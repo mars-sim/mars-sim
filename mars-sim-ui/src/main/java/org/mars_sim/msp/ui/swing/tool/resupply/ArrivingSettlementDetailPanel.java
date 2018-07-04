@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
+import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -347,5 +348,11 @@ implements ClockListener, HistoricalEventListener {
 		
 		currentTime = null;
 		masterClock = null;
+	}
+
+	@Override
+	public void eventAdded(int index, SimpleEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 }

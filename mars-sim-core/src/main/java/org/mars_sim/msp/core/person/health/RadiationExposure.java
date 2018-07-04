@@ -34,7 +34,6 @@ public class RadiationExposure implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-	/** default serial id. */
 	private static Logger logger = Logger.getLogger(RadiationExposure.class.getName());
 
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
@@ -534,22 +533,24 @@ public class RadiationExposure implements Serializable {
     	    }
 
     		if (totalExposure > 0) {
-	    		String vehicle = "Outside";
+	    		//String loc = "Outside";
 	    		String coord = person.getCoordinates().getFormattedString();
+	    		String str = person.getName() + WAS + EXPOSED_TO + Math.round(totalExposure*10000.0)/10000.0;
+	    		
 	    		if (person.getVehicle() == null)
 	    			// if a person steps outside of the vehicle
-				    LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-				    	"[" + person.getLocationTag().getQuickLocation() + "] " 
-				    	+ person.getName() + WAS + EXPOSED_TO + totalExposure
+				    LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+				    	"[" + coord + "] " 
+				    	+ str
     	    			+ DOSE //in body region " + i
     	    			+ EVA_OPERATION
     	    			+ coord, null);
-	    		else if (person.getMind().getMission() != null) {
+	    		else {//if (person.getMind().getMission() != null) {
 	    			// if a person is inside a vehicle
-	    			vehicle = person.getVehicle().getName();
-	    			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+	    			//loc = person.getVehicle().getName();
+	    			LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
 	    				"[" + coord + "] "
-	    				+ person.getName() + WAS + EXPOSED_TO + totalExposure
+	    				+ str
     	    			+ DOSE // in body region " + i
     	    			+ " during " + person.getMind().getMission().getName(), null);
 	    		}
@@ -558,10 +559,10 @@ public class RadiationExposure implements Serializable {
 	    				EventType.HAZARD_RADIATION_EXPOSURE,
 	    				eventMap,
 	    				//EXPOSED_TO + exposure + DOSE, 
-	    				"Dosage : " + Math.round(totalExposure*10000.0)/10000.0 + " mSv",
+	    				"Dose of " + Math.round(totalExposure*10000.0)/10000.0 + " mSv",
 						person.getName(), 
-						vehicle, 
-						coord 
+						person.getLocationTag().getImmediateLocation(), 
+						person.getLocationTag().getLocale() 
 						);
 				Simulation.instance().getEventManager().registerNewEvent(hEvent);
 				

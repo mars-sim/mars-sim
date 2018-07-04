@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -208,7 +209,7 @@ extends TabPanel {
 	 * Gets the parts string.
 	 * @return string.
 	 */
-	private String getPartsString(Map<Part, Integer> parts, boolean useHtml) {
+	private String getPartsString(Map<Integer, Integer> parts, boolean useHtml) {
 		/*
 		StringBuilder buf = new StringBuilder("Parts: ");
 		if (parts.size() > 0) {
@@ -227,12 +228,13 @@ extends TabPanel {
         StringBuilder buf = new StringBuilder("Needed Parts: ");
     	//Map<Part, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
     	if (parts.size() > 0) {
-    		Iterator<Part> i = parts.keySet().iterator();
+    		Iterator<Integer> i = parts.keySet().iterator();
     		while (i.hasNext()) {
-    			Part part = i.next();
+    			Integer part = i.next();
     			int number = parts.get(part);
 				if (useHtml) buf.append("<br>");
-				buf.append(number).append(" ").append(Conversion.capitalize(part.getName()));
+				buf.append(number).append(" ")
+				.append(Conversion.capitalize(ItemResourceUtil.findItemResource(part).getName()));
 				if (i.hasNext()) buf.append(", ");
 				else {
 					buf.append(".");
@@ -318,7 +320,7 @@ extends TabPanel {
 			progressBarModel.setValue(percentDone);
 
 			// Prepare parts label.
-			Map<Part, Integer> parts = manager.getMaintenanceParts();
+			Map<Integer, Integer> parts = manager.getMaintenanceParts();
 			partsLabel = new JLabel(getPartsString(parts, false), JLabel.CENTER);
 			partsLabel.setPreferredSize(new Dimension(-1, -1));
 			add(partsLabel);
@@ -351,7 +353,7 @@ extends TabPanel {
 				lastLabel.setText("Last completed : " + lastCompletedCache + " sols ago");
 			}
 
-			Map<Part, Integer> parts = manager.getMaintenanceParts();
+			Map<Integer, Integer> parts = manager.getMaintenanceParts();
 
 			// Update parts label.
 			partsLabel.setText(getPartsString(parts, false));

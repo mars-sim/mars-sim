@@ -47,10 +47,12 @@ implements Serializable {
 	
 	private boolean toggle = false;
 	
-	private AmountResource methaneAR;// = ResourceUtil.methaneAR;
+//	private AmountResource methaneAR;// = ResourceUtil.methaneAR;
+//	private AmountResource oxygenAR = ResourceUtil.oxygenAR;
 
-	private AmountResource oxygenAR = ResourceUtil.oxygenAR;
-
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int methaneID = ResourceUtil.methaneID;
+		
 	/**
 	 * Constructor.
 	 * @param _maxHeat the maximum power/heat (kW) of the heat source.
@@ -63,7 +65,6 @@ implements Serializable {
 		super(HeatSourceType.FUEL_HEATING, _maxHeat);
 		rate = _consumptionSpeed;
 		toggle = _toggle;
-		methaneAR = ResourceUtil.methaneAR;//AmountResource.findAmountResource(fuelType);
 	}
 
 /*
@@ -98,8 +99,8 @@ implements Serializable {
 		//System.out.println("maxFuel : "+maxFuel);
 		double consumed = 0;
 		
-		double fuelStored = inv.getAmountResourceStored(methaneAR, false);
-		double o2Stored = inv.getAmountResourceStored(oxygenAR, false);
+		double fuelStored = inv.getAmountResourceStored(methaneID, false);
+		double o2Stored = inv.getAmountResourceStored(oxygenID, false);
 
 		// Note that 16 g of methane requires 64 g of oxygen, a 1 to 4 ratio
 		consumed = Math.min(maxFuel, Math.min(fuelStored, o2Stored/4D));
@@ -121,25 +122,32 @@ implements Serializable {
 		}				
 */		
 
-		inv.retrieveAmountResource(methaneAR, consumed);
-		inv.retrieveAmountResource(oxygenAR, 4D*consumed);
+		inv.retrieveAmountResource(methaneID, consumed);
+		inv.retrieveAmountResource(oxygenID, 4D*consumed);
 		
-	    inv.addAmountDemandTotalRequest(methaneAR);
-	   	inv.addAmountDemand(methaneAR, consumed);
+	    inv.addAmountDemandTotalRequest(methaneID);
+	   	inv.addAmountDemand(methaneID, consumed);
 	   	
-	    inv.addAmountDemandTotalRequest(methaneAR);
-	   	inv.addAmountDemand(methaneAR, 4D*consumed);
+	    inv.addAmountDemandTotalRequest(methaneID);
+	   	inv.addAmountDemand(methaneID, 4D*consumed);
 	   	
 		return consumed;
 	}
-
 	/**
 	 * Gets the amount resource used as fuel.
 	 * @return amount resource.
 	 */
-	 public AmountResource getFuelResource() {
-		return methaneAR;
+	 public int getFuelResourceID() {
+		return methaneID;
 	}
+	 
+//	/**
+//	 * Gets the amount resource used as fuel.
+//	 * @return amount resource.
+//	 */
+//	 public AmountResource getFuelResource() {
+//		return methaneAR;
+//	}
 
 	/**
 	 * Gets the rate the fuel is consumed.
@@ -164,8 +172,7 @@ implements Serializable {
 	 @Override
 	 public double getAverageHeat(Settlement settlement) {
 		 double fuelHeat = getMaxHeat();
-		 AmountResource fuelResource = getFuelResource();
-		 Good fuelGood = GoodsUtil.getResourceGood(fuelResource);
+		 Good fuelGood = GoodsUtil.getResourceGood(methaneID);
 		 GoodsManager goodsManager = settlement.getGoodsManager();
 		 double fuelValue = goodsManager.getGoodValuePerItem(fuelGood);
 		 fuelValue *= getFuelConsumptionRate();
@@ -249,9 +256,7 @@ implements Serializable {
 		
 	@Override
 	public void destroy() {
-		 super.destroy();
-		 methaneAR = null;
-		 oxygenAR = null;		 
+		 super.destroy();	 
 	}
 
 

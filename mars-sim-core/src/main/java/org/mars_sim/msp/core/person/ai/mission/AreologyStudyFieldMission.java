@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -30,8 +29,6 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.AreologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -82,9 +79,9 @@ implements Serializable {
 	/** The person leading the areology research. */
 	private Person leadResearcher;
 
-	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	private static AmountResource waterAR = ResourceUtil.waterAR;
-	private static AmountResource foodAR = ResourceUtil.foodAR;
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+	private static int foodID = ResourceUtil.foodID;
 
 	private static ScienceType areology = ScienceType.AREOLOGY;
 
@@ -285,7 +282,7 @@ implements Serializable {
 
 		// Check food capacity as time limit.
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate() * Mission.FOOD_MARGIN;
-		double foodCapacity = vInv.getAmountResourceCapacity(foodAR, false);
+		double foodCapacity = vInv.getAmountResourceCapacity(foodID, false);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit) {
 			timeLimit = foodTimeLimit;
@@ -303,7 +300,7 @@ implements Serializable {
 
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate() * Mission.WATER_MARGIN;
-		double waterCapacity = vInv.getAmountResourceCapacity(waterAR, false);
+		double waterCapacity = vInv.getAmountResourceCapacity(waterID, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit) {
 			timeLimit = waterTimeLimit;
@@ -311,7 +308,7 @@ implements Serializable {
 
 		// Check oxygen capacity as time limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate() * Mission.OXYGEN_MARGIN;
-		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenAR, false);
+		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenID, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit) {
 			timeLimit = oxygenTimeLimit;
@@ -404,13 +401,13 @@ implements Serializable {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
+	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(
 			boolean useBuffer) {
 		if (equipmentNeededCache != null) {
 			return equipmentNeededCache;
 		}
 		else {
-			Map<Class<? extends Equipment>, Integer> result = new HashMap<>();
+			Map<Integer, Integer> result = new HashMap<>();
 			equipmentNeededCache = result;
 			return result;
 		}
@@ -627,9 +624,9 @@ implements Serializable {
 	}
 
 	@Override
-	public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
+	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
 
-		Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
+		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
 
 		double fieldSiteTime = getEstimatedRemainingFieldSiteTime();
 		double timeSols = fieldSiteTime / 1000D;
@@ -639,24 +636,24 @@ implements Serializable {
 		// Determine life support supplies needed for trip.
 		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(oxygenAR)) {
-			oxygenAmount += (Double) result.get(oxygenAR);
+		if (result.containsKey(oxygenID)) {
+			oxygenAmount += (Double) result.get(oxygenID);
 		}
-		result.put(oxygenAR, oxygenAmount);
+		result.put(oxygenID, oxygenAmount);
 
 		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(waterAR)) {
-			waterAmount += (Double) result.get(waterAR);
+		if (result.containsKey(waterID)) {
+			waterAmount += (Double) result.get(waterID);
 		}
-		result.put(waterAR, waterAmount);
+		result.put(waterID, waterAmount);
 
 		//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum * PhysicalCondition.FOOD_RESERVE_FACTOR;
-		if (result.containsKey(foodAR)) {
-			foodAmount += (Double) result.get(foodAR);
+		if (result.containsKey(foodID)) {
+			foodAmount += (Double) result.get(foodID);
 		}
-		result.put(foodAR, foodAmount);
+		result.put(foodID, foodAmount);
 
 		/*
 		// 2015-03-09 Added the chosen dessert for the journey

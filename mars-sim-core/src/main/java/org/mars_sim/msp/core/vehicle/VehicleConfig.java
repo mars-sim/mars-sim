@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.science.ScienceType;
 
@@ -94,7 +95,7 @@ implements Serializable {
 	private void parseIfNeccessary() {
 		// only parse when necessary (i.e. when not yet parsed)
 		if (map == null) {
-			map = new HashMap<String,VehicleDescription>();
+			map = new HashMap<String, VehicleDescription>();
 			Element root = vehicleDoc.getRootElement();
 			List<Element> vehicleNodes = root.getChildren(VEHICLE);
 			for (Element vehicleElement : vehicleNodes) {
@@ -115,7 +116,7 @@ implements Serializable {
 
 				// cargo capacities
 				Element cargoElement = vehicleElement.getChild(CARGO);
-				v.cargoCapacityMap = new HashMap<String,Double>();
+				v.cargoCapacityMap = new HashMap<String, Double>();
 				if (cargoElement != null) {
 					double resourceCapacity = 0D;
 					List<Element> capacityList = cargoElement.getChildren(CAPACITY);
@@ -605,7 +606,7 @@ implements Serializable {
 		private double drivetrainEff,baseSpeed,emptyMass;
 		private int crewSize;
 		private double totalCapacity;
-		private Map<String,Double> cargoCapacityMap;
+		private Map<String, Double> cargoCapacityMap;
 		private boolean hasSickbay,hasLab,hasPartAttachments;
 		private int sickbayTechLevel,sickbayBeds;
 		private int labTechLevel,attachmentSlots;

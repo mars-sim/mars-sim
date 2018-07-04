@@ -21,9 +21,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.AmountResourceStorage;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
@@ -53,6 +56,8 @@ implements Serializable {
     private Collection<Unit> containedUnits = null;
     /** Map of item resources. */
     private Map<ItemResource, Integer> containedItemResources = null;
+    /** Map of item resources. */
+    private Map<Integer, Integer> containedItemIDs = null;
     /** General mass capacity of inventory. */
     private double generalCapacity = 0D;
     /** Resource storage. */
@@ -452,6 +457,15 @@ implements Serializable {
      * @param resource the resource.
      * @param capacity the extra capacity amount (kg).
      */
+    public void addAmountResourceTypeCapacity(int resource, double capacity) {
+    	addARTypeCapacity(resource, capacity);
+    }
+    
+    /**
+     * Adds capacity for a resource type.
+     * @param resource the resource.
+     * @param capacity the extra capacity amount (kg).
+     */
     public void addARTypeCapacity(int resource, double capacity) {
     	//AmountResource ar = ResourceUtil.findAmountResource(resource);
         // Set capacity cache to dirty because capacity values are changing.
@@ -562,8 +576,18 @@ implements Serializable {
      * @param allowDirty will allow dirty (possibly out of date) results.
      * @return capacity amount (kg).
      */
+    public double getAmountResourceCapacity(int resource, boolean allowDirty) {
+        return getARCapacityCacheValue(resource, allowDirty);
+    }
+    
+    /**
+     * Gets the storage capacity for a resource.
+     * @param resource the resource.
+     * @param allowDirty will allow dirty (possibly out of date) results.
+     * @return capacity amount (kg).
+     */
     public double getARCapacity(int resource, boolean allowDirty) {
-        return getAmountResourceCapacityCacheValue(ResourceUtil.findAmountResource(resource), allowDirty);
+        return getARCapacityCacheValue(resource, allowDirty);
     }
     
     /**
@@ -589,6 +613,16 @@ implements Serializable {
      */
     public double getAmountResourceStored(AmountResource resource, boolean allowDirty) {
         return getAmountResourceStoredCacheValue(resource, allowDirty);
+    }
+  
+    /**
+     * Gets the amount of a resource stored.
+     * @param resource the resource.
+     * @param allowDirty will allow dirty (possibly out of date) results.
+     * @return stored amount (kg).
+     */
+    public double getAmountResourceStored(int resource, boolean allowDirty) {
+        return getAmountResourceStoredCacheValue(ResourceUtil.findAmountResource(resource), allowDirty);
     }
     
     /**
@@ -628,6 +662,35 @@ implements Serializable {
         return getTotalAmountResourcesStoredCache(allowDirty);
     }
 
+    /**
+     * Gets the remaining capacity available for a resource.
+     * @param resource the resource.
+     * @param useContainedUnits should the capacity of contained units be added?
+     * @param allowDirty will allow dirty (possibly out of date) results.
+     * @return remaining capacity amount (kg).
+     */
+    public double getAmountResourceRemainingCapacity(int resource,
+            boolean useContainedUnits, boolean allowDirty) {
+    	
+        double result = 0D;
+
+        if (useContainedUnits) {
+            double capacity = getARCapacity(resource, allowDirty);
+            double stored = getARStored(resource, allowDirty);
+            result += capacity - stored;
+        } else if (resourceStorage != null) {
+            result += resourceStorage.getARRemainingCapacity(resource);
+        }
+
+        // Check if remaining capacity exceeds container unit's remaining general capacity.
+        double containerUnitLimit = getContainerUnitGeneralCapacityLimit(allowDirty);
+        if (result > containerUnitLimit) {
+            result = containerUnitLimit;
+        }
+
+        return result;
+    }
+    
     /**
      * Gets the remaining capacity available for a resource.
      * @param resource the resource.
@@ -769,6 +832,89 @@ implements Serializable {
         }
     }
 
+    /**
+     * Store an amount of a resource.
+     * @param resource the resource.
+     * @param amount the amount (kg).
+     * @param useContainedUnits
+     */
+    public void storeAmountResource(int resource, double amount, boolean useContainedUnits) {
+   
+        if (amount < 0D) {
+            throw new IllegalStateException("Cannot store negative amount of resource: " + amount);
+        }
+
+        if (amount > 0D) {
+            AmountResource ar = ResourceUtil.findAmountResource(resource);
+                   
+            if (amount <= getARRemainingCapacity(resource, useContainedUnits, false)) {
+               
+                // Set modified cache values as dirty.
+                setAmountResourceCapacityCacheAllDirty(false);
+                setAmountResourceStoredCacheAllDirty(false);
+                setAllStoredAmountResourcesCacheDirty();
+                setTotalAmountResourcesStoredCacheDirty();
+
+                double remainingAmount = amount;
+                double remainingStorageCapacity = 0D;
+                if (resourceStorage != null) {
+                    remainingStorageCapacity += resourceStorage.getARRemainingCapacity(resource);
+                }
+
+                // Check if local resource storage can hold resources if not using contained units.
+                if (!useContainedUnits && (remainingAmount > remainingStorageCapacity)) {
+                	
+                    throw new IllegalStateException(ar.getName()
+                            + " could not be totally stored. Remaining: " + (remainingAmount -
+                                    remainingStorageCapacity));
+                }
+
+                // Store resource in local resource storage.
+                double storageAmount = remainingAmount;
+                if (storageAmount > remainingStorageCapacity) {
+                    storageAmount = remainingStorageCapacity;
+                }
+                if ((storageAmount > 0D) && (resourceStorage != null)) {
+                    resourceStorage.storeAmountResource(resource, storageAmount);
+                    remainingAmount -= storageAmount;
+                }
+
+                // Store remaining resource in contained units in general capacity.
+                if (useContainedUnits && (remainingAmount > 0D) && (containedUnits != null)) {
+                    for (Unit unit : containedUnits) {
+                        // Use only contained units that implement container interface.
+                        if (unit instanceof Container) {
+                            Inventory unitInventory = unit.getInventory();
+                            double remainingUnitCapacity = unitInventory.getARRemainingCapacity(
+                                    resource, false, false);
+                            double unitStorageAmount = remainingAmount;
+                            if (unitStorageAmount > remainingUnitCapacity) {
+                                unitStorageAmount = remainingUnitCapacity;
+                            }
+                            if (unitStorageAmount > 0D) {
+                                unitInventory.storeAR(resource, unitStorageAmount, false);
+                                remainingAmount -= unitStorageAmount;
+                            }
+                        }
+                    }
+                }
+
+                if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
+                    throw new IllegalStateException(ar.getName()
+                            + " could not be totally stored. Remaining: " + remainingAmount);
+                }
+
+                // Fire inventory event.
+                if (owner != null) {
+                    owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, ar);
+                }
+            } else {
+                throw new IllegalStateException("Insufficient capacity to store " + ar.getName() +
+                        ", capacity: " + getARRemainingCapacity(resource, useContainedUnits,
+                                false) + ", attempted: " + amount);
+            }
+        }
+    }
     
     /**
      * Store an amount of a resource.
@@ -777,16 +923,17 @@ implements Serializable {
      * @param useContainedUnits
      */
     public void storeAR(int resource, double amount, boolean useContainedUnits) {
-        AmountResource ar = ResourceUtil.findAmountResource(resource);
-        
+     
         if (amount < 0D) {
             throw new IllegalStateException("Cannot store negative amount of resource: " + amount);
         }
 
         if (amount > 0D) {
-
+            AmountResource ar = ResourceUtil.findAmountResource(resource);
+                 
             if (amount <= getARRemainingCapacity(resource, useContainedUnits, false)) {
 
+           
                 // Set modified cache values as dirty.
                 setAmountResourceCapacityCacheAllDirty(false);
                 setAmountResourceStoredCacheAllDirty(false);
@@ -853,6 +1000,14 @@ implements Serializable {
         }
     }
 
+    /**
+     * Retrieves an amount of a resource from storage.
+     * @param resource the resource.
+     * @param amount the amount (kg).
+     */
+    public void retrieveAmountResource(int resource, double amount) {
+    	retrieveAmountResource(ResourceUtil.findAmountResource(resource), amount);
+    }
     
     /**
      * Retrieves an amount of a resource from storage.
@@ -1053,6 +1208,10 @@ implements Serializable {
         return result;
     }
 
+    public boolean hasItemResource(int id) {
+    	return hasItemResource(ItemResourceUtil.findItemResource(id));
+    }
+    
     /**
      * Checks if storage has an item resource.
      * @param resource the resource.
@@ -1080,6 +1239,20 @@ implements Serializable {
      * @param resource the resource.
      * @return number of resources.
      */
+    public int getItemResourceNum(int id) {
+    	ItemResource resource = ItemResourceUtil.findItemResource(id);
+        int result = 0;
+        if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
+            result += containedItemResources.get(resource);
+        }
+        return result;
+    }
+    
+    /**
+     * Gets the number of an item resource in storage.
+     * @param resource the resource.
+     * @return number of resources.
+     */
     public int getItemResourceNum(ItemResource resource) {
         int result = 0;
         if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
@@ -1088,6 +1261,20 @@ implements Serializable {
         return result;
     }
 
+//    /**
+//     * Gets a set of all the item resources in storage.
+//     * @return set of item resources.
+//     */
+//    public Set<Integer> getAllItemIDsStored() {
+//        Set<Integer> result = null;
+//        if (containedItemResources != null) {
+//            result = containedItemResources.keySet();
+//        } else {
+//            result = new HashSet<Integer>();
+//        }
+//        return result;
+//    }
+    
     /**
      * Gets a set of all the item resources in storage.
      * @return set of item resources.
@@ -1111,6 +1298,15 @@ implements Serializable {
         return getItemResourceTotalMassCache(allowDirty);
     }
 
+    /**
+     * Stores item resources.
+     * @param resource the resource to store.
+     * @param number the number of resources to store.
+     */
+    public void storeItemResources(int id, int number) {
+    	storeItemResources(ItemResourceUtil.findItemResource(id), number);
+    }
+    
     /**
      * Stores item resources.
      * @param resource the resource to store.
@@ -1152,6 +1348,15 @@ implements Serializable {
         }
     }
 
+    /**
+     * Retrieves item resources.
+     * @param resource the resource to retrieve.
+     * @param number the number of resources to retrieve.
+     */
+    public void retrieveItemResources(int resource, int number) {
+    	retrieveItemResources(ItemResourceUtil.findItemResource(resource), number);
+    }
+    
     /**
      * Retrieves item resources.
      * @param resource the resource to retrieve.
@@ -1245,6 +1450,11 @@ implements Serializable {
         return result;
     }
 
+    private boolean containsUnitClassLocal(int c) {
+     	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(c).getName());
+    	return containsUnitClassLocal(unitClass);
+    }
+   
     /**
      * Checks if any of a given class of unit is in storage.
      * @param unitClass the unit class.
@@ -1263,6 +1473,15 @@ implements Serializable {
         return result;
     }
 
+    public boolean containsUnitClass(int c) {
+        boolean result = false;
+        // Check if unit of class is in inventory.
+        if (containsUnitClassLocal(c)) {
+            result = true;
+        }
+        return result;
+    }
+    
     /**
      * Checks if any of a given class of unit is in storage.
      * @param unitClass the unit class.
@@ -1277,6 +1496,11 @@ implements Serializable {
         return result;
     }
 
+    public Unit findUnitOfClass(int c) {
+       	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(c).getName());
+    	return findUnitOfClass(unitClass);
+    }
+    
     /**
      * Finds a unit of a given class in storage.
      * @param unitClass the unit class.
@@ -1296,6 +1520,11 @@ implements Serializable {
         return result;
     }
 
+    public Collection<Unit> findAllUnitsOfClass(int c) {
+       	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(c).getName());
+       	return findAllUnitsOfClass(unitClass);
+    }
+    
     /**
      * Finds all of the units of a class in storage.
      * @param unitClass the unit class.
@@ -1313,6 +1542,11 @@ implements Serializable {
         return result;
     }
 
+    public int findNumUnitsOfClass(int c) {
+    	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(c).getName());
+    	return findNumUnitsOfClass(unitClass);
+    }
+    
     /**
      * Finds the number of units of a class that are contained in storage.
      * @param unitClass the unit class.
@@ -1352,6 +1586,21 @@ implements Serializable {
         return result;
     }
 
+    public int findNumEmptyUnitsOfClass(int c, boolean allowDirty) {
+    	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(c).getName());
+        int result = 0;
+        if (containsUnitClass(unitClass)) {
+            for (Unit unit : containedUnits) {
+                if (unitClass.isInstance(unit)) {
+                    Inventory inv = unit.getInventory();
+                    if ((inv != null) && inv.isEmpty(allowDirty)) {
+                        result++;
+                    }
+                }
+            }
+        }
+        return result;
+    }
     /**
      * Checks if a unit can be stored.
      * @param unit the unit.

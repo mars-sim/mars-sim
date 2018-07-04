@@ -980,14 +980,14 @@ public class BrowserJFX {
             //urlTF.setText(shortened);
             tf.setText(shortened);
     		statusBarURLText = shortened;
-    		statusBarLbl.setText(shortened);
+    		SwingUtilities.invokeLater(()-> statusBarLbl.setText(shortened));
     	}
     	else {
     		// this is a remote link or internal link
             //urlTF.setText(content);
             tf.setText(content);
     		statusBarURLText = content;
-    		statusBarLbl.setText(content);
+    		SwingUtilities.invokeLater(()-> statusBarLbl.setText(content));
     	}
 /*
 		//System.out.println("isLocalHtml : " + isLocalHtml + "   isInternal : " + isInternal);

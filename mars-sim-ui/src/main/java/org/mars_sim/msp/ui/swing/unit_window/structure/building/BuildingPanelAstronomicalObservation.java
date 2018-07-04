@@ -13,9 +13,15 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
-import javax.swing.*;
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -28,7 +34,7 @@ extends BuildingFunctionPanel {
 	// Data members
 	private int currentObserversAmount;
 
-	private JLabel observersLabel;
+	private WebLabel observersLabel;
 	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
 	
 	private AstronomicalObservation function;
@@ -51,29 +57,29 @@ extends BuildingFunctionPanel {
 		setLayout(new BorderLayout());
 		
 		// Prepare label panelAstronomicalObservation
-		JPanel labelPanel = new JPanel(new GridLayout(5, 1, 0, 0));
+		WebPanel labelPanel = new WebPanel(new GridLayout(5, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
 
 		// Astronomy top label
 		// 2014-11-21 Changed font type, size and color and label text
-		JLabel astronomyLabel = new JLabel(Msg.getString("BuildingPanelAstronomicalObservation.title"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel astronomyLabel = new WebLabel(Msg.getString("BuildingPanelAstronomicalObservation.title"), WebLabel.CENTER); //$NON-NLS-1$
 		astronomyLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//astronomyLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(astronomyLabel);
 
 		// Observer number label
 		// 2014-11-21 Fixed currentObserversAmount
-		observersLabel = new JLabel(Msg.getString("BuildingPanelAstronomicalObservation.numberOfObservers", currentObserversAmount), JLabel.CENTER); //$NON-NLS-1$
-		observersLabel.setHorizontalAlignment(JLabel.CENTER);
+		observersLabel = new WebLabel(Msg.getString("BuildingPanelAstronomicalObservation.numberOfObservers", currentObserversAmount), WebLabel.CENTER); //$NON-NLS-1$
+		observersLabel.setHorizontalAlignment(WebLabel.CENTER);
 		update();
 		labelPanel.add(observersLabel);
 
 		// Observer capacityLabel
-		JLabel observerCapacityLabel = new JLabel(
+		WebLabel observerCapacityLabel = new WebLabel(
 			Msg.getString(
 				"BuildingPanelAstronomicalObservation.observerCapacity", //$NON-NLS-1$
 				function.getObservatoryCapacity()
-			),JLabel.CENTER
+			),WebLabel.CENTER
 		);
 		labelPanel.add(observerCapacityLabel);
 		
@@ -85,10 +91,10 @@ extends BuildingFunctionPanel {
 		observersLabel.setBackground(new Color(0,0,0,128));
 		
       	// Create the button panel.
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		// Create the orbit viewer button.
-		JButton button = new JButton("Orbit Viewer");
+		WebButton button = new WebButton("Orbit Viewer");
 		
 		//balloonToolTip.createBalloonTip(button, "Click to open the solar system orbit viewer"); 
 		//button.setToolTipText("Click to open the solar system orbit viewer");

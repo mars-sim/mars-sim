@@ -171,7 +171,7 @@ public class GoodsManager implements Serializable {
     private Map<Good, Double> goodsTradeCache;
     private Map<String, Double> vehicleBuyValueCache;
     private Map<String, Double> vehicleSellValueCache;
-    private Map<Part, Double> partsDemandCache;
+    private Map<Integer, Double> partsDemandCache;
     private boolean initialized = false;
 
     private Settlement settlement;
@@ -236,7 +236,7 @@ public class GoodsManager implements Serializable {
         }
 
         // Create parts demand cache.
-        partsDemandCache = new HashMap<Part, Double>(ItemResourceUtil.getItemResources().size());
+        partsDemandCache = new HashMap<>(ItemResourceUtil.getItemIDs().size());
 
         // Create vehicle caches.
         vehicleBuyValueCache = new HashMap<String, Double>();
@@ -386,6 +386,8 @@ public class GoodsManager implements Serializable {
             else throw new IllegalArgumentException("Good: " + resourceGood + " not valid.");
         }
         else {
+        	int id = ResourceUtil.findIDbyAmountResourceName(resource.getName());
+        	
             // 2015-01-15 Created getAllSupplyAmount()
             totalSupply = getTotalSupplyAmount(resource, supply, solElapsed);
             //goodsSupplyCache.put(resourceGood, totalSupply);
@@ -409,7 +411,7 @@ public class GoodsManager implements Serializable {
             projectedDemand += getFarmingDemand(resource);
 
             // Tune resource processing demand.
-            projectedDemand += getResourceProcessingDemand(resource);
+            projectedDemand += getResourceProcessingDemand(id);
 
             // Tune manufacturing demand.
             projectedDemand += getResourceManufacturingDemand(resource);
@@ -424,7 +426,7 @@ public class GoodsManager implements Serializable {
             projectedDemand += getResourceDessertDemand(resource);
 
             // Tune construction demand.
-            projectedDemand += getResourceConstructionDemand(resource);
+            projectedDemand += getResourceConstructionDemand(id);
 
             // Tune construction site demand.
             projectedDemand += getResourceConstructionSiteDemand(resource);
@@ -861,7 +863,7 @@ public class GoodsManager implements Serializable {
      * @param resource the amount resource.
      * @return demand (kg)
      */
-    private double getResourceProcessingDemand(AmountResource resource) {
+    private double getResourceProcessingDemand(Integer resource) {
         double demand = 0D;
 
         // Get all resource processes at settlement.
@@ -881,17 +883,17 @@ public class GoodsManager implements Serializable {
      * @param resource the amount resource.
      * @return demand (kg)
      */
-    private double getResourceProcessDemand(ResourceProcess process, AmountResource resource) {
+    private double getResourceProcessDemand(ResourceProcess process, Integer resource) {
         double demand = 0D;
 
-        Set<AmountResource> inputResources = process.getInputResources();
-        Set<AmountResource> outputResources = process.getOutputResources();
+        Set<Integer> inputResources = process.getInputResources();
+        Set<Integer> outputResources = process.getOutputResources();
 
         if (inputResources.contains(resource) && !process.isAmbientInputResource(resource)) {
             double outputValue = 0D;
-            Iterator<AmountResource> i = outputResources.iterator();
+            Iterator<Integer> i = outputResources.iterator();
             while (i.hasNext()) {
-                AmountResource output = i.next();
+            	Integer output = i.next();
                 double outputRate = process.getMaxOutputResourceRate(output);
                 if (!process.isWasteOutputResource(resource)) {
                     outputValue += (getGoodValuePerItem(GoodsUtil.getResourceGood(output)) * outputRate);
@@ -1201,7 +1203,7 @@ public class GoodsManager implements Serializable {
      * @param resource the amount resource.
      * @return demand (kg)
      */
-    private double getResourceConstructionDemand(AmountResource resource) {
+    private double getResourceConstructionDemand(Integer resource) {
         double demand = 0D;
 
         ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
@@ -1269,24 +1271,24 @@ public class GoodsManager implements Serializable {
      * @param stageValue the building construction stage value (VP).
      * @return demand (kg)
      */
-    private double getResourceConstructionStageDemand(AmountResource resource, ConstructionStageInfo stage,
+    private double getResourceConstructionStageDemand(Integer resource, ConstructionStageInfo stage,
             double stageValue) {
         double demand = 0D;
 
         double resourceAmount = getPrerequisiteConstructionResourceAmount(resource, stage);
 
         if (resourceAmount > 0D) {
-            Map<AmountResource, Double> resources = getAllPrerequisiteConstructionResources(stage);
-            Map<Part, Integer> parts = getAllPrerequisiteConstructionParts(stage);
+            Map<Integer, Double> resources = getAllPrerequisiteConstructionResources(stage);
+            Map<Integer, Integer> parts = getAllPrerequisiteConstructionParts(stage);
 
             double totalItems = 0D;
 
-            Iterator<AmountResource> i = resources.keySet().iterator();
+            Iterator<Integer> i = resources.keySet().iterator();
             while (i.hasNext()) {
                 totalItems += resources.get(i.next());
             }
 
-            Iterator<Part> j = parts.keySet().iterator();
+            Iterator<Integer> j = parts.keySet().iterator();
             while (j.hasNext()) {
                 totalItems += parts.get(j.next());
             }
@@ -1304,17 +1306,17 @@ public class GoodsManager implements Serializable {
      * @param stage the stage.
      * @return map of resources and their amounts (kg).
      */
-    private Map<AmountResource, Double> getAllPrerequisiteConstructionResources(ConstructionStageInfo stage) {
+    private Map<Integer, Double> getAllPrerequisiteConstructionResources(ConstructionStageInfo stage) {
 
         // Start with all resources required to build stage.
-        Map<AmountResource, Double> result = new HashMap<AmountResource, Double>(stage.getResources());
+        Map<Integer, Double> result = new HashMap<Integer, Double>(stage.getResources());
 
         // Add all resources required to build first prestage, if any.
         ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
         if ((preStage1 != null)) {
-            Iterator<AmountResource> i = preStage1.getResources().keySet().iterator();
+            Iterator<Integer> i = preStage1.getResources().keySet().iterator();
             while (i.hasNext()) {
-                AmountResource resource = i.next();
+            	Integer resource = i.next();
                 double amount = preStage1.getResources().get(resource);
                 if (result.containsKey(resource)) {
                     double totalAmount = result.get(resource) + amount;
@@ -1328,9 +1330,9 @@ public class GoodsManager implements Serializable {
             // Add all resources required to build second prestage, if any.
             ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
             if ((preStage2 != null)) {
-                Iterator<AmountResource> j = preStage2.getResources().keySet().iterator();
+                Iterator<Integer> j = preStage2.getResources().keySet().iterator();
                 while (j.hasNext()) {
-                    AmountResource resource = j.next();
+                	Integer resource = j.next();
                     double amount = preStage2.getResources().get(resource);
                     if (result.containsKey(resource)) {
                         double totalAmount = result.get(resource) + amount;
@@ -1352,12 +1354,12 @@ public class GoodsManager implements Serializable {
      * @param stage the stage.
      * @return total amount (kg) of the resource.
      */
-    private double getPrerequisiteConstructionResourceAmount(AmountResource resource, ConstructionStageInfo stage) {
+    private double getPrerequisiteConstructionResourceAmount(Integer resource, ConstructionStageInfo stage) {
 
         double result = 0D;
 
         // Add resource amount needed for stage.
-        Map<AmountResource, Double> stageResources = stage.getResources();
+        Map<Integer, Double> stageResources = stage.getResources();
         if (stageResources.containsKey(resource)) {
             result += stageResources.get(resource);
         }
@@ -1365,7 +1367,7 @@ public class GoodsManager implements Serializable {
         // Add resource amount needed for first prestage, if any.
         ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
         if ((preStage1 != null) && preStage1.isConstructable()) {
-            Map<AmountResource, Double> preStage1Resources = preStage1.getResources();
+            Map<Integer, Double> preStage1Resources = preStage1.getResources();
             if (preStage1Resources.containsKey(resource)) {
                 result += preStage1Resources.get(resource);
             }
@@ -1373,7 +1375,7 @@ public class GoodsManager implements Serializable {
             // Add resource amount needed for second prestage, if any.
             ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
             if ((preStage2 != null) && preStage2.isConstructable()) {
-                Map<AmountResource, Double> preStage2Resources = preStage2.getResources();
+                Map<Integer, Double> preStage2Resources = preStage2.getResources();
                 if (preStage2Resources.containsKey(resource)) {
                     result += preStage2Resources.get(resource);
                 }
@@ -1388,17 +1390,17 @@ public class GoodsManager implements Serializable {
      * @param stage the stage.
      * @return map of parts and their numbers.
      */
-    private Map<Part, Integer> getAllPrerequisiteConstructionParts(ConstructionStageInfo stage) {
+    private Map<Integer, Integer> getAllPrerequisiteConstructionParts(ConstructionStageInfo stage) {
 
         // Start with all parts required to build stage.
-        Map<Part, Integer> result = new HashMap<Part, Integer>(stage.getParts());
+        Map<Integer, Integer> result = new HashMap<Integer, Integer>(stage.getParts());
 
         // Add parts from first prestage, if any.
         ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
         if ((preStage1 != null)) {
-            Iterator<Part> i = preStage1.getParts().keySet().iterator();
+            Iterator<Integer> i = preStage1.getParts().keySet().iterator();
             while (i.hasNext()) {
-                Part part = i.next();
+            	Integer part = i.next();
                 int number = preStage1.getParts().get(part);
                 if (result.containsKey(part)) {
                     int totalNumber = result.get(part) + number;
@@ -1412,9 +1414,9 @@ public class GoodsManager implements Serializable {
             // Add parts from second prestage, if any.
             ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
             if ((preStage2 != null)) {
-                Iterator<Part> j = preStage2.getParts().keySet().iterator();
+                Iterator<Integer> j = preStage2.getParts().keySet().iterator();
                 while (j.hasNext()) {
-                    Part part = j.next();
+                	Integer part = j.next();
                     int number = preStage2.getParts().get(part);
                     if (result.containsKey(part)) {
                         int totalNumber = result.get(part) + number;
@@ -1436,12 +1438,12 @@ public class GoodsManager implements Serializable {
      * @param stage the stage.
      * @return total number of parts required.
      */
-    private int getPrerequisiteConstructionPartNum(Part part, ConstructionStageInfo stage) {
+    private int getPrerequisiteConstructionPartNum(Integer part, ConstructionStageInfo stage) {
 
         int result = 0;
 
         // Add all parts from stage.
-        Map<Part, Integer> stageParts = stage.getParts();
+        Map<Integer, Integer> stageParts = stage.getParts();
         if (stageParts.containsKey(part)) {
             result += stageParts.get(part);
         }
@@ -1449,7 +1451,7 @@ public class GoodsManager implements Serializable {
         // Add all parts from first prestage, if any.
         ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
         if ((preStage1 != null) && preStage1.isConstructable()) {
-            Map<Part, Integer> preStage1Parts = preStage1.getParts();
+            Map<Integer, Integer> preStage1Parts = preStage1.getParts();
             if (preStage1Parts.containsKey(part)) {
                 result += preStage1Parts.get(part);
             }
@@ -1457,7 +1459,7 @@ public class GoodsManager implements Serializable {
             // Add all parts from second prestage, if any.
             ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
             if ((preStage2 != null) && preStage2.isConstructable()) {
-                Map<Part, Integer> preStage2Parts = preStage2.getParts();
+                Map<Integer, Integer> preStage2Parts = preStage2.getParts();
                 if (preStage2Parts.containsKey(part)) {
                     result += preStage2Parts.get(part);
                 }
@@ -1477,9 +1479,9 @@ public class GoodsManager implements Serializable {
             double result = 0D;
 
             if (GoodType.AMOUNT_RESOURCE == good.getCategory())
-                result = getAmountOfResourceForSettlement((AmountResource) good.getObject());
+                result = getAmountOfResourceForSettlement((AmountResource)(good.getObject()));
             else if (GoodType.ITEM_RESOURCE == good.getCategory())
-                result = getNumberOfResourceForSettlement((ItemResource) good.getObject());
+                result = getNumberOfResourceForSettlement((ItemResource)(good.getObject()));
             else if (GoodType.EQUIPMENT == good.getCategory())
                 result = getNumberOfEquipmentForSettlement(good.getClassType());
             else if (GoodType.VEHICLE == good.getCategory())
@@ -1518,7 +1520,7 @@ public class GoodsManager implements Serializable {
         Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
         while (j.hasNext()) {
             Person person = j.next();
-            if (person.getLocationSituation() == LocationSituation.OUTSIDE)
+            if (person.isOutside())
                 amount += person.getInventory().getAmountResourceStored(resource, false);
         }
 
@@ -1530,7 +1532,7 @@ public class GoodsManager implements Serializable {
         Iterator<Building> p = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
         while (p.hasNext()) {
             Building building = p.next();
-            FoodProduction kitchen = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
+            FoodProduction kitchen = building.getFoodProduction();
 
             // Go through each ongoing food production process.
             Iterator<FoodProductionProcess> q = kitchen.getProcesses().iterator();
@@ -1561,7 +1563,7 @@ public class GoodsManager implements Serializable {
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            Manufacture workshop = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
+            Manufacture workshop = building.getManufacture();
 
             // Go through each ongoing manufacturing process.
             Iterator<ManufactureProcess> j = workshop.getProcesses().iterator();
@@ -1612,6 +1614,7 @@ public class GoodsManager implements Serializable {
                 if (partsDemandCache.size() == 0) determinePartsDemand();
                 if (partsDemandCache.containsKey(part)) demand = partsDemandCache.get(part);
 
+               
                 // Add manufacturing demand.
                 demand += getPartManufacturingDemand(part);
 
@@ -1619,7 +1622,7 @@ public class GoodsManager implements Serializable {
                 demand += getPartFoodProductionDemand(part);
 
                 // Add construction demand.
-                demand += getPartConstructionDemand(part);
+                demand += getPartConstructionDemand(part.getID());
 
                 // Add construction site demand.
                 demand += getPartConstructionSiteDemand(part);
@@ -1644,7 +1647,7 @@ public class GoodsManager implements Serializable {
      * @return map of parts and their demand.
      */
     private void determinePartsDemand() {
-        Map<Part, Double> partsProbDemand = new HashMap<Part, Double>(ItemResourceUtil.getItemResources().size());
+        Map<Integer, Double> partsProbDemand = new HashMap<>(ItemResourceUtil.getItemIDs().size());
 
         // Get all malfunctionables associated with settlement.
         Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();
@@ -1671,9 +1674,9 @@ public class GoodsManager implements Serializable {
         sumPartsDemand(partsProbDemand, getVehicleAttachmentParts(), 1D);
 
         // Store in parts demand cache.
-        Iterator<Part> j = partsProbDemand.keySet().iterator();
+        Iterator<Integer> j = partsProbDemand.keySet().iterator();
         while (j.hasNext()) {
-            Part part = j.next();
+        	Integer part = j.next();
             partsDemandCache.put(part, partsProbDemand.get(part));
         }
     }
@@ -1684,19 +1687,19 @@ public class GoodsManager implements Serializable {
      * @param additionalPartsDemand the additional parts number.
      * @param multiplier the multiplier for the additional parts number.
      */
-    private void sumPartsDemand(Map<Part, Double> totalPartsDemand, Map<Part, Number> additionalPartsDemand,
+    private void sumPartsDemand(Map<Integer, Double> totalPartsDemand, Map<Integer, Number> additionalPartsDemand,
             double multiplier) {
-        Iterator<Part> i = additionalPartsDemand.keySet().iterator();
+        Iterator<Integer> i = additionalPartsDemand.keySet().iterator();
         while (i.hasNext()) {
-            Part part = i.next();
+        	Integer part = i.next();
             double number = additionalPartsDemand.get(part).doubleValue() * multiplier;
             if (totalPartsDemand.containsKey(part)) number += totalPartsDemand.get(part);
             totalPartsDemand.put(part, number);
         }
     }
 
-    private Map<Part, Number> getEstimatedOrbitRepairParts(Malfunctionable entity) {
-        Map<Part, Number> result = new HashMap<Part, Number>();
+    private Map<Integer, Number> getEstimatedOrbitRepairParts(Malfunctionable entity) {
+        Map<Integer, Number> result = new HashMap<>();
 
         MalfunctionManager manager = entity.getMalfunctionManager();
 
@@ -1704,28 +1707,28 @@ public class GoodsManager implements Serializable {
         double orbitMalfunctions = manager.getEstimatedNumberOfMalfunctionsPerOrbit();
 
         // Estimate parts needed per malfunction.
-        Map<Part, Double> partsPerMalfunction = manager.getRepairPartProbabilities();
+        Map<Integer, Double> partsPerMalfunction = manager.getRepairPartProbabilities();
 
         // Multiply parts needed by malfunctions per orbit.
-        Iterator<Part> i = partsPerMalfunction.keySet().iterator();
+        Iterator<Integer> i = partsPerMalfunction.keySet().iterator();
         while (i.hasNext()) {
-            Part part = i.next();
+        	Integer part = i.next();
             result.put(part, partsPerMalfunction.get(part) * orbitMalfunctions);
         }
 
         return result;
     }
 
-    private Map<Part, Number> getOutstandingRepairParts(Malfunctionable entity) {
-        Map<Part, Number> result = new HashMap<Part, Number>(0);
+    private Map<Integer, Number> getOutstandingRepairParts(Malfunctionable entity) {
+        Map<Integer, Number> result = new HashMap<>(0);
 
         Iterator<Malfunction> i = entity.getMalfunctionManager().getMalfunctions().iterator();
         while (i.hasNext()) {
             Malfunction malfunction = i.next();
-            Map<Part, Integer> repairParts = malfunction.getRepairParts();
-            Iterator<Part> j = repairParts.keySet().iterator();
+            Map<Integer, Integer> repairParts = malfunction.getRepairParts();
+            Iterator<Integer> j = repairParts.keySet().iterator();
             while (j.hasNext()) {
-                Part part = j.next();
+            	Integer part = j.next();
                 int number = repairParts.get(part) * OUTSTANDING_REPAIR_PART_MODIFIER;
                 if (result.containsKey(part)) number += result.get(part).intValue();
                 result.put(part, number);
@@ -1735,8 +1738,8 @@ public class GoodsManager implements Serializable {
         return result;
     }
 
-    private Map<Part, Number> getEstimatedOrbitMaintenanceParts(Malfunctionable entity) {
-        Map<Part, Number> result = new HashMap<Part, Number>();
+    private Map<Integer, Number> getEstimatedOrbitMaintenanceParts(Malfunctionable entity) {
+        Map<Integer, Number> result = new HashMap<>();
 
         MalfunctionManager manager = entity.getMalfunctionManager();
 
@@ -1744,25 +1747,25 @@ public class GoodsManager implements Serializable {
         double orbitMaintenances = manager.getEstimatedNumberOfMaintenancesPerOrbit();
 
         // Estimate parts needed per maintenance.
-        Map<Part, Double> partsPerMaintenance = manager.getMaintenancePartProbabilities();
+        Map<Integer, Double> partsPerMaintenance = manager.getMaintenancePartProbabilities();
 
         // Multiply parts needed by maintenances per orbit.
-        Iterator<Part> i = partsPerMaintenance.keySet().iterator();
+        Iterator<Integer> i = partsPerMaintenance.keySet().iterator();
         while (i.hasNext()) {
-            Part part = i.next();
+        	Integer part = i.next();
             result.put(part, partsPerMaintenance.get(part) * orbitMaintenances);
         }
 
         return result;
     }
 
-    private Map<Part, Number> getOutstandingMaintenanceParts(Malfunctionable entity) {
-        Map<Part, Number> result = new HashMap<Part, Number>();
+    private Map<Integer, Number> getOutstandingMaintenanceParts(Malfunctionable entity) {
+        Map<Integer, Number> result = new HashMap<>();
 
-        Map<Part, Integer> maintParts = entity.getMalfunctionManager().getMaintenanceParts();
-        Iterator<Part> i = maintParts.keySet().iterator();
+        Map<Integer, Integer> maintParts = entity.getMalfunctionManager().getMaintenanceParts();
+        Iterator<Integer> i = maintParts.keySet().iterator();
         while (i.hasNext()) {
-            Part part = i.next();
+        	Integer part = i.next();
             int number = maintParts.get(part) * OUTSTANDING_MAINT_PART_MODIFIER;
             result.put(part, number);
         }
@@ -1774,8 +1777,8 @@ public class GoodsManager implements Serializable {
      * Gets the part demand for vehicle attachments.
      * @return map of parts and demand number.
      */
-    private Map<Part, Number> getVehicleAttachmentParts() {
-        Map<Part, Number> result = new HashMap<Part, Number>();
+    private Map<Integer, Number> getVehicleAttachmentParts() {
+        Map<Integer, Number> result = new HashMap<>();
 
         //VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
         Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
@@ -1784,10 +1787,10 @@ public class GoodsManager implements Serializable {
             if (vehicleConfig.hasPartAttachments(type)) {
                 Iterator<Part> j = vehicleConfig.getAttachableParts(type).iterator();
                 while (j.hasNext()) {
-                    Part part = j.next();
+                	Part part = j.next();
                     int demand = 1;
                     if (result.containsKey(part)) demand += result.get(part).intValue();
-                    result.put(part, demand);
+                    result.put(ItemResourceUtil.findIDbyItemResourceName(part.getName()), demand);
                 }
             }
         }
@@ -1972,7 +1975,7 @@ public class GoodsManager implements Serializable {
      * @param part the part.
      * @return demand (# of parts).
      */
-    private double getPartConstructionDemand(Part part) {
+    private double getPartConstructionDemand(Integer part) {
         double demand = 0D;
 
         ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
@@ -2001,22 +2004,22 @@ public class GoodsManager implements Serializable {
      * @param stageValue the building construction stage value (VP).
      * @return demand (# of parts).
      */
-    private double getPartConstructionStageDemand(Part part, ConstructionStageInfo stage,
+    private double getPartConstructionStageDemand(Integer part, ConstructionStageInfo stage,
             double stageValue) {
         double demand = 0D;
 
         int partNumber = getPrerequisiteConstructionPartNum(part, stage);
 
         if (partNumber > 0) {
-            Map<AmountResource, Double> resources = getAllPrerequisiteConstructionResources(stage);
-            Map<Part, Integer> parts = getAllPrerequisiteConstructionParts(stage);
+            Map<Integer, Double> resources = getAllPrerequisiteConstructionResources(stage);
+            Map<Integer, Integer> parts = getAllPrerequisiteConstructionParts(stage);
 
             double totalNumber = 0D;
 
-            Iterator<AmountResource> i = resources.keySet().iterator();
+            Iterator<Integer> i = resources.keySet().iterator();
             while (i.hasNext()) totalNumber += resources.get(i.next());
 
-            Iterator<Part> j = parts.keySet().iterator();
+            Iterator<Integer> j = parts.keySet().iterator();
             while (j.hasNext()) totalNumber += parts.get(j.next());
 
             double totalInputsValue = stageValue * CONSTRUCTING_INPUT_FACTOR;
@@ -2053,7 +2056,7 @@ public class GoodsManager implements Serializable {
         Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
         while (j.hasNext()) {
             Person person = j.next();
-            if (person.getLocationSituation() == LocationSituation.OUTSIDE)
+            if (person.isOutside())
                 number += person.getInventory().getItemResourceNum(resource);
         }
 
@@ -2127,7 +2130,7 @@ public class GoodsManager implements Serializable {
                 if (resource.getPhase() == containerPhase) {
                     double settlementCapacity = settlement.getInventory().
                             getAmountResourceCapacityNoContainers(resource);
-                    Good resourceGood = GoodsUtil.getResourceGood(resource);
+                    Good resourceGood = GoodsUtil.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName()));
                     double resourceDemand = 0D;
                     if (goodsDemandCache.containsKey(resourceGood)) {
                         resourceDemand = goodsDemandCache.get(resourceGood);
@@ -2146,8 +2149,8 @@ public class GoodsManager implements Serializable {
 
         // Determine number of bags that are needed.
         if (Bag.class.equals(equipmentClass)) {
-            double iceValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceAR));
-            double regolithValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithAR));
+            double iceValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
+            double regolithValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
             numDemand += CollectIce.REQUIRED_BAGS * areologistNum * iceValue;
             numDemand += CollectRegolith.REQUIRED_BAGS * areologistNum * regolithValue;
         }
@@ -2489,7 +2492,7 @@ public class GoodsManager implements Serializable {
             demand = getAreologistNum();
         }
         else if (COLLECT_ICE_MISSION.equals(missionType)) {
-            demand = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceAR));
+            demand = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
             if (demand > 10D) demand = 10D;
         }
         else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
@@ -2499,7 +2502,7 @@ public class GoodsManager implements Serializable {
             demand = getTraderNum();
         }
         else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
-            demand = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithAR));
+            demand = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
             if (demand > 10D) demand = 10D;
         }
         else if (MINING_MISSION.equals(missionType)) {

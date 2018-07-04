@@ -465,7 +465,7 @@ implements Serializable, Transportable {
             String equipmentType = equipmentI.next();
             int number = getNewEquipment().get(equipmentType);
             for (int x=0; x < number; x++) {
-                Equipment equipment = EquipmentFactory.getEquipment(equipmentType,
+                Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
                         settlement.getCoordinates(), false);
                 equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
                 inv.storeUnit(equipment);

@@ -31,7 +31,7 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -52,6 +52,8 @@ implements Serializable {
 	
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
+    protected static final int MAX_AMOUNT_RESOURCE = ResourceUtil.FIRST_ITEM_RESOURCE;
+    
     // Global mission identifier
 	private static int missionIdentifer = 0;
 
@@ -1070,14 +1072,14 @@ implements Serializable {
 	 * @param useBuffer use time buffers in estimation if true.
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 */
-	public abstract Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer);
+	public abstract Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer);
 
 	/**
 	 * Gets the number and types of equipment needed for the mission.
 	 * @param useBuffer use time buffers in estimation if true.
 	 * @return map of equipment class and Integer number.
 	 */
-	public abstract Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer);
+	public abstract Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer);
 
 	/**
 	 * Time passing for mission.

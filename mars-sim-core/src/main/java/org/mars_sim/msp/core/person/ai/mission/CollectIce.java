@@ -12,6 +12,7 @@ import java.util.List;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -56,8 +57,9 @@ extends CollectResourcesMission {
 	 */
 	public CollectIce(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson, ResourceUtil.iceAR, SITE_GOAL,
-				COLLECTION_RATE, Bag.class, REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
+		super(DEFAULT_DESCRIPTION, startingPerson, ResourceUtil.iceID, SITE_GOAL,
+				COLLECTION_RATE, EquipmentType.str2int(Bag.TYPE), 
+				REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
 	}
 
 	/**
@@ -74,8 +76,9 @@ extends CollectResourcesMission {
 			String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, members, startingSettlement, ResourceUtil.iceAR, SITE_GOAL,
-				COLLECTION_RATE, Bag.class, REQUIRED_BAGS, iceCollectionSites.size(),
+		super(description, members, startingSettlement, ResourceUtil.iceID, SITE_GOAL,
+				COLLECTION_RATE, EquipmentType.str2int(Bag.TYPE), 
+				REQUIRED_BAGS, iceCollectionSites.size(),
 				RoverMission.MIN_GOING_MEMBERS, rover, iceCollectionSites);
 	}
 
@@ -87,15 +90,5 @@ extends CollectResourcesMission {
 	protected String getCollectionSiteDescription(int siteNum) {
 		return "prospecting site";
 	}
-
-	/**
-	 * Gets the ice resource.
-	 * @return ice resource.
-	 * @throws MissionException if error getting ice resource.
-	
-	private static AmountResource getIceResource() {
-		return AmountResource.findAmountResource("ice");
-	}
-	*/
 	
 }

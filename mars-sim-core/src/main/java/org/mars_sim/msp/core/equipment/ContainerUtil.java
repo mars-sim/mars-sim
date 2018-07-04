@@ -7,8 +7,9 @@
 package org.mars_sim.msp.core.equipment;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.PhaseType;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
  * A utility class for containers.
@@ -28,9 +29,9 @@ public final class ContainerUtil {
 	 * @return type of container or null if none found.
 	 */
 	public static Class<? extends Container> getContainerClassToHoldResource(
-		AmountResource resource
-	) {
-		return getContainerTypeNeeded(resource.getPhase());
+		int resource
+	) {	
+		return getContainerTypeNeeded(ResourceUtil.findAmountResource(resource).getPhase());
 	}
 
 	/**
@@ -60,7 +61,7 @@ public final class ContainerUtil {
 
 		Class<? extends Equipment> equipmentClass = (Class<? extends Equipment>) containerClass;
 
-		Container container = (Container) EquipmentFactory.getEquipment(equipmentClass, coordinates, true);
+		Container container = (Container) EquipmentFactory.createEquipment(equipmentClass, coordinates, true);
 		if (container != null) {
 			result = container.getTotalCapacity();
 		}
@@ -68,6 +69,24 @@ public final class ContainerUtil {
 		return result;
 	}
 	
+	/**
+	 * Gets the capacity of the container.
+	 * @param containerClass the container class.
+	 * @return capacity (kg).
+	 */
+	public static double getContainerCapacity(int c) {
+
+		Class<? extends Equipment> u = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(c).getName());
+		
+		double result = 0D;
+
+		Container container = (Container) EquipmentFactory.createEquipment(u, coordinates, true);
+		if (container != null) {
+			result = container.getTotalCapacity();
+		}
+
+		return result;
+	}
 	/**
 	 * Gets the phase of amount resource that a container can hold.
 	 * @param containerClass the container class.
@@ -78,7 +97,7 @@ public final class ContainerUtil {
 	    PhaseType result = null;
 	    
 	    Class<? extends Equipment> equipmentClass = (Class<? extends Equipment>) containerClass;
-	    Container container = (Container) EquipmentFactory.getEquipment(equipmentClass, coordinates, true);
+	    Container container = (Container) EquipmentFactory.createEquipment(equipmentClass, coordinates, true);
         if (container != null) {
             result = container.getContainingResourcePhase();
         }

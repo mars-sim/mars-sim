@@ -74,7 +74,7 @@ extends BuildingFunctionPanel {
 	/** List of salvage processes in building. */
 	private List<SalvageProcess> salvageCache;
 	/** Process selector. */
-	private JComboBoxMW processComboBox;
+	private JComboBoxMW<?> processComboBox;
 	/** List of available processes. */
 	private List<ManufactureProcessInfo> processComboBoxCache;
 	/** List of available salvage processes. */
@@ -107,17 +107,17 @@ extends BuildingFunctionPanel {
         add(labelPane, BorderLayout.NORTH);
 
         // Prepare manufacturing label
-        JLabel manufactureLabel = new JLabel("Manufacturing", JLabel.CENTER);
+        WebLabel manufactureLabel = new WebLabel("Manufacturing", WebLabel.CENTER);
         manufactureLabel.setFont(new Font("Serif", Font.BOLD, 16));
         //manufactureLabel.setForeground(new Color(102, 51, 0)); // dark brown
         labelPane.add(manufactureLabel);
 
         // Prepare tech level label
-        JLabel techLabel = new JLabel("Tech Level: " + workshop.getTechLevel(), JLabel.CENTER);
+        WebLabel techLabel = new WebLabel("Tech Level: " + workshop.getTechLevel(), WebLabel.CENTER);
         labelPane.add(techLabel);
 
         // Prepare processCapacity label
-        JLabel processCapacityLabel = new JLabel("Process Capacity: " + workshop.getSupportingProcesses(), JLabel.CENTER);
+        WebLabel processCapacityLabel = new WebLabel("Process Capacity: " + workshop.getSupportingProcesses(), WebLabel.CENTER);
         labelPane.add(processCapacityLabel);
 
         // Create scroll pane for manufacturing processes
@@ -128,7 +128,7 @@ extends BuildingFunctionPanel {
         //scrollPanel.setBackground(new Color(0,0,0,128));
         //scrollPanel.getViewport().setOpaque(false);
         //scrollPanel.getViewport().setBackground(new Color(0,0,0,128));
-        scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
+        scrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 
         // Create process list main panel
         WebPanel processListMainPane = new WebPanel(new BorderLayout(0, 0));
@@ -447,7 +447,7 @@ extends BuildingFunctionPanel {
 			if (value instanceof ManufactureProcessInfo) {
 			    ManufactureProcessInfo info = (ManufactureProcessInfo) value;
 			    if (info != null) {
-			    	// 2014-11-21 Capitalized processName
+			    	// Capitalized processName
 			        String processName = Conversion.capitalize(info.getName());
 			        if (processName.length() > processStringWidth) 
 			        	processName = processName.substring(0, processStringWidth) + "...";
@@ -458,7 +458,7 @@ extends BuildingFunctionPanel {
 			else if (value instanceof SalvageProcessInfo) {
 			    SalvageProcessInfo info = (SalvageProcessInfo) value;
 			    if (info != null) {
-			    	// 2014-11-21 Capitalized processName
+			    	// Capitalized processName
 			        String processName = Conversion.capitalize(info.toString());
 			        if (processName.length() > processStringWidth) 
 			        	processName = processName.substring(0, processStringWidth) + "...";

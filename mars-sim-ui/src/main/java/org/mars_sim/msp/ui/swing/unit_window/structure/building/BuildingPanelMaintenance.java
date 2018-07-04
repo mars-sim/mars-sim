@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -152,15 +153,16 @@ extends BuildingFunctionPanel {
 	private String getPartsString(boolean useHtml) {
 		StringBuilder buf = new StringBuilder("Needed Parts: ");
 
-		Map<Part, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
+		Map<Integer, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
 		if (parts.size() > 0) {
-			Iterator<Part> i = parts.keySet().iterator();
+			Iterator<Integer> i = parts.keySet().iterator();
 			while (i.hasNext()) {
-				Part part = i.next();
+				Integer part = i.next();
 				int number = parts.get(part);
 				// 2014-11-21 Capitalized part.getName()
 				if (useHtml) buf.append("<br>");
-				buf.append(number).append(" ").append(Conversion.capitalize(part.getName()));
+				buf.append(number).append(" ")
+					.append(Conversion.capitalize(ItemResourceUtil.findItemResource(part).getName()));
 				if (i.hasNext()) buf.append(", ");
 				else {
 					buf.append(".");

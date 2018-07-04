@@ -10,7 +10,6 @@ import java.awt.Dimension;
 
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 import com.alee.laf.panel.WebPanel;

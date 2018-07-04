@@ -30,6 +30,10 @@ public class ResourceUtil implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	public static final int FIRST_ITEM_RESOURCE = 1000;
+
+	public static final int FIRST_EQUIPMENT_RESOURCE = 1000;
+	
     public static final String ARGON = "argon";
     public static final String NITROGEN = "nitrogen";
     public static final String CO = "carbon monoxide";
@@ -65,13 +69,11 @@ public class ResourceUtil implements Serializable {
 
     public static final String TOILET_TISSUE = "toilet tissue";
 
-	// Data members.
-	//private Set<AmountResource> savedARs;
-	
+	// Data members.	
 	//private Set<AmountResource> resources;// = new TreeSet<AmountResource>();
     private static Map<String, AmountResource> amountResourceMap;
     private static Map<Integer, AmountResource> amountResourceIDMap;
-    private static Map<Integer, String> IDNameMap;
+    private static Map<Integer, String> arIDNameMap;
 
 	private static Set<AmountResource> resources;
 	
@@ -97,6 +99,8 @@ public class ResourceUtil implements Serializable {
 	
 	public static int iceID;
 	public static int regolithID;
+	public static int sandID;
+	public static int soymilkID;
 	
 	public static AmountResource foodAR;
 	public static AmountResource oxygenAR;
@@ -115,7 +119,7 @@ public class ResourceUtil implements Serializable {
     public static AmountResource compostAR;
     
 	public static AmountResource regolithAR;
-	
+
     public static AmountResource tableSaltAR;
     public static AmountResource NaClOAR;
     public static AmountResource greyWaterAR;
@@ -242,9 +246,9 @@ public class ResourceUtil implements Serializable {
 			amountResourceIDMap.put(resource.getID(), resource);
 		}
 
-		IDNameMap = new HashMap<Integer, String>();
+		arIDNameMap = new HashMap<Integer, String>();
 		for (AmountResource resource : sortedResources) {
-			IDNameMap.put(resource.getID(), resource.getName());
+			arIDNameMap.put(resource.getID(), resource.getName());
 		}
     }
 
@@ -265,8 +269,10 @@ public class ResourceUtil implements Serializable {
     	iceID = findAmountResource(ICE).getID();				// 13
        	
         regolithID = findAmountResource(REGOLITH).getID();		// 156
-          	
-    	
+        sandID = findAmountResource("sand").getID();		// 156
+  	
+        soymilkID = findAmountResource("soymilk").getID();
+        
     	foodAR = findAmountResource(LifeSupportType.FOOD);			// 1
 		waterAR = findAmountResource(LifeSupportType.WATER);		// 2
 		oxygenAR = findAmountResource(LifeSupportType.OXYGEN);		// 3
@@ -310,6 +316,7 @@ public class ResourceUtil implements Serializable {
         garlicOilAR = findAmountResource(GARLIC_OIL);		// 41
         sesameOilAR = findAmountResource(SESAME_OIL);		// 53
         peanutOilAR = findAmountResource(PEANUT_OIL);		// 46
+        
     }
 
     public void savedARs() {
@@ -471,7 +478,7 @@ public class ResourceUtil implements Serializable {
 		//result = getKeyByValue(getIDNameMap(), name.toLowerCase());
 		//if (result != null) return (int) result;
 		//else throw new IllegalStateException("Resource: " + name + " could not be found.");
-		return (int)(getKeyByValue(getIDNameMap(), name.toLowerCase()));
+		return getKeyByValue(arIDNameMap, name.toLowerCase());
 	}
 
 
@@ -546,7 +553,7 @@ public class ResourceUtil implements Serializable {
 	 * @return {@link Map}<{@link Integer}, {@link String}>
 	 */
 	public static Map<Integer, String> getIDNameMap() {
-		return IDNameMap;
+		return arIDNameMap;
 	}
 
 	/**
@@ -624,7 +631,7 @@ public class ResourceUtil implements Serializable {
 		resources = null;
 		amountResourceMap = null;
 		amountResourceIDMap = null;
-		IDNameMap = null;
+		arIDNameMap = null;
 	}
 
 

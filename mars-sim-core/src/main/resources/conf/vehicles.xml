@@ -30,7 +30,7 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 	<vehicle type="Explorer Rover" width="3.5" length="8.0">
 		<description>A rover for collecting rock samples from remote sites and ice prospecting.</description>
 
-		<!-- The drivetrain efficiency of the rover (km/kg) (required) -->
+		<!-- The drivetrain efficiency of the rover (in %) (required) -->
 		<!-- Default: varied according to the type of vehicle -->
 		<drivetrain-efficiency value="60.0" />
 
@@ -40,7 +40,7 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 
 		<!-- Empty mass of rover (kg) (required) -->
 		<!-- Default: varies according to the type of vehicle  -->
-		<empty-mass value="10000.0" />
+		<empty-mass value="8000.0" />
 
 		<!-- The crew size of an rover -->
 		<!-- Default: varies according to the type of vehicle -->
@@ -179,9 +179,9 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 	<!-- Cargo rover -->
 	<vehicle type="Cargo Rover" width="4.0" length="8.0">
 		<description>A rover for transporting cargo from one settlement to another.</description>
-		<drivetrain-efficiency value="40.0" />
+		<drivetrain-efficiency value="50.0" />
 		<base-speed value="40.0" />
-		<empty-mass value="10000.0" />
+		<empty-mass value="8000.0" />
 		<crew-size value="2" />
 		<cargo total-capacity="10300.0">
 			<capacity resource="methane" value="600.0" />
@@ -210,7 +210,7 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 	<!-- Light Utility Vehicle -->
 	<vehicle type="Light Utility Vehicle" width="1.7" length="2.55">
 		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
-		<drivetrain-efficiency value="0.0" />
+		<drivetrain-efficiency value="80.0" />
 		<base-speed value="0.0" />
 		<empty-mass value="300.0" />
 		<crew-size value="1" />

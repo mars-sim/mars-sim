@@ -49,7 +49,7 @@ public final class PartConfig implements Serializable {
 	
 	public static final double MAX_MTBF = 669*NUM_YEARS;
 	
-	private static int new_id;
+	private static int nextID;
 	
 	private static MarsClock marsClock;
 	
@@ -76,7 +76,8 @@ public final class PartConfig implements Serializable {
      * @throws Exception if error reading XML document
      */
     public PartConfig(Document itemResourceDoc) {
-		new_id = 0;
+    	// Pick up from the last resource id
+		nextID = ResourceUtil.FIRST_ITEM_RESOURCE;//SimulationConfig.instance().getResourceConfiguration().getNextID() + 1;
 		
 		unitManager = Simulation.instance().getUnitManager();
 		
@@ -182,9 +183,9 @@ public final class PartConfig implements Serializable {
     
     
     
-    public void setFailure(Part p, int num) {
-    	int old_failures = failure_map.get(p.getID());
-    	failure_map.put(p.getID(), old_failures + num); 	
+    public void setFailure(Integer p, int num) {
+    	int old_failures = failure_map.get(p);//.getID());
+    	failure_map.put(p, old_failures + num); 	
     }
     
     /**
@@ -197,7 +198,7 @@ public final class PartConfig implements Serializable {
         Element root = itemResourceDoc.getRootElement();
         List<Element> partNodes = root.getChildren(PART);
         for (Element partElement : partNodes) {
-			new_id++;
+			nextID++;
             String name = "";
             String description = "no description available.";
 
@@ -215,7 +216,7 @@ public final class PartConfig implements Serializable {
                     .getAttributeValue(MASS));
 
             // Add part to item resources.
-            Part p = new Part(name, new_id, description, mass, 1);
+            Part p = new Part(name, nextID, description, mass, 1);
             partSet.add(p);
             //ItemResource r = new ItemResource(name, description, mass);
             //itemResources.add(r);

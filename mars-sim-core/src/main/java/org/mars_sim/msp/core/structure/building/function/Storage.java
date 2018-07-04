@@ -140,7 +140,7 @@ implements Serializable {
 				if (existingStorage < 0D) existingStorage = 0D;
 			}
 
-			Good resourceGood = GoodsUtil.getResourceGood(resource);
+			Good resourceGood = GoodsUtil.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName()));
 			double resourceValue = settlement.getGoodsManager().getGoodValuePerItem(resourceGood);
 			double resourceStored = settlement.getInventory().getAmountResourceStored(resource, false);
 			double resourceDemand = resourceValue * (resourceStored + 1D);

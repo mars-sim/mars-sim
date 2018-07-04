@@ -30,6 +30,7 @@ import javax.swing.JScrollPane;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -249,32 +250,35 @@ extends TabPanel {
 			result.append("&emsp;&nbsp;Building:&emsp;").append(building.getNickName()).append("<br>");
 			result.append("Power Req:&emsp;").append(decFormatter.format(process.getPowerRequired())).append(" kW<br>");
 			result.append("&emsp;&emsp;&nbsp;Inputs:&emsp;");
-			Iterator<AmountResource> i = process.getInputResources().iterator();
+			Iterator<Integer> i = process.getInputResources().iterator();
 			// 2014-11-20 Added ambientStr and ii and ii++
 			String ambientStr = "";
 			int ii = 0;
 			while (i.hasNext()) {
 				if (ii!=0)	result.append("&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");
-				AmountResource resource = i.next();
+				Integer resource = i.next();
 				double rate = process.getMaxInputResourceRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
 				//result.append("&nbsp;&nbsp;&emsp;");
 				if (process.isAmbientInputResource(resource)) ambientStr = "*";
 				// 2014-11-20 Capitalized resource.getName()
-				result.append(Conversion.capitalize(resource.getName())).append(ambientStr).append(" @ ").append(rateString).append(" kg/sol<br>");
+				result.append(Conversion.capitalize(ResourceUtil.findAmountResource(resource).getName()))
+					.append(ambientStr).append(" @ ")
+					.append(rateString).append(" kg/sol<br>");
 				ii++;
 			}
 			result.append("&emsp;&nbsp;&nbsp;Outputs:&emsp;");
-			Iterator<AmountResource> j = process.getOutputResources().iterator();
+			Iterator<Integer> j = process.getOutputResources().iterator();
 			// 2014-11-20 Added jj and jj++
 			int jj = 0;
 			while (j.hasNext()) {
 				if (jj!=0) result.append("&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;");
-				AmountResource resource = j.next();
+				Integer resource = j.next();
 				double rate = process.getMaxOutputResourceRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
 				// 2014-11-20 Capitalized resource.getName()
-				result.append(Conversion.capitalize(resource.getName())).append(" @ ").append(rateString).append(" kg/sol<br>");
+				result.append(Conversion.capitalize(ResourceUtil.findAmountResource(resource).getName()))
+					.append(" @ ").append(rateString).append(" kg/sol<br>");
 				jj++;
 			}
 			// 2014-11-20 Moved * from front to back of the text

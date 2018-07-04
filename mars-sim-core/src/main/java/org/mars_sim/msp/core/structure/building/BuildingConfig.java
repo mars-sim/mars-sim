@@ -758,20 +758,22 @@ public class BuildingConfig implements Serializable {
 			List<Element> inputNodes = processElement.getChildren(INPUT);
 			for (Element inputElement : inputNodes) {
 				String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
-				AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+				//AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
 				double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000D;
 				boolean ambient = Boolean.valueOf(inputElement.getAttributeValue(AMBIENT));
-				process.addMaxInputResourceRate(resource, rate, ambient);
+				process.addMaxInputResourceRate(id, rate, ambient);
 			}
 
 			// Get output resources.
 			List<Element> outputNodes = processElement.getChildren(OUTPUT);
 			for (Element outputElement : outputNodes) {
 				String resourceName = outputElement.getAttributeValue(RESOURCE).toLowerCase();
-				AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+				//AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
 				double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000D;
 				boolean ambient = Boolean.valueOf(outputElement.getAttributeValue(AMBIENT));
-				process.addMaxOutputResourceRate(resource, rate, ambient);
+				process.addMaxOutputResourceRate(id, rate, ambient);
 			}
 
 			resourceProcesses.add(process);

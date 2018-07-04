@@ -14,6 +14,7 @@ import java.util.List;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -125,8 +126,9 @@ implements Serializable {
 			else if (source instanceof FuelPowerSource) {
 				FuelPowerSource fuelSource = (FuelPowerSource) source;
 				double fuelPower = source.getMaxPower();
-				AmountResource fuelResource = fuelSource.getFuelResource();
-				Good fuelGood = GoodsUtil.getResourceGood(fuelResource);
+				//AmountResource fuelResource = fuelSource.getFuelResource();
+				int id = fuelSource.getFuelResourceID();
+				Good fuelGood = GoodsUtil.getResourceGood(id);
 				double fuelValue = settlement.getGoodsManager()
 						.getGoodValuePerItem(fuelGood);
 				fuelValue *= fuelSource.getFuelConsumptionRate();

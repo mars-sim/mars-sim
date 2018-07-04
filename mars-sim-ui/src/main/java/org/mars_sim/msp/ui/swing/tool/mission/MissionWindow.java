@@ -148,7 +148,7 @@ extends ToolWindow {
 */
 		buttonPane.add(abortButton);
 
-		setSize(new Dimension(640, 736));
+		setSize(new Dimension(640, 640));//736));
 		setMaximizable(true);
 		setResizable(false);
 

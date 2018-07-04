@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.tool.Conversion;
 
@@ -38,8 +39,8 @@ public class ConstructionStage implements Serializable {
     private double completedWorkTime;
     private boolean isSalvaging;
     private double completableWorkTime;
-    private Map<Part, Integer> remainingParts;
-    private Map<AmountResource, Double> remainingResources;
+    private Map<Integer, Integer> remainingParts;
+    private Map<Integer, Double> remainingResources;
 
     /**
      * Constructor.
@@ -51,8 +52,8 @@ public class ConstructionStage implements Serializable {
         completedWorkTime = 0D;
         isSalvaging = false;
         completableWorkTime = 0D;
-        remainingParts = new HashMap<Part, Integer>(info.getParts());
-        remainingResources = new HashMap<AmountResource, Double>(info.getResources());
+        remainingParts = new HashMap<>(info.getParts());
+        remainingResources = new HashMap<>(info.getResources());
 
         // Update the remaining completable work time.
         updateCompletableWorkTime();
@@ -150,16 +151,16 @@ public class ConstructionStage implements Serializable {
      * Gets the remaining parts needed for construction.
      * @return map of parts and their numbers.
      */
-    public Map<Part, Integer> getRemainingParts() {
-        return new HashMap<Part, Integer>(remainingParts);
+    public Map<Integer, Integer> getRemainingParts() {
+        return new HashMap<>(remainingParts);
     }
 
     /**
      * Gets the remaining resources needed for construction.
      * @return map of resources and their amounts (kg).
      */
-    public Map<AmountResource, Double> getRemainingResources() {
-        return new HashMap<AmountResource, Double>(remainingResources);
+    public Map<Integer, Double> getRemainingResources() {
+        return new HashMap<>(remainingResources);
     }
 
     /**
@@ -167,7 +168,7 @@ public class ConstructionStage implements Serializable {
      * @param part the part to add.
      * @param number the number of parts to add.
      */
-    public void addParts(Part part, int number) {
+    public void addParts(Integer part, int number) {
 
         if (remainingParts.containsKey(part)) {
             int remainingRequiredNum = remainingParts.get(part);
@@ -203,7 +204,7 @@ public class ConstructionStage implements Serializable {
      * @param resource the resource to add.
      * @param amount the amount (kg) of resource to add.
      */
-    public void addResource(AmountResource resource, double amount) {
+    public void addResource(Integer resource, double amount) {
 
         if (remainingResources.containsKey(resource)) {
             double remainingRequiredAmount = remainingResources.get(resource);
@@ -260,25 +261,25 @@ public class ConstructionStage implements Serializable {
      * @param parts map of parts and their numbers.
      * @return total mass.
      */
-    private double getConstructionMaterialMass(Map<AmountResource, Double> resources, Map<Part, 
+    private double getConstructionMaterialMass(Map<Integer, Double> resources, Map<Integer, 
             Integer> parts) {
 
         double result = 0D;
 
         // Add total mass of resources.
-        Iterator<AmountResource> i = resources.keySet().iterator();
+        Iterator<Integer> i = resources.keySet().iterator();
         while (i.hasNext()) {
-            AmountResource resource = i.next();
+        	Integer resource = i.next();
             double amount = resources.get(resource);
             result += amount;
         }
 
         // Add total mass of parts.
-        Iterator<Part> j = parts.keySet().iterator();
+        Iterator<Integer> j = parts.keySet().iterator();
         while (j.hasNext()) {
-            Part part = j.next();
+        	Integer part = j.next();
             int number = parts.get(part);
-            double mass = part.getMassPerItem();
+            double mass = ItemResourceUtil.findItemResource(part).getMassPerItem();
             result += number * mass;
         }
 

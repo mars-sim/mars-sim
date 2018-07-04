@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -55,9 +54,10 @@ implements Serializable {
 	//private ItemResource cellStack;
 	private Building building;
 
-	private AmountResource methaneAR;// = ResourceUtil.methaneAR;
-
-	private AmountResource oxygenAR = ResourceUtil.oxygenAR;
+//	private AmountResource methaneAR;// = ResourceUtil.methaneAR;
+//	private AmountResource oxygenAR = ResourceUtil.oxygenAR;
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int methaneID = ResourceUtil.methaneID;
 
 	/**
 	 * Constructor.
@@ -71,9 +71,8 @@ implements Serializable {
 		super(PowerSourceType.FUEL_POWER, _maxPower);
 		rate = _consumptionSpeed;
 		toggle = _toggle;
-		methaneAR = ResourceUtil.methaneAR;//AmountResource.findAmountResource(fuelType);
 		
-		// 2015-09-29 Added "fuel cell stack"
+		// Added "fuel cell stack"
 		//cellStack = ItemResource.findItemResource("fuel cell stack");
 		//installed = false;
 	}
@@ -112,20 +111,20 @@ implements Serializable {
 		
 		double consumed = 0;
 		
-		double fuelStored = inv.getAmountResourceStored(methaneAR, false);
-		double o2Stored = inv.getAmountResourceStored(oxygenAR, false);
+		double fuelStored = inv.getAmountResourceStored(methaneID, false);
+		double o2Stored = inv.getAmountResourceStored(oxygenID, false);
 
 		// Note that 16 g of methane requires 64 g of oxygen, a 1 to 4 ratio
 		consumed = Math.min(maxFuel, Math.min(fuelStored, o2Stored/4D));
 
-		inv.retrieveAmountResource(methaneAR, consumed);
-		inv.retrieveAmountResource(oxygenAR, 4D*consumed);
+		inv.retrieveAmountResource(methaneID, consumed);
+		inv.retrieveAmountResource(oxygenID, 4D*consumed);
 		
-	    inv.addAmountDemandTotalRequest(methaneAR);
-	   	inv.addAmountDemand(methaneAR, consumed);
+	    inv.addAmountDemandTotalRequest(methaneID);
+	   	inv.addAmountDemand(methaneID, consumed);
 	   	
-	    inv.addAmountDemandTotalRequest(methaneAR);
-	   	inv.addAmountDemand(methaneAR, 4D*consumed);
+	    inv.addAmountDemandTotalRequest(methaneID);
+	   	inv.addAmountDemand(methaneID, 4D*consumed);
 	   	
 		return consumed;
 	}
@@ -172,14 +171,22 @@ implements Serializable {
 	}
 
 
+//	/**
+//	 * Gets the amount resource used as fuel.
+//	 * @return amount resource.
+//	 */
+//	 public AmountResource getFuelResource() {
+//		return methaneAR;
+//	}
+
 	/**
 	 * Gets the amount resource used as fuel.
 	 * @return amount resource.
 	 */
-	 public AmountResource getFuelResource() {
-		return methaneAR;
+	 public int getFuelResourceID() {
+		return methaneID;
 	}
-
+		 
 	/**
 	 * Gets the rate the fuel is consumed.
 	 * @return rate (kg/Sol).
@@ -205,8 +212,8 @@ implements Serializable {
 	 @Override
 	 public double getAveragePower(Settlement settlement) {
 		 double fuelPower = getMaxPower();
-		 AmountResource fuelResource = getFuelResource();
-		 Good fuelGood = GoodsUtil.getResourceGood(fuelResource);
+		 //AmountResource fuelResource = getFuelResource();
+		 Good fuelGood = GoodsUtil.getResourceGood(ResourceUtil.methaneAR);
 		 GoodsManager goodsManager = settlement.getGoodsManager();
 		 double fuelValue = goodsManager.getGoodValuePerItem(fuelGood);
 		 fuelValue *= getFuelConsumptionRate();
@@ -237,7 +244,6 @@ implements Serializable {
 		 super.destroy();
 		 //cellStack = null;
 		 building = null;
-		 methaneAR = null;
-		 oxygenAR = null;
 	 }
+
 }

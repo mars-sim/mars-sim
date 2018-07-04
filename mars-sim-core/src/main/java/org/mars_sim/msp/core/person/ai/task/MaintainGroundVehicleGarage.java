@@ -182,10 +182,10 @@ implements Serializable {
         // Add repair parts if necessary.
         Inventory inv = person.getTopContainerUnit().getInventory();
         if (Maintenance.hasMaintenanceParts(inv, vehicle)) {
-        	Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
-        	Iterator<Part> j = parts.keySet().iterator();
+        	Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
+        	Iterator<Integer> j = parts.keySet().iterator();
         	while (j.hasNext()) {
-        		Part part = j.next();
+        		Integer part = j.next();
         		int number = parts.get(part);
         		inv.retrieveItemResources(part, number);
         		manager.maintainWithParts(part, number);

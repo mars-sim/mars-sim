@@ -12,6 +12,7 @@ import java.util.List;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -58,9 +59,9 @@ extends CollectResourcesMission {
 	public CollectRegolith (Person startingPerson) {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson,
-				ResourceUtil.regolithAR, SITE_GOAL,
+				ResourceUtil.regolithID, SITE_GOAL,
 				COLLECTION_RATE,
-				Bag.class, REQUIRED_BAGS,
+				EquipmentType.str2int(Bag.TYPE), REQUIRED_BAGS,
 				NUM_SITES, MIN_PEOPLE);
 	}
 
@@ -77,9 +78,9 @@ extends CollectResourcesMission {
 			List<Coordinates> regolithCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, members, startingSettlement, ResourceUtil.regolithAR,
+		super(description, members, startingSettlement, ResourceUtil.regolithID,
 				SITE_GOAL, COLLECTION_RATE,
-				Bag.class, REQUIRED_BAGS, regolithCollectionSites.size(),
+				EquipmentType.str2int(Bag.TYPE), REQUIRED_BAGS, regolithCollectionSites.size(),
 				RoverMission.MIN_GOING_MEMBERS, rover, regolithCollectionSites);
 	}
 

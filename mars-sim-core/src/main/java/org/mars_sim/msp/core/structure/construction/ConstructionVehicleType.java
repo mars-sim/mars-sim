@@ -24,7 +24,7 @@ implements Serializable {
 	// Data members
 	private String vehicleType;
 	private Class<?> vehicleClass;
-	private List<Part> attachmentParts;
+	private List<Integer> attachmentParts;
 
 	/**
 	 * Constructor.
@@ -34,7 +34,7 @@ implements Serializable {
 	 */
 	public ConstructionVehicleType(
 		String vehicleType, Class<?> vehicleClass, 
-		List<Part> attachmentParts
+		List<Integer> attachmentParts
 	) {
 
 		this.vehicleType = vehicleType;
@@ -46,7 +46,7 @@ implements Serializable {
 	 * Gets the attachment parts.
 	 * @return list of parts.
 	 */
-	public List<Part> getAttachmentParts() {
+	public List<Integer> getAttachmentParts() {
 		return attachmentParts;
 	}
 

@@ -18,7 +18,7 @@ public class TestMalfunctionManager extends TestCase {
     }
 
     public void testGetEVAMalfunctions() throws Exception {
-		EVASuit suit = (EVASuit) EquipmentFactory.getEquipment(EVASuit.TYPE, new Coordinates(0D, 0D), false);
+		EVASuit suit = (EVASuit) EquipmentFactory.createEquipment(EVASuit.TYPE, new Coordinates(0D, 0D), false);
 		MalfunctionManager manager = suit.getMalfunctionManager();
 		Malfunction malfunction1 = new MockMalfunction("test malfunction1", 10, 0D, 100D, 50D);
 		Malfunction malfunction2 = new MockMalfunction("test malfunction2", 50, 0D, 100D, 50D);

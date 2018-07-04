@@ -279,17 +279,12 @@ implements Serializable {
         for (ManufactureProcessItem item : process.getInfo().getInputList()) {
             if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
                 AmountResource resource = AmountResource.findAmountResource(item.getName());
-                //s_inv
                 inv.retrieveAmountResource(resource, item.getAmount());
-
-				// 2015-02-13 addAmountDemand()
-				//s_inv.
 				inv.addAmountDemand(resource, item.getAmount());
             }
             else if (ItemType.PART.equals(item.getType())) {
                 Part part = (Part) ItemResource.findItemResource(item.getName());
-                //s_inv
-                inv.retrieveItemResources(part, (int) item.getAmount());
+                  inv.retrieveItemResources(part, (int) item.getAmount());
             }
             else throw new IllegalStateException(
                     "Manufacture process input: " +
@@ -524,7 +519,7 @@ implements Serializable {
                         String equipmentType = item.getName();
                         int number = (int) item.getAmount();
                         for (int x = 0; x < number; x++) {
-                            Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
+                            Equipment equipment = EquipmentFactory.createEquipment(equipmentType, settlement.getCoordinates(), false);
                             equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
                             inv.storeUnit(equipment);
                         }
@@ -589,7 +584,7 @@ implements Serializable {
                         String equipmentType = item.getName();
                         int number = (int) item.getAmount();
                         for (int x = 0; x < number; x++) {
-                            Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
+                            Equipment equipment = EquipmentFactory.createEquipment(equipmentType, settlement.getCoordinates(), false);
                             equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
                             inv.storeUnit(equipment);
                         }
@@ -641,7 +636,7 @@ implements Serializable {
      */
     public void endSalvageProcess(SalvageProcess process, boolean premature) {
 
-        Map<Part, Integer> partsSalvaged = new HashMap<Part, Integer>(0);
+        Map<Integer, Integer> partsSalvaged = new HashMap<>(0);
 
         if (!premature) {
             // Produce salvaged parts.
@@ -665,14 +660,15 @@ implements Serializable {
             while (i.hasNext()) {
                 PartSalvage partSalvage = i.next();
                 Part part = (Part) ItemResource.findItemResource(partSalvage.getName());
-
+                int id = part.getID();
+                
                 int totalNumber = 0;
                 for (int x = 0; x < partSalvage.getNumber(); x++) {
                     if (RandomUtil.lessThanRandPercent(salvageChance)) totalNumber++;
                 }
 
                 if (totalNumber > 0) {
-                    partsSalvaged.put(part, totalNumber);
+                    partsSalvaged.put(id, totalNumber);
 
                     double mass = totalNumber * part.getMassPerItem();
                     double capacity = inv.getGeneralCapacity();

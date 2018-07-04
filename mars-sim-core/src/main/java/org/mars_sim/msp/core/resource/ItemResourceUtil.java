@@ -10,11 +10,17 @@ package org.mars_sim.msp.core.resource;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.structure.building.function.Manufacture;
 
 public class ItemResourceUtil implements Serializable {
 
@@ -27,7 +33,7 @@ public class ItemResourceUtil implements Serializable {
 	public static final String SMALL_HAMMER = "small hammer";
 	public static final String SOCKET_WRENCH = "socket wrench";
 	public static final String PIPE_WRENCH = "pipe wrench";
-	public static final String EXTINGUSHER = "fire extingusher";
+	public static final String EXTINGUSHER = "fire extinguisher";
 	public static final String WORK_GLOVES = "work gloves";
 	public static final String CONTAINMENT = "mushroom containment kit";
 	
@@ -41,13 +47,66 @@ public class ItemResourceUtil implements Serializable {
 	public static Part fireExtinguisherAR = (Part) findItemResource(EXTINGUSHER);
 	public static Part workGlovesAR = (Part) findItemResource(WORK_GLOVES);
 	public static Part mushroomBoxAR = (Part) findItemResource(CONTAINMENT);
+ 
+	public static int pneumaticDrillID;
+	public static int backhoeID;
+	public static int smallHammerID;
+//	public static int hammerID;
+	public static int socketWrenchID;
+	public static int pipeWrenchID;
+	public static int fireExtinguisherID;
+	public static int workGlovesID;
+	public static int mushroomBoxID;
+	public static int printerID;
+    	
+    private static Map<String, Part> itemResourceMap;
+    private static Map<Integer, Part> itemResourceIDMap;
+    private static Map<Integer, String> partIDNameMap;
 
 	private static Set<Part> partSet;
 
 	private static List<Part> sortedParts;
 
 	public ItemResourceUtil() {
+		partSet = getItemResources();
+		createMaps();
+		
+		createIDs();
 	}
+
+	public void createIDs() {
+		pneumaticDrillID = findIDbyItemResourceName(PNEUMATIC_DRILL);
+		backhoeID = findIDbyItemResourceName(BACKHOE);
+		smallHammerID = findIDbyItemResourceName(SMALL_HAMMER);
+		//hammerID = findIDbyItemResourceName("hammer");
+		socketWrenchID = findIDbyItemResourceName(SOCKET_WRENCH);
+		pipeWrenchID = findIDbyItemResourceName(PIPE_WRENCH);
+		fireExtinguisherID = findIDbyItemResourceName(EXTINGUSHER);
+		workGlovesID = findIDbyItemResourceName(WORK_GLOVES);
+		mushroomBoxID = findIDbyItemResourceName(CONTAINMENT);
+		printerID = findIDbyItemResourceName(Manufacture.LASER_SINTERING_3D_PRINTER);
+	}
+	
+    public static void createMaps() {
+		itemResourceMap = new HashMap<>();
+		sortedParts = new ArrayList<>(partSet);
+		Collections.sort(sortedParts);
+		
+		for (Part p : sortedParts) {
+			itemResourceMap.put(p.getName(), p);
+			//System.out.println(resource.getName());
+		}
+
+		itemResourceIDMap = new HashMap<>();
+		for (Part p : sortedParts) {
+			itemResourceIDMap.put(p.getID(), p);
+		}
+
+		partIDNameMap = new HashMap<Integer, String>();
+		for (Part p : sortedParts) {
+			partIDNameMap.put(p.getID(), p.getName());
+		}
+    }
 
 	/**
 	 * Finds an item resource by name.
@@ -66,6 +125,16 @@ public class ItemResourceUtil implements Serializable {
 	}
 	
 	/**
+	 * Finds an amount resource by id.
+	 * @param id the resource's id.
+	 * @return resource
+	 * @throws ResourceException if resource could not be found.
+	 */
+	public static Part findItemResource(int id) {
+		return itemResourceIDMap.get(id);
+	}
+	
+	/**
 	 * Gets a ummutable collection of all the item resources.
 	 * @return collection of item resources.
 	 */
@@ -80,6 +149,14 @@ public class ItemResourceUtil implements Serializable {
 	}
 
 	
+	/**
+	 * Gets an immutable set of all the amount resources.
+	 * @return set of amount resources.
+	 */
+	public static Set<Integer> getItemIDs() {
+		return itemResourceIDMap.keySet();
+	}
+	
 	public static List<Part> getSortedParts() {
 		sortedParts = new ArrayList<>(partSet);
 		Collections.sort(sortedParts);
@@ -90,6 +167,108 @@ public class ItemResourceUtil implements Serializable {
 		//if (partConfig == null) System.err.println("partConfig == null");
 		return partConfig.getNamePartMap();
 	}
+	
+	/**
+	 * gets a sorted map of all amount resource names by calling
+	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
+	 * @return {@link Map}<{@link Integer}, {@link String}>
+	 */
+	public static Map<Integer, String> getPartIDNameMap() {
+		return partIDNameMap;
+	}
+	
+	/**
+	 * Finds an amount resource by name.
+	 * @param name the name of the resource.
+	 * @return resource
+	 * @throws ResourceException if resource could not be found.
+	 */
+	public static Integer findIDbyItemResourceName(String name) {
+		return getKeyByValue(partIDNameMap, name.toLowerCase());
+	}
+
+
+	/**
+	 * Returns the first matched key from a given value in a map for one-to-one relationship
+	 * @param map
+	 * @param value
+	 * @return key
+	 */
+	public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
+	    for (Entry<T, E> entry : map.entrySet()) {
+	        if (Objects.equals(value, entry.getValue())) {
+	            return entry.getKey();
+	        }
+	    }
+	    return null;
+	}
+
+	/**
+	 * Returns a set of keys from a given value in a map using Java 8 stream
+	 * @param map
+	 * @param value
+	 * @return a set of key
+	 */
+	public static <T, E> Set<T> getKeySetByValue(Map<T, E> map, E value) {
+	    return map.entrySet()
+	              .stream()
+	              .filter(entry -> Objects.equals(entry.getValue(), value))
+	              .map(Map.Entry::getKey)
+	              .collect(Collectors.toSet());
+	}
+
+	
+	/**
+	 * Gets an immutable set of all the amount resources.
+	 * @return set of amount resources.
+	 */
+	public Set<Integer> getARIDs() {
+		return itemResourceIDMap.keySet();
+	}
+	
+//	/**
+//	 * gets a sorted map of all amount resource names by calling
+//	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
+//	 * @return {@link Map}<{@link Integer}, {@link String}>
+//	 */
+//	public static Map<Integer, String> getIDNameMap() {
+//		return IDNameMap;
+//	}
+
+	/**
+	 * gets a sorted map of all amount resources by calling
+	 * {@link AmountResourceConfig#getAmountResourcesIDMap()}.
+	 * @return {@link Map}<{@link Integer},{@link AmountResource}>
+	 */
+	public static Map<Integer, Part> getItemResourcesIDMap() {
+		return itemResourceIDMap;
+	}
+
+//	/**
+//	 * gets a sorted map of all amount resources by calling
+//	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
+//	 * @return {@link Map}<{@link String},{@link AmountResource}>
+//	 */
+//	public static Map<String, Part> getItemResourcesMap() {
+//		return itemResourceMap;
+//	}
+
+	/**
+	 * convenience method that calls {@link #getAmountResources()} and
+	 * turns the result into an alphabetically ordered list of strings.
+	 * @return {@link List}<{@link String}>
+	 */
+	public static List<String> getItemResourceStringSortedList() {
+		List<String> resourceNames = new ArrayList<String>();
+		Iterator<Part> i = partSet.iterator();
+		while (i.hasNext()) {
+			resourceNames.add(i.next().getName().toLowerCase());
+		}
+		Collections.sort(resourceNames);
+		return resourceNames;
+	}
+
+	
 }
 
 

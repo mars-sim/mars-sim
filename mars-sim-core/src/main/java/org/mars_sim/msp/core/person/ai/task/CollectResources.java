@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -58,9 +57,9 @@ implements Serializable {
     /** Amount of resource already in rover cargo at start of task. (kg) */
     protected double startingCargo;
     /** The resource type. */
-    protected AmountResource resourceType;
+    protected Integer resourceType;
     /** The container type to use to collect resource. */
-    protected Class containerType;
+    protected Integer containerType;
 
     /**
      * Constructor.
@@ -73,8 +72,8 @@ implements Serializable {
      * @param startingCargo The starting amount (kg) of resource in the rover cargo.
      * @param containerType the type of container to use to collect resource.
      */
-    public CollectResources(String taskName, Person person, Rover rover, AmountResource resourceType,
-            double collectionRate, double targettedAmount, double startingCargo, Class containerType) {
+    public CollectResources(String taskName, Person person, Rover rover, Integer resourceType,
+            double collectionRate, double targettedAmount, double startingCargo, Integer containerType) {
 
         // Use EVAOperation parent constructor.
         super(taskName, person, true, RandomUtil.getRandomDouble(50D) + 10D);
@@ -215,15 +214,15 @@ implements Serializable {
      * @param resourceType the resource for capacity.
      * @return container.
      */
-    private static Unit findLeastFullContainer(Inventory inv, Class containerType,
-            AmountResource resource) {
+    private static Unit findLeastFullContainer(Inventory inv, Integer containerType,
+    		Integer resource) {
         Unit result = null;
         double mostCapacity = 0D;
 
         Iterator<Unit> i = inv.findAllUnitsOfClass(containerType).iterator();
         while (i.hasNext()) {
-            Unit container = i.next();
-            double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(
+        	Unit container = i.next();
+            double remainingCapacity = container.getInventory().getARRemainingCapacity(
                     resource, true, false);
             if (remainingCapacity > mostCapacity) {
                 result = container;
@@ -258,9 +257,9 @@ implements Serializable {
             return time;
         }
 
-        double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
+        double remainingPersonCapacity = person.getInventory().getARRemainingCapacity(
                 resourceType, true, false);
-        double currentSamplesCollected = rover.getInventory().getAmountResourceStored(
+        double currentSamplesCollected = rover.getInventory().getARStored(
                 resourceType, false) - startingCargo;
         double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
         double sampleLimit = remainingPersonCapacity;
@@ -291,14 +290,14 @@ implements Serializable {
 
         // Collect resources.
         if (samplesCollected <= sampleLimit) {
-            person.getInventory().storeAmountResource(resourceType, samplesCollected, true);
+            person.getInventory().storeAR(resourceType, samplesCollected, true);
     		// 2015-01-15 Add addSupplyAmount()
             // person.getSettlementInventory().addSupplyAmount(resourceType, samplesCollected);
             return 0D;
         }
         else {
             if (sampleLimit >= 0D) {
-                person.getInventory().storeAmountResource(resourceType, sampleLimit, true);
+                person.getInventory().storeAR(resourceType, sampleLimit, true);
         		// 2015-01-15 Add addSupplyAmount()
                 person.getInventory().addAmountSupplyAmount(resourceType, sampleLimit);
             }
@@ -334,8 +333,8 @@ implements Serializable {
      * @param resourceType the resource to collect.
      * @return true if person can perform the task.
      */
-    public static boolean canCollectResources(MissionMember member, Rover rover, Class containerType,
-            AmountResource resourceType) {
+    public static boolean canCollectResources(MissionMember member, Rover rover, Integer containerType,
+            Integer resourceType) {
 
         boolean result = false;
 

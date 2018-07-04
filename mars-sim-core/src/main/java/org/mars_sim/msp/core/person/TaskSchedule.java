@@ -429,10 +429,12 @@ public class TaskSchedule implements Serializable {
 				
 				Settlement s = null;
 				
-				if (person.isBuried() || person.isDeclaredDead()) {
+				if (person.isBuried()) {// || person.isDeclaredDead()) {
 					s = person.getBuriedSettlement(); 
+					
 					if (shiftTypeCache != null)
 						s.decrementAShift(shiftTypeCache);
+					
 					s.incrementAShift(shiftType);
 				}
 				else {

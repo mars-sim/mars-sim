@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -218,14 +219,15 @@ public class MaintenanceTabPanel extends TabPanel {
     	Malfunctionable malfunctionable = (Malfunctionable) unit;
         StringBuilder buf = new StringBuilder("Needed Parts: ");
 
-    	Map<Part, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
+    	Map<Integer, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
     	if (parts.size() > 0) {
-    		Iterator<Part> i = parts.keySet().iterator();
+    		Iterator<Integer> i = parts.keySet().iterator();
     		while (i.hasNext()) {
-    			Part part = i.next();
-    			int number = parts.get(part);
+    			Integer id = i.next();
+    			int number = parts.get(id);
+    			Part p = ItemResourceUtil.findItemResource(id);
 				if (useHtml) buf.append("<br>");
-				buf.append(number).append(" ").append(Conversion.capitalize(part.getName()));
+				buf.append(number).append(" ").append(Conversion.capitalize(p.getName()));
 				if (i.hasNext()) buf.append(", ");
 				else {
 					buf.append(".");

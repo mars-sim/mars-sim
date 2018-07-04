@@ -189,4 +189,8 @@ implements Serializable, Malfunctionable, Salvagable {
 		return null;
 	}
 
+	@Override
+	public Unit getUnit() {
+		return this;
+	}
 }

@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
+import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.EventType;
@@ -88,7 +89,7 @@ implements ListSelectionListener {
 	public void destroy() {
 		listModel.destroy();
 	}
-
+	
 	/**
 	 * Inner class for the arrived resupply list model.
 	 */
@@ -146,6 +147,11 @@ implements ListSelectionListener {
 			// Do Nothing
 		}
 
+		@Override
+		public void eventAdded(int index, SimpleEvent event) {
+			// TODO Auto-generated method stub
+			
+		}
 		/**
 		 * Prepares the list for deletion.
 		 */

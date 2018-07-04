@@ -334,6 +334,7 @@ implements Serializable, Comparable<Unit> {
 			}
 		}
 */
+		
 		return topUnit;
 	}
 
@@ -368,7 +369,7 @@ implements Serializable, Comparable<Unit> {
 	 */
 	public void updatePersonRobotState(Unit newContainer) {
 		Unit oldContainer = this.containerUnit;
-
+	
 		// Case 1a : exiting a settlement
 		if (oldContainer instanceof Settlement && newContainer == null)
 			currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
@@ -413,8 +414,7 @@ implements Serializable, Comparable<Unit> {
 		Unit oldContainer = this.containerUnit;
 
 		// Note : a person or a robot must be the carrier of an equipment
-		
-		
+			
 		// Case 1a
 		if (oldContainer instanceof Settlement && newContainer instanceof Person)
 			currentStateType = LocationStateType.ON_A_PERSON;

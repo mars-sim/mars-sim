@@ -232,10 +232,15 @@ public class MalfunctionConfig implements Serializable {
                         }
                     }
 
+                    // Convert resourceEffects
+                    Map<Integer, Double> resourceEffectIDs = new HashMap<Integer, Double>();
+                    for (AmountResource ar : resourceEffects.keySet()) {
+                    	resourceEffectIDs.put(ar.getID(), resourceEffects.get(ar));
+                    }
 
                     // Create malfunction.
                     Malfunction malfunction = new Malfunction(name, 0, severity, probability, emergencyRepairTime, repairTime,
-                            evaRepairTime, systems, resourceEffects, lifeSupportEffects, medicalComplaints);
+                            evaRepairTime, systems, resourceEffectIDs, lifeSupportEffects, medicalComplaints);
 
                     // Add repair parts.
                     Element repairPartsListElement = malfunctionElement.getChild(REPAIR_PARTS_LIST);

@@ -374,5 +374,9 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		return null;
 	}
 
+	@Override
+	public Unit getUnit() {
+		return this;
+	}
 	
 }

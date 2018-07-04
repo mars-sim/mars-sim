@@ -111,7 +111,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		inv.addGeneralCapacity(vehicleConfig.getTotalCapacity(description));
 		
 		// Set inventory resource capacities.
-		inv.addAmountResourceTypeCapacity(ResourceUtil.methaneAR, vehicleConfig.getCargoCapacity(description, ResourceUtil.METHANE));
+		inv.addAmountResourceTypeCapacity(ResourceUtil.methaneID, vehicleConfig.getCargoCapacity(description, ResourceUtil.METHANE));
 		inv.addARTypeCapacity(ResourceUtil.oxygenID, vehicleConfig.getCargoCapacity(description, LifeSupportType.OXYGEN));
 		inv.addARTypeCapacity(ResourceUtil.waterID, vehicleConfig.getCargoCapacity(description, LifeSupportType.WATER));
 		inv.addARTypeCapacity(ResourceUtil.foodID, vehicleConfig.getCargoCapacity(description, LifeSupportType.FOOD));
@@ -415,7 +415,16 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
      * Gets the resource type that this vehicle uses for fuel.
      * @return resource type as a string
      */
-    public AmountResource getFuelType() {
+    public Integer getFuelType() {
+    	try {
+    		return ResourceUtil.methaneID;
+    	}
+    	catch (Exception e) {
+    		return null;
+    	}
+    }
+
+    public AmountResource getFuelTypeAR() {
     	try {
     		return ResourceUtil.methaneAR;
     	}
@@ -423,7 +432,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     		return null;
     	}
     }
-
+    
     /**
      * Sets unit's location coordinates
      * @param newLocation the new location of the unit
@@ -441,33 +450,41 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
      * @throws Exception if error getting range.
      */
     public double getRange() {
-    	double range = super.getRange();
-
+    	double fuelRange = super.getRange();
+    	double maxRange = super.getSettlement().getMaxMssionRange();
     	double distancePerSol = getEstimatedTravelDistancePerSol();
 
+//    	System.out.println("----------" + getName() + "----------");
+//       	System.out.println("max range : " + maxRange);
+//    	System.out.println("d/sol : " + distancePerSol);
+//    	System.out.println("fuel : " + fuelRange);
+    	
     	// Check food capacity as range limit.
     	double foodConsumptionRate = personConfig.getFoodConsumptionRate();
     	double foodCapacity = getInventory().getARCapacity(ResourceUtil.foodID, false);
     	double foodSols = foodCapacity / (foodConsumptionRate * crewCapacity);
-    	double foodRange = distancePerSol * foodSols / Vehicle.getLifeSupportRangeErrorMargin();
+    	double foodRange = distancePerSol * foodSols / Vehicle.getLifeSupportRangeErrorMargin();	
+//    	System.out.println("food : " + foodRange);
     	
-    	if (foodRange < range) range = foodRange;
-
     	// Check water capacity as range limit.
     	double waterConsumptionRate = personConfig.getWaterConsumptionRate();
     	double waterCapacity = getInventory().getARCapacity(ResourceUtil.waterID, false);
     	double waterSols = waterCapacity / (waterConsumptionRate * crewCapacity);
     	double waterRange = distancePerSol * waterSols / Vehicle.getLifeSupportRangeErrorMargin();
-    	if (waterRange < range) range = waterRange;
-
+//    	if (waterRange < fuelRange) fuelRange = waterRange;
+//    	System.out.println("water : " + waterRange);
+    	
     	// Check oxygen capacity as range limit.
     	double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
     	double oxygenCapacity = getInventory().getARCapacity(ResourceUtil.oxygenID, false);
     	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
     	double oxygenRange = distancePerSol * oxygenSols / Vehicle.getLifeSupportRangeErrorMargin();
-    	if (oxygenRange < range) range = oxygenRange;
-
-    	return range;
+//    	if (oxygenRange < fuelRange) fuelRange = oxygenRange;
+//    	System.out.println("oxygen : " + oxygenRange);
+//    	System.out.println("--------------------");
+    	
+    	return Math.min(oxygenRange, Math.min(foodRange, Math.min(waterRange, Math.min(maxRange, fuelRange))));
+ 
     }
 
     @Override

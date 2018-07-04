@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -30,6 +31,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
+import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -258,9 +260,10 @@ implements Serializable {
      */
     private static double getInputResourcesValue(Settlement settlement, FuelPowerSource fuelSource) {
 
-        AmountResource resource = fuelSource.getFuelResource();
+    	int resource = fuelSource.getFuelResourceID();
         double massPerSol = fuelSource.getFuelConsumptionRate();
-        double value = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(resource));
+        Good good = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(resource));
+        double value = settlement.getGoodsManager().getGoodValuePerItem(good);
 
         return value * massPerSol;
     }
@@ -292,7 +295,7 @@ implements Serializable {
             FuelPowerSource fuelSource) {
         boolean result = false;
 
-        AmountResource resource = fuelSource.getFuelResource();
+        int resource = fuelSource.getFuelResourceID();
         double stored = settlement.getInventory().getAmountResourceStored(resource, false);
         if (stored == 0D) {
             result = true;

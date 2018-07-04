@@ -73,7 +73,11 @@ public final class TradeUtil {
 	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
 	private static AmountResource waterAR = ResourceUtil.waterAR;
 	private static AmountResource foodAR = ResourceUtil.foodAR;
-    
+
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+	private static int foodID = ResourceUtil.foodID;
+
 	private static Simulation sim = Simulation.instance();
 	private static MissionManager missionManager = sim.getMissionManager();
 	private static CreditManager creditManager = sim.getCreditManager();
@@ -286,7 +290,7 @@ public final class TradeUtil {
 		massCapacity -= missionPartsMass;
 
 		// Determine repair parts for trip.
-		Set<Part> repairParts = rover.getMalfunctionManager().getRepairPartProbabilities().keySet();
+		Set<Integer> repairParts = rover.getMalfunctionManager().getRepairPartProbabilities().keySet();
 
 		// Determine the load.
 		boolean done = false;
@@ -425,7 +429,7 @@ public final class TradeUtil {
 	private static Good findBestTradeGood(Settlement sellingSettlement, Settlement buyingSettlement,
 			Map<Good, Integer> tradedGoods, Set<Good> nonTradeGoods, double remainingCapacity,
 			boolean hasVehicle, Rover missionRover, Good previousGood, boolean allowNegValue,
-			Set<Part> repairParts, double maxBuyValue) {
+			Set<Integer> repairParts, double maxBuyValue) {
 
 		Good result = null;
 
@@ -528,7 +532,7 @@ public final class TradeUtil {
 	 */
 	private static double getTradeValue(Good good, Settlement sellingSettlement, Settlement buyingSettlement,
 			Map<Good, Integer> tradedGoods, double remainingCapacity, boolean hasVehicle, Rover missionRover,
-			boolean allowNegValue, Set<Part> repairParts) {
+			boolean allowNegValue, Set<Integer> repairParts) {
 
 		double result = Double.NEGATIVE_INFINITY;
 
@@ -627,7 +631,7 @@ public final class TradeUtil {
 			else if (good.getCategory() == GoodType.EQUIPMENT) {
 				Class type = good.getClassType();
 				if (!equipmentGoodCache.containsKey(type))
-					equipmentGoodCache.put(type, EquipmentFactory.getEquipment(type, new Coordinates(0D, 0D), true));
+					equipmentGoodCache.put(type, EquipmentFactory.createEquipment(type, new Coordinates(0D, 0D), true));
 				result = (remainingCapacity >= equipmentGoodCache.get(type).getBaseMass());
 			}
 			else if (good.getCategory() == GoodType.VEHICLE)
@@ -710,7 +714,7 @@ public final class TradeUtil {
 		Map<Good, Integer> neededResources = new HashMap<Good, Integer>(4);
 
 		// Get required fuel.
-		Good fuelGood = GoodsUtil.getResourceGood(rover.getFuelType());
+		Good fuelGood = GoodsUtil.getResourceGood(rover.getFuelTypeAR());
 		double efficiency = rover.getDrivetrainEfficiency();
 		neededResources.put(fuelGood,
 				(int) VehicleMission.getFuelNeededForTrip(distance, efficiency * GoodsManager.SOFC_CONVERSION_EFFICIENCY, true));
@@ -766,7 +770,7 @@ public final class TradeUtil {
 		Equipment container = null;
 		if (containerTypeCache.containsKey(containerType)) container = containerTypeCache.get(containerType);
 		else {
-			container = EquipmentFactory.getEquipment(containerType, new Coordinates(0, 0), true);
+			container = EquipmentFactory.createEquipment(containerType, new Coordinates(0, 0), true);
 			containerTypeCache.put(containerType, container);
 		}
 

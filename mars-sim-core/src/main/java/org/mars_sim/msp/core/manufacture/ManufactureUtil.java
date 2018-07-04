@@ -23,7 +23,9 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -47,11 +49,12 @@ public final class ManufactureUtil {
 
 
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-    private static ItemResource printerItem;
-
+//    private static ItemResource printerItem;
+	public final static int printerID = ItemResourceUtil.printerID;
+			
     /** Private constructor. */
     private ManufactureUtil() {
-        printerItem = ItemResource.findItemResource(Manufacture.LASER_SINTERING_3D_PRINTER);
+ //       printerItem = ItemResource.findItemResource(Manufacture.LASER_SINTERING_3D_PRINTER);
     }
 
     /**
@@ -267,8 +270,9 @@ public final class ManufactureUtil {
             Iterator<PartSalvage> i = process.getPartSalvageList().iterator();
             while (i.hasNext()) {
                 PartSalvage partSalvage = i.next();
-                Part part = (Part) ItemResource.findItemResource(partSalvage.getName());
-                Good partGood = GoodsUtil.getResourceGood(part);
+//                Part part = (Part) ItemResource.findItemResource(partSalvage.getName());
+//                int id = ItemResourceUtil.findIDbyItemResourceName(partSalvage.getName());
+                Good partGood = GoodsUtil.getResourceGood(ItemResource.findItemResource(partSalvage.getName()));
                 double partValue = goodsManager.getGoodValuePerItem(partGood) * partSalvage.getNumber();
                 totalPartsGoodValue += partValue;
             }
@@ -300,21 +304,23 @@ public final class ManufactureUtil {
         GoodsManager manager = settlement.getGoodsManager();
 
         if (item.getType().equals(ItemType.AMOUNT_RESOURCE)) {
-            AmountResource resource = AmountResource.findAmountResource(item.getName());
+            //AmountResource resource = AmountResource.findAmountResource(item.getName());
+//            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
             double amount = item.getAmount();
             if (isOutput) {
                 double remainingCapacity = settlement.getInventory().getAmountResourceRemainingCapacity(
-                        resource, true, false);
+                		AmountResource.findAmountResource(item.getName()), true, false);
                 if (amount > remainingCapacity) {
                     amount = remainingCapacity;
                 }
             }
-            Good good = GoodsUtil.getResourceGood(resource);
+            Good good = GoodsUtil.getResourceGood(AmountResource.findAmountResource(item.getName()));
             result = manager.getGoodValuePerItem(good) * amount;
         }
         else if (item.getType().equals(ItemType.PART)) {
-            ItemResource resource = ItemResource.findItemResource(item.getName());
-            Good good = GoodsUtil.getResourceGood(resource);
+//            ItemResource resource = ItemResource.findItemResource(item.getName());
+//            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
+            Good good = GoodsUtil.getResourceGood(ItemResource.findItemResource(item.getName()));
             result = manager.getGoodValuePerItem(good) * item.getAmount();
         }
         else if (item.getType().equals(ItemType.EQUIPMENT)) {
@@ -374,7 +380,6 @@ public final class ManufactureUtil {
 	 * @param workshop
 	 * @return true if there is an available 3D Printer.
 	 */
-    //2015-06-01 isAn3DPrinterAvailable()
     public static synchronized boolean isAn3DPrinterAvailable(Manufacture workshop) {
 
         if(workshop.getSupportingProcesses() > 0)
@@ -382,6 +387,7 @@ public final class ManufactureUtil {
         else
             return false;
 
+        // TODO: rework checking for the printer ?
 /*
     	boolean result = false;
     	int inBldg = 0;
@@ -557,12 +563,14 @@ public final class ManufactureUtil {
     public static Good getGood(ManufactureProcessItem item) {
         Good result = null;
         if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-            AmountResource resource = AmountResource.findAmountResource(item.getName());
-            result = GoodsUtil.getResourceGood(resource);
+//            AmountResource resource = AmountResource.findAmountResource(item.getName());
+//            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
+            result = GoodsUtil.getResourceGood(AmountResource.findAmountResource(item.getName()));
         }
         else if (ItemType.PART.equals(item.getType())) {
-            Part part = (Part) ItemResource.findItemResource(item.getName());
-            result = GoodsUtil.getResourceGood(part);
+//            Part part = (Part) ItemResource.findItemResource(item.getName());
+//            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
+            result = GoodsUtil.getResourceGood(ItemResource.findItemResource(item.getName()));
         }
         else if (ItemType.EQUIPMENT.equals(item.getType())) {
             Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());

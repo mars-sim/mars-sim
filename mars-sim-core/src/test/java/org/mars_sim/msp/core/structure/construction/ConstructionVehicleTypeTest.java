@@ -11,6 +11,8 @@ package org.mars_sim.msp.core.structure.construction;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 
@@ -27,8 +29,8 @@ public class ConstructionVehicleTypeTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        List<Part> attachments = new ArrayList<Part>(1);
-        attachments.add(new Part("attachment part", 1, "test resource description", 1D, 1));
+        List<Integer> attachments = new ArrayList<Integer>(1);
+        attachments.add(new Part("attachment part", 1, "test resource description", 1D, 1).getID());
         vehicleType = new ConstructionVehicleType("Light Utility Vehicle", 
                 LightUtilityVehicle.class, attachments);
     }
@@ -38,11 +40,11 @@ public class ConstructionVehicleTypeTest extends TestCase {
      * ConstructionVehicleType.getAttachmentParts()'
      */
     public void testGetAttachmentParts() {
-        List<Part> parts = vehicleType.getAttachmentParts();
+        List<Integer> parts = vehicleType.getAttachmentParts();
         assertNotNull(parts);
         assertEquals(1, parts.size());
         
-        Part part = parts.get(0);
+        Part part = ItemResourceUtil.findItemResource(parts.get(0));
         assertNotNull(part);
         assertEquals("attachment part", part.getName());
     }

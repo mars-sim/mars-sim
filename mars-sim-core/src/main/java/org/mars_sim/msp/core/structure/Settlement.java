@@ -171,7 +171,7 @@ implements Serializable, LifeSupportType, Objective {
 
 	private double outside_temperature; 
 	/** The maximum distance the rovers are allowed to travel */
-	private double maxMssionRange;
+	private double maxMssionRange = 800;
 	
 	// Added foodProductionOverride
 	private boolean foodProductionOverride = false;
@@ -3531,14 +3531,14 @@ implements Serializable, LifeSupportType, Objective {
     public double computeRegolithProbability() {
     	double result = 0;
 
-        double regolith_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithAR));
+        double regolith_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
         regolith_value = regolith_value * GoodsManager.REGOLITH_VALUE_MODIFIER;
     	if (regolith_value > 2000)
     		regolith_value = 2000;
     	else if (regolith_value <= 5)
     		return 0;
 
-        double sand_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.sandAR));
+        double sand_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.sandID));
         sand_value = sand_value * GoodsManager.SAND_VALUE_MODIFIER;
         if (sand_value > 2000)
     		sand_value = 2000;
@@ -3577,14 +3577,14 @@ implements Serializable, LifeSupportType, Objective {
     public double computeIceProbability() {
     	double result = 0;
 
-        double ice_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceAR));
+        double ice_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
         ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
     	if (ice_value > 8000)
     		ice_value = 8000;
     	if (ice_value < 1)
     		ice_value = 1;
 
-        double water_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.waterAR));
+        double water_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.waterID));
         water_value = water_value * GoodsManager.WATER_VALUE_MODIFIER;
         if (water_value > 8000)
     		water_value = 8000;

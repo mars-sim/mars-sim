@@ -409,7 +409,8 @@ implements Serializable {
 	
 	// 2015-03-02 Added	getCropValue()
     public double getCropValue(AmountResource resource) {
-    	return settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(resource));
+    	return settlement.getGoodsManager().getGoodValuePerItem(
+    			GoodsUtil.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName())));
     }
 
     /**
@@ -663,7 +664,7 @@ implements Serializable {
         }
 
         // Modify result by value (VP) of food at the settlement.
-        Good foodGood = GoodsUtil.getResourceGood(ResourceUtil.foodAR);
+        Good foodGood = GoodsUtil.getResourceGood(ResourceUtil.foodID);
         double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
 
         result = (demand / (supply + 1D)) * foodValue;

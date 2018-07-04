@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.mission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.*;
@@ -190,11 +191,11 @@ implements ConstructionListener {
 			// Add construction parts.
 			if (info.getParts().size() > 0) {
 				result.append("<br>Salvagable Parts:<br>");
-				Iterator<Part> j = info.getParts().keySet().iterator();
+				Iterator<Integer> j = info.getParts().keySet().iterator();
 				while (j.hasNext()) {
-					Part part = j.next();
-					int number = info.getParts().get(part);
-					result.append("&nbsp;&nbsp;").append(part.getName()).append(": ").append(number).append("<br>");
+					Integer id = j.next();
+					int number = info.getParts().get(id);
+					result.append("&nbsp;&nbsp;").append(ItemResourceUtil.findItemResource(id).getName()).append(": ").append(number).append("<br>");
 				}
 			}
 
@@ -206,9 +207,9 @@ implements ConstructionListener {
 					ConstructionVehicleType vehicle = k.next();
 					result.append("&nbsp;&nbsp;Vehicle Type: ").append(vehicle.getVehicleType()).append("<br>");
 					result.append("&nbsp;&nbsp;Attachment Parts:<br>");
-					Iterator<Part> l = vehicle.getAttachmentParts().iterator();
+					Iterator<Integer> l = vehicle.getAttachmentParts().iterator();
 					while (l.hasNext()) {
-						result.append("&nbsp;&nbsp;&nbsp;&nbsp;").append(l.next().getName()).append("<br>");
+						result.append("&nbsp;&nbsp;&nbsp;&nbsp;").append(ItemResourceUtil.findItemResource(l.next()).getName()).append("<br>");
 					}
 				}
 			}

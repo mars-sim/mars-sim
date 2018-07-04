@@ -140,8 +140,8 @@ public class SalvageTabPanel extends TabPanel {
         
         // Data members
         private SalvageInfo salvageInfo;
-        private Map<Part, Integer> parts;
-        private List<Part> keys;
+        private Map<Integer, Integer> parts;
+        private List<Integer> keys;
         
         /**
          * Constructor
@@ -149,8 +149,8 @@ public class SalvageTabPanel extends TabPanel {
          */
         private PartTableModel(SalvageInfo salvageInfo) {
             this.salvageInfo = salvageInfo;
-            parts = new HashMap<Part, Integer>(salvageInfo.getPartsSalvaged());
-            keys = new ArrayList<Part>(parts.keySet());
+            parts = new HashMap<Integer, Integer>(salvageInfo.getPartsSalvaged());
+            keys = new ArrayList<Integer>(parts.keySet());
             
             // Sort parts alphabetically by name.
             Collections.sort(keys);

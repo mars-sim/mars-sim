@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -84,17 +83,22 @@ implements Serializable {
 	private double totalResourceCollected;
 
 	/** The type of container needed for the mission or null if none. */
-	private Class<? extends Equipment> containerType;
+	private Integer containerType;
 	/** The start time at the current collection site. */
 	private MarsClock collectionSiteStartTime;
 	/** The type of resource to collect. */
-	private AmountResource resourceType;
+	private Integer resourceType;
 	
 	// Static members
-	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	private static AmountResource waterAR = ResourceUtil.waterAR;
-	private static AmountResource foodAR = ResourceUtil.foodAR;
-	private static AmountResource methaneAR = ResourceUtil.methaneAR;
+//	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+//	private static AmountResource waterAR = ResourceUtil.waterAR;
+//	private static AmountResource foodAR = ResourceUtil.foodAR;
+//	private static AmountResource methaneAR = ResourceUtil.methaneAR;
+
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+	private static int foodID = ResourceUtil.foodID;
+	private static int methaneID = ResourceUtil.methaneID;
 
 	private static PersonConfig personConfig;
 	
@@ -112,8 +116,8 @@ implements Serializable {
      * @throws MissionException if problem constructing mission.
      */
     CollectResourcesMission(String missionName, Person startingPerson,
-            AmountResource resourceType, double siteResourceGoal,
-            double resourceCollectionRate, Class containerType,
+            Integer resourceType, double siteResourceGoal,
+            double resourceCollectionRate, Integer containerType,
             int containerNum, int numSites, int minPeople) {
 
         // Use RoverMission constructor
@@ -193,9 +197,9 @@ implements Serializable {
      * @throws MissionException if problem constructing mission.
      */
     CollectResourcesMission(String missionName, Collection<MissionMember> members,
-            Settlement startingSettlement, AmountResource resourceType,
+            Settlement startingSettlement, Integer resourceType,
             double siteResourceGoal, double resourceCollectionRate,
-            Class containerType, int containerNum, int numSites, int minPeople,
+            Integer containerType, int containerNum, int numSites, int minPeople,
             Rover rover, List<Coordinates> collectionSites) {
 
         // Use RoverMission constructor
@@ -305,7 +309,7 @@ implements Serializable {
             
             // Check if starting settlement has minimum amount of methane fuel.
             //AmountResource methane = AmountResource.findAmountResource("methane");
-            if (settlement.getInventory().getAmountResourceStored(methaneAR, false) <
+            if (settlement.getInventory().getARStored(methaneID, false) <
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE)
             	return 0;
 
@@ -400,8 +404,8 @@ implements Serializable {
      */
     private void collectingPhase(MissionMember member) {
         Inventory inv = getRover().getInventory();
-        double resourcesCollected = inv.getAmountResourceStored(resourceType, false);
-        double resourcesCapacity = inv.getAmountResourceCapacity(resourceType, false);
+        double resourcesCollected = inv.getARStored(resourceType, false);
+        double resourcesCapacity = inv.getARCapacity(resourceType, false);
 
         // Set total collected resources.
         totalResourceCollected = resourcesCollected;
@@ -475,7 +479,7 @@ implements Serializable {
                                 "Collecting Resources", person, getRover(),
                                 resourceType, resourceCollectionRate,
                                 siteResourceGoal - siteCollectedResources, inv
-                                .getAmountResourceStored(resourceType, false),
+                                .getARStored(resourceType, false),
                                 containerType);
                         assignTask(person, collectResources);
                     }
@@ -664,9 +668,9 @@ implements Serializable {
     }
 
     @Override
-    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
+    public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
 
-        Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
+        Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
 
         double collectionSitesTime = getEstimatedRemainingCollectionSiteTime(useBuffer);
         double timeSols = collectionSitesTime / 1000D;
@@ -677,23 +681,23 @@ implements Serializable {
         //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()// * WATER_MARGIN
                 * timeSols * crewNum;
-        if (result.containsKey(oxygenAR))
-            oxygenAmount += (Double) result.get(oxygenAR);
-        result.put(oxygenAR, oxygenAmount);
+        if (result.containsKey(oxygenID))
+            oxygenAmount += (Double) result.get(oxygenID);
+        result.put(oxygenID, oxygenAmount);
 
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterAmount = PhysicalCondition.getWaterConsumptionRate()// * WATER_MARGIN
                 * timeSols * crewNum;
-        if (result.containsKey(waterAR))
-            waterAmount += (Double) result.get(waterAR);
-        result.put(waterAR, waterAmount);
+        if (result.containsKey(waterID))
+            waterAmount += (Double) result.get(waterID);
+        result.put(waterID, waterAmount);
 
         //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         double foodAmount = PhysicalCondition.getFoodConsumptionRate()// * PhysicalCondition.FOOD_RESERVE_FACTOR
                 * timeSols * crewNum;
-        if (result.containsKey(foodAR))
-            foodAmount += (Double) result.get(foodAR);
-        result.put(foodAR, foodAmount);
+        if (result.containsKey(foodID))
+            foodAmount += (Double) result.get(foodID);
+        result.put(foodID, foodAmount);
 
 
         /*
@@ -724,8 +728,8 @@ implements Serializable {
     }
 
     @Override
-    protected Map<Resource, Number> getPartsNeededForTrip(double distance) {
-        Map<Resource, Number> result = super.getPartsNeededForTrip(distance);
+    protected Map<Integer, Number> getPartsNeededForTrip(double distance) {
+        Map<Integer, Number> result = super.getPartsNeededForTrip(distance);
 
         // Determine repair parts for EVA Suits.
         double evaTime = getEstimatedRemainingCollectionSiteTime(false);
@@ -736,14 +740,14 @@ implements Serializable {
         double numberMalfunctions = numberAccidents * 2D;
 
         // Get temporary EVA suit.
-        EVASuit suit = (EVASuit) EquipmentFactory.getEquipment(EVASuit.class,
+        EVASuit suit = (EVASuit) EquipmentFactory.createEquipment(EVASuit.class,
                 new Coordinates(0, 0), true);
 
         // Determine needed repair parts for EVA suits.
-        Map<Part, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();
-        Iterator<Part> i = parts.keySet().iterator();
+        Map<Integer, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();
+        Iterator<Integer> i = parts.keySet().iterator();
         while (i.hasNext()) {
-            Part part = i.next();
+        	Integer part = i.next();
             int number = (int) Math.round(parts.get(part) * numberMalfunctions);
             if (number > 0) {
                 if (result.containsKey(part))
@@ -804,7 +808,7 @@ implements Serializable {
 
         // Check food capacity as time limit.
         double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-        double foodCapacity = vInv.getAmountResourceCapacity(foodAR, false);
+        double foodCapacity = vInv.getARCapacity(foodID, false);
         double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
         if (foodTimeLimit < timeLimit)
             timeLimit = foodTimeLimit;
@@ -821,7 +825,7 @@ implements Serializable {
         */
         // Check water capacity as time limit.
         double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-        double waterCapacity = vInv.getAmountResourceCapacity(waterAR, false);
+        double waterCapacity = vInv.getARCapacity(waterID, false);
         double waterTimeLimit = waterCapacity
                 / (waterConsumptionRate * memberNum);
         if (waterTimeLimit < timeLimit)
@@ -829,7 +833,7 @@ implements Serializable {
 
         // Check oxygen capacity as time limit.
         double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-        double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenAR, false);
+        double oxygenCapacity = vInv.getARCapacity(oxygenID, false);
         double oxygenTimeLimit = oxygenCapacity
                 / (oxygenConsumptionRate * memberNum);
         if (oxygenTimeLimit < timeLimit)
@@ -844,13 +848,13 @@ implements Serializable {
     }
 
     @Override
-    public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
+    public Map<Integer, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
         if (equipmentNeededCache != null) {
             return equipmentNeededCache;
         }
         else {
-            Map<Class<? extends Equipment>, Integer> result = new HashMap<>();
+            Map<Integer, Integer> result = new HashMap<>();
 
             // Include required number of containers.
             result.put(containerType, containerNum);

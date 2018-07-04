@@ -11,16 +11,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-/*
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.VehicleConfig;
-*/
+
 /**
  * Utility class for food information.
  */
@@ -60,16 +57,12 @@ public class FoodUtil {
 		foodList = null;
 	}
 
-	/**
-	 * Gets a food object for a given resource.
-	 * @param resource the resource.
-	 * @return food for the resource.
-	 */
 	public static Food getResourceFood(Resource resource) {
 		if (resource == null) {
 			throw new IllegalArgumentException("Resource cannot be null");
 		}
 		FoodType category = null;
+
 		if (resource instanceof AmountResource
 				&& ((AmountResource) resource).isEdible())
 			category = FoodType.AMOUNT_RESOURCE;
@@ -77,6 +70,37 @@ public class FoodUtil {
 		//	category = FoodType.ITEM_RESOURCE;
 		Food food = new Food(resource.getName(), resource, category);
 		return food;
+	}
+	
+	/**
+	 * Gets a food object for a given resource.
+	 * @param resource the resource.
+	 * @return food for the resource.
+	 */
+	public static Food getResourceFood(Integer resource) {
+		if (resource == null) {
+			throw new IllegalArgumentException("Resource cannot be null");
+		}
+		FoodType category = null;
+
+			if (resource < Task.FIRST_ITEM_RESOURCE) {
+				category = FoodType.AMOUNT_RESOURCE;
+				AmountResource ar = ResourceUtil.findAmountResource(resource);
+				if (ar.isEdible()) {
+					Food food = new Food(ar.getName(), ar, category);
+					return food;
+				}
+			}
+//			else if (resource >= Task.FIRST_ITEM_RESOURCE) {
+//				category = FoodType.ITEM_RESOURCE;
+//				Part p = ItemResourceUtil.findItemResource(resource);
+//				if (p.isEdible()) {
+//					Food food = new Food(p.getName(), p, category);
+//				}
+//			}
+
+			return null;
+		
 	}
 
 	/**

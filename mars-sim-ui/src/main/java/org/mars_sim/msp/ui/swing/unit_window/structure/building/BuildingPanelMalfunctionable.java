@@ -14,12 +14,21 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
 
-import javax.swing.*;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.swing.BoxLayout;
+
 
 /**
  * The BuildingPanelMalfunctionable class is a building function panel representing
@@ -35,7 +44,7 @@ extends BuildingFunctionPanel {
 	/** List of malfunctions in building. */
 	private Collection<Malfunction> malfunctionCache;
 	/** Malfunction list panel. */
-	private JPanel malfunctionListPanel;
+	private WebPanel malfunctionListPanel;
 
 	/**
 	 * Constructor.
@@ -56,13 +65,13 @@ extends BuildingFunctionPanel {
 		// Create malfunctions label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for labels
-		JLabel malfunctionsLabel = new JLabel(Msg.getString("BuildingPanelMalfunctionable.title"), JLabel.CENTER);
+		WebLabel malfunctionsLabel = new WebLabel(Msg.getString("BuildingPanelMalfunctionable.title"), WebLabel.CENTER);
 		malfunctionsLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//malfunctionsLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		add(malfunctionsLabel, BorderLayout.NORTH);
 
 		// Create scroll panel for malfunction list
-		JScrollPane scrollPanel = new JScrollPane();
+		WebScrollPane scrollPanel = new WebScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 90));
 		add(scrollPanel, BorderLayout.CENTER);
         scrollPanel.setOpaque(false);
@@ -72,13 +81,13 @@ extends BuildingFunctionPanel {
         //scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 
 		// Create malfunction list main panel.
-		JPanel malfunctionListMainPanel = new JPanel(new BorderLayout(0, 0));
+		WebPanel malfunctionListMainPanel = new WebPanel(new BorderLayout(0, 0));
 		scrollPanel.setViewportView(malfunctionListMainPanel);
 		//malfunctionListMainPanel.setOpaque(false);
 		//malfunctionListMainPanel.setBackground(new Color(0,0,0,128));
 
 		// Create malfunction list panel
-		malfunctionListPanel = new JPanel();
+		malfunctionListPanel = new WebPanel();
 		malfunctionListPanel.setLayout(new BoxLayout(malfunctionListPanel, BoxLayout.Y_AXIS));
 		malfunctionListMainPanel.add(malfunctionListPanel, BorderLayout.NORTH);
 		//malfunctionListPanel.setOpaque(false);

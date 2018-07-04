@@ -63,6 +63,9 @@ implements Serializable {
     private Rover rover; // Rover used.
     protected AmountResource mineralType;
 
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+
     /**
      * Constructor
      * @param person the person performing the task.
@@ -372,9 +375,9 @@ implements Serializable {
             if (suit != null) {
                 carryMass += suit.getMass();
                 //AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-                carryMass += suit.getInventory().getARRemainingCapacity(ResourceUtil.oxygenID, false, false);
+                carryMass += suit.getInventory().getARRemainingCapacity(oxygenID, false, false);
                 //AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-                carryMass += suit.getInventory().getARRemainingCapacity(ResourceUtil.waterID, false, false);
+                carryMass += suit.getInventory().getARRemainingCapacity(waterID, false, false);
             }
             double carryCapacity = person.getInventory().getGeneralCapacity();
             boolean canCarryEquipment = (carryCapacity >= carryMass);

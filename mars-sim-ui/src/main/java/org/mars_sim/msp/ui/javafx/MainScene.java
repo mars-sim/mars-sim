@@ -176,6 +176,8 @@ public class MainScene {
 
 	public final static String THEME_PATH = "/fxui/css/theme/";
 
+	public final static String SPINNER_CSS = "/fxui/css/spinner/spinner.css";
+
 	public final static String ORANGE_CSS_JFX = "/fxui/css/tab/jfx_orange.css";
 	public final static String BLUE_CSS_JFX = "/fxui/css/tab/jfx_blue.css";
 
@@ -247,7 +249,7 @@ public class MainScene {
 	private static final String UPTIME = "UpTime :";
 	private static final String TPS = "# Ticks/s :";
 	private static final String SEC = "One Real Sec :";
-	private static final String TR = "Current TR :";
+	private static final String TR = "Time Ratio :";
 	private static final String DTR = "Default TR :";
 	private static final String HZ = " Hz";
 	private static final String REFRESH = "Refresh Rate :";
@@ -262,7 +264,7 @@ public class MainScene {
 
 	private static final String LABEL_CSS_STYLE = "-fx-background-color:transparent; -fx-text-fill: white;" + "-fx-font-size: 11px;" 
 			+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;" 
-			+ "-fx-font-weight:bold; -fx-text-alignment: center;";
+			+ "-fx-font-weight:bold; -fx-text-alignment: center; -fx-alignment: CENTER;";
 	
 	private static final String PANE_CSS = "jfx-popup-container; -fx-background-radius: 10; -fx-background-color:transparent;";
 	
@@ -1232,15 +1234,7 @@ public class MainScene {
 	 * Creates and returns the panel for simulation speed and time info
 	 */
 	public void createSpeedPanel() {
-		timeRatioSpinner = new Spinner<Integer>();
-		timeRatioSpinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-
-        //Spinner.STYLE_CLASS_ARROWS_ON_RIGHT_HORIZONTAL
-        //Spinner.STYLE_CLASS_ARROWS_ON_LEFT_VERTICAL
-        //Spinner.STYLE_CLASS_ARROWS_ON_LEFT_HORIZONTAL
-        //Spinner.STYLE_CLASS_SPLIT_ARROWS_VERTICAL
-        //Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL
-        
+ 
 		speedBtn = new JFXButton();
 		// speedBtn.setStyle(value);
 		// speedBtn.getStyleClass().add("menu-button");//"button-raised");
@@ -1293,11 +1287,20 @@ public class MainScene {
 		double ratio = masterClock.getTimeRatio();
 		s1.append(ClockUtils.getTimeTruncated(ratio));
 		realTimeLabel.setText(s1.toString());
-
 		
 		Label spinnerLabel0 = createLabelLeft(TR, "The current time-ratio is the ratio of simulation time to real time.");
-		timeRatioSpinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
 
+		timeRatioSpinner = new Spinner<Integer>();
+		//timeRatioSpinner.getStyleClass().clear();
+		timeRatioSpinner.getStyleClass().add(getClass().getResource(SPINNER_CSS).toExternalForm());
+		timeRatioSpinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+		
+        //Spinner.STYLE_CLASS_ARROWS_ON_RIGHT_HORIZONTAL
+        //Spinner.STYLE_CLASS_ARROWS_ON_LEFT_VERTICAL
+        //Spinner.STYLE_CLASS_ARROWS_ON_LEFT_HORIZONTAL
+        //Spinner.STYLE_CLASS_SPLIT_ARROWS_VERTICAL
+        //Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL
+       
 //		List<Integer> items = null;
 //		if (default_ratio == 16)
 //			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);
@@ -1310,6 +1313,7 @@ public class MainScene {
 //		else // if (default_ratio == 256)
 //			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096);// ,8192);
 
+		
 		List<Integer> items = null;
 		if (defaultRatioInt == 16)
 			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);
@@ -1326,7 +1330,7 @@ public class MainScene {
 		timeRatioSpinner.setValueFactory(new SpinnerValueFactory.ListSpinnerValueFactory<Integer>(FXCollections.observableArrayList(items)));
 		//spinner.setValueFactory((SpinnerValueFactory<Integer>) items);
 		timeRatioSpinner.setMaxSize(85, 15);
-		timeRatioSpinner.setStyle(LABEL_CSS_STYLE);
+		//timeRatioSpinner.setStyle(LABEL_CSS_STYLE);
 		// spinner.setAlignment(Pos.CENTER);
 		timeRatioSpinner.getValueFactory().setValue(defaultRatioInt);
 		timeRatioSpinner.valueProperty().addListener((o, old_val, new_val) -> {
@@ -2669,6 +2673,7 @@ public class MainScene {
 		if (choice == ThemeType.Weblaf) {
 			try {
 				// use the weblaf skin
+//				WebLookAndFeel.setForceSingleEventsThread ( true );
 				WebLookAndFeel.install();
 				UIManagers.initialize();
 					        

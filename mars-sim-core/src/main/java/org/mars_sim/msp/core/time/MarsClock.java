@@ -466,7 +466,7 @@ public class MarsClock implements Serializable {
 	public String getDateString() {
 		StringBuilder result = new StringBuilder();
 
-		// 2016-11-23 Append padding zeros to orbit
+		// Append padding zeros to orbit
 		if (orbit < 10) // then 000x
 			result.append(THREE_ZEROS);
 		else if (orbit < 100) // then 00xx

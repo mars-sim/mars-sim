@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -756,9 +756,9 @@ implements Serializable {
     }
 
     @Override
-    public Map<Class<? extends Equipment>, Integer> getOptionalEquipmentToLoad() {
+    public Map<Integer, Integer> getOptionalEquipmentToLoad() {
 
-        Map<Class<? extends Equipment>, Integer> result = super.getOptionalEquipmentToLoad();
+        Map<Integer, Integer> result = super.getOptionalEquipmentToLoad();
 
         // Add buy/sell load.
         Map<Good, Integer> load = null;
@@ -777,7 +777,7 @@ implements Serializable {
                 if (result.containsKey(equipmentClass)) {
                     num += (Integer) result.get(equipmentClass);
                 }
-                result.put(equipmentClass, num);
+                result.put(ResourceUtil.findIDbyAmountResourceName(equipmentClass.getName()), num);
             }
         }
 
@@ -785,9 +785,9 @@ implements Serializable {
     }
 
     @Override
-    public Map<Resource, Number> getOptionalResourcesToLoad() {
+    public Map<Integer, Number> getOptionalResourcesToLoad() {
 
-        Map<Resource, Number> result = super.getOptionalResourcesToLoad();
+        Map<Integer, Number> result = super.getOptionalResourcesToLoad();
 
         // Add buy/sell load.
         Map<Good, Integer> load = null;
@@ -806,14 +806,14 @@ implements Serializable {
                 if (result.containsKey(resource)) {
                     amount += (Double) result.get(resource);
                 }
-                result.put(resource, amount);
+                result.put(ResourceUtil.findIDbyAmountResourceName(resource.getName()), amount);
             } else if (good.getCategory().equals(GoodType.ITEM_RESOURCE)) {
                 ItemResource resource = (ItemResource) good.getObject();
                 int num = load.get(good);
                 if (result.containsKey(resource)) {
                     num += (Integer) result.get(resource);
                 }
-                result.put(resource, num);
+                result.put(ResourceUtil.findIDbyAmountResourceName(resource.getName()), num);
             }
         }
 
@@ -1040,11 +1040,11 @@ implements Serializable {
     }
 
     @Override
-    public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
+    public Map<Integer, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
         if (equipmentNeededCache != null) return equipmentNeededCache;
         else {
-            Map<Class<? extends Equipment>, Integer> result = new HashMap<>(0);
+            Map<Integer, Integer> result = new HashMap<>(0);
             equipmentNeededCache = result;
             return result;
         }

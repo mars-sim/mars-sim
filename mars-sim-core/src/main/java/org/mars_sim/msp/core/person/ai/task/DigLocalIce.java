@@ -67,7 +67,7 @@ implements Serializable {
 	private Bag bag;
 	private Settlement settlement;
 
-	//private static AmountResource iceAR = ResourceUtil.iceAR;
+	private static int iceID = ResourceUtil.iceID;
 	
 	/**
 	 * Constructor.
@@ -246,17 +246,16 @@ implements Serializable {
 
         // Unload bag to rover's inventory.
         if (bag != null) {
-            AmountResource iceAR = ResourceUtil.iceAR;
-            double collectedAmount = bag.getInventory().getAmountResourceStored(iceAR, false);
+            double collectedAmount = bag.getInventory().getAmountResourceStored(iceID, false);
             double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
-            		iceAR, false, false);
+            		iceID, false, false);
 
             // Try to store ice in settlement.
             if (collectedAmount < settlementCap) {
-                bag.getInventory().retrieveAmountResource(iceAR, collectedAmount);
-                settlement.getInventory().storeAmountResource(iceAR, collectedAmount, false);
+                bag.getInventory().retrieveAmountResource(iceID, collectedAmount);
+                settlement.getInventory().storeAmountResource(iceID, collectedAmount, false);
            		// 2015-01-15 Add addSupplyAmount()
-                settlement.getInventory().addAmountSupplyAmount(iceAR, collectedAmount);
+                settlement.getInventory().addAmountSupplyAmount(iceID, collectedAmount);
             }
 
             // Store bag.
@@ -265,7 +264,7 @@ implements Serializable {
 
             // Recalculate settlement good value for output item.
             GoodsManager goodsManager = settlement.getGoodsManager();
-            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(iceAR), false);
+            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(ResourceUtil.iceAR), false);
         }
 
         super.endTask();

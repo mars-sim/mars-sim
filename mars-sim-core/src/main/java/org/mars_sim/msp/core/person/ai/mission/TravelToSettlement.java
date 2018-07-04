@@ -589,12 +589,12 @@ implements Serializable {
      * @return map of equipment class and Integer number.
      * @throws MissionException if error determining needed equipment.
      */
-    public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
+    public Map<Integer, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
         if (equipmentNeededCache != null)
             return equipmentNeededCache;
         else {
-            Map<Class<? extends Equipment>, Integer> result = new HashMap<>();
+            Map<Integer, Integer> result = new HashMap<>();
             equipmentNeededCache = result;
             return result;
         }

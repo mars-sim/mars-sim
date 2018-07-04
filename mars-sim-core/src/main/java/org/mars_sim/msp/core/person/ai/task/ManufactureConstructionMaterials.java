@@ -48,7 +48,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ManufactureConstructionMaterials.class.getName());
+//	private static Logger logger = Logger.getLogger(ManufactureConstructionMaterials.class.getName());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -63,9 +63,9 @@ implements Serializable {
 	private static final double STRESS_MODIFIER = .1D;
 
 	/** List of construction material resources. */
-	private static List<AmountResource> constructionResources;
+	private static List<Integer> constructionResources;
 	/** List of construction material parts. */
-	private static List<Part> constructionParts;
+	private static List<Integer> constructionParts;
 
 	// Data members
 	/** The manufacturing workshop the person is using. */
@@ -91,8 +91,7 @@ implements Serializable {
         // Get available manufacturing workshop if any.
         Building manufactureBuilding = getAvailableManufacturingBuilding(person);
         if (manufactureBuilding != null) {
-            workshop = (Manufacture) manufactureBuilding
-                    .getFunction(FunctionType.MANUFACTURE);
+            workshop = manufactureBuilding.getManufacture();
 
             // Walk to manufacturing building.
             walkToActivitySpotInBuilding(manufactureBuilding, false);
@@ -456,17 +455,17 @@ implements Serializable {
      * Determines all resources needed for construction projects.
      */
     private static void determineConstructionResources() {
-        constructionResources = new ArrayList<AmountResource>();
+        constructionResources = new ArrayList<>();
 
         Iterator<ConstructionStageInfo> i = ConstructionUtil
                 .getAllConstructionStageInfoList().iterator();
         while (i.hasNext()) {
             ConstructionStageInfo info = i.next();
             if (info.isConstructable()) {
-                Iterator<AmountResource> j = info.getResources().keySet()
+                Iterator<Integer> j = info.getResources().keySet()
                         .iterator();
                 while (j.hasNext()) {
-                    AmountResource resource = j.next();
+                	Integer resource = j.next();
                     if (!constructionResources.contains(resource)) {
                         constructionResources.add(resource);
                     }
@@ -479,16 +478,16 @@ implements Serializable {
      * Determines all parts needed for construction projects.
      */
     private static void determineConstructionParts() {
-        constructionParts = new ArrayList<Part>();
+        constructionParts = new ArrayList<>();
 
         Iterator<ConstructionStageInfo> i = ConstructionUtil
                 .getAllConstructionStageInfoList().iterator();
         while (i.hasNext()) {
             ConstructionStageInfo info = i.next();
             if (info.isConstructable()) {
-                Iterator<Part> j = info.getParts().keySet().iterator();
+                Iterator<Integer> j = info.getParts().keySet().iterator();
                 while (j.hasNext()) {
-                    Part part = j.next();
+                	Integer part = j.next();
                     if (!constructionParts.contains(part)) {
                         constructionParts.add(part);
                     }

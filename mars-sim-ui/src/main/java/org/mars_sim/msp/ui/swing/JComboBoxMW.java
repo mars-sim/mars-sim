@@ -35,8 +35,8 @@ public class JComboBoxMW<T> extends WebComboBox implements MouseWheelListener {
 	public JComboBoxMW() {
 		super();
 		this.addMouseWheelListener(this);
-		((JTextField) this.getEditor().getEditorComponent()).setBorder(
-				BorderFactory.createCompoundBorder(this.getBorder(), BorderFactory.createEmptyBorder(0, 1, 0, 1)));
+//		((JTextField) this.getEditor().getEditorComponent()).setBorder(
+//				BorderFactory.createCompoundBorder(this.getBorder(), BorderFactory.createEmptyBorder(0, 1, 0, 1)));
 	}
 
 	/**
@@ -99,12 +99,12 @@ public class JComboBoxMW<T> extends WebComboBox implements MouseWheelListener {
 		this.wide = wide;
 	}
 
-	public Dimension getSize() {
-		Dimension dim = super.getSize();
-		if (!layingOut && isWide())
-
-			dim.width = Math.min(dim.width, Toolkit.getDefaultToolkit().getScreenSize().width);
-		return dim;
-	}
+//	public Dimension getSize() {
+//		Dimension dim = super.getSize();
+//		if (!layingOut && isWide())
+//
+//			dim.width = Math.min(dim.width, Toolkit.getDefaultToolkit().getScreenSize().width);
+//		return dim;
+//	}
 
 }

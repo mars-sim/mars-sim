@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -57,6 +58,10 @@ implements Serializable, Comparable<Task> {
 	private static final double JOB_STRESS_MODIFIER = .5D; 
 	// if that task is an a.i. task within a person's job, then the stress effect is 1/2
 	private static final double SKILL_STRESS_MODIFIER = .1D;
+
+    public static final int FIRST_ITEM_RESOURCE = ResourceUtil.FIRST_ITEM_RESOURCE;
+
+    public static final int FIRST_EQUIPMENT_RESOURCE = ResourceUtil.FIRST_EQUIPMENT_RESOURCE;
 
 	// Data members
 

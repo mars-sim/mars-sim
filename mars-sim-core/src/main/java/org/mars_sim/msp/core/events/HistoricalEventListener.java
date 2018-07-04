@@ -22,6 +22,15 @@ public interface HistoricalEventListener {
 	public void eventAdded(int index, HistoricalEvent event);
 
 	/**
+	 * A new event has been added at the specified manager.
+	 *
+	 * @param index Index of new event in the manager.
+	 * @param event The new event added.
+	 */
+	public void eventAdded(int index, SimpleEvent event);
+
+	
+	/**
 	 * A consecutive sequence of events have been removed from the manager.
 	 *
 	 * @param startIndex First exclusive index of the event to be removed.

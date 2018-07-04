@@ -36,7 +36,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
@@ -539,19 +541,19 @@ class ConstructionProjectPanel extends WizardPanel {
         Inventory inv = settlement.getInventory();
 
         // Check amount resources.
-        Iterator<AmountResource> i = stageInfo.getResources().keySet()
+        Iterator<Integer> i = stageInfo.getResources().keySet()
                 .iterator();
         while (i.hasNext()) {
-            AmountResource resource = i.next();
+        	Integer resource = i.next();
             double amount = stageInfo.getResources().get(resource);
             if (inv.getAmountResourceStored(resource, false) < amount)
                 result = false;
         }
 
         // Check parts.
-        Iterator<Part> j = stageInfo.getParts().keySet().iterator();
+        Iterator<Integer> j = stageInfo.getParts().keySet().iterator();
         while (j.hasNext()) {
-            Part part = j.next();
+        	Integer part = j.next();
             int number = stageInfo.getParts().get(part);
             if (inv.getItemResourceNum(part) < number)
                 result = false;
@@ -576,10 +578,10 @@ class ConstructionProjectPanel extends WizardPanel {
         if (stage != null) {
         
             // Check amount resources.
-            Iterator<AmountResource> i = stage.getRemainingResources().keySet()
+            Iterator<Integer> i = stage.getRemainingResources().keySet()
                     .iterator();
             while (i.hasNext()) {
-                AmountResource resource = i.next();
+            	Integer resource = i.next();
                 double amount = stage.getRemainingResources().get(resource);
                 if (inv.getAmountResourceStored(resource, false) < amount) {
                     result = false;
@@ -587,9 +589,9 @@ class ConstructionProjectPanel extends WizardPanel {
             }
 
             // Check parts.
-            Iterator<Part> j = stage.getRemainingParts().keySet().iterator();
+            Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
             while (j.hasNext()) {
-                Part part = j.next();
+            	Integer part = j.next();
                 int number = stage.getRemainingParts().get(part);
                 if (inv.getItemResourceNum(part) < number) {
                     result = false;
@@ -620,23 +622,23 @@ class ConstructionProjectPanel extends WizardPanel {
             result = false;
 
         // Check for LUV attachment parts.
-        Map<Part, Integer> attachmentParts = new HashMap<Part, Integer>();
+        Map<Integer, Integer> attachmentParts = new HashMap<Integer, Integer>();
         Iterator<ConstructionVehicleType> k = stageInfo.getVehicles()
                 .iterator();
         while (k.hasNext()) {
             ConstructionVehicleType vehicleType = k.next();
-            Iterator<Part> l = vehicleType.getAttachmentParts().iterator();
+            Iterator<Integer> l = vehicleType.getAttachmentParts().iterator();
             while (l.hasNext()) {
-                Part part = l.next();
+            	Integer part = l.next();
                 int partNum = 1;
                 if (attachmentParts.containsKey(part))
                     partNum += attachmentParts.get(part);
                 attachmentParts.put(part, partNum);
             }
         }
-        Iterator<Part> m = attachmentParts.keySet().iterator();
+        Iterator<Integer> m = attachmentParts.keySet().iterator();
         while (m.hasNext()) {
-            Part part = m.next();
+        	Integer part = m.next();
             int number = attachmentParts.get(part);
             if (inv.getItemResourceNum(part) < number)
                 result = false;
@@ -736,51 +738,52 @@ class ConstructionProjectPanel extends WizardPanel {
                         ConstructionStage stage = site.getCurrentConstructionStage();
                         
                         // Add resources.
-                        Iterator<AmountResource> i = stage.getRemainingResources().keySet()
+                        Iterator<Integer> i = stage.getRemainingResources().keySet()
                                 .iterator();
                         while (i.hasNext()) {
-                            AmountResource resource = i.next();
+                        	Integer resource = i.next();
                             double amountRequired = info.getResources().get(
                                     resource);
                             double amountAvailable = inv.getAmountResourceStored(
                                     resource, false);
-                            materialsList.add(new ConstructionMaterial(resource
-                                    .getName(), (int) amountRequired,
+                            materialsList.add(new ConstructionMaterial(
+                            		ResourceUtil.findAmountResource(resource).getName(), (int) amountRequired,
                                     (int) amountAvailable, false));
                         }
                         
                         // Add parts.
-                        Iterator<Part> j = stage.getRemainingParts().keySet().iterator();
+                        Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
                         while (j.hasNext()) {
-                            Part part = j.next();
+                        	Integer part = j.next();
                             int numRequired = info.getParts().get(part);
                             int numAvailable = inv.getItemResourceNum(part);
-                            materialsList.add(new ConstructionMaterial(part
-                                    .getName(), numRequired, numAvailable, false));
+                            materialsList.add(new ConstructionMaterial(
+                            		ItemResourceUtil.findItemResource(part).getName(), 
+                            		numRequired, numAvailable, false));
                         }
 
                         // Add vehicle attachment parts.
-                        Map<Part, Integer> attachmentParts = new HashMap<Part, Integer>();
+                        Map<Integer, Integer> attachmentParts = new HashMap<Integer, Integer>();
                         Iterator<ConstructionVehicleType> k = info.getVehicles()
                                 .iterator();
                         while (k.hasNext()) {
                             ConstructionVehicleType vehicleType = k.next();
-                            Iterator<Part> l = vehicleType.getAttachmentParts()
+                            Iterator<Integer> l = vehicleType.getAttachmentParts()
                                     .iterator();
                             while (l.hasNext()) {
-                                Part part = l.next();
+                            	Integer part = l.next();
                                 int partNum = 1;
                                 if (attachmentParts.containsKey(part))
                                     partNum += attachmentParts.get(part);
                                 attachmentParts.put(part, partNum);
                             }
                         }
-                        Iterator<Part> m = attachmentParts.keySet().iterator();
+                        Iterator<Integer> m = attachmentParts.keySet().iterator();
                         while (m.hasNext()) {
-                            Part part = m.next();
+                        	Integer part = m.next();
                             int numRequired = attachmentParts.get(part);
                             int numAvailable = inv.getItemResourceNum(part);
-                            materialsList.add(new ConstructionMaterial(part
+                            materialsList.add(new ConstructionMaterial(ItemResourceUtil.findItemResource(part)
                                     .getName(), numRequired, numAvailable, true));
                         }
 
@@ -799,51 +802,51 @@ class ConstructionProjectPanel extends WizardPanel {
                 else {
                     try {
                         // Add resources.
-                        Iterator<AmountResource> i = info.getResources().keySet()
+                        Iterator<Integer> i = info.getResources().keySet()
                                 .iterator();
                         while (i.hasNext()) {
-                            AmountResource resource = i.next();
+                        	Integer resource = i.next();
                             double amountRequired = info.getResources().get(
                                     resource);
                             double amountAvailable = inv.getAmountResourceStored(
                                     resource, false);
-                            materialsList.add(new ConstructionMaterial(resource
+                            materialsList.add(new ConstructionMaterial(ResourceUtil.findAmountResource(resource)
                                     .getName(), (int) amountRequired,
                                     (int) amountAvailable, false));
                         }
 
                         // Add parts.
-                        Iterator<Part> j = info.getParts().keySet().iterator();
+                        Iterator<Integer> j = info.getParts().keySet().iterator();
                         while (j.hasNext()) {
-                            Part part = j.next();
+                        	Integer part = j.next();
                             int numRequired = info.getParts().get(part);
                             int numAvailable = inv.getItemResourceNum(part);
-                            materialsList.add(new ConstructionMaterial(part
+                            materialsList.add(new ConstructionMaterial(ItemResourceUtil.findItemResource(part)
                                     .getName(), numRequired, numAvailable, false));
                         }
 
                         // Add vehicle attachment parts.
-                        Map<Part, Integer> attachmentParts = new HashMap<Part, Integer>();
+                        Map<Integer, Integer> attachmentParts = new HashMap<Integer, Integer>();
                         Iterator<ConstructionVehicleType> k = info.getVehicles()
                                 .iterator();
                         while (k.hasNext()) {
                             ConstructionVehicleType vehicleType = k.next();
-                            Iterator<Part> l = vehicleType.getAttachmentParts()
+                            Iterator<Integer> l = vehicleType.getAttachmentParts()
                                     .iterator();
                             while (l.hasNext()) {
-                                Part part = l.next();
+                            	Integer part = l.next();
                                 int partNum = 1;
                                 if (attachmentParts.containsKey(part))
                                     partNum += attachmentParts.get(part);
                                 attachmentParts.put(part, partNum);
                             }
                         }
-                        Iterator<Part> m = attachmentParts.keySet().iterator();
+                        Iterator<Integer> m = attachmentParts.keySet().iterator();
                         while (m.hasNext()) {
-                            Part part = m.next();
+                        	Integer part = m.next();
                             int numRequired = attachmentParts.get(part);
                             int numAvailable = inv.getItemResourceNum(part);
-                            materialsList.add(new ConstructionMaterial(part
+                            materialsList.add(new ConstructionMaterial(ItemResourceUtil.findItemResource(part)
                                     .getName(), numRequired, numAvailable, true));
                         }
 

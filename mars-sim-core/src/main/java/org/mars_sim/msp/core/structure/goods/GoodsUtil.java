@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -64,11 +65,6 @@ public class GoodsUtil {
 		goodsList = null;
 	}
 
-	/**
-	 * Gets a good object for a given resource.
-	 * @param resource the resource.
-	 * @return good for the resource.
-	 */
 	public static Good getResourceGood(Resource resource) {
 		if (resource == null) {
 			throw new IllegalArgumentException("resource cannot be null");
@@ -77,6 +73,30 @@ public class GoodsUtil {
 		if (resource instanceof AmountResource) category = GoodType.AMOUNT_RESOURCE;
 		else if (resource instanceof ItemResource) category = GoodType.ITEM_RESOURCE;
 		return new Good(resource.getName(), resource, category);
+	}
+	
+	/**
+	 * Gets a good object for a given resource.
+	 * @param resource the resource.
+	 * @return good for the resource.
+	 */
+	public static Good getResourceGood(int resource) {
+//		if (resource == null) {
+//			throw new IllegalArgumentException("resource cannot be null");
+//		}
+		GoodType category = null;
+		if (resource < ResourceUtil.FIRST_ITEM_RESOURCE) {
+			category = GoodType.AMOUNT_RESOURCE;
+			AmountResource ar = ResourceUtil.findAmountResource(resource);
+			return new Good(ar.getName(), ar, category);
+		}
+		else if (resource >= ResourceUtil.FIRST_ITEM_RESOURCE) {
+			Part p = ItemResourceUtil.findItemResource(resource);
+			category = GoodType.ITEM_RESOURCE;
+			return new Good(p.getName(), p, category);
+		}
+
+		return null;
 	}
 
 	/**
@@ -100,6 +120,11 @@ public class GoodsUtil {
 		return result;
 	}
 
+	public static Good getEquipmentGood(int e) {
+//		Class<? extends Unit> equipmentClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(e).getName());
+		return getEquipmentGood(EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(e).getName()));
+	}
+	
 	/**
 	 * Gets a good object for the given vehicle type.
 	 * @param vehicleType the vehicle type string.
@@ -152,6 +177,7 @@ public class GoodsUtil {
 	 * Populates the goods list with all amount resources.
 	 */
 	private static void populateAmountResources() {
+//		Iterator<Integer> i = ResourceUtil.getInstance().getARIDs().iterator();
 		Iterator<AmountResource> i = ResourceUtil.getInstance().getAmountResources().iterator();
 		while (i.hasNext()) goodsList.add(getResourceGood(i.next()));
 	}
@@ -160,8 +186,8 @@ public class GoodsUtil {
 	 * Populates the goods list with all item resources.
 	 */
 	private static void populateItemResources() {
+//		Iterator<Integer> i = ItemResourceUtil.getItemIDs().iterator();
 		Iterator<Part> i = ItemResourceUtil.getItemResources().iterator();
-		//Iterator<ItemResource> i = ItemResource.getItemResources().iterator();
 		while (i.hasNext()) goodsList.add(getResourceGood(i.next()));
 	}
 

@@ -18,7 +18,9 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -188,10 +190,11 @@ public final class FoodProductionUtil {
 
         if (item.getType().equals(ItemType.AMOUNT_RESOURCE)) {
             AmountResource resource = AmountResource.findAmountResource(item.getName());
+//            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
             double amount = item.getAmount();
             if (isOutput) {
                 double remainingCapacity = settlement.getInventory().getAmountResourceRemainingCapacity(
-                        resource, true, false);
+                		resource, true, false);
                 if (amount > remainingCapacity) {
                     amount = remainingCapacity;
                 }
@@ -201,6 +204,7 @@ public final class FoodProductionUtil {
         }
         else if (item.getType().equals(ItemType.PART)) {
             ItemResource resource = ItemResource.findItemResource(item.getName());
+//            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
             Good good = GoodsUtil.getResourceGood(resource);
             result = manager.getGoodValuePerItem(good) * item.getAmount();
         }
@@ -368,10 +372,12 @@ public final class FoodProductionUtil {
         Good result = null;
         if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
             AmountResource resource = AmountResource.findAmountResource(item.getName());
+//            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
             result = GoodsUtil.getResourceGood(resource);
         }
         else if (ItemType.PART.equals(item.getType())) {
             Part part = (Part) ItemResource.findItemResource(item.getName());
+//            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
             result = GoodsUtil.getResourceGood(part);
         }
         else if (ItemType.EQUIPMENT.equals(item.getType())) {

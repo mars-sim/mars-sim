@@ -6,17 +6,21 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import java.awt.*;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.text.WebTextArea;
 
 
 /**
@@ -34,7 +38,7 @@ extends BuildingFunctionPanel {
 	/** The number of researchers cache. */
 	private int researchersCache;
 
-	private JLabel researchersLabel;
+	private WebLabel researchersLabel;
 
 	/**
 	 * Constructor.
@@ -53,7 +57,7 @@ extends BuildingFunctionPanel {
 		setLayout(new BorderLayout());
 
 		// Prepare label panel
-		JPanel labelPanel = new JPanel(new GridLayout(4, 1, 0, 0));
+		WebPanel labelPanel = new WebPanel(new GridLayout(4, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
@@ -61,38 +65,38 @@ extends BuildingFunctionPanel {
 		// Prepare research label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for the three labels
-		JLabel researchLabel = new JLabel(Msg.getString("BuildingPanelResearch.title"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel researchLabel = new WebLabel(Msg.getString("BuildingPanelResearch.title"), WebLabel.CENTER); //$NON-NLS-1$
 		researchLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//researchLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(researchLabel);
 
 		// Prepare researcher number label
 		researchersCache = lab.getResearcherNum();
-		researchersLabel = new JLabel(Msg.getString("BuildingPanelResearch.numberOfResearchers", researchersCache), JLabel.CENTER);
+		researchersLabel = new WebLabel(Msg.getString("BuildingPanelResearch.numberOfResearchers", researchersCache), WebLabel.CENTER);
 		labelPanel.add(researchersLabel);
 
 		// Prepare researcher capacityLabel
-		JLabel researcherCapacityLabel = new JLabel(Msg.getString("BuildingPanelResearch.researcherCapacity",
+		WebLabel researcherCapacityLabel = new WebLabel(Msg.getString("BuildingPanelResearch.researcherCapacity",
 				lab.getLaboratorySize()),
-				JLabel.CENTER);
+				WebLabel.CENTER);
 		labelPanel.add(researcherCapacityLabel);
 
 		// Prepare specialties label
-		JLabel specialtiesLabel = new JLabel(Msg.getString("BuildingPanelResearch.namesOfSpecialties"), JLabel.CENTER);
+		WebLabel specialtiesLabel = new WebLabel(Msg.getString("BuildingPanelResearch.namesOfSpecialties"), WebLabel.CENTER);
 		labelPanel.add(specialtiesLabel);
 
 		// Get the research specialties of the building.
 		ScienceType[] specialties = lab.getTechSpecialties();
 		int size = specialties.length;
 		// Prepare specialtiesListPanel
-		//JPanel specialtiesListPanel = new JPanel(new GridLayout(specialties.length, 1, 10, 3));
+		//WebPanel specialtiesListPanel = new WebPanel(new GridLayout(specialties.length, 1, 10, 3));
 		//specialtiesListPanel.setBorder(new EmptyBorder(1, 20, 1, 20)); //(int top, int left, int bottom, int right)
 		//specialtiesListPanel.setOpaque(false);
 		//specialtiesListPanel.setBackground(new Color(0,0,0,128));
 
 		//add(specialtiesListPanel, BorderLayout.CENTER);
 
-		JTextArea specialtyTA = new JTextArea();
+		WebTextArea specialtyTA = new WebTextArea();
 		//JTextPane specialtyTA = new JTextPane();
 		//StyledDocument doc = specialtyTA.getStyledDocument();
 		//SimpleAttributeSet center = new SimpleAttributeSet();
@@ -107,7 +111,7 @@ extends BuildingFunctionPanel {
 
 		// For each specialty, add specialty name panel.
 		for (ScienceType specialty : specialties) {
-			//JLabel specialtyLabel = new JLabel(specialty.getName(), JLabel.CENTER);
+			//WebLabel specialtyLabel = new WebLabel(specialty.getName(), WebLabel.CENTER);
 			//specialtyLabel.setFont(new Font("SansSerif", Font.ITALIC, 10));
 			//specialtyLabel.setForeground(Color.DARK_GRAY);
 			//specialtyLabel.setBackground(Color.WHITE);
@@ -121,7 +125,7 @@ extends BuildingFunctionPanel {
 		}
 
 
-		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		//listPanel.add(specialtiesListPanel);
 		//specialtiesListPanel.setBorder(new MarsPanelBorder());
 

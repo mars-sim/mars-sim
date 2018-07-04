@@ -966,6 +966,16 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
 		this.walk = walk;
 	}
 
+	@Override
+	public Settlement getBuriedSettlement() {
+		return this.getAssociatedSettlement();
+	}
+	
+	@Override
+	public Unit getUnit() {
+		return this;
+	}
+	
     @Override
     public void destroy() {
         super.destroy();
@@ -986,9 +996,4 @@ implements Salvagable, Malfunctionable, MissionMember, Serializable {
         //scientificAchievement.clear();
         //scientificAchievement = null;
     }
-
-	@Override
-	public Settlement getBuriedSettlement() {
-		return this.getAssociatedSettlement();
-	}
 }

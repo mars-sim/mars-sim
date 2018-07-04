@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.equipment.BuildingKit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
@@ -37,6 +36,7 @@ import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.robot.Robot;
@@ -99,7 +99,7 @@ implements Serializable {
 	/** The current malfunctions in the unit. */
 	private Collection<Malfunction> malfunctions;
 	/** The parts currently needed to maintain this entity. */
-	private Map<Part, Integer> partsNeededForMaintenance;
+	private Map<Integer, Integer> partsNeededForMaintenance;
 	/** The number of malfunctions the entity has had so far. */
 	private int numberMalfunctions;
 	/** The number of times the entity has been maintained so far. */
@@ -416,23 +416,43 @@ implements Serializable {
 				if (!malfunctionName.contains("Meteorite")) {
 					// if it has nothing to do with meteorite impact
 					
-//					String object = entity.getImmediateLocation();
+					String loc0 = null;
+					String loc1 = null;
 //					
 //					if (entity instanceof Vehicle
 //						|| entity instanceof EVASuit	
 //						|| entity instanceof Building
 //						|| entity instanceof Robot
 //						|| entity instanceof BuildingKit)
+					
 					String object = entity.getNickName();
 
+					if (entity.getUnit() instanceof Vehicle) {
+						loc0 = entity.getNickName();
+						loc1 = entity.getLocale();
+					}
+					
+					else if (object.toLowerCase().contains("eva")) {
+//						Unit unit = entity.getUnit();
+//						EVASuit suit = (EVASuit)entity.getUnit();
+						loc0 = entity.getImmediateLocation();//((EVASuit)entity).getQuickLocatin();
+						loc1 = ((EVASuit)entity.getUnit()).getSettlement().getName();					
+					}			
+					
+					else {
+						loc0 = entity.getImmediateLocation();
+						loc1 = entity.getLocale();
+					}
+					
 					if (actor == null) {
 						HistoricalEvent newEvent = new MalfunctionEvent(
 							EventType.MALFUNCTION_PARTS_FAILURE,
 							malfunction,
 							malfunctionName + " on " + object,
 							"Part Fatigue", // in the who field
-							entity.getImmediateLocation(),
-							entity.getLocale());
+							loc0,
+							loc1
+							);
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
 		        			malfunction.getName() + " detected due to Parts Fatigue in " + entity.getLocale(), null);
@@ -443,8 +463,9 @@ implements Serializable {
 								malfunction,
 								malfunctionName + " on " + object,
 								offender,
-								entity.getImmediateLocation(),
-								entity.getLocale());
+								loc0,
+								loc1
+								);
 							Simulation.instance().getEventManager().registerNewEvent(newEvent);
 							LogConsolidated.log(logger, Level.INFO, 0, sourceName, offender + " may have to do with "
 			        			+ malfunction.getName() + " due to Human Factors in " + entity.getLocale(), null);
@@ -472,17 +493,18 @@ implements Serializable {
 				return;
 			
 			 // Register the failure of the Parts involved
-			 Map<Part,Integer> parts = malfunction.getRepairParts();
-			 Set<Part> partSet = parts.keySet();
+			 Map<Integer, Integer> parts = malfunction.getRepairParts();
+			 Set<Integer> partSet = parts.keySet();
 
-			 for (Part p : partSet) {
+			 for (Integer p : partSet) {
 				 int num = parts.get(p);	 
 //			 }
 			
 			 // Compute the new reliability and failure rate for this malfunction
 //			 for (Part p : partSet) {
-				 int id = p.getID();
-				 String part_name = p.getName();
+				 int id = p;//.getID();
+				 Part part = ItemResourceUtil.findItemResource(p);
+				 String part_name = part.getName();
 				 
 				 if (part_name.equalsIgnoreCase("decontamination kit") 
 						 || part_name.equalsIgnoreCase("airleak patch") 
@@ -500,14 +522,14 @@ implements Serializable {
 				 // Increment the number of failure for this Part
 				 partConfig.setFailure(p, num);
 				 // Recompute the reliability of this Part
-				 partConfig.computeReliability(p);
+				 partConfig.computeReliability(part);
 	 
 				 //String name = p.getName();			 
 				 double new_rel = partConfig.getReliability(id);			 
 				 double new_prob = malfunctionConfig.getRepairPartProbability(malfunction.getName(), part_name);
 				 double new_rate =  (100-new_rel) * new_prob/100D;
 				 double new_mal_prob_failure = 0;
-				 logger.info("Updating field reliability data for the part '" + p.getName() + "' as follows :");
+				 logger.info("Updating field reliability data for the part '" + part_name + "' as follows :");
 				 logger.info("(1). Reliability: " + Math.round(old_rel*1000.0)/1000.0  + " % --> "
 						 + Math.round(new_rel*1000.0)/1000.0  + " %" );
 //				 logger.info("(2). Part Needed Probability: " + Math.round(old_prob*1000.0)/1000.0 + " % --> "
@@ -705,10 +727,10 @@ implements Serializable {
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
 				if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
-					Map<AmountResource, Double> effects = malfunction.getResourceEffects();
-					Iterator<AmountResource> i2 = effects.keySet().iterator();
+					Map<Integer, Double> effects = malfunction.getResourceEffects();
+					Iterator<Integer> i2 = effects.keySet().iterator();
 					while (i2.hasNext()) {
-						AmountResource resource = i2.next();
+						Integer resource = i2.next();
 						double amount = effects.get(resource);
 						double amountDepleted = amount * time;
 						Inventory inv = entity.getInventory();
@@ -1020,20 +1042,22 @@ implements Serializable {
 	 * Determines a new set of required maintenance parts.
 	 */
 	private void determineNewMaintenanceParts() {
-		if (partsNeededForMaintenance == null) partsNeededForMaintenance = new HashMap<Part, Integer>();
+		if (partsNeededForMaintenance == null) partsNeededForMaintenance = new HashMap<>();
 		partsNeededForMaintenance.clear();
 
 		Iterator<String> i = scopes.iterator();
 		while (i.hasNext()) {
 			String entity = i.next();
-			Iterator<Part> j = Part.getParts().iterator();
+			Iterator<Integer> j = Part.getItemIDs().iterator();
 			while (j.hasNext()) {
-				Part part = j.next();
+				Integer id = j.next();
+				Part part = ItemResourceUtil.findItemResource(id);
 				if (part.hasMaintenanceEntity(entity)) {
 					if (RandomUtil.lessThanRandPercent(part.getMaintenanceProbability(entity))) {
 						int number = RandomUtil.getRandomRegressionInteger(part.getMaintenanceMaximumNumber(entity));
-						if (partsNeededForMaintenance.containsKey(part)) number += partsNeededForMaintenance.get(part);
-						partsNeededForMaintenance.put(part, number);
+						if (partsNeededForMaintenance.containsKey(id)) 
+							number += partsNeededForMaintenance.get(id);
+						partsNeededForMaintenance.put(id, number);
 					}
 				}
 			}
@@ -1044,9 +1068,9 @@ implements Serializable {
 	 * Gets the parts needed for maintenance on this entity.
 	 * @return map of parts and their number.
 	 */
-	public Map<Part, Integer> getMaintenanceParts() {
-		if (partsNeededForMaintenance == null) partsNeededForMaintenance = new HashMap<Part, Integer>();
-		return new HashMap<Part, Integer>(partsNeededForMaintenance);
+	public Map<Integer, Integer> getMaintenanceParts() {
+		if (partsNeededForMaintenance == null) partsNeededForMaintenance = new HashMap<>();
+		return new HashMap<>(partsNeededForMaintenance);
 	}
 
 	/**
@@ -1054,7 +1078,7 @@ implements Serializable {
 	 * @param part the part.
 	 * @param number the number used.
 	 */
-	public void maintainWithParts(Part part, int number) {
+	public void maintainWithParts(Integer part, int number) {
 		if (part == null) throw new IllegalArgumentException("part is null");
 		if (partsNeededForMaintenance.containsKey(part)) {
 			int numberNeeded = partsNeededForMaintenance.get(part);
@@ -1074,12 +1098,12 @@ implements Serializable {
 	 * @return maps of parts and probable number of parts needed per malfunction.
 	 * @throws Exception if error finding probabilities.
 	 */
-	public Map<Part, Double> getRepairPartProbabilities() {
+	public Map<Integer, Double> getRepairPartProbabilities() {
 		//MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		return factory.getRepairPartProbabilities(scopes);
 	}
 
-	public Map<Part, Double> getMaintenancePartProbabilities() {
+	public Map<Integer, Double> getMaintenancePartProbabilities() {
 		//MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		return factory.getMaintenancePartProbabilities(scopes);
 	}

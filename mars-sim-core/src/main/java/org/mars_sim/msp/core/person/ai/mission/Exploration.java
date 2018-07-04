@@ -22,7 +22,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.equipment.Equipment;
+
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.Mars;
@@ -35,8 +36,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ExploreSite;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Resource;
+
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -91,10 +91,14 @@ implements Serializable {
 	private boolean endExploringSite;
 
 	// Static members
-	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	private static AmountResource waterAR = ResourceUtil.waterAR;
-	private static AmountResource foodAR = ResourceUtil.foodAR;
-	
+//	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+//	private static AmountResource waterAR = ResourceUtil.waterAR;
+//	private static AmountResource foodAR = ResourceUtil.foodAR;
+
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+	private static int foodID = ResourceUtil.foodID;
+
 	private static PersonConfig personConfig;
 
     /**
@@ -525,9 +529,9 @@ implements Serializable {
     }
 
     @Override
-    public Map<Resource, Number> getResourcesNeededForRemainingMission(
+    public Map<Integer, Number> getResourcesNeededForRemainingMission(
             boolean useBuffer) {
-        Map<Resource, Number> result = super
+        Map<Integer, Number> result = super
                 .getResourcesNeededForRemainingMission(useBuffer);
 
         double explorationSitesTime = getEstimatedRemainingExplorationSiteTime();
@@ -539,23 +543,23 @@ implements Serializable {
         //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()// * Mission.OXYGEN_MARGIN
                 * timeSols * crewNum;
-        if (result.containsKey(oxygenAR))
-            oxygenAmount += (Double) result.get(oxygenAR);
-        result.put(oxygenAR, oxygenAmount);
+        if (result.containsKey(oxygenID))
+            oxygenAmount += (Double) result.get(oxygenID);
+        result.put(oxygenID, oxygenAmount);
 
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterAmount = PhysicalCondition.getWaterConsumptionRate()// * Mission.WATER_MARGIN
                 * timeSols * crewNum;
-        if (result.containsKey(waterAR))
-            waterAmount += (Double) result.get(waterAR);
-        result.put(waterAR, waterAmount);
+        if (result.containsKey(waterID))
+            waterAmount += (Double) result.get(waterID);
+        result.put(waterID, waterAmount);
 
        // AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         double foodAmount = PhysicalCondition.getFoodConsumptionRate()// * Mission.FOOD_MARGIN
                 * timeSols * crewNum;
-        if (result.containsKey(foodAR))
-            foodAmount += (Double) result.get(foodAR);
-        result.put(foodAR, foodAmount);
+        if (result.containsKey(foodID))
+            foodAmount += (Double) result.get(foodID);
+        result.put(foodID, foodAmount);
 
         /*
         // 2015-01-04 Added Soymilk
@@ -621,15 +625,15 @@ implements Serializable {
     }
 
     @Override
-    public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
+    public Map<Integer, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
         if (equipmentNeededCache != null)
             return equipmentNeededCache;
         else {
-            Map<Class<? extends Equipment>, Integer> result = new HashMap<>();
+            Map<Integer, Integer> result = new HashMap<>();
 
             // Include required number of specimen containers.
-            result.put(SpecimenContainer.class, REQUIRED_SPECIMEN_CONTAINERS);
+            result.put(EquipmentType.str2int(SpecimenContainer.TYPE), REQUIRED_SPECIMEN_CONTAINERS);
 
             equipmentNeededCache = result;
             return result;
@@ -654,7 +658,7 @@ implements Serializable {
 
         // Check food capacity as time limit.
         double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-        double foodCapacity = vInv.getAmountResourceCapacity(foodAR, false);
+        double foodCapacity = vInv.getARCapacity(foodID, false);
         double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
         if (foodTimeLimit < timeLimit)
             timeLimit = foodTimeLimit;
@@ -670,7 +674,7 @@ implements Serializable {
 */
         // Check water capacity as time limit.
         double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-        double waterCapacity = vInv.getAmountResourceCapacity(waterAR, false);
+        double waterCapacity = vInv.getARCapacity(waterID, false);
         double waterTimeLimit = waterCapacity
                 / (waterConsumptionRate * memberNum);
         if (waterTimeLimit < timeLimit)
@@ -678,7 +682,7 @@ implements Serializable {
 
         // Check oxygen capacity as time limit.
         double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-        double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenAR, false);
+        double oxygenCapacity = vInv.getARCapacity(oxygenID, false);
         double oxygenTimeLimit = oxygenCapacity
                 / (oxygenConsumptionRate * memberNum);
         if (oxygenTimeLimit < timeLimit)

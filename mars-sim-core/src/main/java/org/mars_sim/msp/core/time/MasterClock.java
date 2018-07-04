@@ -89,7 +89,6 @@ public class MasterClock implements Serializable {
 	/** A list of clock listener tasks. */
 	private transient List<ClockListenerTask> clockListenerTasks =  new CopyOnWriteArrayList<>();
 
-
 	/** The martian Clock. */
 	private MarsClock marsTime;
 	/** A copy of the initial martian clock at the start of the sim. */
@@ -102,9 +101,6 @@ public class MasterClock implements Serializable {
 	private transient volatile File file;
 	/** The thread for running the game loop. */
 	private ClockThreadTask clockThreadTask;
-
-	//private transient ThreadPoolExecutor clockListenerExecutor;
-	
 	/** The thread for running the clock listeners. */
 	private transient ExecutorService clockListenerExecutor;
 	// Note: ExecutorService may not stop after the program exits.

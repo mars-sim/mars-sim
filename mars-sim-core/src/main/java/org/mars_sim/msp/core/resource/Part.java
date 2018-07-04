@@ -26,6 +26,7 @@ public class Part extends ItemResource {
     /**
      * Constructor.
      * @param name the name of the part.
+     * @param id the id# of the part
      * @param description {@link String}
      * @param mass the mass of the part (kg)
      * @param the sol when this part is put to use
@@ -111,24 +112,34 @@ public class Part extends ItemResource {
      * @return set of parts.
      */
     public static Set<Part> getParts() {
-        Set<Part> result = new HashSet<Part>();
-
-        Iterator<Part> i = ItemResourceUtil.getItemResources().iterator();
-        while (i.hasNext()) {
-            ItemResource resource = i.next();
-            if (resource instanceof Part) {
-                result.add((Part) resource);
-            }
-        }
-        
-/*
-        Iterator<Part> i = ItemResource.getItemResources().iterator();
-        while (i.hasNext()) {
-            Part p = i.next();
-            result.add(p);
-        }
-*/        
-        return result;
+    	return ItemResourceUtil.getItemResources();
+    }
+    	
+    /**
+     * Gets a set of all parts.
+     * @return set of parts.
+     */
+    public static Set<Integer> getItemIDs() {
+    	return ItemResourceUtil.getItemIDs();
+//    			
+//        Set<Integer> result = new HashSet<>();
+//
+//        Iterator<Integer> i = ItemResourceUtil.getItemIDs().iterator();
+//        while (i.hasNext()) {
+//        	Integer resource = i.next();
+////            if (resource instanceof Part) {
+//                result.add(resource);
+////            }
+//        }
+//        
+///*
+//        Iterator<Part> i = ItemResource.getItemResources().iterator();
+//        while (i.hasNext()) {
+//            Part p = i.next();
+//            result.add(p);
+//        }
+//*/        
+//        return result;
     }
 
 

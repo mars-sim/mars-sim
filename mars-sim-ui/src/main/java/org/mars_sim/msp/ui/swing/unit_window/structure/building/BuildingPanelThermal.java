@@ -10,14 +10,14 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 
-import javax.swing.JLabel;
-
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.structure.building.Building;
+
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import com.alee.laf.label.WebLabel;
 
 /**
  * The BuildingPanelThermal class is a building function panel representing 
@@ -33,11 +33,11 @@ extends BuildingFunctionPanel {
 	/** Is the building a heat producer? */
 	private boolean hasFurnace;
 	/** The heat status label. */
-	private JLabel heatStatusLabel;
+	private WebLabel heatStatusLabel;
 	/** The heat production label. */
-	private JLabel productionLabel;
+	private WebLabel productionLabel;
 	/** The heat used label. */
-	//private JLabel usedLabel;
+	//private WebLabel usedLabel;
 	/** Decimal formatter. */
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("BuildingPanelThermal.decimalFormat")); //$NON-NLS-1$
 
@@ -76,25 +76,25 @@ extends BuildingFunctionPanel {
 			 setLayout(new GridLayout(3, 1, 0, 0));
 			
 			// 2014-11-21 Changed font type, size and color and label text
-			JLabel titleLabel = new JLabel(
+			WebLabel titleLabel = new WebLabel(
 					Msg.getString("BuildingPanelThermal.title"), //$NON-NLS-1$
-					JLabel.CENTER);		
+					WebLabel.CENTER);		
 			titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 			//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 			add(titleLabel);
 			
 			// Prepare heat status label.
 			heatStatusCache = building.getHeatMode();
-			heatStatusLabel = new JLabel(
+			heatStatusLabel = new WebLabel(
 				Msg.getString("BuildingPanelThermal.heatStatus", heatStatusCache.getName()), //$NON-NLS-1$
-				JLabel.CENTER
+				WebLabel.CENTER
 			);
 			add(heatStatusLabel);	
 				
 			productionCache = furnace.getGeneratedHeat();		
-			productionLabel = new JLabel(	
+			productionLabel = new WebLabel(	
 				Msg.getString("BuildingPanelThermal.heatProduced", formatter.format(productionCache)), //$NON-NLS-1$
-				JLabel.CENTER
+				WebLabel.CENTER
 			);
 			add(productionLabel);
 		}

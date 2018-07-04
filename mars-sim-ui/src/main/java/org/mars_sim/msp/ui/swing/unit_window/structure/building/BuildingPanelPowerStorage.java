@@ -12,9 +12,17 @@ import org.mars_sim.msp.core.structure.building.function.PowerStorage;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
-import javax.swing.*;
-import java.awt.*;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.text.WebTextField;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.text.DecimalFormat;
+
+import javax.swing.SpringLayout;
 
 /**
  * The PowerStorageBuildingPanel class is a building function panel representing 
@@ -26,11 +34,11 @@ extends BuildingFunctionPanel {
 	private static final String kWh = " kWh";
 	
 	// Data members
-	private JLabel storedLabel;
-	private JLabel capacityLabel;
+	private WebLabel storedLabel;
+	private WebLabel capacityLabel;
 	
-	private JTextField storedTF;
-	private JTextField capTF;
+	private WebTextField storedTF;
+	private WebTextField capTF;
 
 	private double capacityCache;
 	private double storedCache;
@@ -56,25 +64,25 @@ extends BuildingFunctionPanel {
 		setLayout(new BorderLayout());
 
 		// 2014-11-21 Changed font type, size and color and label text
-		JLabel titleLabel = new JLabel(
+		WebLabel titleLabel = new WebLabel(
 				Msg.getString("BuildingPanelPowerStorage.title"), //$NON-NLS-1$
-				JLabel.CENTER);		
+				WebLabel.CENTER);		
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		add(titleLabel, BorderLayout.NORTH);
 		
-		JPanel springPanel = new JPanel(new SpringLayout());
+		WebPanel springPanel = new WebPanel(new SpringLayout());
 		add(springPanel, BorderLayout.CENTER);
 		
 		// Create capacity label.
 		capacityCache = Math.round(storage.getCurrentMaxCapacity() *10.0)/10.0;;
-		capacityLabel = new JLabel(
+		capacityLabel = new WebLabel(
 				Msg.getString("BuildingPanelPowerStorage.cap"), //$NON-NLS-1$
-				JLabel.CENTER);		
+				WebLabel.CENTER);		
 		springPanel.add(capacityLabel);
 		
-		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		capTF = new JTextField(formatter.format(capacityCache) + kWh);
+		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		capTF = new WebTextField(formatter.format(capacityCache) + kWh);
 		capTF.setEditable(false);
 		capTF.setColumns(7);
 		capTF.setPreferredSize(new Dimension(120, 25));
@@ -83,13 +91,13 @@ extends BuildingFunctionPanel {
 		
 		// Create stored label.
 		storedCache = Math.round(storage.getkWattHourStored() *10.0)/10.0;;
-		storedLabel = new JLabel(
+		storedLabel = new WebLabel(
 				Msg.getString("BuildingPanelPowerStorage.stored"), //$NON-NLS-1$
-				JLabel.CENTER);
+				WebLabel.CENTER);
 		springPanel.add(storedLabel);
 		
-		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		storedTF = new JTextField(storedCache + kWh);
+		WebPanel wrapper2 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		storedTF = new WebTextField(storedCache + kWh);
 		storedTF.setEditable(false);
 		storedTF.setColumns(7);
 		storedTF.setPreferredSize(new Dimension(120, 25));

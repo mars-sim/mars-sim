@@ -40,7 +40,6 @@ import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -48,7 +47,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /** The Vehicle class represents a generic vehicle. It keeps track of
  *  generic information about the vehicle. This class needs to be
@@ -572,8 +570,8 @@ public abstract class Vehicle extends Unit implements
      * @throws Exception if error getting range.
      */
     public double getRange() {
-    	double fuelCapacity = getInventory().getAmountResourceCapacity(getFuelType(), false);
-        return fuelCapacity * drivetrainEfficiency * GoodsManager.SOFC_CONVERSION_EFFICIENCY / fuel_range_error_margin;      
+    	double fuelCapacity = getInventory().getARCapacity(getFuelType(), false);
+        return fuelCapacity * drivetrainEfficiency/100.0 * GoodsManager.SOFC_CONVERSION_EFFICIENCY / fuel_range_error_margin;      
     }
 
     /**
@@ -860,7 +858,7 @@ public abstract class Vehicle extends Unit implements
      * Gets the resource type that this vehicle uses for fuel.
      * @return resource type
      */
-    public abstract AmountResource getFuelType();
+    public abstract Integer getFuelType();
 
     /**
      * Gets the estimated distance traveled in one sol.
@@ -868,10 +866,9 @@ public abstract class Vehicle extends Unit implements
      */
     public double getEstimatedTravelDistancePerSol() {
     	// Get estimated average speed (km / hr).
-    	double estSpeed = baseSpeed / 2D;
-
+//    	double estSpeed = baseSpeed / 2D;
     	// Return estimated average speed in km / sol.
-    	return estSpeed / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
+    	return baseSpeed * 12; // 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
     }
 
     /**
@@ -970,6 +967,11 @@ public abstract class Vehicle extends Unit implements
     @Override
 	public Building getBuildingLocation() {
 		return this.getGarage();
+	}
+	
+	@Override
+	public Unit getUnit() {
+		return this;
 	}
 	
     @Override

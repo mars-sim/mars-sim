@@ -37,7 +37,7 @@ public class AmountResourceConfig implements Serializable {
 
 	private static final String CROP = "crop";
 
-	private static int resource_id = 0;
+	private static int nextID = 0;
 
 	// Data members.
 	private static Set<AmountResource> resourceSet;
@@ -64,7 +64,7 @@ public class AmountResourceConfig implements Serializable {
 		Element root = amountResourceDoc.getRootElement();
 		List<Element> resourceNodes = root.getChildren(RESOURCE);
 		for (Element resourceElement : resourceNodes) {
-			resource_id++;
+			nextID++;
 			// 2015-02-24 Added toLowerCase() just in case
 			String name = resourceElement.getAttributeValue(NAME).toLowerCase();
 			// 2016-06-28 Added type
@@ -83,12 +83,12 @@ public class AmountResourceConfig implements Serializable {
 			Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
 			// 2014-11-25 Added edible
 			
-			resourceSet.add(new AmountResource(resource_id, name, type, description, phaseType, lifeSupport, edible));
+			resourceSet.add(new AmountResource(nextID, name, type, description, phaseType, lifeSupport, edible));
 
 			if (type != null && type.toLowerCase().equals(CROP)) {
-				resource_id++;
+				nextID++;
 				// Create the tissue culture for each crop.
-				AmountResource tissue = new AmountResource(resource_id, name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phaseType, lifeSupport, false);
+				AmountResource tissue = new AmountResource(nextID, name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phaseType, lifeSupport, false);
 				tissueCultureSet.add(tissue);
 				resourceSet.add(tissue);
 				// TODO: may set edible to true
@@ -109,7 +109,10 @@ public class AmountResourceConfig implements Serializable {
 		return tissueCultureSet;
 	}
 
-
+	public int getNextID() {
+		return nextID;
+	}
+	
 	public void destroy() {
 		resourceSet = null;
 	}

@@ -36,8 +36,8 @@ public class ConstructionStageInfo implements Serializable {
     private double workTime;
     private int architectConstructionSkill;
     private String prerequisiteStage;
-    private Map<Part, Integer> parts;
-    private Map<AmountResource, Double> resources;
+    private Map<Integer, Integer> parts;
+    private Map<Integer, Double> resources;
     private List<ConstructionVehicleType> vehicles;
 
     /**
@@ -60,7 +60,7 @@ public class ConstructionStageInfo implements Serializable {
     ConstructionStageInfo(String name, String type, double width, double length,
     		boolean unsetDimensions, int baseLevel, boolean constructable,
     		boolean salvagable, double workTime, int architectConstructionSkill,
-    		String prerequisiteStage, Map<Part, Integer> parts, Map<AmountResource,
+    		String prerequisiteStage, Map<Integer, Integer> parts, Map<Integer,
     		Double> resources, List<ConstructionVehicleType> vehicles) {
 
         this.name = name;
@@ -146,7 +146,7 @@ public class ConstructionStageInfo implements Serializable {
      * Gets the parts needed for the stage.
      * @return map of parts and their number.
      */
-    public Map<Part, Integer> getParts() {
+    public Map<Integer, Integer> getParts() {
         return parts;
     }
 
@@ -162,7 +162,7 @@ public class ConstructionStageInfo implements Serializable {
      * Gets the resources needed for the stage.
      * @return map of resources and their amounts (kg).
      */
-    public Map<AmountResource, Double> getResources() {
+    public Map<Integer, Double> getResources() {
         return resources;
     }
 

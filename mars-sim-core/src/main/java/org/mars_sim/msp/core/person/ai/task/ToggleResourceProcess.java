@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -273,12 +274,12 @@ implements Serializable {
 
         double result = 0D;
 
-        Iterator<AmountResource> i = null;
+        Iterator<Integer> i = null;
         if (input) i = process.getInputResources().iterator();
         else i = process.getOutputResources().iterator();
 
         while (i.hasNext()) {
-            AmountResource resource = i.next();
+        	Integer resource = i.next();
             boolean useResource = true;
             if (input && process.isAmbientInputResource(resource)) {
                 useResource = false;
@@ -288,7 +289,7 @@ implements Serializable {
             }
             if (useResource) {
                 double value = settlement.getGoodsManager().getGoodValuePerItem(
-                        GoodsUtil.getResourceGood(resource));
+                        GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(resource)));
                 double rate = 0D;
                 if (input) {
                     rate = process.getMaxInputResourceRate(resource);
@@ -318,9 +319,9 @@ implements Serializable {
             ResourceProcess process) {
         boolean result = false;
 
-        Iterator<AmountResource> i = process.getInputResources().iterator();
+        Iterator<Integer> i = process.getInputResources().iterator();
         while (i.hasNext()) {
-            AmountResource resource = i.next();
+        	Integer resource = i.next();
             if (!process.isAmbientInputResource(resource)) {
                 double stored = settlement.getInventory().getAmountResourceStored(resource, false);
                 if (stored == 0D) {

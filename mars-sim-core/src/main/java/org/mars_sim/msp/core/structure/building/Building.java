@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.hazard.HazardEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -1551,6 +1552,11 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	public Settlement getBuriedSettlement() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Unit getUnit() {
+		return this;
 	}
 
 }

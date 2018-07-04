@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.Storage;
@@ -58,10 +59,10 @@ public class Malfunction implements Serializable {
     private String mostTraumatized;
     
     private Collection<String> systems;
-    private Map<AmountResource, Double> resourceEffects;
+    private Map<Integer, Double> resourceEffects;
     private Map<String, Double> lifeSupportEffects;
     private Map<ComplaintType, Double> medicalComplaints;
-    private Map<Part, Integer> repairParts;
+    private Map<Integer, Integer> repairParts;
 
     /* The map for storing how much worktime the repairers spent in fixing this malfunction*/
     private Map<String, Double> repairersWorkTime;
@@ -75,7 +76,7 @@ public class Malfunction implements Serializable {
      */
     public Malfunction(String name, int incidentNum, int severity, double probability, double emergencyWorkTime,
 		       double workTime, double EVAWorkTime, Collection<String> entities,
-		       Map<AmountResource, Double> resourceEffects,
+		       Map<Integer, Double> resourceEffects,
 		       Map<String, Double> lifeSupportEffects, Map<ComplaintType, Double> medicalComplaints) {
 
         // Initialize data members
@@ -91,12 +92,12 @@ public class Malfunction implements Serializable {
         this.lifeSupportEffects = lifeSupportEffects;
         this.medicalComplaints = medicalComplaints;
 
-        repairParts = new HashMap<Part, Integer>();
+        repairParts = new HashMap<>();
         workTimeCompleted = 0D;
         emergencyWorkTimeCompleted = 0D;
         EVAWorkTimeCompleted = 0D;
         
-        repairersWorkTime = new HashMap<String, Double>();
+        repairersWorkTime = new HashMap<>();
         
     	config = SimulationConfig.instance().getMalfunctionConfiguration();
     	
@@ -298,7 +299,7 @@ public class Malfunction implements Serializable {
      * Gets the resource effects of the malfunction.
      * @return resource effects as name-value pairs in Map
      */
-    public Map<AmountResource, Double> getResourceEffects() {
+    public Map<Integer, Double> getResourceEffects() {
         return resourceEffects;
     }
 
@@ -347,11 +348,11 @@ public class Malfunction implements Serializable {
         for (String partName : partNames) {
             if (RandomUtil.lessThanRandPercent(config.getRepairPartProbability(name, partName))) {
                 int number = RandomUtil.getRandomRegressionInteger(config.getRepairPartNumber(name, partName));
-                Part part = (Part) ItemResource.findItemResource(partName);
-                repairParts.put(part, number);
+                //Part part = (Part) ItemResource.findItemResource(partName);
+                repairParts.put(ItemResourceUtil.findIDbyItemResourceName(partName), number);
                 String id_string = INCIDENT_NUM + incidentNum;
             	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-            			name + id_string + " - the repair requires " + part.getName() 
+            			name + id_string + " - the repair requires " + partName 
             			+ " (quantity: " + number + ").", null);
             }
         }
@@ -381,8 +382,8 @@ public class Malfunction implements Serializable {
      * Gets the parts required to repair this malfunction.
      * @return map of parts and their number.
      */
-    public Map<Part, Integer> getRepairParts() {
-    	return new HashMap<Part, Integer>(repairParts);
+    public Map<Integer, Integer> getRepairParts() {
+    	return new HashMap<Integer, Integer>(repairParts);
     }
 
     /**
@@ -403,7 +404,7 @@ public class Malfunction implements Serializable {
                 if (part.getMassPerItem() > 0)
                 	Storage.storeAnResource(part.getMassPerItem(), ResourceUtil.solidWasteAR, inv, sourceName + "::repairWithParts");
 
-    			if (numberNeeded > 0) repairParts.put(part, numberNeeded);
+    			if (numberNeeded > 0) repairParts.put(ItemResourceUtil.findIDbyItemResourceName(part.getName()), numberNeeded);
     			else repairParts.remove(part);
     		}
     	}

@@ -12,7 +12,9 @@ import org.jdom.Element;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -198,7 +200,7 @@ public class ConstructionConfig implements Serializable {
                     
                 List<Element> partList = stageInfoElement.getChildren(PART);
                 
-                Map<Part, Integer> parts = new HashMap<Part, Integer>(partList.size());
+                Map<Integer, Integer> parts = new HashMap<>(partList.size());
                 for (Element partElement : partList) {
                     String partName = partElement.getAttributeValue(NAME);
                     int partNum = Integer.parseInt(partElement.getAttributeValue(NUMBER));
@@ -207,13 +209,13 @@ public class ConstructionConfig implements Serializable {
     				if (part == null)
     					logger.severe(partName + " shows up in constructions.xml but doesn't exist in parts.xml.");
     				else
-                        parts.put(part, partNum);  
+                        parts.put(ItemResourceUtil.findIDbyItemResourceName(partName), partNum);  
 
                 }
                     
                 List<Element> resourceList = stageInfoElement.getChildren(RESOURCE);
-                Map<AmountResource, Double> resources = 
-                    new HashMap<AmountResource, Double>(resourceList.size());
+                Map<Integer, Double> resources = 
+                    new HashMap<>(resourceList.size());
                 for (Element resourceElement : resourceList) {
                     String resourceName = resourceElement.getAttributeValue(NAME);
                     double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
@@ -221,7 +223,7 @@ public class ConstructionConfig implements Serializable {
        				if (resource == null)
     					logger.severe(resourceName + " shows up in constructions.xml but doesn't exist in resources.xml.");
     				else
-    					resources.put(resource, resourceAmount);
+    					resources.put(ResourceUtil.findIDbyAmountResourceName(resourceName), resourceAmount);
                 }
                     
                 List<Element> vehicleList = stageInfoElement.getChildren(VEHICLE);
@@ -238,11 +240,11 @@ public class ConstructionConfig implements Serializable {
                     else throw new IllegalStateException("Unknown vehicle type: " + vehicleType);
                         
                     List<Element> attachmentPartList = vehicleElement.getChildren(ATTACHMENT_PART);
-                    List<Part> attachmentParts = new ArrayList<Part>(attachmentPartList.size());
+                    List<Integer> attachmentParts = new ArrayList<>(attachmentPartList.size());
                     for (Element attachmentPartElement : attachmentPartList) {
                         String partName = attachmentPartElement.getAttributeValue(NAME);
-                        Part attachmentPart = (Part) ItemResource.findItemResource(partName);
-                        attachmentParts.add(attachmentPart);
+                        //Part attachmentPart = (Part) ItemResource.findItemResource(partName);
+                        attachmentParts.add(ItemResourceUtil.findIDbyItemResourceName(partName));
                     }
                         
                     vehicles.add(new ConstructionVehicleType(vehicleType, vehicleClass, attachmentParts));

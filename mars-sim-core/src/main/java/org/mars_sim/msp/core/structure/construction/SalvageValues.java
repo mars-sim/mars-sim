@@ -341,9 +341,9 @@ implements Serializable {
 
 		GoodsManager goodsManager = settlement.getGoodsManager();
 
-		Iterator<Part> i = stageInfo.getParts().keySet().iterator();
+		Iterator<Integer> i = stageInfo.getParts().keySet().iterator();
 		while (i.hasNext()) {
-			Part part = i.next();
+			Integer part = i.next();
 			int number = stageInfo.getParts().get(part);
 			double partValue = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(part));
 			result += number * partValue;

@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
@@ -426,10 +426,10 @@ implements Repair, Serializable {
 
         Inventory inv = containerUnit.getInventory();
 
-        Map<Part, Integer> repairParts = malfunction.getRepairParts();
-        Iterator<Part> i = repairParts.keySet().iterator();
+        Map<Integer, Integer> repairParts = malfunction.getRepairParts();
+        Iterator<Integer> i = repairParts.keySet().iterator();
         while (i.hasNext() && result) {
-            Part part = i.next();
+        	Integer part = i.next();
             int number = repairParts.get(part);
             if (inv.getItemResourceNum(part) < number) {
                 result = false;
@@ -589,20 +589,20 @@ implements Repair, Serializable {
         Inventory inv = containerUnit.getInventory();
 
 		if (person != null) {
-		       if (hasRepairPartsForMalfunction(person, containerUnit, malfunction)) {
-		            Map<Part, Integer> parts = new HashMap<Part, Integer>(malfunction.getRepairParts());
-		            Iterator<Part> j = parts.keySet().iterator();
-		            while (j.hasNext()) {
-		                Part part = j.next();
-		                int number = parts.get(part);
-		                inv.retrieveItemResources(part, number);
-		                malfunction.repairWithParts(part, number, inv);
-		            }
-		        }
-		        else {
-		            setPhase(WALK_BACK_INSIDE);
-		            return time;
-		        }
+	       if (hasRepairPartsForMalfunction(person, containerUnit, malfunction)) {
+	            Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
+	            Iterator<Integer> j = parts.keySet().iterator();
+	            while (j.hasNext()) {
+	            	Integer part = j.next();
+	                int number = parts.get(part);
+	                inv.retrieveItemResources(part, number);
+	                malfunction.repairWithParts(ItemResourceUtil.findItemResource(part), number, inv);
+	            }
+	        }
+	        else {
+	            setPhase(WALK_BACK_INSIDE);
+	            return time;
+	        }
 
 		}
 /*

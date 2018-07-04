@@ -21,11 +21,11 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.Container;
+
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -39,8 +39,8 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -100,16 +100,16 @@ implements Serializable {
 	private Settlement emergencySettlement;
 	private Vehicle emergencyVehicle;
 	
-	private Map<AmountResource, Double> emergencyResources;
-	private Map<Class<? extends Equipment>, Integer> emergencyEquipment;
-	private Map<Part, Integer> emergencyParts;
+	private Map<Integer, Double> emergencyResources;
+	private Map<Integer, Integer> emergencyEquipment;
+	private Map<Integer, Integer> emergencyParts;
 
 	// Static members
-	private static AmountResource foodAR = ResourceUtil.foodAR;
-	private static AmountResource oxygenAR =  ResourceUtil.oxygenAR;
-	private static AmountResource waterAR = ResourceUtil.waterAR;
-	private static AmountResource methaneAR = ResourceUtil.methaneAR;
-
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+	private static int foodID = ResourceUtil.foodID;
+	private static int methaneID = ResourceUtil.methaneID;
+	
     private static PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 	private static MissionManager missionManager;
@@ -215,8 +215,8 @@ implements Serializable {
                 emergencySettlement.getName()));
 
         // Determine emergency supplies.
-        emergencyResources = new HashMap<AmountResource, Double>();
-        emergencyParts = new HashMap<Part, Integer>();
+        emergencyResources = new HashMap<>();
+        emergencyParts = new HashMap<>();
         emergencyEquipment = new HashMap<>();
 
         Iterator<Good> j = emergencyGoods.keySet().iterator();
@@ -225,15 +225,17 @@ implements Serializable {
             int amount = emergencyGoods.get(good);
             if (GoodType.AMOUNT_RESOURCE.equals(good.getCategory())) {
                 AmountResource resource = (AmountResource) good.getObject();
-                emergencyResources.put(resource, (double) amount);
+                emergencyResources.put(ResourceUtil.findIDbyAmountResourceName(resource.getName()), (double) amount);
             }
             else if (GoodType.ITEM_RESOURCE.equals(good.getCategory())) {
                 Part part = (Part) good.getObject();
-                emergencyParts.put(part, amount);
+                emergencyParts.put(ItemResourceUtil.findIDbyItemResourceName(part.getName()), amount);
             }
             else if (GoodType.EQUIPMENT.equals(good.getCategory())) {
                 Class<? extends Equipment> equipmentClass = good.getClassType();
-                emergencyEquipment.put(equipmentClass, amount);
+                System.out.println("EmergencySupplyMission str : " + good.getName() + " : "
+                + equipmentClass.getName() + " : " + EquipmentType.str2int(good.getName()));
+                emergencyEquipment.put(EquipmentType.str2int(good.getName()), amount);
             }
             else if (GoodType.VEHICLE.equals(good.getCategory())) {
                 String vehicleType = good.getName();
@@ -604,8 +606,8 @@ implements Serializable {
                     if (settlementRange <= (rover.getRange() * .8D)) {
 
                         // Find what emergency supplies are needed at settlement.
-                        Map<AmountResource, Double> emergencyResourcesNeeded = getEmergencyResourcesNeeded(settlement);
-                        Map<Class<? extends Container>, Integer> emergencyContainersNeeded =
+                        Map<Integer, Double> emergencyResourcesNeeded = getEmergencyResourcesNeeded(settlement);
+                        Map<Integer, Integer> emergencyContainersNeeded =
                                 getContainersRequired(emergencyResourcesNeeded);
 
                         if (!emergencyResourcesNeeded.isEmpty()) {
@@ -632,15 +634,15 @@ implements Serializable {
      * @return true if enough supplies at starting settlement.
      */
     private static boolean hasEnoughSupplies(Settlement startingSettlement,
-            Map<AmountResource, Double> emergencyResourcesNeeded,
-            Map<Class<? extends Container>, Integer> emergencyContainersNeeded) {
+            Map<Integer, Double> emergencyResourcesNeeded,
+            Map<Integer, Integer> emergencyContainersNeeded) {
 
         boolean result = true;
 
         // Check if settlement has enough extra resources to send as emergency supplies.
-        Iterator<AmountResource> i = emergencyResourcesNeeded.keySet().iterator();
+        Iterator<Integer> i = emergencyResourcesNeeded.keySet().iterator();
         while (i.hasNext() && result) {
-            AmountResource resource = i.next();
+        	Integer resource = i.next();
             double amountRequired = emergencyResourcesNeeded.get(resource);
             double amountNeededAtStartingSettlement = getResourceAmountNeededAtStartingSettlement(
                     startingSettlement, resource);
@@ -654,12 +656,11 @@ implements Serializable {
         }
 
         // Check if settlement has enough empty containers to hold emergency resources.
-        Iterator<Class<? extends Container>> j = emergencyContainersNeeded.keySet().iterator();
+        Iterator<Integer> j = emergencyContainersNeeded.keySet().iterator();
         while (j.hasNext() && result) {
-            Class<? extends Container> container = j.next();
+        	Integer container = j.next();
             int numberRequired = emergencyContainersNeeded.get(container);
-            int numberAvailable = startingSettlement.getInventory().findNumEmptyUnitsOfClass(
-                    (Class<? extends Unit>) container, false);
+            int numberAvailable = startingSettlement.getInventory().findNumEmptyUnitsOfClass(container, false);
             if (numberAvailable < numberRequired) {
                 result = false;
             }
@@ -675,22 +676,22 @@ implements Serializable {
      * @return amount (kg) needed.
      */
     private static double getResourceAmountNeededAtStartingSettlement(Settlement startingSettlement,
-            AmountResource resource) {
+    		Integer resource) {
 
         double result = 0D;
 
-        if (resource.isLifeSupport()) {
+        if (ResourceUtil.findAmountResource(resource).isLifeSupport()) {
             double amountNeededSol = 0D;
-            if (resource.equals(oxygenAR)) amountNeededSol = config.getNominalO2ConsumptionRate();
-            if (resource.equals(waterAR)) amountNeededSol = config.getWaterConsumptionRate();
-            if (resource.equals(foodAR)) amountNeededSol = config.getFoodConsumptionRate();
+            if (resource.equals(oxygenID)) amountNeededSol = config.getNominalO2ConsumptionRate();
+            if (resource.equals(waterID)) amountNeededSol = config.getWaterConsumptionRate();
+            if (resource.equals(foodID)) amountNeededSol = config.getFoodConsumptionRate();
 
             double amountNeededOrbit = amountNeededSol * (MarsClock.SOLS_PER_MONTH_LONG * 3D);
             int numPeople = startingSettlement.getAllAssociatedPeople().size();
             result = numPeople * amountNeededOrbit ;
         }
         else {
-            if (resource.equals(methaneAR)) {
+            if (resource.equals(methaneID)) {
                 Iterator<Vehicle> i = startingSettlement.getAllAssociatedVehicles().iterator();
                 while (i.hasNext()) {
                     double fuelDemand = i.next().getInventory().getAmountResourceCapacity(resource, false);
@@ -737,13 +738,13 @@ implements Serializable {
         emergencyResources = getEmergencyResourcesNeeded(emergencySettlement);
 
         // Determine containers needed to hold emergency resources.
-        Map<Class<? extends Container>, Integer> containers = getContainersRequired(emergencyResources);
+        Map<Integer, Integer> containers = getContainersRequired(emergencyResources);
         emergencyEquipment = new HashMap<>(containers.size());
-        Iterator<Class<? extends Container>> i = containers.keySet().iterator();
+        Iterator<Integer> i = containers.keySet().iterator();
         while (i.hasNext()) {
-            Class<? extends Container> container = i.next();
+        	Integer container = i.next();
             int number = containers.get(container);
-            emergencyEquipment.put((Class<? extends Equipment>) container, number);
+            emergencyEquipment.put(container, number);
         }
 
         // Determine emergency parts needed.
@@ -755,71 +756,71 @@ implements Serializable {
      * @param settlement the settlement
      * @return map of resources and amounts needed.
      */
-    private static Map<AmountResource, Double> getEmergencyResourcesNeeded(Settlement settlement) {
+    private static Map<Integer, Double> getEmergencyResourcesNeeded(Settlement settlement) {
 
-        Map<AmountResource, Double> result = new HashMap<AmountResource, Double>();
+        Map<Integer, Double> result = new HashMap<>();
 
         double solsMonth = MarsClock.SOLS_PER_MONTH_LONG;
         int numPeople = settlement.getAllAssociatedPeople().size();
         Inventory inv = settlement.getInventory();
         // Determine oxygen amount needed.
         double oxygenAmountNeeded = config.getNominalO2ConsumptionRate() * numPeople * solsMonth * Mission.OXYGEN_MARGIN;
-        double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygenAR, false);
+        double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygenID, false);
 
-        inv.addAmountDemandTotalRequest(oxygenAR);
+        inv.addAmountDemandTotalRequest(oxygenID);
 
-        oxygenAmountAvailable += getResourcesOnMissions(settlement, oxygenAR);
+        oxygenAmountAvailable += getResourcesOnMissions(settlement, oxygenID);
         if (oxygenAmountAvailable < oxygenAmountNeeded) {
             double oxygenAmountEmergency = oxygenAmountNeeded - oxygenAmountAvailable;
             if (oxygenAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
                 oxygenAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
             }
-            result.put(oxygenAR, oxygenAmountEmergency);
+            result.put(oxygenID, oxygenAmountEmergency);
         }
 
         // Determine water amount needed.
         double waterAmountNeeded = config.getWaterConsumptionRate() * numPeople * solsMonth * Mission.WATER_MARGIN;
-        double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(waterAR, false);
+        double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(waterID, false);
 
-        inv.addAmountDemandTotalRequest(waterAR);
+        inv.addAmountDemandTotalRequest(waterID);
 
-        waterAmountAvailable += getResourcesOnMissions(settlement, waterAR);
+        waterAmountAvailable += getResourcesOnMissions(settlement, waterID);
         if (waterAmountAvailable < waterAmountNeeded) {
             double waterAmountEmergency = waterAmountNeeded - waterAmountAvailable;
             if (waterAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
                 waterAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
             }
-            result.put(waterAR, waterAmountEmergency);
+            result.put(waterID, waterAmountEmergency);
         }
 
         // Determine food amount needed.
         double foodAmountNeeded = config.getFoodConsumptionRate() * numPeople * solsMonth * Mission.FOOD_MARGIN;
-        double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(foodAR, false);
+        double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(foodID, false);
 
-        inv.addAmountDemandTotalRequest(foodAR);
+        inv.addAmountDemandTotalRequest(foodID);
 
-        foodAmountAvailable += getResourcesOnMissions(settlement, foodAR);
+        foodAmountAvailable += getResourcesOnMissions(settlement, foodID);
         if (foodAmountAvailable < foodAmountNeeded) {
             double foodAmountEmergency = foodAmountNeeded - foodAmountAvailable;
             if (foodAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
                 foodAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
             }
-            result.put(foodAR, foodAmountEmergency);
+            result.put(foodID, foodAmountEmergency);
         }
 
         // Determine methane amount needed.
         double methaneAmountNeeded = VEHICLE_FUEL_DEMAND;
-        double methaneAmountAvailable = settlement.getInventory().getAmountResourceStored(methaneAR, false);
+        double methaneAmountAvailable = settlement.getInventory().getAmountResourceStored(methaneID, false);
 
-        inv.addAmountDemandTotalRequest(methaneAR);
+        inv.addAmountDemandTotalRequest(methaneID);
 
-        methaneAmountAvailable += getResourcesOnMissions(settlement, methaneAR);
+        methaneAmountAvailable += getResourcesOnMissions(settlement, methaneID);
         if (methaneAmountAvailable < methaneAmountNeeded) {
             double methaneAmountEmergency = methaneAmountNeeded - methaneAmountAvailable;
             if (methaneAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
                 methaneAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
             }
-            result.put(methaneAR, methaneAmountEmergency);
+            result.put(methaneID, methaneAmountEmergency);
         }
 
         return result;
@@ -831,7 +832,7 @@ implements Serializable {
      * @param resource the amount resource.
      * @return the amount of resource on missions.
      */
-    private static double getResourcesOnMissions(Settlement settlement, AmountResource resource) {
+    private static double getResourcesOnMissions(Settlement settlement, Integer resource) {
         double result = 0D;
 
         if (missionManager == null)
@@ -862,25 +863,26 @@ implements Serializable {
      * @param resources the map of resources and their amounts.
      * @return map of containers and the number required of each.
      */
-    private static Map<Class<? extends Container>, Integer> getContainersRequired(
-            Map<AmountResource, Double> resources) {
+    private static Map<Integer, Integer> getContainersRequired(
+            Map<Integer, Double> resources) {
 
-        Map<Class<? extends Container>, Integer> result = new HashMap<Class<? extends Container>, Integer>();
+        Map<Integer, Integer> result = new HashMap<>();
 
-        Iterator<AmountResource> i = resources.keySet().iterator();
+        Iterator<Integer> i = resources.keySet().iterator();
         while (i.hasNext()) {
-            AmountResource resource = i.next();
+        	Integer resource = i.next();
 
-            Class<? extends Container> containerClass = ContainerUtil.getContainerClassToHoldResource(resource);
-            if (containerClass != null) {
+//            Class<? extends Container> containerClass = ContainerUtil.getContainerClassToHoldResource(resource);
+//            if (containerClass != null) {
                 double resourceAmount = resources.get(resource);
-                double containerCapacity = ContainerUtil.getContainerCapacity(containerClass);
+                double containerCapacity = ContainerUtil.getContainerCapacity(resource);
                 int numContainers = (int) Math.ceil(resourceAmount / containerCapacity);
-                result.put(containerClass, numContainers);
-            }
-            else {
-                throw new IllegalStateException("No container found to hold resource: " + resource);
-            }
+                //result.put(EquipmentType.str2int(containerClass.getName()), numContainers);
+                result.put(resource, numContainers);
+//            }
+//            else {
+//                throw new IllegalStateException("No container found to hold resource: " + resource);
+//            }
         }
 
         return result;
@@ -891,9 +893,9 @@ implements Serializable {
      * @param settlement the settlement
      * @return map of parts and numbers needed.
      */
-    private static Map<Part, Integer> getEmergencyPartsNeeded(Settlement settlement) {
+    private static Map<Integer, Integer> getEmergencyPartsNeeded(Settlement settlement) {
 
-        Map<Part, Integer> result = new HashMap<Part, Integer>();
+        Map<Integer, Integer> result = new HashMap<>();
 
         // Get all malfunctionables associated with settlement.
         Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();
@@ -904,10 +906,10 @@ implements Serializable {
             Iterator<Malfunction> j = entity.getMalfunctionManager().getMalfunctions().iterator();
             while (j.hasNext()) {
                 Malfunction malfunction = j.next();
-                Map<Part, Integer> repairParts = malfunction.getRepairParts();
-                Iterator<Part> k = repairParts.keySet().iterator();
+                Map<Integer, Integer> repairParts = malfunction.getRepairParts();
+                Iterator<Integer> k = repairParts.keySet().iterator();
                 while (k.hasNext()) {
-                    Part part = k.next();
+                	Integer part = k.next();
                     int number = repairParts.get(part);
                     if (!settlement.getInventory().hasItemResource(part)) {
                         if (result.containsKey(part)) {
@@ -919,10 +921,10 @@ implements Serializable {
             }
 
             // Determine parts needed but not available for maintenance.
-            Map<Part, Integer> maintParts = entity.getMalfunctionManager().getMaintenanceParts();
-            Iterator<Part> l = maintParts.keySet().iterator();
+            Map<Integer, Integer> maintParts = entity.getMalfunctionManager().getMaintenanceParts();
+            Iterator<Integer> l = maintParts.keySet().iterator();
             while (l.hasNext()) {
-                Part part = l.next();
+            	Integer part = l.next();
                 int number = maintParts.get(part);
                 if (!settlement.getInventory().hasItemResource(part)) {
                     if (result.containsKey(part)) {
@@ -950,7 +952,7 @@ implements Serializable {
     }
 
     @Override
-    public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
+    public Map<Integer, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
 
         return new HashMap<>(0);
@@ -984,15 +986,15 @@ implements Serializable {
     }
 
     @Override
-    public Map<Resource, Number> getRequiredResourcesToLoad() {
-        Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(true);
+    public Map<Integer, Number> getRequiredResourcesToLoad() {
+        Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(true);
 
         // Add any emergency resources needed.
         if (outbound && (emergencyResources != null)) {
 
-            Iterator<AmountResource> i = emergencyResources.keySet().iterator();
+            Iterator<Integer> i = emergencyResources.keySet().iterator();
             while (i.hasNext()) {
-                AmountResource resource = i.next();
+            	Integer resource = i.next();
                 double amount = emergencyResources.get(resource);
                 if (result.containsKey(resource)) {
                     amount += (Double) result.get(resource);
@@ -1005,16 +1007,16 @@ implements Serializable {
     }
 
     @Override
-    public Map<Resource, Number> getOptionalResourcesToLoad() {
+    public Map<Integer, Number> getOptionalResourcesToLoad() {
 
-        Map<Resource, Number> result = super.getOptionalResourcesToLoad();
+        Map<Integer, Number> result = super.getOptionalResourcesToLoad();
 
         // Add any emergency parts needed.
         if (outbound && (emergencyParts != null)) {
 
-            Iterator<Part> i = emergencyParts.keySet().iterator();
+            Iterator<Integer> i = emergencyParts.keySet().iterator();
             while (i.hasNext()) {
-                Part part = i.next();
+            	Integer part = i.next();
                 int num = emergencyParts.get(part);
                 if (result.containsKey(part)) {
                     num += (Integer) result.get(part);
@@ -1027,16 +1029,16 @@ implements Serializable {
     }
 
     @Override
-    public Map<Class<? extends Equipment>, Integer> getRequiredEquipmentToLoad() {
+    public Map<Integer, Integer> getRequiredEquipmentToLoad() {
 
-        Map<Class<? extends Equipment>, Integer> result = getEquipmentNeededForRemainingMission(true);
+        Map<Integer, Integer> result = getEquipmentNeededForRemainingMission(true);
 
         // Add any emergency equipment needed.
         if (outbound && (emergencyEquipment != null)) {
 
-            Iterator<Class<? extends Equipment>> i = emergencyEquipment.keySet().iterator();
+            Iterator<Integer> i = emergencyEquipment.keySet().iterator();
             while (i.hasNext()) {
-                Class<? extends Equipment> equipment = i.next();
+            	Integer equipment = i.next();
                 int num = emergencyEquipment.get(equipment);
                 if (result.containsKey(equipment)) {
                     num += (Integer) result.get(equipment);
@@ -1056,27 +1058,27 @@ implements Serializable {
         Map<Good, Integer> result = new HashMap<Good, Integer>();
 
         // Add emergency resources.
-        Iterator<AmountResource> i = emergencyResources.keySet().iterator();
+        Iterator<Integer> i = emergencyResources.keySet().iterator();
         while (i.hasNext()) {
-            AmountResource resource = i.next();
+        	Integer resource = i.next();
             double amount = emergencyResources.get(resource);
-            Good resourceGood = GoodsUtil.getResourceGood(resource);
+            Good resourceGood = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(resource));
             result.put(resourceGood, (int) amount);
         }
 
         // Add emergency parts.
-        Iterator<Part> j = emergencyParts.keySet().iterator();
+        Iterator<Integer> j = emergencyParts.keySet().iterator();
         while (j.hasNext()) {
-            Part part = j.next();
+        	Integer part = j.next();
             int number = emergencyParts.get(part);
-            Good partGood = GoodsUtil.getResourceGood(part);
+            Good partGood = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(part));
             result.put(partGood, number);
         }
 
         // Add emergency equipment.
-        Iterator<Class<? extends Equipment>> k = emergencyEquipment.keySet().iterator();
+        Iterator<Integer> k = emergencyEquipment.keySet().iterator();
         while (k.hasNext()) {
-            Class<? extends Equipment> equipmentClass = k.next();
+        	Integer equipmentClass = k.next();
             int number = emergencyEquipment.get(equipmentClass);
             Good equipmentGood = GoodsUtil.getEquipmentGood(equipmentClass);
             result.put(equipmentGood, number);

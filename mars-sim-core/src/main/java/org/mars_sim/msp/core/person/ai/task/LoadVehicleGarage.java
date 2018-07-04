@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -36,7 +37,8 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
@@ -92,16 +94,21 @@ implements Serializable {
 	private static PersonConfig personConfig;// = SimulationConfig.instance().getPersonConfiguration();
 
 	/** Resources required to load. */
-	private Map<Resource, Number> requiredResources;
+	private Map<Integer, Number> requiredResources;
 	/** Resources desired to load but not required. */
-	private Map<Resource, Number> optionalResources;
+	private Map<Integer, Number> optionalResources;
 	/** Equipment required to load. */
-	private Map<Class<? extends Equipment>, Integer> requiredEquipment;
+	private Map<Integer, Integer> requiredEquipment;
 	/** Equipment desired to load but not required. */
-	private Map<Class<? extends Equipment>, Integer> optionalEquipment;
+	private Map<Integer, Integer> optionalEquipment;
 
 	public static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+	private static int foodID = ResourceUtil.foodID;
+	private static int methaneID = ResourceUtil.methaneID;
+	
 
 	/**
 	 * Constructor.
@@ -200,9 +207,9 @@ implements Serializable {
      * @param requiredEquipment a map of required equipment to be loaded.
      * @param optionalEquipment a map of optional equipment to be loaded.
      */
-    public LoadVehicleGarage(Person person, Vehicle vehicle, Map<Resource, Number> requiredResources,
-            Map<Resource, Number> optionalResources, Map<Class<? extends Equipment>, Integer> requiredEquipment,
-            Map<Class<? extends Equipment>, Integer> optionalEquipment) {
+    public LoadVehicleGarage(Person person, Vehicle vehicle, Map<Integer, Number> requiredResources,
+            Map<Integer, Number> optionalResources, Map<Integer, Integer> requiredEquipment,
+            Map<Integer, Integer> optionalEquipment) {
     	// Use Task constructor.
     	super("Loading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
 
@@ -211,10 +218,10 @@ implements Serializable {
         this.vehicle = vehicle;
 
         if (requiredResources != null) {
-            this.requiredResources = new HashMap<Resource, Number>(requiredResources);
+            this.requiredResources = new HashMap<Integer, Number>(requiredResources);
         }
         if (optionalResources != null) {
-            this.optionalResources = new HashMap<Resource, Number>(optionalResources);
+            this.optionalResources = new HashMap<Integer, Number>(optionalResources);
         }
         if (requiredEquipment != null) {
             this.requiredEquipment = new HashMap<>(requiredEquipment);
@@ -237,9 +244,9 @@ implements Serializable {
         addPhase(LOADING);
         setPhase(LOADING);
     }
-    public LoadVehicleGarage(Robot robot, Vehicle vehicle, Map<Resource, Number> requiredResources,
-            Map<Resource, Number> optionalResources, Map<Class<? extends Equipment>, Integer> requiredEquipment,
-            Map<Class<? extends Equipment>, Integer> optionalEquipment) {
+    public LoadVehicleGarage(Robot robot, Vehicle vehicle, Map<Integer, Number> requiredResources,
+            Map<Integer, Number> optionalResources, Map<Integer, Integer> requiredEquipment,
+            Map<Integer, Integer> optionalEquipment) {
     	// Use Task constructor.
     	super("Loading vehicle", robot, true, false, STRESS_MODIFIER, true, DURATION);
 
@@ -248,10 +255,10 @@ implements Serializable {
         this.vehicle = vehicle;
 
         if (requiredResources != null) {
-            this.requiredResources = new HashMap<Resource, Number>(requiredResources);
+            this.requiredResources = new HashMap<Integer, Number>(requiredResources);
         }
         if (optionalResources != null) {
-            this.optionalResources = new HashMap<Resource, Number>(optionalResources);
+            this.optionalResources = new HashMap<Integer, Number>(optionalResources);
         }
         if (requiredEquipment != null) {
             this.requiredEquipment = new HashMap<>(requiredEquipment);
@@ -431,30 +438,30 @@ implements Serializable {
     private double loadResources(double amountLoading) {
 
         // Load required resources.
-        Iterator<Resource> iR = requiredResources.keySet().iterator();
+        Iterator<Integer> iR = requiredResources.keySet().iterator();
         while (iR.hasNext() && (amountLoading > 0D)) {
-        	Resource resource = iR.next();
-        	if (resource instanceof AmountResource) {
+        	Integer resource = iR.next();
+        	if (resource < FIRST_ITEM_RESOURCE) {
         		// Load amount resources
-        		amountLoading = loadAmountResource(amountLoading, (AmountResource) resource, true);
+        		amountLoading = loadAmountResource(amountLoading, resource, true);
         	}
-        	else if (resource instanceof ItemResource) {
+        	else if (resource >= FIRST_ITEM_RESOURCE) {
         		// Load item resources
-        		amountLoading = loadItemResource(amountLoading, (ItemResource) resource, true);
+        		amountLoading = loadItemResource(amountLoading, resource, true);
         	}
         }
 
         // Load optional resources.
-        Iterator<Resource> iR2 = optionalResources.keySet().iterator();
+        Iterator<Integer> iR2 = optionalResources.keySet().iterator();
         while (iR2.hasNext() && (amountLoading > 0D)) {
-            Resource resource = iR2.next();
-            if (resource instanceof AmountResource) {
+            Integer resource = iR2.next();
+            if (resource < FIRST_ITEM_RESOURCE) {
                 // Load amount resources
-                amountLoading = loadAmountResource(amountLoading, (AmountResource) resource, false);
+                amountLoading = loadAmountResource(amountLoading, resource, false);
             }
-            else if (resource instanceof ItemResource) {
+            else if (resource >= FIRST_ITEM_RESOURCE) {
                 // Load item resources
-                amountLoading = loadItemResource(amountLoading, (ItemResource) resource, false);
+                amountLoading = loadItemResource(amountLoading, resource, false);
             }
         }
 
@@ -469,7 +476,7 @@ implements Serializable {
      * @param required true if the amount resource is required to load, false if optional.
      * @return the remaining amount (kg) the person can load in this time period.
      */
-    private double loadAmountResource(double amountLoading, AmountResource resource, boolean required) {
+    private double loadAmountResource(double amountLoading, Integer resource, boolean required) {
 
     	Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
@@ -580,36 +587,38 @@ implements Serializable {
      * @param required true if the item resource is required to load, false if optional.
      * @return the remaining amount (kg) the person can load in this time period.
      */
-    private double loadItemResource(double amountLoading, ItemResource resource, boolean required) {
+    private double loadItemResource(double amountLoading, Integer id, boolean required) {
 
     	Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
 
         int numNeededTotal = 0;
         if (required) {
-            numNeededTotal = (Integer) requiredResources.get(resource);
+            numNeededTotal = (int) requiredResources.get(id);
         }
         else {
-            if (requiredResources.containsKey(resource)) {
-                numNeededTotal += (Integer) requiredResources.get(resource);
+            if (requiredResources.containsKey(id)) {
+                numNeededTotal += (int) requiredResources.get(id);
             }
-            numNeededTotal += (Integer) optionalResources.get(resource);
+            numNeededTotal += (int) optionalResources.get(id);
         }
 
-		int numAlreadyLoaded = vInv.getItemResourceNum(resource);
+		int numAlreadyLoaded = vInv.getItemResourceNum(id);
 
+		Part p = ItemResourceUtil.findItemResource(id);
+		
 		if (numAlreadyLoaded < numNeededTotal) {
 			int numNeeded = numNeededTotal - numAlreadyLoaded;
 			boolean canLoad = true;
             String loadingError = "";
 
             // Check if enough resource in settlement inventory.
-            int settlementStored = sInv.getItemResourceNum(resource);
+            int settlementStored = sInv.getItemResourceNum(id);
             if (settlementStored < numNeeded) {
                 if (required) {
                     canLoad = false;
                     loadingError = "Not enough resource stored at settlement to load "
-                            + "resource: " + resource + " needed: " + numNeeded + ", stored: "
+                            + "resource: " + p + " needed: " + numNeeded + ", stored: "
                             + settlementStored;
                 }
                 else {
@@ -619,20 +628,20 @@ implements Serializable {
 
             // Check remaining capacity in vehicle inventory.
             double remainingMassCapacity = vInv.getRemainingGeneralCapacity(false);
-            if (remainingMassCapacity < (numNeeded * resource.getMassPerItem())) {
+            if (remainingMassCapacity < (numNeeded * p.getMassPerItem())) {
                 if (required) {
                     canLoad = false;
                     loadingError = "Not enough capacity in vehicle for loading resource "
-                            + resource + ": " + numNeeded + ", remaining capacity: "
+                            + p + ": " + numNeeded + ", remaining capacity: "
                             + remainingMassCapacity + " kg";
                 }
                 else {
-                    numNeeded = (int) (remainingMassCapacity / resource.getMassPerItem());
+                    numNeeded = (int) (remainingMassCapacity / p.getMassPerItem());
                 }
             }
 
 		    // Determine amount to load.
-		    int resourceNum = (int) (amountLoading / resource.getMassPerItem());
+		    int resourceNum = (int) (amountLoading / p.getMassPerItem());
 		    if (resourceNum < 1) {
 		        resourceNum = 1;
 		    }
@@ -643,9 +652,9 @@ implements Serializable {
 		    if (canLoad) {
 
 		        // Load resource from settlement inventory to vehicle inventory.
-		        sInv.retrieveItemResources(resource, resourceNum);
-		        vInv.storeItemResources(resource, resourceNum);
-		        amountLoading -= (resourceNum * resource.getMassPerItem());
+		        sInv.retrieveItemResources(id, resourceNum);
+		        vInv.storeItemResources(id, resourceNum);
+		        amountLoading -= (resourceNum * p.getMassPerItem());
 		        if (amountLoading < 0D) amountLoading = 0D;
 		    }
 		    else {
@@ -654,8 +663,8 @@ implements Serializable {
 		    }
 		}
 		else {
-		    if (required && optionalResources.containsKey(resource)) {
-		        numNeededTotal += (Integer) optionalResources.get(resource);
+		    if (required && optionalResources.containsKey(id)) {
+		        numNeededTotal += (int) optionalResources.get(id);
 		    }
 
 		    if (numAlreadyLoaded > numNeededTotal) {
@@ -663,8 +672,8 @@ implements Serializable {
 		        // In case vehicle wasn't fully unloaded first.
 		        int numToRemove = numAlreadyLoaded - numNeededTotal;
 		        try {
-		            vInv.retrieveItemResources(resource, numToRemove);
-		            sInv.storeItemResources(resource, numToRemove);
+		            vInv.retrieveItemResources(id, numToRemove);
+		            sInv.storeItemResources(id, numToRemove);
 		        }
 		        catch (Exception e) {}
 		    }
@@ -701,9 +710,9 @@ implements Serializable {
         Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
 
-        Iterator<Class<? extends Equipment>> iE = requiredEquipment.keySet().iterator();
+        Iterator<Integer> iE = requiredEquipment.keySet().iterator();
         while (iE.hasNext() && (amountLoading > 0D)) {
-            Class<? extends Equipment> equipmentType = iE.next();
+        	Integer equipmentType = iE.next();
             int numNeededTotal = requiredEquipment.get(equipmentType);
             int numAlreadyLoaded = vInv.findNumUnitsOfClass(equipmentType);
             if (numAlreadyLoaded < numNeededTotal) {
@@ -785,9 +794,9 @@ implements Serializable {
         Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
 
-        Iterator<Class<? extends Equipment>> iE = optionalEquipment.keySet().iterator();
+        Iterator<Integer> iE = optionalEquipment.keySet().iterator();
         while (iE.hasNext() && (amountLoading > 0D)) {
-            Class<? extends Equipment> equipmentType = iE.next();
+        	Integer equipmentType = iE.next();
             int numNeededTotal = optionalEquipment.get(equipmentType);
             if (requiredEquipment.containsKey(equipmentType)) {
                 numNeededTotal += requiredEquipment.get(equipmentType);
@@ -872,8 +881,8 @@ implements Serializable {
      * @return true if enough supplies
      * @throws Exception if error checking supplies.
      */
-    public static synchronized boolean hasEnoughSupplies(Settlement settlement, Vehicle vehicle, Map <Resource, Number> resources,
-    		Map<Class<? extends Equipment>, Integer> equipment, int vehicleCrewNum, double tripTime) {
+    public static synchronized boolean hasEnoughSupplies(Settlement settlement, Vehicle vehicle, Map <Integer, Number> resources,
+    		Map<Integer, Integer> equipment, int vehicleCrewNum, double tripTime) {
 
     	// Check input parameters.
     	if (settlement == null) throw new IllegalArgumentException("settlement is null");
@@ -889,11 +898,11 @@ implements Serializable {
         }
 
         // Check if there are enough resources at the settlement.
-        //Iterator<Resource> iR = resources.keySet().iterator();
-        //while (iR.hasNext()) {
-        for (Resource resource : resources.keySet()) {//= iR.next();
-        	if (resource instanceof AmountResource) {       		
-        		// 2015-03-09 Added all desserts to the matching test
+
+        for (Integer resource : resources.keySet()) {
+
+        	if (resource < FIRST_ITEM_RESOURCE) {       		
+        		// Added all desserts to the matching test
         	 	boolean isDessert = false;
              	double amountDessertLoaded = 0;
             	double totalAmountDessertStored = 0;
@@ -902,12 +911,12 @@ implements Serializable {
         		
            	  	// Put together a list of available dessert
                 for (AmountResource dessert : availableDesserts) {
-                	if (resource.getName().equals(dessert.getName())) {
+                	if (ResourceUtil.findAmountResource(resource).getName().equals(dessert.getName())) {
     	        		// 2015-03-15 Added the amount of all six desserts together
-    	        		amountDessertLoaded += vInv.getAmountResourceStored((AmountResource) resource, false);
-    	        		totalAmountDessertStored += inv.getAmountResourceStored((AmountResource) resource, false);
+    	        		amountDessertLoaded += vInv.getARStored(resource, false);
+    	        		totalAmountDessertStored += inv.getARStored(resource, false);
     	        		settlementDessertNeed += getSettlementNeed(settlement, vehicleCrewNum,
-    	        		        (AmountResource) resource, tripTime);
+    	        		        resource, tripTime);
     	        		isDessert = true;
                 	}
                 }
@@ -927,14 +936,13 @@ implements Serializable {
 
         		else  { // this resource is not a dessert
 	        		double amountNeeded = (Double) resources.get(resource);
-	        		double settlementNeed = getSettlementNeed(settlement, vehicleCrewNum,
-	        		        (AmountResource) resource, tripTime);
-	        		double amountLoaded = vInv.getAmountResourceStored((AmountResource) resource, false);
+	        		double settlementNeed = getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
+	        		double amountLoaded = vInv.getARStored(resource, false);
 	        		double totalNeeded = amountNeeded + settlementNeed - amountLoaded;
-	        		if (inv.getAmountResourceStored((AmountResource) resource, false) < totalNeeded) {
-	        			double stored = inv.getAmountResourceStored((AmountResource) resource, false);
+	        		if (inv.getARStored(resource, false) < totalNeeded) {
+	        			double stored = inv.getARStored(resource, false);
 	        			if (logger.isLoggable(Level.INFO))
-	        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, resource.getName() 
+	        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, ResourceUtil.findAmountResource(resource).getName() 
 	        						+ " needed: " + Math.round(totalNeeded*10.0)/10.0 
 	        						+ " stored: " + Math.round(stored*10.0)/10.0 , null);
 	        			//enoughSupplies = false;
@@ -943,16 +951,15 @@ implements Serializable {
                 }
         	}
 
-        	else if (resource instanceof ItemResource) {
+        	else if (resource >= FIRST_ITEM_RESOURCE) {
         		int numNeeded = (Integer) resources.get(resource);
-        		int settlementNumPartNeed = getRemainingSettlementNum(settlement, vehicleCrewNum,
-        		        (ItemResource) resource);
-        		int numLoaded = vInv.getItemResourceNum((ItemResource) resource);
+        		int settlementNumPartNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, resource);
+        		int numLoaded = vInv.getItemResourceNum(resource);
         		int totalNeeded = numNeeded + settlementNumPartNeed - numLoaded;
-        		if (inv.getItemResourceNum((ItemResource) resource) < totalNeeded) {
-        			int stored = inv.getItemResourceNum((ItemResource) resource);
+        		if (inv.getItemResourceNum(resource) < totalNeeded) {
+        			int stored = inv.getItemResourceNum(resource);
         			if (logger.isLoggable(Level.INFO))
-        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, resource.getName() 
+        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, ResourceUtil.findAmountResource(resource).getName() 
         						+ " needed: " + totalNeeded + " stored: " + stored, null);
         			//enoughSupplies = false;
         			return false;
@@ -962,9 +969,9 @@ implements Serializable {
         }
 
         // Check if there is enough equipment at the settlement.
-        Iterator<Class<? extends Equipment>> iE = equipment.keySet().iterator();
+        Iterator<Integer> iE = equipment.keySet().iterator();
         while (iE.hasNext()) {
-        	Class<? extends Equipment> equipmentType = iE.next();
+        	Integer equipmentType = iE.next();
         	int numNeeded = equipment.get(equipmentType);
         	int settlementEquipmentNumNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
         	int numLoaded = vInv.findNumUnitsOfClass(equipmentType);
@@ -994,7 +1001,7 @@ implements Serializable {
      * @throws Exception if error getting the remaining amount.
      */
     static double getSettlementNeed(Settlement settlement, int vehicleCrewNum,
-    		AmountResource resource, double tripTime) {
+    		Integer resource, double tripTime) {
     	int remainingPeopleNum = settlement.getIndoorPeopleCount() - vehicleCrewNum;
     	double amountPersonPerSol = 0D;
     	double tripTimeSols = tripTime / 1000D;
@@ -1004,17 +1011,17 @@ implements Serializable {
     	//	throw new IllegalArgumentException("personConfig is null");
     	
     	// Only life support resources are required at settlement at this time.
-    	if (resource.equals(ResourceUtil.oxygenAR)) 
+    	if (resource == oxygenID) 
     		amountPersonPerSol = personConfig.getNominalO2ConsumptionRate();
-    	else if (resource.equals(ResourceUtil.waterAR)) 
+    	else if (resource == waterID) 
     		amountPersonPerSol = personConfig.getWaterConsumptionRate();
-    	else if (resource.equals(ResourceUtil.foodAR)) 
+    	else if (resource == foodID) 
       	  // Divide by 3 arbitrarily since settlers prefer to have meals rather than preserved food
     		amountPersonPerSol = personConfig.getFoodConsumptionRate() / 3D; 
     	else {
 	    	// check if this resource is a dessert
 	        for (AmountResource dessert : availableDesserts) {
-	           	if (resource.getName().equals(dessert.getName())) {
+	           	if (ResourceUtil.findAmountResource(resource).getName().equals(dessert.getName())) {
 	          		amountPersonPerSol = PreparingDessert.getDessertMassPerServing();
 	          		break;
 	        	}
@@ -1033,7 +1040,7 @@ implements Serializable {
      * @throws Exception if error getting the remaining number.
      */
     private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum,
-    		ItemResource resource) {
+    		Integer resource) {
     	// No item resources required at settlement at this time.
     	return 1;
     }
@@ -1071,8 +1078,8 @@ implements Serializable {
      * @return true if vehicle can carry supplies.
      * @throws Exception if error
      */
-    public static boolean enoughCapacityForSupplies(Map<Resource, Number> resources,
-            Map<Class<? extends Equipment>, Integer> equipment, Vehicle vehicle, Settlement settlement) {
+    public static boolean enoughCapacityForSupplies(Map<Integer, Number> resources,
+            Map<Integer, Integer> equipment, Vehicle vehicle, Settlement settlement) {
 
     	boolean sufficientCapacity = true;
 
@@ -1081,26 +1088,30 @@ implements Serializable {
 
     	try {
     		// Add equipment clones.
-    		Iterator<Class<? extends Equipment>> i = equipment.keySet().iterator();
+    		Iterator<Integer> i = equipment.keySet().iterator();
     		while (i.hasNext()) {
-    			Class<? extends Equipment> equipmentType = i.next();
+    			Integer equipmentType = i.next();
     			int num = equipment.get(equipmentType);
     			Coordinates defaultLoc = new Coordinates(0D, 0D);
     			for (int x = 0; x < num; x++)
-    				inv.storeUnit(EquipmentFactory.getEquipment(equipmentType, defaultLoc, false));
+    				inv.storeUnit(EquipmentFactory.createEquipment(
+    						equipmentType, 
+    						defaultLoc, 
+    						false));
     		}
 
     		// Add all resources.
-    		Iterator<Resource> j = resources.keySet().iterator();
+    		Iterator<Integer> j = resources.keySet().iterator();
     		while (j.hasNext()) {
-    			Resource resource = j.next();
-    			if (resource instanceof AmountResource) {
+    			Integer resource = j.next();
+    			
+    			if (resource > 1000) {
     				double amount = (Double) resources.get(resource);
-    				inv.storeAmountResource((AmountResource) resource, amount, true);
+    				inv.storeAR(resource, amount, true);
     			}
     			else {
     				int num = (Integer) resources.get(resource);
-    				inv.storeItemResources((ItemResource) resource, num);
+    				inv.storeItemResources(resource, num);
     			}
     		}
     	}
@@ -1124,9 +1135,9 @@ implements Serializable {
      * @param settlement the settlement that the vehicle is being loaded from.
      * @return true if vehicle is fully loaded.
      */
-    public static boolean isFullyLoaded(Map<Resource, Number> requiredResources,
-            Map<Resource, Number> optionalResources, Map<Class<? extends Equipment>, Integer> requiredEquipment,
-            Map<Class<? extends Equipment>, Integer> optionalEquipment, Vehicle vehicle, Settlement settlement) {
+    public static boolean isFullyLoaded(Map<Integer, Number> requiredResources,
+            Map<Integer, Number> optionalResources, Map<Integer, Integer> requiredEquipment,
+            Map<Integer, Integer> optionalEquipment, Vehicle vehicle, Settlement settlement) {
 
     	boolean sufficientSupplies = true;
 
@@ -1149,8 +1160,8 @@ implements Serializable {
      * @param settlement the settlement that the vehicle is being loaded from.
      * @return true if vehicle is loaded.
      */
-    private static boolean isFullyLoadedWithResources(Map<Resource, Number> requiredResources,
-            Map<Resource, Number> optionalResources, Vehicle vehicle, Settlement settlement) {
+    private static boolean isFullyLoadedWithResources(Map<Integer, Number> requiredResources,
+            Map<Integer, Number> optionalResources, Vehicle vehicle, Settlement settlement) {
 
     	if (vehicle == null) {
     	    throw new IllegalArgumentException("vehicle is null");
@@ -1161,19 +1172,19 @@ implements Serializable {
         Inventory sInv = settlement.getInventory();
 
         // Check that required resources are loaded first.
-        Iterator<Resource> iR = requiredResources.keySet().iterator();
+        Iterator<Integer> iR = requiredResources.keySet().iterator();
         while (iR.hasNext() && sufficientSupplies) {
-        	Resource resource = iR.next();
-        	if (resource instanceof AmountResource) {
+        	Integer resource = iR.next();
+        	if (resource < FIRST_ITEM_RESOURCE) {
         		double amount = (Double) requiredResources.get(resource);
-        		double storedAmount = vInv.getAmountResourceStored((AmountResource) resource, false);
+        		double storedAmount = vInv.getARStored(resource, false);
         		if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
         		    sufficientSupplies = false;
         		}
         	}
-        	else if (resource instanceof ItemResource) {
+        	else if (resource >= FIRST_ITEM_RESOURCE) {
         		int num = (Integer) requiredResources.get(resource);
-        		if (vInv.getItemResourceNum((ItemResource) resource) < num) {
+        		if (vInv.getItemResourceNum(resource) < num) {
         		    sufficientSupplies = false;
         		}
         	}
@@ -1183,26 +1194,25 @@ implements Serializable {
         }
 
         // Check that optional resources are loaded or can't be loaded.
-        Iterator<Resource> iR2 = optionalResources.keySet().iterator();
+        Iterator<Integer> iR2 = optionalResources.keySet().iterator();
         while (iR2.hasNext() && sufficientSupplies) {
-            Resource resource = iR2.next();
-            if (resource instanceof AmountResource) {
+        	Integer resource = iR2.next();
+            if (resource < 1000) {
 
-                AmountResource amountResource = (AmountResource) resource;
+                //AmountResource amountResource = (AmountResource) resource;
                 double amount = (Double) optionalResources.get(resource);
                 if (requiredResources.containsKey(resource)) {
                     amount += (Double) requiredResources.get(resource);
                 }
 
-                double storedAmount = vInv.getAmountResourceStored(amountResource, false);
+                double storedAmount = vInv.getARStored(resource, false);
                 if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
                     // Check if enough capacity in vehicle.
-                    double vehicleCapacity = vInv.getAmountResourceRemainingCapacity(
-                            amountResource, true, false);
+                    double vehicleCapacity = vInv.getARRemainingCapacity(resource, true, false);
                     boolean hasVehicleCapacity = (vehicleCapacity >= (amount - storedAmount));
 
                     // Check if enough stored in settlement.
-                    double storedSettlement = sInv.getAmountResourceStored(amountResource, false);
+                    double storedSettlement = sInv.getARStored(resource, false);
                     if (settlement.getParkedVehicles().contains(vehicle)) {
                         storedSettlement -= storedAmount;
                     }
@@ -1213,22 +1223,22 @@ implements Serializable {
                     }
                 }
             }
-            else if (resource instanceof ItemResource) {
+            else if (resource >= 1000) {
 
-                ItemResource itemResource = (ItemResource) resource;
+                //ItemResource itemResource = (ItemResource) resource;
                 double num = (Integer) optionalResources.get(resource);
                 if (requiredResources.containsKey(resource)) {
                     num += (Integer) requiredResources.get(resource);
                 }
 
-                int storedNum = vInv.getItemResourceNum(itemResource);
+                int storedNum = vInv.getItemResourceNum(resource);
                 if (storedNum < num) {
                     // Check if enough capacity in vehicle.
                     double vehicleCapacity = vInv.getRemainingGeneralCapacity(false);
-                    boolean hasVehicleCapacity = (vehicleCapacity >= ((num - storedNum) * itemResource.getMassPerItem()));
+                    boolean hasVehicleCapacity = (vehicleCapacity >= ((num - storedNum) * ItemResourceUtil.findItemResource(resource).getMassPerItem()));
 
                     // Check if enough stored in settlement.
-                    int storedSettlement = sInv.getItemResourceNum(itemResource);
+                    int storedSettlement = sInv.getItemResourceNum(resource);
                     if (settlement.getParkedVehicles().contains(vehicle)) {
                         storedSettlement -= storedNum;
                     }
@@ -1255,8 +1265,8 @@ implements Serializable {
      * @param settlement the settlement that the vehicle is being loaded from.
      * @return true if vehicle is full loaded.
      */
-    private static boolean isFullyLoadedWithEquipment(Map<Class<? extends Equipment>, Integer> requiredEquipment,
-            Map<Class<? extends Equipment>, Integer> optionalEquipment, Vehicle vehicle, Settlement settlement) {
+    private static boolean isFullyLoadedWithEquipment(Map<Integer, Integer> requiredEquipment,
+            Map<Integer, Integer> optionalEquipment, Vehicle vehicle, Settlement settlement) {
 
     	if (vehicle == null) {
     	    throw new IllegalArgumentException("vehicle is null");
@@ -1267,9 +1277,9 @@ implements Serializable {
         Inventory sInv = settlement.getInventory();
 
         // Check that required equipment is loaded first.
-        Iterator<Class<? extends Equipment>> iE = requiredEquipment.keySet().iterator();
+        Iterator<Integer> iE = requiredEquipment.keySet().iterator();
         while (iE.hasNext() && sufficientSupplies) {
-        	Class<? extends Equipment> equipmentType = iE.next();
+        	Integer equipmentType = iE.next();
         	int num = requiredEquipment.get(equipmentType);
         	if (vInv.findNumUnitsOfClass(equipmentType) < num) {
         	    sufficientSupplies = false;
@@ -1277,9 +1287,9 @@ implements Serializable {
         }
 
         // Check that optional equipment is loaded or can't be loaded.
-        Iterator<Class<? extends Equipment>> iE2 = optionalEquipment.keySet().iterator();
+        Iterator<Integer> iE2 = optionalEquipment.keySet().iterator();
         while (iE2.hasNext() && sufficientSupplies) {
-            Class<? extends Equipment> equipmentType = iE2.next();
+        	Integer equipmentType = iE2.next();
             int num = optionalEquipment.get(equipmentType);
             if (requiredEquipment.containsKey(equipmentType)) {
                 num += requiredEquipment.get(equipmentType);

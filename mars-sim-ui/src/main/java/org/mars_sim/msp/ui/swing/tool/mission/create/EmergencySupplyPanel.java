@@ -306,7 +306,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 				PhaseType phase = resource.getPhase();
 				Class containerType = ContainerUtil.getContainerTypeNeeded(phase);
 				int containerNum = containerMap.get(containerType);
-				Unit container = EquipmentFactory.getEquipment(containerType, new Coordinates(0, 0), true);
+				Unit container = EquipmentFactory.createEquipment(containerType, new Coordinates(0, 0), true);
 				double capacity = container.getInventory().getAmountResourceCapacity(resource, false);
 				double totalCapacity = containerNum * capacity;
 				double resourceAmount = cargoGoods.get(good);

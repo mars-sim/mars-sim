@@ -304,16 +304,16 @@ extends MonitorTab {
             };
         }
 
-        // 2014-12-29 Added ColumnResizer
+        // Added ColumnResizer
      	//SwingUtilities.invokeLater(() -> {
             TableStyle.setTableStyle(table);
 	     	//adjustColumnPreferredWidths(table);
 	    //});
 
-    	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
+    	// Switched to using the TableStyle's setTableStyle()
         //TableStyle.setTableStyle(table);
 
-        //2017-03-24 Enable use of RowFilter with Swingbits
+        // Enable use of RowFilter with Swingbits
         // see https://github.com/eugener/oxbow/wiki/Table-Filtering
         //TableRowFilterSupport.forTable(table).apply();
 
@@ -321,7 +321,7 @@ extends MonitorTab {
         if (singleSelection)
         	table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		// 2015-06-08 Added RowNumberTable
+		// Added RowNumberTable
         WebTable rowTable = new RowNumberTable(table);
         TableStyle.setTableStyle(rowTable);
         // Add a scrolled window and center it with the table

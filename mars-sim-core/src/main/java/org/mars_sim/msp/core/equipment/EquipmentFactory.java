@@ -56,6 +56,10 @@ public final class EquipmentFactory {
 	    
 	}
 
+	public static Equipment createEquipment(int type, Coordinates location, boolean temp) {
+		return createEquipment(EquipmentType.int2enum(type).getName(), location, temp);
+	}
+	
 	/**
 	 * Gets an equipment instance from an equipment type string.
 	 * @param type the equipment type string.
@@ -64,11 +68,11 @@ public final class EquipmentFactory {
 	 * @return the equipment instance.
 	 * @throws Exception if error creating equipment instance.
 	 */
-	public static Equipment getEquipment(String type, Coordinates location, boolean temp) {
+	public static Equipment createEquipment(String type, Coordinates location, boolean temp) {
 		if (temp) {
 			if (equipmentTypeCache.containsKey(type)) return equipmentTypeCache.get(type);
 			else {
-				Equipment equipment = getEquipment(type, location, false);
+				Equipment equipment = createEquipment(type, location, false);
 				equipmentTypeCache.put(type, equipment);
 				return equipment;
 			}
@@ -97,7 +101,7 @@ public final class EquipmentFactory {
 	 * @return the equipment instance.
 	 * @throws Exception if error creating equipment instance.
 	 */
-	public static Equipment getEquipment(
+	public static Equipment createEquipment(
 		Class<? extends Equipment> equipmentClass,
 		Coordinates location,
 		boolean temp
@@ -105,7 +109,7 @@ public final class EquipmentFactory {
 		if (temp) {
 			if (equipmentClassCache.containsKey(equipmentClass)) return equipmentClassCache.get(equipmentClass);
 			else {
-				Equipment equipment = getEquipment(equipmentClass, location, false);
+				Equipment equipment = createEquipment(equipmentClass, location, false);
 				equipmentClassCache.put(equipmentClass, equipment);
 				return equipment;
 			}
@@ -139,6 +143,11 @@ public final class EquipmentFactory {
 		else throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
 	}
 
+//	public static int getEquipmentID(String type) {
+//		return EquipmentType.str2int(type);
+//	}
+
+	
     /**
      * Gets the empty mass of the equipment.
      * @param type the equipment type string.

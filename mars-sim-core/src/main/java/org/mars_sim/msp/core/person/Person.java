@@ -674,7 +674,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Is the person outside
+	 * Is the person outside on the surface of Mars
 	 * @return true if the person is outside
 	 */
 	public boolean isOutside() {
@@ -893,10 +893,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		isBuried = true;		
 		// Remove the person from the settlement
 		setContainerUnit(null);
-		// Remove the person from being a member of the associated settlement		
-		setAssociatedSettlement(null);		
 		// Set his/her buried settlement
 		setBuriedSettlement(associatedSettlement);
+		// Remove the person from being a member of the associated settlement		
+		setAssociatedSettlement(null);		
+		// Set work shift to OFF
+		setShiftType(ShiftType.OFF);
 		// Set unit description to "Dead"
 		super.setDescription("Dead");
         // Throw unit event.
@@ -909,15 +911,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	void setDeclaredDead() {
 
 		declaredDead = true;
-
-		setShiftType(ShiftType.OFF);
-
+		// Set quarters to null
 		if (quarters != null) {
 			LivingAccommodations accommodations = quarters.getLivingAccommodations();
 			accommodations.getBedMap().remove(this);
 			quarters = null;
 		}
-
+		// Empty the bed
 		if (bed != null)
 			bed = null;
 
@@ -953,7 +953,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 				if (!condition.isDead()) {
 
-					// 2015-06-29 Added calling preference
+					// Added calling preference
 					preference.timePassing(time);
 
 					try {
@@ -975,8 +975,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 							// Adjust the shiftChoice once every 3 sols based on sleep hour
 							int bestSleepTime[] = getPreferredSleepHours();
 							taskSchedule.adjustShiftChoice(bestSleepTime);
-						}
-						
+						}				
 						
 						if (solElapsed % 4 == 0) {
 							// Increment the shiftChoice once every 4 sols
@@ -990,17 +989,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 					}
 				}
 			}
-
-			else if (!declaredDead) {
-				setDeclaredDead();
-				mind.setInactive();
-			}
-			
+		
 			else if (!isBuried 
 					&& condition.getDeathDetails() != null 
 					&& condition.getDeathDetails().getBodyRetrieved()) {
-						buryBody();
-
+			
+				if (!declaredDead) {
+					setDeclaredDead();
+					mind.setInactive();
+				}
+				
+				buryBody();
 			}
 	    }
 

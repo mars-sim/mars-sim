@@ -62,7 +62,7 @@ implements Indoor, Salvagable {
 		
 		unitManager = Simulation.instance().getUnitManager();
 	}
-
+	
 	/**
 	 * Gets a collection of people affected by this entity.
 	 * @return person collection

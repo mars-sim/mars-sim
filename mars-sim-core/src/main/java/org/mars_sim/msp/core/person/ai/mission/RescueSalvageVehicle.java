@@ -20,15 +20,13 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Driver;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Resource;
+
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -82,10 +80,11 @@ implements Serializable {
     private static UnitManager unitManager;
     private static MissionManager missionManager;
     
-	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	private static AmountResource waterAR = ResourceUtil.waterAR;
-	private static AmountResource foodAR = ResourceUtil.foodAR;
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+	private static int foodID = ResourceUtil.foodID;
 
+	
     /**
      * Constructor
      * @param startingPerson the person starting the mission.
@@ -107,7 +106,8 @@ implements Serializable {
             		vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
 
             	// Obtain a rescuing vehicle and ensure that vehicleTarget is not included.
-            	reserveVehicle();
+            	if (!reserveVehicle())
+            		return;
             	
                 int capacity = getRover().getCrewCapacity();
                 if (capacity < MAX_GOING_MEMBERS) {
@@ -347,28 +347,20 @@ implements Serializable {
 
         // If rescuing vehicle crew, load rescue life support resources into vehicle (if possible).
         if (rescue) {
-            Map<Resource, Number> rescueResources = determineRescueResourcesNeeded(true);
-            //Iterator<Resource> i = rescueResources.keySet().iterator();
-            //while (i.hasNext()) {
-            for (Resource resource : rescueResources.keySet()) {//= (AmountResource) i.next();
-                double amount = (Double) rescueResources.get((AmountResource)resource);
+            Map<Integer, Number> rescueResources = determineRescueResourcesNeeded(true);
+
+            for (Integer resource : rescueResources.keySet()) {
+                double amount = (Double) rescueResources.get(resource);
                 Inventory roverInv = getRover().getInventory();
                 Inventory targetInv = vehicleTarget.getInventory();
-                double amountNeeded = amount - targetInv.getAmountResourceStored((AmountResource)resource, false);
-
-                // 2015-01-09 Added addDemandTotalRequest()
-                //targetInv.addDemandTotalRequest(resource);
+                double amountNeeded = amount - targetInv.getARStored(resource, false);
 
                 if ((amountNeeded > 0) 
-                		&& (roverInv.getAmountResourceStored((AmountResource)resource, false) > amountNeeded)) {
-                    roverInv.retrieveAmountResource((AmountResource)resource, amountNeeded);
+                		&& (roverInv.getARStored(resource, false) > amountNeeded)) {
+                    roverInv.retrieveAR(resource, amountNeeded);
 
-                    // 2015-01-09 addDemandRealUsage()
-                    //roverInv.addDemandRealUsage(resource,amountNeeded);
+                    targetInv.storeAR(resource, amountNeeded, true);
 
-                    targetInv.storeAmountResource((AmountResource)resource, amountNeeded, true);
-       			 	// 2015-01-15 Add addSupplyAmount()
-                    //targetInv.addSupplyAmount(harvestCropAR, harvestAmount);
                 }
             }
         }
@@ -517,8 +509,8 @@ implements Serializable {
      * @return map of amount resources and their amounts.
      * @throws MissionException if error determining resources.
      */
-    private Map<Resource, Number> determineRescueResourcesNeeded(boolean useBuffer) {
-        Map<Resource, Number> result = new HashMap<Resource, Number>(3);
+    private Map<Integer, Number> determineRescueResourcesNeeded(boolean useBuffer) {
+        Map<Integer, Number> result = new HashMap<Integer, Number>(3);
 
         // Determine estimate time for trip.
         double distance = vehicleTarget.getCoordinates().getDistance(getStartingSettlement().getCoordinates());
@@ -533,21 +525,21 @@ implements Serializable {
         if (useBuffer) {
             oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin();
         }
-        result.put(oxygenAR, oxygenAmount);
+        result.put(oxygenID, oxygenAmount);
 
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * peopleNum * Mission.WATER_MARGIN;
         if (useBuffer) {
             waterAmount *= Vehicle.getLifeSupportRangeErrorMargin();
         }
-        result.put(waterAR, waterAmount);
+        result.put(waterID, waterAmount);
 
         //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * peopleNum * Mission.FOOD_MARGIN;
         if (useBuffer) {
             foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
         }
-        result.put(foodAR, foodAmount);
+        result.put(foodID, foodAmount);
 
         return result;
     }
@@ -683,17 +675,19 @@ implements Serializable {
     }
 
     @Override
-    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
+    public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
 
-        Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
+        Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
 
         // Include rescue resources if needed.
         if (rescue && (getRover().getTowedVehicle() == null)) {
-            Map<Resource, Number> rescueResources = determineRescueResourcesNeeded(useBuffer);
-            //Iterator<Resource> i = rescueResources.keySet().iterator();
-            //while (i.hasNext()) {
-            for (Resource resource : rescueResources.keySet()) {//= i.next();
-                if (resource instanceof AmountResource) {
+            Map<Integer, Number> rescueResources = determineRescueResourcesNeeded(useBuffer);
+ 
+//            int cutOffID = SimulationConfig.instance().getResourceConfiguration().getNextID();
+            
+            for (Integer resource : rescueResources.keySet()) {//= i.next();
+            	if (resource < 1000) {
+//                if (resource instanceof AmountResource) {
                     double amount = (Double) rescueResources.get(resource);
                     if (result.containsKey(resource)) {
                         amount += (Double) result.get(resource);
@@ -717,12 +711,12 @@ implements Serializable {
     }
 
     @Override
-    public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
+    public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
         if (equipmentNeededCache != null) {
             return equipmentNeededCache;
         }
         else {
-            Map<Class<? extends Equipment>, Integer> result = new HashMap<>();
+            Map<Integer, Integer> result = new HashMap<>();
             equipmentNeededCache = result;
             return result;
         }
@@ -808,18 +802,18 @@ implements Serializable {
      * @return resources and their number.
      * @throws MissionException if error determining resources.
      */
-    public Map<Resource, Number> getResourcesToLoad() {
+    public Map<Integer, Number> getResourcesToLoad() {
         // Override and full rover with fuel and life support resources.
-        Map<Resource, Number> result = new HashMap<Resource, Number>(4);
+        Map<Integer, Number> result = new HashMap<Integer, Number>(4);
         Inventory inv = getVehicle().getInventory();
-        result.put(getVehicle().getFuelType(), inv.getAmountResourceCapacity(
+        result.put(getVehicle().getFuelType(), inv.getARCapacity(
                 getVehicle().getFuelType(), false));
         //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        result.put(oxygenAR, inv.getAmountResourceCapacity(oxygenAR, false));
+        result.put(oxygenID, inv.getARCapacity(oxygenID, false));
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-        result.put(waterAR, inv.getAmountResourceCapacity(waterAR, false));
+        result.put(waterID, inv.getARCapacity(waterID, false));
         //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-        result.put(foodAR, inv.getAmountResourceCapacity(foodAR, false));
+        result.put(foodID, inv.getARCapacity(foodID, false));
 
         // Get parts too.
         result.putAll(getPartsNeededForTrip(getTotalRemainingDistance()));
@@ -836,8 +830,8 @@ implements Serializable {
         unitManager = null;
         missionManager = null;
         
-    	oxygenAR = null;
-    	waterAR = null;
-    	foodAR = null;
+//    	oxygenAR = null;
+//    	waterAR = null;
+//    	foodAR = null;
     }
 }

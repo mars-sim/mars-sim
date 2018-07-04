@@ -121,7 +121,7 @@ public class HistoricalEventManager implements Serializable {
 	
 	
 	public boolean isSameEvent(HistoricalEvent newEvent) {
-		boolean result = false;
+//		boolean result = false;
 		if (lastEvents != null && !lastEvents.isEmpty()) {
 			for (HistoricalEvent e : lastEvents) {
 				
@@ -132,12 +132,13 @@ public class HistoricalEventManager implements Serializable {
 					|| e.getLocation0().equals(newEvent.getLocation0())
 					|| e.getLocation1().equals(newEvent.getLocation1())
 				 ) {
-					result = true;
+//					result = true;
+					return true;
 				}
 				
 			}
 		}
-		return result;
+		return false;
 	}
 	
 	/**
@@ -175,24 +176,24 @@ public class HistoricalEventManager implements Serializable {
 			 
 			newEvent.setTimestamp(timestamp);
 	
-			convertEvent(newEvent);
-			
-//			events.add(0, newEvent);
-			
+			SimpleEvent se = convert2SimpleEvent(newEvent);
 
 			if (listeners == null) {
 				listeners = new ArrayList<HistoricalEventListener>();
 			}
 			
 			Iterator<HistoricalEventListener> iter = listeners.iterator();
-			while (iter.hasNext()) 
-				iter.next().eventAdded(0, newEvent);
-
+			while (iter.hasNext()) {
+				HistoricalEventListener l = iter.next();
+				l.eventAdded(0, se);
+				l.eventAdded(0, newEvent);
+			}
+				
 			narrator.translate(newEvent);
 		}
 	}
 
-	private void convertEvent(HistoricalEvent event) {
+	private SimpleEvent convert2SimpleEvent(HistoricalEvent event) {
 		short sol = (short)(event.getTimestamp().getMissionSol());
 		float msol = (float)(event.getTimestamp().getMillisol());
 		byte cat = (byte)(event.getCategory().ordinal());
@@ -202,7 +203,9 @@ public class HistoricalEventManager implements Serializable {
 		short loc0 = (short)(getID(loc0Map, event.getLocation0()));
 		short loc1 = (short)(getID(loc1Map, event.getLocation1()));
 		
-		eventsRegistry.add(0, new SimpleEvent(sol, msol, cat, type, what, who, loc0, loc1));
+		SimpleEvent se = new SimpleEvent(sol, msol, cat, type, what, who, loc0, loc1);
+		eventsRegistry.add(0, se);
+		return se;	
 	}
 	
 	public int getID(Map<Integer, String> map, String v) {

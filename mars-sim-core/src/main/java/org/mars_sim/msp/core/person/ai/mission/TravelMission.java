@@ -292,7 +292,9 @@ extends Mission {
      * @return distance (km)
      */
     public final double getCurrentLegDistance() {
-        if (travelStatus != null && TRAVEL_TO_NAVPOINT.equals(travelStatus)) {
+        if (travelStatus != null && TRAVEL_TO_NAVPOINT.equals(travelStatus)
+        		&& lastStopNavpoint != null
+        		&& getNextNavpoint() != null) {
             return lastStopNavpoint.getLocation().getDistance(
                     getNextNavpoint().getLocation());
         }

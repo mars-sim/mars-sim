@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -283,8 +284,8 @@ public final class MalfunctionFactory implements Serializable {
 	 * @return map of repair parts and probable number of parts needed per malfunction.
 	 * @throws Exception if error finding repair part probabilities.
 	 */
-	Map<Part, Double> getRepairPartProbabilities(Collection<String> scope) {
-		Map<Part, Double> result = new HashMap<Part, Double>();
+	Map<Integer, Double> getRepairPartProbabilities(Collection<String> scope) {
+		Map<Integer, Double> result = new HashMap<Integer, Double>();
 
 		for (Malfunction m : malfunctions) {
 			if (m.isMatched(scope)) {
@@ -296,10 +297,12 @@ public final class MalfunctionFactory implements Serializable {
 					int partNumber = config.getRepairPartNumber(m.getName(), partName);
 					double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
 					double totalNumber = averageNumber * partProbability * malfunctionProbability;
-					Part part = (Part) ItemResource.findItemResource(partName);
-					if (result.containsKey(part)) 
-						totalNumber += result.get(part);
-					result.put(part, totalNumber);
+//					Part part = (Part) ItemResource.findItemResource(partName);
+//					int id = part.getID();
+					Integer id = ItemResourceUtil.findIDbyItemResourceName(partName);
+					if (result.containsKey(id)) 
+						totalNumber += result.get(id);
+					result.put(id, totalNumber);
 				}
 			}
 		}
@@ -313,18 +316,24 @@ public final class MalfunctionFactory implements Serializable {
 	 * @return map of maintenance parts and probable number of parts needed per maintenance.
 	 * @throws Exception if error finding maintenance part probabilities.
 	 */
-	Map<Part, Double> getMaintenancePartProbabilities(Collection<String> scope) {
-		Map<Part, Double> result = new HashMap<Part, Double>();
+	Map<Integer, Double> getMaintenancePartProbabilities(Collection<String> scope) {
+		Map<Integer, Double> result = new HashMap<Integer, Double>();
 
 		for (String entity : scope) {
-			for (Part part : Part.getParts()) {
+			for (Part part : ItemResourceUtil.getItemResources()) {
 				if (part.hasMaintenanceEntity(entity)) {
 					double prob = part.getMaintenanceProbability(entity) / 100D;
 					int partNumber = part.getMaintenanceMaximumNumber(entity);
 					double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
-					double totalNumber = averageNumber * prob;
-					if (result.containsKey(part)) totalNumber += result.get(part);
-					result.put(part, totalNumber);
+					double totalNumber = averageNumber * prob;										
+//					if (result.containsKey(part)) 
+//						totalNumber += result.get(part);
+//					result.put(part, totalNumber);
+					Integer id = ItemResourceUtil.findIDbyItemResourceName(part.getName());
+					if (result.containsKey(id)) 
+						totalNumber += result.get(id);
+					result.put(id, totalNumber);
+					
 				}
 			}
 		}

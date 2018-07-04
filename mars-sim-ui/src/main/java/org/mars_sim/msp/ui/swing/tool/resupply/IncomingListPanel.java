@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
+import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
@@ -169,5 +170,11 @@ implements ListSelectionListener {
 			  transportList = null;
 			  Simulation.instance().getEventManager().removeListener(this);
 		  }
+
+		@Override
+		public void eventAdded(int index, SimpleEvent event) {
+			// TODO Auto-generated method stub
+			
+		}
 	 }
 }

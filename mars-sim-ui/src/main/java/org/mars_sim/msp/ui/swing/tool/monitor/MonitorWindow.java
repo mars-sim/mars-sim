@@ -102,6 +102,7 @@ implements TableModelListener, ActionListener {
 
 	private WebPanel statusPanel;
 	private WebTable table ;
+	private WebTable rowTable;
 	private Searchable searchable ;
 	private SearchableBar _tableSearchableBar;
 
@@ -413,14 +414,12 @@ implements TableModelListener, ActionListener {
 
 	public void tabChanged(boolean reloadSearch) {
 		//SwingUtilities.updateComponentTreeUI(this);
-		//System.out.println("tabChanged()");
 		MonitorTab newTab = getSelected();
 		WebTable table = null;
 		
 		if (newTab != oldTab) {
 			newTab.getModel().addTableModelListener(this);
 			//if (oldTab != null) System.out.println("tabChanged() : oldTab is " + oldTab.getName());
-			//System.out.println("tabChanged() : newTab is " + newTab.getName());
 
 			// Disable all buttons
 			buttonMap.setEnabled(false);
@@ -469,6 +468,8 @@ implements TableModelListener, ActionListener {
 				// Note: needed for periodic refreshing in ToolWindow
 	            //TableStyle.setTableStyle(new RowNumberTable(table));
 	            TableStyle.setTableStyle(table);       
+		        rowTable = new RowNumberTable(table);
+		        TableStyle.setTableStyle(rowTable);
 				//statusPanel.remove(_tableSearchableBar);
 	            if (reloadSearch)
 	            	createSearchableBar(table);
@@ -618,7 +619,7 @@ implements TableModelListener, ActionListener {
 	public void refreshTable() {
 		if (table != null) {
 	        TableStyle.setTableStyle(table);
-	        TableStyle.setTableStyle(new RowNumberTable(table));
+	        TableStyle.setTableStyle(rowTable);
 	        MonitorTab selected = getSelected();
 			if (selected == eventsTab) {
 				//String status = selected.getCountString();

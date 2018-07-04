@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
@@ -133,13 +134,14 @@ extends JPanel {
 	private String getPartsString() {
 		StringBuilder buf = new StringBuilder("Parts: ");
 
-		Map<Part, Integer> parts = malfunction.getRepairParts();
+		Map<Integer, Integer> parts = malfunction.getRepairParts();
 		if (parts.size() > 0) {
-			Iterator<Part> i = parts.keySet().iterator();
+			Iterator<Integer> i = parts.keySet().iterator();
 			while (i.hasNext()) {
-				Part part = i.next();
-				int number = parts.get(part);
-				buf.append(number).append(" ").append(part.getName());
+				Integer id = i.next();
+    			Part p = ItemResourceUtil.findItemResource(id);
+				int number = parts.get(id);
+				buf.append(number).append(" ").append(p.getName());
 				if (i.hasNext()) buf.append(", ");
 			}
 		}

@@ -357,10 +357,10 @@ implements Serializable {
         GoodsManager manager = settlement.getGoodsManager();
 
         // Add value of construction resources.
-        Map<AmountResource, Double> resources = stageInfo.getResources();
-        Iterator<AmountResource> j = resources.keySet().iterator();
+        Map<Integer, Double> resources = stageInfo.getResources();
+        Iterator<Integer> j = resources.keySet().iterator();
         while (j.hasNext()) {
-            AmountResource resource = j.next();
+        	Integer resource = j.next();
             Good resourceGood = GoodsUtil.getResourceGood(resource);
             double amount = resources.get(resource);
             double value = manager.getGoodValuePerItem(resourceGood) * amount;
@@ -368,10 +368,10 @@ implements Serializable {
         }
 
         // Add value of construction parts.
-        Map<Part, Integer> parts = stageInfo.getParts();
-        Iterator<Part> k = parts.keySet().iterator();
+        Map<Integer, Integer> parts = stageInfo.getParts();
+        Iterator<Integer> k = parts.keySet().iterator();
         while (k.hasNext()) {
-            Part part = k.next();
+        	Integer part = k.next();
             Good partGood = GoodsUtil.getResourceGood(part);
             int number = parts.get(part);
             double value = manager.getGoodValuePerItem(partGood) * number;

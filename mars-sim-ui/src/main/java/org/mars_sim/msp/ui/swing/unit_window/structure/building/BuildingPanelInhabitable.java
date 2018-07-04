@@ -11,18 +11,23 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
-import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
 
-import javax.swing.*;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
 
 /**
  * The InhabitableBuildingPanel class is a building function panel representing 
@@ -37,7 +42,7 @@ implements MouseListener {
 	private DefaultListModel<Person> inhabitantListModel;
 	private JList<Person> inhabitantList;
 	private Collection<Person> inhabitantCache;
-	private JLabel numberLabel;
+	private WebLabel numberLabel;
 
 	/**
 	 * Constructor.
@@ -56,14 +61,14 @@ implements MouseListener {
 		setLayout(new BorderLayout());
 
 		// Create label panel
-		JPanel labelPanel = new JPanel(new GridLayout(3, 1, 0, 0));
+		WebPanel labelPanel = new WebPanel(new GridLayout(3, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
 
 		// Create inhabitant label
 		// 2014-11-21 Changed font type, size and color of the title text
-		JLabel inhabitantLabel = new JLabel(Msg.getString("BuildingPanelInhabitable.title"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel inhabitantLabel = new WebLabel(Msg.getString("BuildingPanelInhabitable.title"), WebLabel.CENTER); //$NON-NLS-1$
 		inhabitantLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//inhabitantLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(inhabitantLabel);
@@ -71,24 +76,24 @@ implements MouseListener {
 		inhabitantLabel.setBackground(new Color(0,0,0,128));
 
 		// Create number label
-		numberLabel = new JLabel(Msg.getString("BuildingPanelInhabitable.number", inhabitable.getOccupantNumber()), JLabel.CENTER); //$NON-NLS-1$
+		numberLabel = new WebLabel(Msg.getString("BuildingPanelInhabitable.number", inhabitable.getOccupantNumber()), WebLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(numberLabel);
 		numberLabel.setOpaque(false);
 		numberLabel.setBackground(new Color(0,0,0,128));
 
 		// Create capacity label
-		JLabel capacityLabel = new JLabel(
+		WebLabel capacityLabel = new WebLabel(
 			Msg.getString(
 				"BuildingPanelInhabitable.capacity", //$NON-NLS-1$
 				inhabitable.getOccupantCapacity()
-			),JLabel.CENTER
+			),WebLabel.CENTER
 		);
 		labelPanel.add(capacityLabel);
 		capacityLabel.setOpaque(false);
 		capacityLabel.setBackground(new Color(0,0,0,128));
 
 		// Create inhabitant list panel
-		JPanel inhabitantListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel inhabitantListPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		add(inhabitantListPanel, BorderLayout.CENTER);
 		//inhabitantListPanel.setOpaque(false);
 		//inhabitantListPanel.setBackground(new Color(0,0,0,128));

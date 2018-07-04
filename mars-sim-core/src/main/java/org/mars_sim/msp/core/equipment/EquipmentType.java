@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.equipment;
 import java.util.HashSet;
 import java.util.Set;
 
+
 /**
  * The EquipmentType enum class is used for distinguishing between various type of equipments
  */
@@ -24,6 +25,7 @@ public enum EquipmentType {
 	SPECIMEN_CONTAINER	("Specimen Box");
 	// should 3D printer be an equipment or an itemResource ?
 	
+	private static final int STARTING_ID = 2000;
 	
 	private String name;	
 
@@ -62,5 +64,21 @@ public enum EquipmentType {
 			}
 		}
 		return equipmentSet;
+	}
+	
+	public static int str2int(String name) {
+		if (name != null) {
+	    	for (EquipmentType e : EquipmentType.values()) {
+	    		if (name.equalsIgnoreCase(e.name)) {
+	    			return e.ordinal() + STARTING_ID;
+	    		}
+	    	}
+		}
+		
+		return -1;
+	}
+	
+	public static EquipmentType int2enum(int ordinal) {
+		return EquipmentType.values()[ordinal-STARTING_ID];
 	}
 }

@@ -13,7 +13,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.JLayer;
-
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.LayerUI;
 
@@ -381,7 +381,7 @@ extends ToolWindow {
 		if (widthCache != width.get() || heightCache != height.get()) {
 			widthCache = width.get();
 			heightCache = height.get();
-			setSize(new Dimension((int)widthCache, (int)heightCache));
+    		SwingUtilities.invokeLater(()-> setSize(new Dimension((int)widthCache, (int)heightCache)));
 		}
 	/*
 		String d = marsClock.getDateString();
@@ -404,26 +404,35 @@ extends ToolWindow {
 
 
 	    if (sol != s) {
+//		    SwingUtilities.invokeLater(()-> 
 		    solLabel.setText(SOL + s);
+//		    );
 		    sol = s;
 	    }
 
 
 	    if (pop != p) {
+//		    SwingUtilities.invokeLater(()-> 
 		    popLabel.setText(POPULATION + p);
+//		    );
 		    pop = p;
 	    }
 
 	    if (cap != c) {
+//		    SwingUtilities.invokeLater(()-> 
 		    capLabel.setText(CAP + c);
+//		    );
 		    cap = c;
 	    }
 
 	    if (xCoor != 0 && yCoor != 0)
+//	    	SwingUtilities.invokeLater(()-> 
 	    	xyLabel.setText(POINTER + xCoor + COMMA + yCoor + CLOSE_PARENT);
+//	    	);
 	    else
+//	    	SwingUtilities.invokeLater(()-> 
 	    	xyLabel.setText("");
-	    //yLabel.setText(", " + yCoor + ")" + " ");
+//	    	);
 	}
 
 	/**

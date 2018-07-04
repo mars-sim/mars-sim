@@ -13,8 +13,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -112,9 +110,9 @@ implements Serializable {
 
 	    boolean result = false;
 
-	    Iterator<AmountResource> i = stage.getRemainingResources().keySet().iterator();
+	    Iterator<Integer> i = stage.getRemainingResources().keySet().iterator();
 	    while (i.hasNext() && !result) {
-	        AmountResource resource = i.next();
+	    	Integer resource = i.next();
 	        double amountRequired = stage.getRemainingResources().get(resource);
 	        if (amountRequired > 0D) {
 	            double amountStored = settlement.getInventory().getAmountResourceStored(resource, false);
@@ -124,9 +122,9 @@ implements Serializable {
 	        }
 	    }
 
-	    Iterator<Part> j = stage.getRemainingParts().keySet().iterator();
+	    Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
 	    while (j.hasNext() && !result) {
-	        Part part = j.next();
+	    	Integer part = j.next();
 	        int numRequired = stage.getRemainingParts().get(part);
 	        if (numRequired > 0) {
 	            int numStored = settlement.getInventory().getItemResourceNum(part);

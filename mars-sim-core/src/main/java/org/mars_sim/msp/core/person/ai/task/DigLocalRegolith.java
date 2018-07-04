@@ -68,7 +68,7 @@ implements Serializable {
 	private Bag bag;
 	private Settlement settlement;
 
-	//private static AmountResource regolithAR = ResourceUtil.regolithAR;
+	private static int regolithID = ResourceUtil.regolithID;
 
 	/**
 	 * Constructor.
@@ -243,17 +243,17 @@ implements Serializable {
 
         // Unload bag to rover's inventory.
         if (bag != null) {
-            AmountResource regolithAR = ResourceUtil.regolithAR;
-            double collectedAmount = bag.getInventory().getAmountResourceStored(regolithAR, false);
+//            AmountResource regolithID = ResourceUtil.regolithAR;
+            double collectedAmount = bag.getInventory().getAmountResourceStored(regolithID, false);
             double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
-                    regolithAR, false, false);
+                    regolithID, false, false);
 
             // Try to store regolith in settlement.
             if (collectedAmount < settlementCap) {
-                bag.getInventory().retrieveAmountResource(regolithAR, collectedAmount);
-                settlement.getInventory().storeAmountResource(regolithAR, collectedAmount, false);
+                bag.getInventory().retrieveAmountResource(regolithID, collectedAmount);
+                settlement.getInventory().storeAmountResource(regolithID, collectedAmount, false);
         		// 2015-01-15 Add addSupplyAmount()
-                settlement.getInventory().addAmountSupplyAmount(regolithAR, collectedAmount);
+                settlement.getInventory().addAmountSupplyAmount(regolithID, collectedAmount);
             }
 
             // Store bag.
@@ -262,7 +262,7 @@ implements Serializable {
 
             // Recalculate settlement good value for output item.
             GoodsManager goodsManager = settlement.getGoodsManager();
-            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(regolithAR), false);
+            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(ResourceUtil.regolithAR), false);
         }
 
         super.endTask();

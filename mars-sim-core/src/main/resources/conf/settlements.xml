@@ -10,12 +10,12 @@
 		<!-- This vehicle range Error margin imposed on the life support/consumable. -->
 		<!-- The lower the value, the farther a rover can go  -->
 		<!-- default value : 1.5  Valid from 1.0 to 3.0 -->
-		<rover-life-support-range-error-margin value="2" />
+		<rover-life-support-range-error-margin value="1.5" />
 
 		<!-- This vehicle range Error margin imposed on the fuel of the vehicle. -->
 		<!-- The lower the value, the farther a rover can go  -->
 		<!-- default value : 1.5  Valid from 1.0 to 3.0 -->
-		<rover-fuel-range-error-margin value="2" />
+		<rover-fuel-range-error-margin value="1.5" />
 
 	</mission-control>
 

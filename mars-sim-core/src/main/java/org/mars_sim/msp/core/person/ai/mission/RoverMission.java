@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -69,14 +68,18 @@ extends VehicleMission {
 	// Data members
 	private Settlement startingSettlement;
 	
-	private Map<AmountResource, Double> dessertResources;
+	private Map<Integer, Double> dessertResources;
 
 	// Static members
-	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	private static AmountResource waterAR = ResourceUtil.waterAR;
-	private static AmountResource foodAR = ResourceUtil.foodAR;
-	private static AmountResource methaneAR = ResourceUtil.methaneAR;
-
+//	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
+//	private static AmountResource waterAR = ResourceUtil.waterAR;
+//	private static AmountResource foodAR = ResourceUtil.foodAR;
+//	private static AmountResource methaneAR = ResourceUtil.methaneAR;
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+	private static int foodID = ResourceUtil.foodID;
+	private static int methaneID = ResourceUtil.methaneID;
+	
 	public static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
 	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
@@ -279,7 +282,7 @@ extends VehicleMission {
 		//	throw new NullPointerException("getVehicle().getSettlement() is null");
 
 		else {
-			LocationSituation ls = member.getLocationSituation();
+//			LocationSituation ls = member.getLocationSituation();
 			Settlement settlement = getVehicle().getSettlement();
 			if (settlement == null)
 				throw new IllegalStateException(Msg.getString("RoverMission.log.notAtSettlement",getPhase().getName())); //$NON-NLS-1$
@@ -298,7 +301,7 @@ extends VehicleMission {
 				else {
 					// Check if vehicle can hold enough supplies for mission.
 					if (isVehicleLoadable()) {
-						if (LocationSituation.IN_SETTLEMENT == ls) {
+						if (member.isInSettlement()) {//LocationSituation.IN_SETTLEMENT == ls) {
 							// Load rover
 							// Random chance of having person load (this allows person to do other things sometimes)
 							if (RandomUtil.lessThanRandPercent(75)) {
@@ -334,8 +337,8 @@ extends VehicleMission {
 				}
 			} else {
 				// If person is not aboard the rover, board rover.
-				if (LocationSituation.IN_VEHICLE != ls
-						&& LocationSituation.BURIED != ls) {
+				if (!member.isInVehicle()) { //LocationSituation.IN_VEHICLE != ls
+						//&& !member.isOutside()) {//LocationSituation.BURIED != ls) {
 
 					// Move person to random location within rover.
 					Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
@@ -746,9 +749,9 @@ extends VehicleMission {
 	}
 
 	@Override
-	public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer,
+	public Map<Integer, Number> getResourcesNeededForTrip(boolean useBuffer,
 			double distance) {
-		Map<Resource, Number> result = super.getResourcesNeededForTrip(
+		Map<Integer, Number> result = super.getResourcesNeededForTrip(
 				useBuffer, distance);
 
 		// Determine estimate time for trip.
@@ -769,7 +772,7 @@ extends VehicleMission {
 				+ "   crewNum : " + crewNum 
 				+ "   O2 amount : " + Math.round(oxygenAmount * 1000.0)/1000.0 + " kg" 
 				, null);
-*/		result.put(oxygenAR, oxygenAmount);
+*/		result.put(oxygenID, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate()
 				* timeSols * crewNum * Mission.WATER_MARGIN;
@@ -781,21 +784,21 @@ extends VehicleMission {
 		//		+ "   crewNum : " + crewNum 
 		//		+ "   water : " + Math.round(waterAmount * 10.0)/10.0 + " kg" 
 		//		, null);
-		result.put(waterAR, waterAmount);
+		result.put(waterID, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate()
 				* timeSols * crewNum * Mission.FOOD_MARGIN; //  * PhysicalCondition.FOOD_RESERVE_FACTOR
 		if (useBuffer)
 			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
-		result.put(foodAR, foodAmount);
+		result.put(foodID, foodAmount);
 
 		return result;
 	}
 
 	@Override
-	public Map<Resource, Number> getOptionalResourcesToLoad() {
+	public Map<Integer, Number> getOptionalResourcesToLoad() {
 
-	    Map<Resource, Number> result = super.getOptionalResourcesToLoad();
+	    Map<Integer, Number> result = super.getOptionalResourcesToLoad();
 
 	    // Initialize dessert resources if necessary.
 	    if (dessertResources == null) {
@@ -803,9 +806,9 @@ extends VehicleMission {
 	    }
 
 	    // Add any dessert resources to optional resources to load.
-	    Iterator<AmountResource> i = dessertResources.keySet().iterator();
+	    Iterator<Integer> i = dessertResources.keySet().iterator();
 	    while (i.hasNext()) {
-	        AmountResource dessert = i.next();
+	    	Integer dessert = i.next();
 	        double amount = dessertResources.get(dessert);
 
 	        if (result.containsKey(dessert)) {
@@ -822,9 +825,9 @@ extends VehicleMission {
 	/**
 	 * Determine an unprepared dessert resource to load on the mission.
 	 */
-	private AmountResource determineDessertResources() {
+	private Integer determineDessertResources() {
 
-	    dessertResources = new HashMap<AmountResource, Double>(1);
+	    dessertResources = new HashMap<>(1);
 
 	    // Determine estimate time for trip.
         double distance = getTotalRemainingDistance();
@@ -837,7 +840,7 @@ extends VehicleMission {
         double dessertAmount =  PhysicalCondition.getDessertConsumptionRate() * crewNum * timeSols * Mission.DESSERT_MARGIN;
 
         // Put together a list of available unprepared dessert resources.
-        List<AmountResource> dessertList = new ArrayList<AmountResource>();
+        List<AmountResource> dessertList = new ArrayList<>();
         //availableDesserts = AmountResource.getArrayOfDessertsAR();
         for (AmountResource ar : availableDesserts) {
 
@@ -856,11 +859,12 @@ extends VehicleMission {
             //dessert = AmountResource.findAmountResource(dessertName);
         }
 
+        int id = ResourceUtil.findIDbyAmountResourceName(dessertAR.getName());
         if (dessertAR != null) {
-            dessertResources.put(dessertAR, dessertAmount);
+            dessertResources.put(id, dessertAmount);
         }
 
-        return dessertAR;
+        return id;
 	}
 
 	@Override
@@ -909,16 +913,16 @@ extends VehicleMission {
 
 		Inventory inv = settlement.getInventory();
 		try {
-			if (inv.getAmountResourceStored(methaneAR, false) < 100D) {
+			if (inv.getARStored(methaneID, false) < 100D) {
 				return false;
 			}
-			if (unmasked && inv.getAmountResourceStored(oxygenAR, false) < 100D) {
+			if (unmasked && inv.getARStored(oxygenID, false) < 100D) {
 				return false;
 			}
-			if (unmasked && inv.getAmountResourceStored(waterAR, false) < 100D) {
+			if (unmasked && inv.getARStored(waterID, false) < 100D) {
 				return false;
 			}
-			if (inv.getAmountResourceStored(foodAR, false) < 100D) {
+			if (inv.getARStored(foodID, false) < 100D) {
 				return false;
 			}
 		}

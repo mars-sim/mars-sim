@@ -27,7 +27,7 @@ public class SalvageInfo implements Serializable {
     private SalvageProcessInfo processInfo;
     private MarsClock startTime;
     private MarsClock finishTime;
-    private Map<Part, Integer> partsSalvaged;
+    private Map<Integer, Integer> partsSalvaged;
     private Settlement settlement;
     
     /**
@@ -41,14 +41,14 @@ public class SalvageInfo implements Serializable {
         this.settlement = settlement;
         startTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
         finishTime = null;
-        partsSalvaged = new HashMap<Part, Integer>(processInfo.getPartSalvageList().size());
+        partsSalvaged = new HashMap<>(processInfo.getPartSalvageList().size());
     }
     
     /**
      * Finish the salvage.
      * @param partsSalvaged a map of the parts salvaged and their number or an empty map if none.
      */
-    public void finishSalvage(Map<Part, Integer> partsSalvaged) {
+    public void finishSalvage(Map<Integer, Integer> partsSalvaged) {
         this.partsSalvaged = partsSalvaged;
         finishTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
     }
@@ -89,8 +89,8 @@ public class SalvageInfo implements Serializable {
      * Gets a map of the parts salvaged and their number from this item.
      * @return map of parts and their number or empty map if salvage not finished.
      */
-    public Map<Part, Integer> getPartsSalvaged() {
-        return new HashMap<Part, Integer>(partsSalvaged);
+    public Map<Integer, Integer> getPartsSalvaged() {
+        return new HashMap<>(partsSalvaged);
     }
     
     /**

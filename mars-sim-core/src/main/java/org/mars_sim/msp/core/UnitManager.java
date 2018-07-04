@@ -560,7 +560,7 @@ public class UnitManager implements Serializable {
 				for (String type : equipmentMap.keySet()) {//= j.next();
 					int number = (Integer) equipmentMap.get(type);
 					for (int x = 0; x < number; x++) {
-						Equipment equipment = EquipmentFactory.getEquipment(type, settlement.getCoordinates(), false);
+						Equipment equipment = EquipmentFactory.createEquipment(type, settlement.getCoordinates(), false);
 						equipment.setName(getNewName(UnitType.EQUIPMENT, type, null, null));
 						settlement.getInventory().storeUnit(equipment);
 						addUnit(equipment);

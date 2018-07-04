@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
+import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
@@ -78,7 +79,6 @@ import javafx.scene.control.ButtonType;
 /**
  * The MultiplayerClient class allows the computer to take on the client role.
  */
-@SuppressWarnings("restriction")
 public class MultiplayerClient implements UnitListener, HistoricalEventListener, UnitManagerListener {
 
 	/** default logger. */
@@ -1214,6 +1214,12 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		clientTask = null;
 		multiplayerTray = null;
 		alert = null;
+	}
+
+	@Override
+	public void eventAdded(int index, SimpleEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

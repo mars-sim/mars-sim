@@ -216,7 +216,7 @@ extends WizardPanel {
 
     	// Data members.
         private ConstructionStageInfo info = null;
-        private Map<Part, Integer> partsNumber;
+        private Map<Integer, Integer> partsNumber;
         
         /**
          * Constructor.
@@ -225,7 +225,7 @@ extends WizardPanel {
             // Use AbstractTableModel constructor.
             super();
             
-            partsNumber = new HashMap<Part, Integer>();
+            partsNumber = new HashMap<>();
         }
         
         public int getColumnCount() {
@@ -246,7 +246,8 @@ extends WizardPanel {
 
         public Object getValueAt(int row, int col) {
             if ((row < partsNumber.keySet().size()) && (col < 2)) {
-                Part part = (Part) partsNumber.keySet().toArray()[row];
+//                Part part = (Part) partsNumber.keySet().toArray()[row];
+                Integer part = (int)partsNumber.keySet().toArray()[row];
                 if (col == 0) {
                     return part.toString();
                 }
@@ -322,9 +323,9 @@ extends WizardPanel {
                     if (salvageChance > 100D) salvageChance = 100D;
                     
                     // Estimate parts salvaged.
-                    Iterator<Part> j = info.getParts().keySet().iterator();
+                    Iterator<Integer> j = info.getParts().keySet().iterator();
                     while (j.hasNext()) {
-                        Part part = j.next();
+                        Integer part = j.next();
                         int maxSalvage = info.getParts().get(part);
                         int estimatedSalvage = (int) Math.round((double) maxSalvage * (salvageChance / 100D));
                         partsNumber.put(part, estimatedSalvage);

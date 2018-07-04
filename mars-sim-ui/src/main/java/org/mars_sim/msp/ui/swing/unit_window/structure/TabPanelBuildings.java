@@ -21,9 +21,10 @@ import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
+
 import javax.swing.JList;
-import javax.swing.JPanel;
+
+
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 
@@ -38,6 +39,9 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+
 /**
  * The BuildingsTabPanel is a tab panel containing building panels.
  */
@@ -47,15 +51,17 @@ implements ActionListener {
 
 	private DefaultComboBoxModel<Building> comboBoxModel;
 	private JComboBoxMW<Building> comboBox;
+//	private WebComboBox<Building> comboBox;
+
 	private List<Building> buildingsCache;
-	private JPanel buildingDisplayPanel;
+	private WebPanel buildingDisplayPanel;
 	private CardLayout buildingLayout;
 	private List<BuildingPanel> buildingPanels;
 	private int count;
 
 	private Building building;
 	
-	private List<JPanel> panelList = new ArrayList<JPanel>();
+	private List<WebPanel> panelList = new ArrayList<WebPanel>();
 
 	/**
 	 * Constructor
@@ -86,19 +92,19 @@ implements ActionListener {
 		
 		// Create building select panel.
 		// 2014-11-21 Added buildingInfoPanel & buildingTitleLabel	
-		JPanel buildingInfoPanel = new JPanel(new GridLayout(2,1,0,0));
+		WebPanel buildingInfoPanel = new WebPanel(new GridLayout(2,1,0,0));
 		//buildingInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(buildingInfoPanel);
 		panelList.add(buildingInfoPanel);
 		
-        JLabel titleLabel = new JLabel("Buildings", JLabel.CENTER);
+        WebLabel titleLabel = new WebLabel("Buildings", WebLabel.CENTER);
         titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
         //titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
         buildingInfoPanel.add(titleLabel);
         titleLabel.setOpaque(false);
         titleLabel.setBackground(new Color(0,0,0,128));
         
-		JPanel buildingSelectPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel buildingSelectPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		buildingInfoPanel.add(buildingSelectPanel);
 		panelList.add(buildingSelectPanel);
 		
@@ -123,7 +129,7 @@ implements ActionListener {
 		buildingSelectPanel.add(comboBox);
 		
 		// Create building display panel.
-		buildingDisplayPanel = new JPanel();
+		buildingDisplayPanel = new WebPanel();
 		buildingLayout = new CardLayout();
 		buildingDisplayPanel.setLayout(buildingLayout);
 		buildingDisplayPanel.setBorder(new MarsPanelBorder());
@@ -200,7 +206,7 @@ implements ActionListener {
 	}
 
 	
-	public void setPanelStyle(JPanel p) {
+	public void setPanelStyle(WebPanel p) {
 		//if (isTranslucent) {
 			p.setOpaque(false);
 			p.setBackground(new Color(0,0,0,128)); 
@@ -209,9 +215,9 @@ implements ActionListener {
 	
 	public void setPanelTranslucent() {	
 		//if (isTranslucent) {
-		    Iterator<JPanel> i = panelList.iterator();
+		    Iterator<WebPanel> i = panelList.iterator();
 			 	while (i.hasNext()) {
-			 		JPanel pp = i.next();
+			 		WebPanel pp = i.next();
 			 		setPanelStyle(pp);
 			 	}
 		//}

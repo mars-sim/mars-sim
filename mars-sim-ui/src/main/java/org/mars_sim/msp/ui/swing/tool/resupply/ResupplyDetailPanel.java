@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
+import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -750,6 +751,12 @@ implements ClockListener, HistoricalEventListener {
 		
 		desktop = null;
 		mainScene = null;
+		
+	}
+
+	@Override
+	public void eventAdded(int index, SimpleEvent event) {
+		// TODO Auto-generated method stub
 		
 	}
 	

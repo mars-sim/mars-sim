@@ -76,7 +76,7 @@ implements Serializable {
 		List<ResourceProcess> processes = config.getResourceProcesses(buildingName);
 		for (ResourceProcess process : processes) {
 			double processValue = 0D;
-			for (AmountResource resource : process.getOutputResources()) {		
+			for (Integer resource : process.getOutputResources()) {		
 				if (!process.isWasteOutputResource(resource)) {
 					Good resourceGood = GoodsUtil.getResourceGood(resource);
 					double rate = process.getMaxOutputResourceRate(resource);// * 1000D;
@@ -85,7 +85,7 @@ implements Serializable {
 			}
 
 			double inputInventoryLimit = 1D;
-			for (AmountResource resource : process.getInputResources()) {
+			for (Integer resource : process.getInputResources()) {
 				if (!process.isAmbientInputResource(resource)) {
 					Good resourceGood = GoodsUtil.getResourceGood(resource);
 					double rate = process.getMaxInputResourceRate(resource);// * 1000D;

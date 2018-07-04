@@ -221,10 +221,10 @@ implements Serializable {
             Inventory inv = container.getInventory();
             if (Maintenance.hasMaintenanceParts(inv, entity)) {
                 repairParts = true;
-                Map<Part, Integer> parts = new HashMap<Part, Integer>(manager.getMaintenanceParts());
-                Iterator<Part> j = parts.keySet().iterator();
+                Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
+                Iterator<Integer> j = parts.keySet().iterator();
                 while (j.hasNext()) {
-                    Part part = j.next();
+                	Integer part = j.next();
                     int number = parts.get(part);
                     inv.retrieveItemResources(part, number);
                     manager.maintainWithParts(part, number);
@@ -469,10 +469,10 @@ implements Serializable {
     static boolean hasMaintenanceParts(Inventory inv, Malfunctionable malfunctionable) {
         boolean result = true;
 
-        Map<Part, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
-        Iterator<Part> i = parts.keySet().iterator();
+        Map<Integer, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
+        Iterator<Integer> i = parts.keySet().iterator();
         while (i.hasNext()) {
-            Part part = i.next();
+        	Integer part = i.next();
             int number = parts.get(part);
             if (inv.getItemResourceNum(part) < number) result = false;
         }

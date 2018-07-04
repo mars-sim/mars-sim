@@ -1,11 +1,22 @@
 .spinner {
-    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+/*     -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;*/
+
+    -fx-background-color: transparent;
+    
     -fx-background-insets: 0 0 -1 0, 0, 1, 2;
     -fx-background-radius: 3px, 3px, 2px, 1px;
 
-    -fx-text-fill: -fx-text-base-color;
-    -fx-alignment: CENTER;
-    -fx-content-display: LEFT;
+    -fx-text-fill: white; 
+    -fx-alignment: center;
+    -fx-content-display: center;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+}
+
+.spinner > .label {
+    -fx-alignment: center;
+    -fx-content-display: center;
 }
 
 .spinner:focused,
@@ -16,9 +27,19 @@
 }
 
 .spinner > .text-field {
-    -fx-background-color: -fx-control-inner-background;
+	-fx-background-color: transparent;
+ 
+/*    -fx-background-color: -fx-control-inner-background;*/
     -fx-background-insets: 1 0 1 1;
     -fx-background-radius: 2 0 0 2;
+    -fx-alignment: center;
+    -fx-content-display: center;
+    
+    -fx-text-fill: white; 
+
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
 }
 
 .spinner .increment-arrow-button {

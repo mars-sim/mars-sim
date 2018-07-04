@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -258,10 +258,10 @@ implements Repair, Serializable {
             result = true;
             Inventory inv = containerUnit.getInventory();
 
-            Map<Part, Integer> repairParts = malfunction.getRepairParts();
-            Iterator<Part> i = repairParts.keySet().iterator();
+            Map<Integer, Integer> repairParts = malfunction.getRepairParts();
+            Iterator<Integer> i = repairParts.keySet().iterator();
             while (i.hasNext() && result) {
-                Part part = i.next();
+            	Integer part = i.next();
                 int number = repairParts.get(part);
                 if (inv.getItemResourceNum(part) < number) {
                     result = false;
@@ -288,10 +288,10 @@ implements Repair, Serializable {
             result = true;
             Inventory inv = containerUnit.getInventory();
 
-            Map<Part, Integer> repairParts = malfunction.getRepairParts();
-            Iterator<Part> i = repairParts.keySet().iterator();
+            Map<Integer, Integer> repairParts = malfunction.getRepairParts();
+            Iterator<Integer> i = repairParts.keySet().iterator();
             while (i.hasNext() && result) {
-                Part part = i.next();
+            	Integer part = i.next();
                 int number = repairParts.get(part);
                 if (inv.getItemResourceNum(part) < number) {
                     result = false;
@@ -392,13 +392,13 @@ implements Repair, Serializable {
             // Add repair parts if necessary.
             if (hasRepairPartsForMalfunction(person, malfunction)) {
                 Inventory inv = person.getTopContainerUnit().getInventory();
-                Map<Part, Integer> parts = new HashMap<Part, Integer>(malfunction.getRepairParts());
-                Iterator<Part> j = parts.keySet().iterator();
+                Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
+                Iterator<Integer> j = parts.keySet().iterator();
                 while (j.hasNext()) {
-                    Part part = j.next();
+                	Integer part = j.next();
                     int number = parts.get(part);
                     inv.retrieveItemResources(part, number);
-                    malfunction.repairWithParts(part, number, inv);
+                    malfunction.repairWithParts(ItemResourceUtil.findItemResource(part), number, inv);
                 }
             }
 
@@ -407,13 +407,13 @@ implements Repair, Serializable {
             // Add repair parts if necessary.
             if (hasRepairPartsForMalfunction(robot, malfunction)) {
                 Inventory inv = robot.getTopContainerUnit().getInventory();
-                Map<Part, Integer> parts = new HashMap<Part, Integer>(malfunction.getRepairParts());
-                Iterator<Part> j = parts.keySet().iterator();
+                Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
+                Iterator<Integer> j = parts.keySet().iterator();
                 while (j.hasNext()) {
-                    Part part = j.next();
+                	Integer part = j.next();
                     int number = parts.get(part);
                     inv.retrieveItemResources(part, number);
-                    malfunction.repairWithParts(part, number, inv);
+                    malfunction.repairWithParts(ItemResourceUtil.findItemResource(part), number, inv);
                 }
             }
         }
@@ -539,13 +539,33 @@ implements Repair, Serializable {
         boolean isWalk = false;
         if (malfunctionable instanceof Building) {
             Building building = (Building) malfunctionable;
-            if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-
-                // Walk to malfunctioning building.
-                walkToRandomLocInBuilding(building, true);
-                isWalk = true;
+                    
+			if (person != null) {
+				
+		        if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+	                // Walk to malfunctioning building.
+	                walkToRandomLocInBuilding(building, true);
+	                isWalk = true;
+	            }
+			}
+			
+			else if (robot != null) {
+				// Note 1 : robot doesn't need life support
+				// Note 2 : robot cannot come thru the airlock yet to the astronomy building
+				if (building.getNickName().toLowerCase().contains("astronomy")) {
+					if (robot.getSettlement().getBuildingConnectors(building).size() > 0) {
+		                // Walk to malfunctioning building.
+		                walkToRandomLocInBuilding(building, false);
+		                isWalk = true;
+					}
+	            }
+				else {
+	                walkToRandomLocInBuilding(building, false);
+	                isWalk = true;
+				}
             }
         }
+        
         else if (malfunctionable instanceof Rover) {
 
 	        if (person != null) {

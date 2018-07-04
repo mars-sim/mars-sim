@@ -23,9 +23,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
-import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.EventType;
@@ -33,10 +31,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.TaskPhase;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -58,7 +52,7 @@ implements UnitListener {
 	private static Logger logger = Logger.getLogger(VehicleMission.class.getName());
 
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
-  
+     
 	/** Mission phases. */
 	final public static MissionPhase EMBARKING = new MissionPhase(Msg.getString(
 			"Mission.phase.embarking")); //$NON-NLS-1$
@@ -94,7 +88,7 @@ implements UnitListener {
 
 
 	/** Caches */
-	protected Map<Class<? extends Equipment>, Integer> equipmentNeededCache;
+	protected Map<Integer, Integer> equipmentNeededCache;
 
 	protected VehicleMission(String missionName, MissionMember startingMember, int minPeople) {
 		// Use TravelMission constructor.
@@ -113,11 +107,13 @@ implements UnitListener {
 	}
 
 
-	protected void reserveVehicle() {
+	protected boolean reserveVehicle() {
 		// Reserve a vehicle.
 		if (!reserveVehicle(startingMember)) {
 		    endMission(NO_RESERVABLE_VEHICLES);
+		    return false;
 		}
+		return true;
 	}
 	
 	protected VehicleMission(String missionName, MissionMember startingMember, int minPeople,
@@ -470,8 +466,8 @@ implements UnitListener {
 	 */
 	public final boolean isVehicleLoadable() {
 
-		Map<Resource, Number> resources = getRequiredResourcesToLoad();
-		Map<Class<? extends Equipment>, Integer> equipment = getRequiredEquipmentToLoad();
+		Map<Integer, Number> resources = getRequiredResourcesToLoad();
+		Map<Integer, Integer> equipment = getRequiredEquipmentToLoad();
 		Vehicle vehicle = this.vehicle;
 		Settlement settlement = vehicle.getSettlement();
 		double tripTime = getEstimatedRemainingMissionTime(true);
@@ -738,7 +734,7 @@ implements UnitListener {
 	 * @param useMargin True if estimating trip. False if calculating remaining trip.
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 */
-	public Map<Resource, Number> getResourcesNeededForRemainingMission(
+	public Map<Integer, Number> getResourcesNeededForRemainingMission(
 			boolean useMargin) {
 		return getResourcesNeededForTrip(useMargin, getTotalRemainingDistance());
 	}
@@ -749,9 +745,9 @@ implements UnitListener {
 	 * @param distance the distance (km) of the trip.
 	 * @return map of amount and item resources and their Double amount or Integer number.
 	 */
-	public Map<Resource, Number> getResourcesNeededForTrip(boolean useMargin,
+	public Map<Integer, Number> getResourcesNeededForTrip(boolean useMargin,
 			double distance) {
-		Map<Resource, Number> result = new HashMap<Resource, Number>();
+		Map<Integer, Number> result = new HashMap<Integer, Number>();
 		if (vehicle != null) {
 			result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance,
 					vehicle.getDrivetrainEfficiency() * GoodsManager.SOFC_CONVERSION_EFFICIENCY, useMargin));
@@ -764,8 +760,8 @@ implements UnitListener {
 	 * @param distance the distance of the trip.
 	 * @return map of part resources and their number.
 	 */
-	protected Map<Resource, Number> getPartsNeededForTrip(double distance) {
-		Map<Resource, Number> result = new HashMap<Resource, Number>();
+	protected Map<Integer, Number> getPartsNeededForTrip(double distance) {
+		Map<Integer, Number> result = new HashMap<Integer, Number>();
 
 		// Determine vehicle parts.
 		if (vehicle != null) {
@@ -775,8 +771,8 @@ implements UnitListener {
 			// Average number malfunctions per accident is 3.
 			double numberMalfunctions = numberAccidents * AVERAGE_NUM_MALFUNCTION;
 
-			Map<Part, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
-			for (Part part : parts.keySet()) {
+			Map<Integer, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
+			for (Integer part : parts.keySet()) {
 				int number = (int) Math.round(parts.get(part)
 						* numberMalfunctions * PARTS_NUMBER_MODIFIER);
 				if (number > 0) {
@@ -804,17 +800,17 @@ implements UnitListener {
 	 * @param neededResources map of amount and item resources and their Double amount or Integer number.
 	 * @return true if enough resources.
 	 */
-	private boolean hasEnoughResources(Map<Resource, Number> neededResources) {
+	private boolean hasEnoughResources(Map<Integer, Number> neededResources) {
 		boolean result = true;
 
 		if (vehicle != null) {
 			Inventory inv = vehicle.getInventory();
-			//Iterator<Resource> iR = neededResources.keySet().iterator();
-			//while (iR.hasNext() && result) {
-			for (Resource resource : neededResources.keySet()) {//= iR.next();
-				if (resource instanceof AmountResource) {
+
+			for (Integer resource : neededResources.keySet()) {
+				if (resource < MAX_AMOUNT_RESOURCE) {
+					
 				    double amount = (Double) neededResources.get(resource);
-				    double amountStored = inv.getAmountResourceStored((AmountResource) resource, false);
+				    double amountStored = inv.getARStored(resource, false);
 
 				    if (amountStored < amount) {
 				    	String newLog = vehicle.getName() + " does not have enough " + resource +
@@ -825,9 +821,9 @@ implements UnitListener {
 				    }
 				}
  
-				else if (resource instanceof ItemResource) {
+				else if (resource >= MAX_AMOUNT_RESOURCE) {
 					int num = (Integer) neededResources.get(resource);
-					int numStored = inv.getItemResourceNum((ItemResource) resource);
+					int numStored = inv.getItemResourceNum(resource);
 
 					if (numStored < num) {
 				    	String newLog = vehicle.getName() + " does not have enough " + resource +
@@ -1154,7 +1150,7 @@ implements UnitListener {
 	 * Gets the required resources needed for loading the vehicle.
 	 * @return resources and their number.
 	 */
-	public Map<Resource, Number> getRequiredResourcesToLoad() {
+	public Map<Integer, Number> getRequiredResourcesToLoad() {
 		return getResourcesNeededForRemainingMission(true);
 	}
 
@@ -1162,7 +1158,7 @@ implements UnitListener {
 	 * Gets the optional resources needed for loading the vehicle.
 	 * @return resources and their number.
 	 */
-	public Map<Resource, Number> getOptionalResourcesToLoad() {
+	public Map<Integer, Number> getOptionalResourcesToLoad() {
 		return getPartsNeededForTrip(getTotalRemainingDistance());
 	}
 
@@ -1170,7 +1166,7 @@ implements UnitListener {
 	 * Gets the required equipment needed for loading the vehicle.
 	 * @return equipment and their number.
 	 */
-	public Map<Class<? extends Equipment>, Integer> getRequiredEquipmentToLoad() {
+	public Map<Integer, Integer> getRequiredEquipmentToLoad() {
 		return getEquipmentNeededForRemainingMission(true);
 	}
 
@@ -1178,27 +1174,31 @@ implements UnitListener {
 	 * Gets the optional equipment needed for loading the vehicle.
 	 * @return equipment and their number.
 	 */
-	public Map<Class<? extends Equipment>, Integer> getOptionalEquipmentToLoad() {
+	public Map<Integer, Integer> getOptionalEquipmentToLoad() {
 
-	    Map<Class<? extends Equipment>, Integer> result = new HashMap<>();
+	    Map<Integer, Integer> result = new HashMap<>();
 
 	    // Add containers needed for optional amount resources.
-	    Map<Resource, Number> optionalResources = getOptionalResourcesToLoad();
-	    Iterator<Resource> i = optionalResources.keySet().iterator();
+	    Map<Integer, Number> optionalResources = getOptionalResourcesToLoad();
+	    Iterator<Integer> i = optionalResources.keySet().iterator();
 	    while (i.hasNext()) {
-	        Resource resource = i.next();
-	        if (resource instanceof AmountResource) {
-	            AmountResource amountResource = (AmountResource) resource;
-	            double amount = (double) optionalResources.get(amountResource);
-	            Class<? extends Container> containerClass = ContainerUtil.getContainerClassToHoldResource(amountResource);
-	            double capacity = ContainerUtil.getContainerCapacity(containerClass);
+	    	int resource = i.next();
+	
+	        if (resource < MAX_AMOUNT_RESOURCE) {
+	            //AmountResource amountResource = (AmountResource) resource;
+	            double amount = (double) optionalResources.get(resource);
+	            //Class<? extends Container> containerClass = ContainerUtil.getContainerClassToHoldResource(resource);
+	            double capacity = ContainerUtil.getContainerCapacity(resource);
 	            int numContainers = (int) Math.ceil(amount / capacity);
 
-	            if (result.containsKey(containerClass)) {
-	                numContainers += result.get(containerClass);
+//	            int id = EquipmentType.str2int(containerClass.getClass().getName());
+		         
+	            if (result.containsKey(resource)) {
+	                numContainers += (int)(result.get(resource));
 	            }
 
-	            result.put((Class<? extends Equipment>) containerClass, numContainers);
+   
+	            result.put(resource, numContainers);
 	        }
 	    }
 
@@ -1218,10 +1218,10 @@ implements UnitListener {
 					.getMalfunctions().iterator();
 			while (i.hasNext()) {
 				Malfunction malfunction = i.next();
-				Map<Part, Integer> parts = malfunction.getRepairParts();
-				Iterator<Part> j = parts.keySet().iterator();
+				Map<Integer, Integer> parts = malfunction.getRepairParts();
+				Iterator<Integer> j = parts.keySet().iterator();
 				while (j.hasNext()) {
-					Part part = j.next();
+					Integer part = j.next();
 					int number = parts.get(part);
 					if (vehicle.getInventory().getItemResourceNum(part) < number) {
 						result = true;

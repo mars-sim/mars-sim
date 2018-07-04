@@ -23,6 +23,8 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -34,7 +36,6 @@ import org.mars_sim.msp.core.person.ai.task.MineSite;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
-import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -91,9 +92,9 @@ extends RoverMission {
 	private Map<AmountResource, Double> totalExcavatedMinerals;
 	private LightUtilityVehicle luv;
 
-	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	private static AmountResource waterAR = ResourceUtil.waterAR;
-	private static AmountResource foodAR = ResourceUtil.foodAR;
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+	private static int foodID = ResourceUtil.foodID;
 
     /**
      * Constructor
@@ -119,8 +120,8 @@ extends RoverMission {
 
             // Initialize data members.
             setStartingSettlement(startingPerson.getSettlement());
-            excavatedMinerals = new HashMap<AmountResource, Double>(1);
-            totalExcavatedMinerals = new HashMap<AmountResource, Double>(1);
+            excavatedMinerals = new HashMap<>(1);
+            totalExcavatedMinerals = new HashMap<>(1);
 
             // Recruit additional members to mission.
             recruitMembersForMission(startingPerson);
@@ -286,10 +287,10 @@ extends RoverMission {
         Inventory inv = settlement.getInventory();
 
         try {
-            if (!inv.hasItemResource(ItemResourceUtil.pneumaticDrillAR)) {
+            if (!inv.hasItemResource(ItemResourceUtil.pneumaticDrillID)) {
                 result = false;
             }
-            if (!inv.hasItemResource(ItemResourceUtil.backhoeAR)) {
+            if (!inv.hasItemResource(ItemResourceUtil.backhoeID)) {
                 result = false;
             }
         } catch (Exception e) {
@@ -669,7 +670,7 @@ extends RoverMission {
 
         Iterator<AmountResource> i = excavatedMinerals.keySet().iterator();
         while (i.hasNext()) {
-            AmountResource resource = i.next();
+        	AmountResource resource = i.next();
             if ((excavatedMinerals.get(resource) >= MINIMUM_COLLECT_AMOUNT)
                     && CollectMinedMinerals.canCollectMinerals(member,
                             getRover(), resource)) {
@@ -845,9 +846,11 @@ extends RoverMission {
         Iterator<String> i = concentrations.keySet().iterator();
         while (i.hasNext()) {
             String mineralType = i.next();
-            AmountResource mineralResource = AmountResource
-                    .findAmountResource(mineralType);
-            Good mineralGood = GoodsUtil.getResourceGood(mineralResource);
+//            AmountResource mineralResource = AmountResource
+//                    .findAmountResource(mineralType);
+//          int mineralResource = ResourceUtil.findIDbyAmountResourceName(mineralType);
+            Good mineralGood = GoodsUtil.getResourceGood(AmountResource
+                    .findAmountResource(mineralType));
             double mineralValue = settlement.getGoodsManager()
                     .getGoodValuePerItem(mineralGood);
             double concentration = concentrations.get(mineralType);
@@ -877,7 +880,7 @@ extends RoverMission {
         // Check food capacity as time limit.
         //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         double foodConsumptionRate = config.getFoodConsumptionRate() * Mission.FOOD_MARGIN;
-        double foodCapacity = vInv.getAmountResourceCapacity(foodAR, false);
+        double foodCapacity = vInv.getARCapacity(foodID, false);
         double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
         if (foodTimeLimit < timeLimit) {
             timeLimit = foodTimeLimit;
@@ -895,7 +898,7 @@ extends RoverMission {
         // Check water capacity as time limit.
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterConsumptionRate = config.getWaterConsumptionRate() * Mission.WATER_MARGIN;
-        double waterCapacity = vInv.getAmountResourceCapacity(waterAR, false);
+        double waterCapacity = vInv.getARCapacity(waterID, false);
         double waterTimeLimit = waterCapacity
                 / (waterConsumptionRate * memberNum);
         if (waterTimeLimit < timeLimit) {
@@ -905,7 +908,7 @@ extends RoverMission {
         // Check oxygen capacity as time limit.
         //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         double oxygenConsumptionRate = config.getHighO2ConsumptionRate() * Mission.OXYGEN_MARGIN;
-        double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenAR, false);
+        double oxygenCapacity = vInv.getARCapacity(oxygenID, false);
         double oxygenTimeLimit = oxygenCapacity
                 / (oxygenConsumptionRate * memberNum);
         if (oxygenTimeLimit < timeLimit) {
@@ -922,16 +925,16 @@ extends RoverMission {
     }
 
     @Override
-    public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
+    public Map<Integer, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
         if (equipmentNeededCache != null) {
             return equipmentNeededCache;
         }
         else {
-            Map<Class<? extends Equipment>, Integer> result = new HashMap<>();
+            Map<Integer, Integer> result = new HashMap<>();
 
             // Include required number of bags.
-            result.put(Bag.class, NUMBER_OF_BAGS);
+            result.put(EquipmentType.str2int(Bag.TYPE), NUMBER_OF_BAGS);
 
             equipmentNeededCache = result;
             return result;
@@ -995,9 +998,9 @@ extends RoverMission {
     }
 
     @Override
-    public Map<Resource, Number> getResourcesNeededForRemainingMission(
+    public Map<Integer, Number> getResourcesNeededForRemainingMission(
             boolean useBuffer) {
-        Map<Resource, Number> result = super
+        Map<Integer, Number> result = super
                 .getResourcesNeededForRemainingMission(useBuffer);
 
         double miningSiteTime = getEstimatedRemainingMiningSiteTime();
@@ -1009,26 +1012,26 @@ extends RoverMission {
         //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()
                 * timeSols * crewNum;
-        if (result.containsKey(oxygenAR)) {
-            oxygenAmount += (Double) result.get(oxygenAR);
+        if (result.containsKey(oxygenID)) {
+            oxygenAmount += (Double) result.get(oxygenID);
         }
-        result.put(oxygenAR, oxygenAmount);
+        result.put(oxygenID, oxygenAmount);
 
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterAmount = PhysicalCondition.getWaterConsumptionRate()
                 * timeSols * crewNum;
-        if (result.containsKey(waterAR)) {
-            waterAmount += (Double) result.get(waterAR);
+        if (result.containsKey(waterID)) {
+            waterAmount += (Double) result.get(waterID);
         }
-        result.put(waterAR, waterAmount);
+        result.put(waterID, waterAmount);
 
         //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         double foodAmount = PhysicalCondition.getFoodConsumptionRate()
                 * timeSols * crewNum;
-        if (result.containsKey(foodAR)) {
-            foodAmount += (Double) result.get(foodAR);
+        if (result.containsKey(foodID)) {
+            foodAmount += (Double) result.get(foodID);
         }
-        result.put(foodAR, foodAmount);
+        result.put(foodID, foodAmount);
 /*
         // 2015-01-04 Added Soymilk
         AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");

@@ -393,7 +393,7 @@ implements Transportable, Serializable {
 			String equipmentType = equipmentI.next();
 			int number = template.getEquipment().get(equipmentType);
 			for (int x=0; x < number; x++) {
-				Equipment equipment = EquipmentFactory.getEquipment(equipmentType,
+				Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
 						newSettlement.getCoordinates(), false);
 				equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
 				unitManager.addUnit(equipment);

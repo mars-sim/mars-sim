@@ -596,7 +596,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		//g.drawString(latitude, 5, 130);
 		g.drawString(latitude, 5, 260);
 		//g.drawString(longitude, 145 - rightWidth, 130);
-		g.drawString(longitude, 300 - rightWidth, 260);
+		g.drawString(longitude, 260 - rightWidth, 260);
 
 		String latString = centerCoords.getFormattedLatitudeString();
 		String longString = centerCoords.getFormattedLongitudeString();

@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.resource.AmountResource;
+
 
 /**
  * The ResourceProcess class represents a process of
@@ -34,10 +34,10 @@ implements Serializable {
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 10D;
 
 	private String name;
-	private Map<AmountResource, Double> maxInputResourceRates;
-	private Map<AmountResource, Double> maxAmbientInputResourceRates;
-	private Map<AmountResource, Double> maxOutputResourceRates;
-	private Map<AmountResource, Double> maxWasteOutputResourceRates;
+	private Map<Integer, Double> maxInputResourceRates;
+	private Map<Integer, Double> maxAmbientInputResourceRates;
+	private Map<Integer, Double> maxOutputResourceRates;
+	private Map<Integer, Double> maxWasteOutputResourceRates;
 	private boolean runningProcess;
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
@@ -51,10 +51,10 @@ implements Serializable {
 	 */
 	public ResourceProcess(String name, double powerRequired, boolean defaultOn) {
 		this.name = name;
-		maxInputResourceRates = new HashMap<AmountResource, Double>();
-		maxAmbientInputResourceRates = new HashMap<AmountResource, Double>();
-		maxOutputResourceRates = new HashMap<AmountResource, Double>();
-		maxWasteOutputResourceRates = new HashMap<AmountResource, Double>();
+		maxInputResourceRates = new HashMap<>();
+		maxAmbientInputResourceRates = new HashMap<>();
+		maxOutputResourceRates = new HashMap<>();
+		maxWasteOutputResourceRates = new HashMap<>();
 		runningProcess = defaultOn;
 		currentProductionLevel = 1D;
 		this.powerRequired = powerRequired;
@@ -74,7 +74,7 @@ implements Serializable {
 	 * @param rate max input resource rate (kg/millisol)
 	 * @param ambient is resource from available from surroundings? (air)
 	 */
-	public void addMaxInputResourceRate(AmountResource resource, double rate, boolean ambient) {
+	public void addMaxInputResourceRate(Integer resource, double rate, boolean ambient) {
 		if (ambient) {
 			if (!maxAmbientInputResourceRates.containsKey(resource))
 				maxAmbientInputResourceRates.put(resource, rate);
@@ -91,7 +91,7 @@ implements Serializable {
 	 * @param rate max output resource rate (kg/millisol)
 	 * @param waste is resource waste material not to be stored?
 	 */
-	public void addMaxOutputResourceRate(AmountResource resource, double rate, boolean waste) {
+	public void addMaxOutputResourceRate(Integer resource, double rate, boolean waste) {
 		if (waste) {
 			if (!maxWasteOutputResourceRates.containsKey(resource))
 				maxWasteOutputResourceRates.put(resource, rate);
@@ -148,8 +148,8 @@ implements Serializable {
 	 * Gets the set of input resources.
 	 * @return set of resources.
 	 */
-	public Set<AmountResource> getInputResources() {
-		Set<AmountResource> results = new HashSet<AmountResource>();
+	public Set<Integer> getInputResources() {
+		Set<Integer> results = new HashSet<>();
 		results.addAll(maxInputResourceRates.keySet());
 		results.addAll(maxAmbientInputResourceRates.keySet());
 		return results;
@@ -159,7 +159,7 @@ implements Serializable {
 	 * Gets the max input resource rate for a given resource.
 	 * @return rate in kg/millisol.
 	 */
-	public double getMaxInputResourceRate(AmountResource resource) {
+	public double getMaxInputResourceRate(Integer resource) {
 		double result = 0D;
 		if (maxInputResourceRates.containsKey(resource))
 			result = maxInputResourceRates.get(resource);
@@ -173,7 +173,7 @@ implements Serializable {
 	 * @param resource the resource to check.
 	 * @return true if ambient resource.
 	 */
-	public boolean isAmbientInputResource(AmountResource resource) {
+	public boolean isAmbientInputResource(Integer resource) {
 		return maxAmbientInputResourceRates.containsKey(resource);
 	}
 
@@ -181,8 +181,8 @@ implements Serializable {
 	 * Gets the set of output resources.
 	 * @return set of resources.
 	 */
-	public Set<AmountResource> getOutputResources() {
-		Set<AmountResource> results = new HashSet<AmountResource>();
+	public Set<Integer> getOutputResources() {
+		Set<Integer> results = new HashSet<>();
 		results.addAll(maxOutputResourceRates.keySet());
 		results.addAll(maxWasteOutputResourceRates.keySet());
 		return results;
@@ -192,7 +192,7 @@ implements Serializable {
 	 * Gets the max output resource rate for a given resource.
 	 * @return rate in kg/millisol.
 	 */
-	public double getMaxOutputResourceRate(AmountResource resource) {
+	public double getMaxOutputResourceRate(Integer resource) {
 		double result = 0D;
 		if (maxOutputResourceRates.containsKey(resource))
 			result = maxOutputResourceRates.get(resource);
@@ -206,7 +206,7 @@ implements Serializable {
 	 * @param resource the resource to check.
 	 * @return true if waste output.
 	 */
-	public boolean isWasteOutputResource(AmountResource resource) {
+	public boolean isWasteOutputResource(Integer resource) {
 		return maxWasteOutputResourceRates.containsKey(resource);
 	}
 
@@ -239,11 +239,11 @@ implements Serializable {
 			//Iterator<AmountResource> inputI = maxInputResourceRates.keySet().iterator();
 			//while (inputI.hasNext()) {
 			//	AmountResource resource = inputI.next();
-			for (AmountResource resource : maxInputResourceRates.keySet()) {
+			for (Integer resource : maxInputResourceRates.keySet()) {
 				double maxRate = maxInputResourceRates.get(resource);
 				double resourceRate = maxRate * productionLevel;
 				double resourceAmount = resourceRate * time;
-				double remainingAmount = inventory.getAmountResourceStored(resource, false);
+				double remainingAmount = inventory.getARStored(resource, false);
 
 				// 2015-01-09 Added addDemandTotalRequest()
 				//inventory.addAmountDemandTotalRequest(resource);
@@ -264,7 +264,7 @@ implements Serializable {
 			//Iterator<AmountResource> outputI = maxOutputResourceRates.keySet().iterator();
 			//while (outputI.hasNext()) {
 			//	AmountResource resource = outputI.next();
-			for (AmountResource resource : maxOutputResourceRates.keySet()) {	
+			for (Integer resource : maxOutputResourceRates.keySet()) {	
 				double maxRate = maxOutputResourceRates.get(resource);
 				double resourceRate = maxRate * productionLevel;
 				double resourceAmount = resourceRate * time;
@@ -307,7 +307,7 @@ implements Serializable {
 		//while (inputI.hasNext()) {
 		//	AmountResource resource = inputI.next();
 			//System.out.println(resource.getName());
-		for (AmountResource resource : maxInputResourceRates.keySet()) {	
+		for (Integer resource : maxInputResourceRates.keySet()) {	
 			double maxRate = maxInputResourceRates.get(resource);
 			double desiredResourceAmount = maxRate * time;
 			double inventoryResourceAmount = inventory.getAmountResourceStored(resource, false);

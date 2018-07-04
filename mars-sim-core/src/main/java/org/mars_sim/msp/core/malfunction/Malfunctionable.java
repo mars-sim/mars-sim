@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.malfunction;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 
 import java.util.Collection;
@@ -17,6 +18,13 @@ import java.util.Collection;
  */
 public interface Malfunctionable {
 
+    /**
+     * Gets the entity's object.
+     * @return object
+     */
+    public Unit getUnit();
+	
+	
     /**
      * Gets the entity's malfunction manager.
      * @return malfunction manager

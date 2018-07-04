@@ -25,7 +25,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private int id;
+	private Integer id;
 	private double massPerItem;
 	private String name;
 	private String description;

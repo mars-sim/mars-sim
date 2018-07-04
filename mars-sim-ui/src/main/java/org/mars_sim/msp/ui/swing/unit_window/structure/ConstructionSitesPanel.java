@@ -7,7 +7,9 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.construction.*;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
@@ -264,33 +266,36 @@ public class ConstructionSitesPanel extends JPanel {
                 // Add remaining construction resources.
                 if ((stage.getRemainingResources().size() > 0) && !stage.isSalvaging()) {
                     result.append("<br>Remaining Construction Resources:<br>");
-                    Iterator<AmountResource> i = stage.getRemainingResources().keySet().iterator();
+                    Iterator<Integer> i = stage.getRemainingResources().keySet().iterator();
                     while (i.hasNext()) {
-                        AmountResource resource = i.next();
+                    	Integer resource = i.next();
                         double amount = stage.getRemainingResources().get(resource);
-                        result.append("&nbsp;&nbsp;").append(resource.getName()).append(": ").append(amount).append(" kg<br>");
+                        result.append("&nbsp;&nbsp;").append(ResourceUtil.findAmountResource(resource)
+                        		.getName()).append(": ").append(amount).append(" kg<br>");
                     }
                 }
                 
                 // Add remaining construction parts.
                 if (stage.getRemainingParts().size() > 0) {
                     result.append("<br>Remaining Construction Parts:<br>");
-                    Iterator<Part> j = stage.getRemainingParts().keySet().iterator();
+                    Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
                     while (j.hasNext()) {
-                        Part part = j.next();
+                    	Integer part = j.next();
                         int number = stage.getRemainingParts().get(part);
-                        result.append("&nbsp;&nbsp;").append(part.getName()).append(": ").append(number).append("<br>");
+                        result.append("&nbsp;&nbsp;").append(ItemResourceUtil.findItemResource(part)
+                        		.getName()).append(": ").append(number).append("<br>");
                     }
                 }
                 
                 // Add salvage parts.
                 if (!stage.isSalvaging() && (info.getParts().size() > 0)) {
                     result.append("<br>Salvagable Parts:<br>");
-                    Iterator<Part> j = info.getParts().keySet().iterator();
+                    Iterator<Integer> j = info.getParts().keySet().iterator();
                     while (j.hasNext()) {
-                        Part part = j.next();
+                    	Integer part = j.next();
                         int number = info.getParts().get(part);
-                        result.append("&nbsp;&nbsp;").append(part.getName()).append(": ").append(number).append("<br>");
+                        result.append("&nbsp;&nbsp;").append(ItemResourceUtil.findItemResource(part)
+                        		.getName()).append(": ").append(number).append("<br>");
                     }
                 }
                 
@@ -303,9 +308,10 @@ public class ConstructionSitesPanel extends JPanel {
                         ConstructionVehicleType vehicle = k.next();
                         result.append("&nbsp;&nbsp;Vehicle Type: ").append(vehicle.getVehicleType()).append("<br>");
                         result.append("&nbsp;&nbsp;Attachment Parts:<br>");
-                        Iterator<Part> l = vehicle.getAttachmentParts().iterator();
+                        Iterator<Integer> l = vehicle.getAttachmentParts().iterator();
                         while (l.hasNext()) {
-                            result.append("&nbsp;&nbsp;&nbsp;&nbsp;").append(l.next().getName()).append("<br>");
+                            result.append("&nbsp;&nbsp;&nbsp;&nbsp;").append(
+                            		ItemResourceUtil.findItemResource(l.next()).getName()).append("<br>");
                         }
                     }
                 }

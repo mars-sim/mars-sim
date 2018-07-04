@@ -24,14 +24,14 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -87,7 +87,7 @@ implements Serializable {
 	private List<GroundVehicle> constructionVehicles;
 	private MarsClock sitePreparationStartTime;
 	private boolean finishingExistingStage;
-	private List<Part> luvAttachmentParts;
+	private List<Integer> luvAttachmentParts;
 	private double wearCondition;
 
 	/**
@@ -525,19 +525,17 @@ implements Serializable {
 	}
 
 	@Override
-	public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
+	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(
 			boolean useBuffer) {
-
-		Map<Class<? extends Equipment>, Integer> equipment = new HashMap<>(1);
-		equipment.put(EVASuit.class, getPeopleNumber());
-
+		Map<Integer, Integer> equipment = new HashMap<>(1);
+		equipment.put(EquipmentType.str2int(EVASuit.TYPE), getPeopleNumber());
 		return equipment;
 	}
 
 	@Override
-	public Map<Resource, Number> getResourcesNeededForRemainingMission(
+	public Map<Integer, Number> getResourcesNeededForRemainingMission(
 			boolean useBuffer) {
-		Map<Resource, Number> resources = new HashMap<Resource, Number>(0);
+		Map<Integer, Number> resources = new HashMap<Integer, Number>(0);
 		return resources;
 	}
 
@@ -773,7 +771,7 @@ implements Serializable {
 	 */
 	private void retrieveConstructionLUVParts() {
 		if (constructionStage != null) {
-			luvAttachmentParts = new ArrayList<Part>();
+			luvAttachmentParts = new ArrayList<>();
 			int vehicleIndex = 0;
 			Iterator<ConstructionVehicleType> k = constructionStage.getInfo()
 					.getVehicles().iterator();
@@ -783,9 +781,9 @@ implements Serializable {
 					vehicle = constructionVehicles.get(vehicleIndex);
 				}
 
-				Iterator<Part> l = k.next().getAttachmentParts().iterator();
+				Iterator<Integer> l = k.next().getAttachmentParts().iterator();
 				while (l.hasNext()) {
-					Part part = l.next();
+					Integer part = l.next();
 					try {
 						settlement.getInventory()
 						.retrieveItemResources(part, 1);
@@ -794,13 +792,14 @@ implements Serializable {
 						}
 						luvAttachmentParts.add(part);
 					} catch (Exception e) {
+                    	Part p = ItemResourceUtil.findItemResource(part);
 						logger.log(Level.SEVERE,
 								Msg.getString(
 										"BuildingSalvageMission.log.attachmentPart" //$NON-NLS-1$
-										,part.getName()));
+										, p.getName()));
 						endMission(Msg.getString(
 								"BuildingSalvageMission.log.attachmentPart" //$NON-NLS-1$
-								,part.getName()));
+								, p.getName()));
 					}
 				}
 				vehicleIndex++;
@@ -922,11 +921,11 @@ implements Serializable {
 		salvageChance += averageSkill * 5D;
 
 		// Salvage construction parts.
-		Map<Part, Integer> salvagableParts = constructionStage.getInfo()
+		Map<Integer, Integer> salvagableParts = constructionStage.getInfo()
 				.getParts();
-		Iterator<Part> j = salvagableParts.keySet().iterator();
+		Iterator<Integer> j = salvagableParts.keySet().iterator();
 		while (j.hasNext()) {
-			Part part = j.next();
+			Integer part = j.next();
 			int number = salvagableParts.get(part);
 
 			int salvagedNumber = 0;
@@ -936,8 +935,8 @@ implements Serializable {
 			}
 
 			if (salvagedNumber > 0) {
-
-				double mass = salvagedNumber * part.getMassPerItem();
+				Part p = ItemResourceUtil.findItemResource(part);
+				double mass = salvagedNumber * p.getMassPerItem();
 				double capacity = settlement.getInventory()
 						.getGeneralCapacity();
 				if (mass <= capacity)
@@ -946,7 +945,7 @@ implements Serializable {
 
 				// Recalculate settlement good value for salvaged part.
 				settlement.getGoodsManager().updateGoodValue(
-						GoodsUtil.getResourceGood(part), false);
+						GoodsUtil.getResourceGood(p), false);
 			}
 		}
 	}

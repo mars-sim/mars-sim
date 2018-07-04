@@ -34,7 +34,9 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionEvent;
 import org.mars_sim.msp.core.structure.construction.ConstructionListener;
@@ -265,22 +267,24 @@ implements ConstructionListener {
             // Add remaining construction resources.
             if (stage.getRemainingResources().size() > 0) {
                 result.append(Msg.BR).append("Remaining Construction Resources:").append(Msg.BR);
-                Iterator<AmountResource> i = stage.getRemainingResources().keySet().iterator();
+                Iterator<Integer> i = stage.getRemainingResources().keySet().iterator();
                 while (i.hasNext()) {
-                    AmountResource resource = i.next();
+                	Integer resource = i.next();
                     double amount = stage.getRemainingResources().get(resource);
-                    result.append(Msg.NBSP).append(Msg.NBSP).append(resource.getName()).append(": ").append(amount).append(" kg").append(Msg.BR);
+                    result.append(Msg.NBSP).append(Msg.NBSP)
+                    .append(ResourceUtil.findAmountResource(resource).getName()).append(": ").append(amount).append(" kg").append(Msg.BR);
                 }
             }
 
             // Add remaining construction parts.
             if (stage.getRemainingParts().size() > 0) {
                 result.append(Msg.BR).append("Remaining Construction Parts:").append(Msg.BR);
-                Iterator<Part> j = stage.getRemainingParts().keySet().iterator();
+                Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
                 while (j.hasNext()) {
-                    Part part = j.next();
+                	Integer part = j.next();
                     int number = stage.getRemainingParts().get(part);
-                    result.append(Msg.NBSP).append(Msg.NBSP).append(part.getName()).append(": ").append(number).append(Msg.BR);
+                    result.append(Msg.NBSP).append(Msg.NBSP)
+                    .append(ResourceUtil.findAmountResource(part).getName()).append(": ").append(number).append(Msg.BR);
                 }
             }
 
@@ -292,9 +296,10 @@ implements ConstructionListener {
                     ConstructionVehicleType vehicle = k.next();
                     result.append(Msg.NBSP).append(Msg.NBSP).append("Vehicle Type: ").append(vehicle.getVehicleType()).append(Msg.BR);
                     result.append(Msg.NBSP).append(Msg.NBSP).append("Attachment Parts:").append(Msg.BR);
-                    Iterator<Part> l = vehicle.getAttachmentParts().iterator();
+                    Iterator<Integer> l = vehicle.getAttachmentParts().iterator();
                     while (l.hasNext()) {
-                        result.append(Msg.NBSP).append(Msg.NBSP).append(Msg.NBSP).append(Msg.NBSP).append(l.next().getName()).append(Msg.BR);
+                        result.append(Msg.NBSP).append(Msg.NBSP).append(Msg.NBSP).append(Msg.NBSP)
+                        .append(ResourceUtil.findAmountResource(l.next()).getName()).append(Msg.BR);
                     }
                 }
             }
@@ -393,20 +398,20 @@ implements ConstructionListener {
             if (stage != null) {
 
                 // Add remaining resources.
-                Iterator<AmountResource> i = stage.getRemainingResources().keySet().iterator();
+                Iterator<Integer> i = stage.getRemainingResources().keySet().iterator();
                 while (i.hasNext()) {
-                    AmountResource resource = i.next();
+                	Integer resource = i.next();
                     double amount = stage.getRemainingResources().get(resource);
-                    Good good = GoodsUtil.getResourceGood(resource);
+                    Good good = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(resource));
                     goodsMap.put(good, (int) amount);
                 }
 
                 // Add remaining parts.
-                Iterator<Part> j = stage.getRemainingParts().keySet().iterator();
+                Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
                 while (j.hasNext()) {
-                    Part part = j.next();
+                	Integer part = j.next();
                     int num = stage.getRemainingParts().get(part);
-                    Good good = GoodsUtil.getResourceGood(part);
+                    Good good = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(part));
                     goodsMap.put(good, num);
                 }
             }

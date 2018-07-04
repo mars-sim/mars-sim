@@ -38,18 +38,18 @@ implements Serializable {
     public static final int NAPKIN = 150;
 
 	// Data members
-	private static int count = 0;
-	// 2016-12-02 Added id
+//	private static int count = 0;
+
 	private int id;
 
 	private int hashcode = -1;
-	// 2014-11-25 Added edible
+
 	private boolean edible;
 
 	private boolean lifeSupport;
 
 	private String name;
-	// 2016-06-28 Added type
+
 	private String type;
 
 	private String description;

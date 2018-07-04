@@ -14,6 +14,10 @@ public class SimpleEvent implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 23982863L;
     
+	private static final String ONE_ZERO = "0";
+	private static final String TWO_ZEROS = "00";
+	private static final String THREE_ZEROS = "000";
+	
 	short sol;
 	float msol;
 	byte cat;
@@ -38,8 +42,19 @@ public class SimpleEvent implements Serializable {
 		return sol;
 	}
 	
-	public float getMsol() {
-		return msol;
+	public String getMsol() {
+		StringBuilder result = new StringBuilder();
+
+		float m = msol;
+		
+		if (m < 10) // then 000x
+			result.append(THREE_ZEROS);
+		else if (m < 100) // then 00xx
+			result.append(TWO_ZEROS);
+		else if (m < 1000) // then 0xxx
+			result.append(ONE_ZERO);
+		
+		return result.toString();
 	}
 	
 	public byte getCat() {

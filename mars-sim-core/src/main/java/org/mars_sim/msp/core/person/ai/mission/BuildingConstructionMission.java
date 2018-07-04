@@ -27,16 +27,15 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.Resource;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -120,7 +119,7 @@ implements Serializable {
 	
 	private List<GroundVehicle> constructionVehicles;
 	private Collection<MissionMember> members;// = constructionSite.getMembers();
-	private List<Part> luvAttachmentParts;
+	private List<Integer> luvAttachmentParts;
 
 	private static MarsClock sitePreparationStartTime;
 	
@@ -611,7 +610,7 @@ implements Serializable {
     public void retrieveConstructionLUVParts() {
     	logger.info("calling retrieveConstructionLUVParts()");
         if (stage != null) {
-            luvAttachmentParts = new ArrayList<Part>();
+            luvAttachmentParts = new ArrayList<>();
             int vehicleIndex = 0;
             Iterator<ConstructionVehicleType> k = stage.getInfo().getVehicles().iterator();
             while (k.hasNext()) {
@@ -620,9 +619,9 @@ implements Serializable {
                     vehicle = constructionVehicles.get(vehicleIndex);
                 }
 
-                Iterator<Part> l = k.next().getAttachmentParts().iterator();
+                Iterator<Integer> l = k.next().getAttachmentParts().iterator();
                 while (l.hasNext()) {
-                    Part part = l.next();
+                	Integer part = l.next();
                     try {
                         settlement.getInventory().retrieveItemResources(part, 1);
                         if (vehicle != null) {
@@ -631,8 +630,9 @@ implements Serializable {
                         luvAttachmentParts.add(part);
                     }
                     catch (Exception e) {
-                        logger.log(Level.SEVERE, "Error retrieving attachment part " + part.getName());
-                        endMission("Construction attachment part " + part.getName() + " could not be retrieved.");
+                    	Part p = ItemResourceUtil.findItemResource(part);
+                        logger.log(Level.SEVERE, "Error retrieving attachment part " + p.getName());
+                        endMission("Construction attachment part " + p.getName() + " could not be retrieved.");
                     }
                 }
                 vehicleIndex++;
@@ -798,9 +798,9 @@ implements Serializable {
         Inventory inv = settlement.getInventory();
 
         // Load amount resources.
-        Iterator<AmountResource> i = stage.getRemainingResources().keySet().iterator();
+        Iterator<Integer> i = stage.getRemainingResources().keySet().iterator();
         while (i.hasNext()) {
-            AmountResource resource = i.next();
+        	Integer resource = i.next();
             double amountNeeded = stage.getRemainingResources().get(resource);
 
             inv.addAmountDemandTotalRequest(resource);
@@ -822,9 +822,9 @@ implements Serializable {
         }
 
         // Load parts.
-        Iterator<Part> j = stage.getRemainingParts().keySet().iterator();
+        Iterator<Integer> j = stage.getRemainingParts().keySet().iterator();
         while (j.hasNext()) {
-            Part part = j.next();
+        	Integer part = j.next();
             int numberNeeded = stage.getRemainingParts().get(part);
             int numberAvailable = inv.getItemResourceNum(part);
 
@@ -932,16 +932,16 @@ implements Serializable {
     }
 
     @Override
-    public Map<Resource, Number> getResourcesNeededForRemainingMission(
+    public Map<Integer, Number> getResourcesNeededForRemainingMission(
             boolean useBuffer) {
 
-        Map<Resource, Number> resources = new HashMap<Resource, Number>();
+        Map<Integer, Number> resources = new HashMap<Integer, Number>();
 
         // Add construction LUV attachment parts.
         if (luvAttachmentParts != null) {
-            Iterator<Part> i = luvAttachmentParts.iterator();
+            Iterator<Integer> i = luvAttachmentParts.iterator();
             while (i.hasNext()) {
-                Part part = i.next();
+            	Integer part = i.next();
                 if (resources.containsKey(part)) {
                     resources.put(part, (resources.get(part).intValue() + 1));
                 }
@@ -955,10 +955,10 @@ implements Serializable {
     }
 
 	@Override
-	public Map<Class<? extends Equipment>, Integer> getEquipmentNeededForRemainingMission(
+	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(
 		boolean useBuffer) {
-		Map<Class<? extends Equipment>, Integer> equipment = new HashMap<>(1);
-		equipment.put(EVASuit.class, getPeopleNumber());
+		Map<Integer, Integer> equipment = new HashMap<>(1);
+		equipment.put(EquipmentType.str2int(EVASuit.TYPE), getPeopleNumber());
 		return equipment;
 	}
 
@@ -1039,18 +1039,17 @@ implements Serializable {
     /*
      * Unreserve and store back all LUV attachment parts in settlement.
      */
-    //2016-09-25 unreserveLUVparts()
     public void unreserveLUVparts() {
 
         if (luvAttachmentParts != null) {
-            Iterator<Part> i = luvAttachmentParts.iterator();
+            Iterator<Integer> i = luvAttachmentParts.iterator();
             while (i.hasNext()) {
-                Part part = i.next();
+            	Integer part = i.next();
                 try {
                     settlement.getInventory().storeItemResources(part, 1);
                 }
                 catch (Exception e) {
-                    logger.log(Level.SEVERE, "Error storing attachment part " + part.getName());
+                    logger.log(Level.SEVERE, "Error storing attachment part " + ItemResourceUtil.findItemResource(part).getName());
                 }
             }
         }

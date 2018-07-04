@@ -32,16 +32,16 @@ public class ConstructionStageTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        Map<Part, Integer> parts = new HashMap<Part, Integer>(1);
-        parts.put(new Part("test part", 1, "test resource description", 1D, 1), 1);
+        Map<Integer, Integer> parts = new HashMap<Integer, Integer>(1);
+        parts.put(new Part("test part", 1, "test resource description", 1D, 1).getID(), 1);
 
-        Map<AmountResource, Double> resources = new HashMap<AmountResource, Double>(1);
-        resources.put(new AmountResource(1, "test resource", "test type","test resource description", PhaseType.SOLID, false, false), 1D);
+        Map<Integer, Double> resources = new HashMap<Integer, Double>(1);
+        resources.put(new AmountResource(1, "test resource", "test type","test resource description", PhaseType.SOLID, false, false).getID(), 1D);
 
         List<ConstructionVehicleType> vehicles =
             new ArrayList<ConstructionVehicleType>(1);
-        List<Part> attachments = new ArrayList<Part>(1);
-        attachments.add(new Part("attachment part", 2, "test resource description", 1D, 1));
+        List<Integer> attachments = new ArrayList<Integer>(1);
+        attachments.add(new Part("attachment part", 2, "test resource description", 1D, 1).getID());
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
                 attachments));
 
