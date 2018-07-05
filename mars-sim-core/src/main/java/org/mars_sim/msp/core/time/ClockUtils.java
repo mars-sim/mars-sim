@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.time;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -68,20 +69,20 @@ public class ClockUtils implements Serializable {
 	private static final String	ZERO_MINUTES = "00m ";
 	private static final String	SECONDS = "s";
 
-	private static Simulation sim = Simulation.instance();
+//	private static Simulation sim = Simulation.instance();
 	
-	private static OrbitInfo orbitInfo;// = sim.getMars().getOrbitInfo();
+//	private static OrbitInfo orbitInfo;// = sim.getMars().getOrbitInfo();
 
-	private static MarsClock marsClock;//= sim.getMasterClock().getMarsClock();
+//	private static MarsClock marsClock;//= sim.getMasterClock().getMarsClock();
 
-	private static EarthClock earthClock;// = sim.getMasterClock().getEarthClock();
+//	private static EarthClock earthClock;// = sim.getMasterClock().getEarthClock();
 
-	private GregorianCalendar cal;
+//	private GregorianCalendar cal;
 	
-	private SimpleDateFormat f2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+//	private SimpleDateFormat f2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
 	// Set GMT timezone for calendar
-	private SimpleTimeZone zone = new SimpleTimeZone(0, "GMT");
+//	private SimpleTimeZone zone = new SimpleTimeZone(0, "GMT");
 
 	/**
 	 * Constructor
@@ -359,7 +360,7 @@ public class ClockUtils implements Serializable {
      */
 	public static double getPBS(EarthClock clock) {
 		double j2000 = getDaysSinceJ2kEpoch(clock);
-		double d = 360 / 365.25 ;
+		double d = 360.0 / 365.25 ;
 		double PBS = 
 			   0.0071 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.2353) +  49.409)) +
                0.0057 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.7543) + 168.173)) +
@@ -372,14 +373,16 @@ public class ClockUtils implements Serializable {
 	}
 	
 	/*
-	 * Determine Equation of Center. (Bracketed term in AM2000, eqs. 19 and 20)
+	 * Determine Equation of Center, namely, v - M. 
+	 * (Bracketed term in AM2000, eqs. 19 and 20)
      * The equation of center is the true anomaly minus mean anomaly.
      * @return degree EOC
      */
 	public static double getEOC(EarthClock clock) {
 		double j2000 = getDaysSinceJ2kEpoch(clock);
-		double M = (19.3870 + 0.52402075 * j2000) * OrbitInfo.DEGREE_TO_RADIAN;
-		double d = 360 / 365.25 ;
+		double M = (19.3871 + 0.52402073 * j2000) * OrbitInfo.DEGREE_TO_RADIAN;
+		// alternatively, M = 19.3870 + 0.52402075 * j2000
+		double d = 360.0 / 365.25 ;
 		double PBS = 
 			   0.0071 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.2353) +  49.409)) +
                0.0057 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.7543) + 168.173)) +
@@ -388,9 +391,12 @@ public class ClockUtils implements Serializable {
                0.0021 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.1354) +  15.704)) +
                0.0020 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.4694) +  95.528)) +
                0.0018 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 / 32.8493) +  49.095));
-		double EOC =  (10.691 + 3.0 * j2000 /1_000_000) 
-				* Math.sin(M) + 0.623 * Math.sin(2*M) + 0.050* Math.sin(3*M) 
-				+ 0.005* Math.sin(4*M) + 0.0005* Math.sin(5*M) + PBS;//OrbitInfo.DEGREE_TO_RADIAN;
+		double EOC =  (10.691 + 3.0E-7 * j2000) * Math.sin(M) 
+				+ 0.623 * Math.sin(2*M) 
+				+ 0.050* Math.sin(3*M) 
+				+ 0.005* Math.sin(4*M) 
+				+ 0.0005* Math.sin(5*M) 
+				+ PBS;//OrbitInfo.DEGREE_TO_RADIAN;
 		return EOC;
 	}
 
@@ -398,7 +404,7 @@ public class ClockUtils implements Serializable {
 	 *
     * @return
     */
-	public static double getTrueAnomaly_Concise(EarthClock clock) {
+	public static double getTrueAnomaly0(EarthClock clock) {
 		double j2000 = getDaysSinceJ2kEpoch(clock);
 		double Mdeg = getMarsMeanAnomaly(clock);
 		double M = Mdeg * OrbitInfo.DEGREE_TO_RADIAN;
@@ -417,9 +423,9 @@ public class ClockUtils implements Serializable {
      */
 	public static double getTrueAnomaly(EarthClock clock) {
 		double j2000 = getDaysSinceJ2kEpoch(clock);
-		double Mdeg = 19.3870 + 0.52402075 * j2000;
-		double M = (19.3870 + 0.52402075 * j2000)* OrbitInfo.DEGREE_TO_RADIAN;
-		double d = 360 / 365.25 ;
+		double Mdeg = 19.3871 + 0.52402073 * j2000;
+		double M = Mdeg * OrbitInfo.DEGREE_TO_RADIAN;
+		double d = 360.0 / 365.25 ;
 		double PBS = 
 			   0.0071 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.2353) +  49.409)) +
                0.0057 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.7543) + 168.173)) +
@@ -428,7 +434,7 @@ public class ClockUtils implements Serializable {
                0.0021 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.1354) +  15.704)) +
                0.0020 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.4694) +  95.528)) +
                0.0018 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 / 32.8493) +  49.095));
-		double EOC =  (10.691 + 3.0E-7 * getDaysSinceJ2kEpoch(clock)) * Math.sin(M) 
+		double EOC =  (10.691 + 3.0E-7 * j2000) * Math.sin(M) 
 				+ 0.623 * Math.sin(2*M) 
 				+ 0.050* Math.sin(3*M) 
 				+ 0.005* Math.sin(4*M) 
@@ -443,8 +449,8 @@ public class ClockUtils implements Serializable {
 	 */
 	public static double getLs(EarthClock clock) {
 		double j2000 = getDaysSinceJ2kEpoch(clock);
-		double M = (19.3870 + 0.52402075 * j2000) * OrbitInfo.DEGREE_TO_RADIAN;
-		double d = 360 / 365.25 ;
+		double M = (19.3871 + 0.52402073 * j2000) * OrbitInfo.DEGREE_TO_RADIAN;
+		double d = 360.0 / 365.25 ;
 		double PBS = 
 			   0.0071 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.2353) +  49.409)) +
                0.0057 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.7543) + 168.173)) +
@@ -464,7 +470,7 @@ public class ClockUtils implements Serializable {
 	 * Determine areocentric solar longitude. (AM2000, eq. 19)
 	 * @return degree L_s
 	 */
-	public static double getLs_Concise(EarthClock clock) {
+	public static double getLs0(EarthClock clock) {
 		return getAlphaFMS(clock) + getEOC(clock);
 	}
 
@@ -473,7 +479,7 @@ public class ClockUtils implements Serializable {
 	 * Determine Equation of Time. (AM2000, eq. 20)
      * @return in degrees 
      */
-	public static double getEOT_Concise(EarthClock clock) {
+	public static double getEOTDegree0(EarthClock clock) {
 		double Ls = getLs(clock) * OrbitInfo.DEGREE_TO_RADIAN;
 		double EOT = 2.861 * Math.sin(2*Ls) 
 				- 0.071 * Math.sin(4*Ls) 
@@ -484,23 +490,100 @@ public class ClockUtils implements Serializable {
 
 	/*
 	 * Determine Equation of Time. (AM2000, eq. 20)
-     * @return in hour
+     * @return in degrees 
      */
-	public static double getEOTHour_Concise(EarthClock clock) {
-		double EOT = getEOT_Concise(clock) * 24/360;
+	public static double getEOTDegree(EarthClock clock) {
+		double j2000 = getDaysSinceJ2kEpoch(clock);
+		double M = (19.3871 + 0.52402073 * j2000) * OrbitInfo.DEGREE_TO_RADIAN;
+		double d = 360.0 / 365.25 ;
+		double PBS = 
+			   0.0071 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.2353) +  49.409)) +
+               0.0057 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.7543) + 168.173)) +
+               0.0039 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  1.1177) + 191.837)) +
+               0.0037 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 / 15.7866) +  21.736)) +
+               0.0021 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.1354) +  15.704)) +
+               0.0020 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.4694) +  95.528)) +
+               0.0018 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 / 32.8493) +  49.095));
+		double EOC =  (10.691 + 3.0 * j2000 /1_000_000) 
+				* Math.sin(M) + 0.623 * Math.sin(2*M) + 0.050* Math.sin(3*M) 
+				+ 0.005* Math.sin(4*M) + 0.0005* Math.sin(5*M) + PBS;//OrbitInfo.DEGREE_TO_RADIAN;
+		double alphaFMS = 270.3871 + 0.524038496 * j2000;
+		double Ls = (alphaFMS + EOC) * OrbitInfo.DEGREE_TO_RADIAN;
+		double EOT = 2.861 * Math.sin(2*Ls) 
+				- 0.071 * Math.sin(4*Ls) 
+				+ 0.002 * Math.sin(6*Ls)
+				- EOC;
 		return EOT;
 	}
 	
-
+	/*
+	 * Determine Equation of Time. (AM2000, eq. 20)
+     * @return in hour
+     */
+	public static double getEOTHour0(EarthClock clock) {
+		double EOT = getEOTDegree0(clock) / 15.0;
+		return EOT;
+	}
+	
+	/*
+	 * Determine Equation of Time. (AM2000, eq. 20)
+     * @return in hour
+     */
+	public static double getEOTHour(EarthClock clock) {
+		double j2000 = getDaysSinceJ2kEpoch(clock);
+		double M = (19.3871 + 0.52402073 * j2000) * OrbitInfo.DEGREE_TO_RADIAN;
+		double d = 360.0 / 365.25 ;
+		double PBS = 
+			   0.0071 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.2353) +  49.409)) +
+               0.0057 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.7543) + 168.173)) +
+               0.0039 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  1.1177) + 191.837)) +
+               0.0037 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 / 15.7866) +  21.736)) +
+               0.0021 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.1354) +  15.704)) +
+               0.0020 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 /  2.4694) +  95.528)) +
+               0.0018 * Math.cos(OrbitInfo.DEGREE_TO_RADIAN * ((d * j2000 / 32.8493) +  49.095));
+		double EOC =  (10.691 + 3.0 * j2000 /1_000_000) 
+				* Math.sin(M) + 0.623 * Math.sin(2*M) + 0.050* Math.sin(3*M) 
+				+ 0.005* Math.sin(4*M) + 0.0005* Math.sin(5*M) + PBS;//OrbitInfo.DEGREE_TO_RADIAN;
+		double alphaFMS = 270.3871 + 0.524038496 * j2000;
+		double Ls = (alphaFMS + EOC) * OrbitInfo.DEGREE_TO_RADIAN;
+		double EOT = 2.861 * Math.sin(2*Ls) 
+				- 0.071 * Math.sin(4*Ls) 
+				+ 0.002 * Math.sin(6*Ls)
+				- EOC;
+		return EOT / 15.0;
+	}
 	
 	/*
 	 * Gets Mars Sol Date (MSD), starting at midnight on 6th January 2000 (when time_J2000 = 4.5), at the Martian prime meridian,
      * Note: by convention, to keep the MSD positive going back to midday December 29th 1873, we add 44,796.
      * @return days
      */
-	public static double getMarsSolDate(EarthClock clock) {
+	public static double getMarsSolDate0(EarthClock clock) {
 		// 0.00096 is a slight adjustment as the midnights by Mars24
-		double result = ((getDaysSinceJ2kEpoch(clock) - 4.5) / 1.0274912517) + 44796.0 - 0.000926;
+		double result = ((getDaysSinceJ2kEpoch(clock) - 4.5) / 1.0274912517) + 44796.0 - 0.00096;
+		return result;
+	}
+
+	/*
+	 * Gets Adjusted Mars Sol Date (MSD) using Julian Date in TT, starting at midnight on 6th January 2000 (when time_J2000 = 4.5), 
+	 * at the Martian prime meridian,
+     * Note: by convention, to keep the MSD positive going back to midday December 29th 1873, we add 44,796.
+     * @return days
+     */
+	public static double getMarsSolDateAdj(EarthClock clock) {
+		// 0.0009626 is a slight adjustment as the midnights by Mars24
+		double result = ((getJulianDateTT(clock) - 2451549.5) / 1.0274912517) + 44796.0 - 0.0009626;
+		return result;
+	}
+
+	
+	/*
+	 * Gets Coordinated Mars Time (MTC), a mean time for Mars, like Earth's UTC
+     * Note: Calculated directly from the Mars Sol Date
+     * @return hours
+     */
+	public static double getMTC0(EarthClock clock) {
+		double result = (24 * getMarsSolDate0(clock)) % 24;
 		return result;
 	}
 
@@ -509,12 +592,102 @@ public class ClockUtils implements Serializable {
      * Note: Calculated directly from the Mars Sol Date
      * @return hours
      */
-	public static double getMTC(EarthClock clock) {
-		// 0.00096 is a slight adjustment as the midnights by Mars24
-		double result = (24 * getMarsSolDate(clock)) % 24;
+	public static double getMTC1(EarthClock clock) {
+		double result = (24 * getMarsSolDateAdj(clock)) % 24;
 		return result;
 	}
 
+	/*
+	 * Determine Local Mean Solar Time for a given planetographic longitude, Λ, 
+	 * in degrees west, is easily determined by offsetting from the 
+	 * mean solar time on the prime meridian.
+	 * @param clock Earth clock
+	 * @param degW longitude in degree west
+     * @return hours
+     */
+	public static double getLMST(EarthClock clock, double degW) {
+		return getMTC1(clock) - degW / 15.0;
+	}
+
+	/*
+	 * Determine Local True Solar Time (AM2000, eq. 23) for a given planetographic longitude, Λ, 
+	 * @param clock Earth clock
+	 * @param degW longitude in degree west
+     * @return hours
+     */
+	public static double getLTST(EarthClock clock, double degW) {
+		return getLMST(clock, degW) + getEOTHour(clock);
+	}
+
+	/*
+	 * Determine Subsolar Longitude  
+	 * @param clock Earth clock
+     * @return longitude in deg
+     */
+	public static double getSubsolarLongitude(EarthClock clock) {
+		return ((getMTC1(clock) + getEOTHour(clock))* 15.0 + 180) % 360;
+	}
+	
+	/*
+	 * Determine heliocentric distance. (AM2000, eq. 25, corrected) 
+	 * @param clock Earth clock
+     * @return distance in A.U.
+     */
+	public static double getHeliocentricDistance(EarthClock clock) {
+		double M = (19.3871 + 0.52402073 * getDaysSinceJ2kEpoch(clock)) 
+				* OrbitInfo.DEGREE_TO_RADIAN;
+		return 1.52367934 * (1.00436 
+				- 0.09309 * Math.cos(M) 
+				- 0.004336 * Math.cos(2*M) 
+				- 0.00031 * Math.cos(3*M) 
+				- 0.00003 * Math.cos(4*M));
+	}
+	
+	/*
+	 * Gets Coordinated Mars Time (MTC) string 
+	 * Note: Calculated directly from the Mars Sol Date
+     * @return String in hour:min:second
+     */
+	public static String getFormattedTimeString(double s) {		
+		int hours = (int) s; // 10 ok
+		int minutes = (int) ((s - hours) * 60); // 53 ok
+//		int seconds = (int) ((MTC - hours) * 3600 - minutes * 60 + 0.5); // 24 ok
+//		double seconds = Math.round(10.0*((s - hours) * 3600 - minutes * 60))/10.0; // 24 ok
+		double seconds = (s - hours) * 3600 - minutes * 60; // 24 ok
+		
+		DecimalFormat fmt = new DecimalFormat("##.###");
+		
+		if (s < 0) {
+			minutes = -minutes;
+			String ss = null;
+			
+			if (seconds < 10) {
+				ss = "0" + fmt.format(-seconds);
+			}
+			else {
+				ss = fmt.format(-seconds);
+			}
+			
+			if (hours == 0) {
+				return String.format("-%02d:%02d:", hours, minutes) + ss; 
+			}
+//			else {
+//			}
+		}
+		
+		String ss = null;
+		
+		if (seconds < 10) {
+			ss = "0" + fmt.format(seconds);
+		}
+		else {
+			ss = fmt.format(seconds);
+		}
+		
+		return String.format("%02d:%02d:", hours, minutes) + ss;
+
+	}	
+	
 //	/*
 //	 *
 //     * @return
@@ -525,8 +698,8 @@ public class ClockUtils implements Serializable {
 //	}
 	
 	public void destroy() {
-		orbitInfo = null;
-		sim = null;
-		marsClock = null;
+//		orbitInfo = null;
+//		sim = null;
+//		marsClock = null;
 	}
 }

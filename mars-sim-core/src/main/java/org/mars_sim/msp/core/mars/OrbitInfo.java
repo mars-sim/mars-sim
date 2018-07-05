@@ -49,13 +49,19 @@ implements Serializable {
 	private static final double TWO_PIs = Math.PI * 2D;
 	/** 
 	 * The initial areocentric solar longitude (or the orbital position of Mars 
-	 * around the sun) at the start of the sim.
+	 * around the sun) at the start of the sim on 2043-Sep-30 00:00:00
+	 * Note: may obtain the most accurate value of L_AT_START numerically 
+	 * by running ClockUtils.getLs()
 	 */
-	private static final double L_AT_START = 12.72008961663414;//252.5849107170493; 
+	private static final double L_AT_START = 12.72010790886634; //252.5849107170493; 
 	// Note : An areocentric orbit is an orbit around the planet Mars.
 	
-	/** The initial distance from the Sun to Mars (in au). */
-	private static final double SUN_MARS_DIST_AT_START =  1.5876367428334057;//1.3817913894302327; //1.665732D; //
+	/** 
+	 * The initial distance from the Sun to Mars (in au) on 2043-Sep-30 00:00:00
+	 * Note: may obtain the most accurate value numerically by running 
+	 * ClockUtils.getHeliocentricDistance()
+	 */
+	private static final double SUN_MARS_DIST_AT_START =  1.587624202793963;// 1.5876367428334057;//1.3817913894302327; //1.665732D; //
 	
 	// Data members
 	/** The difference between the L_s and the true anomaly v in degree. */
@@ -228,8 +234,8 @@ implements Serializable {
 	 * @param v the instantaneous truly anomaly in radians
 	 */
 	public double getRadius(double v) {
-		double e = this.ECCENTRICITY;
-		double a = this.SEMI_MAJOR_AXIS ;
+		double e = ECCENTRICITY;
+		double a = SEMI_MAJOR_AXIS ;
 		double r = a * (1 - e * e)/(1+ e * Math.cos(v));
 		return r;
 	}
@@ -380,87 +386,65 @@ implements Serializable {
 		if (marsClock == null)
 			marsClock = sim.getMasterClock().getMarsClock();
 
-        //if (!marsClock.equals(cosineSolarZenithAngleMapCacheTime)) {
-        //    cosineSolarZenithAngleMap.clear();
-        //    cosineSolarZenithAngleMapCacheTime = (MarsClock) marsClock.clone();
-        //}
+		double solar_time = marsClock.getMillisol() ;
 
-        // If location is not in cache, calculate
-        //if (!cosineSolarZenithAngleMap.containsKey(location)) {
+		// compute latitude in radians rather than in degree
+		double lat = location.getPhi2LatRadian();
 
-			double solar_time = marsClock.getMillisol() ;
-			//System.out.println("solar_time is " + (int) solar_time);
+		// TODO: figure out a more compact Equation of Time (EOT) using numerical model of the Mars "Analemma".
 
-        	//double result = 0;
-        	// compute latitude in radians rather than in degree
-			double lat = location.getPhi2LatRadian();
-			//System.out.println("location.getPhi2LatRadian() : " + lat);
-			//double dec = getSolarDeclinationAngle(); //getL_s());
-			//System.out.println("solar dec angle is " + dec);
+		// Note: Mars has an EOT varying between -51.1min and +39.9min, since Mars has more than five times (or 40%)
+		// larger orbital eccentricity than the Earth's,
 
-			// TODO: figure out a more compact Equation of Time (EOT) using numerical model of the Mars "Analemma".
+		// This results in a fifty minute variation in the timing of local noon (as measured on a 24 "hour" Mars clock).
 
-			// Note: Mars has an EOT varying between -51.1min and +39.9min, since Mars has more than five times (or 40%)
-			// larger orbital eccentricity than the Earth's,
+		// Mars' Analemma has a pear shape or tear-drop shape. For an explanation of analema,
+		// see paper at http://pubs.giss.nasa.gov/docs/1997/1997_Allison_1.pdf
 
-			// This results in a fifty minute variation in the timing of local noon (as measured on a 24 "hour" Mars clock).
+		// See media below for the projection of the location of the sun on Mars Oppoortunity Rover
+		// 1. pic 1 at https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Mars_Analemma_Time_Lapse_Opportunity.webm/220px--Mars_Analemma_Time_Lapse_Opportunity.webm.jpg
+		// 2. pic 2 at http://www.fromquarkstoquasars.com/wp-content/uploads/2014/05/Analemma-Rendering.jpg
+		// 3. video at https://upload.wikimedia.org/wikipedia/commons/1/14/Mars_Analemma_Time_Lapse_Opportunity.webm
 
-			// Mars' Analemma has a pear shape or tear-drop shape. For an explanation of analema,
-			// see paper at http://pubs.giss.nasa.gov/docs/1997/1997_Allison_1.pdf
+		// REFERENCE:
+		// 1. http://www.giss.nasa.gov/research/briefs/allison_02/
+		// 2. https://en.wiki2.org/wiki/Equation_of_time
+		// 3. https://en.wiki2.org/wiki/Analemma
+		// 4. http://www.planetary.org/blogs/emily-lakdawalla/2014/a-martian-analemma.html?referrer=https://www.google.com/
 
-			// See media below for the projection of the location of the sun on Mars Oppoortunity Rover
-			// 1. pic 1 at https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Mars_Analemma_Time_Lapse_Opportunity.webm/220px--Mars_Analemma_Time_Lapse_Opportunity.webm.jpg
-			// 2. pic 2 at http://www.fromquarkstoquasars.com/wp-content/uploads/2014/05/Analemma-Rendering.jpg
-			// 3. video at https://upload.wikimedia.org/wikipedia/commons/1/14/Mars_Analemma_Time_Lapse_Opportunity.webm
+		computeSineSolarDeclinationAngle();
+		double d = getSolarDeclinationAngle();
 
-			// REFERENCE:
-			// 1. http://www.giss.nasa.gov/research/briefs/allison_02/
-			// 2. https://en.wiki2.org/wiki/Equation_of_time
-			// 3. https://en.wiki2.org/wiki/Analemma
-			// 4. http://www.planetary.org/blogs/emily-lakdawalla/2014/a-martian-analemma.html?referrer=https://www.google.com/
+		double equation_of_time_offset = 0;
 
+		double Ls = getL_s();
+		if (Ls == 57.7)
+			equation_of_time_offset = 0;
+		else if (Ls <= 90 )
+			equation_of_time_offset = 0.7106 * Ls - 41D; // slope = 41/57.7, b = -41
+		else if (Ls <= 180)
+			equation_of_time_offset =  0.1803 * Ls + 6.7277;
+		else if (Ls <= 190)
+			equation_of_time_offset =  39.1817;
+		else if (Ls == 258)
+			equation_of_time_offset = 39.1817 * Math.cos(90D/68D*(Ls-190)*DEGREE_TO_RADIAN);
+		else if (Ls <= 326)
+			equation_of_time_offset = -51D * Math.sin(90D/69D*(Ls-258)*DEGREE_TO_RADIAN);
+		else if (Ls <= 360)
+			equation_of_time_offset = -41D - 10 * Math.sin(90D/34D*(Ls-326)*DEGREE_TO_RADIAN);
 
-			computeSineSolarDeclinationAngle();
-			double d = getSolarDeclinationAngle();
+		double theta_offset = location.getTheta() * 159.1519;
+		// 159.1519 = 1000D / 2D / Math.PI  ; // convert theta (longitude) from radians to millisols;
 
-			double equation_of_time_offset = 0;
-			//computeL_s();
-			double Ls = getL_s();
-			if (Ls == 57.7)
-				equation_of_time_offset = 0;
-			else if (Ls <= 90 )
-				equation_of_time_offset = 0.7106 * Ls - 41D; // slope = 41/57.7, b = -41
-			else if (Ls <= 180)
-				equation_of_time_offset =  0.1803 * Ls + 6.7277;
-			else if (Ls <= 190)
-				equation_of_time_offset =  39.1817;
-			else if (Ls == 258)
-				equation_of_time_offset = 39.1817 * Math.cos(90D/68D*(Ls-190)*DEGREE_TO_RADIAN);
-			else if (Ls <= 326)
-				equation_of_time_offset = -51D * Math.sin(90D/69D*(Ls-258)*DEGREE_TO_RADIAN);
-			else if (Ls <= 360)
-				equation_of_time_offset = -41D - 10 * Math.sin(90D/34D*(Ls-326)*DEGREE_TO_RADIAN);
+		double EOT_in_millisol = equation_of_time_offset * 0.6759; 
+		// 0.6759 = 60D / SOLAR_DAY * 1000D; // convert from min to millisols
+		
+		double modified_solar_time = theta_offset + solar_time + EOT_in_millisol ;
+		// The hour angle is measured from the true noon westward, represented by h = 2 * pi * t / P, t is time past noon in seconds
+		double h = 0.0063 * Math.abs(modified_solar_time - 500D);
+		// 0.0063 = 2D * Math.PI / 1000D;
 
-			double theta_offset = location.getTheta() * 159.1519;
-			// 159.1519 = 1000D / 2D / Math.PI  ; // convert theta (longitude) from radians to millisols;
-			//System.out.println(" theta_offset: " + theta_offset);
-
-			double EOT_in_millisol = equation_of_time_offset * 0.6759; // 0.6759 = 60D / SOLAR_DAY * 1000D; // convert from min to millisols
-			double modified_solar_time = theta_offset + solar_time + EOT_in_millisol ;
-			// The hour angle is measured from the true noon westward, represented by h = 2 * pi * t / P, t is time past noon in seconds
-			double h = 0.0063 * Math.abs(modified_solar_time - 500D);
-			// 0.0063 = 2D * Math.PI / 1000D;
-
-			//computeSineSolarDeclinationAngle();
-			//double d = getSolarDeclinationAngle();
-
-			return Math.sin (lat) * sineSolarDeclinationAngle +  Math.cos (lat)  * Math.cos (d) * Math.cos (h) ;
-
-
-			//cosineSolarZenithAngleMap.put(location, result);
-        //}
-
-        //return cosineSolarZenithAngleMap.get(location);
+		return Math.sin (lat) * sineSolarDeclinationAngle +  Math.cos (lat)  * Math.cos (d) * Math.cos (h) ;
 
 	}
 
@@ -523,9 +507,10 @@ implements Serializable {
 
 	/**
 	 * Computes the instantaneous areocentric longitude
+	 * numerically using ClockUtil's methods.
 	 */
 	public double computeL_s() {
-		double ls = ClockUtils.getLs(earthClock)%360;
+		double ls = ClockUtils.getLs(earthClock) % 360;
 		L_s = ls;
 		return ls;
 	}
@@ -580,7 +565,7 @@ implements Serializable {
 		//double lat = location.getPhi2Lat(location.getPhi());
 		return 318.3152 * Math.acos ( -Math.tan (location.getPhi2LatRadian()) * Math.tan (getSolarDeclinationAngle()) );
 		// Note: 318.3152 = 1000 millisols / 24 hours / DEGREE_TO_RADIAN * 2 / 360 degrees * 24 hours
-		// TODO: is 24 hours wrong on Mars?
+		// TODO: should 24 hours be used ?
 	}
 
 	/**

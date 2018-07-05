@@ -129,7 +129,7 @@ public class MasterClock implements Serializable {
         
         initialMarsTime = (MarsClock) marsTime.clone();
 
-//		testMarsTimeParams();
+		testNewMarsLandingDayTime();
 				
         // Create an Earth clock
         earthClock = new EarthClock(config.getEarthStartDateTime());
@@ -211,13 +211,25 @@ public class MasterClock implements Serializable {
 		logger.info("*** Welcome to Mars and the beginning of the new adventure for humankind ***");
     }
 
-    public void testMarsTimeParams() {
+    public void testNewMarsLandingDayTime() {
         // Create an Earth clock
-        EarthClock c = new EarthClock("2043-09-30 00:00:00.000");//"2004-01-04 00:00:00.000"); // "2004-01-03 13:46:31.000"//"2000-01-06 00:00:00.000");
+        EarthClock c = new EarthClock("2015-07-14 09:53:18.0");
+        //"2004-01-04 00:00:00.000"
+        //"2004-01-03 13:46:31.000" degW = 84.702 , <-- used this
+        //"2000-01-06 00:00:00.000" degW = 0 ,
         
+        // 0015-Adir-01 corresponds to Wednesday, September 30, 2043 at 12:00:00 AM Coordinated Universal Time
+        //"2043-09-30 00:00:00.000"
+        
+        // 0000-Adir-01 corresponds to Tuesday, July 14, 2015 at 9:53:18 AM Coordinated Universal Time
+        // "2015-07-14 09:53:18.0"
+        
+        // "2028-07-14 00:00:00.000"
+        
+        // Use the EarthClock instance c from above for the computation below :
         ClockUtils.getFirstLandingDateTime();
 
-		double millis = c.getMillis(c);
+		double millis = EarthClock.getMillis(c);
 		logger.info("millis is " + millis); 
 		double jdut = ClockUtils.getJulianDateUT(c);
 		logger.info("jdut is " + jdut);    
@@ -237,23 +249,41 @@ public class MasterClock implements Serializable {
 		logger.info("PBS is " + PBS);	
 		double EOC = ClockUtils.getEOC(c)%360;
 		logger.info("EOC is " + EOC);	
-		double v = ClockUtils.getTrueAnomaly_Concise(c)%360;
+		double v = ClockUtils.getTrueAnomaly0(c)%360;
 		logger.info("v is " + v);
 		double L_s = ClockUtils.getLs(c)%360;
 		logger.info("L_s is " + L_s);
 
-		double EOT = ClockUtils.getEOT_Concise(c);
-		logger.info("EOT is " + EOT);
-		double EOT_hr = ClockUtils.getEOTHour_Concise(c);
-		logger.info("EOT_hr is " + EOT_hr);	
-//		String EOTStr = ClockUtils.getEOTString(c);
-//		logger.info("EOTStr is " + EOTStr);	
+		double EOT = ClockUtils.getEOTDegree(c);
+		logger.info("EOTDegree is " + EOT);
+		double EOT_hr = ClockUtils.getEOTHour(c);
+		logger.info("EOTHour is " + EOT_hr);	
+		String EOT_Str = ClockUtils.getFormattedTimeString(EOT_hr);
+		logger.info("EOT_Str is " + EOT_Str);
 		
-		double MTC = ClockUtils.getMTC(c);
-		logger.info("MTC is " + MTC);
-//		String MTCStr = ClockUtils.getMTCString(c);
-//		logger.info("MTCStr is " + MTCStr);
+		double MTC = ClockUtils.getMTC1(c);
+		logger.info("MTC1 is " + MTC);
+		double MTC_Adj = ClockUtils.getMTC1(c);
+		logger.info("MTC_Adj is " + MTC_Adj);
+		String MTCStr = ClockUtils.getFormattedTimeString(MTC_Adj);
+		logger.info("MTC_Str is " + MTCStr);
 
+		
+		double LMST = ClockUtils.getLMST(c, 0);//184.702);
+		logger.info("LMST is " + LMST);
+		String LMST_Str = ClockUtils.getFormattedTimeString(LMST);
+		logger.info("LMST_Str is " + LMST_Str);
+
+		double LTST = ClockUtils.getLTST(c, 0);//184.702);
+		logger.info("LTST is " + LTST);
+		String LTST_Str = ClockUtils.getFormattedTimeString(LTST);
+		logger.info("LTST_Str is " + LTST_Str);
+		
+		double sl = ClockUtils.getSubsolarLongitude(c);
+		logger.info("sl is " + sl);
+		
+		double r = ClockUtils.getHeliocentricDistance(c);
+		logger.info("r is " + r);
     }
     
     /**
