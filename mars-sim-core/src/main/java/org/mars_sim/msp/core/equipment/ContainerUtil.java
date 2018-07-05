@@ -25,8 +25,19 @@ public final class ContainerUtil {
 
 	/**
 	 * Gets the type of container needed to hold a particular resource.
-	 * @param resource the amount resource to hold.
-	 * @return type of container or null if none found.
+	 * @param resource the id of the resource to hold.
+	 * @return container id.
+	 */
+	public static int getContainerClassIDToHoldResource(
+			int resource
+		) {	
+			return getContainerID(ResourceUtil.findAmountResource(resource).getPhase());
+		}
+	
+	/**
+	 * Gets the type of container needed to hold a particular resource.
+	 * @param resource the id of the resource to hold.
+	 * @return container class or null if none found.
 	 */
 	public static Class<? extends Container> getContainerClassToHoldResource(
 		int resource
@@ -36,7 +47,26 @@ public final class ContainerUtil {
 
 	/**
 	 * Gets the container type needed for an amount resource phase.
-	 * @param phase the amount resource phase.
+	 * @param phase the phase type of the amount resource.
+	 * @return container id.
+	 */
+	public static int getContainerID(PhaseType phase) {
+		int result = -1;
+		switch (phase) {
+			case GAS : result = EquipmentType.GAS_CANISTER.ordinal();//str2int("Gas Canister");; 
+			break;
+			case LIQUID : result = EquipmentType.BARREL.ordinal();//.str2int("Barrel"); 
+			break;
+			case SOLID : result = EquipmentType.BAG.ordinal();//.str2int("Bag");
+			break;
+			//System.out.println("ContainerUtil : Can't match " + phase + " to any known phases.");
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets the container type needed for an amount resource phase.
+	 * @param phase the phase type of the amount resource.
 	 * @return container class.
 	 */
 	public static Class<? extends Container> getContainerTypeNeeded(PhaseType phase) {
@@ -57,16 +87,24 @@ public final class ContainerUtil {
 	 */
 	public static double getContainerCapacity(Class<? extends Container> containerClass) {
 
-		double result = 0D;
-
-		Class<? extends Equipment> equipmentClass = (Class<? extends Equipment>) containerClass;
-
-		Container container = (Container) EquipmentFactory.createEquipment(equipmentClass, coordinates, true);
-		if (container != null) {
-			result = container.getTotalCapacity();
-		}
-
-		return result;
+		if (containerClass == GasCanister.class)
+			return GasCanister.CAPACITY;
+		else if (containerClass == Barrel.class)
+			return Barrel.CAPACITY;
+		else if (containerClass == Bag.class)
+			return Bag.CAPACITY;
+		else 
+			return 0;
+		
+		// Note : not an inefficient way of finding the phase type of a container 
+//		double result = 0D;
+////		Class<? extends Equipment> equipmentClass = (Class<? extends Equipment>) containerClass;
+//		Container container = (Container) EquipmentFactory.createEquipment((Class<? extends Equipment>) containerClass, coordinates, true);
+//		if (container != null) {
+//			result = container.getTotalCapacity();
+//		}
+//
+//		return result;
 	}
 	
 	/**
@@ -74,18 +112,28 @@ public final class ContainerUtil {
 	 * @param containerClass the container class.
 	 * @return capacity (kg).
 	 */
-	public static double getContainerCapacity(int c) {
+	public static double getContainerCapacity(int id) {
 
-		Class<? extends Equipment> u = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(c).getName());
-		
-		double result = 0D;
+		if (id == EquipmentType.GAS_CANISTER.ordinal())
+			return GasCanister.CAPACITY;
+		else if (id == EquipmentType.BARREL.ordinal())
+			return Barrel.CAPACITY;
+		else if (id == EquipmentType.BAG.ordinal())
+			return Bag.CAPACITY;
+		else 
+			return 0;
 
-		Container container = (Container) EquipmentFactory.createEquipment(u, coordinates, true);
-		if (container != null) {
-			result = container.getTotalCapacity();
-		}
-
-		return result;
+// Note : inefficient way of finding the total capacity of a container to create a container
+//		double result = 0D;		
+////		Class<? extends Equipment> u = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());		
+//		Container container = (Container) EquipmentFactory.createEquipment(
+//				EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName()),
+//				coordinates, true);
+//		if (container != null) {
+//			result = container.getTotalCapacity();
+//		}
+//
+//		return result;
 	}
 	/**
 	 * Gets the phase of amount resource that a container can hold.
@@ -96,6 +144,7 @@ public final class ContainerUtil {
 	    
 	    PhaseType result = null;
 	    
+	 // Note : not an inefficient way of finding the phase type of a container 
 	    Class<? extends Equipment> equipmentClass = (Class<? extends Equipment>) containerClass;
 	    Container container = (Container) EquipmentFactory.createEquipment(equipmentClass, coordinates, true);
         if (container != null) {

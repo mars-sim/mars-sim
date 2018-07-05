@@ -800,25 +800,27 @@ extends VehicleMission {
 
 	    Map<Integer, Number> result = super.getOptionalResourcesToLoad();
 
+	    int dessertID = -1;
 	    // Initialize dessert resources if necessary.
 	    if (dessertResources == null) {
-	        determineDessertResources();
+	    	dessertID = determineDessertResources();
 	    }
 
-	    // Add any dessert resources to optional resources to load.
-	    Iterator<Integer> i = dessertResources.keySet().iterator();
-	    while (i.hasNext()) {
-	    	Integer dessert = i.next();
-	        double amount = dessertResources.get(dessert);
-
-	        if (result.containsKey(dessert)) {
-	            double initialAmount = (double) result.get(dessert);
-	            amount += initialAmount;
-	        }
-
-	        result.put(dessert, amount);
+	    if (dessertID != -1) {
+		    // Add any dessert resources to optional resources to load.
+		    Iterator<Integer> i = dessertResources.keySet().iterator();
+		    while (i.hasNext()) {
+		    	Integer dessert = i.next();
+		        double amount = dessertResources.get(dessert);
+	
+		        if (result.containsKey(dessert)) {
+		            double initialAmount = (double) result.get(dessert);
+		            amount += initialAmount;
+		        }
+	
+		        result.put(dessert, amount);
+		    }
 	    }
-
 	    return result;
 	}
 
@@ -858,9 +860,11 @@ extends VehicleMission {
         	dessertAR = dessertList.get(RandomUtil.getRandomInt(dessertList.size() - 1));
             //dessert = AmountResource.findAmountResource(dessertName);
         }
-
-        int id = ResourceUtil.findIDbyAmountResourceName(dessertAR.getName());
+        
+        int id = -1;
+        
         if (dessertAR != null) {
+            id = ResourceUtil.findIDbyAmountResourceName(dessertAR.getName());
             dessertResources.put(id, dessertAmount);
         }
 

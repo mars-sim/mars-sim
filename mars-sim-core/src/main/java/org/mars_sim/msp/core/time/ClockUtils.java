@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.time;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -173,23 +172,20 @@ public class ClockUtils implements Serializable {
 		
 	}
 	
+    /**
+     * Returns a date time string in full HHh MMm SS.SSs format
+     * @param missionSol the sol since the start of the sim
+     * @return a date time string
+     */	
 	public static String convertMissionSol2Date(int missionSol) {
-
-//		int orbit = 0;
-//		int sol = missionSol;
-//		int month = 0;
-
 		MarsClock clock = new MarsClock(15, 1, 1, 0);
-		
 		clock.addTime(missionSol*1000);
-		String s = MarsClock.getDateString(clock);
-		
-		return s;
+		return MarsClock.getDateString(clock);
 	}
 	
     /**
      * Returns a date time string in HHh MMm SS.SSs format
-     * @param ratio The tiem ratio
+     * @param ratio The time ratio
      * @return a date time string
      */
     public static String getTimeString(double ratio) {

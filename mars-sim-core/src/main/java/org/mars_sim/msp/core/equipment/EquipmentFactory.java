@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A factory for equipment units.
@@ -56,8 +57,8 @@ public final class EquipmentFactory {
 	    
 	}
 
-	public static Equipment createEquipment(int type, Coordinates location, boolean temp) {
-		return createEquipment(EquipmentType.int2enum(type).getName(), location, temp);
+	public static Equipment createEquipment(int id, Coordinates location, boolean temp) {
+		return createEquipment(EquipmentType.int2enum(id).getName(), location, temp);
 	}
 	
 	/**
@@ -140,9 +141,15 @@ public final class EquipmentFactory {
 		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return SpecimenContainer.class;
 		else if (BuildingKit.TYPE.equalsIgnoreCase(type)) return BuildingKit.class;
 		else if (Robot.TYPE.equalsIgnoreCase(type)) return Robot.class;
+//		else if (Vehicle.NAME.equalsIgnoreCase(type)) return Vehicle.class;
 		else throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
 	}
 
+	public static Class<? extends Equipment> getEquipmentClass(int id) {
+		String type = EquipmentType.int2enum(id).getName();
+		return getEquipmentClass(type);
+	}
+	
 //	public static int getEquipmentID(String type) {
 //		return EquipmentType.str2int(type);
 //	}

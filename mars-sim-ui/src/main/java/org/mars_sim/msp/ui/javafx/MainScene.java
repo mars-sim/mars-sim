@@ -3469,7 +3469,8 @@ public class MainScene {
 		isShowingDialog = false;
 		masterClock.setPaused(false, true);
 		timeLabeltimer.play();
-		billboardTimer.start();
+		if (billboardTimer != null)
+			billboardTimer.start();
 		stopPausePopup();
 	}
 

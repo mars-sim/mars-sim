@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -777,7 +778,8 @@ implements Serializable {
                 if (result.containsKey(equipmentClass)) {
                     num += (Integer) result.get(equipmentClass);
                 }
-                result.put(ResourceUtil.findIDbyAmountResourceName(equipmentClass.getName()), num);
+                result.put(EquipmentType.getEquipmentID(equipmentClass), num);
+//                result.put(ResourceUtil.findIDbyAmountResourceName(equipmentClass.getName()), num);
             }
         }
 

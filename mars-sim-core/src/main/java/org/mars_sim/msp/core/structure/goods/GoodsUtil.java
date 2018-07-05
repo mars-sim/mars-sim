@@ -120,9 +120,9 @@ public class GoodsUtil {
 		return result;
 	}
 
-	public static Good getEquipmentGood(int e) {
+	public static Good getEquipmentGood(int id) {
 //		Class<? extends Unit> equipmentClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(e).getName());
-		return getEquipmentGood(EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(e).getName()));
+		return getEquipmentGood(EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName()));
 	}
 	
 	/**

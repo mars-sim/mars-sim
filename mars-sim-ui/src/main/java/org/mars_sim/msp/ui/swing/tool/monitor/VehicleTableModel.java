@@ -313,7 +313,8 @@ extends UnitTableModel {
 					Mission mission = missionManager.getMissionForVehicle(vehicle);
 					if ((mission != null) && (mission instanceof VehicleMission)) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
-						if (vehicleMission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+						if (vehicleMission.getTravelStatus() != null 
+								&& vehicleMission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
 							NavPoint destination = vehicleMission.getNextNavpoint();
 							if (destination.isSettlementAtNavpoint()) result = destination.getSettlement().getName();
 							else result = destination.getLocation().getFormattedString();
@@ -448,15 +449,15 @@ extends UnitTableModel {
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
 				Map<AmountResource, Double> resourceMap = new HashMap<AmountResource, Double>();
-				resourceMap.put(foodAR, Math.round(10.0 * getResourceStored(newUnit, foodAR))/10.0);
-				resourceMap.put(oxygenAR, Math.round(10.0 * getResourceStored(newUnit, oxygenAR))/10.0);
-				resourceMap.put(waterAR, Math.round(10.0 * getResourceStored(newUnit, waterAR))/10.0);
-				resourceMap.put(methaneAR, Math.round(10.0 *getResourceStored(newUnit, methaneAR))/10.0);
-				resourceMap.put(rockSamplesAR, Math.round(10.0 *getResourceStored(newUnit, rockSamplesAR))/10.0);
-				resourceMap.put(iceAR, Math.round(10.0 *getResourceStored(newUnit, iceAR))/10.0);
+				resourceMap.put(foodAR, Math.round(100.0 * getResourceStored(newUnit, foodAR))/100.0);
+				resourceMap.put(oxygenAR, Math.round(100.0 * getResourceStored(newUnit, oxygenAR))/100.0);
+				resourceMap.put(waterAR, Math.round(100.0 * getResourceStored(newUnit, waterAR))/100.0);
+				resourceMap.put(methaneAR, Math.round(100.0 *getResourceStored(newUnit, methaneAR))/100.0);
+				resourceMap.put(rockSamplesAR, Math.round(100.0 *getResourceStored(newUnit, rockSamplesAR))/100.0);
+				resourceMap.put(iceAR, Math.round(100.0 *getResourceStored(newUnit, iceAR))/100.0);
 			  	// Put together a list of available dessert
 		        for(AmountResource ar : availableDesserts) {
-		        	resourceMap.put(ar, Math.round(10.0 *getResourceStored(newUnit, ar))/10.0);
+		        	resourceMap.put(ar, Math.round(100.0 *getResourceStored(newUnit, ar))/100.0);
 		        }
 
 				resourceCache.put(newUnit, resourceMap);

@@ -42,17 +42,22 @@ public class SimpleEvent implements Serializable {
 		return sol;
 	}
 	
+    /**
+     * Returns the sol string in xxx.xxx format
+     * @param ratio The time ratio
+     * @return the sol string
+     */
 	public String getMsol() {
 		StringBuilder result = new StringBuilder();
 
 		float m = msol;
 		
 		if (m < 10) // then 000x
-			result.append(THREE_ZEROS);
+			result.append(THREE_ZEROS).append(m);
 		else if (m < 100) // then 00xx
-			result.append(TWO_ZEROS);
+			result.append(TWO_ZEROS).append(m);
 		else if (m < 1000) // then 0xxx
-			result.append(ONE_ZERO);
+			result.append(ONE_ZERO).append(m);
 		
 		return result.toString();
 	}

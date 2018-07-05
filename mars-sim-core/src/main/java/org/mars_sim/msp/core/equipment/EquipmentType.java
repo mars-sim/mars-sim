@@ -25,7 +25,7 @@ public enum EquipmentType {
 	SPECIMEN_CONTAINER	("Specimen Box");
 	// should 3D printer be an equipment or an itemResource ?
 	
-	private static final int STARTING_ID = 2000;
+//	private static final int STARTING_ID = 2000;
 	
 	private String name;	
 
@@ -70,7 +70,7 @@ public enum EquipmentType {
 		if (name != null) {
 	    	for (EquipmentType e : EquipmentType.values()) {
 	    		if (name.equalsIgnoreCase(e.name)) {
-	    			return e.ordinal() + STARTING_ID;
+	    			return e.ordinal();
 	    		}
 	    	}
 		}
@@ -79,6 +79,17 @@ public enum EquipmentType {
 	}
 	
 	public static EquipmentType int2enum(int ordinal) {
-		return EquipmentType.values()[ordinal-STARTING_ID];
+		return EquipmentType.values()[ordinal];
+	}
+	
+	public static int getEquipmentID(Class<? extends Equipment> equipmentClass) {
+		if (Bag.class.equals(equipmentClass)) return BAG.ordinal();
+		else if (Barrel.class.equals(equipmentClass)) return BARREL.ordinal();
+		else if (BuildingKit.class.equals(equipmentClass)) return BUILDING_KIT.ordinal();
+		else if (EVASuit.class.equals(equipmentClass)) return EVA_SUIT.ordinal();
+		else if (GasCanister.class.equals(equipmentClass)) return GAS_CANISTER.ordinal();
+        else if (LargeBag.class.equals(equipmentClass)) return LARGE_BAG.ordinal();
+		else if (SpecimenContainer.class.equals(equipmentClass)) return SPECIMEN_CONTAINER.ordinal();
+		else return -1;
 	}
 }

@@ -1450,8 +1450,8 @@ implements Serializable {
         return result;
     }
 
-    private boolean containsUnitClassLocal(int c) {
-     	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(c).getName());
+    private boolean containsUnitClassLocal(int id) {
+     	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
     	return containsUnitClassLocal(unitClass);
     }
    
@@ -1496,8 +1496,8 @@ implements Serializable {
         return result;
     }
 
-    public Unit findUnitOfClass(int c) {
-       	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(c).getName());
+    public Unit findUnitOfClass(int id) {
+       	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
     	return findUnitOfClass(unitClass);
     }
     
@@ -1520,8 +1520,8 @@ implements Serializable {
         return result;
     }
 
-    public Collection<Unit> findAllUnitsOfClass(int c) {
-       	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(c).getName());
+    public Collection<Unit> findAllUnitsOfClass(int id) {
+       	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
        	return findAllUnitsOfClass(unitClass);
     }
     
@@ -1542,8 +1542,8 @@ implements Serializable {
         return result;
     }
 
-    public int findNumUnitsOfClass(int c) {
-    	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(c).getName());
+    public int findNumUnitsOfClass(int id) {
+    	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
     	return findNumUnitsOfClass(unitClass);
     }
     
@@ -1586,8 +1586,8 @@ implements Serializable {
         return result;
     }
 
-    public int findNumEmptyUnitsOfClass(int c, boolean allowDirty) {
-    	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(c).getName());
+    public int findNumEmptyUnitsOfClass(int id, boolean allowDirty) {
+    	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
         int result = 0;
         if (containsUnitClass(unitClass)) {
             for (Unit unit : containedUnits) {

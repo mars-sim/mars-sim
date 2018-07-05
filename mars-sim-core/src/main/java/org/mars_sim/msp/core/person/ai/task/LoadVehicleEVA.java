@@ -1091,13 +1091,13 @@ implements Serializable {
             while (j.hasNext()) {
                 Integer resource = j.next();
                 if (resource < FIRST_ITEM_RESOURCE) {
-                    double amount = (Double) resources.get(resource);
+                    double amount = (Double) (resources.get(resource));
                     inv.storeAmountResource(resource, amount, true);
        			 	// 2015-01-15 Add addSupplyAmount()
                     //inv.addSupplyAmount((AmountResource) resource, amount);
                 }
                 else {
-                    int num = (Integer) resources.get(resource);
+                    int num = (Integer) (resources.get(resource));
                     inv.storeItemResources(resource, num);
                 }
             }
@@ -1163,14 +1163,14 @@ implements Serializable {
         while (iR.hasNext() && sufficientSupplies) {
             Integer resource = iR.next();
             if (resource < FIRST_ITEM_RESOURCE) {
-                double amount = (Double) requiredResources.get(resource);
+                double amount = (Double) (requiredResources.get(resource));
                 double storedAmount = vInv.getAmountResourceStored(resource, false);
                 if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
                     sufficientSupplies = false;
                 }
             }
             else if (resource >= FIRST_ITEM_RESOURCE) {
-                int num = (Integer) requiredResources.get(resource);
+                int num = (Integer) (requiredResources.get(resource));
                 if (vInv.getItemResourceNum(resource) < num) {
                     sufficientSupplies = false;
                 }
@@ -1187,9 +1187,9 @@ implements Serializable {
             if (resource < FIRST_ITEM_RESOURCE) {
 
                 //AmountResource amountResource = (AmountResource) resource;
-                double amount = (Double) optionalResources.get(resource);
+                double amount = (Double) (optionalResources.get(resource));
                 if (requiredResources.containsKey(resource)) {
-                    amount += (Double) requiredResources.get(resource);
+                    amount += (Double) (requiredResources.get(resource));
                 }
 
                 double storedAmount = vInv.getAmountResourceStored(resource, false);
@@ -1213,9 +1213,9 @@ implements Serializable {
             else if (resource >= FIRST_ITEM_RESOURCE) {
 
                 ItemResource ir = ItemResourceUtil.findItemResource(resource);
-                double num = (Integer) optionalResources.get(resource);
+                int num = (Integer) (optionalResources.get(resource));
                 if (requiredResources.containsKey(resource)) {
-                    num += (Integer) requiredResources.get(resource);
+                    num += (Integer) (requiredResources.get(resource));
                 }
 
                 int storedNum = vInv.getItemResourceNum(resource);

@@ -1105,12 +1105,12 @@ implements Serializable {
     		while (j.hasNext()) {
     			Integer resource = j.next();
     			
-    			if (resource > 1000) {
-    				double amount = (Double) resources.get(resource);
+    			if (resource < FIRST_ITEM_RESOURCE) {
+    				double amount = (Double) (resources.get(resource));
     				inv.storeAR(resource, amount, true);
     			}
     			else {
-    				int num = (Integer) resources.get(resource);
+    				int num = (Integer) (resources.get(resource));
     				inv.storeItemResources(resource, num);
     			}
     		}
@@ -1176,14 +1176,14 @@ implements Serializable {
         while (iR.hasNext() && sufficientSupplies) {
         	Integer resource = iR.next();
         	if (resource < FIRST_ITEM_RESOURCE) {
-        		double amount = (Double) requiredResources.get(resource);
+        		double amount = (Double) (requiredResources.get(resource));
         		double storedAmount = vInv.getARStored(resource, false);
         		if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
         		    sufficientSupplies = false;
         		}
         	}
         	else if (resource >= FIRST_ITEM_RESOURCE) {
-        		int num = (Integer) requiredResources.get(resource);
+        		int num = (Integer) (requiredResources.get(resource));
         		if (vInv.getItemResourceNum(resource) < num) {
         		    sufficientSupplies = false;
         		}
@@ -1197,7 +1197,7 @@ implements Serializable {
         Iterator<Integer> iR2 = optionalResources.keySet().iterator();
         while (iR2.hasNext() && sufficientSupplies) {
         	Integer resource = iR2.next();
-            if (resource < 1000) {
+            if (resource < FIRST_ITEM_RESOURCE) {
 
                 //AmountResource amountResource = (AmountResource) resource;
                 double amount = (Double) optionalResources.get(resource);
@@ -1223,12 +1223,12 @@ implements Serializable {
                     }
                 }
             }
-            else if (resource >= 1000) {
+            else if (resource >= FIRST_ITEM_RESOURCE) {
 
                 //ItemResource itemResource = (ItemResource) resource;
-                double num = (Integer) optionalResources.get(resource);
+                int num = (Integer) (optionalResources.get(resource));
                 if (requiredResources.containsKey(resource)) {
-                    num += (Integer) requiredResources.get(resource);
+                    num += (Integer) (requiredResources.get(resource));
                 }
 
                 int storedNum = vInv.getItemResourceNum(resource);

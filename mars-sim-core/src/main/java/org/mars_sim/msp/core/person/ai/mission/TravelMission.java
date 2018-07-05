@@ -174,8 +174,9 @@ extends Mission {
             return navPoints.get(index);
         else {
         	LogConsolidated.log(logger, Level.SEVERE, 0, logger.getName(), 
-        			getPhase() + " index " + index
-                    + " out of bounds.", null);
+        			//getPhase() + " index " + index + " out of bounds."
+        			"Index is " + index + ". # of navpoints is " + getNumberOfNavpoints()
+                    , null);
             //throw new IllegalArgumentException("index: " + index
             //        + " out of bounds.");
         	

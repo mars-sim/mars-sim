@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.EventType;
@@ -1188,17 +1189,17 @@ implements UnitListener {
 	            //AmountResource amountResource = (AmountResource) resource;
 	            double amount = (double) optionalResources.get(resource);
 	            //Class<? extends Container> containerClass = ContainerUtil.getContainerClassToHoldResource(resource);
+	            int containerID = ContainerUtil.getContainerClassIDToHoldResource(resource);
 	            double capacity = ContainerUtil.getContainerCapacity(resource);
 	            int numContainers = (int) Math.ceil(amount / capacity);
 
 //	            int id = EquipmentType.str2int(containerClass.getClass().getName());
 		         
-	            if (result.containsKey(resource)) {
+	            if (result.containsKey(containerID)) {
 	                numContainers += (int)(result.get(resource));
 	            }
 
-   
-	            result.put(resource, numContainers);
+	            result.put(containerID, numContainers);
 	        }
 	    }
 

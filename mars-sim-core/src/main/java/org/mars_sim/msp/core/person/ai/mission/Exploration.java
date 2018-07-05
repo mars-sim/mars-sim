@@ -562,7 +562,7 @@ implements Serializable {
         result.put(foodID, foodAmount);
 
         /*
-        // 2015-01-04 Added Soymilk
+        // Added Soymilk
         AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
         double dessert1Amount = PhysicalCondition.getFoodConsumptionRate() / 6D
                 * timeSols * crewNum;
@@ -663,7 +663,7 @@ implements Serializable {
         if (foodTimeLimit < timeLimit)
             timeLimit = foodTimeLimit;
 /*
-        // 2015-01-04 Added Soymilk
+        // Added Soymilk
         // Check dessert1 capacity as time limit.
         AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
         double dessert1ConsumptionRate = config.getFoodConsumptionRate() / 6D;
