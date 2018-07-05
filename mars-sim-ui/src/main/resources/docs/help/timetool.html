@@ -48,14 +48,15 @@ for details and info on converting an Earth Date and time to Martian Date and So
 <BR>
 <H3>Design of the Mars Calendar</H3>
 
-<P>The Martian calendar used in this simulation is based on Shaun Moss's Areosynchronous Calendar.<BR></P>
+<P>The Martian calendar used in mars-sim is a variant form of Shaun Moss's Areosynchronous Calendar.<BR></P>
 <P>The Areosynchronous Calendar is heavily derived from Tom Gangale's Darian Calendar
  <A HREF="https://en.wikipedia.org/wiki/Darian_calendar">[1]</A>
  <A HREF="http://ops-alaska.com/time/gangale_mst/darian.htm">[2]</A>
  <A HREF="https://github.com/cworreschk/darian_calendar">[3]</A>.</P>
-<P>The Martian year is referred to as an "orbit". It is 668.5921 Martian days ("Sols") long. In the
- calendar, about half of the orbits are 668 Sols long, and the other half are "leap-orbits" with 669
- Sols. See the Areosynchronous Calendar for complete details on leap-orbits.</P>
+<P>A day on Mars is called sol. One Martian year is referred to as an orbit. It is 668.5921 Martian sols long.
+In mars-sim, about half of the orbits are 668 Sols long, and the other half are leap-orbits with 669 Sols. 
+
+See the Areosynchronous Calendar for complete details on leap-orbits.</P>
 <P>The orbit has 24 months with either 27 or 28 Sols:</P>
 <P>
 <TABLE>
@@ -209,7 +210,7 @@ for details and info on converting an Earth Date and time to Martian Date and So
  millisol = 1/1000 Sol = 1.48 Earth minutes</P>
 <P>Martian time of the Sol is usually written in three-digit millisol format to three decimal points.
  ex. from "000.000" to "999.999".</P>
-<P>The common timstamp format for Mars date/time is orbit-month-sol:millisols. ex. "17-Adir-03:523.234"</P>
+<P>The common timstamp format for Mars date/time is "orbit-month-sol millisols". For instance, "17-Adir-03 523.234"</P>
 <P>The time of the day is based on Bruce Mackenzie's <A HREF="http://ops-alaska.com/time/mckenzie/mckenzie.htm"> Metric Time for Mars</A>.<BR>
 </P>
 <hr>

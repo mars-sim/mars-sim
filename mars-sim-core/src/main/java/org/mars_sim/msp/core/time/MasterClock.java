@@ -129,7 +129,7 @@ public class MasterClock implements Serializable {
         
         initialMarsTime = (MarsClock) marsTime.clone();
 
-		testNewMarsLandingDayTime();
+//		testNewMarsLandingDayTime();
 				
         // Create an Earth clock
         earthClock = new EarthClock(config.getEarthStartDateTime());

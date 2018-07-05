@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -126,19 +127,24 @@ implements Serializable {
 		// Set orbit coordinates to start of orbit.
 //		if (earthClock == null)
 //			earthClock = sim.getMasterClock().getEarthClock();
+		
 		orbitTime = 0D;
 		theta = 0D;
-		// At the start of the sim, Mars' L_s is at 252.58. 
-		// This corresponds to Earth date 2043-Sep-30 00:00 UT, 
-		// the date arbitrarily chosen by mars-sim developer.
-		L_s = L_AT_START; 
-		instantaneousSunMarsDistance = SUN_MARS_DIST_AT_START;
+				
+		// Compute the initial L_s and initial r based on the earth start date/time in simulation.xml 
+		EarthClock c = new EarthClock(SimulationConfig.instance().getEarthStartDateTime());//"2043-09-30 00:00:00.000");
+		instantaneousSunMarsDistance = ClockUtils.getHeliocentricDistance(c);
+		//instantaneousSunMarsDistance = SUN_MARS_DIST_AT_START;
+		L_s = ClockUtils.getLs(c) % 360;
+		//L_s = L_AT_START; 
+	
 		sunDirection = new Coordinates(HALF_PI + TILT, Math.PI);
 		
 //		testOrbitData();
 		
 		offsetL_s = computePerihelion(2043);
 	}
+	
 	
 	public void testOrbitData() {
 		
