@@ -1830,7 +1830,7 @@ public class MainScene {
 		hBox.getChildren().addAll(yearText, monthText);
 
 		Label LsLabel = new Label(SOLAR_LONGITUDE);
-		setQuickToolTip(LsLabel, "Solar Longitude (L_s) is the Mars-Sun angle for determining the Martian season");
+		setQuickToolTip(LsLabel, "The Areocentric Solar Longitude (L_s) is the Mars-Sun angle for determining the Martian season");
 
 		orbitInfo = sim.getMars().getOrbitInfo();
 		double L_s = orbitInfo.getL_s();

@@ -5,7 +5,7 @@ Copyright (C) 2018 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-beta1 (build 4354) - 2018-06-26
+## v3.1.0-beta1 (build 43__) - 2018-0_-__
 
 ### KNOWN LIMITATIONS :
 
@@ -34,6 +34,10 @@ Copyright (C) 2018 Scott Davis
 5. Improve how a vehicle should respond to "resources not enough" events 
    during a mission. Will now travel toward a settlement as close as possible
    before turning on the beacon and asking for help.
+
+6. Limit the distance a rover may travel in a mission.
+
+7. Enable flexible Earth start date/time in simulation.xml.
 
 
 ### UI IMPROVEMENT :

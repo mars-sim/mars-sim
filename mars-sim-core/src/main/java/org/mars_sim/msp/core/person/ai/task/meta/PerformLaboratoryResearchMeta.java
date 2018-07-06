@@ -8,10 +8,13 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -37,6 +40,8 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(PerformLaboratoryResearchMeta.class.getName());
+
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
     private static ScientificStudyManager studyManager;
     
@@ -85,7 +90,9 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	                    }
 	                }
 	                catch (Exception e) {
-                        logger.severe("[" + person.getVehicle() + "] " + person + " is unable to perform lab research.");// + e.getMessage());
+//                        logger.severe("[" + person.getVehicle() + "] " + person + " is unable to perform lab research.");// + e.getMessage());
+            			LogConsolidated.log(logger, Level.INFO, 2000, sourceName,
+            					"[" + person.getLocationTag().getImmediateLocation() + "] " + person + " is unable to perform lab research.", null);	                
 	                }
 	            }
 	        }
@@ -119,7 +126,10 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	                        }
 	                    }
 	                    catch (Exception e) {
-	                        logger.severe("[" + person.getVehicle() + "] " + person + " is unable to perform lab research.");// + e.getMessage());
+//	                        logger.severe("[" + person.getVehicle() + "] " + person + " is unable to perform lab research.");// + e.getMessage());
+	            			LogConsolidated.log(logger, Level.INFO, 2000, sourceName,
+	            					"[" + person.getLocationTag().getImmediateLocation() + "] " + person + " is unable to perform lab research.", null);	                
+
 	                    }
 	                }
 	            }
