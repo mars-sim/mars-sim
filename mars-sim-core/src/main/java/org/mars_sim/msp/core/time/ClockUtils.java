@@ -162,7 +162,7 @@ public class ClockUtils implements Serializable {
 	}
 
 	/**
-	 * Returns a date time string in full HHh MMm SS.SSs format
+	 * Returns a date time string in orbit-month-sol format
 	 * 
 	 * @param missionSol the sol since the start of the sim
 	 * @return a date time string

@@ -433,7 +433,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Gets the date string of a given time. ex. "13-Adir-05"
+	 * Gets the date string of a given time. ex. "0013-Adir-05"
 	 * 
 	 * @param time {@link MarsClock} instance
 	 * @return date string
@@ -443,6 +443,14 @@ public class MarsClock implements Serializable {
 		int orbit = time.getOrbit();
 		int sol = time.getSolOfMonth();
 		String month = time.getMonthName();
+
+		// Append padding zeros to orbit
+		if (orbit < 10) // then 000x
+			s.append(THREE_ZEROS);
+		else if (orbit < 100) // then 00xx
+			s.append(TWO_ZEROS);
+		else if (orbit < 1000) // then 0xxx
+			s.append(ONE_ZERO);
 
 		// Append orbit
 		s.append(orbit).append("-").append(month).append("-");
@@ -457,6 +465,7 @@ public class MarsClock implements Serializable {
 
 	/**
 	 * Returns the time string in millisols without decimal. e.g. "056"
+	 * 
 	 * @return millisols without decimal
 	 */
 	public String getTrucatedTimeStringUMST() {
@@ -481,6 +490,7 @@ public class MarsClock implements Serializable {
 
 	/**
 	 * Returns the time string in millisols with decimals. e.g. "056.349"
+	 * 
 	 * @return millisols with decimals
 	 */
 	public String getTimeString() {

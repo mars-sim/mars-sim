@@ -65,7 +65,7 @@ See the Areosynchronous Calendar for complete details on leap-orbits.</P>
   <TR>
     <TH>Month Name</TH>
     <TH>&nbsp;</TH>
-    <TH>Number of Sols</TH>
+    <TH># of Sols</TH>
   </TR>
   <TR>
     <TD>Adir</TD>
@@ -203,18 +203,27 @@ See the Areosynchronous Calendar for complete details on leap-orbits.</P>
   <LI>Jovisol</LI>
 </OL>
 </P>
-<P>Every Martian month has 4 weeks. On months with 27 Sols, the last week only has
- six Sols and Jovisol is clipped. This allows the first Sol of every month and
- every orbit to be Heliosol.</P>
-<P>The calendar uses metric time for Mars with the Sol broken up into the following common units:</P>
+<P>Every Martian month has 4 weeks. On months with 27 sols, the last week only has 6 sols and Jovisol is clipped.</P>
+
+<P>This allows the first sol of every month and every orbit to be Heliosol.</P>
+
+<P>The time of the day, i.e. a sol, is loosely based on Bruce Mackenzie's <A HREF="http://ops-alaska.com/time/mckenzie/mckenzie.htm"> Metric Time for Mars</A>.
+
+<P>One may break down the metric time in a sol into the following common units:</P>
 <P>decasol = 1/10 Sol = 2.46 Earth hours<BR>
  centisol = 1/100 Sol = 14.8 Earth minutes<BR>
  millisol = 1/1000 Sol = 1.48 Earth minutes</P>
-<P>Martian time of the Sol is usually written in three-digit millisol format to three decimal points.
- ex. from "000.000" to "999.999".</P>
-<P>The common timstamp format for Mars date/time is "orbit-month-sol millisols". For instance, "17-Adir-03 523.234"</P>
-<P>The time of the day is based on Bruce Mackenzie's <A HREF="http://ops-alaska.com/time/mckenzie/mckenzie.htm"> Metric Time for Mars</A>.<BR>
-</P>
+ 
+<P>mars-sim, however, adopts only the millisol as the unit of keeping track of time in a sol.</P>
+
+<P>It's either in three-digit millisol format without the decimals, e.g. from 000 to 999.</P> 
+
+<P>Or it may be shown in three-digit millisol format with three decimal points. 
+e.g. from 000.000 to 999.999.</P>
+
+<P>Therefore, after putting the date and the time together with a colon separator in between, you will see `0017-Adir-03:523.234`.</P>
+
+<P>As you may have guessed, the date/time stamp format is orbit-month-sol:millisols.</P>
 <hr>
 </TT>
 </BODY>

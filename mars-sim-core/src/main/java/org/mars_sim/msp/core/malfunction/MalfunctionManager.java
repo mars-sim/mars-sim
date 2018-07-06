@@ -35,7 +35,6 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.MedicalManager;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
@@ -47,11 +46,12 @@ import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * The MalfunctionManager class manages the current malfunctions in each of the 6 types of units (namely, Building, BuildingKit, EVASuit, Robot, MockBuilding, or Vehicle)
+ * The MalfunctionManager class manages the current malfunctions in each of the
+ * 6 types of units (namely, Building, BuildingKit, EVASuit, Robot,
+ * MockBuilding, or Vehicle)
  */
 // TODO: have one single MalfunctionUtility class to handle static methods that are common to all 6 types of units
-public class MalfunctionManager
-implements Serializable {
+public class MalfunctionManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -59,7 +59,8 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MalfunctionManager.class.getName());
 
-    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
 
 	/** Initial estimate for malfunctions per orbit for an entity. */
 	private static double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 10D;
@@ -82,13 +83,15 @@ implements Serializable {
 	private static final String TEMPERATURE = "Temperature";
 
 	private static final String PARTS_FAILURE = "Parts Failure";// due to reliability";
-	
+
 	// Data members
 	/** The owning entity. */
 	private Malfunctionable entity;
 	/** Time passing (in millisols) since last maintenance on entity. */
 	private double timeSinceLastMaintenance;
-	/** Time (millisols) that entity has been actively used since last maintenance. */
+	/**
+	 * Time (millisols) that entity has been actively used since last maintenance.
+	 */
 	private double effectiveTimeSinceLastMaintenance;
 	/** The required work time for maintenance on entity. */
 	private double maintenanceWorkTime;
@@ -109,7 +112,10 @@ implements Serializable {
 	 * 0% = worn out -> 100% = new condition.
 	 */
 	private double wearCondition;
-	/** The expected life time (millisols) of active use before the malfunctionable is worn out. */
+	/**
+	 * The expected life time (millisols) of active use before the malfunctionable
+	 * is worn out.
+	 */
 	private double wearLifeTime;
 
 	// Life support modifiers.
@@ -121,26 +127,26 @@ implements Serializable {
 	private static MasterClock masterClock;
 	private static MarsClock startTime;
 	private static MarsClock currentTime;
-	
-	private	static MalfunctionFactory factory;
+
+	private static MalfunctionFactory factory;
 	private static PartConfig partConfig;
 	private static MalfunctionConfig malfunctionConfig;
-	
+
 	private static SimulationConfig simconfig;
 	private static Simulation sim;
-	
+
 	// NOTE : each building has its own MalfunctionManager
-	
+
 	/**
 	 * Constructor.
-	 * @param entity the malfunctionable entity.
-	 * @param wearLifeTime the expected life time (millisols) of active use
-	 * before the entity is worn out.
+	 * 
+	 * @param entity              the malfunctionable entity.
+	 * @param wearLifeTime        the expected life time (millisols) of active use
+	 *                            before the entity is worn out.
 	 * @param maintenanceWorkTime the amount of work time (millisols) required for
-	 * maintenance.
+	 *                            maintenance.
 	 */
-	public MalfunctionManager(Malfunctionable entity, double wearLifeTime,
-			double maintenanceWorkTime) {
+	public MalfunctionManager(Malfunctionable entity, double wearLifeTime, double maintenanceWorkTime) {
 
 		// Initialize data members
 		this.entity = entity;
@@ -150,7 +156,7 @@ implements Serializable {
 		malfunctions = new ArrayList<Malfunction>();
 		this.maintenanceWorkTime = maintenanceWorkTime;
 		this.wearLifeTime = wearLifeTime;
-		wearCondition = 100D;		
+		wearCondition = 100D;
 
 		simconfig = SimulationConfig.instance();
 		sim = Simulation.instance();
@@ -161,6 +167,7 @@ implements Serializable {
 
 	/**
 	 * Add a scope string of a system or a function to the manager.
+	 * 
 	 * @param scopeString
 	 */
 	public void addScopeString(String scopeString) {
@@ -173,6 +180,7 @@ implements Serializable {
 
 	/**
 	 * Checks if entity has a malfunction.
+	 * 
 	 * @return true if malfunction
 	 */
 	public boolean hasMalfunction() {
@@ -181,6 +189,7 @@ implements Serializable {
 
 	/**
 	 * Checks if the entity has a given malfunction.
+	 * 
 	 * @return true if entity has malfunction
 	 */
 	public boolean hasMalfunction(Malfunction malfunction) {
@@ -189,17 +198,18 @@ implements Serializable {
 
 	/**
 	 * Checks if entity has any emergency malfunctions.
+	 * 
 	 * @return true if emergency malfunction
 	 */
 	public boolean hasEmergencyMalfunction() {
 		boolean result = false;
 
 		if (hasMalfunction()) {
-			//Iterator<Malfunction> i = malfunctions.iterator();
-			//while (i.hasNext()) {
-			for (Malfunction malfunction : malfunctions) {//= i.next();
-				if ((malfunction.getEmergencyWorkTime() -
-						malfunction.getCompletedEmergencyWorkTime()) > 0D) result = true;
+			// Iterator<Malfunction> i = malfunctions.iterator();
+			// while (i.hasNext()) {
+			for (Malfunction malfunction : malfunctions) {// = i.next();
+				if ((malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime()) > 0D)
+					result = true;
 			}
 		}
 
@@ -208,17 +218,18 @@ implements Serializable {
 
 	/**
 	 * Checks if entity has any normal malfunctions.
+	 * 
 	 * @return true if normal malfunction
 	 */
 	public boolean hasNormalMalfunction() {
 		boolean result = false;
 
 		if (hasMalfunction()) {
-			//Iterator<Malfunction> i = malfunctions.iterator();
-			//while (i.hasNext()) {
-			for (Malfunction malfunction : malfunctions) {//= i.next();
-				if ((malfunction.getWorkTime() -
-						malfunction.getCompletedWorkTime()) > 0D) result = true;
+			// Iterator<Malfunction> i = malfunctions.iterator();
+			// while (i.hasNext()) {
+			for (Malfunction malfunction : malfunctions) {// = i.next();
+				if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D)
+					result = true;
 			}
 		}
 
@@ -227,17 +238,18 @@ implements Serializable {
 
 	/**
 	 * Checks if entity has any EVA malfunctions.
+	 * 
 	 * @return true if EVA malfunction
 	 */
 	public boolean hasEVAMalfunction() {
 		boolean result = false;
 
 		if (hasMalfunction()) {
-			//Iterator<Malfunction> i = malfunctions.iterator();
-			//while (i.hasNext()) {
+			// Iterator<Malfunction> i = malfunctions.iterator();
+			// while (i.hasNext()) {
 			for (Malfunction malfunction : malfunctions) {// = i.next();
-				if ((malfunction.getEVAWorkTime() -
-						malfunction.getCompletedEVAWorkTime()) > 0D) result = true;
+				if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D)
+					result = true;
 			}
 		}
 
@@ -246,6 +258,7 @@ implements Serializable {
 
 	/**
 	 * Gets a list of the unit's current malfunctions.
+	 * 
 	 * @return malfunction list
 	 */
 	public List<Malfunction> getMalfunctions() {
@@ -254,6 +267,7 @@ implements Serializable {
 
 	/**
 	 * Gets the most serious malfunction the entity has.
+	 * 
 	 * @return malfunction
 	 */
 	public Malfunction getMostSeriousMalfunction() {
@@ -275,6 +289,7 @@ implements Serializable {
 
 	/**
 	 * Gets the most serious emergency malfunction the entity has.
+	 * 
 	 * @return malfunction
 	 */
 	public Malfunction getMostSeriousEmergencyMalfunction() {
@@ -298,6 +313,7 @@ implements Serializable {
 
 	/**
 	 * Gets the most serious normal malfunction the entity has.
+	 * 
 	 * @return malfunction
 	 */
 	public Malfunction getMostSeriousNormalMalfunction() {
@@ -321,6 +337,7 @@ implements Serializable {
 
 	/**
 	 * Gets a list of all normal malfunctions sorted by highest severity first.
+	 * 
 	 * @return list of malfunctions.
 	 */
 	public List<Malfunction> getNormalMalfunctions() {
@@ -335,6 +352,7 @@ implements Serializable {
 
 	/**
 	 * Gets the most serious EVA malfunction the entity has.
+	 * 
 	 * @return malfunction
 	 */
 	public Malfunction getMostSeriousEVAMalfunction() {
@@ -358,6 +376,7 @@ implements Serializable {
 
 	/**
 	 * Gets a list of all EVA malfunctions sorted by highest severity first.
+	 * 
 	 * @return list of malfunctions.
 	 */
 	public List<Malfunction> getEVAMalfunctions() {
@@ -376,220 +395,215 @@ implements Serializable {
 	private boolean selectMalfunction(Unit actor) {
 		boolean result = false;
 		Malfunction malfunction = factory.pickAMalfunction(scopes);
-		if (malfunction != null) {		
-//			System.out.println("selectMalfunction() in MalfunctionManager : malfunction != null");
+		if (malfunction != null) {
 			addMalfunction(malfunction, true, actor);
 			numberMalfunctions++;
 			result = true;
 		}
-//		else
-//			System.out.println("malfunction != null");
-		
-		return result; 
+
+		return result;
 	}
 
 	/**
 	 * Adds a malfunction to the unit.
+	 * 
 	 * @param malfunction the malfunction to add.
 	 */
 	public void addMalfunction(Malfunction malfunction, boolean registerEvent, Unit actor) {
-//		System.out.println("MalfunctionManager : addMalfunction()");
-			malfunctions.add(malfunction);
+		malfunctions.add(malfunction);
 
-			String offender = PARTS_FAILURE;
-			
-			if (actor != null)
-				offender = actor.getName();
-				
-			String malfunctionName = malfunction.getName();
+		String offender = PARTS_FAILURE;
 
-			try {
-				getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
-			}
-			catch (Exception e) {
-				e.printStackTrace(System.err);
-			}
+		if (actor != null)
+			offender = actor.getName();
 
+		String malfunctionName = malfunction.getName();
 
-			if (registerEvent) {
-				
-				if (!malfunctionName.contains("Meteorite")) {
-					// if it has nothing to do with meteorite impact
-					
-					String loc0 = null;
-					String loc1 = null;
+		try {
+			getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+
+		if (registerEvent) {
+
+			if (!malfunctionName.contains("Meteorite")) {
+				// if it has nothing to do with meteorite impact
+
+				String loc0 = null;
+				String loc1 = null;
 //					
 //					if (entity instanceof Vehicle
 //						|| entity instanceof EVASuit	
 //						|| entity instanceof Building
 //						|| entity instanceof Robot
 //						|| entity instanceof BuildingKit)
-					
-					String object = entity.getNickName();
 
-					if (entity.getUnit() instanceof Vehicle) {
-						loc0 = entity.getNickName();
-						loc1 = entity.getLocale();
-					}
-					
-					else if (object.toLowerCase().contains("eva")) {
+				String object = entity.getNickName();
+
+				if (entity.getUnit() instanceof Vehicle) {
+					loc0 = entity.getNickName();
+					loc1 = entity.getLocale();
+				}
+
+				else if (object.toLowerCase().contains("eva")) {
 //						Unit unit = entity.getUnit();
 //						EVASuit suit = (EVASuit)entity.getUnit();
-						loc0 = entity.getImmediateLocation();//((EVASuit)entity).getQuickLocatin();
-						loc1 = ((EVASuit)entity.getUnit()).getSettlement().getName();					
-					}			
-					
-					else {
-						loc0 = entity.getImmediateLocation();
-						loc1 = entity.getLocale();
-					}
-					
-					if (actor == null) {
-						HistoricalEvent newEvent = new MalfunctionEvent(
-							EventType.MALFUNCTION_PARTS_FAILURE,
-							malfunction,
-							malfunctionName + " on " + object,
-							"Part Fatigue", // in the who field
-							loc0,
-							loc1
-							);
-						Simulation.instance().getEventManager().registerNewEvent(newEvent);
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-		        			malfunction.getName() + " detected due to Parts Fatigue in " + entity.getLocale(), null);
-					}
-					else {
-						HistoricalEvent newEvent = new MalfunctionEvent(
-								EventType.MALFUNCTION_HUMAN_FACTORS,
-								malfunction,
-								malfunctionName + " on " + object,
-								offender,
-								loc0,
-								loc1
-								);
-							Simulation.instance().getEventManager().registerNewEvent(newEvent);
-							LogConsolidated.log(logger, Level.INFO, 0, sourceName, offender + " may have to do with "
-			        			+ malfunction.getName() + " due to Human Factors in " + entity.getLocale(), null);
-					}
+					loc0 = entity.getImmediateLocation();// ((EVASuit)entity).getQuickLocatin();
+					loc1 = ((EVASuit) entity.getUnit()).getSettlement().getName();
 				}
-				else {
-					
-					String name = malfunction.getTraumatized();
-					if (name == null)
-						name = "None";
-					// if it is a meteorite impact
-					HistoricalEvent newEvent = new MalfunctionEvent(
-							EventType.MALFUNCTION_ACT_OF_GOD,
-							malfunction,
-							malfunctionName,
-							name,
-							entity.getImmediateLocation(),
-							entity.getLocale());
-						Simulation.instance().getEventManager().registerNewEvent(newEvent);
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-			        			malfunction.getName() + " damage detected in " + entity.getLocale(), null);
-				}
-			}
-			else
-				return;
-			
-			 // Register the failure of the Parts involved
-			 Map<Integer, Integer> parts = malfunction.getRepairParts();
-			 Set<Integer> partSet = parts.keySet();
 
-			 for (Integer p : partSet) {
-				 int num = parts.get(p);	 
+				else {
+					loc0 = entity.getImmediateLocation();
+					loc1 = entity.getLocale();
+				}
+
+				if (object.equals(loc0)) {
+					if (actor == null) {
+						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
+								malfunction, malfunctionName, "Part Fatigue", // in the who field
+								loc0, loc1);
+						Simulation.instance().getEventManager().registerNewEvent(newEvent);
+						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+								malfunction.getName() + " detected due to Parts Fatigue in " + entity.getLocale(),
+								null);
+					} else {
+						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
+								malfunction, malfunctionName, offender, loc0, loc1);
+						Simulation.instance().getEventManager().registerNewEvent(newEvent);
+						LogConsolidated.log(
+								logger, Level.INFO, 0, sourceName, offender + " may have to do with "
+										+ malfunction.getName() + " due to Human Factors in " + entity.getLocale(),
+								null);
+					}
+				} else {
+					if (actor == null) {
+						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
+								malfunction, malfunctionName + " on " + object, "Part Fatigue", // in the who field
+								loc0, loc1);
+						Simulation.instance().getEventManager().registerNewEvent(newEvent);
+						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+								malfunction.getName() + " detected due to Parts Fatigue in " + entity.getLocale(),
+								null);
+					} else {
+						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
+								malfunction, malfunctionName + " on " + object, offender, loc0, loc1);
+						Simulation.instance().getEventManager().registerNewEvent(newEvent);
+						LogConsolidated.log(
+								logger, Level.INFO, 0, sourceName, offender + " may have to do with "
+										+ malfunction.getName() + " due to Human Factors in " + entity.getLocale(),
+								null);
+					}
+				}
+
+			} else {
+
+				String name = malfunction.getTraumatized();
+				if (name == null)
+					name = "None";
+				// if it is a meteorite impact
+				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_ACT_OF_GOD, malfunction,
+						malfunctionName, name, entity.getImmediateLocation(), entity.getLocale());
+				Simulation.instance().getEventManager().registerNewEvent(newEvent);
+				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+						malfunction.getName() + " damage detected in " + entity.getLocale(), null);
+			}
+		} else
+			return;
+
+		// Register the failure of the Parts involved
+		Map<Integer, Integer> parts = malfunction.getRepairParts();
+		Set<Integer> partSet = parts.keySet();
+
+		for (Integer p : partSet) {
+			int num = parts.get(p);
 //			 }
-			
-			 // Compute the new reliability and failure rate for this malfunction
+
+			// Compute the new reliability and failure rate for this malfunction
 //			 for (Part p : partSet) {
-				 int id = p;//.getID();
-				 Part part = ItemResourceUtil.findItemResource(p);
-				 String part_name = part.getName();
-				 
-				 if (part_name.equalsIgnoreCase("decontamination kit") 
-						 || part_name.equalsIgnoreCase("airleak patch") 
-						 || part_name.equalsIgnoreCase("fire extinguisher")) {
-					 // NOTE : they do NOT contribute to the malfunctions and are tools to fix the malfunction
-					 // and do NOT need to change their reliability.
-					 return ;
-				 }
-				 
-				 double old_rel = partConfig.getReliability(id);
-				 double old_prob = malfunctionConfig.getRepairPartProbability(malfunction.getName(), part_name);
-				 double old_weight =  (100-old_rel) * old_prob/100D;
-				 double old_mal_probl_failure = malfunction.getProbability();
-				 
-				 // Increment the number of failure for this Part
-				 partConfig.setFailure(p, num);
-				 // Recompute the reliability of this Part
-				 partConfig.computeReliability(part);
-	 
-				 //String name = p.getName();			 
-				 double new_rel = partConfig.getReliability(id);			 
-				 double new_prob = malfunctionConfig.getRepairPartProbability(malfunction.getName(), part_name);
-				 double new_rate =  (100-new_rel) * new_prob/100D;
-				 double new_mal_prob_failure = 0;
-				 logger.info("Updating field reliability data for the part '" + part_name + "' as follows :");
-				 logger.info("(1). Reliability: " + Math.round(old_rel*1000.0)/1000.0  + " % --> "
-						 + Math.round(new_rel*1000.0)/1000.0  + " %" );
+			int id = p;// .getID();
+			Part part = ItemResourceUtil.findItemResource(p);
+			String part_name = part.getName();
+
+			if (part_name.equalsIgnoreCase("decontamination kit") || part_name.equalsIgnoreCase("airleak patch")
+					|| part_name.equalsIgnoreCase("fire extinguisher")) {
+				// NOTE : they do NOT contribute to the malfunctions and are tools to fix the
+				// malfunction
+				// and do NOT need to change their reliability.
+				return;
+			}
+
+			double old_rel = partConfig.getReliability(id);
+			double old_prob = malfunctionConfig.getRepairPartProbability(malfunction.getName(), part_name);
+			double old_weight = (100 - old_rel) * old_prob / 100D;
+			double old_mal_probl_failure = malfunction.getProbability();
+
+			// Increment the number of failure for this Part
+			partConfig.setFailure(p, num);
+			// Recompute the reliability of this Part
+			partConfig.computeReliability(part);
+
+			// String name = p.getName();
+			double new_rel = partConfig.getReliability(id);
+			double new_prob = malfunctionConfig.getRepairPartProbability(malfunction.getName(), part_name);
+			double new_rate = (100 - new_rel) * new_prob / 100D;
+			double new_mal_prob_failure = 0;
+			logger.info("Updating field reliability data for the part '" + part_name + "' as follows :");
+			logger.info("(1). Reliability: " + Math.round(old_rel * 1000.0) / 1000.0 + " % --> "
+					+ Math.round(new_rel * 1000.0) / 1000.0 + " %");
 //				 logger.info("(2). Part Needed Probability: " + Math.round(old_prob*1000.0)/1000.0 + " % --> "
 //						 + Math.round(new_prob*1000.0)/1000.0 + " %");
-				 logger.info("(2). Failure Rate: " + Math.round(old_weight*1000.0)/1000.0  + " % --> "
-						 + Math.round(new_rate*1000.0)/1000.0  + " %");
-				 new_mal_prob_failure = (old_mal_probl_failure + new_rate )/2.0; 
-				 
-				 logger.info("Updating field reliability data for the malfunction '" + malfunctionName + "' as follows :");
-				 logger.info("(1). Probability of Failure : " + Math.round(old_mal_probl_failure*10000.0)/10000.0  
-						 + " % --> " + Math.round(new_mal_prob_failure*10000.0)/10000.0 + " %");
-				 malfunction.setProbability(new_mal_prob_failure);
-		 
-			}
-			
-			issueMedicalComplaints(malfunction);
+			logger.info("(2). Failure Rate: " + Math.round(old_weight * 1000.0) / 1000.0 + " % --> "
+					+ Math.round(new_rate * 1000.0) / 1000.0 + " %");
+			new_mal_prob_failure = (old_mal_probl_failure + new_rate) / 2.0;
+
+			logger.info("Updating field reliability data for the malfunction '" + malfunctionName + "' as follows :");
+			logger.info("(1). Probability of Failure : " + Math.round(old_mal_probl_failure * 10000.0) / 10000.0
+					+ " % --> " + Math.round(new_mal_prob_failure * 10000.0) / 10000.0 + " %");
+			malfunction.setProbability(new_mal_prob_failure);
+
+		}
+
+		issueMedicalComplaints(malfunction);
 //		}
 	}
-	
-/*
-	public void consumeFireExtingusher(int type) {
-		if (type == 0) {
-			if (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR)) {
-				entity.getInventory().retrieveItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
-				
-				int rand = RandomUtil.getRandomInt(3);
-				if (rand > 0)
-					// Say 25% of the time, a fire extinguisher is being used up.
-					entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
-			}
-		}
-		else if (type == 1) {
-			if (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR)) {
-				entity.getInventory().retrieveItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
-				
-				int rand = RandomUtil.getRandomInt(3);
-				if (rand > 1)
-					// Say 50% of the time, a fire extinguisher is being used up.
-					entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
-			}
-		}
-		else if (type == 2) {
-			if (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR)) {
-				entity.getInventory().retrieveItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
-				
-			int rand = RandomUtil.getRandomInt(3);
-			if (rand == 0)
-				// Say 25% of the time, a fire extinguisher is being used up.
-				entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 2);
-			else if (rand == 1)
-				// Say 50% of the time, a fire extinguisher is being used up.
-				entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
-			}
-		}			
-		
-	}
-*/
-	
+
+	/*
+	 * public void consumeFireExtingusher(int type) { if (type == 0) { if
+	 * (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR))
+	 * { entity.getInventory().retrieveItemResources(ItemResourceUtil.
+	 * fireExtinguisherAR, 1);
+	 * 
+	 * int rand = RandomUtil.getRandomInt(3); if (rand > 0) // Say 25% of the time,
+	 * a fire extinguisher is being used up.
+	 * entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR,
+	 * 1); } } else if (type == 1) { if
+	 * (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR))
+	 * { entity.getInventory().retrieveItemResources(ItemResourceUtil.
+	 * fireExtinguisherAR, 1);
+	 * 
+	 * int rand = RandomUtil.getRandomInt(3); if (rand > 1) // Say 50% of the time,
+	 * a fire extinguisher is being used up.
+	 * entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR,
+	 * 1); } } else if (type == 2) { if
+	 * (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR))
+	 * { entity.getInventory().retrieveItemResources(ItemResourceUtil.
+	 * fireExtinguisherAR, 1);
+	 * 
+	 * int rand = RandomUtil.getRandomInt(3); if (rand == 0) // Say 25% of the time,
+	 * a fire extinguisher is being used up.
+	 * entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR,
+	 * 2); else if (rand == 1) // Say 50% of the time, a fire extinguisher is being
+	 * used up.
+	 * entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR,
+	 * 1); } }
+	 * 
+	 * }
+	 */
+
 	/**
 	 * Time passing while the unit is being actively used.
+	 * 
 	 * @param time amount of time passing (in millisols)
 	 */
 	public void activeTimePassing(double time) {
@@ -598,28 +612,30 @@ implements Serializable {
 
 		// Add time to wear condition.
 		wearCondition -= (time / wearLifeTime) * 100D;
-		if (wearCondition < 0D) wearCondition = 0D;
+		if (wearCondition < 0D)
+			wearCondition = 0D;
 
 		double maintFactor = effectiveTimeSinceLastMaintenance * MAINTENANCE_MALFUNCTION_FACTOR;
 		double wearFactor = (100D - wearCondition) / 100D * WEAR_MALFUNCTION_FACTOR + 1D;
 		double chance = time * maintFactor * wearFactor;
-		
+
 		// Check for malfunction due to lack of maintenance and wear condition.
 		if (RandomUtil.lessThanRandPercent(chance)) {
-			int solsLastMaint =  (int) (effectiveTimeSinceLastMaintenance / 1000D);
-        	LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
-        			"[" + entity.getImmediateLocation() + "] "
-        			+ entity.getNickName() + " is behind on maintenance.  "
-					+ "Time since last check-up: " + solsLastMaint
-					+ " sols.  Condition: " + wearCondition + " %.", null);
-        	
-        	// TODO: does it use field reliability statistics to select a malfunction ?
+			int solsLastMaint = (int) (effectiveTimeSinceLastMaintenance / 1000D);
+			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+					"[" + entity.getImmediateLocation() + "] " + entity.getNickName() + " is behind on maintenance.  "
+							+ "Time since last check-up: " + solsLastMaint + " sols.  Condition: " + wearCondition
+							+ " %.",
+					null);
+
+			// TODO: does it use field reliability statistics to select a malfunction ?
 			selectMalfunction(null);
 		}
 	}
 
 	/**
 	 * Time passing for unit.
+	 * 
 	 * @param time amount of time passing (in millisols)
 	 */
 	public void timePassing(double time) {
@@ -629,35 +645,29 @@ implements Serializable {
 		// Check if any malfunctions are fixed.
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (malfunction.isFixed()) fixedMalfunctions.add(malfunction);
+				if (malfunction.isFixed())
+					fixedMalfunctions.add(malfunction);
 			}
 		}
 
 		if (fixedMalfunctions.size() > 0) {
-			for (Malfunction malfunction : fixedMalfunctions) {	
+			for (Malfunction malfunction : fixedMalfunctions) {
 				malfunctions.remove(malfunction);
 
 				try {
 					getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace(System.err);
 				}
 
 				String chiefRepairer = malfunction.getChiefRepairer();
-				
-				HistoricalEvent newEvent = new MalfunctionEvent(
-						EventType.MALFUNCTION_FIXED,
-						malfunction,
-						malfunction.getName(),
-						chiefRepairer,
-						entity.getImmediateLocation(),
-						entity.getLocale()
-						);
+
+				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, malfunction,
+						malfunction.getName(), chiefRepairer, entity.getImmediateLocation(), entity.getLocale());
 
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-	        			"The malfunction '" + malfunction.getName() + "' has been fixed", null);
+				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+						"The malfunction '" + malfunction.getName() + "' has been fixed", null);
 			}
 		}
 
@@ -667,8 +677,7 @@ implements Serializable {
 		// Deplete resources.
 		try {
 			depleteResources(time);
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
 
@@ -678,6 +687,7 @@ implements Serializable {
 
 	/**
 	 * Determine life support modifiers for given time.
+	 * 
 	 * @param time amount of time passing (in millisols)
 	 */
 	public void setLifeSupportModifiers(double time) {
@@ -704,21 +714,30 @@ implements Serializable {
 			}
 		}
 
-		if (tempOxygenFlowModifier < 0D) oxygenFlowModifier += tempOxygenFlowModifier * time;
-		else oxygenFlowModifier = 100D;
+		if (tempOxygenFlowModifier < 0D)
+			oxygenFlowModifier += tempOxygenFlowModifier * time;
+		else
+			oxygenFlowModifier = 100D;
 
-		if (tempWaterFlowModifier < 0D) waterFlowModifier += tempWaterFlowModifier * time;
-		else waterFlowModifier = 100D;
+		if (tempWaterFlowModifier < 0D)
+			waterFlowModifier += tempWaterFlowModifier * time;
+		else
+			waterFlowModifier = 100D;
 
-		if (tempAirPressureModifier < 0D) airPressureModifier += tempAirPressureModifier * time;
-		else airPressureModifier = 100D;
+		if (tempAirPressureModifier < 0D)
+			airPressureModifier += tempAirPressureModifier * time;
+		else
+			airPressureModifier = 100D;
 
-		if (tempTemperatureModifier != 0D) temperatureModifier += tempTemperatureModifier * time;
-		else temperatureModifier = 100D;
+		if (tempTemperatureModifier != 0D)
+			temperatureModifier += tempTemperatureModifier * time;
+		else
+			temperatureModifier = 100D;
 	}
 
 	/**
 	 * Depletes resources due to malfunctions.
+	 * 
 	 * @param time amount of time passing (in millisols)
 	 * @throws Exception if error depleting resources.
 	 */
@@ -737,10 +756,10 @@ implements Serializable {
 						double amountStored = inv.getAmountResourceStored(resource, false);
 
 						if (amountStored < amountDepleted) {
-						    amountDepleted = amountStored;
+							amountDepleted = amountStored;
 						}
-						if(amountDepleted >= 0) {
-						    inv.retrieveAmountResource(resource, amountDepleted);
+						if (amountDepleted >= 0) {
+							inv.retrieveAmountResource(resource, amountDepleted);
 
 						}
 					}
@@ -751,62 +770,59 @@ implements Serializable {
 
 	/**
 	 * Creates a series of related malfunctions
+	 * 
 	 * @param s the place of accident
 	 */
 	public void createASeriesOfMalfunctions(String s, Robot r) {
-		//handleStringTypeOne(s, r);
+		// handleStringTypeOne(s, r);
 		determineNumOfMalfunctions(1, s, r);
 	}
-	
+
 	/**
 	 * Creates a series of related malfunctions
+	 * 
 	 * @param s the place of accident
 	 */
 	public void createASeriesOfMalfunctions(String s, Person p) {
-		//handleStringTypeOne(s, p);
-    	int nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
+		// handleStringTypeOne(s, p);
+		int nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
 		determineNumOfMalfunctions(1, s, nervousness, p);
 	}
-	
+
 	public void handleStringTypeOne(String s, Unit u) {
 		StringBuilder sb = new StringBuilder(Conversion.capitalize(s));
 
 		if (s.contains("EVA")) {
 			sb.insert(0, "with ");
 		}
-	
+
 		else {
 			// if it's a vehicle, no need of a/an
 			sb.insert(0, "in ");
 		}
-/*			
+		/*
+		 * 
+		 * if (s.contains("EVA")) { sb.insert(0, "with "); }
+		 * 
+		 * else { // if it's a vehicle, no need of a/an sb.insert(0, "in ");
+		 * 
+		 * if (s.startsWith("A") || s.startsWith("E") || s.startsWith("I") ||
+		 * s.startsWith("O") || s.startsWith("U")) //Conversion.checkVowel(name))
+		 * sb.insert(0, "in an "); else sb.insert(0, "in a "); }
+		 */
 
-		if (s.contains("EVA")) {
-			sb.insert(0, "with ");
-		}
-	
-		else {
-			// if it's a vehicle, no need of a/an
-			sb.insert(0, "in ");
-			
-			if (s.startsWith("A") || s.startsWith("E") || s.startsWith("I") || s.startsWith("O") || s.startsWith("U")) //Conversion.checkVowel(name))
-				sb.insert(0, "in an ");
-			else
-				sb.insert(0, "in a ");
-		}
-*/		
-
-    	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-    			"[" + u.getLocationTag().getImmediateLocation() + "] A Type-I accident occurs " + sb.toString() + ".", null);
+		LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
+				"[" + u.getLocationTag().getImmediateLocation() + "] A Type-I accident occurs " + sb.toString() + ".",
+				null);
 
 	}
-	
+
 	/**
 	 * Creates a series of related malfunctions
 	 */
 	public void createASeriesOfMalfunctions(Person p) {
-		//handleStringTypeTwo();
-       	int nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
+		// handleStringTypeTwo();
+		int nervousness = p.getMind().getTraitManager().getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
 		determineNumOfMalfunctions(2, null, nervousness, p);
 	}
 
@@ -814,34 +830,30 @@ implements Serializable {
 	 * Creates a series of related malfunctions
 	 */
 	public void createASeriesOfMalfunctions(Robot r) {
-		//handleStringTypeTwo();
+		// handleStringTypeTwo();
 		determineNumOfMalfunctions(2, null, r);
 	}
-	
+
 	public void handleStringTypeTwo() {
 		String n = entity.getNickName();
-/*
-  		StringBuilder sb = new StringBuilder();//Conversion.capitalize(n));
-		if (n.contains("EVA")) {
-			sb.insert(0, "with ");
-		}
-		
-		else {
-			sb.insert(0, "in ");
-		}
-*/
-		
+		/*
+		 * StringBuilder sb = new StringBuilder();//Conversion.capitalize(n)); if
+		 * (n.contains("EVA")) { sb.insert(0, "with "); }
+		 * 
+		 * else { sb.insert(0, "in "); }
+		 */
+
 //		String sName = null;
 //		if (entity.getImmediateLocation() != null) {
 //			sName = entity.getImmediateLocation().replace(Conversion.capitalize(n), "")
 //					.replace(" in ", "");
 //		}
-		
-    	LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
-    			//"[" + locationName + "] An accident occurs " + sb.toString() + ".", null);
-			"[" + Conversion.capitalize(n) + "] A Type-II accident occurs in " + entity.getLocale(), null);
+
+		LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
+				// "[" + locationName + "] An accident occurs " + sb.toString() + ".", null);
+				"[" + Conversion.capitalize(n) + "] A Type-II accident occurs in " + entity.getLocale(), null);
 	}
-	
+
 	/**
 	 * Determines the numbers of malfunctions.
 	 */
@@ -851,14 +863,13 @@ implements Serializable {
 		boolean hasMal = false;
 		boolean done = false;
 		double chance = 100D;
-		double mod = score/50;
+		double mod = score / 50;
 		while (!done) {
 			if (RandomUtil.lessThanRandPercent(chance)) {
 				hasMal = selectMalfunction(actor);
 				chance = chance / 3D * mod;
-			}
-			else {
-			    done = true;
+			} else {
+				done = true;
 			}
 		}
 
@@ -890,9 +901,8 @@ implements Serializable {
 			if (RandomUtil.lessThanRandPercent(chance)) {
 				hasMal = selectMalfunction(actor);
 				chance /= 3D;
-			}
-			else {
-			    done = true;
+			} else {
+				done = true;
 			}
 		}
 
@@ -910,8 +920,10 @@ implements Serializable {
 			}
 		}
 	}
+
 	/**
 	 * Gets the time since last maintenance on entity.
+	 * 
 	 * @return time (in millisols)
 	 */
 	public double getTimeSinceLastMaintenance() {
@@ -919,8 +931,8 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the time the entity has been actively used
-	 * since its last maintenance.
+	 * Gets the time the entity has been actively used since its last maintenance.
+	 * 
 	 * @return time (in millisols)
 	 */
 	public double getEffectiveTimeSinceLastMaintenance() {
@@ -929,6 +941,7 @@ implements Serializable {
 
 	/**
 	 * Gets the required work time for maintenance for the entity.
+	 * 
 	 * @return time (in millisols)
 	 */
 	public double getMaintenanceWorkTime() {
@@ -937,6 +950,7 @@ implements Serializable {
 
 	/**
 	 * Sets the required work time for maintenance for the entity.
+	 * 
 	 * @param maintenanceWorkTime (in millisols)
 	 */
 	public void setMaintenanceWorkTime(double maintenanceWorkTime) {
@@ -945,6 +959,7 @@ implements Serializable {
 
 	/**
 	 * Gets the work time completed on maintenance.
+	 * 
 	 * @return time (in millisols)
 	 */
 	public double getMaintenanceWorkTimeCompleted() {
@@ -953,6 +968,7 @@ implements Serializable {
 
 	/**
 	 * Add work time to maintenance.
+	 * 
 	 * @param time (in millisols)
 	 */
 	public void addMaintenanceWorkTime(double time) {
@@ -968,6 +984,7 @@ implements Serializable {
 
 	/**
 	 * Issues any necessary medical complaints.
+	 * 
 	 * @param malfunction the new malfunction
 	 */
 	public void issueMedicalComplaints(Malfunction malfunction) {
@@ -996,6 +1013,7 @@ implements Serializable {
 
 	/**
 	 * Gets the oxygen flow modifier.
+	 * 
 	 * @return modifier
 	 */
 	public double getOxygenFlowModifier() {
@@ -1004,6 +1022,7 @@ implements Serializable {
 
 	/**
 	 * Gets the water flow modifier.
+	 * 
 	 * @return modifier
 	 */
 	public double getWaterFlowModifier() {
@@ -1012,6 +1031,7 @@ implements Serializable {
 
 	/**
 	 * Gets the air flow modifier.
+	 * 
 	 * @return modifier
 	 */
 	public double getAirPressureModifier() {
@@ -1020,6 +1040,7 @@ implements Serializable {
 
 	/**
 	 * Gets the temperature modifier.
+	 * 
 	 * @return modifier
 	 */
 	public double getTemperatureModifier() {
@@ -1028,21 +1049,25 @@ implements Serializable {
 
 	/**
 	 * Gets the unit associated with this malfunctionable.
+	 * 
 	 * @return associated unit.
 	 * @throws Exception if error finding associated unit.
 	 */
 	public Unit getUnit() {
-		if (entity instanceof Unit) return (Unit) entity;
+		if (entity instanceof Unit)
+			return (Unit) entity;
 		else if (entity instanceof Building)
 			return ((Building) entity).getBuildingManager().getSettlement();
-		else throw new IllegalStateException("Could not find unit associated with malfunctionable.");
+		else
+			throw new IllegalStateException("Could not find unit associated with malfunctionable.");
 	}
 
 	/**
 	 * Determines a new set of required maintenance parts.
 	 */
 	private void determineNewMaintenanceParts() {
-		if (partsNeededForMaintenance == null) partsNeededForMaintenance = new HashMap<>();
+		if (partsNeededForMaintenance == null)
+			partsNeededForMaintenance = new HashMap<>();
 		partsNeededForMaintenance.clear();
 
 		Iterator<String> i = scopes.iterator();
@@ -1055,7 +1080,7 @@ implements Serializable {
 				if (part.hasMaintenanceEntity(entity)) {
 					if (RandomUtil.lessThanRandPercent(part.getMaintenanceProbability(entity))) {
 						int number = RandomUtil.getRandomRegressionInteger(part.getMaintenanceMaximumNumber(entity));
-						if (partsNeededForMaintenance.containsKey(id)) 
+						if (partsNeededForMaintenance.containsKey(id))
 							number += partsNeededForMaintenance.get(id);
 						partsNeededForMaintenance.put(id, number);
 					}
@@ -1066,51 +1091,60 @@ implements Serializable {
 
 	/**
 	 * Gets the parts needed for maintenance on this entity.
+	 * 
 	 * @return map of parts and their number.
 	 */
 	public Map<Integer, Integer> getMaintenanceParts() {
-		if (partsNeededForMaintenance == null) partsNeededForMaintenance = new HashMap<>();
+		if (partsNeededForMaintenance == null)
+			partsNeededForMaintenance = new HashMap<>();
 		return new HashMap<>(partsNeededForMaintenance);
 	}
 
 	/**
 	 * Adds a number of a part to the entity for maintenance.
-	 * @param part the part.
+	 * 
+	 * @param part   the part.
 	 * @param number the number used.
 	 */
 	public void maintainWithParts(Integer part, int number) {
-		if (part == null) throw new IllegalArgumentException("part is null");
+		if (part == null)
+			throw new IllegalArgumentException("part is null");
 		if (partsNeededForMaintenance.containsKey(part)) {
 			int numberNeeded = partsNeededForMaintenance.get(part);
-			if (number > numberNeeded) throw new IllegalArgumentException("number " + number +
-					" is greater that number of parts needed: " + numberNeeded);
+			if (number > numberNeeded)
+				throw new IllegalArgumentException(
+						"number " + number + " is greater that number of parts needed: " + numberNeeded);
 			else {
 				numberNeeded -= number;
-				if (numberNeeded > 0) partsNeededForMaintenance.put(part, numberNeeded);
-				else partsNeededForMaintenance.remove(part);
+				if (numberNeeded > 0)
+					partsNeededForMaintenance.put(part, numberNeeded);
+				else
+					partsNeededForMaintenance.remove(part);
 			}
-		}
-		else throw new IllegalArgumentException("Part " + part + " is not needed for maintenance.");
+		} else
+			throw new IllegalArgumentException("Part " + part + " is not needed for maintenance.");
 	}
 
 	/**
 	 * Gets off of the repair part probabilities for the malfunctionable.
+	 * 
 	 * @return maps of parts and probable number of parts needed per malfunction.
 	 * @throws Exception if error finding probabilities.
 	 */
 	public Map<Integer, Double> getRepairPartProbabilities() {
-		//MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
+		// MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		return factory.getRepairPartProbabilities(scopes);
 	}
 
 	public Map<Integer, Double> getMaintenancePartProbabilities() {
-		//MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
+		// MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		return factory.getMaintenancePartProbabilities(scopes);
 	}
 
 	/**
-	 * Gets the estimated number of malfunctions this entity will
-	 * have in one Martian orbit.
+	 * Gets the estimated number of malfunctions this entity will have in one
+	 * Martian orbit.
+	 * 
 	 * @return number of malfunctions.
 	 */
 	public double getEstimatedNumberOfMalfunctionsPerOrbit() {
@@ -1130,8 +1164,7 @@ implements Serializable {
 
 			if (totalTimeOrbits < 1D) {
 				avgMalfunctionsPerOrbit = (numberMalfunctions + ESTIMATED_MALFUNCTIONS_PER_ORBIT) / 2D;
-			}
-			else {
+			} else {
 				avgMalfunctionsPerOrbit = numberMalfunctions / totalTimeOrbits;
 			}
 		}
@@ -1140,8 +1173,9 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the estimated number of periodic maintenances this entity will
-	 * have in one Martian orbit.
+	 * Gets the estimated number of periodic maintenances this entity will have in
+	 * one Martian orbit.
+	 * 
 	 * @return number of maintenances.
 	 */
 	public double getEstimatedNumberOfMaintenancesPerOrbit() {
@@ -1161,8 +1195,7 @@ implements Serializable {
 
 			if (totalTimeOrbits < 1D) {
 				avgMaintenancesPerOrbit = (numberMaintenances + ESTIMATED_MAINTENANCES_PER_ORBIT) / 2D;
-			}
-			else {
+			} else {
 				avgMaintenancesPerOrbit = numberMaintenances / totalTimeOrbits;
 			}
 		}
@@ -1171,27 +1204,30 @@ implements Serializable {
 	}
 
 	/**
-	 * Inner class comparator for sorting malfunctions my highest severity to lowest.
+	 * Inner class comparator for sorting malfunctions my highest severity to
+	 * lowest.
 	 */
-	private static class MalfunctionSeverityComparator
-	implements Comparator<Malfunction>, Serializable {
+	private static class MalfunctionSeverityComparator implements Comparator<Malfunction>, Serializable {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
+
 		@Override
 		public int compare(Malfunction malfunction1, Malfunction malfunction2) {
 			int severity1 = malfunction1.getSeverity();
 			int severity2 = malfunction2.getSeverity();
-			if (severity1 > severity2) return -1;
-			else if (severity1 == severity2) return 0;
-			else return 1;
+			if (severity1 > severity2)
+				return -1;
+			else if (severity1 == severity2)
+				return 0;
+			else
+				return 1;
 		}
 	}
 
 	/**
-	 * Get the percentage representing the malfunctionable's condition
-	 * from wear & tear.
-	 * 100% = new condition
-	 * 0% = worn out condition.
+	 * Get the percentage representing the malfunctionable's condition from wear &
+	 * tear. 100% = new condition 0% = worn out condition.
+	 * 
 	 * @return wear condition.
 	 */
 	public double getWearCondition() {
@@ -1201,6 +1237,7 @@ implements Serializable {
 	/**
 	 * Gets the multiplying modifier for the chance of an accident due to the
 	 * malfunctionable entity's wear condition.
+	 * 
 	 * @return accident modifier.
 	 */
 	public double getWearConditionAccidentModifier() {

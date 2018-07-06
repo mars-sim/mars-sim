@@ -188,24 +188,21 @@ public class MainScene {
 	public final static String HEALTH_NEWS = "Health News: ";
 	public final static String MISSION_REPORTS = "Mission Reports: ";
 	public final static String HAZARD = "Safety News: ";
-	
+
 	public static String OS = Simulation.OS.toLowerCase();
 	// System.getProperty("os.name").toLowerCase();
 	// e.g. 'linux', 'mac os x'
 
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
-    private static final int            LIME = DotMatrix.convertToInt(Color.LIME);
-    private static final int            RED  = DotMatrix.convertToInt(Color.RED);
-    private static final int            ORANGE  = DotMatrix.convertToInt(Color.ORANGE);
-    private static final int            YELLOW  = DotMatrix.convertToInt(Color.YELLOW);
-    private static final int            BLACK  = DotMatrix.convertToInt(Color.BLACK);
-    
+	private static final int LIME = DotMatrix.convertToInt(Color.LIME);
+	private static final int RED = DotMatrix.convertToInt(Color.RED);
+	private static final int ORANGE = DotMatrix.convertToInt(Color.ORANGE);
+	private static final int YELLOW = DotMatrix.convertToInt(Color.YELLOW);
+	private static final int BLACK = DotMatrix.convertToInt(Color.BLACK);
+
 	public enum ThemeType {
-	    System,
-	    Nimbus,
-	    Nimrod,
-	    Weblaf
+		System, Nimbus, Nimrod, Weblaf
 	}
 
 	public static ThemeType defaultThemeType = ThemeType.Weblaf;
@@ -230,15 +227,15 @@ public class MainScene {
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
 
 	private static final int DEFAULT_ZOOM = 10;
-	
+
 	// private static final String ROUND_BUTTONS_DIR = "/icons/round_buttons/";
 
 	// private static final String PAUSE = "PAUSE";
 	// private static final String ESC_TO_RESUME = "ESC to resume";
 	// private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
 	private static final String LAST_SAVED = "Last Saved : ";
-	//private static final String EARTH_DATE_TIME = " ";//EARTH : ";
-	private static final String MARS_DATE_TIME = " ";//MARS : ";
+	// private static final String EARTH_DATE_TIME = " ";//EARTH : ";
+	private static final String MARS_DATE_TIME = " ";// MARS : ";
 	// private static final String UMST = " (UMST)";
 	private static final String COLON = ":";
 	private static final String ONE_SPACE = " ";
@@ -254,7 +251,7 @@ public class MainScene {
 	private static final String DTR = "Default TR :";
 	private static final String HZ = " Hz";
 	private static final String REFRESH = "Refresh Rate :";
-	
+
 	private static final String SOLAR_LONGITUDE = "Solar Longitude : ";
 	private static final String NOTE_MARS = " Note : Mars's now at ";
 	private static final String APHELION = "aphelion ";
@@ -263,13 +260,12 @@ public class MainScene {
 	private static final String NORTH = "Northern : ";
 	private static final String SOUTH = "Southern : ";
 
-	private static final String LABEL_CSS_STYLE = "-fx-background-color:transparent; -fx-text-fill: white;" + "-fx-font-size: 11px;" 
-			+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;" 
+	private static final String LABEL_CSS_STYLE = "-fx-background-color:transparent; -fx-text-fill: white;"
+			+ "-fx-font-size: 11px;" + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
 			+ "-fx-font-weight:bold; -fx-text-alignment: center; -fx-alignment: CENTER;";
-	
+
 	private static final String PANE_CSS = "jfx-popup-container; -fx-background-radius: 10; -fx-background-color:transparent;";
-	
-	
+
 	private static int theme = 6; // 6 is snow blue; 7 is the mud orange with nimrod
 	public static int chatBoxHeight = 256;
 	public static int LINUX_WIDTH = 270;
@@ -278,7 +274,7 @@ public class MainScene {
 
 	public static boolean isFXGL = false;
 	public static boolean menuBarVisible = false;
-	
+
 	static boolean isShowingDialog = false;
 
 	private int screen_width = DEFAULT_WIDTH;
@@ -296,19 +292,19 @@ public class MainScene {
 
 	private float musicSliderCache = 0;
 	private float effectSliderCache = 0;
-	
+
 	private long lastTimerCall;
-	
+
 	private DoubleProperty musicProperty = new SimpleDoubleProperty(musicSliderValue);
 	private DoubleProperty soundEffectProperty = new SimpleDoubleProperty(soundEffectSliderValue);
-	
+
 	private double tpsCache;
 
 	private boolean minimized = false;
 	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
 	private boolean isFullScreenCache = false;
-	
+
 	private DoubleProperty sceneWidth;// = new SimpleDoubleProperty(DEFAULt_WIDTH);//1366-40;
 	private DoubleProperty sceneHeight;// = new SimpleDoubleProperty(DEFAULt_HEIGHT); //768-40;
 
@@ -322,12 +318,12 @@ public class MainScene {
 	private String dir = null;
 	private String oldLastSaveStamp = null;
 
-    private DotMatrix matrix;
-    
+	private DotMatrix matrix;
+
 	private ExecutorService saveExecutor = Executors.newSingleThreadExecutor();
-	
-	//private transient Timer autosaveTimer;
-	
+
+	// private transient Timer autosaveTimer;
+
 	private DraggableNode gNode;
 	private GameScene gameScene;
 	private Parent root;
@@ -346,18 +342,18 @@ public class MainScene {
 	private StackPane savePane;
 	private StackPane sPane;
 	private Pane billboard;
-	
+
 	private AnchorPane anchorPane;
 	private AnchorPane mapsAnchorPane;
 	private SwingNode desktopNode;
 	private SwingNode mapNode;
 	private SwingNode minimapNode;
-	// guideNode,  monNode, missionNode, resupplyNode, sciNode, guideNode ;
-	
+	// guideNode, monNode, missionNode, resupplyNode, sciNode, guideNode ;
+
 	private Stage stage;
 //	private Stage loadingStage;
 	private Stage savingStage;
-	
+
 	private Scene scene;
 	private Scene savingScene;
 
@@ -365,15 +361,15 @@ public class MainScene {
 
 	private JFXDatePicker datePickerFX;
 	private JFXTimePicker timePickerFX;
-	
+
 	private IconNode marsTimeIcon;
-	
+
 	private HBox earthTimeBox;
 	private HBox marsTimeBox;
 
 	private static Label effectLabel;
 	private static Label trackLabel;
-	
+
 	private Label marsTimeLabel;
 	private Label lastSaveLabel;
 	private Label tpsLabel;
@@ -410,27 +406,27 @@ public class MainScene {
 	private JFXToolbar toolbar;
 
 	private static JFXSlider musicSlider;
-	private static JFXSlider soundEffectSlider; 
-	
+	private static JFXSlider soundEffectSlider;
+
 	private JFXButton soundBtn;
 	private JFXButton marsNetBtn;
 	private JFXButton rotateCWBtn;
 	private JFXButton rotateCCWBtn;
 	private JFXButton recenterBtn;
 	private JFXButton speedBtn;
-	
-	private JFXPopup soundPopup; 
+
+	private JFXPopup soundPopup;
 	private JFXPopup marsNetBox;
 	private JFXPopup marsCalendarPopup;
 	private JFXPopup simSpeedPopup;
-	
+
 	private JFXTabPane tabPane;
-	
+
 	private JFXDialog exitDialog;
-	
+
 	private static CheckBox musicMuteBox;
 	private static CheckBox soundEffectMuteBox;
-	
+
 	private ESCHandler esc = null;
 	private Timeline timeLabeltimer;
 
@@ -445,8 +441,8 @@ public class MainScene {
 	private static QuotationPopup quote;
 
 	private static Simulation sim = Simulation.instance();
-    private static UnitManager unitManager = sim.getUnitManager();
-    
+	private static UnitManager unitManager = sim.getUnitManager();
+
 	private static MasterClock masterClock = sim.getMasterClock();
 	private static EarthClock earthClock;
 	private static MarsClock marsClock;
@@ -459,8 +455,8 @@ public class MainScene {
 	private static MarsCalendarDisplay calendarDisplay;
 	private static UpTimer uptimer;
 
-    private AnimationTimer billboardTimer;
-    
+	private AnimationTimer billboardTimer;
+
 	private static OrbitInfo orbitInfo;
 
 	/**
@@ -478,11 +474,10 @@ public class MainScene {
 		if (gameScene != null) {
 			stage = ((Stage) gameScene.getRoot().getScene().getWindow());
 			isFXGL = true;
-		    //stage.initStyle(StageStyle.DECORATED);
-		}
-		else
+			// stage.initStyle(StageStyle.DECORATED);
+		} else
 			stage = new Stage();
-		
+
 		stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
 		stage.setMinWidth(sceneWidth.get());
 		stage.setMinHeight(sceneHeight.get());
@@ -492,31 +487,30 @@ public class MainScene {
 		// Detect if a user hits the top-right close button
 		stage.setOnCloseRequest(e -> {
 			if (isFXGL) {
-		        Input input = FXGL.getInput();
+				Input input = FXGL.getInput();
 				input.mockKeyPress(KeyCode.ESCAPE);
-		        input.mockKeyRelease(KeyCode.ESCAPE);
-			}
-			else {
+				input.mockKeyRelease(KeyCode.ESCAPE);
+			} else {
 				dialogOnExit();
 				e.consume();
 			}
 		});
 
 		stage.iconifiedProperty().addListener(new ChangeListener<Boolean>() {
-		    @Override
-		    public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
-		    	if (!t.equals(t1)) {
-		    		minimized = t1;
-		    	}
-		    	if (billboardTimer != null) {
-		    		if (t1)
-		    			billboardTimer.stop();
-		    		else
-		    			billboardTimer.start();
-		    	}
-		    }
+			@Override
+			public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
+				if (!t.equals(t1)) {
+					minimized = t1;
+				}
+				if (billboardTimer != null) {
+					if (t1)
+						billboardTimer.stop();
+					else
+						billboardTimer.start();
+				}
+			}
 		});
-		
+
 		// Detect if a user hits ESC
 		if (!isFXGL) {
 			esc = new ESCHandler();
@@ -528,32 +522,33 @@ public class MainScene {
 	 * Loads the rest of the methods in MainScene.
 	 */
 	public void finalizeMainScene() {
-			
-		//SwingUtilities.invokeLater(() -> {
-			WebLookAndFeel.install();
-			UIManagers.initialize();
-		//});
-		
+
+		// SwingUtilities.invokeLater(() -> {
+		WebLookAndFeel.install();
+		UIManagers.initialize();
+		// });
+
 		Platform.runLater(() -> {
 
 			prepareScene();
-			
+
 			initializeTheme();
-			
-			prepareOthers();		
-			// Call setMonitor() for screen detection and placing quotation pop at top right corner
+
+			prepareOthers();
+			// Call setMonitor() for screen detection and placing quotation pop at top right
+			// corner
 			setMonitor(stage);
 			stage.centerOnScreen();
 			stage.setTitle(Simulation.title);
 			stage.setResizable(false);
 			stage.show();
 			stage.requestFocus();
-			
+
 			createSavingIndicator();
 
 			openInitialWindows();
 //			hideWaitStage(MainScene.LOADING);
-			
+
 		});
 	}
 
@@ -564,7 +559,7 @@ public class MainScene {
 		// logger.info("MainMenu's prepareScene() is on " +
 		// Thread.currentThread().getName());
 		UIConfig.INSTANCE.useUIDefault();
-	
+
 		// creates and initialize scene
 		scene = initializeScene();
 		// switch from the main menu's scene to the main scene's scene
@@ -835,11 +830,10 @@ public class MainScene {
 		InputMap<KeyEvent> ctrlX = consume(keyPressed(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN)),
 				e -> {
 					if (isFXGL) {
-				        Input input = FXGL.getInput();
+						Input input = FXGL.getInput();
 						input.mockKeyPress(KeyCode.ESCAPE);
-				        input.mockKeyRelease(KeyCode.ESCAPE);
-					}
-					else {
+						input.mockKeyRelease(KeyCode.ESCAPE);
+					} else {
 						dialogOnExit();
 						e.consume();
 					}
@@ -848,18 +842,18 @@ public class MainScene {
 
 		InputMap<KeyEvent> ctrlT = consume(keyPressed(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN)),
 				e -> {
-					//if (OS.contains("linux")) {
-						// if (theme == 6)
-					//	setTheme(0);
-						// else if (theme == 0)
-						// setTheme(6);
-					//} else {
-						if (theme == 0 || theme == 6) {
-							setTheme(7);
-						} else if (theme == 7) {
-							setTheme(0);
-						}
-					//}
+					// if (OS.contains("linux")) {
+					// if (theme == 6)
+					// setTheme(0);
+					// else if (theme == 0)
+					// setTheme(6);
+					// } else {
+					if (theme == 0 || theme == 6) {
+						setTheme(7);
+					} else if (theme == 7) {
+						setTheme(0);
+					}
+					// }
 				});
 		Nodes.addInputMap(rootStackPane, ctrlT);
 
@@ -913,16 +907,16 @@ public class MainScene {
 	}
 
 	public Text createTextHeader(String s) {
-		//DropShadow ds = new DropShadow();
-		//ds.setOffsetY(1.0f);
-		//ds.setColor(Color.color(0.4f, 0.4f, 0.4f));
+		// DropShadow ds = new DropShadow();
+		// ds.setOffsetY(1.0f);
+		// ds.setColor(Color.color(0.4f, 0.4f, 0.4f));
 
 		Text t = new Text();
-		//t.setEffect(ds);
+		// t.setEffect(ds);
 		t.setCache(true);
 		t.setX(10.0f);
 		t.setY(270.0f);
-		t.setFill(Color.LIGHTBLUE);//.ORANGE);//.DARKSLATEGREY);
+		t.setFill(Color.LIGHTBLUE);// .ORANGE);//.DARKSLATEGREY);
 		t.setText(s);
 		t.setFont(Font.font(null, FontWeight.BOLD, 14));
 		return t;
@@ -932,7 +926,8 @@ public class MainScene {
 		Label header_label = new Label(s);
 		// header_label.setEffect(blend);
 		header_label.setStyle("-fx-text-fill: white; -fx-font-size: 13px; -fx-background-color:transparent;"
-				//+ "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
+				// + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0
+				// #000;"
 				+ "-fx-font-weight: bold;");
 		header_label.setPadding(new Insets(3, 0, 1, 2));
 		return header_label;
@@ -942,32 +937,28 @@ public class MainScene {
 		Text text = new Text(s);
 		// text.setEffect(blend);
 		text.setStyle("-fx-text-fill: white; -fx-font-size: 11px; -fx-background-color:transparent;"
-		// + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0
-		// #000;"
+				// + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0
+				// #000;"
 				+ "-fx-font-weight: normal;");
 		return text;
 	}
 
 	public void toggleSound() {
 		if (!masterClock.isPaused()) {
-			
+
 			musicMuteBox.setSelected(!musicMuteBox.isSelected());
 			soundEffectMuteBox.setSelected(!soundEffectMuteBox.isSelected());
-/*			
-			if (musicMuteBox.isSelected()) {// || musicSlider.getValue() > 0) { //musicMuteBox.isSelected()) {//
-				//musicMuteBox.setSelected(true);
-				mute(false, true);
-			} else
-				//musicMuteBox.setSelected(false);
-				unmute(false, true);
-			
-			if (soundEffectMuteBox.isSelected()) {// || soundEffectSlider.getValue() > 0) { //soundEffectMuteBox.isSelected()) {//
-				//soundEffectMuteBox.setSelected(true);
-				mute(true, false);
-			} else
-				//soundEffectMuteBox.setSelected(false);
-				unmute(true, false);
-*/			
+			/*
+			 * if (musicMuteBox.isSelected()) {// || musicSlider.getValue() > 0) {
+			 * //musicMuteBox.isSelected()) {// //musicMuteBox.setSelected(true);
+			 * mute(false, true); } else //musicMuteBox.setSelected(false); unmute(false,
+			 * true);
+			 * 
+			 * if (soundEffectMuteBox.isSelected()) {// || soundEffectSlider.getValue() > 0)
+			 * { //soundEffectMuteBox.isSelected()) {//
+			 * //soundEffectMuteBox.setSelected(true); mute(true, false); } else
+			 * //soundEffectMuteBox.setSelected(false); unmute(true, false);
+			 */
 		}
 	}
 
@@ -991,10 +982,9 @@ public class MainScene {
 			soundEffectSlider.setValue(0);
 			// check the sound effect mute item in menuBar
 			menuBar.getSoundEffectMuteItem().setSelected(true);
-			
-			
+
 		}
-		//soundPlayer.pause(isEffect, isMusic);
+		// soundPlayer.pause(isEffect, isMusic);
 	}
 
 	public void unmute(boolean isEffect, boolean isMusic) {
@@ -1005,7 +995,7 @@ public class MainScene {
 			musicSlider.setValue(musicSliderCache);
 			// uncheck the music mute item in menuBar
 			menuBar.getMusicMuteItem().setSelected(false);
-			
+
 		}
 		if (isEffect) {
 			// unmute it
@@ -1016,7 +1006,7 @@ public class MainScene {
 			menuBar.getSoundEffectMuteItem().setSelected(false);
 		}
 
-		//soundPlayer.restore(isEffect, isMusic);
+		// soundPlayer.restore(isEffect, isMusic);
 
 	}
 
@@ -1069,8 +1059,7 @@ public class MainScene {
 		pausePane.setStyle("-fx-background-color:rgba(0,0,0,0.5);");
 		pausePane.getChildren().add(createPausePaneContent());
 		pausePane.setPrefSize(150, 150);
-		
-		
+
 		if (OS.contains("mac")) {
 			((MenuBar) menuBar).useSystemMenuBarProperty().set(true);
 		}
@@ -1124,18 +1113,18 @@ public class MainScene {
 
 //		AnchorPane.setBottomAnchor(billboard, 35.0);
 //		AnchorPane.setLeftAnchor(billboard, 335.0);//(sceneWidth.get() - 300) / 2);
-		
+
 		anchorPane = new AnchorPane();
-		//anchorPane.setStyle("-fx-background-color: black; ");
+		// anchorPane.setStyle("-fx-background-color: black; ");
 		anchorPane.getChildren().addAll(tabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeBox, marsTimeBox,
 				soundBtn, gNode);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
 
 		gNode.setLayoutX(350);
-	    gNode.setLayoutY(670);
-		
+		gNode.setLayoutY(670);
+
 		// Set up stackPane for anchoring the JFXDialog box and others
 		rootStackPane = new StackPane(anchorPane);
-		//rootStackPane.setStyle("-fx-background-color: black; ");
+		// rootStackPane.setStyle("-fx-background-color: black; ");
 		rootStackPane.setPrefWidth(sceneWidth.get());
 		rootStackPane.setPrefHeight(sceneHeight.get());
 		// rootStackPane.setBackground(new Background(new
@@ -1144,8 +1133,7 @@ public class MainScene {
 		if (gameScene != null) {
 			scene = gameScene.getRoot().getScene();
 			gameScene.addUINode(rootStackPane);
-		}
-		else {
+		} else {
 			scene = new Scene(rootStackPane, sceneWidth.get(), sceneHeight.get(), Color.TRANSPARENT);// , Color.BROWN);
 		}
 
@@ -1156,9 +1144,9 @@ public class MainScene {
 
 		tabPane.prefHeightProperty().bind(scene.heightProperty());
 		tabPane.prefWidthProperty().bind(scene.widthProperty());
-		
-		//matrix.setPrefWidth(jfxTabPane.getWidth());
-		
+
+		// matrix.setPrefWidth(jfxTabPane.getWidth());
+
 		dashboardStackPane.prefHeightProperty().bind(scene.heightProperty().subtract(30));
 		dashboardStackPane.prefWidthProperty().bind(scene.widthProperty());
 
@@ -1168,7 +1156,7 @@ public class MainScene {
 		// anchorTabPane is within jfxTabPane
 		mapsAnchorPane.prefHeightProperty().bind(scene.heightProperty().subtract(30));
 		mapsAnchorPane.prefWidthProperty().bind(scene.widthProperty());
-	
+
 		// Setup key events using wellbehavedfx
 		setupKeyEvents();
 
@@ -1186,48 +1174,44 @@ public class MainScene {
 		datePickerFX = new JFXDatePicker();
 		datePickerFX.setValue(earthClock.getLocalDate());
 		datePickerFX.setEditable(false);
-		//datePickerFX.setDefaultColor(Color.valueOf("#065185"));
-		//datePickerFX.setOverLay(true);
+		// datePickerFX.setDefaultColor(Color.valueOf("#065185"));
+		// datePickerFX.setOverLay(true);
 		datePickerFX.setShowWeekNumbers(true);
 		datePickerFX.setPromptText("Earth Date");
 		datePickerFX.setId("earth-time");
 
 		setQuickToolTip(datePickerFX, "Earth Date");
-		
+
 		timePickerFX = new JFXTimePicker();
 		timePickerFX.setValue(earthClock.getLocalTime());
 		timePickerFX.setIs24HourView(true);
 		timePickerFX.setEditable(false);
-		//timePickerFX.setDefaultColor(Color.valueOf("#065185"));
-		//blueDatePicker.setOverLay(true);
+		// timePickerFX.setDefaultColor(Color.valueOf("#065185"));
+		// blueDatePicker.setOverLay(true);
 		timePickerFX.setPromptText("Earth Time");
 		timePickerFX.setId("earth-time");
-		
+
 		setQuickToolTip(timePickerFX, "Earth Time in UTC");
-		
+
 		HBox box = new HBox(5, datePickerFX, timePickerFX);
 
 		earthTimeBox = new HBox(box);
 		earthTimeBox.setId("earth-time-box");
 		earthTimeBox.setAlignment(Pos.CENTER);
 
-		
 		if (OS.contains("linux")) {
 			earthTimeBox.setPrefSize(50, 25); // 270
-			datePickerFX.setPrefSize(25, 25);//160, 29);
-			timePickerFX.setPrefSize(25, 25);//140, 29);
+			datePickerFX.setPrefSize(25, 25);// 160, 29);
+			timePickerFX.setPrefSize(25, 25);// 140, 29);
 		} else if (OS.contains("mac")) {
-			earthTimeBox.setPrefSize(50, 23);  // 230
+			earthTimeBox.setPrefSize(50, 23); // 230
 			datePickerFX.setPrefSize(23, 23);
 			timePickerFX.setPrefSize(23, 23);
 		} else {
 			earthTimeBox.setPrefSize(50, 25);
-			datePickerFX.setPrefSize(25, 25);//130, 25);
-			timePickerFX.setPrefSize(25, 25);//110, 25);
+			datePickerFX.setPrefSize(25, 25);// 130, 25);
+			timePickerFX.setPrefSize(25, 25);// 110, 25);
 		}
-		
-
-
 
 	}
 
@@ -1235,7 +1219,7 @@ public class MainScene {
 	 * Creates and returns the panel for simulation speed and time info
 	 */
 	public void createSpeedPanel() {
- 
+
 		speedBtn = new JFXButton();
 		// speedBtn.setStyle(value);
 		// speedBtn.getStyleClass().add("menu-button");//"button-raised");
@@ -1260,48 +1244,50 @@ public class MainScene {
 		});
 
 		speedPane = new StackPane();
-		speedPane.setBackground(new Background(new BackgroundFill(Color.rgb(54, 54, 54), CornerRadii.EMPTY, Insets.EMPTY)));
+		speedPane.setBackground(
+				new Background(new BackgroundFill(Color.rgb(54, 54, 54), CornerRadii.EMPTY, Insets.EMPTY)));
 		// soundPane.setEffect(blend);
 		speedPane.getStyleClass().add("jfx-popup-container; -fx-text-fill: white;");// -fx-background-radius: 10;");
 		// speedPane.setEffect(blend);
-		//speedPane.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;");
+		// speedPane.getStyleClass().add("jfx-popup-container; -fx-background-radius:
+		// 10;");
 		speedPane.setAlignment(Pos.CENTER);
 		speedPane.setPrefHeight(100);
 		speedPane.setPrefWidth(250);// earthTimeButton.getPrefWidth());
 		simSpeedPopup = new JFXPopup(speedPane);
-		
-		
+
 		Text header_label = createTextHeader("SPEED PANEL");
 
-
-		Label defaultRatioLabel0 = createLabelLeft(DTR, "The default time-ratio is the ratio of simulation time to real time.");
+		Label defaultRatioLabel0 = createLabelLeft(DTR,
+				"The default time-ratio is the ratio of simulation time to real time.");
 		Label defaultRatioLabel = createLabelRight("e.g. 128x means 1 real secs corresponds to 128 sim secs.");
 		int defaultRatioInt = (int) masterClock.getCalculatedTimeRatio();
 		StringBuilder s0 = new StringBuilder();
 		s0.append(defaultRatioInt);
 		defaultRatioLabel.setText(s0.toString());
 
-		
 		Label realTimeLabel0 = createLabelLeft(SEC, "The amount of simulation time per real second.");
-		realTimeLabel = createLabelRight("e.g. 02m.08s means every real world second corresponds to 2 mins and 8 secs of simulation time.");
+		realTimeLabel = createLabelRight(
+				"e.g. 02m.08s means every real world second corresponds to 2 mins and 8 secs of simulation time.");
 		StringBuilder s1 = new StringBuilder();
 		double ratio = masterClock.getTimeRatio();
 		s1.append(ClockUtils.getTimeTruncated(ratio));
 		realTimeLabel.setText(s1.toString());
-		
-		Label spinnerLabel0 = createLabelLeft(TR, "The current time-ratio is the ratio of simulation time to real time.");
+
+		Label spinnerLabel0 = createLabelLeft(TR,
+				"The current time-ratio is the ratio of simulation time to real time.");
 
 		timeRatioSpinner = new Spinner<Integer>();
-		//timeRatioSpinner.getStyleClass().clear();
+		// timeRatioSpinner.getStyleClass().clear();
 		timeRatioSpinner.getStyleClass().add(getClass().getResource(SPINNER_CSS).toExternalForm());
 		timeRatioSpinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-		
-        //Spinner.STYLE_CLASS_ARROWS_ON_RIGHT_HORIZONTAL
-        //Spinner.STYLE_CLASS_ARROWS_ON_LEFT_VERTICAL
-        //Spinner.STYLE_CLASS_ARROWS_ON_LEFT_HORIZONTAL
-        //Spinner.STYLE_CLASS_SPLIT_ARROWS_VERTICAL
-        //Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL
-       
+
+		// Spinner.STYLE_CLASS_ARROWS_ON_RIGHT_HORIZONTAL
+		// Spinner.STYLE_CLASS_ARROWS_ON_LEFT_VERTICAL
+		// Spinner.STYLE_CLASS_ARROWS_ON_LEFT_HORIZONTAL
+		// Spinner.STYLE_CLASS_SPLIT_ARROWS_VERTICAL
+		// Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL
+
 //		List<Integer> items = null;
 //		if (default_ratio == 16)
 //			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);
@@ -1314,24 +1300,23 @@ public class MainScene {
 //		else // if (default_ratio == 256)
 //			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096);// ,8192);
 
-		
 		List<Integer> items = null;
 		if (defaultRatioInt == 16)
 			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);
 		else if (defaultRatioInt == 32)
 			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);// ,1024);
 		else if (defaultRatioInt == 64)
-			items =Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024);// , 2048);
+			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024);// , 2048);
 		else if (defaultRatioInt == 128)
 			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048);// ,4096,8192);
 		else // if (default_ratio == 256)
 			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096);// ,8192);
-		
-		
-		timeRatioSpinner.setValueFactory(new SpinnerValueFactory.ListSpinnerValueFactory<Integer>(FXCollections.observableArrayList(items)));
-		//spinner.setValueFactory((SpinnerValueFactory<Integer>) items);
+
+		timeRatioSpinner.setValueFactory(
+				new SpinnerValueFactory.ListSpinnerValueFactory<Integer>(FXCollections.observableArrayList(items)));
+		// spinner.setValueFactory((SpinnerValueFactory<Integer>) items);
 		timeRatioSpinner.setMaxSize(85, 15);
-		//timeRatioSpinner.setStyle(LABEL_CSS_STYLE);
+		// timeRatioSpinner.setStyle(LABEL_CSS_STYLE);
 		// spinner.setAlignment(Pos.CENTER);
 		timeRatioSpinner.getValueFactory().setValue(defaultRatioInt);
 		timeRatioSpinner.valueProperty().addListener((o, old_val, new_val) -> {
@@ -1358,10 +1343,10 @@ public class MainScene {
 		upTimeLabel = createLabelRight("e.g. 03m 05s means 3 minutes and 5 seconds.");
 		if (uptimer != null)
 			upTimeLabel.setText(uptimer.getUptime());
-		
+
 		Label refreshLabel0 = createLabelLeft(REFRESH, "The frequency the graphic is refreshed");
 		refreshLabel = createLabelRight("e.g. 1 Hz means once per second.");
-		
+
 		/*
 		 * Label benchmarkLabel0 = new Label(BENCHMARK); //
 		 * upTimeLabel0.setEffect(blend);
@@ -1385,7 +1370,8 @@ public class MainScene {
 		 */
 		GridPane gridPane = new GridPane();
 		gridPane.getStyleClass().add("jfx-popup-container; -fx-background-color:transparent;");
-		//gridPane.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;");
+		// gridPane.getStyleClass().add("jfx-popup-container; -fx-background-radius:
+		// 10;");
 		gridPane.setAlignment(Pos.CENTER);
 		gridPane.setPadding(new Insets(5, 5, 5, 5));
 		gridPane.setHgap(1.0);
@@ -1409,7 +1395,7 @@ public class MainScene {
 		GridPane.setConstraints(realTimeLabel0, 0, 2);
 		GridPane.setConstraints(tpsLabel0, 0, 3);
 		GridPane.setConstraints(upTimeLabel0, 0, 4);
-		GridPane.setConstraints(refreshLabel0, 0, 5);	
+		GridPane.setConstraints(refreshLabel0, 0, 5);
 		// GridPane.setConstraints(benchmarkLabel0, 0, 5);
 
 		GridPane.setHalignment(timeRatioSpinner, HPos.CENTER);
@@ -1429,15 +1415,12 @@ public class MainScene {
 		// GridPane.setHalignment(benchmarkLabel0, HPos.RIGHT);
 
 		gridPane.getColumnConstraints().addAll(left, right);
-		gridPane.getChildren().addAll(spinnerLabel0, timeRatioSpinner, 
-				defaultRatioLabel0, defaultRatioLabel,
-				realTimeLabel0, realTimeLabel, 
-				tpsLabel0, tpsLabel, 
-				upTimeLabel0, upTimeLabel,
-				refreshLabel0, refreshLabel);
+		gridPane.getChildren().addAll(spinnerLabel0, timeRatioSpinner, defaultRatioLabel0, defaultRatioLabel,
+				realTimeLabel0, realTimeLabel, tpsLabel0, tpsLabel, upTimeLabel0, upTimeLabel, refreshLabel0,
+				refreshLabel);
 		// , benchmarkLabel0, benchmarkLabel);
 
-		speedVBox = new VBox();	
+		speedVBox = new VBox();
 		speedVBox.getStyleClass().add(PANE_CSS);
 		speedVBox.setPadding(new Insets(6, 2, 6, 2));
 		speedVBox.setAlignment(Pos.CENTER);
@@ -1445,7 +1428,7 @@ public class MainScene {
 		speedPane.getChildren().addAll(speedVBox);
 
 	}
-	
+
 	public Label createLabelLeft(String name, String tip) {
 		Label l = new Label(name);
 		// upTimeLabel0.setEffect(blend);
@@ -1456,7 +1439,7 @@ public class MainScene {
 		setQuickToolTip(l, tip);
 		return l;
 	}
-	
+
 	public Label createLabelRight(String tip) {
 		Label l = new Label();
 		l.setAlignment(Pos.CENTER);
@@ -1468,7 +1451,7 @@ public class MainScene {
 		setQuickToolTip(l, tip);
 		return l;
 	}
-	
+
 	/*
 	 * public String timeRatioString(int t) { String s = null; if (t < 10) s = "   "
 	 * + t; else if (t < 100) s = "  " + t; else if (t < 1000) s = " " + t; else s =
@@ -1511,7 +1494,8 @@ public class MainScene {
 		});
 
 		soundPane = new StackPane();
-		soundPane.setBackground(new Background(new BackgroundFill(Color.rgb(54, 54, 54), CornerRadii.EMPTY, Insets.EMPTY)));
+		soundPane.setBackground(
+				new Background(new BackgroundFill(Color.rgb(54, 54, 54), CornerRadii.EMPTY, Insets.EMPTY)));
 		// soundPane.setEffect(blend);
 		soundPane.getStyleClass().add("jfx-popup-container; -fx-text-fill: white;");// -fx-background-radius: 10;");
 		soundPane.setAlignment(Pos.CENTER);
@@ -1521,7 +1505,7 @@ public class MainScene {
 		soundPopup = new JFXPopup(soundPane);
 
 		Text header_label = createTextHeader("SOUND PANEL");
-		
+
 		// Set up a settlement view zoom bar
 		musicSlider = new JFXSlider();
 		// soundSlider.setEffect(blend);
@@ -1543,17 +1527,17 @@ public class MainScene {
 		musicSlider.setOrientation(Orientation.HORIZONTAL);
 		musicSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
 		setQuickToolTip(musicSlider, "Adjust the background music volume"); //$NON-NLS-1$
-		
+
 		musicSlider.valueProperty().bindBidirectional(musicProperty);
 		// detect dragging
 		musicSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
 				if (old_val != new_val) {
 					float sliderValue = new_val.floatValue();
-					// Set to the new music volume in the sound player 
-					//System.out.println((float) convertSlider2Volume(sliderValue));
+					// Set to the new music volume in the sound player
+					// System.out.println((float) convertSlider2Volume(sliderValue));
 					soundPlayer.setMusicVolume(convertSlider2Volume(sliderValue));
-					
+
 					if (sliderValue <= 0) {
 						// check the music mute box
 						musicMuteBox.setSelected(true);
@@ -1566,42 +1550,36 @@ public class MainScene {
 		});
 		// Background sound track
 		trackLabel = createBlendLabel("Music");
-		//trackLabel.setPadding(new Insets(0, 0, 0, 0));
+		// trackLabel.setPadding(new Insets(0, 0, 0, 0));
 
 		musicMuteBox = new JFXCheckBox("mute");
-		//musicMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
-		//		+ "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
+		// musicMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom,
+		// -fx-base, derive(-fx-base,30%));"
+		// + "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
 		// cb.setPadding(new Insets(0,0,0,5));
 		musicMuteBox.setAlignment(Pos.CENTER);
-		
+
 		musicMuteBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
-		    @Override
-		    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-		    	//System.out.println("oldValue : " + oldValue + "   newValue : " + newValue);
-		    	if (oldValue != newValue) {
-			    	musicMuteBox.setSelected(newValue);
-					if (!masterClock.isPaused()) {			
-						if (musicMuteBox.isSelected()) {				
-							mute(false, true);	
-						} else {					
-							unmute(false, true);			
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				// System.out.println("oldValue : " + oldValue + " newValue : " + newValue);
+				if (oldValue != newValue) {
+					musicMuteBox.setSelected(newValue);
+					if (!masterClock.isPaused()) {
+						if (musicMuteBox.isSelected()) {
+							mute(false, true);
+						} else {
+							unmute(false, true);
 						}
 					}
-		    	}
-		    }
-		});
-/*		
-		musicMuteBox.setOnAction(e -> {
-			if (!masterClock.isPaused()) {
-				if (musicMuteBox.isSelected()) {					
-					mute(false, true);			
-				} else {				
-					unmute(false, true);			
 				}
-			} 
-			e.consume();
+			}
 		});
-*/
+		/*
+		 * musicMuteBox.setOnAction(e -> { if (!masterClock.isPaused()) { if
+		 * (musicMuteBox.isSelected()) { mute(false, true); } else { unmute(false,
+		 * true); } } e.consume(); });
+		 */
 		// Set up a settlement view zoom bar
 		soundEffectSlider = new JFXSlider();
 		// soundSlider.setEffect(blend);
@@ -1623,20 +1601,20 @@ public class MainScene {
 		soundEffectSlider.setOrientation(Orientation.HORIZONTAL);
 		soundEffectSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
 		setQuickToolTip(soundEffectSlider, "Adjust the sound effect volume"); //$NON-NLS-1$
-		
+
 		soundEffectSlider.valueProperty().bindBidirectional(soundEffectProperty);
-		
+
 		// detect dragging
 		soundEffectSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
 
 				if (old_val != new_val) {
 					float sliderValue = new_val.floatValue();
-					// Set to the new sound effect volume in the sound player 
+					// Set to the new sound effect volume in the sound player
 					soundPlayer.setSoundVolume(convertSlider2Volume(sliderValue));
-					
-					//soundPlayer.setSoundVolume(convertSlider2Volume((float)soundEffectProperty.get()));
-					
+
+					// soundPlayer.setSoundVolume(convertSlider2Volume((float)soundEffectProperty.get()));
+
 					if (sliderValue <= 0) {
 						// check the sound effect mute box
 						soundEffectMuteBox.setSelected(true);
@@ -1650,41 +1628,35 @@ public class MainScene {
 
 		// Sound effect
 		effectLabel = createBlendLabel("Sound Effect");
-		//effectLabel.setPadding(new Insets(0, 0, 0, 1));
+		// effectLabel.setPadding(new Insets(0, 0, 0, 1));
 
 		soundEffectMuteBox = new JFXCheckBox("mute");
-		//soundEffectMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
-		//		+ "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
+		// soundEffectMuteBox.setStyle("-fx-background-color: linear-gradient(to bottom,
+		// -fx-base, derive(-fx-base,30%));"
+		// + "-fx-font: bold 9pt 'Corbel';" + "-fx-text-fill: #654b00;");
 		// cb.setPadding(new Insets(0,0,0,5));
 		soundEffectMuteBox.setAlignment(Pos.CENTER);
-		
+
 		soundEffectMuteBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
-		    @Override
-		    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-		    	if (oldValue != newValue) {
-			    	soundEffectMuteBox.setSelected(newValue);
-					if (!masterClock.isPaused()) {			
-						if (soundEffectMuteBox.isSelected()) {				
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if (oldValue != newValue) {
+					soundEffectMuteBox.setSelected(newValue);
+					if (!masterClock.isPaused()) {
+						if (soundEffectMuteBox.isSelected()) {
 							mute(true, false);
-						} else {					
-							unmute(true, false);			
+						} else {
+							unmute(true, false);
 						}
 					}
-		    	}
-		    }
-		});
-/*		
-		soundEffectMuteBox.setOnAction(e -> {
-			if (!masterClock.isPaused()) {			
-				if (soundEffectMuteBox.isSelected()) {				
-					mute(true, false);
-				} else {					
-					unmute(true, false);			
 				}
 			}
-			e.consume();
 		});
-*/
+		/*
+		 * soundEffectMuteBox.setOnAction(e -> { if (!masterClock.isPaused()) { if
+		 * (soundEffectMuteBox.isSelected()) { mute(true, false); } else { unmute(true,
+		 * false); } } e.consume(); });
+		 */
 		// Label empty = new Label();
 
 		GridPane gridPane0 = new GridPane();
@@ -1771,23 +1743,23 @@ public class MainScene {
 	 * }
 	 */
 
-	public void createMarsTimeBar() {	
-		
+	public void createMarsTimeBar() {
+
 		marsTimeLabel = new Label();
 		marsTimeLabel.setId("mars-time-label");
 		marsTimeLabel.setAlignment(Pos.CENTER);
-		
-		setQuickToolTip(marsTimeLabel, "Martian Date and Time");	
+
+		setQuickToolTip(marsTimeLabel, "Martian Date and Time");
 
 		marsTimeButton = new Button();
 		marsTimeButton.setPrefSize(20, 20);
 		marsTimeButton.setId("mars-time-button");
-		
+
 		marsTimeIcon = new IconNode(FontAwesome.CALENDAR_O);
 		marsTimeIcon.setIconSize(20);
 		marsTimeIcon.setId("mars-time-icon");
 		marsTimeButton.setGraphic(marsTimeIcon);
-		
+
 		marsTimeBox = new HBox(marsTimeButton, marsTimeLabel);
 		marsTimeBox.setId("mars-time-box");
 		marsTimeBox.setAlignment(Pos.CENTER);
@@ -1795,16 +1767,16 @@ public class MainScene {
 		marsTimeButton.setMaxWidth(Double.MAX_VALUE);
 		if (OS.contains("linux")) {
 			marsTimeLabel.setPrefSize(LINUX_WIDTH, 29);
-			marsTimeBox.setPrefSize(LINUX_WIDTH+25, 29);
+			marsTimeBox.setPrefSize(LINUX_WIDTH + 25, 29);
 		} else if (OS.contains("mac")) {
 			marsTimeLabel.setPrefSize(MACOS_WIDTH, 30);
-			marsTimeBox.setPrefSize(MACOS_WIDTH+20, 30);
+			marsTimeBox.setPrefSize(MACOS_WIDTH + 20, 30);
 		} else if (OS.contains("win")) {
 			marsTimeLabel.setPrefSize(WIN_WIDTH, 35);
-			marsTimeBox.setPrefSize(WIN_WIDTH+20, 35);
+			marsTimeBox.setPrefSize(WIN_WIDTH + 20, 35);
 		}
-		
-		setQuickToolTip(marsTimeButton, "Click to open Martian calendar");	
+
+		setQuickToolTip(marsTimeButton, "Click to open Martian calendar");
 
 		if (masterClock == null)
 			masterClock = sim.getMasterClock();
@@ -1815,22 +1787,20 @@ public class MainScene {
 		marsTimeButton.setOnAction(e -> {
 			if (marsCalendarPopup.isShowing()) {
 				marsCalendarPopup.hide();// close();
-			} 
-			else {
+			} else {
 				marsCalendarPopup.show(marsTimeButton, PopupVPosition.TOP, PopupHPosition.LEFT, 0, 38);
 			}
 			e.consume();
 		});
 
-		
 		calendarDisplay = new MarsCalendarDisplay(marsClock, desktop);
 
 		SwingNode calNode = new SwingNode();
-		calNode.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;"); 
+		calNode.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;");
 		calNode.setContent(calendarDisplay);
 
 		StackPane calPane = new StackPane(calNode);
-		calPane.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;"); 
+		calPane.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;");
 		calPane.setAlignment(Pos.CENTER);
 		calPane.setPrefHeight(100);
 		calPane.setPrefWidth(140);
@@ -1844,14 +1814,15 @@ public class MainScene {
 		// Label header_label = createHeader("MARS CALENDAR");
 		Text header_label = createTextHeader("MARS CALENDAR PANEL");
 		header_label.setFill(Color.DARKSLATEGREY);
-		
+
 		monthText = createBlendText(MONTH + marsClock.getMonthName());
 		yearText = createBlendText(ORBIT + marsClock.getOrbitString());
 
 		setQuickToolTip(monthText, "the current Martian month. Each orbit has 24 months with either 27 or 28 Sols");
-		setQuickToolTip(yearText, "the current Martian orbit (or year). "
-				+ "Orbit 0015 coincides with Earth year 2043 CE"); 
-		// The Martian year is referred to as an "orbit". Each orbit has 668.59 Martian sols and 
+		setQuickToolTip(yearText,
+				"the current Martian orbit (or year). " + "Orbit 0015 coincides with Earth year 2043 CE");
+		// The Martian year is referred to as an "orbit". Each orbit has 668.59 Martian
+		// sols and
 		// is 668.5921 Martian days long.
 		HBox hBox = new HBox();
 		hBox.setPadding(new Insets(2, 15, 2, 15));
@@ -1864,10 +1835,9 @@ public class MainScene {
 		orbitInfo = sim.getMars().getOrbitInfo();
 		double L_s = orbitInfo.getL_s();
 		LSText = createBlendText(Math.round(L_s * 100D) / 100D + Msg.getString("direction.degreeSign")); //$NON-NLS-1$
-		setQuickToolTip(LSText, "L_s in deg. For Northern hemisphere, "
-				+ "Spring equinox at L_s=0; Winter solstice at L_s=270."
-				+ "Summer solstice at L_s=90."																			
-				+ "Autumn equinox at L_s = 180.");
+		setQuickToolTip(LSText,
+				"L_s in deg. For Northern hemisphere, " + "Spring equinox at L_s=0; Winter solstice at L_s=270."
+						+ "Summer solstice at L_s=90." + "Autumn equinox at L_s = 180.");
 
 		HBox LsBox = new HBox();
 		LsBox.setPadding(new Insets(2, 2, 2, 2));
@@ -1918,13 +1888,13 @@ public class MainScene {
 
 		// Add toolStackPane for map tool
 //		sMapToolPane = new StackPane();
-		
+
 		createMapButtons();
 		createMapCacheToggles();
 		createFXSettlementComboBox();
 		createFXZoomSlider();
 		createFXMapLabelBox();
-		
+
 		// detect mouse wheel scrolling
 		sMapStackPane.setOnScroll(new EventHandler<ScrollEvent>() {
 			public void handle(ScrollEvent event) {
@@ -1948,7 +1918,7 @@ public class MainScene {
 		});
 	}
 
-	public void createMapCacheToggles() { 
+	public void createMapCacheToggles() {
 		minimapToggle = new JFXToggleButton();
 		// pinButton.setTextFill(Paint.OPAQUE);
 		minimapToggle.setText("Minimap Off");
@@ -2013,11 +1983,9 @@ public class MainScene {
 			e.consume();
 		});
 
-
-		
 	}
-	
-	public void createMapButtons() { 
+
+	public void createMapButtons() {
 		rotateCWBtn = new JFXButton();
 		rotateCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.cw"))))); //$NON-NLS-1$
 		rotateCWBtn.setStyle("-fx-background-color: transparent; ");
@@ -2069,10 +2037,8 @@ public class MainScene {
 			e.consume();
 		});
 
-		
 	}
-	
-	
+
 	public void createFXZoomSlider() {
 		// logger.info("MainScene's createFXZoomSlider() is on " +
 		// Thread.currentThread().getName() + " Thread");
@@ -2086,8 +2052,8 @@ public class MainScene {
 		zoomSlider.setMin(1);
 		zoomSlider.setMax(35);
 		zoomSlider.setValue(DEFAULT_ZOOM);
-		zoomSlider.setMajorTickUnit(34);	
-		zoomSlider.setMinorTickCount(1);	
+		zoomSlider.setMajorTickUnit(34);
+		zoomSlider.setMinorTickCount(1);
 		zoomSlider.setShowTickLabels(true);
 		zoomSlider.setShowTickMarks(true);
 		zoomSlider.setSnapToTicks(false);
@@ -2102,14 +2068,14 @@ public class MainScene {
 				if (old_val != new_val) {
 					// Change scale of map based on slider position.
 					double sliderValue = new_val.doubleValue();
-					//double d = SettlementMapPanel.DEFAULT_SCALE;
+					// double d = SettlementMapPanel.DEFAULT_SCALE;
 					double newScale = 0;
 					if (sliderValue > 0) {
-						newScale = sliderValue;//* SettlementTransparentPanel.ZOOM_CHANGE;
-					} 
-					//else if (sliderValue < 0) {
-					//	newScale = 1 + sliderValue;//* SettlementTransparentPanel.ZOOM_CHANGE));
-					//}
+						newScale = sliderValue;// * SettlementTransparentPanel.ZOOM_CHANGE;
+					}
+					// else if (sliderValue < 0) {
+					// newScale = 1 + sliderValue;//* SettlementTransparentPanel.ZOOM_CHANGE));
+					// }
 					mapPanel.setScale(newScale);
 				}
 			}
@@ -2123,7 +2089,7 @@ public class MainScene {
 		sBox.getStyleClass().add("jfx-combo-box");
 		setQuickToolTip(sBox, Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		// ObservableList<Settlement> names = sim.getUnitManager().getSettlementOList();
-		//sBox.itemsProperty().setValue(sim.getUnitManager().getSettlementOList());
+		// sBox.itemsProperty().setValue(sim.getUnitManager().getSettlementOList());
 		sBox.itemsProperty().setValue(FXCollections.observableArrayList(sim.getUnitManager().getSettlements()));
 		sBox.setPromptText("Select a settlement to view");
 		sBox.getSelectionModel().selectFirst();
@@ -2269,25 +2235,25 @@ public class MainScene {
 
 		// Set up the "Main" Tab
 		createJFXToolbar();
-		
+
 		toolbarBox = new VBox(toolbar, desktopNode);
-		toolbarBox.setPadding(new Insets(5,5,5,5));
+		toolbarBox.setPadding(new Insets(5, 5, 5, 5));
 		mainStackPane = new StackPane();
-		//mainStackPane.setStyle("-fx-background-color: transparent; ");
+		// mainStackPane.setStyle("-fx-background-color: transparent; ");
 		mainStackPane.getChildren().add(toolbarBox);
 
 		mainTab = new Tab();
 		mainTab.setText("Main");
 		mainTab.setContent(mainStackPane);
-		
+
 		// Set up the "Map" Tab
 		mapsAnchorPane = new AnchorPane();
-		//mapsAnchorPane.setStyle("-fx-background-color: transparent; ");
+		// mapsAnchorPane.setStyle("-fx-background-color: transparent; ");
 		mapsAnchorPane.setStyle("-fx-background-color: black; ");
-		
+
 		Tab mapTab = new Tab();
 		mapTab.setText("Map");
-		//mapTab.setStyle("-fx-background-color: black; ");
+		// mapTab.setStyle("-fx-background-color: black; ");
 		mapTab.setContent(mapsAnchorPane);
 
 		navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
@@ -2318,13 +2284,13 @@ public class MainScene {
 		tabPane.getTabs().addAll(dashboardTab, mainTab, mapTab, guideTab);
 
 		final DashboardController c = controller;
-		
+
 		tabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
 
 			if (newTab == dashboardTab) {
-				
+
 				c.checkSettlements();
-				
+
 				dashboardStackPane.requestFocus();
 				closeMaps();
 			}
@@ -2344,8 +2310,8 @@ public class MainScene {
 
 			else if (newTab == guideTab) {
 
-				//if (!desktop.isToolWindowOpen(GuideWindow.NAME))
-					desktop.openToolWindow(GuideWindow.NAME);
+				// if (!desktop.isToolWindowOpen(GuideWindow.NAME))
+				desktop.openToolWindow(GuideWindow.NAME);
 
 				closeMaps();
 
@@ -2367,11 +2333,11 @@ public class MainScene {
 	}
 
 	public void anchorMapTool() {
-	
+
 //		AnchorPane.setRightAnchor(sMapToolPane, 25.0);
 //		AnchorPane.setTopAnchor(sMapToolPane, 20.0);
 //		mapsAnchorPane.getChildren().add(sMapToolPane);
-						
+
 		AnchorPane.setRightAnchor(zoomSlider, 65.0);
 		AnchorPane.setTopAnchor(zoomSlider, 350.0);
 
@@ -2390,25 +2356,24 @@ public class MainScene {
 
 		AnchorPane.setRightAnchor(mapLabelBox, -10.0);
 		AnchorPane.setTopAnchor(mapLabelBox, 140.0);
-		
-		
+
 	}
-	
+
 	public void anchorToggles() {
-		
+
 		AnchorPane.setRightAnchor(cacheToggle, 25.0);
 		AnchorPane.setTopAnchor(cacheToggle, 55.0); // 55.0
-	
+
 		AnchorPane.setLeftAnchor(minimapToggle, 10.0);
 		AnchorPane.setTopAnchor(minimapToggle, 17.0); // 55.0
-	
+
 		AnchorPane.setRightAnchor(mapToggle, 15.0);
 		AnchorPane.setTopAnchor(mapToggle, 17.0); // 55.0
-	
+
 		mapsAnchorPane.getChildren().addAll(cacheToggle, minimapToggle, mapToggle);
-		
+
 	}
-	
+
 	public void openMinimap() {
 		desktop.openToolWindow(NavigatorWindow.NAME);
 
@@ -2424,7 +2389,7 @@ public class MainScene {
 
 		if (!flag)
 			mapsAnchorPane.getChildren().addAll(minimapGroup);
-		
+
 		navWin.getGlobeDisplay().drawSphere();// updateDisplay();
 		navWin.toFront();
 		navWin.requestFocus();
@@ -2506,7 +2471,7 @@ public class MainScene {
 	public boolean isMinimapOn() {
 		return mapToggle.isSelected();
 	}
-	
+
 	public void closeMinimap() {
 		desktop.closeToolWindow(NavigatorWindow.NAME);
 		Platform.runLater(() -> {
@@ -2569,14 +2534,11 @@ public class MainScene {
 		/*
 		 * if (OS.contains("linux")) { setTheme(0); } else { setTheme(7); }
 		 */
-/*		
-		if (choice_theme == ThemeType.Nimrod)
-			setTheme(0);
-		else if (choice_theme == ThemeType.Nimbus)
-			setTheme(0);
-		else if (choice_theme == ThemeType.Web)
-			setTheme(0);
-*/		
+		/*
+		 * if (choice_theme == ThemeType.Nimrod) setTheme(0); else if (choice_theme ==
+		 * ThemeType.Nimbus) setTheme(0); else if (choice_theme == ThemeType.Web)
+		 * setTheme(0);
+		 */
 		setTheme(defaultThemeColor);
 
 		// SwingUtilities.invokeLater(() -> setLookAndFeel(NIMBUS_THEME));
@@ -2590,7 +2552,7 @@ public class MainScene {
 	public void setTheme(int theme) {
 
 		String cssFile = THEME_PATH;
-		
+
 		if (menuBar != null && menuBar.getStylesheets() != null)
 			menuBar.getStylesheets().clear();
 
@@ -2600,7 +2562,8 @@ public class MainScene {
 			if (theme == 0) { // snow blue
 				// for numbus theme
 				cssFile += "snowBlue.css";
-				updateThemeColor(0, Color.rgb(0, 107, 184), Color.rgb(0, 107, 184), cssFile); // CADETBLUE //																						// Color.rgb(23,138,255)
+				updateThemeColor(0, Color.rgb(0, 107, 184), Color.rgb(0, 107, 184), cssFile); // CADETBLUE // //
+																								// Color.rgb(23,138,255)
 				themeSkin = "snowBlue";
 				// see https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/color.html
 
@@ -2631,32 +2594,32 @@ public class MainScene {
 
 			} else if (theme == 6) { // + skyblue
 				cssFile += "snowBlue.css";
-				updateThemeColor(6, Color.rgb(0, 107, 184), Color.rgb(255, 255, 255), cssFile); 
+				updateThemeColor(6, Color.rgb(0, 107, 184), Color.rgb(255, 255, 255), cssFile);
 				// (144, 208, 229) light blue , CADETBLUE (0,107,184), Color.rgb(23,138,255)
 				themeSkin = "snowBlue";
-				
+
 			} else if (theme == 7) { // mud orange/standard
 				cssFile += "nimrodskin.css";
 				updateThemeColor(7, Color.rgb(156, 77, 0), Color.rgb(255, 255, 255), cssFile); // DARKORANGE, CORAL
 				themeSkin = "nimrod";
-				
+
 			}
 
 			SwingUtilities.invokeLater(() -> {
-				//if (OS.contains("linux")) {
-					// Note: NIMROD theme lib doesn't work on linux
-				//	setLookAndFeel(ThemeType.Nimbus);
-				//} 
-				
-				//else {
-					//if (theme == 0 || theme == 6)
-						setLookAndFeel(defaultThemeType);
-					//else
-					//	setLookAndFeel(ThemeType.Nimrod);
-				//}
-				
+				// if (OS.contains("linux")) {
+				// Note: NIMROD theme lib doesn't work on linux
+				// setLookAndFeel(ThemeType.Nimbus);
+				// }
+
+				// else {
+				// if (theme == 0 || theme == 6)
+				setLookAndFeel(defaultThemeType);
+				// else
+				// setLookAndFeel(ThemeType.Nimrod);
+				// }
+
 			});
-			
+
 		}
 
 	}
@@ -2677,26 +2640,26 @@ public class MainScene {
 //				WebLookAndFeel.setForceSingleEventsThread ( true );
 				WebLookAndFeel.install();
 				UIManagers.initialize();
-					        
+
 				// need to load an uimanager
-				//if (theme == 0 || theme == 6)
-				//	UIManager.setLookAndFeel (NimbusLookAndFeel.class.getCanonicalName());
-				//else if (theme == 7){
+				// if (theme == 0 || theme == 6)
+				// UIManager.setLookAndFeel (NimbusLookAndFeel.class.getCanonicalName());
+				// else if (theme == 7){
 //					NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
 //					NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
 //					// working if switching to a brand new .theme file 
 //					NimRODLookAndFeel nf = new NimRODLookAndFeel();
 //					nf.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme // file
 //					UIManager.setLookAndFeel(nf); 
-				//}
-				
+				// }
+
 				changed = true;
-				
+
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
 		}
-		
+
 		else if (choice == ThemeType.System) {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -2707,25 +2670,27 @@ public class MainScene {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
 		}
-		
-		else if (choice == ThemeType.Nimrod) { 
+
+		else if (choice == ThemeType.Nimrod) {
 			try {
-				//String themeSkin = "snowBlue";
-				NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
+				// String themeSkin = "snowBlue";
+				NimRODTheme nt = new NimRODTheme(
+						getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
 				NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
-				// working if switching to a brand new .theme file 
+				// working if switching to a brand new .theme file
 				NimRODLookAndFeel nf = new NimRODLookAndFeel();
-				nf.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme // file
-				UIManager.setLookAndFeel(nf); 
+				nf.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme
+										// // file
+				UIManager.setLookAndFeel(nf);
 				changed = true; //
-				//System.out.println("found Nimrod");
-		 
-			} catch (Exception e) { 
+				// System.out.println("found Nimrod");
+
+			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$ } }
 			}
-		 }
-		 
-		 else if (choice == ThemeType.Nimbus) {
+		}
+
+		else if (choice == ThemeType.Nimbus) {
 			try {
 				boolean foundNimbus = false;
 				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -2788,18 +2753,18 @@ public class MainScene {
 
 		tabPane.getStylesheets().clear();
 //		setStylesheet(tabPane, cssFile);
-		
+
 		toolbar.getStylesheets().clear();
 //		setStylesheet(toolbar, cssFile);
-		
-		//setStylesheet(marsTimeBox, cssFile);
+
+		// setStylesheet(marsTimeBox, cssFile);
 		setStylesheet(toolbarBox, cssFile);
 		setStylesheet(marsTimeButton, cssFile);
 		setStylesheet(marsTimeLabel, cssFile);
-		
+
 		marsTimeIcon.getStyleClass().clear();
 		marsTimeIcon.getStyleClass().add(getClass().getResource(cssFile).toExternalForm());
-		
+
 		setStylesheet(lastSaveLabel, cssFile);
 		setStylesheet(cacheToggle, cssFile);
 		setStylesheet(minimapToggle, cssFile);
@@ -2833,7 +2798,7 @@ public class MainScene {
 //			timePickerFX.setDefaultColor(Color.valueOf("#065185"));
 //		else
 //			timePickerFX.setDefaultColor(Color.valueOf("#654b00"));
-		
+
 		if (settlementWindow == null) {
 			settlementWindow = (SettlementWindow) (desktop.getToolWindow(SettlementWindow.NAME));
 			if (settlementWindow != null) {
@@ -2883,9 +2848,9 @@ public class MainScene {
 			soundBtn.setGraphic(soundIcon);
 			// farmIcon.setFill(Color.LAVENDER);
 			// farmBtn.setGraphic(farmIcon);
-			tabPane.getStylesheets().add(getClass().getResource(BLUE_CSS_JFX).toExternalForm()); 
+			tabPane.getStylesheets().add(getClass().getResource(BLUE_CSS_JFX).toExternalForm());
 			tabPane.getStyleClass().add("jfx-tab-pane");
-			toolbar.getStylesheets().add(getClass().getResource(BLUE_CSS_JFX).toExternalForm()); 
+			toolbar.getStylesheets().add(getClass().getResource(BLUE_CSS_JFX).toExternalForm());
 			toolbar.getStyleClass().add("jfx-tool-bar");
 		}
 
@@ -2898,9 +2863,9 @@ public class MainScene {
 		t.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		t.getStyleClass().add("jfx-tab-pane");
 	}
-	
+
 	public void setStylesheet(Text t, String cssFile) {
-		//t.getStylesheets().clear();
+		// t.getStylesheets().clear();
 		t.setStyle(getClass().getResource(cssFile).toExternalForm());
 	}
 
@@ -2909,7 +2874,7 @@ public class MainScene {
 		t.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		t.getStyleClass().add("jfx-toolbar");
 	}
-	
+
 	public void setStylesheet(JFXSlider s, String cssFile) {
 		s.getStylesheets().clear();
 		s.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
@@ -2934,7 +2899,7 @@ public class MainScene {
 		b.getStylesheets().clear();
 		b.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 	}
-	
+
 	public void setStylesheet(VBox vb, String cssFile) {
 		vb.getStylesheets().clear();
 		vb.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
@@ -3076,12 +3041,12 @@ public class MainScene {
 	 * Updates Earth and Mars time label in the earthTimeBar and marsTimeBar
 	 */
 	public void updateTimeLabels() {
-		
+
 		double tr = masterClock.getTimeRatio();
 		// if (msol % 10 == 0) {
 		// Check to see if a background sound track is being played.
 		if (!soundPlayer.isSoundDisabled() && !soundPlayer.isMusicMute() && !MainMenu.isSoundDisabled())
-		//if (musicSlider.getValue() > 0)
+			// if (musicSlider.getValue() > 0)
 			soundPlayer.playRandomMusicTrack();
 		// }
 
@@ -3091,7 +3056,7 @@ public class MainScene {
 				tps = masterClock.getFPS();
 			else
 				tps = Math.round(masterClock.getPulsesPerSecond() * 100.0) / 100.0;
-			
+
 			if (tpsCache != tps) {
 				tpsCache = tps;
 				tpsLabel.setText(tps + HZ);
@@ -3101,10 +3066,10 @@ public class MainScene {
 				upTimeCache = upt;
 				upTimeLabel.setText(upt);
 			}
-			
-			double refresh = Math.round(100.0 * tr /masterClock.getRefresh())/10000.0;
+
+			double refresh = Math.round(100.0 * tr / masterClock.getRefresh()) / 10000.0;
 			refreshLabel.setText(refresh + HZ);
-			
+
 			// benchmarkLabel.setText(masterClock.getDiffCache() + "");
 		}
 
@@ -3149,10 +3114,10 @@ public class MainScene {
 				.append(marsClock.getTrucatedTimeStringUMST());
 		marsTimeLabel.setText(m.toString());
 
-		//StringBuilder e = new StringBuilder();
-		//e.append(EARTH_DATE_TIME).append(earthClock.getLT());//getTimeStampF0());
-		//earthTime.setText(e.toString());
-		
+		// StringBuilder e = new StringBuilder();
+		// e.append(EARTH_DATE_TIME).append(earthClock.getLT());//getTimeStampF0());
+		// earthTime.setText(e.toString());
+
 		datePickerFX.setValue(earthClock.getLocalDate());
 		timePickerFX.setValue(earthClock.getLocalTime());
 
@@ -3191,50 +3156,37 @@ public class MainScene {
 
 	/**
 	 * Create a new simulation.
-
-	public void newSimulation() {
-		if ((newSimThread == null) || !newSimThread.isAlive()) {
-			newSimThread = new Thread(Msg.getString("MainWindow.thread.newSim")) { //$NON-NLS-1$
-				@Override
-				public void run() {
-					Platform.runLater(() -> {
-						newSimulationProcess();
-					});
-				}
-			};
-			newSimThread.start();
-		} else {
-			newSimThread.interrupt();
-		}
-
-	}
+	 * 
+	 * public void newSimulation() { if ((newSimThread == null) ||
+	 * !newSimThread.isAlive()) { newSimThread = new
+	 * Thread(Msg.getString("MainWindow.thread.newSim")) { //$NON-NLS-1$
+	 * 
+	 * @Override public void run() { Platform.runLater(() -> {
+	 *           newSimulationProcess(); }); } }; newSimThread.start(); } else {
+	 *           newSimThread.interrupt(); }
+	 * 
+	 *           }
 	 */
-	
+
 	/**
 	 * Performs the process of creating a new simulation.
+	 * 
+	 * private void newSimulationProcess() { Alert alert = new
+	 * Alert(AlertType.CONFIRMATION); alert.setTitle("Starting new sim");
+	 * alert.setHeaderText(Msg.getString("MainScene.new.header"));
+	 * alert.setContentText(Msg.getString("MainScene.new.content")); ButtonType
+	 * buttonTypeOne = new ButtonType("Save on Exit"); // ButtonType buttonTypeTwo =
+	 * new ButtonType("End Sim"); ButtonType buttonTypeCancel = new ButtonType("Back
+	 * to Sim");// , ButtonData.CANCEL_CLOSE);
+	 * alert.getButtonTypes().setAll(buttonTypeOne, // buttonTypeTwo,
+	 * buttonTypeCancel); Optional<ButtonType> result = alert.showAndWait();
+	 * 
+	 * if (result.get() == buttonTypeOne) { saveOnExit();
+	 * 
+	 * } else if (result.get() == buttonTypeCancel) {// !result.isPresent()) return;
+	 * } }
+	 */
 
-	private void newSimulationProcess() {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Starting new sim");
-		alert.setHeaderText(Msg.getString("MainScene.new.header"));
-		alert.setContentText(Msg.getString("MainScene.new.content"));
-		ButtonType buttonTypeOne = new ButtonType("Save on Exit");
-		// ButtonType buttonTypeTwo = new ButtonType("End Sim");
-		ButtonType buttonTypeCancel = new ButtonType("Back to Sim");// , ButtonData.CANCEL_CLOSE);
-		alert.getButtonTypes().setAll(buttonTypeOne,
-				// buttonTypeTwo,
-				buttonTypeCancel);
-		Optional<ButtonType> result = alert.showAndWait();
-
-		if (result.get() == buttonTypeOne) {
-			saveOnExit();
-
-		} else if (result.get() == buttonTypeCancel) {// !result.isPresent())
-			return;
-		}
-	}
-*/
-	
 	/**
 	 * Save the current simulation. This displays a FileChooser to select the
 	 * location to save the simulation if the default is not to be used.
@@ -3264,7 +3216,6 @@ public class MainScene {
 					hideWaitStage(SAVING);
 				}
 			});
-			
 
 		}
 		// endPause(previous);
@@ -3275,37 +3226,24 @@ public class MainScene {
 	 * location to save the simulation if the default is not to be used.
 	 * 
 	 * @param type
+	 * 
+	 *             public void saveSimulation(int type) { if
+	 *             (!masterClock.isPaused()) { // hideWaitStage(PAUSED); if (type ==
+	 *             Simulation.SAVE_DEFAULT || type == Simulation.SAVE_AS)
+	 *             showWaitStage(SAVING); else showWaitStage(AUTOSAVING);
+	 * 
+	 *             Task<Void> task = new Task<Void>() {
+	 * @Override protected Void call() throws Exception {
+	 *           saveSimulationProcess(type); while
+	 *           (masterClock.isSavingSimulation())
+	 *           TimeUnit.MILLISECONDS.sleep(200L); return null; }
+	 * 
+	 * @Override protected void succeeded() { super.succeeded();
+	 *           hideWaitStage(SAVING); } }; new Thread(task).start();
+	 * 
+	 *           } // endPause(previous); }
+	 */
 
-	public void saveSimulation(int type) {
-		if (!masterClock.isPaused()) {
-			// hideWaitStage(PAUSED);
-			if (type == Simulation.SAVE_DEFAULT || type == Simulation.SAVE_AS)
-				showWaitStage(SAVING);
-			else
-				showWaitStage(AUTOSAVING);
-
-			Task<Void> task = new Task<Void>() {
-				@Override
-				protected Void call() throws Exception {
-					saveSimulationProcess(type);
-					while (masterClock.isSavingSimulation())
-						TimeUnit.MILLISECONDS.sleep(200L);
-					return null;
-				}
-
-				@Override
-				protected void succeeded() {
-					super.succeeded();
-					hideWaitStage(SAVING);
-				}
-			};
-			new Thread(task).start();
-
-		}
-		// endPause(previous);
-	}
-*/
-	
 	/**
 	 * Performs the process of saving a simulation.
 	 */
@@ -3556,15 +3494,15 @@ public class MainScene {
 	private void createDesktopNode() {
 		// Create group to hold swingNode which in turns holds the Swing desktop
 		desktopNode = new SwingNode();
-		//desktopNode.setStyle("-fx-background-color: black; ");
+		// desktopNode.setStyle("-fx-background-color: black; ");
 		desktop = new MainDesktopPane(this);
-		//SwingUtilities.invokeLater(() -> desktopNode.setContent(desktop));
-		
+		// SwingUtilities.invokeLater(() -> desktopNode.setContent(desktop));
+
 		// Add main pane
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setSize(screen_width, screen_height);
 		mainPane.add(desktop, BorderLayout.CENTER);
-		SwingUtilities.invokeLater(() -> desktopNode.setContent(mainPane));	
+		SwingUtilities.invokeLater(() -> desktopNode.setContent(mainPane));
 
 		desktopNode.requestFocus();
 	}
@@ -3605,9 +3543,9 @@ public class MainScene {
 				vb.setPadding(new Insets(5, 5, 5, 5));
 				vb.getChildren().addAll(l, hb);
 				vb.setAlignment(Pos.CENTER);
-				
+
 				StackPane sp = new StackPane(vb);
-				sp.setStyle("-fx-background-color: black;");//rgba(0,0,0,0.1);");
+				sp.setStyle("-fx-background-color: black;");// rgba(0,0,0,0.1);");
 				StackPane.setMargin(vb, new Insets(10, 10, 10, 10));
 
 				exitDialog = new JFXDialog();
@@ -3701,24 +3639,23 @@ public class MainScene {
 
 		if (isFXGL) {
 			Input input = FXGL.getInput();
-			input.addInputMapping(new InputMapping("Open", KeyCode.O));	       
+			input.addInputMapping(new InputMapping("Open", KeyCode.O));
 		}
 	}
 
+	@OnUserAction(name = "Open", type = ActionType.ON_ACTION_BEGIN)
+	public void openWindow() {
+		// 1. create in-game window
+		InGameWindow window = new InGameWindow("FXGL Window");
 
-    @OnUserAction(name = "Open", type = ActionType.ON_ACTION_BEGIN)
-    public void openWindow() {
-	      // 1. create in-game window
-        InGameWindow window = new InGameWindow("FXGL Window");
+		// 2. set properties
+		window.setPrefSize(300, 200);
+		window.setPosition(400, 300);
+		window.setBackgroundColor(Color.BLACK);
 
-        // 2. set properties
-        window.setPrefSize(300, 200);
-        window.setPosition(400, 300);
-        window.setBackgroundColor(Color.BLACK);
-        
-        gameScene.addUINode(window);
-    }
-    
+		gameScene.addUINode(window);
+	}
+
 	public void popAQuote() {
 		quote.popAQuote(stage);
 	}
@@ -3852,9 +3789,9 @@ public class MainScene {
 
 		}
 
-		//else if (type == PAUSED) {
-			// messagePopup = new MessagePopup();
-		//}
+		// else if (type == PAUSED) {
+		// messagePopup = new MessagePopup();
+		// }
 
 		else
 			System.out.println("MainScene's createProgressCircle() : type is invalid");
@@ -3863,6 +3800,7 @@ public class MainScene {
 
 	/**
 	 * Starts the wait stage in an executor thread
+	 * 
 	 * @param type
 	 */
 	public void showWaitStage(int type) {
@@ -3877,6 +3815,7 @@ public class MainScene {
 
 	/*
 	 * Set up a wait stage
+	 * 
 	 * @param type
 	 */
 	class LoadWaitStageTask implements Runnable {
@@ -3923,13 +3862,17 @@ public class MainScene {
 
 	/**
 	 * Sets the stage properly on the monitor where the mouse pointer is
+	 * 
 	 * @param stage
 	 */
 	public void setMonitor(Stage stage) {
 		// TODO: how to run on the "Active monitor" as chosen by user ?
-		// Note : "Active monitor is defined by whichever computer screen the mouse pointer is or where the command console that starts mars-sim.
-		// By default, it runs on the primary monitor (aka monitor 0 as reported by windows os only.
-		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762
+		// Note : "Active monitor is defined by whichever computer screen the mouse
+		// pointer is or where the command console that starts mars-sim.
+		// By default, it runs on the primary monitor (aka monitor 0 as reported by
+		// windows os only.
+		// see
+		// http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762
 		StartUpLocation startUpLoc = null;
 
 		if (anchorPane == null) {
@@ -3947,27 +3890,26 @@ public class MainScene {
 		double xPos = startUpLoc.getXPos();
 		double yPos = startUpLoc.getYPos();
 		// Set Only if X and Y are not zero and were computed correctly
-		//if (xPos != 0 && yPos != 0) {
-			stage.setX(xPos);
-			stage.setY(yPos);
-		//}
-		
-		//System.out.println("xPos : " + xPos);
-		//System.out.println("yPos : " + yPos);
+		// if (xPos != 0 && yPos != 0) {
+		stage.setX(xPos);
+		stage.setY(yPos);
+		// }
 
-/*	
-		Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-		stage.setX(bounds.getMinX());
-		stage.setY(bounds.getMinY());
-		
-		//stage.setWidth(bounds.getWidth());
-		//stage.setHeight(bounds.getHeight());			
+		// System.out.println("xPos : " + xPos);
+		// System.out.println("yPos : " + yPos);
 
-		System.out.println("bounds.getMinX() : " + bounds.getMinX());
-		System.out.println("bounds.getMinY() : " + bounds.getMinY());
-*/
+		/*
+		 * Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+		 * stage.setX(bounds.getMinX()); stage.setY(bounds.getMinY());
+		 * 
+		 * //stage.setWidth(bounds.getWidth()); //stage.setHeight(bounds.getHeight());
+		 * 
+		 * System.out.println("bounds.getMinX() : " + bounds.getMinX());
+		 * System.out.println("bounds.getMinY() : " + bounds.getMinY());
+		 */
 
-		//stage.centerOnScreen(); // this will cause the stage to be pinned slight upward.
+		// stage.centerOnScreen(); // this will cause the stage to be pinned slight
+		// upward.
 	}
 
 	/**
@@ -3995,7 +3937,7 @@ public class MainScene {
 		else
 			return false;
 	}
-	
+
 	public Parent getRoot() {
 		return root;
 	}
@@ -4022,9 +3964,10 @@ public class MainScene {
 			sBox.getSelectionModel().select(s);
 		});
 	}
-	
+
 	/**
 	 * Sets up the JavaFX's tooltip
+	 * 
 	 * @param n Node
 	 * @param s tooltip's hint text
 	 */
@@ -4033,31 +3976,25 @@ public class MainScene {
 		tt.getStyleClass().add("ttip");
 		Tooltip.install(n, tt);
 		tt.setOnShowing(ev -> tt.setText(s));
-/*		
-		
-
-		n.setOnMouseEntered(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				// position tooltip at bottom right of the node
-				Point2D p = n.localToScreen(n.getLayoutBounds().getMaxX(), n.getLayoutBounds().getMaxY());
-				tt.show(n, p.getX(), p.getY());
-			}
-		});
-
-		n.setOnMouseExited(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				tt.hide();
-			}
-		});
-*/
+		/*
+		 * 
+		 * 
+		 * n.setOnMouseEntered(new EventHandler<MouseEvent>() {
+		 * 
+		 * @Override public void handle(MouseEvent event) { // position tooltip at
+		 * bottom right of the node Point2D p =
+		 * n.localToScreen(n.getLayoutBounds().getMaxX(),
+		 * n.getLayoutBounds().getMaxY()); tt.show(n, p.getX(), p.getY()); } });
+		 * 
+		 * n.setOnMouseExited(new EventHandler<MouseEvent>() {
+		 * 
+		 * @Override public void handle(MouseEvent event) { tt.hide(); } });
+		 */
 	}
 
 	private float convertSlider2Volume(float y) {
 		return y / 100f;
 	}
-
 
 	public JFXButton getMarsNetBtn() {
 		return marsNetBtn;
@@ -4067,7 +4004,7 @@ public class MainScene {
 //		logger.log(Level.SEVERE, "Disabling the sound UI in MainScene.");	
 		BoxBlur blur = new BoxBlur(1.0, 1.0, 1);
 		soundVBox.setEffect(blur);
-		
+
 		if (musicSlider != null) {
 			musicSlider.setDisable(true);// .setValue(0);
 			musicSlider.setEffect(blur);
@@ -4076,23 +4013,23 @@ public class MainScene {
 			soundEffectSlider.setDisable(true);// .setValue(0);
 			soundEffectSlider.setEffect(blur);
 		}
-		
+
 		if (musicMuteBox != null) {
 			musicMuteBox.setDisable(true);
 			musicMuteBox.setEffect(blur);
 		}
-		
+
 		if (soundEffectMuteBox != null) {
 			soundEffectMuteBox.setEffect(blur);
 			soundEffectMuteBox.setDisable(true);
 		}
 
-		//if (effectLabel != null)
-			effectLabel.setEffect(blur);
-		
-		//if (trackLabel != null)
-			trackLabel.setEffect(blur);
-	
+		// if (effectLabel != null)
+		effectLabel.setEffect(blur);
+
+		// if (trackLabel != null)
+		trackLabel.setEffect(blur);
+
 	}
 
 	public void setScreenSize(int w, int h) {
@@ -4114,49 +4051,45 @@ public class MainScene {
 	// }
 
 	public float getMusic() {
-		return (float)musicProperty.get();
+		return (float) musicProperty.get();
 	}
 
 	public float getSoundEffect() {
-		return (float)soundEffectProperty.get();
+		return (float) soundEffectProperty.get();
 	}
 
 	public boolean isMinimized() {
 		return minimized;
 	}
-	
+
 	public void createBillboard() {
 
-	    matrix = DotMatrixBuilder.create()              
-                .prefSize(925, 54)
-                .colsAndRows(196, 11)                
-                .dotOnColor(Color.rgb(255, 55, 0))
-                .dotOffColor(Color.rgb(64, 64, 64))
-                .dotShape(DotShape.ROUND)
-                .matrixFont(MatrixFont8x8.INSTANCE)
-                .build();
+		matrix = DotMatrixBuilder.create().prefSize(925, 54).colsAndRows(196, 11).dotOnColor(Color.rgb(255, 55, 0))
+				.dotOffColor(Color.rgb(64, 64, 64)).dotShape(DotShape.ROUND).matrixFont(MatrixFont8x8.INSTANCE).build();
 
 		billboard = new Pane(matrix);
-		//billboard.setPadding(new Insets(1));
-		billboard.setBackground(new Background(new BackgroundFill(Color.rgb(20, 20, 20), CornerRadii.EMPTY, Insets.EMPTY)));
-		//billboard.setBorder(new Border(new BorderStroke(Color.DARKCYAN, BorderStrokeStyle.DOTTED, CornerRadii.EMPTY, BorderWidths.FULL)));
+		// billboard.setPadding(new Insets(1));
+		billboard.setBackground(
+				new Background(new BackgroundFill(Color.rgb(20, 20, 20), CornerRadii.EMPTY, Insets.EMPTY)));
+		// billboard.setBorder(new Border(new BorderStroke(Color.DARKCYAN,
+		// BorderStrokeStyle.DOTTED, CornerRadii.EMPTY, BorderWidths.FULL)));
 
-	    gNode = new DraggableNode(billboard);
+		gNode = new DraggableNode(billboard);
 
 	}
-	
+
 	public void sendMsg(String str) {
-      
+
 		if (!str.equals(messageCache)) {
-			
-	        if (billboardTimer != null) {
-	        	matrix.clear();
-	        	billboardTimer.stop();
-	        	billboardTimer = null;
-	        }
-	        
+
+			if (billboardTimer != null) {
+				matrix.clear();
+				billboardTimer.stop();
+				billboardTimer = null;
+			}
+
 			messageCache = str;
-			
+
 			newsHeader = null;
 			if (str.contains("died"))
 				newsHeader = BREAKING_NEWS;
@@ -4164,59 +4097,60 @@ public class MainScene {
 				newsHeader = HEALTH_NEWS;
 			else if (str.toLowerCase().contains("mission") || str.toLowerCase().contains("beacon"))
 				newsHeader = MISSION_REPORTS;
-			else if (str.toLowerCase().contains("radiation"))			
+			else if (str.toLowerCase().contains("radiation"))
 				newsHeader = HAZARD;
 			else
 				newsHeader = BREAKING_NEWS;
-	
+
 			String text = newsHeader + str.replaceAll("\\u00B0 ", "").replace("ć", "c").replace("æ", "a");
-			
-	        textLength = text.length();
-	        textLengthInPixel = textLength * 8;
-		    offset = 3;
-		    x = matrix.getCols() + 7;
-	        lastTimerCall = System.nanoTime();
-	        
-	        billboardTimer = new AnimationTimer() {
-	            @Override public void handle(final long now) {
-	                if (now > lastTimerCall + 10_000_000l) {
-	                    if (x < -textLengthInPixel) {
-	                      x = matrix.getCols() + 7;
-	//                      System.out.println("x is " + x 
-	//                    		  + "; textLengthInPixel is " + textLengthInPixel
-	//                    		  + "; textLength is " + textLength); 
-	//                        if (matrix.getMatrixFont().equals(MatrixFont8x8.INSTANCE)) {
-	//                            matrix.setMatrixFont(MatrixFont8x11.INSTANCE);
-	//                            offset     = 1;
-	//                            matrix.setDotShape(DotShape.SQUARE);
-	//                        } else {
-	//                            matrix.setMatrixFont(MatrixFont8x8.INSTANCE);
-	//                            offset     = 3;
-	//                            matrix.setDotShape(DotShape.ROUND);
-	//                        }
-	//                        textLength        = text.length();
-	//                        textLengthInPixel = textLength * 8;
-	                    }
-	                    int color = RED;
-	                    if (newsHeader.equals(MISSION_REPORTS))
-	                    	color = LIME;
-	                    else if (newsHeader.equals(HEALTH_NEWS))
-	                    	color = YELLOW;
-	                    else if (newsHeader.equals(HAZARD))
-	                    	color = ORANGE;
-	                    for (int i = 0 ; i < textLength ; i++) {
-	                        matrix.setCharAt(text.charAt(i), x + i * 8, offset, color);//i % 2 == 0 ? LIME : RED);
-	                    }
-	                    x--;
-	                    lastTimerCall = now;
-	                }
-	            }
-	        };
-	        
-	        billboardTimer.start();
+
+			textLength = text.length();
+			textLengthInPixel = textLength * 8;
+			offset = 3;
+			x = matrix.getCols() + 7;
+			lastTimerCall = System.nanoTime();
+
+			billboardTimer = new AnimationTimer() {
+				@Override
+				public void handle(final long now) {
+					if (now > lastTimerCall + 10_000_000l) {
+						if (x < -textLengthInPixel) {
+							x = matrix.getCols() + 7;
+							// System.out.println("x is " + x
+							// + "; textLengthInPixel is " + textLengthInPixel
+							// + "; textLength is " + textLength);
+							// if (matrix.getMatrixFont().equals(MatrixFont8x8.INSTANCE)) {
+							// matrix.setMatrixFont(MatrixFont8x11.INSTANCE);
+							// offset = 1;
+							// matrix.setDotShape(DotShape.SQUARE);
+							// } else {
+							// matrix.setMatrixFont(MatrixFont8x8.INSTANCE);
+							// offset = 3;
+							// matrix.setDotShape(DotShape.ROUND);
+							// }
+							// textLength = text.length();
+							// textLengthInPixel = textLength * 8;
+						}
+						int color = RED;
+						if (newsHeader.equals(MISSION_REPORTS))
+							color = LIME;
+						else if (newsHeader.equals(HEALTH_NEWS))
+							color = YELLOW;
+						else if (newsHeader.equals(HAZARD))
+							color = ORANGE;
+						for (int i = 0; i < textLength; i++) {
+							matrix.setCharAt(text.charAt(i), x + i * 8, offset, color);// i % 2 == 0 ? LIME : RED);
+						}
+						x--;
+						lastTimerCall = now;
+					}
+				}
+			};
+
+			billboardTimer.start();
 		}
 	}
-			
+
 	public void createJFXToolbar() {
 //		JFXButton b0 = new JFXButton("Help");
 		JFXButton b1 = new JFXButton("Search");
@@ -4225,7 +4159,7 @@ public class MainScene {
 		JFXButton b4 = new JFXButton("Mission");
 		JFXButton b5 = new JFXButton("Science");
 		JFXButton b6 = new JFXButton("Resupply");
-		
+
 //		setQuickToolTip(b0, "Open Help Browser");
 		setQuickToolTip(b1, "Search Box");
 		setQuickToolTip(b2, "Time Tool");
@@ -4236,9 +4170,8 @@ public class MainScene {
 
 		toolbar = new JFXToolbar();
 		toolbar.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
-		toolbar.getLeftItems().addAll(b1,b2,b3,b4,b5,b6);
+		toolbar.getLeftItems().addAll(b1, b2, b3, b4, b5, b6);
 
-		
 //		b0.setOnAction(e -> desktop.openToolWindow(GuideWindow.NAME));
 		b1.setOnAction(e -> desktop.openToolWindow(SearchWindow.NAME));
 		b2.setOnAction(e -> desktop.openToolWindow(TimeWindow.NAME));
@@ -4246,7 +4179,7 @@ public class MainScene {
 		b4.setOnAction(e -> desktop.openToolWindow(MissionWindow.NAME));
 		b5.setOnAction(e -> desktop.openToolWindow(ScienceWindow.NAME));
 		b6.setOnAction(e -> desktop.openToolWindow(ResupplyWindow.NAME));
-		
+
 //		b0.setOnAction(toolbarHandler);		
 //		EventHandler<ActionEvent> toolbarHandler = new EventHandler<ActionEvent>() {
 //			public void handle(ActionEvent ae) {
@@ -4254,9 +4187,7 @@ public class MainScene {
 //			}
 //		}
 	}
-	
 
-	
 	public void destroy() {
 		quote = null;
 		// messagePopup = null;
@@ -4280,7 +4211,7 @@ public class MainScene {
 		sPane = null;
 		billboard = null;
 		anchorPane = null;
-		//newSimThread = null;
+		// newSimThread = null;
 		stage = null;
 //		loadingStage = null;
 		savingStage = null;
