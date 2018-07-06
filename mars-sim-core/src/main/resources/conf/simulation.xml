@@ -77,10 +77,10 @@
 
 		<!-- Mars start date/time -->
 		<!-- (See time.txt) -->
-		<!-- "orbit-month-sol millisol" format -->
-		<!-- Default: 15-Adir-01 000.000 -->
+		<!-- "orbit-month-sol:millisol" format -->
+		<!-- Default: 15-Adir-01:000.000 -->
 		<!-- Note that changing this date to another value is currently UNSUPPORTED -->
-		<mars-start-date-time value="15-Adir-01 000.000" />
+		<mars-start-date-time value="15-Adir-01:000.000" />
 
 		<!-- autosave-interval is the number of minutes the simulation will wait between two successive autosave events -->
 		<!-- Value must be a positive number between 1 and 1440 and cannot be zero -->

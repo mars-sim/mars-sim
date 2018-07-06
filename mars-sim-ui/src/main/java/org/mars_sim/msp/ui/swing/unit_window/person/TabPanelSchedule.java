@@ -517,7 +517,7 @@ extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		DecimalFormat fmt = new DecimalFormat("0000");
+		DecimalFormat fmt = new DecimalFormat("000");
 
 		/**
 		 * hidden constructor.

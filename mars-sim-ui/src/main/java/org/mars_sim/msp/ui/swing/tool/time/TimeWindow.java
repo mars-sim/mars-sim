@@ -561,7 +561,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		if (marsTime != null) {
 			//SwingUtilities.invokeLater(() -> {
 			String ts = marsTime.getDateTimeStamp();
-				if (!ts.equals("  ") && ts != null && !ts.equals(""))
+				if (!ts.equals(":") && ts != null && !ts.equals(""))
 					if (martianTimeLabel != null)
 						martianTimeLabel.setText(ts);
 			//});

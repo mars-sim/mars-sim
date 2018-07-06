@@ -240,6 +240,7 @@ public class MainScene {
 	//private static final String EARTH_DATE_TIME = " ";//EARTH : ";
 	private static final String MARS_DATE_TIME = " ";//MARS : ";
 	// private static final String UMST = " (UMST)";
+	private static final String COLON = ":";
 	private static final String ONE_SPACE = " ";
 	private static final String MONTH = "    Month : ";
 	private static final String ORBIT = "Orbit : ";
@@ -3144,7 +3145,7 @@ public class MainScene {
 		}
 
 		StringBuilder m = new StringBuilder();
-		m.append(MARS_DATE_TIME).append(marsClock.getDateString()).append(ONE_SPACE)
+		m.append(MARS_DATE_TIME).append(marsClock.getDateString()).append(COLON)
 				.append(marsClock.getTrucatedTimeStringUMST());
 		marsTimeLabel.setText(m.toString());
 
