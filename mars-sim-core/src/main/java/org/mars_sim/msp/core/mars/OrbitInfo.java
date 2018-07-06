@@ -146,8 +146,8 @@ public class OrbitInfo implements Serializable {
 
 		// Compute the initial L_s and initial r based on the earth start date/time in
 		// simulation.xml
-		EarthClock c = new EarthClock(SimulationConfig.instance().getEarthStartDateTime());// "2043-09-30
-																							// 00:00:00.000");
+		EarthClock c = new EarthClock(SimulationConfig.instance().getEarthStartDateTime());
+		
 		instantaneousSunMarsDistance = ClockUtils.getHeliocentricDistance(c);
 		// instantaneousSunMarsDistance = SUN_MARS_DIST_AT_START;
 		L_s = ClockUtils.getLs(c) % 360;

@@ -7,19 +7,27 @@
  */
 package org.mars_sim.msp.ui.swing.tool.time;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+
+import javax.swing.SwingUtilities;
+
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-import javax.swing.*;
-import java.awt.*;
+import com.alee.extended.WebComponent;
+import com.alee.managers.style.StyleId;
+
 
 /**
- * The Mars Calendar Display class shows the current month
- * in a panel for the {@link TimeWindow} class.
+ * The Mars Calendar Display class shows the current month in a panel for the
+ * {@link TimeWindow} class.
  */
-public class MarsCalendarDisplay
-extends JComponent {
+public class MarsCalendarDisplay extends WebComponent {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -34,12 +42,15 @@ extends JComponent {
 	/** The Sol of month cache. */
 	private int solOfMonthCache;
 
-	private int themeCache = 0;
+	private int themeCache = -1;
 
-	private Color baseColor, midColor, darkColor;
+	private Color baseColor;
+	private Color midColor;
+	private Color darkColor;
 
 	/**
 	 * Constructs a MarsCalendarDisplay object.
+	 * 
 	 * @param marsTime Martian clock instance
 	 */
 	public MarsCalendarDisplay(MarsClock marsTime, MainDesktopPane desktop) {
@@ -55,11 +66,16 @@ extends JComponent {
 		setMaximumSize(getPreferredSize());
 		setMinimumSize(getPreferredSize());
 
-		baseColor = Color.orange;
-		midColor = new Color(104, 114, 77); // 74, 140, 94
-		darkColor = new Color(73, 97, 0);
-		//midColor = new Color(210, 117, 101);
-		//darkColor = new Color(140, 94, 74);
+		baseColor = Color.white;//new Color(85, 152, 212);//Color.cyan;
+		midColor = new Color(99, 125, 150);
+		darkColor = new Color(101, 139, 210);
+		
+//		baseColor = Color.orange;
+//		midColor = new Color(104, 114, 77); // 74, 140, 94
+//		darkColor = new Color(73, 97, 0);
+		
+		// midColor = new Color(210, 117, 101);
+		// darkColor = new Color(140, 94, 74);
 	}
 
 	/**
@@ -71,7 +87,6 @@ extends JComponent {
 			int theme = MainScene.getTheme();
 
 			if (theme != themeCache) {
-
 				theme = themeCache;
 
 				if (theme == 1) {
@@ -79,15 +94,13 @@ extends JComponent {
 					baseColor = Color.orange;
 					midColor = new Color(104, 114, 77); // 74, 140, 94
 					darkColor = new Color(73, 97, 0);
-				}
-				else if (theme == 2) {
+				} else if (theme == 2) {
 					// red theme
 					baseColor = Color.red;
 					midColor = new Color(255, 102, 102); // pink orange
 					darkColor = new Color(51, 25, 0); // dark brown
-				}
-				else if (theme == 3) {
-					//  brownish theme
+				} else if (theme == 3) {
+					// brownish theme
 					baseColor = Color.orange;
 					midColor = new Color(210, 117, 101); // orange pink
 					darkColor = new Color(140, 94, 74); // greyish brown pink
@@ -98,38 +111,36 @@ extends JComponent {
 					baseColor = Color.gray;
 					midColor = Color.lightGray;
 					darkColor = Color.DARK_GRAY;
-				}
-				else if (theme == 5) {
+				} else if (theme == 5) {
 					// purple theme
 					baseColor = Color.magenta;
 					midColor = new Color(112, 76, 103);
 					darkColor = new Color(51, 0, 51);
-				}
-				else if (theme == 6 || theme == 0) {
+				} else if (theme == 6 || theme == 0) {
 					// blue theme
-					baseColor = Color.cyan;
+					baseColor = Color.white;//new Color(85, 152, 212);//Color.cyan;
 					midColor = new Color(99, 125, 150);
 					darkColor = new Color(101, 139, 210);
-				}
-				else if (theme == 7) {
+				} else if (theme == 7) {
 					// pale olive theme
 					baseColor = Color.orange;
 					midColor = new Color(152, 149, 92);
 					darkColor = new Color(138, 141, 74);
 				}
 
-				repaint();
+				SwingUtilities.invokeLater(() -> repaint());
 			}
 		}
 
 		if (solOfMonthCache != marsTime.getSolOfMonth()) {
 			solOfMonthCache = marsTime.getSolOfMonth();
-			repaint();
+			SwingUtilities.invokeLater(() -> repaint());
 		}
 	}
 
 	/**
 	 * Overrides paintComponent method.
+	 * 
 	 * @param g graphics context
 	 */
 	@Override
@@ -156,12 +167,12 @@ extends JComponent {
 		g.drawRect(0, 0, 139, 94);
 
 		// Paint vertical day lines
-		for (int x=1; x < 7; x++) {
+		for (int x = 1; x < 7; x++) {
 			g.drawLine(20 * x, 0, 20 * x, 94);
 		}
 
 		// Paint horizontal lines
-		for (int x=0; x < 4; x++) {
+		for (int x = 0; x < 4; x++) {
 			g.drawLine(0, (20 * x) + 15, 139, (20 * x) + 15);
 		}
 
@@ -172,8 +183,8 @@ extends JComponent {
 
 		// Draw week letters
 		g.setFont(weekFont);
-		char[] weekLetters = {'S', 'P', 'D', 'T', 'H', 'V', 'J'};
-		for (int x=0; x < 7; x++) {
+		char[] weekLetters = { 'S', 'P', 'D', 'T', 'H', 'V', 'J' };
+		for (int x = 0; x < 7; x++) {
 			int letterWidth = weekMetrics.charWidth(weekLetters[x]);
 			g.drawString("" + weekLetters[x], (20 * x) + 11 - (letterWidth / 2), weekHeight + 1);
 		}
@@ -185,8 +196,8 @@ extends JComponent {
 
 		// Draw sol letters
 		g.setFont(solFont);
-		for (int y=0; y < 4; y++) {
-			for (int x=0; x < 7; x++) {
+		for (int y = 0; y < 4; y++) {
+			for (int x = 0; x < 7; x++) {
 				int solNumber = (y * 7) + x + 1;
 				int solNumberWidth = solMetrics.stringWidth("" + solNumber);
 				int xPos = (20 * x) + 11 - (solNumberWidth / 2);
@@ -201,5 +212,23 @@ extends JComponent {
 				}
 			}
 		}
+	}
+
+	@Override
+	public StyleId getDefaultStyleId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void updateUI() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getUIClassID() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

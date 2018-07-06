@@ -119,8 +119,7 @@ public class UIConfig {
 	/**
 	 * Creates an XML document for the UI configuration and saves it to a file.
 	 * 
-	 * @param mainWindow
-	 *            the main window.
+	 * @param mainWindow the main window.
 	 */
 	public void saveFile(MainWindow mainWindow) {
 		desktop = mainWindow.getDesktop();
@@ -151,8 +150,8 @@ public class UIConfig {
 			uiElement.addContent(volumeElement);
 
 			AudioPlayer player = desktop.getSoundPlayer();
-			volumeElement.setAttribute(SOUND, Float.toString(player.getMusicVolume()));
-			volumeElement.setAttribute(SOUND, Float.toString(player.getEffectVolume()));
+			volumeElement.setAttribute(SOUND, Double.toString(player.getMusicVolume()));
+			volumeElement.setAttribute(SOUND, Double.toString(player.getEffectVolume()));
 			volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
 			volumeElement.setAttribute(MUTE, Boolean.toString(player.isSoundMute()));
 
@@ -224,8 +223,7 @@ public class UIConfig {
 	/**
 	 * Creates an XML document for the UI configuration and saves it to a file.
 	 * 
-	 * @param mainScene
-	 *            the Main Scene.
+	 * @param mainScene the Main Scene.
 	 */
 	public void saveFile(MainScene mainScene) {
 		desktop = mainScene.getDesktop();
@@ -249,8 +247,8 @@ public class UIConfig {
 			uiElement.addContent(volumeElement);
 
 			AudioPlayer player = desktop.getSoundPlayer();
-			volumeElement.setAttribute(SOUND, Float.toString(player.getMusicVolume()));
-			volumeElement.setAttribute(SOUND, Float.toString(player.getEffectVolume()));
+			volumeElement.setAttribute(SOUND, Double.toString(player.getMusicVolume()));
+			volumeElement.setAttribute(SOUND, Double.toString(player.getEffectVolume()));
 			volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
 			volumeElement.setAttribute(MUTE, Boolean.toString(player.isSoundMute()));
 
@@ -426,8 +424,7 @@ public class UIConfig {
 	/**
 	 * Checks if an internal window is displayed.
 	 *
-	 * @param windowName
-	 *            the window name.
+	 * @param windowName the window name.
 	 * @return true if displayed.
 	 */
 	@SuppressWarnings("unchecked")
@@ -456,8 +453,7 @@ public class UIConfig {
 	/**
 	 * Gets the origin location of an internal window on the desktop.
 	 *
-	 * @param windowName
-	 *            the window name.
+	 * @param windowName the window name.
 	 * @return location.
 	 */
 	@SuppressWarnings("unchecked")
@@ -487,8 +483,7 @@ public class UIConfig {
 	/**
 	 * Gets the z order of an internal window on the desktop.
 	 *
-	 * @param windowName
-	 *            the window name.
+	 * @param windowName the window name.
 	 * @return z order (lower number represents higher up)
 	 */
 	@SuppressWarnings("unchecked")
@@ -515,8 +510,7 @@ public class UIConfig {
 	/**
 	 * Gets the size of an internal window.
 	 *
-	 * @param windowName
-	 *            the window name.
+	 * @param windowName the window name.
 	 * @return size.
 	 */
 	@SuppressWarnings("unchecked")
@@ -546,8 +540,7 @@ public class UIConfig {
 	/**
 	 * Gets the internal window type.
 	 *
-	 * @param windowName
-	 *            the window name.
+	 * @param windowName the window name.
 	 * @return "unit" or "tool".
 	 */
 	@SuppressWarnings("unchecked")
@@ -574,8 +567,7 @@ public class UIConfig {
 	/**
 	 * Checks if internal window is configured.
 	 *
-	 * @param windowName
-	 *            the window name.
+	 * @param windowName the window name.
 	 * @return true if configured.
 	 */
 	@SuppressWarnings("unchecked")

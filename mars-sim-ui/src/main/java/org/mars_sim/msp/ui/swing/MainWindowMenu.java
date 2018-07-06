@@ -268,8 +268,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		// Create Volume slider menu item
 		// MainDesktopPane desktop = mainWindow.getDesktop();
 		final AudioPlayer soundPlayer = desktop.getSoundPlayer();
-		float volume = soundPlayer.getMusicVolume();
-		int intVolume = Math.round(volume * 10F);
+		double volume = soundPlayer.getMusicVolume();
+		int intVolume = (int) Math.round(volume * 10.0);
 
 		musicVolumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); // $NON-NLS-1$
 		musicVolumeItem.setMajorTickSpacing(1);
@@ -466,22 +466,22 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		}
 
 		else if (selectedItem == musicVolumeUpItem) {
-			float oldvolume = desktop.getSoundPlayer().getMusicVolume();
+			double oldvolume = desktop.getSoundPlayer().getMusicVolume();
 			desktop.getSoundPlayer().setMusicVolume(oldvolume + 0.05F);
 		}
 
 		else if (selectedItem == musicVolumeDownItem) {
-			float oldvolume = desktop.getSoundPlayer().getMusicVolume();
+			double oldvolume = desktop.getSoundPlayer().getMusicVolume();
 			desktop.getSoundPlayer().setMusicVolume(oldvolume - 0.05F);
 		}
 
 		else if (selectedItem == effectVolumeUpItem) {
-			float oldvolume = desktop.getSoundPlayer().getEffectVolume();
+			double oldvolume = desktop.getSoundPlayer().getEffectVolume();
 			desktop.getSoundPlayer().setSoundVolume(oldvolume + 0.05F);
 		}
 
 		else if (selectedItem == effectVolumeDownItem) {
-			float oldvolume = desktop.getSoundPlayer().getEffectVolume();
+			double oldvolume = desktop.getSoundPlayer().getEffectVolume();
 			desktop.getSoundPlayer().setSoundVolume(oldvolume - 0.05F);
 		}
 
@@ -537,9 +537,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		showUnitBarItem.setSelected(desktop.getMainWindow().getUnitToolBar().isVisible());
 		showToolBarItem.setSelected(desktop.getMainWindow().getToolToolBar().isVisible());
 
-		musicVolumeItem.setValue(Math.round(desktop.getSoundPlayer().getMusicVolume() * 10F));
+		musicVolumeItem.setValue((int) Math.round(desktop.getSoundPlayer().getMusicVolume() * 10));
 		musicVolumeItem.setEnabled(!desktop.getSoundPlayer().isMusicMute());
-		effectVolumeItem.setValue(Math.round(desktop.getSoundPlayer().getEffectVolume() * 10F));
+		effectVolumeItem.setValue((int) Math.round(desktop.getSoundPlayer().getEffectVolume() * 10));
 		effectVolumeItem.setEnabled(!desktop.getSoundPlayer().isSoundMute());
 		musicMuteItem.setSelected(desktop.getSoundPlayer().isMusicMute());
 		effectMuteItem.setSelected(desktop.getSoundPlayer().isSoundMute());

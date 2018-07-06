@@ -96,6 +96,7 @@ import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -170,7 +171,7 @@ import static org.fxmisc.wellbehaved.event.InputMap.*;
  * The MainScene class is the primary Stage for MSP. It is the container for
  * housing desktop swing node, javaFX UI, pull-down menu and icons for tools.
  */
-public class MainScene {
+public class MainScene implements ClockListener {
 
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
@@ -287,11 +288,11 @@ public class MainScene {
 	private int offset;
 	private int x;
 
-	public float musicSliderValue = AudioPlayer.DEFAULT_VOL * 100;
-	public float soundEffectSliderValue = AudioPlayer.DEFAULT_VOL * 100;
+	public double musicSliderValue = AudioPlayer.DEFAULT_VOL * 100;
+	public double soundEffectSliderValue = AudioPlayer.DEFAULT_VOL * 100;
 
-	private float musicSliderCache = 0;
-	private float effectSliderCache = 0;
+	private double musicSliderCache = 0;
+	private double effectSliderCache = 0;
 
 	private long lastTimerCall;
 
@@ -463,6 +464,7 @@ public class MainScene {
 	 * Constructor for MainScene
 	 */
 	public MainScene(int width, int height, GameScene gameScene) {
+		
 		screen_width = width;
 		screen_height = height;
 		this.gameScene = gameScene;
@@ -550,6 +552,12 @@ public class MainScene {
 //			hideWaitStage(MainScene.LOADING);
 
 		});
+		
+		// Add MainScene to MasterClock's clock listener
+		if (masterClock == null)
+			masterClock = sim.getMasterClock();			
+		masterClock.addClockListener(this);
+
 	}
 
 	/*
@@ -570,7 +578,7 @@ public class MainScene {
 	}
 
 	public void createLoadingIndicator() {
-		// 2016-10-01 Added mainSceneExecutor for executing wait stages
+		// Added mainSceneExecutor for executing wait stages
 		startMainSceneExecutor();
 //		createProgressCircle(LOADING);
 	}
@@ -580,7 +588,6 @@ public class MainScene {
 		createProgressCircle(SAVING);
 	}
 
-	// 2015-12-28 Added setEscapeEventHandler()
 	public void setEscapeEventHandler(boolean value, Stage stage) {
 		if (value) {
 			stage.addEventHandler(KeyEvent.KEY_PRESSED, esc);
@@ -594,9 +601,11 @@ public class MainScene {
 		public void handle(KeyEvent t) {
 			if (t.getCode() == KeyCode.ESCAPE) {
 				if (masterClock.isPaused()) {
-					unpauseSimulation();
+					//unpauseSimulation();
+					masterClock.setPaused(false, true);
 				} else {
-					pauseSimulation(true);
+					//pauseSimulation(true);
+					masterClock.setPaused(true, true);
 				}
 			}
 		}
@@ -642,7 +651,7 @@ public class MainScene {
 		// normally on pool-4-thread-3 Thread
 		// Note: make sure pauseSimulation() doesn't interfere with
 		// resupply.deliverOthers();
-		// 2015-12-16 Track the current pause state
+		// Track the current pause state
 		Platform.runLater(() -> {
 			// boolean previous = startPause(); ?
 			pauseSimulation(false);
@@ -671,7 +680,7 @@ public class MainScene {
 		});
 	}
 
-	// 2015-12-16 Added getConstructionWizard()
+
 	public ConstructionWizard getConstructionWizard() {
 		return constructionWizard;
 	}
@@ -679,7 +688,6 @@ public class MainScene {
 	/**
 	 * Setup key events using wellbehavedfx
 	 */
-	// 2016-11-14 Setup key events using wellbehavedfx
 	public void setupKeyEvents() {
 		InputMap<KeyEvent> f1 = consume(keyPressed(KeyCode.F1), e -> {
 			tabPane.getSelectionModel().select(MainScene.HELP_TAB);
@@ -948,17 +956,6 @@ public class MainScene {
 
 			musicMuteBox.setSelected(!musicMuteBox.isSelected());
 			soundEffectMuteBox.setSelected(!soundEffectMuteBox.isSelected());
-			/*
-			 * if (musicMuteBox.isSelected()) {// || musicSlider.getValue() > 0) {
-			 * //musicMuteBox.isSelected()) {// //musicMuteBox.setSelected(true);
-			 * mute(false, true); } else //musicMuteBox.setSelected(false); unmute(false,
-			 * true);
-			 * 
-			 * if (soundEffectMuteBox.isSelected()) {// || soundEffectSlider.getValue() > 0)
-			 * { //soundEffectMuteBox.isSelected()) {//
-			 * //soundEffectMuteBox.setSelected(true); mute(true, false); } else
-			 * //soundEffectMuteBox.setSelected(false); unmute(true, false);
-			 */
 		}
 	}
 
@@ -967,7 +964,7 @@ public class MainScene {
 			// mute it
 			soundPlayer.mute(false, true);
 			// save the slider value into the cache
-			musicSliderCache = (float) musicSlider.getValue();
+			musicSliderCache = musicSlider.getValue();
 			// set the slider value to zero
 			musicSlider.setValue(0);
 			// check the music mute item in menuBar
@@ -977,7 +974,7 @@ public class MainScene {
 			// mute it
 			soundPlayer.mute(true, false);
 			// save the slider value into the cache
-			effectSliderCache = (float) soundEffectSlider.getValue();
+			effectSliderCache = soundEffectSlider.getValue();
 			// set the slider value to zero
 			soundEffectSlider.setValue(0);
 			// check the sound effect mute item in menuBar
@@ -995,6 +992,8 @@ public class MainScene {
 			musicSlider.setValue(musicSliderCache);
 			// uncheck the music mute item in menuBar
 			menuBar.getMusicMuteItem().setSelected(false);
+			
+			soundPlayer.setMusicVolume(convertSlider2Volume(musicSlider.getValue()));
 
 		}
 		if (isEffect) {
@@ -1533,7 +1532,7 @@ public class MainScene {
 		musicSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
 				if (old_val != new_val) {
-					float sliderValue = new_val.floatValue();
+					double sliderValue = new_val.doubleValue();
 					// Set to the new music volume in the sound player
 					// System.out.println((float) convertSlider2Volume(sliderValue));
 					soundPlayer.setMusicVolume(convertSlider2Volume(sliderValue));
@@ -1609,7 +1608,7 @@ public class MainScene {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
 
 				if (old_val != new_val) {
-					float sliderValue = new_val.floatValue();
+					double sliderValue = new_val.doubleValue();
 					// Set to the new sound effect volume in the sound player
 					soundPlayer.setSoundVolume(convertSlider2Volume(sliderValue));
 
@@ -1749,7 +1748,7 @@ public class MainScene {
 		marsTimeLabel.setId("mars-time-label");
 		marsTimeLabel.setAlignment(Pos.CENTER);
 
-		setQuickToolTip(marsTimeLabel, "Martian Date and Time");
+		setQuickToolTip(marsTimeLabel, "Martian date/time stamp in Universal Martian Standard Time (UMST) at 0 W 0 N");
 
 		marsTimeButton = new Button();
 		marsTimeButton.setPrefSize(20, 20);
@@ -2629,7 +2628,6 @@ public class MainScene {
 	 * 
 	 * @param choice
 	 */
-	// 2015-05-02 Edited setLookAndFeel()
 	public void setLookAndFeel(ThemeType choice) {
 		// logger.info("MainScene's setLookAndFeel() is on " +
 		// Thread.currentThread().getName() + " Thread");
@@ -2739,7 +2737,6 @@ public class MainScene {
 	/*
 	 * Updates the theme colors of statusBar, swingPane and menuBar
 	 */
-	// 2015-08-29 Added updateThemeColor()
 	public void updateThemeColor(int theme, Color txtColor, Color txtColor2, String cssFile) {
 		mainStackPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		if (!OS.contains("mac"))
@@ -3011,7 +3008,6 @@ public class MainScene {
 	 * Creates the time bar for MainScene
 	 */
 	public void createLastSaveBar() {
-		// 2016-09-15 Added oldLastSaveStamp
 		oldLastSaveStamp = sim.getLastSaveTimeStamp();
 		oldLastSaveStamp = oldLastSaveStamp.replace("_", " ");
 
@@ -3045,9 +3041,9 @@ public class MainScene {
 		double tr = masterClock.getTimeRatio();
 		// if (msol % 10 == 0) {
 		// Check to see if a background sound track is being played.
-		if (!soundPlayer.isSoundDisabled() && !soundPlayer.isMusicMute() && !MainMenu.isSoundDisabled())
-			// if (musicSlider.getValue() > 0)
-			soundPlayer.playRandomMusicTrack();
+		if (!soundPlayer.isSoundDisabled() && !soundPlayer.isMusicMute() && !MainMenu.isSoundDisabled()
+			 && musicSlider.getValue() > 0)
+				soundPlayer.playRandomMusicTrack();
 		// }
 
 		if (simSpeedPopup.isShowing() || solCache == 0) {
@@ -3221,28 +3217,6 @@ public class MainScene {
 		// endPause(previous);
 	}
 
-	/**
-	 * Save the current simulation. This displays a FileChooser to select the
-	 * location to save the simulation if the default is not to be used.
-	 * 
-	 * @param type
-	 * 
-	 *             public void saveSimulation(int type) { if
-	 *             (!masterClock.isPaused()) { // hideWaitStage(PAUSED); if (type ==
-	 *             Simulation.SAVE_DEFAULT || type == Simulation.SAVE_AS)
-	 *             showWaitStage(SAVING); else showWaitStage(AUTOSAVING);
-	 * 
-	 *             Task<Void> task = new Task<Void>() {
-	 * @Override protected Void call() throws Exception {
-	 *           saveSimulationProcess(type); while
-	 *           (masterClock.isSavingSimulation())
-	 *           TimeUnit.MILLISECONDS.sleep(200L); return null; }
-	 * 
-	 * @Override protected void succeeded() { super.succeeded();
-	 *           hideWaitStage(SAVING); } }; new Thread(task).start();
-	 * 
-	 *           } // endPause(previous); }
-	 */
 
 	/**
 	 * Performs the process of saving a simulation.
@@ -3322,6 +3296,8 @@ public class MainScene {
 			// if (messagePopup.numPopups() < 1) {
 			// Note: (NOT WORKING) popups.size() is always zero no matter what.
 			Platform.runLater(() -> {
+				if (billboardTimer != null)
+					billboardTimer.start();
 				// messagePopup.popAMessage(PAUSE, ESC_TO_RESUME, " ", stage, Pos.TOP_CENTER,
 				// PNotification.PAUSE_ICON)
 				boolean hasIt = false;
@@ -3345,6 +3321,8 @@ public class MainScene {
 		if (gameScene == null) {
 			Platform.runLater(() -> {
 				// messagePopup.stop()
+				if (billboardTimer != null)
+					billboardTimer.stop();
 				boolean hasIt = false;
 				for (Node node : rootStackPane.getChildren()) {// root.getChildrenUnmodifiable()) {
 					if (node == pausePane) {
@@ -3364,7 +3342,6 @@ public class MainScene {
 	 * 
 	 * @return VBox
 	 */
-	// 2017-04-12 Add pause pane
 	private VBox createPausePaneContent() {
 		VBox vbox = new VBox();
 		vbox.setPrefSize(150, 150);
@@ -3391,26 +3368,17 @@ public class MainScene {
 	 */
 	public void pauseSimulation(boolean showPane) {
 		if (exitDialog == null || !exitDialog.isVisible()) {
-			isShowingDialog = true;
 			masterClock.setPaused(true, showPane);
-			timeLabeltimer.pause();
-			if (billboardTimer != null)
-				billboardTimer.stop();
-			if (showPane && !masterClock.isSavingSimulation())
-				startPausePopup();
+			pause();
 		}
 	}
 
 	/**
 	 * Unpauses the simulation.
 	 */
-	public void unpauseSimulation() {
-		isShowingDialog = false;
+	public void unpauseSimulation() {	
+		unpause();
 		masterClock.setPaused(false, true);
-		timeLabeltimer.play();
-		if (billboardTimer != null)
-			billboardTimer.start();
-		stopPausePopup();
 	}
 
 	public boolean startPause() {
@@ -3992,8 +3960,8 @@ public class MainScene {
 		 */
 	}
 
-	private float convertSlider2Volume(float y) {
-		return y / 100f;
+	private double convertSlider2Volume(double y) {
+		return y / 100.0;
 	}
 
 	public JFXButton getMarsNetBtn() {
@@ -4188,10 +4156,40 @@ public class MainScene {
 //		}
 	}
 
+	public void unpause() {
+		isShowingDialog = false;
+		// Revert the sound setting
+		if (!musicMuteBox.isSelected())
+			soundPlayer.setSoundVolume(convertSlider2Volume(musicSlider.getValue()));
+		if (!soundEffectMuteBox.isSelected())
+			soundPlayer.setMusicVolume(convertSlider2Volume(soundEffectSlider.getValue()));
+		if (!soundPlayer.isSoundDisabled() 
+				//&& !soundPlayer.isMusicMute() 
+				//&& !MainMenu.isSoundDisabled() 
+				&& musicSlider.getValue() > 0)
+					soundPlayer.playRandomMusicTrack();
+
+		timeLabeltimer.play();
+		if (billboardTimer != null)
+			billboardTimer.start();
+		stopPausePopup();
+
+	}
+	
+	public void pause() {
+		isShowingDialog = true;
+		timeLabeltimer.pause();
+		if (billboardTimer != null)
+			billboardTimer.stop();
+		startPausePopup();
+
+	}
+	
 	public void destroy() {
 		quote = null;
 		// messagePopup = null;
 		// topFlapBar = null;
+		masterClock.removeClockListener(this);
 		marsNetBox = null;
 		marsNetBtn = null;
 		chatBox = null;
@@ -4223,5 +4221,31 @@ public class MainScene {
 		marsNode = null;
 		transportWizard = null;
 		constructionWizard = null;
+	}
+
+	@Override
+	public void clockPulse(double time) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void uiPulse(double time) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pauseChange(boolean isPaused, boolean showPane) {
+		if (isPaused) {
+			if (showPane && !masterClock.isSavingSimulation()) {
+				if (exitDialog == null || !exitDialog.isVisible()) {
+					pause();
+				}
+			}
+
+		} else {
+			unpause();
+		}
 	}
 }

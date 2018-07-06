@@ -38,12 +38,10 @@ import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
-
-
 /**
- * Loads the simulation configuration XML files as DOM documents.
- * Provides simulation configuration.
- * Provides access to other simulation subset configuration classes.
+ * Loads the simulation configuration XML files as DOM documents. Provides
+ * simulation configuration. Provides access to other simulation subset
+ * configuration classes.
  */
 public class SimulationConfig implements Serializable {
 
@@ -76,7 +74,7 @@ public class SimulationConfig implements Serializable {
 
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
-	
+
 	private static final String BASE_TIME_RATIO = "base-time-ratio";
 	private static final String BASE_TIME_BETWEEN_UPDATES = "base-time-between-updates";
 
@@ -84,21 +82,27 @@ public class SimulationConfig implements Serializable {
 	private static final String AVERAGE_TRANSIT_TIME = "average-transit-time";
 	private static final String MAX_FRAME_SKIPS = "max-frame-skips";
 	private static final String NO_DELAYS_PER_YIELD = "no-delays-per-yield";
-	
+
 	private static final String EARTH_START_DATE_TIME = "earth-start-date-time";
 	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
-	
-	public String build;
 
 	private double tbu = 0;
 
 	private double tr = 0;
 
-	private int[] data = new int[] {0,0,0,0};
+	private int[] data = new int[] { 0, 0, 0, 0 };
 
-	/* ---------------------------------------------------------------------------------------------------- *
-	 * Members
-	 * ---------------------------------------------------------------------------------------------------- */
+	public String build;
+
+	public String marsStartDate = null;
+	public String earthStartDate = null;
+
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------------------- * Members
+	 * -----------------------------------------------------------------------------
+	 * -----------------------
+	 */
 
 	/** DOM documents. */
 	private Document simulationDoc;
@@ -120,69 +124,77 @@ public class SimulationConfig implements Serializable {
 	private ResupplyConfig resupplyConfig;
 	private ConstructionConfig constructionConfig;
 
-	// 2014-11-23 Added Food Production
 	private FoodProductionConfig foodProductionConfig;
-	// 2014-12-06 Added mealConfig
 	private MealConfig mealConfig;
-	// 2015-01-21 Added robotConfig
 	private RobotConfig robotConfig;
-	// 2016-06-08 Added quotationConfig
 	private QuotationConfig quotationConfig;
 
-	/* ---------------------------------------------------------------------------------------------------- *
-	 * Constructors
-	 * ---------------------------------------------------------------------------------------------------- */
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------------------- * Constructors
+	 * -----------------------------------------------------------------------------
+	 * -----------------------
+	 */
 
 	/** hidden constructor. */
 	private SimulationConfig() {
 	}
 
-    /**
-     * Gets a Bill Pugh Singleton instance of the simulation.
-     * @return Simulation instance
-     */
-    //public static SimulationConfig instance() {
-        //logger.info("Simulation's instance() is on " + Thread.currentThread().getName() + " Thread");
-        //NOTE: Simulation.instance() is accessible on any threads or by any threads
-    //	return SingletonHelper.INSTANCE;
-    //}
+	/**
+	 * Gets a Bill Pugh Singleton instance of the simulation.
+	 * 
+	 * @return Simulation instance
+	 */
+	// public static SimulationConfig instance() {
+	// logger.info("Simulation's instance() is on " +
+	// Thread.currentThread().getName() + " Thread");
+	// NOTE: Simulation.instance() is accessible on any threads or by any threads
+	// return SingletonHelper.INSTANCE;
+	// }
 
-    /**
-     * Initializes an inner static helper class for Bill Pugh Singleton Pattern
-     * Note: as soon as the instance() method is called the first time, the class is loaded into memory and an instance gets created.
-     * Advantage: it supports multiple threads calling instance() simultaneously with no synchronized keyword needed (which slows down the VM)
-     * {@link SingletonHelper} is loaded on the first execution of
-     * {@link Singleton#instance()} or the first access to
-     * {@link SingletonHelper#INSTANCE}, not before.
-     */
-    //private static class SingletonHelper{
-    //	private static final SimulationConfig INSTANCE = new SimulationConfig();
-    //}
+	/**
+	 * Initializes an inner static helper class for Bill Pugh Singleton Pattern
+	 * Note: as soon as the instance() method is called the first time, the class is
+	 * loaded into memory and an instance gets created. Advantage: it supports
+	 * multiple threads calling instance() simultaneously with no synchronized
+	 * keyword needed (which slows down the VM) {@link SingletonHelper} is loaded on
+	 * the first execution of {@link Singleton#instance()} or the first access to
+	 * {@link SingletonHelper#INSTANCE}, not before.
+	 */
+	// private static class SingletonHelper{
+	// private static final SimulationConfig INSTANCE = new SimulationConfig();
+	// }
 
-    /**
-     * Prevents the singleton pattern from being destroyed
-     * at the time of serialization
-     * @return SimulationConfig instance
-     */
-    protected Object readResolve() throws ObjectStreamException {
-    	return instance();
-    }
+	/**
+	 * Prevents the singleton pattern from being destroyed at the time of
+	 * serialization
+	 * 
+	 * @return SimulationConfig instance
+	 */
+	protected Object readResolve() throws ObjectStreamException {
+		return instance();
+	}
 
-
-	/* ---------------------------------------------------------------------------------------------------- *
-	 * Static Members
-	 * ---------------------------------------------------------------------------------------------------- */
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------------------- * Static Members
+	 * -----------------------------------------------------------------------------
+	 * -----------------------
+	 */
 
 	/** Eager Instantiation of Singleton Instance. */
 	private static SimulationConfig instance = new SimulationConfig();
 
-
-	/* ---------------------------------------------------------------------------------------------------- *
-	 * Public Static Methods
-	 * ---------------------------------------------------------------------------------------------------- */
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------------------- * Public Static Methods
+	 * -----------------------------------------------------------------------------
+	 * -----------------------
+	 */
 
 	/**
 	 * Gets a singleton instance of the simulation config.
+	 * 
 	 * @return SimulationConfig instance
 	 */
 	public static SimulationConfig instance() {
@@ -191,39 +203,44 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Sets the singleton instance.
+	 * 
 	 * @param instance the singleton instance.
 	 */
 	public static void setInstance(SimulationConfig instance) {
 		SimulationConfig.instance = instance;
 	}
 
+	// public String getBuildVersion() {
+	// return build;
+	// }
 
-	//public String getBuildVersion() {
-	//	return build;
-	//}
-
-	//public String getBuild(){
-	//	return build;
-	//}
+	// public String getBuild(){
+	// return build;
+	// }
 
 	/**
 	 * Reloads all of the configuration files.
+	 * 
 	 * @throws Exception if error loading or parsing configuration files.
 	 */
 	public static void loadConfig() {
-	   	//logger.info("loadConfig() is on " + Thread.currentThread().getName());
+		// logger.info("loadConfig() is on " + Thread.currentThread().getName());
 		if (instance.simulationDoc != null) {
 			instance.destroyOldConfiguration();
 		}
 		instance.loadDefaultConfiguration();
 	}
 
-	/* ---------------------------------------------------------------------------------------------------- *
-	 * Getter
-	 * ---------------------------------------------------------------------------------------------------- */
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------------------- * Getter
+	 * -----------------------------------------------------------------------------
+	 * -----------------------
+	 */
 
 	/**
 	 * Gets the ratio of simulation time to real time in simulation.xml
+	 * 
 	 * @return ratio
 	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
@@ -245,18 +262,20 @@ public class SimulationConfig implements Serializable {
 
 			else {
 				try {
-			         d = Double.valueOf(str.trim()).doubleValue();
-			         //System.out.println("double d = " + d);
+					d = Double.valueOf(str.trim()).doubleValue();
+					// System.out.println("double d = " + d);
 
-			         if (d < 16 && d > 2048)
-			 			throw new IllegalStateException("time_ratio must be between 64.0 and 1024.0");
+					if (d < 16 && d > 2048)
+						throw new IllegalStateException("time_ratio must be between 64.0 and 1024.0");
 
-			      } catch (NumberFormatException nfe) {
-			         System.out.println("NumberFormatException found in time_ratio : " + nfe.getMessage());
-			      }
+				} catch (NumberFormatException nfe) {
+					System.out.println("NumberFormatException found in time_ratio : " + nfe.getMessage());
 				}
-			//if (ratio < 0D) throw new IllegalStateException("Simulation time ratio must be positive number.");
-			//else if (ratio == 0D) throw new IllegalStateException("Simulation time ratio cannot be zero.");
+			}
+			// if (ratio < 0D) throw new IllegalStateException("Simulation time ratio must
+			// be positive number.");
+			// else if (ratio == 0D) throw new IllegalStateException("Simulation time ratio
+			// cannot be zero.");
 			tr = d;
 			return d;
 		}
@@ -264,6 +283,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the time between updates in milliseconds in simulation.xml
+	 * 
 	 * @return the time interval in milliseconds
 	 * @throws Exception if the value is not in configuration or is not valid.
 	 */
@@ -285,29 +305,31 @@ public class SimulationConfig implements Serializable {
 				throw new IllegalStateException("time-between-updates must be greater than zero and cannot be blank.");
 			else {
 				try {
-			         l = Double.valueOf(str.trim()).doubleValue();
-			         //System.out.println("double tbu = " + l);
+					l = Double.valueOf(str.trim()).doubleValue();
+					// System.out.println("double tbu = " + l);
 
-			         if (l > 250 || l < 40)
-			 			throw new IllegalStateException("time-between-updates must be between 40 and 250");
+					if (l > 250 || l < 40)
+						throw new IllegalStateException("time-between-updates must be between 40 and 250");
 
-
-			      } catch (NumberFormatException nfe) {
-			         System.out.println("NumberFormatException found in time-between-updates : " + nfe.getMessage());
-			      }
+				} catch (NumberFormatException nfe) {
+					System.out.println("NumberFormatException found in time-between-updates : " + nfe.getMessage());
+				}
 			}
 
 			tbu = l;
 			return l;
-			//double result = Double.parseDouble(el.getAttributeValue(VALUE));
-			//if (result < 0D) throw new IllegalStateException("time-between-updates in simulation.xml must be positive number.");
-			//else if (result == 0D) throw new IllegalStateException("time-between-updates in simulation.xml cannot be zero.");
-			//return result;
+			// double result = Double.parseDouble(el.getAttributeValue(VALUE));
+			// if (result < 0D) throw new IllegalStateException("time-between-updates in
+			// simulation.xml must be positive number.");
+			// else if (result == 0D) throw new IllegalStateException("time-between-updates
+			// in simulation.xml cannot be zero.");
+			// return result;
 		}
 	}
 
 	/**
 	 * Gets the parameter no-delays-per-yield in simulation.xml
+	 * 
 	 * @return the number
 	 * @throws Exception if the value is not in configuration or is not valid.
 	 */
@@ -330,29 +352,31 @@ public class SimulationConfig implements Serializable {
 				throw new IllegalStateException("no-delays-per-yield must be greater than zero and cannot be blank.");
 			else {
 				try {
-			         result = Integer.parseInt(str);
+					result = Integer.parseInt(str);
 
-			         if (result > 100 || result < 1)
-			 			throw new IllegalStateException("no-delays-per-yield must be between 1 and 200.");
+					if (result > 100 || result < 1)
+						throw new IllegalStateException("no-delays-per-yield must be between 1 and 200.");
 
-
-			      } catch (NumberFormatException nfe) {
-			         System.out.println("NumberFormatException found in time-between-updates : " + nfe.getMessage());
-			      }
+				} catch (NumberFormatException nfe) {
+					System.out.println("NumberFormatException found in time-between-updates : " + nfe.getMessage());
+				}
 			}
 
 			data[0] = result;
 			return result;
 
-			//int result = Integer.parseInt(el.getAttributeValue(VALUE));
-			//if (result < 0) throw new IllegalStateException("no-delays-per-yield in simulation.xml must be positive number.");
-			//else if (result == 0) throw new IllegalStateException("no-delays-per-yield in simulation.xml cannot be zero.");
-			//return result;
+			// int result = Integer.parseInt(el.getAttributeValue(VALUE));
+			// if (result < 0) throw new IllegalStateException("no-delays-per-yield in
+			// simulation.xml must be positive number.");
+			// else if (result == 0) throw new IllegalStateException("no-delays-per-yield in
+			// simulation.xml cannot be zero.");
+			// return result;
 		}
 	}
 
 	/**
 	 * Gets the parameter max-frame-skips in simulation.xml
+	 * 
 	 * @return the number of frames
 	 * @throws Exception if the value is not in configuration or is not valid.
 	 */
@@ -375,61 +399,68 @@ public class SimulationConfig implements Serializable {
 				throw new IllegalStateException("max-frame-skips must be greater than zero and cannot be blank.");
 			else {
 				try {
-			         result = Integer.parseInt(str);
+					result = Integer.parseInt(str);
 
-			         if (result > 50 || result < 1)
-			 			throw new IllegalStateException("max-frame-skips must be between 1 and 200.");
+					if (result > 50 || result < 1)
+						throw new IllegalStateException("max-frame-skips must be between 1 and 200.");
 
-
-			      } catch (NumberFormatException nfe) {
-			         System.out.println("NumberFormatException found in max-frame-skips : " + nfe.getMessage());
-			      }
+				} catch (NumberFormatException nfe) {
+					System.out.println("NumberFormatException found in max-frame-skips : " + nfe.getMessage());
+				}
 			}
 
 			data[1] = result;
 			return result;
 
 		}
-			//int result = Integer.parseInt(el.getAttributeValue(VALUE));
-			//if (result < 0) throw new IllegalStateException("max-frame-skips in simulation.xml must be positive number.");
-			//else if (result == 0) throw new IllegalStateException("max-frame-skips in simulation.xml cannot be zero.");
+		// int result = Integer.parseInt(el.getAttributeValue(VALUE));
+		// if (result < 0) throw new IllegalStateException("max-frame-skips in
+		// simulation.xml must be positive number.");
+		// else if (result == 0) throw new IllegalStateException("max-frame-skips in
+		// simulation.xml cannot be zero.");
 
 	}
 
 	/**
 	 * Gets the Earth date/time when the simulation starts.
+	 * 
 	 * @return date/time as string in "MM/dd/yyyy hh:mm:ss" format.
 	 * @throws Exception if value is null or empty.
 	 */
 	public String getEarthStartDateTime() {
-		Element root = simulationDoc.getRootElement();
-		Element timeConfig = root.getChild(TIME_CONFIGURATION);
-		Element earthStartDate = timeConfig.getChild(EARTH_START_DATE_TIME);
-		String startDate = earthStartDate.getAttributeValue(VALUE);
-		if ((startDate == null) || startDate.trim().length() == 0)
-			throw new IllegalStateException("Earth start date time must not be blank.");
-
-		return startDate;
+		if (earthStartDate == null) {
+			Element root = simulationDoc.getRootElement();
+			Element timeConfig = root.getChild(TIME_CONFIGURATION);
+			Element date = timeConfig.getChild(EARTH_START_DATE_TIME);
+			earthStartDate = date.getAttributeValue(VALUE);
+			if ((earthStartDate == null) || earthStartDate.trim().length() == 0)
+				throw new IllegalStateException("Earth start date time must not be blank.");
+		}
+		return earthStartDate;
 	}
 
 	/**
 	 * Gets the Mars date/time when the simulation starts.
+	 * 
 	 * @return date/time as string in "orbit-month-sol:millisol" format.
 	 * @throws Exception if value is null or empty.
 	 */
 	public String getMarsStartDateTime() {
-		Element root = simulationDoc.getRootElement();
-		Element timeConfig = root.getChild(TIME_CONFIGURATION);
-		Element marsStartDate = timeConfig.getChild(MARS_START_DATE_TIME);
-		String startDate = marsStartDate.getAttributeValue(VALUE);
-		if ((startDate == null) || startDate.trim().length() == 0)
-			throw new IllegalStateException("Mars start date time must not be blank.");
+		if (marsStartDate == null) {
+			Element root = simulationDoc.getRootElement();
+			Element timeConfig = root.getChild(TIME_CONFIGURATION);
+			Element date = timeConfig.getChild(MARS_START_DATE_TIME);
+			marsStartDate = date.getAttributeValue(VALUE);
+			if ((marsStartDate == null) || marsStartDate.trim().length() == 0)
+				throw new IllegalStateException("Mars start date time must not be blank.");
+		}
 
-		return startDate;
+		return marsStartDate;
 	}
 
 	/**
 	 * Gets the autosave interval when the simulation starts.
+	 * 
 	 * @return number of minutes.
 	 * @throws Exception if value is null or empty.
 	 */
@@ -451,15 +482,15 @@ public class SimulationConfig implements Serializable {
 				throw new IllegalStateException("autosave_interval must not be blank and must be greater than zero.");
 			else {
 				try {
-			         d = (int) Double.valueOf(str.trim()).doubleValue();
-			         //System.out.println("double d = " + d);
+					d = (int) Double.valueOf(str.trim()).doubleValue();
+					// System.out.println("double d = " + d);
 
-			         if (d < 1 || d > 1440)
-			 			throw new IllegalStateException("autosave_interval must be between 1 and 1440.");
+					if (d < 1 || d > 1440)
+						throw new IllegalStateException("autosave_interval must be between 1 and 1440.");
 
-			      } catch (NumberFormatException nfe) {
-			         System.out.println("NumberFormatException found in autosave_interval : " + nfe.getMessage());
-			      }
+				} catch (NumberFormatException nfe) {
+					System.out.println("NumberFormatException found in autosave_interval : " + nfe.getMessage());
+				}
 
 			}
 
@@ -470,6 +501,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the AverageTransitTime when the simulation starts.
+	 * 
 	 * @return number of sols.
 	 * @throws Exception if value is null or empty.
 	 */
@@ -488,18 +520,19 @@ public class SimulationConfig implements Serializable {
 			int d = 0;
 
 			if ((str == null) || str.trim().length() == 0)
-				throw new IllegalStateException("average-transit-time must not be blank and must be greater than zero.");
+				throw new IllegalStateException(
+						"average-transit-time must not be blank and must be greater than zero.");
 			else {
 				try {
-			         d = (int) Double.valueOf(str.trim()).doubleValue();
-			         //System.out.println("double d = " + d);
+					d = (int) Double.valueOf(str.trim()).doubleValue();
+					// System.out.println("double d = " + d);
 
-			         if (d < 0 || d > 430)
-			 			throw new IllegalStateException("average-transit-time must be between 0 and 430.");
+					if (d < 0 || d > 430)
+						throw new IllegalStateException("average-transit-time must be between 0 and 430.");
 
-			      } catch (NumberFormatException nfe) {
-			         System.out.println("NumberFormatException found in average-transit-time : " + nfe.getMessage());
-			      }
+				} catch (NumberFormatException nfe) {
+					System.out.println("NumberFormatException found in average-transit-time : " + nfe.getMessage());
+				}
 
 			}
 
@@ -508,10 +541,9 @@ public class SimulationConfig implements Serializable {
 		}
 	}
 
-
-
 	/**
 	 * Gets the part config subset.
+	 * 
 	 * @return part config
 	 */
 	public PartConfig getPartConfiguration() {
@@ -520,6 +552,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the part package configuration.
+	 * 
 	 * @return part package config
 	 */
 	public PartPackageConfig getPartPackageConfiguration() {
@@ -528,15 +561,17 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the resource config subset.
+	 * 
 	 * @return resource config
 	 */
 	public AmountResourceConfig getResourceConfiguration() {
-		//System.out.println("SimulationConfig : caling getResourceConfiguration()");
+		// System.out.println("SimulationConfig : caling getResourceConfiguration()");
 		return resourceConfig;
 	}
 
 	/**
 	 * Gets the person config subset.
+	 * 
 	 * @return person config
 	 */
 	public PersonConfig getPersonConfiguration() {
@@ -545,6 +580,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the robot config subset.
+	 * 
 	 * @return robot config
 	 */
 	public RobotConfig getRobotConfiguration() {
@@ -553,6 +589,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the medical config subset.
+	 * 
 	 * @return medical config
 	 */
 	public MedicalConfig getMedicalConfiguration() {
@@ -561,6 +598,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the landmark config subset.
+	 * 
 	 * @return landmark config
 	 */
 	public LandmarkConfig getLandmarkConfiguration() {
@@ -569,6 +607,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the mineral map config subset.
+	 * 
 	 * @return mineral map config
 	 */
 	public MineralMapConfig getMineralMapConfiguration() {
@@ -577,6 +616,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the malfunction config subset.
+	 * 
 	 * @return malfunction config
 	 */
 	public MalfunctionConfig getMalfunctionConfiguration() {
@@ -585,6 +625,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the crop config subset.
+	 * 
 	 * @return crop config
 	 */
 	public CropConfig getCropConfiguration() {
@@ -593,6 +634,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the vehicle config subset.
+	 * 
 	 * @return vehicle config
 	 */
 	public VehicleConfig getVehicleConfiguration() {
@@ -601,15 +643,17 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the building config subset.
+	 * 
 	 * @return building config
 	 */
 	public BuildingConfig getBuildingConfiguration() {
-        //System.out.println("right before calling getBuildingConfiguration()");
+		// System.out.println("right before calling getBuildingConfiguration()");
 		return buildingConfig;
 	}
 
 	/**
 	 * Gets the resupply configuration.
+	 * 
 	 * @return resupply config
 	 */
 	public ResupplyConfig getResupplyConfiguration() {
@@ -618,6 +662,7 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the settlement config subset.
+	 * 
 	 * @return settlement config
 	 */
 	public SettlementConfig getSettlementConfiguration() {
@@ -626,15 +671,16 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the manufacture config subset.
+	 * 
 	 * @return manufacture config
 	 */
 	public ManufactureConfig getManufactureConfiguration() {
 		return manufactureConfig;
 	}
 
-
 	/**
 	 * Gets the foodProduction config subset.
+	 * 
 	 * @return foodProduction config
 	 */
 	// 2014-11-23 Added Food Production
@@ -642,90 +688,98 @@ public class SimulationConfig implements Serializable {
 		return foodProductionConfig;
 	}
 
-
 	/**
 	 * Gets the meal config subset.
+	 * 
 	 * @return meal config
 	 */
 	// 2014-12-06 Added getMealConfiguration()
 	public MealConfig getMealConfiguration() {
-		//logger.info("calling getMealConfiguration()");
+		// logger.info("calling getMealConfiguration()");
 		return mealConfig;
 	}
 
-
 	/**
 	 * Gets the construction config subset.
+	 * 
 	 * @return construction config
 	 */
 	public ConstructionConfig getConstructionConfiguration() {
 		return constructionConfig;
 	}
 
-
 	/**
 	 * Gets the quotation config subset.
+	 * 
 	 * @return quotation config
 	 */
 	public QuotationConfig getQuotationConfiguration() {
 		return quotationConfig;
 	}
 
-	
 	/**
 	 * Parses an XML file into a DOM document.
+	 * 
 	 * @param filename the path of the file.
-	 * @param useDTD true if the XML DTD should be used.
+	 * @param useDTD   true if the XML DTD should be used.
 	 * @return DOM document
 	 * @throws Exception if XML could not be parsed or file could not be found.
-
-	public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
-		SAXBuilder builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
-	
-		File xmlFile = new File(filename);
-		Document document = null;
-		//System.out.println("Parsing FILE: "+ xmlFile.getAbsolutePath()); 
-		try {
-
-			document = builder.build(xmlFile);
-
-		} catch (IOException | JDOMException e) {
-           System.out.println(e.getMessage());
-		}
-	       
-		return result;
-	}
+	 * 
+	 *                   public static Document parseXMLFileAsJDOMDocument(String
+	 *                   filename, boolean useDTD) { SAXBuilder builder = new
+	 *                   SAXBuilder(XMLReaders.DTDVALIDATING);
+	 * 
+	 *                   File xmlFile = new File(filename); Document document =
+	 *                   null; //System.out.println("Parsing FILE: "+
+	 *                   xmlFile.getAbsolutePath()); try {
+	 * 
+	 *                   document = builder.build(xmlFile);
+	 * 
+	 *                   } catch (IOException | JDOMException e) {
+	 *                   System.out.println(e.getMessage()); }
+	 * 
+	 *                   return result; }
 	 */
-	
+
 	/**
 	 * Parses an XML file into a DOM document.
+	 * 
 	 * @param filename the path of the file.
-	 * @param useDTD true if the XML DTD should be used.
+	 * @param useDTD   true if the XML DTD should be used.
 	 * @return DOM document
-	 * @throws IOException 
-	 * @throws JDOMException 
-	 * @throws Exception if XML could not be parsed or file could not be found.
+	 * @throws IOException
+	 * @throws JDOMException
+	 * @throws Exception     if XML could not be parsed or file could not be found.
 	 */
-	public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) throws IOException, JDOMException {
+	public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD)
+			throws IOException, JDOMException {
 		InputStream stream = getInputStream(filename);
-		/* bug 2909888: read the inputstream with a specific encoding instead of the system default. */
+		/*
+		 * bug 2909888: read the inputstream with a specific encoding instead of the
+		 * system default.
+		 */
 		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
 		SAXBuilder saxBuilder = new SAXBuilder(useDTD);
-		/* [landrus, 26.11.09]: Use an entity resolver to load dtds from the classpath */
+		/*
+		 * [landrus, 26.11.09]: Use an entity resolver to load dtds from the classpath
+		 */
 		saxBuilder.setEntityResolver(new ClasspathEntityResolver());
 		Document result = saxBuilder.build(reader);
 		stream.close();
-	       
+
 		return result;
 	}
-	
-	/* ---------------------------------------------------------------------------------------------------- *
-	 * Private Methods
-	 * ---------------------------------------------------------------------------------------------------- */
+
+	/*
+	 * -----------------------------------------------------------------------------
+	 * ----------------------- * Private Methods
+	 * -----------------------------------------------------------------------------
+	 * -----------------------
+	 */
 
 	private void loadDefaultConfiguration() {
 		try {
-			//System.out.println("Setting SimulationConfig.build to Build " + build);
+			// System.out.println("Setting SimulationConfig.build to Build " + build);
 			// Load simulation document
 			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 			// Load subset configuration classes.
@@ -741,7 +795,8 @@ public class SimulationConfig implements Serializable {
 			vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE, true));
 			buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, true));
 			resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
-			settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true), partPackageConfig);
+			settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true),
+					partPackageConfig);
 			manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE, true));
 			constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
 			// 2014-11-23 Added Food Production
@@ -752,52 +807,51 @@ public class SimulationConfig implements Serializable {
 			robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
 			// 2016-06-08 Added quotationConfig
 			quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
-			//logger.info("Done loading all xml files");
+			// logger.info("Done loading all xml files");
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,"Error reading config file(s) below : " + e.getMessage());
+			logger.log(Level.SEVERE, "Error reading config file(s) below : " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 
-
 	/**
 	 * Gets a configuration file as an input stream.
+	 * 
 	 * @param filename the filename of the configuration file.
 	 * @return input stream
 	 * @throws IOException if file cannot be found.
 	 */
 	private static InputStream getInputStream(String filename) throws IOException {
-		/* [landrus, 28.11.09]: dont use filesystem separators in classloader loading envs. */
+		/*
+		 * [landrus, 28.11.09]: dont use filesystem separators in classloader loading
+		 * envs.
+		 */
 		String fullPathName = "/conf/" + filename + ".xml";
 		InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
-		if (stream == null) throw new IOException(fullPathName + " failed to load");
+		if (stream == null)
+			throw new IOException(fullPathName + " failed to load");
 		return stream;
 	}
 
-
-/*
-	public int testValue(String str, String name) {
-		int result = 0;
-
-		if ((str == null) || str.trim().length() == 0)
-			throw new IllegalStateException(name + " must be greater than zero and cannot be blank.");
-		else {
-			try {
-		         result = Integer.parseInt(str);
-
-		         if (result > 200 || result < 1)
-		 			throw new IllegalStateException(name + " must be between 1 and 200.");
-
-
-		      } catch (NumberFormatException nfe) {
-		         System.out.println(name + " has NumberFormatException : " + nfe.getMessage());
-		      }
-		}
-
-		return result;
-
-	}
-*/
+	/*
+	 * public int testValue(String str, String name) { int result = 0;
+	 * 
+	 * if ((str == null) || str.trim().length() == 0) throw new
+	 * IllegalStateException(name +
+	 * " must be greater than zero and cannot be blank."); else { try { result =
+	 * Integer.parseInt(str);
+	 * 
+	 * if (result > 200 || result < 1) throw new IllegalStateException(name +
+	 * " must be between 1 and 200.");
+	 * 
+	 * 
+	 * } catch (NumberFormatException nfe) { System.out.println(name +
+	 * " has NumberFormatException : " + nfe.getMessage()); } }
+	 * 
+	 * return result;
+	 * 
+	 * }
+	 */
 
 	/**
 	 * Prepares all configuration objects for garbage collection.

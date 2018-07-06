@@ -643,6 +643,20 @@ public class ClockUtils implements Serializable {
 	}
 
 
+	/*
+	 * Gets Universal Mars Time (UMT) in millisols 
+	 * 
+	 * @return String in "###.###"
+	 */
+	public static String getFormattedMillisolString(double s) {
+
+		DecimalFormat fmt = new DecimalFormat("###.###");
+		s = s * 3_600_000.0 / SECONDS_PER_SOLAR_DAY_ON_MARS ;
+
+		return fmt.format(s);
+
+	}
+	
 	public void destroy() {
 
 	}

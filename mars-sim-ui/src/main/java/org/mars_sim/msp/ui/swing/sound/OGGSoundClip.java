@@ -22,9 +22,7 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.jcraft.jogg.Packet;
 import com.jcraft.jogg.Page;
@@ -47,15 +45,15 @@ public class OGGSoundClip {
 	private byte[] buffer = null;
 	private int bytes = 0;
 
-	private float balance;
-	private float volume = .5f;
-	
+	private double balance;
+	private double volume = .5f;
+
 	private boolean mute = false;
 	private boolean paused;
 	private boolean isMasterGainSupported;
 
 	private byte[] convbuffer = new byte[convsize];
-	
+
 	private String name;
 
 	private static FloatControl floatControl;
@@ -72,23 +70,20 @@ public class OGGSoundClip {
 	private BufferedInputStream bitStream = null;
 	private Thread playerThread = null;
 
-
 	/**
 	 * Create a new clip based on a reference into the class path
 	 *
-	 * @param ref
-	 *            The reference into the class path which the OGG can be read
-	 *            from
-	 * @throws IOException
-	 *             Indicated a failure to find the resource
+	 * @param ref The reference into the class path which the OGG can be read from
+	 * @throws IOException Indicated a failure to find the resource
 	 */
 	public OGGSoundClip(String ref) throws IOException {
 		name = ref;
-		
+
 		try {
-			init(Thread.currentThread().getContextClassLoader().getResourceAsStream(SoundConstants.SOUNDS_ROOT_PATH + ref));
+			init(Thread.currentThread().getContextClassLoader()
+					.getResourceAsStream(SoundConstants.SOUNDS_ROOT_PATH + ref));
 		} catch (IOException e) {
-			//throw new IOException("Couldn't find: " + ref);
+			// throw new IOException("Couldn't find: " + ref);
 			logger.log(Level.SEVERE, "Couldn't find: " + ref);
 		}
 	}
@@ -96,10 +91,8 @@ public class OGGSoundClip {
 	/**
 	 * Create a new clip based on a reference into the class path
 	 *
-	 * @param in
-	 *            The stream from which the OGG can be read from
-	 * @throws IOException
-	 *             Indicated a failure to read from the stream
+	 * @param in The stream from which the OGG can be read from
+	 * @throws IOException Indicated a failure to read from the stream
 	 */
 	public OGGSoundClip(InputStream in) throws IOException {
 		init(in);
@@ -112,57 +105,45 @@ public class OGGSoundClip {
 		determineGain(AudioPlayer.DEFAULT_VOL);
 	}
 
-	public float getVol() {
+	public double getVol() {
 		return volume;
 	}
 
 	/**
 	 * Attempt to set the global gain for the playback. If the control is not
-	 * supported this method has no effect. 1.0 will set maximum gain, 0.0
-	 * minimum gain
+	 * supported this method has no effect. 1.0 will set maximum gain, 0.0 minimum
+	 * gain
 	 *
-	 * @param gain
-	 *            The gain value
-
-	public void setGain(float gain) {
-		if (gain != -1) {
-			if ((gain < 0) || (gain > 1)) {
-				throw new IllegalArgumentException("Volume must be between 0.0 and 1.0");
-			}
-		}
-
-		this.gain = gain;
-
-		if (outputLine == null) {
-			return;
-		}
-
-		try {
-			FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
-			if (gain == -1) {
-				control.setValue(0);
-			} else {
-				float max = control.getMaximum();
-				float min = control.getMinimum(); // negative values all seem to
-													// be zero?
-				float range = max - min;
-
-				control.setValue(min + (range * gain));
-			}
-		} catch (IllegalArgumentException e) {
-			// gain not supported
-			e.printStackTrace();
-		}
-	}
- */
-
+	 * @param gain The gain value
+	 * 
+	 *             public void setGain(float gain) { if (gain != -1) { if ((gain <
+	 *             0) || (gain > 1)) { throw new IllegalArgumentException("Volume
+	 *             must be between 0.0 and 1.0"); } }
+	 * 
+	 *             this.gain = gain;
+	 * 
+	 *             if (outputLine == null) { return; }
+	 * 
+	 *             try { FloatControl control = (FloatControl)
+	 *             outputLine.getControl(FloatControl.Type.MASTER_GAIN); if (gain ==
+	 *             -1) { control.setValue(0); } else { float max =
+	 *             control.getMaximum(); float min = control.getMinimum(); //
+	 *             negative values all seem to // be zero? float range = max - min;
+	 * 
+	 *             control.setValue(min + (range * gain)); } } catch
+	 *             (IllegalArgumentException e) { // gain not supported
+	 *             e.printStackTrace(); } }
+	 */
 
 	/**
-	 * Compute the gain value for the playback--based on the new value of volume in the increment or decrement of 0.05f.
+	 * Compute the gain value for the playback--based on the new value of volume in
+	 * the increment or decrement of 0.05f.
+	 * 
 	 * @param volume the volume
 	 */
-	public void determineGain(float volume) {
-		//System.out.println("OGGSoundClip's setGain() is on " + Thread.currentThread().getName());
+	public void determineGain(double volume) {
+		// System.out.println("OGGSoundClip's setGain() is on " +
+		// Thread.currentThread().getName());
 
 		if (volume > 1)
 			volume = 1;
@@ -171,7 +152,7 @@ public class OGGSoundClip {
 
 		this.volume = volume;
 
-		//System.out.println("volume : " + volume);
+		// System.out.println("volume : " + volume);
 
 		if (outputLine == null) {
 			return;
@@ -179,110 +160,93 @@ public class OGGSoundClip {
 
 		try {
 			// Note: control is supposed to be in decibel (dB)
-			//FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
+			// FloatControl control = (FloatControl)
+			// outputLine.getControl(FloatControl.Type.MASTER_GAIN);
 
-			//DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, AudioSystem.NOT_SPECIFIED);
-			//SourceDataLine dataLine = (SourceDataLine) AudioSystem.getLine(info);
-			//outputLine.open();
+			// DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat,
+			// AudioSystem.NOT_SPECIFIED);
+			// SourceDataLine dataLine = (SourceDataLine) AudioSystem.getLine(info);
+			// outputLine.open();
 			// Adjust the volume on the output line.
 			if (isMasterGainSupported) {
-			    // If inside this if, the Master_Gain must be supported. Yes? // In ubuntu linux 17.04, it is not supported
-				//floatControl = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
-			    // This line throws an exception. "Master_Gain not supported"
-				//control.setValue( 100.0F );
+				// If inside this if, the Master_Gain must be supported. Yes? // In ubuntu linux
+				// 17.04, it is not supported
+				// floatControl = (FloatControl)
+				// outputLine.getControl(FloatControl.Type.MASTER_GAIN);
+				// This line throws an exception. "Master_Gain not supported"
+				// control.setValue( 100.0F );
 
-
-				//  A positive gain amplifies (boosts) the signal's volume,
-				//  A negative gain attenuates (cuts) it.
-				// The gain setting defaults to a value of 0.0 dB, meaning the signal's loudness is unaffected.
+				// A positive gain amplifies (boosts) the signal's volume,
+				// A negative gain attenuates (cuts) it.
+				// The gain setting defaults to a value of 0.0 dB, meaning the signal's loudness
+				// is unaffected.
 				// Note that gain measures dB, not amplitude.
-				
-				
-				float max = floatControl.getMaximum();
-				float min = floatControl.getMinimum();
 
-/*				
-				float range = max - min;
-				float step = range/100f;
+				double max = floatControl.getMaximum();
+				double min = floatControl.getMinimum();
 
-				float num = gain/0.05f;
-				float value = min + num * step;
+				/*
+				 * float range = max - min; float step = range/100f;
+				 * 
+				 * float num = gain/0.05f; float value = min + num * step;
+				 * 
+				 * if (value < min) value = min; else if (value > max) value = max;
+				 */
 
-				if (value < min)
-					value = min;
-				else if (value > max)
-					value = max;
-*/
-				
-			
-				float value = (max - min/2f) * volume + min/2f; 
-						
-				if (value <= min/2)
-					floatControl.setValue(min);
+				double value = (max - min / 2f) * volume + min / 2f;
+
+				if (value <= min / 2)
+					floatControl.setValue((float)min);
 				else
-					floatControl.setValue(value);
+					floatControl.setValue((float)value);
 
-				//System.out.println("max : " + max); // = 6.0206
-				//System.out.println("min : " + min); // = -80.0
-				//System.out.println("range : " + range);
-				//System.out.println("step : " + step);
-				//System.out.println("value : " + value);
-			}
-			else {
+				// System.out.println("max : " + max); // = 6.0206
+				// System.out.println("min : " + min); // = -80.0
+				// System.out.println("range : " + range);
+				// System.out.println("step : " + step);
+				// System.out.println("value : " + value);
+			} else {
 				// in case of some versions of linux in which MASTER_GAIN is not supported
 				logger.log(Level.SEVERE, "Please ensure sound driver is working. MasterGain not supported. ");
 				disableSound();
 			}
 
-
 		} catch (IllegalArgumentException e) {
-			// TODO: how to resolve 'IllegalArgumentException: Master Gain not supported' in ubuntu ?
-			//e.printStackTrace();
+			// TODO: how to resolve 'IllegalArgumentException: Master Gain not supported' in
+			// ubuntu ?
+			// e.printStackTrace();
 			logger.log(Level.SEVERE, "Please ensure sound interface is working. Speakers NOT detected. " + e);
 			disableSound();
 		}
 
 	}
 
-	//public float getVolume() {
-	//	return volume;
-	//}
+	// public float getVolume() {
+	// return volume;
+	// }
 
 	/*
-	public void setVolume() {
-		try {
-		// use FloatControl.Type.VOLUME
-			FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.VOLUME);
-			float max = control.getMaximum();
-			float min = control.getMinimum();
-			float range = max - min;
-			float value = min + (range * gain);
-			if (value < min)
-				value = min;
-			else if (value > max)
-				value = max;
-
-			control.setValue(value);
-
-			System.out.println("max : " + max);
-			System.out.println("min : " + min);
-			System.out.println("range : " + range);
-			System.out.println("value : " + value);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		}
-	}
-*/
+	 * public void setVolume() { try { // use FloatControl.Type.VOLUME FloatControl
+	 * control = (FloatControl) outputLine.getControl(FloatControl.Type.VOLUME);
+	 * float max = control.getMaximum(); float min = control.getMinimum(); float
+	 * range = max - min; float value = min + (range * gain); if (value < min) value
+	 * = min; else if (value > max) value = max;
+	 * 
+	 * control.setValue(value);
+	 * 
+	 * System.out.println("max : " + max); System.out.println("min : " + min);
+	 * System.out.println("range : " + range); System.out.println("value : " +
+	 * value); } catch (IllegalArgumentException e) { e.printStackTrace(); } }
+	 */
 
 	/**
-	 * Attempt to set the balance between the two speakers. -1.0 is full left
-	 * speak, 1.0 if full right speaker. Anywhere in between moves between the
-	 * two speakers. If the control is not supported this method has no effect
+	 * Attempt to set the balance between the two speakers. -1.0 is full left speak,
+	 * 1.0 if full right speaker. Anywhere in between moves between the two
+	 * speakers. If the control is not supported this method has no effect
 	 *
-	 * @param balance
-	 *            The balance value
+	 * @param balance The balance value
 	 */
-	public void setBalance(float balance) {
+	public void setBalance(double balance) {
 		this.balance = balance;
 
 		if (outputLine == null) {
@@ -291,7 +255,7 @@ public class OGGSoundClip {
 
 		try {
 			FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.BALANCE);
-			control.setValue(balance);
+			control.setValue((float)balance);
 		} catch (IllegalArgumentException e) {
 			// balance not supported
 			disableSound();
@@ -321,14 +285,10 @@ public class OGGSoundClip {
 
 	/**
 	 * Pause the playback
-
-	public void pause() {
-		paused = true;
-		//oldGain = gain;
-		determineGain(0);
-	}
+	 * 
+	 * public void pause() { paused = true; //oldGain = gain; determineGain(0); }
 	 */
-	
+
 	/**
 	 * Check if the stream is paused
 	 *
@@ -340,7 +300,7 @@ public class OGGSoundClip {
 
 	/**
 	 * Resume the playback
-	 */	 
+	 */
 	public void resume() {
 		if (!paused) {
 			play();
@@ -354,11 +314,10 @@ public class OGGSoundClip {
 				playerThread.notify();
 			}
 		}
-		
-		//determineGain(oldGain);
+
+		// determineGain(oldGain);
 	}
 
-	
 	/**
 	 * Check if the clip has been stopped
 	 *
@@ -371,14 +330,12 @@ public class OGGSoundClip {
 	/**
 	 * Initialise the OGG clip
 	 *
-	 * @param in
-	 *            The stream we're going to read from
-	 * @throws IOException
-	 *             Indicates a failure to read from the stream
+	 * @param in The stream we're going to read from
+	 * @throws IOException Indicates a failure to read from the stream
 	 */
 	private void init(InputStream in) throws IOException {
 		if (in == null) {
-			//throw new IOException("Couldn't find input source");
+			// throw new IOException("Couldn't find input source");
 			logger.log(Level.SEVERE, "Couldn't find input source");
 			disableSound();
 		}
@@ -390,7 +347,8 @@ public class OGGSoundClip {
 	 * Play the clip once - for sound effects
 	 */
 	public void play() {
-		//System.out.println("OGGSoundClip's play() is on " + Thread.currentThread().getName());
+		// System.out.println("OGGSoundClip's play() is on " +
+		// Thread.currentThread().getName());
 		stop();
 
 		try {
@@ -403,18 +361,19 @@ public class OGGSoundClip {
 
 		playerThread = new Thread() {
 			public void run() {
-				//try {
-					playStream(Thread.currentThread());
-				//} catch (InternalException e) {
-					//e.printStackTrace();
-				//	logger.log(Level.SEVERE, "InternalException", e.getMessage());
-				//}
+				// try {
+				playStream(Thread.currentThread());
+				// } catch (InternalException e) {
+				// e.printStackTrace();
+				// logger.log(Level.SEVERE, "InternalException", e.getMessage());
+				// }
 
 				try {
 					bitStream.reset();
 				} catch (IOException e) {
-					//e.printStackTrace();
-					logger.log(Level.SEVERE, "Trouble resetting the bit stream for the audio file " + name, e.getMessage());
+					// e.printStackTrace();
+					logger.log(Level.SEVERE, "Trouble resetting the bit stream for the audio file " + name,
+							e.getMessage());
 					disableSound();
 				}
 			};
@@ -437,26 +396,28 @@ public class OGGSoundClip {
 
 		playerThread = new Thread() {
 			public void run() {
-				//while (playerThread == Thread.currentThread()) {
-					try {
-						playStream(Thread.currentThread());
-					} catch (Exception e) {
-					//	logger.log(Level.SEVERE, "Troubleshooting audio : have you plugged in a speaker/headphone? "
-					//			+ "Please check your audio source.", e.getMessage());
-						//e.printStackTrace();
-						playerThread = null;
-						logger.log(Level.SEVERE, "Can't play the bit stream. ", e.getMessage());
-						disableSound();
-					}
+				// while (playerThread == Thread.currentThread()) {
+				try {
+					playStream(Thread.currentThread());
+				} catch (Exception e) {
+					// logger.log(Level.SEVERE, "Troubleshooting audio : have you plugged in a
+					// speaker/headphone? "
+					// + "Please check your audio source.", e.getMessage());
+					// e.printStackTrace();
+					playerThread = null;
+					logger.log(Level.SEVERE, "Can't play the bit stream. ", e.getMessage());
+					disableSound();
+				}
 
-					try {
-						bitStream.reset();
-					} catch (IOException e) {
-						//e.printStackTrace();
-						logger.log(Level.SEVERE, "Trouble reseting the bit stream for the background track " + name, e.getMessage());
-						disableSound();
-					}
-				//}
+				try {
+					bitStream.reset();
+				} catch (IOException e) {
+					// e.printStackTrace();
+					logger.log(Level.SEVERE, "Trouble reseting the bit stream for the background track " + name,
+							e.getMessage());
+					disableSound();
+				}
+				// }
 			};
 		};
 		playerThread.setDaemon(true);
@@ -468,11 +429,11 @@ public class OGGSoundClip {
 //			MainScene.disableSound();
 //		}
 //		else
-			AudioPlayer.disableSound();
-		
+		AudioPlayer.disableSound();
+
 		MainMenu.disableSound();
 	}
-	
+
 	/**
 	 * Stop the clip playing
 	 */
@@ -501,42 +462,41 @@ public class OGGSoundClip {
 	 */
 	private void initJavaSound(int channels, int rate) {
 		try {
-			AudioFormat audioFormat = new AudioFormat(rate, 16, channels,
-					true, // PCM_Signed
+			AudioFormat audioFormat = new AudioFormat(rate, 16, channels, true, // PCM_Signed
 					false // littleEndian
-					);
-			
+			);
+
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, AudioSystem.NOT_SPECIFIED);
 
 			try {
 				outputLine = (SourceDataLine) AudioSystem.getLine(info);
 				// outputLine.addLineListener(this);
 				outputLine.open(audioFormat);
-				
+
 				if (!AudioSystem.isLineSupported(info)) {
-					//throw new Exception("Line " + info + " not supported.");
+					// throw new Exception("Line " + info + " not supported.");
 					logger.log(Level.SEVERE, "Sound system NOT supported. ");
 					disableSound();
 				}
-					
+
 				isMasterGainSupported = outputLine.isControlSupported(FloatControl.Type.MASTER_GAIN);
 				if (!isMasterGainSupported) {
 					// in case of some versions of linux in which MASTER_GAIN is not supported
 					logger.log(Level.SEVERE, "MasterGain NOT supported in this machine. Run the sim without audio");
 					disableSound();
-				}
-				else
+				} else
 					floatControl = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
-				
+
 			} catch (LineUnavailableException ex) {
-				//throw new Exception("Unable to open the sourceDataLine: " + ex);
+				// throw new Exception("Unable to open the sourceDataLine: " + ex);
 				logger.log(Level.SEVERE, "Unable to open the sourceDataLine: " + ex);
 				disableSound();
-				
+
 			} catch (IllegalArgumentException ex) {
-				//throw new Exception("Illegal Argument: " + ex);
-				//logger.log(Level.SEVERE, "Illegal Argument: " + ex);
-				logger.log(Level.SEVERE, "Sound line/system NOT detected. Please ensure speakers are plugged in. Run the sim without audio");
+				// throw new Exception("Illegal Argument: " + ex);
+				// logger.log(Level.SEVERE, "Illegal Argument: " + ex);
+				logger.log(Level.SEVERE,
+						"Sound line/system NOT detected. Please ensure speakers are plugged in. Run the sim without audio");
 				disableSound();
 			}
 
@@ -547,7 +507,7 @@ public class OGGSoundClip {
 			determineGain(volume);
 		} catch (Exception ee) {
 			logger.log(Level.SEVERE, "Sound system NOT supported. Run the sim without audio." + ee);
-			disableSound();		
+			disableSound();
 		}
 	}
 
@@ -590,7 +550,7 @@ public class OGGSoundClip {
 	/*
 	 * Taken from the JOrbis Player
 	 */
-	private void playStream(Thread me) {//throws InternalException {
+	private void playStream(Thread me) {// throws InternalException {
 		boolean chained = false;
 
 		initJOrbis();
@@ -607,7 +567,7 @@ public class OGGSoundClip {
 			try {
 				bytes = bitStream.read(buffer, index, BUFSIZE);
 			} catch (Exception e) {
-				//throw new InternalException(e);
+				// throw new InternalException(e);
 				logger.log(Level.SEVERE, "Audio Troubleshooting : have a speaker/headphone been plugged in ? "
 						+ "Please check your audio source.", e.getMessage());
 			}
@@ -620,7 +580,7 @@ public class OGGSoundClip {
 				if (oy.pageout(og) != 1) {
 					if (bytes < BUFSIZE)
 						break;
-					//throw new InternalException("Input does not appear to be an Ogg bitstream.");
+					// throw new InternalException("Input does not appear to be an Ogg bitstream.");
 					logger.log(Level.SEVERE, "Input does not appear to be an Ogg bitstream.");
 				}
 			}
@@ -632,19 +592,21 @@ public class OGGSoundClip {
 
 			if (os.pagein(og) < 0) {
 				// error; stream version mismatch perhaps
-				//throw new InternalException("Error reading first page of OGG bitstream data.");
+				// throw new InternalException("Error reading first page of OGG bitstream
+				// data.");
 				logger.log(Level.SEVERE, "Error reading first page of OGG bitstream data.");
 			}
 
 			if (os.packetout(op) != 1) {
 				// no page? must not be vorbis
-				//throw new InternalException("Error reading initial header packet.");
+				// throw new InternalException("Error reading initial header packet.");
 				logger.log(Level.SEVERE, "Error reading initial header packet.");
 			}
 
 			if (vi.synthesis_headerin(vc, op) < 0) {
 				// error case; not a vorbis header
-				//throw new InternalException("This Ogg bitstream does not contain Vorbis audio data.");
+				// throw new InternalException("This Ogg bitstream does not contain Vorbis audio
+				// data.");
 				logger.log(Level.SEVERE, "This Ogg bitstream does not contain Vorbis audio data.");
 			}
 
@@ -666,7 +628,7 @@ public class OGGSoundClip {
 							if (result == 0)
 								break;
 							if (result == -1) {
-								//throw new InternalException("Corrupt secondary header. Exiting.");
+								// throw new InternalException("Corrupt secondary header. Exiting.");
 								logger.log(Level.SEVERE, "Corrupt secondary header. Exiting.");
 							}
 							vi.synthesis_headerin(vc, op);
@@ -680,11 +642,12 @@ public class OGGSoundClip {
 				try {
 					bytes = bitStream.read(buffer, index, BUFSIZE);
 				} catch (Exception e) {
-					//throw new InternalException(e);
+					// throw new InternalException(e);
 					logger.log(Level.SEVERE, "Exception", e.getMessage());
 				}
 				if (bytes == 0 && i < 2) {
-					//throw new InternalException("End of file before finding all Vorbis headers!");
+					// throw new InternalException("End of file before finding all Vorbis
+					// headers!");
 					logger.log(Level.SEVERE, "End of file before finding all Vorbis headers!");
 				}
 				oy.wrote(bytes);
@@ -791,7 +754,7 @@ public class OGGSoundClip {
 					try {
 						bytes = bitStream.read(buffer, index, BUFSIZE);
 					} catch (Exception e) {
-						//throw new InternalException(e);
+						// throw new InternalException(e);
 						logger.log(Level.SEVERE, "Exception", e.getMessage());
 					}
 					if (bytes == -1) {
@@ -822,35 +785,29 @@ public class OGGSoundClip {
 
 		if (outputLine == null) {
 			return;
-		}
-		else if (outputLine.isControlSupported(BooleanControl.Type.MUTE)) {
+		} else if (outputLine.isControlSupported(BooleanControl.Type.MUTE)) {
 			BooleanControl muteControl = (BooleanControl) outputLine.getControl(BooleanControl.Type.MUTE);
 			muteControl.setValue(mute);
 
-			//if (!mute)
-			//	setGain(oldGain);
+			// if (!mute)
+			// setGain(oldGain);
 		}
 
 	}
-	
+
 	public String toString() {
 		return name;
 	}
-/*
-	private class InternalException extends Exception {
+	/*
+	 * private class InternalException extends Exception {
+	 * 
+	 * private static final long serialVersionUID = 1L;
+	 * 
+	 * public InternalException(Exception e) { super(e); }
+	 * 
+	 * public InternalException(String msg) { super(msg); } }
+	 */
 
-		private static final long serialVersionUID = 1L;
-
-		public InternalException(Exception e) {
-			super(e);
-		}
-
-		public InternalException(String msg) {
-			super(msg);
-		}
-	}
-*/
-	
 	public void destroy() {
 		oy = null;
 		os = null;
@@ -865,5 +822,5 @@ public class OGGSoundClip {
 		bitStream = null;
 		playerThread = null;
 	}
-	
+
 }

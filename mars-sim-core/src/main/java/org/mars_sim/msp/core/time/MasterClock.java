@@ -214,7 +214,7 @@ public class MasterClock implements Serializable {
 
 	public void testNewMarsLandingDayTime() {
 		// Create an Earth clock
-		EarthClock c = new EarthClock("2015-07-14 09:53:18.0");
+		EarthClock c = new EarthClock("2028-08-17 15:23:13.740");
 		// "2004-01-04 00:00:00.000"
 		// "2004-01-03 13:46:31.000" degW = 84.702 , <-- used this
 		// "2000-01-06 00:00:00.000" degW = 0 ,
@@ -227,7 +227,7 @@ public class MasterClock implements Serializable {
 		// Universal Time
 		// "2015-07-14 09:53:18.0"
 
-		// "2028-07-14 00:00:00.000"
+		// "2028-08-17 00:00:00.000"
 
 		// Use the EarthClock instance c from above for the computation below :
 		ClockUtils.getFirstLandingDateTime();
@@ -264,13 +264,16 @@ public class MasterClock implements Serializable {
 		String EOT_Str = ClockUtils.getFormattedTimeString(EOT_hr);
 		logger.info("EOT_Str is " + EOT_Str);
 
-		double MTC = ClockUtils.getMTC1(c);
-		logger.info("MTC1 is " + MTC);
-		double MTC_Adj = ClockUtils.getMTC1(c);
-		logger.info("MTC_Adj is " + MTC_Adj);
-		String MTCStr = ClockUtils.getFormattedTimeString(MTC_Adj);
+		double MTC0 = ClockUtils.getMTC0(c);
+		logger.info("MTC0 is " + MTC0);
+		double MTC1 = ClockUtils.getMTC1(c);
+		logger.info("MTC1 is " + MTC1);
+		String MTCStr = ClockUtils.getFormattedTimeString(MTC1);
 		logger.info("MTC_Str is " + MTCStr);
 
+		String millisols = ClockUtils.getFormattedMillisolString(MTC1);
+		logger.info("millisols is " + millisols);
+		
 		double LMST = ClockUtils.getLMST(c, 0);// 184.702);
 		logger.info("LMST is " + LMST);
 		String LMST_Str = ClockUtils.getFormattedTimeString(LMST);
@@ -889,7 +892,6 @@ public class MasterClock implements Serializable {
 	public void setPaused(boolean isPaused, boolean showPane) {
 		// logger.info("MasterClock's setPaused() is on " +
 		// Thread.currentThread().getName());
-		// System.out.println("MasterClock : calling setPaused()");
 		uptimer.setPaused(isPaused);
 
 		if (isPaused && sim.getAutosaveTimer() != null && !sim.getAutosaveTimer().isShutdown()

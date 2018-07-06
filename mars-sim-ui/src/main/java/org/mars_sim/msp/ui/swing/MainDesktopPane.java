@@ -31,7 +31,6 @@ import javafx.scene.control.SingleSelectionModel;
 
 import javax.swing.ImageIcon;
 
-
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
@@ -52,7 +51,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.javafx.BrowserJFX;
@@ -138,8 +136,7 @@ public class MainDesktopPane extends WebDesktopPane
 	/**
 	 * Constructor 1.
 	 * 
-	 * @param mainWindow
-	 *            the main outer window
+	 * @param mainWindow the main outer window
 	 */
 	public MainDesktopPane(MainWindow mainWindow) {
 		super();
@@ -152,8 +149,7 @@ public class MainDesktopPane extends WebDesktopPane
 	/**
 	 * Constructor 2.
 	 * 
-	 * @param mainScene
-	 *            the main scene
+	 * @param mainScene the main scene
 	 */
 	public MainDesktopPane(MainScene mainScene) {
 
@@ -162,9 +158,8 @@ public class MainDesktopPane extends WebDesktopPane
 		init();
 	}
 
-	// 2015-02-04 Added init()
 	public void init() {
-		// logger.info("init() is on " + Thread.currentThread().getName() + " Thread");	
+		// logger.info("init() is on " + Thread.currentThread().getName() + " Thread");
 		// Set background color to black
 		setBackground(Color.black);
 
@@ -193,7 +188,7 @@ public class MainDesktopPane extends WebDesktopPane
 
 		// Initialize data members
 		soundPlayer = new AudioPlayer(this);
-		
+
 		if (mainScene == null && !MainMenu.isSoundDisabled() && !soundPlayer.isSoundDisabled())
 			soundPlayer.playRandomMusicTrack();
 
@@ -221,8 +216,7 @@ public class MainDesktopPane extends WebDesktopPane
 	 * logoLabel on MainWindow and set backgroundLabel to the size of
 	 * MainDesktopPane.
 	 * 
-	 * @param e
-	 *            the component event
+	 * @param e the component event
 	 */
 	@Override
 	public void componentResized(ComponentEvent e) {
@@ -258,7 +252,7 @@ public class MainDesktopPane extends WebDesktopPane
 	@Override
 	public void componentMoved(ComponentEvent e) {
 		logger.info("componentMoved()");
-		//updateToolWindow();
+		// updateToolWindow();
 	}
 
 	@Override
@@ -347,9 +341,8 @@ public class MainDesktopPane extends WebDesktopPane
 	}
 
 	/**
-	 * sets up this class with two listeners
+	 * Sets up this class with two listeners
 	 */
-	// 2014-12-19 Added prepareListeners()
 	public void prepareListeners() {
 		// logger.info("MainDesktopPane's prepareListeners() is on " +
 		// Thread.currentThread().getName() + " Thread");
@@ -396,8 +389,7 @@ public class MainDesktopPane extends WebDesktopPane
 	 * logoLabel on MainWindow and set backgroundLabel to the size of
 	 * MainDesktopPane.
 	 * 
-	 * @param e
-	 *            the component event
+	 * @param e the component event
 	 * 
 	 * @Override public void componentResized(ComponentEvent e) {
 	 * 
@@ -441,7 +433,7 @@ public class MainDesktopPane extends WebDesktopPane
 	private void prepareToolWindows() {
 		// logger.info("MainDesktopPane's prepareToolWindows() is on " +
 		// Thread.currentThread().getName() + " Thread");
-	
+
 		if (toolWindows != null)
 			toolWindows.clear();
 
@@ -481,7 +473,7 @@ public class MainDesktopPane extends WebDesktopPane
 		}
 		toolWindows.add(settlementWindow);
 		setSettlementWindow(settlementWindow);
-		
+
 		// Prepare science tool window
 		ScienceWindow scienceWindow = new ScienceWindow(this);
 		try {
@@ -497,7 +489,7 @@ public class MainDesktopPane extends WebDesktopPane
 		} catch (PropertyVetoException e) {
 		}
 		toolWindows.add(guideWindow);
-		
+
 		// Prepare monitor tool window
 		MonitorWindow monitorWindow = new MonitorWindow(this);
 		try {
@@ -542,8 +534,7 @@ public class MainDesktopPane extends WebDesktopPane
 	/**
 	 * Returns a tool window for a given tool name
 	 * 
-	 * @param toolName
-	 *            the name of the tool window
+	 * @param toolName the name of the tool window
 	 * @return the tool window
 	 */
 	public ToolWindow getToolWindow(String toolName) {
@@ -555,8 +546,7 @@ public class MainDesktopPane extends WebDesktopPane
 	/**
 	 * Displays a new Unit model in the monitor window.
 	 * 
-	 * @param model
-	 *            the new model to display
+	 * @param model the new model to display
 	 */
 	public void addModel(UnitTableModel model) {
 		((MonitorWindow) getToolWindow(MonitorWindow.NAME)).displayModel(model);
@@ -567,8 +557,7 @@ public class MainDesktopPane extends WebDesktopPane
 	 * Centers the map and the globe on given coordinates. Also opens the map tool
 	 * if it's closed.
 	 * 
-	 * @param targetLocation
-	 *            the new center location
+	 * @param targetLocation the new center location
 	 */
 	public void centerMapGlobe(Coordinates targetLocation) {
 		((NavigatorWindow) getToolWindow(NavigatorWindow.NAME)).updateCoords(targetLocation);
@@ -578,8 +567,7 @@ public class MainDesktopPane extends WebDesktopPane
 	/**
 	 * Return true if an unit window is open.
 	 * 
-	 * @param unit
-	 *            window
+	 * @param unit window
 	 * @return true true if the unit window is open
 	 */
 	public boolean isUnitWindowOpen(UnitWindow w) {
@@ -593,8 +581,7 @@ public class MainDesktopPane extends WebDesktopPane
 	/**
 	 * Return true if tool window is open.
 	 * 
-	 * @param toolName
-	 *            the name of the tool window
+	 * @param toolName the name of the tool window
 	 * @return true true if tool window is open
 	 */
 	public boolean isToolWindowOpen(String toolName) {
@@ -605,10 +592,8 @@ public class MainDesktopPane extends WebDesktopPane
 	/**
 	 * Opens a tool window if necessary.
 	 * 
-	 * @param toolName
-	 *            the name of the tool window
+	 * @param toolName the name of the tool window
 	 */
-	@SuppressWarnings("restriction")
 	public void openToolWindow(String toolName) {
 		// logger.info("openToolWindow() is on " + Thread.currentThread().getName());
 		// either on JavaFX Application Thread or on AWT-EventQueue-0 Thread
@@ -637,7 +622,7 @@ public class MainDesktopPane extends WebDesktopPane
 				}
 
 				if (mainScene != null) {
-					// 2016-10-22 These 2 tools are in the Main Tab
+					// These 2 tools are in the Main Tab
 					if (toolName.equals(SearchWindow.NAME) || toolName.equals(TimeWindow.NAME)
 							|| toolName.equals(MonitorWindow.NAME) || toolName.equals(MissionWindow.NAME)
 							|| toolName.equals(ResupplyWindow.NAME) || toolName.equals(ScienceWindow.NAME)) {
@@ -671,14 +656,13 @@ public class MainDesktopPane extends WebDesktopPane
 		validate();
 		repaint();
 
-		// 2015-12-07 Added below to check the corresponding menu item
+		// Added below to check the corresponding menu item
 		if (mainScene != null) {
 			if (ssm == null)
 				ssm = mainScene.getJFXTabPane().getSelectionModel();
-			// System.out.println(toolName + " is running openToolWindow().");
 			Platform.runLater(() -> {
 
-				// 2016-10-22 Opening the first 3 tools will switch to the Desktop Tab
+				// Opening the first 3 tools will switch to the Desktop Tab
 				if (toolName.equals(NavigatorWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAP_TAB))
@@ -748,8 +732,7 @@ public class MainDesktopPane extends WebDesktopPane
 	/**
 	 * Closes a tool window if it is open
 	 * 
-	 * @param toolName
-	 *            the name of the tool window
+	 * @param toolName the name of the tool window
 	 */
 	@SuppressWarnings("restriction")
 	public void closeToolWindow(String toolName) {
@@ -769,10 +752,8 @@ public class MainDesktopPane extends WebDesktopPane
 	 * Creates and opens a window for a unit if it isn't already in existence and
 	 * open.
 	 * 
-	 * @param unit
-	 *            the unit the window is for.
-	 * @param initialWindow
-	 *            true if window is opened at UI startup.
+	 * @param unit          the unit the window is for.
+	 * @param initialWindow true if window is opened at UI startup.
 	 */
 	public void openUnitWindow(Unit unit, boolean initialWindow) {
 		UnitWindow tempWindow = null;
@@ -852,8 +833,7 @@ public class MainDesktopPane extends WebDesktopPane
 	/**
 	 * Finds an existing unit window for a unit.
 	 * 
-	 * @param unit
-	 *            the unit to search for.
+	 * @param unit the unit to search for.
 	 * @return existing unit window or null if none.
 	 */
 	public UnitWindow findUnitWindow(Unit unit) {
@@ -870,8 +850,7 @@ public class MainDesktopPane extends WebDesktopPane
 	/**
 	 * Disposes a unit window and button.
 	 *
-	 * @param unit
-	 *            the unit the window is for.
+	 * @param unit the unit the window is for.
 	 */
 	public void disposeUnitWindow(Unit unit) {
 
@@ -898,8 +877,7 @@ public class MainDesktopPane extends WebDesktopPane
 	/**
 	 * Disposes a unit window and button.
 	 *
-	 * @param window
-	 *            the unit window to dispose.
+	 * @param window the unit window to dispose.
 	 */
 	public void disposeUnitWindow(UnitWindow window) {
 
@@ -1076,7 +1054,7 @@ public class MainDesktopPane extends WebDesktopPane
 		int rX = (int) Math.round((desktop_size.width - window_size.width) / 2D);
 		int rY = (int) Math.round((desktop_size.height - window_size.height) / 2D);
 
-		// 2014-12-25 Added rX checking
+		// Added rX checking
 		if (rX < 0) {
 			rX = 0;
 		}
@@ -1092,8 +1070,7 @@ public class MainDesktopPane extends WebDesktopPane
 	/**
 	 * Gets a random location on the desktop for a given {@link WebInternalFrame}.
 	 * 
-	 * @param tempWindow
-	 *            an internal window
+	 * @param tempWindow an internal window
 	 * @return random point on the desktop
 	 */
 	private Point getRandomLocation(WebInternalFrame tempWindow) {
@@ -1101,7 +1078,7 @@ public class MainDesktopPane extends WebDesktopPane
 		Dimension desktop_size = getSize();
 		Dimension window_size = tempWindow.getSize();
 
-		// 2016-11-24 populate windows in grid=like starting position
+		// Populate windows in grid=like starting position
 		int w = desktop_size.width - window_size.width;
 		int rX = RandomUtil.getRandomInt(w / 20) * 20;
 		// (int) Math.round(Math.random() *
@@ -1114,14 +1091,14 @@ public class MainDesktopPane extends WebDesktopPane
 	}
 
 	/**
-	 * Gets the starting location on the desktop for a given {@link WebInternalFrame}.
+	 * Gets the starting location on the desktop for a given
+	 * {@link WebInternalFrame}.
 	 * 
 	 * @return a specific point on the desktop
 	 */
-	// 2016-11-26 getStartingLocation()
 	private Point getStartingLocation(WebInternalFrame f) {
 
-		// 2016-11-24 populate windows in grid=like starting position
+		// Populate windows in grid=like starting position
 		// int w = desktop_size.width - f_size.width;
 		int rX = 5;
 		int rY = 10;
@@ -1140,12 +1117,11 @@ public class MainDesktopPane extends WebDesktopPane
 //	public static void disableSound() {
 //		soundPlayer.disableSound();
 //	}
-	
+
 	/**
 	 * Opens a popup announcement window on the desktop.
 	 * 
-	 * @param announcement
-	 *            the announcement text to display.
+	 * @param announcement the announcement text to display.
 	 */
 	public void openAnnouncementWindow(String announcement) {
 		announcementWindow.setAnnouncement(announcement);
@@ -1195,7 +1171,9 @@ public class MainDesktopPane extends WebDesktopPane
 
 			// Note : Call updateComponentTreeUI() below is must-have or else Monitor Tool
 			// won't work
-			//SwingUtilities.updateComponentTreeUI(toolWindow); // does Weblaf throw Exception in thread "AWT-EventQueue-0" com.alee.managers.style.StyleException ?
+			// SwingUtilities.updateComponentTreeUI(toolWindow); // does Weblaf throw
+			// Exception in thread "AWT-EventQueue-0" com.alee.managers.style.StyleException
+			// ?
 		}
 	}
 
@@ -1205,7 +1183,7 @@ public class MainDesktopPane extends WebDesktopPane
 
 			window.update();
 			// });
-			//SwingUtilities.updateComponentTreeUI(window);
+			// SwingUtilities.updateComponentTreeUI(window);
 		}
 	}
 
@@ -1417,7 +1395,7 @@ public class MainDesktopPane extends WebDesktopPane
 
 	@Override
 	public void clockPulse(double time) {
-		// TODO Auto-generated method stub	
+		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -1429,28 +1407,28 @@ public class MainDesktopPane extends WebDesktopPane
 //				double freq = PERIOD_IN_MILLISOLS * Math.sqrt(masterClock.getTimeRatio());
 //				if (timeCache > PERIOD_IN_MILLISOLS * time) {
 //					System.out.println(masterClock.getTimeRatio() + " > " + Math.round(freq*100.0)/100.0);
-					updateWindows();
+				updateWindows();
 //					timeCache = 0;
 //				}
 			}
 		} else if (!isEmpty()) {
 //			timeCache = timeCache + time;
 //			if (timeCache > PERIOD_IN_MILLISOLS * Math.sqrt(masterClock.getTimeRatio())) {
-				updateWindows();
+			updateWindows();
 //				timeCache = 0;
 //			}
-		}		
+		}
 	}
-	
+
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		if (isPaused) {
-//			marqueeTicker.pauseMarqueeTimer(true);
-			soundPlayer.mute(true, true);
-		} else {
-//			marqueeTicker.pauseMarqueeTimer(false);
-			soundPlayer.unmute(true, true);
-		}
+//		if (isPaused) {
+////			marqueeTicker.pauseMarqueeTimer(true);
+//			soundPlayer.mute(true, true);
+//		} else {
+////			marqueeTicker.pauseMarqueeTimer(false);
+//			soundPlayer.unmute(true, true);
+//		}
 	}
 
 	public boolean isEmpty() {

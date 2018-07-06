@@ -18,9 +18,7 @@ import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
@@ -42,20 +40,16 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 //import com.alee.managers.language.data.TooltipWay;
 
-
 /**
  * The TimeWindow is a tool window that displays the current Martian and Earth
- * time.<br/>
- * The numbers below have been tweaked with some care. At 20, the realworld:sim
- * ratio is 1:1 above 20, the numbers start climbing logarithmically maxing out
- * at around 100K this is really fast Below 20, the simulation goes in slow
- * motion, 1:0.0004 is around the slowest. The increments may be so small at
- * this point that events can't progress at all. When run too quickly, lots of
- * accidents occur, and lots of settlers die.
+ * time.
  */
 public class TimeWindow extends ToolWindow implements ClockListener {
 
@@ -86,14 +80,16 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private static final double maxfracpos = minslider - 1d;
 
 	/** the "default" ratio that will be set at 50, the middle of the scale. */
-	public static double ratioatmid = 500D; // default value = 500D This avoids
-											// maven test error
+	public static double ratioatmid = 500D; 
+	// default value = 500D This avoids maven test error
 
 	// Data members
 	private int solElapsedCache = 0;
 
-	private String northernSeasonTip, northernSeasonCache = "";
-	private String southernSeasonTip, southernSeasonCache = "";
+	private String northernSeasonTip ="";
+	private String northernSeasonCache = "";
+	private String southernSeasonTip = "";
+	private String southernSeasonCache = "";
 
 	private Simulation sim;
 	/** Master Clock. */
@@ -107,33 +103,36 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** Martian calendar panel. */
 	private MarsCalendarDisplay calendarDisplay;
 	/** label for Martian time. */
-	private JLabel martianTimeLabel;
+	private WebLabel martianTimeLabel;
 	/** label for Martian month. */
-	private JLabel martianMonthLabel;
+	private WebLabel martianMonthLabel;
 	/** label for Northern hemisphere season. */
-	private JLabel northernSeasonLabel;
+	private WebLabel northernSeasonLabel;
 	/** label for Southern hemisphere season. */
-	private JLabel southernSeasonLabel;
+	private WebLabel southernSeasonLabel;
 	/** label for Earth time. */
-	private JLabel earthTimeLabel;
+	private WebLabel earthTimeLabel;
 	/** label for uptimer. */
-	private JLabel uptimeLabel;
+	private WebLabel uptimeLabel;
 	/** label for pulses per second label. */
-	private JLabel pulsespersecondLabel, pulsesLabel;
-
-	private JLabel timeRatioLabel, timeCompressionLabel;
-
+	private WebLabel pulsesPerSecLabel;
+	/** label for time ratio. */
+	private WebLabel timeRatioLabel;
+	/** label for time compression. */	
+	private WebLabel timeCompressionLabel;
 	/** slider for pulse. */
 	private JSliderMW pulseSlider;
-	private JButton pauseButton;
-	//private BalloonToolTip balloonToolTip;
+	/** button for pause. */
+	private WebButton pauseButton;
+	/** MainScene instance . */
 	private MainScene mainScene;
 
+	DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
+	
 	/**
 	 * Constructs a TimeWindow object
 	 *
-	 * @param desktop
-	 *            the desktop pane
+	 * @param desktop the desktop pane
 	 */
 	public TimeWindow(final MainDesktopPane desktop) {
 		// Use TimeWindow constructor
@@ -154,150 +153,139 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		marsTime = masterClock.getMarsClock();
 		earthTime = masterClock.getEarthClock();
 		uptimer = masterClock.getUpTimer();
-		//balloonToolTip = new BalloonToolTip();
 
 		// Get content pane
-		JPanel mainPane = new JPanel(new BorderLayout());
+		WebPanel mainPane = new WebPanel(new BorderLayout());
 		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
 
 		// Create Martian time panel
-		JPanel martianTimePane = new JPanel(new BorderLayout());
+		WebPanel martianTimePane = new WebPanel(new BorderLayout());
 		martianTimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		mainPane.add(martianTimePane, BorderLayout.NORTH);
 
 		// Create Martian time header label
-		JLabel martianTimeHeaderLabel = new JLabel(Msg.getString("TimeWindow.martianTime"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel martianTimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.martianTime"), WebLabel.CENTER); //$NON-NLS-1$
 		martianTimePane.add(martianTimeHeaderLabel, BorderLayout.NORTH);
 
 		// Create Martian time label
-		martianTimeLabel = new JLabel(marsTime.getDateTimeStamp(), JLabel.CENTER);
+		martianTimeLabel = new WebLabel(marsTime.getDateTimeStamp(), WebLabel.CENTER);
 		martianTimePane.add(martianTimeLabel, BorderLayout.SOUTH);
 
 		// Create Martian calendar panel
-		JPanel martianCalendarPane = new JPanel(new FlowLayout());
+		WebPanel martianCalendarPane = new WebPanel(new FlowLayout());
 		martianCalendarPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		mainPane.add(martianCalendarPane, BorderLayout.CENTER);
 
 		// Create Martian calendar month panel
-		JPanel calendarMonthPane = new JPanel(new BorderLayout());
+		WebPanel calendarMonthPane = new WebPanel(new BorderLayout());
 		martianCalendarPane.add(calendarMonthPane);
 
 		// Create martian month label
-		martianMonthLabel = new JLabel("Month of " + marsTime.getMonthName(), JLabel.CENTER);
+		martianMonthLabel = new WebLabel("Month of " + marsTime.getMonthName(), WebLabel.CENTER);
 		calendarMonthPane.add(martianMonthLabel, BorderLayout.NORTH);
 
 		// Create Martian calendar display
 		calendarDisplay = new MarsCalendarDisplay(marsTime, desktop);
-		JPanel innerCalendarPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		WebPanel innerCalendarPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		innerCalendarPane.setPreferredSize(new Dimension(140, 100));
 		innerCalendarPane.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		innerCalendarPane.add(calendarDisplay);
 		calendarMonthPane.add(innerCalendarPane, BorderLayout.CENTER);
 
-		JPanel emptyP = new JPanel();
-		JLabel emptyL = new JLabel(" ", JLabel.CENTER);
+		WebPanel emptyP = new WebPanel();
+		WebLabel emptyL = new WebLabel(" ", WebLabel.CENTER);
 		emptyP.add(emptyL);
 		emptyL.setMinimumSize(new Dimension(140, 15));
 		emptyP.setMinimumSize(new Dimension(140, 15));
 		calendarMonthPane.add(emptyP, BorderLayout.SOUTH);
 
-		JPanel southPane = new JPanel(new BorderLayout());
+		WebPanel southPane = new WebPanel(new BorderLayout());
 		mainPane.add(southPane, BorderLayout.SOUTH);
 
-		JPanel simulationPane = new JPanel(new BorderLayout());
+		WebPanel simulationPane = new WebPanel(new BorderLayout());
 		southPane.add(simulationPane, BorderLayout.SOUTH);
 
 		// Create Martian season panel
-		JPanel marsSeasonPane = new JPanel(new BorderLayout());
+		WebPanel marsSeasonPane = new WebPanel(new BorderLayout());
 		marsSeasonPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		southPane.add(marsSeasonPane, BorderLayout.NORTH);
 
 		// Create Martian season label
-		JLabel marsSeasonLabel = new JLabel(Msg.getString("TimeWindow.martianSeasons"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel marsSeasonLabel = new WebLabel(Msg.getString("TimeWindow.martianSeasons"), WebLabel.CENTER); //$NON-NLS-1$
 		marsSeasonPane.add(marsSeasonLabel, BorderLayout.NORTH);
 
 		// Create Northern season label
-		northernSeasonLabel = new JLabel(Msg.getString("TimeWindow.northernHemisphere", //$NON-NLS-1$
-				marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE)), JLabel.CENTER);
+		northernSeasonLabel = new WebLabel(Msg.getString("TimeWindow.northernHemisphere", //$NON-NLS-1$
+				marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE)), WebLabel.CENTER);
 		marsSeasonPane.add(northernSeasonLabel, BorderLayout.CENTER);
 
 		/*
 		 * String str = "<html>\t\tEarth vs Mars " +
-		 * "<br>\tSpring : 93 days vs 199 days" +
-		 * "<br>\tSummer : 94 days vs 184 days" +
+		 * "<br>\tSpring : 93 days vs 199 days" + "<br>\tSummer : 94 days vs 184 days" +
 		 * "<br>\tFall : 89 days vs 146 days" +
 		 * "<br>\tWinter : 89 days vs 158 days</html>";
 		 */
-		// balloonToolTip.createBalloonTip(northernSeasonLabel,
-		// northernSeasonTip);//Msg.getString("TimeWindow.season.toolTip"));
-		// //$NON-NLS-1$
 
 		// Create Southern season label
-		southernSeasonLabel = new JLabel(Msg.getString("TimeWindow.southernHemisphere", //$NON-NLS-1$
-				marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)), JLabel.CENTER);
+		southernSeasonLabel = new WebLabel(Msg.getString("TimeWindow.southernHemisphere", //$NON-NLS-1$
+				marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)), WebLabel.CENTER);
 		marsSeasonPane.add(southernSeasonLabel, BorderLayout.SOUTH);
 
-		// balloonToolTip.createBalloonTip(southernSeasonLabel,
-		// southernSeasonTip);//Msg.getString("TimeWindow.season.toolTip"),
-		// BalloonToolTip.Orientation.RIGHT_ABOVE); //$NON-NLS-1$
-
 		// Create Earth time panel
-		JPanel earthTimePane = new JPanel(new BorderLayout());
+		WebPanel earthTimePane = new WebPanel(new BorderLayout());
 		earthTimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		southPane.add(earthTimePane, BorderLayout.CENTER);
 
 		// Create Earth time header label
-		JLabel earthTimeHeaderLabel = new JLabel(Msg.getString("TimeWindow.earthTime"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel earthTimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.earthTime"), WebLabel.CENTER); //$NON-NLS-1$
 		earthTimePane.add(earthTimeHeaderLabel, BorderLayout.NORTH);
 
 		// Create Earth time label
-		earthTimeLabel = new JLabel(earthTime.getTimeStampF0(), JLabel.CENTER);
+		earthTimeLabel = new WebLabel(earthTime.getTimeStampF0(), WebLabel.CENTER);
 		earthTimePane.add(earthTimeLabel, BorderLayout.SOUTH);
 
 		// Create uptime panel
-		JPanel uptimePane = new JPanel(new BorderLayout());
+		WebPanel uptimePane = new WebPanel(new BorderLayout());
 		uptimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		simulationPane.add(uptimePane, BorderLayout.NORTH);
 
-		JPanel pulsespersecondPane = new JPanel(new BorderLayout());
+		WebPanel pulsespersecondPane = new WebPanel(new BorderLayout());
 		pulsespersecondPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		uptimePane.add(pulsespersecondPane, BorderLayout.SOUTH);
 
-		JPanel pausePane = new JPanel(new FlowLayout());
-		pauseButton = new JButton("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
+		WebPanel pausePane = new WebPanel(new FlowLayout());
+		pauseButton = new WebButton("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
 		pauseButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				masterClock.setPaused(!masterClock.isPaused(), false);
+				if (mainScene != null)
+					masterClock.setPaused(!masterClock.isPaused(), true);
+				else
+					masterClock.setPaused(!masterClock.isPaused(), false);
 			}
 		});
 		pausePane.add(pauseButton);
 
 		// Create uptime header label
-		JLabel uptimeHeaderLabel = new JLabel(Msg.getString("TimeWindow.simUptime"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel uptimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.simUptime"), WebLabel.CENTER); //$NON-NLS-1$
 		uptimePane.add(uptimeHeaderLabel, BorderLayout.NORTH);
 
-		JLabel pulsespersecondHeaderLabel = new JLabel(Msg.getString("TimeWindow.ticksPerSecond"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel pulsespersecondHeaderLabel = new WebLabel(Msg.getString("TimeWindow.ticksPerSecond"), WebLabel.CENTER); //$NON-NLS-1$
 		pulsespersecondPane.add(pulsespersecondHeaderLabel, BorderLayout.NORTH);
 
 		// Create uptime label
-		uptimeLabel = new JLabel(uptimer.getUptime(), JLabel.CENTER);
+		uptimeLabel = new WebLabel(uptimer.getUptime(), WebLabel.CENTER);
 		uptimePane.add(uptimeLabel, BorderLayout.CENTER);
 
 		DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
 		String pulsePerSecond = formatter.format(masterClock.getPulsesPerSecond());
-		pulsespersecondLabel = new JLabel(pulsePerSecond, JLabel.CENTER);
-		pulsespersecondPane.add(pulsespersecondLabel, BorderLayout.CENTER);
+		pulsesPerSecLabel = new WebLabel(pulsePerSecond, WebLabel.CENTER);
+		pulsespersecondPane.add(pulsesPerSecLabel, BorderLayout.CENTER);
 
-		/*
-		 * String pulses = formatter.format(masterClock.getPulses());
-		 * pulsesLabel = new JLabel(pulses, JLabel.CENTER);
-		 * pulsespersecondPane.add(pulsesLabel, BorderLayout.SOUTH);
-		 */
 
 		// Create uptime panel
-		JPanel pulsePane = new JPanel(new BorderLayout());
+		WebPanel pulsePane = new WebPanel(new BorderLayout());
 		pulsePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		simulationPane.add(pulsePane, BorderLayout.SOUTH);
 
@@ -309,14 +297,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		s0.append(ONE_REAL_SEC);
 		s0.append(ClockUtils.getTimeString(ratio));
 
-		timeCompressionLabel = new JLabel(s0.toString(), JLabel.CENTER);
+		timeCompressionLabel = new WebLabel(s0.toString(), WebLabel.CENTER);
 		pulsePane.add(timeCompressionLabel, BorderLayout.CENTER);
 
 		// Create pulse header label
-		JPanel northPanel = new JPanel(new GridLayout(2, 1));
-		JLabel speedLabel = new JLabel(Msg.getString("TimeWindow.simSpeed"), JLabel.CENTER); //$NON-NLS-1$
+		WebPanel northPanel = new WebPanel(new GridLayout(2, 1));
+		WebLabel speedLabel = new WebLabel(Msg.getString("TimeWindow.simSpeed"), WebLabel.CENTER); //$NON-NLS-1$
 
-		timeRatioLabel = new JLabel(Msg.getString("TimeWindow.timeRatioHeader", factor), JLabel.CENTER); //$NON-NLS-1$
+		timeRatioLabel = new WebLabel(Msg.getString("TimeWindow.timeRatioHeader", factor), WebLabel.CENTER); //$NON-NLS-1$
 		pulsePane.add(northPanel, BorderLayout.NORTH);
 
 		northPanel.add(speedLabel);
@@ -341,11 +329,10 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 				}
 			});
 
-
 			// Create pulse slider
 			int sliderpos = calculateSliderValue(masterClock.getTimeRatio());
 			pulseSlider = new JSliderMW(1, 100, sliderpos);
-			//pulseSlider.setEnabled(false);
+			// pulseSlider.setEnabled(false);
 			pulseSlider.setMajorTickSpacing(20);
 			pulseSlider.setMinorTickSpacing(5);
 			pulseSlider.setPaintTicks(true);
@@ -385,19 +372,17 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/**
 	 * Sets the time ratio for the simulation based on the slider value.
 	 *
-	 * @param sliderValue
-	 *            the slider value (1 to 100).
+	 * @param sliderValue the slider value (1 to 100).
 	 */
 	private void setTimeRatioFromSlider(int sliderValue) {
 		double timeRatio = calculateTimeRatioFromSlider(sliderValue);
-		// System.out.println("timeRatio : " + timeRatio);
 		masterClock.setTimeRatio(timeRatio);
 	}
 
 	/**
 	 * Calculates a time ratio given a slider value.
-	 * @param sliderValue
-	 *            the slider value from 1 to 100.
+	 * 
+	 * @param sliderValue the slider value from 1 to 100.
 	 * @return time ratio value (simulation time / real time).
 	 */
 	public static double calculateTimeRatioFromSlider(int sliderValue) {
@@ -443,8 +428,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/**
 	 * Moves the slider bar appropriately given the time ratio.
 	 *
-	 * @param timeRatio
-	 *            the time ratio (simulation time / real time).
+	 * @param timeRatio the time ratio (simulation time / real time).
 	 */
 	public void setTimeRatioSlider(double timeRatio) {
 		int sliderValue = calculateSliderValue(timeRatio);
@@ -455,8 +439,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	 * Calculates a slider value based on a time ratio. Note: This method is the
 	 * inverse of calculateTimeRatioFromSlider.
 	 *
-	 * @param timeRatio
-	 *            time ratio (simulation time / real time).
+	 * @param timeRatio time ratio (simulation time / real time).
 	 * @return slider value (1 to 100).
 	 */
 	public static int calculateSliderValue(double timeRatio) {
@@ -494,6 +477,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		return sliderValue;
 	}
 
+	/**
+	 * Set and update the season labels
+	 */
 	public void setSeason() {
 
 		String northernSeason = marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE);
@@ -508,9 +494,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			}
 
 			northernSeasonTip = getSeasonTip(northernSeason);
-			//balloonToolTip.createBalloonTip(northernSeasonLabel, northernSeasonTip);// Msg.getString("TimeWindow.season.toolTip"));
-																					// //$NON-NLS-1$
-	   		TooltipManager.setTooltip (northernSeasonLabel, northernSeasonTip, TooltipWay.down);
+			TooltipManager.setTooltip(northernSeasonLabel, northernSeasonTip, TooltipWay.down);
 		}
 
 		if (!southernSeasonCache.equals(southernSeason)) {
@@ -522,13 +506,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			}
 
 			southernSeasonTip = getSeasonTip(southernSeason);
-			//balloonToolTip.createBalloonTip(southernSeasonLabel, southernSeasonTip);// Msg.getString("TimeWindow.season.toolTip"));
-																					// //$NON-NLS-1$
-	   		TooltipManager.setTooltip (southernSeasonLabel, southernSeasonTip, TooltipWay.down);
+			TooltipManager.setTooltip(southernSeasonLabel, southernSeasonTip, TooltipWay.down);
 		}
 
 	}
 
+	/**
+	 * Get the text for the season label tooltip
+	 */
 	public String getSeasonTip(String hemi) {
 		if (hemi.contains("Spring"))
 			return Msg.getString("TimeWindow.season.spring");
@@ -542,40 +527,37 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			return null;
 	}
 
-	public void updateFXLabel() {
+	/**
+	 * Update the calendar, the time ratio and time compression labels via ui pulse
+	 */
+	public void updateSlowLabels() {
 		StringBuilder s0 = new StringBuilder();
 		double ratio = masterClock.getTimeRatio();
 		String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
 		s0.append(ONE_REAL_SEC);
 		s0.append(ClockUtils.getTimeString(ratio));
-		if (timeRatioLabel != null) timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
-		if (timeCompressionLabel != null) timeCompressionLabel.setText(s0.toString());
+		if (timeRatioLabel != null)
+			SwingUtilities.invokeLater(() -> timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor))); //$NON-NLS-1$
+		if (timeCompressionLabel != null)
+			SwingUtilities.invokeLater(() -> timeCompressionLabel.setText(s0.toString()));
+		calendarDisplay.update();
 	}
-	
-	/**
-	 * Updates date and time in Time Tool
-	 *
-	 * @param time
-	 */
-	public void updateSwingLabel(double time) {
-		if (marsTime != null) {
-			//SwingUtilities.invokeLater(() -> {
-			String ts = marsTime.getDateTimeStamp();
-				if (!ts.equals(":") && ts != null && !ts.equals(""))
-					if (martianTimeLabel != null)
-						martianTimeLabel.setText(ts);
-			//});
-			int solElapsed = marsTime.getMissionSol();
-			// 2015-02-24 Added solElapsedCache
-			if (solElapsed != solElapsedCache) {
-				//SwingUtilities.invokeLater(() -> {
-				String mn = marsTime.getMonthName();
-					if (mn != null)
-						if (martianMonthLabel != null)
-							martianMonthLabel.setText(mn);
-				//});
-				setSeason();
 
+	/**
+	 * Updates date and time in Time Tool via clock pulse
+	 */
+	public void updateFastLabels() {
+		if (marsTime != null) {
+			String ts = marsTime.getDateTimeStamp();
+			if (!ts.equals(":") && ts != null && !ts.equals("") && martianTimeLabel != null)
+				SwingUtilities.invokeLater(() -> martianTimeLabel.setText(ts));
+			int solElapsed = marsTime.getMissionSol();
+
+			if (solElapsed != solElapsedCache) {
+				String mn = marsTime.getMonthName();
+				if (mn != null && martianMonthLabel != null)
+					SwingUtilities.invokeLater(() -> martianMonthLabel.setText(mn));
+				setSeason();
 				solElapsedCache = solElapsed;
 			}
 		}
@@ -583,85 +565,85 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		if (earthTime != null) {
 			String ts = earthTime.getTimeStampF0();
 			if (ts != null)
-				//SwingUtilities.invokeLater(() -> {
-					//if (earthTime != null)
-						earthTimeLabel.setText(ts);
-				//});
+				SwingUtilities.invokeLater(() -> earthTimeLabel.setText(ts));
 		}
 
 		if (masterClock != null) {
-			DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
 			String pulsePerSecond = formatter.format(masterClock.getPulsesPerSecond());
-
-			// String pulses = formatter.format(masterClock.getPulses());
-			// pulsesLabel.setText(pulses);
-
-			pulsespersecondLabel.setText(pulsePerSecond);
+			SwingUtilities.invokeLater(() -> pulsesPerSecLabel.setText(pulsePerSecond));
 		}
 
 		if (uptimer != null) {
-			uptimeLabel.setText(uptimer.getUptime());
+			SwingUtilities.invokeLater(() -> uptimeLabel.setText(uptimer.getUptime()));
 		}
 
-		calendarDisplay.update();
 	}
 
-	// Called by Masterclock's firePauseChange() since TimeWindow is on
-	// clocklistener
-	// 2015-12-16 Revised pauseChange() to add getAutosaveTimeline().pause() or
-	// .play()
+	/**
+	 * Change the pause status. Called by Masterclock's firePauseChange() since
+	 * TimeWindow is on clocklistener.
+	 * 
+	 * @param isPaused true if set to pause
+	 * @param showPane true if the pane will show up
+	 */
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		// logger.info("TimeWindow : calling pauseChange()");
 		// Update pause/resume button text based on master clock pause state.
 		if (isPaused) {
-			//if (showPane && mainScene != null && !masterClock.isSavingSimulation())
-			//	mainScene.startPausePopup();
+//			if (showPane && mainScene != null && !masterClock.isSavingSimulation())
+//				mainScene.startPausePopup();
 			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$
-			//desktop.getMarqueeTicker().pauseMarqueeTimer(true);
-		
-		} 
-		else {
+			// desktop.getMarqueeTicker().pauseMarqueeTimer(true);
+
+		} else {
 			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
-			//desktop.getMarqueeTicker().pauseMarqueeTimer(false);
-			//if (showPane && mainScene != null)
-			//	mainScene.stopPausePopup();
+			// desktop.getMarqueeTicker().pauseMarqueeTimer(false);
+//			if (showPane && mainScene != null)
+//				mainScene.stopPausePopup();
 		}
 	}
 
 	/**
 	 * Enables/disables the pause button
 	 *
-	 * @param value
-	 *            true or false
+	 * @param value true or false
 	 */
-	// 2015-12-07 Added enablePauseButton()
 	public void enablePauseButton(boolean value) {
 		pauseButton.setEnabled(value);
 		// Note : when a wizard or a dialog box is opened/close,
 		// need to call below to remove/add the ability to use ESC to
 		// unpause/pause
-		if (!MainScene.isFXGL) 
+		if (!MainScene.isFXGL)
 			mainScene.setEscapeEventHandler(value, mainScene.getStage());
 	}
 
 	@Override
 	public void clockPulse(double time) {
-		// TODO Auto-generated method stub	
+		if (mainScene != null) {
+			if (!mainScene.isMinimized() && mainScene.isMainTabOpen()) {	
+				if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
+					updateFastLabels();
+				}
+			}
+		} else if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
+			updateFastLabels();
+		}
 	}
-	
+
 	@Override
 	public void uiPulse(double time) {
 		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && desktop.isToolWindowOpen(TimeWindow.NAME)) {			
-				updateFXLabel();
+			if (!mainScene.isMinimized() && mainScene.isMainTabOpen()) {	
+				if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
+					updateSlowLabels();
+				}
 			}
+		} else if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
+			updateSlowLabels();
 		}
-		else if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
-			updateSwingLabel(time);
-		}		
 	}
-	
+
 	/**
 	 * Prepare tool window for deletion.
 	 */

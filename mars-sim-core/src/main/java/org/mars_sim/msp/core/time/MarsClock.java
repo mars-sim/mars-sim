@@ -166,7 +166,7 @@ public class MarsClock implements Serializable {
 		if (orbitInfo == null)
 			orbitInfo = sim.getMars().getOrbitInfo();
 
-		// Set initial date to dateString. ex: "15-Adir-01 000.000"
+		// Set initial date to dateString. ex: "0015-Adir-01 000.000"
 		String orbitStr = dateString.substring(0, dateString.indexOf("-"));
 		orbit = Integer.parseInt(orbitStr);
 		if (orbit < 0)
@@ -372,7 +372,7 @@ public class MarsClock implements Serializable {
 	public String getDateTimeStamp() {
 		// TODO: are the "two" whitespace intentional? or should we use colon as the
 		// separator ?
-		return new StringBuilder(getDateString()).append(COLON).append(getTimeString()).toString();
+		return new StringBuilder(getDateString()).append(COLON).append(getDecimalTimeString()).toString();
 	}
 
 	/**
@@ -382,7 +382,7 @@ public class MarsClock implements Serializable {
 	 * @return formatted String
 	 */
 	public static String getDateTimeStamp(MarsClock time) {
-		return new StringBuilder(getDateString(time)).append(COLON).append(getMillisolString(time)).toString();
+		return new StringBuilder(getDateString(time)).append(COLON).append(getTruncatedTimeString(time)).toString();
 	}
 
 	/**
@@ -493,23 +493,27 @@ public class MarsClock implements Serializable {
 	 * 
 	 * @return millisols with decimals
 	 */
-	public String getTimeString() {
+	public String getDecimalTimeString() {
 		StringBuilder b = new StringBuilder();
 		double tb = Math.floor(millisol * 1000D) / 1000D;
 		// String result = "" + tb;
 		b.append(tb);
-		if (millisol < 100D) {
+		if (millisol < 100) {
 			b.insert(0, ONE_ZERO);
 			// result = "0" + result;
 		}
-		if (millisol < 10D) {
+		if (millisol < 10) {
 			b.insert(0, ONE_ZERO);
 			// result = "0" + result;
 		}
-//		while (b.length() < 7) {
-//			b.append(ONE_ZERO);
-//			// result += "0";
-//		}
+		if (millisol < 1) {
+			b.insert(0, ONE_ZERO);
+			// result = "0" + result;
+		}
+		while (b.length() < 7) {
+			b.append(ONE_ZERO);
+			// result += "0";
+		}
 
 		return b.toString();
 	}
@@ -520,7 +524,7 @@ public class MarsClock implements Serializable {
 	 * @param time {@link MarsClock} instance
 	 * @return String in millisols
 	 */
-	public static String getMillisolString(MarsClock time) {
+	public static String getTruncatedTimeString(MarsClock time) {
 		StringBuilder b = new StringBuilder();
 		int millisol = time.getMsol0();
 
@@ -534,10 +538,14 @@ public class MarsClock implements Serializable {
 			b.insert(0, ONE_ZERO);
 			// result = "0" + result;
 		}
-		while (b.length() < 3) {
-			b.append(ONE_ZERO);
-			// result += "0";
+		if (millisol < 1) {
+			b.insert(0, ONE_ZERO);
+			// result = "0" + result;
 		}
+//		while (b.length() < 3) {
+//			b.append(ONE_ZERO);
+//			// result += "0";
+//		}
 
 		return b.toString();
 	}
