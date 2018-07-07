@@ -450,7 +450,7 @@ public class MalfunctionManager implements Serializable {
 //						Unit unit = entity.getUnit();
 //						EVASuit suit = (EVASuit)entity.getUnit();
 					loc0 = entity.getImmediateLocation();// ((EVASuit)entity).getQuickLocatin();
-					loc1 = ((EVASuit) entity.getUnit()).getSettlement().getName();
+					loc1 = ((EVASuit) entity.getUnit()).getLocale();// .getSettlement().getName();
 				}
 
 				else {

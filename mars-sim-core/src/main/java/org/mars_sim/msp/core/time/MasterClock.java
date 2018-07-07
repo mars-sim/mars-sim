@@ -38,19 +38,21 @@ public class MasterClock implements Serializable {
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
 
-	private static final double PERIOD_IN_MILLISOLS = 2500D / MarsClock.SECONDS_PER_MILLISOL;
+	private static final double PERIOD_IN_MILLISOLS = 1500D / MarsClock.SECONDS_PER_MILLISOL;
 
-	private static final int SEC_TO_MILLIS = 1000;
+//	private static final int ONE_THOUSAND = 1000;
 
 	// Data members
 	/** Runnable flag. */
 	private transient volatile boolean keepRunning = true;
 	/** Pausing clock. */
 	private transient volatile boolean isPaused = false;
-	/** Simulation time ratio. */
-	private volatile double currentTR = 0D;
+	
+	
 	/** The Current time between updates (TBU). */
 	private volatile long currentTBU_ns = 0L;
+	/** Simulation time ratio. */
+	private volatile double currentTR = 0D;
 	/** Adjusted time ratio. */
 	private volatile double adjustedTR = 0D;
 	/** Adjusted time between updates in nanoseconds. */
@@ -61,34 +63,34 @@ public class MasterClock implements Serializable {
 	private volatile double adjustedTBU_s = 0;
 	/** Adjusted frame per sec */
 	private volatile double adjustedFPS = 0;
-	/**
-	 * The maximum number of counts allowed in waiting for other threads to execute.
-	 */
-	private int noDelaysPerYield = 0;
-	/**
-	 * The measure of tolerance of the maximum number of lost frames for saving a
-	 * simulation.
-	 */
-	private int maxFrameSkips = 0;
-	/** Mode for saving a simulation. */
-	private double tpfCache = 0;
-	/** The UI refresh cycle. */
-	private double refresh;
+	
+	/** The cache for accumulating millisols up to a limit before sending out a clock pulse. */
+	private transient double timeCache;
 	/** Mode for saving a simulation. */
 	private transient volatile int saveType;
 	/** Flag for ending the simulation program. */
 	private transient volatile boolean exitProgram;
 	/** Flag for getting ready for autosaving. */
 	private transient volatile boolean autosave;
-	/** The total number of pulses cumulated. */
-	private long totalPulses = 1;
 	/** The pulses since last elapsed. */
 	private transient long elapsedLast;
-	/**
-	 * The cache for accumulating millisols up to a limit before sending out a clock
-	 * pulse.
-	 */
-	private transient double timeCache;
+	
+	/** The maximum number of counts allowed in waiting for other threads to execute. */
+	private int noDelaysPerYield = 0;
+	/** The measure of tolerance of the maximum number of lost frames for saving a simulation. */
+	private int maxFrameSkips = 0;
+	/** Mode for saving a simulation. */
+	private double tpfCache = 0;
+	/** The UI refresh cycle. */
+	private double refresh;
+	/** The total number of pulses cumulated. */
+	private long totalPulses = 1;
+
+	/** The cache for the last nano time of an ui pulse. */	
+	private long t01;
+	/** The time between two ui pulses. */	
+	private float pulseTime;
+	
 	/** Is FXGL is in use. */
 	private boolean isFXGL = false;
 
@@ -175,23 +177,23 @@ public class MasterClock implements Serializable {
 
 		// Tune the time ratio
 		if (threads == 1) {
-			adjustedTR = tr / 16D;
+			adjustedTR = tr / 32D;
 		} else if (threads == 2) {
-			adjustedTR = tr / 8D;
+			adjustedTR = tr / 16D;
 		} else if (threads <= 3) {
-			adjustedTR = tr / 4D;
+			adjustedTR = tr / 8D;
 		} else if (threads <= 4) {
 			adjustedTR = tr / 4D;
 		} else if (threads <= 6) {
 			adjustedTR = tr / 2D;
 		} else if (threads <= 8) {
-			adjustedTR = tr / 2D;
+			adjustedTR = tr;
 		} else if (threads <= 12) {
-			adjustedTR = tr;
+			adjustedTR = tr * 2D;
 		} else if (threads <= 16) {
-			adjustedTR = tr;
+			adjustedTR = tr * 4D;
 		} else {
-			adjustedTR = tr;
+			adjustedTR = tr * 8D;
 		}
 
 		adjustedTBU_ns = adjustedTBU_ms * 1_000_000.0; // convert from millis to nano
@@ -214,7 +216,7 @@ public class MasterClock implements Serializable {
 
 	public void testNewMarsLandingDayTime() {
 		// Create an Earth clock
-		EarthClock c = new EarthClock("2028-08-17 15:23:13.740");
+		EarthClock c = new EarthClock("1609-03-12 19:19:06.000"); 
 		// "2004-01-04 00:00:00.000"
 		// "2004-01-03 13:46:31.000" degW = 84.702 , <-- used this
 		// "2000-01-06 00:00:00.000" degW = 0 ,
@@ -227,10 +229,10 @@ public class MasterClock implements Serializable {
 		// Universal Time
 		// "2015-07-14 09:53:18.0"
 
-		// "2028-08-17 00:00:00.000"
+		// "2028-08-17 15:23:13.740"
 
 		// Use the EarthClock instance c from above for the computation below :
-		ClockUtils.getFirstLandingDateTime();
+//		ClockUtils.getFirstLandingDateTime();
 
 		double millis = EarthClock.getMillis(c);
 		logger.info("millis is " + millis);
@@ -800,6 +802,11 @@ public class MasterClock implements Serializable {
 		return refresh;
 	}
 
+	/** Gets the time between two ui pulses. */
+	public float getPulseTime( ) {
+		return pulseTime;
+	}
+	
 	/**
 	 * Prepares clock listener tasks for setting up threads.
 	 */
@@ -829,9 +836,17 @@ public class MasterClock implements Serializable {
 				// so that UpTimer, Mars, UnitManager, ScientificStudyManager, TransportManager
 				// gets updated.
 				listener.clockPulse(time);
-				refresh = PERIOD_IN_MILLISOLS * time;
 				timeCache += time;
+
 				if (timeCache > refresh) {
+					// Set refresh to the new value
+					refresh = PERIOD_IN_MILLISOLS * time;
+					long t02 = System.nanoTime();
+					pulseTime = (t02-t01)/1_000_000_000F;
+//					System.out.println("time : " + time + "   refresh : " + refresh + "   Rate : " + pulseTime + " s");
+					t01 = t02;
+					// at the start of the sim, delta is ~.18 s
+					
 					// The secondary job of CLockListener is to send uiPulse() out to
 					// MainDesktopPane,
 					// which in terms sends a clock pulse out to update all unit windows and tool
@@ -1039,7 +1054,7 @@ public class MasterClock implements Serializable {
 					// logger.info(millis + "");
 					// Add time pulse length to Earth and Mars clocks.
 					// System.out.println(Math.round(timePulse *10000.0)/10000.0);
-					earthClock.addTime(SEC_TO_MILLIS * t);// millis*timeRatio);
+					earthClock.addTime(1000D * t);// millis*timeRatio);
 					marsTime.addTime(timePulse);
 					fireClockPulse(timePulse);
 				}

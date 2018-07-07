@@ -1245,21 +1245,19 @@ public class MainScene implements ClockListener {
 		speedPane = new StackPane();
 		speedPane.setBackground(
 				new Background(new BackgroundFill(Color.rgb(54, 54, 54), CornerRadii.EMPTY, Insets.EMPTY)));
-		// soundPane.setEffect(blend);
+
 		speedPane.getStyleClass().add("jfx-popup-container; -fx-text-fill: white;");// -fx-background-radius: 10;");
-		// speedPane.setEffect(blend);
-		// speedPane.getStyleClass().add("jfx-popup-container; -fx-background-radius:
-		// 10;");
+
 		speedPane.setAlignment(Pos.CENTER);
 		speedPane.setPrefHeight(100);
-		speedPane.setPrefWidth(250);// earthTimeButton.getPrefWidth());
+		speedPane.setPrefWidth(250);
 		simSpeedPopup = new JFXPopup(speedPane);
 
 		Text header_label = createTextHeader("SPEED PANEL");
 
 		Label defaultRatioLabel0 = createLabelLeft(DTR,
-				"The default time-ratio is the ratio of simulation time to real time.");
-		Label defaultRatioLabel = createLabelRight("e.g. 128x means 1 real secs corresponds to 128 sim secs.");
+				"The default time-ratio is the default ratio of simulation time to real time.");
+		Label defaultRatioLabel = createLabelRight("e.g. 128x means 1 real sec corresponds to 128 sim secs.");
 		int defaultRatioInt = (int) masterClock.getCalculatedTimeRatio();
 		StringBuilder s0 = new StringBuilder();
 		s0.append(defaultRatioInt);
@@ -1267,7 +1265,7 @@ public class MainScene implements ClockListener {
 
 		Label realTimeLabel0 = createLabelLeft(SEC, "The amount of simulation time per real second.");
 		realTimeLabel = createLabelRight(
-				"e.g. 02m.08s means every real world second corresponds to 2 mins and 8 secs of simulation time.");
+				"e.g. 02m.08s means every real-world sec corresponds to 2 mins and 8 secs of simulation time.");
 		StringBuilder s1 = new StringBuilder();
 		double ratio = masterClock.getTimeRatio();
 		s1.append(ClockUtils.getTimeTruncated(ratio));
@@ -1298,23 +1296,32 @@ public class MainScene implements ClockListener {
 //			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048);// ,4096,8192);
 //		else // if (default_ratio == 256)
 //			items = FXCollections.observableArrayList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096);// ,8192);
-
+		
 		List<Integer> items = null;
+		if (defaultRatioInt <= 4)
+			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128);//, 256);
+		if (defaultRatioInt == 8)
+			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256);//, 512);
 		if (defaultRatioInt == 16)
-			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);
+			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);//, 1024);
 		else if (defaultRatioInt == 32)
-			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512);// ,1024);
+			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024);//, 2048);
 		else if (defaultRatioInt == 64)
-			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024);// , 2048);
+			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048);//, 4096);
 		else if (defaultRatioInt == 128)
-			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048);// ,4096,8192);
-		else // if (default_ratio == 256)
-			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096);// ,8192);
+			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096);//, 8192);
+		else if (defaultRatioInt == 256)
+			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192);//, 16384);
+		else if (defaultRatioInt == 512)
+			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384);//, 32768);
+		else if (defaultRatioInt >= 1024)
+			items = Arrays.asList(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768);//, 65536);
+
 
 		timeRatioSpinner.setValueFactory(
 				new SpinnerValueFactory.ListSpinnerValueFactory<Integer>(FXCollections.observableArrayList(items)));
 		// spinner.setValueFactory((SpinnerValueFactory<Integer>) items);
-		timeRatioSpinner.setMaxSize(85, 15);
+		timeRatioSpinner.setMaxSize(100, 15);
 		// timeRatioSpinner.setStyle(LABEL_CSS_STYLE);
 		// spinner.setAlignment(Pos.CENTER);
 		timeRatioSpinner.getValueFactory().setValue(defaultRatioInt);
@@ -3038,7 +3045,7 @@ public class MainScene implements ClockListener {
 	 */
 	public void updateTimeLabels() {
 
-		double tr = masterClock.getTimeRatio();
+//		double tr = masterClock.getTimeRatio();
 		// if (msol % 10 == 0) {
 		// Check to see if a background sound track is being played.
 		if (!soundPlayer.isSoundDisabled() && !soundPlayer.isMusicMute() && !MainMenu.isSoundDisabled()
@@ -3063,7 +3070,7 @@ public class MainScene implements ClockListener {
 				upTimeLabel.setText(upt);
 			}
 
-			double refresh = Math.round(100.0 * tr / masterClock.getRefresh()) / 10000.0;
+			double refresh = Math.round(1.0/masterClock.getPulseTime());
 			refreshLabel.setText(refresh + HZ);
 
 			// benchmarkLabel.setText(masterClock.getDiffCache() + "");
