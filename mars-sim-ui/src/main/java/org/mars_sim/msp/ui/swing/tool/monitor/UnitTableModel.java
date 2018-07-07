@@ -18,53 +18,51 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitListener;
 
 /**
- * The UnitTableModel that maintains a table model of Units objects.
- * It is only a partial implementation of the TableModel interface.
+ * The UnitTableModel that maintains a table model of Units objects. It is only
+ * a partial implementation of the TableModel interface.
  */
-abstract public class UnitTableModel
-extends AbstractTableModel
-implements MonitorModel, UnitListener {
+abstract public class UnitTableModel extends AbstractTableModel implements MonitorModel, UnitListener {
 
 	// Data members
 	/** Collection of units. */
 	private Collection<Unit> units;
 	/** Model name. */
 	private String name;
-	/** key for calling the internationalized text that counts the number of units. */
+	/**
+	 * key for calling the internationalized text that counts the number of units.
+	 */
 	private String countingMsgKey;
 	/** Names of the displayed columns. */
 	private String columnNames[];
 	/** Types of the individual columns. */
-	private Class<?>  columnTypes[];
+	private Class<?> columnTypes[];
 	private int size = -1;
 	private boolean refreshSize = true;
 
 	/**
 	 * Constructor.
-	 *  @param name Name of the model.
-	 *  @param countingMsgKey {@link String}
-	 *  key for calling the internationalized text that counts the number of units.
-	 *  should be a valid key to an existing value in <code>messages.properties</code>.
-	 *  @param names Names of the columns displayed.
-	 *  @param types The Classes of the individual columns.
+	 * 
+	 * @param name           Name of the model.
+	 * @param countingMsgKey {@link String} key for calling the internationalized
+	 *                       text that counts the number of units. should be a valid
+	 *                       key to an existing value in
+	 *                       <code>messages.properties</code>.
+	 * @param names          Names of the columns displayed.
+	 * @param types          The Classes of the individual columns.
 	 */
-	protected UnitTableModel(
-		String name,
-		String countingMsgKey,
-		String names[],
-		Class<?> types[]
-	) {
+	protected UnitTableModel(String name, String countingMsgKey, String names[], Class<?> types[]) {
 		// Initialize data members
 		this.name = name;
 		this.countingMsgKey = countingMsgKey;
 		this.units = new ConcurrentLinkedQueue<Unit>();
-		//getRowCount();
+		// getRowCount();
 		this.columnNames = names;
 		this.columnTypes = types;
 	}
 
 	/**
 	 * Add a unit to the model.
+	 * 
 	 * @param newUnit Unit to add to the model.
 	 */
 	protected void addUnit(Unit newUnit) {
@@ -84,6 +82,7 @@ implements MonitorModel, UnitListener {
 
 	/**
 	 * Remove a unit from the model.
+	 * 
 	 * @param oldUnit Unit to remove from the model.
 	 */
 	protected void removeUnit(Unit oldUnit) {
@@ -101,6 +100,7 @@ implements MonitorModel, UnitListener {
 
 	/**
 	 * Gets the index value of a given unit.
+	 * 
 	 * @param unit the unit
 	 * @return the index value.
 	 */
@@ -108,10 +108,10 @@ implements MonitorModel, UnitListener {
 		final Iterator<Unit> it = units.iterator();
 		int idx = -1;
 		Unit u;
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			idx++;
 			u = it.next();
-			if(u.equals(unit)){
+			if (u.equals(unit)) {
 				return idx;
 			}
 		}
@@ -120,11 +120,13 @@ implements MonitorModel, UnitListener {
 
 	/**
 	 * Adds a collection of units to the model.
+	 * 
 	 * @param newUnits the units to add.
 	 */
 	protected void addAll(Collection<Unit> newUnits) {
 		Iterator<Unit> i = newUnits.iterator();
-		while (i.hasNext()) addUnit(i.next());
+		while (i.hasNext())
+			addUnit(i.next());
 	}
 
 	/**
@@ -132,7 +134,8 @@ implements MonitorModel, UnitListener {
 	 */
 	protected void clear() {
 		Iterator<Unit> i = units.iterator();
-		while (i.hasNext()) i.next().removeUnitListener(this);
+		while (i.hasNext())
+			i.next().removeUnitListener(this);
 		units.clear();
 		refreshSize = true;
 		fireTableDataChanged();
@@ -140,6 +143,7 @@ implements MonitorModel, UnitListener {
 
 	/**
 	 * Checks if unit is in table model already.
+	 * 
 	 * @param unit the unit to check.
 	 * @return true if unit is in table.
 	 */
@@ -149,15 +153,16 @@ implements MonitorModel, UnitListener {
 
 	/**
 	 * Gets the number of units in the model.
+	 * 
 	 * @return number of units.
 	 */
 	protected int getUnitNumber() {
-		if(refreshSize){
+		if (refreshSize) {
 			this.size = units == null ? 0 : units.size();
 			refreshSize = false;
 		}
-		//        if (units != null) return units.size();
-		//    	else return 0;
+		// if (units != null) return units.size();
+		// else return 0;
 		return this.size;
 	}
 
@@ -183,6 +188,7 @@ implements MonitorModel, UnitListener {
 
 	/**
 	 * Return the number of columns
+	 * 
 	 * @return column count.
 	 */
 	public int getColumnCount() {
@@ -191,6 +197,7 @@ implements MonitorModel, UnitListener {
 
 	/**
 	 * Return the type of the column requested.
+	 * 
 	 * @param columnIndex Index of column.
 	 * @return Class of specified column.
 	 */
@@ -203,6 +210,7 @@ implements MonitorModel, UnitListener {
 
 	/**
 	 * Return the name of the column requested.
+	 * 
 	 * @param columnIndex Index of column.
 	 * @return name of specified column.
 	 */
@@ -213,9 +221,9 @@ implements MonitorModel, UnitListener {
 		return "Unknown";
 	}
 
-
 	/**
 	 * Get the name of the model.
+	 * 
 	 * @return model name.
 	 */
 	public String getName() {
@@ -224,6 +232,7 @@ implements MonitorModel, UnitListener {
 
 	/**
 	 * Get the number of rows in the model.
+	 * 
 	 * @return the number of Units.
 	 */
 	public int getRowCount() {
@@ -232,6 +241,7 @@ implements MonitorModel, UnitListener {
 
 	/**
 	 * Is this model already ordered according to some external criteria.
+	 * 
 	 * @return FALSE as the Units have no natural order.
 	 */
 	public boolean getOrdered() {
@@ -240,16 +250,18 @@ implements MonitorModel, UnitListener {
 
 	/**
 	 * Get the unit at the specified row.
+	 * 
 	 * @param index Index of the row.
 	 * @return Unit matching row
 	 */
 	protected Unit getUnit(int index) {
-		if(index > (getRowCount()-1)) throw new IllegalStateException("Invalid index " + index + " for " + getRowCount() + " rows");
+		if (index > (getRowCount() - 1))
+			throw new IllegalStateException("Invalid index " + index + " for " + getRowCount() + " rows");
 		int idx = -1;
 		Iterator<Unit> it = units.iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			idx++;
-			if(idx == index){
+			if (idx == index) {
 				return it.next();
 			}
 			it.next();
@@ -259,6 +271,7 @@ implements MonitorModel, UnitListener {
 
 	/**
 	 * Gets the index of the row a given unit is at.
+	 * 
 	 * @param unit the unit to find.
 	 * @return the row index or -1 if not in table model.
 	 */
@@ -271,6 +284,7 @@ implements MonitorModel, UnitListener {
 
 	/**
 	 * Get the unit at the specified row.
+	 * 
 	 * @param row Indexes of Unit to retrieve.
 	 * @return Unit at specified position.
 	 */
@@ -282,10 +296,9 @@ implements MonitorModel, UnitListener {
 	 * Gets the model count string.
 	 */
 	public String getCountString() {
-		return " " + Msg.getString(countingMsgKey, 
+		return " " + Msg.getString(countingMsgKey,
 //				Integer.toString(getUnitNumber())
-				getUnitNumber()
-				);
+				getUnitNumber());
 	}
 
 	/**
@@ -305,13 +318,16 @@ implements MonitorModel, UnitListener {
 		if (o instanceof UnitTableModel) {
 			UnitTableModel oModel = (UnitTableModel) o;
 
-			if (!units.equals(oModel.units)) result = false;
+			if (!units.equals(oModel.units))
+				result = false;
 
-			if (!name.equals(oModel.name)) result = false;
+			if (!name.equals(oModel.name))
+				result = false;
 
-			if (!countingMsgKey.equals(oModel.countingMsgKey)) result = false;
-		}
-		else result = false;
+			if (!countingMsgKey.equals(oModel.countingMsgKey))
+				result = false;
+		} else
+			result = false;
 
 		return result;
 	}

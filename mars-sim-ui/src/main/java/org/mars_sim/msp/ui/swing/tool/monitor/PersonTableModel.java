@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -99,7 +100,7 @@ public class PersonTableModel extends UnitTableModel {
 	private final static String M = "M";
 	private final static String F = "F";
 	private final static String WALK = "walk";
-	
+
 	/**
 	 * The static initializer creates the name & type arrays.
 	 */
@@ -142,41 +143,23 @@ public class PersonTableModel extends UnitTableModel {
 		ALL_PEOPLE, VEHICLE_CREW, SETTLEMENT_INHABITANTS, SETTLEMENT_ALL_ASSOCIATED_PEOPLE, MISSION_PEOPLE;
 	}
 
-	/*
-	 * static final Map<String, Integer> EVENT_COLUMN_MAPPING;//= new
-	 * HashMap<String, Integer>(12);
-	 *
-	 * static { HashMap<String, Integer> m = new HashMap<String, Integer>();
-	 * m.put(Unit.NAME_EVENT, NAME); m.put(Unit.LOCATION_EVENT, LOCATION);
-	 * m.put(PhysicalCondition.HUNGER_EVENT, HUNGER);
-	 * m.put(PhysicalCondition.FATIGUE_EVENT, FATIGUE);
-	 * m.put(PhysicalCondition.STRESS_EVENT, STRESS);
-	 * m.put(PhysicalCondition.PERFORMANCE_EVENT, PERFORMANCE);
-	 * m.put(Mind.JOB_EVENT, JOB); m.put(TaskManager.TASK_EVENT, TASK);
-	 * m.put(Mind.MISSION_EVENT, MISSION);
-	 * m.put(PhysicalCondition.ILLNESS_EVENT, HEALTH);
-	 * m.put(PhysicalCondition.DEATH_EVENT, HEALTH); EVENT_COLUMN_MAPPING =
-	 * Collections.unmodifiableMap(m); }
-	 */
-	
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	private String taskCache = "Relaxing";
-	
+
 	private ValidSourceType sourceType;
 
 	private Crewable vehicle;
 	private Settlement settlement;
 	private Mission mission;
-	
+
 	private MainDesktopPane desktop;
-	
+
 	private UnitListener crewListener;
 	private UnitListener settlementListener;
 	private MissionListener missionListener;
 	private UnitManagerListener unitManagerListener;
 
-	
 	/**
 	 * Map for caching a person's hunger, fatigue, stress and performance status
 	 * strings.
@@ -184,11 +167,10 @@ public class PersonTableModel extends UnitTableModel {
 	private Map<Unit, Map<Integer, String>> performanceValueCache;
 
 	/**
-	 * constructor. Constructs a PersonTableModel object that displays all
-	 * people in the simulation.
+	 * constructor. Constructs a PersonTableModel object that displays all people in
+	 * the simulation.
 	 *
-	 * @param unitManager
-	 *            Manager containing Person objects.
+	 * @param unitManager Manager containing Person objects.
 	 */
 	public PersonTableModel(MainDesktopPane desktop) {
 		super(Msg.getString("PersonTableModel.tabName"), //$NON-NLS-1$
@@ -201,16 +183,13 @@ public class PersonTableModel extends UnitTableModel {
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 
-		// 2014-12-30 Added desktop
-		// this.desktop = desktop;
 	}
 
 	/**
 	 * Constructs a PersonTableModel object that displays all people from the
 	 * specified vehicle.
 	 *
-	 * @param vehicle
-	 *            Monitored vehicle Person objects.
+	 * @param vehicle Monitored vehicle Person objects.
 	 */
 	public PersonTableModel(Crewable vehicle) {
 		super(Msg.getString("PersonTableModel.namePeople", //$NON-NLS-1$
@@ -228,21 +207,18 @@ public class PersonTableModel extends UnitTableModel {
 	 * Constructs a PersonTableModel that displays residents are all associated
 	 * people with a specified settlement.
 	 *
-	 * @param settlement
-	 *            the settlement to check.
-	 * @param allAssociated
-	 *            Are all people associated with this settlement to be
-	 *            displayed?
+	 * @param settlement    the settlement to check.
+	 * @param allAssociated Are all people associated with this settlement to be
+	 *                      displayed?
 	 */
 	public PersonTableModel(Settlement settlement, boolean allAssociated) {
-		super((allAssociated
-				? Msg.getString("PersonTableModel.nameAssociatedPeople", //$NON-NLS-1$
-						settlement.getName())
+		super((allAssociated ? Msg.getString("PersonTableModel.nameAssociatedPeople", //$NON-NLS-1$
+				settlement.getName())
 				: Msg.getString("PersonTableModel.namePeople", //$NON-NLS-1$
 						settlement.getName())),
 				(allAssociated ? "PersonTableModel.countingAssociatedPeople" : //$NON-NLS-1$
 						"PersonTableModel.countingResidents" //$NON-NLS-1$
-		), columnNames, columnTypes);
+				), columnNames, columnTypes);
 
 		this.settlement = settlement;
 		if (allAssociated) {
@@ -262,8 +238,7 @@ public class PersonTableModel extends UnitTableModel {
 	 * Constructs a PersonTableModel object that displays all Person from the
 	 * specified mission.
 	 *
-	 * @param mission
-	 *            Monitored mission Person objects.
+	 * @param mission Monitored mission Person objects.
 	 */
 	public PersonTableModel(Mission mission) {
 		super(Msg.getString("PersonTableModel.namePeople", //$NON-NLS-1$
@@ -349,71 +324,43 @@ public class PersonTableModel extends UnitTableModel {
 	/**
 	 * Catch unit update event.
 	 *
-	 * @param event
-	 *            the unit event.
+	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-		
+
 		// WARNING : the instance of desktop is NOT guarantee
-		
-		//if (desktop.getMainScene() != null) {
-		//	Platform.runLater(
-		//		new PersonTableUpdater(event, this)
-		//	);
-				
-		//}
-		//else {
-		// WARNING : the use of SwingUtilities below seems to create StackOverflow from time to time in eclipse
-			//SwingUtilities.invokeLater(
-				new PersonTableUpdater(event, this);
-			//);
-		//}
-		
-		/*
-		 * String eventType = event.getType();
-		 *
-		 * Integer column = EVENT_COLUMN_MAPPING.get(eventType);
-		 *
-		 * // int columnNum = -1; // if (eventType.equals(Unit.NAME_EVENT))
-		 * columnNum = NAME; // else if (eventType.equals(Unit.LOCATION_EVENT))
-		 * columnNum = LOCATION; // else if
-		 * (eventType.equals(PhysicalCondition.HUNGER_EVENT)) columnNum =
-		 * HUNGER; // else if
-		 * (eventType.equals(PhysicalCondition.FATIGUE_EVENT)) columnNum =
-		 * FATIGUE; // else if
-		 * (eventType.equals(PhysicalCondition.STRESS_EVENT)) columnNum =
-		 * STRESS; // else if
-		 * (eventType.equals(PhysicalCondition.PERFORMANCE_EVENT)) columnNum =
-		 * PERFORMANCE; // else if (eventType.equals(Mind.JOB_EVENT)) columnNum
-		 * = JOB; // else if (eventType.equals(TaskManager.TASK_EVENT))
-		 * columnNum = TASK; // else if (eventType.equals(Mind.MISSION_EVENT))
-		 * columnNum = MISSION; // else if
-		 * (eventType.equals(PhysicalCondition.ILLNESS_EVENT) || //
-		 * eventType.equals(PhysicalCondition.DEATH_EVENT)) columnNum = HEALTH;
-		 *
-		 * if (column != null && column> -1) { Unit unit = (Unit)
-		 * event.getSource(); fireTableCellUpdated(getUnitIndex(unit), column);
-		 * }
-		 */
+		// if (desktop.getMainScene() != null) {
+		// Platform.runLater(
+		// new PersonTableUpdater(event, this)
+		// );
+
+		// }
+		// else {
+		// WARNING : the use of SwingUtilities below seems to create StackOverflow from
+		// time to time in eclipse
+		// SwingUtilities.invokeLater(
+		new PersonTableUpdater(event, this);
+		// );
+		// }
+
+
 	}
 
 	/**
 	 * Return the value of a Cell
 	 *
-	 * @param rowIndex
-	 *            Row index of the cell.
-	 * @param columnIndex
-	 *            Column index of the cell.
+	 * @param rowIndex    Row index of the cell.
+	 * @param columnIndex Column index of the cell.
 	 */
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
 		if (rowIndex < getUnitNumber()) {
 			Person person = (Person) getUnit(rowIndex);
-			//boolean isDead = person.getPhysicalCondition().isDead();
-			//PhysicalCondition pc = person.getPhysicalCondition();
-			//Mind mind = person.getMind();
-			
+			// boolean isDead = person.getPhysicalCondition().isDead();
+			// PhysicalCondition pc = person.getPhysicalCondition();
+			// Mind mind = person.getMind();
+
 			switch (columnIndex) {
 
 			case TASK: {
@@ -422,20 +369,18 @@ public class PersonTableModel extends UnitTableModel {
 				String t = taskCache;
 
 				if (mgr != null) {
-					
+
 					t = mgr.getTaskDescription(false);
-					
+
 					if (!t.toLowerCase().contains(WALK) && t != null && !t.equals(taskCache))
 						result = t;
 					else
 						result = t;
-			
-				}
-				else
+
+				} else
 					result = t;
 
-				
-				//result = ((mgr != null) ? mgr.getTaskDescription(true) : null);
+				// result = ((mgr != null) ? mgr.getTaskDescription(true) : null);
 
 			}
 				break;
@@ -486,7 +431,7 @@ public class PersonTableModel extends UnitTableModel {
 				break;
 
 			case FATIGUE: {
-				//double fatigue = person.getPhysicalCondition().getFatigue();
+				// double fatigue = person.getPhysicalCondition().getFatigue();
 				// result = new Float(fatigue).intValue();
 				if (person.getPhysicalCondition().isDead())
 					result = "";
@@ -496,7 +441,7 @@ public class PersonTableModel extends UnitTableModel {
 				break;
 
 			case STRESS: {
-				//double stress = person.getPhysicalCondition().getStress();
+				// double stress = person.getPhysicalCondition().getStress();
 				// result = new Double(stress).intValue();
 				if (person.getPhysicalCondition().isDead())
 					result = "";
@@ -506,7 +451,7 @@ public class PersonTableModel extends UnitTableModel {
 				break;
 
 			case PERFORMANCE: {
-				//double performance = person.getPhysicalCondition().getPerformanceFactor();
+				// double performance = person.getPhysicalCondition().getPerformanceFactor();
 				// result = new Float(performance * 100D).intValue();
 				if (person.getPhysicalCondition().isDead())
 					result = "";
@@ -516,23 +461,13 @@ public class PersonTableModel extends UnitTableModel {
 				break;
 
 			case HEALTH: {
-
 				result = person.getPhysicalCondition().getHealthSituation();
 			}
 				break;
 
 			case LOCATION: {
-				//LocationSituation locationSituation = person.getLocationSituation();
-				//if (locationSituation == LocationSituation.IN_SETTLEMENT) {
-				//	if (person.getSettlement() != null)
-				//		result = person.getSettlement().getName();
-				//} else if (locationSituation == LocationSituation.IN_VEHICLE) {
-				//	if (person.getVehicle() != null)
-				//		result = person.getVehicle().getName();
-				//} else
-				//	result = locationSituation.getName();
 				result = person.getLocationTag().getQuickLocation();
-				
+
 			}
 				break;
 
@@ -718,10 +653,8 @@ public class PersonTableModel extends UnitTableModel {
 	 */
 	private static class PersonTableUpdater implements Runnable {
 
-		static final Map<UnitEventType, Integer> EVENT_COLUMN_MAPPING;// = new
-																		// HashMap<String,
-																		// Integer>(12);
-
+		static final Map<UnitEventType, Integer> EVENT_COLUMN_MAPPING;
+		
 		static {
 			HashMap<UnitEventType, Integer> m = new HashMap<UnitEventType, Integer>();
 			m.put(UnitEventType.NAME_EVENT, NAME);
@@ -735,7 +668,7 @@ public class PersonTableModel extends UnitTableModel {
 			m.put(UnitEventType.SHIFT_EVENT, SHIFT);
 			m.put(UnitEventType.TASK_EVENT, TASK);
 			m.put(UnitEventType.TASK_NAME_EVENT, TASK);
-			//m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
+			// m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
 			m.put(UnitEventType.TASK_SUBTASK_EVENT, TASK);
 			m.put(UnitEventType.MISSION_EVENT, MISSION);
 			m.put(UnitEventType.ILLNESS_EVENT, HEALTH);
@@ -757,23 +690,6 @@ public class PersonTableModel extends UnitTableModel {
 			UnitEventType eventType = event.getType();
 
 			Integer column = EVENT_COLUMN_MAPPING.get(eventType);
-			/*
-			 * int columnNum = -1; if (eventType.equals(Unit.NAME_EVENT))
-			 * columnNum = NAME; else if (eventType.equals(Unit.LOCATION_EVENT))
-			 * columnNum = LOCATION; else if
-			 * (eventType.equals(PhysicalCondition.HUNGER_EVENT)) columnNum =
-			 * HUNGER; else if
-			 * (eventType.equals(PhysicalCondition.FATIGUE_EVENT)) columnNum =
-			 * FATIGUE; else if
-			 * (eventType.equals(PhysicalCondition.STRESS_EVENT)) columnNum =
-			 * STRESS; else if
-			 * (eventType.equals(PhysicalCondition.PERFORMANCE_EVENT)) columnNum
-			 * = PERFORMANCE; else if (eventType.equals(Mind.JOB_EVENT))
-			 * columnNum = JOB; else if
-			 * (eventType.equals(TaskManager.TASK_EVENT)) columnNum = TASK; else
-			 * if (eventType.equals(Mind.MISSION_EVENT)) columnNum = MISSION;
-			 * else if (eventType.equals(PhysicalCondition.ILLNESS_EVENT) ||
-			 */
 
 			if (eventType == UnitEventType.DEATH_EVENT) {
 				if (event.getTarget() instanceof Person) {
@@ -889,8 +805,7 @@ public class PersonTableModel extends UnitTableModel {
 		/**
 		 * Catch unit update event.
 		 *
-		 * @param event
-		 *            the unit event.
+		 * @param event the unit event.
 		 */
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType eventType = event.getType();
@@ -913,8 +828,7 @@ public class PersonTableModel extends UnitTableModel {
 		/**
 		 * Catch mission update event.
 		 *
-		 * @param event
-		 *            the mission event.
+		 * @param event the mission event.
 		 */
 		public void missionUpdate(MissionEvent event) {
 			MissionEventType eventType = event.getType();
@@ -933,8 +847,7 @@ public class PersonTableModel extends UnitTableModel {
 		/**
 		 * Catch unit manager update event.
 		 *
-		 * @param event
-		 *            the unit event.
+		 * @param event the unit event.
 		 */
 		public void unitManagerUpdate(UnitManagerEvent event) {
 			Unit unit = event.getUnit();
@@ -959,8 +872,7 @@ public class PersonTableModel extends UnitTableModel {
 		/**
 		 * Catch unit update event.
 		 *
-		 * @param event
-		 *            the unit event.
+		 * @param event the unit event.
 		 */
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType eventType = event.getType();
@@ -982,8 +894,7 @@ public class PersonTableModel extends UnitTableModel {
 		/**
 		 * Catch unit update event.
 		 *
-		 * @param event
-		 *            the unit event.
+		 * @param event the unit event.
 		 */
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType eventType = event.getType();
@@ -993,4 +904,5 @@ public class PersonTableModel extends UnitTableModel {
 				removeUnit((Unit) event.getTarget());
 		}
 	}
+
 }

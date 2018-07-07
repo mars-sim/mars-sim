@@ -22,8 +22,8 @@ import javafx.application.Platform;
 import javafx.scene.control.CheckMenuItem;
 
 /**
- * The ToolWindow class is an abstract UI window for a tool.
- * Particular tool windows should be derived from this.
+ * The ToolWindow class is an abstract UI window for a tool. Particular tool
+ * windows should be derived from this.
  */
 public abstract class ToolWindow extends WebInternalFrame {
 
@@ -38,25 +38,24 @@ public abstract class ToolWindow extends WebInternalFrame {
 
 	protected MainScene mainScene;
 	protected MonitorWindow monitorWindow;
-	//private SingleSelectionModel<?> ssm;
+	// private SingleSelectionModel<?> ssm;
 
 	/** True if window is open. */
 	protected boolean opened;
 
 	/**
 	 * Constructor.
-	 * @param name the name of the tool
+	 * 
+	 * @param name    the name of the tool
 	 * @param desktop the main desktop.
 	 */
 	public ToolWindow(String name, MainDesktopPane desktop) {
 
 		// use JInternalFrame constructor
-		super(
-			name,
-			true, // resizable
-			true, // closable
-			false, // maximizable
-			false // iconifiable
+		super(name, true, // resizable
+				true, // closable
+				false, // maximizable
+				false // iconifiable
 		);
 
 		// Initialize data members
@@ -64,40 +63,38 @@ public abstract class ToolWindow extends WebInternalFrame {
 		this.desktop = desktop;
 		this.mainScene = desktop.getMainScene();
 
-		// 2016-10-21 Remove title bar
-	    //putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
+		// Remove title bar
+		// putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
 //	    getRootPane().setWindowDecorationStyle(JRootPane.NONE);
 //	    BasicInternalFrameUI bi = (BasicInternalFrameUI)super.getUI();
 //	    bi.setNorthPane(null);
 //	    setBorder(null);
 
-	    //getRootPane().setOpaque(false);
-	    //getRootPane().setBackground(new Color(0,0,0,128));
-	    //setOpaque(false);
-	    //setBackground(new Color(0,0,0,128));
+		// getRootPane().setOpaque(false);
+		// getRootPane().setBackground(new Color(0,0,0,128));
+		// setOpaque(false);
+		// setBackground(new Color(0,0,0,128));
 
 		if (this instanceof MonitorWindow)
-			this.monitorWindow = (MonitorWindow)this;
+			this.monitorWindow = (MonitorWindow) this;
 
 		opened = false;
 
 		if (mainScene != null) {
 			msm = mainScene.getMainSceneMenu();
-			//ssm = mainScene.getJFXTabPane().getSelectionModel();
+			// ssm = mainScene.getJFXTabPane().getSelectionModel();
 		}
 
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-		//setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		// setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
 		// Set internal frame listener
-		//ToolFrameListener tool = new ToolFrameListener(this);
-		//addInternalFrameListener(tool);
-
 		addInternalFrameListener(new ToolFrameListener());
 	}
 
 	/**
 	 * Gets the tool name.
+	 * 
 	 * @return tool name
 	 */
 	public String getToolName() {
@@ -106,6 +103,7 @@ public abstract class ToolWindow extends WebInternalFrame {
 
 	/**
 	 * Sets the tool name.
+	 * 
 	 * @param tool name
 	 */
 	public void setTitleName(String value) {
@@ -114,6 +112,7 @@ public abstract class ToolWindow extends WebInternalFrame {
 
 	/**
 	 * Checks if the tool window has previously been opened.
+	 * 
 	 * @return true if tool window has previously been opened.
 	 */
 	public boolean wasOpened() {
@@ -122,6 +121,7 @@ public abstract class ToolWindow extends WebInternalFrame {
 
 	/**
 	 * Sets if the window has previously been opened.
+	 * 
 	 * @param opened true if previously opened.
 	 */
 	public void setWasOpened(boolean opened) {
@@ -129,118 +129,34 @@ public abstract class ToolWindow extends WebInternalFrame {
 	}
 
 	public void closeMaps() {
-		//if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-			mainScene.closeMaps();
-		//}
+		// if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
+		mainScene.closeMaps();
+		// }
 	}
+
 	/**
 	 * Update window.
 	 */
 	public void update() {
 
 		if (mainScene != null && !masterClock.isPaused()) {
-/*
-			if (ssm == null)
-				ssm = mainScene.getJFXTabPane().getSelectionModel();
 
-			if (ssm.isSelected(MainScene.MAIN_TAB)) {
-				closeMaps();
-				//System.out.println("ToolWindow : closing other tools !");
-				//desktop.closeToolWindow(MonitorWindow.NAME);
-				//desktop.closeToolWindow(ResupplyWindow.NAME);
-				//desktop.closeToolWindow(ScienceWindow.NAME);
-				//desktop.closeToolWindow(MissionWindow.NAME);
-				desktop.closeToolWindow(GuideWindow.NAME);
-			}
-
-			else if (ssm.isSelected(MainScene.MAP_TAB)) {
-				//System.out.println("ToolWindow : closing other tools !");
-				//desktop.closeToolWindow(MonitorWindow.NAME);
-				//desktop.closeToolWindow(ResupplyWindow.NAME);
-				//desktop.closeToolWindow(ScienceWindow.NAME);
-				//desktop.closeToolWindow(MissionWindow.NAME);
-				desktop.closeToolWindow(GuideWindow.NAME);
-			}
-
-			else if (ssm.isSelected(MainScene.HELP_TAB)) {
-				closeMaps();
-				//desktop.openToolWindow(GuideWindow.NAME);
-				//desktop.closeToolWindow(MonitorWindow.NAME);
-				//desktop.closeToolWindow(ResupplyWindow.NAME);
-				//desktop.closeToolWindow(ScienceWindow.NAME);
-				//desktop.closeToolWindow(MissionWindow.NAME);
-			}
-
-
-			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MONITOR_TAB)) {
-				closeMaps();
-				//desktop.openToolWindow(MonitorWindow.NAME);
-				desktop.closeToolWindow(ResupplyWindow.NAME);
-				desktop.closeToolWindow(ScienceWindow.NAME);
-				desktop.closeToolWindow(MissionWindow.NAME);
-				desktop.closeToolWindow(GuideWindow.NAME);
-			}
-
-			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MISSION_TAB)) {
-				closeMaps();
-				//desktop.openToolWindow(MissionWindow.NAME);
-				desktop.closeToolWindow(MonitorWindow.NAME);
-				desktop.closeToolWindow(ResupplyWindow.NAME);
-				desktop.closeToolWindow(ScienceWindow.NAME);
-				desktop.closeToolWindow(GuideWindow.NAME);
-			}
-
-			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.RESUPPLY_TAB)) {
-				closeMaps();
-				//desktop.openToolWindow(ResupplyWindow.NAME);
-				desktop.closeToolWindow(MonitorWindow.NAME);
-				desktop.closeToolWindow(ScienceWindow.NAME);
-				desktop.closeToolWindow(MissionWindow.NAME);
-				desktop.closeToolWindow(GuideWindow.NAME);
-			}
-
-			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.SCIENCE_TAB)) {
-				closeMaps();
-				//desktop.openToolWindow(ScienceWindow.NAME);
-				//desktop.closeToolWindow(MonitorWindow.NAME);
-				//desktop.closeToolWindow(ResupplyWindow.NAME);
-				//desktop.closeToolWindow(MissionWindow.NAME);
-				desktop.closeToolWindow(GuideWindow.NAME);
-			}
-
-*/
-
-			if ( this.isVisible() || this.isShowing() ) {
-				//System.out.println("this.getToolName() is "+ this.getToolName());
+			if (this.isVisible() || this.isShowing()) {
 				// Note: need to refresh the table column/row header
 				if (this.getToolName().equals(MonitorWindow.NAME))
 					monitorWindow.refreshTable();
-					//pack(); // create time lag, and draw artifact
-
-					//mainScene.setLookAndFeel(1); causing java.lang.NullPointerException at com.jidesoft.plaf.basic.BasicJideTabbedPaneUI.getFontMetrics(BasicJideTabbedPaneUI.java:5063)
-					//SwingUtilities.updateComponentTreeUI(this); causing java.lang.NullPointerException
-					//Platform.runLater(() -> {
-						//mainScene.changeTheme(mainScene.getTheme());
-					//});
-					//SwingUtilities.invokeLater(() -> SwingUtilities.updateComponentTreeUI(this));
-					// Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException when pressing the terminate button in eclipse
-					//monitorWindow.tabChanged(false); // create time lag, draw artifact and search text out of focus
-				// create time lag, draw artifact and search text out of focus
+					// pack(); // create time lag, and draw artifact
 			}
 
-			else if ( !this.isVisible() || !this.isShowing() ) { // || !this.isSelected()) { // || this.wasOpened()) {
-				//System.out.println(name + " is not visible");
+			else if (!this.isVisible() || !this.isShowing()) {
 				Platform.runLater(() -> {
 					if (msm == null)
 						msm = mainScene.getMainSceneMenu();
 					item = msm.getCheckMenuItem(name);
-					//System.out.println(item + " is obtained");
 					if (item != null) {
 						// Note: need to accommodate if item is a guide window, as it is always null
-						//System.out.println(item + " is obtained");
 						if (item.isSelected()) {
 							msm.uncheckToolWindow(name);
-							//System.out.println(name + " is unchecked");
 						}
 					}
 				});

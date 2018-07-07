@@ -17,27 +17,24 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.alee.laf.panel.WebPanel;
 
-
 /**
- * This class represents an abstraction of a view displayed in the Monitor Window.
- * The view is displayed inside a tab panel within the window and depends on
- * a UnitTableModel
+ * This class represents an abstraction of a view displayed in the Monitor
+ * Window. The view is displayed inside a tab panel within the window and
+ * depends on a UnitTableModel
  */
-public abstract class MonitorTab
-extends WebPanel {
+public abstract class MonitorTab extends WebPanel {
 
 	/** Model providing the data. */
 	private MonitorModel model;
 	private Icon icon;
 	private boolean mandatory;
 
-
 	/**
-	 * constructor.
-	 * Create a view within a tab displaying the specified model.
-	 * @param model The model of entities to display.
+	 * constructor. Create a view within a tab displaying the specified model.
+	 * 
+	 * @param model     The model of entities to display.
 	 * @param mandatory This view is a mandatory view can can not be removed.
-	 * @param icon Iconic representation.
+	 * @param icon      Iconic representation.
 	 */
 	public MonitorTab(MonitorModel model, boolean mandatory, Icon icon) {
 		this.model = model;
@@ -45,12 +42,11 @@ extends WebPanel {
 		this.mandatory = mandatory;
 		this.setOpaque(false);
 
-    	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
-        //TableStyle.setTableStyle(new ZebraJTable(model));
+		// TableStyle.setTableStyle(new ZebraJTable(model));
 
 		// Create a panel
 		setLayout(new BorderLayout());
-		//setBorder(MainDesktopPane.newEmptyBorder());
+		// setBorder(MainDesktopPane.newEmptyBorder());
 
 	}
 
@@ -68,14 +64,16 @@ extends WebPanel {
 	public void displayDetails(MainDesktopPane desktop) {
 		List<?> rows = getSelection();
 		Iterator<?> it = rows.iterator();
-		while(it.hasNext()) {
+		while (it.hasNext()) {
 			Object selected = it.next();
-			if (selected instanceof Unit) desktop.openUnitWindow((Unit) selected, false);
+			if (selected instanceof Unit)
+				desktop.openUnitWindow((Unit) selected, false);
 		}
 	}
 
 	/**
 	 * Center the map on the first selected row.
+	 * 
 	 * @param desktop Main window of application.
 	 */
 	public void centerMap(MainDesktopPane desktop) {
@@ -93,8 +91,7 @@ extends WebPanel {
 	abstract public void displayProps(MainDesktopPane desktop);
 
 	/**
-	 * This return the selected objects that are current
-	 * selected in this tab.
+	 * This return the selected objects that are current selected in this tab.
 	 *
 	 * @return List of objects selected in this tab.
 	 */
@@ -109,6 +106,7 @@ extends WebPanel {
 
 	/**
 	 * Get the icon associated with this view.
+	 * 
 	 * @return Icon for this view
 	 */
 	public Icon getIcon() {
@@ -117,6 +115,7 @@ extends WebPanel {
 
 	/**
 	 * Get the associated model.
+	 * 
 	 * @return Monitored model associated to the tab.
 	 */
 	public MonitorModel getModel() {
@@ -125,6 +124,7 @@ extends WebPanel {
 
 	/**
 	 * Get the mandatory state of this view
+	 * 
 	 * @return Mandatory view.
 	 */
 	public boolean getMandatory() {

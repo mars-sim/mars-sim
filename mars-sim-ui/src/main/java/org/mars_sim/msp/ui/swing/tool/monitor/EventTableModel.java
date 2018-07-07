@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.MainSceneMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -908,10 +907,7 @@ public class EventTableModel extends AbstractTableModel
 		}
 
 		public void run() {
-			// Notifications.create().darkStyle().title(header).text(message).position(pos).owner(desktop.getMainScene().getStage()).showWarning();
 			System.out.println("Notification : " + message);
-
-//	    	if (type == 0 || type == 1 || type == 2 || type == 3) {
 
 			int theme = MainScene.getTheme();
 
@@ -937,7 +933,6 @@ public class EventTableModel extends AbstractTableModel
 						.graphic(appIconSet.get(type)).owner(desktop.getMainScene().getStage()).show();
 //		    		.showWarning();
 			}
-//	    	}
 
 			desktop.getMainScene().sendMsg(message);
 		}

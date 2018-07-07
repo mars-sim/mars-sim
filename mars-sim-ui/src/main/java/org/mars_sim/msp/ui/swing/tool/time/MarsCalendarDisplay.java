@@ -86,8 +86,8 @@ public class MarsCalendarDisplay extends WebComponent {
 		if (mainScene != null) {
 			int theme = MainScene.getTheme();
 
-			if (theme != themeCache) {
-				theme = themeCache;
+			if (themeCache != theme) {
+				themeCache = theme;
 
 				if (theme == 1) {
 					// green theme
