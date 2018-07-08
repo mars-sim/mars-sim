@@ -560,6 +560,7 @@ public class RadiationExposure implements Serializable {
 	    				eventMap,
 	    				//EXPOSED_TO + exposure + DOSE, 
 	    				"Dose of " + Math.round(totalExposure*10000.0)/10000.0 + " mSv",
+	    				person.getTaskDescription(),
 						person.getName(), 
 						person.getLocationTag().getImmediateLocation(), 
 						person.getLocationTag().getLocale() 

@@ -43,6 +43,7 @@ public class ConsolidateContainersMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+    	// a person can be within a settlement or inside a vehicle
         if (person.isInside()) {
         	
             // Check if there are local containers that need resource consolidation.

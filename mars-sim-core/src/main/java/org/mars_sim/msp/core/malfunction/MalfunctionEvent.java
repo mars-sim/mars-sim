@@ -16,32 +16,27 @@ import org.mars_sim.msp.core.person.EventType;
  * This class represents the historical action of a Malfunction occurring or
  * being resolved.
  */
-public class MalfunctionEvent
-extends HistoricalEvent implements Serializable {
+public class MalfunctionEvent extends HistoricalEvent implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-   
+
 	/**
 	 * Create an event associated to a Malfunction.
-	 * @param type {@link EventType} Type of event.
-	 * @param whatCause The cause for this event
+	 * 
+	 * @param type        {@link EventType} Type of event.
+	 * @param whatCause   The cause for this event.
+	 * @param whileDoing  the activity the person was engaging.
 	 * @param whoAffected Who is being primarily affected by this event.
-	 * @param location0 the building/vehicle where it occurs
-	 * @param location1 the settlement/coordinate where it occurs
+	 * @param location0   the building/vehicle where it occurs.
+	 * @param location1   the settlement/coordinate where it occurs.
 	 * 
 	 * 
 	 */
-	public MalfunctionEvent(EventType type, Malfunction malfunction, String whatCause, String whoAffected, String location0, String location1) {			
+	public MalfunctionEvent(EventType type, Malfunction malfunction, String whatCause, String whileDoing,
+			String whoAffected, String location0, String location1) {
 //			Malfunctionable entity, Malfunction malfunction, EventType eventType, Object actor, String location, boolean fixed) {
-		super(
-			HistoricalEventCategory.MALFUNCTION,
-			type,
-			malfunction,
-			whatCause,
-			whoAffected,
-			location0,
-			location1
-		);
+		super(HistoricalEventCategory.MALFUNCTION, type, malfunction, whatCause, whileDoing, whoAffected, location0,
+				location1);
 	}
 }

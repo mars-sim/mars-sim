@@ -129,11 +129,11 @@ implements ListSelectionListener {
 		}
 
 		@Override
-		public void eventAdded(int index, HistoricalEvent event) {
-			if (event.getCategory() == HistoricalEventCategory.TRANSPORT) {
-				Transportable transportItem = (Transportable) event.getSource();
+		public void eventAdded(int index, SimpleEvent se, HistoricalEvent he) {
+			if (he.getCategory() == HistoricalEventCategory.TRANSPORT) {
+				Transportable transportItem = (Transportable) he.getSource();
 
-				if (EventType.TRANSPORT_ITEM_ARRIVED.equals(event.getType())) {
+				if (EventType.TRANSPORT_ITEM_ARRIVED.equals(he.getType())) {
 					resupplyList.add(transportItem);
 					Collections.sort(resupplyList);
 					int transportItemIndex = resupplyList.indexOf(transportItem);
@@ -147,11 +147,6 @@ implements ListSelectionListener {
 			// Do Nothing
 		}
 
-		@Override
-		public void eventAdded(int index, SimpleEvent event) {
-			// TODO Auto-generated method stub
-			
-		}
 		/**
 		 * Prepares the list for deletion.
 		 */

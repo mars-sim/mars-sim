@@ -14,71 +14,75 @@ import java.util.List;
  */
 public class MetaMissionUtil {
 
-    // Static values.
-    private static List<MetaMission> metaMissions = null;
-    private static List<MetaMission> robotMetaMissions = null;
-    /**
-     * Private constructor for utility class.
-     */
-    private MetaMissionUtil() {};
+	// Static values.
+	private static List<MetaMission> metaMissions = null;
+	private static List<MetaMission> robotMetaMissions = null;
 
-    /**
-     * Lazy initialization of metaMissions list.
-     */
-    private static void initializeMetaMissions() {
+	/**
+	 * Private constructor for utility class.
+	 */
+	private MetaMissionUtil() {
+	};
 
-        metaMissions = new ArrayList<MetaMission>(12);
+	/**
+	 * Lazy initialization of metaMissions list.
+	 */
+	private static void initializeMetaMissions() {
 
-        // Populate metaMissions list with all meta missions.
-        metaMissions.add(new AreologyStudyFieldMissionMeta());
-        metaMissions.add(new BiologyStudyFieldMissionMeta());
-        metaMissions.add(new BuildingConstructionMissionMeta());
-        metaMissions.add(new BuildingSalvageMissionMeta());
-        metaMissions.add(new CollectIceMeta());
-        metaMissions.add(new CollectRegolithMeta());
-        metaMissions.add(new EmergencySupplyMissionMeta());
-        metaMissions.add(new ExplorationMeta());
-        metaMissions.add(new MiningMeta());
-        metaMissions.add(new RescueSalvageVehicleMeta());
-        metaMissions.add(new TradeMeta());
-        metaMissions.add(new TravelToSettlementMeta());
-    }
-    private static void initializeRobotMetaMissions() {
+		metaMissions = new ArrayList<MetaMission>(12);
 
-        robotMetaMissions = new ArrayList<MetaMission>();
+		// Populate metaMissions list with all meta missions.
+		metaMissions.add(new AreologyStudyFieldMissionMeta());
+		metaMissions.add(new BiologyStudyFieldMissionMeta());
+		metaMissions.add(new BuildingConstructionMissionMeta());
+		metaMissions.add(new BuildingSalvageMissionMeta());
+		metaMissions.add(new CollectIceMeta());
+		metaMissions.add(new CollectRegolithMeta());
+		metaMissions.add(new EmergencySupplyMissionMeta());
+		metaMissions.add(new ExplorationMeta());
+		metaMissions.add(new MiningMeta());
+		metaMissions.add(new RescueSalvageVehicleMeta());
+		metaMissions.add(new TradeMeta());
+		metaMissions.add(new TravelToSettlementMeta());
+	}
 
-        // Populate robotMetaMissions list with all meta missions.
-        //robotMetaMissions.add(new TradeMeta());
-        //robotMetaMissions.add(new TravelToSettlementMeta());
-        //robotMetaMissions.add(new BuildingConstructionMissionMeta());
-        //robotMetaMissions.add(new BuildingSalvageMissionMeta());
-    }
+	private static void initializeRobotMetaMissions() {
 
-    /**
-     * Gets a list of all meta missions.
-     * @return list of meta missions.
-     */
-    public static List<MetaMission> getMetaMissions() {
+		robotMetaMissions = new ArrayList<MetaMission>();
 
-        // Lazy initialize meta missions list if necessary.
-        if (metaMissions == null) {
-            initializeMetaMissions();
-        }
+		// Populate robotMetaMissions list with all meta missions.
+		// robotMetaMissions.add(new TradeMeta());
+		// robotMetaMissions.add(new TravelToSettlementMeta());
+		// robotMetaMissions.add(new BuildingConstructionMissionMeta());
+		// robotMetaMissions.add(new BuildingSalvageMissionMeta());
+	}
 
-        // Return copy of meta mission list.
-        //return new ArrayList<MetaMission>(metaMissions);
-        return metaMissions;
-    }
-    
-    public static List<MetaMission> getRobotMetaMissions() {
+	/**
+	 * Gets a list of all meta missions.
+	 * 
+	 * @return list of meta missions.
+	 */
+	public static List<MetaMission> getMetaMissions() {
 
-        // Lazy initialize meta missions list if necessary.
-        if (robotMetaMissions == null) {
-            initializeRobotMetaMissions();
-        }
+		// Lazy initialize meta missions list if necessary.
+		if (metaMissions == null) {
+			initializeMetaMissions();
+		}
 
-        // Return copy of meta mission list.
-        //return new ArrayList<MetaMission>(robotMetaMissions);
-        return robotMetaMissions;
-    }
+		// Return copy of meta mission list.
+		// return new ArrayList<MetaMission>(metaMissions);
+		return metaMissions;
+	}
+
+	public static List<MetaMission> getRobotMetaMissions() {
+
+		// Lazy initialize meta missions list if necessary.
+		if (robotMetaMissions == null) {
+			initializeRobotMetaMissions();
+		}
+
+		// Return copy of meta mission list.
+		// return new ArrayList<MetaMission>(robotMetaMissions);
+		return robotMetaMissions;
+	}
 }

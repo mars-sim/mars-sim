@@ -39,6 +39,7 @@ extends HistoricalEvent implements Serializable {
 				eventType, 
 				source,
 				task.getDescription() + " " + description,
+				"N/A",
 				unit.getName(), 
 				"None",
 				location

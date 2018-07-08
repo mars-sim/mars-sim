@@ -11,24 +11,22 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 
 /**
- * This class represents a historical event table displayed within the Monitor Window.
+ * This class represents a historical event table displayed within the Monitor
+ * Window.
  */
-public class EventTab
-extends TableTab {
+public class EventTab extends TableTab {
 
 	/**
 	 * constructor.
+	 * 
 	 * @param window {@link MonitorWindow} the containing window
-	 * @param model {@link EventTableModel}
+	 * @param model  {@link EventTableModel}
 	 */
-	// 2015-01-14 Changed param list to include notifyBox and desktop
+	// Changed param list to include notifyBox and desktop
 	public EventTab(final MonitorWindow window, NotificationWindow notifyBox, MainDesktopPane desktop) {
 		// Use TableTab constructor
-		super(window,
-			new EventTableModel(Simulation.instance().getEventManager(), notifyBox, desktop),
-			true,
-			false,
-			MonitorWindow.EVENT_ICON);
+		super(window, new EventTableModel(Simulation.instance().getEventManager(), notifyBox, desktop), true, false,
+				MonitorWindow.EVENT_ICON);
 
 	}
 

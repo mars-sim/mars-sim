@@ -1121,7 +1121,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 	}
 
 	@Override
-	public void eventAdded(int index, HistoricalEvent event) {
+	public void eventAdded(int index, SimpleEvent se, HistoricalEvent he) {
 		// TODO Auto-generated method stub
 
 	}
@@ -1215,11 +1215,4 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		multiplayerTray = null;
 		alert = null;
 	}
-
-	@Override
-	public void eventAdded(int index, SimpleEvent event) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

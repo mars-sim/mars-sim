@@ -15,26 +15,22 @@ import org.mars_sim.msp.core.person.EventType;
 /**
  * A historical event for interplanetary transportation.
  */
-public class TransportEvent
-extends HistoricalEvent implements Serializable {
+public class TransportEvent extends HistoricalEvent implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Constructor.
+	 * 
 	 * @param transportItem the transport item.
-	 * @param eventType the event type string.
-	 * @param description of the event.
+	 * @param eventType     the event type string.
+	 * @param cause         The cause for this event.
+	 * @param location   the settlement/coordinate where it occurs.
 	 */
 	public TransportEvent(Transportable transportItem, EventType eventType, String cause, String location) {
-		super(
-			HistoricalEventCategory.TRANSPORT,
-			eventType,
-			transportItem,
-			transportItem.getName(),
-			cause,
-			"N/A", // TODO: Add the type of rocket
-			location
-		);
+		super(HistoricalEventCategory.TRANSPORT, eventType, transportItem, transportItem.getName(), "N/A", cause, "N/A",
+				location);
+		// TODO: Add the type of rocket
 	}
 }

@@ -261,6 +261,7 @@ public class NotificationWindow extends JDialog implements ClockListener {
 		        // Only display notification window when malfunction has occurred, not when fixed.
 		        if (event.getType() == EventType.MALFUNCTION_ACT_OF_GOD
 		        	||event.getType() == EventType.MALFUNCTION_HUMAN_FACTORS
+				    ||event.getType() == EventType.MALFUNCTION_PROGRAMMING_ERROR
 		        	||event.getType() == EventType.MALFUNCTION_PARTS_FAILURE
 		        		) {
 		            willNotify = true;

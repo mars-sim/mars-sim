@@ -90,69 +90,83 @@ import org.mars_sim.msp.core.time.MasterClock;
 /**
  * The Building class is a settlement's building.
  */
-public class Building
-extends Structure
-implements Malfunctionable, Indoor, // Comparable<Building>,
-LocalBoundedObject, InsidePathLocation, Serializable {
+public class Building extends Structure implements Malfunctionable, Indoor, // Comparable<Building>,
+		LocalBoundedObject, InsidePathLocation, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	// default logger.
 	private static Logger logger = Logger.getLogger(Building.class.getName());
-	
-    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
-    public static final int TISSUE_CAPACITY = 20;
-    
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
+	public static final int TISSUE_CAPACITY = 20;
+
 	public static final double HEIGHT = 2.5; // assume an uniform height of 2.5 meters in all buildings
-	/** The volume of an airlock in cubic meters*/
-	public static final double AIRLOCK_VOLUME_IN_CM = BuildingAirlock.AIRLOCK_VOLUME_IN_CM; //3 * 2 * 2; //in m^3
+	/** The volume of an airlock in cubic meters */
+	public static final double AIRLOCK_VOLUME_IN_CM = BuildingAirlock.AIRLOCK_VOLUME_IN_CM; // 3 * 2 * 2; //in m^3
 	/** 500 W heater for use during EVA ingress */
 	public static final double kW_EVA_HEATER = .5D; //
-	// Assuming 20% chance for each person to witness or be conscious of the meteorite impact in an affected building
+	// Assuming 20% chance for each person to witness or be conscious of the
+	// meteorite impact in an affected building
 	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
 
 	// The influx of meteorites entering Mars atmosphere can be estimated as
 	// log N = -0.689* log(m) + 4.17
-	// N is the number of meteorites per year having masses greater than m grams incident
+	// N is the number of meteorites per year having masses greater than m grams
+	// incident
 	// on an area of 10^6 km2 (Bland and Smith, 2000).
 	// see initial implementation in MeteoriteImpactImpl class
 
-	/** 
-	 * The thickness of the Aluminum wall of a building in meter.
-	 * Typically between 10^-5 (.00001) and 10^-2 (.01) [in m]
+	/**
+	 * The thickness of the Aluminum wall of a building in meter. Typically between
+	 * 10^-5 (.00001) and 10^-2 (.01) [in m]
 	 */
 	public static final double WALL_THICKNESS_ALUMINUM = 0.0000254;
-	
+
 	// inflatable greenhouse : 4.815E-4 or 0.0004815
 	// large greenhouse : 9.63E-4 or 0.000963
-	
+
 	/** The thickness of the wall of a greenhouse building in meter */
-	public static double wall_thickness_inflatable;//= 0.0000211; 
-	/** The safety factor when determining the wall/canopy thickness for an inflatable greenhouse. */
+	public static double wall_thickness_inflatable;// = 0.0000211;
+	/**
+	 * The safety factor when determining the wall/canopy thickness for an
+	 * inflatable greenhouse.
+	 */
 	private static double safety_factor = 1.5D;
-	/** The design pressure when determining the wall/canopy thickness for an inflatable greenhouse. */
+	/**
+	 * The design pressure when determining the wall/canopy thickness for an
+	 * inflatable greenhouse.
+	 */
 	private static double design_pressure = 14.7 - 4; // [in psi]
 	/** The diameter of the canopy thickness for an inflatable greenhouse. */
 	private static double diameter;
-	/** The tensile strength of the composite material when determining the wall/canopy thickness for an inflatable greenhouse. */
+	/**
+	 * The tensile strength of the composite material when determining the
+	 * wall/canopy thickness for an inflatable greenhouse.
+	 */
 	private static double kevlar_tensile_strength = 100000; // [in psi] assume kevlar 49/epoxy
 
-	// Note : the typical values of penetrationThicknessOnAL for a 1 g/cm^3, 1 km/s meteorite can be .0010 to 0.0022 meter
-	
+	// Note : the typical values of penetrationThicknessOnAL for a 1 g/cm^3, 1 km/s
+	// meteorite can be .0010 to 0.0022 meter
+
 	// Loaded wearLifeTime, maintenanceTime, roomTemperature from buildings.xml
 	/** Default : 3340 Sols (5 orbits). */
 	private int wearLifeTime = 3340000;
 	/** Default : 50 millisols maintenance time. */
 	private int maintenanceTime = 50;
 	/** Default : 22.5 deg celsius. */
-    private double initialTemperature = 22.5D;
-    //public double GREENHOUSE_TEMPERATURE = 24D;
+	private double initialTemperature = 22.5D;
+	// public double GREENHOUSE_TEMPERATURE = 24D;
 
-    // Data members
-    /** The cache for msols */     
- 	private int msolCache;
-    /** an unique template id assigned for the settlement template that this building belong */
+	// Data members
+	/** The cache for msols */
+	private int msolCache;
+	/**
+	 * an unique template id assigned for the settlement template that this building
+	 * belong
+	 */
 	protected int templateID;
 	protected int inhabitableID = -1;
 	protected int baseLevel;
@@ -179,9 +193,9 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	// Added description for each building
 	private String description;// = "Stay tuned";
 
-	//protected Set<Function> functions;
+	// protected Set<Function> functions;
 	protected List<Function> functions;
-	//private List<BuildingKit> buildingKit;
+	// private List<BuildingKit> buildingKit;
 	private Map<Integer, ItemResource> itemMap = new HashMap<Integer, ItemResource>();
 
 	/** Unit location coordinates. */
@@ -189,12 +203,12 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	protected BuildingManager manager;
 	protected MalfunctionManager malfunctionManager;
 
-    private Inventory inv; //b_inv, s_inv;
-    private Settlement settlement;
+	private Inventory inv; // b_inv, s_inv;
+	private Settlement settlement;
 
-    private ThermalGeneration furnace;
-    private PowerGeneration powerGen;
-    private PowerStorage powerStorage;
+	private ThermalGeneration furnace;
+	private PowerGeneration powerGen;
+	private PowerStorage powerStorage;
 	private LifeSupport lifeSupport;
 	private RoboticStation roboticStation;
 	private Heating heating;
@@ -207,7 +221,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	private WasteDisposal waste;
 	private VehicleMaintenance garage;
 	private FoodProduction foodFactory;
-	private ResourceProcessing processing; 
+	private ResourceProcessing processing;
 	private Research lab;
 	private Manufacture workshop;
 	private Administration admin;
@@ -216,31 +230,32 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	private GroundVehicleMaintenance maint;
 	private AstronomicalObservation astro;
 	private Exercise gym;
-	
+
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 	private static BuildingConfig buildingConfig;
-	private static Malfunction malfunction_meteor;
-	
+	private static Malfunction malfunctionMeteoriteImpact;
+
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
 
-	//private DecimalFormat fmt = new DecimalFormat("###.####");
+	// private DecimalFormat fmt = new DecimalFormat("###.####");
 
-	private static Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
-	
-	
-	/** Constructor 1.
-	 * Constructs a Building object.
+	private static Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration()
+			.getTissueCultures();
+
+	/**
+	 * Constructor 1. Constructs a Building object.
+	 * 
 	 * @param template the building template.
-	 * @param manager the building's building manager.
+	 * @param manager  the building's building manager.
 	 * @throws BuildingException if building can not be created.
 	 */
 	public Building(BuildingTemplate template, BuildingManager manager) {
 		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getWidth(),
-		        template.getLength(), template.getXLoc(), template.getYLoc(),
-				template.getFacing(), manager);
-	    //logger.info("Building's constructor 1 is on " + Thread.currentThread().getName() + " Thread");
+				template.getLength(), template.getXLoc(), template.getYLoc(), template.getFacing(), manager);
+		// logger.info("Building's constructor 1 is on " +
+		// Thread.currentThread().getName() + " Thread");
 
 		this.manager = manager;
 		this.settlement = manager.getSettlement();
@@ -252,7 +267,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 		if (hasFunction(FunctionType.LIFE_SUPPORT)) {
 			if (lifeSupport == null) {
 				lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
-			    // Set up an inhabitable_building id for tracking composition of air
+				// Set up an inhabitable_building id for tracking composition of air
 				int id = manager.getNextInhabitableID();
 				setInhabitableID(id);
 			}
@@ -262,58 +277,60 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 		if (hasFunction(FunctionType.POWER_GENERATION))
 			if (powerGen == null)
 				powerGen = (PowerGeneration) getFunction(FunctionType.POWER_GENERATION);
-		
+
 		// Set the instance of thermal generation function.
 		if (hasFunction(FunctionType.THERMAL_GENERATION))
 			if (furnace == null)
 				furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
-					//if (heating == null)
-					//	heating = furnace.getHeating();
-					
+		// if (heating == null)
+		// heating = furnace.getHeating();
+
 		// Set the instance of power storage function.
-		if (hasFunction(FunctionType.POWER_STORAGE))	    
+		if (hasFunction(FunctionType.POWER_STORAGE))
 			if (powerStorage == null)
 				powerStorage = (PowerStorage) getFunction(FunctionType.POWER_STORAGE);
 
-		
 		// Set the instance of robotic station function.
 		if (hasFunction(FunctionType.ROBOTIC_STATION))
 			if (roboticStation == null)
 				roboticStation = (RoboticStation) getFunction(FunctionType.ROBOTIC_STATION);
-		
+
 		// Set the instance of eva function.
 		if (hasFunction(FunctionType.EVA))
 			if (eva == null)
 				eva = (EVA) getFunction(FunctionType.EVA);
-		
+
 		// Set the instance of farming function.
 		if (hasFunction(FunctionType.FARMING))
 			if (farm == null)
 				farm = (Farming) getFunction(FunctionType.FARMING);
-		
+
 		if (hasFunction(FunctionType.LIVING_ACCOMODATIONS))
 			if (livingAccommodations == null)
 				livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMODATIONS);
-		
+
 	}
 
-	/** Constructor 2
-	 * Constructs a Building object.
-	 * @param id the building's unique ID number.
+	/**
+	 * Constructor 2 Constructs a Building object.
+	 * 
+	 * @param id           the building's unique ID number.
 	 * @param buildingType the building Type.
-	 * @param nickName the building's nick name.
-	 * @param w the width (meters) of the building or -1 if not set.
-	 * @param l the length (meters) of the building or -1 if not set.
-	 * @param xLoc the x location of the building in the settlement.
-	 * @param yLoc the y location of the building in the settlement.
-	 * @param facing the facing of the building (degrees clockwise from North).
-	 * @param manager the building's building manager.
+	 * @param nickName     the building's nick name.
+	 * @param w            the width (meters) of the building or -1 if not set.
+	 * @param l            the length (meters) of the building or -1 if not set.
+	 * @param xLoc         the x location of the building in the settlement.
+	 * @param yLoc         the y location of the building in the settlement.
+	 * @param facing       the facing of the building (degrees clockwise from
+	 *                     North).
+	 * @param manager      the building's building manager.
 	 * @throws BuildingException if building can not be created.
 	 */
-	public Building(int id, String buildingType, String nickName, double w, double l,
-	        double xLoc, double yLoc, double facing, BuildingManager manager) {
+	public Building(int id, String buildingType, String nickName, double w, double l, double xLoc, double yLoc,
+			double facing, BuildingManager manager) {
 		super(nickName, manager.getSettlement().getCoordinates());
-	    //logger.info("Building's constructor 2 is on " + Thread.currentThread().getName() + " Thread");
+		// logger.info("Building's constructor 2 is on " +
+		// Thread.currentThread().getName() + " Thread");
 
 		this.templateID = id;
 		this.buildingType = buildingType;
@@ -346,25 +363,22 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 //			b_inv.addGeneralCapacity(100_000);
 //		}
 
-		
-
 		if (buildingType.toLowerCase().contains("greenhouse")) {
-			
-			if (buildingType.equalsIgnoreCase("inflatable greenhouse"))	
+
+			if (buildingType.equalsIgnoreCase("inflatable greenhouse"))
 				diameter = 6;
-			else if (buildingType.equalsIgnoreCase("inground greenhouse"))	
+			else if (buildingType.equalsIgnoreCase("inground greenhouse"))
 				diameter = 5;
-			else if (buildingType.equalsIgnoreCase("large greenhouse"))	
+			else if (buildingType.equalsIgnoreCase("large greenhouse"))
 				diameter = 12;
-			
-			wall_thickness_inflatable = diameter * safety_factor * design_pressure  
-											/ ( 2 * kevlar_tensile_strength);
-			//System.out.println("wall_thickness_inflatable : " + wall_thickness_inflatable);
+
+			wall_thickness_inflatable = diameter * safety_factor * design_pressure / (2 * kevlar_tensile_strength);
+			// System.out.println("wall_thickness_inflatable : " +
+			// wall_thickness_inflatable);
 			// inflatable greenhouse : 4.815E-4 or 0.0004815
 			// large greenhouse : 9.63E-4 or 0.000963
 		}
-		
-		
+
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
 
@@ -393,20 +407,18 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 //		if (this.length <= 0D) {
 //			throw new IllegalStateException("Invalid building length: " + this.length + " m. for new building " + buildingType);
 //		}
-	
 
-		if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel"))	{
+		if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel")) {
 			length = l;
 			width = buildingConfig.getWidth(buildingType);
-			//logger.info(nickName + "'s length and width : " + length + " x " + width);
-		}
-		else {
+			// logger.info(nickName + "'s length and width : " + length + " x " + width);
+		} else {
 			width = buildingConfig.getWidth(buildingType);
 			length = buildingConfig.getLength(buildingType);
 		}
-		
+
 		floorArea = length * width;
-			
+
 		baseLevel = buildingConfig.getBaseLevel(buildingType);
 		description = buildingConfig.getDescription(buildingType);
 
@@ -420,8 +432,8 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 		maintenanceTime = buildingConfig.getMaintenanceTime(buildingType);
 
 		// Set room temperature
-		initialTemperature = buildingConfig.getRoomTemperature(buildingType);	
-		
+		initialTemperature = buildingConfig.getRoomTemperature(buildingType);
+
 		// Determine total maintenance time.
 		double totalMaintenanceTime = maintenanceTime;
 		Iterator<Function> j = functions.iterator();
@@ -441,13 +453,14 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 			for (int x = 0; x < function.getMalfunctionScopeStrings().length; x++) {
 				malfunctionManager.addScopeString(function.getMalfunctionScopeStrings()[x]);
 			}
-			//malfunctionManager.addScopeString(function.getFunctionType().getName());
+			// malfunctionManager.addScopeString(function.getFunctionType().getName());
 		}
-		
+
 		// Initialize lab space for storing crop tissue cultures
 		if (hasFunction(FunctionType.RESEARCH) && getResearch().hasSpecialty(ScienceType.BOTANY)) {
 			lab = getResearch();
-			//Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
+			// Set<AmountResource> tissues =
+			// SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
 			for (AmountResource ar : tissues) {
 				getInventory().addAmountResourceTypeCapacity(ar, TISSUE_CAPACITY);
 				getInventory().storeAmountResource(ar, .1, false);
@@ -459,58 +472,61 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	/** Constructor 3 (for use by Mock Building in Unit testing) */
 	protected Building(BuildingManager manager) {
 		super("Mock Building", new Coordinates(0D, 0D));
-		//settlement = manager.getSettlement();
-		//inv = settlement.getInventory();
+		// settlement = manager.getSettlement();
+		// inv = settlement.getInventory();
 	}
 
 	/**
 	 * Gets the building inventory of this building.
+	 * 
 	 * @return inventory
-
-    public Inventory getBuildingInventory() {
-    	return inv;//b_inv;
-    }
+	 * 
+	 *         public Inventory getBuildingInventory() { return inv;//b_inv; }
 	 */
 	/**
 	 * Gets the settlement inventory of this building.
+	 * 
 	 * @return inventory
 	 */
 	public Inventory getSettlementInventory() {
-		return inv;//manager.getSettlement().getInventory();//s_inv;
+		return inv;// manager.getSettlement().getInventory();//s_inv;
 	}
 
 	/**
 	 * Gets the settlement inventory of this building.
+	 * 
 	 * @return inventory
 	 */
 	public Inventory getInventory() {
-		return inv;//manager.getSettlement().getInventory();
+		return inv;// manager.getSettlement().getInventory();
 	}
 
 	/**
-     * Gets the description of a building.
-     * @return String description
-     */
-	//2014-11-27  Added getDescription()
-    public String getDescription() {
-            return description;
-    }
+	 * Gets the description of a building.
+	 * 
+	 * @return String description
+	 */
+	public String getDescription() {
+		return description;
+	}
 
 	/**
 	 * Sets building nickname
+	 * 
 	 * @param nick name
 	 */
-    public void setBuildingNickName(String name) {
-        this.nickName = name;
-    }
+	public void setBuildingNickName(String name) {
+		this.nickName = name;
+	}
 
 	/**
-     * Gets the initial temperature of a building.
-     * @return temperature (deg C)
-     */
-    public double getInitialTemperature() {
-    	return initialTemperature;
-    }
+	 * Gets the initial temperature of a building.
+	 * 
+	 * @return temperature (deg C)
+	 */
+	public double getInitialTemperature() {
+		return initialTemperature;
+	}
 
 	public LifeSupport getLifeSupport() {
 		if (lifeSupport == null)
@@ -521,50 +537,50 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	public RoboticStation getRoboticStation() {
 		if (roboticStation == null)
 			roboticStation = (RoboticStation) getFunction(FunctionType.ROBOTIC_STATION);
-	
+
 		return roboticStation;
 	}
-	
+
 	public ThermalGeneration getThermalGeneration() {
 		if (furnace == null)
 			furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
 		return furnace;
 	}
-	
+
 	public Farming getFarming() {
 		if (farm == null)
 			farm = (Farming) getFunction(FunctionType.FARMING);
 		return farm;
 	}
-		
+
 	public EVA getEVA() {
-		//if (hasFunction(BuildingFunction.EVA))
-		//	eva = (EVA) getFunction(BuildingFunction.EVA);
-		//else
-		//	return null;
+		// if (hasFunction(BuildingFunction.EVA))
+		// eva = (EVA) getFunction(BuildingFunction.EVA);
+		// else
+		// return null;
 		if (eva == null)
 			eva = (EVA) getFunction(FunctionType.EVA);
 		return eva;
 	}
-		
+
 	public PowerGeneration getPowerGeneration() {
 		if (powerGen == null)
 			powerGen = (PowerGeneration) getFunction(FunctionType.POWER_GENERATION);
 		return powerGen;
 	}
-	
+
 	public PowerStorage getPowerStorage() {
 		if (powerStorage == null)
 			powerStorage = (PowerStorage) getFunction(FunctionType.POWER_STORAGE);
 		return powerStorage;
 	}
-	
-	public LivingAccommodations	getLivingAccommodations() {
+
+	public LivingAccommodations getLivingAccommodations() {
 		if (livingAccommodations == null)
 			livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMODATIONS);
 		return livingAccommodations;
 	}
-	
+
 	public PreparingDessert getPreparingDessert() {
 		if (preparingDessert == null)
 			preparingDessert = (PreparingDessert) getFunction(FunctionType.PREPARING_DESSERT);
@@ -576,121 +592,125 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 			cooking = (Cooking) getFunction(FunctionType.COOKING);
 		return cooking;
 	}
-	
+
 	public MedicalCare getMedical() {
 		if (medical == null)
 			medical = (MedicalCare) getFunction(FunctionType.MEDICAL_CARE);
-		return medical;	
+		return medical;
 	}
-	
+
 	public WasteDisposal getWaste() {
 		if (waste == null)
 			waste = (WasteDisposal) getFunction(FunctionType.WASTE_DISPOSAL);
 		return waste;
 	}
-	
-	public VehicleMaintenance getVehicleMaintenance() { 
+
+	public VehicleMaintenance getVehicleMaintenance() {
 		if (garage == null)
 			garage = (VehicleMaintenance) getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 		return garage;
 	}
-	
+
 	public FoodProduction getFoodProduction() {
 		if (foodFactory == null)
 			foodFactory = (FoodProduction) getFunction(FunctionType.FOOD_PRODUCTION);
-		return foodFactory;		
+		return foodFactory;
 	}
-	
+
 	public ResourceProcessing getResourceProcessing() {
 		if (processing == null)
 			processing = (ResourceProcessing) getFunction(FunctionType.RESOURCE_PROCESSING);
 		return processing;
 	}
-	
+
 	public Research getResearch() {
 		if (lab == null)
 			lab = (Research) getFunction(FunctionType.RESEARCH);
 		return lab;
 	}
-	
+
 	public Manufacture getManufacture() {
 		if (workshop == null)
 			workshop = (Manufacture) getFunction(FunctionType.MANUFACTURE);
 		return workshop;
 	}
-	
+
 	public Administration getAdministration() {
 		if (admin == null)
 			admin = (Administration) getFunction(FunctionType.ADMINISTRATION);
-		return admin;			
+		return admin;
 	}
-	
+
 	public Recreation getRecreation() {
 		if (rec == null)
-			rec = (Recreation)getFunction(FunctionType.RECREATION);
+			rec = (Recreation) getFunction(FunctionType.RECREATION);
 		return rec;
 	}
-	
+
 	public Dining getDining() {
 		if (dine == null)
 			dine = (Dining) getFunction(FunctionType.DINING);
 		return dine;
 	}
-	
+
 	public GroundVehicleMaintenance getGroundVehicleMaintenance() {
 		if (maint == null)
 			maint = (GroundVehicleMaintenance) getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 		return maint;
 	}
-	
+
 	public AstronomicalObservation getAstronomicalObservation() {
 		if (astro == null)
 			astro = (AstronomicalObservation) getFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS);
 		return astro;
 	}
-	
+
 	public Exercise getExercise() {
 		if (gym == null)
 			gym = (Exercise) getFunction(FunctionType.EXERCISE);
 		return gym;
-		
+
 	}
-	
-    /**
-     * Gets the temperature of a building.
-     * @return temperature (deg C)
-     */
-	//2014-10-17  Added getTemperature()
-    public double getCurrentTemperature() {
-    	if (heating != null)
-            return heating.getCurrentTemperature();
-    	else
-    		return initialTemperature;
-    }
+
+	/**
+	 * Gets the temperature of a building.
+	 * 
+	 * @return temperature (deg C)
+	 */
+	public double getCurrentTemperature() {
+		if (heating != null)
+			return heating.getCurrentTemperature();
+		else
+			return initialTemperature;
+	}
 
 	/**
 	 * Determines the building functions.
+	 * 
 	 * @return list of building .
 	 * @throws Exception if error in functions.
 	 */
 	private List<Function> determineFunctions() {
-		//System.out.println("Building's determineFunctions");
 		List<Function> buildingFunctions = new ArrayList<Function>();
-		//Set<Function> buildingFunctions = new HashSet<Function>();
+		// Set<Function> buildingFunctions = new HashSet<Function>();
 
 		// Set administration function.
-		if (buildingConfig.hasAdministration(buildingType)) buildingFunctions.add(new Administration(this));
+		if (buildingConfig.hasAdministration(buildingType))
+			buildingFunctions.add(new Administration(this));
 
 		// Set astronomical observation function
-		if (buildingConfig.hasAstronomicalObservation(buildingType)) buildingFunctions.add(new AstronomicalObservation(this));
+		if (buildingConfig.hasAstronomicalObservation(buildingType))
+			buildingFunctions.add(new AstronomicalObservation(this));
 
 		// Set building connection function.
-		if (buildingConfig.hasBuildingConnection(buildingType)) buildingFunctions.add(new BuildingConnection(this));
+		if (buildingConfig.hasBuildingConnection(buildingType))
+			buildingFunctions.add(new BuildingConnection(this));
 
 		// Set communication function.
-		if (buildingConfig.hasCommunication(buildingType)) buildingFunctions.add(new Communication(this));
+		if (buildingConfig.hasCommunication(buildingType))
+			buildingFunctions.add(new Communication(this));
 
-		if (buildingConfig.hasCooking(buildingType))  {
+		if (buildingConfig.hasCooking(buildingType)) {
 			// Set cooking function.
 			buildingFunctions.add(new Cooking(this));
 			// Set preparing dessert function.
@@ -698,108 +718,133 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 		}
 
 		// Set dining function.
-		if (buildingConfig.hasDining(buildingType)) buildingFunctions.add(new Dining(this));
+		if (buildingConfig.hasDining(buildingType))
+			buildingFunctions.add(new Dining(this));
 
 		// Set Earth return function.
-		if (buildingConfig.hasEarthReturn(buildingType)) buildingFunctions.add(new EarthReturn(this));
+		if (buildingConfig.hasEarthReturn(buildingType))
+			buildingFunctions.add(new EarthReturn(this));
 		// Set EVA function.
-		//eva = new EVA(this); if (config.hasEVA(buildingType)) buildingFunctions.add(eva);
-		if (buildingConfig.hasEVA(buildingType)) buildingFunctions.add(new EVA(this));
+		// eva = new EVA(this); if (config.hasEVA(buildingType))
+		// buildingFunctions.add(eva);
+		if (buildingConfig.hasEVA(buildingType))
+			buildingFunctions.add(new EVA(this));
 
 		// Set exercise function.
-		if (buildingConfig.hasExercise(buildingType)) buildingFunctions.add(new Exercise(this));
+		if (buildingConfig.hasExercise(buildingType))
+			buildingFunctions.add(new Exercise(this));
 
 		// Set farming function.
-		if (buildingConfig.hasFarming(buildingType)) buildingFunctions.add(new Farming(this));
+		if (buildingConfig.hasFarming(buildingType))
+			buildingFunctions.add(new Farming(this));
 
-		//2014-11-23 Added food production
-		if (buildingConfig.hasFoodProduction(buildingType)) buildingFunctions.add(new FoodProduction(this));
+		// Added food production
+		if (buildingConfig.hasFoodProduction(buildingType))
+			buildingFunctions.add(new FoodProduction(this));
 
 		// Set ground vehicle maintenance function.
-		if (buildingConfig.hasGroundVehicleMaintenance(buildingType)) buildingFunctions.add(new GroundVehicleMaintenance(this));
+		if (buildingConfig.hasGroundVehicleMaintenance(buildingType))
+			buildingFunctions.add(new GroundVehicleMaintenance(this));
 
 		// Set life support function.
-		if (buildingConfig.hasLifeSupport(buildingType)) buildingFunctions.add(new LifeSupport(this));
+		if (buildingConfig.hasLifeSupport(buildingType))
+			buildingFunctions.add(new LifeSupport(this));
 
 		// Set living accommodations function.
-		if (buildingConfig.hasLivingAccommodations(buildingType)) buildingFunctions.add(new LivingAccommodations(this));
+		if (buildingConfig.hasLivingAccommodations(buildingType))
+			buildingFunctions.add(new LivingAccommodations(this));
 
 		// Set management function.
-		if (buildingConfig.hasManagement(buildingType)) buildingFunctions.add(new Management(this));
+		if (buildingConfig.hasManagement(buildingType))
+			buildingFunctions.add(new Management(this));
 
 		// Set manufacture function.
-		if (buildingConfig.hasManufacture(buildingType)) buildingFunctions.add(new Manufacture(this));
+		if (buildingConfig.hasManufacture(buildingType))
+			buildingFunctions.add(new Manufacture(this));
 
 		// Set medical care function.
-		if (buildingConfig.hasMedicalCare(buildingType)) buildingFunctions.add(new MedicalCare(this));
+		if (buildingConfig.hasMedicalCare(buildingType))
+			buildingFunctions.add(new MedicalCare(this));
 
 		// Set power generation function.
-		if (buildingConfig.hasPowerGeneration(buildingType)) buildingFunctions.add(new PowerGeneration(this));
+		if (buildingConfig.hasPowerGeneration(buildingType))
+			buildingFunctions.add(new PowerGeneration(this));
 
 		// Set power storage function.
-		if (buildingConfig.hasPowerStorage(buildingType)) buildingFunctions.add(new PowerStorage(this));
+		if (buildingConfig.hasPowerStorage(buildingType))
+			buildingFunctions.add(new PowerStorage(this));
 
 		// Set recreation function.
-		if (buildingConfig.hasRecreation(buildingType)) buildingFunctions.add(new Recreation(this));
+		if (buildingConfig.hasRecreation(buildingType))
+			buildingFunctions.add(new Recreation(this));
 
 		// Set research function.
-		if (buildingConfig.hasResearchLab(buildingType)) buildingFunctions.add(new Research(this));
+		if (buildingConfig.hasResearchLab(buildingType))
+			buildingFunctions.add(new Research(this));
 
 		// Set resource processing function.
-		if (buildingConfig.hasResourceProcessing(buildingType)) buildingFunctions.add(new ResourceProcessing(this));
+		if (buildingConfig.hasResourceProcessing(buildingType))
+			buildingFunctions.add(new ResourceProcessing(this));
 
 		// Set robotic function.
-		if (buildingConfig.hasRoboticStation(buildingType)) buildingFunctions.add(new RoboticStation(this));
+		if (buildingConfig.hasRoboticStation(buildingType))
+			buildingFunctions.add(new RoboticStation(this));
 
 		// Set storage function.
-		if (buildingConfig.hasStorage(buildingType)) buildingFunctions.add(new Storage(this));
+		if (buildingConfig.hasStorage(buildingType))
+			buildingFunctions.add(new Storage(this));
 
 		// Set thermal generation function.
-		if (buildingConfig.hasThermalGeneration(buildingType)) buildingFunctions.add(new ThermalGeneration(this));
+		if (buildingConfig.hasThermalGeneration(buildingType))
+			buildingFunctions.add(new ThermalGeneration(this));
 
 		// Set thermal storage function.
-		// if (config.hasThermalStorage(buildingType)) buildingFunctions.add(new ThermalStorage(this));
+		// if (config.hasThermalStorage(buildingType)) buildingFunctions.add(new
+		// ThermalStorage(this));
 
 		return buildingFunctions;
 	}
 
 	/**
 	 * Checks if this building has the given functions (more than one).
+	 * 
 	 * @param function the name of the function.
 	 * @return true if it does.
 	 */
 	public boolean hasFunction(FunctionType[] fts) {
 		boolean result = false;
-        for (Function f : functions) {
-        	for (FunctionType ft : fts) {
-	        	if (f.getFunctionType() == ft) {
-	        		result = result && true;
-	        	}
+		for (Function f : functions) {
+			for (FunctionType ft : fts) {
+				if (f.getFunctionType() == ft) {
+					result = result && true;
+				}
 			}
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Checks if this building has the given functions (more than one).
+	 * 
 	 * @param function the enum name of the functions.
 	 * @return true if it it does.
 	 */
 	public boolean hasFunction(FunctionType bf1, FunctionType bf2) {
-		return hasFunction(new FunctionType[] {bf1, bf2});
+		return hasFunction(new FunctionType[] { bf1, bf2 });
 	}
-	
+
 	/**
 	 * Checks if this building has a particular function.
+	 * 
 	 * @param function the enum name of the function.
 	 * @return true if it does.
 	 */
 	public boolean hasFunction(FunctionType functionType) {
 		boolean result = false;
-        for (Function f : functions) {
-        	if (f.getFunctionType() == functionType) {
-        		return true;
-        	}
+		for (Function f : functions) {
+			if (f.getFunctionType() == functionType) {
+				return true;
+			}
 		}
 //		functions.stream()
 //		.filter((f) -> f.getFunction() == functionType)
@@ -818,6 +863,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 	/**
 	 * Gets a function if the building has it.
+	 * 
 	 * @param functionType {@link FunctionType} the function of the building.
 	 * @return function.
 	 * @throws BuildingException if building doesn't have the function.
@@ -825,27 +871,22 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	public Function getFunction(FunctionType functionType) {
 		Function result = null;
 
-        for (Function f : functions) {
-        	if (f.getFunctionType() == functionType) {
-        		return f;
-        	}
+		for (Function f : functions) {
+			if (f.getFunctionType() == functionType) {
+				return f;
+			}
 		}
-/*
-		functions.forEach(f -> {
-			if (f.getFunction() == functionType)
-        		return f;
-		});
-
-
-		Iterator<Function> i = functions.iterator();
-		while (i.hasNext()) {
-			Function function = i.next();
-			if (function.getFunction() == functionType)
-				result = function;
-		}
-*/
-		//if (result != null) return result;
-		//else throw new IllegalStateException(buildingType + " does not have " + functionType);
+		/*
+		 * functions.forEach(f -> { if (f.getFunction() == functionType) return f; });
+		 * 
+		 * 
+		 * Iterator<Function> i = functions.iterator(); while (i.hasNext()) { Function
+		 * function = i.next(); if (function.getFunction() == functionType) result =
+		 * function; }
+		 */
+		// if (result != null) return result;
+		// else throw new IllegalStateException(buildingType + " does not have " +
+		// functionType);
 		return result;
 	}
 
@@ -862,32 +903,34 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 	public void removeFunction(Function function) {
 		if (functions.contains(function)) {
-	        functions.remove(function);
-	        // Call removeOneFunctionfromBFMap()
-	        manager.removeOneFunctionfromBFMap(this, function);
-	    }
+			functions.remove(function);
+			// Call removeOneFunctionfromBFMap()
+			manager.removeOneFunctionfromBFMap(this, function);
+		}
 	}
 
 	/**
 	 * Gets the building's building manager.
+	 * 
 	 * @return building manager
 	 */
 	public BuildingManager getBuildingManager() {
 		return manager;
 	}
 
-
-
 	/**
 	 * Sets the building's nickName
+	 * 
 	 * @return none
 	 */
 	// Called by TabPanelBuilding.java for building nickname change
 	public void setNickName(String nickName) {
 		this.nickName = nickName;
 	}
+
 	/**
 	 * Gets the building's nickName
+	 * 
 	 * @return building's nickName as a String
 	 */
 	// Called by TabPanelBuilding.java for building nickname change
@@ -897,9 +940,10 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 	/**
 	 * Gets the building type, not building's nickname
+	 * 
 	 * @return building type as a String.
-	 * @deprecated
-	 * TODO internationalize building names for display in user interface.
+	 * @deprecated TODO internationalize building names for display in user
+	 *             interface.
 	 */
 	// Change data field from "name" to "buildingType"
 	// TODO: change getName() to getBuildingType()
@@ -911,31 +955,30 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 	/**
 	 * Gets the building type.
-	 * @return building type as a String.
-	 * TODO internationalize building names for display in user interface.
+	 * 
+	 * @return building type as a String. TODO internationalize building names for
+	 *         display in user interface.
 	 */
-	//2014-11-02  Added getBuildingType()
+
 	public String getBuildingType() {
 		return buildingType;
 	}
 
 	/**
 	 * Sets the building's type (formerly name)
-	 * @return none
-	 * "buildingType" was formerly "name"
+	 * 
+	 * @return none "buildingType" was formerly "name"
 	 */
-	//2014-10-28  Called by TabPanelBuilding.java for generating a building list
+	// Called by TabPanelBuilding.java for generating a building list
 	public void setBuildingType(String type) {
-		//System.out.println("input nickName is " + nickName);
+		// System.out.println("input nickName is " + nickName);
 		this.buildingType = type;
-		//System.out.println("new buildingType is " + this.buildingType);
+		// System.out.println("new buildingType is " + this.buildingType);
 	}
 
-	
 	public double getWidth() {
 		return width;
 	}
-
 
 	public double getLength() {
 		return length;
@@ -945,22 +988,22 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 		return floorArea;
 	}
 
-	/** 
+	/**
 	 * Returns the volume of the building in liter
-	 * @return volume in liter 
+	 * 
+	 * @return volume in liter
 	 */
 	public double getVolumeInLiter() {
 		return floorArea * HEIGHT * 1000; // 1 Cubic Meter = 1,000 Liters
 	}
-	
+
 	@Override
 	public double getXLocation() {
 		return xLoc;
 	}
 
-
 	public void setXLocation(double x) {
-		this.xLoc = x ;
+		this.xLoc = x;
 	}
 
 	@Override
@@ -969,7 +1012,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	}
 
 	public void setYLocation(double y) {
-		this.yLoc = y ;
+		this.yLoc = y;
 	}
 
 	@Override
@@ -978,7 +1021,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	}
 
 	public void setFacing(double facing) {
-		this.facing = facing ;
+		this.facing = facing;
 	}
 
 	public boolean getInTransport() {
@@ -990,35 +1033,36 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	}
 
 	/**
-     * Gets the base level of the building.
-     * @return -1 for in-ground, 0 for above-ground.
-     */
-    public int getBaseLevel() {
-        return baseLevel;
-    }
+	 * Gets the base level of the building.
+	 * 
+	 * @return -1 for in-ground, 0 for above-ground.
+	 */
+	public int getBaseLevel() {
+		return baseLevel;
+	}
 
 	/**
 	 * Gets the power this building currently requires for full-power mode.
+	 * 
 	 * @return power in kW.
 	 */
-	//2014-11-02  Modified getFullPowerRequired()
-	public double getFullPowerRequired()  {
+	public double getFullPowerRequired() {
 		double result = basePowerRequirement;
 
 		// Determine power required for each function.
 		Iterator<Function> i = functions.iterator();
-		while (i.hasNext()) result += i.next().getFullPowerRequired();
-				
+		while (i.hasNext())
+			result += i.next().getFullPowerRequired();
+
 		result += powerNeededForEVAheater;
-		
-		//2014-11-02 Added getFullHeatRequired()
-		//result = result + getFullHeatRequired();
+		// result = result + getFullHeatRequired();
 
 		return result;
 	}
 
 	/**
 	 * Gets the power the building requires for power-down mode.
+	 * 
 	 * @return power in kW.
 	 */
 	public double getPoweredDownPowerRequired() {
@@ -1026,7 +1070,8 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 		// Determine power required for each function.
 		Iterator<Function> i = functions.iterator();
-		while (i.hasNext()) result += i.next().getPoweredDownPowerRequired();
+		while (i.hasNext())
+			result += i.next().getPoweredDownPowerRequired();
 
 		return result;
 	}
@@ -1047,42 +1092,43 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 	/**
 	 * Gets the heat this building currently requires for full-power mode.
+	 * 
 	 * @return heat in kW.
 	 */
-	//2014-11-02  Modified getFullHeatRequired()
-	public double getFullHeatRequired()  {
-		//double result = baseHeatRequirement;
+	public double getFullHeatRequired() {
+		// double result = baseHeatRequirement;
 		double result = 0;
 
-		if (furnace != null && heating != null )
+		if (furnace != null && heating != null)
 			result = furnace.getHeating().getFullHeatRequired();
 
-		//result += powerNeededForEVAheater;
+		// result += powerNeededForEVAheater;
 
 		return result;
 	}
-	
+
 	public void setHeatGenerated(double heatGenerated) {
 		if (heating == null)
 			heating = furnace.getHeating();
 		heating.setHeatGenerated(heatGenerated);
 	}
-	
+
 	public void setPowerRequiredForHeating(double powerReq) {
 		if (heating == null)
 			heating = furnace.getHeating();
 		heating.setPowerRequired(powerReq);
 	}
 
-	//public void setPowerGenerated(double powerGenerated) {
-	//	powerGen.setPowerGenerated(powerGenerated);
-	//}
-	
+	// public void setPowerGenerated(double powerGenerated) {
+	// powerGen.setPowerGenerated(powerGenerated);
+	// }
+
 	/**
 	 * Gets the heat the building requires for power-down mode.
+	 * 
 	 * @return heat in kJ/s.
-	*/
-	//2014-10-17  Added getPoweredDownHeatRequired()
+	 */
+
 	public double getPoweredDownHeatRequired() {
 		double result = 0;
 		if (furnace != null && heating != null)
@@ -1093,7 +1139,6 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	/**
 	 * Gets the building's power mode.
 	 */
-	//2014-10-17  Added heat mode
 	public HeatMode getHeatMode() {
 		return heatModeCache;
 	}
@@ -1101,7 +1146,6 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	/**
 	 * Sets the building's heat mode.
 	 */
-	//2014-10-17  Added heat mode
 	public void setHeatMode(HeatMode heatMode) {
 		if (heatModeCache != heatMode) {
 			// if heatModeCache is different from the its last value
@@ -1111,77 +1155,76 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 	/**
 	 * Gets the entity's malfunction manager.
+	 * 
 	 * @return malfunction manager
 	 */
 	public MalfunctionManager getMalfunctionManager() {
 		return malfunctionManager;
 	}
 
-    /**
-     * Gets the total amount of lighting power in this greenhouse.
-     * @return power (kW)
-     */
-    public double getTotalPowerForEVA() {
-        return powerNeededForEVAheater;
-    }
+	/**
+	 * Gets the total amount of lighting power in this greenhouse.
+	 * 
+	 * @return power (kW)
+	 */
+	public double getTotalPowerForEVA() {
+		return powerNeededForEVAheater;
+	}
 
 	/**
-	 * Calculates the number of people in the airlock   
+	 * Calculates the number of people in the airlock
+	 * 
 	 * @return number of people
 	 */
 	public int numOfPeopleInAirLock() {
-        int num = 0;
+		int num = 0;
 		if (eva == null)
-			eva = (EVA) getFunction(FunctionType.EVA);	
+			eva = (EVA) getFunction(FunctionType.EVA);
 		if (eva != null) {
-	        num = eva.getAirlock().getOccupants().size();
-	        powerNeededForEVAheater = num * kW_EVA_HEATER * .5D; // assume half of people are doing EVA ingress statistically
+			num = eva.getAirlock().getOccupants().size();
+			powerNeededForEVAheater = num * kW_EVA_HEATER * .5D; // assume half of people are doing EVA ingress
+																	// statistically
 		}
-        return num;
+		return num;
 	}
 
-
-    public Collection<Person> getInhabitants() {
+	public Collection<Person> getInhabitants() {
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
 		if (lifeSupport != null) {
 			for (Person occupant : lifeSupport.getOccupants()) {
-				if (!people.contains(occupant)) people.add(occupant);
+				if (!people.contains(occupant))
+					people.add(occupant);
 			}
 		}
-/*
-		// If building has life support, add all occupants of the building.
-		if (hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-			LifeSupport lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
-			Iterator<Person> i = lifeSupport.getOccupants().iterator();
-			while (i.hasNext()) {
-				Person occupant = i.next();
-				if (!people.contains(occupant)) people.add(occupant);
-			}
-		}
-*/
+		/*
+		 * // If building has life support, add all occupants of the building. if
+		 * (hasFunction(BuildingFunction.LIFE_SUPPORT)) { LifeSupport lifeSupport =
+		 * (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT); Iterator<Person> i
+		 * = lifeSupport.getOccupants().iterator(); while (i.hasNext()) { Person
+		 * occupant = i.next(); if (!people.contains(occupant)) people.add(occupant); }
+		 * }
+		 */
 		return people;
-    }
+	}
 
 	/**
-	 * Gets a collection of people affected by this entity.
-	 * Children buildings should add additional people as necessary.
+	 * Gets a collection of people affected by this entity. Children buildings
+	 * should add additional people as necessary.
+	 * 
 	 * @return person collection
 	 */
 	public Collection<Person> getAffectedPeople() {
-/*
-		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-
-		// If building has life support, add all occupants of the building.
-		if (hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-			LifeSupport lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
-			Iterator<Person> i = lifeSupport.getOccupants().iterator();
-			while (i.hasNext()) {
-				Person occupant = i.next();
-				if (!people.contains(occupant)) people.add(occupant);
-			}
-		}
-*/
+		/*
+		 * Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+		 * 
+		 * // If building has life support, add all occupants of the building. if
+		 * (hasFunction(BuildingFunction.LIFE_SUPPORT)) { LifeSupport lifeSupport =
+		 * (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT); Iterator<Person> i
+		 * = lifeSupport.getOccupants().iterator(); while (i.hasNext()) { Person
+		 * occupant = i.next(); if (!people.contains(occupant)) people.add(occupant); }
+		 * }
+		 */
 		Collection<Person> people = getInhabitants();
 		// Check all people in settlement.
 		Iterator<Person> i = manager.getSettlement().getIndoorPeople().iterator();
@@ -1192,14 +1235,16 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 			// Add all people maintaining this building.
 			if (task instanceof Maintenance) {
 				if (((Maintenance) task).getEntity() == this) {
-					if (!people.contains(person)) people.add(person);
+					if (!people.contains(person))
+						people.add(person);
 				}
 			}
 
 			// Add all people repairing this facility.
 			if (task instanceof Repair) {
 				if (((Repair) task).getEntity() == this) {
-					if (!people.contains(person)) people.add(person);
+					if (!people.contains(person))
+						people.add(person);
 				}
 			}
 		}
@@ -1207,25 +1252,23 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 		return people;
 	}
 
-
 	public Collection<Robot> getAffectedRobots() {
 		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
 
 		if (roboticStation != null) {
 			for (Robot occupant : roboticStation.getRobotOccupants()) {
-				if (!robots.contains(occupant)) robots.add(occupant);
+				if (!robots.contains(occupant))
+					robots.add(occupant);
 			}
 		}
-/*
-		if (hasFunction(BuildingFunction.ROBOTIC_STATION)) {
-	       	RoboticStation roboticStation = (RoboticStation) getFunction(BuildingFunction.ROBOTIC_STATION);
-			Iterator<Robot> i = roboticStation.getRobotOccupants().iterator();
-			while (i.hasNext()) {
-				Robot occupant = i.next();
-				if (!robots.contains(occupant)) robots.add(occupant);
-			}
-		}
-*/
+		/*
+		 * if (hasFunction(BuildingFunction.ROBOTIC_STATION)) { RoboticStation
+		 * roboticStation = (RoboticStation)
+		 * getFunction(BuildingFunction.ROBOTIC_STATION); Iterator<Robot> i =
+		 * roboticStation.getRobotOccupants().iterator(); while (i.hasNext()) { Robot
+		 * occupant = i.next(); if (!robots.contains(occupant)) robots.add(occupant); }
+		 * }
+		 */
 		// Check all robots in settlement.
 		Iterator<Robot> i = manager.getSettlement().getRobots().iterator();
 		while (i.hasNext()) {
@@ -1235,14 +1278,16 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 			// Add all robots maintaining this building.
 			if (task instanceof Maintenance) {
 				if (((Maintenance) task).getEntity() == this) {
-					if (!robots.contains(robot)) robots.add(robot);
+					if (!robots.contains(robot))
+						robots.add(robot);
 				}
 			}
 
 			// Add all robots repairing this facility.
 			if (task instanceof Repair) {
 				if (((Repair) task).getEntity() == this) {
-					if (!robots.contains(robot)) robots.add(robot);
+					if (!robots.contains(robot))
+						robots.add(robot);
 				}
 			}
 		}
@@ -1252,9 +1297,11 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 	/**
 	 * String representation of this building.
+	 * 
 	 * @return The settlement and building's nickName.
 	 */
-	// TODO: To prevent crash, check which classes still rely on toString() to return buildingType
+	// TODO: To prevent crash, check which classes still rely on toString() to
+	// return buildingType
 	// Change buildingType to nickName
 	public String toString() {
 //		return buildingType;
@@ -1263,26 +1310,28 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 	/**
 	 * Compares this object with the specified object for order.
+	 * 
 	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is less than,
-	 * equal to, or greater than the specified object.
+	 * @return a negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
 	 */
 	// TODO: find out if we should use nickName vs. buildingType
 	public int compareTo(Building o) {
 		return buildingType.compareToIgnoreCase(o.buildingType);
 	}
 
-
 	/**
 	 * Time passing for building.
+	 * 
 	 * @param time amount of time passing (in millisols)
 	 */
 	public void timePassing(double time) {
-				
-		//s_inv = settlement.getInventory();
-		//b_inv = super.getInventory();
+
+		// s_inv = settlement.getInventory();
+		// b_inv = super.getInventory();
 		// Check for valid argument.
-		if (time < 0D) throw new IllegalArgumentException("Time must be > 0D");
+		if (time < 0D)
+			throw new IllegalArgumentException("Time must be > 0D");
 
 		// Send time to each building function.
 		for (Function f : functions)
@@ -1292,23 +1341,23 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 			masterClock = Simulation.instance().getMasterClock();
 		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
-		
-	    int msol = marsClock.getMsol0();
-	    
-	    if (msolCache != msol) {
-	    	msolCache = msol;
-	    	
+
+		int msol = marsClock.getMsol0();
+
+		if (msolCache != msol) {
+			msolCache = msol;
+
 			// Determine if a meteorite impact will occur within the new sol
 			checkForMeteoriteImpact();
-	
+
 			// Update malfunction manager.
 			malfunctionManager.timePassing(time);
-	
+
 			// If powered up, active time passing.
 			if (powerModeCache == PowerMode.FULL_POWER)
 				malfunctionManager.activeTimePassing(time);
-		
-	    }
+
+		}
 
 		inTransportMode = false;
 	}
@@ -1325,45 +1374,49 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	 * Checks for possible meteorite impact for this building
 	 */
 	public void checkForMeteoriteImpact() {
-        // check for the passing of each day
-        int solElapsed = marsClock.getMissionSol();
-        int moment_of_impact = 0;
+		// check for the passing of each day
+		int solElapsed = marsClock.getMissionSol();
+		int moment_of_impact = 0;
 
-        if (solCache != solElapsed) {
-        	solCache = solElapsed;
+		if (solCache != solElapsed) {
+			solCache = solElapsed;
 
-			double probability  = floorArea * manager.getProbabilityOfImpactPerSQMPerSol();
+			double probability = floorArea * manager.getProbabilityOfImpactPerSQMPerSol();
 
-			// assume a degree of randomness centered at the probability can be 5 times as much
-			//probability = probability * ( 1 + RandomUtil.getRandomDouble(4) - RandomUtil.getRandomDouble(4));
+			// assume a degree of randomness centered at the probability can be 5 times as
+			// much
+			// probability = probability * ( 1 + RandomUtil.getRandomDouble(4) -
+			// RandomUtil.getRandomDouble(4));
 
 			// assume a gauissan profile
-			probability = probability * ( 1 + RandomUtil.getGaussianDouble());
+			probability = probability * (1 + RandomUtil.getGaussianDouble());
 
 			if (probability < 0)
 				probability = 0;
 
-			//if (probability > 0) logger.info("Sensors just picked up the new probability of a meteorite impact for " + nickName 
-			//		+ " in " + settlement + " to be " + Math.round(probability*100D)/100D + " %.");
-			
+			// if (probability > 0) logger.info("Sensors just picked up the new probability
+			// of a meteorite impact for " + nickName
+			// + " in " + settlement + " to be " + Math.round(probability*100D)/100D + "
+			// %.");
+
 			// probability is in percentage unit between 0% and 100%
 			if (RandomUtil.getRandomDouble(100D) <= probability) {
 				isImpactImminent = true;
-	        	// set a time for the impact to happen any time between 0 and 1000 milisols
+				// set a time for the impact to happen any time between 0 and 1000 milisols
 				moment_of_impact = RandomUtil.getRandomInt(1000);
 			}
 		}
 
-        if (isImpactImminent) {
-        	int now = marsClock.getMsol0();
-            // Note: at the fastest sim speed, up to ~5 millisols may be skipped.
-        	// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
-        	int delta = (int)Math.sqrt(Math.sqrt(masterClock.getTimeRatio()));
-        	if (now > moment_of_impact - 2 *delta && now < moment_of_impact + 2 *delta) {
-            	LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-            			"[" + settlement + "] A meteorite impact over " + nickName 
-    					+ " is imminent.", null);
-	        	// reset the boolean immmediately. This is for keeping track of whether the impact has occurred at msols
+		if (isImpactImminent) {
+			int now = marsClock.getMsol0();
+			// Note: at the fastest sim speed, up to ~5 millisols may be skipped.
+			// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
+			int delta = (int) Math.sqrt(Math.sqrt(masterClock.getTimeRatio()));
+			if (now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
+				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+						"[" + settlement + "] A meteorite impact over " + nickName + " is imminent.", null);
+				// reset the boolean immmediately. This is for keeping track of whether the
+				// impact has occurred at msols
 				isImpactImminent = false;
 
 				// find the length this meteorite can penetrate
@@ -1379,55 +1432,58 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 				if (penetrated_length >= wallThickness) {
 					// Yes it's breached !
-					if (malfunction_meteor == null)
-						malfunction_meteor = MalfunctionFactory.getMeteoriteImpactMalfunction(
-		        			MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
-		        	// Simulate the meteorite impact as a malfunction event for now
+					if (malfunctionMeteoriteImpact == null)
+						malfunctionMeteoriteImpact = MalfunctionFactory
+								.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
+					// Simulate the meteorite impact as a malfunction event for now
 					try {
-						malfunctionManager.addMalfunction(malfunction_meteor, true, null);
-						//malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction_meteor);
-					}
-					catch (Exception e) {
+						malfunctionManager.addMalfunction(malfunctionMeteoriteImpact, true, null);
+						// malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT,
+						// malfunction_meteor);
+					} catch (Exception e) {
 						e.printStackTrace(System.err);
 					}
-					
+
 					String victimName = "None";
-					
-					//check if someone under this roof may have seen/affected by the impact
+					String task = "N/A";
+
+					// check if someone under this roof may have seen/affected by the impact
 					for (Person person : getInhabitants()) {
-						if (person.getBuildingLocation() == this 
+						if (person.getBuildingLocation() == this
 								&& RandomUtil.lessThanRandPercent(METEORITE_IMPACT_PROBABILITY_AFFECTED)) {
 
 							// TODO: someone got hurt, declare medical emergency
 							// TODO: delineate the accidents from those listed in malfunction.xml
-							// currently, malfunction whether a person gets hurt is handled by Malfunction above
+							// currently, malfunction whether a person gets hurt is handled by Malfunction
+							// above
 
 							PhysicalCondition pc = person.getPhysicalCondition();
-				            int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
-				            int courage = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.COURAGE);
-				            double factor = 1 + RandomUtil.getRandomDouble(1) - resilience/100 - courage/100D;
+							int resilience = person.getNaturalAttributeManager()
+									.getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
+							int courage = person.getNaturalAttributeManager()
+									.getAttribute(NaturalAttributeType.COURAGE);
+							double factor = 1 + RandomUtil.getRandomDouble(1) - resilience / 100 - courage / 100D;
 							if (factor > 1)
 								pc.setStress(person.getStress() * factor);
 
 							victimName = person.getName();
-							malfunction_meteor.setTraumatized(victimName);
-							
-							logger.info(victimName + " was affected by the meteorite impact in " + this + " at " + settlement);
+							task = person.getTaskDescription();
+							malfunctionMeteoriteImpact.setTraumatized(victimName);
+
+							logger.info(victimName + " was affected by the meteorite impact in " + this + " at "
+									+ settlement);
 						}
-						//else {
-							//logger.info(person.getName() + " did not witness the latest meteorite impact in " + this + " at " + settlement);
-						//}
+						// else {
+						// logger.info(person.getName() + " did not witness the latest meteorite impact
+						// in " + this + " at " + settlement);
+						// }
 					}
-					
-					HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_METEORITE_IMPACT,
-							malfunction_meteor,
-							malfunction_meteor.getName(),//"Natural Cause",
-							victimName,
-							this.getNickName(),
-							settlement.getName()
-							);
+
+					HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_METEORITE_IMPACT, malfunctionMeteoriteImpact,
+							"Meteorites", //"Natural Cause",
+							task, victimName, this.getNickName(), settlement.getName());
 					Simulation.instance().getEventManager().registerNewEvent(hEvent);
-					
+
 //					HistoricalEvent mEvent = new MalfunctionEvent(EventType.MALFUNCTION_ACCIDENT,
 //							malfunction_meteor.getName(),
 //							name,
@@ -1435,8 +1491,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 //							settlement.getName()
 //							);
 //					Simulation.instance().getEventManager().registerNewEvent(mEvent);
-					
-					
+
 				}
 			}
 		}
@@ -1448,6 +1503,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 	/**
 	 * Gets the building's inhabitable ID number.
+	 * 
 	 * @return id.
 	 */
 	public int getInhabitableID() {
@@ -1456,6 +1512,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 	/**
 	 * Sets the building's settlement inhabitable ID number.
+	 * 
 	 * @param id.
 	 */
 	public void setInhabitableID(int id) {
@@ -1464,6 +1521,7 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 	/**
 	 * Gets the building's settlement template ID number.
+	 * 
 	 * @return id.
 	 */
 	public int getTemplateID() {
@@ -1472,16 +1530,17 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 	/**
 	 * Sets the building's settlement template ID number.
+	 * 
 	 * @param id.
 	 */
 	public void setTemplateID(int id) {
 		templateID = id;
 	}
 
-	public Settlement getSettlement(){
+	public Settlement getSettlement() {
 		return manager.getSettlement();
 	}
-	
+
 	public void extractHeat(double heat) {
 		// Set the instance of thermal generation function.
 		if (furnace == null)
@@ -1489,12 +1548,11 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 
 		heating.setHeatLoss(heat);
 	}
-/*	
-	@Override
-	public String getShortLocationName() {
-		return nickName + " in " + getSettlement().getName(); //getLocationTag().getSettlementName();
-	}
-*/
+
+	/*
+	 * @Override public String getShortLocationName() { return nickName + " in " +
+	 * getSettlement().getName(); //getLocationTag().getSettlementName(); }
+	 */
 	@Override
 	public String getImmediateLocation() {
 		return getLocationTag().getImmediateLocation();
@@ -1509,12 +1567,12 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		
+
 		functions = null;
 		itemMap = null;
 		location = null;
 		manager = null;
-	    settlement = null;
+		settlement = null;
 		furnace = null;
 		lifeSupport = null;
 		roboticStation = null;
@@ -1523,19 +1581,17 @@ LocalBoundedObject, InsidePathLocation, Serializable {
 		masterClock = null;
 		buildingConfig = null;
 		heatModeCache = null;
-		//fmt = null;
+		// fmt = null;
 		buildingType = null;
 		manager = null;
 		powerModeCache = null;
 		heatModeCache = null;
 		malfunctionManager.destroy();
 		malfunctionManager = null;
-/*		
-		Iterator<Function> i = functions.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
-*/		
+		/*
+		 * Iterator<Function> i = functions.iterator(); while (i.hasNext()) {
+		 * i.next().destroy(); }
+		 */
 	}
 
 	@Override

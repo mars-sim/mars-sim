@@ -156,8 +156,9 @@ public class LocationTag implements LocationState, Serializable {
 //			if (e.getContainerUnit() != null)
 //				return e.getContainerUnit().getName();
 			if (e.getTopContainerUnit() != null)
-				return e.getTopContainerUnit().getName();
+				return e.getTopContainerUnit().getLocationTag().getLocale();
 			else
+				// if its top container is null
 				return e.getCoordinates().getFormattedString();	
 		}
 		

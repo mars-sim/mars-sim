@@ -294,6 +294,8 @@ public class MainScene implements ClockListener {
 	private double musicSliderCache = 0;
 	private double effectSliderCache = 0;
 
+	private double refreshCache;
+	
 	private long lastTimerCall;
 
 	private DoubleProperty musicProperty = new SimpleDoubleProperty(musicSliderValue);
@@ -3070,10 +3072,17 @@ public class MainScene implements ClockListener {
 				upTimeLabel.setText(upt);
 			}
 
-			double refresh = Math.round(1.0/masterClock.getPulseTime());
-			refreshLabel.setText(refresh + HZ);
-
-			// benchmarkLabel.setText(masterClock.getDiffCache() + "");
+			double refresh = 1.0/masterClock.getPulseTime();
+			if (refresh > 0 && refresh < 30) {
+				double rate = Math.round(50*(refreshCache + refresh))/100.0;
+				refreshLabel.setText(rate + HZ);
+				refreshCache = rate;
+			}
+//			else {
+//				rate = refreshCache;
+//				refreshLabel.setText(rate + HZ);
+//			}
+			
 		}
 
 		int solOfMonth = marsClock.getSolOfMonth();
@@ -3304,7 +3313,7 @@ public class MainScene implements ClockListener {
 			// Note: (NOT WORKING) popups.size() is always zero no matter what.
 			Platform.runLater(() -> {
 				if (billboardTimer != null)
-					billboardTimer.start();
+					billboardTimer.stop();
 				// messagePopup.popAMessage(PAUSE, ESC_TO_RESUME, " ", stage, Pos.TOP_CENTER,
 				// PNotification.PAUSE_ICON)
 				boolean hasIt = false;
@@ -3329,7 +3338,7 @@ public class MainScene implements ClockListener {
 			Platform.runLater(() -> {
 				// messagePopup.stop()
 				if (billboardTimer != null)
-					billboardTimer.stop();
+					billboardTimer.start();
 				boolean hasIt = false;
 				for (Node node : rootStackPane.getChildren()) {// root.getChildrenUnmodifiable()) {
 					if (node == pausePane) {

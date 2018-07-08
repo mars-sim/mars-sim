@@ -253,10 +253,10 @@ implements ClockListener, HistoricalEventListener {
 
 
 	@Override
-	public void eventAdded(int index, HistoricalEvent event) {
-		if (HistoricalEventCategory.TRANSPORT == event.getCategory() && 
-				EventType.TRANSPORT_ITEM_MODIFIED.equals(event.getType())) {
-			if ((arrivingSettlement != null) && event.getSource().equals(arrivingSettlement)) {
+	public void eventAdded(int index, SimpleEvent se, HistoricalEvent he) {
+		if (HistoricalEventCategory.TRANSPORT == he.getCategory() && 
+				EventType.TRANSPORT_ITEM_MODIFIED.equals(he.getType())) {
+			if ((arrivingSettlement != null) && he.getSource().equals(arrivingSettlement)) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -350,9 +350,4 @@ implements ClockListener, HistoricalEventListener {
 		masterClock = null;
 	}
 
-	@Override
-	public void eventAdded(int index, SimpleEvent event) {
-		// TODO Auto-generated method stub
-		
-	}
 }

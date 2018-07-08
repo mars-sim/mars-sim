@@ -26,17 +26,20 @@ public class SimpleEvent implements Serializable {
 	private byte cat;
 	private byte type;
 	private short what;
+	private short whileDoing;
 	private short who;
 	private short loc0;
 	private short loc1;
 	private String dateTime = null;
 
-	public SimpleEvent(short sol, float msol, byte cat, byte type, short what, short who, short loc0, short loc1) {
+	public SimpleEvent(short sol, float msol, byte cat, byte type, short what, short whileDoing, short who, short loc0,
+			short loc1) {
 		this.sol = sol;
 		this.msol = msol;
 		this.cat = cat;
 		this.type = type;
 		this.what = what;
+		this.whileDoing = whileDoing;
 		this.who = who;
 		this.loc0 = loc0;
 		this.loc1 = loc1;
@@ -84,6 +87,10 @@ public class SimpleEvent implements Serializable {
 
 	public short getWhat() {
 		return what;
+	}
+
+	public short getWhileDoing() {
+		return whileDoing;
 	}
 
 	public short getWho() {

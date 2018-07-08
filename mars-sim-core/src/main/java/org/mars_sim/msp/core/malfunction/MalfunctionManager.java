@@ -410,10 +410,25 @@ public class MalfunctionManager implements Serializable {
 	 * @param malfunction the malfunction to add.
 	 */
 	public void addMalfunction(Malfunction malfunction, boolean registerEvent, Unit actor) {
-		malfunctions.add(malfunction);
-
+		Person person = null;
+		Robot robot = null;
+		
 		String offender = PARTS_FAILURE;
-
+		String task = "N/A";
+		
+		malfunctions.add(malfunction);
+		
+		if (actor != null) {
+			if (actor instanceof Person) {
+				person = (Person) actor;
+				task = person.getTaskDescription();
+			}
+			else if (actor instanceof Robot) {
+				robot = (Robot) actor;
+				task = robot.getTaskDescription();
+			}
+		}
+		
 		if (actor != null)
 			offender = actor.getName();
 
@@ -449,10 +464,16 @@ public class MalfunctionManager implements Serializable {
 				else if (object.toLowerCase().contains("eva")) {
 //						Unit unit = entity.getUnit();
 //						EVASuit suit = (EVASuit)entity.getUnit();
-					loc0 = entity.getImmediateLocation();// ((EVASuit)entity).getQuickLocatin();
-					loc1 = ((EVASuit) entity.getUnit()).getLocale();// .getSettlement().getName();
+					// TODO: for a eva suit malfunction, 
+					loc0 = ((EVASuit) entity).getImmediateLocation(); //entity.getImmediateLocation();// 
+					loc1 = ((EVASuit) entity).getLastOwner().getLocationTag().getLocale();// .getSettlement().getName();
 				}
 
+				else if (object.toLowerCase().contains("bot")) {
+				loc0 = ((EVASuit) entity).getImmediateLocation();
+				loc1 = ((EVASuit) entity).getLocale();
+			}
+				
 				else {
 					loc0 = entity.getImmediateLocation();
 					loc1 = entity.getLocale();
@@ -461,25 +482,36 @@ public class MalfunctionManager implements Serializable {
 				if (object.equals(loc0)) {
 					if (actor == null) {
 						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
-								malfunction, malfunctionName, "Part Fatigue", // in the who field
+								malfunction, malfunctionName, "N/A", "Part Fatigue", // in the who field
 								loc0, loc1);
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 								malfunction.getName() + " detected due to Parts Fatigue in " + entity.getLocale(),
 								null);
 					} else {
-						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
-								malfunction, malfunctionName, offender, loc0, loc1);
-						Simulation.instance().getEventManager().registerNewEvent(newEvent);
-						LogConsolidated.log(
-								logger, Level.INFO, 0, sourceName, offender + " may have to do with "
-										+ malfunction.getName() + " due to Human Factors in " + entity.getLocale(),
-								null);
+						if (person != null) {
+							HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
+									malfunction, malfunctionName, task, offender, loc0, loc1);
+							Simulation.instance().getEventManager().registerNewEvent(newEvent);
+							LogConsolidated.log(
+									logger, Level.INFO, 0, sourceName, offender + " may have to do with "
+											+ malfunction.getName() + " due to Human Factors in " + entity.getLocale(),
+									null);
+						}
+						else if (robot != null) {
+							HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
+									malfunction, malfunctionName, task, offender, loc0, loc1);
+							Simulation.instance().getEventManager().registerNewEvent(newEvent);
+							LogConsolidated.log(
+									logger, Level.INFO, 0, sourceName, offender + " may have to do with "
+											+ malfunction.getName() + " due to poor software quality control in " + entity.getLocale(),
+									null);
+						}
 					}
 				} else {
 					if (actor == null) {
 						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
-								malfunction, malfunctionName + " on " + object, "Part Fatigue", // in the who field
+								malfunction, malfunctionName + " on " + object, "N/A", "Part Fatigue", // in the who field
 								loc0, loc1);
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
@@ -487,7 +519,7 @@ public class MalfunctionManager implements Serializable {
 								null);
 					} else {
 						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
-								malfunction, malfunctionName + " on " + object, offender, loc0, loc1);
+								malfunction, malfunctionName + " on " + object, task, offender, loc0, loc1);
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(
 								logger, Level.INFO, 0, sourceName, offender + " may have to do with "
@@ -496,14 +528,15 @@ public class MalfunctionManager implements Serializable {
 					}
 				}
 
-			} else {
-
+			}
+			
+			else {
+				// due to meteorite impact 
 				String name = malfunction.getTraumatized();
-				if (name == null)
-					name = "None";
+
 				// if it is a meteorite impact
 				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_ACT_OF_GOD, malfunction,
-						malfunctionName, name, entity.getImmediateLocation(), entity.getLocale());
+						malfunctionName, task, name, entity.getImmediateLocation(), entity.getLocale());
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
 				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 						malfunction.getName() + " damage detected in " + entity.getLocale(), null);
@@ -663,7 +696,7 @@ public class MalfunctionManager implements Serializable {
 				String chiefRepairer = malfunction.getChiefRepairer();
 
 				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, malfunction,
-						malfunction.getName(), chiefRepairer, entity.getImmediateLocation(), entity.getLocale());
+						malfunction.getName(), "Repairing", chiefRepairer, entity.getImmediateLocation(), entity.getLocale());
 
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
 				LogConsolidated.log(logger, Level.INFO, 0, sourceName,

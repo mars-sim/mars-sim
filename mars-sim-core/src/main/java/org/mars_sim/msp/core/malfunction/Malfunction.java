@@ -57,7 +57,7 @@ public class Malfunction implements Serializable {
 	private String name;
 
 	/* The person who are being the most traumatized by this malfunction */
-	private String mostTraumatized;
+	private String mostTraumatized = "None";
 
 	private Collection<String> systems;
 	private Map<Integer, Double> resourceEffects;
@@ -282,6 +282,11 @@ public class Malfunction implements Serializable {
 		return 0D;
 	}
 
+	/**
+	 * Gets the name of the person who spent most time repairing this malfunction
+	 * 
+	 * @return the name of the person
+	 */
 	public String getChiefRepairer() {
 		Map.Entry<String, Double> maxEntry = repairersWorkTime.entrySet().stream().max(Map.Entry.comparingByValue())
 				.get(); // may get null ?

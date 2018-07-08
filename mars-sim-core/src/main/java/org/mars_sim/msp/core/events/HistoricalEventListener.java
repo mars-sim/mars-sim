@@ -17,18 +17,10 @@ public interface HistoricalEventListener {
 	 * A new event has been added at the specified manager.
 	 *
 	 * @param index Index of new event in the manager.
-	 * @param event The new event added.
+	 * @param event The new {@link SimpleEvent} added.
+	 * @param event The new {@link HistoricalEvent} added.
 	 */
-	public void eventAdded(int index, HistoricalEvent event);
-
-	/**
-	 * A new event has been added at the specified manager.
-	 *
-	 * @param index Index of new event in the manager.
-	 * @param event The new event added.
-	 */
-	public void eventAdded(int index, SimpleEvent event);
-
+	public void eventAdded(int index, SimpleEvent se, HistoricalEvent he);
 	
 	/**
 	 * A consecutive sequence of events have been removed from the manager.

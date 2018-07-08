@@ -40,7 +40,37 @@ public class Conversion {
 			return false;
 	}
 
+	public static String setFirstWordLowercase(String input) {
+		if (input != null) {
+		    StringBuilder titleCase = new StringBuilder();
+		    boolean nextTitleCase = true;
 
+		    for (char c : input.toCharArray()) {
+		        if (Character.isSpaceChar(c)|| c == '/' ) {
+		            nextTitleCase = true;
+		        } else if (nextTitleCase) {
+		            c = Character.toLowerCase(c);
+		            nextTitleCase = false;
+		        }
+
+		        titleCase.append(c);
+		    }
+
+		    return titleCase.toString().replaceAll("eVA", "EVA");
+		}
+		else
+			return null;
+//		
+//		StringBuilder s = new StringBuilder();
+//		if (!input.substring(0, 3).equals("EVA")) {
+//			s.append(input.substring(0, 1).toLowerCase());
+//			s.append(input.substring(1, input.length()));
+//		}
+//
+//		return s.toString();
+	}
+	
+	
 	public static String capitalize(String input) {
 		if (input != null) {
 		    StringBuilder titleCase = new StringBuilder();

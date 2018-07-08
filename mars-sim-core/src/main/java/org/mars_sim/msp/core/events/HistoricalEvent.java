@@ -38,7 +38,7 @@ public abstract class HistoricalEvent implements Serializable {
 	private MarsClock timestamp;
 	/** Source of event may be null. */
 	private Object source;
-
+	private String whileDoing;
 	private String whatCause;
 	private String who;
 	private String location0;
@@ -56,11 +56,12 @@ public abstract class HistoricalEvent implements Serializable {
 	 * @param location1 the settlement/coordinate where it occurs
 	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent
 	 */
-	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause, String whoAffected, String location0, String location1) { 
+	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause, String whileDoing, String whoAffected, String location0, String location1) { 
 		this.category = category;
 		this.type = type;
 		this.source = source;
 		this.whatCause = whatCause;
+		this.whileDoing = whileDoing;
 		this.who = whoAffected;
 		this.location0 = location0;
 		this.location1 = location1;
@@ -82,6 +83,15 @@ public abstract class HistoricalEvent implements Serializable {
 		return whatCause;
 	}
 
+	/**
+	 * Get the activity a person was engaging.
+	 * @return String the activity.
+	 */
+	public String getWhileDoing() {
+		return whileDoing;
+	}
+
+	
 	/**
 	 * Get the name of the offender or the person affected.
 	 * @return String the name.

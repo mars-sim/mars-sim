@@ -13,6 +13,7 @@ public enum EventType {
 
 	MALFUNCTION_PARTS_FAILURE	(Msg.getString("EventType.malfunction.partsFailure")), //$NON-NLS-1$
 	MALFUNCTION_HUMAN_FACTORS	(Msg.getString("EventType.malfunction.humanFactors")), //$NON-NLS-1$
+	MALFUNCTION_PROGRAMMING_ERROR	(Msg.getString("EventType.malfunction.programmingError")), //$NON-NLS-1$
 	MALFUNCTION_ACT_OF_GOD		(Msg.getString("EventType.malfunction.actOfGod")), //$NON-NLS-1$
 	MALFUNCTION_FIXED			(Msg.getString("EventType.malfunction.fixed")), //$NON-NLS-1$
 

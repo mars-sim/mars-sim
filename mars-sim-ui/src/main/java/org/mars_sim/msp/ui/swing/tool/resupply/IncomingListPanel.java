@@ -129,11 +129,11 @@ implements ListSelectionListener {
 		 }
 
 		 @Override
-		 public void eventAdded(int index, HistoricalEvent event) {
-			 if (event.getCategory().equals(HistoricalEventCategory.TRANSPORT)) {
-				 Transportable transportItem = (Transportable) event.getSource();
+			public void eventAdded(int index, SimpleEvent se, HistoricalEvent he) {
+			 if (he.getCategory().equals(HistoricalEventCategory.TRANSPORT)) {
+				 Transportable transportItem = (Transportable) he.getSource();
 
-				 if (EventType.TRANSPORT_ITEM_CREATED.equals(event.getType())) {
+				 if (EventType.TRANSPORT_ITEM_CREATED.equals(he.getType())) {
 					 if (TransitState.PLANNED == transportItem.getTransitState() ||
 							 TransitState.IN_TRANSIT.equals(transportItem.getTransitState())) {
 						 transportList.add(transportItem);
@@ -142,13 +142,13 @@ implements ListSelectionListener {
 						 fireIntervalAdded(this, transportIndex, transportIndex);
 					 }
 				 }
-				 else if (EventType.TRANSPORT_ITEM_ARRIVED.equals(event.getType()) ||
-						 EventType.TRANSPORT_ITEM_CANCELLED.equals(event.getType())) {
+				 else if (EventType.TRANSPORT_ITEM_ARRIVED.equals(he.getType()) ||
+						 EventType.TRANSPORT_ITEM_CANCELLED.equals(he.getType())) {
 					 int transportIndex = transportList.indexOf(transportItem);
 					 transportList.remove(transportItem);
 					 fireIntervalRemoved(this, transportIndex, transportIndex);
 				 }
-				 else if (EventType.TRANSPORT_ITEM_MODIFIED.equals(event.getType())) {
+				 else if (EventType.TRANSPORT_ITEM_MODIFIED.equals(he.getType())) {
 					 if (transportList.contains(transportItem)) {
 						 Collections.sort(transportList);
 						 fireContentsChanged(this, 0, transportList.size() - 1);
@@ -171,10 +171,5 @@ implements ListSelectionListener {
 			  Simulation.instance().getEventManager().removeListener(this);
 		  }
 
-		@Override
-		public void eventAdded(int index, SimpleEvent event) {
-			// TODO Auto-generated method stub
-			
-		}
 	 }
 }

@@ -292,10 +292,10 @@ implements Serializable {
             setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
             if (rescue) {
-                logger.info(getVehicle().getName() + " starting rescue mission for " + vehicleTarget.getName());
+                logger.info(getVehicle().getName() + " has commenced a rescue mission for " + vehicleTarget.getName());
             }
             else {
-                logger.info(getVehicle().getName() + " starting salvage mission for " + vehicleTarget.getName());
+                logger.info(getVehicle().getName() + " has commenced a salvage mission for " + vehicleTarget.getName());
             }
         }
         else if (TRAVELLING.equals(getPhase())) {
@@ -372,20 +372,43 @@ implements Serializable {
 
         setPhaseEnded(true);
 
-        // Turn off vehicle's emergency beacon.
+//        String issue = ((Person)member).getPhysicalCondition().getHealthSituation();
+//        if (vehicleTarget.getMalfunctionManager().getMostSeriousMalfunction() != null)
+//        String issue = vehicleTarget.getMalfunctionManager().getMostSeriousMalfunction().getName();
+//        if (issue == null)
+//        	issue = vehicleTarget.getMalfunctionManager().getMostSeriousEmergencyMalfunction().getName();
+		
+        // The member of the rescuing vehicle will turn off the target vehicle's emergency beacon.
         if (vehicleTarget.isBeaconOn())
-        	setEmergencyBeacon(member, vehicleTarget, false, EventType.MISSION_RENDEZVOUS.toString());
+        	setEmergencyBeacon(member, vehicleTarget, false, "None");
 
         // Set mission event.
-        HistoricalEvent newEvent = new MissionHistoricalEvent(
-        		EventType.MISSION_RENDEZVOUS,
-				this,
-				EventType.MISSION_RENDEZVOUS.getName(),
-        		member.getName(), 
-        		member.getVehicle().getName(),
-        		vehicleTarget.getLocationTag().getLocale() 
-        		);
-        Simulation.instance().getEventManager().registerNewEvent(newEvent);
+		if (rescue) {
+	        HistoricalEvent newEvent = new MissionHistoricalEvent(
+	        		EventType.MISSION_RENDEZVOUS,
+					this,
+					"Rescue Vehicle", // cause
+					this.getName(), // during
+	        		member.getName(), // member
+	        		member.getVehicle().getName(), // loc0
+	        		vehicleTarget.getLocationTag().getLocale() // loc1
+	        		);
+	        Simulation.instance().getEventManager().registerNewEvent(newEvent);
+		}
+		else {
+	        HistoricalEvent newEvent = new MissionHistoricalEvent(
+	        		EventType.MISSION_RENDEZVOUS,
+					this,
+					"None",
+					this.getName(),
+	        		member.getName(), 
+	        		member.getVehicle().getName(),
+	        		vehicleTarget.getLocationTag().getLocale() 
+	        		);
+	        Simulation.instance().getEventManager().registerNewEvent(newEvent);
+		}
+        
+
     }
 
     /**
@@ -433,12 +456,19 @@ implements Serializable {
             //towedVehicle.determinedSettlementParkedLocationAndFacing();
             logger.info(towedVehicle + " has been towed to " + disembarkSettlement.getName());
             
+            String issue = "";
+            if (vehicleTarget.getMalfunctionManager().getMostSeriousMalfunction() != null)
+            	issue = vehicleTarget.getMalfunctionManager().getMostSeriousMalfunction().getName();          
+            if (issue == null && vehicleTarget.getMalfunctionManager().getMostSeriousEmergencyMalfunction() != null)
+            	issue = vehicleTarget.getMalfunctionManager().getMostSeriousEmergencyMalfunction().getName();
+            
             HistoricalEvent salvageEvent = new MissionHistoricalEvent(
             		EventType.MISSION_SALVAGE_VEHICLE,
     				this,
-    				EventType.MISSION_SALVAGE_VEHICLE.getName(),
-            		person.getName(),
-            		person.getVehicle().getName(),
+    				issue, 
+    				this.getName(),
+    				towedVehicle.getName(), //person.getName(),
+            		person.getLocationTag().getImmediateLocation(),//.getVehicle().getName(),
             		person.getLocationTag().getLocale()
             		);
             Simulation.instance().getEventManager().registerNewEvent(salvageEvent);
@@ -465,10 +495,11 @@ implements Serializable {
                     HistoricalEvent rescueEvent = new MissionHistoricalEvent(
                     		EventType.MISSION_RESCUE_PERSON,
             				this,
-            				EventType.MISSION_RESCUE_PERSON.getName(), 
-                    		person.getName(),
-                    		person.getVehicle().getName(),
-                    		person.getLocationTag().getLocale()
+            				p.getPhysicalCondition().getHealthSituation(),
+            				p.getTaskDescription(),
+                    		p.getName(),
+                    		p.getVehicle().getName(),
+                    		p.getLocationTag().getLocale()
                     		);
                     Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
                 }

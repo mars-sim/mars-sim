@@ -69,7 +69,13 @@ implements Serializable {
         // Use Task constructor
         super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
                 
+        if (person.getTopContainerUnit() == null) {
+        	endTask();
+        	return;
+        }
+        
         topInventory = person.getTopContainerUnit().getInventory();
+
         if (topInventory != null) {
             
             if (person.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {

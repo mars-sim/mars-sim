@@ -228,7 +228,7 @@ public class HealthProblem implements Serializable {
 		Simulation.instance().getEventManager().registerNewEvent(treatedEvent);
 
 		LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-        		"[" + getSufferer().getSettlement() + "] " +
+        		"[" + getSufferer().getLocationTag().getQuickLocation() + "] " +
 				getSufferer().getName() + " begins to receive treatment for " + toString().toLowerCase(), null);
     }
 

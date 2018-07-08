@@ -178,7 +178,7 @@ public class PhysicalCondition implements Serializable {
 	private DeathInfo deathDetails;
 	/** Most serious problem. */
 	private HealthProblem serious;
-	// 2015-04-29 Added RadiationExposure
+	/** Radiation Exposure. */
 	private RadiationExposure radiation;
 
 	private CircadianClock circadian;
@@ -186,6 +186,7 @@ public class PhysicalCondition implements Serializable {
 	private TaskManager taskMgr;
 
 	private HealthProblem starved;
+	
 	private HealthProblem dehydrated;
 	
 	private NaturalAttributeManager naturalAttributeManager;
@@ -1051,36 +1052,39 @@ public class PhysicalCondition implements Serializable {
 		if ((complaint != null) && !problems.containsKey(complaint)) {
 			HealthProblem problem = new HealthProblem(complaint, person);
 			problems.put(complaint, problem);
-			String n = complaint.getType().getName().toLowerCase();
+			ComplaintType type = complaint.getType();
+			String n = type.getName().toLowerCase();
 			String prefix = "[" + person.getLocationTag().getQuickLocation() + "] ";
 			String phrase = "";
 			String suffix = ".";
 
-			LocationSituation ls = person.getLocationSituation();
-
-			if (LocationSituation.IN_SETTLEMENT == ls) {
+			if (person.isInSettlement()) {
 				// prefix = "[" + person.getSettlement() + "] ";
 				suffix = " in " + person.getBuildingLocation() + ".";
 			}
-			/*
-			 * else if (LocationSituation.IN_VEHICLE == ls) { prefix = "[" +
-			 * person.getVehicle() + "] "; } else if (LocationSituation.OUTSIDE == ls) {
-			 * prefix = "[At " + person.getCoordinates().getFormattedString() + "] "; }
-			 */
-			if (n.equalsIgnoreCase("starvation"))
+
+			if (type == ComplaintType.STARVATION)//.equalsIgnoreCase("starvation"))
 				phrase = " is starving";
-			else if (n.equalsIgnoreCase("decompression"))
+			else if (type == ComplaintType.COLD)
+				phrase = " caught a cold";
+			else if (type == ComplaintType.FLU)
+				phrase = " caught the flu";
+			else if (type == ComplaintType.FEVER)
+				phrase = " is having a fever";
+			else if (type == ComplaintType.DECOMPRESSION)//n.equalsIgnoreCase("decompression"))
 				phrase = " is suffering from decompression";
-			else if (n.equalsIgnoreCase("dehydration"))
+			else if (type == ComplaintType.DEHYDRATION)//n.equalsIgnoreCase("dehydration"))
 				phrase = " is suffering from dehydration";
-			else if (n.equalsIgnoreCase("freezing"))
+			else if (type == ComplaintType.FREEZING)//n.equalsIgnoreCase("freezing"))
 				phrase = " is freezing";
-			else if (n.equalsIgnoreCase("heat stroke"))
+			else if (type == ComplaintType.HEAT_STROKE)//n.equalsIgnoreCase("heat stroke"))
 				phrase = " is suffering from a heat stroke";
-			else if (n.equalsIgnoreCase("suffocation"))
+			else if (type == ComplaintType.SUFFOCATION)//n.equalsIgnoreCase("suffocation"))
 				phrase = " is suffocating";
-			else if (n.equalsIgnoreCase("laceration"))
-				phrase = " is having a";
+			else if (type == ComplaintType.LACERATION)//n.equalsIgnoreCase("laceration"))
+				phrase = " sufferred laceration";
+			else if (type == ComplaintType.PULL_MUSCLE_TENDON)//n.equalsIgnoreCase("laceration"))
+				phrase = " had a pulled muscle";
 			else
 				phrase = " is complaining about the " + n;
 
@@ -1318,7 +1322,8 @@ public class PhysicalCondition implements Serializable {
 	 * @param problem
 	 */
 	public void examBody(HealthProblem problem) {
-		logger.log(Level.SEVERE, "[" + person.getLocationTag().getQuickLocation() + "] A post-mortem examination was ordered on " + person + ". The cause of death : "
+		logger.log(Level.SEVERE, "[" + person.getLocationTag().getQuickLocation() 
+				+ "] A post-mortem examination was ordered on " + person + ". Cause of death : "
 				+ problem.toString().toLowerCase());
 		// Create medical event for death.
 		MedicalEvent event = new MedicalEvent(person, problem, EventType.MEDICAL_DEATH);

@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
@@ -38,23 +37,23 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.Conversion;
 
 /**
- * The Mission class represents a large multi-person task
- * There is at most one instance of a mission per person.
- * A Mission may have one or more people associated with it.
+ * The Mission class represents a large multi-person task There is at most one
+ * instance of a mission per person. A Mission may have one or more people
+ * associated with it.
  */
-public abstract class Mission
-implements Serializable {
+public abstract class Mission implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Mission.class.getName());
-	
-    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
-    protected static final int MAX_AMOUNT_RESOURCE = ResourceUtil.FIRST_ITEM_RESOURCE;
-    
-    // Global mission identifier
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
+	protected static final int MAX_AMOUNT_RESOURCE = ResourceUtil.FIRST_ITEM_RESOURCE;
+
+	// Global mission identifier
 	private static int missionIdentifer = 0;
 
 	public static final String SUCCESSFULLY_ENDED_CONSTRUCTION = "Mission accomplished and all members successfully ended construction";
@@ -68,23 +67,39 @@ implements Serializable {
 	public static final String MEDICAL_EMERGENCY = "A member has a medical emergency";
 	public static final String NO_TRADING_SETTLEMENT = "No trading settlement";
 	public static final String NO_GOOD_EVA_SUIT = "No good EVA suit";
-	public static final String REQUEST_RESCUE = "Requesting rescue";	
+	public static final String REQUEST_RESCUE = "Requesting rescue";
 	public static final String NO_ONGOING_SCIENTIFIC_STUDY = "No on-going Scientific study in this subject";
 	public static final String VEHICLE_NOT_LOADABLE = "Cannot load resources into the rover";
 	public static final String NO_EXPLORATION_SITES = "Exploration sites could not be determined";
-	//public static final String VEHICLE_NOT_LOADABLE = "Vehicle is not loadable at CollectingResourcesMission";
+	// public static final String VEHICLE_NOT_LOADABLE = "Vehicle is not loadable at
+	// CollectingResourcesMission";
+
+	public static final String MISSION = " mission.";
+	public static final String[] expression = new String[] {
+			"Where is everybody when I need someone for ",
+			"No way everybody is busy and unavailable for ",
+			"How come no one is available for "
+	};
 	
 	public static final String OUTSIDE = "Outside";
-	
-	/** The marginal factor for the amount of water to be brought during a mission. */
+
+	/**
+	 * The marginal factor for the amount of water to be brought during a mission.
+	 */
 	public final static double WATER_MARGIN = 4.4; // TODO: need to find out why water is running so fast in vehicle
-	/** The marginal factor for the amount of oxygen to be brought during a mission. */
+	/**
+	 * The marginal factor for the amount of oxygen to be brought during a mission.
+	 */
 	public final static double OXYGEN_MARGIN = 3.1;
-	/** The marginal factor for the amount of food to be brought during a mission. */
+	/**
+	 * The marginal factor for the amount of food to be brought during a mission.
+	 */
 	public final static double FOOD_MARGIN = 2.1;
-	/** The marginal factor for the amount of dessert to be brought during a mission. */
+	/**
+	 * The marginal factor for the amount of dessert to be brought during a mission.
+	 */
 	public final static double DESSERT_MARGIN = 1.5;
-	
+
 	// Data members
 	/** Unique identifier */
 	private int identifier;
@@ -103,14 +118,14 @@ implements Serializable {
 	private MissionPhase phase;
 	/** The description of the current phase of operation. */
 	private String phaseDescription;
-	/**	The name of the starting member  */
+	/** The name of the starting member */
 	private MissionMember startingMember;
 
 	/** Mission members. */
 	private Collection<MissionMember> members;
 	/** A collection of the mission's phases. */
 	private Collection<MissionPhase> phases;
-	
+
 	// transient members
 	/** Mission listeners. */
 	private transient List<MissionListener> listeners;
@@ -119,7 +134,9 @@ implements Serializable {
 	private static UnitManager unitManager;
 
 	/**
-	 * Must be synchronised to prevent duplicate ids being assigned via different threads.
+	 * Must be synchronised to prevent duplicate ids being assigned via different
+	 * threads.
+	 * 
 	 * @return
 	 */
 	private static synchronized int getNextIdentifier() {
@@ -139,12 +156,12 @@ implements Serializable {
 		phaseEnded = false;
 		this.minMembers = minMembers;
 		missionCapacity = Integer.MAX_VALUE;
-		
+
 		unitManager = Simulation.instance().getUnitManager();
-		
+
 		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
 
-		Person person = (Person)startingMember;
+		Person person = (Person) startingMember;
 		String loc0 = null;
 		String loc1 = null;
 //        if (person.isInSettlement()) {
@@ -164,48 +181,40 @@ implements Serializable {
 //			loc1 = person.getCoordinates().toString();
 //        }
 // 
-		
-        if (person.isInSettlement()) {
+
+		if (person.isInSettlement()) {
 			loc0 = person.getBuildingLocation().getNickName();
-			loc1 = person.getSettlement().getName();           	
-	
-					
-	   		// Created mission starting event.
-	   		HistoricalEvent newEvent = new MissionHistoricalEvent(
-	   				EventType.MISSION_START,
-    				this,
-    				EventType.MISSION_START.getName(),
-    				person.getName(),
-	   				loc0,
-	   				loc1
-	   				);
+			loc1 = person.getSettlement().getName();
 
-	   		Simulation.instance().getEventManager().registerNewEvent(newEvent);
- 
-	        // Log mission starting.
-	        int n = members.size();
-	        String str = null;
-	        if (n == 0)
-	        	str = ".";
-	        else if (n == 1)
-	        	str = "' with 1 other.";
-	        else
-	        	str = "' with " + n + " others.";
+			// Created mission starting event.
+			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_START, this,
+					"Mission Starting", missionName, person.getName(), loc0, loc1);
 
-	        LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-	        		"[" + person.getSettlement() + "] " + startingMember.getName() + " started a " + missionName + " mission" + str, null);
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
-	        // Add starting member to mission.
-	        // 2015-11-01 Temporarily set the shift type to none during the mission
-	        startingMember.setMission(this);
+			// Log mission starting.
+			int n = members.size();
+			String str = null;
+			if (n == 0)
+				str = ".";
+			else if (n == 1)
+				str = "' with 1 other.";
+			else
+				str = "' with " + n + " others.";
 
-	        if (startingMember instanceof Person)
-	        	startingMember.setShiftType(ShiftType.ON_CALL);
+			LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "[" + person.getSettlement() + "] "
+					+ startingMember.getName() + " started a " + missionName + " mission" + str, null);
 
-	    }
+			// Add starting member to mission.
+			// Temporarily set the shift type to none during the mission
+			startingMember.setMission(this);
+
+			if (startingMember instanceof Person)
+				startingMember.setShiftType(ShiftType.ON_CALL);
+
+		}
 
 	}
-
 
 	public int getIdentifier() {
 		return identifier;
@@ -213,6 +222,7 @@ implements Serializable {
 
 	/**
 	 * Generate the type from the Class name. Not ideal.
+	 * 
 	 * @return
 	 */
 	public String getType() {
@@ -221,6 +231,7 @@ implements Serializable {
 
 	/**
 	 * Adds a listener.
+	 * 
 	 * @param newListener the listener to add.
 	 */
 	public final void addMissionListener(MissionListener newListener) {
@@ -234,6 +245,7 @@ implements Serializable {
 
 	/**
 	 * Removes a listener.
+	 * 
 	 * @param oldListener the listener to remove.
 	 */
 	public final void removeMissionListener(MissionListener oldListener) {
@@ -247,6 +259,7 @@ implements Serializable {
 
 	/**
 	 * Fire a mission update event.
+	 * 
 	 * @param updateType the update type.
 	 */
 	protected final void fireMissionUpdate(MissionEventType updateType) {
@@ -255,14 +268,16 @@ implements Serializable {
 
 	/**
 	 * Fire a mission update event.
+	 * 
 	 * @param addMemberEvent the update type.
-	 * @param target the event target or null if none.
+	 * @param target         the event target or null if none.
 	 */
 	protected final void fireMissionUpdate(MissionEventType addMemberEvent, Object target) {
-		if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
-		synchronized(listeners) {
+		if (listeners == null)
+			listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
+		synchronized (listeners) {
 			Iterator<MissionListener> i = listeners.iterator();
-			while (i.hasNext()) 
+			while (i.hasNext())
 				i.next().missionUpdate(new MissionEvent(this, addMemberEvent, target));
 		}
 	}
@@ -274,125 +289,109 @@ implements Serializable {
 		return missionName;
 	}
 
-
 	public final void addMember(MissionMember member) {
-	    if (!members.contains(member)) {
-	        members.add(member);
-			
-			Person person = (Person)member;
+		if (!members.contains(member)) {
+			members.add(member);
+
+			Person person = (Person) member;
 			String loc0 = null;
 			String loc1 = null;
-            if (person.isInSettlement()) {
+			if (person.isInSettlement()) {
 				loc0 = person.getBuildingLocation().getNickName();
-				loc1 = person.getSettlement().getName();           	
-            }
-            else if (person.isInVehicle()) {
+				loc1 = person.getSettlement().getName();
+			} else if (person.isInVehicle()) {
 				loc0 = person.getVehicle().getName();
-				
+
 				if (person.getVehicle().getBuildingLocation() != null)
 					loc1 = person.getVehicle().getSettlement().getName();
 				else
 					loc1 = person.getCoordinates().toString();
-            }
-            else {
+			} else {
 				loc0 = OUTSIDE;
 				loc1 = person.getCoordinates().toString();
-            }
-            
-	        // Creating mission joining event.
-            HistoricalEvent newEvent = new MissionHistoricalEvent(
-	   				EventType.MISSION_JOINING,
-    				this,
-    				EventType.MISSION_JOINING.getName(),
-	   				person.getName(),
-	   				loc0,
-	   				loc1
-            		);
-            
-            Simulation.instance().getEventManager().registerNewEvent(newEvent);
+			}
 
-            fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
+			// Creating mission joining event.
+			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_JOINING, this,
+					"Adding a member", missionName, person.getName(), loc0, loc1);
 
-            logger.finer(member.getName() + " added to mission: " + missionName);
-	    }
+			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+
+			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
+
+			logger.finer(member.getName() + " added to mission: " + missionName);
+		}
 	}
 
 	/**
-     * Removes a member from the mission.
-     * @param member to be removed
-     */
-    public final void removeMember(MissionMember member) {
-    	if (members.contains(member)) {
-            members.remove(member);
-			//logger.info("done removing " + member);
+	 * Removes a member from the mission.
+	 * 
+	 * @param member to be removed
+	 */
+	public final void removeMember(MissionMember member) {
+		if (members.contains(member)) {
+			members.remove(member);
+			// logger.info("done removing " + member);
 
-            // 2015-11-01 Added codes in reassigning a work shift
-            if (member instanceof Person) {
-            	Person person = (Person) member;
-            	person.getMind().stopMission();//setMission(null);
-            	member.setMission(null);
+			// Added codes in reassigning a work shift
+			if (member instanceof Person) {
+				Person person = (Person) member;
+				person.getMind().stopMission();// setMission(null);
+				member.setMission(null);
 
-            	ShiftType shift = null;
-            	//System.out.println("A mission was ended. Calling removeMember() in Mission.java.   Name : " + person.getName() + "   Settlement : " + person.getSettlement());
-            	if (person.getSettlement() != null) {
-            		shift = person.getSettlement().getAnEmptyWorkShift(-1);
-            		person.setShiftType(shift);
-            	}
-            	else if (person.getVehicle() != null)
-            		if (person.getVehicle().getSettlement() != null){
-            		shift = person.getVehicle().getSettlement().getAnEmptyWorkShift(-1);
-            		person.setShiftType(shift);
-            	}
+				ShiftType shift = null;
+				if (person.getSettlement() != null) {
+					shift = person.getSettlement().getAnEmptyWorkShift(-1);
+					person.setShiftType(shift);
+				} else if (person.getVehicle() != null)
+					if (person.getVehicle().getSettlement() != null) {
+						shift = person.getVehicle().getSettlement().getAnEmptyWorkShift(-1);
+						person.setShiftType(shift);
+					}
 
-	            // Creating missing finishing event.
-	            //HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_FINISH);
-	            
+				// Creating missing finishing event.
+				// HistoricalEvent newEvent = new MissionHistoricalEvent(member, this,
+				// EventType.MISSION_FINISH);
+
 				String loc0 = null;
 				String loc1 = null;
-	            if (person.isInSettlement()) {
+				if (person.isInSettlement()) {
 					loc0 = person.getBuildingLocation().getNickName();
-					loc1 = person.getSettlement().getName();           	
-	            }
-	            else if (person.isInVehicle()) {
+					loc1 = person.getSettlement().getName();
+				} else if (person.isInVehicle()) {
 					loc0 = person.getVehicle().getName();
 					if (person.getVehicle().getBuildingLocation() != null)
 						loc1 = person.getVehicle().getSettlement().getName();
 					else
 						loc1 = person.getCoordinates().toString();
-	            }
-	            else {
+				} else {
 					loc0 = OUTSIDE;
 					loc1 = person.getCoordinates().toString();
-	            }
-	            
-	            Simulation.instance().getEventManager().registerNewEvent(
-	            		new MissionHistoricalEvent(
-	            				EventType.MISSION_FINISH,
-	            				this,
-	            				EventType.MISSION_FINISH.getName(),
-	            				person.getName(), 
-			            		loc0,
-			            		loc1
-			            		));
-	            fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
-	
-	        	if ((members.size() == 0) && !done) {
-	            	endMission("Not enough members.");
-	        	}
-	
-	            //logger.fine(member.getName() + " removed from mission : " + name);
-	        }
-    	}
-    }
+				}
 
-    /**
-     * Determines if a mission includes the given member.
-     * @param member member to be checked
-     * @return true if member is a part of the mission.
-     */
-    public final boolean hasMember(MissionMember member) {
-        return members.contains(member);
-    }
+				Simulation.instance().getEventManager()
+						.registerNewEvent(new MissionHistoricalEvent(EventType.MISSION_FINISH, this,
+								"Removing a member", missionName, person.getName(), loc0, loc1));
+				fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
+
+				if ((members.size() == 0) && !done) {
+					endMission("Not enough members.");
+				}
+
+				// logger.fine(member.getName() + " removed from mission : " + name);
+			}
+		}
+	}
+
+	/**
+	 * Determines if a mission includes the given member.
+	 * 
+	 * @param member member to be checked
+	 * @return true if member is a part of the mission.
+	 */
+	public final boolean hasMember(MissionMember member) {
+		return members.contains(member);
+	}
 
 //	/**
 //	 * Determines if a mission includes the given person.
@@ -403,83 +402,87 @@ implements Serializable {
 //		return people.contains(person);
 //	}
 
-    /**
-     * Gets the number of members in the mission.
-     * @return number of members.
-     */
-    public final int getMembersNumber() {
-        return members.size();
-    }
+	/**
+	 * Gets the number of members in the mission.
+	 * 
+	 * @return number of members.
+	 */
+	public final int getMembersNumber() {
+		return members.size();
+	}
 
 	/**
 	 * Gets the number of people in the mission.
+	 * 
 	 * @return number of people
 	 */
 	public final int getPeopleNumber() {
-	    int result = 0;
+		int result = 0;
 
-	    Iterator<MissionMember> i = members.iterator();
-	    while (i.hasNext()) {
-	        if (i.next() instanceof Person) {
-	            result++;
-	        }
-	    }
+		Iterator<MissionMember> i = members.iterator();
+		while (i.hasNext()) {
+			if (i.next() instanceof Person) {
+				result++;
+			}
+		}
 
 		return result;
 	}
 
-    /**
-     * Gets the minimum number of members required for mission.
-     * @return minimum number of members
-     */
-    public final int getMinMembers() {
-        return minMembers;
-    }
+	/**
+	 * Gets the minimum number of members required for mission.
+	 * 
+	 * @return minimum number of members
+	 */
+	public final int getMinMembers() {
+		return minMembers;
+	}
 
+	/**
+	 * Sets the minimum number of members required for a mission.
+	 * 
+	 * @param minMembers minimum number of members
+	 */
+	protected final void setMinMembers(int minMembers) {
+		this.minMembers = minMembers;
+		fireMissionUpdate(MissionEventType.MIN_MEMBERS_EVENT, minMembers);
+	}
 
-    /**
-     * Sets the minimum number of members required for a mission.
-     * @param minMembers minimum number of members
-     */
-    protected final void setMinMembers(int minMembers) {
-        this.minMembers = minMembers;
-        fireMissionUpdate(MissionEventType.MIN_MEMBERS_EVENT, minMembers);
-    }
-
-
-    /**
-     * Gets a collection of the members in the mission.
-     * @return collection of members
-     */
-    public final Collection<MissionMember> getMembers() {
-        return new ConcurrentLinkedQueue<MissionMember>(members);
-    }
+	/**
+	 * Gets a collection of the members in the mission.
+	 * 
+	 * @return collection of members
+	 */
+	public final Collection<MissionMember> getMembers() {
+		return new ConcurrentLinkedQueue<MissionMember>(members);
+	}
 
 	/**
 	 * Gets a collection of the people in the mission.
+	 * 
 	 * @return collection of people
 	 */
 	public final Collection<Person> getPeople() {
 		Collection<MissionMember> members = getMembers();
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-		//Collection<Person> people = members.stream()
-	    //.filter(p -> p instanceof Person).collect(Collectors.toList());
+		// Collection<Person> people = members.stream()
+		// .filter(p -> p instanceof Person).collect(Collectors.toList());
 
 		Iterator<MissionMember> i = members.iterator();
-	    while (i.hasNext()) {
-	    	MissionMember m = i.next();
-	        if (m instanceof Person) {
-	            people.add((Person) m);
-	        }
-	    }
+		while (i.hasNext()) {
+			MissionMember m = i.next();
+			if (m instanceof Person) {
+				people.add((Person) m);
+			}
+		}
 
-	    return people;
-		//return new ConcurrentLinkedQueue<Person>(people);
+		return people;
+		// return new ConcurrentLinkedQueue<Person>(people);
 	}
-
 
 	/**
 	 * Determines if mission is completed.
+	 * 
 	 * @return true if mission is completed
 	 */
 	public final boolean isDone() {
@@ -495,6 +498,7 @@ implements Serializable {
 
 	/**
 	 * Gets the name of the mission.
+	 * 
 	 * @return name of mission
 	 */
 	public final String getName() {
@@ -503,6 +507,7 @@ implements Serializable {
 
 	/**
 	 * Sets the name of the mission.
+	 * 
 	 * @param name the new mission name
 	 */
 	protected final void setName(String name) {
@@ -512,6 +517,7 @@ implements Serializable {
 
 	/**
 	 * Gets the mission's description.
+	 * 
 	 * @return mission description
 	 */
 	public final String getDescription() {
@@ -520,6 +526,7 @@ implements Serializable {
 
 	/**
 	 * Sets the mission's description.
+	 * 
 	 * @param description the new description.
 	 */
 	public final void setDescription(String description) {
@@ -531,6 +538,7 @@ implements Serializable {
 
 	/**
 	 * Gets the current phase of the mission.
+	 * 
 	 * @return phase
 	 */
 	public final MissionPhase getPhase() {
@@ -539,54 +547,55 @@ implements Serializable {
 
 	/**
 	 * Sets the mission phase.
+	 * 
 	 * @param newPhase the new mission phase.
-	 * @throws MissionException if newPhase is not in the mission's collection of phases.
+	 * @throws MissionException if newPhase is not in the mission's collection of
+	 *                          phases.
 	 */
 	protected final void setPhase(MissionPhase newPhase) {
 		if (newPhase == null) {
-		    throw new IllegalArgumentException("newPhase is null");
-		}
-		else if (phases.contains(newPhase)) {
+			throw new IllegalArgumentException("newPhase is null");
+		} else if (phases.contains(newPhase)) {
 			phase = newPhase;
 			setPhaseEnded(false);
 			phaseDescription = null;
 			fireMissionUpdate(MissionEventType.PHASE_EVENT, newPhase);
-		}
-		else {
-			throw new IllegalStateException(phase + " : newPhase: " + newPhase + " is not a valid phase for this mission.");
+		} else {
+			throw new IllegalStateException(
+					phase + " : newPhase: " + newPhase + " is not a valid phase for this mission.");
 		}
 	}
 
 	/**
 	 * Adds a phase to the mission's collection of phases.
+	 * 
 	 * @param newPhase the new phase to add.
 	 */
 	public final void addPhase(MissionPhase newPhase) {
 		if (newPhase == null) {
 			throw new IllegalArgumentException("newPhase is null");
-		}
-		else if (!phases.contains(newPhase)) {
+		} else if (!phases.contains(newPhase)) {
 			phases.add(newPhase);
 		}
 	}
 
 	/**
 	 * Gets the description of the current phase.
+	 * 
 	 * @return phase description.
 	 */
 	public final String getPhaseDescription() {
 		if (phaseDescription != null) {
 			return Conversion.capitalize(phaseDescription);
-		}
-		else if (phase != null){
+		} else if (phase != null) {
 			return Conversion.capitalize(phase.toString());
-		}
-		else
+		} else
 			return "";
 	}
 
 	/**
 	 * Sets the description of the current phase.
+	 * 
 	 * @param description the phase description.
 	 */
 	protected final void setPhaseDescription(String description) {
@@ -595,42 +604,44 @@ implements Serializable {
 	}
 
 	/**
-     * Performs the mission.
-     * @param member the member performing the mission.
-     */
-    public void performMission(MissionMember member) {
+	 * Performs the mission.
+	 * 
+	 * @param member the member performing the mission.
+	 */
+	public void performMission(MissionMember member) {
 
-        // If current phase is over, decide what to do next.
-        if (phaseEnded) {
-            determineNewPhase();
-        }
+		// If current phase is over, decide what to do next.
+		if (phaseEnded) {
+			determineNewPhase();
+		}
 
-        // Perform phase.
-        if (!done) {
-            performPhase(member);
-        }
-    }
-
+		// Perform phase.
+		if (!done) {
+			performPhase(member);
+		}
+	}
 
 	/**
 	 * Determines a new phase for the mission when the current phase has ended.
+	 * 
 	 * @throws MissionException if problem setting a new phase.
 	 */
-	protected abstract void determineNewPhase() ;
+	protected abstract void determineNewPhase();
 
 	/**
-     * The member performs the current phase of the mission.
-     * @param member the member performing the phase.
-     */
-    protected void performPhase(MissionMember member) {
-        if (phase == null) {
-            endMission("Current mission phase is null.");
-        }
-    }
-
+	 * The member performs the current phase of the mission.
+	 * 
+	 * @param member the member performing the phase.
+	 */
+	protected void performPhase(MissionMember member) {
+		if (phase == null) {
+			endMission("Current mission phase is null.");
+		}
+	}
 
 	/**
 	 * Gets the mission capacity for participating people.
+	 * 
 	 * @return mission capacity
 	 */
 	public final int getMissionCapacity() {
@@ -639,6 +650,7 @@ implements Serializable {
 
 	/**
 	 * Sets the mission capacity to a given value.
+	 * 
 	 * @param newCapacity the new mission capacity
 	 */
 	protected final void setMissionCapacity(int newCapacity) {
@@ -646,30 +658,29 @@ implements Serializable {
 		fireMissionUpdate(MissionEventType.CAPACITY_EVENT, newCapacity);
 	}
 
-	
 	/**
 	 * End the mission collection phase at the current site.
 	 */
 	protected void endCollectionPhase() {
-		if (this instanceof CollectResourcesMission) 
+		if (this instanceof CollectResourcesMission)
 			((CollectResourcesMission) this).endCollectingAtSite();
 	}
-	
+
 	/**
 	 * Have the mission return home and end collection phase if necessary.
-	*/
+	 */
 	protected void returnHome() {
 		if (this instanceof TravelMission) {
 			TravelMission travelMission = (TravelMission) this;
 			int offset = 2;
-			if (travelMission.getPhase().equals(VehicleMission.TRAVELLING)) offset = 1;
+			if (travelMission.getPhase().equals(VehicleMission.TRAVELLING))
+				offset = 1;
 			travelMission.setNextNavpointIndex(travelMission.getNumberOfNavpoints() - offset);
 			travelMission.updateTravelDestination();
 			endCollectionPhase();
 		}
 	}
 
-	
 	/**
 	 * Go to the nearest settlement and end collection phase if necessary.
 	 */
@@ -681,74 +692,79 @@ implements Serializable {
 				Settlement nearestSettlement = vehicleMission.findClosestSettlement();
 				if (nearestSettlement != null) {
 					vehicleMission.clearRemainingNavpoints();
-		    		vehicleMission.addNavpoint(new NavPoint(nearestSettlement.getCoordinates(), nearestSettlement, 
-		    				nearestSettlement.getName()));
-		    		vehicleMission.associateAllMembersWithSettlement(nearestSettlement);
-		    		vehicleMission.updateTravelDestination();
-		    		endCollectionPhase();
+					vehicleMission.addNavpoint(new NavPoint(nearestSettlement.getCoordinates(), nearestSettlement,
+							nearestSettlement.getName()));
+					vehicleMission.associateAllMembersWithSettlement(nearestSettlement);
+					vehicleMission.updateTravelDestination();
+					endCollectionPhase();
 				}
+			} catch (Exception e) {
 			}
-			catch (Exception e) {}
 		}
 	}
-	
+
 	/**
-	 * Finalizes the mission.
-	 * String reason Reason for ending mission.
-	 * Mission can override this to perform necessary finalizing operations.
+	 * Finalizes the mission. String reason Reason for ending mission. Mission can
+	 * override this to perform necessary finalizing operations.
 	 */
 	public void endMission(String reason) {
-		//logger.info("Mission's endMission() is in " + Thread.currentThread().getName() + " Thread");
+		// logger.info("Mission's endMission() is in " +
+		// Thread.currentThread().getName() + " Thread");
 
-		//if (!(this instanceof RescueSalvageVehicle)) {
-		//	returnHome();
-		//	goToNearestSettlement();
-		//}
-		
+		// if (!(this instanceof RescueSalvageVehicle)) {
+		// returnHome();
+		// goToNearestSettlement();
+		// }
+
 		if (!done) {// && !reason.equals(USER_ABORTED_MISSION) ) {
-				//& reason.equals(SUCCESSFULLY_ENDED_CONSTRUCTION) // Note: !done is very important to keep !
-				//|| reason.equals(SUCCESSFULLY_DISEMBARKED)
-				//|| reason.equals(USER_ABORTED_MISSION)) {
-			
-			// Note : there can be custom reason such as "Equipment EVA Suit 12 cannot be loaded in rover Rahu" with mission name 'Trade With Camp Bradbury'
-			
-			//logger.info("Calling endMission(). Mission ended. Reason : " + reason);
-			
-			LogConsolidated.log(logger, Level.INFO, 5000, sourceName,  
-				        "[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName() + " ended the " 
-				        + missionName + " mission. Reason : " + reason, null);
+			// & reason.equals(SUCCESSFULLY_ENDED_CONSTRUCTION) // Note: !done is very
+			// important to keep !
+			// || reason.equals(SUCCESSFULLY_DISEMBARKED)
+			// || reason.equals(USER_ABORTED_MISSION)) {
+
+			// Note : there can be custom reason such as "Equipment EVA Suit 12 cannot be
+			// loaded in rover Rahu" with mission name 'Trade With Camp Bradbury'
+
+			// logger.info("Calling endMission(). Mission ended. Reason : " + reason);
+
+			LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+					"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()
+							+ " ended the " + missionName + " mission. Reason : " + reason,
+					null);
 
 			done = true; // Note: done = true is very important to keep !
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
-			//logger.info("done firing End_Mission_Event");
-			
-			if (members != null) {
-				if (!members.isEmpty()) {	
-				    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-				    	"[" + startingMember.getLocationTag().getQuickLocation() + "] Removing the following mission members : " + members, null);
-				    Iterator<MissionMember> i = members.iterator();
-					while (i.hasNext()) {
-	                    removeMember(i.next());
+			// logger.info("done firing End_Mission_Event");
 
-	                }
+			if (members != null) {
+				if (!members.isEmpty()) {
+					LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+							"[" + startingMember.getLocationTag().getQuickLocation()
+									+ "] Removing the following mission members : " + members,
+							null);
+					Iterator<MissionMember> i = members.iterator();
+					while (i.hasNext()) {
+						removeMember(i.next());
+
+					}
 				}
 			}
 
-			//logger.info(description + " ending at the " + phase + " phase due to " + reason);
-		}
-		else
-		    LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-		    		"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()  
-		    		+ " is calling endMission() to end the " + missionName 
-	        		+ ". Reason : '" + reason + "'", null);
+			// logger.info(description + " ending at the " + phase + " phase due to " +
+			// reason);
+		} else
+			LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+					"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()
+							+ " is calling endMission() to end the " + missionName + ". Reason : '" + reason + "'",
+					null);
 	}
 
 	/**
-	 * Adds a new task for a person in the mission.
-	 * Task may be not assigned if it is effort-driven and person is too ill
-	 * to perform it.
+	 * Adds a new task for a person in the mission. Task may be not assigned if it
+	 * is effort-driven and person is too ill to perform it.
+	 * 
 	 * @param person the person to assign to the task
-	 * @param task the new task to be assigned
+	 * @param task   the new task to be assigned
 	 * @return true if task can be performed.
 	 */
 	protected boolean assignTask(Person person, Task task) {
@@ -767,19 +783,20 @@ implements Serializable {
 	}
 
 	/**
-     * Adds a new task for a robot in the mission.
-     * Task may be not assigned if the robot has a malfunction.
-     * @param robot the robot to assign to the task
-     * @param task the new task to be assigned
-     * @return true if task can be performed.
-     */
+	 * Adds a new task for a robot in the mission. Task may be not assigned if the
+	 * robot has a malfunction.
+	 * 
+	 * @param robot the robot to assign to the task
+	 * @param task  the new task to be assigned
+	 * @return true if task can be performed.
+	 */
 	protected boolean assignTask(Robot robot, Task task) {
 		boolean canPerformTask = true;
 
 		// If robot is malfunctioning, it cannot perform task.
 		boolean hasMalfunction = robot.getMalfunctionManager().hasMalfunction();
 		if (hasMalfunction) {
-		    canPerformTask = false;
+			canPerformTask = false;
 		}
 
 		if (canPerformTask) {
@@ -791,19 +808,20 @@ implements Serializable {
 
 	/**
 	 * Checks to see if any of the people in the mission have any dangerous medical
-	 * problems that require treatment at a settlement.
-	 * Also any environmental problems, such as suffocation.
+	 * problems that require treatment at a settlement. Also any environmental
+	 * problems, such as suffocation.
+	 * 
 	 * @return true if dangerous medical problems
 	 */
 	protected final boolean hasDangerousMedicalProblems() {
 		boolean result = false;
 		for (MissionMember member : members) {
-		    if (member instanceof Person) {
-		        Person person = (Person) member;
-		        if (person.getPhysicalCondition().hasSeriousMedicalProblems()) {
-	                result = true;
-	            }
-		    }
+			if (member instanceof Person) {
+				Person person = (Person) member;
+				if (person.getPhysicalCondition().hasSeriousMedicalProblems()) {
+					result = true;
+				}
+			}
 		}
 
 		return result;
@@ -811,25 +829,27 @@ implements Serializable {
 
 	/**
 	 * Checks to see if all of the people in the mission have any dangerous medical
-	 * problems that require treatment at a settlement.
-	 * Also any environmental problems, such as suffocation.
+	 * problems that require treatment at a settlement. Also any environmental
+	 * problems, such as suffocation.
+	 * 
 	 * @return true if all have dangerous medical problems
 	 */
 	protected final boolean hasDangerousMedicalProblemsAllCrew() {
 		boolean result = true;
 		for (MissionMember member : members) {
-            if (member instanceof Person) {
-                Person person = (Person) member;
-                if (!person.getPhysicalCondition().hasSeriousMedicalProblems()) {
-                    result = false;
-                }
-            }
+			if (member instanceof Person) {
+				Person person = (Person) member;
+				if (!person.getPhysicalCondition().hasSeriousMedicalProblems()) {
+					result = false;
+				}
+			}
 		}
 		return result;
 	}
 
 	/**
 	 * Checks if the mission has an emergency situation.
+	 * 
 	 * @return true if emergency.
 	 */
 	protected boolean hasEmergency() {
@@ -838,6 +858,7 @@ implements Serializable {
 
 	/**
 	 * Checks if the mission has an emergency situation affecting all the crew.
+	 * 
 	 * @return true if emergency affecting all.
 	 */
 	protected boolean hasEmergencyAllCrew() {
@@ -845,72 +866,69 @@ implements Serializable {
 	}
 
 	/**
-     * Recruits new members into the mission.
-     * @param startingMember the mission member starting the mission.
-     */
-    protected void recruitMembersForMission(MissionMember startingMember) {
+	 * Recruits new members into the mission.
+	 * 
+	 * @param startingMember the mission member starting the mission.
+	 */
+	protected void recruitMembersForMission(MissionMember startingMember) {
 
-        // Get all people qualified for the mission.
-        Collection<Person> qualifiedPeople = new ConcurrentLinkedQueue<Person>();
-        Iterator <Person> i = unitManager.getPeople().iterator();
-        while (i.hasNext()) {
-            Person person = i.next();
-            if (isCapableOfMission(person)) {
-                qualifiedPeople.add(person);
-            }
-        }
+		// Get all people qualified for the mission.
+		Collection<Person> qualifiedPeople = new ConcurrentLinkedQueue<Person>();
+		Iterator<Person> i = unitManager.getPeople().iterator();
+		while (i.hasNext()) {
+			Person person = i.next();
+			if (isCapableOfMission(person)) {
+				qualifiedPeople.add(person);
+			}
+		}
 
-        // Recruit the most qualified and most liked people first.
-        while (qualifiedPeople.size() > 0) {
-            double bestPersonValue = 0D;
-            Person bestPerson = null;
-            Iterator<Person> j = qualifiedPeople.iterator();
-            while (j.hasNext() && (getMembersNumber() < missionCapacity)) {
-                Person person = j.next();
-                // Determine the person's mission qualification.
-                double qualification = getMissionQualification(person) * 100D;
+		// Recruit the most qualified and most liked people first.
+		while (qualifiedPeople.size() > 0) {
+			double bestPersonValue = 0D;
+			Person bestPerson = null;
+			Iterator<Person> j = qualifiedPeople.iterator();
+			while (j.hasNext() && (getMembersNumber() < missionCapacity)) {
+				Person person = j.next();
+				// Determine the person's mission qualification.
+				double qualification = getMissionQualification(person) * 100D;
 
-                // Determine how much the recruiter likes the person.
-                double likability = 50D;
-                if (startingMember instanceof Person) {
-                    RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-                    likability = relationshipManager.getOpinionOfPerson((Person) startingMember, person);
-                }
+				// Determine how much the recruiter likes the person.
+				double likability = 50D;
+				if (startingMember instanceof Person) {
+					RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+					likability = relationshipManager.getOpinionOfPerson((Person) startingMember, person);
+				}
 
-                // Check if person is the best recruit.
-                double personValue = (qualification + likability) / 2D;
-                if (personValue > bestPersonValue) {
-                    bestPerson = person;
-                    bestPersonValue = personValue;
-                }
-            }
+				// Check if person is the best recruit.
+				double personValue = (qualification + likability) / 2D;
+				if (personValue > bestPersonValue) {
+					bestPerson = person;
+					bestPersonValue = personValue;
+				}
+			}
 
-            // Try to recruit best person available to the mission.
-            if (bestPerson != null) {
-                recruitPerson(startingMember, bestPerson);
-                qualifiedPeople.remove(bestPerson);
-            }
-            else {
-                break;
-            }
-        }
-/*
-        // Recruit robots qualified for the mission.
-        Iterator <Robot> k = Simulation.instance().getUnitManager().getRobots().iterator();
-        while (k.hasNext() && (getMembersNumber() < missionCapacity)) {
-            Robot robot = k.next();
-            if (isCapableOfMission(robot)) {
-                robot.setMission(this);
-            }
-        }
-*/
-        if (getMembersNumber() < minMembers) {
-            endMission("Not enough members");
-        }
-    }
+			// Try to recruit best person available to the mission.
+			if (bestPerson != null) {
+				recruitPerson(startingMember, bestPerson);
+				qualifiedPeople.remove(bestPerson);
+			} else {
+				break;
+			}
+		}
+		/*
+		 * // Recruit robots qualified for the mission. Iterator <Robot> k =
+		 * Simulation.instance().getUnitManager().getRobots().iterator(); while
+		 * (k.hasNext() && (getMembersNumber() < missionCapacity)) { Robot robot =
+		 * k.next(); if (isCapableOfMission(robot)) { robot.setMission(this); } }
+		 */
+		if (getMembersNumber() < minMembers) {
+			endMission("Not enough members");
+		}
+	}
 
 	/**
 	 * Attempt to recruit a new person into the mission.
+	 * 
 	 * @param recruiter the mission member doing the recruiting.
 	 * @param recruitee the person being recruited.
 	 */
@@ -924,25 +942,24 @@ implements Serializable {
 			// Get the recruitee's social opinion of the recruiter.
 			double recruiterLikability = 50D;
 			if (recruiter instanceof Person) {
-			    recruiterLikability = relationshipManager.getOpinionOfPerson(recruitee, (Person) recruiter);
+				recruiterLikability = relationshipManager.getOpinionOfPerson(recruitee, (Person) recruiter);
 			}
 
 			// Get the recruitee's average opinion of all the current mission members.
 			List<Person> people = new ArrayList<Person>();
 			Iterator<MissionMember> i = members.iterator();
 			while (i.hasNext()) {
-			    MissionMember member = i.next();
-			    if (member instanceof Person) {
-			        people.add((Person) member);
-			    }
+				MissionMember member = i.next();
+				if (member instanceof Person) {
+					people.add((Person) member);
+				}
 			}
 			double groupLikability = relationshipManager.getAverageOpinionOfPeople(recruitee, people);
 
 			double recruitmentChance = (qualification + recruiterLikability + groupLikability) / 3D;
 			if (recruitmentChance > 100D) {
 				recruitmentChance = 100D;
-			}
-			else if (recruitmentChance < 0D) {
+			} else if (recruitmentChance < 0D) {
 				recruitmentChance = 0D;
 			}
 
@@ -950,103 +967,104 @@ implements Serializable {
 				recruitee.setMission(this);
 
 				if (recruitee instanceof Person) {
-		            ((Person) recruitee).setShiftType(ShiftType.ON_CALL);
-		        }
+					((Person) recruitee).setShiftType(ShiftType.ON_CALL);
+				}
 				// robot cannot be a recruitee
-		        //else if (recruitee instanceof Robot) {
-		        //    ((Robot) recruitee).getTaskSchedule().setShiftType("None");
-		        //}
+				// else if (recruitee instanceof Robot) {
+				// ((Robot) recruitee).getTaskSchedule().setShiftType("None");
+				// }
 			}
 		}
 	}
-	
+
 	/**
-     * Checks to see if a member is capable of joining a mission.
-     * @param member the member to check.
-     * @return true if member could join mission.
-     */
-    protected boolean isCapableOfMission(MissionMember member) {
-        boolean result = false;
+	 * Checks to see if a member is capable of joining a mission.
+	 * 
+	 * @param member the member to check.
+	 * @return true if member could join mission.
+	 */
+	protected boolean isCapableOfMission(MissionMember member) {
+		boolean result = false;
 
-        if (member == null) {
-            throw new IllegalArgumentException("member is null");
-        }
+		if (member == null) {
+			throw new IllegalArgumentException("member is null");
+		}
 
-        if (member instanceof Person) {
-            Person person = (Person) member;
+		if (member instanceof Person) {
+			Person person = (Person) member;
 
-            // Make sure person isn't already on a mission.
-            boolean onMission = (person.getMind().getMission() != null);
+			// Make sure person isn't already on a mission.
+			boolean onMission = (person.getMind().getMission() != null);
 
-            // Make sure person doesn't have any serious health problems.
-            boolean healthProblem = person.getPhysicalCondition().hasSeriousMedicalProblems();
+			// Make sure person doesn't have any serious health problems.
+			boolean healthProblem = person.getPhysicalCondition().hasSeriousMedicalProblems();
 
-            // Check if person is qualified to join the mission.
-            boolean isQualified = (getMissionQualification(person) > 0D);
+			// Check if person is qualified to join the mission.
+			boolean isQualified = (getMissionQualification(person) > 0D);
 
-            if (!onMission && !healthProblem && isQualified) {
-                result = true;
-            }
-        }
-        else if (member instanceof Robot) {
-            Robot robot = (Robot) member;
+			if (!onMission && !healthProblem && isQualified) {
+				result = true;
+			}
+		} else if (member instanceof Robot) {
+			Robot robot = (Robot) member;
 
-            // Make sure robot isn't already on a mission.
-            boolean onMission = (robot.getBotMind().getMission() != null);
+			// Make sure robot isn't already on a mission.
+			boolean onMission = (robot.getBotMind().getMission() != null);
 
-            // Make sure robot doesn't have a malfunction.
-            boolean hasMalfunction = robot.getMalfunctionManager().hasMalfunction();
+			// Make sure robot doesn't have a malfunction.
+			boolean hasMalfunction = robot.getMalfunctionManager().hasMalfunction();
 
-            // Check if robot is qualified to join the mission.
-            boolean isQualified = (getMissionQualification(robot) > 0D);
+			// Check if robot is qualified to join the mission.
+			boolean isQualified = (getMissionQualification(robot) > 0D);
 
-            if (!onMission && !hasMalfunction && isQualified) {
-                result = true;
-            }
-        }
+			if (!onMission && !hasMalfunction && isQualified) {
+				result = true;
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
+	/**
+	 * Gets the mission qualification value for the member. Member is qualified in
+	 * joining the mission if the value is larger than 0. The larger the
+	 * qualification value, the more likely the member will be picked for the
+	 * mission.
+	 * 
+	 * @param member the member to check.
+	 * @return mission qualification value.
+	 */
+	protected double getMissionQualification(MissionMember member) {
 
-    /**
-     * Gets the mission qualification value for the member.
-     * Member is qualified in joining the mission if the value is larger than 0.
-     * The larger the qualification value, the more likely the member will be picked for the mission.
-     * @param member the member to check.
-     * @return mission qualification value.
-     */
-    protected double getMissionQualification(MissionMember member) {
-
-        double result = 0D;
+		double result = 0D;
 
 //        if (isCapableOfMission(member)) {
 
-            if (member instanceof Person) {
-                Person person = (Person) member;
+		if (member instanceof Person) {
+			Person person = (Person) member;
 
-                // Get base result for job modifier.
-                Job job = person.getMind().getJob();
-                if (job != null) {
-                    result = job.getJoinMissionProbabilityModifier(this.getClass());
-                }
-            }
-            else if (member instanceof Robot) {
-                Robot robot = (Robot) member;
+			// Get base result for job modifier.
+			Job job = person.getMind().getJob();
+			if (job != null) {
+				result = job.getJoinMissionProbabilityModifier(this.getClass());
+			}
+		} else if (member instanceof Robot) {
+			Robot robot = (Robot) member;
 
-                // Get base result for job modifier.
-                RobotJob job = robot.getBotMind().getRobotJob();
-                if (job != null) {
-                    result = job.getJoinMissionProbabilityModifier(this.getClass());
-                }
-            }
+			// Get base result for job modifier.
+			RobotJob job = robot.getBotMind().getRobotJob();
+			if (job != null) {
+				result = job.getJoinMissionProbabilityModifier(this.getClass());
+			}
+		}
 //        }
 
-        return result;
-    }
+		return result;
+	}
 
 	/**
 	 * Checks if the current phase has ended or not.
+	 * 
 	 * @return true if phase has ended
 	 */
 	public final boolean getPhaseEnded() {
@@ -1055,6 +1073,7 @@ implements Serializable {
 
 	/**
 	 * Sets if the current phase has ended or not.
+	 * 
 	 * @param phaseEnded true if phase has ended
 	 */
 	protected final void setPhaseEnded(boolean phaseEnded) {
@@ -1063,19 +1082,23 @@ implements Serializable {
 
 	/**
 	 * Gets the settlement associated with the mission.
+	 * 
 	 * @return settlement or null if none.
 	 */
 	public abstract Settlement getAssociatedSettlement();
 
 	/**
 	 * Gets the number and amounts of resources needed for the mission.
+	 * 
 	 * @param useBuffer use time buffers in estimation if true.
-	 * @return map of amount and item resources and their Double amount or Integer number.
+	 * @return map of amount and item resources and their Double amount or Integer
+	 *         number.
 	 */
 	public abstract Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer);
 
 	/**
 	 * Gets the number and types of equipment needed for the mission.
+	 * 
 	 * @param useBuffer use time buffers in estimation if true.
 	 * @return map of equipment class and Integer number.
 	 */
@@ -1083,6 +1106,7 @@ implements Serializable {
 
 	/**
 	 * Time passing for mission.
+	 * 
 	 * @param time the amount of time passing (in millisols)
 	 * @throws Exception if error during time passing.
 	 */
@@ -1092,44 +1116,49 @@ implements Serializable {
 
 	/**
 	 * Associate all mission members with a settlement.
+	 * 
 	 * @param settlement the associated settlement.
 	 */
 	public void associateAllMembersWithSettlement(Settlement settlement) {
 		Iterator<MissionMember> i = members.iterator();
 		while (i.hasNext()) {
-		    MissionMember member = i.next();
+			MissionMember member = i.next();
 			member.setAssociatedSettlement(settlement);
 		}
 	}
 
 	/**
 	 * Gets the current location of the mission.
+	 * 
 	 * @return coordinate location.
 	 * @throws MissionException if error determining location.
 	 */
 	public final Coordinates getCurrentMissionLocation() {
 
-	    Coordinates result = null;
+		Coordinates result = null;
 
-	    if (getMembersNumber() > 0) {
-	        MissionMember member = (MissionMember) members.toArray()[0];
-	        result = member.getCoordinates();
-	    }
-		else {
-			String log = null;
+		if (getMembersNumber() > 0) {
+			MissionMember member = (MissionMember) members.toArray()[0];
+			result = member.getCoordinates();
+		} else {
+			
+			int rand = RandomUtil.getRandomInt(2);
+			String log = expression[rand];
 			if (phase != null)
-				log = "No people/robots are available in phase '" + phase + "' of a " + this.toString() + " mission.";
+				log = log + phase + " in a " + this.toString() + MISSION;
 			else
-				log = "No people/robots are available in a " + this.toString() + " mission.";
-		    //throw new IllegalStateException(phase + " : No people or robots in the mission.");
-		    LogConsolidated.log(logger, Level.INFO, 0, sourceName, log , null);
+				log = log + "a " + this.toString() + MISSION;
+			// throw new IllegalStateException(phase + " : No people or robots in the
+			// mission.");
+			LogConsolidated.log(logger, Level.INFO, 2000, sourceName, log, null);
 		}
 
-	    return result;
+		return result;
 	}
 
 	/**
 	 * Gets the number of available EVA suits for a mission at a settlement.
+	 * 
 	 * @param settlement the settlement to check.
 	 * @return number of available suits.
 	 */
@@ -1138,7 +1167,7 @@ implements Serializable {
 
 		if (settlement == null)
 			result = 0;
-			//throw new NullPointerException();
+		// throw new NullPointerException();
 
 		else {
 			result = settlement.getInventory().findNumUnitsOfClass(EVASuit.class);

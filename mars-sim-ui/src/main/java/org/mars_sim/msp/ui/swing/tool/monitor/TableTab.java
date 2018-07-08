@@ -310,8 +310,6 @@ extends MonitorTab {
 	     	//adjustColumnPreferredWidths(table);
 	    //});
 
-    	// Switched to using the TableStyle's setTableStyle()
-        //TableStyle.setTableStyle(table);
 
         // Enable use of RowFilter with Swingbits
         // see https://github.com/eugener/oxbow/wiki/Table-Filtering

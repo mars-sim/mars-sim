@@ -658,10 +658,10 @@ implements ClockListener, HistoricalEventListener {
 	}
 
 	@Override
-	public void eventAdded(int index, HistoricalEvent event) {
-		if (HistoricalEventCategory.TRANSPORT == event.getCategory() &&
-				EventType.TRANSPORT_ITEM_MODIFIED.equals(event.getType())) {
-			if ((resupply != null) && event.getSource().equals(resupply)) {
+	public void eventAdded(int index, SimpleEvent se, HistoricalEvent he) {
+		if (HistoricalEventCategory.TRANSPORT == he.getCategory() &&
+				EventType.TRANSPORT_ITEM_MODIFIED.equals(he.getType())) {
+			if ((resupply != null) && he.getSource().equals(resupply)) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -751,12 +751,6 @@ implements ClockListener, HistoricalEventListener {
 		
 		desktop = null;
 		mainScene = null;
-		
-	}
-
-	@Override
-	public void eventAdded(int index, SimpleEvent event) {
-		// TODO Auto-generated method stub
 		
 	}
 	
