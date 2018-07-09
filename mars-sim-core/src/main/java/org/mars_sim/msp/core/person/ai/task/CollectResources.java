@@ -279,7 +279,7 @@ implements Serializable {
         }
 
         // Modify collection rate by polar region if ice collecting.
-        if (resourceType.equals(ResourceUtil.iceAR)) {
+        if (resourceType == ResourceUtil.iceID) {
             if (Simulation.instance().getMars().getSurfaceFeatures().inPolarRegion(person.getCoordinates())) {
                 samplesCollected *= 3D;
             }

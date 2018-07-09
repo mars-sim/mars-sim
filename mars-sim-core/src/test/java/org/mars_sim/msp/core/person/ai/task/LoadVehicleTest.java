@@ -13,18 +13,13 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.GenderType;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
-import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -358,10 +353,10 @@ extends TestCase {
 		}
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
-		requiredResourcesMap.put(oxygenID, new Double(100D));
-		requiredResourcesMap.put(foodID, new Double(100D));
-		requiredResourcesMap.put(waterID, new Double(waterAmount));
-		requiredResourcesMap.put(methaneID, new Double(100D));
+		requiredResourcesMap.put(oxygenID, 100D);
+		requiredResourcesMap.put(foodID, 100D);
+		requiredResourcesMap.put(waterID, waterAmount);
+		requiredResourcesMap.put(methaneID, 100D);
 		requiredResourcesMap.put(hammerID, Integer.valueOf(5));
 
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
@@ -399,11 +394,11 @@ extends TestCase {
 		int hammerID = hammer.getID();
 		
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
-		requiredResourcesMap.put(oxygenID, new Double(100D));
-		requiredResourcesMap.put(foodID, new Double(100D));
-		requiredResourcesMap.put(waterID, new Double(waterAmount));
-		requiredResourcesMap.put(methaneID, new Double(100D));
-		requiredResourcesMap.put(hammerID, Integer.valueOf(5));
+		requiredResourcesMap.put(oxygenID, 100D);
+		requiredResourcesMap.put(foodID, 100D);
+		requiredResourcesMap.put(waterID, waterAmount);
+		requiredResourcesMap.put(methaneID, 100D);
+		requiredResourcesMap.put(hammerID, 5);
 
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
 

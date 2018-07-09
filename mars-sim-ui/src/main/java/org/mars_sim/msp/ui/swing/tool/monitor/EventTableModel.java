@@ -401,68 +401,62 @@ public class EventTableModel extends AbstractTableModel
 
 				// reset willNotify to false
 				boolean willNotify = false;
-				int type = 0;
+				int type = -1;
 
 				String header = null;
 				String message = null;
+				String cause = manager.getWhat(event.getWhat());
+				String during = (manager.getWhileDoing(event.getWhileDoing()));
+				String who = manager.getWho(event.getWho());
+				String location0 = manager.getLoc0(event.getLoc0());
+				String location1 = manager.getLoc1(event.getLoc1());
 				
 				HistoricalEventCategory category = HistoricalEventCategory.int2enum(event.getCat());
+				EventType eventType = EventType.int2enum(event.getType());
+				
+				if (category == HistoricalEventCategory.MALFUNCTION) {
 
-				if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
-					EventType eventType = EventType.int2enum(event.getType());
-					String cause = manager.getWhat(event.getWhat());
-					String during = (manager.getWhileDoing(event.getWhileDoing())).toLowerCase();
-					String who = manager.getWho(event.getWho());
-					String location0 = manager.getLoc0(event.getLoc0());
-					String location1 = manager.getLoc1(event.getLoc1());
-
+					during = during.toLowerCase();
+					
 					header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
 
 					// Only display notification window when malfunction has occurred, not when
 					// fixed.
 					if (eventType == EventType.MALFUNCTION_HUMAN_FACTORS) {
 						message = cause + " in " + location0 + " at " + location1 + ". " + who
-								+ " witnessed the malfunction while " + during + " and may have to do with it.";
+								+ " reported the malfunction while " + during + ".";
 						willNotify = true;
 					}
 
 					else if (eventType == EventType.MALFUNCTION_PROGRAMMING_ERROR) {
 						message = cause + " in " + location0 + " at " + location1 + ". " + who
-								+ " may be caused the malfunction due to poor software quality control while " + during + ".";
+								+ " may have caused the malfunction due to software quality control issues while " + during + ".";
 						willNotify = true;
 					}
 					
 					else if (eventType == EventType.MALFUNCTION_PARTS_FAILURE) {
-						message = who + " reported " + cause + " in " + location0 + " at " + location1;
+						message = who + " reported " + cause + " in " + location0 + " at " + location1+ ".";
 						willNotify = true;
 					}
 
 					else if (eventType == EventType.MALFUNCTION_ACT_OF_GOD) {
 						if (who.toLowerCase().equals("none"))
 							message = "No one witnessed " + cause + " in " + location0 + " at "
-									+ location1;
+									+ location1+ ".";
 						else
-							message = who + " got traumatized by " + cause + " while " + during + " in " + location0 + " at " + location1;
+							message = who + " got traumatized by " + cause + " while " + during 
+								+ " in " + location0 + " at " + location1+ ".";
 						willNotify = true;
 					}
 
-					if (willNotify && !messageCache.contains(message)) {
-						messageCache.add(0, message);
-						if (messageCache.size() > MSG_CACHE)
-							messageCache.remove(messageCache.size() - 1);
-						type = 0;
-					}
-					else 
-						willNotify = false;
+					type = 0;
+
 				}
 
-				else if (category.equals(HistoricalEventCategory.MEDICAL)) {
-					EventType eventType = EventType.int2enum(event.getType());
-					String cause = (manager.getWhat(event.getWhat())).toLowerCase();
-					String during = manager.getWhileDoing(event.getWhileDoing()).toLowerCase();
-					String who = manager.getWho(event.getWho());
-					String location0 = manager.getLoc0(event.getLoc0());
-					String location1 = manager.getLoc1(event.getLoc1());
+				else if (category == HistoricalEventCategory.MEDICAL) {
+
+					cause = cause.toLowerCase();
+					during = during.toLowerCase();
 
 					header = Msg.getString("EventTableModel.message.medical"); //$NON-NLS-1$
 
@@ -489,14 +483,14 @@ public class EventTableModel extends AbstractTableModel
 						else if (cause.equalsIgnoreCase("suffocation"))
 							phrase = " is suffocating";
 						else if (cause.equalsIgnoreCase("laceration"))
-							phrase = " sufferred laceration";
+							phrase = " suffered laceration";
 						else if (cause.equalsIgnoreCase("pulled muscle/tendon"))
 							phrase = " had a pulled muscle";
 						else
-							phrase = " is complaining about the ";//" is suffering from ";
+							phrase = " is complaining about the " + cause;//" is suffering from ";
 						
 						willNotify = true;
-						message = who + phrase + cause + " while " + during + " in " + location0 + " at " + location1;
+						message = who + phrase + " while " + during + " in " + location0 + " at " + location1;
 
 					} else if (eventType == EventType.MEDICAL_DEATH) {
 
@@ -514,23 +508,11 @@ public class EventTableModel extends AbstractTableModel
 //						message = who + " was cured from " + cause + " in " + location0 + " at " + location1;
 					}
 
-					if (willNotify && !messageCache.contains(message)) {
-						messageCache.add(0, message);
-						if (messageCache.size() > MSG_CACHE)
-							messageCache.remove(messageCache.size() - 1);
-						type = 1;
-					}
-					else 
-						willNotify = false;
+					type = 1;
+
 				}
 
-				else if (category.equals(HistoricalEventCategory.MISSION)) {
-					EventType eventType = EventType.int2enum(event.getType());
-					String cause = manager.getWhat(event.getWhat());
-					String during = manager.getWhileDoing(event.getWhileDoing());
-					String who = manager.getWho(event.getWho());
-					String location0 = manager.getLoc0(event.getLoc0());
-					String location1 = manager.getLoc1(event.getLoc1());
+				else if (category == HistoricalEventCategory.MISSION) {
 
 					header = Msg.getString("EventTableModel.message.mission"); //$NON-NLS-1$
 
@@ -540,7 +522,8 @@ public class EventTableModel extends AbstractTableModel
 					if (eventType == EventType.MISSION_RESCUE_PERSON
 							|| eventType == EventType.MISSION_SALVAGE_VEHICLE
 							|| eventType == EventType.MISSION_RENDEZVOUS) {
-						message = who + " is attempting to " + Conversion.setFirstWordLowercase(during) + " from " + location0 + " at " + location1;
+						message = who + " is attempting to " + Conversion.setFirstWordLowercase(during) 
+							+ " from " + location0 + " at " + location1;
 						willNotify = true;
 					}
 					else if (eventType == EventType.MISSION_EMERGENCY_BEACON_ON
@@ -548,38 +531,27 @@ public class EventTableModel extends AbstractTableModel
 //							|| eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
 							|| eventType == EventType.MISSION_MEDICAL_EMERGENCY
 							) {
-						message = who + " has " + Conversion.setFirstWordLowercase(cause) + " while " + during.toLowerCase() + " in " + location0 + " at " + location1;	
+						message = who + " has " + Conversion.setFirstWordLowercase(cause) 
+							+ " while " + during.toLowerCase() + " in " + location0 + " at " + location1;	
 						willNotify = true;
 					}
 
-					if (willNotify && !messageCache.contains(message)) {
-						messageCache.add(0, message);
-						if (messageCache.size() > MSG_CACHE)
-							messageCache.remove(messageCache.size() - 1);
-						// willNotify = true;
-						type = 2;
-					}
-					else 
-						willNotify = false;					
+					type = 2;
+			
 				}
 
-				else if (category.equals(HistoricalEventCategory.HAZARD)) {
-					EventType eventType = EventType.int2enum(event.getType());
-					String cause = manager.getWhat(event.getWhat());
-					String during = manager.getWhileDoing(event.getWhileDoing());
-					String who = manager.getWho(event.getWho());
-					String location0 = manager.getLoc0(event.getLoc0());
-					String location1 = manager.getLoc1(event.getLoc1());
+				else if (category == HistoricalEventCategory.HAZARD) {
 
 					if (eventType == EventType.HAZARD_METEORITE_IMPACT) {
 						
 						header = Msg.getString("EventType.hazard.meteoriteImpact"); //$NON-NLS-1$
 
 						if (who.toLowerCase().equals("none"))
-							message = "There is a " + cause + " in " + location0 + " at " + location1
+							message = "There is a " + eventType.getName() + " in " + location0 + " at " + location1
 									+ ". Fortunately, no one was hurt.";
 						else
-							message = who + " was rattled by the " + cause + " while " + Conversion.setFirstWordLowercase(during) + " in " + location0
+							message = who + " was rattled by the " + eventType.getName() + " while " 
+									+ Conversion.setFirstWordLowercase(during) + " in " + location0
 									+ " at " + location1;
 						willNotify = true;
 					}
@@ -593,17 +565,22 @@ public class EventTableModel extends AbstractTableModel
 								+ location0 + " at " + location1;
 					}
 
-					if (willNotify && !messageCache.contains(message)) {
+					type = 3;
+
+				}
+
+				if (willNotify) {
+					if (messageCache.contains(message)) {
 						messageCache.add(0, message);
 						if (messageCache.size() > MSG_CACHE)
 							messageCache.remove(messageCache.size() - 1);
-						type = 3;
 					}
 					else 
 						willNotify = false;
 				}
-
-				// Modified eventAdded to use controlsfx's notification window for javaFX UI
+				
+			
+				// Use controlsfx's notification window for javaFX UI
 				if (willNotify)
 					Platform.runLater(new NotifyFXLauncher(header, message, type));
 			}

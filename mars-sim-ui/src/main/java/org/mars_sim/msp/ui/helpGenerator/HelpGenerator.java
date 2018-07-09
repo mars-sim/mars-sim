@@ -63,6 +63,8 @@ public class HelpGenerator {
 	// at \mars-sim-ui\target\classes\docs\help
 	// e.g. D:\Data\git\mars-sim\mars-sim-ui\target\classes\docs\help
     //
+    // Note that the generated html files are located within the mars-sim-ui's target folder
+    // and NOT the mars-sim-ui's src folder.
     //
     // One will need to "manually" copy the newly generated htmls from the target folder to the src folder
     //   
@@ -77,7 +79,14 @@ public class HelpGenerator {
     // 
 */
 
-	private static final String DIR = "\\docs\\help\\";
+//	private static final String DIR = "\\docs\\help\\";
+	private static final String VEHICLE_DIR = "\\docs\\help\\vehicles\\";
+	private static final String RESOURCE_DIR = "\\docs\\help\\resources\\";
+	private static final String PART_DIR = "\\docs\\help\\parts\\";
+	private static final String PROCESS_DIR = "\\docs\\help\\processes\\";
+	private static final String FOOD_DIR = "\\docs\\help\\food\\";
+//	private static final String EQUIPMENT_DIR = "\\docs\\help\\equipment";
+		
 	private static final String SUFFIX = ".html";
 
 	private static final String VEHICLES = "vehicles";
@@ -156,17 +165,29 @@ public class HelpGenerator {
 		content.append("<p><ul><li>No Such Food Production Processes Known</li></ul></p>");
 	}
 
-	private static final void generateFile(final StringBuffer path, final StringBuffer content) {
+	/**
+	 * Generates a html file.
+	 * @param path the path of the html file.
+	 * @param content the String content of the html file.
+	 */
+	private static final void generateFile(String dir, final StringBuffer path, final StringBuffer content) {
 		try {
 			String absPath = new File(
 				HelpGenerator
 				.class
 				.getClassLoader()
-				.getResource(DIR)
+				.getResource(dir)
 				.toURI()
 			).getAbsolutePath();
+			
 			//System.out.println("absPath is " + absPath);
 			File file = new File(absPath + '/' + path.toString());
+			
+		      // if the autosave/default save directory does not exist, create one now
+	        if (!file.getParentFile().exists()) {
+	            file.getParentFile().mkdirs();
+	        }
+	        
 //			File file = new File(ABSOLUTE_DIR + '/' + path.toString());
 			PrintWriter pw = new PrintWriter(file);
 			pw.write(content.toString());
@@ -401,7 +422,7 @@ public class HelpGenerator {
 		content.append("</ul>");
 		helpFileHeader(content,"vehicles");
 		helpFileFooter(content);
-		generateFile(getPathVehicles(),content);
+		generateFile(VEHICLE_DIR, getPathVehicles(),content);
 
 		// second loop over vehicle types to generate a help file for each one
 		String[] cargoArray = new String[] {
@@ -484,7 +505,7 @@ public class HelpGenerator {
 
 			helpFileHeader(content, "Vehicle \"" + vehicle + "\"");
 			helpFileFooter(content);
-			generateFile(getPathVehicle(vehicle),content);
+			generateFile(VEHICLE_DIR, getPathVehicle(vehicle),content);
 		}
 	}
 
@@ -536,7 +557,7 @@ public class HelpGenerator {
 
 		helpFileHeader(content,"resources");
 		helpFileFooter(content);
-		generateFile(getPathResources(),content);
+		generateFile(RESOURCE_DIR, getPathResources(),content);
 
 		//System.out.println("generateResourceDescriptions(): done with part 1");
 
@@ -641,7 +662,7 @@ public class HelpGenerator {
 			// finalize and generate help file
 			helpFileHeader(content,"Resource \"" + resource + "\"");
 			helpFileFooter(content);
-			generateFile(getPathResource(name),content);
+			generateFile(RESOURCE_DIR, getPathResource(name),content);
 
 		}
 	}
@@ -670,7 +691,7 @@ public class HelpGenerator {
 		content.append("</ul>\n");
 		helpFileHeader(content,"parts");
 		helpFileFooter(content);
-		generateFile(getPathParts(),content);
+		generateFile(PART_DIR, getPathParts(),content);
 
 		// second: loop over part types to generate a help file for each one
 		//for (Entry<String, ItemResource> entry : parts.entrySet()) {
@@ -769,7 +790,7 @@ public class HelpGenerator {
 			// finalize and generate help file
 			helpFileHeader(content,"Part \"" + part + "\"");
 			helpFileFooter(content);
-			generateFile(getPathPart(name),content);
+			generateFile(PART_DIR, getPathPart(name),content);
 
 		}
 	}
@@ -813,7 +834,7 @@ public class HelpGenerator {
 		content.append("</table>\n");
 		helpFileHeader(content,"processes");
 		helpFileFooter(content);
-		generateFile(getPathProcesses(),content);
+		generateFile(PROCESS_DIR, getPathProcesses(),content);
 
 		// second: loop over processes to generate a help file for each one
 		for (Entry<String,ManufactureProcessInfo> process : processes.entrySet()) {
@@ -881,7 +902,7 @@ public class HelpGenerator {
 			// finalize and generate help file
 			helpFileHeader(content,"Process \"" + name + "\"");
 			helpFileFooter(content);
-			generateFile(getPathProcess(name),content);
+			generateFile(PROCESS_DIR, getPathProcess(name),content);
 		}
 	}
 
@@ -925,7 +946,7 @@ public class HelpGenerator {
 		content.append("</ul></table>\n");
 		helpFileHeader(content,"Food Production");
 		helpFileFooter(content);
-		generateFile(getPathFoodProductionProcesses(),content);
+		generateFile(FOOD_DIR, getPathFoodProductionProcesses(),content);
 
 		// second: loop over processes to generate a help file for each one
 		for (Entry<String,FoodProductionProcessInfo> process : processes.entrySet()) {
@@ -994,7 +1015,7 @@ public class HelpGenerator {
 			// finalize and generate help file
 			helpFileHeader(content,"Food Production \"" + name + "\"");
 			helpFileFooter(content);
-			generateFile(getPathFoodProductionProcess(name),content);
+			generateFile(FOOD_DIR, getPathFoodProductionProcess(name),content);
 		}
 	}
 

@@ -158,23 +158,25 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		// pack(); // this will shrink the window to one line tall in swing mode
 	}
 
-	/** Set a display URL. */
-	// 2016-06-07 Added displaying the hyperlink's path and html filename.
-	@SuppressWarnings("restriction")
+	/** 
+	 * Set a display URL. Added displaying the hyperlink's path and html filename.
+	 * @param fileloc
+	 * 
+	 */
 	public void setURL(String fileloc) {
 		// goToURL(getClass().getResource(fileloc));
 		// browser.getStatusBarLabel().setText(fileloc);
 		String fullLink = getClass().getResource(fileloc).toExternalForm();
 		Platform.runLater(() -> {
 			browser.setTextInputCache(fullLink);
-			browser.inputURLType(fullLink);// , BrowserJFX.REMOTE_HTML);
+			browser.checkInputURLType(fullLink);// , BrowserJFX.REMOTE_HTML);
 			browser.showFormattedURL();
 			browser.fireButtonGo(fullLink);
 		});
 	}
 
 	/** Gets the full URL string for internal html files. */
-	// 2017-04-28 Added displaying the hyperlink's path and html filename.
+	// Added displaying the hyperlink's path and html filename.
 	public String getFullURL(String fileloc) {
 		return getClass().getResource(fileloc).toExternalForm();
 	}
@@ -188,7 +190,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 			String input = guideURL.toExternalForm();
 			Platform.runLater(() -> {
 				browser.setTextInputCache(input);
-				browser.inputURLType(input);
+				browser.checkInputURLType(input);
 				browser.showFormattedURL();
 			});
 		}
@@ -197,7 +199,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 			String input = shortcutsURL.toExternalForm();
 			Platform.runLater(() -> {
 				browser.setTextInputCache(input);
-				browser.inputURLType(input);
+				browser.checkInputURLType(input);
 				browser.showFormattedURL();
 			});
 		}
@@ -206,7 +208,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 			String input = aboutURL.toExternalForm();
 			Platform.runLater(() -> {
 				browser.setTextInputCache(input);
-				browser.inputURLType(input);
+				browser.checkInputURLType(input);
 				browser.showFormattedURL();
 			});
 		}
@@ -215,7 +217,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 			String input = tutorialURL.toExternalForm();
 			Platform.runLater(() -> {
 				browser.setTextInputCache(input);
-				browser.inputURLType(input);
+				browser.checkInputURLType(input);
 				browser.showFormattedURL();
 			});
 		}
@@ -223,7 +225,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		else if (source == this.projectsiteButton || source == this.wikiButton) {
 			Platform.runLater(() -> {
 				browser.setTextInputCache(projectsiteURLstring);
-				browser.inputURLType(projectsiteURLstring);
+				browser.checkInputURLType(projectsiteURLstring);
 				browser.showFormattedURL();
 			});
 			/*

@@ -240,7 +240,7 @@ public class BrowserJFX {
     
     public void fireURL(String input) {
 		setTextInputCache(input);
-		inputURLType(input);
+		checkInputURLType(input);
 		showFormattedURL();
 		fireButtonGo(input);
     }
@@ -461,8 +461,11 @@ public class BrowserJFX {
     public void goLoad(String input) {
 
 		if (input.contains(DOCS_HELP_DIR) && input.contains(".html")) {
-	    	if (mainScene == null && ourGuide == null) {
-				ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+			
+	    	if (mainScene == null) {    		
+	    		if (ourGuide == null)
+	    			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+	    		// Call setURL to parse the input URL
 				ourGuide.setURL(input);
 	    	}
 	    	else {
@@ -478,7 +481,6 @@ public class BrowserJFX {
 	/**
 	 * Gets the full URL string for internal html files.
 	 */
-	// 2017-04-28 Added displaying the hyperlink's path and html filename.
 	public String getFullURL(String fileloc) {
 		return getClass().getResource(fileloc).toExternalForm();
 	}
@@ -486,14 +488,13 @@ public class BrowserJFX {
 	/**
 	 * Set a display URL
 	 */
-	// 2016-06-07 Added displaying the hyperlink's path and html filename.
 	public void setURL(String fileloc) {
 		//goToURL(getClass().getResource(fileloc));
 		//browser.getStatusBarLabel().setText(fileloc);
 		String fullLink = getClass().getResource(fileloc).toExternalForm();
 		//Platform.runLater(()-> {
 			setTextInputCache(fullLink);
-			inputURLType(fullLink);//, BrowserJFX.REMOTE_HTML);
+			checkInputURLType(fullLink);//, BrowserJFX.REMOTE_HTML);
 			showFormattedURL();
 			fireButtonGo(fullLink);
 		//});
@@ -513,14 +514,13 @@ public class BrowserJFX {
     }
 */
 
-    @SuppressWarnings("restriction")
 	public void fireButtonGo(String input) {
 		if (input != null && !input.isEmpty()) {
 			// if the address bar is not empty
 			Platform.runLater(() -> {
             	//System.out.println("fireButtonGo");
             	//System.out.println("i : " + history.getCurrentIndex());
-				inputURLType(input);
+				checkInputURLType(input);
             	//System.out.println("i : " + history.getCurrentIndex());
 		    	int i = history.getCurrentIndex();
 		    	ssm.select(i); // question : will it load the url the 2nd time ?
@@ -535,7 +535,9 @@ public class BrowserJFX {
 		}
     }
 
-    // 2016-04-22 Added ability to interpret internal commands
+    /**
+     * Sets up the Web Panel
+     */
     public WebPanel initWebPanel() {
 /*
         ActionListener al = new ActionListener() {
@@ -609,8 +611,11 @@ public class BrowserJFX {
         return panel;
     }
 
-
-    public void inputURLType(String input) {
+    /**
+     * Check the input URL before parsing it
+     * @param input
+     */
+    public void checkInputURLType(String input) {
 
     	if (input != null && !input.isEmpty()) {
     		textInputCache = input;
@@ -620,8 +625,10 @@ public class BrowserJFX {
     				|| input.equals(GLOBE_FILE)) {
     			parseInput(input, INTERNAL_COMMAND);
     		}
+    		
     		else if (input.contains(DOCS_HELP_DIR)) { //"file:/")) {
-    				parseInput(input, LOCAL_HTML);
+    			System.out.println("checkInputURLType : " + input);
+    			parseInput(input, LOCAL_HTML);
     		}
 
     		else if (input.contains("https://")
@@ -652,7 +659,12 @@ public class BrowserJFX {
     	//}
 
     }
-
+    
+    /**
+     * Parses the input URL 
+     * @param input
+     * @param URL_type the type of URL
+     */
     public void parseInput(String input, int URL_type) {
 
 		// Type 0 is internal command

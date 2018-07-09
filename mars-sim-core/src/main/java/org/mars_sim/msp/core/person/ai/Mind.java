@@ -195,18 +195,6 @@ implements Serializable {
      */
     public void takeAction(double time) {
 
-        if ((mission != null) && mission.isDone()) {
-            mission = null;
-        }
-
-        boolean hasActiveMission = hasActiveMission();//(mission != null);
-
-        // Check if mission creation at settlement (if any) is overridden.
-        boolean overrideMission = false;
-
-        if (person.isInSettlement()) {
-            overrideMission = person.getSettlement().getMissionCreationOverride();
-        }
 
         boolean hasActiveTask = taskManager.hasActiveTask();
         // Perform a task if the person has one, or determine a new task/mission.
@@ -214,10 +202,24 @@ implements Serializable {
             double remainingTime = taskManager.executeTask(time, person
                     .getPerformanceRating());
             if (remainingTime > 0D) {
+            	// Call takeAction recursively until time = 0
                 takeAction(remainingTime);
             }
         }
         else {
+            if ((mission != null) && mission.isDone()) {
+                mission = null;
+            }
+
+            boolean hasActiveMission = hasActiveMission();//(mission != null);
+
+            // Check if mission creation at settlement (if any) is overridden.
+            boolean overrideMission = false;
+
+            if (person.isInSettlement()) {
+                overrideMission = person.getSettlement().getMissionCreationOverride();
+            }
+
             if (hasActiveMission) {
                 mission.performMission(person);
             }
@@ -454,13 +456,13 @@ implements Serializable {
         }
 
         if (missions) {
-	           missionWeights = missionManager.getTotalMissionProbability(person);
-	           weightSum += missionWeights;
+           missionWeights = missionManager.getTotalMissionProbability(person);
+           weightSum += missionWeights;
 		}
 
         if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || (Double.isInfinite(weightSum))) {
         	try {
-				TimeUnit.MILLISECONDS.sleep(1000L);
+				TimeUnit.MILLISECONDS.sleep(100L);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

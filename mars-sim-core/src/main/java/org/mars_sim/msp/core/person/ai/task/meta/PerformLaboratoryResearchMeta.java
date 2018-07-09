@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -147,12 +146,12 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 
 	        // Modify if research is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	            result *= 1.25D;
+	            result *= 1.2D;
 	        }
 	        
 	        // Modify if lab experimentation is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.LAB_EXPERIMENTATION) {
-	            result *= 1.25D;
+	            result *= 1.2D;
 	        }
 
             // 2015-06-07 Added Preference modifier

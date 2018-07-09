@@ -247,6 +247,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected final boolean reserveVehicle(MissionMember member) {
 
 		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<Vehicle>();
+		if (member.getSettlement() == null)
+			return false;
 		Collection<Vehicle> vList = getAvailableVehicles(member.getSettlement());
 		// Create list of best unreserved vehicles for the mission.
 

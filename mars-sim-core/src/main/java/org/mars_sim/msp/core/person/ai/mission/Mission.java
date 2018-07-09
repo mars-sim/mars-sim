@@ -77,7 +77,7 @@ public abstract class Mission implements Serializable {
 	public static final String MISSION = " mission.";
 	public static final String[] expression = new String[] {
 			"Where is everybody when I need someone for ",
-			"No way everybody is busy and unavailable for ",
+			"So no one is available for ",
 			"How come no one is available for "
 	};
 	
@@ -1141,16 +1141,17 @@ public abstract class Mission implements Serializable {
 			MissionMember member = (MissionMember) members.toArray()[0];
 			result = member.getCoordinates();
 		} else {
+			StringBuilder s = new StringBuilder();
 			
-			int rand = RandomUtil.getRandomInt(2);
-			String log = expression[rand];
-			if (phase != null)
-				log = log + phase + " in a " + this.toString() + MISSION;
-			else
-				log = log + "a " + this.toString() + MISSION;
-			// throw new IllegalStateException(phase + " : No people or robots in the
-			// mission.");
-			LogConsolidated.log(logger, Level.INFO, 2000, sourceName, log, null);
+			if (phase != null) {
+				s.append("Anyone can do ").append(phase).append(" for a ").append(this.toString()).append(MISSION).append("?");
+			}
+			else {
+				int rand = RandomUtil.getRandomInt(2);
+				s.append(expression[rand]).append(" a ").append(this.toString()).append(MISSION).append("?");
+			}
+
+			LogConsolidated.log(logger, Level.INFO, 2000, sourceName, s.toString(), null);
 		}
 
 		return result;

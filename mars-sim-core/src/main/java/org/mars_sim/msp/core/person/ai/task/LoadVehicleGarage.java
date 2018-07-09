@@ -1176,7 +1176,7 @@ implements Serializable {
         while (iR.hasNext() && sufficientSupplies) {
         	Integer resource = iR.next();
         	if (resource < FIRST_ITEM_RESOURCE) {
-        		double amount = (Double) (requiredResources.get(resource));
+        		double amount = (double) requiredResources.get(resource);
         		double storedAmount = vInv.getARStored(resource, false);
         		if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
         		    sufficientSupplies = false;
