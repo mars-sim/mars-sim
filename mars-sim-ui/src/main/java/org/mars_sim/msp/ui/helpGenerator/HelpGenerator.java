@@ -90,22 +90,22 @@ public class HelpGenerator {
 	private static final String SUFFIX = ".html";
 
 	private static final String VEHICLES = "vehicles";
-	private static final String VEHICLE = "vehicle_";
+	private static final String VEHICLE = "../vehicles/vehicle_";
 
 	private static final String RESOURCES = "resources";
-	private static final String RESOURCE = "resource_";
+	private static final String RESOURCE = "../resources/resource_";
 
 	private static final String PARTS = "parts";
-	private static final String PART = "part_";
+	private static final String PART = "../parts/part_";
 
 	private static final String PROCESSES = "processes";
-	private static final String PROCESS = "process_";
+	private static final String PROCESS = "../processes/process_";
 
 	private static final String FOOD_PRODUCTIONS = "food_productions";
-	private static final String FOOD_PRODUCTION = "food_production_";
+	private static final String FOOD_PRODUCTION = "../food/food_production_";
 
 	private static final String EQUIPMENTS = "equipment";
-	private static final String EQUIPMENT = "equipment_";
+	private static final String EQUIPMENT = "../equipment/equipment_";
 
 	/** used to count how many files are generated. */
 	private static int filesGenerated = 0;
