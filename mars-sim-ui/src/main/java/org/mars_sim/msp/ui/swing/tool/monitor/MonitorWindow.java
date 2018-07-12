@@ -17,7 +17,6 @@ import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
@@ -483,15 +482,15 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		}
 	}
 
+	@Override
 	public void tableChanged(TableModelEvent e) {
 		if (e.getType() != TableModelEvent.UPDATE) {
-			MonitorTab selected = getSelected();
-			if (selected == eventsTab) {
-				// String status = selected.getCountString();
-				rowCount.setText(eventsTab.getCountString());
-			}
+			refreshTableStyle();
+//			MonitorTab selected = getSelected();
+//			if (selected == eventsTab) {
+//				rowCount.setText(eventsTab.getCountString());
+//			}
 		}
-		// System.out.println("tableChanged()");
 	}
 
 	private void addTab(MonitorTab newTab) {
@@ -548,17 +547,17 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	/*
-	 * Refreshes the table column/row header
+	 * Refreshes the table theme style and row count
 	 */
-	public void refreshTable() {
+	public void refreshTableStyle() {
 		if (table != null) {
 			TableStyle.setTableStyle(table);
 			TableStyle.setTableStyle(rowTable);
 			MonitorTab selected = getSelected();
 			if (selected == eventsTab) {
-				// String status = selected.getCountString();
 				rowCount.setText(eventsTab.getCountString());
 			}
+			
 		}
 	}
 

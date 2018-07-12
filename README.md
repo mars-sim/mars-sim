@@ -24,7 +24,7 @@ For instance, each settler has a well-defined job, a role, a bunch of technical 
 ## Operation Modeling
 mars-sim adopts a rich set of scientific vocabulary from research journal and paper when it comes to defining operation paradigms and programming models  based on the present day technologies that are applicable for the near-term human exploration and settlement on Mars.
 
-For instance, a low pressure atmosphere of 34kPa or 5 psi is chosen for humans to live in each settlement on Mars, as opposed to the Earth's 
+For instance, a low pressure atmosphere of 34 kPa or 5 psi is chosen for humans to live in each settlement on Mars, as opposed to the Earth's 
 sea level atmosphere of 101 kPa (14.7 psi). The oxygen (as well as other traces of gas and water moisture) in the air is continuously monitored 
 and replenished periodically for each building. These gases are generated via various systems such as Sabatier Reverse Water Gas (SRWG) and Oxygen Generation System as well as in greenhouses.
 

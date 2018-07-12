@@ -90,7 +90,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static String DETECTOR_GRID = "] The detector grid forecast a ";
 
 	/** Normal air pressure [in kPa] */
-	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_IN_KPA;// 101.325D;
+	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA;
 
 	/** Normal temperature (celsius) */
 	// private static final double NORMAL_TEMP = 22.5D;

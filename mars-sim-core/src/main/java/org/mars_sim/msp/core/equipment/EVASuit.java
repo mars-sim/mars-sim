@@ -58,7 +58,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	/** Water capacity (kg.). */
 	private static final double WATER_CAPACITY = 4D;
 	/** Normal air pressure (Pa) inside EVA suit is around 20 kPa. */
-	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_IN_KPA; //101325D;
+	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA; //101325D;
 	// Ref : https://en.wikipedia.org/wiki/Space_suit
 	// Generally, to supply enough oxygen for respiration, a space suit using pure oxygen must have a pressure of about 
 	// 32.4 kPa (240 Torr; 4.7 psi), equal to the 20.7 kPa (160 Torr; 3.0 psi) partial pressure of oxygen in the Earth's

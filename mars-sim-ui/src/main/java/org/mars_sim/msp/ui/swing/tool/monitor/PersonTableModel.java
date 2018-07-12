@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-//import javax.swing.SwingUtilities;
+import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -338,10 +337,8 @@ public class PersonTableModel extends UnitTableModel {
 		// else {
 		// WARNING : the use of SwingUtilities below seems to create StackOverflow from
 		// time to time in eclipse
-		// SwingUtilities.invokeLater(
-		new PersonTableUpdater(event, this);
-		// );
-		// }
+		SwingUtilities.invokeLater(new PersonTableUpdater(event, this));
+//		}
 
 
 	}
@@ -668,7 +665,8 @@ public class PersonTableModel extends UnitTableModel {
 			m.put(UnitEventType.SHIFT_EVENT, SHIFT);
 			m.put(UnitEventType.TASK_EVENT, TASK);
 			m.put(UnitEventType.TASK_NAME_EVENT, TASK);
-			// m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
+			m.put(UnitEventType.TASK_DESCRIPTION_EVENT, TASK);
+			m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
 			m.put(UnitEventType.TASK_SUBTASK_EVENT, TASK);
 			m.put(UnitEventType.MISSION_EVENT, MISSION);
 			m.put(UnitEventType.ILLNESS_EVENT, HEALTH);

@@ -142,9 +142,9 @@ public abstract class ToolWindow extends WebInternalFrame {
 		if (mainScene != null && !masterClock.isPaused()) {
 
 			if (this.isVisible() || this.isShowing()) {
-				// Note: need to refresh the table column/row header
+				// Note: need to update the table color style after the theme is changed
 				if (this.getToolName().equals(MonitorWindow.NAME))
-					monitorWindow.refreshTable();
+					monitorWindow.refreshTableStyle();
 					// pack(); // create time lag, and draw artifact
 			}
 

@@ -51,7 +51,7 @@ public abstract class UnitWindow extends WebInternalFrame { //
 	// private static final int BLUR_SIZE = 7;
 
 	public static final int WIDTH = 480;// 512;
-	public static final int HEIGHT = 605;
+	public static final int HEIGHT = 625;//605;
 
 	// private BufferedImage image;
 	public static final String USER = Msg.getString("icon.user");

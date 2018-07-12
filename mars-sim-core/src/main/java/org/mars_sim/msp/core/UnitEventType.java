@@ -48,6 +48,9 @@ public enum UnitEventType {
 	// For MalfunctionManager
 	MALFUNCTION_EVENT				("malfunction"),
 
+	// For TaskManager
+	TASK_EVENT						("task"),
+
 	// For Task
 	TASK_NAME_EVENT					("task name"),
 	TASK_DESCRIPTION_EVENT			("task description"),
@@ -92,9 +95,6 @@ public enum UnitEventType {
 	OPERATOR_EVENT					("vehicle operator"),
 	EMERGENCY_BEACON_EVENT			("vehicle emergency beacon event"),
 	RESERVED_EVENT					("vehicle reserved event"),
-
-	// For TaskManager
-	TASK_EVENT						("task"),
 
 	// For power grid
 	POWER_MODE_EVENT				("power mode"),

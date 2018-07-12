@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -91,15 +92,13 @@ public class PhysicalCondition implements Serializable {
 	private static final double ENERGY_PERFORMANCE_MODIFIER = .0001D;
 	/** The average maximum daily energy intake */
 	private static final double MAX_DAILY_ENERGY_INTAKE = 10100D;
-
-	// Each meal has 0.1550 kg and has 2525 kJ. Thus each 1 kg has 16290.323 kJ
+	/** The average kJ of a 1kg food. Assume each meal has 0.1550 kg and has 2525 kJ.  */	
 	public static final double FOOD_COMPOSITION_ENERGY_RATIO = 16290.323;
 	// public static int MAX_KJ = 16290; // 1kg of food has ~16290 kJ (see notes on
 	// people.xml under <food-consumption-rate value="0.62" />)
 	public static final double ENERGY_FACTOR = 0.8D;
-	/** The maximum air pressure a person can live without harm */
-	public static final double MAXIMUM_AIR_PRESSURE = 680D; // in kPa // Assume 10,000 psi or 680 kPa time dependent and
-															// somewhat arbitrary
+	/** The maximum air pressure a person can live without harm in kPa. (somewhat arbitrary) */
+	public static final double MAXIMUM_AIR_PRESSURE = 680D; // Assume 10,000 psi or 680 kPa time dependent
 	/** Period of time (millisols) over which random ailments may happen. */
 	private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
 
@@ -214,8 +213,7 @@ public class PhysicalCondition implements Serializable {
 	/** List of medications affecting the person. */
 	private List<Medication> medicationList;
 	/** Injury/Illness effecting person. */
-	private HashMap<Complaint, HealthProblem> problems;
-
+	private Map<Complaint, HealthProblem> problems;
 	/** List of all available medical complaints. */
 	private static List<Complaint> allMedicalComplaints;
 
@@ -225,7 +223,6 @@ public class PhysicalCondition implements Serializable {
 	 * @param newPerson
 	 *            The person requiring a physical presence.
 	 */
-	// 2015-04-29 Added RadiationExposure();
 	public PhysicalCondition(Person newPerson) {
 		person = newPerson;
 		name = newPerson.getName();
@@ -514,7 +511,7 @@ public class PhysicalCondition implements Serializable {
 					if (stress > MENTAL_BREAKDOWN)
 						checkForStressBreakdown(time);
 
-				// 2016-03-01 check if person is at very high fatigue may collapse.
+				// Check if person is at very high fatigue may collapse.
 				if (!isCollapsed)
 					if (fatigue > COLLAPSE_IMMINENT)
 						checkForHighFatigueCollapse(time);
@@ -1095,23 +1092,6 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Person consumes given amount of food
-	 * 
-	 * @param amount
-	 *            amount of food to consume (in kg).
-	 * @param container
-	 *            unit to get food from
-	 * @throws Exception
-	 *             if error consuming food.
-	 * 
-	 *             public void consumeFood(double amount, Unit container) { if
-	 *             (container == null) throw new IllegalArgumentException("container
-	 *             is null"); consumePackedFood(amount, container);//,
-	 *             LifeSupportType.FOOD);
-	 * 
-	 *             }
-	 */
-	/**
 	 * Robot consumes given amount of power
 	 * 
 	 * @param amount
@@ -1136,20 +1116,17 @@ public class PhysicalCondition implements Serializable {
 	 * @throws Exception
 	 *             if error consuming food.
 	 */
-	// 2014-11-07 Added consumePackedFood()
-	@SuppressWarnings("unused")
-	public void consumePackedFood(double amount, Unit container) {// , String foodType) {
+	public void consumePackedFood(double amount, Unit container) {
 		Inventory inv = container.getInventory();
 
-		if (container == null)
-			throw new IllegalArgumentException("container is null");
+//		if (container == null)
+//			throw new IllegalArgumentException("container is null");
 
 		// AmountResource foodAR = AmountResource.findAmountResource(foodType);
 		double foodEaten = amount;
-		double foodAvailable = inv.getAmountResourceStored(ResourceUtil.foodAR, false);
+		double foodAvailable = inv.getAmountResourceStored(ResourceUtil.foodID, false);
 
-		// 2015-01-09 Added addDemandTotalRequest()
-		inv.addAmountDemandTotalRequest(ResourceUtil.foodAR);
+		inv.addAmountDemandTotalRequest(ResourceUtil.foodID);
 
 		if (foodAvailable < 0.01D) {
 			// throw new IllegalStateException("Warning: less than 0.01 kg dried food
@@ -1168,10 +1145,9 @@ public class PhysicalCondition implements Serializable {
 
 			foodEaten = Math.round(foodEaten * 1_000_000.0) / 1_000_000.0;
 			// subtract food from container
-			inv.retrieveAmountResource(ResourceUtil.foodAR, foodEaten);
+			inv.retrieveAmountResource(ResourceUtil.foodID, foodEaten);
 
-			// 2015-01-09 addDemandRealUsage()
-			inv.addAmountDemand(ResourceUtil.foodAR, foodEaten);
+			inv.addAmountDemand(ResourceUtil.foodID, foodEaten);
 		}
 	}
 
@@ -1551,9 +1527,7 @@ public class PhysicalCondition implements Serializable {
 	 *             if error in configuration.
 	 */
 	public static double getOxygenConsumptionRate() {
-		// if (personConfig == null)
-		// personConfig = SimulationConfig.instance().getPersonConfiguration();
-		return o2_consumption;// personConfig.getNominalO2ConsumptionRate();
+		return o2_consumption;
 	}
 
 	/**
@@ -1564,9 +1538,7 @@ public class PhysicalCondition implements Serializable {
 	 *             if error in configuration.
 	 */
 	public static double getWaterConsumptionRate() {
-		// if (personConfig == null)
-		// personConfig = SimulationConfig.instance().getPersonConfiguration();;
-		return h2o_consumption; // personConfig.getWaterConsumptionRate();
+		return h2o_consumption;
 	}
 
 	public double getWaterConsumedPerServing() {
@@ -1581,9 +1553,7 @@ public class PhysicalCondition implements Serializable {
 	 *             if error in configuration.
 	 */
 	public static double getFoodConsumptionRate() {
-		// if (personConfig == null)
-		// personConfig = SimulationConfig.instance().getPersonConfiguration();
-		return food_consumption;// personConfig.getFoodConsumptionRate();
+		return food_consumption;
 	}
 
 	/**
@@ -1594,9 +1564,7 @@ public class PhysicalCondition implements Serializable {
 	 *             if error in configuration.
 	 */
 	public static double getDessertConsumptionRate() {
-		// if (personConfig == null)
-		// personConfig = SimulationConfig.instance().getPersonConfiguration();
-		return dessert_consumption;// personConfig.getDessertConsumptionRate();
+		return dessert_consumption;
 	}
 
 	/**
@@ -1618,16 +1586,14 @@ public class PhysicalCondition implements Serializable {
 	 * @return medical manager.
 	 */
 	private MedicalManager getMedicalManager() {
-		return Simulation.instance().getMedicalManager();
+		if (medicalManager == null)
+			medicalManager = Simulation.instance().getMedicalManager();
+		return medicalManager;
 	}
 
 	public double getBodyMassDeviation() {
 		return bodyMassDeviation;
 	}
-
-	// public double getMinAirPressure() {
-	// return minimum_air_pressure;
-	// }
 
 	public boolean isStressedOut() {
 		return isStressedOut;

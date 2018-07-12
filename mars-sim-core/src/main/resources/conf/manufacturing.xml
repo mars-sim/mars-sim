@@ -497,7 +497,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<outputs>
 			<resource name="aluminum" amount="20.0" />
 			<resource name="silicon dioxide" amount="250.0" />			
-			<resource name="sand" amount="150.0" />	
+			<resource name="sand" amount="15.0" />	
 		</outputs>
 	</process>
 

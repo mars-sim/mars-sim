@@ -115,8 +115,8 @@ extends TabPanel {
 		
 		jfxpanel = new JFXPanel();
 
-		int width = UnitWindow.WIDTH-30;//400;
-		int height = UnitWindow.HEIGHT;//700;
+		int width = UnitWindow.WIDTH-40;//400;
+		int height = UnitWindow.HEIGHT-150;//700;
 
 		Platform.runLater(new Runnable() {
 			@Override
@@ -275,10 +275,10 @@ extends TabPanel {
 				
 				
 				// Build gauges for Big Five Personality	
-				VBox gaugeBox = new VBox();
-				gaugeBox.setPadding(new Insets(15,5,0,5));
+				VBox bottomBox = new VBox();
+				bottomBox.setPadding(new Insets(5,5,0,5));
 				//gaugeBox.setSpacing(value);
-				gaugeBox.setAlignment(Pos.TOP_LEFT);			
+				bottomBox.setAlignment(Pos.TOP_LEFT);			
 			
 				HBox hBox1 = new HBox();
 				hBox1.setAlignment(Pos.TOP_LEFT);
@@ -309,30 +309,46 @@ extends TabPanel {
 				tf1.setTooltip(i2);
 				setQuickToolTip(tf1, i2);
 				
-				GridPane grid = new GridPane();			
-				List<VBox> vboxes = new ArrayList<VBox>();
+//				GridPane grid = new GridPane();			
+				List<VBox> containerBox = new ArrayList<VBox>();
 				List<QualityGauge> gauges = new ArrayList<QualityGauge>();		
-				for (int i=0; i<3; i++) {
-					for (int j=0; j<2; j++) {
-						QualityGauge g = new QualityGauge();
-						VBox box = new VBox(g);
-						box.setAlignment(Pos.CENTER);
-						g.setMinSize(140, 80);
-						vboxes.add(box);
-						gauges.add(g);
-						grid.add(box, j, i);
-					}
+//				for (int i=0; i<3; i++) {
+//					for (int j=0; j<2; j++) {
+//						QualityGauge g = new QualityGauge();
+//						VBox box = new VBox(g);
+//						box.setAlignment(Pos.CENTER);
+//						g.setMinSize(140, 80);
+//						vboxes.add(box);
+//						gauges.add(g);
+//						grid.add(box, j, i);
+//					}
+//				}
+	
+				VBox gaugeBox = new VBox();
+				gaugeBox.setPadding(new Insets(5,25,5,25));
+				gaugeBox.setAlignment(Pos.CENTER);			
+			
+				for (int i=0; i<5; i++) {
+					QualityGauge g = new QualityGauge();
+					VBox gBox = new VBox(g);
+					gBox.setAlignment(Pos.CENTER);
+					g.setMinSize(140, 80);
+					containerBox.add(gBox);
+					gauges.add(g);
+					gaugeBox.getChildren().add(gBox);
 				}
 				
-				vboxes.get(0).getChildren().add(createLabel("Openness"));
-				vboxes.get(1).getChildren().add(createLabel("Conscientiousness"));
-				vboxes.get(2).getChildren().add(createLabel("Extraversion"));
-				vboxes.get(3).getChildren().add(createLabel("Aggreeableness"));
-				vboxes.get(4).getChildren().add(createLabel("Neuroticism"));
+				// Add label for each gauge
+				containerBox.get(0).getChildren().add(createLabel("Openness"));
+				containerBox.get(1).getChildren().add(createLabel("Conscietiousness"));
+				containerBox.get(2).getChildren().add(createLabel("Extraversion"));
+				containerBox.get(3).getChildren().add(createLabel("Aggreeableness"));
+				containerBox.get(4).getChildren().add(createLabel("Neuroticism"));
+//				vboxes.get(5).getChildren().add(createLabel(""));
 
-				grid.getChildren().remove(vboxes.get(5));
-				vboxes.remove(gauges.get(5));
-				gauges.remove(5);
+//				vboxes.remove(gauges.get(5));
+//				gauges.remove(5);
+//				grid.getChildren().remove(vboxes.get(5));
 				
 				Map<PersonalityTraitType, Integer> points = person.getMind().getTraitManager().getPersonalityTraitMap();
 
@@ -370,9 +386,9 @@ extends TabPanel {
 				chartBox.getChildren().addAll(hBox0, barBox);
 			
 				hBox1.getChildren().addAll(label1, tf1);
-				gaugeBox.getChildren().addAll(hBox1, grid);
+				bottomBox.getChildren().addAll(hBox1, gaugeBox);
 								
-				topBox.getChildren().addAll(title, chartBox, gaugeBox);
+				topBox.getChildren().addAll(title, chartBox, bottomBox);
 
 				stack.getChildren().addAll(topBox);
 			}
