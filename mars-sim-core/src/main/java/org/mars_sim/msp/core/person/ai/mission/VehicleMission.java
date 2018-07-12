@@ -85,6 +85,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/** Caches */
 	protected Map<Integer, Integer> equipmentNeededCache;
 
+	private static MissionManager manager = Simulation.instance().getMissionManager();
+
 	protected VehicleMission(String missionName, MissionMember startingMember, int minPeople) {
 		// Use TravelMission constructor.
 		super(missionName, startingMember, minPeople);
@@ -881,15 +883,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			hasMedicalEmergency = true;
 			// Creating medical emergency mission event.
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_MEDICAL_EMERGENCY, this,
-					person.getName() + " had " + person.getPhysicalCondition().getHealthSituation(), 
-					this.getName(), member.getName(), member.getVehicle().getName(),
-					member.getLocationTag().getLocale());
+					person.getName() + " had " + person.getPhysicalCondition().getHealthSituation(), this.getName(),
+					member.getName(), member.getVehicle().getName(), member.getLocationTag().getLocale());
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		} else {
 			// Creating 'Not enough resources' mission event.
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_NOT_ENOUGH_RESOURCES, this,
-					"Dwindling resource(s)", 
-					this.getName(), member.getName(), member.getVehicle().getName(),
+					"Dwindling resource(s)", this.getName(), member.getName(), member.getVehicle().getName(),
 					member.getLocationTag().getLocale());
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		}
@@ -944,10 +944,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 					// Creating emergency destination mission event.
 					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION, this,
-							"Dwindling Resource(s)", 
-							this.getName(),
-							member.getName(),
-							member.getVehicle().getName(), member.getLocationTag().getLocale());
+							"Dwindling Resource(s)", this.getName(), member.getName(), member.getVehicle().getName(),
+							member.getLocationTag().getLocale());
 					Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
 					// Note: use Mission.goToNearestSettlement() as reference
@@ -1003,9 +1001,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 					// Creating emergency destination mission event.
 					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION, this,
-							"Dwindling Resource(s)",
-							this.getName(), member.getName(),
-							member.getVehicle().getName(), member.getLocationTag().getLocale());
+							"Dwindling Resource(s)", this.getName(), member.getName(), member.getVehicle().getName(),
+							member.getLocationTag().getLocale());
 					Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
 					// Set the new destination as the travel mission's next and final navpoint.
@@ -1047,10 +1044,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		if (beaconOn) {
 			// Creating mission emergency beacon event.
-			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_BEACON_ON, this,
-					reason, 
-					this.getName(), 
-					member.getName(), member.getVehicle().getName(),
+			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_BEACON_ON, this, reason,
+					this.getName(), member.getName(), member.getVehicle().getName(),
 					member.getLocationTag().getLocale());
 
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
@@ -1240,12 +1235,34 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public static boolean hasEmbarkingMissions(Settlement settlement) {
 		boolean result = false;
-
-		MissionManager manager = Simulation.instance().getMissionManager();
+//		MissionManager manager = Simulation.instance().getMissionManager();
+		if (manager == null)
+			manager = Simulation.instance().getMissionManager();
 		Iterator<Mission> i = manager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			if (EMBARKING.equals(i.next().getPhase())) {
 				result = true;
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Checks to see how many currently embarking missions at the settlement.
+	 * 
+	 * @param settlement the settlement.
+	 * @return true if embarking missions.
+	 */
+	public static int numEmbarkingMissions(Settlement settlement) {
+		int result = 0;
+		if (manager == null)
+			manager = Simulation.instance().getMissionManager();
+		Iterator<Mission> i = manager.getMissionsForSettlement(settlement).iterator();
+		while (i.hasNext()) {
+			if (EMBARKING.equals(i.next().getPhase())) {
+				result++;
 			}
 		}
 

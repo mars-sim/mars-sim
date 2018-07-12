@@ -5,6 +5,9 @@
 <!--
 1. A Chemical Approach to C02 Util on Mars
 http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
+
+2. Regolith composition :
+http://canada.marssociety.org/winnipeg/soil.html
  -->
 
 <!-- List of all manufacturing processes. -->
@@ -15,7 +18,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 	<!-- work-time - The effort time (in millisols) required to perform the process.  Higher skilled workers will produce more effort time than lower skilled workers. -->
 	<!-- process-time - The minimum time (in millisols) required for the process regardless of effort time. -->
 	<!-- power-required - The total amount of power (kW hr) required for the process. -->
-	<process name="extract iron oxide and sand from regolith"
+	<process name="extract iron oxide from regolith"
 			tech="1" skill="0"
 			work-time="25"
 			process-time="50"
@@ -39,7 +42,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 		</outputs>
 	</process>
 
-	<process name="extract iron oxide and sand from regolith (large batch)"
+	<process name="extract iron oxide from regolith (large batch)"
 			tech="1" skill="2"
 			work-time="100"
 			process-time="200"
@@ -52,6 +55,36 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 			<resource name="sand" amount="400.0" />
 		</outputs>
 	</process>
+	
+<!--
+	<process name="extract ?  oxide from regolith"
+			tech="1" skill="2"
+			work-time="100"
+			process-time="200"
+			power-required="0.5">
+		<inputs>
+			<resource name="regolith" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="? oxide" amount="7.0" />
+			<resource name="sand" amount="40.0" />
+		</outputs>
+	</process>
+	
+	<process name="extract ?  oxide from regolith (large batch)"
+			tech="1" skill="2"
+			work-time="100"
+			process-time="200"
+			power-required="0.5">
+		<inputs>
+			<resource name="regolith" amount="500.0" />
+		</inputs>
+		<outputs>
+			<resource name="? oxide" amount="70.0" />
+			<resource name="sand" amount="400.0" />
+		</outputs>
+	</process>
+-->		
 
 	<!-- Purify Rock Salt to Food Grade Table Salt -->
 	<process name="purify rock salt into table/epsom salt and other compounds"
@@ -232,11 +265,11 @@ TODO 2: need to recruit chemist to monitor the process
 			power-required=".05">
 		<inputs>
 			<resource name="oxygen" amount=".2" />
-			<resource name="Sulfur" amount=".05" />
-			<resource name="Ammonia" amount=".05" />
+			<resource name="sulfur" amount=".05" />
+			<resource name="ammonia" amount=".05" />
 			<resource name="sodium hypochlorite" amount=".05" />
-			<resource name="Calcium Carbonate" amount=".1" />
-			<resource name="Magnesium" amount=".05" />
+			<resource name="calcium carbonate" amount=".1" />
+			<resource name="magnesium" amount=".05" />
 		</inputs>
 		<outputs>
 			<resource name="bleaching chemical" amount=".5" />
@@ -250,11 +283,11 @@ TODO 2: need to recruit chemist to monitor the process
 			power-required=".3">
 		<inputs>
 			<resource name="oxygen" amount="2" />
-			<resource name="Sulfur" amount=".5" />
-			<resource name="Ammonia" amount=".5" />
+			<resource name="sulfur" amount=".5" />
+			<resource name="ammonia" amount=".5" />
 			<resource name="sodium hypochlorite" amount=".5" />
-			<resource name="Calcium Carbonate" amount="1" />
-			<resource name="Magnesium" amount=".5" />
+			<resource name="calcium carbonate" amount="1" />
+			<resource name="magnesium" amount=".5" />
 		</inputs>
 		<outputs>
 			<resource name="bleaching chemical" amount="5" />
@@ -280,7 +313,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<resource name="sodium hypochlorite" amount="7.45" />
-			<resource name="Hydrogen" amount=".2" />
+			<resource name="hydrogen" amount=".2" />
 		</outputs>
 	</process>
 
@@ -296,7 +329,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<resource name="sodium hypochlorite" amount="74.5" />
-			<resource name="Hydrogen" amount="2" />
+			<resource name="hydrogen" amount="2" />
 		</outputs>
 	</process>
 
@@ -416,7 +449,9 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<resource name="aluminum oxide" amount="2.0" />
-			<resource name="silicon" amount="1.0" />			
+			<resource name="silicon" amount="1.0" />
+			<resource name="sulfur" amount="1.0" />				
+			<resource name="sand" amount="40.0" />		
 		</outputs>
 	</process>
 
@@ -430,10 +465,78 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<resource name="aluminum oxide" amount="20.0" />
-			<resource name="silicon" amount="2.0" />			
+			<resource name="silicon" amount="10.0" />
+			<resource name="sulfur" amount="10.0" />						
+			<resource name="sand" amount="400.0" />	
 		</outputs>
 	</process>
 
+	<process name="extract silicon dioxide from sand"
+	tech="1" skill="0"
+			work-time="50"
+			process-time="100"
+			power-required="0.2">
+		<inputs>
+			<resource name="sand" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="aluminum" amount="2.0" />
+			<resource name="silicon dioxide" amount="25.0" />
+			<resource name="sand" amount="15.0" />					
+		</outputs>
+	</process>
+	
+	<process name="extract silicon dioxide from sand (large batch)"
+	tech="1" skill="2"
+			work-time="250"
+			process-time="500"
+			power-required="1.0">
+		<inputs>
+			<resource name="sand" amount="500.0" />
+		</inputs>
+		<outputs>
+			<resource name="aluminum" amount="20.0" />
+			<resource name="silicon dioxide" amount="250.0" />			
+			<resource name="sand" amount="150.0" />	
+		</outputs>
+	</process>
+
+<!-- Typically, manufactured glass contains around 15% sodium oxide, 70% silica 
+     (silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate "soda" 
+     serves as a flux to lower the temperature at which the silica melts.  
+     https://en.wikipedia.org/wiki/Sodium_oxide -->
+	<process name="make glass from sand"
+	tech="1" skill="0"
+			work-time="50"
+			process-time="100"
+			power-required="0.2">
+		<inputs>
+			<resource name="sand" amount="50.0" />
+			<resource name="sodium carbonate" amount="5.0" />
+			
+		</inputs>
+		<outputs>
+			<resource name="glass" amount="30.0" />
+			<resource name="silicon dioxide" amount="10.0" />			
+		</outputs>
+	</process>
+
+	<process name="make quartz from silicon dioxide"
+	tech="1" skill="0"
+			work-time="50"
+			process-time="100"
+			power-required="0.2">
+		<inputs>
+			<resource name="silicon dioxide" amount="45.0" />
+			<resource name="calcium carbonate" amount="1.0" />
+			<resource name="sodium carbonate" amount="1.0" />
+			
+		</inputs>
+		<outputs>
+			<resource name="quartz" amount="40.0" />		
+		</outputs>
+	</process>	
+<!-- 
 	<process name="extract aluminum and oxide from sand"
 	tech="1" skill="0"
 			work-time="50"
@@ -463,7 +566,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="silicon" amount="10.0" />			
 		</outputs>
 	</process>
-
+ -->
 	
 	<process name="do carbon monoxide iron reduction"
 			tech="1" skill="1"
@@ -984,6 +1087,33 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="extract sodium oxide from regolith" tech="2" skill="1" work-time="50" process-time="50"
+			power-required=".1">
+		<inputs>
+			<resource name="regolith" amount="100.0" />
+		</inputs>
+		<outputs>
+			<resource name="sodium oxide" amount="5.0" />				
+			<resource name="regolith" amount="90.0" />					
+		</outputs>
+	</process>
+	
+<!-- Soda is sodium carbonate. That is a salt. Sodium exists in Martian regolith as an 
+oxide or super oxide and can be converted into soda. Just dissolve the sodium oxide
+ in water, then bubble carbon dioxide through the water. Oxygen will be released and soda created.
+  Boil down the result to extract the water and you have soda. -->
+	<process name="make soda from sodium oxide" tech="2" skill="1" work-time="50" process-time="50"
+			power-required=".1">
+		<inputs>
+			<resource name="sodium oxide" amount="10.0" />
+			<resource name="water" amount="1.0" />			
+			<resource name="carbon dioxide" amount="1.0" />	
+		</inputs>
+		<outputs>
+			<resource name="sodium carbonate" amount="5.0" />							
+		</outputs>
+	</process>
+		
 	<!-- Gypsum is CaSO4 * 2H2O 
 	Besides being the mineral evidence that water may have flowed on Mars, 
 	gypsum deposit may indicate a less-acidic water supportive of microbial life.
@@ -2129,6 +2259,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<outputs>
 			<resource name="magnesium" amount="14.4" />
 			<resource name="carbon dioxide" amount="52.2" />
+			<resource name="silicon dioxide" amount="5" />			
 		</outputs>
 	</process>
 
@@ -2518,6 +2649,34 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<!-- Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates. 
+	     https://phys.org/news/2016-01-martian-concrete-materials-red-planet.html
+	     http://sffsymposium.engr.utexas.edu/sites/default/files/2015/2015-141-Khoshnevis.pdf -->
+	<process name="mix sulfur concrete" tech="1" skill="1" work-time="50" process-time="0"
+			power-required="0.1">
+		<inputs>
+			<resource name="sulfur" amount="25.0" />
+			<resource name="sand" amount="5.0" />
+			<resource name="regolith" amount="20.0" />
+		</inputs>
+		<outputs>
+			<resource name="concrete" amount="50.0" />
+		</outputs>
+	</process>
+
+	<!-- Makes sulfur concrete using sulfur as the cement, with sand and regolith as aggregates.  -->
+	<process name="mix sulfur concrete (large batch)" tech="1" skill="5" work-time="250" process-time="0"
+			power-required="0.5">
+		<inputs>
+			<resource name="sulfur" amount="250.0" />
+			<resource name="sand" amount="50.0" />
+			<resource name="regolith" amount="200.0" />
+		</inputs>
+		<outputs>
+			<resource name="concrete" amount="500.0" />
+		</outputs>
+	</process>
+	
 	<!-- Makes dry concrete using cement with sand and regolith as aggregates. -->
 	<process name="mix concrete" tech="1" skill="1" work-time="50" process-time="0"
 			power-required="0.1">

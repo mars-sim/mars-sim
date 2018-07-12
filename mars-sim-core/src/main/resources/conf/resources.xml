@@ -76,7 +76,7 @@
 <!-- Derived food resources from crop harvest -->
 	<resource name="blueberry muffin" type="food" phase="solid" edible="true"></resource>
 	<resource name="brown rice" type="food" phase="solid" edible="true"></resource>
-	<resource name="cranberry juice" type="food" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
+	<resource name="cranberry juice" type="food" phase="solid" edible="true">Juice made from Cranberries</resource>
 	<resource name="cranberry sauce" type="food" phase="solid" edible="true">Sauce or relish made from Cranberries</resource>
 	<resource name="french fries" type="food" phase="solid" edible="true">French fries made from potatoes.</resource>
 	<resource name="garlic oil" type="food" phase="liquid" edible="true">Oil pressed from Garlic.</resource>
@@ -167,8 +167,7 @@
 	<resource name="fertilizer" phase="solid">Inorganic nutrients for crop growth </resource>
 	<resource name="lime" phase="solid">Lime is a calcium-containing inorganic 
 		material in which carbonates, oxides, and hydroxides predominate. In the 
-		strict sense of the term, lime is calcium oxide/calcium hydroxide.
-	</resource> 
+		strict sense of the term, lime is CaO or Ca(OH)2.</resource> 
 	<resource name="polycarbonate resin" phase="liquid" />
 	<resource name="polyester resin" phase="liquid" />
 	<resource name="polyethylene" phase="solid">Polyethylene pellets or flakes.
@@ -179,7 +178,9 @@
 	<resource name="sodium hypochlorite" phase="liquid">Sodium Hypochlorite is 
 		one of the bleaching chemical for sanitization of Soybean as well as pulp 
 		bleaching during paper making </resource>
-		
+	<resource name="sodium carbonate" phase="solid">Na2CO3, also called washing soda,
+	soda ash and soda crystals, is the water-soluble sodium salt of carbonic acid
+	</resource>	
 
 
 
@@ -205,7 +206,12 @@
 		salt, is the mineral form of sodium chloride (NaCl).</resource>
 	<resource name="sand" phase="solid">Martian soil with iron oxide removed. 
 		Used for making glass.</resource>
-
+	<resource name="silicon dioxide" phase="solid">also known as silica (from
+		the Latin silex), is an oxide of silicon with the chemical formula 
+		SiO2, most commonly found in nature as quartz and in various living 
+		organisms.In many parts of the world, silica is the major constituent
+		 of sand. </resource>
+	<resource name="sodium oxide" phase="solid">extracted from regolith.</resource>
 
 <!-- Paper related products. -->
 	<resource name="bleaching chemical" phase="liquid">Bleaching chemical 
@@ -234,19 +240,70 @@
     May add Plagioclase, Feldspar, High-Ca Pyroxene, Low-Ca Pyroxene, Quartz, 
     Amphibole, Silicates, etc. -->
     
-	<resource name="Chalcopyrite" phase="solid">A mineral.</resource>
-	<resource name="Goethite" phase="solid">A mineral.</resource>
-	<resource name="Hematite" phase="solid">A mineral.</resource>
-	<resource name="Kamacite" phase="solid">A mineral.</resource>
-	<resource name="Magnesite" phase="solid">A mineral.</resource>
-	<resource name="Magnetite" phase="solid">A mineral.</resource>
-	<resource name="Malachite" phase="solid">A mineral.</resource>
-	<resource name="Olivine" phase="solid">A mineral.</resource>
-	<resource name="Taenite" phase="solid">A mineral.</resource>
-	<resource name="Sylvite" phase="solid">Potassium Chloride. A mineral.</resource>
+	<resource name="Chalcopyrite" phase="solid">A copper iron sulfide (CuFeS2) mineral that 
+	 crystallizes in the tetragonal system.</resource>
+	<resource name="Goethite" phase="solid">An iron bearing oxyhydroxide mineral containing 
+	 ferric iron. Found in soil and other low-temperature environments, Goethite has been 
+	 well known	since ancient times for its use as a pigment (brown ochre). </resource>
+	<resource name="Hematite" phase="solid">The mineral form of iron(III) oxide (Fe2O3).
+	 Seen in abundance at Terra Meridiani near the equator at 0° longitude,
+	 and the Aram Chaos site near the Valles Marineris, and Aureum Chaos. 
+	 https://en.wikipedia.org/wiki/Hematite#Mars</resource>
+	<resource name="Kamacite" phase="solid">An alloy of iron and nickel, may originate from
+	 meteorites. The proportion iron:nickel is between 90:10 and 95:5; small quantities of 
+	 other elements, such as cobalt or carbon may also be present. The mineral has a metallic
+	 luster, is gray and has no clear cleavage although its crystal structure is 
+	 isometric-hexoctahedral.</resource>
+	<resource name="Magnesite" phase="solid">A magnesium carbonate mineral MgCO3. Mixed 
+	 crystals of iron(II) carbonate and magnesite (mixed crystals known as ankerite) possess
+	 a layered structure. These magnesites often are cryptocrystalline and contain silica in 
+	 the form of opal or chert. Manganese, cobalt and nickel may also occur in small amounts.
+	 </resource>
+	<resource name="Magnetite" phase="solid">A rock mineral and one of the main iron ores, 
+	 with the chemical formula Fe3O4. It is one of the oxides of iron, and is ferrimagnetic; 
+	 it is attracted to a magnet and can be magnetized to become a permanent magnet itself.
+	 </resource>
+	<resource name="Malachite" phase="solid">A copper carbonate hydroxide mineral Cu2CO3(OH)2.
+	 This opaque, green banded mineral crystallizes in the monoclinic crystal system, and most
+	 often forms botryoidal, fibrous, or stalagmitic masses, in fractures and spaces, deep 
+	 underground, where the water table and hydrothermal fluids provide the means for chemical 
+	 precipitation.</resource>
+	<resource name="Olivine" phase="solid">A magnesium iron silicate (Mg2+, Fe2+)2SiO4. A type
+	 of nesosilicate or orthosilicate. Olivine incorporates only minor amounts of elements other
+	 than oxygen, silicon, magnesium and iron. Manganese and nickel commonly are the additional 
+	 elements present in highest concentrations. Olivine gives its name to the group of minerals
+	 with a related structure (the olivine group)—which includes tephroite (Mn2SiO4), 
+	 monticellite (CaMgSiO4) and kirschsteinite (CaFeSiO4).</resource>
+	<resource name="Taenite" phase="solid">Taenite is a major constituent of iron meteorites. 
+	 An alloy of iron and nickel, with nickel proportions of 20% up to 65%. The name is derived 
+	 from the Greek meaning band or ribbon. In octahedrites it is found in bands interleaving 
+	 with kamacite forming Widmanstätten patterns, whereas in ataxites it is the dominant 
+	 constituent. In octahedrites a fine intermixture with kamacite can occur, which is 
+	 called plessite. Taenite is one of four known Fe-Ni meteorite minerals: The others are 
+	 kamacite, tetrataenite, and antitaenite.</resource>
+	<resource name="Sylvite" phase="solid">Or sylvine, is potassium chloride (KCl) in natural 
+	 mineral form. It forms crystals in the isometric system very similar to normal rock salt, 
+	 halite (NaCl). The two are, in fact, isomorphous. Sylvite is colorless to white with shades
+	 of yellow and red due to inclusions. </resource>
 
 
-
+	<!-- Types of Rocks. See https://geology.com/stories/13/rocks-on-mars/ -->
+	<resource name="columnar basalt" phase="solid">Basalt is a dark-colored, fine-grained, igneous rock 
+	 composed mainly of plagioclase and pyroxene minerals. It most commonly forms as an 
+	 extrusive rock, such as a lava flow.</resource>
+	<resource name="granite" phase="solid">The granitoid rocks on Mars may have formed when thick
+	 sequences of basaltic rocks were metamorphosed by moderate heat and pressure and then 
+	 partially melted. Observed the craters' central peaks, they must have been dredged up from 
+	 depths by the force of the crater-making impact. http://themis.asu.edu/node/5395.</resource>
+	<resource name="mudstone" phase="solid">.</resource>
+	<resource name="sandstone" phase="solid">.</resource>		
+	<resource name="shale" phase="solid">.</resource>	
+	<resource name="conglomerate" phase="solid">.</resource>
+	<resource name="cross bedding" phase="solid">.</resource>
+	<resource name="meteorite" phase="solid">.</resource>	
+	<resource name="scoria" phase="solid">.</resource>		
+	<resource name="sand dunes" phase="solid">.</resource>	
+		
 <!-- Mineral Elements 
  
     On Earth, vast volcanic landscapes are called "Large Igneous Provinces" 
@@ -304,5 +361,10 @@
     http://en.wiki2.org/wiki/Sewage_treatment : Nitrification itself is a two-step aerobic process, each step facilitated by a different type of bacteria. The oxidation of ammonia (NH3) to nitrite (NO2−) is most often facilitated by Nitrosomonas spp. ("nitroso" referring to the formation of a nitroso functional group). Nitrite oxidation to nitrate (NO3−), though traditionally believed to be facilitated by Nitrobacter spp. (nitro referring the formation of a nitro functional group), is now known to be facilitated in the environment almost exclusively by Nitrospira spp.
 	http://www.the-compost-gardener.com/nitrogen-fixing-bacteria.html
 	-->
+
+<!-- Misc. -->
+	<resource name="glass" phase="solid" >For making vessels</resource>
+	<resource name="quartz" phase="solid" >For making electronic components</resource>
+
 
 </resource-list>

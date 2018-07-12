@@ -230,12 +230,10 @@ implements Serializable {
             if (RandomUtil.getRandomDouble(1.0D) <= probability) {
                 Inventory inv = person.getInventory();
                 double rockSampleMass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
-                //AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
                 double rockSampleCapacity = inv.getAmountResourceRemainingCapacity(
                 		ResourceUtil.rockSamplesAR, true, false);
                 if (rockSampleMass < rockSampleCapacity)
                     inv.storeAmountResource(ResourceUtil.rockSamplesAR, rockSampleMass, true);
-   			 		// 2015-01-15 Add addSupplyAmount()
                 	inv.addAmountSupplyAmount(ResourceUtil.rockSamplesAR, rockSampleMass);
             }
         }

@@ -422,16 +422,14 @@ implements Serializable {
 
         try {
             // Check if EVA suit is at 15% of its oxygen capacity.
-            //AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
-            double oxygenCap = suitInv.getAmountResourceCapacity(ResourceUtil.oxygenAR, false);
-            double oxygen = suitInv.getAmountResourceStored(ResourceUtil.oxygenAR, false);
+            double oxygenCap = suitInv.getAmountResourceCapacity(ResourceUtil.oxygenID, false);
+            double oxygen = suitInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
             if (oxygen <= (oxygenCap * .15D)) {
                 logger.fine(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");
                 return false;
             }
 
             // Check if EVA suit is at 15% of its water capacity.
-            //AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
             double waterCap = suitInv.getARCapacity(ResourceUtil.waterID, false);
             double water = suitInv.getARStored(ResourceUtil.waterID, false);
             if (water <= (waterCap * .15D)) {

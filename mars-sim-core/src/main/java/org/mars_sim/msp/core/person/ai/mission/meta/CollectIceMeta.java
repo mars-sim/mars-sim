@@ -28,6 +28,8 @@ public class CollectIceMeta implements MetaMission {
     private static final String NAME = Msg.getString(
             "Mission.description.collectIce"); //$NON-NLS-1$
 
+    private static final int VALUE = 200;
+    
     @Override
     public String getName() {
         return NAME;
@@ -77,10 +79,15 @@ public class CollectIceMeta implements MetaMission {
                 return 0;
             }
 
+//            // Check for embarking missions.
+//            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
+//                return 0;
+//            }
+	        
             // Check for embarking missions.
-            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
-                return 0;
-            }
+            else if (settlement.getAllAssociatedPeople().size()/4.0 < VehicleMission.numEmbarkingMissions(settlement)){
+            	return 0;
+            }	        
 
             // Check if starting settlement has minimum amount of methane fuel.
             else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneAR, false) <
@@ -90,7 +97,7 @@ public class CollectIceMeta implements MetaMission {
 
             else {
 
-                result = settlement.getIceProbabilityValue() / 40D;
+                result = settlement.getIceProbabilityValue() / VALUE;
 
             }
 

@@ -208,8 +208,6 @@ public class MainScene implements ClockListener {
 
 	public static ThemeType defaultThemeType = ThemeType.Weblaf;
 
-	private static int defaultThemeColor = 0;
-
 	public static final int DASHBOARD_TAB = 0;
 	public static final int MAIN_TAB = 1;
 	public static final int MAP_TAB = 2;
@@ -224,13 +222,25 @@ public class MainScene implements ClockListener {
 	public static final int DEFAULT_HEIGHT = 768; // 1080;//
 	public static final int TAB_PANEL_HEIGHT = 35;
 	public static final int TITLE_BAR_HEIGHT = 25;
+	
+	public static int chatBoxHeight = 256;
+	public static int LINUX_WIDTH = 270;
+	public static int MACOS_WIDTH = 230;
+	public static int WIN_WIDTH = 230;
+	
+
+	public static boolean isFXGL = false;
+	public static boolean menuBarVisible = false;
+
+	static boolean isShowingDialog = false;
+	
+	private static final int DEFAULT_ZOOM = 10;
+	
+	private static int defaultThemeColor = 0;
+	private static int theme = 6; // 6 is snow blue; 7 is the mud orange with nimrod
 
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
-
-	private static final int DEFAULT_ZOOM = 10;
-
 	// private static final String ROUND_BUTTONS_DIR = "/icons/round_buttons/";
-
 	// private static final String PAUSE = "PAUSE";
 	// private static final String ESC_TO_RESUME = "ESC to resume";
 	// private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
@@ -239,7 +249,7 @@ public class MainScene implements ClockListener {
 	private static final String MARS_DATE_TIME = " ";// MARS : ";
 	// private static final String UMST = " (UMST)";
 	private static final String COLON = ":";
-	private static final String ONE_SPACE = " ";
+//	private static final String ONE_SPACE = " ";
 	private static final String MONTH = "    Month : ";
 	private static final String ORBIT = "Orbit : ";
 	private static final String ADIR = "Adir";
@@ -266,17 +276,6 @@ public class MainScene implements ClockListener {
 			+ "-fx-font-weight:bold; -fx-text-alignment: center; -fx-alignment: CENTER;";
 
 	private static final String PANE_CSS = "jfx-popup-container; -fx-background-radius: 10; -fx-background-color:transparent;";
-
-	private static int theme = 6; // 6 is snow blue; 7 is the mud orange with nimrod
-	public static int chatBoxHeight = 256;
-	public static int LINUX_WIDTH = 270;
-	public static int MACOS_WIDTH = 230;
-	public static int WIN_WIDTH = 230;
-
-	public static boolean isFXGL = false;
-	public static boolean menuBarVisible = false;
-
-	static boolean isShowingDialog = false;
 
 	private int screen_width = DEFAULT_WIDTH;
 	private int screen_height = DEFAULT_HEIGHT;
@@ -324,8 +323,6 @@ public class MainScene implements ClockListener {
 	private DotMatrix matrix;
 
 	private ExecutorService saveExecutor = Executors.newSingleThreadExecutor();
-
-	// private transient Timer autosaveTimer;
 
 	private DraggableNode gNode;
 	private GameScene gameScene;
@@ -1889,7 +1886,7 @@ public class MainScene implements ClockListener {
 		calendarPane.setPadding(new Insets(5, 5, 5, 5));
 
 		marsCalendarPopup = new JFXPopup(calendarPane);
-
+		setGlow(calendarPane);
 	}
 
 	public void createMapToolBox() {
@@ -2211,6 +2208,17 @@ public class MainScene implements ClockListener {
 		});
 	}
 
+	public void setGlow(Node node) {
+		int depth = 70; //Setting the uniform variable for the glow width and height	 
+		DropShadow borderGlow= new DropShadow();
+		borderGlow.setOffsetY(0f);
+		borderGlow.setOffsetX(0f);
+		borderGlow.setColor(Color.ORANGE);
+		borderGlow.setWidth(depth);
+		borderGlow.setHeight(depth); 
+		node.setEffect(borderGlow);
+	}
+	
 	/**
 	 * Creates the tab pane for housing a bunch of tabs
 	 */
@@ -2258,27 +2266,30 @@ public class MainScene implements ClockListener {
 		mapsAnchorPane = new AnchorPane();
 		// mapsAnchorPane.setStyle("-fx-background-color: transparent; ");
 		mapsAnchorPane.setStyle("-fx-background-color: black; ");
-
+		
 		Tab mapTab = new Tab();
 		mapTab.setText("Map");
 		// mapTab.setStyle("-fx-background-color: black; ");
 		mapTab.setContent(mapsAnchorPane);
 
+		// Set up Navigator Window (Minimap)
 		navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
 
 		minimapNode = new SwingNode();
 		minimapGroup = new Group(minimapNode);
 		minimapNode.setContent(navWin);
-
+		
+		// Set up Settlement Window (Settlement Map)
 		settlementWindow = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
 		mapPanel = settlementWindow.getMapPanel();
 
 		mapNode = new SwingNode();
-		mapNode.setStyle("-fx-background-color: transparent; ");
+		mapNode.setStyle("-fx-background-color: transparent; ");	
 		sMapStackPane = new StackPane(mapNode);
 		mapNode.setContent(settlementWindow);
 		sMapStackPane.setStyle("-fx-background-color: transparent; ");
-
+//		setGlow(mapNode);
+		
 		createMapToolBox();
 
 		// Set up the "Help" Tab

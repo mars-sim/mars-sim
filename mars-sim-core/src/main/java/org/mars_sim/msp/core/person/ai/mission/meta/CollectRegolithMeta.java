@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -29,6 +30,8 @@ public class CollectRegolithMeta implements MetaMission {
     private static final String NAME = Msg.getString(
             "Mission.description.collectRegolith"); //$NON-NLS-1$
 
+    private static final int VALUE = 200;
+    
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 1;
 
@@ -70,6 +73,11 @@ public class CollectRegolithMeta implements MetaMission {
 		        return 0;
 		    }
 
+            // Check for embarking missions.
+            else if (settlement.getAllAssociatedPeople().size()/4.0 < VehicleMission.numEmbarkingMissions(settlement)){
+            	return 0;
+            }
+	        
 	        else
 	        	result = CollectResourcesMission.getNewMissionProbability(person, Bag.class,
 	                CollectRegolith.REQUIRED_BAGS, CollectRegolith.MIN_PEOPLE);
@@ -77,7 +85,7 @@ public class CollectRegolithMeta implements MetaMission {
 	        if (result <= 0)
 	        	return 0;
 
-	        result = result + settlement.getRegolithProbabilityValue() / 30D;
+	        result = settlement.getRegolithProbabilityValue() / VALUE;
 
             // Crowding modifier
             int crowding = settlement.getIndoorPeopleCount()

@@ -570,7 +570,7 @@ public class EventTableModel extends AbstractTableModel
 				}
 
 				if (willNotify) {
-					if (messageCache.contains(message)) {
+					if (!messageCache.contains(message)) {
 						messageCache.add(0, message);
 						if (messageCache.size() > MSG_CACHE)
 							messageCache.remove(messageCache.size() - 1);
@@ -778,7 +778,6 @@ public class EventTableModel extends AbstractTableModel
 
 			else if (type == 1) {
 				pos = Pos.BOTTOM_LEFT;
-
 			}
 
 			else if (type == 2) {
@@ -792,7 +791,7 @@ public class EventTableModel extends AbstractTableModel
 		}
 
 		public void run() {
-			System.out.println("Notification : " + message);
+			System.out.println("EventTableModel : " + message);
 
 			int theme = MainScene.getTheme();
 

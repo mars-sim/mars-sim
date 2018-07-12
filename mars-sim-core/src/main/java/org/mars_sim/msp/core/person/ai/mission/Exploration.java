@@ -29,7 +29,6 @@ import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MineralMap;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -91,10 +90,6 @@ implements Serializable {
 	private boolean endExploringSite;
 
 	// Static members
-//	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-//	private static AmountResource waterAR = ResourceUtil.waterAR;
-//	private static AmountResource foodAR = ResourceUtil.foodAR;
-
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 	private static int foodID = ResourceUtil.foodID;
@@ -482,7 +477,7 @@ implements Serializable {
 
         if (result) {
             boolean atStartingSettlement = false;
-            if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            if (member.isInSettlement()) {
                 if (member.getSettlement() == getStartingSettlement()) {
                     atStartingSettlement = true;
                 }

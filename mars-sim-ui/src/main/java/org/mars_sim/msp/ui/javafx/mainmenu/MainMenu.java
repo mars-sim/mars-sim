@@ -102,7 +102,8 @@ public class MainMenu {
     public static String screen3ID = "credits";
     public static String screen3File = "/fxui/fxml/Credits.fxml";
 
-    private static final int STAR_COUNT = 1500;//00;
+    private static final int STAR_COUNT = 500;//00;
+    private static final int TIME = 20_000_000;//2_000_000_000;
     
     private Rectangle[] nodes = new Rectangle[STAR_COUNT];
     private final double[] angles = new double[STAR_COUNT];
@@ -144,7 +145,7 @@ public class MainMenu {
 	private MainMenu mainMenu;
 	
 	private MainScene mainScene;
-	//private ScreensSwitcher screen;
+
 	private MultiplayerMode multiplayerMode;
 	
 	private MainMenuController mainMenuController;
@@ -158,6 +159,8 @@ public class MainMenu {
 	private List<Resolution> resList;
 	
 	private transient ThreadPoolExecutor executor;
+	
+	private AnimationTimer starsTimer;
 	
     public MainMenu() {
        	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
@@ -345,26 +348,28 @@ public class MainMenu {
 		for (int i=0; i<STAR_COUNT; i++) {
             nodes[i] = new Rectangle(1, 1, Color.DARKGOLDENROD);//.WHITE);
             angles[i] = 2.0 * Math.PI * random.nextDouble();
-            start[i] = random.nextInt(2000000000);
+            start[i] = random.nextInt(TIME);
         }
 		
 	       
-        new AnimationTimer() {
+		starsTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                final double width = 0.5 * primaryStage.getWidth();
+                final double width = 0.25 * primaryStage.getWidth();
                 final double height = 0.5 * primaryStage.getHeight();
                 final double radius = Math.sqrt(2) * Math.max(width, height);
                 for (int i=0; i<STAR_COUNT; i++) {
                     final Node node = nodes[i];
                     final double angle = angles[i];
-                    final long t = (now - start[i]) % 2000000000;
-                    final double d = t * radius / 2000000000.0;
+                    final long t = (now - start[i]) % TIME;
+                    final double d = t * radius / TIME;
                     node.setTranslateX(Math.cos(angle) * d + width);
                     node.setTranslateY(Math.sin(angle) * d + height);
                 }
             }
-        }.start();
+        };
+        
+        starsTimer.start();
         
 	}
 	
@@ -1362,6 +1367,8 @@ public class MainMenu {
 		gameScene = null;	
 		settingDialog = null;	
 		exitDialog = null;
+		starsTimer.stop();
+		starsTimer = null;
 	}
 
 	private class Resolution {

@@ -548,11 +548,16 @@ public class RadiationExposure implements Serializable {
 	    		else {//if (person.getMind().getMission() != null) {
 	    			// if a person is inside a vehicle
 	    			//loc = person.getVehicle().getName();
+	    			String activity = "";
+	    			if (person.getMind().getMission() != null)
+	    				activity = person.getMind().getMission().getName();
+	    			else
+	    				activity = person.getTaskDescription();
 	    			LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
 	    				"[" + coord + "] "
 	    				+ str
     	    			+ DOSE // in body region " + i
-    	    			+ " during " + person.getMind().getMission().getName(), null);
+    	    			+ " while " + activity, null);
 	    		}
 	    				
 	    		HistoricalEvent hEvent = new HazardEvent(

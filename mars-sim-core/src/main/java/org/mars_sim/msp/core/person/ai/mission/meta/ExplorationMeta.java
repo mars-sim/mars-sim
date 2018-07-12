@@ -81,7 +81,7 @@ public class ExplorationMeta implements MetaMission {
             }
 
             // Check for embarking missions.
-            else if (!VehicleMission.hasEmbarkingMissions(settlement)){
+            else if (settlement.getAllAssociatedPeople().size()/4.0 < VehicleMission.numEmbarkingMissions(settlement)){
             	return 0;
             }
 
@@ -92,7 +92,7 @@ public class ExplorationMeta implements MetaMission {
 
             // Check if starting settlement has minimum amount of methane fuel.
             //AmountResource methane = AmountResource.findAmountResource("methane");
-            else if (!(settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneAR, false) <
+            else if (!(settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneID, false) <
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE))
             	return 0;
 
