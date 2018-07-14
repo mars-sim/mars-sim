@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.TaskPhase;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -833,7 +834,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					double amountStored = inv.getARStored(resource, false);
 
 					if (amountStored < amount) {
-						String newLog = vehicle.getName() + " does not have enough " + resource + " to continue with "
+						String newLog = vehicle.getName() + " does not have enough " 
+								+ ResourceUtil.findAmountResource(resource).getName() + " to continue with "
 								+ getName() + " (Required: " + Math.round(amount * 100D) / 100D + " kg  Stored: "
 								+ Math.round(amountStored * 100D) / 100D + " kg).";
 						LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, newLog, null);
@@ -846,7 +848,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					int numStored = inv.getItemResourceNum(resource);
 
 					if (numStored < num) {
-						String newLog = vehicle.getName() + " does not have enough " + resource + " to continue with "
+						String newLog = vehicle.getName() + " does not have enough " 
+								+ ResourceUtil.findAmountResource(resource).getName() + " to continue with "
 								+ getName() + " (Required: " + num + "  Stored: " + numStored + ").";
 						LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, newLog, null);
 						result = false;
@@ -854,7 +857,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				}
 
 				else {
-					throw new IllegalStateException(getPhase() + " : Unknown resource type: " + resource);
+					throw new IllegalStateException(getPhase() + " : issues with the resource type of " 
+							+ ResourceUtil.findAmountResource(resource).getName());
 				}
 			}
 

@@ -482,7 +482,7 @@ public class MalfunctionManager implements Serializable {
 				if (object.equals(loc0)) {
 					if (actor == null) {
 						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
-								malfunction, malfunctionName, "N/A", "Part Fatigue", // in the who field
+								malfunction, malfunctionName, "N/A", "None",
 								loc0, loc1);
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
@@ -511,7 +511,7 @@ public class MalfunctionManager implements Serializable {
 				} else {
 					if (actor == null) {
 						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
-								malfunction, malfunctionName + " on " + object, "N/A", "Part Fatigue", // in the who field
+								malfunction, malfunctionName + " on " + object, "N/A", "None",
 								loc0, loc1);
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,

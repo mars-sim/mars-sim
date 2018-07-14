@@ -111,13 +111,13 @@ public class EventTableModel extends AbstractTableModel
 
 	private Map<Integer, ImageView> appIconSet = new LinkedHashMap<>();
 
-	private ImageView icon_med = new ImageView(
+	private static ImageView icon_med = new ImageView(
 			EventTableModel.class.getResource("/icons/notification/medical_48.png").toExternalForm());
-	private ImageView icon_mal = new ImageView(
+	private static ImageView icon_mal = new ImageView(
 			EventTableModel.class.getResource("/icons/notification/tool_48.png").toExternalForm());
-	private ImageView icon_mission = new ImageView(
+	private static ImageView icon_mission = new ImageView(
 			EventTableModel.class.getResource("/icons/notification/car_48.png").toExternalForm());
-	private ImageView icon_hazard = new ImageView(
+	private static ImageView icon_hazard = new ImageView(
 			EventTableModel.class.getResource("/icons/notification/hazard_48.png").toExternalForm());
 
 //	private transient List<HistoricalEvent> cachedEvents = new ArrayList<HistoricalEvent>();
@@ -490,17 +490,17 @@ public class EventTableModel extends AbstractTableModel
 							phrase = " is complaining about the " + cause;//" is suffering from ";
 						
 						willNotify = true;
-						message = who + phrase + " while " + during + " in " + location0 + " at " + location1;
+						message = who + phrase + " while " + during + " in/outside " + location0 + " at " + location1;
 
 					} else if (eventType == EventType.MEDICAL_DEATH) {
 
 						willNotify = true;
-						message = who + " died from " + cause + " in " + location0 + " at " + location1;
+						message = who + " died from " + cause + " in/outside " + location0 + " at " + location1;
 						
 					} else if (eventType == EventType.MEDICAL_TREATED) {
 
 						willNotify = true;
-						message = who + " was being treated for " + cause + " in " + location0 + " at " + location1;
+						message = who + " was being treated for " + cause + " in/outside " + location0 + " at " + location1;
 						
 //					} else if (eventType == EventType.MEDICAL_CURED) {
 //

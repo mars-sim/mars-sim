@@ -180,7 +180,7 @@ public abstract class Vehicle extends Unit
 		setBaseMass(config.getEmptyMass(vehicleType));
 
 		// Set the fuel efficiency of the vehicle.
-		drivetrainEfficiency = config.getDrivetrainEfficiency(getDescription());
+		drivetrainEfficiency = config.getDrivetrainEfficiency(getDescription()) / 100.0;
 
 		// Set initial parked location and facing at settlement.
 		determinedSettlementParkedLocationAndFacing();
@@ -226,7 +226,7 @@ public abstract class Vehicle extends Unit
 		trail = new ArrayList<Coordinates>();
 		setBaseSpeed(baseSpeed);
 		setBaseMass(baseMass);
-		this.drivetrainEfficiency = fuelEfficiency;
+		this.drivetrainEfficiency = fuelEfficiency / 100.0;
 		status = StatusType.PARKED;
 		isReservedMission = false;
 		distanceMark = false;
@@ -602,7 +602,7 @@ public abstract class Vehicle extends Unit
 	 */
 	public double getRange() {
 		double fuelCapacity = getInventory().getARCapacity(getFuelType(), false);
-		return fuelCapacity * drivetrainEfficiency / 100.0 * GoodsManager.SOFC_CONVERSION_EFFICIENCY
+		return fuelCapacity * drivetrainEfficiency * GoodsManager.SOFC_CONVERSION_EFFICIENCY
 				/ fuel_range_error_margin;
 	}
 

@@ -741,44 +741,10 @@ implements Serializable {
             return false;
         }
 
-        else if (person.isInVehicle()) {
-        	
-        	// Check if EVA suit is available.
-        	if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
-        	
-		    	//String newLog = person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
-	            //        " since no working EVA suit is available.";
-	    		//LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, newLog, null);
-	    		// TODO: how to have someone deliver him a working EVASuit
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-						"[" + person.getLocationTag().getQuickLocation() 
-						+ "] " + person + " can't find a working EVA suit and is awaiting the response for rescue."
-						, null);
-
-	    		Vehicle v = person.getVehicle();
-	    		Mission m = person.getMind().getMission();
-	    		//Mission m = missionManager.getMission(person);
-	    		
-	    		if (v != null && m != null && !v.isBeaconOn() && !v.isBeingTowed()) {
-					// Set the emergency beacon on since no EVA suit is available
-					((VehicleMission)m).setEmergencyBeacon(person, v, true, Mission.NO_GOOD_EVA_SUIT);
-	    		}
-	    		//else
-	    		//	person.getMind().getNewAction(true, true);
-	    		//person.getMind().getTaskManager().clearTask();
-	    		
-	    		return false;
-        	}
-        	
-        	else
-        		return true;
-        }
-
-        //double performance = person.getPerformanceRating();
         // Check if person is incapacitated.
-        // TODO: if incapacitated, should someone else help this person to get out?
         else if (person.getPerformanceRating() == 0) {
-
+            // TODO: if incapacitated, should someone else help this person to get out?
+        	
         	// Prevent the logger statement below from being repeated multiple times
 	    	String newLog = person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
 	                " due to crippling performance rating";
@@ -802,6 +768,73 @@ implements Serializable {
             }
 
             return false;
+        }
+ 
+        else if (person.isInSettlement()) {
+        	
+        	// Check if EVA suit is available.
+        	if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
+        	
+				LogConsolidated.log(logger, Level.INFO, 2000, sourceName, 
+						"[" + person.getLocationTag().getQuickLocation() 
+						+ "] " + person + " can't find a working EVA suit and needs to wait until they are repaired."
+						, null);
+
+//	    		Mission m = person.getMind().getMission();
+	    		// TODO: what about outdoor tasks such as DiggingIce ?
+	    		
+//	    		// TODO: should at least wait for a period of time for the EVA suit to be fixed before calling for rescue
+//	    		if (m != null) {	
+	    			airlock.addCheckEVASuit();
+    				person.getMind().getTaskManager().clearTask();
+	    			
+	    			if (airlock.getCheckEVASuit() > 10)
+						// TODO : repair this EVASuit by himself/herself
+						;
+//	    		}
+
+	    		return false;
+        	}
+        	
+        	else
+        		return true;
+        }
+        
+        else if (person.isInVehicle()) {
+        	
+        	// Check if EVA suit is available.
+        	if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
+        	
+	    		// TODO: how to have someone deliver him a working EVASuit
+				LogConsolidated.log(logger, Level.INFO, 2000, sourceName, 
+						"[" + person.getLocationTag().getQuickLocation() 
+						+ "] " + person + " can't find a working EVA suit and is awaiting the response for rescue."
+						, null);
+
+	    		Vehicle v = person.getVehicle();
+	    		Mission m = person.getMind().getMission();
+	    		//Mission m = missionManager.getMission(person);
+	    		
+	    		// TODO: should at least wait for a period of time for the EVA suit to be fixed before calling for rescue
+	    		if (v != null && m != null && !v.isBeaconOn() && !v.isBeingTowed()) {
+	    			
+	    			airlock.addCheckEVASuit();
+    				person.getMind().getTaskManager().clearTask();
+	    			
+	    			if (airlock.getCheckEVASuit() > 10)
+						// Set the emergency beacon on since no EVA suit is available
+						((VehicleMission)m).setEmergencyBeacon(person, v, true, Mission.NO_GOOD_EVA_SUIT);
+					
+	    		}
+ 		
+	    		return false;
+        	}
+        	
+        	else {
+        		airlock.resetCheckEVASuit();
+        		return true;
+        	}
+        		
         }
 
         return true;
@@ -864,7 +897,11 @@ implements Serializable {
      * @return true if good EVA suit is in inventory
      */
     public static boolean goodEVASuitAvailable(Inventory inv) {
-        return (getGoodEVASuit(inv, null) != null);
+    	if (getGoodEVASuit(inv, null) != null) {
+    		return true;
+    	}
+    	else
+    		return false;
     }
 
     /**

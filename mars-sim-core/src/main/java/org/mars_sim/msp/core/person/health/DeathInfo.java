@@ -103,40 +103,29 @@ implements Serializable {
         }
         else
         	this.illness = problem.getIllness().getType();
-/*
-        if (person.getLocationSituation() == LocationSituation.DEAD)
-        	placeOfDeath = "On Mars";
-        else if (person.getLocationSituation() == LocationSituation.OUTSIDE)
-        	placeOfDeath = "On Mars";
-        else if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
-        	placeOfDeath = "" + person.getBuriedSettlement();
-*/
-        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+
+        if (person.isInVehicle()) {
         	// such as died inside a vehicle
             containerUnit = person.getContainerUnit();
             placeOfDeath = containerUnit.getName();
         }
 
-        else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
-        	placeOfDeath = "An known location on Mars";
+        else if (person.isOutside()) {
+        	placeOfDeath = person.getCoordinates().toString();//"An known location on Mars";
         }
 
-        else if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        else if (person.isInSettlement()) {
         	placeOfDeath = person.getSettlement().getName();
         	// It's eligible for retrieval
         	bodyRetrieved = true;
         }
 
-        else if (person.getLocationSituation() == LocationSituation.BURIED) {
+        else if (person.isBuried()) {
         	placeOfDeath = person.getBuriedSettlement().getName();
         }
 
         else {
-        	placeOfDeath = "An unspecified Location";
-	        //if (placeOfDeath == null || placeOfDeath.equals(""))
-	       // 	placeOfDeath = "" + person.getBuriedSettlement().getName();
-	       // if (placeOfDeath == null || placeOfDeath.equals(""))
-	        //	placeOfDeath = "On Mars";
+        	placeOfDeath = "an unspecified Location";
         }
 
         locationOfDeath = person.getCoordinates();

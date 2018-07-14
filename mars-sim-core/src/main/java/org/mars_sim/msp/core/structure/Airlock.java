@@ -57,16 +57,22 @@ public abstract class Airlock implements Serializable {
     // Data members
     /** The state of the airlock. */
     private String state;
+    
     /** True if airlock is activated. */
     private boolean activated;
     /** True if inner door is locked. */
     private boolean innerDoorLocked;
     /** True if outer door is locked. */
     private boolean outerDoorLocked;
+    
     /** Number of people who can use the airlock at once. */
     private int capacity;
+    /** Number of times no eva suit is found available. */
+    private int numEVASuitChecks;
+    
     /** Amount of remaining time for the airlock cycle. (in millisols) */
     private double remainingCycleTime;
+    
     /** People currently in airlock. */
 //    private Collection<Unit> occupants;
     private Collection<Person> occupants;
@@ -784,6 +790,20 @@ public abstract class Airlock implements Serializable {
     	return occupants;
     }
     
+    
+    public void addCheckEVASuit() {
+    	numEVASuitChecks++;
+    }
+    
+    public void resetCheckEVASuit() {
+		numEVASuitChecks = 0;
+    }
+	
+    public int getCheckEVASuit() {
+    	return numEVASuitChecks;
+    }
+		
+		
     /**
      * Prepare object for garbage collection.
      */

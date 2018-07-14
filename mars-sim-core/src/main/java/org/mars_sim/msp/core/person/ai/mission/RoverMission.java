@@ -65,16 +65,6 @@ extends VehicleMission {
 
 	public static final double MIN_STARTING_SETTLEMENT_METHANE = 1000D;
 
-	// Data members
-	private Settlement startingSettlement;
-	
-	private Map<Integer, Double> dessertResources;
-
-	// Static members
-//	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-//	private static AmountResource waterAR = ResourceUtil.waterAR;
-//	private static AmountResource foodAR = ResourceUtil.foodAR;
-//	private static AmountResource methaneAR = ResourceUtil.methaneAR;
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 	private static int foodID = ResourceUtil.foodID;
@@ -83,6 +73,10 @@ extends VehicleMission {
 	public static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
 	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+	// Data members
+	private Settlement startingSettlement;
+	private Map<Integer, Double> dessertResources;
 
 	/**
 	 * Constructor.
