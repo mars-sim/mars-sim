@@ -9,10 +9,9 @@ package org.mars_sim.msp.core.person.health;
 
 import org.mars_sim.msp.core.Msg;
 
-
 public enum ComplaintType {
 
-	// Environmental
+	// Environmentally Induced Illnesses
 	DECOMPRESSION  					(Msg.getString("ComplaintType.decompression")), //$NON-NLS-1$
 	DEHYDRATION  					(Msg.getString("ComplaintType.dehydration")), //$NON-NLS-1$
 	FREEZING  						(Msg.getString("ComplaintType.freezing")), //$NON-NLS-1$
@@ -63,33 +62,34 @@ public enum ComplaintType {
 
 	public static ComplaintType fromString(String name) {
 		if (name != null) {
-	    	for (ComplaintType b : ComplaintType.values()) {
-	    	  if (name.equalsIgnoreCase(b.name)) {
-	        	return b;
-	        }
-	      }
-	    }
-	    return null;
+			for (ComplaintType b : ComplaintType.values()) {
+				if (name.equalsIgnoreCase(b.name)) {
+					return b;
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
 	 * A common method for all enums since they can't have another base class
-	 * @param <T> Enum type
-	 * @param c enum type. All enums must be all caps.
+	 * 
+	 * @param        <T> Enum type
+	 * @param c      enum type. All enums must be all caps.
 	 * @param string case insensitive
 	 * @return corresponding enum, or null
 	 */
 	public static <T extends Enum<T>> T getEnumFromString(Class<T> c, String string) {
-	    if( c != null && string != null ) {
-	        try {
-	            return Enum.valueOf(c, string.trim());//.toUpperCase());
-	        } catch(IllegalArgumentException ex) {
-	        }
-	    }
-	    return null;
+		if (c != null && string != null) {
+			try {
+				return Enum.valueOf(c, string.trim());// .toUpperCase());
+			} catch (IllegalArgumentException ex) {
+			}
+		}
+		return null;
 	}
 
-	public static ComplaintType convertFromString(String name) {
-	    return getEnumFromString(ComplaintType.class, name);
+	public static ComplaintType str2Enum(String name) {
+		return getEnumFromString(ComplaintType.class, name);
 	}
 }

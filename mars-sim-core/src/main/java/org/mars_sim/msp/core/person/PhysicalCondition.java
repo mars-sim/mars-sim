@@ -60,10 +60,10 @@ public class PhysicalCondition implements Serializable {
 	public static final String DEAD = "Dead : ";
 	public static final String ILL = "Sick : ";
 
-	//public static final String OXYGEN = "oxygen";
-	//public static final String WATER = "water";
-	//public static final String FOOD = "food";
-	//public static final String CO2 = "carbon dioxide";
+//	public static final int OXYGEN;
+//	public static final int WATER;
+//	public static final int FOOD;
+//	public static final int CO2;
 
 	public static final int THIRST_THRESHOLD = 150;
 	
@@ -100,7 +100,7 @@ public class PhysicalCondition implements Serializable {
 	/** The maximum air pressure a person can live without harm in kPa. (somewhat arbitrary) */
 	public static final double MAXIMUM_AIR_PRESSURE = 680D; // Assume 10,000 psi or 680 kPa time dependent
 	/** Period of time (millisols) over which random ailments may happen. */
-	private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
+	private static double RANDOM_AILMENT_PROBABILITY_TIME = 100_000D;
 
 	private static double o2_consumption;
 	private static double h2o_consumption;
@@ -137,6 +137,7 @@ public class PhysicalCondition implements Serializable {
 	private int strength;
 	private int resilience;
 	private int emotStability;
+	private int agility;
 	
 	/** Person's Musculoskeletal system from 0 to 100 (muscle pain tolerance, muscle health, muscle soreness). */
 	private double[] musculoskeletal = new double[]{0, 0, 0};
@@ -214,9 +215,15 @@ public class PhysicalCondition implements Serializable {
 	private List<Medication> medicationList;
 	/** Injury/Illness effecting person. */
 	private Map<Complaint, HealthProblem> problems;
+	/** Record of Illness frequency. */
+	private Map<ComplaintType, Integer> healthLog;
+	/** Record of illness start time. */
+	private Map<ComplaintType, List<String>> healthHistory;	
+	
 	/** List of all available medical complaints. */
 	private static List<Complaint> allMedicalComplaints;
 
+	
 	/**
 	 * Constructor 1.
 	 * 
@@ -239,11 +246,6 @@ public class PhysicalCondition implements Serializable {
 		// panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
 		// highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
 
-		endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ENDURANCE);
-		strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
-		resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
-		emotStability = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
-
 		taskMgr = person.getMind().getTaskManager();
 
 		alive = true;
@@ -255,15 +257,23 @@ public class PhysicalCondition implements Serializable {
 
 		problems = new HashMap<Complaint, HealthProblem>();
 
+		healthLog = new HashMap<ComplaintType, Integer>() ;
+		
+		healthHistory = new HashMap<ComplaintType, List<String>>();	
+		
 		medicationList = new ArrayList<Medication>();
 
 		if (naturalAttributeManager == null)
 			naturalAttributeManager = person.getNaturalAttributeManager();
+		
+		endurance = naturalAttributeManager.getAttribute(NaturalAttributeType.ENDURANCE);
+		strength = naturalAttributeManager.getAttribute(NaturalAttributeType.STRENGTH);
+		resilience = naturalAttributeManager.getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
+		emotStability = naturalAttributeManager.getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
+		agility = naturalAttributeManager.getAttribute(NaturalAttributeType.AGILITY);
+
 		// Computes the adjustment from a person's natural attributes
-        double es =  (naturalAttributeManager.getAttribute(NaturalAttributeType.ENDURANCE)
-        			+ naturalAttributeManager.getAttribute(NaturalAttributeType.STRENGTH) 
-        			+ naturalAttributeManager.getAttribute(NaturalAttributeType.AGILITY))/300D;
-        
+        double es =  (endurance + strength + agility)/300D;   
         
         // TODO: may incorporate real world parameters such as areal density in g cm−2, T-socre and Z-score (see https://en.wikipedia.org/wiki/Bone_density)
 		musculoskeletal[0] = RandomUtil.getRandomInt(-10, 10) + (int)es; // pain tolerance
@@ -366,7 +376,8 @@ public class PhysicalCondition implements Serializable {
 			int solElapsed = marsClock.getMissionSol();
 
 			if (solCache != solElapsed) {
-
+				// check once a day only
+				
 				if (solCache == 0)
 					initialize();
 
@@ -401,9 +412,10 @@ public class PhysicalCondition implements Serializable {
 						"[" + loc + "] " + name + "'s life support system is failing !", null);
 			}
 
+			// Update radiation counter
 			radiation.timePassing(time);
 
-			// Check the existing problems
+			// Update the existing health problems
 			if (!problems.isEmpty()) {
 				// Throw illness event if any problems already exist.
 				illnessEvent = true;
@@ -449,11 +461,6 @@ public class PhysicalCondition implements Serializable {
 				}
 
 				// Add the new problems
-				// Iterator<Complaint> newIter = newProblems.iterator();
-				// while(newIter.hasNext()) {
-				// addMedicalComplaint(newIter.next());
-				// illnessEvent = true;
-				// }
 				for (Complaint c : newProblems) {
 					addMedicalComplaint(c);
 					illnessEvent = true;
@@ -465,11 +472,13 @@ public class PhysicalCondition implements Serializable {
 			// if (isDead()) return false;
 
 			// See if any random illnesses happen.
-			List<Complaint> randomAilments = checkForRandomAilments(time);
-			if (randomAilments.size() > 0) {
-				illnessEvent = true;
+			if (!person.getTaskDescription().toLowerCase().contains("sleep")) {
+				List<Complaint> randomAilments = checkForRandomAilments(time);
+				if (randomAilments.size() > 0) {
+					illnessEvent = true;
+				}
 			}
-
+			
 			if (illnessEvent) {
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 			}
@@ -496,11 +505,7 @@ public class PhysicalCondition implements Serializable {
 			// unless dead. - Scott
 			// reduceEnergy(time);
 
-
-			// System.out.println("PhysicalCondition : hunger : "+
-			// Math.round(hunger*10.0)/10.0);
-
-			int msol = marsClock.getMsol0();//(int) (marsClock.getMillisol() * masterClock.getTimeRatio());
+			int msol = marsClock.getMsol0();
 			if (msol % 7 == 0) {
 
 				checkStarvation(hunger);
@@ -1002,40 +1007,111 @@ public class PhysicalCondition implements Serializable {
 		// TODO: create a history of past ailments a person suffers from.
 		// TODO: create a history of potential ailments a person is likely to suffer
 		// from.
+		// TODO: ailments should also be activity based.
 		List<Complaint> result = new ArrayList<Complaint>(0);
+		
 		// Check each possible medical complaint.
-		// Iterator<Complaint> i =
-		// getMedicalManager().getAllMedicalComplaints().iterator();
-		// while (i.hasNext()) {
 		if (allMedicalComplaints == null)
 			allMedicalComplaints = medicalManager.getAllMedicalComplaints();
 
-		for (Complaint complaint : allMedicalComplaints) {// = i.next();
-			double probability = complaint.getProbability();
-			// TODO: need to be more task-based or location-based ?
-			// Check that medical complaint has a probability > zero.
-			if (probability > 0D) {
-				// Check that person does not already have a health problem with this complaint.
-				if (!problems.containsKey(complaint)) {
+		for (Complaint complaint : allMedicalComplaints) {
 
+			ComplaintType ct = complaint.getType();
+			// The following 3 complaints are being checked in their own methods
+			// Check that person does not already have a health problem with this complaint.
+			if (!problems.containsKey(complaint)
+				&& ct != ComplaintType.HIGH_FATIGUE_COLLAPSE
+				&& ct != ComplaintType.PANIC_ATTACK 
+				&& ct != ComplaintType.DEPRESSION
+				) {
+				
+				double probability = complaint.getProbability();
+				// Check that medical complaint has a probability > zero
+				// since some complaints are secondary complaints and cannot be started
+				// by itself
+				if (probability > 0D) {
+					double taskModifier = 1;
+					double tendency = 1;
+					int msol = marsClock.getMissionSol();
+					
+					if (healthLog.get(ct) != null && msol > 3)
+						tendency = 0.5 + healthLog.get(ct) / marsClock.getMissionSol();
+					else
+						tendency = 1.0;
+					double immunity = endurance + strength;
+					
+					if (immunity > 100)
+						tendency = .75 * tendency - .25 * immunity/100.0;
+					else
+						tendency = .75 * tendency + .25 * (100-immunity)/100.0;
+					
+					if (tendency < 0)
+						tendency = 0.0001;
+						
+					if (tendency > 2)
+						tendency = 2;
+					
+					if (ct == ComplaintType.PULL_MUSCLE_TENDON) {
+						// Note: at the time of workout, pulled muscle can happen
+						// TODO: but make a person less prone to pulled muscle while doing other tasks 
+						// if having consistent workout.
+						if (person.getTaskDescription().equalsIgnoreCase("exercising"))
+							taskModifier = 1.2;
+						
+						else if (person.getTaskDescription().toLowerCase().contains("work")) {
+							// Doing outdoor field work increases the risk of having pulled muscle.
+							taskModifier = 1.1;
+							
+							if (agility > 50)
+								taskModifier = .75 * taskModifier - .25 * agility/100.0;
+							else
+								taskModifier = .75 * taskModifier + .25 * (50-agility)/50.0;
+						}
+						
+						else if (person.getTaskDescription().toLowerCase().contains("yoga"))
+							taskModifier = 1.1;
+
+						else if (person.getTaskDescription().toLowerCase().contains("eva"))
+							taskModifier = 1.2;
+						
+						else if (person.getTaskDescription().contains("Digging")) {
+							taskModifier = 1.3;
+							
+							int avoidAccident = strength + agility;
+							if (avoidAccident > 50)
+								taskModifier = .75 * taskModifier - .25 * avoidAccident/100.0;
+							else
+								taskModifier = .75 *taskModifier + .25 * (100-avoidAccident)/100.0;
+						}
+						
+					}
+					else if (ct == ComplaintType.MINOR_BURNS
+							|| ct == ComplaintType.MAJOR_BURNS
+							|| ct == ComplaintType.BURNS
+							|| ct == ComplaintType.LACERATION
+							) {
+						if (agility > 50)
+							taskModifier = .75 * taskModifier - .25 * agility/100.0;
+						else
+							taskModifier = .75 * taskModifier + .25 * (50-agility)/50.0;
+					}
+					
+					if (taskModifier < 0)
+						taskModifier = 0.0001;
+					if (taskModifier > 2)
+						taskModifier = 2;
+					
 					// Randomly determine if person suffers from ailment.
-					double chance = RandomUtil.getRandomDouble(100D);
+					double rand = RandomUtil.getRandomDouble(100D);
 					double timeModifier = time / RANDOM_AILMENT_PROBABILITY_TIME;
-					if (chance <= (probability) * timeModifier) {
-						/*
-						 * String ailment = complaint.toString(); if (Conversion.checkVowel(ailment))
-						 * ailment = "an " + ailment.toLowerCase(); else ailment = "a " +
-						 * ailment.toLowerCase(); LogConsolidated.log(logger, Level.INFO, 500,
-						 * sourceName, "[" + person.getSettlement() + "] " + person +
-						 * " comes down with " + ailment + ".", null);
-						 */
+//					System.out.println("chance : " + chance + "   p*t : " + probability * timeModifier);
+					if (rand <= probability  * taskModifier * tendency * timeModifier) {
 						addMedicalComplaint(complaint);
 						result.add(complaint);
 					}
 				}
 			}
 		}
-
 		return result;
 	}
 
@@ -1047,9 +1123,28 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void addMedicalComplaint(Complaint complaint) {
 		if ((complaint != null) && !problems.containsKey(complaint)) {
+			// Create a new health problem
 			HealthProblem problem = new HealthProblem(complaint, person);
 			problems.put(complaint, problem);
 			ComplaintType type = complaint.getType();
+			
+			// Record this complaint type
+			int freq = 0;
+			if (healthLog.get(type) != null)
+				freq = healthLog.get(type);
+			healthLog.put(type, freq + 1);
+			
+			// Register this complaint type with a timestamp
+			List<String> clocks = null;			
+			if (healthHistory.get(type) != null) {
+				clocks = healthHistory.get(type);
+			}
+			else {
+				clocks = new ArrayList<>();
+			}			
+			clocks.add(marsClock.getDateTimeStamp());
+			healthHistory.put(type, clocks);
+			
 			String n = type.getName().toLowerCase();
 			String prefix = "[" + person.getLocationTag().getQuickLocation() + "] ";
 			String phrase = "";

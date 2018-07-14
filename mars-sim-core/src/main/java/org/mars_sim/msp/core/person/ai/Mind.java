@@ -35,565 +35,574 @@ import org.mars_sim.msp.core.time.MarsClock;
  * The Mind class represents a person's mind. It keeps track of missions and
  * tasks which the person is involved.
  */
-public class Mind
-implements Serializable {
+public class Mind implements Serializable {
 
-    /** default serial id.*/
-    private static final long serialVersionUID = 1L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(Mind.class.getName());
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(Mind.class.getName());
 
-    // Data members
-    /** Is the job locked so another can't be chosen? */
-    private boolean jobLock;
-    /** The cache for sol. */    
+	// Data members
+	/** Is the job locked so another can't be chosen? */
+	private boolean jobLock;
+	/** The cache for sol. */
 	private int solCache = 1;
-    /** The cache for msol0. */     
- 	private double msolCache = -1D;
-    /** The person owning this mind. */
-    private Person person = null;
-    /** The person's task manager. */
-    private TaskManager taskManager;
-    /** The person's current mission (if any). */
-    private Mission mission;
-    /** The person's job. */
-    private Job job;
-    /** The person's personality. */
-    private PersonalityType mbti;
+	/** The cache for msol0. */
+	private double msolCache = -1D;
+	/** The person owning this mind. */
+	private Person person = null;
+	/** The person's task manager. */
+	private TaskManager taskManager;
+	/** The person's current mission (if any). */
+	private Mission mission;
+	/** The person's job. */
+	private Job job;
+	/** The person's personality. */
+	private PersonalityType mbti;
 
-    private PersonalityTraitManager trait;
-    /** The person's skill manager. */
-    private SkillManager skillManager;
+	private PersonalityTraitManager trait;
+	/** The person's skill manager. */
+	private SkillManager skillManager;
 
-    private MissionManager missionManager;
+	private MissionManager missionManager;
 
-    private static Simulation sim;
-    
-    private MarsClock marsClock;
+	private static Simulation sim;
 
-    /**
-     * Constructor 1.
-     * @param person the person owning this mind
-     * @throws Exception if mind could not be created.
-     */
-    public Mind(Person person) {
-		//logger.info("Mind's constructor is in " + Thread.currentThread().getName() + " Thread");
+	private MarsClock marsClock;
 
-        // Initialize data members
-        this.person = person;
-        mission = null;
-        job = null;
-        jobLock = false;
+	/**
+	 * Constructor 1.
+	 * 
+	 * @param person the person owning this mind
+	 * @throws Exception if mind could not be created.
+	 */
+	public Mind(Person person) {
+		// logger.info("Mind's constructor is in " + Thread.currentThread().getName() +
+		// " Thread");
 
-        sim = Simulation.instance();
-        if (sim.getMasterClock() != null) // for passing maven test
-        	marsClock = sim.getMasterClock().getMarsClock();
-        
-        // Construct the Big Five personality trait.
-        trait = new PersonalityTraitManager(person);
-        // Construct the MBTI personality type.
-        mbti = new PersonalityType(person);
-        // Construct the task manager
-        taskManager = new TaskManager(this);
-        // Load the mission manager
-        missionManager = sim.getMissionManager();
-        // Construct the skill manager.
-        skillManager = new SkillManager(person);
-    }
+		// Initialize data members
+		this.person = person;
+		mission = null;
+		job = null;
+		jobLock = false;
 
-    /**
-     * Time passing.
-     * @param time the time passing (millisols)
-     * @throws Exception if error.
-     */
-    public void timePassing(double time) {
-		//logger.info("Mind's timePassing() is in " + Thread.currentThread().getName() + " Thread");
+		sim = Simulation.instance();
+		if (sim.getMasterClock() != null) // for passing maven test
+			marsClock = sim.getMasterClock().getMarsClock();
 
-        if (taskManager != null)
-        	// 2015-10-22 Added recordTask()
-    		taskManager.recordTask();
+		// Construct the Big Five personality trait.
+		trait = new PersonalityTraitManager(person);
+		// Construct the MBTI personality type.
+		mbti = new PersonalityType(person);
+		// Construct the task manager
+		taskManager = new TaskManager(this);
+		// Load the mission manager
+		missionManager = sim.getMissionManager();
+		// Construct the skill manager.
+		skillManager = new SkillManager(person);
+	}
 
-//        if (missionManager != null)
-//        	// 2015-10-31 Added recordMission()
-//        	missionManager.recordMission(person);
+	/**
+	 * Time passing.
+	 * 
+	 * @param time the time passing (millisols)
+	 * @throws Exception if error.
+	 */
+	public void timePassing(double time) {
+		// logger.info("Mind's timePassing() is in " + Thread.currentThread().getName()
+		// + " Thread");
 
-	    double msol1 = marsClock.getMsol1();
-	    
-	    if (msolCache != msol1) {
-	    	msolCache = msol1;
+		if (taskManager != null)
+			taskManager.recordTask();
 
-	    	// Note : for now a Mayor/Manager cannot switch job
-	    	if (job instanceof Politician)
-	    		jobLock = true;
-	
-	     	else {
-	    		if (jobLock) {
-	    		   	// Note: for non-manager, the new job will be locked in until the beginning of the next day
-	    	        // check for the passing of each day
-	    	        int solElapsed = marsClock.getMissionSol();
-	    	        if (solElapsed != solCache) {
-	    	        	solCache = solElapsed;
-	    	        	jobLock = false;
-	    	        }
-	        	}
-	    		else 
-	    			checkJob();
-	    	}
-	
-	        // Update stress based on personality.
-	        mbti.updateStress(time);
-	
-	        // Update relationships.
-	        sim.getRelationshipManager().timePassing(person, time);
-	
-	        // Take action as necessary.
-	        if (taskManager != null)
-	        	takeAction(time);
-	    }
+		double msol1 = marsClock.getMsol1();
 
-    }
+		if (msolCache != msol1) {
+			msolCache = msol1;
 
-    /*
-     * Checks if a person has a job. If not, get a new one.
-     */
-    // 2015-04-30 Added checkJob()
-    public void checkJob() { //String status, String approvedBy) {
-        // Check if this person needs to get a new job or change jobs.
-        if (job == null) { // removing !jobLock
-        	// Note: getNewJob() is checking if existing job is "good enough"/ or has good prospect
-         	Job newJob = JobManager.getNewJob(person);
-           	// 2015-04-30 Already excluded mayor/manager job from being assigned in JobManager.getNewJob()
-         	String newJobStr = newJob.getName(person.getGender());
-        	String jobStr = null;
-        	if (job != null)
-        		jobStr = job.getName(person.getGender());
-        	if (newJob != null) {
-        		//System.out.println("timePassing() : newJob is null");
-	           	if (!newJobStr.equals(jobStr)) {
-		            //job = newJob;
-	           		setJob(newJob, false, JobManager.SETTLEMENT, JobAssignmentType.APPROVED, JobManager.SETTLEMENT);
-	           	}
-        	}
-        	//System.out.println(person.getName() + "'s jobLock is false.");
-        }
-    }
+			// Note : for now a Mayor/Manager cannot switch job
+			if (job instanceof Politician)
+				jobLock = true;
 
-    /**
-     * Assigns the first job at the start of the sim
-     * @param assignedBy the authority that assigns the job
-     */
-    public void getInitialJob(String assignedBy) {
-    	//Job newJob = JobManager.getNewJob(person);
-    	setJob(JobManager.getNewJob(person), true, assignedBy, JobAssignmentType.APPROVED, assignedBy);
-    }
+			else {
+				if (jobLock) {
+					// Note: for non-manager, the new job will be locked in until the beginning of
+					// the next day
+					// check for the passing of each day
+					int solElapsed = marsClock.getMissionSol();
+					if (solElapsed != solCache) {
+						solCache = solElapsed;
+						jobLock = false;
+					}
+				} else
+					checkJob();
+			}
 
-    /**
-     * Take appropriate action for a given amount of time.
-     * @param time time in millisols
-     * @throws Exception if error during action.
-     */
-    public void takeAction(double time) {
+			// Update stress based on personality.
+			mbti.updateStress(time);
 
+			// Update relationships.
+			sim.getRelationshipManager().timePassing(person, time);
 
-        boolean hasActiveTask = taskManager.hasActiveTask();
-        // Perform a task if the person has one, or determine a new task/mission.
-        if (hasActiveTask) {
-            double remainingTime = taskManager.executeTask(time, person
-                    .getPerformanceRating());
-            if (remainingTime > 0D) {
-            	// Call takeAction recursively until time = 0
-                takeAction(remainingTime);
-            }
-        }
-        else {
-            if ((mission != null) && mission.isDone()) {
-                mission = null;
-            }
+			// Take action as necessary.
+			if (taskManager != null)
+				takeAction(time);
+		}
 
-            boolean hasActiveMission = hasActiveMission();//(mission != null);
+	}
 
-            // Check if mission creation at settlement (if any) is overridden.
-            boolean overrideMission = false;
+	/*
+	 * Checks if a person has a job. If not, get a new one.
+	 */
+	public void checkJob() { // String status, String approvedBy) {
+		// Check if this person needs to get a new job or change jobs.
+		if (job == null) { // removing !jobLock
+			// Note: getNewJob() is checking if existing job is "good enough"/ or has good
+			// prospect
+			Job newJob = JobManager.getNewJob(person);
+			// Already excluded mayor/manager job from being assigned in
+			// JobManager.getNewJob()
+			String newJobStr = newJob.getName(person.getGender());
+			String jobStr = null;
+			if (job != null)
+				jobStr = job.getName(person.getGender());
+			if (newJob != null) {
+				if (!newJobStr.equals(jobStr)) {
+					// job = newJob;
+					setJob(newJob, false, JobManager.SETTLEMENT, JobAssignmentType.APPROVED, JobManager.SETTLEMENT);
+				}
+			}
+		}
+	}
 
-            if (person.isInSettlement()) {
-                overrideMission = person.getSettlement().getMissionCreationOverride();
-            }
+	/**
+	 * Assigns the first job at the start of the sim
+	 * 
+	 * @param assignedBy the authority that assigns the job
+	 */
+	public void getInitialJob(String assignedBy) {
+		// Job newJob = JobManager.getNewJob(person);
+		setJob(JobManager.getNewJob(person), true, assignedBy, JobAssignmentType.APPROVED, assignedBy);
+	}
 
-            if (hasActiveMission) {
-                mission.performMission(person);
-            }
-  
-            if (!taskManager.hasActiveTask()) {
-                try {
-                    getNewAction(true, (!hasActiveMission && !overrideMission));
-                } catch (Exception e) {
-                    logger.log(Level.WARNING, person + " could not get new action", e);
-                    e.printStackTrace(System.err);
-                }
-            }
+	/**
+	 * Take appropriate action for a given amount of time.
+	 * 
+	 * @param time time in millisols
+	 * @throws Exception if error during action.
+	 */
+	public void takeAction(double time) {
 
-            //if (hasActiveTask || hasActiveMission) {
-            //    takeAction(time); 
-                // Recursive calling causing Exception in thread "pool-4-thread-217" java.lang.StackOverflowError 
-                // org.mars_sim.msp.core.person.ai.Mind.takeAction(Mind.java:242)
-            //}
-        }
-    }
+		boolean hasActiveTask = taskManager.hasActiveTask();
+		// Perform a task if the person has one, or determine a new task/mission.
+		if (hasActiveTask) {
+			double remainingTime = taskManager.executeTask(time, person.getPerformanceRating());
+			if (remainingTime > 0D) {
+				// Call takeAction recursively until time = 0
+				takeAction(remainingTime);
+			}
+		} else {
+			if ((mission != null) && mission.isDone()) {
+				mission = null;
+			}
 
+			boolean hasActiveMission = hasActiveMission();// (mission != null);
 
-    /**
-     * Reassign the person's job.
-     * @param newJob the new job
-     * @param bypassingJobLock
-     */
-    // 2015-09-23 Renamed to reassignedJob()
-    // Called by
-    // (1) ReviewJobReassignment's constructor or
-    // (2) TabPanelCareer's actionPerformed() [for a pop <= 4 settlement]
-    public void reassignJob(String newJobStr, boolean bypassingJobLock, String assignedBy, JobAssignmentType status, String approvedBy) {
-    	//System.out.println("\n< " + person.getName() + " > ");
-	    //System.out.println("Mind.java : reassignJob() : starting ");
-    	Job newJob = null;
-    	Iterator<Job> i = JobManager.getJobs().iterator();
-	    while (i.hasNext()) {
-		    Job job = i.next();
-		    String n = job.getName(person.getGender());
+			// Check if mission creation at settlement (if any) is overridden.
+			boolean overrideMission = false;
+
+			if (person.isInSettlement()) {
+				overrideMission = person.getSettlement().getMissionCreationOverride();
+			}
+
+			if (hasActiveMission) {
+				mission.performMission(person);
+			}
+
+			if (!taskManager.hasActiveTask()) {
+				try {
+					getNewAction(true, (!hasActiveMission && !overrideMission));
+				} catch (Exception e) {
+					logger.log(Level.WARNING, person + " could not get new action", e);
+					e.printStackTrace(System.err);
+				}
+			}
+
+			// if (hasActiveTask || hasActiveMission) {
+			// takeAction(time);
+			// Recursive calling causing Exception in thread "pool-4-thread-217"
+			// java.lang.StackOverflowError
+			// org.mars_sim.msp.core.person.ai.Mind.takeAction(Mind.java:242)
+			// }
+		}
+	}
+
+	/**
+	 * Reassign the person's job.
+	 * 
+	 * @param newJob           the new job
+	 * @param bypassingJobLock
+	 */
+	// Called by
+	// (1) ReviewJobReassignment's constructor or
+	// (2) TabPanelCareer's actionPerformed() [for a pop <= 4 settlement]
+	public void reassignJob(String newJobStr, boolean bypassingJobLock, String assignedBy, JobAssignmentType status,
+			String approvedBy) {
+		// System.out.println("\n< " + person.getName() + " > ");
+		// System.out.println("Mind.java : reassignJob() : starting ");
+		Job newJob = null;
+		Iterator<Job> i = JobManager.getJobs().iterator();
+		while (i.hasNext()) {
+			Job job = i.next();
+			String n = job.getName(person.getGender());
 			if (newJobStr.equals(n))
 				// gets selectedJob by running through iterator to match it
 				newJob = job;
 		}
 
-    	assignJob(newJob, newJobStr, bypassingJobLock, assignedBy, status, approvedBy);
-    }
+		assignJob(newJob, newJobStr, bypassingJobLock, assignedBy, status, approvedBy);
+	}
 
+	/**
+	 * Sets the person's job.
+	 * 
+	 * @param newJob           the new job
+	 * @param bypassingJobLock
+	 * @param assignedBy
+	 * @param status           of JobAssignmentType
+	 * @param approvedBy
+	 */
+	// Called by
+	// (1) setRole() in Person.java (if a person has a Manager role type)
+	// (2) checkJob() in Mind.java
+	// (3) getInitialJob() in Mind.java
+	public void setJob(Job newJob, boolean bypassingJobLock, String assignedBy, JobAssignmentType status,
+			String approvedBy) {
+		// System.out.println("\n< " + person.getName() + " > ");
+		// System.out.println("Mind.java : setJob() : starting");
+		// if (newJob == null) System.out.println("setJob() : newJob is null");
+		// TODO : if jobLock is true, will it allow the job to be changed?
+		String newJobStr = newJob.getName(person.getGender());
 
-    /**
-     * Sets the person's job.
-     * @param newJob the new job
-     * @param bypassingJobLock
-     * @param assignedBy
-     * @param status of JobAssignmentType
-     * @param approvedBy
-     */
-    // Called by
-    // (1) setRole() in Person.java (if a person has a Manager role type)
-    // (2) checkJob() in Mind.java
-    // (3) getInitialJob() in Mind.java
-    public void setJob(Job newJob, boolean bypassingJobLock, String assignedBy, JobAssignmentType status, String approvedBy) {
-    	//System.out.println("\n< " + person.getName() + " > ");
-    	//System.out.println("Mind.java : setJob() : starting");
-    	// if (newJob == null) System.out.println("setJob() : newJob is null");
-    	// TODO : if jobLock is true, will it allow the job to be changed?
-    	String newJobStr = newJob.getName(person.getGender());
+		// System.out.println("Mind.java : setJob() : calling assignJob() ");
+		assignJob(newJob, newJobStr, bypassingJobLock, assignedBy, status, approvedBy);
+	}
 
-	    //System.out.println("Mind.java : setJob() : calling assignJob() ");
-    	assignJob(newJob, newJobStr, bypassingJobLock, assignedBy, status, approvedBy);
-    }
+	/**
+	 * Assigns a person a new job.
+	 * 
+	 * @param newJob           the new job
+	 * @param bypassingJobLock
+	 * @param assignedBy
+	 * @param status           of JobAssignmentType
+	 * @param approvedBy
+	 */
+	public void assignJob(Job newJob, String newJobStr, boolean bypassingJobLock, String assignedBy,
+			JobAssignmentType status, String approvedBy) {
+		// System.out.println("Mind.java : assignJob() : starting");
+		String jobStr = null;
+		JobHistory jh = person.getJobHistory();
+		Settlement s = person.getSettlement();
 
-    /**
-     * Assigns a person a new job.
-     * @param newJob the new job
-     * @param bypassingJobLock
-     * @param assignedBy
-     * @param status of JobAssignmentType
-     * @param approvedBy
-     */
-    public void assignJob(Job newJob, String newJobStr, boolean bypassingJobLock, String assignedBy, JobAssignmentType status, String approvedBy) {
-    	//System.out.println("Mind.java : assignJob() : starting");
-    	String jobStr = null;
-    	JobHistory jh = person.getJobHistory();
-    	Settlement s = person.getSettlement();
+		if (job == null)
+			jobStr = null;
+		else
+			jobStr = job.getName(person.getGender());
 
-    	if (job == null)
-    		jobStr = null;
-    	else
-    		jobStr = job.getName(person.getGender());
+		// System.out.println("Mind.java : assignJob() : old jobStr was " + jobStr);
+		// System.out.println("Mind.java : assignJob() : old job was " + job);
+		// System.out.println("Mind.java : assignJob() : bypassingJobLock = " +
+		// bypassingJobLock
+		// + " jobLock = " + jobLock);
 
-    	//System.out.println("Mind.java : assignJob() : old jobStr was " + jobStr);
-    	//System.out.println("Mind.java : assignJob() : old job was " + job);
-       	//System.out.println("Mind.java : assignJob() : bypassingJobLock = " + bypassingJobLock
-       	//		+ "  jobLock = " + jobLock);
+		// TODO : check if the initiator's role allows the job to be changed
+		if (!newJobStr.equals(jobStr)) {
 
-    	// TODO : check if the initiator's role allows the job to be changed
-    	if (!newJobStr.equals(jobStr)) {
+			if (bypassingJobLock || !jobLock) {
+				job = newJob;
 
-    	    if (bypassingJobLock || !jobLock) {
-	            job = newJob;
+				// System.out.println("Mind.java : assignJob(): approvedBy is " + approvedBy);
+				// Set up 4 approvedBy conditions
+				if (approvedBy.equals(JobManager.SETTLEMENT)) { // automatically approved if pop <= 4
+					// System.out.println("Mind.java : assignJob() : pop > 4, calling JobHistory's
+					// saveJob(), approved by Settlement");
+					jh.saveJob(newJob, assignedBy, status, approvedBy, true);
+				} else if (approvedBy.equals(JobManager.USER)) {
+					// if (person.getAssociatedSettlement().getAllAssociatedPeople().size() <= 4) {
+					// System.out.println("Mind.java : assignJob() : pop <= 4, calling JobHistory's
+					// saveJob(), approved by User");
+					jh.saveJob(newJob, assignedBy, status, approvedBy, true);
+				} else if (approvedBy.equals(JobManager.MISSION_CONTROL)) { // at the start of sim
+					// System.out.println("Mind.java : assignJob() : calling JobHistory's saveJob(),
+					// approved by Mission Control");
+					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
+				} else { // if approvedBy = name of commander/subcommander/mayor/president
+							// System.out.println("Mind.java : assignJob() : calling JobHistory's saveJob(),
+							// approved by a Senior Official");
+					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
+				}
 
-	            //System.out.println("Mind.java : assignJob(): approvedBy is " + approvedBy);
-		        // 2015-09-23 Set up 4 approvedBy conditions
-		        if (approvedBy.equals(JobManager.SETTLEMENT)) { // automatically approved if pop <= 4
-		        	//System.out.println("Mind.java : assignJob() : pop > 4, calling JobHistory's saveJob(), approved by Settlement");
-		        	jh.saveJob(newJob, assignedBy, status, approvedBy, true);
-		        }
-		        else if (approvedBy.equals(JobManager.USER)) {
-		        // if (person.getAssociatedSettlement().getAllAssociatedPeople().size() <= 4) {
-	        		//System.out.println("Mind.java : assignJob() : pop <= 4, calling JobHistory's saveJob(), approved by User");
-	        		jh.saveJob(newJob, assignedBy, status, approvedBy, true);
-		        }
-		        else if (approvedBy.equals(JobManager.MISSION_CONTROL)) { // at the start of sim
-	            	//System.out.println("Mind.java : assignJob() : calling JobHistory's saveJob(), approved by Mission Control");
-	        		jh.saveJob(newJob, assignedBy, status, approvedBy, false);
-		        }
-		        else { // if approvedBy = name of commander/subcommander/mayor/president
-	        		//System.out.println("Mind.java : assignJob() : calling JobHistory's saveJob(), approved by a Senior Official");
-	        		jh.saveJob(newJob, assignedBy, status, approvedBy, false);
-		        }
+				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 
-		    	//System.out.println("just called JobHistory's saveJob()");
-		        person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
+				// int population = 0;
 
-		        //int population = 0;
+				// Assign a new role type to the person and others in a settlement
+				// immediately after the change of one's job type
+				if (s != null) {
+					ChainOfCommand cc = s.getChainOfCommand();
+					// s.updateAllAssociatedPeople();
+					// population = s.getAllAssociatedPeople().size();
+					// Assign a role associate with
+					if (s.getAllAssociatedPeople().size() >= UnitManager.POPULATION_WITH_MAYOR) {
+						cc.set7Divisions(true);
+						cc.assignSpecialiststo7Divisions(person);
+					}
+					// else if (population >= UnitManager.POPULATION_WITH_SUB_COMMANDER) {
+					// person.getSettlement().set3Divisions(true);
+					// UnitManager.assignSpecialiststo3Divisions(person);
+					// }
+					else {
+						cc.set3Divisions(true);
+						cc.assignSpecialiststo3Divisions(person);
+					}
 
-		        // Assign a new role type to the person and others in a settlement
-		        // immediately after the change of one's job type
-		        if (s != null) {
-		        	ChainOfCommand cc = s.getChainOfCommand();
-		        	//s.updateAllAssociatedPeople();
-		        	//population = s.getAllAssociatedPeople().size();
-			        // Assign a role associate with
-	                if (s.getAllAssociatedPeople().size() >= UnitManager.POPULATION_WITH_MAYOR) {
-	                	cc.set7Divisions(true);
-	                	cc.assignSpecialiststo7Divisions(person);
-	                }
-	                //else if (population >= UnitManager.POPULATION_WITH_SUB_COMMANDER) {
-	                //	person.getSettlement().set3Divisions(true);
-	                //	UnitManager.assignSpecialiststo3Divisions(person);
-	                //}
-	                else {
-	                	cc.set3Divisions(true);
-	                	cc.assignSpecialiststo3Divisions(person);
-	                }
+				}
 
-		        }
+				// the new job will be Locked in until the beginning of the next day
+				jobLock = true;
+				// System.out.println("Mind's assignJob() : just set jobLock = true");
+			}
+		}
+	}
 
-		    	// the new job will be Locked in until the beginning of the next day
-		        jobLock = true;
-		        //System.out.println("Mind's assignJob() : just set jobLock = true");
-    	    }
-    	}
-    }
+	/**
+	 * Returns true if person has an active mission.
+	 * 
+	 * @return true for active mission
+	 */
+	public boolean hasActiveMission() {
+		return (mission != null) && !mission.isDone();
+	}
 
-    /**
-     * Returns true if person has an active mission.
-     * @return true for active mission
-     */
-    public boolean hasActiveMission() {
-        return (mission != null) && !mission.isDone();
-    }
+	/**
+	 * Set this mind as inactive. Needs move work on this; has to abort the Task can
+	 * not just close it. This abort action would then allow the Mission to be also
+	 * aborted.
+	 */
+	public void setInactive() {
+		taskManager.clearTask();
+		if (hasActiveMission()) {
+			// if (person != null) {
+			mission.removeMember(person);
+			// }
 
-    /**
-     * Set this mind as inactive. Needs move work on this; has to abort the Task can not just close it. This abort
-     * action would then allow the Mission to be also aborted.
-     */
-    public void setInactive() {
-        taskManager.clearTask();
-        if (hasActiveMission()) {
-        	//if (person != null) {
-                mission.removeMember(person);
-        	//}
+			mission = null;
+		}
+	}
 
-            mission = null;
-        }
-    }
+	/**
+	 * Sets the person's current mission.
+	 * 
+	 * @param newMission the new mission
+	 */
+	public void setMission(Mission newMission) {
+		if (newMission != mission) {
 
-    /**
-     * Sets the person's current mission.
-     * @param newMission the new mission
-     */
-    public void setMission(Mission newMission) {
-        if (newMission != mission) {
+			if (person != null) {
+				if (mission != null) {
+					mission.removeMember(person);
+				}
 
-        	if (person != null) {
-        		if (mission != null) {
-                    mission.removeMember(person);
-                }
+				mission = newMission;
 
-                mission = newMission;
+				if (newMission != null) {
+					newMission.addMember(person);
+				}
 
-                if (newMission != null) {
-                    newMission.addMember(person);
-                }
+				person.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
+			}
 
-                person.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
-        	}
+		}
+	}
 
-        }
-    }
+	/**
+	 * Stops the person's current mission.
+	 * 
+	 */
+	public void stopMission() {
+		mission = null;
+	}
 
-    /**
-     * Stops the person's current mission.
+	/**
+	 * Determines a new action for the person based on available tasks, missions and
+	 * active missions.
+	 * 
+	 * @param tasks    can the action be a new task?
+	 * @param missions can the action be a new mission?
+	 */
+	public void getNewAction(boolean tasks, boolean missions) {
 
-     */
-    public void stopMission() {
-    	mission = null;
-    }
-
-    /**
-     * Determines a new action for the person based on available tasks, missions and active missions.
-     * @param tasks can the action be a new task?
-     * @param missions can the action be a new mission?
-     */
-    public void getNewAction(boolean tasks, boolean missions) {
-
-    	// If this Person is too weak then they can not do Missions
-    	if (person.getPerformanceRating() < 0.5D) {
-    		missions = false;
-    	}
-
-
-        // Get probability weights from tasks, missions and active missions.
-        double taskWeights = 0D;
-        double missionWeights = 0D;
-
-        // Determine sum of weights based on given parameters
-        double weightSum = 0D;
-
-        if (tasks) {
-            taskWeights = taskManager.getTotalTaskProbability(false);
-            weightSum += taskWeights;
-        }
-
-        if (missions) {
-           missionWeights = missionManager.getTotalMissionProbability(person);
-           weightSum += missionWeights;
+		// If this Person is too weak then they can not do Missions
+		if (person.getPerformanceRating() < 0.5D) {
+			missions = false;
 		}
 
-        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || (Double.isInfinite(weightSum))) {
-        	try {
+		// Get probability weights from tasks, missions and active missions.
+		double taskWeights = 0D;
+		double missionWeights = 0D;
+
+		// Determine sum of weights based on given parameters
+		double weightSum = 0D;
+
+		if (tasks) {
+			taskWeights = taskManager.getTotalTaskProbability(false);
+			weightSum += taskWeights;
+		}
+
+		if (missions) {
+			missionWeights = missionManager.getTotalMissionProbability(person);
+			weightSum += missionWeights;
+		}
+
+		if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || (Double.isInfinite(weightSum))) {
+			try {
 				TimeUnit.MILLISECONDS.sleep(100L);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-            throw new IllegalStateException("Mind.getNewAction(): " + person + " weight sum: "
-                    + weightSum);
-        }
+			throw new IllegalStateException("Mind.getNewAction(): " + person + " weight sum: " + weightSum);
+		}
 
-        // Select randomly across the total weight sum.
-        double rand = RandomUtil.getRandomDouble(weightSum);
+		// Select randomly across the total weight sum.
+		double rand = RandomUtil.getRandomDouble(weightSum);
 
-        // Determine which type of action was selected and set new action accordingly.
-        if (tasks) {
-            if (rand < taskWeights) {
-                Task newTask = taskManager.getNewTask();
-                if (newTask != null)
-                	taskManager.addTask(newTask);
-                else
-                	logger.severe(person + " : newTask is null ");
+		// Determine which type of action was selected and set new action accordingly.
+		if (tasks) {
+			if (rand < taskWeights) {
+				Task newTask = taskManager.getNewTask();
+				if (newTask != null)
+					taskManager.addTask(newTask);
+				else
+					logger.severe(person + " : newTask is null ");
 
-                return;
-            }
-            else {
-                rand -= taskWeights;
-            }
-        }
+				return;
+			} else {
+				rand -= taskWeights;
+			}
+		}
 
+		if (missions) {
+			if (rand < missionWeights) {
+				Mission newMission = null;
+				logger.fine(person.getName() + " starting a new mission.");
+				newMission = missionManager.getNewMission(person);
 
-        if (missions) {
-            if (rand < missionWeights) {
-            	Mission newMission = null;
-            	logger.fine(person.getName() + " starting a new mission.");
-            	newMission = missionManager.getNewMission(person);
+				if (newMission != null) {
+					missionManager.addMission(newMission);
+					setMission(newMission);
+				}
 
-                if (newMission != null) {
-                    missionManager.addMission(newMission);
-                    setMission(newMission);
-                }
- 
-                return;
-            }
-            else {
-                rand -= missionWeights;
-            }
-        }
+				return;
+			} else {
+				rand -= missionWeights;
+			}
+		}
 
-        // If reached this point, no task or mission has been found.
-        logger.severe(person.getName()
-                    + " couldn't determine new action - taskWeights: "
-                    + taskWeights + ", missionWeights: " + missionWeights);
-    }
+		// If reached this point, no task or mission has been found.
+		logger.severe(person.getName() + " couldn't determine new action - taskWeights: " + taskWeights
+				+ ", missionWeights: " + missionWeights);
+	}
 
-    /**
-     * Gets the person's MBTI (personality type).
-     * @return personality type.
-     */
-    public PersonalityType getMBTI() {
-        return mbti;
-    }
+	/**
+	 * Gets the person's MBTI (personality type).
+	 * 
+	 * @return personality type.
+	 */
+	public PersonalityType getMBTI() {
+		return mbti;
+	}
 
-    /**
-     * Returns a reference to the Person's skill manager
-     * @return the person's skill manager
-     */
-    public SkillManager getSkillManager() {
-        return skillManager;
-    }
+	/**
+	 * Returns a reference to the Person's skill manager
+	 * 
+	 * @return the person's skill manager
+	 */
+	public SkillManager getSkillManager() {
+		return skillManager;
+	}
 
+	/**
+	 * Returns the person owning this mind.
+	 * 
+	 * @return person
+	 */
+	public Person getPerson() {
+		return person;
+	}
 
-    /**
-     * Returns the person owning this mind.
-     * @return person
-     */
-    public Person getPerson() {
-        return person;
-    }
+	/**
+	 * Returns the person's task manager
+	 * 
+	 * @return task manager
+	 */
+	public TaskManager getTaskManager() {
+		return taskManager;
+	}
 
-    /**
-     * Returns the person's task manager
-     * @return task manager
-     */
-    public TaskManager getTaskManager() {
-        return taskManager;
-    }
+	/**
+	 * Returns the person's current mission. Returns null if there is no current
+	 * mission.
+	 * 
+	 * @return current mission
+	 */
+	public Mission getMission() {
+		return mission;
+	}
 
-    /**
-     * Returns the person's current mission. Returns null if there is no current mission.
-     * @return current mission
-     */
-    public Mission getMission() {
-        return mission;
-    }
+	/**
+	 * Gets the person's job
+	 * 
+	 * @return job or null if none.
+	 */
+	public Job getJob() {
+		return job;
+	}
 
-    /**
-     * Gets the person's job
-     * @return job or null if none.
-     */
-    public Job getJob() {
-        return job;
-    }
+	/**
+	 * Checks if the person's job is locked and can't be changed.
+	 * 
+	 * @return true if job lock.
+	 */
+	public boolean getJobLock() {
+		return jobLock;
+	}
 
-     /**
-     * Checks if the person's job is locked and can't be changed.
-     * @return true if job lock.
-     */
-    public boolean getJobLock() {
-        return jobLock;
-    }
+	/*
+	 * Set the value of jobLock so that the job can or cannot be changed
+	 */
+	public void setJobLock(boolean value) {
+		jobLock = value;
+	}
 
-    /*
-     * Set the value of jobLock so that the job can or cannot be changed
-     */
-    public void setJobLock(boolean value) {
-    	jobLock = value;
-    }
+	public PersonalityTraitManager getTraitManager() {
+		return trait;
+	}
 
-    public PersonalityTraitManager getTraitManager() {
-    	return trait;
-    }
-
-    /**
-     * Prepare object for garbage collection.
-     */
-    public void destroy() {
-        person = null;
-        taskManager.destroy();
-        if (mission != null) mission.destroy();
-        mission = null;
-        job = null;
-        if (mbti !=null) mbti.destroy();
-        mbti = null;
-        skillManager.destroy();
-        skillManager = null;
-    }
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		person = null;
+		taskManager.destroy();
+		if (mission != null)
+			mission.destroy();
+		mission = null;
+		job = null;
+		if (mbti != null)
+			mbti.destroy();
+		mbti = null;
+		skillManager.destroy();
+		skillManager = null;
+	}
 }

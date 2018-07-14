@@ -80,7 +80,7 @@
 		<medical-complaint name="Pulled Muscle/Tendon">
 			<seriousness value="1" />
 			<recovery-time value="2.0" />
-			<probability value="20.0" />
+			<probability value="3.0" />
 			<performance-percent value="70.0" />
 			<bed-rest-recovery value="false" />
 		</medical-complaint>
@@ -90,7 +90,7 @@
 		<medical-complaint name="Cold">
 			<seriousness value="10" />
 			<recovery-time value="12.0" />
-			<probability value="20.0" />
+			<probability value="5.0" />
 			<performance-percent value="80.0" />
 			<bed-rest-recovery value="false" />
 		</medical-complaint>

@@ -356,7 +356,7 @@ implements ActionListener {
 	    if (unit instanceof Person) {
 	    	person = (Person) unit;
 			mind = person.getMind();
-			dead = person.isDeclaredDead();
+			dead = person.getPhysicalCondition().isDead();//.isDeclaredDead();
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
 		}
 		else if (unit instanceof Robot) {

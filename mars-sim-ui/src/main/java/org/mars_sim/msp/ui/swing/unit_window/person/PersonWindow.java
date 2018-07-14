@@ -41,7 +41,7 @@ extends UnitWindow {
 		addTabPanel(new TabPanelCareer(person, desktop));
 
 		// Add death tab panel if person is dead.
-		if (person.isDeclaredDead()) {
+		if (person.getPhysicalCondition().isDead()) {
 			deadCache = true;
 			addTabPanel(new TabPanelDeath(person, desktop));
 		}

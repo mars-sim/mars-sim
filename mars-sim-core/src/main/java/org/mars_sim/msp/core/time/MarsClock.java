@@ -384,7 +384,7 @@ public class MarsClock implements Serializable {
 	public static String getDateTimeStamp(MarsClock time) {
 		return new StringBuilder(getDateString(time)).append(COLON).append(getTruncatedTimeString(time)).toString();
 	}
-
+	
 	/**
 	 * Gets the current date string. ex. "0013-Adir-05"
 	 *

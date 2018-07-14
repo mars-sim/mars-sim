@@ -24,21 +24,20 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * This class represents a medical station.
- * It provides a number of treatments to persons, these are defined in the
- * Medical.xml file.
+ * This class represents a medical station. It provides a number of treatments
+ * to persons, these are defined in the Medical.xml file.
  */
-public class MedicalStation
-        implements MedicalAid, Serializable {
+public class MedicalStation implements MedicalAid, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
-	/** default logger. */
-    private static Logger logger = Logger.getLogger(MedicalStation.class.getName());
 
-    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
-    
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(MedicalStation.class.getName());
+
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
 	/** Treatment level of the facility. */
 	private int level;
 	/** Number of sick beds. */
@@ -51,19 +50,20 @@ public class MedicalStation
 	private List<Person> restingRecoveryPeople;
 	/** Treatments supported by the medical station. */
 	private List<Treatment> supportedTreatments;
-	
+
 //	private MedicalCare medicalCare;
-	
+
 	private Vehicle vehicle;
-	
+
 	private Building building;
 
 //    private Map<Person, Point2D> bedMap = new HashMap<>();
 
-	/** 
+	/**
 	 * Constructor.
-	 * @param level The treatment level of the medical station.
-	 * @param sickBeds Number of sickbeds. 
+	 * 
+	 * @param level    The treatment level of the medical station.
+	 * @param sickBeds Number of sickbeds.
 	 */
 	public MedicalStation(int level, int sickBeds) {
 //		this.medicalCare = medicalCare;
@@ -81,11 +81,11 @@ public class MedicalStation
 	public void setVehicle(Vehicle v) {
 		vehicle = v;
 	}
-	
+
 	public void setBuilding(Building b) {
 		building = b;
 	}
-	
+
 	@Override
 	public List<HealthProblem> getProblemsAwaitingTreatment() {
 		return new ArrayList<HealthProblem>(problemsAwaitingTreatment);
@@ -95,14 +95,15 @@ public class MedicalStation
 	public List<HealthProblem> getProblemsBeingTreated() {
 		return new ArrayList<HealthProblem>(problemsBeingTreated);
 	}
-	
+
 	@Override
 	public List<Person> getRestingRecoveryPeople() {
-	    return new ArrayList<Person>(restingRecoveryPeople);
+		return new ArrayList<Person>(restingRecoveryPeople);
 	}
 
 	/**
 	 * Gets the number of sick beds.
+	 * 
 	 * @return Sick bed count.
 	 */
 	public int getSickBedNum() {
@@ -111,6 +112,7 @@ public class MedicalStation
 
 	/**
 	 * Gets the current number of people being treated here.
+	 * 
 	 * @return Patient count.
 	 */
 	public int getPatientNum() {
@@ -119,29 +121,30 @@ public class MedicalStation
 
 	/**
 	 * Gets the patients at this medical station.
+	 * 
 	 * @return Collection of People.
 	 */
 	public Collection<Person> getPatients() {
 		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
-		
+
 		// Add patients being treated for health problems.
 		Iterator<HealthProblem> i = problemsBeingTreated.iterator();
 		while (i.hasNext()) {
 			Person patient = i.next().getSufferer();
 			if (!result.contains(patient)) {
-			    result.add(patient);
+				result.add(patient);
 			}
 		}
 
 		// Add patients that are resting to recover from health problems.
 		Iterator<Person> j = restingRecoveryPeople.iterator();
 		while (j.hasNext()) {
-		    Person patient = j.next();
-		    if (!result.contains(patient)) {
-		        result.add(patient);
-		    }
+			Person patient = j.next();
+			if (!result.contains(patient)) {
+				result.add(patient);
+			}
 		}
-		
+
 		return result;
 	}
 
@@ -152,7 +155,8 @@ public class MedicalStation
 
 	@Override
 	public boolean canTreatProblem(HealthProblem problem) {
-		if (problem == null) return false;
+		if (problem == null)
+			return false;
 		else {
 			boolean degrading = problem.isDegrading();
 
@@ -174,79 +178,71 @@ public class MedicalStation
 	public void requestTreatment(HealthProblem problem) {
 
 		if (problem == null) {
-		    throw new IllegalArgumentException("Health problem is null");
+			throw new IllegalArgumentException("Health problem is null");
 		}
 
 		// Check if treatment is supported here.
 		if (canTreatProblem(problem)) {
 
-		    // Add the problem to the waiting queue.
-		    problemsAwaitingTreatment.add(problem);
-		}
-		else {
+			// Add the problem to the waiting queue.
+			problemsAwaitingTreatment.add(problem);
+		} else {
 			String loc0 = null;
 			String loc1 = null;
 			if (building != null) {
 				loc0 = building.getNickName();
 				loc1 = building.getLocationTag().getSettlementName();
-			}
-			else if (vehicle != null) {
+			} else if (vehicle != null) {
 				loc0 = vehicle.getName();
 				loc1 = loc0;
 			}
-			
-			LogConsolidated.log(logger, Level.INFO, 2000, sourceName,  
-			        "[" + loc0 + "] " 
-			        + problem.getIllness() + " cannot be treated in " 
-			        + loc1 + "'s medical station.", null);
+
+			LogConsolidated.log(logger, Level.INFO, 2000, sourceName,
+					"[" + loc0 + "] " + problem.getIllness() + " cannot be treated in " + loc1 + "'s medical station.",
+					null);
 		}
 	}
-	
-    @Override
-    public void cancelRequestTreatment(HealthProblem problem) {
-        
-        if (problem == null) {
-            throw new IllegalArgumentException("Health problem is null");
-        }
-        
-        // Check if problem is being treated here.
-        if (problemsAwaitingTreatment.contains(problem)) {
-            problemsAwaitingTreatment.remove(problem);
-        }
-        else {
-            logger.severe("Health problem " + problem.getIllness() + 
-                    " request cannot be canceled as it is not awaiting response.");
-        }
-    }
+
+	@Override
+	public void cancelRequestTreatment(HealthProblem problem) {
+
+		if (problem == null) {
+			throw new IllegalArgumentException("Health problem is null");
+		}
+
+		// Check if problem is being treated here.
+		if (problemsAwaitingTreatment.contains(problem)) {
+			problemsAwaitingTreatment.remove(problem);
+		} else {
+			logger.severe("Health problem " + problem.getIllness()
+					+ " request cannot be canceled as it is not awaiting response.");
+		}
+	}
 
 	@Override
 	public void startTreatment(HealthProblem problem, double treatmentDuration) {
 
 		if (problem == null) {
-		    throw new IllegalArgumentException("Health problem is null");
+			throw new IllegalArgumentException("Health problem is null");
 		}
 
 		if (problemsAwaitingTreatment.contains(problem)) {
 			problem.startTreatment(treatmentDuration, this);
 			problemsBeingTreated.add(problem);
 			problemsAwaitingTreatment.remove(problem);
-		}
-		else {
+		} else {
 			String loc0 = null;
 			String loc1 = null;
 			if (building != null) {
 				loc0 = building.getNickName();
 				loc1 = building.getLocationTag().getSettlementName();
-			}
-			else if (vehicle != null) {
+			} else if (vehicle != null) {
 				loc0 = vehicle.getName();
 				loc1 = loc0;
 			}
-			
-			LogConsolidated.log(logger, Level.INFO, 2000, sourceName,  
-			        "[" + loc0 + "] " 
-			        + problem.getIllness() + " cannot be treated in " 
-			        + loc1 + "'s medical station is not equipped to handle.", null);		
+
+			LogConsolidated.log(logger, Level.INFO, 2000, sourceName, "[" + loc0 + "] " + problem.getIllness()
+					+ " cannot be treated in " + loc1 + "'s medical station is not equipped to handle.", null);
 		}
 	}
 
@@ -260,39 +256,36 @@ public class MedicalStation
 			boolean dead = problem.getSufferer().getPhysicalCondition().isDead();
 			boolean recovering = problem.getRecovering();
 			if (!cured && !dead && !recovering) {
-			    problemsAwaitingTreatment.add(problem);
+				problemsAwaitingTreatment.add(problem);
 			}
-		}
-		else {
-		    logger.severe("Health problem " + problem.getIllness() + 
-                    " not currently being treated.");
+		} else {
+			logger.severe("Health problem " + problem.getIllness() + " not currently being treated.");
 		}
 	}
-	
+
 	@Override
 	public void startRestingRecovery(Person person) {
-	    
-	    if (!restingRecoveryPeople.contains(person)) {
-	        restingRecoveryPeople.add(person);
-	    }
-	    else {
-	        logger.severe(person + " already resting at medical station.");
-	    }
+
+		if (!restingRecoveryPeople.contains(person)) {
+			restingRecoveryPeople.add(person);
+		} else {
+			logger.severe(person + " already resting at medical station.");
+		}
 	}
 
 	@Override
 	public void stopRestingRecovery(Person person) {
-	    
-	    if (restingRecoveryPeople.contains(person)) {
-	        restingRecoveryPeople.remove(person);
-	    }
-	    else {
-	        logger.severe(person + " isn't resting at medical station.");
-	    }
+
+		if (restingRecoveryPeople.contains(person)) {
+			restingRecoveryPeople.remove(person);
+		} else {
+			logger.severe(person + " isn't resting at medical station.");
+		}
 	}
 
 	/**
 	 * Gets the treatment level of the medical station.
+	 * 
 	 * @return treatment level
 	 */
 	public int getTreatmentLevel() {
@@ -302,7 +295,7 @@ public class MedicalStation
 //	public MedicalCare getMedicalCare() {
 //		return medicalCare;
 //	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
