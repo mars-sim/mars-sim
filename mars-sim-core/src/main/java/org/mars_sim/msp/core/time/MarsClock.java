@@ -101,6 +101,7 @@ public class MarsClock implements Serializable {
 	// This gives them 4 periods to use like we do months.
 	// They are a bit long so maybe they divide them up more later.
 
+	private static final String DASH = "-";
 	private static final String COLON = ":";
 	private static final String ONE_ZERO = "0";
 	private static final String TWO_ZEROS = "00";
@@ -135,6 +136,8 @@ public class MarsClock implements Serializable {
 	private int month;
 	/** The Martian day. */
 	private int sol;
+	/** The mission sol since the start of the sim. */	
+	private int missionSol;
 	/** The rounded millisol of the day. */
 	private int msolInt;
 	/** The millisol of the day. */
@@ -142,13 +145,13 @@ public class MarsClock implements Serializable {
 	/** The millisol of the day in 1 decimal place. */
 	private double msol1;
 
+	
 	private static OrbitInfo orbitInfo;
 
 //	private static EarthClock earthClock;
 
 	private Simulation sim;
 
-	private int missionSol = 1; // the sol since the start of the sim
 
 	/**
 	 * Constructor with date string parameter.
@@ -167,12 +170,12 @@ public class MarsClock implements Serializable {
 			orbitInfo = sim.getMars().getOrbitInfo();
 
 		// Set initial date to dateString. ex: "0015-Adir-01 000.000"
-		String orbitStr = dateString.substring(0, dateString.indexOf("-"));
+		String orbitStr = dateString.substring(0, dateString.indexOf(DASH));
 		orbit = Integer.parseInt(orbitStr);
 		if (orbit < 0)
 			throw new IllegalStateException("Invalid orbit number: " + orbit);
 
-		String monthStr = dateString.substring(dateString.indexOf("-") + 1, dateString.lastIndexOf("-"));
+		String monthStr = dateString.substring(dateString.indexOf(DASH) + 1, dateString.lastIndexOf(DASH));
 		month = 0;
 		for (int x = 0; x < MONTH_NAMES.length; x++) {
 			if (monthStr.equals(MONTH_NAMES[x]))
@@ -181,7 +184,7 @@ public class MarsClock implements Serializable {
 		if ((month < 1) || (month > MONTH_NAMES.length))
 			throw new IllegalStateException("Invalid month: " + monthStr);
 
-		String solStr = dateString.substring(dateString.lastIndexOf("-") + 1, dateString.indexOf(COLON));
+		String solStr = dateString.substring(dateString.lastIndexOf(DASH) + 1, dateString.indexOf(COLON));
 		sol = Integer.parseInt(solStr);
 		if (sol < 1)
 			throw new IllegalStateException("Invalid sol number: " + sol);
@@ -191,10 +194,68 @@ public class MarsClock implements Serializable {
 		if (millisol < 0D)
 			throw new IllegalStateException("Invalid millisol number: " + millisol);
 
+		missionSol = 1; // the sol since the start of the sim
 	}
 
 	/**
-	 * Constructs a MarsClock object with a given time
+	 * Constructs a MarsClock instance with a given mission sol. 
+	 * Note that time will NOT increment in this clock.
+	 * 
+	 * @param missionSol the sols to be added to the calendar
+	 */
+	public MarsClock(int missionSol) {
+		double addedMillisols = missionSol * 1000.0;
+		
+		// Set date and time to given parameters.
+		this.orbit = 0;
+		this.month = 1;
+		this.sol = 1;
+		this.missionSol = 1;
+		this.millisol = 0;
+		
+		sim = Simulation.instance();
+
+		if (orbitInfo == null)
+			orbitInfo = sim.getMars().getOrbitInfo();
+		
+		millisol += addedMillisols;
+		msol1 = Math.round(millisol * 10.0) / 10.0;
+		msolInt = (int) millisol;
+
+		if (addedMillisols > 0D) {
+			while (millisol >= 1000D) {
+				millisol -= 1000D;
+				sol += 1;
+				missionSol += 1;
+				if (sol > getSolsInMonth(month, orbit)) {
+					sol = 1;
+					month += 1;
+					if (month > MONTHS_PER_ORBIT) {
+						month = 1;
+						orbit += 1;
+					}
+				}
+			}
+		} else if (addedMillisols < 0D) {
+			while (millisol < 0D) {
+				millisol += 1000D;
+				sol -= 1;
+				missionSol -= 1;
+				if (sol < 1) {
+					month -= 1;
+					if (month < 1) {
+						month = MONTHS_PER_ORBIT;
+						orbit -= 1;
+					}
+					sol = getSolsInMonth(month, orbit);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Constructs a MarsClock object with a given time. 
+	 * Note that time will NOT increment in this clock.
 	 * 
 	 * @param orbit    current orbit
 	 * @param month    current month
@@ -210,7 +271,8 @@ public class MarsClock implements Serializable {
 		this.month = month;
 		this.sol = sol;
 		this.millisol = millisol;
-
+		this.missionSol = sol;
+		
 		sim = Simulation.instance();
 
 		if (orbitInfo == null)
@@ -401,7 +463,7 @@ public class MarsClock implements Serializable {
 		else if (orbit < 1000) // then 0xxx
 			result.append(ONE_ZERO);
 
-		result.append(orbit).append("-").append(getMonthName()).append("-");
+		result.append(orbit).append(DASH).append(getMonthName()).append(DASH);
 
 		if (sol < 10)
 			result.append(ONE_ZERO);
@@ -453,7 +515,7 @@ public class MarsClock implements Serializable {
 			s.append(ONE_ZERO);
 
 		// Append orbit
-		s.append(orbit).append("-").append(month).append("-");
+		s.append(orbit).append(DASH).append(month).append(DASH);
 
 		if (sol < 10) {
 			s.append(ONE_ZERO);

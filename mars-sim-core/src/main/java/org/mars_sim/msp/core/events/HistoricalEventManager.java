@@ -191,7 +191,7 @@ public class HistoricalEventManager implements Serializable {
 
 		newEvent.setTimestamp(timestamp);
 
-		SimpleEvent se = convert2SimpleEvent(newEvent);
+		SimpleEvent se = convert2SimpleEvent(newEvent, timestamp);
 
 		if (listeners == null) {
 			listeners = new ArrayList<HistoricalEventListener>();
@@ -208,9 +208,9 @@ public class HistoricalEventManager implements Serializable {
 		narrator.translate(newEvent);
 	}
 
-	private SimpleEvent convert2SimpleEvent(HistoricalEvent event) {
-		short sol = (short) (event.getTimestamp().getMissionSol());
-		float msol = (float) (event.getTimestamp().getMillisol());
+	private SimpleEvent convert2SimpleEvent(HistoricalEvent event, MarsClock timestamp) {
+		short sol = (short) (timestamp.getMissionSol());//event.getTimestamp().getMissionSol());
+		float millisols = (float) (event.getTimestamp().getMillisol());
 		byte cat = (byte) (event.getCategory().ordinal());
 		byte type = (byte) (event.getType().ordinal());
 		short what = (short) (getID(whatList, event.getWhatCause()));
@@ -219,7 +219,8 @@ public class HistoricalEventManager implements Serializable {
 		short loc0 = (short) (getID(loc0List, event.getLocation0()));
 		short loc1 = (short) (getID(loc1List, event.getLocation1()));
 
-		SimpleEvent se = new SimpleEvent(sol, msol, cat, type, what, whileDoing, who, loc0, loc1);
+//		System.out.println("mission sol : " + sol);
+		SimpleEvent se = new SimpleEvent(sol, millisols, cat, type, what, whileDoing, who, loc0, loc1);
 		eventsRegistry.add(0, se);
 		return se;
 	}
