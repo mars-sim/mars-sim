@@ -121,9 +121,8 @@ public class EatMeal extends Task implements Serializable {
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 		
         // Check if person is not in a settlement or vehicle.
-        //LocationSituation ls = person.getLocationSituation();
-        
-        if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
+        if (person.isOutside()) {
+        	// TODO : if a person is on EVA suit, should be able to drink water from the helmet tube
 			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, 
             		person + " was trying to eat a meal, but is not inside a settlement/vehicle.", null);
             endTask();

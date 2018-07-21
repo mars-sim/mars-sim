@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.time;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 
@@ -55,6 +54,8 @@ public class MarsClock implements Serializable {
 	public static final int NORTHERN_HEMISPHERE = 1;
 	public static final int SOUTHERN_HEMISPHERE = 2;
 
+	public static final int NUM_SOLS_SIX_MONTHS = SOLS_PER_MONTH_LONG * 5 + SOLS_PER_MONTH_SHORT;
+	
 	// Note: the summer solstice marks the longest day of the calendar year and
 	// the beginning of summer in the "Northern Hemisphere".
 	// The solar longitude Ls is the Mars-Sun angle, measured from the Northern
@@ -154,7 +155,7 @@ public class MarsClock implements Serializable {
 
 
 	/**
-	 * Constructor with date string parameter.
+	 * Constructor 1 : create an instance of MarsClock with date string parameter.
 	 *
 	 * @param dateString format: "orbit-month-sol millisol"
 	 * @throws Exception if dateString is invalid.
@@ -169,7 +170,7 @@ public class MarsClock implements Serializable {
 		if (orbitInfo == null)
 			orbitInfo = sim.getMars().getOrbitInfo();
 
-		// Set initial date to dateString. ex: "0015-Adir-01 000.000"
+		// Set initial date to dateString. ex: "0000-Adir-01 000.000"
 		String orbitStr = dateString.substring(0, dateString.indexOf(DASH));
 		orbit = Integer.parseInt(orbitStr);
 		if (orbit < 0)
@@ -197,72 +198,194 @@ public class MarsClock implements Serializable {
 		missionSol = 1; // the sol since the start of the sim
 	}
 
+//	public int getOrbit(int missionSol) {
+//		
+//		// If an orbit is divisible by 10 it is a leap orbit
+//		// If an orbit is divisible by 100, it is not a leap orbit
+//		// If an orbit is divisible by 500, it is a leap orbit
+//	
+//		int orbit = 0;
+//		if (missionSol > SOLS_PER_ORBIT_NON_LEAPYEAR) {
+//			missionSol = missionSol - SOLS_PER_ORBIT_NON_LEAPYEAR;
+//			orbit++;
+//		}
+//		return orbit;
+//	}
+	
+	
 	/**
-	 * Constructs a MarsClock instance with a given mission sol. 
+	 * Constructor 2 : create a MarsClock instance with the given mission sol. 
 	 * Note that time will NOT increment in this clock.
 	 * 
-	 * @param missionSol the sols to be added to the calendar
+	 * @param newSols the sols to be added to the calendar
 	 */
-	public MarsClock(int missionSol) {
-		double addedMillisols = missionSol * 1000.0;
+	public MarsClock(int newSols) {
+
+		// Set missionSol first
+		this.missionSol = newSols;
 		
-		// Set date and time to given parameters.
-		this.orbit = 0;
-		this.month = 1;
-		this.sol = 1;
-		this.missionSol = 1;
-		this.millisol = 0;
+		// Initialize params
+		int orbit = 0;
+		int month = 1;
+		int sol = 0;
+		
+		int numSolsInOrbit = SOLS_PER_ORBIT_NON_LEAPYEAR;
 		
 		sim = Simulation.instance();
 
 		if (orbitInfo == null)
-			orbitInfo = sim.getMars().getOrbitInfo();
-		
-		millisol += addedMillisols;
-		msol1 = Math.round(millisol * 10.0) / 10.0;
-		msolInt = (int) millisol;
+			orbitInfo = sim.getMars().getOrbitInfo();	
 
-		if (addedMillisols > 0D) {
-			while (millisol >= 1000D) {
-				millisol -= 1000D;
-				sol += 1;
-				missionSol += 1;
-				if (sol > getSolsInMonth(month, orbit)) {
-					sol = 1;
-					month += 1;
-					if (month > MONTHS_PER_ORBIT) {
-						month = 1;
-						orbit += 1;
-					}
-				}
-			}
-		} else if (addedMillisols < 0D) {
-			while (millisol < 0D) {
-				millisol += 1000D;
-				sol -= 1;
-				missionSol -= 1;
-				if (sol < 1) {
-					month -= 1;
-					if (month < 1) {
-						month = MONTHS_PER_ORBIT;
-						orbit -= 1;
-					}
-					sol = getSolsInMonth(month, orbit);
-				}
-			}
+		boolean isLeapOrbit = isLeapOrbit(orbit);
+		
+		// For mission sols larger than an orbit
+		while (newSols > numSolsInOrbit) {
+			newSols = newSols - numSolsInOrbit;
+			orbit++;
+					
+			// Update numSolsInOrbit
+			isLeapOrbit = isLeapOrbit(orbit);
+			
+			if (isLeapOrbit)
+				numSolsInOrbit = SOLS_PER_ORBIT_NON_LEAPYEAR;
+			else
+				numSolsInOrbit = SOLS_PER_ORBIT_LEAPYEAR;	
+
 		}
+				
+		// For mission sols larger than 6 months
+		while (newSols > NUM_SOLS_SIX_MONTHS) {
+			newSols = newSols - NUM_SOLS_SIX_MONTHS;
+			month = month + 6;
+
+			if (month > 24) {
+				orbit++;
+				month = month - 24;				
+			}
+				
+		}
+				
+		// Update numSolsInOrbit
+		isLeapOrbit = isLeapOrbit(orbit);
+		
+		if (isLeapOrbit)
+			numSolsInOrbit = SOLS_PER_ORBIT_NON_LEAPYEAR;
+		else
+			numSolsInOrbit = SOLS_PER_ORBIT_LEAPYEAR;
+		
+		
+		// Update numSolsPerMonth
+		boolean is27 = (month % 6 == 0) && !(isLeapOrbit && month % 24 == 0);
+		int numSolsPerMonth = 0;
+		
+		if (is27)
+			numSolsPerMonth = SOLS_PER_MONTH_SHORT;
+		else
+			numSolsPerMonth = SOLS_PER_MONTH_LONG;
+					
+		// If month number is divisible by 6, month has 27 sols
+		// A standard month has 28 sols		
+		// However, if it's in a leap orbit and month number is 24, 
+		// then that month only has 28 sols, not 27 sols
+		
+		boolean lessThanOneMonth = true;
+
+		System.out.println("A. month : " + month + "   sol : " + sol + "   newSols : " + newSols);
+		
+		// mission sols larger than 27 or 28 sols
+		while (newSols > numSolsPerMonth) {	
+			lessThanOneMonth = false;
+			newSols = newSols - numSolsPerMonth;
+			sol = sol + numSolsPerMonth;
+			if (sol > numSolsPerMonth) {
+				sol = sol - numSolsPerMonth;
+				month++;
+				if (month > 24) {
+					orbit++;
+					month = 1;				
+				}
+			}
+			
+			// Update numSolsPerMonth
+			is27 = (month % 6 == 0) && !(isLeapOrbit && month % 24 == 0);
+			
+			if (is27)
+				numSolsPerMonth = SOLS_PER_MONTH_SHORT;
+			else
+				numSolsPerMonth = SOLS_PER_MONTH_LONG;
+			
+			System.out.println("B. month : " + month + "   sol : " + sol + "   newSols : " + newSols);
+		}
+		
+		if (lessThanOneMonth) {
+			sol = sol + newSols;	
+			if (sol > numSolsPerMonth) {
+				sol = sol - numSolsPerMonth;
+				month++;
+				if (month > 24) {
+					orbit++;
+					month = 1;				
+				}
+			}
+			System.out.println("C. month : " + month + "   sol : " + sol + "   newSols : " + newSols);
+		}
+		
+
+		this.orbit = orbit;
+		this.month = month;
+		this.sol = sol;
+		this.millisol = 0;
+		
+		
+		// Note : the following procedures can be done only if addedMillisols is small 
+		// and needs to be done iteratively and thus is very slow
+		
+//		millisol += addedMillisols;
+//		msol1 = Math.round(millisol * 10.0) / 10.0;
+//		msolInt = (int) millisol;
+//
+//		if (addedMillisols > 0D) {
+//			while (millisol >= 1000D) {
+//				millisol -= 1000D;
+//				sol += 1;
+//				missionSol += 1;
+//				if (sol > getSolsInMonth(month, orbit)) {
+//					sol = 1;
+//					month += 1; ?
+//					if (month > MONTHS_PER_ORBIT) {
+//						month = 1;
+//						orbit += 1;
+//					}
+//				}
+//			}
+//		} else if (addedMillisols < 0D) {
+//			while (millisol < 0D) {
+//				millisol += 1000D;
+//				sol -= 1;
+//				missionSol -= 1;
+//				if (sol < 1) {
+//					month -= 1;
+//					if (month < 1) {
+//						month = MONTHS_PER_ORBIT;
+//						orbit -= 1;
+//					}
+//					sol = getSolsInMonth(month, orbit);
+//				}
+//			}
+//		}
 	}
 	
 	/**
-	 * Constructs a MarsClock object with a given time. 
+	 * Constructor 3 : create a MarsClock object with a given time. 
 	 * Note that time will NOT increment in this clock.
 	 * 
 	 * @param orbit    current orbit
 	 * @param month    current month
 	 * @param sol      current sol
 	 * @param millisol current millisol
+	 * @param missionSol current missionSol
 	 */
-	public MarsClock(int orbit, int month, int sol, double millisol) {
+	public MarsClock(int orbit, int month, int sol, double millisol, int missionSol) {
 		// logger.info("MarsClock's constructor is on " +
 		// Thread.currentThread().getName() + " Thread");
 
@@ -271,7 +394,7 @@ public class MarsClock implements Serializable {
 		this.month = month;
 		this.sol = sol;
 		this.millisol = millisol;
-		this.missionSol = sol;
+		this.missionSol = missionSol;
 		
 		sim = Simulation.instance();
 
@@ -368,15 +491,15 @@ public class MarsClock implements Serializable {
 	public static boolean isLeapOrbit(int orbit) {
 		boolean result = false;
 
-		// If an orbit is divisable by 10 it is a leap orbit
+		// If an orbit is divisible by 10 it is a leap orbit
 		if ((orbit % 10) == 0)
 			result = true;
 
-		// If an orbit is divisable by 100, it is not a leap orbit
+		// If an orbit is divisible by 100, it is not a leap orbit
 		if ((orbit % 100) == 0)
 			result = false;
 
-		// If an orbit is divisable by 500, it is a leap orbit
+		// If an orbit is divisible by 500, it is a leap orbit
 		if ((orbit % 500) == 0)
 			result = true;
 
@@ -384,7 +507,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Adds time to the calendar Note: negative time should be used to subtract
+	 * Adds time to the calendar. Note: negative time should be used to subtract
 	 * time.
 	 * 
 	 * @param addedMillisols millisols to be added to the calendar
@@ -427,7 +550,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns formatted time stamp string. e.g.. "0013-Adir-05:056.349"
+	 * Returns formatted time stamp string in the format of e.g. "0013-Adir-05:056.349"
 	 *
 	 * @return formatted time stamp string
 	 */
@@ -438,7 +561,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns formatted time stamp string e.g. "0013-Adir-05:056"
+	 * Returns formatted time stamp string in the format of "0013-Adir-05:056"
 	 * 
 	 * @param time {@link MarsClock} instance
 	 * @return formatted String
@@ -448,7 +571,7 @@ public class MarsClock implements Serializable {
 	}
 	
 	/**
-	 * Gets the current date string. ex. "0013-Adir-05"
+	 * Gets the current date string in the format of e.g. "0013-Adir-05"
 	 *
 	 * @return current date string
 	 */
@@ -474,7 +597,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Gets the current orbit string. ex. "0013"
+	 * Gets the current orbit string in the format of e.g. "0013"
 	 *
 	 * @return current orbit string
 	 */
@@ -495,7 +618,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Gets the date string of a given time. ex. "0013-Adir-05"
+	 * Gets the date string in the format of e.g. "0013-Adir-05"
 	 * 
 	 * @param time {@link MarsClock} instance
 	 * @return date string
@@ -526,7 +649,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns the time string in millisols without decimal. e.g. "056"
+	 * Returns the time string in millisols without decimal in the format of e.g. "056"
 	 * 
 	 * @return millisols without decimal
 	 */
@@ -551,7 +674,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns the time string in millisols with decimals. e.g. "056.349"
+	 * Returns the time string in millisols with decimals in the format of e.g. "056.349"
 	 * 
 	 * @return millisols with decimals
 	 */
@@ -581,7 +704,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns the time string of a given time. ex. "056"
+	 * Returns the time string in the format of e.g. "056"
 	 * 
 	 * @param time {@link MarsClock} instance
 	 * @return String in millisols
@@ -623,7 +746,7 @@ public class MarsClock implements Serializable {
 
 		// Add millisols up to current orbit
 		for (int x = 1; x < time.orbit; x++) {
-			if (MarsClock.isLeapOrbit(x))
+			if (isLeapOrbit(x))
 				result += SOLS_PER_ORBIT_LEAPYEAR * 1000D;
 			else
 				result += SOLS_PER_ORBIT_NON_LEAPYEAR * 1000D;
@@ -631,7 +754,7 @@ public class MarsClock implements Serializable {
 
 		// Add millisols up to current month
 		for (int x = 1; x < time.month; x++)
-			result += MarsClock.getSolsInMonth(x, time.orbit) * 1000D;
+			result += getSolsInMonth(x, time.orbit) * 1000D;
 
 		// Add millisols up to current sol
 		result += (time.sol - 1) * 1000D;
@@ -699,7 +822,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns the millisols
+	 * Returns the millisols with 1 decimal place
 	 * 
 	 * @return the millisols in 1 decimal place
 	 */
@@ -828,37 +951,37 @@ public class MarsClock implements Serializable {
 	 * @return clone of this MarsClock object
 	 */
 	public Object clone() {
-		return new MarsClock(orbit, month, sol, millisol);
+		return new MarsClock(orbit, month, sol, millisol, missionSol);
 	}
 
-	/**
-	 * Gets a (random) time on the next day between t1 and t2 millisols. if t2 = 0,
-	 * millisols = t1.
-	 * 
-	 * @param clock {@link MarsClock} instance
-	 * @param t1    the lower millisols
-	 * @param t2    the upper millisols
-	 * @return MarsClock
-	 */
-	public MarsClock getMarsClockNextSol(MarsClock clock, int t1, int t2) {
-		int millis = 0;
-		if (t2 == 0)
-			millis = t1;
-		else
-			millis = RandomUtil.getRandomInt(t1, t2);
-		int s = clock.getSolOfMonth() + 1;
-		int m = clock.getMonth();
-		int o = clock.getOrbit();
-		if (s == 29) {
-			s = 1;
-			m++;
-		}
-		if (m == 24) {
-			m = 1;
-			o++;
-		}
-		return new MarsClock(o, m, s, millis);
-	}
+//	/**
+//	 * Gets a (random) time on the next day between t1 and t2 millisols. if t2 = 0,
+//	 * millisols = t1.
+//	 * 
+//	 * @param clock {@link MarsClock} instance
+//	 * @param t1    the lower millisols
+//	 * @param t2    the upper millisols
+//	 * @return MarsClock
+//	 */
+//	public MarsClock getRandomTimeNextSol(MarsClock clock, int t1, int t2) {
+//		int millis = 0;
+//		if (t2 == 0)
+//			millis = t1;
+//		else
+//			millis = RandomUtil.getRandomInt(t1, t2);
+//		int s = clock.getSolOfMonth() + 1;
+//		int m = clock.getMonth();
+//		int o = clock.getOrbit();
+//		if (s == 29) {
+//			s = 1;
+//			m++;
+//		}
+//		if (m == 24) {
+//			m = 1;
+//			o++;
+//		}
+//		return new MarsClock(o, m, s, millis);
+//	}
 
 	/**
 	 * Displays the string version of the clock.

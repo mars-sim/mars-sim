@@ -189,12 +189,12 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		// May pressurize the suit to 1/3 of atmospheric pressure, per NASA aboard on the ISS
 		double oxygenTaken = amountRequested;
 		try {
-			double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false);
+			double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
-			getInventory().retrieveAmountResource(ResourceUtil.oxygenAR, oxygenTaken);
-			getInventory().addAmountDemandTotalRequest(ResourceUtil.oxygenAR);
-			getInventory().addAmountDemand(ResourceUtil.oxygenAR, oxygenTaken);
+			getInventory().retrieveAmountResource(ResourceUtil.oxygenID, oxygenTaken);
+			getInventory().addAmountDemandTotalRequest(ResourceUtil.oxygenID);
+			getInventory().addAmountDemand(ResourceUtil.oxygenID, oxygenTaken);
 			
 /*
   			// Assume the EVA Suit has pump system to vent out all CO2 to prevent the built-up
@@ -290,13 +290,13 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		boolean result = true;
 
 		//AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		double oxygen = getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false);
+		double oxygen = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
 		if (oxygen != OXYGEN_CAPACITY) {
 			result = false;
 		}
 
 		//AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-		double water = getInventory().getAmountResourceStored(ResourceUtil.waterAR, false);
+		double water = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
 		if (water != WATER_CAPACITY) {
 			result = false;
 		}
@@ -313,7 +313,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		Unit container = getContainerUnit();
 		if (container instanceof Person) {
 			Person person = (Person) container;
-			if (!person.isDeclaredDead()) {
+			if (!person.getPhysicalCondition().isDead()) {//.isDeclaredDead()) {
 				malfunctionManager.activeTimePassing(time);
 			}
 		}

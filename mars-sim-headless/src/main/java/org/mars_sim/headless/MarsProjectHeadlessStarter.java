@@ -73,6 +73,18 @@ public class MarsProjectHeadlessStarter {
         	else if (argList.contains("1024x")) {// time ratio is 1024x
 	            command.append(" -1024x");
 	        }
+
+        	else if (argList.contains("2048x")) {// time ratio is 2048x
+	            command.append(" -2048x");
+	        }
+ 
+        	else if (argList.contains("4096x")) {// time ratio is 4096x
+	            command.append(" -4096x");
+	        }
+        	
+        	else if (argList.contains("8192x")) {// time ratio is 8192x
+	            command.append(" -8192x");
+	        }
         	
         	else if (argList.contains("5") || argList.contains("-5")) {// || argList.contains("5 ")) {
 	            command.append(" -Xms256m");

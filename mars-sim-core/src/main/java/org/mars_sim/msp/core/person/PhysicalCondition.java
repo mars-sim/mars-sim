@@ -131,6 +131,8 @@ public class PhysicalCondition implements Serializable {
 	private boolean isThirsty;
 	/** True if person is radiation Poisoned. */
 	private boolean isRadiationPoisoned;
+	/** True if person is doing a task that's considered resting. */	
+	private boolean restingTask;
 
 	private int solCache = 0;
 	private int endurance;
@@ -415,6 +417,25 @@ public class PhysicalCondition implements Serializable {
 			// Update radiation counter
 			radiation.timePassing(time);
 
+			if (
+//				person.getTaskDescription().equalsIgnoreCase("assist")
+				person.getTaskDescription().equalsIgnoreCase("eat")
+				|| person.getTaskDescription().equalsIgnoreCase("drink")
+//				|| person.getTaskDescription().equalsIgnoreCase("compil")
+				|| person.getTaskDescription().equalsIgnoreCase("meet")
+//				|| person.getTaskDescription().equalsIgnoreCase("peer")
+				|| person.getTaskDescription().equalsIgnoreCase("relax")
+				|| person.getTaskDescription().equalsIgnoreCase("rest")
+				|| person.getTaskDescription().equalsIgnoreCase("sleep")					
+//				|| person.getTaskDescription().equalsIgnoreCase("teach")
+				|| person.getTaskDescription().equalsIgnoreCase("walk")		
+				|| person.getTaskDescription().equalsIgnoreCase("yoga")	
+				) {
+				restingTask = true;
+			}
+			
+
+					
 			// Update the existing health problems
 			if (!problems.isEmpty()) {
 				// Throw illness event if any problems already exist.
@@ -472,11 +493,9 @@ public class PhysicalCondition implements Serializable {
 			// if (isDead()) return false;
 
 			// See if any random illnesses happen.
-			if (!person.getTaskDescription().toLowerCase().contains("sleep")) {
-				List<Complaint> randomAilments = checkForRandomAilments(time);
-				if (randomAilments.size() > 0) {
-					illnessEvent = true;
-				}
+			List<Complaint> randomAilments = checkForRandomAilments(time);
+			if (randomAilments.size() > 0) {
+				illnessEvent = true;
 			}
 			
 			if (illnessEvent) {
@@ -508,8 +527,10 @@ public class PhysicalCondition implements Serializable {
 			int msol = marsClock.getMsol0();
 			if (msol % 7 == 0) {
 
-				checkStarvation(hunger);
-				checkDehydration(thirst);
+				if (!restingTask) {
+					checkStarvation(hunger);				
+					checkDehydration(thirst);
+				}
 				
 				// If person is at high stress, check for mental breakdown.
 				if (!isStressedOut)
@@ -1004,10 +1025,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return list of ailments occurring. May be empty.
 	 */
 	private List<Complaint> checkForRandomAilments(double time) {
-		// TODO: create a history of past ailments a person suffers from.
-		// TODO: create a history of potential ailments a person is likely to suffer
-		// from.
-		// TODO: ailments should also be activity based.
+
 		List<Complaint> result = new ArrayList<Complaint>(0);
 		
 		// Check each possible medical complaint.
@@ -1017,13 +1035,38 @@ public class PhysicalCondition implements Serializable {
 		for (Complaint complaint : allMedicalComplaints) {
 
 			ComplaintType ct = complaint.getType();
-			// The following 3 complaints are being checked in their own methods
+			// Note : the following complaints are being initiated in their own methods
+			// e.g. checkStarvation() and checkDehydration()
+	
+			boolean noGo = true;
+			if (ct == ComplaintType.LACERATION) {
+				if (person.getTaskDescription().equalsIgnoreCase("assist")
+					|| person.getTaskDescription().equalsIgnoreCase("compil")
+					|| person.getTaskDescription().equalsIgnoreCase("peer")			
+					|| person.getTaskDescription().equalsIgnoreCase("teach")
+					|| restingTask
+					) {
+					noGo = false;
+				}
+			}
+			
 			// Check that person does not already have a health problem with this complaint.
-			if (!problems.containsKey(complaint)
+			if (!noGo 
+				&& !problems.containsKey(complaint)
 				&& ct != ComplaintType.HIGH_FATIGUE_COLLAPSE
 				&& ct != ComplaintType.PANIC_ATTACK 
 				&& ct != ComplaintType.DEPRESSION
-				) {
+				// Exclude the following 6 environmentally induced complaints
+				&& ct != ComplaintType.DEHYDRATION
+				&& ct != ComplaintType.STARVATION				
+				&& ct != ComplaintType.SUFFOCATION
+				&& ct != ComplaintType.RADIATION_SICKNESS
+				&& ct != ComplaintType.FREEZING
+				&& ct != ComplaintType.HEAT_STROKE
+				&& ct != ComplaintType.DECOMPRESSION
+				// not meaningful to implement suicide until emotional/mood state is in place 
+				&& ct != ComplaintType.SUICIDE				
+					) {
 				
 				double probability = complaint.getProbability();
 				// Check that medical complaint has a probability > zero
@@ -1353,6 +1396,8 @@ public class PhysicalCondition implements Serializable {
 		setPerformanceFactor(0D);
 		setStress(0D);
 
+		deathDetails = new DeathInfo(person, problem);
+
 		if (causedByUser) {
 			person.setDeclaredDead();
 
@@ -1360,8 +1405,6 @@ public class PhysicalCondition implements Serializable {
 			this.serious = problem;
 			logger.severe(person + " committed suicide as instructed.");
 		}
-
-		deathDetails = new DeathInfo(person, problem);
 
 		person.getMind().setInactive();
 

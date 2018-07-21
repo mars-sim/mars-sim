@@ -20,6 +20,8 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -131,65 +133,95 @@ implements Indoor, Salvagable {
 		return salvageInfo;
 	}
 
+//	/**
+//	 * Get settlement equipment is at, null if not at a settlement
+//	 *
+//	 * @return the equipment's settlement
+//	 */
+//    @Override
+//	public Settlement getSettlement() {
+//    	LocationSituation ls = getLocationSituation();
+//		if (LocationSituation.IN_SETTLEMENT == ls) {
+//			return (Settlement) getContainerUnit();
+//		}
+//
+//		else if (LocationSituation.OUTSIDE == ls)
+//			return null;
+//
+//		else if (LocationSituation.IN_VEHICLE == ls) {
+//			Vehicle vehicle = (Vehicle) getContainerUnit();
+//			Settlement settlement = (Settlement) vehicle.getContainerUnit();
+//			return settlement;
+//		}
+//
+//		else if (LocationSituation.BURIED == ls) {
+//			// should not be the case
+//			return null;
+//		}
+//
+//		else {
+//			System.err.println("Equipment : error in determining " + getName() + "'s getSettlement() ");
+//			return null;
+//		}
+//	}
+
 	/**
-	 * Get settlement equipment is at, null if not at a settlement
+	 * Get the equipment's settlement, null if equipment is not at a settlement
 	 *
-	 * @return the equipment's settlement
+	 * @return {@link Settlement} the equipment's settlement
 	 */
-	// 2017-03-19 Add getSettlement()
-    @Override
 	public Settlement getSettlement() {
-		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			return (Settlement) getContainerUnit();
+
+		Unit container = getContainerUnit();
+
+		if (container instanceof Settlement) {
+			return (Settlement) container;
 		}
 
-		else if (getLocationSituation() == LocationSituation.OUTSIDE)
+		else if (container instanceof Person) {
+			Unit c = ((Person) container).getContainerUnit();
+			if (c instanceof Settlement) {
+				return (Settlement) container;
+			}
+		}
+		
+		else if (container instanceof Vehicle) {
+			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+			if (b != null)
+				// still inside the garage
+				return b.getSettlement();
+			else
+				// either at the vicinity of a settlement or already outside on a mission
+				// TODO: need to differentiate which case in future better granularity
+				return null;
+		}
+
+		else if (container == null) {
 			return null;
 
-		else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
-			Vehicle vehicle = (Vehicle) getContainerUnit();
-			Settlement settlement = (Settlement) vehicle.getContainerUnit();
-			return settlement;
 		}
 
-		else if (getLocationSituation() == LocationSituation.BURIED) {
-			// should not be the case
-			return null;
-		}
-
-		else {
-			System.err.println("Error in determining " + getName() + "'s getSettlement() ");
-			return null;
-		}
-	}
-
-	/**
-	 * Gets the building the equipment is located at, null if outside of a
-	 * settlement
-	 *
-	 * @return building 
-	// 2017-03-19 Added getBuildingLocation()
-	public Building getBuildingLocation() {
-		// not being used at this moment
+//		logger.warning("Error in determining " + getName() + "'s getSettlement() ");
 		return null;
 	}
-*/
+	
 	/**
 	 * Get vehicle the equipment is in, null if not in vehicle
 	 *
-	 * @return the equipment's vehicle
+	 * @return {@link Vehicle} the equipment's vehicle
 	 */
-	// 2017-03-19 Add getSettlement()
-	
 	public Vehicle getVehicle() {
-		if (getLocationSituation() == LocationSituation.IN_VEHICLE)
-			return (Vehicle) getContainerUnit();
+		Unit container = getContainerUnit();
+		if (container instanceof Vehicle)
+			return (Vehicle) container;
 		else
 			return null;
 	}
 
 	/**
 	 * Get the equipment's location
+	 * @deprecated use other more efficient methods
+	 * @return {@link LocationSituation} the person's location
 	 */
 	public LocationSituation getLocationSituation() {
 		Unit container = getContainerUnit();
@@ -203,6 +235,54 @@ implements Indoor, Salvagable {
 			return LocationSituation.UNKNOWN;
 	}
 
+	/**
+	 * Is the equipment's immediate container a settlement ?
+	 * 
+	 * @return true if yes
+	 */
+	public boolean isInSettlement() {
+		if (getContainerUnit() instanceof Settlement)
+			return true;
+		else
+			return false;
+	}
+	
+	/**
+	 * Is the equipment's immediate container a person ?
+	 * 
+	 * @return true if yes
+	 */
+	public boolean isInPerson() {
+		if (getContainerUnit() instanceof Person)
+			return true;
+		else
+			return false;
+	}
+	
+	/**
+	 * Is the equipment's immediate container a vehicle ?
+	 * 
+	 * @return true if yes
+	 */
+	public boolean isInVehicle() {
+		if (getContainerUnit() instanceof Vehicle)
+			return true;
+		else
+			return false;
+	}
+
+	/**
+	 * Is the equipment outside on the surface of Mars
+	 * 
+	 * @return true if the equipment is outside
+	 */
+	public boolean isOutside() {
+		if (getContainerUnit() == null)
+			return true;
+		else
+			return false;
+	}
+	
 	public void setLastOwner(Unit unit) {
 		lastOwner = unit;
 	}

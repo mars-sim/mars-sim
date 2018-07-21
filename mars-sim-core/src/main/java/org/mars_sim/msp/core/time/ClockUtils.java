@@ -10,6 +10,8 @@ package org.mars_sim.msp.core.time;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -171,6 +173,11 @@ public class ClockUtils implements Serializable {
 		return MarsClock.getDateString(new MarsClock(missionSol));
 	}
 
+	public static void getLocalDate(int year, int atDay) {
+	      LocalDate date = Year.of(year).atDay(atDay);
+	      System.out.println(date);  
+	}
+	
 	/**
 	 * Returns a date time string in HHh MMm SS.SSs format
 	 * 

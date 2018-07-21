@@ -274,8 +274,7 @@ public class HealthProblem implements Serializable {
 			// If no recovery period, then it's done.
 			duration = illness.getRecoveryPeriod();
 
-			// 2016-09-22 Randomized the duration and varied it according to the complaint
-			// type
+			// Randomized the duration and varied it according to the complaint type
 			if (illness.getType() == ComplaintType.COLD || illness.getType() == ComplaintType.FEVER)
 				duration = duration + duration * RandomUtil.getRandomDouble(.5)
 						- duration * RandomUtil.getRandomDouble(.5);
@@ -288,12 +287,14 @@ public class HealthProblem implements Serializable {
 				duration = duration + duration * RandomUtil.getRandomDouble(.3)
 						- duration * RandomUtil.getRandomDouble(.3);
 			else if (illness.getType() == ComplaintType.STARVATION)
-				duration = duration + duration * RandomUtil.getRandomDouble(.1)
-						- duration * RandomUtil.getRandomDouble(.1);
+				duration = duration * (1 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1));
+			else if (illness.getType() == ComplaintType.DEHYDRATION)
+				duration = duration * (1 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1));
 			else
-				duration = duration + duration * RandomUtil.getRandomDouble(.1)
-						- duration * RandomUtil.getRandomDouble(.1);
+				duration = duration * (1 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1));
 
+			// TODO: what to do with environmentally induced complaints ? do they need to be treated ?
+			
 			timePassed = 0D;
 
 			if (duration > 0D) {
@@ -308,10 +309,11 @@ public class HealthProblem implements Serializable {
 
 				// Check if recovery requires bed rest.
 				requiresBedRest = illness.requiresBedRestRecovery();
-
+				
 				// Create medical event for recovering.
 				MedicalEvent recoveringEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_RECOVERY);
 				Simulation.instance().getEventManager().registerNewEvent(recoveringEvent);
+
 			} else
 				setCured();
 		}
@@ -401,7 +403,9 @@ public class HealthProblem implements Serializable {
 		if (state == RECOVERING) {
 			buffer.append("Recovering from ");
 			buffer.append(illness.getType().toString());
-		} else if (state == BEING_TREATED) {
+		} 
+		
+		else if (state == BEING_TREATED) {
 			buffer.append(illness.getType());
 			buffer.append(" with ");
 			Treatment treatment = illness.getRecoveryTreatment();
@@ -409,7 +413,9 @@ public class HealthProblem implements Serializable {
 				buffer.append(treatment.getName());
 			}
 
-		} else
+		} 
+		
+		else
 			buffer.append(illness.getType());
 
 		int rating = getHealthRating();

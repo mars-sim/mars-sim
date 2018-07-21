@@ -446,9 +446,9 @@ implements Serializable {
 				//double stored = inv.getAmountResourceStored(ar, false);
 
 				if (remainingCapacity == 0) {
-					LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName + " at " + method, 
-							"(int) No more room to store " + Math.round(amount*100.0)/100.0 + " kg of "
-							+ r.getName() + " (or storage space has not been initialized yet).", null);
+//					LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName + " at " + method, 
+//							"(int) No more room to store " + Math.round(amount*100.0)/100.0 + " kg of "
+//							+ r.getName() + " (or storage space has not been initialized yet).", null);
 					result = false;
 					// TODO: increase VP of barrel/bag/gas canister for storage to prompt for manufacturing them
 				}
@@ -456,16 +456,16 @@ implements Serializable {
 				else if (remainingCapacity < amount) {
 					//double stored = inv.getAmountResourceStored(ar, false);
 				    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
-				    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName + " at " + method, 
-				    		"(int) The storage capacity for " 
-				    		+ r.getName() + " has been reached. Only "
-					    	+ Math.round(amount*10000.0)/10000.0 
-					    	+ " kg can be stored in " + inv.getOwner() 
-					    	+ "."
-					    	//+ " (Remaining capacity : " + Math.round(remainingCapacity*100.0)/100.0
-					    	//+ " (Stored : " + Math.round(stored*100.0)/100.0
-					    	//+ ")"
-				    	, null);	
+//				    LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName + " at " + method, 
+//				    		"(int) The storage capacity for " 
+//				    		+ r.getName() + " has been reached. Only "
+//					    	+ Math.round(amount*10000.0)/10000.0 
+//					    	+ " kg can be stored in " + inv.getOwner() 
+//					    	+ "."
+//					    	//+ " (Remaining capacity : " + Math.round(remainingCapacity*100.0)/100.0
+//					    	//+ " (Stored : " + Math.round(stored*100.0)/100.0
+//					    	//+ ")"
+//				    	, null);	
 					amount = remainingCapacity;
 					inv.storeAR(ar, amount, true);
 					inv.addAmountSupplyAmount(r, amount);

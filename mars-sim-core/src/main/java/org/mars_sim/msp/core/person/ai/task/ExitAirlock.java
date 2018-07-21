@@ -737,7 +737,7 @@ implements Serializable {
     				person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
                     " since he/she is already outside.", null);
           	//person.getMind().getNewAction(true, false);
-          	person.getMind().getTaskManager().clearTask();
+//          	person.getMind().getTaskManager().clearTask();
             return false;
         }
 
@@ -751,14 +751,16 @@ implements Serializable {
 
     		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, newLog, null);
 
-            // Calling getNewAction(true, false) so as not to get "stuck" inside the airlock.
+ 
             try {
             	//logger.info(person.getName() + " is nearly abandoning the action of exiting the airlock and switching to a new task");
             	// Note: calling getNewAction() below is still considered "experimental"
             	// It may have caused StackOverflowError if a very high fatigue person is stranded in the airlock and cannot go outside.
             	// Intentionally add a 3% performance boost
             	person.getPhysicalCondition().setPerformanceFactor(3);
-            	person.getMind().getNewAction(true, false);
+//				person.getMind().getTaskManager().clearTask();
+                // Calling getNewAction(true, false) so as not to get "stuck" inside the airlock.
+//            	person.getMind().getNewAction(true, false);
 
             } catch (Exception e) {
         		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
@@ -786,11 +788,21 @@ implements Serializable {
 //	    		// TODO: should at least wait for a period of time for the EVA suit to be fixed before calling for rescue
 //	    		if (m != null) {	
 	    			airlock.addCheckEVASuit();
-    				person.getMind().getTaskManager().clearTask();
-	    			
+//    				person.getMind().getTaskManager().clearTask();
+                    // Calling getNewAction(true, false) so as not to get "stuck" inside the airlock.
+//                	person.getMind().getNewAction(true, false);
+    				LogConsolidated.log(logger, Level.INFO, 2000, sourceName, 
+    						"[" + person.getLocationTag().getQuickLocation() 
+    						+ "] " + person + " has tried to exit the airlock " + airlock.getCheckEVASuit() + " times."
+    						, null);
+    				
 	    			if (airlock.getCheckEVASuit() > 10)
-						// TODO : repair this EVASuit by himself/herself
-						;
+						// Repair this EVASuit by himself/herself
+	    				person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
+//	    				LogConsolidated.log(logger, Level.INFO, 2000, sourceName, 
+//	    						"[" + person.getLocationTag().getQuickLocation() 
+//	    						+ "] " + person + " has already tried to exit the airlock " + airlock.getCheckEVASuit() + " times."
+//	    						, null);
 //	    		}
 
 	    		return false;
@@ -819,8 +831,13 @@ implements Serializable {
 	    		if (v != null && m != null && !v.isBeaconOn() && !v.isBeingTowed()) {
 	    			
 	    			airlock.addCheckEVASuit();
-    				person.getMind().getTaskManager().clearTask();
+//    				person.getMind().getTaskManager().clearTask();
+                    // Calling getNewAction(true, false) so as not to get "stuck" inside the airlock.
+//                	person.getMind().getNewAction(true, false);
 	    			
+					// Repair this EVASuit by himself/herself
+    				person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
+    				
 	    			if (airlock.getCheckEVASuit() > 10)
 						// Set the emergency beacon on since no EVA suit is available
 						((VehicleMission)m).setEmergencyBeacon(person, v, true, Mission.NO_GOOD_EVA_SUIT);

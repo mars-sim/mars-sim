@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.mars.TerrainElevation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -432,7 +431,7 @@ implements ActionListener {
         		p = (Person) unit;
     		    //SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
-        		if (p.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        		if (p.isInSettlement()) {//.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
         			if (mainScene != null) {
         				mainScene.setSettlement(p.getSettlement());
@@ -456,7 +455,7 @@ implements ActionListener {
         			mapPanel.selectPerson(p);
             	}
         		
-        		else if (p.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        		else if (p.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
         			Vehicle vv = p.getVehicle();
 
@@ -491,7 +490,7 @@ implements ActionListener {
 	        		}
             	}
         		
-        		else if (p.getLocationSituation() == LocationSituation.OUTSIDE) {
+        		else if (p.isOutside()) {//.getLocationSituation() == LocationSituation.OUTSIDE) {
         			Vehicle vv = p.getVehicle();
 
         			if (vv == null) {
@@ -537,7 +536,7 @@ implements ActionListener {
         		r = (Robot) unit;
         		//SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
-        		if (r.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        		if (r.isInSettlement()) {//.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         			desktop.openToolWindow(SettlementWindow.NAME);
         			//System.out.println("Just open Settlement Map Tool");
         			if (mainScene != null)
@@ -556,7 +555,7 @@ implements ActionListener {
         			mapPanel.selectRobot(r);
             	}
         		
-        		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        		else if (r.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
         			Vehicle vv = r.getVehicle();
         			if (vv.getSettlement() == null) {
@@ -584,7 +583,7 @@ implements ActionListener {
 	        		}
             	}
         		
-        		else if (r.getLocationSituation() == LocationSituation.OUTSIDE) {
+        		else if (r.isOutside()) {//.getLocationSituation() == LocationSituation.OUTSIDE) {
         			Vehicle vv = r.getVehicle();
 
         			if (vv == null) {
@@ -647,7 +646,7 @@ implements ActionListener {
 	    		e = (Equipment) unit;
 	    		//SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
-	    		if (e.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	    		if (e.isInSettlement()) {//.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	    			desktop.openToolWindow(SettlementWindow.NAME);
 
 	    			if (mainScene != null)
@@ -670,7 +669,7 @@ implements ActionListener {
  */
 	        	}
 
-	    		else if (e.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+	    		else if (e.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
 	    			Vehicle vv = e.getVehicle();
 	    			if (vv.getSettlement() == null) {
@@ -698,7 +697,7 @@ implements ActionListener {
 	        		}
 	        	}
 
-	    		else if (e.getLocationSituation() == LocationSituation.OUTSIDE) {
+	    		else if (e.isOutside()) {//.getLocationSituation() == LocationSituation.OUTSIDE) {
 
 	    		}
 

@@ -62,13 +62,10 @@ public class SelfTreatHealthProblemMeta implements MetaTask, Serializable {
 	
 	        if (hasSelfTreatableProblems && hasAvailableMedicalAids) {
 	            result = 300D;
-	
-	            // 2015-06-07 Added Preference modifier
-	            //result = result + result * person.getPreference().getPreferenceScore(this) / 8D;
-	        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-	
 	        }
 	
+        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+        	
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();
 	
@@ -145,7 +142,7 @@ public class SelfTreatHealthProblemMeta implements MetaTask, Serializable {
             boolean malfunction = building.getMalfunctionManager().hasMalfunction();
 
             // Check if enough beds for patient.
-            MedicalCare medicalCare = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
+            MedicalCare medicalCare = building.getMedical();
             int numPatients = medicalCare.getPatientNum();
             int numBeds = medicalCare.getSickBedNum();
 

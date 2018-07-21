@@ -74,8 +74,8 @@ public abstract class Mission implements Serializable {
 	// public static final String VEHICLE_NOT_LOADABLE = "Vehicle is not loadable at
 	// CollectingResourcesMission";
 
-	public static final String MISSION = " mission.";
-	public static final String[] expression = new String[] {
+	public static final String MISSION = " mission";
+	public static final String[] EXPRESSIONS = new String[] {
 			"Where is everybody when I need someone for ",
 			"So no one is available for ",
 			"How come no one is available for "
@@ -1142,15 +1142,35 @@ public abstract class Mission implements Serializable {
 			result = member.getCoordinates();
 		} else {
 			StringBuilder s = new StringBuilder();
+			String missionName = this.toString();
+			if (missionName.toLowerCase().contains("mission")) {
+				if (phase != null) {
+					s.append("Anyone can do ").append(phase).append(" for a ").append(missionName).append("?");
+				}
+				else {
+					int rand = RandomUtil.getRandomInt(2);
+					String theInitial = missionName.substring(0);
+					if (Conversion.checkVowel(theInitial))
+						s.append(EXPRESSIONS[rand]).append("an ").append(missionName).append("?");
+					else
+						s.append(EXPRESSIONS[rand]).append("a ").append(missionName).append("?");
+				}
+			}
 			
-			if (phase != null) {
-				s.append("Anyone can do ").append(phase).append(" for a ").append(this.toString()).append(MISSION).append("?");
-			}
 			else {
-				int rand = RandomUtil.getRandomInt(2);
-				s.append(expression[rand]).append(" a ").append(this.toString()).append(MISSION).append("?");
+				if (phase != null) {
+					s.append("Anyone can do ").append(phase).append(" for a ").append(missionName).append(MISSION).append("?");
+				}
+				else {
+					int rand = RandomUtil.getRandomInt(2);
+					String theInitial = missionName.substring(0);
+					if (Conversion.checkVowel(theInitial))
+						s.append(EXPRESSIONS[rand]).append("an ").append(missionName).append(MISSION).append("?");
+					else
+						s.append(EXPRESSIONS[rand]).append("a ").append(missionName).append(MISSION).append("?");
+				}
 			}
-
+			
 			LogConsolidated.log(logger, Level.INFO, 2000, sourceName, s.toString(), null);
 		}
 

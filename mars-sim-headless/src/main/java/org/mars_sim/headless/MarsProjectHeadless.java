@@ -70,11 +70,17 @@ public class MarsProjectHeadless {
         // Create a simulation
         List<String> argList = Arrays.asList(args);
 
+        if (argList.contains("-512x")) 
+            userTimeRatio = 512;
         if (argList.contains("-1024x")) 
         	userTimeRatio = 1024;
-        else if (argList.contains("-512x")) 
-            userTimeRatio = 512;
-        	
+        else if (argList.contains("-2048x")) 
+            userTimeRatio = 2048;
+        if (argList.contains("-4096x")) 
+        	userTimeRatio = 4096;
+        else if (argList.contains("-8192x")) 
+            userTimeRatio = 8192;
+        
         if (argList.contains("-new")) {
             // If new argument, create new simulation.
             handleNewSimulation(userTimeRatio); // if this fails we always exit, continuing is useless

@@ -149,7 +149,8 @@ public class MedicalManager implements Serializable {
 	 * @param recovery
 	 * @param performance
 	 * @param needBedRest
-	 * @return
+	 * 
+	 * @return {@link Complaint}
 	 */
 	private Complaint createEnvironmentComplaint(ComplaintType type,
 			int seriousness,

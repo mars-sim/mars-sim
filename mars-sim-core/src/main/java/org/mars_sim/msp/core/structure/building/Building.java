@@ -1480,7 +1480,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 					}
 
 					HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_METEORITE_IMPACT, malfunctionMeteoriteImpact,
-							"Meteorites", //"Natural Cause",
+							"Meteorite Impact", //"Natural Cause",
 							task, victimName, this.getNickName(), settlement.getName());
 					Simulation.instance().getEventManager().registerNewEvent(hEvent);
 

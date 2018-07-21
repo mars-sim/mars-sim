@@ -1017,7 +1017,7 @@ extends TransportItemEditingPanel {
 					millisols = currentTime.getMillisol();
 				}
 
-				result = new MarsClock(orbit, month, sol, millisols);
+				result = new MarsClock(orbit, month, sol, millisols, -1);
 			}
 			catch (NumberFormatException e) {
 				e.printStackTrace(System.err);

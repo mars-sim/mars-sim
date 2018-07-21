@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
