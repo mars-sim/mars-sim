@@ -28,7 +28,6 @@ import com.almasb.fxgl.settings.GameSettings;
 
 import javafx.application.Platform;
 
-@SuppressWarnings("restriction")
 public class MarsProjectFXGL extends GameApplication {
 
 	/** initialized logger for this class. */
@@ -36,7 +35,7 @@ public class MarsProjectFXGL extends GameApplication {
 
 	static String[] args;
  
-	private static final String manpage = "\n> java -jar mars-sim-main-[version/build].jar\n"
+	private static final String manpage = "\n> java -jar mars-sim-main-[$VERSION].jar\n"
 		+ "                    (Note : start a new sim)\n"
 		+ "   or  \n"
 		+ "\n"
@@ -475,7 +474,7 @@ public class MarsProjectFXGL extends GameApplication {
 		            }
 	        	}
 			}
-			// 2016-06-06 Generated html files for in-game help
+			// Generate html files for in-game help
 			else if (generateHTML) {
 		   		// CASE C //
 				logger.info("Generating help files in headless mode in " + Simulation.OS);
@@ -483,7 +482,7 @@ public class MarsProjectFXGL extends GameApplication {
 				try {
 		            SimulationConfig.loadConfig();
 		    	    // this will generate html files for in-game help based on config xml files
-		    	    // 2016-04-16 Relocated the following to handleNewSimulation() right before calling ScenarioConfigEditorFX.
+		    	    // Relocate the following to handleNewSimulation() right before calling ScenarioConfigEditorFX.
 		    	    HelpGenerator.generateHtmlHelpFiles();
 		    	    logger.info("Done creating help files.");
 			        Platform.exit();
@@ -586,7 +585,7 @@ public class MarsProjectFXGL extends GameApplication {
      */
 	public void destroy() {
 	    mainMenu = null;
-	    argList = null;
-	    sim = null;
+		argList = null;
+		sim = null;
 	}
 }

@@ -27,7 +27,6 @@ import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 
 import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 
-
 /**--------------------------------------------------------------
  * Case A : with '-headless' and '-new' switch, it will load the following :
  **--------------------------------------------------------------
@@ -184,364 +183,371 @@ import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
  *
 */
 
-
 /**
- * MarsProjectFX is the main class for MSP. It creates JavaFX/8 application thread.
+ * MarsProjectFX is the main class for MSP. It creates JavaFX/8 application
+ * thread.
  */
-public class MarsProjectFX extends Application  {
+public class MarsProjectFX extends Application {
 
-    /** initialized logger for this class. */
-    private static Logger logger = Logger.getLogger(MarsProjectFX.class.getName());
+	/** initialized logger for this class. */
+	private static Logger logger = Logger.getLogger(MarsProjectFX.class.getName());
 
 	static String[] args;
 
-	private static final String manpage = "\n> java -jar mars-sim-main-[version/build].jar\n"
-		+ "                    (Note : start a new sim)\n"
-		+ "   or  \n"
-		+ "\n"
-		+ "> java -jar jarfile [args...]\n"
-		+ "                    (Note : start mars-sim with arguments)\n"
-		+ "\n"
-		+ "  where args include :\n"
-		+ "\n"
-		+ "    new             start a new sim (by default)\n"
-		+ "                    (Note : if 'load' is absent, 'new' is automatically appended.)\n"
-		+ "    headless        run in console mode and without the graphical interface\n"
-		+ "    0               256MB Min, 1024MB Max (by default)\n"
-		+ "    1               256MB Min, 512MB Max\n"
-		+ "    2               256MB Min, 768MB Max\n"
-		+ "    3               256MB Min, 1024MB Max\n"
-		+ "    4               256MB Min, 1536MB Max\n"
-		+ "    5               256MB Min, 2048MB Max\n"
-		+ "    load            go to directory /.mars-sim/saved/ and wait for user to choose a saved sim\n"
-		+ "    load 123.sim    load the saved sim with filename '123.sim'\n"
-		+ "                    (Note : '123.sim' must be located at the same directory as the jarfile.)\n"
-		+ "    noaudio         disable background music and sound effect\n";
+	private static final String manpage = "\n> java -jar mars-sim-main-[$VERSION].jar\n"
+			+ "                    (Note : start a new sim)\n" + "   or  \n" + "\n" + "> java -jar jarfile [args...]\n"
+			+ "                    (Note : start mars-sim with arguments)\n" + "\n" + "  where args include :\n" + "\n"
+			+ "    new             start a new sim (by default)\n"
+			+ "                    (Note : if 'load' is absent, 'new' is automatically appended.)\n"
+			+ "    headless        run in console mode and without the graphical interface\n"
+			+ "    0               256MB Min, 1024MB Max (by default)\n" + "    1               256MB Min, 512MB Max\n"
+			+ "    2               256MB Min, 768MB Max\n" + "    3               256MB Min, 1024MB Max\n"
+			+ "    4               256MB Min, 1536MB Max\n" + "    5               256MB Min, 2048MB Max\n"
+			+ "    load            go to directory /.mars-sim/saved/ and wait for user to choose a saved sim\n"
+			+ "    load 123.sim    load the saved sim with filename '123.sim'\n"
+			+ "                    (Note : '123.sim' must be located at the same directory as the jarfile.)\n"
+			+ "    noaudio         disable background music and sound effect\n";
 
-	
-    /** true if displaying graphic user interface. */
-    private boolean headless = false;
-    private boolean newSim = false;
-    private boolean loadSim = false;
-    private boolean savedSim = false;
-    private boolean noaudio = false;
-    /** true if help documents should be generated from config xml files. */
-    private boolean generateHTML = false;
-    private boolean helpPage = false;
+	/** true if displaying graphic user interface. */
+	private boolean headless = false;
+	private boolean newSim = false;
+	private boolean loadSim = false;
+	private boolean savedSim = false;
+	private boolean noaudio = false;
+	/** true if help documents should be generated from config xml files. */
+	private boolean generateHTML = false;
+	private boolean helpPage = false;
 
-    //private boolean isDone;
+	// private boolean isDone;
 
-    private String loadFileString;
+	private String loadFileString;
 
-    private MainMenu mainMenu;
+	private MainMenu mainMenu;
 
-    private List<String> argList;
+	private List<String> argList;
 
-    private static Simulation sim = Simulation.instance();
+	private static Simulation sim = Simulation.instance();
 
-    /*
-     * Default Constructor
-     */
-    //public MarsProjectFX() {
-	   	//logger.info("MarsProjectFX's constructor is on " + Thread.currentThread().getName());
-    	//marsProjectFX = this;
-/*
-		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
-        System.out.println(javaCompiler.toString());
-
-        Set<SourceVersion> sourceVersion;
-        sourceVersion = javaCompiler.getSourceVersions();
-
-        for (SourceVersion version : sourceVersion) {
-            System.out.print(version.name() + "\n");
-        }
-
-        System.out.print("availableProcessors = " + Runtime.getRuntime().availableProcessors() + "\n");
-*/
-    //}
+//    /*
+//     * Default Constructor
+//     */
+//    public MarsProjectFX() {
+//	   	//logger.info("MarsProjectFX's constructor is on " + Thread.currentThread().getName());
+//    	//marsProjectFX = this;
+//
+//		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
+//        System.out.println(javaCompiler.toString());
+//
+//        Set<SourceVersion> sourceVersion;
+//        sourceVersion = javaCompiler.getSourceVersions();
+//
+//        for (SourceVersion version : sourceVersion) {
+//            System.out.print(version.name() + "\n");
+//        }
+//
+//        System.out.print("availableProcessors = " + Runtime.getRuntime().availableProcessors() + "\n");
+//
+//    }
 
 	/*
-     * Initiates any tasks or methods on a JavaFX-Launcher Thread
-     * @see javafx.application.Application#init()
-     */
-    @SuppressWarnings("restriction")
+	 * Initiates any tasks or methods on a JavaFX-Launcher Thread
+	 * 
+	 * @see javafx.application.Application#init()
+	 */
 	@Override
-    public final void init() throws Exception {
-	   	//logger.info("MarsProjectFX's init() is on " + Thread.currentThread().getName() );
-	   	// INFO: MarsProjectFX's init() is on JavaFX-Launcher Thread
+	public final void init() throws Exception {
+		// logger.info("MarsProjectFX's init() is on " +
+		// Thread.currentThread().getName() );
+		// INFO: MarsProjectFX's init() is on JavaFX-Launcher Thread
 		setLogging();
 		setDirectory();
-        // general text antialiasing
-        System.setProperty("swing.aatext", "true");
-        //System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
-        //Properties props = System.getProperties();
-        //props.setProperty("swing.jlf.contentPaneTransparent", "true");
+		// general text antialiasing
+		System.setProperty("swing.aatext", "true");
+		// System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
+		// Properties props = System.getProperties();
+		// props.setProperty("swing.jlf.contentPaneTransparent", "true");
 
-    	//logger.info(Simulation.title);
-    	LogConsolidated.log(logger, Level.INFO, 0, logger.getName(), Simulation.title, null);
+		// logger.info(Simulation.title);
+		LogConsolidated.log(logger, Level.INFO, 0, logger.getName(), Simulation.title, null);
 
-        //System.getProperty("java.version").compareTo("1.7.0_45") >= 0;
+		// System.getProperty("java.version").compareTo("1.7.0_45") >= 0;
 
-    	boolean good2Go = true;
-    	
-        String major = null;
-        String minor = null;
-        //String update = null; 
-        String build = null;
-        //String dateStamp = null;
+		boolean good2Go = true;
 
-        // see http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#getProperties%28%29
+		String major = null;
+		String minor = null;
+		// String update = null;
+		String build = null;
+		// String dateStamp = null;
 
-        //String bit = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
+		// see
+		// http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#getProperties%28%29
 
-        //String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b| ");
-        String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|_| ");
+		// String bit = (System.getProperty("os.arch").contains("64") ? "64-bit" :
+		// "32-bit");
 
-        // e.g. 8.0.111 (Thu Nov 24 14:50:47 UTC 2016) in case of openjdk 8 in linux
-        major = javaVersionElements[0];
-        minor   = javaVersionElements[1];
-        //update  = javaVersionElements[2];
+		// String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b| ");
+		String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|_| ");
 
-        if (javaVersionElements.length > 3) {
-        	build = javaVersionElements[3];
-        	//dateStamp = Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
-        }
+		// e.g. 8.0.111 (Thu Nov 24 14:50:47 UTC 2016) in case of openjdk 8 in linux
+		major = javaVersionElements[0];
+		minor = javaVersionElements[1];
+		// update = javaVersionElements[2];
 
-        double majorNum = Double.parseDouble(major);
-        double minorNum = Double.parseDouble(minor);
-        
+		if (javaVersionElements.length > 3) {
+			build = javaVersionElements[3];
+			// dateStamp =
+			// Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
+		}
+
+		double majorNum = Double.parseDouble(major);
+		double minorNum = Double.parseDouble(minor);
+
 //        System.out.println(major);
 //        System.out.println(minor);
 //        System.out.println(update);
 //        System.out.println(build);
-        
-    	if (majorNum > 8) {
-    		// see https://docs.oracle.com/javase/9/migrate/toc.htm#JSMIG-GUID-3A71ECEF-5FC5-46FE-9BA9-88CBFCE828CB
-    		// In Java 9, the format of the new version-string is: $MAJOR.$MINOR.$SECURITY.$PATCH
-    		// Under the old scheme, the Java 9u5 security release would have the version string 1.9.0_5-b20.
-    		// Under the new scheme, the short version of the same release is 9.0.1, and the long version is 9.0.1+20.
 
-    		// e.g.
-    		// In Java 8, majorNum has always been "1". minorNum is "8".
-    		// In Java 9.0.4, majorNum becomes "9". minorNum is "0". update is "4".
-    		// In Java 10.0.1, majorNum is "10".minorNum is "0". update is "1".
-    		
-    		//exitWithError("Note: mars-sim is currently incompatible with Java 9/10/11. It requires Java 8 (8u77 or above). Terminated.");
-    		
-    		good2Go = true;
-            logger.log(Level.INFO, "Note: it is still experimental in running mars-sim under Java 9/10/11.");
-    	}
-    	
-    	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
-    	else if (minorNum < 8) {
-    		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
-    		
-    		good2Go = false;
-    		exitWithError("Note: mars-sim is incompatible with Java 7 and below. It requires Java 8 (8u77 or above). Terminated.");
-    	}
-    	
-    	else if ("8".equals(minor) && Double.parseDouble(build) < 77.0) {
-    		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77. Terminating...");
-    		good2Go = false;
-    		exitWithError("Note: mars-sim requires at least Java 8u77. Terminated.");
-    	}
-    	
-    	else {
-    		good2Go = true;
-    	}
-	
-    	if (good2Go) {
-    		
-    		argList = Arrays.asList(args);
-            newSim = argList.contains("-new");
-            loadSim = argList.contains("-load");
-    		generateHTML = argList.contains("-html");
-    		helpPage = argList.contains("-help");
-    		noaudio = argList.contains("-noaudio");
-    		//savedSim = argList.contains(".sim");
+		if (majorNum > 8) {
+			// see
+			// https://docs.oracle.com/javase/9/migrate/toc.htm#JSMIG-GUID-3A71ECEF-5FC5-46FE-9BA9-88CBFCE828CB
+			// In Java 9, the format of the new version-string is:
+			// $MAJOR.$MINOR.$SECURITY.$PATCH
+			// Under the old scheme, the Java 9u5 security release would have the version
+			// string 1.9.0_5-b20.
+			// Under the new scheme, the short version of the same release is 9.0.1, and the
+			// long version is 9.0.1+20.
 
-    		if (generateHTML || helpPage || argList.contains("-headless"))
-    			headless = true;
+			// e.g.
+			// In Java 8, majorNum has always been "1". minorNum is "8".
+			// In Java 9.0.4, majorNum becomes "9". minorNum is "0". update is "4".
+			// In Java 10.0.1, majorNum is "10".minorNum is "0". update is "1".
 
-        	int size = argList.size();
-        	boolean flag = true;
-    		for (int i= 0; i<size; i++) {
-    			if (argList.get(i).contains(".sim")) {
-    				if (flag) {
-    					loadFileString = argList.get(i);
-    					savedSim = true;
-    					flag = false;
-    				}
-    				else {
-    					exitWithError("Cannot load more than one saved sim.");
-    				}
-    			}
-    		}
+			// exitWithError("Note: mars-sim is currently incompatible with Java 9/10/11. It
+			// requires Java 8 (8u77 or above). Terminated.");
 
-    	   	sim.startSimExecutor();
-    	   	sim.getSimExecutor().execute(new SimulationTask());
-    	}
+			good2Go = true;
+			logger.log(Level.INFO, "Note: it is still experimental in running mars-sim under Java 9/10/11.");
+		}
 
-    }
+		// if (!vendor.startsWith("Oracle") || // TODO: find out if other vendor's VM
+		// works
+		else if (minorNum < 8) {
+			// logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77.
+			// Terminating...");
+
+			good2Go = false;
+			exitWithError(
+					"Note: mars-sim is incompatible with Java 7 and below. It requires Java 8 (8u77 or above). Terminated.");
+		}
+
+		else if ("8".equals(minor) && Double.parseDouble(build) < 77.0) {
+			// logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77.
+			// Terminating...");
+			good2Go = false;
+			exitWithError("Note: mars-sim requires at least Java 8u77. Terminated.");
+		}
+
+		else {
+			good2Go = true;
+		}
+
+		if (good2Go) {
+
+			argList = Arrays.asList(args);
+			newSim = argList.contains("-new");
+			loadSim = argList.contains("-load");
+			generateHTML = argList.contains("-html");
+			helpPage = argList.contains("-help");
+			noaudio = argList.contains("-noaudio");
+			// savedSim = argList.contains(".sim");
+
+			if (generateHTML || helpPage || argList.contains("-headless"))
+				headless = true;
+
+			int size = argList.size();
+			boolean flag = true;
+			for (int i = 0; i < size; i++) {
+				if (argList.get(i).contains(".sim")) {
+					if (flag) {
+						loadFileString = argList.get(i);
+						savedSim = true;
+						flag = false;
+					} else {
+						exitWithError("Cannot load more than one saved sim.");
+					}
+				}
+			}
+
+			sim.startSimExecutor();
+			sim.getSimExecutor().execute(new SimulationTask());
+		}
+
+	}
 
 	public class SimulationTask implements Runnable {
 		public void run() {
 			prepare();
 		}
-    }
+	}
 
 	public void prepare() {
-        SimulationConfig.loadConfig();
+		SimulationConfig.loadConfig();
 
-	    if (!headless) {
-	    	// Using GUI mode
-	    	if (Simulation.OS.startsWith ("Windows")) {
-	    		System.setProperty( "sun.java2d.noddraw", "false" );
-	    		System.setProperty( "sun.java2d.ddscale","true" );
-	    		System.setProperty( "sun.java2d.ddforcevram", "true" );
-	    	}
-	    	//logger.info("Running " + Simulation.OS + " in GUI mode");
-	    	//if (Simulation.OS.startsWith ("Mac"))
-	    	//	System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX, causing delay in JPopMenu in Windows
-	       	// Enable capability of loading of svg image using regular method
-	    	//SvgImageLoaderFactory.install();
-		   	if (newSim) {
-		   		// CASE D1 and D2 //
-		   		// Note 1 : should NOT run createNewSimulation() until after clicking "Start" in Config Editor
-	   		}
-
-	   		else if (loadSim) {
-		   		// CASE E //
-	   		}
-
-		} else {
-				
-			// Using -headless (GUI-less mode)
+		if (!headless) {
+			// Using GUI mode
+			if (Simulation.OS.startsWith("Windows")) {
+				System.setProperty("sun.java2d.noddraw", "false");
+				System.setProperty("sun.java2d.ddscale", "true");
+				System.setProperty("sun.java2d.ddforcevram", "true");
+			}
+			// logger.info("Running " + Simulation.OS + " in GUI mode");
+			// if (Simulation.OS.startsWith ("Mac"))
+			// System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX,
+			// causing delay in JPopMenu in Windows
+			// Enable capability of loading of svg image using regular method
+			// SvgImageLoaderFactory.install();
 			if (newSim) {
-		   		// CASE A //
-				logger.info("Starting a new sim in headless mode in " + Simulation.OS);
-				// Initialize the simulation.
-	        	Simulation.createNewSimulation(-1);
-			    // Start the simulation.
-			    startSimulation(true);
+				// CASE D1 and D2 //
+				// Note 1 : should NOT run createNewSimulation() until after clicking "Start" in
+				// Config Editor
 			}
 
 			else if (loadSim) {
-		   		// CASE B //
-				// Initialize the simulation.
-	        	Simulation.createNewSimulation(-1);
-
-	        	if (savedSim) {
-
-	                File loadFile = new File(loadFileString);
-
-		            try {
-		            	// try to see if user enter his own saved sim after the "load" argument
-		                handleLoadSimulation(loadFile);
-
-		            } catch (Exception e) {
-		                e.printStackTrace();
-		                showError("Could not load the user's saved sim.", e);
-		            }
-	        	}
-
-	        	else {
-	        		// if user wants to load the default saved sim
-	        		try {
-	                	// try loading default.sim instead
-	                	handleLoadDefaultSimulation();
-
-		            } catch (Exception e2) {
-		                e2.printStackTrace();
-		            	exitWithError("Could not load the default saved sim.", e2);
-		                //showError("Could not load the default saved sim. Starting a new sim now. ", e2);
-		            }
-	        	}
+				// CASE E //
 			}
-			// 2016-06-06 Generated html files for in-game help
+
+		} else {
+
+			// Using -headless (GUI-less mode)
+			if (newSim) {
+				// CASE A //
+				logger.info("Starting a new sim in headless mode in " + Simulation.OS);
+				// Initialize the simulation.
+				Simulation.createNewSimulation(-1);
+				// Start the simulation.
+				startSimulation(true);
+			}
+
+			else if (loadSim) {
+				// CASE B //
+				// Initialize the simulation.
+				Simulation.createNewSimulation(-1);
+
+				if (savedSim) {
+
+					File loadFile = new File(loadFileString);
+
+					try {
+						// try to see if user enter his own saved sim after the "load" argument
+						handleLoadSimulation(loadFile);
+
+					} catch (Exception e) {
+						e.printStackTrace();
+						showError("Could not load the user's saved sim.", e);
+					}
+				}
+
+				else {
+					// if user wants to load the default saved sim
+					try {
+						// try loading default.sim instead
+						handleLoadDefaultSimulation();
+
+					} catch (Exception e2) {
+						e2.printStackTrace();
+						exitWithError("Could not load the default saved sim.", e2);
+						// showError("Could not load the default saved sim. Starting a new sim now. ",
+						// e2);
+					}
+				}
+			}
+			// Generate html files for in-game help
 			else if (generateHTML) {
-		   		// CASE C //
+				// CASE C //
 				logger.info("Generating help files in headless mode in " + Simulation.OS);
 
 				try {
-		            SimulationConfig.loadConfig();
-		    	    // this will generate html files for in-game help based on config xml files
-		    	    // 2016-04-16 Relocated the following to handleNewSimulation() right before calling ScenarioConfigEditorFX.
-		    	    HelpGenerator.generateHtmlHelpFiles();
-		    	    logger.info("Done creating help files.");
-			        Platform.exit();
-			        System.exit(1);
+					SimulationConfig.loadConfig();
+					// this will generate html files for in-game help based on config xml files
+					// Relocate the following to handleNewSimulation() right before calling
+					// ScenarioConfigEditorFX.
+					HelpGenerator.generateHtmlHelpFiles();
+					logger.info("Done creating help files.");
+					Platform.exit();
+					System.exit(1);
 
-		        } catch (Exception e) {
-		            e.printStackTrace();
-		            exitWithError("Could not generate help files ", e);
-		        }
-			}
-			else if (helpPage) {
-		   		// CASE D //
-				//logger.info("Displaying help instructions in headless mode in " + Simulation.OS);
-	        	System.out.println(manpage);
-		        Platform.exit();
-		        System.exit(1);
+				} catch (Exception e) {
+					e.printStackTrace();
+					exitWithError("Could not generate help files ", e);
+				}
+			} else if (helpPage) {
+				// CASE D //
+				// logger.info("Displaying help instructions in headless mode in " +
+				// Simulation.OS);
+				System.out.println(manpage);
+				Platform.exit();
+				System.exit(1);
 			}
 		}
 	}
 
 	@Override
-	public void start(Stage primaryStage) {	
-	   	//logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName());
-	   	if (!headless) {
-		   //logger.info("start() : in GUI mode, loading the Main Menu");
+	public void start(Stage primaryStage) {
+		// logger.info("MarsProjectFX's start() is on " +
+		// Thread.currentThread().getName());
+		if (!headless) {
+			// logger.info("start() : in GUI mode, loading the Main Menu");
 
-	   		mainMenu = new MainMenu();
-	   		
-	   		if (newSim) {
-		   		// CASE D1 and D2//
-	   	    	logger.info("Starting a new sim in GUI mode in " + Simulation.OS);
-	   			mainMenu.initMainMenu(primaryStage);
+			mainMenu = new MainMenu();
 
-		   		// Now in the Main Menu, wait for user to pick either options
-		   		// 1. 'New Sim' - call runOne(), go to ScenarioConfigEditorFX
-		   		// 2. 'Load Sim' -call runTwo(), need to call sim.runStartTask(false);
-	   		}
+			if (newSim) {
+				// CASE D1 and D2//
+				logger.info("Starting a new sim in GUI mode in " + Simulation.OS);
+				mainMenu.initMainMenu(primaryStage);
 
-	   		else if (loadSim) {
-		   		// CASE E //
+				// Now in the Main Menu, wait for user to pick either options
+				// 1. 'New Sim' - call runOne(), go to ScenarioConfigEditorFX
+				// 2. 'Load Sim' -call runTwo(), need to call sim.runStartTask(false);
+			}
 
-	        	if (savedSim) {
+			else if (loadSim) {
+				// CASE E //
+
+				if (savedSim) {
 
 					logger.info("Loading user's saved sim in GUI mode in " + Simulation.OS);
 
-	        		File loadFile = new File(loadFileString);
+					File loadFile = new File(loadFileString);
 
-		            try {
-		            	// load loadFile directly without opening the FileChooser
-		            	mainMenu.loadSim(loadFile);
+					try {
+						// load loadFile directly without opening the FileChooser
+						mainMenu.loadSim(loadFile);
 
-		            } catch (Exception e) {
-		                e.printStackTrace();
-		                exitWithError("Could not load the user's saved sim. ", e);
+					} catch (Exception e) {
+						e.printStackTrace();
+						exitWithError("Could not load the user's saved sim. ", e);
 
-		            }
-	        	}
+					}
+				}
 
-	        	else {
-	        		// if user wants to load the default saved sim
+				else {
+					// if user wants to load the default saved sim
 					logger.info("Loading a saved sim with FileChooser in GUI mode in " + Simulation.OS);
 
-	        		try {
-	                	// load FileChooser instead
-			   			mainMenu.loadSim(null);
-			   			// Then wait for user to select a saved sim to load in loadSim();
+					try {
+						// load FileChooser instead
+						mainMenu.loadSim(null);
+						// Then wait for user to select a saved sim to load in loadSim();
 
-		            } catch (Exception e2) {
-		                //e2.printStackTrace();
-		            	exitWithError("Could not load the default saved sim. ", e2);
+					} catch (Exception e2) {
+						// e2.printStackTrace();
+						exitWithError("Could not load the default saved sim. ", e2);
 
-		            }
-	        	}
-	   		}
-	   		
+					}
+				}
+			}
+
 			if (noaudio) {
 				logger.info("noaudio argument detected. Turn off sound.");
 				// Use MainMenu to save the sound state
@@ -551,18 +557,15 @@ public class MarsProjectFX extends Application  {
 		}
 
 		else {
-		   	logger.info("Entering headless mode and skip loading the Main Menu");
-		   	if (newSim) {
-		   	// CASE A //
-	   		}
-	   		else if (loadSim) {
-		   		// CASE B //
-	   		}
-			else if (generateHTML) {
-		   		// CASE C //
-			}
-			else if (helpPage) {
-		   		// CASE D //
+			logger.info("Entering headless mode and skip loading the Main Menu");
+			if (newSim) {
+				// CASE A //
+			} else if (loadSim) {
+				// CASE B //
+			} else if (generateHTML) {
+				// CASE C //
+			} else if (helpPage) {
+				// CASE D //
 			}
 		}
 	}
@@ -571,197 +574,204 @@ public class MarsProjectFX extends Application  {
 		return argList;
 	}
 
-    /**
-     * Loads the simulation from the default save file.
-     * @throws Exception if error loading the default saved simulation.
-     */
-    private void handleLoadDefaultSimulation() {
-		//logger.info("MarsProjectFX's handleLoadDefaultSimulation() is on "+Thread.currentThread().getName());
+	/**
+	 * Loads the simulation from the default save file.
+	 * 
+	 * @throws Exception if error loading the default saved simulation.
+	 */
+	private void handleLoadDefaultSimulation() {
+		// logger.info("MarsProjectFX's handleLoadDefaultSimulation() is on
+		// "+Thread.currentThread().getName());
 		logger.info("Loading the default saved sim in headless mode in " + Simulation.OS);
 
-    	try {
-            // Load the default saved file "default.sim"
-            sim.loadSimulation(null);
+		try {
+			// Load the default saved file "default.sim"
+			sim.loadSimulation(null);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            exitWithError("Could not load default simulation", e);
-        }
+		} catch (Exception e) {
+			e.printStackTrace();
+			exitWithError("Could not load default simulation", e);
+		}
 
-	    // Start the simulation.
-	    startSimulation(true);
-    }
-
-
-    /**
-     * Loads the simulation from a save file.
-     * @param argList the command argument list.
-     * @throws Exception if error loading the saved simulation.
-     */
-    void handleLoadSimulation(File loadFile) throws Exception {
-		//logger.info("MarsProjectFX's handleLoadSimulation() is on "+Thread.currentThread().getName() );
-    	// INFO: MarsProjectFX's handleLoadSimulation() is in JavaFX Application Thread Thread
-		logger.info("Loading user's saved sim in headless mode in " + Simulation.OS);
-    	try {
-
-            if (loadFile.exists() && loadFile.canRead()) {
-
-                sim.loadSimulation(loadFile);
-
-        		//2017-04-07 Add newInstance()
-        		//AmountResource.newInstance();
-
-			    // Start the simulation.
-			    startSimulation(false);
-
-            } else {
-                exitWithError("Could not load the simulation. The sim file " + loadFile +
-                        " could not be read or found.", null);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            exitWithError("Error : problem loading the simulation ", e);
-            //logger.log(Level.SEVERE, "Problem loading existing simulation", e);
-        }
-    }
-
-    /**
-     * Create a new simulation instance.
-     */
-    void handleNewSimulation() {
-		//logger.info("MarsProjectFX's handleNewSimulation() is on "+Thread.currentThread().getName() );
-		// MarsProjectFX's handleNewSimulation() is in JavaFX Application Thread Thread
-		//isDone = true;
-		logger.info("Creating a new sim in " + Simulation.OS);
-        try {
-            //SimulationConfig.loadConfig(); // located to prepare()
-           	sim.getSimExecutor().execute(new ConfigEditorTask());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            exitWithError("Error : could not create a new simulation ", e);
-        }
-    }
-
-	public class ConfigEditorTask implements Runnable {
-		  public void run() {
-			  //logger.info("MarsProjectFX's ConfigEditorTask's run() is on " + Thread.currentThread().getName() );
-			  new ScenarioConfigEditorFX(mainMenu);
-		  }
+		// Start the simulation.
+		startSimulation(true);
 	}
 
-    /**
-     * Start the simulation instance.
-     * @param autosaveDefaultName use the default name for autosave
-     */
-    public void startSimulation(boolean autosaveDefaultName) {
-		//logger.info("MarsProjectFX's startSimulation() is on "+Thread.currentThread().getName() );
-        // Start the simulation.
-        sim.start(autosaveDefaultName);
-    }
+	/**
+	 * Loads the simulation from a save file.
+	 * 
+	 * @param argList the command argument list.
+	 * @throws Exception if error loading the saved simulation.
+	 */
+	void handleLoadSimulation(File loadFile) throws Exception {
+		// logger.info("MarsProjectFX's handleLoadSimulation() is on
+		// "+Thread.currentThread().getName() );
+		// INFO: MarsProjectFX's handleLoadSimulation() is in JavaFX Application Thread
+		// Thread
+		logger.info("Loading user's saved sim in headless mode in " + Simulation.OS);
+		try {
 
-    /**
-     * Exit the simulation with an error message.
-     * @param message the error message.
-     * @param e the thrown exception or null if none.
-     */
-    private void exitWithError(String message, Exception e) {
-        showError(message, e);
-        Platform.exit();
-        System.exit(1);
-    }
+			if (loadFile.exists() && loadFile.canRead()) {
 
-    /**
-     * Exit the simulation with an error message.
-     * @param message the error message.
-     */
-    private void exitWithError(String message) {
-        logger.log(Level.SEVERE, message);
-        Platform.exit();
-        System.exit(1);
-    }
+				sim.loadSimulation(loadFile);
 
-    /**
-     * Show a modal error message dialog.
-     * @param message the error message.
-     * @param e the thrown exception or null if none.
-     */
-    private void showError(String message, Exception e) {
-        if (e != null) {
-            logger.log(Level.SEVERE, message, e);
-        }
-        else {
-            logger.log(Level.SEVERE, message);
-        }
+				// 2017-04-07 Add newInstance()
+				// AmountResource.newInstance();
 
-        //if (!headless) {
-        //	if (!Simulation.OS.contains("mac"))
-        //		JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-        	// Warning: cannot load the editor in macosx if it was a JDialog
-        //}
-    }
+				// Start the simulation.
+				startSimulation(false);
 
-    public void setDirectory() {
-        new File(System.getProperty("user.home"), Simulation.MARS_SIM_DIRECTORY + File.separator + "logs").mkdirs();
-    }
+			} else {
+				exitWithError(
+						"Could not load the simulation. The sim file " + loadFile + " could not be read or found.",
+						null);
+			}
 
+		} catch (Exception e) {
+			e.printStackTrace();
+			exitWithError("Error : problem loading the simulation ", e);
+			// logger.log(Level.SEVERE, "Problem loading existing simulation", e);
+		}
+	}
 
-    public void setLogging() {
-    	//logger.info("setLogging() is on " + Thread.currentThread().getName() );
-        try {
-            LogManager.getLogManager().readConfiguration(MarsProjectFX.class.getResourceAsStream("/logging.properties"));
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Could not load logging properties", e);
-            try {
-                LogManager.getLogManager().readConfiguration();
-            } catch (IOException e1) {
-                logger.log(Level.WARNING, "Could read logging default config", e);
-            }
-        }
-    }
+	/**
+	 * Create a new simulation instance.
+	 */
+	void handleNewSimulation() {
+		// logger.info("MarsProjectFX's handleNewSimulation() is on
+		// "+Thread.currentThread().getName() );
+		// MarsProjectFX's handleNewSimulation() is in JavaFX Application Thread Thread
+		// isDone = true;
+		logger.info("Creating a new sim in " + Simulation.OS);
+		try {
+			// SimulationConfig.loadConfig(); // located to prepare()
+			sim.getSimExecutor().execute(new ConfigEditorTask());
 
-/*
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        if (appLaunch != null) {
-            appLaunch.start(this, primaryStage);
-        }
-    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			exitWithError("Error : could not create a new simulation ", e);
+		}
+	}
 
-    @Override
-    public void stop() throws Exception {
-	   	//logger.info("MarsProjectFX's stop is on " + Thread.currentThread().getName() );
-    }
-*/
-    
-    public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException{
-    	//logger.info("MarsProjectFX's main() is on " + Thread.currentThread().getName() + " Thread" );
-    	MarsProjectFX.args = args;
-/*
-        // 2015-10-13  Added command prompt console
-        Console console = System.console();
-        if(console == null && !GraphicsEnvironment.isHeadless()){
-            String filename = MarsProjectFX.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
-            Runtime.getRuntime().exec(new String[]{"cmd","/c","start","cmd","/k","java -jar \"" + filename + "\""});
-        }else{
-        	//MarsProjectFX.main(new String[0]);
-            System.out.println("Program has ended, please type 'exit' to close the console");
-        }
-*/
-/*    	
-    	for (String env: args) {
-            String value = System.getenv(env);
-            if (value != null) {
-                System.out.format("%s=%s%n",
-                                  env, value);
-            } else {
-                System.out.format("%s is"
-                    + " not assigned.%n", env);
-            }
-        }
-*/    	
-        launch(args);
-    }
+	public class ConfigEditorTask implements Runnable {
+		public void run() {
+			// logger.info("MarsProjectFX's ConfigEditorTask's run() is on " +
+			// Thread.currentThread().getName() );
+			new ScenarioConfigEditorFX(mainMenu);
+		}
+	}
+
+	/**
+	 * Start the simulation instance.
+	 * 
+	 * @param autosaveDefaultName use the default name for autosave
+	 */
+	public void startSimulation(boolean autosaveDefaultName) {
+		// logger.info("MarsProjectFX's startSimulation() is on
+		// "+Thread.currentThread().getName() );
+		// Start the simulation.
+		sim.start(autosaveDefaultName);
+	}
+
+	/**
+	 * Exit the simulation with an error message.
+	 * 
+	 * @param message the error message.
+	 * @param e       the thrown exception or null if none.
+	 */
+	private void exitWithError(String message, Exception e) {
+		showError(message, e);
+		Platform.exit();
+		System.exit(1);
+	}
+
+	/**
+	 * Exit the simulation with an error message.
+	 * 
+	 * @param message the error message.
+	 */
+	private void exitWithError(String message) {
+		logger.log(Level.SEVERE, message);
+		Platform.exit();
+		System.exit(1);
+	}
+
+	/**
+	 * Show a modal error message dialog.
+	 * 
+	 * @param message the error message.
+	 * @param e       the thrown exception or null if none.
+	 */
+	private void showError(String message, Exception e) {
+		if (e != null) {
+			logger.log(Level.SEVERE, message, e);
+		} else {
+			logger.log(Level.SEVERE, message);
+		}
+
+		// if (!headless) {
+		// if (!Simulation.OS.contains("mac"))
+		// JOptionPane.showMessageDialog(null, message, "Error",
+		// JOptionPane.ERROR_MESSAGE);
+		// Warning: cannot load the editor in macosx if it was a JDialog
+		// }
+	}
+
+	public void setDirectory() {
+		new File(System.getProperty("user.home"), Simulation.MARS_SIM_DIRECTORY + File.separator + "logs").mkdirs();
+	}
+
+	public void setLogging() {
+		// logger.info("setLogging() is on " + Thread.currentThread().getName() );
+		try {
+			LogManager.getLogManager()
+					.readConfiguration(MarsProjectFX.class.getResourceAsStream("/logging.properties"));
+		} catch (IOException e) {
+			logger.log(Level.WARNING, "Could not load logging properties", e);
+			try {
+				LogManager.getLogManager().readConfiguration();
+			} catch (IOException e1) {
+				logger.log(Level.WARNING, "Could read logging default config", e);
+			}
+		}
+	}
+
+	/*
+	 * @Override public void start(Stage primaryStage) throws Exception { if
+	 * (appLaunch != null) { appLaunch.start(this, primaryStage); } }
+	 * 
+	 * @Override public void stop() throws Exception {
+	 * //logger.info("MarsProjectFX's stop is on " +
+	 * Thread.currentThread().getName() ); }
+	 */
+
+	public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
+		// logger.info("MarsProjectFX's main() is on " +
+		// Thread.currentThread().getName() + " Thread" );
+		MarsProjectFX.args = args;
+
+//        // Add command prompt console
+//        Console console = System.console();
+//        if(console == null && !GraphicsEnvironment.isHeadless()){
+//            String filename = MarsProjectFX.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
+//            Runtime.getRuntime().exec(new String[]{"cmd","/c","start","cmd","/k","java -jar \"" + filename + "\""});
+//        }else{
+//        	//MarsProjectFX.main(new String[0]);
+//            System.out.println("Program has ended, please type 'exit' to close the console");
+//        }
+
+//    	for (String env: args) {
+//            String value = System.getenv(env);
+//            if (value != null) {
+//                System.out.format("%s=%s%n",
+//                                  env, value);
+//            } else {
+//                System.out.format("%s is"
+//                    + " not assigned.%n", env);
+//            }
+//        }
+//    	
+		launch(args);
+	}
 
 }

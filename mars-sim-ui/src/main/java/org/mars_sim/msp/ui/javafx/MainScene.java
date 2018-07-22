@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.javafx;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -240,10 +241,7 @@ public class MainScene implements ClockListener {
 	private static int theme = 6; // 6 is snow blue; 7 is the mud orange with nimrod
 
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
-	// private static final String ROUND_BUTTONS_DIR = "/icons/round_buttons/";
-	// private static final String PAUSE = "PAUSE";
-	// private static final String ESC_TO_RESUME = "ESC to resume";
-	// private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
+
 	private static final String LAST_SAVED = "Last Saved : ";
 	// private static final String EARTH_DATE_TIME = " ";//EARTH : ";
 	private static final String MARS_DATE_TIME = " ";// MARS : ";
@@ -263,13 +261,13 @@ public class MainScene implements ClockListener {
 	private static final String HZ = " Hz";
 	private static final String REFRESH = "Refresh Rate :";
 
-	private static final String SOLAR_LONGITUDE = "Solar Longitude : ";
+	private static final String SOLAR_LONGITUDE = "Areocentric Ls : ";//"Solar Longitude : ";
 	private static final String NOTE_MARS = " Note : Mars's now at ";
 	private static final String APHELION = "aphelion ";
 	private static final String PERIHELION = "perihelion ";
 
-	private static final String NORTH = "Northern : ";
-	private static final String SOUTH = "Southern : ";
+	private static final String NORTH = "Northern Hemi. : ";
+	private static final String SOUTH = "Southern Hemi. : ";
 
 	private static final String LABEL_CSS_STYLE = "-fx-background-color:transparent; -fx-text-fill: white;"
 			+ "-fx-font-size: 11px;" + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
@@ -385,6 +383,7 @@ public class MainScene implements ClockListener {
 	private Text yearText;
 	private Text northText;
 	private Text southText;
+	private Text radiusText;
 
 	private IconNode soundIcon;
 	private IconNode marsNetIcon;
@@ -458,6 +457,8 @@ public class MainScene implements ClockListener {
 	private AnimationTimer billboardTimer;
 
 	private static OrbitInfo orbitInfo;
+
+	private DecimalFormat df = new DecimalFormat("0.000");
 
 	/**
 	 * Constructor for MainScene
@@ -1352,31 +1353,9 @@ public class MainScene implements ClockListener {
 		Label refreshLabel0 = createLabelLeft(REFRESH, "The frequency the graphic is refreshed");
 		refreshLabel = createLabelRight("e.g. 1 Hz means once per second.");
 
-		/*
-		 * Label benchmarkLabel0 = new Label(BENCHMARK); //
-		 * upTimeLabel0.setEffect(blend);
-		 * benchmarkLabel0.setAlignment(Pos.CENTER_RIGHT);
-		 * benchmarkLabel0.setTextAlignment(TextAlignment.RIGHT);
-		 * benchmarkLabel0.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;" +
-		 * "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-		 * + "-fx-font-weight: italic;"); benchmarkLabel0.setPadding(new Insets(1, 1, 1,
-		 * 2)); setQuickToolTip(benchmarkLabel0,
-		 * "how well this machine perform in mars-sim \n (the lower the number the better the performance)"
-		 * ); //$NON-NLS-1$
-		 * 
-		 * benchmarkLabel = new Label(); benchmarkLabel.setAlignment(Pos.CENTER); //
-		 * upTimeLabel.setEffect(blend);
-		 * benchmarkLabel.setStyle("-fx-text-fill: #065185;" + "-fx-font-size: 12px;" +
-		 * "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
-		 * + "-fx-font-weight: italic;"); benchmarkLabel.setPadding(new Insets(1, 1, 1,
-		 * 2)); benchmarkLabel.setText(masterClock.getDiffCache() + "");
-		 * setQuickToolTip(benchmarkLabel, "a real time metric of performance");
-		 * //$NON-NLS-1$
-		 */
+
 		GridPane gridPane = new GridPane();
 		gridPane.getStyleClass().add("jfx-popup-container; -fx-background-color:transparent;");
-		// gridPane.getStyleClass().add("jfx-popup-container; -fx-background-radius:
-		// 10;");
 		gridPane.setAlignment(Pos.CENTER);
 		gridPane.setPadding(new Insets(5, 5, 5, 5));
 		gridPane.setHgap(1.0);
@@ -1393,7 +1372,6 @@ public class MainScene implements ClockListener {
 		GridPane.setConstraints(tpsLabel, 1, 3);
 		GridPane.setConstraints(upTimeLabel, 1, 4);
 		GridPane.setConstraints(refreshLabel, 1, 5);
-		// GridPane.setConstraints(benchmarkLabel, 1, 5);
 
 		GridPane.setConstraints(spinnerLabel0, 0, 0);
 		GridPane.setConstraints(defaultRatioLabel0, 0, 1);
@@ -1401,7 +1379,6 @@ public class MainScene implements ClockListener {
 		GridPane.setConstraints(tpsLabel0, 0, 3);
 		GridPane.setConstraints(upTimeLabel0, 0, 4);
 		GridPane.setConstraints(refreshLabel0, 0, 5);
-		// GridPane.setConstraints(benchmarkLabel0, 0, 5);
 
 		GridPane.setHalignment(timeRatioSpinner, HPos.CENTER);
 		GridPane.setHalignment(defaultRatioLabel, HPos.CENTER);
@@ -1409,7 +1386,6 @@ public class MainScene implements ClockListener {
 		GridPane.setHalignment(tpsLabel, HPos.CENTER);
 		GridPane.setHalignment(upTimeLabel, HPos.CENTER);
 		GridPane.setHalignment(refreshLabel, HPos.CENTER);
-		// GridPane.setHalignment(benchmarkLabel, HPos.CENTER);
 
 		GridPane.setHalignment(spinnerLabel0, HPos.RIGHT);
 		GridPane.setHalignment(defaultRatioLabel0, HPos.RIGHT);
@@ -1417,13 +1393,11 @@ public class MainScene implements ClockListener {
 		GridPane.setHalignment(tpsLabel0, HPos.RIGHT);
 		GridPane.setHalignment(upTimeLabel0, HPos.RIGHT);
 		GridPane.setHalignment(refreshLabel0, HPos.RIGHT);
-		// GridPane.setHalignment(benchmarkLabel0, HPos.RIGHT);
 
 		gridPane.getColumnConstraints().addAll(left, right);
 		gridPane.getChildren().addAll(spinnerLabel0, timeRatioSpinner, defaultRatioLabel0, defaultRatioLabel,
 				realTimeLabel0, realTimeLabel, tpsLabel0, tpsLabel, upTimeLabel0, upTimeLabel, refreshLabel0,
 				refreshLabel);
-		// , benchmarkLabel0, benchmarkLabel);
 
 		speedVBox = new VBox();
 		speedVBox.getStyleClass().add(PANE_CSS);
@@ -1657,12 +1631,6 @@ public class MainScene implements ClockListener {
 				}
 			}
 		});
-		/*
-		 * soundEffectMuteBox.setOnAction(e -> { if (!masterClock.isPaused()) { if
-		 * (soundEffectMuteBox.isSelected()) { mute(true, false); } else { unmute(true,
-		 * false); } } e.consume(); });
-		 */
-		// Label empty = new Label();
 
 		GridPane gridPane0 = new GridPane();
 		gridPane0.getStyleClass().add("jfx-popup-container ; -fx-background-color:transparent;");
@@ -1808,13 +1776,13 @@ public class MainScene implements ClockListener {
 		calPane.getStyleClass().add("jfx-popup-container; -fx-background-radius: 10;");
 		calPane.setAlignment(Pos.CENTER);
 		calPane.setPrefHeight(100);
-		calPane.setPrefWidth(140);
+		calPane.setPrefWidth(180);
 
 		VBox calBox = new VBox();
 		calBox.setPadding(new Insets(0, 3, 3, 3));
 		calBox.setAlignment(Pos.BOTTOM_CENTER);
 		calBox.getChildren().addAll(calPane);
-		setQuickToolTip(calBox, "Martian Calendar showing the 4 weeks for current month");
+		setQuickToolTip(calBox, "The Martian Calendar. Each month contains four weeks with 27 or 28 sols");
 
 		// Label header_label = createHeader("MARS CALENDAR");
 		Text header_label = createTextHeader("MARS CALENDAR PANEL");
@@ -1823,48 +1791,60 @@ public class MainScene implements ClockListener {
 		monthText = createBlendText(MONTH + marsClock.getMonthName());
 		yearText = createBlendText(ORBIT + marsClock.getOrbitString());
 
-		setQuickToolTip(monthText, "the current Martian month. Each orbit has 24 months with either 27 or 28 Sols");
+		setQuickToolTip(monthText, "the current Martian month. Each orbit has 24 months with either 27 or 28 sols");
 		setQuickToolTip(yearText,
-				"the current Martian orbit (or year). " + "Orbit 0015 coincides with Earth year 2043 CE");
+				"the current Martian orbit (or year). " + "Orbit 0000 coincides with Earth year 2028 CE");
 		// The Martian year is referred to as an "orbit". Each orbit has 668.59 Martian
 		// sols and
 		// is 668.5921 Martian days long.
 		HBox hBox = new HBox();
-		hBox.setPadding(new Insets(2, 15, 2, 15));
+		hBox.setPadding(new Insets(10, 15, 2, 15));
 		hBox.setAlignment(Pos.BOTTOM_CENTER);
 		hBox.getChildren().addAll(yearText, monthText);
 
 		Label LsLabel = new Label(SOLAR_LONGITUDE);
-		setQuickToolTip(LsLabel, "The Areocentric Solar Longitude (L_s) is the Mars-Sun angle for determining the Martian season");
+		setQuickToolTip(LsLabel, "The Areocentric Solar Longitude (Ls) is the Mars-Sun angle for determining the Martian season");
 
 		orbitInfo = sim.getMars().getOrbitInfo();
 		double L_s = orbitInfo.getL_s();
-		LSText = createBlendText(Math.round(L_s * 100D) / 100D + Msg.getString("direction.degreeSign")); //$NON-NLS-1$
+		LSText = createBlendText(df.format(Math.round(L_s * 1_000D) / 1_000D) + Msg.getString("direction.degreeSign")); //$NON-NLS-1$
 		setQuickToolTip(LSText,
-				"L_s in deg. For Northern hemisphere, " + "Spring equinox at L_s=0; Winter solstice at L_s=270."
-						+ "Summer solstice at L_s=90." + "Autumn equinox at L_s = 180.");
+				"Ls in degree. For Northern Hemisphere, " 
+						+ "Spring Equinox -> Ls = 0 ; "
+						+ "Summer Solstice -> Ls = 90 ; "
+						+ "Autumn Equinox -> Ls = 180 ; "
+						+ "Winter Solstice -> Ls = 270");
 
-		HBox LsBox = new HBox();
-		LsBox.setPadding(new Insets(2, 2, 2, 2));
-		LsBox.setAlignment(Pos.BOTTOM_CENTER);
-		LsBox.getChildren().addAll(LsLabel, LSText);
+//		HBox LsBox = new HBox();
+//		LsBox.setPadding(new Insets(2, 2, 2, 2));
+//		LsBox.setAlignment(Pos.BOTTOM_CENTER);
+//		LsBox.getChildren().addAll(LsLabel, LSText);
+
+		Label radiusLabel = new Label("Mars-to-Sun : ");
+		setQuickToolTip(radiusLabel, "The distance between Mars and Sun in A.U.");
+		double radius = orbitInfo.getDistanceToSun();
+		radiusText = createBlendText(Math.round(radius * 10_000D) / 10_000D + " A.U.");
 
 		Label northLabel = new Label(NORTH);
 		Label southLabel = new Label(SOUTH);
+		setQuickToolTip(northLabel, "The season in the Northern hemisphere of Mars");
+		setQuickToolTip(southLabel, "The season in the Southern hemisphere of Mars");
+		
 		northText = createBlendText(marsClock.getSeason(MarsClock.NORTHERN_HEMISPHERE));
 		southText = createBlendText(marsClock.getSeason(MarsClock.SOUTHERN_HEMISPHERE));
-		setQuickToolTip(northText, "the current season in the Northern hemisphere");
-		setQuickToolTip(southText, "the current season in the Southern hemisphere");
+		setQuickToolTip(northText, "Can be Early/Mid/Late Spring/Summer/Autumn/Winter.");
+		setQuickToolTip(southText, "Can be Early/Mid/Late Spring/Summer/Autumn/Winter.");
 
-		HBox northBox = new HBox();
-		northBox.setPadding(new Insets(2, 2, 2, 2));
-		northBox.setAlignment(Pos.BOTTOM_CENTER);
-		northBox.getChildren().addAll(northLabel, northText);
-
-		HBox southBox = new HBox();
-		southBox.setPadding(new Insets(2, 2, 2, 2));
-		southBox.setAlignment(Pos.BOTTOM_CENTER);
-		southBox.getChildren().addAll(southLabel, southText);
+		
+//		HBox northBox = new HBox();
+//		northBox.setPadding(new Insets(2, 2, 2, 2));
+//		northBox.setAlignment(Pos.BOTTOM_CENTER);
+//		northBox.getChildren().addAll(northLabel, northText);
+//
+//		HBox southBox = new HBox();
+//		southBox.setPadding(new Insets(2, 2, 2, 2));
+//		southBox.setAlignment(Pos.BOTTOM_CENTER);
+//		southBox.getChildren().addAll(southLabel, southText);
 
 		noteLabel = new Label();
 		// noteText = new Text();
@@ -1873,10 +1853,45 @@ public class MainScene implements ClockListener {
 		noteLabel.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
 				+ "-fx-font-size: 12px;" + "-fx-text-fill: #654b00;");
 
+		GridPane gridPane = new GridPane();
+		gridPane.getStyleClass().add("jfx-popup-container; -fx-background-color:transparent;");
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setPadding(new Insets(5, 5, 5, 5));
+		gridPane.setHgap(1.0);
+		gridPane.setVgap(1.0);
+
+		ColumnConstraints right = new ColumnConstraints();
+		right.setPrefWidth(80);// earthTimeButton.getPrefWidth() * .6);
+		ColumnConstraints left = new ColumnConstraints();
+		left.setPrefWidth(110);// earthTimeButton.getPrefWidth() * .4);
+
+		GridPane.setConstraints(LSText, 1, 0);
+		GridPane.setConstraints(radiusText, 1, 1);
+		GridPane.setConstraints(northText, 1, 2);
+		GridPane.setConstraints(southText, 1, 3);
+
+		GridPane.setConstraints(LsLabel, 0, 0);
+		GridPane.setConstraints(radiusLabel, 0, 1);
+		GridPane.setConstraints(northLabel, 0, 2);
+		GridPane.setConstraints(southLabel, 0, 3);
+
+		GridPane.setHalignment(LSText, HPos.CENTER);
+		GridPane.setHalignment(radiusText, HPos.CENTER);
+		GridPane.setHalignment(northText, HPos.CENTER);
+		GridPane.setHalignment(southText, HPos.CENTER);
+
+		GridPane.setHalignment(LsLabel, HPos.RIGHT);
+		GridPane.setHalignment(radiusLabel, HPos.RIGHT);
+		GridPane.setHalignment(northLabel, HPos.RIGHT);
+		GridPane.setHalignment(southLabel, HPos.RIGHT);
+
+		gridPane.getColumnConstraints().addAll(left, right);
+		gridPane.getChildren().addAll(LsLabel, LSText, radiusLabel, radiusText, northLabel, northText, southLabel, southText);
+		
 		VBox vBox = new VBox();
 		vBox.setPadding(new Insets(1, 5, 1, 5));
 		vBox.setAlignment(Pos.CENTER);
-		vBox.getChildren().addAll(header_label, hBox, calBox, LsBox, northBox, southBox, noteLabel);
+		vBox.getChildren().addAll(header_label, hBox, calBox, gridPane, noteLabel);
 
 		calendarPane = new StackPane(vBox);
 		calendarPane.getStyleClass().add("jfx-popup-container");
@@ -3116,8 +3131,11 @@ public class MainScene implements ClockListener {
 			calendarDisplay.update();
 
 			double L_s = orbitInfo.getL_s();
-			LSText.setText(Math.round(L_s * 100D) / 100D + Msg.getString("direction.degreeSign"));
+			LSText.setText(df.format(Math.round(L_s * 1_000D) / 1_000D) + Msg.getString("direction.degreeSign")); //$NON-NLS-1$
 
+			double radius = orbitInfo.getDistanceToSun();
+			radiusText.setText(Math.round(radius * 10_000D) / 10_000D + " A.U.");
+			
 			if (L_s > 68 && L_s < 72) {
 				noteLabel.setText(NOTE_MARS + APHELION);
 
