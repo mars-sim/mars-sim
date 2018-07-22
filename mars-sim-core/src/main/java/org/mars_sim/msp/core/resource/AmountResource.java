@@ -165,6 +165,22 @@ implements Serializable {
 		return ResourceUtil.findAmountResource(resourceName);
 	}
 
+	public static AmountResource createBrandNewAR(
+			int id,
+			String name,
+			String type,
+			String description,
+			PhaseType phase,
+			boolean lifeSupport,
+			boolean edible
+			
+			) {
+		AmountResource ar = new AmountResource(id, name, type, description, phase, lifeSupport, edible);	
+		ResourceUtil.registerBrandNewAR(ar);
+		return ar;
+	}
+	
+
 	public void destroy() {
 
 		/*

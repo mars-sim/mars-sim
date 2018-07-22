@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -47,7 +48,7 @@ extends TestCase {
 	private static final String resourceName = "hammer";
 	private static final String description = "a tool";
 	private static final double massPerItem = 1.4D;
-	private static final int id = 1;
+	private static final int id = 1001;
 	private static final double waterAmount = 400D;
 
 	private static int oxygenID = ResourceUtil.oxygenID;
@@ -86,8 +87,9 @@ extends TestCase {
 		person.initialize();
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 100);
 		Vehicle vehicle = new MockVehicle(settlement);
-        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
-
+//        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
+        Part hammer = ItemResource.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
+        
 		Inventory vehicleInv = vehicle.getInventory();
 
 //		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
@@ -127,11 +129,11 @@ extends TestCase {
 		settlementInv.storeItemResources(hammerID, 5);
 
 		Map<Integer, Number> resourcesMap = new HashMap<Integer, Number>();
-		resourcesMap.put(oxygenID, new Double(100D));
-		resourcesMap.put(foodID, new Double(100D));
-		resourcesMap.put(waterID, new Double(waterAmount));
-		resourcesMap.put(methaneID, new Double(100D));
-		resourcesMap.put(soymilkID, new Double(20D));
+		resourcesMap.put(oxygenID, 100D);
+		resourcesMap.put(foodID, 100D);
+		resourcesMap.put(waterID, waterAmount);
+		resourcesMap.put(methaneID, 100D);
+		resourcesMap.put(soymilkID, 20D);
 		resourcesMap.put(hammerID, Integer.valueOf(5));
 		
 		
@@ -140,10 +142,10 @@ extends TestCase {
 		}
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
-		requiredResourcesMap.put(oxygenID, new Double(100D));
-		requiredResourcesMap.put(foodID, new Double(100D));
-		requiredResourcesMap.put(waterID, new Double(waterAmount));
-		requiredResourcesMap.put(methaneID, new Double(100D));
+		requiredResourcesMap.put(oxygenID, 100D);
+		requiredResourcesMap.put(foodID, 100D);
+		requiredResourcesMap.put(waterID, waterAmount);
+		requiredResourcesMap.put(methaneID, 100D);
 		requiredResourcesMap.put(hammerID, Integer.valueOf(5));
 
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
@@ -212,10 +214,11 @@ extends TestCase {
 	public void testHasEnoughSuppliesNoAmountResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
-        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
+//        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
+        Part hammer = ItemResource.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
 		int hammerID = hammer.getID();
 		
-		inv.storeItemResources(hammerID, 5);
+		inv.storeItemResources(hammer, 5);
 
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
@@ -227,10 +230,10 @@ extends TestCase {
 //		AmountResource methane = AmountResource.findAmountResource(METHANE);
 
 		Map<Integer, Number> resourcesMap = new HashMap<Integer, Number>();
-		resourcesMap.put(oxygenID, new Double(100D));
-		resourcesMap.put(foodID, new Double(100D));
-		resourcesMap.put(waterID, new Double(waterAmount));
-		resourcesMap.put(methaneID, new Double(100D));
+		resourcesMap.put(oxygenID, 100D);
+		resourcesMap.put(foodID, 100D);
+		resourcesMap.put(waterID, waterAmount);
+		resourcesMap.put(methaneID, 100D);
 		resourcesMap.put(hammerID, Integer.valueOf(5));
 
 		Map<Integer, Integer> equipmentMap = new HashMap<>();
@@ -245,7 +248,8 @@ extends TestCase {
 	public void testHasEnoughSuppliesNoItemResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
-        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
+//        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
+        Part hammer = ItemResource.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
 		int hammerID = hammer.getID();
 		
 //		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
@@ -267,10 +271,10 @@ extends TestCase {
 		}
 
 		Map<Integer, Number> resourcesMap = new HashMap<Integer, Number>();
-		resourcesMap.put(oxygenID, new Double(100D));
-		resourcesMap.put(foodID, new Double(100D));
-		resourcesMap.put(waterID, new Double(waterAmount));
-		resourcesMap.put(methaneID, new Double(100D));
+		resourcesMap.put(oxygenID, 100D);
+		resourcesMap.put(foodID, 100D);
+		resourcesMap.put(waterID, waterAmount);
+		resourcesMap.put(methaneID, 100D);
 		resourcesMap.put(hammerID, Integer.valueOf(5));
 
 		Map<Integer, Integer> equipmentMap = new HashMap<>();
@@ -285,8 +289,9 @@ extends TestCase {
 	public void testHasEnoughSuppliesNoEquipment() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
-        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
-
+//        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
+        Part hammer = ItemResource.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
+        
 //		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
 //		AmountResource food = AmountResource.findAmountResource(FOOD);
 //		AmountResource water = AmountResource.findAmountResource(WATER);
@@ -306,10 +311,10 @@ extends TestCase {
 		inv.storeItemResources(hammerID, 5);
 
 		Map<Integer, Number> resourcesMap = new HashMap<Integer, Number>();
-		resourcesMap.put(oxygenID, new Double(100D));
-		resourcesMap.put(foodID, new Double(100D));
-		resourcesMap.put(waterID, new Double(waterAmount));
-		resourcesMap.put(methaneID, new Double(100D));
+		resourcesMap.put(oxygenID, 100D);
+		resourcesMap.put(foodID, 100D);
+		resourcesMap.put(waterID, waterAmount);
+		resourcesMap.put(methaneID, 100D);
 		resourcesMap.put(hammerID, Integer.valueOf(5));
 
 		Map<Integer, Integer> equipmentMap = new HashMap<>();
@@ -327,7 +332,8 @@ extends TestCase {
 	public void testIsFullyLoadedGood() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
-        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
+//        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
+        Part hammer = ItemResource.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
@@ -376,7 +382,8 @@ extends TestCase {
 	public void testIsFullyLoadedNoAmountResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
-        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
+//        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
+        Part hammer = ItemResource.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
@@ -417,7 +424,7 @@ extends TestCase {
 	public void testIsFullyLoadedNoItemResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
-        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
+        Part hammer = ItemResource.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
@@ -442,10 +449,10 @@ extends TestCase {
 		}
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
-		requiredResourcesMap.put(oxygenID, new Double(100D));
-		requiredResourcesMap.put(foodID, new Double(100D));
-		requiredResourcesMap.put(waterID, new Double(waterAmount));
-		requiredResourcesMap.put(methaneID, new Double(100D));
+		requiredResourcesMap.put(oxygenID, 100D);
+		requiredResourcesMap.put(foodID, 100D);
+		requiredResourcesMap.put(waterID, waterAmount);
+		requiredResourcesMap.put(methaneID, 100D);
 		requiredResourcesMap.put(hammerID, Integer.valueOf(5));
 
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
@@ -465,8 +472,9 @@ extends TestCase {
 	public void testIsFullyLoadedNoEquipment() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
-        ItemResource hammer = ItemResource.createItemResource(resourceName,id,description,massPerItem, 1);
-		Inventory inv = vehicle.getInventory();
+//        ItemResource hammer = ItemResource.createBrandNewItemResource(resourceName,id,description,massPerItem, 1);
+        Part hammer = ItemResource.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
+        Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
 //		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
@@ -487,10 +495,10 @@ extends TestCase {
 		inv.storeItemResources(hammerID, 5);
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
-		requiredResourcesMap.put(oxygenID, new Double(100D));
-		requiredResourcesMap.put(foodID, new Double(100D));
-		requiredResourcesMap.put(waterID, new Double(waterAmount));
-		requiredResourcesMap.put(methaneID, new Double(100D));
+		requiredResourcesMap.put(oxygenID, 100D);
+		requiredResourcesMap.put(foodID, 100D);
+		requiredResourcesMap.put(waterID, waterAmount);
+		requiredResourcesMap.put(methaneID, 100D);
 		requiredResourcesMap.put(hammerID, Integer.valueOf(5));
 
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);

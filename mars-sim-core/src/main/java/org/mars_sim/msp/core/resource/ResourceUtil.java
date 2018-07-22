@@ -252,6 +252,18 @@ public class ResourceUtil implements Serializable {
 		}
     }
 
+    /**
+     * Register the brand new amount resource in all 3 resource maps
+     * 
+     * @param ar {@link ParAmountResourcet}
+     * 
+     */
+    public static void registerBrandNewAR(AmountResource ar) {
+    	amountResourceMap.put(ar.getName(), ar);
+    	amountResourceIDMap.put(ar.getID(), ar);
+    	arIDNameMap.put(ar.getID(), ar.getName());
+    }
+    
     public void mapARs() {
 
     	foodID = findAmountResource(LifeSupportType.FOOD).getID();		// 1

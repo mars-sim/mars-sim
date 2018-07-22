@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -36,7 +35,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -959,7 +957,7 @@ implements Serializable {
         		if (inv.getItemResourceNum(resource) < totalNeeded) {
         			int stored = inv.getItemResourceNum(resource);
         			if (logger.isLoggable(Level.INFO))
-        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, ResourceUtil.findAmountResource(resource).getName() 
+        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, ItemResourceUtil.findItemResource(resource).getName() 
         						+ " needed: " + totalNeeded + " stored: " + stored, null);
         			//enoughSupplies = false;
         			return false;

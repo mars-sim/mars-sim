@@ -163,14 +163,17 @@ implements Serializable {
 		return ItemResourceUtil.getItemResourcesMap();
 	}
 
-	public static ItemResource createItemResource(
+	
+	public static Part createBrandNewItemResource(
 			String resourceName,
 			int id,
 			String description,
 			double massPerItem,
 			int solsUsed
 			) {
-		return new ItemResource(resourceName, id, description, massPerItem, solsUsed);
+		Part p = new Part(resourceName, id, description, massPerItem, solsUsed);	
+		ItemResourceUtil.registerBrandNewPart(p);
+		return p;
 	}
 
 	private static class UnknownResourceName

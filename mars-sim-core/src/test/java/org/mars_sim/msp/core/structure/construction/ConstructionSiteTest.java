@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -41,15 +42,25 @@ public class ConstructionSiteTest extends TestCase {
         site = new ConstructionSite(Settlement.createConstructionStage());
 
         Map<Integer, Integer> parts = new HashMap<Integer, Integer>(1);
-        parts.put(new Part("test part", 1, "test resource description", 1D, 1).getID(), 1);
+        
+        Part ir = ItemResource.createBrandNewItemResource("test part", 1, "test part description", 1D, 1);
+        parts.put(ir.getID(), 1);
 
         Map<Integer, Double> resources = new HashMap<Integer, Double>(1);
-        resources.put(new AmountResource(1, "test resource", "test type", "test resource description", PhaseType.SOLID, false, false).getID(), 1D);
 
+        AmountResource ar = AmountResource.createBrandNewAR(1, "test resource", "test type", "test resource description", PhaseType.SOLID, false, false);
+        resources.put(ar.getID(), 1D);
+        
         List<ConstructionVehicleType> vehicles =
             new ArrayList<ConstructionVehicleType>(1);
         List<Integer> attachments = new ArrayList<Integer>(1);
-        attachments.add(new Part("attachment part", 2, "test resource description", 1D, 1).getID());
+        
+        ItemResource atth = ItemResource.createBrandNewItemResource("attachment part", 2, "test attachment description", 1D, 1);
+        parts.put(atth.getID(), 1);
+        
+        attachments.add(atth.getID());
+        
+        
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
                 attachments));
 

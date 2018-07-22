@@ -31,6 +31,7 @@ public class ItemResourceUtil implements Serializable {
 	public static final String PNEUMATIC_DRILL = "pneumatic drill";
 	public static final String BACKHOE = "backhoe";
 	public static final String SMALL_HAMMER = "small hammer";
+//	public static final String HAMMER = "hammer";
 	public static final String SOCKET_WRENCH = "socket wrench";
 	public static final String PIPE_WRENCH = "pipe wrench";
 	public static final String EXTINGUSHER = "fire extinguisher";
@@ -107,6 +108,19 @@ public class ItemResourceUtil implements Serializable {
 			partIDNameMap.put(p.getID(), p.getName());
 		}
     }
+    
+    /**
+     * Register the brand new part in all 3 item resource maps
+     * 
+     * @param p {@link Part}
+     * 
+     */
+    public static void registerBrandNewPart(Part p) {
+		itemResourceMap.put(p.getName(), p);
+		itemResourceIDMap.put(p.getID(), p);
+		partIDNameMap.put(p.getID(), p.getName());
+    }
+    
 
 	/**
 	 * Finds an item resource by name.
