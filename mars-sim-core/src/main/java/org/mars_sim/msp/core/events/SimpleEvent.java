@@ -17,8 +17,8 @@ public class SimpleEvent implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 23982863L;
 
-	private static final String ONE_ZERO = "0";
-	private static final String TWO_ZEROS = "00";
+//	private static final String ONE_ZERO = "0";
+//	private static final String TWO_ZEROS = "00";
 //	private static final String THREE_ZEROS = "000";
 	private static final String COLON = ":";
 
