@@ -14,12 +14,10 @@ import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
 
 /**
  * This class provides a manager that maintains a model of the events that have
@@ -219,7 +217,7 @@ public class HistoricalEventManager implements Serializable {
 		short loc0 = (short) (getID(loc0List, event.getLocation0()));
 		short loc1 = (short) (getID(loc1List, event.getLocation1()));
 
-		System.out.println("HistoricalEventManager's mission sol : " + missionSol);
+//		System.out.println("HistoricalEventManager's mission sol : " + missionSol);
 		SimpleEvent se = new SimpleEvent(missionSol, millisols, cat, type, what, whileDoing, who, loc0, loc1);
 		eventsRegistry.add(0, se);
 		return se;

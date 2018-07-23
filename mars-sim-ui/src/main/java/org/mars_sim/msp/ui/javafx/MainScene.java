@@ -604,7 +604,7 @@ public class MainScene implements ClockListener {
 					//unpauseSimulation();
 					masterClock.setPaused(false, true);
 				} else {
-					//pauseSimulation(true);
+					//pause();
 					masterClock.setPaused(true, true);
 				}
 			}
@@ -4283,7 +4283,7 @@ public class MainScene implements ClockListener {
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		if (isPaused) {
-			if (showPane && !masterClock.isSavingSimulation()) {
+			if (!masterClock.isSavingSimulation()) {
 				if (exitDialog == null || !exitDialog.isVisible()) {
 					pause();
 				}

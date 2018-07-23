@@ -175,7 +175,7 @@ public class ClockUtils implements Serializable {
 
 	public static void getLocalDate(int year, int atDay) {
 	      LocalDate date = Year.of(year).atDay(atDay);
-	      System.out.println(date);  
+//	      System.out.println(date);  
 	}
 	
 	/**

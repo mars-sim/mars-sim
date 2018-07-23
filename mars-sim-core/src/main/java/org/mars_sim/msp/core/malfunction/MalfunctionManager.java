@@ -64,16 +64,12 @@ public class MalfunctionManager implements Serializable {
 
 	/** Initial estimate for malfunctions per orbit for an entity. */
 	private static double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 10D;
-
 	/** Initial estimate for maintenances per orbit for an entity. */
 	private static double ESTIMATED_MAINTENANCES_PER_ORBIT = 10D;
-
 	/** Factor for chance of malfunction by time since last maintenance. */
 	private static double MAINTENANCE_MALFUNCTION_FACTOR = .000000001D;
-
 	/** Factor for chance of malfunction due to wear condition. */
 	private static double WEAR_MALFUNCTION_FACTOR = 10D;
-
 	/** Factor for chance of accident due to wear condition. */
 	private static double WEAR_ACCIDENT_FACTOR = 5D;
 
@@ -81,32 +77,24 @@ public class MalfunctionManager implements Serializable {
 	private static final String WATER = "Water";
 	private static final String PRESSURE = "Air Pressure";
 	private static final String TEMPERATURE = "Temperature";
-
 	private static final String PARTS_FAILURE = "Parts Failure";// due to reliability";
 
 	// Data members
-	/** The owning entity. */
-	private Malfunctionable entity;
+
+	/** The number of malfunctions the entity has had so far. */
+	private int numberMalfunctions;
+	/** The number of times the entity has been maintained so far. */
+	private int numberMaintenances;
+	/** The number of orbits. */
+	private int orbitCache = 0; 
 	/** Time passing (in millisols) since last maintenance on entity. */
 	private double timeSinceLastMaintenance;
-	/**
-	 * Time (millisols) that entity has been actively used since last maintenance.
-	 */
+	/** Time (millisols) that entity has been actively used since last maintenance. */
 	private double effectiveTimeSinceLastMaintenance;
 	/** The required work time for maintenance on entity. */
 	private double maintenanceWorkTime;
 	/** The completed. */
 	private double maintenanceTimeCompleted;
-	/** The scope strings of the unit. */
-	private Collection<String> scopes;
-	/** The current malfunctions in the unit. */
-	private Collection<Malfunction> malfunctions;
-	/** The parts currently needed to maintain this entity. */
-	private Map<Integer, Integer> partsNeededForMaintenance;
-	/** The number of malfunctions the entity has had so far. */
-	private int numberMalfunctions;
-	/** The number of times the entity has been maintained so far. */
-	private int numberMaintenances;
 	/**
 	 * The percentage representing the malfunctionable's condition from wear & tear.
 	 * 0% = worn out -> 100% = new condition.
@@ -124,6 +112,17 @@ public class MalfunctionManager implements Serializable {
 	private double airPressureModifier = 100D;
 	private double temperatureModifier = 100D;
 
+	/** The owning entity. */
+	private Malfunctionable entity;
+
+	/** The scope strings of the unit. */
+	private Collection<String> scopes;
+	/** The current malfunctions in the unit. */
+	private Collection<Malfunction> malfunctions;
+	/** The parts currently needed to maintain this entity. */
+	private Map<Integer, Integer> partsNeededForMaintenance;
+
+	
 	private static MasterClock masterClock;
 	private static MarsClock startTime;
 	private static MarsClock currentTime;
@@ -427,6 +426,9 @@ public class MalfunctionManager implements Serializable {
 				robot = (Robot) actor;
 				task = robot.getTaskDescription();
 			}
+//			else if (actor instanceof Building) {
+//				;
+//			}
 		}
 		
 		if (actor != null)
@@ -447,12 +449,12 @@ public class MalfunctionManager implements Serializable {
 
 				String loc0 = null;
 				String loc1 = null;
-//					
-//					if (entity instanceof Vehicle
-//						|| entity instanceof EVASuit	
-//						|| entity instanceof Building
-//						|| entity instanceof Robot
-//						|| entity instanceof BuildingKit)
+				
+				// TODO: determine what happens to each entity
+//				entity instanceof EVASuit	
+//				entity instanceof Building
+//				entity instanceof Robot
+//				entity instanceof BuildingKit)
 
 				String object = entity.getNickName();
 
@@ -470,9 +472,9 @@ public class MalfunctionManager implements Serializable {
 				}
 
 				else if (object.toLowerCase().contains("bot")) {
-				loc0 = ((EVASuit) entity).getImmediateLocation();
-				loc1 = ((EVASuit) entity).getLocale();
-			}
+					loc0 = ((EVASuit) entity).getImmediateLocation();
+					loc1 = ((EVASuit) entity).getLocale();
+				}
 				
 				else {
 					loc0 = entity.getImmediateLocation();
@@ -486,7 +488,7 @@ public class MalfunctionManager implements Serializable {
 								loc0, loc1);
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-								malfunction.getName() + " detected due to Parts Fatigue in " + entity.getLocale(),
+								malfunction.getName() + " detected due to Parts Fatigue in " + loc1,
 								null);
 					} else {
 						if (person != null) {
@@ -495,7 +497,7 @@ public class MalfunctionManager implements Serializable {
 							Simulation.instance().getEventManager().registerNewEvent(newEvent);
 							LogConsolidated.log(
 									logger, Level.INFO, 0, sourceName, offender + " may have to do with "
-											+ malfunction.getName() + " due to Human Factors in " + entity.getLocale(),
+											+ malfunction.getName() + " due to Human Factors in " + loc1,
 									null);
 						}
 						else if (robot != null) {
@@ -504,10 +506,11 @@ public class MalfunctionManager implements Serializable {
 							Simulation.instance().getEventManager().registerNewEvent(newEvent);
 							LogConsolidated.log(
 									logger, Level.INFO, 0, sourceName, offender + " may have to do with "
-											+ malfunction.getName() + " due to poor software quality control in " + entity.getLocale(),
+											+ malfunction.getName() + " due to poor software quality control in " + loc1,
 									null);
 						}
 					}
+					
 				} else {
 					if (actor == null) {
 						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
@@ -515,7 +518,7 @@ public class MalfunctionManager implements Serializable {
 								loc0, loc1);
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-								malfunction.getName() + " detected due to Parts Fatigue in " + entity.getLocale(),
+								malfunction.getName() + " detected due to Parts Fatigue in " + loc1,
 								null);
 					} else {
 						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
@@ -523,7 +526,7 @@ public class MalfunctionManager implements Serializable {
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(
 								logger, Level.INFO, 0, sourceName, offender + " may have to do with "
-										+ malfunction.getName() + " due to Human Factors in " + entity.getLocale(),
+										+ malfunction.getName() + " due to Human Factors in " + loc1,
 								null);
 					}
 				}
@@ -532,14 +535,51 @@ public class MalfunctionManager implements Serializable {
 			
 			else {
 				// due to meteorite impact 
+				// actor is null
+				numberMalfunctions++;
+				
+				String loc0 = null;
+				String loc1 = null;
+
+				String object = entity.getNickName();
+
+				// TODO: determine what happens to each entity
+//				entity instanceof EVASuit	
+//				entity instanceof Building
+//				entity instanceof Robot
+//				entity instanceof BuildingKit)
+
+				if (entity.getUnit() instanceof Vehicle) {
+					loc0 = entity.getNickName();
+					loc1 = entity.getLocale();
+				}
+
+				else if (object.toLowerCase().contains("eva")) {
+//						Unit unit = entity.getUnit();
+//						EVASuit suit = (EVASuit)entity.getUnit();
+					// TODO: for a eva suit malfunction, 
+					loc0 = ((EVASuit) entity).getImmediateLocation(); //entity.getImmediateLocation();// 
+					loc1 = ((EVASuit) entity).getLastOwner().getLocationTag().getLocale();// .getSettlement().getName();
+				}
+
+				else if (object.toLowerCase().contains("bot")) {
+					loc0 = ((EVASuit) entity).getImmediateLocation();
+					loc1 = ((EVASuit) entity).getLocale();
+				}
+				
+				else {
+					loc0 = entity.getImmediateLocation();
+					loc1 = entity.getLocale();
+				}
+				
 				String name = malfunction.getTraumatized();
 
 				// if it is a meteorite impact
 				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_ACT_OF_GOD, malfunction,
-						malfunctionName, task, name, entity.getImmediateLocation(), entity.getLocale());
+						malfunctionName, task, name, loc0, loc1);
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
 				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-						malfunction.getName() + " damage detected in " + entity.getLocale(), null);
+						malfunction.getName() + " damage detected in " + loc1, null);
 			}
 		} else
 			return;
@@ -1199,6 +1239,12 @@ public class MalfunctionManager implements Serializable {
 				avgMalfunctionsPerOrbit = (numberMalfunctions + ESTIMATED_MALFUNCTIONS_PER_ORBIT) / 2D;
 			} else {
 				avgMalfunctionsPerOrbit = numberMalfunctions / totalTimeOrbits;
+			}
+			
+			int orbit = currentTime.getOrbit();
+			if (orbitCache != orbit) {
+				orbitCache = orbit;
+				numberMalfunctions = 0;
 			}
 		}
 

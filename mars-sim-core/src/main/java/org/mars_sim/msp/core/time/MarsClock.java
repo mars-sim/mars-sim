@@ -290,19 +290,24 @@ public class MarsClock implements Serializable {
 		
 		boolean lessThanOneMonth = true;
 
-		System.out.println("A. month : " + month + "   sol : " + sol + "   newSols : " + newSols);
+//		System.out.println("A. month : " + month + "   sol : " + sol + "   newSols : " + newSols);
 		
 		// mission sols larger than 27 or 28 sols
 		while (newSols > numSolsPerMonth) {	
 			lessThanOneMonth = false;
+			month++;
+			if (month > 24) {
+				orbit++;
+				month = month - 24;				
+			}
 			newSols = newSols - numSolsPerMonth;
-			sol = sol + numSolsPerMonth;
+			//sol = sol + numSolsPerMonth;
 			if (sol > numSolsPerMonth) {
 				sol = sol - numSolsPerMonth;
 				month++;
 				if (month > 24) {
 					orbit++;
-					month = 1;				
+					month = month - 24;				
 				}
 			}
 			
@@ -314,7 +319,7 @@ public class MarsClock implements Serializable {
 			else
 				numSolsPerMonth = SOLS_PER_MONTH_LONG;
 			
-			System.out.println("B. month : " + month + "   sol : " + sol + "   newSols : " + newSols);
+//			System.out.println("B. month : " + month + "   sol : " + sol + "   newSols : " + newSols);
 		}
 		
 		if (lessThanOneMonth) {
@@ -324,10 +329,10 @@ public class MarsClock implements Serializable {
 				month++;
 				if (month > 24) {
 					orbit++;
-					month = 1;				
+					month = month - 24;				
 				}
 			}
-			System.out.println("C. month : " + month + "   sol : " + sol + "   newSols : " + newSols);
+//			System.out.println("C. month : " + month + "   sol : " + sol + "   newSols : " + newSols);
 		}
 		
 

@@ -43,7 +43,7 @@ public class Complaint implements Serializable {
 	private ComplaintType nextPhaseType;
 
 	/**
-	 * Create a Medical Complaint instance.
+	 * Constructor 1 : Create a Medical Complaint instance.
 	 *
 	 * @param type ComplaintYype.
 	 */
@@ -52,7 +52,7 @@ public class Complaint implements Serializable {
 	}
 
 	/**
-	 * Create a Medical Complaint instance.
+	 * Constructor 2 : Create an environmental Medical Complaint instance
 	 *
 	 * @param type              ComplaintYype.
 	 * @param seriousness       How serious is this complaint.
@@ -89,7 +89,7 @@ public class Complaint implements Serializable {
 	}
 
 	/**
-	 * Constructor using string to store next complaint.
+	 * Constructor 3 : create a Medical Complaint instance from medical.xml
 	 * 
 	 * @param type              ComplaintYype
 	 * @param seriousness       seriousness of complaint

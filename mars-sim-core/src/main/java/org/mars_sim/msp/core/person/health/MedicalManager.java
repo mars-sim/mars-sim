@@ -31,8 +31,9 @@ public class MedicalManager implements Serializable {
 	public final static int MINUTES_PER_DAY = 24 * 60;
 
 	/** Possible Complaints. */
-	//private HashMap<String, Complaint> complaints = new HashMap<String, Complaint>();
 	private HashMap<ComplaintType, Complaint> complaints = new HashMap<ComplaintType, Complaint>();
+	/** Environmentally Related Complaints. */
+	private HashMap<ComplaintType, Complaint> environmentalComplaints = new HashMap<ComplaintType, Complaint>();
 
 	/** Possible Treatments. */
 	private HashMap<String, Treatment> treatments = new HashMap<String, Treatment>();
@@ -78,13 +79,13 @@ public class MedicalManager implements Serializable {
 	}
 
 	/**
-	 * Initialise the Medical Complaints from the configuration.
+	 * Initialize the Medical Complaints from the configuration.
 	 * @throws exception if not able to initialize complaints.
 	 */
 	public void initMedical() {
 		MedicalConfig medicalConfig = simConfig.getMedicalConfiguration();
 
-		addEnvironmentalComplaints();
+		setUpEnvironmentalComplaints();
 		
 		// Create treatments from medical config.
 		Iterator<Treatment> i = medicalConfig.getTreatmentList().iterator();
@@ -103,37 +104,44 @@ public class MedicalManager implements Serializable {
 	/***
 	 * Creates the instance for each environmental complaints
 	 */
-	private void addEnvironmentalComplaints() {
+	private void setUpEnvironmentalComplaints() {
 		// Create the pre-defined complaints, using person configuration.
 		PersonConfig personConfig = simConfig.getPersonConfiguration();
 
 		// Most serious complaint
 		suffocation = createEnvironmentComplaint(ComplaintType.SUFFOCATION, 80, 
 				personConfig.getOxygenDeprivationTime(), 5, 80, true);
-
+		addEnvComplaint(suffocation);
+		
 		// Very serious complaint
 		decompression = createEnvironmentComplaint(ComplaintType.DECOMPRESSION, 70, 
 				personConfig.getDecompressionTime(), 50, 70, true);
-
+		addEnvComplaint(decompression);
+		
 		// Somewhat serious complaint
 		heatStroke = createEnvironmentComplaint(ComplaintType.HEAT_STROKE, 60, 
 				200D, 10, 60, true);
-
+		addEnvComplaint(heatStroke);
+		
 		// Serious complaint
 		freezing = createEnvironmentComplaint(ComplaintType.FREEZING, 50, 
 				personConfig.getFreezingTime(), 10, 50, false);
-
+		addEnvComplaint(freezing);
+		
 		// Somewhat serious complaint
 		dehydration = createEnvironmentComplaint(ComplaintType.DEHYDRATION, 40, 
 				(personConfig.getWaterDeprivationTime() - personConfig.getDehydrationStartTime()) * 1000D, 5, 40, false);
-
+		addEnvComplaint(dehydration);
 
 		// Least serious complaint
 		starvation = createEnvironmentComplaint(ComplaintType.STARVATION, 20, 
-				(personConfig.getFoodDeprivationTime() - personConfig.getStarvationStartTime()) * 1000D, 1, 20, false);
-
+				(personConfig.getFoodDeprivationTime() - personConfig.getStarvationStartTime()) * 1000D, 1, 20, false);		
+		addEnvComplaint(starvation);
 	}
 	
+	void addEnvComplaint(Complaint c) {
+		environmentalComplaints.put(c.getType(), c);
+	}
 	
 	/**
 	 * Create an environment related Complaint. These are started by the simulation and not via randomness. The all
@@ -170,17 +178,26 @@ public class MedicalManager implements Serializable {
 
 	/**
 	 * Package friendly factory method.
+	 * @param type
+	 * @param seriousness
+	 * @param degrade
+	 * @param recovery
+	 * @param probability
+	 * @param performance
+	 * @param needBedRest
+	 * @param treatment
+	 * @param {@link Complaint}
 	 */
-	void createComplaint(ComplaintType type, 
-			int seriousness, double degrade,
-			double recovery, double probability, double performance,
-			boolean bedRest, Treatment recoveryTreatment, Complaint next) {
-
-		Complaint complaint = new Complaint(type, seriousness, degrade,
-				recovery, probability, performance, bedRest, recoveryTreatment, next);
-		// Add an entry keyed on name.
-		complaints.put(type, complaint);
-	}
+//	void createComplaint(ComplaintType type, 
+//			int seriousness, double degrade,
+//			double recovery, double probability, double performance,
+//			boolean bedRest, Treatment recoveryTreatment, Complaint next) {
+//
+//		Complaint complaint = new Complaint(type, seriousness, degrade,
+//				recovery, probability, performance, bedRest, recoveryTreatment, next);
+//		// Add an entry keyed on name.
+//		complaints.put(type, complaint);
+//	}
 
 	/**
 	 * Adds a new complaint to the map.
@@ -232,6 +249,14 @@ public class MedicalManager implements Serializable {
 	    return new ArrayList<Complaint>(complaints.values());
 	}
 
+	/**
+	 * Gets a list of all environmentally related complaints.
+	 * @return list of environmental complaints.
+	 */
+	public List<Complaint> getEnvironmentalComplaints() {
+	    return new ArrayList<Complaint>(this.environmentalComplaints.values());
+	}
+	
 	/**
 	 * This is a finder method that returns a Medical Complaint matching the specified name.
 	 * @param name Name of the complaintType to retrieve.

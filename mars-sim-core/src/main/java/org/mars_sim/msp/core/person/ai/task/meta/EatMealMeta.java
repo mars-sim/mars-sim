@@ -44,8 +44,8 @@ public class EatMealMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0;
         
-        if (person.isOutside())
-        	return 0;
+//        if (person.isOutside())
+//        	return 0;
 
         PhysicalCondition pc = person.getPhysicalCondition();
         
@@ -65,9 +65,9 @@ public class EatMealMeta implements MetaTask, Serializable {
     	}
         // Only eat a meal if person is sufficiently hungry or low on caloric energy.
     	else if (hunger > 250 || energy < 2525) {// || ghrelin-leptin > 300) {
-    		result = thirst;
-    		result += hunger / 10;
-    		result += (2525 - energy) / 50; // +  (ghrelin-leptin - 300);
+    		result = thirst * 3.0;
+    		result += hunger / 8D;
+    		result += (2525 - energy) / 50D; // +  (ghrelin-leptin - 300);
             if (result <= 0)
             	return 0;
         }
@@ -87,7 +87,7 @@ public class EatMealMeta implements MetaTask, Serializable {
                 // If no cooked meal, check if preserved food is available to eat.
                 if (!EatMeal.isPreservedFoodAvailable(person)) {
                     // If no preserved food, person can't eat a meal.
-                    return result/5;
+                    return result/5D;
                 }
             }
 
@@ -103,7 +103,7 @@ public class EatMealMeta implements MetaTask, Serializable {
         		result *= 4D;
         	}
         	else
-        		result *= .25D;    
+        		result *= 1D;    
         	
         }
         
@@ -112,12 +112,18 @@ public class EatMealMeta implements MetaTask, Serializable {
                 // If no preserved food, person can't eat a meal.
             //    return 0;
             //}
-        	result *= 2D; 
+    		// higher probability than inside a settlement since a person is more likely to become thirsty due to on-call shift.
+        	if (CookMeal.isMealTime(person.getCoordinates())) {
+        		result *= 5D;
+        	}
+        	else
+        		result *= 2.5;  
+        	
         	// TODO : how to ration food and water if running out of it ?
         }
         
     	
-        // 2015-06-07 Added Preference modifier
+        // Add Preference modifier
         if (result > 0D) {
             result = result + result * person.getPreference().getPreferenceScore(this)/5D;
         }

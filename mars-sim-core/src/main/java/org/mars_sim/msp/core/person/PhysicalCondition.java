@@ -242,12 +242,6 @@ public class PhysicalCondition implements Serializable {
 
 		medicalManager = sim.getMedicalManager();
 
-		// dehydration = medicalManager.getComplaintByName(ComplaintType.DEHYDRATION);//.getDehydration();
-		// starvation = medicalManager.getComplaintByName(ComplaintType.STARVATION);//.getStarvation();
-		// depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
-		// panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
-		// highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
-
 		taskMgr = person.getMind().getTaskManager();
 
 		alive = true;
@@ -316,10 +310,11 @@ public class PhysicalCondition implements Serializable {
 
 		foodDryMassPerServing = food_consumption / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
-		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() * bodyMassDeviation);
+		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() * bodyMassDeviation/2);
 		// + RandomUtil.getRandomDouble(.15) - RandomUtil.getRandomDouble(.15));
 
 		dehydrationStartTime = 1000D * (personConfig.getDehydrationStartTime() * bodyMassDeviation);
+//		System.out.println("dehydrationStartTime : " + dehydrationStartTime);
 	}
 
 	/**
@@ -428,13 +423,13 @@ public class PhysicalCondition implements Serializable {
 				|| person.getTaskDescription().equalsIgnoreCase("rest")
 				|| person.getTaskDescription().equalsIgnoreCase("sleep")					
 //				|| person.getTaskDescription().equalsIgnoreCase("teach")
-				|| person.getTaskDescription().equalsIgnoreCase("walk")		
-				|| person.getTaskDescription().equalsIgnoreCase("yoga")	
+//				|| person.getTaskDescription().equalsIgnoreCase("walk")		
+//				|| person.getTaskDescription().equalsIgnoreCase("yoga")	
 				) {
 				restingTask = true;
 			}
-			
-
+			else
+				restingTask = false;
 					
 			// Update the existing health problems
 			if (!problems.isEmpty()) {
@@ -493,9 +488,11 @@ public class PhysicalCondition implements Serializable {
 			// if (isDead()) return false;
 
 			// See if any random illnesses happen.
-			List<Complaint> randomAilments = checkForRandomAilments(time);
-			if (randomAilments.size() > 0) {
-				illnessEvent = true;
+			if (!restingTask) {
+				List<Complaint> randomAilments = checkForRandomAilments(time);
+				if (randomAilments.size() > 0) {
+					illnessEvent = true;
+				}
 			}
 			
 			if (illnessEvent) {
@@ -1035,122 +1032,132 @@ public class PhysicalCondition implements Serializable {
 		for (Complaint complaint : allMedicalComplaints) {
 
 			ComplaintType ct = complaint.getType();
-			// Note : the following complaints are being initiated in their own methods
-			// e.g. checkStarvation() and checkDehydration()
-	
-			boolean noGo = true;
-			if (ct == ComplaintType.LACERATION) {
-				if (person.getTaskDescription().equalsIgnoreCase("assist")
-					|| person.getTaskDescription().equalsIgnoreCase("compil")
-					|| person.getTaskDescription().equalsIgnoreCase("peer")			
-					|| person.getTaskDescription().equalsIgnoreCase("teach")
-					|| restingTask
-					) {
-					noGo = false;
-				}
-			}
-			
-			// Check that person does not already have a health problem with this complaint.
-			if (!noGo 
-				&& !problems.containsKey(complaint)
-				&& ct != ComplaintType.HIGH_FATIGUE_COLLAPSE
-				&& ct != ComplaintType.PANIC_ATTACK 
-				&& ct != ComplaintType.DEPRESSION
-				// Exclude the following 6 environmentally induced complaints
-				&& ct != ComplaintType.DEHYDRATION
-				&& ct != ComplaintType.STARVATION				
-				&& ct != ComplaintType.SUFFOCATION
-				&& ct != ComplaintType.RADIATION_SICKNESS
-				&& ct != ComplaintType.FREEZING
-				&& ct != ComplaintType.HEAT_STROKE
-				&& ct != ComplaintType.DECOMPRESSION
-				// not meaningful to implement suicide until emotional/mood state is in place 
-				&& ct != ComplaintType.SUICIDE				
-					) {
+
+			boolean noGo = false;
+			// If a person is performing a resting task, then it is impossible to suffer from laceration.
+			if (!problems.containsKey(complaint)) {
 				
-				double probability = complaint.getProbability();
-				// Check that medical complaint has a probability > zero
-				// since some complaints are secondary complaints and cannot be started
-				// by itself
-				if (probability > 0D) {
-					double taskModifier = 1;
-					double tendency = 1;
-					int msol = marsClock.getMissionSol();
-					
-					if (healthLog.get(ct) != null && msol > 3)
-						tendency = 0.5 + healthLog.get(ct) / marsClock.getMissionSol();
-					else
-						tendency = 1.0;
-					double immunity = endurance + strength;
-					
-					if (immunity > 100)
-						tendency = .75 * tendency - .25 * immunity/100.0;
-					else
-						tendency = .75 * tendency + .25 * (100-immunity)/100.0;
-					
-					if (tendency < 0)
-						tendency = 0.0001;
+				if (ct == ComplaintType.LACERATION 
+						|| ct == ComplaintType.BROKEN_BONE
+						|| ct == ComplaintType.PULL_MUSCLE_TENDON
+						|| ct == ComplaintType.RUPTURED_APPENDIX) {
+					if (person.getTaskDescription().equalsIgnoreCase("assist")
+						|| person.getTaskDescription().equalsIgnoreCase("compil")
+						|| person.getTaskDescription().equalsIgnoreCase("peer")			
+						|| person.getTaskDescription().equalsIgnoreCase("teach")
+//						|| restingTask
+						) {
+						noGo = true;
+					}
+				}
+				
+				// Check that person does not already have a health problem with this complaint.
+				
+				// Note : the following complaints are being initiated in their own methods
+				else if (ct == ComplaintType.HIGH_FATIGUE_COLLAPSE
+					|| ct == ComplaintType.PANIC_ATTACK 
+					|| ct == ComplaintType.DEPRESSION
+					// Exclude the following 6 environmentally induced complaints
+					|| ct == ComplaintType.DEHYDRATION
+					|| ct == ComplaintType.STARVATION				
+					|| ct == ComplaintType.SUFFOCATION
+					|| ct == ComplaintType.FREEZING
+					|| ct == ComplaintType.HEAT_STROKE
+					|| ct == ComplaintType.DECOMPRESSION
+					//
+					|| ct == ComplaintType.RADIATION_SICKNESS
+					// not meaningful to implement suicide until emotional/mood state is in place 
+					|| ct == ComplaintType.SUICIDE				
+					) {
+					noGo = true;
+				}
+				
+				if (!noGo) {
+					double probability = complaint.getProbability();
+					// Check that medical complaint has a probability > zero
+					// since some complaints are secondary complaints and cannot be started
+					// by itself
+					if (probability > 0D) {
+						double taskModifier = 1;
+						double tendency = 1;
+						int msol = marsClock.getMissionSol();
 						
-					if (tendency > 2)
-						tendency = 2;
-					
-					if (ct == ComplaintType.PULL_MUSCLE_TENDON) {
-						// Note: at the time of workout, pulled muscle can happen
-						// TODO: but make a person less prone to pulled muscle while doing other tasks 
-						// if having consistent workout.
-						if (person.getTaskDescription().equalsIgnoreCase("exercising"))
-							taskModifier = 1.2;
+						if (healthLog.get(ct) != null && msol > 3)
+							tendency = 0.5 + healthLog.get(ct) / marsClock.getMissionSol();
+						else
+							tendency = 1.0;
+						double immunity = endurance + strength;
 						
-						else if (person.getTaskDescription().toLowerCase().contains("work")) {
-							// Doing outdoor field work increases the risk of having pulled muscle.
-							taskModifier = 1.1;
+						if (immunity > 100)
+							tendency = .75 * tendency - .25 * immunity/100.0;
+						else
+							tendency = .75 * tendency + .25 * (100-immunity)/100.0;
+						
+						if (tendency < 0)
+							tendency = 0.0001;
 							
+						if (tendency > 2)
+							tendency = 2;
+						
+						if (ct == ComplaintType.PULL_MUSCLE_TENDON
+								|| ct == ComplaintType.BROKEN_BONE) {
+							// Note: at the time of workout, pulled muscle can happen
+							// TODO: but make a person less prone to pulled muscle while doing other tasks 
+							// if having consistent workout.
+							if (person.getTaskDescription().equalsIgnoreCase("exercising"))
+								taskModifier = 1.2;
+							
+							else if (person.getTaskDescription().toLowerCase().contains("work")) {
+								// Doing outdoor field work increases the risk of having pulled muscle.
+								taskModifier = 1.1;
+								
+								if (agility > 50)
+									taskModifier = .75 * taskModifier - .25 * agility/100.0;
+								else
+									taskModifier = .75 * taskModifier + .25 * (50-agility)/50.0;
+							}
+							
+							else if (person.getTaskDescription().toLowerCase().contains("yoga"))
+								taskModifier = 1.1;
+	
+							else if (person.getTaskDescription().toLowerCase().contains("eva"))
+								taskModifier = 1.2;
+							
+							else if (person.getTaskDescription().contains("Digging")) {
+								taskModifier = 1.3;
+								
+								int avoidAccident = strength + agility;
+								if (avoidAccident > 50)
+									taskModifier = .75 * taskModifier - .25 * avoidAccident/100.0;
+								else
+									taskModifier = .75 *taskModifier + .25 * (100-avoidAccident)/100.0;
+							}
+							
+						}
+						else if (ct == ComplaintType.MINOR_BURNS
+								|| ct == ComplaintType.MAJOR_BURNS
+								|| ct == ComplaintType.BURNS
+								|| ct == ComplaintType.LACERATION
+								) {
 							if (agility > 50)
 								taskModifier = .75 * taskModifier - .25 * agility/100.0;
 							else
 								taskModifier = .75 * taskModifier + .25 * (50-agility)/50.0;
 						}
 						
-						else if (person.getTaskDescription().toLowerCase().contains("yoga"))
-							taskModifier = 1.1;
-
-						else if (person.getTaskDescription().toLowerCase().contains("eva"))
-							taskModifier = 1.2;
+						if (taskModifier < 0)
+							taskModifier = 0.0001;
+						if (taskModifier > 2)
+							taskModifier = 2;
 						
-						else if (person.getTaskDescription().contains("Digging")) {
-							taskModifier = 1.3;
-							
-							int avoidAccident = strength + agility;
-							if (avoidAccident > 50)
-								taskModifier = .75 * taskModifier - .25 * avoidAccident/100.0;
-							else
-								taskModifier = .75 *taskModifier + .25 * (100-avoidAccident)/100.0;
+						// Randomly determine if person suffers from ailment.
+						double rand = RandomUtil.getRandomDouble(100D);
+						double timeModifier = time / RANDOM_AILMENT_PROBABILITY_TIME;
+	//					System.out.println("chance : " + chance + "   p*t : " + probability * timeModifier);
+						if (rand <= probability  * taskModifier * tendency * timeModifier) {
+							addMedicalComplaint(complaint);
+							result.add(complaint);
 						}
-						
-					}
-					else if (ct == ComplaintType.MINOR_BURNS
-							|| ct == ComplaintType.MAJOR_BURNS
-							|| ct == ComplaintType.BURNS
-							|| ct == ComplaintType.LACERATION
-							) {
-						if (agility > 50)
-							taskModifier = .75 * taskModifier - .25 * agility/100.0;
-						else
-							taskModifier = .75 * taskModifier + .25 * (50-agility)/50.0;
-					}
-					
-					if (taskModifier < 0)
-						taskModifier = 0.0001;
-					if (taskModifier > 2)
-						taskModifier = 2;
-					
-					// Randomly determine if person suffers from ailment.
-					double rand = RandomUtil.getRandomDouble(100D);
-					double timeModifier = time / RANDOM_AILMENT_PROBABILITY_TIME;
-//					System.out.println("chance : " + chance + "   p*t : " + probability * timeModifier);
-					if (rand <= probability  * taskModifier * tendency * timeModifier) {
-						addMedicalComplaint(complaint);
-						result.add(complaint);
 					}
 				}
 			}

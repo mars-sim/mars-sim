@@ -1470,7 +1470,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 							task = person.getTaskDescription();
 							malfunctionMeteoriteImpact.setTraumatized(victimName);
 
-							logger.info(victimName + " was affected by the meteorite impact in " + this + " at "
+							logger.info(victimName + " was traumatized by the meteorite impact in " + this + " at "
 									+ settlement);
 						}
 						// else {
@@ -1479,18 +1479,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 						// }
 					}
 
-					HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_METEORITE_IMPACT, malfunctionMeteoriteImpact,
-							"Meteorite Impact", //"Natural Cause",
-							task, victimName, this.getNickName(), settlement.getName());
-					Simulation.instance().getEventManager().registerNewEvent(hEvent);
-
-//					HistoricalEvent mEvent = new MalfunctionEvent(EventType.MALFUNCTION_ACCIDENT,
-//							malfunction_meteor.getName(),
-//							name,
-//							this.getNickName(),
-//							settlement.getName()
-//							);
-//					Simulation.instance().getEventManager().registerNewEvent(mEvent);
+//					HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_METEORITE_IMPACT, malfunctionMeteoriteImpact,
+//							"Meteorite Impact", //"Natural Cause",
+//							task, victimName, this.getNickName(), settlement.getName());
+//					Simulation.instance().getEventManager().registerNewEvent(hEvent);
 
 				}
 			}

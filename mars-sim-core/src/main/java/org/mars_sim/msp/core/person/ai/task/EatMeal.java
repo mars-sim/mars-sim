@@ -119,15 +119,7 @@ public class EatMeal extends Task implements Serializable {
                 RandomUtil.getRandomDouble(10D));
 
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
-		
-        // Check if person is not in a settlement or vehicle.
-        if (person.isOutside()) {
-        	// TODO : if a person is on EVA suit, should be able to drink water from the helmet tube
-			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, 
-            		person + " was trying to eat a meal, but is not inside a settlement/vehicle.", null);
-            endTask();
-        }
-        
+  
         condition = person.getPhysicalCondition();
         
         //double thirst = condition.getThirst();
@@ -137,6 +129,14 @@ public class EatMeal extends Task implements Serializable {
         
         boolean notHungry = startingHunger < 150 && energy > 1500;
         
+        // Check if person is outside and is not thirsty
+		if (person.isOutside() && !condition.isThirsty()) {
+			// TODO : if a person is on EVA suit, should be able to drink water from the helmet tube
+			LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, 
+					person + " was trying to eat a meal, but is not inside a settlement/vehicle.", null);
+			endTask();
+		}
+	        
         waterEachServing = condition.getWaterConsumedPerServing() *1000D;
         
         boolean want2Chat = true;
@@ -152,12 +152,13 @@ public class EatMeal extends Task implements Serializable {
         		want2Chat = false;
         }
         
-        Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, want2Chat);
-        if (diningBuilding != null) {
-        	// Walk to that building.
-        	walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
+        if (person.isInSettlement()) {
+	        Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, want2Chat);
+	        if (diningBuilding != null) {
+	        	// Walk to that building.
+	        	walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
+	        }
         }
-        
 
         // if a person is thirsty and not hungry
         if (condition.isThirsty() && notHungry) {
@@ -175,15 +176,16 @@ public class EatMeal extends Task implements Serializable {
         dessertConsumptionRate = config.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
 
         // Take napkin from inventory if available.
-        Unit container = person.getTopContainerUnit();
-        if (container != null) {
-        	Inventory inv = container.getInventory();
-            if (inv != null)
-            	hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, ResourceUtil.napkinAR, inv, false);
-            //else
-            //	endTask();
-        }
-        
+        if (person.isInSettlement()) {
+	        Unit container = person.getTopContainerUnit();
+	        if (container != null) {
+	        	Inventory inv = container.getInventory();
+	            if (inv != null)
+	            	hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, ResourceUtil.napkinAR, inv, false);
+	            //else
+	            //	endTask();
+	        }
+        }  
     
     	// if a person is just a little thirsty and NOT that hungry  
         if (notHungry) {
@@ -415,7 +417,7 @@ public class EatMeal extends Task implements Serializable {
         	Inventory inv = container.getInventory();
 
             // Take preserved food from inventory if it is available.
-            if (Storage.retrieveAnResource(foodAmount, ResourceUtil.foodAR, inv, true)) {
+            if (Storage.retrieveAnResource(foodAmount, ResourceUtil.foodID, inv, true)) {
 
                 // Consume preserved food.
 
@@ -596,9 +598,9 @@ public class EatMeal extends Task implements Serializable {
 
 		    if (waterFinal > 0)  {
 
-		    	double new_thirst = (currentThirst - waterFinal)/8;
+		    	double new_thirst = (currentThirst - waterFinal)/10;
 		    	// Test to see if there's enough water
-		    	boolean haswater = Storage.retrieveAnResource(waterFinal/1000D, ResourceUtil.waterAR, inv , false);  
+		    	boolean haswater = Storage.retrieveAnResource(waterFinal/1000D, ResourceUtil.waterID, inv , false);  
 		    	
 		    	if (haswater) {
 		    		condition.setThirsty(false);
@@ -607,8 +609,8 @@ public class EatMeal extends Task implements Serializable {
 		    		if (waterOnly)
 		    			setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
 		    		double amount = waterFinal/1000D;	    	
-		    		inv.retrieveAmountResource(ResourceUtil.waterAR, amount);
-		    		inv.addAmountDemand(ResourceUtil.waterAR, amount);
+		    		inv.retrieveAmountResource(ResourceUtil.waterID, amount);
+		    		inv.addAmountDemand(ResourceUtil.waterID, amount);
 		    		//LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
 		    				
 		    		//logger.info(person + " is drinking " + Math.round(amount * 1000.0)/1000.0 + " kg of water"
@@ -620,12 +622,13 @@ public class EatMeal extends Task implements Serializable {
 		    	}
 		    	
 		    	if (person.getWaterRation() || !haswater) {
-		    		if (!haswater) person.setWaterRation(true);
+		    		if (!haswater) 
+		    			person.setWaterRation(true);
 			    	// Test to see if there's just half of the amount of water
-		    		haswater = Storage.retrieveAnResource(waterFinal/1000D*RATION_FACTOR, ResourceUtil.waterAR, inv , false);
+		    		haswater = Storage.retrieveAnResource(waterFinal/1000D*RATION_FACTOR, ResourceUtil.waterID, inv , false);
 		    		if (haswater) {
 		    			condition.setThirsty(false);
-		    			new_thirst = new_thirst * (1 + RATION_FACTOR);
+		    			new_thirst = new_thirst * (1 - RATION_FACTOR)/2D;
 			    		condition.setThirst(new_thirst);
 			    		if (waterOnly)
 			    			setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
@@ -633,8 +636,27 @@ public class EatMeal extends Task implements Serializable {
 			    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 			    				"[" + person.getLocationTag().getQuickLocation() +  "] " +
 			    				person + " is on ration when drinking " + Math.round(amount * 1000.0)/1000.0 + " kg of water", null);	
-			    		inv.retrieveAmountResource(ResourceUtil.waterAR, amount);
-			    		inv.addAmountDemand(ResourceUtil.waterAR, amount);
+			    		inv.retrieveAmountResource(ResourceUtil.waterID, amount);
+			    		inv.addAmountDemand(ResourceUtil.waterID, amount);
+			    	}
+		    	}
+		    	
+		    	if (!haswater) {
+		    		person.setWaterRation(true);
+			    	// Test to see if there's just a quarter of the amount of water
+		    		haswater = Storage.retrieveAnResource(waterFinal/2000D*RATION_FACTOR, ResourceUtil.waterID, inv , false);
+		    		if (haswater) {
+		    			condition.setThirsty(false);
+		    			new_thirst = new_thirst * (1 - RATION_FACTOR)/1.5;
+			    		condition.setThirst(new_thirst);
+			    		if (waterOnly)
+			    			setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
+			    		double amount = waterFinal/2000D*RATION_FACTOR;
+			    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+			    				"[" + person.getLocationTag().getQuickLocation() +  "] " +
+			    				person + " is on ration when drinking " + Math.round(amount * 1000.0)/1000.0 + " kg of water", null);	
+			    		inv.retrieveAmountResource(ResourceUtil.waterID, amount);
+			    		inv.addAmountDemand(ResourceUtil.waterID, amount);
 			    	}
 		    	}
 	    	}	        
@@ -850,7 +872,7 @@ public class EatMeal extends Task implements Serializable {
         if (containerUnit != null) {
             //try {
                 Inventory inv = containerUnit.getInventory();
-                result = Storage.retrieveAnResource(foodConsumptionRate, ResourceUtil.foodAR, inv, false);
+                result = Storage.retrieveAnResource(foodConsumptionRate, ResourceUtil.foodID, inv, false);
             //}
             //catch (Exception e) {
             //    e.printStackTrace(System.err);
