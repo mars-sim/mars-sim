@@ -252,7 +252,7 @@ public class MainDesktopPane extends WebDesktopPane
 	@Override
 	public void componentMoved(ComponentEvent e) {
 		logger.info("componentMoved()");
-		// updateToolWindow();
+		updateToolWindow();
 	}
 
 	@Override
@@ -277,7 +277,6 @@ public class MainDesktopPane extends WebDesktopPane
 		WebInternalFrame[] frames = (WebInternalFrame[]) this.getAllFrames();
 		for (WebInternalFrame f : frames) {
 			f.updateUI();
-
 		}
 	}
 
@@ -298,19 +297,23 @@ public class MainDesktopPane extends WebDesktopPane
 	}
 
 	public void unitManagerUpdate(UnitManagerEvent event) {
-		/*
-		 * if (event.getUnit() instanceof Settlement) {
-		 * 
-		 * //removeAllElements(); UnitManager unitManager =
-		 * Simulation.instance().getUnitManager(); List<Settlement> settlements = new
-		 * ArrayList<Settlement>(unitManager.getSettlements());
-		 * Collections.sort(settlements);
-		 * 
-		 * Iterator<Settlement> i = settlements.iterator(); while (i.hasNext()) {
-		 * i.next().removeUnitListener(this); } Iterator<Settlement> j =
-		 * settlements.iterator(); while (j.hasNext()) { j.next().addUnitListener(this);
-		 * } }
-		 */
+
+//		if (event.getUnit() instanceof Settlement) {		  
+		//removeAllElements(); 
+//		UnitManager unitManager =
+//		Simulation.instance().getUnitManager(); 
+//		List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
+//		Collections.sort(settlements);
+//		  
+//		Iterator<Settlement> i = settlements.iterator(); 
+//		while (i.hasNext()) {
+//			i.next().removeUnitListener(this);
+//		} 
+//		Iterator<Settlement> j = settlements.iterator(); 
+//		while (j.hasNext()) {
+//			j.next().addUnitListener(this);
+//		}}
+		 
 		Object unit = event.getUnit();
 		if (unit instanceof Settlement) {
 
@@ -318,8 +321,7 @@ public class MainDesktopPane extends WebDesktopPane
 			UnitManagerEventType eventType = event.getEventType();
 
 			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
-				// System.out.println("MainDesktopPane : " + settlement.getName() + " just
-				// added");
+
 				settlement.addUnitListener(this);
 
 				if (mainScene != null) {
@@ -327,8 +329,7 @@ public class MainDesktopPane extends WebDesktopPane
 				}
 
 			} else if (eventType == UnitManagerEventType.REMOVE_UNIT) { // REMOVE_UNIT;
-				// System.out.println("MainDesktopPane : " + settlement.getName() + " just
-				// deleted");
+
 				settlement.removeUnitListener(this);
 
 				if (mainScene != null) {
@@ -734,7 +735,6 @@ public class MainDesktopPane extends WebDesktopPane
 	 * 
 	 * @param toolName the name of the tool window
 	 */
-	@SuppressWarnings("restriction")
 	public void closeToolWindow(String toolName) {
 		SwingUtilities.invokeLater(() -> {
 			ToolWindow window = getToolWindow(toolName);

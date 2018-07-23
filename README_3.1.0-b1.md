@@ -22,7 +22,7 @@ Copyright (C) 2018 Scott Davis
 ## Installation
 
 - Install the latest Java JRE or JDK on your machine. 
-  (See README.md from https://github.com/mars-sim/mars-sim) 
+  See `Prerequisites` at [README.md](https://github.com/mars-sim/mars-sim/blob/master/README.md) 
 
 - Download the mars-sim package available in 4 editions, namely,
   Batch, Debian, Jar and Headless Jar editions.
