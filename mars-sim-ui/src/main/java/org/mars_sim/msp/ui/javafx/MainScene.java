@@ -2322,9 +2322,7 @@ public class MainScene implements ClockListener {
 		tabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
 
 			if (newTab == dashboardTab) {
-
 				c.checkSettlements();
-
 				dashboardStackPane.requestFocus();
 				closeMaps();
 			}
@@ -2335,20 +2333,14 @@ public class MainScene implements ClockListener {
 			}
 
 			else if (newTab == mapTab) {
-
 				anchorToggles();
-
 				desktop.closeToolWindow(GuideWindow.NAME);
-
 			}
 
 			else if (newTab == guideTab) {
-
 				// if (!desktop.isToolWindowOpen(GuideWindow.NAME))
 				desktop.openToolWindow(GuideWindow.NAME);
-
 				closeMaps();
-
 			}
 
 			else {
@@ -3514,10 +3506,12 @@ public class MainScene implements ClockListener {
 		// Add main pane
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setSize(screen_width, screen_height);
-		mainPane.add(desktop, BorderLayout.CENTER);
+		mainPane.add(desktop, BorderLayout.CENTER);		
 		SwingUtilities.invokeLater(() -> desktopNode.setContent(mainPane));
 
-		desktopNode.requestFocus();
+//		SwingUtilities.invokeLater(() -> desktopNode.setContent(desktop));
+
+//		desktopNode.requestFocus();
 	}
 
 	public SwingNode getDesktopNode() {

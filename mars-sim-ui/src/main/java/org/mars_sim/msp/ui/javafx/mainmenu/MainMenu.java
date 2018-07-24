@@ -102,7 +102,7 @@ public class MainMenu {
     public static String screen3ID = "credits";
     public static String screen3File = "/fxui/fxml/Credits.fxml";
 
-    private static final int STAR_COUNT = 500;//00;
+    private static final int STAR_COUNT = 100;//00;
     private static final int TIME = 20_000_000;//2_000_000_000;
     
     private Rectangle[] nodes = new Rectangle[STAR_COUNT];

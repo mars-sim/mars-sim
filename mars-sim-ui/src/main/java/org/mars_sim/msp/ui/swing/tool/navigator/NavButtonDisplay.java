@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * NavButtonDisplay.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2018-07-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -18,11 +17,12 @@ import java.awt.event.MouseListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JComponent;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.ImageLoader;
+
+import com.alee.extended.WebComponent;
+import com.alee.managers.style.StyleId;
 
 /** 
  * The NavButtonDisplay class is a component that displays and
@@ -30,7 +30,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
  * the globe and map.
  */
 public class NavButtonDisplay
-extends JComponent
+extends WebComponent
 implements MouseListener {
 
 	/** default serial id. */
@@ -246,5 +246,23 @@ implements MouseListener {
 			}
 		}
 		return -1;
+	}
+
+	@Override
+	public StyleId getDefaultStyleId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void updateUI() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getUIClassID() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

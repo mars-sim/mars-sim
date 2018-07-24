@@ -28,13 +28,13 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-
-
+import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
@@ -163,12 +163,12 @@ implements ActionListener {
 		if (desktop.getMainScene() != null) {
 
 			//setTitleName(null);
-			// 2016-10-21 Remove title bar
-		    //putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
-		    //getRootPane().setWindowDecorationStyle(JRootPane.NONE);
-		    //BasicInternalFrameUI bi = (BasicInternalFrameUI)super.getUI();
-		    //bi.setNorthPane(null);
-		    //setBorder(null);
+			// Remove title bar
+		    putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
+		    getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+		    BasicInternalFrameUI bi = (BasicInternalFrameUI)super.getUI();
+		    bi.setNorthPane(null);
+		    setBorder(null);
 
 			// Prepare content pane
 			WebPanel wholePane = new WebPanel();

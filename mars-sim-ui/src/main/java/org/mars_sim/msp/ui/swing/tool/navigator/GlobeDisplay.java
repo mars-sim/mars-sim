@@ -12,8 +12,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MediaTracker;
+import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.MemoryImageSource;
@@ -388,11 +390,17 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 				dbg = dbImage.getGraphics();
 		}
 
-		dbg.setColor(Color.black);
+	    Graphics2D g2d = (Graphics2D) dbg;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		g2d.setRenderingHint( RenderingHints.  KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+				
+		g2d.setColor(Color.black);
 		//dbg.fillRect(0, 0, 150, 150);
-		dbg.fillRect(0, 0, width, height);
+		g2d.fillRect(0, 0, width, height);
 		//Image starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
-		dbg.drawImage(starfield, 0, 0, Color.black, null);
+		g2d.drawImage(starfield, 0, 0, Color.black, null);
 
 		// Draw real or topo globe
 		MarsGlobe globe = topo ? topoSphere : marsSphere;
@@ -400,7 +408,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		Image image = globe.getGlobeImage();
 		if (image != null) {
 			if(globe.isImageDone()) {
-				dbg.drawImage(image, 0, 0, this);
+				g2d.drawImage(image, 0, 0, this);
 			}
 			else {
 				System.out.println("globe.isImageDone() is false");
@@ -411,20 +419,30 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 			System.out.println("image is null");
 
 		if (showDayNightShading) {
-			drawShading(dbg);
+			drawShading(g2d);
 		}
 
-		drawUnits(dbg);
-		drawCrossHair(dbg);
+		drawUnits(g2d);
+		drawCrossHair(g2d);
 
 	}
 
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+//	public void paintComponent(Graphics g) {
+//		super.paintComponent(g);
+//		if(dbImage != null)
+//			g.drawImage(dbImage,  0, 0, null);
+//	}
+
+	public void paint(Graphics g) {
+	    Graphics2D g2d = (Graphics2D) g;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		g2d.setRenderingHint( RenderingHints.  KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 		if(dbImage != null)
-			g.drawImage(dbImage,  0, 0, null);
+			g2d.drawImage(dbImage,  0, 0, null);
 	}
-
+	
 /*
 	public void paintComponent(Graphics g) {
 
@@ -450,7 +468,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 * Draws the day/night shading on the globe.
 	 * @param g graphics context
 	 */
-	protected void drawShading(Graphics g) {
+	protected void drawShading(Graphics2D g) {
 		int centerX = width / 2;
 		int centerY = height / 2;
 
@@ -525,7 +543,11 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 * draw the dots on the globe that identify units
 	 * @param g graphics context
 	 */
-	protected void drawUnits(Graphics g) {
+	protected void drawUnits(Graphics2D g) {
+//	    Graphics2D g = (Graphics2D) gg;
+//		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+//		g.setRenderingHint( RenderingHints.  KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+		
 		Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits()
 				.iterator();
 		while (i.hasNext()) {
@@ -555,7 +577,11 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 * latitude and logitude of the center point of the current globe view.
 	 * @param g graphics context
 	 */
-	protected void drawCrossHair(Graphics g) {
+	protected void drawCrossHair(Graphics2D g) {
+//	    Graphics2D g = (Graphics2D) gg;
+//		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+//		g.setRenderingHint( RenderingHints.  KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+		
 		g.setColor(Color.orange);
 
 		// If USGS map is used, use small crosshairs.
@@ -591,12 +617,12 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 		// use prepared font
 		g.setFont(positionFont);
-
+		 
 		// Draw longitude and latitude strings using prepared measurements
 		//g.drawString(latitude, 5, 130);
-		g.drawString(latitude, 5, 260);
+		g.drawString(latitude, 25, 270);
 		//g.drawString(longitude, 145 - rightWidth, 130);
-		g.drawString(longitude, 260 - rightWidth, 260);
+		g.drawString(longitude, 275 - rightWidth, 270);
 
 		String latString = centerCoords.getFormattedLatitudeString();
 		String longString = centerCoords.getFormattedLongitudeString();
@@ -604,8 +630,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		int latWidth = positionMetrics.stringWidth(latString);
 		int longWidth = positionMetrics.stringWidth(longString);
 
-		int latPosition = ((leftWidth - latWidth) / 2) + 5;
-		int longPosition = 285 - rightWidth + ((rightWidth - longWidth) / 2);
+		int latPosition = ((leftWidth - latWidth) / 2) + 25;
+		int longPosition = 275 - rightWidth + ((rightWidth - longWidth) / 2);
 
 		//g.drawString(latString, latPosition, 142);
 		//g.drawString(longString, longPosition, 142);

@@ -1,11 +1,13 @@
+/**
+ * Mars Simulation Project
+ * PopUpMenu.java
+ * @version 3.1.0 2018-07-23
+ * @author stpa
+ */
 package org.mars_sim.msp.ui.swing.tool.navigator;
 
 import org.mars_sim.msp.core.Msg;
 
-/**
- * @author stpa
- * 2014-03-02
- */
 public enum MarsGlobeType {
 
 	//SURFACE (Msg.getString("img.mars.surface")), //$NON-NLS-1$

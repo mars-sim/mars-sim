@@ -13,9 +13,11 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.JLayer;
+import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.LayerUI;
+import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import org.controlsfx.control.StatusBar;
 import org.mars_sim.msp.core.Msg;
@@ -130,12 +132,12 @@ extends ToolWindow {
 
 		if (mainScene != null) {
 			//setTitleName(null);
-			// 2016-10-21 Remove title bar
-		    //putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
-		    //getRootPane().setWindowDecorationStyle(JRootPane.NONE);
-		    //BasicInternalFrameUI bi = (BasicInternalFrameUI)super.getUI();
-		    //bi.setNorthPane(null);
-		    //setBorder(null);
+			// Remove title bar
+		    putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
+		    getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+		    BasicInternalFrameUI bi = (BasicInternalFrameUI)super.getUI();
+		    bi.setNorthPane(null);
+		    setBorder(null);
 		}
 
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
