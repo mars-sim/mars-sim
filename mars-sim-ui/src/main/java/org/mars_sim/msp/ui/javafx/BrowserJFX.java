@@ -65,6 +65,7 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.progressbar.WebProgressBar;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXScrollPane;
 
 //import com.sun.javafx.webkit.WebConsoleListener;
 
@@ -970,8 +971,12 @@ public class BrowserJFX {
                 borderPane.setTop(vbox);
                 borderPane.setCenter(view);
                 
+                JFXScrollPane scrollPane = new JFXScrollPane();
+                scrollPane.getChildren().add(borderPane);
+                //JFXScrollPane.smoothHScrolling(scrollPane);
+                
                 if (mainScene == null)
-                	jfxPanel.setScene(new Scene(borderPane));
+                	jfxPanel.setScene(new Scene(scrollPane));
         //});
     }
 

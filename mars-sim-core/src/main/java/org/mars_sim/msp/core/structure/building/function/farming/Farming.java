@@ -99,16 +99,12 @@ implements Serializable {
     private double totalMaxHarvest = 0;
     
     /** The amount of air moisture in the greenhouse */ 
-    private double moisture;
+    private double moisture = 0;
     /** The amount of O2 generated in the greenhouse */ 
-    private double o2;
+    private double o2 = 0;
     /** The amount of CO2 consumed in the greenhouse */ 
-    private double cO2;
+    private double cO2 = 0;
     
-    private double cO2Cache;
-
-	//private boolean checkLED;
-
     private String cropInQueue;
 
     /** List of crop types in queue */
@@ -1358,7 +1354,7 @@ implements Serializable {
 	 * Adds air moisture to this farm
 	 * @param value the amount of air moisture in kg
 	 */
-	public synchronized void addMoisture(double value) {
+	public void addMoisture(double value) {
 		moisture += value;
 	}
 
@@ -1366,7 +1362,7 @@ implements Serializable {
 	 * Adds O2 to this farm
 	 * @param value the amount of O2 cached in kg
 	 */
-	public synchronized void addO2Cache(double value) {
+	public void addO2Cache(double value) {
 		o2 += value;
 	}
 
@@ -1374,7 +1370,7 @@ implements Serializable {
 	 * Adds CO2 to this farm
 	 * @param value the amount of CO2 cached in kg
 	 */
-	public synchronized void addCO2Cache(double value) {
+	public void addCO2Cache(double value) {
 		cO2 += value;
 	}
 	
@@ -1386,7 +1382,7 @@ implements Serializable {
 	 * Retrieves the air moisture from this farm
 	 * @return the amount of air moisture in kg retrieved
 	 */
-	public synchronized double retrieveMoisture(double amount) {
+	public double retrieveMoisture(double amount) {
 		//double m = moisture;
 		// Do NOT directly set to zero since a crop may be accessing the method addMoisture() and change the 
 		// value of moisture at the same time.
@@ -1403,7 +1399,7 @@ implements Serializable {
 	 * Retrieves the O2 generated from this farm
 	 * @return the amount of O2 in kg retrieved
 	 */
-	public synchronized double retrieveO2(double amount) {
+	public double retrieveO2(double amount) {
 		//double gas = o2;
 		o2 = o2 - amount; 
 		// Note : The amount of o2 will be monitored by the CompositionOfAir
@@ -1418,7 +1414,7 @@ implements Serializable {
 	 * Retrieves the CO2 consumed from this farm
 	 * @return the amount of CO2 in kg retrieved
 	 */
-	public synchronized double retrieveCO2(double amount) {
+	public double retrieveCO2(double amount) {
 		//double gas = co2;
 		cO2 = cO2 - amount; 
 		// Note : The amount of co2 will be monitored by the CompositionOfAir

@@ -8,6 +8,8 @@
 package org.mars_sim.msp.ui.swing.tool.map;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 import javax.swing.Icon;
 
@@ -32,20 +34,31 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 	 * @param g the graphics context.
 	 */ 
 	protected void displayUnit(Unit unit, Coordinates mapCenter, String mapType, Graphics g) {
-		
+	    Graphics2D g2d = (Graphics2D) g;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		g2d.setRenderingHint( RenderingHints.  KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+		g2d.setRenderingHint(
+		        RenderingHints.KEY_TEXT_ANTIALIASING,
+		        RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+		g2d.setRenderingHint(
+		        RenderingHints.KEY_TEXT_ANTIALIASING,
+		        RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);			
+				
         IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, mapType);
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
         
         IntPoint labelLocation = getLabelLocation(location, displayInfo.getSurfMapIcon(unit));
         
-        if (TopoMarsMap.TYPE.equals(mapType)) g.setColor(displayInfo.getTopoMapLabelColor());
+        if (TopoMarsMap.TYPE.equals(mapType)) g2d.setColor(displayInfo.getTopoMapLabelColor());
         else if (displayInfo != null)
-        	g.setColor(displayInfo.getSurfMapLabelColor());
+        	g2d.setColor(displayInfo.getSurfMapLabelColor());
         	
-        g.setFont(displayInfo.getMapLabelFont());
+        g2d.setFont(displayInfo.getMapLabelFont());
         
         if (!(displayInfo.isMapBlink(unit) && getBlinkFlag() && unit != null)) {
-        	g.drawString(unit.getName(), 
+        	g2d.drawString(unit.getName(), 
         	labelLocation.getiX(), labelLocation.getiY());
         }
 	}

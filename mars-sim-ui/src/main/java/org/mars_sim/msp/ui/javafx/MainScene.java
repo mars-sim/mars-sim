@@ -180,8 +180,8 @@ public class MainScene implements ClockListener {
 
 	public final static String SPINNER_CSS = "/fxui/css/spinner/spinner.css";
 
-	public final static String ORANGE_CSS_JFX = "/fxui/css/tab/jfx_orange.css";
-	public final static String BLUE_CSS_JFX = "/fxui/css/tab/jfx_blue.css";
+	public final static String JFX_ORANGE_CSS = "/fxui/css/tab/jfx_orange.css";
+	public final static String JFX_BLUE_CSS = "/fxui/css/tab/jfx_blue.css";
 
 	public final static String ORANGE_CSS_THEME = THEME_PATH + "nimrodskin.css";
 	public final static String BLUE_CSS_THEME = THEME_PATH + "snowBlue.css";
@@ -691,12 +691,6 @@ public class MainScene implements ClockListener {
 	public void setupKeyEvents() {
 		InputMap<KeyEvent> f1 = consume(keyPressed(KeyCode.F1), e -> {
 			tabPane.getSelectionModel().select(MainScene.HELP_TAB);
-			/*
-			 * if (desktop.isToolWindowOpen(GuideWindow.NAME)) SwingUtilities.invokeLater(()
-			 * -> desktop.closeToolWindow(GuideWindow.NAME)); else {
-			 * //getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
-			 * SwingUtilities.invokeLater(() -> desktop.openToolWindow(GuideWindow.NAME)); }
-			 */
 		});
 		Nodes.addInputMap(rootStackPane, f1);
 
@@ -704,7 +698,6 @@ public class MainScene implements ClockListener {
 			if (desktop.isToolWindowOpen(SearchWindow.NAME))
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(SearchWindow.NAME));
 			else {
-				// getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
 				SwingUtilities.invokeLater(() -> desktop.openToolWindow(SearchWindow.NAME));
 			}
 		});
@@ -714,7 +707,6 @@ public class MainScene implements ClockListener {
 			if (desktop.isToolWindowOpen(TimeWindow.NAME))
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(TimeWindow.NAME));
 			else {
-				// getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
 				SwingUtilities.invokeLater(() -> desktop.openToolWindow(TimeWindow.NAME));
 			}
 		});
@@ -723,13 +715,7 @@ public class MainScene implements ClockListener {
 		InputMap<KeyEvent> f4 = consume(keyPressed(KeyCode.F4), e -> {
 			if (desktop.isToolWindowOpen(MonitorWindow.NAME)) {
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(MonitorWindow.NAME));
-				// rootAnchorPane.getChildren().remove(monPane);
 			} else {
-
-				// getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
-				// rootAnchorPane.getChildren().add(monPane);
-				// AnchorPane.setRightAnchor(monPane, 0.0);
-				// AnchorPane.setBottomAnchor(monPane, 0.0);
 				SwingUtilities.invokeLater(() -> desktop.openToolWindow(MonitorWindow.NAME));
 			}
 		});
@@ -739,7 +725,6 @@ public class MainScene implements ClockListener {
 			if (desktop.isToolWindowOpen(MissionWindow.NAME))
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(MissionWindow.NAME));
 			else {
-				// getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
 				SwingUtilities.invokeLater(() -> desktop.openToolWindow(MissionWindow.NAME));
 			}
 		});
@@ -749,7 +734,6 @@ public class MainScene implements ClockListener {
 			if (desktop.isToolWindowOpen(ScienceWindow.NAME))
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(ScienceWindow.NAME));
 			else {
-				// getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
 				SwingUtilities.invokeLater(() -> desktop.openToolWindow(ScienceWindow.NAME));
 			}
 		});
@@ -759,7 +743,6 @@ public class MainScene implements ClockListener {
 			if (desktop.isToolWindowOpen(ResupplyWindow.NAME))
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(ResupplyWindow.NAME));
 			else {
-				// getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
 				SwingUtilities.invokeLater(() -> desktop.openToolWindow(ResupplyWindow.NAME));
 			}
 		});
@@ -850,18 +833,11 @@ public class MainScene implements ClockListener {
 
 		InputMap<KeyEvent> ctrlT = consume(keyPressed(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN)),
 				e -> {
-					// if (OS.contains("linux")) {
-					// if (theme == 6)
-					// setTheme(0);
-					// else if (theme == 0)
-					// setTheme(6);
-					// } else {
 					if (theme == 0 || theme == 6) {
 						setTheme(7);
 					} else if (theme == 7) {
 						setTheme(0);
 					}
-					// }
 				});
 		Nodes.addInputMap(rootStackPane, ctrlT);
 
@@ -915,12 +891,7 @@ public class MainScene implements ClockListener {
 	}
 
 	public Text createTextHeader(String s) {
-		// DropShadow ds = new DropShadow();
-		// ds.setOffsetY(1.0f);
-		// ds.setColor(Color.color(0.4f, 0.4f, 0.4f));
-
 		Text t = new Text();
-		// t.setEffect(ds);
 		t.setCache(true);
 		t.setX(10.0f);
 		t.setY(270.0f);
@@ -932,10 +903,7 @@ public class MainScene implements ClockListener {
 
 	public Label createBlendLabel(String s) {
 		Label header_label = new Label(s);
-		// header_label.setEffect(blend);
 		header_label.setStyle("-fx-text-fill: white; -fx-font-size: 13px; -fx-background-color:transparent;"
-				// + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0
-				// #000;"
 				+ "-fx-font-weight: bold;");
 		header_label.setPadding(new Insets(3, 0, 1, 2));
 		return header_label;
@@ -943,17 +911,13 @@ public class MainScene implements ClockListener {
 
 	public Text createBlendText(String s) {
 		Text text = new Text(s);
-		// text.setEffect(blend);
 		text.setStyle("-fx-text-fill: white; -fx-font-size: 11px; -fx-background-color:transparent;"
-				// + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0
-				// #000;"
 				+ "-fx-font-weight: normal;");
 		return text;
 	}
 
 	public void toggleSound() {
 		if (!masterClock.isPaused()) {
-
 			musicMuteBox.setSelected(!musicMuteBox.isSelected());
 			soundEffectMuteBox.setSelected(!soundEffectMuteBox.isSelected());
 		}
@@ -1023,9 +987,6 @@ public class MainScene implements ClockListener {
 		// Load soundPlayer instance from desktop right after desktop has been
 		// instantiated.
 		soundPlayer = desktop.getSoundPlayer();
-		// soundPlayer.setEffectVolume(sound_effect_volume);
-		// soundPlayer.setMusicVolume(music_volume);
-
 		// Setup root for embedding key events
 		root = new Pane();// Group();
 
@@ -1110,9 +1071,6 @@ public class MainScene implements ClockListener {
 
 		createBillboard();
 
-//		AnchorPane.setBottomAnchor(billboard, 35.0);
-//		AnchorPane.setLeftAnchor(billboard, 335.0);//(sceneWidth.get() - 300) / 2);
-
 		anchorPane = new AnchorPane();
 		// anchorPane.setStyle("-fx-background-color: black; ");
 		anchorPane.getChildren().addAll(tabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeBox, marsTimeBox,
@@ -1143,8 +1101,6 @@ public class MainScene implements ClockListener {
 
 		tabPane.prefHeightProperty().bind(scene.heightProperty());
 		tabPane.prefWidthProperty().bind(scene.widthProperty());
-
-		// matrix.setPrefWidth(jfxTabPane.getWidth());
 
 		dashboardStackPane.prefHeightProperty().bind(scene.heightProperty().subtract(30));
 		dashboardStackPane.prefWidthProperty().bind(scene.widthProperty());
@@ -2349,8 +2305,6 @@ public class MainScene implements ClockListener {
 
 		});
 
-		// jfxTabPane.getSelectionModel().select(guideTab);
-
 		// NOTE: if a tab is NOT selected, should close that tool as well to save cpu
 		// utilization
 		// this is done in ToolWindow's update(). It allows for up to 1 second of delay,
@@ -2359,10 +2313,6 @@ public class MainScene implements ClockListener {
 	}
 
 	public void anchorMapTool() {
-
-//		AnchorPane.setRightAnchor(sMapToolPane, 25.0);
-//		AnchorPane.setTopAnchor(sMapToolPane, 20.0);
-//		mapsAnchorPane.getChildren().add(sMapToolPane);
 
 		AnchorPane.setRightAnchor(zoomSlider, 65.0);
 		AnchorPane.setTopAnchor(zoomSlider, 350.0);
@@ -2376,8 +2326,7 @@ public class MainScene implements ClockListener {
 		AnchorPane.setRightAnchor(recenterBtn, 70.0);
 		AnchorPane.setTopAnchor(recenterBtn, 300.0);
 
-		AnchorPane.setRightAnchor(settlementBox, 15.0);// anchorMapTabPane.widthProperty().get()/2D -
-														// 110.0);//settlementBox.getWidth());
+		AnchorPane.setRightAnchor(settlementBox, 15.0);
 		AnchorPane.setTopAnchor(settlementBox, 100.0);
 
 		AnchorPane.setRightAnchor(mapLabelBox, -10.0);
@@ -2432,7 +2381,6 @@ public class MainScene implements ClockListener {
 		sMapStackPane.prefWidthProperty().bind(scene.widthProperty().subtract(1));
 
 		desktop.openToolWindow(SettlementWindow.NAME);
-		// mapNode.setContent(settlementWindow);
 
 		AnchorPane.setRightAnchor(sMapStackPane, 0.0);
 		AnchorPane.setTopAnchor(sMapStackPane, 0.0);
@@ -2472,13 +2420,7 @@ public class MainScene implements ClockListener {
 
 		if (!hasButtons)
 			mapsAnchorPane.getChildren().addAll(rotateCWBtn, rotateCCWBtn, recenterBtn);
-		/*
-		 * for (Node node : mapAnchorPane.getChildrenUnmodifiable()) { if (node ==
-		 * cacheButton) { node.toFront(); } else if (node == minimapButton) {
-		 * node.toFront(); } else if (node == sMapButton) { node.toFront(); } else if
-		 * (node == settlementBox) { node.toFront(); } else if (node == mapLabelBox) {
-		 * node.toFront(); } }
-		 */
+
 		mapLabelBox.toFront();
 		settlementBox.toFront();
 		mapToggle.toFront();
@@ -2501,7 +2443,6 @@ public class MainScene implements ClockListener {
 	public void closeMinimap() {
 		desktop.closeToolWindow(NavigatorWindow.NAME);
 		Platform.runLater(() -> {
-			// addNavWin();
 			mapsAnchorPane.getChildren().remove(minimapGroup);
 			minimapToggle.setSelected(false);
 			minimapToggle.setText("Minimap Off");
@@ -2549,27 +2490,7 @@ public class MainScene implements ClockListener {
 	 */
 	public void initializeTheme() {
 		// logger.info("MainScene's initializeTheme()");
-		// NOTE: it is mandatory to change the theme from 1 to 2 below at the start of
-		// the sim
-		// This avoids two display issues:
-		// (1). the crash of Mars Navigator Tool when it was first loaded
-		// (2). the inability of loading the tab icons of the Monitor Tool at the
-		// beginning
-		// Also, when clicking a tab at the first time, a NullPointerException results)
-		// TODO: find out if it has to do with nimrodlf and/or JIDE-related
-		/*
-		 * if (OS.contains("linux")) { setTheme(0); } else { setTheme(7); }
-		 */
-		/*
-		 * if (choice_theme == ThemeType.Nimrod) setTheme(0); else if (choice_theme ==
-		 * ThemeType.Nimbus) setTheme(0); else if (choice_theme == ThemeType.Web)
-		 * setTheme(0);
-		 */
 		setTheme(defaultThemeColor);
-
-		// SwingUtilities.invokeLater(() -> setLookAndFeel(NIMBUS_THEME));
-
-		// logger.info("done with MainScene's initializeTheme()");
 	}
 
 	/*
@@ -2631,20 +2552,7 @@ public class MainScene implements ClockListener {
 
 			}
 
-			SwingUtilities.invokeLater(() -> {
-				// if (OS.contains("linux")) {
-				// Note: NIMROD theme lib doesn't work on linux
-				// setLookAndFeel(ThemeType.Nimbus);
-				// }
-
-				// else {
-				// if (theme == 0 || theme == 6)
-				setLookAndFeel(defaultThemeType);
-				// else
-				// setLookAndFeel(ThemeType.Nimrod);
-				// }
-
-			});
+			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType));
 
 		}
 
@@ -2665,19 +2573,6 @@ public class MainScene implements ClockListener {
 //				WebLookAndFeel.setForceSingleEventsThread ( true );
 				WebLookAndFeel.install();
 				UIManagers.initialize();
-
-				// need to load an uimanager
-				// if (theme == 0 || theme == 6)
-				// UIManager.setLookAndFeel (NimbusLookAndFeel.class.getCanonicalName());
-				// else if (theme == 7){
-//					NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
-//					NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
-//					// working if switching to a brand new .theme file 
-//					NimRODLookAndFeel nf = new NimRODLookAndFeel();
-//					nf.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme // file
-//					UIManager.setLookAndFeel(nf); 
-				// }
-
 				changed = true;
 
 			} catch (Exception e) {
@@ -2689,8 +2584,6 @@ public class MainScene implements ClockListener {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				changed = true;
-				// themeSkin = "system";
-				// System.out.println("found system");
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
@@ -2698,7 +2591,6 @@ public class MainScene implements ClockListener {
 
 		else if (choice == ThemeType.Nimrod) {
 			try {
-				// String themeSkin = "snowBlue";
 				NimRODTheme nt = new NimRODTheme(
 						getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
 				NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
@@ -2708,7 +2600,6 @@ public class MainScene implements ClockListener {
 										// // file
 				UIManager.setLookAndFeel(nf);
 				changed = true; //
-				// System.out.println("found Nimrod");
 
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$ } }
@@ -2723,11 +2614,6 @@ public class MainScene implements ClockListener {
 						// Set Nimbus look & feel if found in JVM.
 
 						// see https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/color.html
-
-						// UIManager.put("nimbusBase", new Color(...));
-						// UIManager.put("nimbusBlueGrey", new Color(...));
-						// UIManager.put("control", new Color(...));
-
 						UIManager.setLookAndFeel(info.getClassName());
 						foundNimbus = true;
 						// themeSkin = "nimbus";
@@ -2740,9 +2626,8 @@ public class MainScene implements ClockListener {
 				if (!foundNimbus) {
 					logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
 					UIManager.setLookAndFeel(new MetalLookAndFeel());
-					// themeSkin = "metal";
+
 					changed = true;
-					// System.out.println("found metal");
 				}
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
@@ -2818,10 +2703,6 @@ public class MainScene implements ClockListener {
 
 		timePickerFX.getStylesheets().clear();
 		timePickerFX.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-//		if (cssFile.toLowerCase().contains("blue"))
-//			timePickerFX.setDefaultColor(Color.valueOf("#065185"));
-//		else
-//			timePickerFX.setDefaultColor(Color.valueOf("#654b00"));
 
 		if (settlementWindow == null) {
 			settlementWindow = (SettlementWindow) (desktop.getToolWindow(SettlementWindow.NAME));
@@ -2849,11 +2730,9 @@ public class MainScene implements ClockListener {
 			marsNetBtn.setGraphic(marsNetIcon);
 			soundIcon.setFill(Color.YELLOW);
 			soundBtn.setGraphic(soundIcon);
-			// farmIcon.setFill(Color.YELLOW);
-			// farmBtn.setGraphic(farmIcon);
-			tabPane.getStylesheets().add(getClass().getResource(ORANGE_CSS_JFX).toExternalForm());
+			tabPane.getStylesheets().add(getClass().getResource(JFX_ORANGE_CSS).toExternalForm());
 			tabPane.getStyleClass().add("jfx-tab-pane");
-			toolbar.getStylesheets().add(getClass().getResource(ORANGE_CSS_JFX).toExternalForm());
+			toolbar.getStylesheets().add(getClass().getResource(JFX_ORANGE_CSS).toExternalForm());
 			toolbar.getStyleClass().add("jfx-tool-bar");
 		}
 
@@ -2870,11 +2749,9 @@ public class MainScene implements ClockListener {
 			marsNetBtn.setGraphic(marsNetIcon);
 			soundIcon.setFill(Color.LAVENDER);
 			soundBtn.setGraphic(soundIcon);
-			// farmIcon.setFill(Color.LAVENDER);
-			// farmBtn.setGraphic(farmIcon);
-			tabPane.getStylesheets().add(getClass().getResource(BLUE_CSS_JFX).toExternalForm());
+			tabPane.getStylesheets().add(getClass().getResource(JFX_BLUE_CSS).toExternalForm());
 			tabPane.getStyleClass().add("jfx-tab-pane");
-			toolbar.getStylesheets().add(getClass().getResource(BLUE_CSS_JFX).toExternalForm());
+			toolbar.getStylesheets().add(getClass().getResource(JFX_BLUE_CSS).toExternalForm());
 			toolbar.getStyleClass().add("jfx-tool-bar");
 		}
 

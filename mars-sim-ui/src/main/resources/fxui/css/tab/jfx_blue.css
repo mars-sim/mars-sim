@@ -1,20 +1,23 @@
-.jfx-popup-container{
-	-fx-background-color: WHITE;
-	-fx-background-radius: 10px;
-	-fx-padding: 3;
+
+#background {
+    -light-blue: #7ebcea;
+    -dark-highlight: #2381E9;
+    -dark-blue: #2f4b8f ;
+    -darkest-blue: #2f4b8f;
+    -mid-gray: rgb(216, 222, 227);
+    -fx-background-color: #7ebcea;
 }
 
-.jfx-tab-pane .headers-region > .tab:selected > .tab-container > .tab-label {
-    -fx-background-color: #065185;
+.button {
+    -fx-background-color:
+        linear-gradient(#7ebcea, #2f4b8f),
+        linear-gradient(#426ab7, #263e75),
+        linear-gradient(#395cab, #223768),
+        linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+    -fx-padding: .2em 0.816667em .2em 0.816667em;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
 }
-.jfx-tab-pane .tab-header-background {
-    -fx-background-color: #065185; 
-}
-.jfx-tab-pane .tab-selected-line {
-    -fx-stroke: #3291D2;
-    -fx-stroke-width: 3pt;
-}
-
 
 #commit-button {
     -fx-background-color:
@@ -30,56 +33,6 @@
     -fx-padding: 5 5 5 5;
 }
 
-.tab-pane > .tab-header-area > .headers-region > .tab:top {
-    -fx-border-color: #a3a7a8;
-    -fx-border-radius: 5 5 0 0;
-    -fx-background-color: white;
-    -fx-pref-height: 40px;
-    -fx-background-insets: 0;
-}
-
-.tab-pane > .tab-header-area > .headers-region > .tab:selected:top {
-    -fx-border-color: #2381E9 #a3a7a8 #a3a7a8 #a3a7a8;
-    -fx-border-width: 5 1 1 1;
-    -fx-border-radius: 5 5 0 0;
-    -fx-background-color: white;
-    -fx-pref-height: 40px;
-    -fx-background-insets: 0;
-}
-
-
-.tab-pane > .tab-header-area > .headers-region > .tab:selected > .tab-container > .tab-label {
-    -fx-alignment: CENTER;
-    -fx-text-fill: #2381E9;
-    -fx-font-weight: bold;
-}
-
-
-.tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
-    -fx-alignment: CENTER;
-    -fx-text-fill: #2381E9;
-    -fx-font-weight: bold;
-}
-
-
-.tab-pane > .tab-header-area > .tab-header-background {
-    -fx-background-color:white;
-    -fx-border-color: #a3a7a8;
-    -fx-border-width: 0 0 1 0;
-    -fx-background-insets: 0;
-    -fx-pref-height: 45px;
-}
-
-
-#background {
-    -light-blue: #7ebcea;
-    -dark-highlight: #2381E9;
-    -dark-blue: #2f4b8f ;
-    -darkest-blue: #2f4b8f;
-    -mid-gray: rgb(216, 222, 227);
-    -fx-background-color: #7ebcea;
-}
-
 .jfx-tool-bar {
     -fx-base: #3291D2;
     -fx-font-size: 11pt;
@@ -91,13 +44,19 @@
     -fx-effect: dropshadow(two-pass-box,-dark-blue,5,.2,0,0);
 }
 
-.button {
-    -fx-background-color:
-        linear-gradient(#7ebcea, #2f4b8f),
-        linear-gradient(#426ab7, #263e75),
-        linear-gradient(#395cab, #223768),
-        linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
-    -fx-padding: .2em 0.816667em .2em 0.816667em;
-    -fx-text-fill: white;
-    -fx-font-size: 11px;
+.jfx-popup-container{
+	-fx-background-color: WHITE;
+	-fx-background-radius: 10px;
+	-fx-padding: 3;
+}
+
+.jfx-tab-pane .headers-region > .tab:selected > .tab-container > .tab-label {
+    -fx-background-color: #065185;
+}
+.jfx-tab-pane .tab-header-background {
+    -fx-background-color: #065185; 
+}
+.jfx-tab-pane .tab-selected-line {
+    -fx-stroke: #3291D2;
+    -fx-stroke-width: 1pt;
 }

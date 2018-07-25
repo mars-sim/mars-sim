@@ -191,13 +191,13 @@ public class Crop implements Serializable {
 	private static MasterClock masterClock;
 	private static CropConfig cropConfig;
 
-	private static AmountResource waterAR = ResourceUtil.waterAR;
-	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	private static AmountResource carbonDioxideAR = ResourceUtil.carbonDioxideAR;
-	private static AmountResource greyWaterAR =  ResourceUtil.greyWaterAR;
-	private static AmountResource cropWasteAR =  ResourceUtil.cropWasteAR;
-	private static AmountResource fertilizerAR =  ResourceUtil.fertilizerAR;
-
+	private static int waterID = ResourceUtil.waterID;
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int carbonDioxideID = ResourceUtil.co2ID;
+	private static int greywaterID =  ResourceUtil.greyWaterID;
+	private static int cropWasteID =  ResourceUtil.cropWasteID;
+	private static int fertilizerID =  ResourceUtil.fertilizerID;
+	
 	private static Part mushroomBoxAR = ItemResourceUtil.mushroomBoxAR;
 			
 
@@ -209,7 +209,7 @@ public class Crop implements Serializable {
 	 * @param farm - Farm crop being grown in.
 	 * @param settlement - the settlement the crop is located at.
 	 * @param isStartup - true if this crop is generated at the start of the sim)  
-	 * @param tissuePercent the percentage of ticarbonDioxideARure available based on the requested amount
+	 * @param tissuePercent the percentage of ticarbonDioxideIDure available based on the requested amount
 	 */
 	// Called by Farming.java constructor and timePassing()
 	// 2015-08-26 Added new param percentGrowth
@@ -353,7 +353,7 @@ public class Crop implements Serializable {
 				inv.addItemDemand(mushroomBoxAR, 2);
 			}
 			// Require some dead matter for fungi to decompose
-			Storage.retrieveAnResource(growingArea *.5, cropWasteAR, inv, true);
+			Storage.retrieveAnResource(growingArea *.5, cropWasteID, inv, true);
 		}
 	}
 	
@@ -479,7 +479,7 @@ public class Crop implements Serializable {
 						+ settlement.getName() + " and didn't survive.");
 				// 2015-02-06 Added Crop Waste
 				if (actualHarvest > 0)
-					Storage.storeAnResource(actualHarvest, cropWasteAR, inv, "::computeHealth");
+					Storage.storeAnResource(actualHarvest, cropWasteID, inv, "::computeHealth");
 				logger.info(actualHarvest + " kg Crop Waste generated from the dead "+ capitalizedCropName);
 				phaseType = PhaseType.FINISHED;
 			}
@@ -496,7 +496,7 @@ public class Crop implements Serializable {
 						+ settlement.getName() + " and didn't survive.");
 				// 2015-02-06 Added Crop Waste
 				if (actualHarvest > 0)
-					Storage.storeAnResource(actualHarvest, cropWasteAR, inv, "::computeHealth");
+					Storage.storeAnResource(actualHarvest, cropWasteID, inv, "::computeHealth");
 				logger.info(actualHarvest + " kg Crop Waste generated from the dead "+ capitalizedCropName);
 				//actualHarvest = 0;
 				//growingTimeCompleted = 0;
@@ -780,7 +780,7 @@ public class Crop implements Serializable {
 		double amountCropWaste = harvestMass * cropType.getInedibleBiomass() / (cropType.getInedibleBiomass() 
 				+ cropType.getEdibleBiomass());
 		if (amountCropWaste > 0)
-			Storage.storeAnResource(amountCropWaste, cropWasteAR, inv, "::generateCropWaste");
+			Storage.storeAnResource(amountCropWaste, cropWasteID, inv, "::generateCropWaste");
 		//logger.info("addWork() : " + cropName + " amountCropWaste " + Math.round(amountCropWaste * 1000.0)/1000.0);
 	}
 
@@ -1060,7 +1060,7 @@ public class Crop implements Serializable {
 		// Calculate water usage
 		double waterRequired = fractionalGrowingTimeCompleted * needFactor * (averageWaterNeeded * time / 1000) * growingArea;
 		// Determine the amount of grey water available.
-		double greyWaterAvailable = Math.min(GREY_WATER_FILTERING_RATE* time, inv.getAmountResourceStored(greyWaterAR, false));
+		double greyWaterAvailable = Math.min(GREY_WATER_FILTERING_RATE* time, inv.getAmountResourceStored(greywaterID, false));
 		double waterUsed = 0;
 		double totalWaterUsed = 0;
 		
@@ -1070,25 +1070,26 @@ public class Crop implements Serializable {
 		// First water crops with grey water if it is available.
 		if (greyWaterAvailable >= waterRequired) {
 			waterUsed = waterRequired;
-		    Storage.retrieveAnResource(waterUsed, greyWaterAR, inv, true);
+			totalWaterUsed = waterUsed;
+		    Storage.retrieveAnResource(waterUsed, greywaterID, inv, true);
 		    waterModifier = 1D;
 		}
 		// If not enough grey water, use water mixed with fertilizer.
 		else if (greyWaterAvailable < waterRequired) {
-		    Storage.retrieveAnResource(greyWaterAvailable, greyWaterAR, inv, true);
+		    Storage.retrieveAnResource(greyWaterAvailable, greywaterID, inv, true);
 
-		    double waterAvailable = inv.getAmountResourceStored(waterAR, false);
+		    double waterAvailable = inv.getAmountResourceStored(waterID, false);
 		    waterUsed = waterRequired - greyWaterAvailable;
 		    
 		    if (waterUsed > waterAvailable) {
 		    	waterUsed = waterAvailable;
-		        Storage.retrieveAnResource(waterUsed, waterAR, inv, true);
+		        Storage.retrieveAnResource(waterUsed, waterID, inv, true);
 		    }
 
 	        // Incur penalty if water is NOT available 
 		    waterModifier = (greyWaterAvailable + waterUsed)/waterRequired;
 		    
-		    double fertilizerAvailable = inv.getAmountResourceStored(fertilizerAR, false);
+		    double fertilizerAvailable = inv.getAmountResourceStored(fertilizerID, false);
 		    double fertilizerRequired = FERTILIZER_NEEDED_WATERING * growingArea * time;
 		    double fertilizerUsed = fertilizerRequired;
 
@@ -1101,7 +1102,7 @@ public class Crop implements Serializable {
 		    	fertilizerModifier = 1D;
 		    
 		    if (fertilizerUsed > 0D) {
-		        Storage.retrieveAnResource(fertilizerUsed, fertilizerAR, inv, true);
+		        Storage.retrieveAnResource(fertilizerUsed, fertilizerID, inv, true);
 		    }
 
 			environment[1] = .5 * fertilizerModifier + .5 * environment[1];
@@ -1116,10 +1117,10 @@ public class Crop implements Serializable {
 		// TODO: Modify harvest modifier according to the moisture level
 		//double waterReclaimed = totalWaterUsed * growingArea * time / 1000D * MOISTURE_RECLAMATION_FRACTION;
 		//if (waterReclaimed > 0)
-		//	Storage.storeAnResource(waterReclaimed, waterAR, inv, sourceName + "::computeWaterFertilizer");
+		//	Storage.storeAnResource(waterReclaimed, waterID, inv, sourceName + "::computeWaterFertilizer");
 		
-		// Assume an universal rate of water vapor evaporation rate of 10%
-		farm.addMoisture(totalWaterUsed);
+		// Assume an universal rate of water vapor evaporation rate of 5%
+		farm.addMoisture(totalWaterUsed*.05);
 		// Record the amount of water taken up by the crop
 		cumulative_water_usage += totalWaterUsed;// *.9;
 		
@@ -1151,13 +1152,13 @@ public class Crop implements Serializable {
 			else
 				fudge_factor = .25 - .125 * uPAR/40; 
 			double o2Required = fractionalGrowingTimeCompleted * fudge_factor * needFactor * (averageOxygenNeeded  * time / 1000) * growingArea;
-			double o2Available = inv.getAmountResourceStored(oxygenAR, false);
+			double o2Available = inv.getAmountResourceStored(oxygenID, false);
 			double o2Used = o2Required;
 
 			if (o2Used > o2Available)
 				o2Used = o2Available;
 			if (o2Used > 0) {
-				//Storage.retrieveAnResource(o2Used, oxygenAR, inv, true);
+				//Storage.retrieveAnResource(o2Used, oxygenID, inv, true);
 				farm.addO2Cache(-o2Used);
 				cumulative_o2 -= o2Used;	
 			}
@@ -1171,7 +1172,7 @@ public class Crop implements Serializable {
 			// Determine the amount of co2 generated via gas exchange.
 			double cO2Gen = o2Used * CO2_TO_O2_RATIO;
 			if (cO2Gen > 0) {
-				//Storage.storeAnResource(co2Amount, carbonDioxideAR, inv, sourceName + "::computeGases");
+				//Storage.storeAnResource(co2Amount, carbonDioxideID, inv, sourceName + "::computeGases");
 				farm.addCO2Cache(cO2Gen);
 				cumulative_co2 = cO2Gen;
 			}
@@ -1186,7 +1187,7 @@ public class Crop implements Serializable {
 			// TODO: gives a better modeling of how the amount of light available will trigger photosynthesis that converts co2 to o2
 			// Determine harvest modifier by amount of carbon dioxide available.
 			double cO2Req = fractionalGrowingTimeCompleted * fudge_factor * needFactor * (averageCarbonDioxideNeeded * time / 1000) * growingArea;
-			double cO2Available = inv.getAmountResourceStored(carbonDioxideAR, false);
+			double cO2Available = inv.getAmountResourceStored(carbonDioxideID, false);
 			double cO2Used = cO2Req;
 
 			// TODO: allow higher concentration of co2 to be pumped to increase the harvest modifier to the harvest.
@@ -1194,7 +1195,7 @@ public class Crop implements Serializable {
 			if (cO2Used > cO2Available)
 				cO2Used = cO2Available;
 			if (cO2Used > 0) {
-				//Storage.retrieveAnResource(carbonDioxideUsed, carbonDioxideAR, inv, true);
+				//Storage.retrieveAnResource(carbonDioxideUsed, carbonDioxideID, inv, true);
 				farm.addCO2Cache(-cO2Used);
 				cumulative_co2 -= cO2Used;
 			}
@@ -1211,7 +1212,7 @@ public class Crop implements Serializable {
 			// Determine the amount of oxygen generated during the day when photosynthesis is taking place .
 			double o2Gen = cO2Used * O2_TO_CO2_RATIO;
 			if (o2Gen > 0) {
-				//Storage.storeAnResource(oxygenAmount, oxygenAR, inv, sourceName + "::computeGases");
+				//Storage.storeAnResource(oxygenAmount, oxygenID, inv, sourceName + "::computeGases");
 				farm.addO2Cache(o2Gen);
 				cumulative_o2 += o2Gen;
 			}

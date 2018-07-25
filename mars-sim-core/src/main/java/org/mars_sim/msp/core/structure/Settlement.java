@@ -857,23 +857,28 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return air pressure [kPa]
 	 */
 	public double computeAveragePressure() {
-		double total = 0;
-		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
-		int size = buildings.size();
-		for (Building b : buildings) {
-			int id = b.getInhabitableID();
-			total += compositionOfAir.getTotalPressure()[id];
-		}
-		// convert from atm to kPascal
-		return total * CompositionOfAir.KPA_PER_ATM / size;
-		/*
-		 * double total_area = 0, total_p_area = 0; List<Building> buildings =
-		 * buildingManager.getBuildingsWithLifeSupport(); for (Building b : buildings) {
-		 * int id = b.getInhabitableID(); double area = b.getFloorArea(); total_area +=
-		 * area; total_p_area += compositionOfAir.getTotalPressure()[id] * area; } //
-		 * convert from atm to kPascal return total_p_area *
-		 * CompositionOfAir.kPASCAL_PER_ATM / total_area;
-		 */
+//		double total = 0;
+//		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
+//		int size = buildings.size();
+//		for (Building b : buildings) {
+//			int id = b.getInhabitableID();
+//			total += compositionOfAir.getTotalPressure()[id];
+//		}
+//		// convert from atm to kPascal
+//		return total * CompositionOfAir.KPA_PER_ATM / size;
+		
+		 double totalArea = 0;
+		 double	totalPressureArea = 0; 
+		 List<Building> buildings = buildingManager.getBuildingsWithLifeSupport(); 
+		 for (Building b : buildings) {
+			 int id = b.getInhabitableID(); 
+			 double area = b.getFloorArea(); 
+			 totalArea += area; 
+			 totalPressureArea += compositionOfAir.getTotalPressure()[id] * area; 
+		 }
+		 // convert from atm to kPascal 
+		 return totalPressureArea * CompositionOfAir.KPA_PER_ATM / totalArea;
+
 	}
 
 	/**
@@ -896,24 +901,24 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return temperature (degrees C)
 	 */
 	public double computeAverageTemperature() {
-		List<Building> buildings = buildingManager.getBuildingsWithThermal();
-		int size = buildings.size();
-		double total = 0;
-		for (Building b : buildings) {
-			total += b.getCurrentTemperature();
-		}
-
-		return total / size;
-		/*
-		 * List<Building> buildings = buildingManager.getBuildingsWithThermal();
-		 * 
-		 * double total_t_area = 0, total_area = 0;
-		 * 
-		 * for (Building b : buildings) { double a = b.getFloorArea(); total_area += a;
-		 * total_t_area += b.getCurrentTemperature() * a; }
-		 * 
-		 * return total_t_area / total_area;
-		 */
+//		List<Building> buildings = buildingManager.getBuildingsWithThermal();
+//		int size = buildings.size();
+//		double total = 0;
+//		for (Building b : buildings) {
+//			total += b.getCurrentTemperature();
+//		}
+//
+//		return total / size;
+		
+		 double totalArea = 0;
+		 double	totalTArea = 0; 
+		 List<Building> buildings = buildingManager.getBuildingsWithThermal(); 
+		 for (Building b : buildings) {
+			 double area = b.getFloorArea(); 
+			 totalArea += area; 
+			 totalTArea += b.getCurrentTemperature() * area; 
+		 }
+		 return totalTArea / totalArea;
 	}
 
 	public ShiftType getCurrentSettlementShift() {

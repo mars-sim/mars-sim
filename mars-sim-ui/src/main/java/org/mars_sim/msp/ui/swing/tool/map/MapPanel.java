@@ -359,9 +359,9 @@ public class MapPanel extends WebPanel implements ClockListener {
 				dbg = dbImage.getGraphics();
 		}
 
-        Graphics2D g2d = (Graphics2D) dbg;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
+//        Graphics2D g2d = (Graphics2D) dbg;
+//        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	
         if (wait) {
         	if (mapImage != null) {
         	    dbg.drawImage(mapImage, 0, 0, this);

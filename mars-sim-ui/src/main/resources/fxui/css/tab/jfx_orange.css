@@ -1,20 +1,21 @@
-.jfx-popup-container{
-	-fx-background-color: WHITE;
-	-fx-background-radius: 10px;
-	-fx-padding: 3;
-}
-
-.jfx-tab-pane .headers-region > .tab:selected > .tab-container > .tab-label  {
-    -fx-text-fill: #654b00;
-    -fx-background-color: #654b00; /* #654b00; or (101,75,0) is mild brown, #F9BF00; is yellowish orange */
-}
-.jfx-tab-pane .tab-header-background {
-    -fx-text-fill: #654b00;
+#background {
+    -light-orange: #efe07c;
+    -dark-highlight: #e68400;
+    -dark-orange: #937210 ;
+    -darkest-orange: #654b00;
+    -mid-gray: rgb(216, 222, 227);
     -fx-background-color: #654b00;
 }
-.jfx-tab-pane .tab-selected-line {
-    -fx-stroke: #F9BF00;
-    -fx-stroke-width: 3pt;
+
+.button {
+	-fx-background-color:
+        linear-gradient(#ffd65b, #e68400),
+        linear-gradient(#ffef84, #f2ba44),
+        linear-gradient(#ffea6a, #efaa22),
+        linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+    -fx-padding: .2em 0.816667em .2em 0.816667em;
+    -fx-text-fill: #654b00;
+    -fx-font-size: 11px;
 }
 
 #commit-button {
@@ -32,6 +33,25 @@
     -fx-padding: 5 5 5 5;
 }
 
+.jfx-popup-container{
+	-fx-background-color: WHITE;
+	-fx-background-radius: 10px;
+	-fx-padding: 3;
+}
+
+.jfx-tab-pane .headers-region > .tab:selected > .tab-container > .tab-label  {
+    -fx-text-fill: #654b00;
+    -fx-background-color: #654b00; /* #654b00; or (101,75,0) is mild brown, #F9BF00; is yellowish orange */
+}
+.jfx-tab-pane .tab-header-background {
+    -fx-text-fill: #654b00;
+    -fx-background-color: #654b00;
+}
+.jfx-tab-pane .tab-selected-line {
+    -fx-stroke: #F9BF00;
+    -fx-stroke-width: 1pt;
+}
+
 .jfx-tab-pane {
 /*	-fx-padding: 0px 5px -2px 5px;
 	-fx-background-insets: 0 -20 0 0;
@@ -45,15 +65,6 @@
 	-fx-text-fill: #333333; /* 333333 is grey */
 }
 
-#background {
-    -light-orange: #efe07c;
-    -dark-highlight: #e68400;
-    -dark-orange: #937210 ;
-    -darkest-orange: #654b00;
-    -mid-gray: rgb(216, 222, 227);
-    -fx-background-color: #654b00;
-}
-
 .jfx-tool-bar {
     -fx-base: #654b00;
     -fx-font-size: 11pt;
@@ -63,15 +74,4 @@
     -fx-background-insets: 0, 0 0 1 0;
     -fx-padding: .05em 0.416667em .05em 0.416667em;
     -fx-effect: dropshadow(two-pass-box,-dark-orange,5,.2,0,0);
-}
-
-.button {
-	-fx-background-color:
-        linear-gradient(#ffd65b, #e68400),
-        linear-gradient(#ffef84, #f2ba44),
-        linear-gradient(#ffea6a, #efaa22),
-        linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
-    -fx-padding: .2em 0.816667em .2em 0.816667em;
-    -fx-text-fill: #654b00;
-    -fx-font-size: 11px;
 }

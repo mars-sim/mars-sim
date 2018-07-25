@@ -68,7 +68,7 @@ extends TabPanel {
 	private double arCache;
 	private double averageTemperatureCache;
 
-	private String totalPressureCache;
+	private String indoorPressureCache;
 	
 	private List<Building> buildingsCache;
 
@@ -77,7 +77,7 @@ extends TabPanel {
 	private WebLabel n2Label;
 	private WebLabel h2OLabel;
 	private WebLabel arLabel;
-	private WebLabel totalPressureLabel;
+	private WebLabel indoorPressureLabel;
 	private WebLabel averageTemperatureLabel;
 
 	private WebTable table ;
@@ -145,11 +145,11 @@ extends TabPanel {
 		averageTemperatureLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label.averageTemperature", fmt2.format(averageTemperatureCache)), WebLabel.LEFT); //$NON-NLS-1$
 		topPanel.add(averageTemperatureLabel);
 		
-		WebLabel p_label = new WebLabel(Msg.getString("TabPanelAirComposition.label.totalPressure.title"), WebLabel.RIGHT);
+		WebLabel p_label = new WebLabel(Msg.getString("TabPanelAirComposition.label.indoorPressure.title"), WebLabel.RIGHT);
 		topPanel.add(p_label);
-		totalPressureCache = Math.round(settlement.getAirPressure()*100.0)/100.0 + "";
-		totalPressureLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label.totalPressure.kPa", totalPressureCache), WebLabel.LEFT); //$NON-NLS-1$
-		topPanel.add(totalPressureLabel);
+		indoorPressureCache = Math.round(settlement.getAirPressure()*100.0)/100.0 + "";
+		indoorPressureLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label.totalPressure.kPa", indoorPressureCache), WebLabel.LEFT); //$NON-NLS-1$
+		topPanel.add(indoorPressureLabel);
 		
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(topPanel,
@@ -480,31 +480,32 @@ extends TabPanel {
 					));
 			}
 			
-			String totalPressure = "";
+			String indoorPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.kPa",  //$NON-NLS-1$
+					Math.round(settlement.getAirPressure()*100.0)/100.0);
 			
 			if (kPa_btn.isSelected()) {
 				// convert from atm to kPascal
-				totalPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.kPa",  //$NON-NLS-1$
+				indoorPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.kPa",  //$NON-NLS-1$
 						Math.round(settlement.getAirPressure()*100.0)/100.0);
 			}
 			else if (atm_btn.isSelected()) {
-				totalPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.atm",  //$NON-NLS-1$
+				indoorPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.atm",  //$NON-NLS-1$
 						Math.round(settlement.getAirPressure()/CompositionOfAir.KPA_PER_ATM*10000.0)/10000.0);
 			}
 			else if (mb_btn.isSelected()) {
 				// convert from atm to mb
-				totalPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.mb",  //$NON-NLS-1$
+				indoorPressure = Msg.getString("TabPanelAirComposition.label.totalPressure.mb",  //$NON-NLS-1$
 						Math.round(settlement.getAirPressure()/CompositionOfAir.KPA_PER_ATM * CompositionOfAir.MB_PER_ATM*100.0)/100.0);
 			}
 			else if (psi_btn.isSelected()) {
 				// convert from atm to kPascal
-				totalPressure =  Msg.getString("TabPanelAirComposition.label.totalPressure.psi",  //$NON-NLS-1$
+				indoorPressure =  Msg.getString("TabPanelAirComposition.label.totalPressure.psi",  //$NON-NLS-1$
 						Math.round(settlement.getAirPressure()/CompositionOfAir.KPA_PER_ATM * CompositionOfAir.PSI_PER_ATM*1000.0)/1000.0);
 			}
 			
-			if (!totalPressureCache.equals(totalPressure)) {
-				totalPressureCache = totalPressure;
-				totalPressureLabel.setText(totalPressureCache);
+			if (!indoorPressureCache.equals(indoorPressure)) {
+				indoorPressureCache = indoorPressure;
+				indoorPressureLabel.setText(indoorPressureCache);
 			}
 
 		}
@@ -743,7 +744,7 @@ extends TabPanel {
 		n2Label = null;
 		h2OLabel = null;
 		arLabel = null;
-		totalPressureLabel = null;
+		indoorPressureLabel = null;
 		averageTemperatureLabel = null;
 		table = null;
 		percent_btn = null;
