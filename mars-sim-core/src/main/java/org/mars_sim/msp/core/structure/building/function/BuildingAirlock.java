@@ -95,7 +95,7 @@ public class BuildingAirlock extends Airlock {
                     // Pump air into the airlock to make it breathable
                 	if (air == null)
                 		air = building.getSettlement().getCompositionOfAir();
-                    air.pumpOrRecaptureAir(building.getInhabitableID(), true, building);
+                    air.releaseOrRecaptureAir(building.getInhabitableID(), true, building);
 
                 	//logger.fine(
                 	//LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
@@ -126,7 +126,7 @@ public class BuildingAirlock extends Airlock {
                     // Recapture air from the airlock before depressurizing it
                 	if (air == null)
                 		air = building.getSettlement().getCompositionOfAir();
-                    air.pumpOrRecaptureAir(building.getInhabitableID(), false, building);
+                    air.releaseOrRecaptureAir(building.getInhabitableID(), false, building);
                     
                    	//logger.fine(
                 	//LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
