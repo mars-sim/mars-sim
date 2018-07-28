@@ -5,7 +5,7 @@ Copyright (C) 2018 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-beta1 (build 43__) - 2018-0_-__
+## v3.1.0-beta1 (build 4414) - 2018-07-27
 
 ### KNOWN LIMITATIONS :
 
@@ -20,24 +20,27 @@ Copyright (C) 2018 Scott Davis
 4. When clicking on a combobox to pick an option, the option list would pop up
    at the far edge of the main window
 
+
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Add new Reporter Job and new RecordActivity task.
-
-2. Refine and revise mission objectives for each sponsor.
-
-3. Implement pure headless mode (without GUI libraries) 
+1. Implement pure headless mode (without GUI libraries) 
    utilizing minimal cpu resources.
 
-4. Enable saving and loading past historical events.
+2. Enable saving and loading past historical events.
 
-5. Improve how a vehicle should respond to "resources not enough" events 
+3. Improve how a vehicle should respond to "resources not enough" events 
    during a mission. Will now travel toward a settlement as close as possible
    before turning on the beacon and asking for help.
 
-6. Limit the distance a rover may travel in a mission.
+4. Limit the distance a rover may travel in a mission.
 
-7. Enable flexible Earth start date/time in simulation.xml.
+5. Enable flexible Earth start date/time in simulation.xml.
+
+6. Add new Reporter Job and new RecordActivity task.
+
+7. Refine and revise mission objectives for each sponsor.
+
+8. Relate the onset of a random ailment to the task a person is performing.
 
 
 ### UI IMPROVEMENT :

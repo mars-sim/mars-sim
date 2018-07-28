@@ -446,6 +446,8 @@ public class MainScene implements ClockListener {
 	private static EarthClock earthClock;
 	private static MarsClock marsClock;
 
+	private static MarsClock lastNewsClock;
+	
 	private SettlementWindow settlementWindow;
 	private NavigatorWindow navWin;
 	private SettlementMapPanel mapPanel;
@@ -460,6 +462,10 @@ public class MainScene implements ClockListener {
 
 	private DecimalFormat df = new DecimalFormat("0.000");
 
+//	private static FXGraphics2D g2;
+//	
+//	private static Canvas mapCanvas;
+	
 	/**
 	 * Constructor for MainScene
 	 */
@@ -567,7 +573,7 @@ public class MainScene implements ClockListener {
 		// logger.info("MainMenu's prepareScene() is on " +
 		// Thread.currentThread().getName());
 		UIConfig.INSTANCE.useUIDefault();
-
+		
 		// creates and initialize scene
 		scene = initializeScene();
 		// switch from the main menu's scene to the main scene's scene
@@ -2249,14 +2255,15 @@ public class MainScene implements ClockListener {
 		minimapNode = new SwingNode();
 		minimapGroup = new Group(minimapNode);
 		minimapNode.setContent(navWin);
-		
+				
 		// Set up Settlement Window (Settlement Map)
 		settlementWindow = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
 		mapPanel = settlementWindow.getMapPanel();
-
+	
 		mapNode = new SwingNode();
 		mapNode.setStyle("-fx-background-color: transparent; ");	
 		sMapStackPane = new StackPane(mapNode);
+		
 		mapNode.setContent(settlementWindow);
 		sMapStackPane.setStyle("-fx-background-color: transparent; ");
 //		setGlow(mapNode);
@@ -2831,6 +2838,12 @@ public class MainScene implements ClockListener {
 
 	}
 
+//	public void startCountdownTimer() {
+//		countdownTimer = new Timeline(
+//				new KeyFrame(Duration.seconds(60 * autosave_minute),
+//						ae -> masterClock.setAutosave(true)));
+//	}
+	
 	/**
 	 * Creates and returns a {@link Flyout}
 	 * 
@@ -2942,6 +2955,9 @@ public class MainScene implements ClockListener {
 	 */
 	public void updateTimeLabels() {
 
+		// Check if the new has been on display for over one sol or not
+		checkBillboardTimer();
+		
 //		double tr = masterClock.getTimeRatio();
 		// if (msol % 10 == 0) {
 		// Check to see if a background sound track is being played.
@@ -3205,6 +3221,22 @@ public class MainScene implements ClockListener {
 
 	}
 
+	/**
+	 * Checks if a news on the billboard timer has been on display for over one sol 
+	 */
+	public void checkBillboardTimer() {
+		if (billboardTimer != null
+			&& lastNewsClock != null
+			&& marsClock.getMissionSol() > lastNewsClock.getMissionSol()
+			&& marsClock.getMillisol() > lastNewsClock.getMillisol()
+		) {
+			matrix.clear();
+			billboardTimer.stop();
+			billboardTimer = null;
+			lastNewsClock = null;
+		}
+	}
+	
 	public void startPausePopup() {
 		if (gameScene == null) {
 			// if (messagePopup.numPopups() < 1) {
@@ -3946,6 +3978,10 @@ public class MainScene implements ClockListener {
 		return minimized;
 	}
 
+	
+	/**
+	 * Creates the new ticker billboard
+	 */
 	public void createBillboard() {
 
 		matrix = DotMatrixBuilder.create().prefSize(925, 54).colsAndRows(196, 11).dotOnColor(Color.rgb(255, 55, 0))
@@ -3962,6 +3998,11 @@ public class MainScene implements ClockListener {
 
 	}
 
+	
+	/**
+	 * Sends a message to the new ticker billboard
+	 * @param str the message string
+	 */
 	public void sendMsg(String str) {
 
 		if (!str.equals(messageCache)) {
@@ -3970,6 +4011,7 @@ public class MainScene implements ClockListener {
 				matrix.clear();
 				billboardTimer.stop();
 				billboardTimer = null;
+				lastNewsClock = null;
 			}
 
 			messageCache = str;
@@ -4032,6 +4074,8 @@ public class MainScene implements ClockListener {
 			};
 
 			billboardTimer.start();
+			
+			lastNewsClock = (MarsClock) marsClock.clone();
 		}
 	}
 
@@ -4101,6 +4145,41 @@ public class MainScene implements ClockListener {
 
 	}
 	
+//	public static FXGraphics2D getFXGraphics2D() {
+//		return g2;
+//	}
+//	
+//	public static Canvas getCanvas() {
+//		return getCanvas();
+//	}
+	
+
+	@Override
+	public void clockPulse(double time) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void uiPulse(double time) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pauseChange(boolean isPaused, boolean showPane) {
+		if (isPaused) {
+			if (!masterClock.isSavingSimulation()) {
+				if (exitDialog == null || !exitDialog.isVisible()) {
+					pause();
+				}
+			}
+
+		} else {
+			unpause();
+		}
+	}
+	
 	public void destroy() {
 		quote = null;
 		// messagePopup = null;
@@ -4139,29 +4218,4 @@ public class MainScene implements ClockListener {
 		constructionWizard = null;
 	}
 
-	@Override
-	public void clockPulse(double time) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void uiPulse(double time) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
-		if (isPaused) {
-			if (!masterClock.isSavingSimulation()) {
-				if (exitDialog == null || !exitDialog.isVisible()) {
-					pause();
-				}
-			}
-
-		} else {
-			unpause();
-		}
-	}
 }

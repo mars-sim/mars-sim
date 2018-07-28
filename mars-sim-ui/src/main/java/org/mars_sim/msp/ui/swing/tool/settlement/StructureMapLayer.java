@@ -48,14 +48,11 @@ public class StructureMapLayer implements SettlementMapLayer {
     	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
     
     // Data members
+    private double scale;
     private SettlementMapPanel mapPanel;
     private Map<Double, Map<BuildingKey, BufferedImage>> svgImageCache;
-    private double scale;
 
- // 2014-11-04 Added building
-    @SuppressWarnings("unused")
-	private Building building;
-    //private String buildingType;
+//	private Building building;
 
     /**
      * Constructor
@@ -71,14 +68,13 @@ public class StructureMapLayer implements SettlementMapLayer {
         // "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
         System.setProperty("org.apache.batik.warn_destination", "false"); //$NON-NLS-1$ //$NON-NLS-2$
     }
-
-	// 2014-11-04 Added this constructor for loading an svg image
+    
+	// Add this constructor for loading an svg image
 	// for the selected building in unit window's building tab
     public StructureMapLayer(SettlementMapPanel mapPanel, Building building) {
 
-
-    	this.building = building;
-    		System.out.println("StructureMapLayer : building is "+ building);
+//    	this.building = building;
+//    	System.out.println("StructureMapLayer : building is "+ building);
         // Initialize data members.
         this.mapPanel = mapPanel;
         svgImageCache = new HashMap<Double, Map<BuildingKey, BufferedImage>>(21);
@@ -109,7 +105,7 @@ public class StructureMapLayer implements SettlementMapLayer {
     	Graphics2D g2d0 = g2d;
     	// value of scale came from paintComponent() in SettlementMapPanel.java
         this.scale = scale;
-        this.building = building;
+//        this.building = building;
 
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
@@ -452,7 +448,10 @@ public class StructureMapLayer implements SettlementMapLayer {
             BufferedImage image = getBufferedImage(svg, width, length, patternSVG);
             if (image != null) {
                 g2d.transform(newTransform);
-                g2d.drawImage(image, 0, 0, mapPanel);
+                
+                if (mapPanel != null)
+                	g2d.drawImage(image, 0, 0, mapPanel);
+                
             }
         }
         else {

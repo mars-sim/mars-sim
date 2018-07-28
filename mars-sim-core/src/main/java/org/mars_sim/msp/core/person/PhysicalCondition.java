@@ -413,18 +413,18 @@ public class PhysicalCondition implements Serializable {
 			radiation.timePassing(time);
 
 			if (
-//				person.getTaskDescription().equalsIgnoreCase("assist")
-				person.getTaskDescription().equalsIgnoreCase("eat")
-				|| person.getTaskDescription().equalsIgnoreCase("drink")
-//				|| person.getTaskDescription().equalsIgnoreCase("compil")
-				|| person.getTaskDescription().equalsIgnoreCase("meet")
-//				|| person.getTaskDescription().equalsIgnoreCase("peer")
-				|| person.getTaskDescription().equalsIgnoreCase("relax")
-				|| person.getTaskDescription().equalsIgnoreCase("rest")
-				|| person.getTaskDescription().equalsIgnoreCase("sleep")					
-//				|| person.getTaskDescription().equalsIgnoreCase("teach")
-//				|| person.getTaskDescription().equalsIgnoreCase("walk")		
-//				|| person.getTaskDescription().equalsIgnoreCase("yoga")	
+//				person.getTaskDescription().toLowerCase().contains("assist")
+				person.getTaskDescription().toLowerCase().contains("eat")
+				|| person.getTaskDescription().toLowerCase().contains("drink")
+//				|| person.getTaskDescription().toLowerCase().contains("compil")
+				|| person.getTaskDescription().toLowerCase().contains("meet")
+//				|| person.getTaskDescription().toLowerCase().contains("peer")
+				|| person.getTaskDescription().toLowerCase().contains("relax")
+				|| person.getTaskDescription().toLowerCase().contains("rest")
+				|| person.getTaskDescription().toLowerCase().contains("sleep")					
+//				|| person.getTaskDescription().toLowerCase().contains("teach")
+//				|| person.getTaskDescription().toLowerCase().contains("walk")		
+//				|| person.getTaskDescription().toLowerCase().contains("yoga")	
 				) {
 				restingTask = true;
 			}
@@ -1041,10 +1041,10 @@ public class PhysicalCondition implements Serializable {
 						|| ct == ComplaintType.BROKEN_BONE
 						|| ct == ComplaintType.PULL_MUSCLE_TENDON
 						|| ct == ComplaintType.RUPTURED_APPENDIX) {
-					if (person.getTaskDescription().equalsIgnoreCase("assist")
-						|| person.getTaskDescription().equalsIgnoreCase("compil")
-						|| person.getTaskDescription().equalsIgnoreCase("peer")			
-						|| person.getTaskDescription().equalsIgnoreCase("teach")
+					if (person.getTaskDescription().toLowerCase().contains("assist")
+						|| person.getTaskDescription().toLowerCase().contains("compil")
+						|| person.getTaskDescription().toLowerCase().contains("peer")			
+						|| person.getTaskDescription().toLowerCase().contains("teach")
 //						|| restingTask
 						) {
 						noGo = true;

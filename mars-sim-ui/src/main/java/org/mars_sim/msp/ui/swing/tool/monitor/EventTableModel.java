@@ -33,6 +33,7 @@ import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
@@ -109,15 +110,15 @@ public class EventTableModel extends AbstractTableModel
 
 	private List<String> messageCache = new ArrayList<>();
 
-	private Map<Integer, ImageView> appIconSet = new LinkedHashMap<>();
+	private Map<Integer, Image> appIconSet = new LinkedHashMap<>();
 
-	private static ImageView icon_med = new ImageView(
+	private static Image icon_med = new Image(
 			EventTableModel.class.getResource("/icons/notification/medical_48.png").toExternalForm());
-	private static ImageView icon_mal = new ImageView(
+	private static Image icon_mal = new Image(
 			EventTableModel.class.getResource("/icons/notification/tool_48.png").toExternalForm());
-	private static ImageView icon_mission = new ImageView(
+	private static Image icon_mission = new Image(
 			EventTableModel.class.getResource("/icons/notification/car_48.png").toExternalForm());
-	private static ImageView icon_hazard = new ImageView(
+	private static Image icon_hazard = new Image(
 			EventTableModel.class.getResource("/icons/notification/hazard_48.png").toExternalForm());
 
 //	private transient List<HistoricalEvent> cachedEvents = new ArrayList<HistoricalEvent>();
@@ -803,7 +804,8 @@ public class EventTableModel extends AbstractTableModel
 //		    				logger.info("A notification box titled " + "header" + " with " + message + "' has just been clicked.");
 //		    			}
 //		    		})
-						.graphic(appIconSet.get(type)).darkStyle().owner(desktop.getMainScene().getStage()).show();
+						.graphic(new ImageView(appIconSet.get(type)))
+						.darkStyle().owner(desktop.getMainScene().getStage()).show();
 			}
 
 			else {// use light theme
@@ -814,7 +816,8 @@ public class EventTableModel extends AbstractTableModel
 //		    				logger.info("A notification box titled " + "header" + " with " + message + "' has just been clicked.");
 //		    			}
 //		    		})
-						.graphic(appIconSet.get(type)).owner(desktop.getMainScene().getStage()).show();
+						.graphic(new ImageView(appIconSet.get(type)))
+						.owner(desktop.getMainScene().getStage()).show();
 //		    		.showWarning();
 			}
 

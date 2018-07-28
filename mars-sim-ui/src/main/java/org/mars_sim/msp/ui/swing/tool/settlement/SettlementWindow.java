@@ -6,10 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
-
-
 import java.awt.BorderLayout;
-
 import java.awt.Dimension;
 
 import javax.swing.JLayer;
@@ -85,7 +82,8 @@ extends ToolWindow {
 	private DoubleProperty width = new SimpleDoubleProperty(HORIZONTAL);
 	private DoubleProperty height = new SimpleDoubleProperty(VERTICAL);
 
-    private String marsDateString, marsTimeString;
+    private String marsDateString;
+    private String marsTimeString;
 
     private boolean isBound;
 
@@ -488,7 +486,7 @@ extends ToolWindow {
 	public SettlementMapPanel getMapPanel() {
 		return mapPanel;
 	}
-
+	
 	/**
 	 * Gets the main desktop panel for this tool.
 	 * @return main desktop panel.

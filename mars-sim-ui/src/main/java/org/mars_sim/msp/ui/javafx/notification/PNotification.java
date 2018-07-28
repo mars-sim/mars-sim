@@ -52,7 +52,6 @@ import javafx.scene.text.TextAlignment;
  * Date: 01.07.13
  * Time: 07:10
  */
-@SuppressWarnings("restriction")
 public class PNotification {
     public static Image INFO_ICON;//    = new Image(this.getClass().getResourceAsStream("info.png"));
     public static Image WARNING_ICON;// = new Image(this.getClass().getResourceAsStream("warning.png"));

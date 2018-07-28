@@ -18,7 +18,6 @@ import javafx.util.Duration;
 /** 
  * The Message class creates a quotation in proper format for use by MainScene
  */
-@SuppressWarnings("restriction")
 public class MessagePopup  {
 
 	private static final int SIZE_ICON = 64;

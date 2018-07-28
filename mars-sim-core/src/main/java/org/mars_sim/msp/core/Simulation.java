@@ -108,7 +108,6 @@ implements ClockListener, Serializable {
             File.separator +
             Msg.getString("Simulation.defaultDir"); //$NON-NLS-1$
 
-    // 2015-01-08 Added autosave
     /** autosave directory. */
     public final static String AUTOSAVE_DIR =
             System.getProperty("user.home") + //$NON-NLS-1$
@@ -315,7 +314,6 @@ implements ClockListener, Serializable {
     /**
      * Initialize intransient data in the simulation.
      */
-    // 2015-02-04 Added threading
     private void initializeIntransientData(int timeRatio) {
         //logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
     	malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
@@ -480,7 +478,7 @@ implements ClockListener, Serializable {
      * @throws ClassNotFoundException if error reading serialized classes.
      * @throws IOException if error reading from file.
      */
-   	// 2016-03-22 Replace gzip with xz compression (based on LZMA2)
+
     private synchronized void readFromFile(File file) throws ClassNotFoundException, IOException {
     	//logger.info("Simulation : running readFromFile()");
         byte[] buf = new byte[8192];
@@ -493,7 +491,9 @@ implements ClockListener, Serializable {
         	//System.out.println("Simulation : inside try. starting decompressing");
             //in = new FileInputStream(file);
             in = new FileInputStream(file);
-
+            
+           	// Replace gzip with xz compression (based on LZMA2)
+            
             // Since XZInputStream does some buffering internally
             // anyway, BufferedInputStream doesn't seem to be
             // needed here to improve performance.
@@ -610,7 +610,7 @@ implements ClockListener, Serializable {
     	logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
     	//System.out.println("file is " + file);
     	
-    	// 2015-12-18 Check if it was previously on pause
+    	// Check if it was previously on pause
 		boolean previous = masterClock.isPaused();
 		// Pause simulation.
 		if (!previous) {
@@ -629,7 +629,7 @@ implements ClockListener, Serializable {
         Path destPath = null;
         Path srcPath = null;
     	
-        // 2016-09-22 Use type to differentiate in what name/dir it is saved
+        // Use type to differentiate in what name/dir it is saved
         if (type == SAVE_DEFAULT) {
         	
             file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
@@ -700,7 +700,7 @@ implements ClockListener, Serializable {
 
         try {
 
-            // 2016-03-22 Replace gzip with xz compression (based on LZMA2)
+            // Replace gzip with xz compression (based on LZMA2)
             // See (1) http://stackoverflow.com/questions/5481487/how-to-use-lzma-sdk-to-compress-decompress-in-java
             //     (2) http://tukaani.org/xz/xz-javadoc/
 
@@ -991,7 +991,7 @@ implements ClockListener, Serializable {
     }
 	
 /*
-    // 2015-10-08 Added testConsole() for outputting text messages to mars-simmers
+    // Add testConsole() for outputting text messages to mars-simmers
     public void testConsole() {
     	if (jc == null) {
     		jc = new JConsole(60,30);
@@ -1124,7 +1124,6 @@ implements ClockListener, Serializable {
      * Sets if simulation was loaded with GUI.
      * @param value is true if GUI is in use.
      */
-    // 2014-12-26 Added setUseGUI()
     public static void setUseGUI(boolean value) {
         useGUI = value;
     }
@@ -1133,7 +1132,6 @@ implements ClockListener, Serializable {
      * Checks if simulation was loaded with GUI.
      * @return true if GUI is in use.
      */
-    // 2014-12-26 Added getUseGUI()
     public static boolean getUseGUI() {
         return useGUI;
     }

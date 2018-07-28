@@ -28,7 +28,7 @@ public interface SettlementMapLayer {
 	 * @param scale the map scale.
 	 */
 	// 
-	// 2014-11-04 Added building parameter
+	// Add building parameter
 	public void displayLayer(
 		Graphics2D g2d, Settlement settlement, Building building, double xPos, 
 		double yPos, int mapWidth, int mapHeight, double rotation, double scale

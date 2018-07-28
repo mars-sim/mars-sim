@@ -95,6 +95,8 @@ implements ClockListener {
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
 	private Map<Settlement, Robot> selectedRobot;
+	
+//	private FXGraphics2D fxg2;
 
 	/** Constructor 1
 	 * 	A panel for displaying a settlement map.
@@ -104,16 +106,14 @@ implements ClockListener {
 		this.settlementWindow = settlementWindow;
 		this.desktop = desktop;
 		this.mainScene = desktop.getMainScene();
-/*
-		if (mainScene != null) {
-			width = mainScene.getWidth();
-			height = mainScene.getHeight();
-		}
-		else {
-			width = SettlementWindow.HORIZONTAL;
-			height = SettlementWindow.VERTICAL;
-		}
-*/		
+
+//		if (mainScene != null) {
+////			fxg2 = MainScene.getFXGraphics2D();
+//			//	    this.g2 = new FXGraphics2D(gc);
+//			fxg2 = new FXGraphics2D(MainScene.getCanvas().getGraphicsContext2D());
+//		}
+
+	
 		settlement = (Settlement) Simulation.instance().getUnitManager().getSettlements().toArray()[0];
 		
 		setLayout(new BorderLayout());
@@ -146,7 +146,7 @@ implements ClockListener {
 
 		Simulation.instance().getMasterClock().addClockListener(this);
 
-		// 2015-01-16 Added detectMouseMovement() after refactoring
+		// Add detectMouseMovement() after refactoring
 		SwingUtilities.invokeLater(() -> {
 			detectMouseMovement();
 			setFocusable(true);
@@ -161,7 +161,7 @@ implements ClockListener {
 		repaint();
 	}
 
-	// 2015-02-09 Added initLayers()
+	// Add initLayers()
 	public void initLayers(MainDesktopPane desktop) {
 		// Create map layers.
 		mapLayers = new ArrayList<SettlementMapLayer>();
@@ -188,8 +188,7 @@ implements ClockListener {
 	/** Constructor 2
 	 *  A panel for initializing the display of a building svg image.
 	 */
-	// 2014-11-04 Added this constructor for loading an svg image
-	// Called by BuildingPanel.java
+	// Add this constructor for loading an svg image, called by BuildingPanel.java
 	public SettlementMapPanel(Settlement settlement, Building building) {
 		super();
 
@@ -363,7 +362,7 @@ implements ClockListener {
 		    	// if NO building is selected, do NOT call popup menu
 		    	if (site != null || building != null || vehicle != null || person != null || robot != null) {
 
-	        		// 2015-01-16 Deconflict cases by the virtue of the if-else order below
+	        		// Deconflict cases by the virtue of the if-else order below
     	        	// when one or more are detected
     	        	if (person != null)
     	        		menu = new PopUpUnitMenu(settlementWindow, person);
@@ -563,7 +562,6 @@ implements ClockListener {
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selectedBuilding
 	 */
-	// 2014-11-22 Added building selection
 	public Building selectBuildingAt(int xPixel, int yPixel) {
 		//System.out.println("selectBuildingAt()");
 		Point.Double clickPosition = convertToSettlementLocation(xPixel, yPixel);
@@ -642,7 +640,6 @@ implements ClockListener {
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selected construction site
 	 */
-	// 2015-12-10 Added Construction Site selection
 	public ConstructionSite selectConstructionSiteAt(int xPixel, int yPixel) {
 		Point.Double clickPosition = convertToSettlementLocation(xPixel, yPixel);
 		ConstructionSite site = null;
@@ -703,7 +700,6 @@ implements ClockListener {
 	}
 
 /*
-	// 2015-12-10 Added returnConstructionSiteList
 	public static List<ConstructionSite> returnConstructionSiteList(Settlement settlement) {
 
 		List<ConstructionSite> result = new ArrayList<ConstructionSite>();
@@ -717,7 +713,6 @@ implements ClockListener {
 		return result;
 	}
 
-	// 2015-12-10 Added returnBuildingList
 	public static List<Building> returnBuildingList(Settlement settlement) {
 
 		List<Building> result = new ArrayList<Building>();
@@ -738,7 +733,6 @@ implements ClockListener {
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selectedVehicle
 	 */
-	// 2015-01-14 Added selectVehicleAt()
 	public Vehicle selectVehicleAt(int xPixel, int yPixel) {
 		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
 
@@ -778,7 +772,7 @@ implements ClockListener {
 	 * @param yLoc the position of the template building on the displayed map.
 	 * @return selectedVehicle
 	 */
-	// 2015-04-07 Added selectVehicleAsObstacle(). Used by TransportWizard
+	// Used by TransportWizard
 	public Vehicle selectVehicleAsObstacle(double xLoc, double yLoc) {
 
 		Vehicle selectedVehicle = null;
@@ -815,7 +809,6 @@ implements ClockListener {
 	}
 
 
-	// // 2015-01-14 Added returnVehicleList()
 	public static List<Vehicle> returnVehicleList(Settlement settlement) {
 
 		List<Vehicle> result = new ArrayList<Vehicle>();
@@ -1063,7 +1056,7 @@ implements ClockListener {
 		Graphics2D g2d = (Graphics2D) dbg;
 */
 		Graphics2D g2d = (Graphics2D) g;
- 
+		
 		//		long startTime = System.nanoTime();
 		
 		// Set graphics rendering hints.
@@ -1076,14 +1069,15 @@ implements ClockListener {
 		// Display all map layers.
 		Iterator<SettlementMapLayer> i = mapLayers.iterator();
 		while (i.hasNext()) {
-			// 2014-11-04 Added building parameter
+			// Add building parameter
 			i.next().displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
 		}
 		*/
+		
 		for (int i = 0; i < size; i++) {
 			mapLayers.get(i).displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
 		}
-		
+
 		//long endTime = System.nanoTime();
 		//double timeDiff = (endTime - startTime) / 1000000D;
 		//System.out.println("SMT paint time: " + (int) timeDiff + " ms");

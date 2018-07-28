@@ -48,8 +48,6 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-
-@SuppressWarnings("restriction")
 public class QNotification {
     public static Image QUOTE_ICON;
 
