@@ -5,7 +5,7 @@ Copyright (C) 2018 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-beta1 (build 4414) - 2018-07-27
+## v3.1.0-beta1 (build 4415) - 2018-07-27
 
 ### KNOWN LIMITATIONS :
 
@@ -23,8 +23,8 @@ Copyright (C) 2018 Scott Davis
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Implement pure headless mode (without GUI libraries) 
-   utilizing minimal cpu resources.
+1. Implement pure headless mode (without GUI libraries) utilizing minimal 
+   cpu resources.
 
 2. Enable saving and loading past historical events.
 
@@ -41,6 +41,12 @@ Copyright (C) 2018 Scott Davis
 7. Refine and revise mission objectives for each sponsor.
 
 8. Relate the onset of a random ailment to the task a person is performing.
+
+9. Add new resources such as silicon dioxide, quartz, glass, sodium carbonate,
+   & sodium oxide and new processes "make quartz from silicon dioxide", 
+   "make soda from sodium oxide", "make glass from sand" and "extract silicon
+   dioxide from sand".
+   
 
 
 ### UI IMPROVEMENT :
@@ -63,16 +69,15 @@ Copyright (C) 2018 Scott Davis
 
 3. Fix not being able to autosave if running in headless mode.
 
-4. Correct how field reliability data for parts is associated with human factor 
-   -- how human may cause a system to malfunction vs. parts fatigue make it fails 
-   on its own.
+4. Correct how field reliability data for parts is associated with human 
+   factor vs. parts fatigue vs. acts of God vs. software quality control issue
 
-5. Fix the formula that restore a person from fatigue while sleeping. Tweak it to 
-   work well for high fatigue case. 
+5. Fix the formula that restore a person from fatigue while sleeping. Tweak 
+   it to work well for high fatigue case. 
       
-6. Correct plexus graph issue (only after loading from a saved sim) that prevent from 
-   fully restore credit/debit history between settlement and existing relationship 
-   between settlers. 
+6. Correct plexus graph issue (only after loading from a saved sim) that 
+   prevent from fully restore credit/debit history between settlement and
+   existing relationship between settlers. 
 
 
 -----------------------------------------------------------------------------------------
