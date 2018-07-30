@@ -760,12 +760,10 @@ implements Serializable {
 	        if (step.building.equals(building) && LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
 	            if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 	                walkingStepIndex++;
-    	        	// 2015-11-11 setDescription()
     	        	//setDescription("Almost arriving at (" + x + ", " + y + ") in " + building.getNickName());
 	                setPhase(getWalkingStepPhase());
 	            }
 	            else {
-    	        	// 2015-11-11 setDescription()
     	        	//setDescription("Arrived at (" + x + ", " + y + ") in " + building.getNickName());
 	                endTask();
 	            }
@@ -848,7 +846,7 @@ implements Serializable {
             WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
             Rover rover = (Rover) person.getVehicle();
 
-            // 2017-01-12 working on resolving NullPointerException
+            // TODO: working on resolving NullPointerException
             if (rover != null) {
                 // Update rover destination if rover has moved and existing destination is no longer within rover.
                 if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(step.xLoc, step.yLoc, rover)) {
@@ -871,12 +869,10 @@ implements Serializable {
             if (step.rover.equals(rover) && LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
-    	        	// 2015-11-11 setDescription()
     	        	//setDescription("Walking back to the rover at (" + x + ", " + y + ")");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
-    	        	// 2015-11-11 setDescription()
     	        	//setDescription("Arrived at (" + x + ", " + y + ")");
                     endTask();
                 }

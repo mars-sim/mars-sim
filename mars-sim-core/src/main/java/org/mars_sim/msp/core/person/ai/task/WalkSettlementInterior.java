@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
@@ -81,9 +80,10 @@ implements Serializable {
         super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
 
         // Check that the person is currently inside the settlement.
-        LocationSituation location = person.getLocationSituation();
-        if (location != LocationSituation.IN_SETTLEMENT) {
-            throw new IllegalStateException(
+//        LocationSituation location = person.getLocationSituation();
+//        if (location != LocationSituation.IN_SETTLEMENT) {
+        if (!person.isInSettlement()) {
+        	throw new IllegalStateException(
                     "WalkSettlementInterior task started when person is not in settlement.");
         }
 
@@ -144,8 +144,9 @@ implements Serializable {
         super("Walking Settlement Interior", robot, false, false, STRESS_MODIFIER, false, 0D);
 
         // Check that the robot is currently inside the settlement.
-        LocationSituation location = robot.getLocationSituation();
-        if (location != LocationSituation.IN_SETTLEMENT) {
+//        LocationSituation location = robot.getLocationSituation();
+//        if (location != LocationSituation.IN_SETTLEMENT) {
+        if (!robot.isInSettlement()) {
             throw new IllegalStateException(
                     "WalkSettlementInterior task started when robot is not in settlement.");
         }
