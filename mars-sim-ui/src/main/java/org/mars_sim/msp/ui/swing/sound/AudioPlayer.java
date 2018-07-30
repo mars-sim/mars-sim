@@ -173,7 +173,7 @@ public class AudioPlayer implements ClockListener {
 	 * @param filepath the file path to the music track.
 	 */
 	public void loadSound(String filepath) {
-		if (allSoundClips.containsKey(filepath) && allSoundClips.get(filepath) != null) {
+		if (allSoundClips != null && allSoundClips.containsKey(filepath) && allSoundClips.get(filepath) != null) {
 			currentSoundClip = allSoundClips.get(filepath);
 			currentSoundClip.determineGain(currentSoundVol);
 			currentSoundClip.play();

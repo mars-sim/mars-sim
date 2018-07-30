@@ -15,8 +15,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.RenderingHints;
 
 public 
 /*
@@ -372,18 +374,24 @@ class OrbitCanvas extends Canvas {
                 }
 
 		// Get Off-Screen Image Graphics Context
-		Graphics og = offscreen.getGraphics();
-
+		Graphics gg = offscreen.getGraphics();
+		Graphics2D g2d = (Graphics2D) gg;
+		
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+//		g2d.setRenderingHint( RenderingHints.  KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+	
 		// Draw Frame
-		og.setColor(Color.black);
-		og.fillRect(0, 0, sizeCanvas.width - 1, sizeCanvas.height - 1);
+		g2d.setColor(Color.black);
+		g2d.fillRect(0, 0, sizeCanvas.width - 1, sizeCanvas.height - 1);
 		
 		// Draw Ecliptic Axis
-		drawEclipticAxis(og);
+		drawEclipticAxis(g2d);
 		
 		// Draw Sun
-		og.setColor(colorSun);
-		og.fillArc(this.nX0 - 2, this.nY0 - 2, 5, 5, 0, 360);
+		g2d.setColor(colorSun);
+		g2d.fillArc(this.nX0 - 2, this.nY0 - 2, 5, 5, 0, 360);
 		
 		// Draw Orbit of Object
 
@@ -398,13 +406,13 @@ class OrbitCanvas extends Canvas {
 			for (int i = 1; i <= this.objectOrbit.getDivision(); i++) {
 				xyz = this.objectOrbit.getAt(i).Rotate(this.mtxToEcl);
 				if (xyz.fZ >= 0.0) {
-					og.setColor(colorObjectOrbitUpper);
+					g2d.setColor(colorObjectOrbitUpper);
 				} else {
-					og.setColor(colorObjectOrbitLower);
+					g2d.setColor(colorObjectOrbitLower);
 				}
 				xyz = xyz.Rotate(this.mtxRotate);
 				point2 = getDrawPoint(xyz);
-				og.drawLine(point1.x, point1.y, point2.x, point2.y);
+				g2d.drawLine(point1.x, point1.y, point2.x, point2.y);
 				point1 = point2;
 		   }
 		}
@@ -412,93 +420,93 @@ class OrbitCanvas extends Canvas {
 		// Draw Object Body
 		xyz = this.objectPos.Rotate(this.mtxToEcl).Rotate(this.mtxRotate);
 		point1 = getDrawPoint(xyz);
-		og.setColor(colorObject);
-		og.fillArc(point1.x - 2, point1.y - 2, 5, 5, 0, 360);
-		og.setFont(fontObjectName);
+		g2d.setColor(colorObject);
+		g2d.fillArc(point1.x - 2, point1.y - 2, 5, 5, 0, 360);
+		g2d.setFont(fontObjectName);
 		if (bObjectName) {
-			og.setColor(colorObjectName);
-			og.drawString(object.getName(), point1.x + 5, point1.y);
+			g2d.setColor(colorObjectName);
+			g2d.drawString(object.getName(), point1.x + 5, point1.y);
 		}
 		
 		//  Draw Orbit of Planets
 		if (Math.abs(epochPlanetOrbit - atime.getJd()) > 365.2422 * 5) {
 			updatePlanetOrbit(atime);
 		}
-		og.setFont(fontPlanetName);
+		g2d.setFont(fontPlanetName);
 		
 		if (OrbitDisplay[0] || OrbitDisplay[10]) {
-			drawPlanetOrbit(og, planetOrbit[Planet.PLUTO-Planet.MERCURY],
+			drawPlanetOrbit(g2d, planetOrbit[Planet.PLUTO-Planet.MERCURY],
 							colorPlanetOrbitUpper, colorPlanetOrbitLower);
 		}
-		drawPlanetBody(og, planetPos[8], "Pluto");
+		drawPlanetBody(g2d, planetPos[8], "Pluto");
 		
 		if (OrbitDisplay[0] || OrbitDisplay[9]) {
 			
-			drawPlanetOrbit(og, planetOrbit[Planet.NEPTUNE-Planet.MERCURY],
+			drawPlanetOrbit(g2d, planetOrbit[Planet.NEPTUNE-Planet.MERCURY],
 							colorPlanetOrbitUpper, colorPlanetOrbitLower);
 		}
-		drawPlanetBody(og, planetPos[7], "Neptune");
+		drawPlanetBody(g2d, planetPos[7], "Neptune");
 		
 		if (OrbitDisplay[0] || OrbitDisplay[8]) {
-			drawPlanetOrbit(og, planetOrbit[Planet.URANUS-Planet.MERCURY],
+			drawPlanetOrbit(g2d, planetOrbit[Planet.URANUS-Planet.MERCURY],
 							colorPlanetOrbitUpper, colorPlanetOrbitLower);
 		}
-		drawPlanetBody(og, planetPos[6], "Uranus");
+		drawPlanetBody(g2d, planetPos[6], "Uranus");
 		
 		if (OrbitDisplay[0] || OrbitDisplay[7]) {
-			drawPlanetOrbit(og, planetOrbit[Planet.SATURN-Planet.MERCURY],
+			drawPlanetOrbit(g2d, planetOrbit[Planet.SATURN-Planet.MERCURY],
 							colorPlanetOrbitUpper, colorPlanetOrbitLower);
 		}
-		drawPlanetBody(og, planetPos[5], "Saturn");
+		drawPlanetBody(g2d, planetPos[5], "Saturn");
 		
 		if (OrbitDisplay[0] || OrbitDisplay[6]) {
-			drawPlanetOrbit(og, planetOrbit[Planet.JUPITER-Planet.MERCURY],
+			drawPlanetOrbit(g2d, planetOrbit[Planet.JUPITER-Planet.MERCURY],
 							colorPlanetOrbitUpper, colorPlanetOrbitLower);
 		}
-		drawPlanetBody(og, planetPos[4], "Jupiter");
+		drawPlanetBody(g2d, planetPos[4], "Jupiter");
 		
 		if (fZoom * 1.524 >= 7.5) {
 			if (OrbitDisplay[0] || OrbitDisplay[5]) {
 				
-				drawPlanetOrbit(og, planetOrbit[Planet.MARS-Planet.MERCURY],
+				drawPlanetOrbit(g2d, planetOrbit[Planet.MARS-Planet.MERCURY],
 								colorPlanetOrbitUpper, colorPlanetOrbitLower);
 			}
-			drawPlanetBody(og, planetPos[3], "Mars");
+			drawPlanetBody(g2d, planetPos[3], "Mars");
 		}
 		if (fZoom * 1.000 >= 7.5) {
                         if (OrbitDisplay[0] || OrbitDisplay[4]) {
 
-			   drawEarthOrbit(og, planetOrbit[Planet.EARTH-Planet.MERCURY],
+			   drawEarthOrbit(g2d, planetOrbit[Planet.EARTH-Planet.MERCURY],
 						colorPlanetOrbitUpper, colorPlanetOrbitUpper);
                         }
-			drawPlanetBody(og, planetPos[2], "Earth");
+			drawPlanetBody(g2d, planetPos[2], "Earth");
                         
 		}
 		if (fZoom * 0.723 >= 7.5) {
                         if (OrbitDisplay[0] || OrbitDisplay[3]) {
-			   drawPlanetOrbit(og, planetOrbit[Planet.VENUS-Planet.MERCURY],
+			   drawPlanetOrbit(g2d, planetOrbit[Planet.VENUS-Planet.MERCURY],
 						colorPlanetOrbitUpper, colorPlanetOrbitLower);
                         }
-			drawPlanetBody(og, planetPos[1], "Venus");
+			drawPlanetBody(g2d, planetPos[1], "Venus");
 		}
 		if (fZoom * 0.387 >= 7.5) {
                         if (OrbitDisplay[0] || OrbitDisplay[2]) {
-			   drawPlanetOrbit(og, planetOrbit[Planet.MERCURY-Planet.MERCURY],
+			   drawPlanetOrbit(g2d, planetOrbit[Planet.MERCURY-Planet.MERCURY],
 						colorPlanetOrbitUpper, colorPlanetOrbitLower);
                         }
-			drawPlanetBody(og, planetPos[0], "Mercury");
+			drawPlanetBody(g2d, planetPos[0], "Mercury");
 		}
 		
 		// Information
-		og.setFont(fontInformation);
-		og.setColor(colorInformation);
-		FontMetrics fm = og.getFontMetrics();
+		g2d.setFont(fontInformation);
+		g2d.setColor(colorInformation);
+		FontMetrics fm = g2d.getFontMetrics();
 		
 		// Object Name String
 		point1.x = fm.charWidth('A');
 //		point1.y = this.sizeCanvas.height - fm.getDescent() - fm.getHeight() / 3;
 		point1.y = 2 * fm.charWidth('A');
-		og.drawString(object.getName(), point1.x, point1.y);
+		g2d.drawString(object.getName(), point1.x, point1.y);
 		
 		if (bDistanceLabel) {
 			// Earth, Mars, Sun Distance
@@ -543,14 +551,14 @@ class OrbitCanvas extends Canvas {
 			point1.x = fm.charWidth('A'); 
 //			point1.y = this.sizeCanvas.height - fm.getDescent() - fm.getHeight() / 3;
 			point1.y = this.sizeCanvas.height - fm.getDescent() - fm.getHeight()* 11/6;
-			og.drawString(strDist, point1.x, point1.y);
+			g2d.drawString(strDist, point1.x, point1.y);
 
 			// Earth
 			strDist = "Earth Distance : " + edistance + " AU";
 			point1.x = fm.charWidth('A'); 
 //			point1.y = this.sizeCanvas.height - fm.getDescent() - fm.getHeight() / 3;
 			point1.y = this.sizeCanvas.height - fm.getDescent() - fm.getHeight();
-			og.drawString(strDist, point1.x, point1.y);
+			g2d.drawString(strDist, point1.x, point1.y);
 						
 //			a = new BigDecimal (sdistance);
 //			v = a.setScale (3, BigDecimal.ROUND_HALF_UP);
@@ -559,7 +567,7 @@ class OrbitCanvas extends Canvas {
 			strDist = "   Sun Distance : " + sdistance + " AU";
 			point1.x = fm.charWidth('A');
 			point1.y = this.sizeCanvas.height - fm.getDescent() - fm.getHeight() * 2 / 7;
-			og.drawString(strDist, point1.x, point1.y);
+			g2d.drawString(strDist, point1.x, point1.y);
 		}
 		
 		if (bDateLabel) {
@@ -570,13 +578,13 @@ class OrbitCanvas extends Canvas {
 				- fm.charWidth('A');
 			point1.y = this.sizeCanvas.height - fm.getDescent() - fm.getHeight() / 3;
 //			point1.y = 2 * fm.charWidth('A');
-			og.drawString(strDate, point1.x, point1.y);
+			g2d.drawString(strDate, point1.x, point1.y);
 		}
 		
 		// Border
-		og.clearRect(0,                    sizeCanvas.height - 1,
+		g2d.clearRect(0,                    sizeCanvas.height - 1,
 					 sizeCanvas.width,     sizeCanvas.height     );
-		og.clearRect(sizeCanvas.width - 1, 0,
+		g2d.clearRect(sizeCanvas.width - 1, 0,
 					 sizeCanvas.width,     sizeCanvas.height     );
 		
 		g.drawImage(offscreen, 0, 0, null);

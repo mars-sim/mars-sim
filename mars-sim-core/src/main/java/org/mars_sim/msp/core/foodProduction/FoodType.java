@@ -11,10 +11,8 @@ import org.mars_sim.msp.core.Msg;
 
 public enum FoodType {
 
-	AMOUNT_RESOURCE 	(Msg.getString("FoodType.amountResource")), //$NON-NLS-1$ 
-	ITEM_RESOURCE 		(Msg.getString("FoodType.itemResource")); //$NON-NLS-1$
-	//EQUIPMENT ("FoodType.equipment"); //$NON-NLS-1$
-	//VEHICLE ("FoodType.vehicle"); //$NON-NLS-1$
+	AMOUNT_RESOURCE 	(Msg.getString("FoodType.amountResource")); //$NON-NLS-1$ 
+//	ITEM_RESOURCE 		(Msg.getString("FoodType.itemResource")); //$NON-NLS-1$
 
 	private String msgKey;
 

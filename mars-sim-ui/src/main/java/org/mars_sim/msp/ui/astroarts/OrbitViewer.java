@@ -250,7 +250,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 			{ "a",
 			  "double", "Semimajor axis AU", 			"2.76631592"    },
 			{ "Date",
-			  "double", "Initial date", 				"20430930.0000" },
+			  "double", "Initial date", 				"20280817.0000" },
 		}; // "19860209.7695"
 		return info;
 	}
@@ -876,7 +876,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 
 
 	private String getParameter(String value) {
-		int col = -1;
+//		int col = -1;
 		String result = null;
 		for (int i = 0; i < rowOfMatrix; i++) {
 			if (getParameterInfo()[i][0].equals(value)) {
@@ -888,7 +888,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		return result;
 	}
 	/**
-	 * Convert time in format "YYYYMMDD.D" to ATime
+	 * Convert time in format "YYYYMMDD.H" to ATime
 	 */
 	private ATime ymdStringToAtime(String strYmd) {
 		double fYmd = Double.valueOf(strYmd).doubleValue();
@@ -896,6 +896,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		fYmd -= (double)nYear * 10000.0;
 		int nMonth = (int)Math.floor(fYmd / 100.0);
 		double fDay = fYmd - (double)nMonth * 100.0;
+		// ignore H (hours)
 		return new ATime(nYear, nMonth, fDay, 0.0);
 	}
 
@@ -1106,7 +1107,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 				if (playerThread != null) {
 					playerThread.stop();
 					playerThread = null;
-					buttonDate.setEnabled(false);//enable();
+					buttonDate.setEnabled(true);//enable();
 				}
 			} else if (source == buttonForStep) {		// +1 Step
 				atime.changeDate(timeStep, ATime.F_INCTIME);
