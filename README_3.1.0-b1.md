@@ -24,26 +24,25 @@ Copyright (C) 2018 Scott Davis
 - Install the latest Java JRE or JDK on your machine. 
   See `Prerequisites` at [README.md](https://github.com/mars-sim/mars-sim/blob/master/README.md) 
 
-- Download the mars-sim package available in 4 editions, namely,
-  Batch, Debian, Jar and Headless Jar editions.
+- Download a binary mars-sim package of your choice.
 
 ---------------------------------------------------------------------
 
 ## Starting a new sim
 
-mars-sim are available in 4 editions as follows : 
+Your mars-sim package may or may not come with JavaFX components.
 
-1. Batch Edition (with GUI)
+1. Batch Edition
 
 - In Windows OS, double click on "mars-sim.bat" to begin.
-- In Linux/MacOS, type "mars-sim.bat" or "./mars-sim" to begin.
+- In Linux/MacOS, type "./mars-sim" to begin.
 
-2. Debian Edition (with GUI)
+2. Debian Edition
 
 - If you have installed the debian version of mars-sim, type 
 `./mars-sim` to begin.
 
-3. Jar Edition (with GUI)
+3a. Jar Edition
 
 - Double-click on `mars-sim-[$VERSION].jar` to begin
 a new simulation in GUI mode as the jar file is executable
@@ -78,12 +77,12 @@ following attribute value in simulation.xml :
 
 	<autosave-interval value="15.0" />
 
-4. Headless Jar Edition (without GUI)
+3b. Headless Jar
 
-- mars-sim is designed with a high level of autonomy. It's capable
+mars-sim is designed with a high level of autonomy. It's capable
 of running the entire simulation on its own. Therefore, one may 
-prefer to run it in a terminal for hours/days in the least 
-intrusive manner utilizing minimal CPU resources. Type :
+prefer to run it in a terminal for hours/days without GUI and in the 
+least intrusive manner utilizing minimal CPU resources. Type :
 
 > java -jar mars-sim-main-[$VERSION].jar 2 headless new
 
@@ -116,6 +115,7 @@ simulation.xml :
 
 Note d: the time ratio argument is optional and is by default
         `256x` as defined in Simulations.xml.
+        
         
 ---------------------------------------------------------------------
 
@@ -178,7 +178,7 @@ numeral argument after the jar file as shown below :
 
 ## Loading Saved Simulation
 
-A. GUI mode
+A. GUI Mode
 
 If you want to load a previously saved simulation in graphic mode,
 

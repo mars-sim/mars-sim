@@ -5,7 +5,7 @@ Copyright (C) 2018 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-beta1 (build 4416) - 2018-07-27
+## v3.1.0-beta1 (build 4421) - 2018-07-30
 
 ### KNOWN LIMITATIONS :
 
@@ -23,8 +23,8 @@ Copyright (C) 2018 Scott Davis
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Implement pure headless mode (without GUI libraries) utilizing minimal 
-   cpu resources.
+1. Implement pure headless mode (without the need of installing openjfx package).
+   It utilizes minimal cpu resources when running mars-sim.
 
 2. Enable saving and loading past historical events.
 
