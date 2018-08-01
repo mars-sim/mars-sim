@@ -32,17 +32,17 @@ Copyright (C) 2018 Scott Davis
 
 Your mars-sim package may or may not come with JavaFX components.
 
-1. Batch Edition
+A. Batch Edition
 
-- In Windows OS, double click on "mars-sim.bat" to begin.
-- In Linux/MacOS, type "./mars-sim" to begin.
+In Windows OS, double click on "mars-sim.bat" to begin.
+In Linux/MacOS, type "./mars-sim" to begin.
 
-2. Debian Edition
+B. Debian Edition
 
 - If you have installed the debian version of mars-sim, type 
 `./mars-sim` to begin.
 
-3a. Jar Edition
+C. Jar Edition
 
 - Double-click on `mars-sim-[$VERSION].jar` to begin
 a new simulation in GUI mode as the jar file is executable
@@ -77,7 +77,7 @@ following attribute value in simulation.xml :
 
 	<autosave-interval value="15.0" />
 
-3b. Headless Jar
+D. Headless Jar
 
 mars-sim is designed with a high level of autonomy. It's capable
 of running the entire simulation on its own. Therefore, one may 
@@ -122,9 +122,9 @@ Note d: the time ratio argument is optional and is by default
 ## Command-Line Arguments Summary
 
 > java -jar mars-sim-[$VERSION].jar
-                    (Note : start a new sim)
-   or
-
+>                    (Note : start a new sim)
+>   or
+>
 > java -jar jarfile [args...]
 >                   (Note : start mars-sim with arguments)
 >
@@ -201,7 +201,7 @@ Note 1: the order of the arguments is NOT important
 Note 2: by default, it is assumed the user is interested in
 loading the default saved sim file. You do NOT need to type 
 `default.sim` as an argument. `default.sim` is located 
-at `[$HOME]\.mars-sim\saved\`
+at `[$HOME]\.mars-sim\saved\`.
 
   OR
 
@@ -209,10 +209,10 @@ at `[$HOME]\.mars-sim\saved\`
 
 This will load `123.sim`, instead of the default saved sim.
 
-Note 3: the order of the arguments is NOT important
+Note 3: the order of the arguments is NOT important.
 
 Note 4: `123.sim` must be present in the same directory
-where the jar file is at
+where the jar file is at.
 
 
 B. Headless Mode
@@ -221,12 +221,12 @@ To load the default saved sim without the graphic interface, type :
 
 > java -jar mars-sim-[$VERSION].jar 3 headless load
 
-Note 1: the order of the arguments is not important
+Note 1: the order of the arguments is not important.
 
 Note 2: by default, it is assumed the user is interested in
 loading the default saved sim file. You do NOT need to type 
 `default.sim` as an argument. `default.sim` is located 
-at `[$HOME]\.mars-sim\saved\`
+at `[$HOME]\.mars-sim\saved\`.
 
   OR
 
@@ -234,10 +234,10 @@ at `[$HOME]\.mars-sim\saved\`
 
 This will load `123.sim`, instead of the default saved sim.
 
-Note 3: the order of the arguments is NOT important
+Note 3: the order of the arguments is NOT important.
 
 Note 4: `123.sim` must be present in the same directory
-where the jar file is at
+where the jar file is at.
 
 
 ---------------------------------------------------------------------
