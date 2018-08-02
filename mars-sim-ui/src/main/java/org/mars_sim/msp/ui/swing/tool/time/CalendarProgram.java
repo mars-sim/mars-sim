@@ -1,3 +1,9 @@
+/* Mars Simulation Project
+ * CalendarProgram.java
+ * @version 3.1.0 2018-08-02
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.ui.swing.tool.time;
 
 import java.awt.Color;
@@ -28,14 +34,15 @@ public class CalendarProgram{
 	static JLabel lblMonth, lblYear;
 	static JButton btnPrev, btnNext;
 	static JTable tblCalendar;
-	static JComboBox cmbYear;
+	static JComboBox<String> cmbYear;
 	static JFrame frmMain;
 	static Container pane;
 	static DefaultTableModel mtblCalendar; //Table model
 	static JScrollPane stblCalendar; //The scrollpane
 	static JPanel pnlCalendar;
 	static int realYear, realMonth, realDay, currentYear, currentMonth;
-
+	static final int WIDTH = 430;
+	
 	public static void main (String args[]){
 		//Look and feel
 		try {UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());}
@@ -46,15 +53,15 @@ public class CalendarProgram{
 
 		//Prepare frame
 		frmMain = new JFrame (); //Create frame
-		frmMain.setSize(330, 375); //Set size to 400x400 pixels
+		frmMain.setSize(WIDTH, 375);//(330, 375); //Set size to 400x400 pixels
 		pane = frmMain.getContentPane(); //Get content pane
 		pane.setLayout(null); //Apply null layout
 		frmMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Close when X is clicked
 
 		//Create controls
 		lblMonth = new JLabel ("Adir");
-		lblYear = new JLabel ("Change year:");
-		cmbYear = new JComboBox();
+		lblYear = new JLabel ("Year :");
+		cmbYear = new JComboBox<String>();
 		btnPrev = new JButton ("<<");
 		btnNext = new JButton (">>");
 		mtblCalendar = new DefaultTableModel(){public boolean isCellEditable(int rowIndex, int mColIndex){return false;}};
@@ -80,13 +87,13 @@ public class CalendarProgram{
 		pnlCalendar.add(stblCalendar);
 
 		//Set bounds
-		pnlCalendar.setBounds(0, 0, 320, 335);
-		lblMonth.setBounds(160-lblMonth.getPreferredSize().width/2, 25, 100, 25);
-		lblYear.setBounds(10, 305, 80, 20);
-		cmbYear.setBounds(230, 305, 80, 20);
+		pnlCalendar.setBounds(0, 0, WIDTH-10, 335);//(0, 0, 320, 335);
+		lblMonth.setBounds(WIDTH/2-lblMonth.getPreferredSize().width/2, 25, 100, 25);//160-lblMonth.getPreferredSize().width/2, 25, 100, 25);
+		lblYear.setBounds(WIDTH-140, 305, 80, 20);//10, 305, 80, 20);
+		cmbYear.setBounds(WIDTH-100, 305, 80, 20);//(230, 305, 80, 20);
 		btnPrev.setBounds(10, 25, 50, 25);
-		btnNext.setBounds(260, 25, 50, 25);
-		stblCalendar.setBounds(10, 50, 300, 250);
+		btnNext.setBounds(WIDTH-70, 25, 50, 25);//(260, 25, 50, 25);
+		stblCalendar.setBounds(10, 50, WIDTH-30, 250);//(10, 50, 300, 250);
 
 		//Make frame visible
 		frmMain.setResizable(false);
@@ -102,7 +109,7 @@ public class CalendarProgram{
 
 		//Add headers
 		String[] headers = {"Solisol", "Phobosol", "Deimosol", "Terrasol", "Hermesol", "Venusol", "Jovisol"}; //All headers
-		for (int i=0; i<7; i++){
+		for (int i=0; i<=6; i++){
 			mtblCalendar.addColumn(headers[i]);
 		}
 
@@ -116,11 +123,13 @@ public class CalendarProgram{
 		tblCalendar.setColumnSelectionAllowed(true);
 		tblCalendar.setRowSelectionAllowed(true);
 		tblCalendar.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
 
 		//Set row/column count
 		tblCalendar.setRowHeight(38);
 		mtblCalendar.setColumnCount(7);
 		mtblCalendar.setRowCount(6);
+
 
 		//Populate table
 		for (int i=realYear-100; i<=realYear+100; i++){
@@ -145,7 +154,7 @@ public class CalendarProgram{
 		if (month == 0 && year <= realYear-10){btnPrev.setEnabled(false);} //Too early
 		if (month == 23 && year >= realYear+100){btnNext.setEnabled(false);} //Too late
 		lblMonth.setText(months[month]); //Refresh the month label (at the top)
-		lblMonth.setBounds(160-lblMonth.getPreferredSize().width/2, 25, 180, 25); //Re-align label with calendar
+		lblMonth.setBounds(WIDTH/2-lblMonth.getPreferredSize().width/2, 25, 180, 25); //Re-align label with calendar
 		cmbYear.setSelectedItem(String.valueOf(year)); //Select the correct year in the combo box
 
 		//Clear table
@@ -169,6 +178,9 @@ public class CalendarProgram{
 
 		//Apply renderers
 		tblCalendar.setDefaultRenderer(tblCalendar.getColumnClass(0), new tblCalendarRenderer());
+		
+//		tblCalendar.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);//.AUTO_RESIZE_LAST_COLUMN);
+		
 	}
 
 	static class tblCalendarRenderer extends DefaultTableCellRenderer{
@@ -209,7 +221,7 @@ public class CalendarProgram{
 				currentMonth = 0;
 				currentYear += 1;
 			}
-			else{ //Foward one month
+			else{ //Forward one month
 				currentMonth += 1;
 			}
 			refreshCalendar(currentMonth, currentYear);

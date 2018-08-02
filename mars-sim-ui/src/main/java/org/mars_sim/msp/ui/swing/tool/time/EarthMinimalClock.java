@@ -23,31 +23,31 @@
 package org.mars_sim.msp.ui.swing.tool.time;
 
 //import com.sun.javafx.css.converters.PaintConverter;
-import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.css.CssMetaData;
-import javafx.css.Styleable;
-import javafx.css.StyleableObjectProperty;
-import javafx.css.StyleableProperty;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Arc;
-
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.*;
-
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.time.EarthClock;
-import org.mars_sim.msp.ui.javafx.Fonts;
+//import javafx.application.Platform;
+//import javafx.beans.property.BooleanProperty;
+//import javafx.beans.property.ObjectProperty;
+//import javafx.beans.property.SimpleBooleanProperty;
+//import javafx.css.CssMetaData;
+//import javafx.css.Styleable;
+//import javafx.css.StyleableObjectProperty;
+//import javafx.css.StyleableProperty;
+//import javafx.scene.control.Control;
+//import javafx.scene.control.Label;
+//import javafx.scene.layout.Pane;
+//import javafx.scene.layout.Region;
+//import javafx.scene.paint.Color;
+//import javafx.scene.paint.Paint;
+//import javafx.scene.shape.Arc;
+//
+//
+//import java.util.ArrayList;
+//import java.util.Collections;
+//import java.util.List;
+//import java.util.concurrent.*;
+//
+//import org.mars_sim.msp.core.Simulation;
+//import org.mars_sim.msp.core.time.EarthClock;
+//import org.mars_sim.msp.ui.javafx.Fonts;
 
 /**
  * User: hansolo

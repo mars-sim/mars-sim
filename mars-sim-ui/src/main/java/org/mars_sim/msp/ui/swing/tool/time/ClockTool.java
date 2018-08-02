@@ -20,17 +20,17 @@
  * limitations under the License.
  */
 
-package org.mars_sim.msp.ui.swing.tool.time;
-
-import javafx.geometry.Insets;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import javafx.scene.layout.StackPane;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
+//package org.mars_sim.msp.ui.swing.tool.time;
+//
+//import javafx.geometry.Insets;
+//import javafx.scene.layout.Background;
+//import javafx.scene.layout.BackgroundFill;
+//import javafx.scene.layout.CornerRadii;
+//import javafx.scene.paint.Color;
+//import javafx.stage.Stage;
+//import javafx.scene.layout.StackPane;
+//import javafx.scene.Scene;
+//import javafx.scene.image.Image;
 
 
 /**

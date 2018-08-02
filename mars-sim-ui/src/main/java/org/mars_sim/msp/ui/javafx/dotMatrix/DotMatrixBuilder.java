@@ -62,7 +62,7 @@ public class DotMatrixBuilder<B extends DotMatrixBuilder<B>> {
 
 
     // ******************** Methods *******************************************
-    public static final DotMatrixBuilder create() {
+    public static final DotMatrixBuilder<?> create() {
         return new DotMatrixBuilder();
     }
     

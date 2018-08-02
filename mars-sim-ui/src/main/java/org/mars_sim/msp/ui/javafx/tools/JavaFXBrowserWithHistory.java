@@ -54,7 +54,7 @@ public class JavaFXBrowserWithHistory  extends Application{
         tf.setPrefWidth(1024);
 
 
-        ComboBox<String> comboBox = new ComboBox();
+        ComboBox<String> comboBox = new ComboBox<String>();
         comboBox.setPromptText("History");
         comboBox.setMaxWidth(110);
 

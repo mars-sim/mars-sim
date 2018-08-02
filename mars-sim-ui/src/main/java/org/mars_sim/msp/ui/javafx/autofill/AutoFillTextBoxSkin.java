@@ -33,7 +33,6 @@ import javafx.util.Callback;
  * @author Narayan G. Maharjan
  * @see <a href="http://www.blog.ngopal.com.np"> Blog </a>
  */
-@SuppressWarnings("restriction")
 public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
         implements ChangeListener<String>,
         EventHandler {

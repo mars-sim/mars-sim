@@ -67,7 +67,6 @@ implements MouseListener {
 		labelPanel.setBackground(new Color(0,0,0,128));
 
 		// Create inhabitant label
-		// 2014-11-21 Changed font type, size and color of the title text
 		WebLabel inhabitantLabel = new WebLabel(Msg.getString("BuildingPanelInhabitable.title"), WebLabel.CENTER); //$NON-NLS-1$
 		inhabitantLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//inhabitantLabel.setForeground(new Color(102, 51, 0)); // dark brown
@@ -78,8 +77,8 @@ implements MouseListener {
 		// Create number label
 		numberLabel = new WebLabel(Msg.getString("BuildingPanelInhabitable.number", inhabitable.getOccupantNumber()), WebLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(numberLabel);
-		numberLabel.setOpaque(false);
-		numberLabel.setBackground(new Color(0,0,0,128));
+//		numberLabel.setOpaque(false);
+//		numberLabel.setBackground(new Color(0,0,0,128));
 
 		// Create capacity label
 		WebLabel capacityLabel = new WebLabel(
@@ -89,28 +88,13 @@ implements MouseListener {
 			),WebLabel.CENTER
 		);
 		labelPanel.add(capacityLabel);
-		capacityLabel.setOpaque(false);
-		capacityLabel.setBackground(new Color(0,0,0,128));
+//		capacityLabel.setOpaque(false);
+//		capacityLabel.setBackground(new Color(0,0,0,128));
 
 		// Create inhabitant list panel
 		WebPanel inhabitantListPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		add(inhabitantListPanel, BorderLayout.CENTER);
-		//inhabitantListPanel.setOpaque(false);
-		//inhabitantListPanel.setBackground(new Color(0,0,0,128));
 
-		
-		// Create scroll panel for inhabitant list
-//		WebScrollPane scrollPanel = new WebScrollPane();
-//		scrollPanel.setPreferredSize(new Dimension(UnitWindow.WIDTH-80, 60));
-//		inhabitantListPanel.add(scrollPanel);
-//		scrollPanel.setViewportView(inhabitantList);
-//		//scrollPanel.getViewport().setOpaque(false);
-//		//scrollPanel.getViewport().setBackground(new Color(0,0,0,128));
-//		//scrollPanel.setOpaque(false);
-//		//scrollPanel.setBackground(new Color(0,0,0,128));
-//	    scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
-
-		
 		// Create inhabitant list model
 		inhabitantListModel = new DefaultListModel<Person>();
 		inhabitantCache = new ArrayList<Person>(inhabitable.getOccupants());
@@ -120,9 +104,6 @@ implements MouseListener {
 		// Create inhabitant list
 		inhabitantList = new JList<Person>(inhabitantListModel);
 		inhabitantList.addMouseListener(this);
-
-		//inhabitantList.setOpaque(false);
-		//inhabitantList.setBackground(new Color(0,0,0,128));
 
 	}
 
