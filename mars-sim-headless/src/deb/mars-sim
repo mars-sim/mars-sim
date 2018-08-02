@@ -1,5 +1,18 @@
-#!/bin/bash
-if [[ $(java -version 2>&1) == *"OpenJDK"* ]]; then echo 'You are using OpenJDK'; else echo 'You are not using OpenJDK'; fi
+#!/usr/bin/env bash
+echo "Launching Mars Simulation Project..."
+if command -v java >/dev/null 2>&1;
+then
+    echo >&2 "Java found"
+else
+    echo >&2 "You don't have Java. Aborting"
+    exit 1
+fi
 
-#!/bin/sh
-java -Xms256m -Xmx1024m -Djava.util.logging.config.file=logging.properties -cp /usr/share/mars-sim-headless/* org.mars_sim.headless.javafx.MarsProjectHeadless -new
+if [[ $(java -version 2>&1) == *"OpenJDK"* ]]; 
+then 
+    echo 'You are using OpenJDK'
+else 
+    echo 'You are not using OpenJDK'
+fi
+
+java -Xms256m -Xmx1024m -Djava.util.logging.config.file=logging.properties -cp /usr/share/mars-sim-headless/* org.mars_sim.headless.MarsProjectHeadless -new
