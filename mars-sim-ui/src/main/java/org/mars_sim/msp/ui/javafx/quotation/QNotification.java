@@ -354,7 +354,7 @@ public class QNotification {
             popupLayout.getChildren().addAll(hBox, ta);
 
             StackPane popupContent = new StackPane();
-            popupContent.getStylesheets().add(this.getClass().getResource("/fxui/css/notifier.css").toExternalForm());
+            popupContent.getStylesheets().add(this.getClass().getResource("/fxui/css/notification/notifier.css").toExternalForm());
             popupContent.setPrefSize(width, ta.getPrefHeight() + ICON_HEIGHT + 10);//.getPrefHeight());
             popupContent.getStyleClass().add("notification");
             popupContent.getChildren().addAll(popupLayout);

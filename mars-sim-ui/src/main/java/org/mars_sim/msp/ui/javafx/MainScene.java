@@ -3423,6 +3423,10 @@ public class MainScene implements ClockListener {
 //		desktopNode.requestFocus();
 	}
 
+	public void desktopFocus() {
+		desktopNode.requestFocus();
+	}
+	
 	public SwingNode getDesktopNode() {
 		return desktopNode;
 	}

@@ -758,6 +758,16 @@ public class MainDesktopPane extends WebDesktopPane
 	public void openUnitWindow(Unit unit, boolean initialWindow) {
 		UnitWindow tempWindow = null;
 
+		// go to the main tab
+		if (mainScene != null) {
+			if (ssm == null)
+				ssm = mainScene.getJFXTabPane().getSelectionModel();
+			Platform.runLater(() -> {
+				ssm.select(MainScene.MAIN_TAB);
+				mainScene.desktopFocus();
+			});
+		}
+
 		for (UnitWindow window : unitWindows) {
 			if (window.getUnit() == unit) {
 				tempWindow = window;
@@ -788,7 +798,6 @@ public class MainDesktopPane extends WebDesktopPane
 			tempWindow.addInternalFrameListener(new UnitWindowListener(this));
 
 			if (initialWindow) {
-
 				// Put window in configured position on desktop.
 				tempWindow.setLocation(UIConfig.INSTANCE.getInternalWindowLocation(unit.getName()));
 			} else {
@@ -805,7 +814,7 @@ public class MainDesktopPane extends WebDesktopPane
 		}
 
 		tempWindow.setVisible(true);
-
+		
 		// Correct window becomes selected
 		try {
 			tempWindow.setSelected(true);
@@ -813,20 +822,13 @@ public class MainDesktopPane extends WebDesktopPane
 		} catch (java.beans.PropertyVetoException e) {
 		}
 
-		// go to the main tab
-		if (mainScene != null) {
-			if (ssm == null)
-				ssm = mainScene.getJFXTabPane().getSelectionModel();
-			Platform.runLater(() -> ssm.select(MainScene.MAIN_TAB));
-		}
-
+		// Play sound
 		String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
-		if ((soundFilePath != null) && soundFilePath.length() != 0) {
+		if (soundFilePath != null && soundFilePath.length() != 0) {
 			// soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
 			soundPlayer.playSound(soundFilePath);
 		}
 
-		// playSound(unit);
 
 	}
 
