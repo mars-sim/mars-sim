@@ -132,6 +132,9 @@ import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 import jiconfont.icons.FontAwesome;
 import jiconfont.javafx.IconFontFX;
 import jiconfont.javafx.IconNode;
+import lk.vivoxalabs.customstage.CustomStage;
+import lk.vivoxalabs.customstage.CustomStageBuilder;
+import lk.vivoxalabs.customstage.tools.HorizontalPos;
 
 import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.UIManagers;
@@ -197,6 +200,8 @@ public class MainScene implements ClockListener {
 
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
+	private static final double TITLE_HEIGHT = 0;//45.0;
+	
 	private static final int LIME = DotMatrix.convertToInt(Color.LIME);
 	private static final int RED = DotMatrix.convertToInt(Color.RED);
 	private static final int ORANGE = DotMatrix.convertToInt(Color.ORANGE);
@@ -322,7 +327,7 @@ public class MainScene implements ClockListener {
 
 	private ExecutorService saveExecutor = Executors.newSingleThreadExecutor();
 
-	private DraggableNode gNode;
+	private DraggableNode dragNode;
 	private GameScene gameScene;
 	private Parent root;
 //	private StackPane sMapToolPane;
@@ -339,19 +344,20 @@ public class MainScene implements ClockListener {
 	private StackPane pausePane;
 	private StackPane savePane;
 	private StackPane sPane;
-	private Pane billboard;
+	private StackPane billboard;
 
-	private AnchorPane anchorPane;
+	private AnchorPane stageAnchorPane;
 	private AnchorPane mapsAnchorPane;
 	private SwingNode desktopNode;
 	private SwingNode mapNode;
 	private SwingNode minimapNode;
 	// guideNode, monNode, missionNode, resupplyNode, sciNode, guideNode ;
 
-	private Stage stage;
+//	private Stage stage;
+	private CustomStage customStage;
 //	private Stage loadingStage;
 	private Stage savingStage;
-
+//	private SceneManager sceneManager;
 	private Scene scene;
 	private Scene savingScene;
 
@@ -474,26 +480,44 @@ public class MainScene implements ClockListener {
 		screen_width = width;
 		screen_height = height;
 		this.gameScene = gameScene;
-		sceneWidth = new SimpleDoubleProperty(width);
-		sceneHeight = new SimpleDoubleProperty(height);// - TAB_PANEL_HEIGHT);
+		sceneWidth = new SimpleDoubleProperty(DEFAULT_WIDTH);
+		sceneHeight = new SimpleDoubleProperty(DEFAULT_HEIGHT);// - TAB_PANEL_HEIGHT);
 
 		isMainSceneDoneLoading = false;
 
 		if (gameScene != null) {
-			stage = ((Stage) gameScene.getRoot().getScene().getWindow());
+			customStage = ((CustomStage) gameScene.getRoot().getScene().getWindow());
 			isFXGL = true;
 			// stage.initStyle(StageStyle.DECORATED);
-		} else
-			stage = new Stage();
+		} else {
+//			stage = new Stage();			
+			String title = Simulation.title;
+			try {
+				customStage = new CustomStageBuilder()
+					.setIcon("/icons/lander_hab64.png")             						     
+//				    .setTitleColor("#F4A576")      //Color of title text
+//				    .setWindowColor("#5675FA")              //Color of the window
+				    .setDimensions(sceneWidth.get(), sceneHeight.get(), width, height)
+	                .setWindowTitle(title, HorizontalPos.RIGHT, HorizontalPos.LEFT)    
+				    .build();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+		}
 
-		stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-		stage.setMinWidth(sceneWidth.get());
-		stage.setMinHeight(sceneHeight.get());
-		stage.setFullScreenExitHint(
+//		customStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+//		customStage.setMinWidth(sceneWidth.get());
+//		customStage.setMinHeight(sceneHeight.get());
+		
+		// Enable Full Screen
+		customStage.setFullScreenExitHint(
 				"Use Ctrl+F (or Meta+C in macOS) to toggle between either the Full Screen mode and the Window mode");
-		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
+		customStage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
+		
 		// Detect if a user hits the top-right close button
-		stage.setOnCloseRequest(e -> {
+		customStage.setOnCloseRequest(e -> {
 			if (isFXGL) {
 				Input input = FXGL.getInput();
 				input.mockKeyPress(KeyCode.ESCAPE);
@@ -504,7 +528,7 @@ public class MainScene implements ClockListener {
 			}
 		});
 
-		stage.iconifiedProperty().addListener(new ChangeListener<Boolean>() {
+		customStage.iconifiedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
 				if (!t.equals(t1)) {
@@ -522,7 +546,7 @@ public class MainScene implements ClockListener {
 		// Detect if a user hits ESC
 		if (!isFXGL) {
 			esc = new ESCHandler();
-			setEscapeEventHandler(true, stage);
+			setEscapeEventHandler(true, customStage);
 		}
 	}
 
@@ -545,12 +569,12 @@ public class MainScene implements ClockListener {
 			prepareOthers();
 			// Call setMonitor() for screen detection and placing quotation pop at top right
 			// corner
-			setMonitor(stage);
-			stage.centerOnScreen();
-			stage.setTitle(Simulation.title);
-			stage.setResizable(false);
-			stage.show();
-			stage.requestFocus();
+			setMonitor(customStage);
+			customStage.centerOnScreen();
+			customStage.setTitle(Simulation.title);
+//			customStage.setResizable(false);
+			customStage.show();
+			customStage.requestFocus();
 
 			createSavingIndicator();
 
@@ -577,9 +601,18 @@ public class MainScene implements ClockListener {
 		// creates and initialize scene
 		scene = initializeScene();
 		// switch from the main menu's scene to the main scene's scene
-		if (gameScene == null) {
-			stage.setScene(scene);
-		}
+//		if (gameScene == null) {	
+//			customStage.setScene(scene);
+//			sceneManager = CustomStage.getDefaultSceneManager();
+//			FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/fxui/fxml/main/Scene.fxml"));
+//			try {
+//				sceneManager.addScene("s0", loader.load(), loader.getController());
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//			Node scene = manager.getScene("Scene"); //gets Scene1.fxml view
+//			manager.getController("Scene"); //gets the Controller of Scene1.fxml
+//		}
 
 	}
 
@@ -776,17 +809,17 @@ public class MainScene implements ClockListener {
 
 		InputMap<KeyEvent> ctrlF = consume(keyPressed(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN)),
 				e -> {
-					boolean isFullScreen = stage.isFullScreen();
+					boolean isFullScreen = customStage.isFullScreen();
 					if (!isFullScreen) {
 						menuBar.getShowFullScreenItem().setSelected(true);
 						if (!isFullScreenCache)
-							stage.setFullScreen(true);
+							customStage.setFullScreen(true);
 					} else {
 						menuBar.getShowFullScreenItem().setSelected(false);
 						if (isFullScreenCache)
-							stage.setFullScreen(false);
+							customStage.setFullScreen(false);
 					}
-					isFullScreenCache = stage.isFullScreen();
+					isFullScreenCache = customStage.isFullScreen();
 				});
 		Nodes.addInputMap(rootStackPane, ctrlF);
 
@@ -1032,40 +1065,40 @@ public class MainScene implements ClockListener {
 
 		// AnchorPane.setBottomAnchor(jfxTabPane, 0.0);
 		AnchorPane.setLeftAnchor(tabPane, 0.0);
-		AnchorPane.setRightAnchor(tabPane, 0.0);
-		AnchorPane.setTopAnchor(tabPane, 0.0);
+		//AnchorPane.setRightAnchor(tabPane, 0.0);
+		AnchorPane.setTopAnchor(tabPane, TITLE_HEIGHT);
 
 		// AnchorPane.setRightAnchor(badgeIcon, 5.0);
 		// AnchorPane.setTopAnchor(badgeIcon, 0.0);
 
 		if (OS.contains("win")) {
-			AnchorPane.setTopAnchor(speedBtn, 3.0);
-			AnchorPane.setTopAnchor(marsNetBtn, 3.0);
-			AnchorPane.setTopAnchor(lastSaveLabel, 1.0);
-			AnchorPane.setTopAnchor(soundBtn, 3.0);
+			AnchorPane.setTopAnchor(speedBtn, 3.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(marsNetBtn, 3.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(lastSaveLabel, 1.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(soundBtn, 3.0 + TITLE_HEIGHT);
 			// AnchorPane.setTopAnchor(farmBtn, 3.0);
-			AnchorPane.setTopAnchor(earthTimeBox, 0.0);
-			AnchorPane.setTopAnchor(marsTimeBox, 0.0);
+			AnchorPane.setTopAnchor(earthTimeBox, 0.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(marsTimeBox, 0.0 + TITLE_HEIGHT);
 		}
 
 		else if (OS.contains("linux")) {
-			AnchorPane.setTopAnchor(speedBtn, 0.0);
-			AnchorPane.setTopAnchor(marsNetBtn, 0.0);
-			AnchorPane.setTopAnchor(lastSaveLabel, 1.0);
-			AnchorPane.setTopAnchor(soundBtn, 0.0);
+			AnchorPane.setTopAnchor(speedBtn, 0.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(marsNetBtn, 0.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(lastSaveLabel, 1.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(soundBtn, 0.0 + TITLE_HEIGHT);
 			// AnchorPane.setTopAnchor(farmBtn, 0.0);
-			AnchorPane.setTopAnchor(earthTimeBox, 0.0);
-			AnchorPane.setTopAnchor(marsTimeBox, 0.0);
+			AnchorPane.setTopAnchor(earthTimeBox, 0.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(marsTimeBox, 0.0 + TITLE_HEIGHT);
 		}
 
 		else if (OS.contains("mac")) {
-			AnchorPane.setTopAnchor(speedBtn, 0.0);
-			AnchorPane.setTopAnchor(marsNetBtn, 0.0);
-			AnchorPane.setTopAnchor(lastSaveLabel, 0.0);
-			AnchorPane.setTopAnchor(soundBtn, 0.0);
+			AnchorPane.setTopAnchor(speedBtn, 0.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(marsNetBtn, 0.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(lastSaveLabel, 0.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(soundBtn, 0.0 + TITLE_HEIGHT);
 			// AnchorPane.setTopAnchor(farmBtn, 0.0);
-			AnchorPane.setTopAnchor(earthTimeBox, 0.0);
-			AnchorPane.setTopAnchor(marsTimeBox, 0.0);
+			AnchorPane.setTopAnchor(earthTimeBox, 0.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(marsTimeBox, 0.0 + TITLE_HEIGHT);
 		}
 
 		AnchorPane.setRightAnchor(speedBtn, 5.0);
@@ -1077,19 +1110,17 @@ public class MainScene implements ClockListener {
 
 		createBillboard();
 
-		anchorPane = new AnchorPane();
+		stageAnchorPane = new AnchorPane();
 		// anchorPane.setStyle("-fx-background-color: black; ");
-		anchorPane.getChildren().addAll(tabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeBox, marsTimeBox,
-				soundBtn, gNode);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
+		stageAnchorPane.getChildren().addAll(tabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeBox, marsTimeBox,
+				soundBtn, dragNode);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
 
-		gNode.setLayoutX(350);
-		gNode.setLayoutY(670);
+		dragNode.setLayoutX(320);
+		dragNode.setLayoutY(600);
 
 		// Set up stackPane for anchoring the JFXDialog box and others
-		rootStackPane = new StackPane(anchorPane);
+		rootStackPane = new StackPane(stageAnchorPane);
 		// rootStackPane.setStyle("-fx-background-color: black; ");
-		rootStackPane.setPrefWidth(sceneWidth.get());
-		rootStackPane.setPrefHeight(sceneHeight.get());
 		// rootStackPane.setBackground(new Background(new
 		// BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
 
@@ -1097,7 +1128,9 @@ public class MainScene implements ClockListener {
 			scene = gameScene.getRoot().getScene();
 			gameScene.addUINode(rootStackPane);
 		} else {
-			scene = new Scene(rootStackPane, sceneWidth.get(), sceneHeight.get(), Color.TRANSPARENT);// , Color.BROWN);
+			//scene = new Scene(rootStackPane, sceneWidth.get(), sceneHeight.get(), Color.TRANSPARENT);// , Color.BROWN);
+//			scene = sceneManager.getScene("s0");	
+			customStage.changeScene(rootStackPane);
 		}
 
 		// pausePane.prefWidthProperty().bind(scene.widthProperty());
@@ -1105,18 +1138,24 @@ public class MainScene implements ClockListener {
 		pausePane.setLayoutX((sceneWidth.get() - pausePane.getPrefWidth()) / 2D);
 		pausePane.setLayoutY((sceneHeight.get() - pausePane.getPrefHeight()) / 2D);
 
-		tabPane.prefHeightProperty().bind(scene.heightProperty());
-		tabPane.prefWidthProperty().bind(scene.widthProperty());
+		stageAnchorPane.prefHeightProperty().bind(rootStackPane.heightProperty());
+		stageAnchorPane.prefWidthProperty().bind(rootStackPane.widthProperty());
+		
+		rootStackPane.prefHeightProperty().bind(customStage.heightProperty());
+		rootStackPane.prefWidthProperty().bind(customStage.widthProperty());
 
-		dashboardStackPane.prefHeightProperty().bind(scene.heightProperty().subtract(30));
-		dashboardStackPane.prefWidthProperty().bind(scene.widthProperty());
+		tabPane.prefHeightProperty().bind(stageAnchorPane.heightProperty());
+		tabPane.prefWidthProperty().bind(stageAnchorPane.widthProperty());
 
-		mainStackPane.prefHeightProperty().bind(scene.heightProperty().subtract(30));
-		mainStackPane.prefWidthProperty().bind(scene.widthProperty());
+		dashboardStackPane.prefHeightProperty().bind(stageAnchorPane.heightProperty().subtract(120));
+		dashboardStackPane.prefWidthProperty().bind(stageAnchorPane.widthProperty());
+
+		mainStackPane.prefHeightProperty().bind(stageAnchorPane.heightProperty());//.subtract(30));
+		mainStackPane.prefWidthProperty().bind(stageAnchorPane.widthProperty());
 
 		// anchorTabPane is within jfxTabPane
-		mapsAnchorPane.prefHeightProperty().bind(scene.heightProperty().subtract(30));
-		mapsAnchorPane.prefWidthProperty().bind(scene.widthProperty());
+		mapsAnchorPane.prefHeightProperty().bind(stageAnchorPane.heightProperty());//.subtract(30));
+		mapsAnchorPane.prefWidthProperty().bind(stageAnchorPane.widthProperty());
 
 		// Setup key events using wellbehavedfx
 		setupKeyEvents();
@@ -2222,7 +2261,7 @@ public class MainScene implements ClockListener {
 			e.printStackTrace();
 		}
 
-		controller.setSize(screen_width, screen_height - TAB_PANEL_HEIGHT);
+		controller.setSize(screen_width-120, screen_height);// - TAB_PANEL_HEIGHT);
 
 		dashboardStackPane.getChildren().add(parent);
 
@@ -2385,7 +2424,7 @@ public class MainScene implements ClockListener {
 	public void openSettlementMap() {
 
 		sMapStackPane.prefWidthProperty().unbind();
-		sMapStackPane.prefWidthProperty().bind(scene.widthProperty().subtract(1));
+		sMapStackPane.prefWidthProperty().bind(rootStackPane.widthProperty().subtract(1));
 
 		desktop.openToolWindow(SettlementWindow.NAME);
 
@@ -3182,7 +3221,7 @@ public class MainScene implements ClockListener {
 						"*.sim");
 				FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("all files (*.*)", "*.*");
 				chooser.getExtensionFilters().addAll(simFilter, allFilter);
-				File selectedFile = chooser.showSaveDialog(stage);
+				File selectedFile = chooser.showSaveDialog(customStage);
 				if (selectedFile != null)
 					fileLocn = selectedFile;
 				else {
@@ -3254,8 +3293,8 @@ public class MainScene implements ClockListener {
 					}
 				}
 				if (!hasIt) {
-					pausePane.setLayoutX((scene.getWidth() - pausePane.getPrefWidth()) / 2D);
-					pausePane.setLayoutY((scene.getHeight() - pausePane.getPrefHeight()) / 2D);
+					pausePane.setLayoutX((rootStackPane.getWidth() - pausePane.getPrefWidth()) / 2D);
+					pausePane.setLayoutY((rootStackPane.getHeight() - pausePane.getPrefHeight()) / 2D);
 					// root.getChildrenUnmodifiable().add(pausePane);
 					rootStackPane.getChildren().add(pausePane);
 				}
@@ -3383,7 +3422,7 @@ public class MainScene implements ClockListener {
 		timeLabeltimer.stop();
 		if (billboardTimer != null)
 			billboardTimer.stop();
-		stage.close();
+		customStage.close();
 	}
 
 	/**
@@ -3401,8 +3440,8 @@ public class MainScene implements ClockListener {
 		return menuBar;
 	}
 
-	public Stage getStage() {
-		return stage;
+	public CustomStage getStage() {
+		return customStage;
 	}
 
 	private void createDesktopNode() {
@@ -3577,7 +3616,7 @@ public class MainScene implements ClockListener {
 	}
 
 	public void popAQuote() {
-		quote.popAQuote(stage);
+		quote.popAQuote(customStage);
 	}
 
 	public MarsNode getMarsNode() {
@@ -3589,7 +3628,7 @@ public class MainScene implements ClockListener {
 	}
 
 	public AnchorPane getAnchorPane() {
-		return anchorPane;
+		return stageAnchorPane;
 	}
 
 	public MenuBar getMenuBar() {
@@ -3674,7 +3713,7 @@ public class MainScene implements ClockListener {
 			);
 
 			savingStage = new Stage();
-			savingStage.initOwner(stage);
+			savingStage.initOwner(customStage);
 			savingStage.initModality(Modality.WINDOW_MODAL); // Modality.NONE is by default if initModality() is NOT
 																// specified.
 			savingStage.getIcons()
@@ -3752,8 +3791,8 @@ public class MainScene implements ClockListener {
 				if (type == AUTOSAVING || type == SAVING) {
 					stopPausePopup();
 					setMonitor(savingStage);
-					savingStage.setX((int) (stage.getX() + scene.getWidth() / 2 - 50));
-					savingStage.setY((int) (stage.getY() + scene.getHeight() / 2 - 50));
+					savingStage.setX((int) (customStage.getX() + rootStackPane.getWidth() / 2 - 50));
+					savingStage.setY((int) (customStage.getY() + rootStackPane.getHeight() / 2 - 50));
 					savingStage.show();
 //				} else if (type == LOADING) {
 //					setMonitor(loadingStage);
@@ -3795,8 +3834,8 @@ public class MainScene implements ClockListener {
 		// http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762
 		StartUpLocation startUpLoc = null;
 
-		if (anchorPane == null) {
-			StackPane pane = new StackPane();// starfield);
+		if (rootStackPane == null) {
+			StackPane pane = new StackPane();
 			pane.setPrefHeight(sceneWidth.get());
 			pane.setPrefWidth(sceneHeight.get());
 			// pane.prefHeightProperty().bind(scene.heightProperty());
@@ -3804,29 +3843,16 @@ public class MainScene implements ClockListener {
 
 			startUpLoc = new StartUpLocation(pane.getPrefWidth(), pane.getPrefHeight());
 		} else {
-			startUpLoc = new StartUpLocation(scene.getWidth(), scene.getHeight());
+			startUpLoc = new StartUpLocation(rootStackPane.getWidth(), rootStackPane.getHeight());
 		}
 
 		double xPos = startUpLoc.getXPos();
 		double yPos = startUpLoc.getYPos();
 		// Set Only if X and Y are not zero and were computed correctly
 		// if (xPos != 0 && yPos != 0) {
-		stage.setX(xPos);
-		stage.setY(yPos);
+		stage.setX(xPos+1);
+		stage.setY(yPos+1);
 		// }
-
-		// System.out.println("xPos : " + xPos);
-		// System.out.println("yPos : " + yPos);
-
-		/*
-		 * Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-		 * stage.setX(bounds.getMinX()); stage.setY(bounds.getMinY());
-		 * 
-		 * //stage.setWidth(bounds.getWidth()); //stage.setHeight(bounds.getHeight());
-		 * 
-		 * System.out.println("bounds.getMinX() : " + bounds.getMinX());
-		 * System.out.println("bounds.getMinY() : " + bounds.getMinY());
-		 */
 
 		// stage.centerOnScreen(); // this will cause the stage to be pinned slight
 		// upward.
@@ -3862,6 +3888,10 @@ public class MainScene implements ClockListener {
 		return root;
 	}
 
+	public Parent getRootStackPane() {
+		return rootStackPane;
+	}
+	
 	public Scene getScene() {
 		return scene;
 	}
@@ -3991,14 +4021,13 @@ public class MainScene implements ClockListener {
 		matrix = DotMatrixBuilder.create().prefSize(925, 54).colsAndRows(196, 11).dotOnColor(Color.rgb(255, 55, 0))
 				.dotOffColor(Color.rgb(64, 64, 64)).dotShape(DotShape.ROUND).matrixFont(MatrixFont8x8.INSTANCE).build();
 
-		billboard = new Pane(matrix);
+		billboard = new StackPane(matrix);
 		// billboard.setPadding(new Insets(1));
 		billboard.setBackground(
 				new Background(new BackgroundFill(Color.rgb(20, 20, 20), CornerRadii.EMPTY, Insets.EMPTY)));
 		// billboard.setBorder(new Border(new BorderStroke(Color.DARKCYAN,
 		// BorderStrokeStyle.DOTTED, CornerRadii.EMPTY, BorderWidths.FULL)));
-
-		gNode = new DraggableNode(billboard);
+		dragNode = new DraggableNode(billboard, customStage, 925, 54);
 
 	}
 
@@ -4207,9 +4236,9 @@ public class MainScene implements ClockListener {
 		savePane = null;
 		sPane = null;
 		billboard = null;
-		anchorPane = null;
+		stageAnchorPane = null;
 		// newSimThread = null;
-		stage = null;
+		customStage = null;
 //		loadingStage = null;
 		savingStage = null;
 		timeLabeltimer = null;

@@ -373,8 +373,8 @@ extends ToolWindow {
 		if (mainScene != null) {
 			if (mainScene.isMainSceneDone() && !isBound) {
 				isBound = true;
-				height.bind(mainScene.getScene().heightProperty());
-				width.bind(mainScene.getScene().widthProperty());
+				height.bind(mainScene.getAnchorPane().heightProperty());
+				width.bind(mainScene.getAnchorPane().widthProperty());
 			}
 		}
 

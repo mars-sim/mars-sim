@@ -12,6 +12,8 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 /**
  * Simple draggable node.
@@ -25,19 +27,27 @@ public class DraggableNode extends Pane {
     // node position
     private double x = 0;
     private double y = 0;
+    private double w = 0;
+    private double h = 0;
     // mouse position
     private double mousex = 0;
     private double mousey = 0;
     private Node view;
     private boolean dragging = false;
     private boolean moveToFront = true;
+    
+    private Stage stage;
+
 
     public DraggableNode() {
         init();
     }
 
-    public DraggableNode(Node view) {
+    public DraggableNode(Node view, Stage stage, double w, double h) {
         this.view = view;
+        this.stage = stage;
+        this.w = w;
+        this.h = h;
 
         getChildren().add(view);
         init();
@@ -80,21 +90,38 @@ public class DraggableNode extends Pane {
                 double offsetX = event.getSceneX() - mousex;
                 double offsetY = event.getSceneY() - mousey;
 
-                x += offsetX;
-                y += offsetY;
+                if (x < stage.getWidth() - w
+	                	&& y < stage.getHeight() - h
+	                	&& stage.getWidth() > w + view.getLayoutX()
+	                	&& stage.getHeight() > h + view.getLayoutY()) {
+                	
+                	x += offsetX;
+                	y += offsetY;
 
-                double scaledX = x;
-                double scaledY = y;
+	                double scaledX = x;
+	                double scaledY = y;
+	
+	                if (scaledX < stage.getWidth() - w - 5
+	                	&& scaledY < stage.getHeight() - h - 35
+	                	&& scaledX > 0
+	                	&& scaledY > 0) {
+	                	
+		                setLayoutX(scaledX);
+		                setLayoutY(scaledY);
 
-                setLayoutX(scaledX);
-                setLayoutY(scaledY);
-
-                dragging = true;
-
-                // again set current Mouse x AND y position
-                mousex = event.getSceneX();
-                mousey = event.getSceneY();
-
+//		                System.out.println("w , h : (" + w + ", " + h + ")");
+//		                System.out.println("Stage : (" + stage.getWidth() + ", " + stage.getHeight() + ")");
+//		                System.out.println("Mouse : (" + x + ", " + y + ")");
+		                dragging = true;
+		
+		                // again set current Mouse x AND y position
+		                mousex = event.getSceneX();
+		                mousey = event.getSceneY();
+		                
+	                }
+	                
+                }
+                
                 event.consume();
             }
         });

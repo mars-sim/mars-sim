@@ -221,6 +221,10 @@ public class MainMenu {
 		
 		mainMenuSPane = new StackPane(menuAPane);
 	
+//		primaryStage = ((Stage) gameScene.getRoot().getScene().getWindow()); //new Stage();
+//		primaryStage.setWidth(WIDTH);
+//		primaryStage.setHeight(HEIGHT);
+		
 		mainMenuSPane.setPrefSize(WIDTH, HEIGHT);
 		mainMenuSPane.setMaxSize(WIDTH, HEIGHT);
 		//stackPane.setLayoutX(10);
@@ -355,8 +359,8 @@ public class MainMenu {
 		starsTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                final double width = 0.25 * primaryStage.getWidth();
-                final double height = 0.5 * primaryStage.getHeight();
+                final double width = 0.25 * WIDTH;//primaryStage.getWidth();
+                final double height = 0.5 * HEIGHT;//primaryStage.getHeight();
                 final double radius = Math.sqrt(2) * Math.max(width, height);
                 for (int i=0; i<STAR_COUNT; i++) {
                     final Node node = nodes[i];
@@ -661,7 +665,7 @@ public class MainMenu {
    
    public void createMainScene() {
 	   // creates a mainScene instance
-	   mainScene = new MainScene(mainscene_width, mainscene_height, gameScene);
+	   mainScene = new MainScene(native_width, native_height, gameScene);
 	   
        try {
     	   // Loads Scenario Config Editor

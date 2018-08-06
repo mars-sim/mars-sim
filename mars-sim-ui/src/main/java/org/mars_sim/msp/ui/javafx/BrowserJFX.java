@@ -749,7 +749,7 @@ public class BrowserJFX {
 
 	                	if (event.getURL() != null) {
 
-		                    if (mainScene != null) mainScene.getScene().setCursor(Cursor.HAND);
+		                    if (mainScene != null) mainScene.getRootStackPane().setCursor(Cursor.HAND);
 
 		                	input = event.getURL().toString(); // can get NullPointerException on some links.
 
@@ -772,7 +772,7 @@ public class BrowserJFX {
                 	}
 
                 	else {
-                		if (mainScene != null) mainScene.getScene().setCursor(Cursor.DEFAULT);
+                		if (mainScene != null) mainScene.getRootStackPane().setCursor(Cursor.DEFAULT);
                 	}
 
                     return false;
@@ -840,7 +840,7 @@ public class BrowserJFX {
                         	// Note: it shows the content of the hyperlink (even before the user clicks on it.
                             String content = event.getData();
                             if (content != null && !content.isEmpty()) {
-                            	if (mainScene != null) mainScene.getScene().setCursor(Cursor.HAND);
+                            	if (mainScene != null) mainScene.getRootStackPane().setCursor(Cursor.HAND);
     		                    //System.out.println("now hovering over a link");
                             	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
                             	if (content.contains(DOCS_HELP_DIR)) {
@@ -856,7 +856,7 @@ public class BrowserJFX {
                             }
 
                             else {
-                            	if (mainScene != null) mainScene.getScene().setCursor(Cursor.DEFAULT);
+                            	if (mainScene != null) mainScene.getRootStackPane().setCursor(Cursor.DEFAULT);
                             	// if the mouse pointer is not on any hyperlink
                            		//System.out.println("The null content is " + content);
                             	statusBarLbl.setText(content);

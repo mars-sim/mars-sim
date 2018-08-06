@@ -283,4 +283,12 @@ public class DotMatrix extends Region {
             drawMatrix();
         }
     }
+    
+    public double getMHeight() {
+    	return preferredHeight;//pane.getPrefHeight();
+    }
+    
+    public double getMWidth() {
+    	return preferredWidth;//pane.getPrefWidth();
+    }
 }
