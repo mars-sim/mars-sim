@@ -101,8 +101,8 @@ public class DraggableNode extends Pane {
 	                double scaledX = x;
 	                double scaledY = y;
 	
-	                if (scaledX < stage.getWidth() - w - 5
-	                	&& scaledY < stage.getHeight() - h - 35
+	                if (scaledX < stage.getWidth() - w - 20
+	                	&& scaledY < stage.getHeight() - h - 40
 	                	&& scaledX > 0
 	                	&& scaledY > 0) {
 	                	

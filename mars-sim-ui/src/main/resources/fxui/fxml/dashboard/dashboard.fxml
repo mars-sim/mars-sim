@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="mainPane" minHeight="720.0" minWidth="1200.0" stylesheets="@../../css/dashboard/dashboard.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.ui.javafx.dashboard.DashboardController">
+<AnchorPane id="AnchorPane" fx:id="mainPane" minHeight="750.0" minWidth="1200.0" stylesheets="@../../css/dashboard/dashboard.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.ui.javafx.dashboard.DashboardController">
    <children>
    		<VBox fx:id="firstVBox" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #2A3F54;">
          <children>

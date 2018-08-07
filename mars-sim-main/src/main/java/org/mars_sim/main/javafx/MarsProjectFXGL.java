@@ -73,11 +73,11 @@ public class MarsProjectFXGL extends GameApplication {
     
 	@Override
 	protected void initSettings(GameSettings settings) {
-		settings.setWidth(1024);
+		settings.setWidth(1366);//1024);
 		settings.setHeight(768);
 		//settings.setStageStyle(StageStyle.UNDECORATED);
 		settings.setTitle("Mars Simulation Project");
-		settings.setVersion("3.1.0");
+		settings.setVersion("3.1.0-b2");
 		settings.setProfilingEnabled(false); // turn off fps
 		settings.setCloseConfirmation(false); // turn off exit dialog
 		settings.setIntroEnabled(false); // turn off intro
