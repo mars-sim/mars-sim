@@ -17,14 +17,13 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 
 /**
- * This class represents an inventory of food at settlements displayed
- * within the Monitor Window.
+ * This class represents an inventory of food at settlements displayed within
+ * the Monitor Window.
  */
-public class FoodInventoryTab
-extends TableTab
-implements UnitManagerListener {
+public class FoodInventoryTab extends TableTab implements UnitManagerListener {
 	/**
 	 * constructor.
+	 * 
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
 	public FoodInventoryTab(final MonitorWindow window) {
@@ -50,8 +49,7 @@ implements UnitManagerListener {
 				TableColumn column = new TableColumn(table.getColumnCount());
 				column.setHeaderValue(settlement.getName());
 				SwingUtilities.invokeLater(new FoodColumnModifier(column, true));
-			}
-			else if (UnitManagerEventType.REMOVE_UNIT == event.getEventType()) {
+			} else if (UnitManagerEventType.REMOVE_UNIT == event.getEventType()) {
 				// If settlement is gone, remove from settlement columns.
 				TableColumn column = table.getColumn(settlement.getName());
 				if (column != null) {
@@ -65,8 +63,7 @@ implements UnitManagerListener {
 	/**
 	 * An inner class for adding or removing food table columns.
 	 */
-	private class FoodColumnModifier
-	implements Runnable {
+	private class FoodColumnModifier implements Runnable {
 
 		// Data members.
 		private TableColumn column;
@@ -74,7 +71,8 @@ implements UnitManagerListener {
 
 		/**
 		 * Constructor
-		 * @param column the column to add or remove.
+		 * 
+		 * @param column    the column to add or remove.
 		 * @param addColumn true for adding column or false for removing column.
 		 */
 		private FoodColumnModifier(TableColumn column, boolean addColumn) {
@@ -86,8 +84,7 @@ implements UnitManagerListener {
 		public void run() {
 			if (addColumn) {
 				table.getColumnModel().addColumn(column);
-			}
-			else {
+			} else {
 				table.getColumnModel().removeColumn(column);
 			}
 		}

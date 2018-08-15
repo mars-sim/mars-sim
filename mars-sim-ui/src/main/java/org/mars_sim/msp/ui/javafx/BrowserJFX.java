@@ -253,66 +253,67 @@ public class BrowserJFX {
         history = engine.getHistory();
         entryList = history.getEntries();
         ssm = comboBox.getSelectionModel();
-    	//logger.info("Web Engine supported : " + engine.getUserAgent());
-    	// For JDK 131, it prints the following :
+    	logger.info("Web Engine supported : " + engine.getUserAgent());
+    	// For JDK 8u131, it prints the following :
     	// Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/602.1 (KHTML, like Gecko) JavaFX/8.0 Safari/602.1
+    	// For JDK 10.0.2
+    	//Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/605.1 (KHTML, like Gecko) JavaFX/10 Safari/605.1
     	highlight();
         // Disable context menu (copy option)
         view.setContextMenuEnabled(false);
 
-/*
-        // 2017-04-27 Add the use of WebEventDispatcher
-        WebEventDispatcher webEventDispatcher = new WebEventDispatcher(view.getEventDispatcher());
+        // Add the use of WebEventDispatcher
+//        WebEventDispatcher webEventDispatcher = new WebEventDispatcher(view.getEventDispatcher());
+//
+//		// features NOT used for now
+//        engine.getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
+//
+//            @Override
+//            public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
+//                if(newValue.equals(State.SUCCEEDED)){
+//                    // dispatch all events
+//                    view.setEventDispatcher(webEventDispatcher);
+//                }
+//            }
+//
+//        });
+
+			// features NOT used for now
+//        engine.setCreatePopupHandler(new Callback<PopupFeatures, WebEngine>() {
+//
+//            @Override
+//            public WebEngine call(PopupFeatures p) {
+//                Stage stage = new Stage(StageStyle.UTILITY);
+//                WebView wv2 = new WebView();
+//                stage.setScene(new Scene(wv2));
+//                stage.show();
+//                return wv2.getEngine();
+//            }
+//        });
 
 		// features NOT used for now
-        engine.getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
+        // Add ListChangeListener to disable mouse scroll
+//        view.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {
+//
+//        	@Override
+//        	public void onChanged(ListChangeListener.Change<? extends Node> c) {
+//                pLimit = view.localToScene(view.getWidth(), view.getHeight());
+//                view.lookupAll(".scroll-bar")
+//                		.stream()
+//                        .map(s -> (ScrollBar)s)
+//                        .forEach(s -> {
+//                            if(s.getOrientation().equals(Orientation.VERTICAL)){
+//                                width = s.getBoundsInLocal().getWidth();
+//                            }
+//                            if(s.getOrientation().equals(Orientation.HORIZONTAL)){
+//                                height = s.getBoundsInLocal().getHeight();
+//                            }
+//                        });
+//                // dispatch all events
+//                webEventDispatcher.setLimit(pLimit.subtract(width, height));
+//            }
+//        });
 
-            @Override
-            public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
-                if(newValue.equals(State.SUCCEEDED)){
-                    // dispatch all events
-                    view.setEventDispatcher(webEventDispatcher);
-                }
-            }
-
-        });
-*/
-/*			// features NOT used for now
-        engine.setCreatePopupHandler(new Callback<PopupFeatures, WebEngine>() {
-
-            @Override
-            public WebEngine call(PopupFeatures p) {
-                Stage stage = new Stage(StageStyle.UTILITY);
-                WebView wv2 = new WebView();
-                stage.setScene(new Scene(wv2));
-                stage.show();
-                return wv2.getEngine();
-            }
-        });
-
-		// features NOT used for now
-        // 2017-04-27 Add ListChangeListener to disable mouse scroll
-        view.getChildrenUnmodifiable().addListener(new ListChangeListener<Node>() {
-
-        	@Override
-        	public void onChanged(ListChangeListener.Change<? extends Node> c) {
-                pLimit = view.localToScene(view.getWidth(), view.getHeight());
-                view.lookupAll(".scroll-bar")
-                		.stream()
-                        .map(s -> (ScrollBar)s)
-                        .forEach(s -> {
-                            if(s.getOrientation().equals(Orientation.VERTICAL)){
-                                width = s.getBoundsInLocal().getWidth();
-                            }
-                            if(s.getOrientation().equals(Orientation.HORIZONTAL)){
-                                height = s.getBoundsInLocal().getHeight();
-                            }
-                        });
-                // dispatch all events
-                webEventDispatcher.setLimit(pLimit.subtract(width, height));
-            }
-        });
-*/
 
 
         comboBox.setPromptText("History");
@@ -501,19 +502,19 @@ public class BrowserJFX {
 		//});
 	}    
 
-/*
-    public void goURL() {
 
-		if (input.contains(DOCS_HELP_DIR) && input.contains(".html")) {
-			if (ourGuide == null)
-				ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
-			ourGuide.setURL(input); //$NON-NLS-1$
-			setTextInputCache(fullLink);
-			inputURLType(fullLink);//, BrowserJFX.REMOTE_HTML);
-			showFormattedURL();
-		}
-    }
-*/
+//    public void goURL() {
+//
+//		if (input.contains(DOCS_HELP_DIR) && input.contains(".html")) {
+//			if (ourGuide == null)
+//				ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+//			ourGuide.setURL(input); //$NON-NLS-1$
+//			setTextInputCache(fullLink);
+//			inputURLType(fullLink);//, BrowserJFX.REMOTE_HTML);
+//			showFormattedURL();
+//		}
+//    }
+
 
 	public void fireButtonGo(String input) {
 		if (input != null && !input.isEmpty()) {
@@ -540,66 +541,66 @@ public class BrowserJFX {
      * Sets up the Web Panel
      */
     public WebPanel initWebPanel() {
-/*
-        ActionListener al = new ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
 
-            	highlight();
+//        ActionListener al = new ActionListener() {
+//            @Override
+//            public void actionPerformed(java.awt.event.ActionEvent e) {
+//
+//            	highlight();
+//
+//        		String input = urlTF.getText().trim();
+//
+//        		if (input.contains(DOCS_HELP_DIR) && input.contains(".html")) {
+//        			if (ourGuide == null)
+//        				ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+//        			ourGuide.setURL(input); //$NON-NLS-1$
+//        		}
+//        		else {
+//                	fireButtonGo(input);
+//        		}
+//
+//            }
+//        };
+//
+//        ActionListener bl = new ActionListener() {
+//            @Override
+//            public void actionPerformed(java.awt.event.ActionEvent e) {
+//                Platform.runLater(() -> {
+//                    goBack();
+//                });
+//            }
+//        };
+//
+//        ActionListener fl = new ActionListener() {
+//            @Override
+//            public void actionPerformed(java.awt.event.ActionEvent e) {
+//                Platform.runLater(() -> {
+//                    goForward();
+//                });
+//            }
+//        };
+//
+//        btnBack.addActionListener(bl);
+//        btnForward.addActionListener(fl);
+//        btnGo.addActionListener(al);
+//        urlTF.addActionListener(al);
+//
+//        urlTF.setEditable(true);
+//        urlTF.requestFocusInWindow();
 
-        		String input = urlTF.getText().trim();
-
-        		if (input.contains(DOCS_HELP_DIR) && input.contains(".html")) {
-        			if (ourGuide == null)
-        				ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
-        			ourGuide.setURL(input); //$NON-NLS-1$
-        		}
-        		else {
-                	fireButtonGo(input);
-        		}
-
-            }
-        };
-
-        ActionListener bl = new ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                Platform.runLater(() -> {
-                    goBack();
-                });
-            }
-        };
-
-        ActionListener fl = new ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                Platform.runLater(() -> {
-                    goForward();
-                });
-            }
-        };
-
-        btnBack.addActionListener(bl);
-        btnForward.addActionListener(fl);
-        btnGo.addActionListener(al);
-        urlTF.addActionListener(al);
-
-        urlTF.setEditable(true);
-        urlTF.requestFocusInWindow();
-*/
         progressBar.setPreferredSize(new Dimension(150, 18));
         progressBar.setStringPainted(true);
-/*
-        WebPanel topBar = new WebPanel(new BorderLayout(5, 0));
-        topBar.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
-        topBar.add(urlTF, BorderLayout.CENTER);
 
-        WebPanel buttonPane = new WebPanel(new FlowLayout());
-        buttonPane.add(btnBack);
-        buttonPane.add(btnGo);
-        buttonPane.add(btnForward);
-        topBar.add(buttonPane, BorderLayout.EAST);
-*/
+//        WebPanel topBar = new WebPanel(new BorderLayout(5, 0));
+//        topBar.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
+//        topBar.add(urlTF, BorderLayout.CENTER);
+//
+//        WebPanel buttonPane = new WebPanel(new FlowLayout());
+//        buttonPane.add(btnBack);
+//        buttonPane.add(btnGo);
+//        buttonPane.add(btnForward);
+//        topBar.add(buttonPane, BorderLayout.EAST);
+
         WebPanel statusBar = new WebPanel(new BorderLayout(5, 0));
         statusBar.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
         statusBar.add(statusBarLbl, BorderLayout.CENTER);
@@ -783,52 +784,50 @@ public class BrowserJFX {
                 view.setStyle("-fx-background-color: #656565;"
                 		+ " -fx-font-color: white;"
                 		+ " -fx-border-color: #00a7c8");
-                		//+ " -webkit-scrollbar: orange;");
 
-/*
-                Button reloadB = new Button("Refresh");
-                reloadB.setMaxWidth(110);
 
-                Button backB = new Button("Back");
-                backB.setMaxWidth(110);
+//                Button reloadB = new Button("Refresh");
+//                reloadB.setMaxWidth(110);
+//
+//                Button backB = new Button("Back");
+//                backB.setMaxWidth(110);
+//
+//                Button forwardB = new Button("Forward");
+//                forwardB.setMaxWidth(110);
+//
+//                reloadB.setOnAction(e -> engine.reload());
+//
+//                backB.setOnAction(e -> {
+//
+//                	engine.executeScript("history.back()");
+//                	String input = urlTF.getText().trim();
+//
+//                	getURLType(input);
+//                	System.out.println("calling history.back()");
+//
+//                });
+//
+//                forwardB.setOnAction(e -> {
+//
+//                	engine.executeScript("history.forward()");
+//                	String input = urlTF.getText().trim();
+//
+//                	getURLType(input);
+//                	System.out.println("calling history.forward()");
+//                });
 
-                Button forwardB = new Button("Forward");
-                forwardB.setMaxWidth(110);
+//                engine.titleProperty().addListener(new ChangeListener<String>() {
+//                    @Override
+//                    public void changed(ObservableValue<? extends String> observable, String oldValue, final String newValue) {
+//                        SwingUtilities.invokeLater(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                //SimpleSwingBrowser.this.setTitle(newValue);
+//                            }
+//                        });
+//                    }
+//                });
 
-                reloadB.setOnAction(e -> engine.reload());
-
-                backB.setOnAction(e -> {
-
-                	engine.executeScript("history.back()");
-                	String input = urlTF.getText().trim();
-
-                	getURLType(input);
-                	System.out.println("calling history.back()");
-
-                });
-
-                forwardB.setOnAction(e -> {
-
-                	engine.executeScript("history.forward()");
-                	String input = urlTF.getText().trim();
-
-                	getURLType(input);
-                	System.out.println("calling history.forward()");
-                });
- */
-/*
-                engine.titleProperty().addListener(new ChangeListener<String>() {
-                    @Override
-                    public void changed(ObservableValue<? extends String> observable, String oldValue, final String newValue) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                //SimpleSwingBrowser.this.setTitle(newValue);
-                            }
-                        });
-                    }
-                });
-*/
 
 
                 // show the url address whenever a mouse hovers over a hyperlink
@@ -842,7 +841,7 @@ public class BrowserJFX {
                             if (content != null && !content.isEmpty()) {
                             	if (mainScene != null) mainScene.getRootStackPane().setCursor(Cursor.HAND);
     		                    //System.out.println("now hovering over a link");
-                            	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
+                            	// Truncate off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
                             	if (content.contains(DOCS_HELP_DIR)) {
                             		int i = content.indexOf("docs")-1;
                             		//System.out.println("shortened content is " + content.substring(i, content.length()));
@@ -919,29 +918,20 @@ public class BrowserJFX {
 	                				System.out.println(" : " + value.getMessage()
 	                                        + ".  Loading error...");
 
-	/*                				JOptionPane.showMessageDialog(
-	                                            panel,
-	                                            (value != null) ?
-	                                            engine.getLocation() + "\n" + value.getMessage() :
-	                                            engine.getLocation() + "\nUnexpected error.",
-	                                            "Loading error...",
-	                                            JOptionPane.ERROR_MESSAGE);
-	*/
-		                		//});
 		                	}
 		                }
 		            }
                 );
- /*
-                engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
-                    if (newState == Worker.State.SUCCEEDED) {
-                    	System.out.println("calling stateProperty");
-                    	getURLType(getCurrentURL());
-                        JSObject jsobj = (JSObject) engine.executeScript("window");
-        				jsobj.setMember("JavaBridge", new TicketSubmission());
-                    }
-                });
-*/
+
+//                engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+//                    if (newState == Worker.State.SUCCEEDED) {
+//                    	System.out.println("calling stateProperty");
+//                    	getURLType(getCurrentURL());
+//                        JSObject jsobj = (JSObject) engine.executeScript("window");
+//        				jsobj.setMember("JavaBridge", new TicketSubmission());
+//                    }
+//                });
+
 
 
                 
@@ -1006,22 +996,22 @@ public class BrowserJFX {
     		statusBarURLText = content;
     		SwingUtilities.invokeLater(()-> statusBarLbl.setText(content));
     	}
-/*
+
 		//System.out.println("isLocalHtml : " + isLocalHtml + "   isInternal : " + isInternal);
- 		if (isLocalHtml) {
-     		if (isInternal){
-        		;//urlTF.setText(urlTF.getText());
-     		}
-    		else {
-    			// if it is a local html file, show blank on the address bar
-    			urlTF.setText("");
-    			//urlTF.setText(textInputCache);
-    		}
-     	}
-    	else {
-     		urlTF.setText(textInputCache);
-     	}
-*/
+// 		if (isLocalHtml) {
+//     		if (isInternal){
+//        		;//urlTF.setText(urlTF.getText());
+//     		}
+//    		else {
+//    			// if it is a local html file, show blank on the address bar
+//    			urlTF.setText("");
+//    			//urlTF.setText(textInputCache);
+//    		}
+//     	}
+//    	else {
+//     		urlTF.setText(textInputCache);
+//     	}
+
     }
 
     public void addCSS() {
@@ -1125,15 +1115,15 @@ public class BrowserJFX {
         });
     }
 
-/*
-    private static Object executejQuery(final WebEngine engine, String minVersion, String script) {
-        return executejQuery(engine, DEFAULT_JQUERY_MIN_VERSION, script);//JQUERY_LOCATION, script);
-    }
 
-    private Object executejQuery(final WebEngine engine, String script) {
-        return executejQuery(engine, DEFAULT_JQUERY_MIN_VERSION, script);
-    }
-*/
+//    private static Object executejQuery(final WebEngine engine, String minVersion, String script) {
+//        return executejQuery(engine, DEFAULT_JQUERY_MIN_VERSION, script);//JQUERY_LOCATION, script);
+//    }
+//
+//    private Object executejQuery(final WebEngine engine, String script) {
+//        return executejQuery(engine, DEFAULT_JQUERY_MIN_VERSION, script);
+//    }
+
 
 
 	public String getCurrentURL() {
@@ -1158,112 +1148,109 @@ public class BrowserJFX {
     }
 
     public void updateButtons() {
-    	/*
+    	
     	//final WebHistory history = engine.getHistory();
     	//ObservableList<WebHistory.Entry> entryList = history.getEntries();
-    	int currentIndex = history.getCurrentIndex();
+//    	int currentIndex = history.getCurrentIndex();
        	//System.out.println("updateButtons()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
 
-    	if (entryList.size() > 1) {
-    		if (currentIndex > 0)
-    			btnBack.setEnabled(true);
-    		else
-    			btnBack.setEnabled(false);
+//    	if (entryList.size() > 1) {
+//    		if (currentIndex > 0)
+//    			btnBack.setEnabled(true);
+//    		else
+//    			btnBack.setEnabled(false);
+//
+//    		if  (currentIndex < entryList.size() - 1)
+//    			btnForward.setEnabled(true);
+//    		else
+//    			btnForward.setEnabled(false);
+//    	}
+//    	else {
+//    		btnBack.setEnabled(false);
+//    		btnForward.setEnabled(false);
+//    	}
 
-    		if  (currentIndex < entryList.size() - 1)
-    			btnForward.setEnabled(true);
-    		else
-    			btnForward.setEnabled(false);
-    	}
-    	else {
-    		btnBack.setEnabled(false);
-    		btnForward.setEnabled(false);
-    	}
 
-*/
-/*
-    	if (entryList.size() > 1
-				&& currentIndex > 0)
-    		btnBack.setEnabled(true);
-    	else
-    		btnBack.setEnabled(false);
-
-    	if (entryList.size() > 1
-				&& currentIndex < entryList.size() - 1)
-    		btnForward.setEnabled(true);
-    	else
-    		btnForward.setEnabled(false);
-*/
+//    	if (entryList.size() > 1
+//				&& currentIndex > 0)
+//    		btnBack.setEnabled(true);
+//    	else
+//    		btnBack.setEnabled(false);
+//
+//    	if (entryList.size() > 1
+//				&& currentIndex < entryList.size() - 1)
+//    		btnForward.setEnabled(true);
+//    	else
+//    		btnForward.setEnabled(false);
 
     }
 
 
-/*
-    @SuppressWarnings("restriction")
-    public void goBack() {
-    	Platform.runLater(() -> {
-        	int currentIndex = history.getCurrentIndex();
-        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
-    		history.go(entryList.size() > 1
-    				&& currentIndex > 0
-    				? -1
-    				: 0);
+//    @SuppressWarnings("restriction")
+//    public void goBack() {
+//    	Platform.runLater(() -> {
+//        	int currentIndex = history.getCurrentIndex();
+//        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
+//    		history.go(entryList.size() > 1
+//    				&& currentIndex > 0
+//    				? -1
+//    				: 0);
+//
+//       		showURL();
+//
+//        	currentIndex = history.getCurrentIndex();
+//        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
+//        	if (entryList.size() > 1) {
+//        		if (currentIndex > 0)
+//        			btnBack.setEnabled(true);
+//        		else
+//        			btnBack.setEnabled(false);
+//
+//        		if  (currentIndex < entryList.size() - 1)
+//        			btnForward.setEnabled(true);
+//        		else
+//        			btnForward.setEnabled(false);
+//        	}
+//        	else {
+//        		btnBack.setEnabled(false);
+//        		btnForward.setEnabled(false);
+//        	}
+//       	});
+//
+//	}
+//
+//    @SuppressWarnings("restriction")
+//    public void goForward() {
+//    	Platform.runLater(() -> {
+//        	int currentIndex = history.getCurrentIndex();
+//        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
+//
+//    		history.go(entryList.size() > 1
+//    				&& currentIndex < entryList.size() - 1
+//    				? 1
+//    				: 0);
+//
+//        	currentIndex = history.getCurrentIndex();
+//        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
+//        	if (entryList.size() > 1) {
+//        		if (currentIndex > 0)
+//        			btnBack.setEnabled(true);
+//        		else
+//        			btnBack.setEnabled(false);
+//
+//        		if  (currentIndex < entryList.size() - 1)
+//        			btnForward.setEnabled(true);
+//        		else
+//        			btnForward.setEnabled(false);
+//        	}
+//        	else {
+//        		btnBack.setEnabled(false);
+//        		btnForward.setEnabled(false);
+//        	}
+//
+//    	});
+//	}
 
-       		showURL();
-
-        	currentIndex = history.getCurrentIndex();
-        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
-        	if (entryList.size() > 1) {
-        		if (currentIndex > 0)
-        			btnBack.setEnabled(true);
-        		else
-        			btnBack.setEnabled(false);
-
-        		if  (currentIndex < entryList.size() - 1)
-        			btnForward.setEnabled(true);
-        		else
-        			btnForward.setEnabled(false);
-        	}
-        	else {
-        		btnBack.setEnabled(false);
-        		btnForward.setEnabled(false);
-        	}
-       	});
-
-	}
-
-    @SuppressWarnings("restriction")
-    public void goForward() {
-    	Platform.runLater(() -> {
-        	int currentIndex = history.getCurrentIndex();
-        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
-
-    		history.go(entryList.size() > 1
-    				&& currentIndex < entryList.size() - 1
-    				? 1
-    				: 0);
-
-        	currentIndex = history.getCurrentIndex();
-        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
-        	if (entryList.size() > 1) {
-        		if (currentIndex > 0)
-        			btnBack.setEnabled(true);
-        		else
-        			btnBack.setEnabled(false);
-
-        		if  (currentIndex < entryList.size() - 1)
-        			btnForward.setEnabled(true);
-        		else
-        			btnForward.setEnabled(false);
-        	}
-        	else {
-        		btnBack.setEnabled(false);
-        		btnForward.setEnabled(false);
-        	}
-
-    	});
-	}
-*/
 
     public String getTextInputCache() {
     	return textInputCache;

@@ -175,17 +175,19 @@ public class AudioPlayer implements ClockListener {
 	public void loadSound(String filepath) {
 		if (allSoundClips != null && allSoundClips.containsKey(filepath) && allSoundClips.get(filepath) != null) {
 			currentSoundClip = allSoundClips.get(filepath);
+			currentSoundClip.determineGain(currentSoundVol);
+			currentSoundClip.play();
 		} else {
 			try {
 				currentSoundClip = new OGGSoundClip(filepath);
+				allSoundClips.put(filepath, currentSoundClip);
+				currentSoundClip.determineGain(currentSoundVol);
+				currentSoundClip.play();
 			} catch (IOException e) {
 				// e.printStackTrace();
 				logger.log(Level.SEVERE, "IOException in AudioPlayer's playSound()", e.getMessage());
 			}
-			allSoundClips.put(filepath, currentSoundClip);
 		}
-		currentSoundClip.determineGain(currentSoundVol);
-		currentSoundClip.play();
 	}
 
 	/**
@@ -214,17 +216,19 @@ public class AudioPlayer implements ClockListener {
 	public void loadMusic(String filepath) {
 		if (allMusicTracks.containsKey(filepath) && allMusicTracks.get(filepath) != null) {
 			currentMusicTrack = allMusicTracks.get(filepath);
+			currentMusicTrack.determineGain(currentMusicVol);
+			currentMusicTrack.loop();
 		} else {
 			try {
 				currentMusicTrack = new OGGSoundClip(filepath);
+				allMusicTracks.put(filepath, currentMusicTrack);
+				currentMusicTrack.determineGain(currentMusicVol);
+				currentMusicTrack.loop();
 			} catch (IOException e) {
 				// e.printStackTrace();
 				logger.log(Level.SEVERE, "IOException in AudioPlayer's playInBackground()", e.getMessage());
 			}
-			allMusicTracks.put(filepath, currentMusicTrack);
 		}
-		currentMusicTrack.determineGain(currentMusicVol);
-		currentMusicTrack.loop();
 	}
 
 	/**

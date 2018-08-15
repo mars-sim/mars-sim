@@ -28,16 +28,14 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
-public class FoodInventoryTableModel
-extends AbstractTableModel
-implements UnitListener, MonitorModel, UnitManagerListener {
+public class FoodInventoryTableModel extends AbstractTableModel
+		implements UnitListener, MonitorModel, UnitManagerListener {
 
 	private static final String FOOD_ITEMS = " Food Items";
-	
+
 	// Data members
 	private List<Food> foodList;
 	private List<Settlement> settlements;
-
 
 	/**
 	 * Constructor.
@@ -49,14 +47,15 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 		UnitManager unitManager = Simulation.instance().getUnitManager();
 
-		//FoodInventoryTableModel ft = unitManager.
+		// FoodInventoryTableModel ft = unitManager.
 
 		// Initialize settlements.
 		settlements = new ArrayList<Settlement>(unitManager.getSettlements());
 
 		// Add table as listener to each settlement.
 		Iterator<Settlement> i = settlements.iterator();
-		while (i.hasNext()) i.next().addUnitListener(this);
+		while (i.hasNext())
+			i.next().addUnitListener(this);
 
 		// Add as unit manager listener.
 		unitManager.addUnitManagerListener(this);
@@ -65,6 +64,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	/**
 	 * Catch unit update event.
+	 * 
 	 * @param event the unit event.
 	 */
 	@Override
@@ -72,19 +72,6 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		if (event.getType() == UnitEventType.GOODS_VALUE_EVENT) {
 			SwingUtilities.invokeLater(new FoodTableUpdater(event));
 		}
-	}
-
-	/**
-	 * Prepares the model for deletion.
-	 */
-	@Override
-	public void destroy() {
-		// Remove as listener for all settlements.
-		Iterator<Settlement> i = settlements.iterator();
-		while (i.hasNext()) i.next().removeUnitListener(this);
-
-		// Remove as listener to unit manager.
-		Simulation.instance().getUnitManager().removeUnitManagerListener(this);
 	}
 
 	/**
@@ -96,8 +83,8 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	}
 
 	/**
-	 * Get the name of this model. The name will be a description helping
-	 * the user understand the contents.
+	 * Get the name of this model. The name will be a description helping the user
+	 * understand the contents.
 	 *
 	 * @return Descriptive name.
 	 */
@@ -108,6 +95,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	/**
 	 * Return the object at the specified row indexes.
+	 * 
 	 * @param row Index of the row object.
 	 * @return Object at the specified row.
 	 */
@@ -116,9 +104,8 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	}
 
 	/**
-	 * Has this model got a natural order that the model conforms to. If this
-	 * value is true, then it implies that the user should not be allowed to
-	 * order.
+	 * Has this model got a natural order that the model conforms to. If this value
+	 * is true, then it implies that the user should not be allowed to order.
 	 */
 	public boolean getOrdered() {
 		return false;
@@ -126,12 +113,14 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	/**
 	 * Return the name of the column requested.
+	 * 
 	 * @param columnIndex Index of column.
 	 * @return name of specified column.
 	 */
 	public String getColumnName(int columnIndex) {
-		if (columnIndex == 0) return Msg.getString("FoodInventoryTableModel.firstColumn");
-		//else if (columnIndex == 1) return "Category";
+		if (columnIndex == 0)
+			return Msg.getString("FoodInventoryTableModel.firstColumn");
+		// else if (columnIndex == 1) return "Category";
 		else {
 			String columnName = Msg.getString("FoodInventoryTableModel.settlementColumns",
 					settlements.get(columnIndex - 1).getName());
@@ -141,12 +130,15 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	/**
 	 * Return the type of the column requested.
+	 * 
 	 * @param columnIndex Index of column.
 	 * @return Class of specified column.
 	 */
 	public Class<?> getColumnClass(int columnIndex) {
-		if (columnIndex < 1) return String.class;
-		else return Double.class;
+		if (columnIndex < 1)
+			return String.class;
+		else
+			return Double.class;
 	}
 
 	public int getColumnCount() {
@@ -159,44 +151,40 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
 
-
 		if (columnIndex == 0) {
-			// 2014-11-17 Capitalized Resource Names
-			Object result =  foodList.get(rowIndex).getName();
+			// Capitalize Resource Names
+			Object result = foodList.get(rowIndex).getName();
 			return Conversion.capitalize(result.toString());
 		}
-	/*
-		else if (columnIndex == 1) {
-			// 2014-11-17 Capitalized Category Names
-			Object result = getFoodCategoryName(foodList.get(rowIndex));
-			return Conversion.capitalize(result.toString());
-		}
-			*/
+		/*
+		 * else if (columnIndex == 1) { // Capitalize Category Names Object result =
+		 * getFoodCategoryName(foodList.get(rowIndex)); return
+		 * Conversion.capitalize(result.toString()); }
+		 */
 		else {
 			try {
-				//Settlement settlement = settlements.get(columnIndex - 1);
-				//Food food = foodList.get(rowIndex);
-				//Inventory inv = settlement.getInventory();
-			    //String foodName = food.getName();
-				//AmountResource ar = AmountResource.findAmountResource(foodName);
-				//double foodAvailable = inv.getAmountResourceStored(ar, false);
-				return settlements.get(columnIndex - 1).getInventory().getAmountResourceStored(AmountResource.findAmountResource(foodList.get(rowIndex).getName()), false);
-			}
-			catch (Exception e) {
+				// Settlement settlement = settlements.get(columnIndex - 1);
+				// Food food = foodList.get(rowIndex);
+				// Inventory inv = settlement.getInventory();
+				// String foodName = food.getName();
+				// AmountResource ar = AmountResource.findAmountResource(foodName);
+				// double foodAvailable = inv.getAmountResourceStored(ar, false);
+				return settlements.get(columnIndex - 1).getInventory().getAmountResourceStored(
+						AmountResource.findAmountResource(foodList.get(rowIndex).getName()), false);
+			} catch (Exception e) {
 				return null;
 			}
 		}
 	}
 
-	/** gives back the internationalized name of a food's category.
-
-	public String getFoodCategoryName(Food food) {
-		String key = food.getCategory().getMsgKey();
-		//if (food.getCategory() == FoodType.EQUIPMENT) {
-		//	if (Container.class.isAssignableFrom(food.getClassType())) key = "FoodType.container"; //$NON-NLS-1$
-		//}
-		return Msg.getString(key);
-	}
+	/**
+	 * gives back the internationalized name of a food's category.
+	 * 
+	 * public String getFoodCategoryName(Food food) { String key =
+	 * food.getCategory().getMsgKey(); //if (food.getCategory() ==
+	 * FoodType.EQUIPMENT) { // if
+	 * (Container.class.isAssignableFrom(food.getClassType())) key =
+	 * "FoodType.container"; //$NON-NLS-1$ //} return Msg.getString(key); }
 	 */
 	/**
 	 * Inner class for updating food table.
@@ -211,7 +199,8 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 		public void run() {
 
-			if (event.getTarget() == null) fireTableDataChanged();
+			if (event.getTarget() == null)
+				fireTableDataChanged();
 			else {
 				foodList = FoodUtil.getFoodList();
 				int rowIndex = foodList.indexOf(event.getTarget());
@@ -234,8 +223,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 					settlements.add(settlement);
 					settlement.addUnitListener(this);
 				}
-			}
-			else if (UnitManagerEventType.REMOVE_UNIT == event.getEventType()) {
+			} else if (UnitManagerEventType.REMOVE_UNIT == event.getEventType()) {
 				// If settlement is gone, remove from settlement list.
 				if (settlements.contains(settlement)) {
 					settlements.remove(settlement);
@@ -252,5 +240,19 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 				}
 			});
 		}
+	}
+
+	/**
+	 * Prepares the model for deletion.
+	 */
+	@Override
+	public void destroy() {
+		// Remove as listener for all settlements.
+		Iterator<Settlement> i = settlements.iterator();
+		while (i.hasNext())
+			i.next().removeUnitListener(this);
+
+		// Remove as listener to unit manager.
+		Simulation.instance().getUnitManager().removeUnitManagerListener(this);
 	}
 }

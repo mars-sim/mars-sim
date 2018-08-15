@@ -275,7 +275,7 @@ public class MainScene implements ClockListener {
 			+ "-fx-font-size: 11px;" + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
 			+ "-fx-font-weight:bold; -fx-text-alignment: center; -fx-alignment: CENTER;";
 
-	private static final String PANE_CSS = "jfx-popup-container; -fx-background-radius: 10; -fx-background-color:transparent;";
+	private static final String PANE_CSS = "-fx-background-radius: 10; -fx-background-color:transparent;";//"jfx-popup-container; -fx-background-radius: 10; -fx-background-color:transparent;";
 
 	private int screen_width = DEFAULT_WIDTH;
 	private int screen_height = DEFAULT_HEIGHT;
@@ -391,6 +391,7 @@ public class MainScene implements ClockListener {
 	private IconNode marsNetIcon;
 	private IconNode speedIcon;// , farmIcon;
 
+	private DropShadow borderGlow;
 	private Blend blend;
 	private VBox mapLabelBox;
 	private VBox speedVBox;
@@ -924,12 +925,23 @@ public class MainScene implements ClockListener {
 		t.setCache(true);
 		t.setX(10.0f);
 		t.setY(270.0f);
-		t.setFill(Color.LIGHTBLUE);// .ORANGE);//.DARKSLATEGREY);
+		t.setFill(Color.WHITE);//.LIGHTBLUE);// .ORANGE);//.DARKSLATEGREY);
 		t.setText(s);
 		t.setFont(Font.font(null, FontWeight.BOLD, 14));
 		return t;
 	}
 
+	public Text createBlackTextHeader(String s) {
+		Text t = new Text();
+		t.setCache(true);
+		t.setX(10.0f);
+		t.setY(270.0f);
+		t.setFill(Color.BLACK);//.LIGHTBLUE);// .ORANGE);//.DARKSLATEGREY);
+		t.setText(s);
+		t.setFont(Font.font(null, FontWeight.BOLD, 14));
+		return t;
+	}
+	
 	public Label createBlendLabel(String s) {
 		Label header_label = new Label(s);
 		header_label.setStyle("-fx-text-fill: white; -fx-font-size: 13px; -fx-background-color:transparent;"
@@ -1535,11 +1547,18 @@ public class MainScene implements ClockListener {
 				}
 			}
 		});
-		/*
-		 * musicMuteBox.setOnAction(e -> { if (!masterClock.isPaused()) { if
-		 * (musicMuteBox.isSelected()) { mute(false, true); } else { unmute(false,
-		 * true); } } e.consume(); });
-		 */
+
+//		musicMuteBox.setOnAction(e -> { 
+//			if (!masterClock.isPaused()) { 
+//				if (musicMuteBox.isSelected()) { 
+//					mute(false, true); 
+//				} else { 
+//					unmute(false,true); 
+//				}
+//			} 
+//			e.consume(); 
+//		});
+
 		// Set up a settlement view zoom bar
 		soundEffectSlider = new JFXSlider();
 		// soundSlider.setEffect(blend);
@@ -1657,45 +1676,49 @@ public class MainScene implements ClockListener {
 
 	}
 
-	/*
-	 * public void createFarmPopup() {
-	 * //logger.info("MainScene's createFarmPopup() is on " +
-	 * Thread.currentThread().getName());
-	 * 
-	 * farmBtn = new JFXButton();
-	 * //farmBtn.getStyleClass().add("menu-button");//"button-raised"); farmIcon =
-	 * new IconNode(FontAwesome.LEAF); farmIcon.setIconSize(20);
-	 * //soundIcon.setFill(Color.YELLOW); //soundIcon.setStroke(Color.WHITE);
-	 * 
-	 * farmBtn.setMaxSize(20, 20); farmBtn.setGraphic(farmIcon);
-	 * setQuickToolTip(farmBtn, "Click to open Farming Panel");
-	 * 
-	 * farmBtn.setOnAction(e -> { if (farmPopup.isShowing()) {
-	 * farmPopup.hide();//close(); } else { farmPopup.show(farmBtn,
-	 * PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35); } });
-	 * 
-	 * Accordion acc = new Accordion(); ObservableList<Settlement> towns =
-	 * sim.getUnitManager().getSettlementOList(); int num = towns.size();
-	 * List<TitledPane> titledPanes = new ArrayList<>(); List<Pane> panes = new
-	 * ArrayList<>();
-	 * 
-	 * for (Settlement s : towns) {
-	 * 
-	 * DragDrop dd = new DragDrop(); StackPane p = dd.createDragDropBox();
-	 * panes.add(p); TitledPane tp = new TitledPane(s.getName(), p);
-	 * titledPanes.add(tp);
-	 * 
-	 * p.getStyleClass().add("jfx-popup-container"); p.setAlignment(Pos.CENTER);
-	 * p.setPrefHeight(75); p.setPrefWidth(250);
-	 * 
-	 * acc.getPanes().add(tp); }
-	 * 
-	 * farmPane = new StackPane(acc);
-	 * 
-	 * farmPopup = new JFXPopup(farmPane);
-	 * 
-	 * }
-	 */
+
+//	 public void createFarmPopup() {
+//		 //logger.info("MainScene's createFarmPopup() is on " +
+//		 Thread.currentThread().getName());
+//		  
+//		 farmBtn = new JFXButton();
+//		 //farmBtn.getStyleClass().add("menu-button");//"button-raised"); farmIcon =
+//		 new IconNode(FontAwesome.LEAF); farmIcon.setIconSize(20);
+//		 //soundIcon.setFill(Color.YELLOW); //soundIcon.setStroke(Color.WHITE);
+//		 
+//		 farmBtn.setMaxSize(20, 20); farmBtn.setGraphic(farmIcon);
+//		 setQuickToolTip(farmBtn, "Click to open Farming Panel");
+//		 
+//		 farmBtn.setOnAction(e -> { 
+//			 if (farmPopup.isShowing()) {
+//			 farmPopup.hide();//close(); } else { farmPopup.show(farmBtn,
+//			 PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35); 
+//		 } });
+//		 
+//		 Accordion acc = new Accordion(); 
+//		 ObservableList<Settlement> towns =
+//		 sim.getUnitManager().getSettlementOList(); 
+//		 int num = towns.size();
+//		 List<TitledPane> titledPanes = new ArrayList<>(); List<Pane> panes = new
+//		 ArrayList<>();
+//		 
+//		 for (Settlement s : towns) {
+//		 
+//		 DragDrop dd = new DragDrop(); StackPane p = dd.createDragDropBox();
+//		 panes.add(p); TitledPane tp = new TitledPane(s.getName(), p);
+//		 titledPanes.add(tp);
+//		 
+//		 p.getStyleClass().add("jfx-popup-container"); p.setAlignment(Pos.CENTER);
+//		 p.setPrefHeight(75); p.setPrefWidth(250);
+//		 
+//		 acc.getPanes().add(tp); }
+//		 
+//		 farmPane = new StackPane(acc);
+//		 
+//		 farmPopup = new JFXPopup(farmPane);
+//		 
+//	 }
+
 
 	public void createMarsTimeBar() {
 
@@ -1765,9 +1788,8 @@ public class MainScene implements ClockListener {
 		calBox.getChildren().addAll(calPane);
 		setQuickToolTip(calBox, "The Martian Calendar. Each month contains four weeks with 27 or 28 sols");
 
-		// Label header_label = createHeader("MARS CALENDAR");
-		Text header_label = createTextHeader("MARS CALENDAR PANEL");
-		header_label.setFill(Color.DARKSLATEGREY);
+		Text header_label = createBlackTextHeader("MARS CALENDAR PANEL");
+		//header_label.setFill(Color.DARKSLATEGREY);
 
 		monthText = createBlendText(MONTH + marsClock.getMonthName());
 		yearText = createBlendText(ORBIT + marsClock.getOrbitString());
@@ -1886,10 +1908,8 @@ public class MainScene implements ClockListener {
 	}
 
 	public void createMapToolBox() {
-
 		// Add toolStackPane for map tool
 //		sMapToolPane = new StackPane();
-
 		createMapButtons();
 		createMapCacheToggles();
 		createFXSettlementComboBox();
@@ -1956,9 +1976,7 @@ public class MainScene implements ClockListener {
 			} else {
 				closeSettlementMap();
 			}
-
 			// sMapButton.toFront();
-
 		});
 
 		cacheToggle = new JFXToggleButton();
@@ -2206,14 +2224,18 @@ public class MainScene implements ClockListener {
 
 	public void setGlow(Node node) {
 		int depth = 70; //Setting the uniform variable for the glow width and height	 
-		DropShadow borderGlow= new DropShadow();
+		borderGlow = new DropShadow();
 		borderGlow.setOffsetY(0f);
 		borderGlow.setOffsetX(0f);
-		borderGlow.setColor(Color.ORANGE);
+		if (theme == 7)
+			borderGlow.setColor(Color.ORANGE);
+		else
+			borderGlow.setColor(Color.BLUE);		
 		borderGlow.setWidth(depth);
 		borderGlow.setHeight(depth); 
 		node.setEffect(borderGlow);
 	}
+	
 	
 	/**
 	 * Creates the tab pane for housing a bunch of tabs
@@ -2760,6 +2782,7 @@ public class MainScene implements ClockListener {
 			tabPane.getStyleClass().add("jfx-tab-pane");
 			toolbar.getStylesheets().add(getClass().getResource(JFX_ORANGE_CSS).toExternalForm());
 			toolbar.getStyleClass().add("jfx-tool-bar");
+			setGlow(calendarPane);
 		}
 
 		else {
@@ -2779,6 +2802,8 @@ public class MainScene implements ClockListener {
 			tabPane.getStyleClass().add("jfx-tab-pane");
 			toolbar.getStylesheets().add(getClass().getResource(JFX_BLUE_CSS).toExternalForm());
 			toolbar.getStyleClass().add("jfx-tool-bar");
+			borderGlow.setColor(Color.BLUE);
+			setGlow(calendarPane);
 		}
 
 		chatBox.update();

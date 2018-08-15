@@ -16,13 +16,11 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 
-
 /**
- * The ResourceProcess class represents a process of
- * converting one set of resources to another.
+ * The ResourceProcess class represents a process of converting one set of
+ * resources to another.
  */
-public class ResourceProcess
-implements Serializable {
+public class ResourceProcess implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -45,9 +43,11 @@ implements Serializable {
 
 	/**
 	 * Constructor.
-	 * @param name the name of the process.
+	 * 
+	 * @param name          the name of the process.
 	 * @param powerRequired the amount of power required to run the process (kW).
-	 * @param defaultOn true of process is on by default, false if off by default.
+	 * @param defaultOn     true of process is on by default, false if off by
+	 *                      default.
 	 */
 	public ResourceProcess(String name, double powerRequired, boolean defaultOn) {
 		this.name = name;
@@ -62,6 +62,7 @@ implements Serializable {
 
 	/**
 	 * Gets the process name.
+	 * 
 	 * @return process name as string.
 	 */
 	public String getProcessName() {
@@ -70,16 +71,16 @@ implements Serializable {
 
 	/**
 	 * Adds a maximum input resource rate if it doesn't already exist.
+	 * 
 	 * @param resource the amount resource.
-	 * @param rate max input resource rate (kg/millisol)
-	 * @param ambient is resource from available from surroundings? (air)
+	 * @param rate     max input resource rate (kg/millisol)
+	 * @param ambient  is resource from available from surroundings? (air)
 	 */
 	public void addMaxInputResourceRate(Integer resource, double rate, boolean ambient) {
 		if (ambient) {
 			if (!maxAmbientInputResourceRates.containsKey(resource))
 				maxAmbientInputResourceRates.put(resource, rate);
-		}
-		else {
+		} else {
 			if (!maxInputResourceRates.containsKey(resource))
 				maxInputResourceRates.put(resource, rate);
 		}
@@ -87,16 +88,16 @@ implements Serializable {
 
 	/**
 	 * Adds a maximum output resource rate if it doesn't already exist.
+	 * 
 	 * @param resource the amount resource.
-	 * @param rate max output resource rate (kg/millisol)
-	 * @param waste is resource waste material not to be stored?
+	 * @param rate     max output resource rate (kg/millisol)
+	 * @param waste    is resource waste material not to be stored?
 	 */
 	public void addMaxOutputResourceRate(Integer resource, double rate, boolean waste) {
 		if (waste) {
 			if (!maxWasteOutputResourceRates.containsKey(resource))
 				maxWasteOutputResourceRates.put(resource, rate);
-		}
-		else {
+		} else {
 			if (!maxOutputResourceRates.containsKey(resource))
 				maxOutputResourceRates.put(resource, rate);
 		}
@@ -104,6 +105,7 @@ implements Serializable {
 
 	/**
 	 * Gets the current production level of the process.
+	 * 
 	 * @return proportion of full production (0D - 1D)
 	 */
 	public double getCurrentProductionLevel() {
@@ -112,6 +114,7 @@ implements Serializable {
 
 	/**
 	 * Checks if the process is running or not.
+	 * 
 	 * @return true if process is running.
 	 */
 	public boolean isProcessRunning() {
@@ -120,6 +123,7 @@ implements Serializable {
 
 	/**
 	 * Sets if the process is running or not.
+	 * 
 	 * @param runningProcess true if process is running.
 	 */
 	public void setProcessRunning(boolean runningProcess) {
@@ -128,6 +132,7 @@ implements Serializable {
 
 	/**
 	 * Adds work time to toggling the process on or off.
+	 * 
 	 * @param time the amount (millisols) of time to add.
 	 */
 	public void addToggleWorkTime(double time) {
@@ -137,8 +142,7 @@ implements Serializable {
 			runningProcess = !runningProcess;
 			if (runningProcess) {
 				logger.fine(name + " turned on.");
-			}
-			else {
+			} else {
 				logger.fine(name + " turned off.");
 			}
 		}
@@ -146,6 +150,7 @@ implements Serializable {
 
 	/**
 	 * Gets the set of input resources.
+	 * 
 	 * @return set of resources.
 	 */
 	public Set<Integer> getInputResources() {
@@ -157,6 +162,7 @@ implements Serializable {
 
 	/**
 	 * Gets the max input resource rate for a given resource.
+	 * 
 	 * @return rate in kg/millisol.
 	 */
 	public double getMaxInputResourceRate(Integer resource) {
@@ -170,6 +176,7 @@ implements Serializable {
 
 	/**
 	 * Checks if resource is an ambient input.
+	 * 
 	 * @param resource the resource to check.
 	 * @return true if ambient resource.
 	 */
@@ -179,6 +186,7 @@ implements Serializable {
 
 	/**
 	 * Gets the set of output resources.
+	 * 
 	 * @return set of resources.
 	 */
 	public Set<Integer> getOutputResources() {
@@ -190,6 +198,7 @@ implements Serializable {
 
 	/**
 	 * Gets the max output resource rate for a given resource.
+	 * 
 	 * @return rate in kg/millisol.
 	 */
 	public double getMaxOutputResourceRate(Integer resource) {
@@ -203,6 +212,7 @@ implements Serializable {
 
 	/**
 	 * Checks if resource is a waste output.
+	 * 
 	 * @param resource the resource to check.
 	 * @return true if waste output.
 	 */
@@ -212,13 +222,13 @@ implements Serializable {
 
 	/**
 	 * Processes resources for a given amount of time.
-	 * @param time (millisols)
+	 * 
+	 * @param time            (millisols)
 	 * @param productionLevel proportion of max process rate (0.0D - 1.0D)
-	 * @param inventory the inventory pool to use for processes.
+	 * @param inventory       the inventory pool to use for processes.
 	 * @throws Exception if error processing resources.
 	 */
-	public void processResources(double time, double productionLevel,
-			Inventory inventory) {
+	public void processResources(double time, double productionLevel, Inventory inventory) {
 
 		if ((productionLevel < 0D) || (productionLevel > 1D) || (time < 0D))
 			throw new IllegalArgumentException();
@@ -231,56 +241,54 @@ implements Serializable {
 
 			// Get resource bottleneck
 			double bottleneck = getInputBottleneck(time, inventory);
-			if (productionLevel > bottleneck) productionLevel = bottleneck;
+			if (productionLevel > bottleneck)
+				productionLevel = bottleneck;
 
 			// logger.info(name + " production level: " + productionLevel);
 
 			// Input resources from inventory.
-			//Iterator<AmountResource> inputI = maxInputResourceRates.keySet().iterator();
-			//while (inputI.hasNext()) {
-			//	AmountResource resource = inputI.next();
+			// Iterator<AmountResource> inputI = maxInputResourceRates.keySet().iterator();
+			// while (inputI.hasNext()) {
+			// AmountResource resource = inputI.next();
 			for (Integer resource : maxInputResourceRates.keySet()) {
 				double maxRate = maxInputResourceRates.get(resource);
 				double resourceRate = maxRate * productionLevel;
 				double resourceAmount = resourceRate * time;
 				double remainingAmount = inventory.getARStored(resource, false);
 
-				// 2015-01-09 Added addDemandTotalRequest()
-				//inventory.addAmountDemandTotalRequest(resource);
-
 				if (resourceAmount > remainingAmount)
 					resourceAmount = remainingAmount;
 
 				try {
 					inventory.retrieveAmountResource(resource, resourceAmount);
-					// 2015-01-09 addAmountDemand
-					//inventory.addAmountDemand(resource,resourceAmount);
+
+				} catch (Exception e) {
 				}
-				catch (Exception e) {}
 				// logger.info(resourceName + " input: " + resourceAmount + "kg.");
 			}
 
 			// Output resources to inventory.
-			//Iterator<AmountResource> outputI = maxOutputResourceRates.keySet().iterator();
-			//while (outputI.hasNext()) {
-			//	AmountResource resource = outputI.next();
-			for (Integer resource : maxOutputResourceRates.keySet()) {	
+			// Iterator<AmountResource> outputI =
+			// maxOutputResourceRates.keySet().iterator();
+			// while (outputI.hasNext()) {
+			// AmountResource resource = outputI.next();
+			for (Integer resource : maxOutputResourceRates.keySet()) {
 				double maxRate = maxOutputResourceRates.get(resource);
 				double resourceRate = maxRate * productionLevel;
 				double resourceAmount = resourceRate * time;
-				double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource,
-						false, false);
-				if (resourceAmount > remainingCapacity) resourceAmount = remainingCapacity;
+				double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource, false, false);
+				if (resourceAmount > remainingCapacity)
+					resourceAmount = remainingCapacity;
 				try {
 					inventory.storeAmountResource(resource, resourceAmount, false);
-					 // 2015-01-15 Add addSupplyAmount()
-		            inventory.addAmountSupplyAmount(resource, resourceAmount);
+
+					inventory.addAmountSupplyAmount(resource, resourceAmount);
+				} catch (Exception e) {
 				}
-				catch (Exception e) {}
 				// logger.info(resourceName + " output: " + resourceAmount + "kg.");
 			}
-		}
-		else productionLevel = 0D;
+		} else
+			productionLevel = 0D;
 
 		// Set the current production level.
 		currentProductionLevel = productionLevel;
@@ -288,7 +296,8 @@ implements Serializable {
 
 	/**
 	 * Finds the bottleneck of input resources from inventory pool.
-	 * @param time (millisols)
+	 * 
+	 * @param time      (millisols)
 	 * @param inventory the inventory pool the process uses.
 	 * @return bottleneck (0.0D - 1.0D)
 	 * @throws Exception if error getting input bottleneck.
@@ -296,25 +305,27 @@ implements Serializable {
 	private double getInputBottleneck(double time, Inventory inventory) {
 
 		// Check for illegal argument.
-		if (time < 0D) throw new IllegalArgumentException("time must be > 0D");
+		if (time < 0D)
+			throw new IllegalArgumentException("time must be > 0D");
 
 		double bottleneck = 1D;
 
 		// Convert time from millisols to seconds.
 		// double timeSec = MarsClock.convertMillisolsToSeconds(time);
 
-		//Iterator<AmountResource> inputI = maxInputResourceRates.keySet().iterator();
-		//while (inputI.hasNext()) {
-		//	AmountResource resource = inputI.next();
-			//System.out.println(resource.getName());
-		for (Integer resource : maxInputResourceRates.keySet()) {	
+		// Iterator<AmountResource> inputI = maxInputResourceRates.keySet().iterator();
+		// while (inputI.hasNext()) {
+		// AmountResource resource = inputI.next();
+		// System.out.println(resource.getName());
+		for (Integer resource : maxInputResourceRates.keySet()) {
 			double maxRate = maxInputResourceRates.get(resource);
 			double desiredResourceAmount = maxRate * time;
 			double inventoryResourceAmount = inventory.getAmountResourceStored(resource, false);
 			double proportionAvailable = 1D;
 			if (desiredResourceAmount > 0D)
 				proportionAvailable = inventoryResourceAmount / desiredResourceAmount;
-			if (bottleneck > proportionAvailable) bottleneck = proportionAvailable;
+			if (bottleneck > proportionAvailable)
+				bottleneck = proportionAvailable;
 		}
 
 		return bottleneck;
@@ -322,6 +333,7 @@ implements Serializable {
 
 	/**
 	 * Gets the string value for this object.
+	 * 
 	 * @return string
 	 */
 	public String toString() {
@@ -330,6 +342,7 @@ implements Serializable {
 
 	/**
 	 * Gets the amount of power required to run the process.
+	 * 
 	 * @return power (kW).
 	 */
 	public double getPowerRequired() {
@@ -341,13 +354,13 @@ implements Serializable {
 	 */
 	public void destroy() {
 		name = null;
-		//maxInputResourceRates.clear();
+		// maxInputResourceRates.clear();
 		maxInputResourceRates = null;
-		//maxAmbientInputResourceRates.clear();
+		// maxAmbientInputResourceRates.clear();
 		maxAmbientInputResourceRates = null;
-		//maxOutputResourceRates.clear();
+		// maxOutputResourceRates.clear();
 		maxOutputResourceRates = null;
-		//maxWasteOutputResourceRates.clear();
+		// maxWasteOutputResourceRates.clear();
 		maxWasteOutputResourceRates = null;
 	}
 }

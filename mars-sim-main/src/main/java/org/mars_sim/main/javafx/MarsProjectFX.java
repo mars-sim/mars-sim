@@ -309,8 +309,12 @@ public class MarsProjectFX extends Application {
 //        System.out.println(minor);
 //        System.out.println(update);
 //        System.out.println(build);
-
-		if (majorNum > 8) {
+		if (majorNum == 8) {
+			good2Go = false;
+			exitWithError("Note: no longer compatible with Java 8 and below. It requires Java 9 or 10 for running mars-sim. Terminated.");			
+		}
+		
+		else if (majorNum == 9 || majorNum == 10) {
 			// see
 			// https://docs.oracle.com/javase/9/migrate/toc.htm#JSMIG-GUID-3A71ECEF-5FC5-46FE-9BA9-88CBFCE828CB
 			// In Java 9, the format of the new version-string is:
@@ -329,7 +333,7 @@ public class MarsProjectFX extends Application {
 			// requires Java 8 (8u77 or above). Terminated.");
 
 			good2Go = true;
-			logger.log(Level.INFO, "Note: it is still experimental in running mars-sim under Java 9/10/11.");
+			//logger.log(Level.INFO, "Note: it is still experimental in running mars-sim under Java 9/10/11.");
 		}
 
 		// if (!vendor.startsWith("Oracle") || // TODO: find out if other vendor's VM
@@ -339,20 +343,19 @@ public class MarsProjectFX extends Application {
 			// Terminating...");
 
 			good2Go = false;
-			exitWithError(
-					"Note: mars-sim is incompatible with Java 7 and below. It requires Java 8 (8u77 or above). Terminated.");
+			exitWithError("Note: no longer compatible with Java 7 and below. It requires Java 9 or above for running mars-sim. Terminated.");
 		}
 
-		else if ("8".equals(minor) && Double.parseDouble(build) < 77.0) {
-			// logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77.
-			// Terminating...");
-			good2Go = false;
-			exitWithError("Note: mars-sim requires at least Java 8u77. Terminated.");
-		}
-
-		else {
-			good2Go = true;
-		}
+//		if ("8".equals(minor) && Double.parseDouble(build) < 77.0) {
+//			// logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77.
+//			// Terminating...");
+//			good2Go = false;
+//			exitWithError("Note: mars-sim requires at least Java 8u77. Terminated.");
+//		}
+//
+//		else {
+//			good2Go = true;
+//		}
 
 		if (good2Go) {
 

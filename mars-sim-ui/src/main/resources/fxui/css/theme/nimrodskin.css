@@ -6,18 +6,6 @@
  * @author Lars Næsbye Christensen
  */
 
-/*
-@font-face {
-	-fx-font-family: "Noto", Sans;
-	src: url("../fonts/notosans/NotoSans-Regular.ttf");
-}
-
-@font-face {
-	-fx-font-family: "Jura";
-	src: url("../fonts/jura/Jura-Regular.ttf");
-}
-*/
-
 .root {
 	-fx-base: rgb(50, 50, 50);
 	-fx-background: rgb(50, 50, 50);
@@ -25,48 +13,6 @@
 	-fx-accent: darkgoldenrod;
 	-fx-font-family: "Serif";
 }
-
-
-.menu-bar,
-.menu-bar:focused,
-.menu-bar:selected:focused {
-	-fx-font-size: 10pt;
-	-fx-font-weight: normal;
-	-fx-background-color:
-	 	linear-gradient(from 0% 93% to 0% 100%, #E5AB00 0%, #EFB500 100%),
-        #E5AB00,
-        #F9BF00,
-        radial-gradient(center 50% 50%, radius 100%, #F9BF00, #EFB500);
-    -fx-text-fill: white;
-	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
-}
-
-.menu-item,
-.menu-item:focused,
-.menu-item:selected:focused {
-	-fx-font-size: 10pt;
-	-fx-font-weight: normal;
-	-fx-background-color:
-	 	linear-gradient(from 0% 93% to 0% 100%, #F9BF00 0%, #E5AB00 100%),
-        #F9BF00,
-        #EFB500,
-        radial-gradient(center 50% 50%, radius 100%, #9EFB500, #E5AB00);
-    -fx-text-fill: white;
-}
-
-.menu .label {
-    -fx-text-fill: white;
-	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
-}
-
-.context-menu {
-    -fx-background-color: #E5AB00;
-}
-
-.tab {
-	-fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
-}
-
 
 .table-view {
 	-fx-table-cell-border-color:derive(-fx-base,+10%);
@@ -82,7 +28,6 @@
 .separator {
 	-fx-text-fill: -fx-accent;
 }
-
 
 .button-broadcast{
     -fx-background-color:
@@ -331,7 +276,7 @@
 	-fx-background-color: black;
 	-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));
     -fx-background-radius: 10px;
-	-fx-text-fill: #f8c202;
+	-fx-text-fill: white;
 	-fx-border-color: transparent;
 	-fx-border-radius: 10px;
 	-fx-border-width: 3px;
@@ -348,7 +293,7 @@
 .jfx-check-box > .box {
     -jfx-checked-color: gray;
     -jfx-unchecked-color: gray;
-    -fx-text-fill: #f8c202;
+    -fx-text-fill: white; /* #f8c202;*/
 	-jfx-background-color: transparent; 
 }
 
@@ -356,7 +301,7 @@
 .jfx-check-box {
     -jfx-checked-color: gray;
     -jfx-unchecked-color: gray;
-    -fx-text-fill: #f8c202;
+    -fx-text-fill: white; /* #f8c202;*/
 	-fx-background-color: transparent;  
     -fx-font-weight: BOLD;
     -fx-font-size: 12;

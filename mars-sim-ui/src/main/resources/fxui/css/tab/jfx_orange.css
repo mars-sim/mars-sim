@@ -33,11 +33,6 @@
     -fx-padding: 5 5 5 5;
 }
 
-.jfx-popup-container{
-	-fx-background-color: WHITE;
-	-fx-background-radius: 10px;
-	-fx-padding: 3;
-}
 
 .jfx-tab-pane .headers-region > .tab:selected > .tab-container > .tab-label  {
     -fx-text-fill: #654b00;
@@ -50,28 +45,4 @@
 .jfx-tab-pane .tab-selected-line {
     -fx-stroke: #F9BF00;
     -fx-stroke-width: 1pt;
-}
-
-.jfx-tab-pane {
-/*	-fx-padding: 0px 5px -2px 5px;
-	-fx-background-insets: 0 -20 0 0;
-	-fx-border-color:red;
-	-fx-background-color: red;   */
-	-fx-text-fill: #654b00;
-}
-
-.jfx-tab-pane:selected {
-/* -fx-border-color:red; */
-	-fx-text-fill: #333333; /* 333333 is grey */
-}
-
-.jfx-tool-bar {
-    -fx-base: #654b00;
-    -fx-font-size: 11pt;
-    -fx-background-color:
-        linear-gradient(to bottom, derive(-fx-base,-30%), derive(-fx-base,-60%)),
-        linear-gradient(to bottom, -light-orange 2%, -dark-orange 98%);
-    -fx-background-insets: 0, 0 0 1 0;
-    -fx-padding: .05em 0.416667em .05em 0.416667em;
-    -fx-effect: dropshadow(two-pass-box,-dark-orange,5,.2,0,0);
 }

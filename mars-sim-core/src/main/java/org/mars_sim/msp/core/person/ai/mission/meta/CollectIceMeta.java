@@ -28,7 +28,7 @@ public class CollectIceMeta implements MetaMission {
     private static final String NAME = Msg.getString(
             "Mission.description.collectIce"); //$NON-NLS-1$
 
-    private static final int VALUE = 200;
+    private static final int VALUE = 500;
     
     @Override
     public String getName() {
@@ -90,7 +90,7 @@ public class CollectIceMeta implements MetaMission {
             }	        
 
             // Check if starting settlement has minimum amount of methane fuel.
-            else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneAR, false) <
+            else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneID, false) <
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
                 return 0;
             }

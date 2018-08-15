@@ -29,10 +29,12 @@ public class FoodUtil {
 	/**
 	 * Private constructor for utility class.
 	 */
-	private FoodUtil() {}
+	private FoodUtil() {
+	}
 
 	/**
 	 * Gets a list of all food in the simulation.
+	 * 
 	 * @return list of food
 	 */
 	public static List<Food> getFoodList() {
@@ -63,17 +65,17 @@ public class FoodUtil {
 		}
 		FoodType category = null;
 
-		if (resource instanceof AmountResource
-				&& ((AmountResource) resource).isEdible())
+		if (resource instanceof AmountResource && ((AmountResource) resource).isEdible())
 			category = FoodType.AMOUNT_RESOURCE;
-		//else if (resource instanceof ItemResource)
-		//	category = FoodType.ITEM_RESOURCE;
+		// else if (resource instanceof ItemResource)
+		// category = FoodType.ITEM_RESOURCE;
 		Food food = new Food(resource.getName(), resource, category);
 		return food;
 	}
-	
+
 	/**
 	 * Gets a food object for a given resource.
+	 * 
 	 * @param resource the resource.
 	 * @return food for the resource.
 	 */
@@ -83,14 +85,14 @@ public class FoodUtil {
 		}
 		FoodType category = null;
 
-			if (resource < Task.FIRST_ITEM_RESOURCE) {
-				category = FoodType.AMOUNT_RESOURCE;
-				AmountResource ar = ResourceUtil.findAmountResource(resource);
-				if (ar.isEdible()) {
-					Food food = new Food(ar.getName(), ar, category);
-					return food;
-				}
+		if (resource < Task.FIRST_ITEM_RESOURCE) {
+			category = FoodType.AMOUNT_RESOURCE;
+			AmountResource ar = ResourceUtil.findAmountResource(resource);
+			if (ar.isEdible()) {
+				Food food = new Food(ar.getName(), ar, category);
+				return food;
 			}
+		}
 //			else if (resource >= Task.FIRST_ITEM_RESOURCE) {
 //				category = FoodType.ITEM_RESOURCE;
 //				Part p = ItemResourceUtil.findItemResource(resource);
@@ -99,49 +101,50 @@ public class FoodUtil {
 //				}
 //			}
 
-			return null;
-		
-	}
-
-	/**
-	 * Gets a food object for a given equipment class.
-	 * @param equipmentClass the equipment class.
-	 * @return food for the resource class or null if none.
-
-	public static Food getEquipmentFood(Class<? extends Unit> equipmentClass) {
-		if (equipmentClass == null) {
-			throw new IllegalArgumentException("goodClass cannot be null");
-		}
-		Food result = null;
-
-		Iterator<Food> i = getFoodList().iterator();
-		while (i.hasNext()) {
-			Food food = i.next();
-			if (food.getClassType() == equipmentClass)
-				result = new Food(food.getName(), equipmentClass, FoodType.EQUIPMENT);
-		}
-
-		return result;
-	}
-*/
-	/**
-	 * Gets a food object for the given vehicle type.
-	 * @param vehicleType the vehicle type string.
-	 * @return food for the vehicle type.
-
-	public static Food getVehicleFood(String vehicleType) {
-		if ((vehicleType == null) || vehicleType.trim().length() == 0) {
-			throw new IllegalArgumentException("vehicleType cannot be blank or null.");
-		}
-		Class<?> vehicleClass = Rover.class;
-		if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType))
-			vehicleClass = LightUtilityVehicle.class;
-		return new Food(vehicleType, vehicleClass, FoodType.VEHICLE);
+		return null;
 
 	}
- */
+
+//	/**
+//	 * Gets a food object for a given equipment class.
+//	 * @param equipmentClass the equipment class.
+//	 * @return food for the resource class or null if none.
+//	 */
+//	public static Food getEquipmentFood(Class<? extends Unit> equipmentClass) {
+//		if (equipmentClass == null) {
+//			throw new IllegalArgumentException("goodClass cannot be null");
+//		}
+//		Food result = null;
+//
+//		Iterator<Food> i = getFoodList().iterator();
+//		while (i.hasNext()) {
+//			Food food = i.next();
+//			if (food.getClassType() == equipmentClass)
+//				result = new Food(food.getName(), equipmentClass, FoodType.EQUIPMENT);
+//		}
+//
+//		return result;
+//	}
+
+//	/**
+//	 * Gets a food object for the given vehicle type.
+//	 * @param vehicleType the vehicle type string.
+//	 * @return food for the vehicle type.
+//	 */
+//	public static Food getVehicleFood(String vehicleType) {
+//		if ((vehicleType == null) || vehicleType.trim().length() == 0) {
+//			throw new IllegalArgumentException("vehicleType cannot be blank or null.");
+//		}
+//		Class<?> vehicleClass = Rover.class;
+//		if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType))
+//			vehicleClass = LightUtilityVehicle.class;
+//		return new Food(vehicleType, vehicleClass, FoodType.VEHICLE);
+//
+//	}
+
 	/**
 	 * Checks if a food is valid in the simulation.
+	 * 
 	 * @param food the food to check.
 	 * @return true if food is valid.
 	 */
@@ -160,13 +163,13 @@ public class FoodUtil {
 		populateAmountResources();
 
 		// Populate item resources.
-		//populateItemResources();
+		// populateItemResources();
 
 		// Populate equipment.
-		//populateEquipment();
+		// populateEquipment();
 
 		// Populate vehicles.
-		//populateVehicles();
+		// populateVehicles();
 
 		// Sort food by name.
 		Collections.sort(foodList);
@@ -179,8 +182,7 @@ public class FoodUtil {
 		boolean edible = false;
 		AmountResource ar = null;
 		Iterator<AmountResource> i = ResourceUtil.getInstance().getAmountResources().iterator();
-		while (i.hasNext())
-		{
+		while (i.hasNext()) {
 			ar = i.next();
 			edible = ar.isEdible();
 			if (edible == true)
@@ -192,42 +194,44 @@ public class FoodUtil {
 	 * Populates the food list with all item resources.
 	 */
 	private static void populateItemResources() {
-		//Iterator<ItemResource> i = ItemResource.getItemResources().iterator();
+		// Iterator<ItemResource> i = ItemResource.getItemResources().iterator();
 		Iterator<Part> i = ItemResourceUtil.getItemResources().iterator();
-		while (i.hasNext()) foodList.add(getResourceFood(i.next()));
+		while (i.hasNext())
+			foodList.add(getResourceFood(i.next()));
 	}
 
-	/**
-	 * Populates the food list with all equipment.
+//	/**
+//	 * Populates the food list with all equipment.
+//   */
+//	private static void populateEquipment() {
+//		List<String> equipmentNames = new ArrayList<String>(EquipmentFactory.getEquipmentNames());
+//		Collections.sort(equipmentNames);
+//		Iterator<String> i = equipmentNames.iterator();
+//		while (i.hasNext()) {
+//			String name = i.next();
+//			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(name);
+//			foodList.add(new Food(name, equipmentClass, FoodType.EQUIPMENT));
+//		}
+//	}
 
-	private static void populateEquipment() {
-		List<String> equipmentNames = new ArrayList<String>(EquipmentFactory.getEquipmentNames());
-		Collections.sort(equipmentNames);
-		Iterator<String> i = equipmentNames.iterator();
-		while (i.hasNext()) {
-			String name = i.next();
-			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(name);
-			foodList.add(new Food(name, equipmentClass, FoodType.EQUIPMENT));
-		}
-	}
-*/
-	/**
-	 * Populates the food list with all vehicles.
+//	/**
+//	 * Populates the food list with all vehicles.
+//	 */
+//	private static void populateVehicles() {
+//		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+//
+//		try {
+//			Iterator<String> i = config.getVehicleTypes().iterator();
+//			while (i.hasNext()) foodList.add(getVehicleFood(i.next()));
+//		}
+//		catch (Exception e) {
+//			e.printStackTrace(System.err);
+//		}
+//	}
 
-	private static void populateVehicles() {
-		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-
-		try {
-			Iterator<String> i = config.getVehicleTypes().iterator();
-			while (i.hasNext()) foodList.add(getVehicleFood(i.next()));
-		}
-		catch (Exception e) {
-			e.printStackTrace(System.err);
-		}
-	}
-*/
 	/**
 	 * Gets the mass per item for a food.
+	 * 
 	 * @param food the food to check.
 	 * @return mass (kg) per item (or 1kg for amount resources).
 	 * @throws Exception if error getting mass per item.
@@ -235,16 +239,17 @@ public class FoodUtil {
 	public static double getFoodMassPerItem(Food food) {
 		double result = 0D;
 
-		if (FoodType.AMOUNT_RESOURCE == food.getCategory()) result = 1D;
+		if (FoodType.AMOUNT_RESOURCE == food.getCategory())
+			result = 1D;
 
-		//else if (FoodType.ITEM_RESOURCE == food.getCategory())
-		//	result = ((ItemResource) food.getObject()).getMassPerItem();
-		//else if (FoodType.EQUIPMENT == food.getCategory())
-		//	result = EquipmentFactory.getEquipmentMass(food.getName());
-		//else if (FoodType.VEHICLE == food.getCategory()) {
-		//	VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-			//result = config.getEmptyMass(food.getName());
-		//}
+		// else if (FoodType.ITEM_RESOURCE == food.getCategory())
+		// result = ((ItemResource) food.getObject()).getMassPerItem();
+		// else if (FoodType.EQUIPMENT == food.getCategory())
+		// result = EquipmentFactory.getEquipmentMass(food.getName());
+		// else if (FoodType.VEHICLE == food.getCategory()) {
+		// VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+		// result = config.getEmptyMass(food.getName());
+		// }
 
 		return result;
 	}

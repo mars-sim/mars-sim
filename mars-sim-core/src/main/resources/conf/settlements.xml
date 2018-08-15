@@ -422,7 +422,7 @@
 
 			<!-- Resources -->
 			<resource type="food" amount="6000.0" />
-			<resource type="water" amount="8000.0" />	
+			<resource type="water" amount="10000.0" />	
 						
 			<resource type="black water" amount="25.0" />			
 			<resource type="grey water" amount="25.0" />			
@@ -729,7 +729,7 @@
 
 			<!-- Resources -->
 			<resource type="food" amount="8000.0" />
-			<resource type="water" amount="10000.0" />	
+			<resource type="water" amount="20000.0" />	
 						
 			<resource type="black water" amount="25.0" />			
 			<resource type="grey water" amount="25.0" />			
@@ -961,7 +961,7 @@
 			<equipment type="Specimen Box" number="10" />
 
 			<resource type="oxygen" amount="4000.0" />
-			<resource type="water" amount="4000.0" />
+			<resource type="water" amount="8000.0" />
 			<resource type="food" amount="4000.0" />
 <!--	
 			<resource type="nitrogen" amount="4000.0" />
@@ -1123,7 +1123,7 @@
 			<equipment type="Specimen Box" number="10" />
 
 			<resource type="oxygen" amount="4000.0" />
-			<resource type="water" amount="4000.0" />
+			<resource type="water" amount="8000.0" />
 			<resource type="food" amount="4000.0" />
 <!--	
 			<resource type="nitrogen" amount="4000.0" />	
