@@ -87,7 +87,7 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 
 		// Initialize data members
 		unitButtons = new ArrayList<UnitButton>();
-		this.mainScene = mainScene;
+		this.mainScene = scene;
 
 		// Set name
 		setName("Unit Toolbar");

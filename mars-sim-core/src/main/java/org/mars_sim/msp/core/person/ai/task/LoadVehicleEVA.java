@@ -930,132 +930,132 @@ implements Serializable {
     	 return LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle,  resources,
     	    		 equipment, vehicleCrewNum, tripTime);
     }
-    /*
-        // Check input parameters.
-        if (settlement == null) {
-            throw new IllegalArgumentException("settlement is null");
-        }
+    
+//        // Check input parameters.
+//        if (settlement == null) {
+//            throw new IllegalArgumentException("settlement is null");
+//        }
+//
+//        boolean enoughSupplies = true;
+//        Inventory inv = settlement.getSettlementInventory();
+//        Inventory vInv = vehicle.getSettlementInventory();
+//
+//        boolean roverInSettlement = false;
+//        if (inv.containsUnit(vehicle)) {
+//            roverInSettlement = true;
+//            inv.retrieveUnit(vehicle);
+//        }
+//
+//        // Check if there are enough resources at the settlement.
+//        Iterator<Resource> iR = resources.keySet().iterator();
+//        while (iR.hasNext()) {
+//            Resource resource = iR.next();
+//            if (resource instanceof AmountResource) {
+//                double amountNeeded = (Double) resources.get(resource);
+//                double remainingSettlementAmount = getRemainingSettlementAmount(settlement, vehicleCrewNum,
+//                        (AmountResource) resource, tripTime);
+//                double amountLoaded = vInv.getAmountResourceStored((AmountResource) resource, false);
+//                double totalNeeded = amountNeeded + remainingSettlementAmount - amountLoaded;
+//                if (inv.getAmountResourceStored((AmountResource) resource, false) < totalNeeded) {
+//                    double stored = inv.getAmountResourceStored((AmountResource) resource, false);
+//                    inv.addAmountDemandTotalRequest((AmountResource) resource);
+//                    if (logger.isLoggable(Level.INFO)) {
+//                        logger.info(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+//                    }
+//                    enoughSupplies = false;
+//                }
+//            }
+//            else if (resource instanceof ItemResource) {
+//                int numNeeded = (Integer) resources.get(resource);
+//                int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum,
+//                        (ItemResource) resource);
+//                int numLoaded = vInv.getItemResourceNum((ItemResource) resource);
+//                int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
+//                if (inv.getItemResourceNum((ItemResource) resource) < totalNeeded) {
+//                    int stored = inv.getItemResourceNum((ItemResource) resource);
+//                    if (logger.isLoggable(Level.INFO)) {
+//                        logger.info(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+//                    }
+//                    enoughSupplies = false;
+//                }
+//            }
+//            else {
+//                throw new IllegalStateException("Unknown resource type: " + resource);
+//            }
+//        }
+//
+//        // Check if there is enough equipment at the settlement.
+//        Iterator<Class> iE = equipment.keySet().iterator();
+//        while (iE.hasNext()) {
+//            Class equipmentType = iE.next();
+//            int numNeeded = (Integer) equipment.get(equipmentType);
+//            int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
+//            int numLoaded = vInv.findNumUnitsOfClass(equipmentType);
+//            int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
+//            if (inv.findNumEmptyUnitsOfClass(equipmentType, false) < totalNeeded) {
+//                int stored = inv.findNumEmptyUnitsOfClass(equipmentType, false);
+//                if (logger.isLoggable(Level.INFO)) {
+//                    logger.info(equipmentType + " needed: " + totalNeeded + " stored: " + stored);
+//                }
+//                enoughSupplies = false;
+//            }
+//        }
+//
+//        if (roverInSettlement) {
+//            inv.storeUnit(vehicle);
+//        }
+//
+//        return enoughSupplies;
+//    }
 
-        boolean enoughSupplies = true;
-        Inventory inv = settlement.getSettlementInventory();
-        Inventory vInv = vehicle.getSettlementInventory();
+//    /**
+//     * Gets the amount of an amount resource that should remain at the settlement.
+//     * @param settlement the settlement
+//     * @param vehicleCrewNum the number of crew leaving on the vehicle.
+//     * @param resource the amount resource
+//     * @param double tripTime the estimated trip time (millisols).
+//     * @return remaining amount (kg)
+//     */
+//    private static double getRemainingSettlementAmount(Settlement settlement, int vehicleCrewNum,
+//    		AmountResource resource, double tripTime) {
+//
+//    	return LoadVehicleGarage.getRemainingSettlementAmount(settlement, vehicleCrewNum,
+//        		resource, tripTime);
+//    }
 
-        boolean roverInSettlement = false;
-        if (inv.containsUnit(vehicle)) {
-            roverInSettlement = true;
-            inv.retrieveUnit(vehicle);
-        }
-
-        // Check if there are enough resources at the settlement.
-        Iterator<Resource> iR = resources.keySet().iterator();
-        while (iR.hasNext()) {
-            Resource resource = iR.next();
-            if (resource instanceof AmountResource) {
-                double amountNeeded = (Double) resources.get(resource);
-                double remainingSettlementAmount = getRemainingSettlementAmount(settlement, vehicleCrewNum,
-                        (AmountResource) resource, tripTime);
-                double amountLoaded = vInv.getAmountResourceStored((AmountResource) resource, false);
-                double totalNeeded = amountNeeded + remainingSettlementAmount - amountLoaded;
-                if (inv.getAmountResourceStored((AmountResource) resource, false) < totalNeeded) {
-                    double stored = inv.getAmountResourceStored((AmountResource) resource, false);
-                    inv.addAmountDemandTotalRequest((AmountResource) resource);
-                    if (logger.isLoggable(Level.INFO)) {
-                        logger.info(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
-                    }
-                    enoughSupplies = false;
-                }
-            }
-            else if (resource instanceof ItemResource) {
-                int numNeeded = (Integer) resources.get(resource);
-                int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum,
-                        (ItemResource) resource);
-                int numLoaded = vInv.getItemResourceNum((ItemResource) resource);
-                int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
-                if (inv.getItemResourceNum((ItemResource) resource) < totalNeeded) {
-                    int stored = inv.getItemResourceNum((ItemResource) resource);
-                    if (logger.isLoggable(Level.INFO)) {
-                        logger.info(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
-                    }
-                    enoughSupplies = false;
-                }
-            }
-            else {
-                throw new IllegalStateException("Unknown resource type: " + resource);
-            }
-        }
-
-        // Check if there is enough equipment at the settlement.
-        Iterator<Class> iE = equipment.keySet().iterator();
-        while (iE.hasNext()) {
-            Class equipmentType = iE.next();
-            int numNeeded = (Integer) equipment.get(equipmentType);
-            int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
-            int numLoaded = vInv.findNumUnitsOfClass(equipmentType);
-            int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
-            if (inv.findNumEmptyUnitsOfClass(equipmentType, false) < totalNeeded) {
-                int stored = inv.findNumEmptyUnitsOfClass(equipmentType, false);
-                if (logger.isLoggable(Level.INFO)) {
-                    logger.info(equipmentType + " needed: " + totalNeeded + " stored: " + stored);
-                }
-                enoughSupplies = false;
-            }
-        }
-
-        if (roverInSettlement) {
-            inv.storeUnit(vehicle);
-        }
-
-        return enoughSupplies;
-    }
-*/
-    /**
-     * Gets the amount of an amount resource that should remain at the settlement.
-     * @param settlement the settlement
-     * @param vehicleCrewNum the number of crew leaving on the vehicle.
-     * @param resource the amount resource
-     * @param double tripTime the estimated trip time (millisols).
-     * @return remaining amount (kg)
-
-    private static double getRemainingSettlementAmount(Settlement settlement, int vehicleCrewNum,
-    		AmountResource resource, double tripTime) {
-
-    	return LoadVehicleGarage.getRemainingSettlementAmount(settlement, vehicleCrewNum,
-        		resource, tripTime);
-    }
-     */
-    /**
-     * Gets the number of an item resource that should remain at the settlement.
-     * @param settlement the settlement
-     * @param vehicleCrewNum the number of crew leaving on the vehicle.
-     * @param resource the item resource
-     * @return remaining number
-     
-    private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum,
-            ItemResource resource) {
-        // No item resources required at settlement at this time.
-        return 0;
-    }
-    */
-    /**
-     * Gets the number of an equipment type that should remain at the settlement.
-     * @param settlement the settlement
-     * @param vehicleCrewNum the number of crew leaving on the vehicle.
-     * @param equipmentType the equipment type class.
-     * @return remaining number.
-     */
-    private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum,
-            Class equipmentType) {
-        int remainingPeopleNum = settlement.getIndoorPeopleCount() - vehicleCrewNum;
-        // Leave one EVA suit for every four remaining people at settlement (min 1).
-        if (equipmentType == EVASuit.class) {
-            int minSuits = remainingPeopleNum / 4;
-            if (minSuits == 0) {
-                minSuits = 1;
-            }
-            return minSuits;
-        }
-        else return 0;
-    }
+//    /**
+//     * Gets the number of an item resource that should remain at the settlement.
+//     * @param settlement the settlement
+//     * @param vehicleCrewNum the number of crew leaving on the vehicle.
+//     * @param resource the item resource
+//     * @return remaining number
+//     */
+//    private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum,
+//            ItemResource resource) {
+//        // No item resources required at settlement at this time.
+//        return 0;
+//    }
+  
+//    /**
+//     * Gets the number of an equipment type that should remain at the settlement.
+//     * @param settlement the settlement
+//     * @param vehicleCrewNum the number of crew leaving on the vehicle.
+//     * @param equipmentType the equipment type class.
+//     * @return remaining number.
+//     */
+//    private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum,
+//            Class<? extends Equipment> equipmentType) {
+//        int remainingPeopleNum = settlement.getIndoorPeopleCount() - vehicleCrewNum;
+//        // Leave one EVA suit for every four remaining people at settlement (min 1).
+//        if (equipmentType == EVASuit.class) {
+//            int minSuits = remainingPeopleNum / 4;
+//            if (minSuits == 0) {
+//                minSuits = 1;
+//            }
+//            return minSuits;
+//        }
+//        else return 0;
+//    }
 
     /**
      * Checks if a vehicle has enough storage capacity for the supplies needed on the trip.
@@ -1066,7 +1066,7 @@ implements Serializable {
      * @return true if vehicle can carry supplies.
      */
     public static boolean enoughCapacityForSupplies(Map<Integer, Number> resources,
-            Map<Class, Integer> equipment, Vehicle vehicle, Settlement settlement) {
+            Map<Class<? extends Equipment>, Integer> equipment, Vehicle vehicle, Settlement settlement) {
 
         boolean sufficientCapacity = true;
 
@@ -1075,9 +1075,9 @@ implements Serializable {
 
         try {
             // Add equipment clones.
-            Iterator<Class> i = equipment.keySet().iterator();
+            Iterator<Class<? extends Equipment>> i = equipment.keySet().iterator();
             while (i.hasNext()) {
-                Class equipmentType = i.next();
+                Class<? extends Equipment> equipmentType = i.next();
                 int num = (Integer) equipment.get(equipmentType);
                 Coordinates defaultLoc = new Coordinates(0D, 0D);
                 for (int x = 0; x < num; x++) {

@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -62,13 +63,13 @@ public final class TradeUtil {
 	private static final int MIN_REPAIR_PARTS = 20;
 
 	/** Performance cache for equipment goods. */
-	private final static Map <Class, Equipment> equipmentGoodCache = new HashMap<Class, Equipment>(5);
+	private final static Map <Class<? extends Equipment>, Equipment> equipmentGoodCache = new HashMap<Class<? extends Equipment>, Equipment>(5);
 
 	/** Cache for the best trade settlement. */
 	public static Settlement bestTradeSettlementCache = null;
 
 	/** Cache for container types. */
-	private final static Map <Class, Equipment> containerTypeCache = new HashMap<Class, Equipment>(3);
+	private final static Map <Class<? extends Equipment>, Equipment> containerTypeCache = new HashMap<Class<? extends Equipment>, Equipment>(3);
 
 	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
 	private static AmountResource waterAR = ResourceUtil.waterAR;

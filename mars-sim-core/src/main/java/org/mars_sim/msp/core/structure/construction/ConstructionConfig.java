@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.structure.construction;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -17,6 +18,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -233,7 +235,7 @@ public class ConstructionConfig implements Serializable {
                 for (Element vehicleElement : vehicleList) {
                     String vehicleType = vehicleElement.getAttributeValue(TYPE);
                         
-                    Class vehicleClass = null;
+                    Class<? extends Vehicle> vehicleClass = null;
                     if (vehicleType.toLowerCase().indexOf("rover") > -1) vehicleClass = Rover.class;
                     else if (vehicleType.equalsIgnoreCase("light utility vehicle")) 
                         vehicleClass = LightUtilityVehicle.class;

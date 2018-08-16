@@ -21,7 +21,7 @@ implements Serializable, Comparable<Good> {
 	private static final long serialVersionUID = 1L;
 	// Data members
 	private String name;
-	private Class classType;
+	private Class<?> classType;
 	private Object object;
 	private GoodType category;
 
@@ -51,7 +51,7 @@ implements Serializable, Comparable<Good> {
 	 * @param classType the good's class.
 	 * @param category {@link GoodType} the good's category.
 	 */
-	Good(String name, Class classType, GoodType category) {
+	Good(String name, Class<?> classType, GoodType category) {
 		if (name != null) this.name = name.trim().toLowerCase();
 		else throw new IllegalArgumentException("name cannot be null.");
 
@@ -90,7 +90,7 @@ implements Serializable, Comparable<Good> {
 	 * Gets the good's class.
 	 * @return class
 	 */
-	public Class<? extends Equipment> getClassType() {
+	public Class<?> getClassType() {
 		return classType;
 	}
 

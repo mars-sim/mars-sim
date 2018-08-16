@@ -325,7 +325,7 @@ public class TableSorter extends AbstractTableModel
         reallocateIndexes();
 
         // Only do sorting if cells contians Comparable
-        Class cellType = sourceModel.getColumnClass(sortedColumn);
+        Class<?> cellType = sourceModel.getColumnClass(sortedColumn);
         if (Comparable.class.isAssignableFrom(cellType)) {
 
             // Different sorting methods

@@ -230,7 +230,9 @@ public class ResourceProcess implements Serializable {
 	 */
 	public void processResources(double time, double productionLevel, Inventory inventory) {
 
-		if ((productionLevel < 0D) || (productionLevel > 1D) || (time < 0D))
+		double level = productionLevel;
+		
+		if ((level < 0D) || (level > 1D) || (time < 0D))
 			throw new IllegalArgumentException();
 
 		// logger.info(name + " process");
@@ -241,8 +243,8 @@ public class ResourceProcess implements Serializable {
 
 			// Get resource bottleneck
 			double bottleneck = getInputBottleneck(time, inventory);
-			if (productionLevel > bottleneck)
-				productionLevel = bottleneck;
+			if (level > bottleneck)
+				level = bottleneck;
 
 			// logger.info(name + " production level: " + productionLevel);
 
@@ -252,7 +254,7 @@ public class ResourceProcess implements Serializable {
 			// AmountResource resource = inputI.next();
 			for (Integer resource : maxInputResourceRates.keySet()) {
 				double maxRate = maxInputResourceRates.get(resource);
-				double resourceRate = maxRate * productionLevel;
+				double resourceRate = maxRate * level;
 				double resourceAmount = resourceRate * time;
 				double remainingAmount = inventory.getARStored(resource, false);
 
@@ -274,24 +276,23 @@ public class ResourceProcess implements Serializable {
 			// AmountResource resource = outputI.next();
 			for (Integer resource : maxOutputResourceRates.keySet()) {
 				double maxRate = maxOutputResourceRates.get(resource);
-				double resourceRate = maxRate * productionLevel;
+				double resourceRate = maxRate * level;
 				double resourceAmount = resourceRate * time;
 				double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource, false, false);
 				if (resourceAmount > remainingCapacity)
 					resourceAmount = remainingCapacity;
 				try {
 					inventory.storeAmountResource(resource, resourceAmount, false);
-
 					inventory.addAmountSupplyAmount(resource, resourceAmount);
 				} catch (Exception e) {
 				}
 				// logger.info(resourceName + " output: " + resourceAmount + "kg.");
 			}
 		} else
-			productionLevel = 0D;
+			level = 0D;
 
 		// Set the current production level.
-		currentProductionLevel = productionLevel;
+		currentProductionLevel = level;
 	}
 
 	/**

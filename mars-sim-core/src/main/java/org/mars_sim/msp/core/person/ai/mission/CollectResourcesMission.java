@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -270,7 +271,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @param missionType   the mission class.
 	 * @return the weighted probability
 	 */
-	public static double getNewMissionProbability(Person person, Class<? extends Container> containerType,
+	public static double getNewMissionProbability(Person person, Class<? extends Unit> containerType,
 			int containerNum, int minPeople) {
 		double result = 1;
 
@@ -605,7 +606,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @return number of empty containers.
 	 * @throws MissionException if error determining number.
 	 */
-	protected static int numCollectingContainersAvailable(Settlement settlement, Class containerType) {
+	protected static int numCollectingContainersAvailable(Settlement settlement, Class<? extends Unit> containerType) {
 		return settlement.getInventory().findNumEmptyUnitsOfClass(containerType, false);
 	}
 

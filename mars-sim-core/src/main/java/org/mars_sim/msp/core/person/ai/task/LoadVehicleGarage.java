@@ -1043,29 +1043,29 @@ implements Serializable {
     	return 1;
     }
 
-    /**
-     * Gets the number of an equipment type that should remain at the settlement.
-     * @param settlement the settlement
-     * @param vehicleCrewNum the number of crew leaving on the vehicle.
-     * @param equipmentType the equipment type class.
-     * @return remaining number.
-     * @throws Exception if error getting the remaining number.
-     */
-    private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum,
-            Class equipmentType) {
-    	int remainingPeopleNum = settlement.getIndoorPeopleCount() - vehicleCrewNum;
-    	// Leave one EVA suit for every four remaining people at settlement (min 1).
-    	if (equipmentType == EVASuit.class) {
-    		int minSuits = remainingPeopleNum / 4;
-    		if (minSuits == 0) {
-    		    minSuits = 1;
-    		}
-    		return minSuits;
-    	}
-    	else {
-    	    return 0;
-    	}
-    }
+//    /**
+//     * Gets the number of an equipment type that should remain at the settlement.
+//     * @param settlement the settlement
+//     * @param vehicleCrewNum the number of crew leaving on the vehicle.
+//     * @param equipmentType the equipment type class.
+//     * @return remaining number.
+//     * @throws Exception if error getting the remaining number.
+//     */
+//    private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum,
+//            Class<? extends Equipment> equipmentType) {
+//    	int remainingPeopleNum = settlement.getIndoorPeopleCount() - vehicleCrewNum;
+//    	// Leave one EVA suit for every four remaining people at settlement (min 1).
+//    	if (equipmentType == EVASuit.class) {
+//    		int minSuits = remainingPeopleNum / 4;
+//    		if (minSuits == 0) {
+//    		    minSuits = 1;
+//    		}
+//    		return minSuits;
+//    	}
+//    	else {
+//    	    return 0;
+//    	}
+//    }
 
     /**
      * Checks if a vehicle has enough storage capacity for the supplies needed on the trip.

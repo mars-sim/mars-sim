@@ -19,8 +19,6 @@ public class SelectableTitledPaneDemo extends Application {
 	
 	String[] strs = new String[]{"A", "B", "C", "D"};
 	
-	
-	@SuppressWarnings("restriction")
 	@Override 
 	public void start(Stage stage) {
 	        

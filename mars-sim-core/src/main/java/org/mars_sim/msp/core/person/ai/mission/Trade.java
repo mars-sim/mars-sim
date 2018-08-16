@@ -773,7 +773,7 @@ implements Serializable {
         while (i.hasNext()) {
             Good good = i.next();
             if (good.getCategory().equals(GoodType.EQUIPMENT)) {
-                Class<? extends Equipment> equipmentClass = good.getClassType();
+                Class<?> equipmentClass = good.getClassType();
                 int num = load.get(good);
                 if (result.containsKey(equipmentClass)) {
                     num += (Integer) result.get(equipmentClass);

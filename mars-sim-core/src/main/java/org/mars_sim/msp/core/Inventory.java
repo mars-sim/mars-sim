@@ -1521,7 +1521,7 @@ implements Serializable {
     }
 
     public Collection<Unit> findAllUnitsOfClass(int id) {
-       	Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
+       	Class<?> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
        	return findAllUnitsOfClass(unitClass);
     }
     
@@ -1530,7 +1530,7 @@ implements Serializable {
      * @param unitClass the unit class.
      * @return collection of units or empty collection if none.
      */
-    public Collection<Unit> findAllUnitsOfClass(Class<? extends Unit> unitClass) {
+    public Collection<Unit> findAllUnitsOfClass(Class unitClass) {
         Collection<Unit> result = new ConcurrentLinkedQueue<Unit>();
         if (containsUnitClass(unitClass)) {
             for (Unit unit : containedUnits) {
@@ -1552,7 +1552,7 @@ implements Serializable {
      * @param unitClass the unit class.
      * @return number of units
      */
-    public int findNumUnitsOfClass(Class<? extends Unit> unitClass) {
+    public int findNumUnitsOfClass(Class unitClass) {
         int result = 0;
         if (containsUnitClass(unitClass)) {
             for (Unit unit : containedUnits) {
@@ -1571,7 +1571,7 @@ implements Serializable {
      * @param allowDirty will allow dirty (possibly out of date) results.
      * @return number of empty units.
      */
-    public int findNumEmptyUnitsOfClass(Class<? extends Unit> unitClass, boolean allowDirty) {
+    public int findNumEmptyUnitsOfClass(Class unitClass, boolean allowDirty) {
         int result = 0;
         if (containsUnitClass(unitClass)) {
             for (Unit unit : containedUnits) {

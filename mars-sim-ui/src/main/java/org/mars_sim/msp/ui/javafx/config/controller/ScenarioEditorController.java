@@ -98,7 +98,7 @@ public class ScenarioEditorController implements Initializable {
                                     Stage stage = new Stage();
                                     
                                     try {
-                                        Class appClass = Class.forName(recipe.getFullClassName());
+                                        Class<?> appClass = Class.forName(recipe.getFullClassName());
                                         Object object = appClass.newInstance();
                                         if (object instanceof Application) {
                                             Application app = (Application) object;

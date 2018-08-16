@@ -82,7 +82,7 @@ public enum EquipmentType {
 		return EquipmentType.values()[ordinal];
 	}
 	
-	public static int getEquipmentID(Class<? extends Equipment> equipmentClass) {
+	public static int getEquipmentID(Class<?> equipmentClass) {
 		if (Bag.class.equals(equipmentClass)) return BAG.ordinal();
 		else if (Barrel.class.equals(equipmentClass)) return BARREL.ordinal();
 		else if (BuildingKit.class.equals(equipmentClass)) return BUILDING_KIT.ordinal();

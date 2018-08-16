@@ -142,6 +142,7 @@ public class GoodsManager implements Serializable {
 	private static final double METHANE_AVERAGE_DEMAND = 20;
 	private static final double TISSUE_CULTURE_FACTOR = 100;
 //	private static final double FOOD_FACTOR = .001;
+	private static final double SPEED_TO_DISTANCE = 2D / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
 
 	private double inflation_rate = .8;
 
@@ -2162,7 +2163,7 @@ public class GoodsManager implements Serializable {
 	 * @param equipmentClass the equipment class.
 	 * @return demand (# of equipment).
 	 */
-	private double determineEquipmentDemand(Class<? extends Equipment> equipmentClass) {
+	private double determineEquipmentDemand(Class<?> equipmentClass) {
 		double numDemand = 0D;
 
 		// Determine number of EVA suits that are needed
@@ -2333,7 +2334,7 @@ public class GoodsManager implements Serializable {
 	 * @param equipmentClass the equipmentType to check.
 	 * @return number of equipment for the settlement.
 	 */
-	private double getNumberOfEquipmentForSettlement(Class<? extends Equipment> equipmentClass) {
+	private double getNumberOfEquipmentForSettlement(Class<?> equipmentClass) {
 		double number = 0D;
 
 		// Get number of the equipment in settlement storage.
@@ -2572,10 +2573,10 @@ public class GoodsManager implements Serializable {
 				demand = 10D;
 		} else if (MINING_MISSION.equals(missionType)) {
 			demand = getAreologistNum();
-		} else if (CONSTRUCT_BUILDING_MISSION.equals(missionType)) {
-			// No demand for rover vehicles.
-		} else if (SALVAGE_BUILDING_MISSION.equals(missionType)) {
-			// No demand for rover vehicles.
+//		} else if (CONSTRUCT_BUILDING_MISSION.equals(missionType)) {
+//			// No demand for rover vehicles.
+//		} else if (SALVAGE_BUILDING_MISSION.equals(missionType)) {
+//			// No demand for rover vehicles.
 		} else if (AREOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
 			demand = getAreologistNum();
 		} else if (BIOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
@@ -2613,8 +2614,7 @@ public class GoodsManager implements Serializable {
 				capacity = 0D;
 
 			boolean hasAreologyLab = false;
-			if (v.hasLab()) {
-				if (v.getLabTechSpecialties().contains("Areology"))
+			if (v.hasLab() && v.getLabTechSpecialties().contains("Areology")) {
 					hasAreologyLab = true;
 			}
 			if (!hasAreologyLab)
@@ -2671,10 +2671,10 @@ public class GoodsManager implements Serializable {
 			double range = getVehicleRange(v);
 			if (range == 0D)
 				capacity = 0D;
-		} else if (CONSTRUCT_BUILDING_MISSION.equals(missionType)) {
-			// No rover vehicles needed.
-		} else if (SALVAGE_BUILDING_MISSION.equals(missionType)) {
-			// No rover vehicles needed.
+//		} else if (CONSTRUCT_BUILDING_MISSION.equals(missionType)) {
+//			// No rover vehicles needed.
+//		} else if (SALVAGE_BUILDING_MISSION.equals(missionType)) {
+//			// No rover vehicles needed.
 		} else if (AREOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
 			if (crewCapacity >= 2)
 				capacity = 1D;
@@ -2733,7 +2733,7 @@ public class GoodsManager implements Serializable {
 		range = fuelCapacity * fuelEfficiency * SOFC_CONVERSION_EFFICIENCY;// / 1.5D;
 
 		double baseSpeed = v.getBaseSpeed();
-		double distancePerSol = baseSpeed / 2D / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
+		double distancePerSol = baseSpeed / SPEED_TO_DISTANCE;
 
 		// PersonConfig personConfig =
 		// SimulationConfig.instance().getPersonConfiguration();
@@ -2774,9 +2774,7 @@ public class GoodsManager implements Serializable {
 	 */
 	private double getNumberOfVehiclesForSettlement(String vehicleType) {
 		double number = 0D;
-		// Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
-		// while (i.hasNext()) {
-		for (Vehicle vehicle : settlement.getAllAssociatedVehicles()) {// = i.next();
+		for (Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
 			if (vehicleType.equalsIgnoreCase(vehicle.getDescription()))
 				number += 1D;
 		}
@@ -2807,9 +2805,7 @@ public class GoodsManager implements Serializable {
 
 			if (unitManager == null)
 				unitManager = sim.getUnitManager(); // needed for loading a saved sim
-			// Iterator<Settlement> i = unitManager.getSettlements().iterator();
-			// while (i.hasNext()) {
-			for (Settlement tempSettlement : unitManager.getSettlements()) {// = i.next();
+			for (Settlement tempSettlement : unitManager.getSettlements()) {
 				if (tempSettlement != settlement) {
 					double baseValue = tempSettlement.getGoodsManager().getGoodValuePerItem(good);
 					double distance = settlement.getCoordinates().getDistance(tempSettlement.getCoordinates());

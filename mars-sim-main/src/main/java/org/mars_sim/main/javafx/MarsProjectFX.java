@@ -279,7 +279,7 @@ public class MarsProjectFX extends Application {
 		String major = null;
 		String minor = null;
 		// String update = null;
-		String build = null;
+//		String build = null;
 		// String dateStamp = null;
 
 		// see
@@ -296,11 +296,11 @@ public class MarsProjectFX extends Application {
 		minor = javaVersionElements[1];
 		// update = javaVersionElements[2];
 
-		if (javaVersionElements.length > 3) {
-			build = javaVersionElements[3];
-			// dateStamp =
-			// Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
-		}
+//		if (javaVersionElements.length > 3) {
+//			build = javaVersionElements[3];
+//			// dateStamp =
+//			// Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
+//		}
 
 		double majorNum = Double.parseDouble(major);
 		double minorNum = Double.parseDouble(minor);
@@ -309,6 +309,7 @@ public class MarsProjectFX extends Application {
 //        System.out.println(minor);
 //        System.out.println(update);
 //        System.out.println(build);
+
 		if (majorNum == 8) {
 			good2Go = false;
 			exitWithError("Note: no longer compatible with Java 8 and below. It requires Java 9 or 10 for running mars-sim. Terminated.");			
@@ -352,10 +353,10 @@ public class MarsProjectFX extends Application {
 //			good2Go = false;
 //			exitWithError("Note: mars-sim requires at least Java 8u77. Terminated.");
 //		}
-//
-//		else {
-//			good2Go = true;
-//		}
+		
+		else {
+			good2Go = true;
+		}
 
 		if (good2Go) {
 

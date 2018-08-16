@@ -232,7 +232,7 @@ implements Serializable {
                 emergencyParts.put(ItemResourceUtil.findIDbyItemResourceName(part.getName()), amount);
             }
             else if (GoodType.EQUIPMENT.equals(good.getCategory())) {
-                Class<? extends Equipment> equipmentClass = good.getClassType();
+                Class<?> equipmentClass = good.getClassType();
                 System.out.println("EmergencySupplyMission str : " + good.getName() + " : "
                 + equipmentClass.getName() + " : " + EquipmentType.str2int(good.getName()));
                 emergencyEquipment.put(EquipmentType.str2int(good.getName()), amount);

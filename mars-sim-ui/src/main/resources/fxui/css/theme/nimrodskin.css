@@ -80,14 +80,13 @@
     -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
 }
 
-
 .text-area {
 /*	-fx-font: 10pt 'Corbel';				*/
     -fx-font-size       : 0.80em;
-    -fx-font-family : "Liberation Mono";
+/*    -fx-font-family : "Liberation Mono";*/
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
-    -fx-text-fill: #f4f13f;
+    -fx-text-fill: #a2b3db;
     -fx-background-color: transparent;
 /*    -fx-fill            : transparent;    */
 }
@@ -95,10 +94,10 @@
 #unit_description {
 /*	-fx-font: 10pt 'Corbel';				*/
     -fx-font-size       : 1.2em;
-    -fx-font-family : "Liberation Mono";
+/*    -fx-font-family : "Liberation Mono";*/
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
-    -fx-text-fill: #f4f13f;
+    -fx-text-fill: #a2b3db;
     -fx-background-color: transparent;
 /*    -fx-fill            : transparent;    */
 }
@@ -106,7 +105,7 @@
 #quotation {
 /*	-fx-font: 14pt 'Corbel';    */
     -fx-font-size       : 1.0em;
-    -fx-font-family : "Liberation Mono";
+/*    -fx-font-family : "Liberation Mono";*/
     -fx-content-display : left;
     -fx-graphic-text-gap: 7;
     -fx-text-fill       : -foreground-color;
@@ -120,7 +119,6 @@
 #quotation .scroll-pane .viewport{
     -fx-background-color: transparent;
 }
-
 
 #quotation .scroll-pane .content{
     -fx-background-color: transparent;
@@ -476,4 +474,3 @@
 .slider:disabled {
 	
 }
-

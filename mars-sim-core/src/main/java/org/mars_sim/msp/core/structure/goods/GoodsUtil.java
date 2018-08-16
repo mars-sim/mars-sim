@@ -104,7 +104,7 @@ public class GoodsUtil {
 	 * @param equipmentClass the equipment class.
 	 * @return good for the resource class or null if none.
 	 */
-	public static Good getEquipmentGood(Class<? extends Unit> equipmentClass) {
+	public static Good getEquipmentGood(Class<?> equipmentClass) {
 		if (equipmentClass == null) {
 			throw new IllegalArgumentException("goodClass cannot be null");
 		}

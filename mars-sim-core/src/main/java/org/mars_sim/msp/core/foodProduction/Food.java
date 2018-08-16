@@ -22,7 +22,7 @@ implements Serializable, Comparable<Food> {
 	private static final long serialVersionUID = 1L;
 	// Data members
 	private String name;
-	private Class classType;
+	private Class<?> classType;
 	private Object object;
 	private FoodType category;
 
@@ -52,7 +52,7 @@ implements Serializable, Comparable<Food> {
 	 * @param classType the food's class.
 	 * @param category {@link FoodType} the food's category.
 	 */
-	Food(String name, Class classType, FoodType category) {
+	Food(String name, Class<?> classType, FoodType category) {
 		if (name != null) this.name = name.trim().toLowerCase();
 		else throw new IllegalArgumentException("name cannot be null.");
 
@@ -91,7 +91,7 @@ implements Serializable, Comparable<Food> {
 	 * Gets the food's class.
 	 * @return class
 	 */
-	public Class<? extends Equipment> getClassType() {
+	public Class<?> getClassType() {
 		return classType;
 	}
 
