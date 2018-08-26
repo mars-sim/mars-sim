@@ -26,6 +26,7 @@ public class MarsProjectHeadlessStarter {
 		StringBuilder command = new StringBuilder();
 
 		String javaHome = System.getenv("JAVA_HOME");
+		
 		if (javaHome != null) {
 			if (javaHome.contains(" "))
 				javaHome = "\"" + javaHome;
@@ -49,7 +50,7 @@ public class MarsProjectHeadlessStarter {
 				.append(File.pathSeparator).append("*").append(File.pathSeparator).append("jars").append(File.separator)
 				.append("*").append(" org.mars_sim.headless.MarsProjectHeadless");
 
-		// 2016-05-28 Added checking for input args
+		// Add checking for input args
 		List<String> argList = Arrays.asList(args);
 
 		if (argList.isEmpty()) {
@@ -60,28 +61,8 @@ public class MarsProjectHeadlessStarter {
 		}
 
 		else {
-
-			if (argList.contains("512x")) {// time ratio is 512x
-				command.append(" -512x");
-			}
-
-			else if (argList.contains("1024x")) {// time ratio is 1024x
-				command.append(" -1024x");
-			}
-
-			else if (argList.contains("2048x")) {// time ratio is 2048x
-				command.append(" -2048x");
-			}
-
-			else if (argList.contains("4096x")) {// time ratio is 4096x
-				command.append(" -4096x");
-			}
-
-			else if (argList.contains("8192x")) {// time ratio is 8192x
-				command.append(" -8192x");
-			}
-
-			else if (argList.contains("5") || argList.contains("-5")) {// || argList.contains("5 ")) {
+			// Check for the memory switch
+			if (argList.contains("5") || argList.contains("-5")) {// || argList.contains("5 ")) {
 				command.append(" -Xms256m");
 				command.append(" -Xmx2048m");
 			} else if (argList.contains("4") || argList.contains("-4")) {
@@ -100,16 +81,18 @@ public class MarsProjectHeadlessStarter {
 				command.append(" -Xms256m");
 				command.append(" -Xmx1024m");
 			} else {
-				// use 1GB by default
+				// Use 1GB by default
 				command.append(" -Xms256m");
 				command.append(" -Xmx1024m");
 			}
 
+			// Check for the help switch
 			if (argList.contains("help") || argList.contains("-help")) {
 				command.append(" -help");
 				// System.out.println(manpage);
 			}
 
+			// Check for the html switch			
 			else if (argList.contains("html") || argList.contains("-html")) {
 				// command.append(" -new");
 				command.append(" -html");
@@ -117,16 +100,19 @@ public class MarsProjectHeadlessStarter {
 
 			else {
 
+				// Check for the headless switch
 				if (argList.contains("headless") || argList.contains("-headless"))
 					command.append(" -headless");
 
+				// Check for the new switch
 				if (argList.contains("new") || argList.contains("-new"))
 					command.append(" -new");
 
+				// Check for the load switch
 				else if (argList.contains("load") || argList.contains("-load")) {
 					command.append(" -load");
 
-					// 2016-10-06 Appended the name of loadFile to the end of the command stream so
+					// Append the name of loadFile to the end of the command stream so
 					// that MarsProjectFX can read it.
 					int index = argList.indexOf("load");
 					int size = argList.size();
@@ -146,8 +132,31 @@ public class MarsProjectHeadlessStarter {
 
 			}
 
+			// Check for noaudio switch
 			if (argList.contains("noaudio"))
 				command.append(" -noaudio");
+			
+			
+			// Check for time-ratio switches
+			if (argList.contains("512x")) {// time ratio is 512x
+				command.append(" -512x");
+			}
+
+			else if (argList.contains("1024x")) {// time ratio is 1024x
+				command.append(" -1024x");
+			}
+
+			else if (argList.contains("2048x")) {// time ratio is 2048x
+				command.append(" -2048x");
+			}
+
+			else if (argList.contains("4096x")) {// time ratio is 4096x
+				command.append(" -4096x");
+			}
+
+			else if (argList.contains("8192x")) {// time ratio is 8192x
+				command.append(" -8192x");
+			}
 		}
 
 		String commandStr = command.toString();

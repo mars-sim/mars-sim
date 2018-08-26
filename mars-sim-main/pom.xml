@@ -1,137 +1,137 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  	<modelVersion>4.0.0</modelVersion>
-  	<parent>
-    	<artifactId>mars-sim</artifactId>
-    	<groupId>net.sf</groupId>
-    	<version>3.1.0-b2</version>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>mars-sim</artifactId>
+		<groupId>net.sf</groupId>
+		<version>3.1.0-b2</version>
 	</parent>
 	<groupId>net.sf.mars-sim</groupId>
 	<artifactId>mars-sim-main</artifactId>
 	<name>mars-sim-main</name>
- 	<packaging>jar</packaging>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties> 	
+	<packaging>jar</packaging>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
-			<!-- https://mvnrepository.com/artifact/org.vafer/jdeb : 1.7 MB -->
-        		<groupId>org.apache.maven.plugins</groupId>
-        		<artifactId>maven-jar-plugin</artifactId>
-        		<version>3.1.0</version>
-        		<configuration>
-          			<archive>
-           				<manifest>
-            				<addClasspath>true</addClasspath>
-              				<mainClass>org.mars_sim.main.MarsProjectStarter</mainClass>
-            			</manifest>
-          			</archive>
-        		</configuration>
-      		</plugin>
-            <plugin>
-            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin/3.1.0
-                 https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>org.mars_sim.main.MarsProjectStarter</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- append to the packaging phase. -->
-                        <goals>
-                            <goal>single</goal> <!-- goals == mojos -->
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-            <!-- see https://github.com/tcurdt/jdeb -->
+				<!-- https://mvnrepository.com/artifact/org.vafer/jdeb : 1.7 MB -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>org.mars_sim.main.MarsProjectStarter</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin/3.1.0 
+					https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>org.mars_sim.main.MarsProjectStarter</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- append to the packaging phase. -->
+						<goals>
+							<goal>single</goal> <!-- goals == mojos -->
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<!-- see https://github.com/tcurdt/jdeb -->
 				<groupId>org.vafer</groupId>
 				<artifactId>jdeb</artifactId>
 				<version>1.6</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jdeb</goal>
-                        </goals>
-                        <configuration>
-                            <dataSet>
-                                <data>
-                                    <src>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</src>
-                                    <type>file</type>
-                                    <mapper>
-                                        <type>perm</type>
-                                        <prefix>/usr/share/mars-sim-main</prefix>
-                                    </mapper>
-                                </data>
-                                <data>
-                                	<src>${project.basedir}/src/deb/mars-sim</src>
-                                	<type>file</type>
-                                	<mapper>
-                                        <type>perm</type>
-                                        <prefix>/usr/bin</prefix>
-                                        <filemode>755</filemode>
-                                    </mapper>
-                                </data>
-                                <data>
-                                	<src>${project.basedir}/src/deb/copyright/copyright</src>
-                                	<type>file</type>
-                                	<mapper>
-                                        <type>perm</type>
-                                        <prefix>/usr/share/doc/mars-sim-main</prefix>
-                                    </mapper>
-                                </data>
-                                <data>
-                                	<src>${project.basedir}/src/deb/changelog.gz</src>
-                                	<type>file</type>
-                                	<mapper>
-                                        <type>perm</type>
-                                        <prefix>/usr/share/doc/mars-sim-main</prefix>
-                                    </mapper>
-                                </data>
-                                <data>
-                                	<src>${project.basedir}/src/deb/icon.png</src>
-                                	<type>file</type>
-                                	<mapper>
-                                        <type>perm</type>
-                                        <prefix>/usr/share/doc/mars-sim-main</prefix>
-                                    </mapper>
-                                </data>
-                                <data>
-                                	<src>${project.basedir}/src/deb/mars-sim.desktop</src>
-                                	<type>file</type>
-                                	<mapper>
-                                        <type>perm</type>
-                                        <prefix>/usr/share/applications</prefix>
-                                    </mapper>
-                                </data>
-                                <data>
-                                	<src>${project.basedir}/src/deb/man/mars-sim.1.gz</src>
-                                	<type>file</type>
-                                	<mapper>
-                                        <type>perm</type>
-                                        <prefix>/usr/share/man/man1</prefix>
-                                    </mapper>
-                                </data>
-                            </dataSet>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jdeb</goal>
+						</goals>
+						<configuration>
+							<dataSet>
+								<data>
+									<src>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/share/mars-sim-main</prefix>
+									</mapper>
+								</data>
+								<data>
+									<src>${project.basedir}/src/deb/mars-sim</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/bin</prefix>
+										<filemode>755</filemode>
+									</mapper>
+								</data>
+								<data>
+									<src>${project.basedir}/src/deb/copyright/copyright</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/share/doc/mars-sim-main</prefix>
+									</mapper>
+								</data>
+								<data>
+									<src>${project.basedir}/src/deb/changelog.gz</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/share/doc/mars-sim-main</prefix>
+									</mapper>
+								</data>
+								<data>
+									<src>${project.basedir}/src/deb/icon.png</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/share/doc/mars-sim-main</prefix>
+									</mapper>
+								</data>
+								<data>
+									<src>${project.basedir}/src/deb/mars-sim.desktop</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/share/applications</prefix>
+									</mapper>
+								</data>
+								<data>
+									<src>${project.basedir}/src/deb/man/mars-sim.1.gz</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/share/man/man1</prefix>
+									</mapper>
+								</data>
+							</dataSet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -139,10 +139,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<exclusions>
-		        <exclusion>
-		            <artifactId>hamcrest-core</artifactId>
-		            <groupId>org.hamcrest</groupId>
-		        </exclusion>
+				<exclusion>
+					<artifactId>hamcrest-core</artifactId>
+					<groupId>org.hamcrest</groupId>
+				</exclusion>
 			</exclusions>
 			<version>${junit.version}</version>
 			<scope>test</scope>
@@ -151,28 +151,22 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			<groupId>net.sf.mars-sim</groupId>
 			<artifactId>mars-sim-headless</artifactId>
 			<version>${project.version}</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>net.sf.mars-sim</groupId>
 			<artifactId>mars-sim-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!--dependency>
-			<groupId>net.sf.mars-sim</groupId>
-			<artifactId>mars-sim-mapdata</artifactId>
-			<version>${project.version}</version>
-		</dependency-->
-	    <!-- dependency>
-	    	<groupId>net.sf.mars-sim</groupId>
-	    	<artifactId>mars-sim-network</artifactId>
-	    	<version>${project.version}</version>
-	    </dependency-->
+		<!--dependency> <groupId>net.sf.mars-sim</groupId> <artifactId>mars-sim-mapdata</artifactId> 
+			<version>${project.version}</version> </dependency -->
+		<!-- dependency> <groupId>net.sf.mars-sim</groupId> <artifactId>mars-sim-network</artifactId> 
+			<version>${project.version}</version> </dependency -->
 	</dependencies>
 
 	<repositories>
-	    <repository>
-	        <id>jcenter</id>
-	        <url>http://jcenter.bintray.com/</url>
-	    </repository>
+		<repository>
+			<id>jcenter</id>
+			<url>http://jcenter.bintray.com/</url>
+		</repository>
 	</repositories>
 </project>

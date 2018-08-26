@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.structure.construction;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;

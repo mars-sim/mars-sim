@@ -11,10 +11,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -491,7 +494,7 @@ implements ClockListener, Serializable {
         	//System.out.println("Simulation : inside try. starting decompressing");
             //in = new FileInputStream(file);
             in = new FileInputStream(file);
-            
+                 
            	// Replace gzip with xz compression (based on LZMA2)
             
             // Since XZInputStream does some buffering internally
@@ -513,6 +516,32 @@ implements ClockListener, Serializable {
 
             ois = new ObjectInputStream(new FileInputStream(uncompressed));
 
+//            InputStream is;
+//
+//            try {
+//                File simConfig = new File(DEFAULT_DIR, "simulationConfig.json");
+//                is = new FileInputStream(simConfig);
+//                //String sconfig = fileSimConfig.to"c:\\simulationConfig.json"; // some JSON content
+//                SimulationConfig.setInstance((SimulationConfig) JsonReader.jsonToJava(is, null));//.jsonToJava(is, true));
+////                is.close(); 
+//            } catch (FileNotFoundException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+
+            
+//            String simConfig = "c:\\simulationConfig.json";
+//            SimulationConfig.setInstance((SimulationConfig) JsonReader.jsonToJava(simConfig));
+//            
+//            String resourceUtil = "c:\\resourceUtil.json"; // some JSON content
+//            ResourceUtil.setInstance((ResourceUtil) JsonReader.jsonToJava(resourceUtil));
+//            
+//            String malfunction = "c:\\malfunction.json"; // some JSON content
+//            malfunctionFactory = (MalfunctionFactory) JsonReader.jsonToJava(malfunction);
+       
             // Load intransient objects.
             SimulationConfig.setInstance((SimulationConfig) ois.readObject());
             ResourceUtil.setInstance((ResourceUtil) ois.readObject());
@@ -713,6 +742,43 @@ implements ClockListener, Serializable {
             }
 
         	oos = new ObjectOutputStream(new FileOutputStream(uncompressed));
+
+//            File fileSimConfig = new File(DEFAULT_DIR, "simulationConfig.json");
+//            String sconfig = fileSimConfig.getPath();
+
+            //String simConfig = "c:\\simulationConfig.json";
+            //SimulationConfig.setInstance((SimulationConfig) JsonReader.jsonToJava(simConfig));
+
+//            String simConfig = JsonWriter.objectToJson(SimulationConfig.instance()); 
+//            System.out.println(simConfig);
+            
+//        	String malString = JsonWriter.objectToJson(malfunctionFactory);
+//            System.out.println(malString);
+//            
+//            OutputStream os0 = new ObjectStream(new FileStream(uncompressed));
+//            JsonWriter jw = new JsonWriter(os0);       // optional 2nd 'options' argument (see below)
+//            jw.write(emp);
+//            jw.close();
+//            
+//        	String marsString = JsonWriter.objectToJson(mars);
+//            System.out.println(marsString);
+//            
+//        	String masterClockString = JsonWriter.objectToJson(masterClock);
+//            System.out.println(masterClockString);
+//            
+//            try{
+//                FileWriter file = new FileWriter("c:\\simulationConfig.json", false);
+//                file.close();
+//            }
+//            catch(Exception e){
+//                e.getMessage();
+//            }
+            
+//            String resourceUtil = "c:\\resourceUtil.json"; // some JSON content
+//            ResourceUtil.setInstance((ResourceUtil) JsonReader.jsonToJava(resourceUtil));
+//
+//            String malfunction = "c:\\malfunction.json"; // some JSON content
+//            malfunctionFactory = (MalfunctionFactory) JsonReader.jsonToJava(malfunction);
 
             // Store the in-transient objects.
             oos.writeObject(SimulationConfig.instance());

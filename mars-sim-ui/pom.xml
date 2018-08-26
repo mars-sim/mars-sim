@@ -61,11 +61,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <version>1.7</version>
 		</dependency>
 
-		<!--dependency>
+		<!--<dependency>
 		    <groupId>com.object-refinery</groupId>
 		    <artifactId>orsoncharts</artifactId>
 		    <version>1.5</version>
- 		</dependency-->
+ 		</dependency>-->
  		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart : 1.5MB -->
 		<dependency>
 			<groupId>org.jfree</groupId>

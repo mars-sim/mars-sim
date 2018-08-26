@@ -249,7 +249,7 @@ implements Serializable {
 	public int getNumberOfConfiguredRobots() {
 		Element root = robotDoc.getRootElement();
 		Element robotList = root.getChild(ROBOT_LIST);
-		List robotNodes = robotList.getChildren(ROBOT);
+		List<String> robotNodes = robotList.getChildren(ROBOT);
 		if (robotNodes != null) return robotNodes.size();
 		else return 0;
 	}

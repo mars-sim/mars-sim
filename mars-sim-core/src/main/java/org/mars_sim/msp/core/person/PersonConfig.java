@@ -996,7 +996,7 @@ implements Serializable {
 	public int getNumberOfConfiguredPeople() {
 		//Element root = personDoc.getRootElement();
 		Element personList = root.getChild(PERSON_LIST);
-		List personNodes = personList.getChildren(PERSON);
+		List<String> personNodes = personList.getChildren(PERSON);
 		if (personNodes != null) return personNodes.size();
 		else return 0;
 	}
