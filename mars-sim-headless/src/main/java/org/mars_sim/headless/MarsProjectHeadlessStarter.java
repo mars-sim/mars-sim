@@ -132,33 +132,34 @@ public class MarsProjectHeadlessStarter {
 
 			}
 
-			// Check for noaudio switch
-			if (argList.contains("noaudio"))
-				command.append(" -noaudio");
-			
-			
-			// Check for time-ratio switches
-			if (argList.contains("512x")) {// time ratio is 512x
-				command.append(" -512x");
-			}
-
-			else if (argList.contains("1024x")) {// time ratio is 1024x
-				command.append(" -1024x");
-			}
-
-			else if (argList.contains("2048x")) {// time ratio is 2048x
-				command.append(" -2048x");
-			}
-
-			else if (argList.contains("4096x")) {// time ratio is 4096x
-				command.append(" -4096x");
-			}
-
-			else if (argList.contains("8192x")) {// time ratio is 8192x
-				command.append(" -8192x");
-			}
 		}
 
+		// Check for noaudio switch
+		if (argList.contains("noaudio") || argList.contains("-noaudio"))
+			command.append(" -noaudio");
+		
+		
+		// Check for time-ratio switches
+		if (argList.contains("512x") || argList.contains("-512x")) {// time ratio is 512x
+			command.append(" -512x");
+		}
+
+		else if (argList.contains("1024x") || argList.contains("-1024x")) {// time ratio is 1024x
+			command.append(" -1024x");
+		}
+
+		else if (argList.contains("2048x") || argList.contains("-2048x")) {// time ratio is 2048x
+			command.append(" -2048x");
+		}
+
+		else if (argList.contains("4096x") || argList.contains("-4096x")) {// time ratio is 4096x
+			command.append(" -4096x");
+		}
+
+		else if (argList.contains("8192x") || argList.contains("-8192x")) {// time ratio is 8192x
+			command.append(" -8192x");
+		}
+		
 		String commandStr = command.toString();
 		System.out.println("Command: " + commandStr);
 
@@ -166,8 +167,8 @@ public class MarsProjectHeadlessStarter {
 			Process process = Runtime.getRuntime().exec(commandStr);
 
 			// Creating stream consumers for processes.
-			StreamConsumer errorConsumer = new StreamConsumer(process.getErrorStream(), "OUTPUT");
-			StreamConsumer outputConsumer = new StreamConsumer(process.getInputStream(), "OUTPUT");
+			StreamConsumer errorConsumer = new StreamConsumer(process.getErrorStream(), "? ");
+			StreamConsumer outputConsumer = new StreamConsumer(process.getInputStream(), "> ");
 
 			// Starting the stream consumers.
 			errorConsumer.start();

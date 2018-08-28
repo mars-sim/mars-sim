@@ -217,17 +217,19 @@ public class MarsProjectHeadless {
 				logger.log(Level.WARNING, "Could read logging default config", e);
 			}
 		}
+	
+		// Add command prompt console 
+//		Console console = System.console(); 
+//		if (console == null && !GraphicsEnvironment.isHeadless()){
+//			String filename = MarsProject.class.getProtectionDomain().getCodeSource().getLocation().
+//			toString().substring(6); 
+//			Runtime.getRuntime().exec(new
+//			String[]{"cmd","/c","start","cmd","/k","java -jar \"" + filename + "\""});
+//		} else { 
+//			MarsProjectHeadless.main(new String[0]); 
+//			System.out.println("Program has ended, please type 'exit' to close the console"); 
+//		}
 
-		/*
-		 * // 2015-10-13 Added command prompt console Console console =
-		 * System.console(); if(console == null && !GraphicsEnvironment.isHeadless()){
-		 * String filename =
-		 * MarsProject.class.getProtectionDomain().getCodeSource().getLocation().
-		 * toString().substring(6); Runtime.getRuntime().exec(new
-		 * String[]{"cmd","/c","start","cmd","/k","java -jar \"" + filename + "\""});
-		 * }else{ MarsProject.main(new String[0]); System.out.
-		 * println("Program has ended, please type 'exit' to close the console"); }
-		 */
 
 		// starting the simulation
 		MarsProjectHeadless mp = new MarsProjectHeadless(args);

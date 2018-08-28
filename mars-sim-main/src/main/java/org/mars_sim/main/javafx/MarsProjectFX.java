@@ -261,8 +261,7 @@ public class MarsProjectFX extends Application {
 		// INFO: MarsProjectFX's init() is on JavaFX-Launcher Thread
 		setLogging();
 		setDirectory();
-		// general text antialiasing
-		  // enable anti-aliased text:
+		// Enable anti-aliased text:
 //		System.setProperty("awt.useSystemAAFontSettings","on");
 		System.setProperty("swing.aatext", "true");
 		System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
@@ -278,23 +277,21 @@ public class MarsProjectFX extends Application {
 
 		String major = null;
 		String minor = null;
-		// String update = null;
+//		String update = null;
 //		String build = null;
-		// String dateStamp = null;
-
-		// see
-		// http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#getProperties%28%29
-
-		// String bit = (System.getProperty("os.arch").contains("64") ? "64-bit" :
-		// "32-bit");
-
-		// String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b| ");
+//		String dateStamp = null;
+//
+//		see http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#getProperties%28%29
+//
+//		String bit = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
+//
+//		// String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b| ");
 		String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|_| ");
 
-		// e.g. 8.0.111 (Thu Nov 24 14:50:47 UTC 2016) in case of openjdk 8 in linux
+		// TODO: Sort out what to do in case of openjdk 8 in linux e.g. 8.0.111 (Thu Nov 24 14:50:47 UTC 2016)
 		major = javaVersionElements[0];
 		minor = javaVersionElements[1];
-		// update = javaVersionElements[2];
+// 		update = javaVersionElements[2];
 
 //		if (javaVersionElements.length > 3) {
 //			build = javaVersionElements[3];
@@ -305,43 +302,37 @@ public class MarsProjectFX extends Application {
 		double majorNum = Double.parseDouble(major);
 		double minorNum = Double.parseDouble(minor);
 
-//        System.out.println(major);
-//        System.out.println(minor);
-//        System.out.println(update);
-//        System.out.println(build);
-
 		if (majorNum == 8) {
 			good2Go = false;
 			exitWithError("Note: no longer compatible with Java 8 and below. It requires Java 9 or 10 for running mars-sim. Terminated.");			
 		}
 		
 		else if (majorNum == 9 || majorNum == 10) {
-			// see
-			// https://docs.oracle.com/javase/9/migrate/toc.htm#JSMIG-GUID-3A71ECEF-5FC5-46FE-9BA9-88CBFCE828CB
-			// In Java 9, the format of the new version-string is:
-			// $MAJOR.$MINOR.$SECURITY.$PATCH
-			// Under the old scheme, the Java 9u5 security release would have the version
-			// string 1.9.0_5-b20.
-			// Under the new scheme, the short version of the same release is 9.0.1, and the
-			// long version is 9.0.1+20.
-
-			// e.g.
-			// In Java 8, majorNum has always been "1". minorNum is "8".
-			// In Java 9.0.4, majorNum becomes "9". minorNum is "0". update is "4".
-			// In Java 10.0.1, majorNum is "10".minorNum is "0". update is "1".
-
-			// exitWithError("Note: mars-sim is currently incompatible with Java 9/10/11. It
-			// requires Java 8 (8u77 or above). Terminated.");
+//			see
+//			https://docs.oracle.com/javase/9/migrate/toc.htm#JSMIG-GUID-3A71ECEF-5FC5-46FE-9BA9-88CBFCE828CB
+//			In Java 9, the format of the new version-string is:
+//			$MAJOR.$MINOR.$SECURITY.$PATCH
+//			Under the old scheme, the Java 9u5 security release would have the version
+//			string 1.9.0_5-b20.
+//			Under the new scheme, the short version of the same release is 9.0.1, and the
+//			long version is 9.0.1+20.
+//
+//			e.g.
+//			In Java 8, majorNum has always been "1". minorNum is "8".
+//			In Java 9.0.4, majorNum becomes "9". minorNum is "0". update is "4".
+//			In Java 10.0.1, majorNum is "10".minorNum is "0". update is "1".
+//
+//			exitWithError("Note: mars-sim is currently incompatible with Java 9/10/11. It
+//			requires Java 8 (8u77 or above). Terminated.");
 
 			good2Go = true;
-			//logger.log(Level.INFO, "Note: it is still experimental in running mars-sim under Java 9/10/11.");
+//			logger.log(Level.INFO, "Note: it is still experimental in running mars-sim under Java 9/10/11.");
 		}
 
 		// if (!vendor.startsWith("Oracle") || // TODO: find out if other vendor's VM
 		// works
 		else if (minorNum < 8) {
-			// logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77.
-			// Terminating...");
+// 			logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.77.	Terminating...");
 
 			good2Go = false;
 			exitWithError("Note: no longer compatible with Java 7 and below. It requires Java 9 or above for running mars-sim. Terminated.");
@@ -366,7 +357,6 @@ public class MarsProjectFX extends Application {
 			generateHTML = argList.contains("-html");
 			helpPage = argList.contains("-help");
 			noaudio = argList.contains("-noaudio");
-			// savedSim = argList.contains(".sim");
 
 			if (generateHTML || helpPage || argList.contains("-headless"))
 				headless = true;
@@ -621,7 +611,7 @@ public class MarsProjectFX extends Application {
 
 				sim.loadSimulation(loadFile);
 
-				// 2017-04-07 Add newInstance()
+				// Add newInstance()
 				// AmountResource.newInstance();
 
 				// Start the simulation.
