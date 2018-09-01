@@ -278,8 +278,15 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		uptimeLabel = new WebLabel(uptimer.getUptime(), WebLabel.CENTER);
 		uptimePane.add(uptimeLabel, BorderLayout.CENTER);
 
-		DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
-		String pulsePerSecond = formatter.format(masterClock.getPulsesPerSecond());
+		//DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
+		String pulsePerSecond = "";
+		
+		if (masterClock.isFXGL) {
+			pulsePerSecond = formatter.format(masterClock.getFPS());
+		}
+		else {
+			pulsePerSecond = formatter.format(masterClock.getPulsesPerSecond());
+		}
 		pulsesPerSecLabel = new WebLabel(pulsePerSecond, WebLabel.CENTER);
 		pulsespersecondPane.add(pulsesPerSecLabel, BorderLayout.CENTER);
 
@@ -569,8 +576,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		}
 
 		if (masterClock != null) {
-			String pulsePerSecond = formatter.format(masterClock.getPulsesPerSecond());
-			SwingUtilities.invokeLater(() -> pulsesPerSecLabel.setText(pulsePerSecond));
+			if (masterClock.isFXGL) {
+				SwingUtilities.invokeLater(() -> pulsesPerSecLabel.setText(formatter.format(masterClock.getFPS())));
+			}
+			else {
+				SwingUtilities.invokeLater(() -> pulsesPerSecLabel.setText(formatter.format(masterClock.getPulsesPerSecond())));
+			}
+
 		}
 
 		if (uptimer != null) {

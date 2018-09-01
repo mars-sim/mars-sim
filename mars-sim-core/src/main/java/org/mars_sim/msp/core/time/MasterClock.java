@@ -92,7 +92,7 @@ public class MasterClock implements Serializable {
 	private float pulseTime;
 	
 	/** Is FXGL is in use. */
-	private boolean isFXGL = false;
+	public boolean isFXGL = false;
 
 	/** A list of clock listeners. */
 	private transient List<ClockListener> clockListeners;

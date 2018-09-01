@@ -261,12 +261,6 @@ public class MarsProjectFX extends Application {
 		// INFO: MarsProjectFX's init() is on JavaFX-Launcher Thread
 		setLogging();
 		setDirectory();
-		// Enable anti-aliased text:
-//		System.setProperty("awt.useSystemAAFontSettings","on");
-		System.setProperty("swing.aatext", "true");
-		System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
-		// Properties props = System.getProperties();
-		// props.setProperty("swing.jlf.contentPaneTransparent", "true");
 
 		// logger.info(Simulation.title);
 		LogConsolidated.log(logger, Level.INFO, 0, logger.getName(), Simulation.title, null);
@@ -307,7 +301,7 @@ public class MarsProjectFX extends Application {
 			exitWithError("Note: no longer compatible with Java 8 and below. It requires Java 9 or 10 for running mars-sim. Terminated.");			
 		}
 		
-		else if (majorNum == 9 || majorNum == 10) {
+		else if (majorNum >= 9) {
 //			see
 //			https://docs.oracle.com/javase/9/migrate/toc.htm#JSMIG-GUID-3A71ECEF-5FC5-46FE-9BA9-88CBFCE828CB
 //			In Java 9, the format of the new version-string is:
@@ -393,6 +387,12 @@ public class MarsProjectFX extends Application {
 		if (!headless) {
 			// Using GUI mode
 			if (Simulation.OS.startsWith("Windows")) {
+				// Enable anti-aliased text:
+//				System.setProperty("awt.useSystemAAFontSettings","on");
+				System.setProperty("swing.aatext", "true");
+				System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
+				// Properties props = System.getProperties();
+				// props.setProperty("swing.jlf.contentPaneTransparent", "true");
 				System.setProperty("sun.java2d.noddraw", "false");
 				System.setProperty("sun.java2d.ddscale", "true");
 				System.setProperty("sun.java2d.ddforcevram", "true");

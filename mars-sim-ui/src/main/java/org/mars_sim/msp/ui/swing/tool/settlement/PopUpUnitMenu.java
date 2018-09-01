@@ -116,24 +116,31 @@ public class PopUpUnitMenu extends JPopupMenu {
         else
         	new BorderUIResource.LineBorderUIResource(Color.blue);
 
-
         UIManager.put("PopupMenu.border", res);
-        //force to the Heavyweight Component or able for AWT Components
+        // Force to the Heavyweight Component or able for AWT Components
         this.setLightWeightPopupEnabled(false);
 
-    	itemOne = new JMenuItem(Msg.getString("PopUpUnitMenu.itemOne"));
-        itemTwo = new JMenuItem(Msg.getString("PopUpUnitMenu.itemTwo"));
-        itemThree = new JMenuItem(Msg.getString("PopUpUnitMenu.itemThree"));
-        itemOne.setForeground(new Color(139,69,19));
-        itemTwo.setForeground(new Color(139,69,19));
-        itemThree.setForeground(new Color(139,69,19));
+//    	itemOne = new JMenuItem(Msg.getString("PopUpUnitMenu.itemOne"));
+//        itemTwo = new JMenuItem(Msg.getString("PopUpUnitMenu.itemTwo"));
+//        itemThree = new JMenuItem(Msg.getString("PopUpUnitMenu.itemThree"));
+//        itemOne.setForeground(new Color(139,69,19));
+//        itemTwo.setForeground(new Color(139,69,19));
+//        itemThree.setForeground(new Color(139,69,19));
 
         if (unit instanceof Person) {
+            itemTwo = new JMenuItem(Msg.getString("PopUpUnitMenu.itemTwo"));
+            itemTwo.setForeground(new Color(139,69,19));
         	add(itemTwo);
         	buildItemTwo(unit);
         }
 
         else if (unit instanceof Vehicle) {
+        	itemOne = new JMenuItem(Msg.getString("PopUpUnitMenu.itemOne"));
+            itemTwo = new JMenuItem(Msg.getString("PopUpUnitMenu.itemTwo"));
+            itemThree = new JMenuItem(Msg.getString("PopUpUnitMenu.itemThree"));
+            itemOne.setForeground(new Color(139,69,19));
+            itemTwo.setForeground(new Color(139,69,19));
+            itemThree.setForeground(new Color(139,69,19));
         	add(itemOne);
         	add(itemTwo);
         	add(itemThree);
@@ -142,6 +149,10 @@ public class PopUpUnitMenu extends JPopupMenu {
             buildItemThree(unit);
         }
         else if (unit instanceof Building) {
+        	itemOne = new JMenuItem(Msg.getString("PopUpUnitMenu.itemOne"));
+            itemTwo = new JMenuItem(Msg.getString("PopUpUnitMenu.itemTwo"));
+            itemOne.setForeground(new Color(139,69,19));
+            itemTwo.setForeground(new Color(139,69,19));
             add(itemOne);
         	add(itemTwo);
         	buildItemOne(unit);
@@ -149,28 +160,32 @@ public class PopUpUnitMenu extends JPopupMenu {
         }
         else if (unit instanceof Robot) {
             //add(itemOne);
+            itemTwo = new JMenuItem(Msg.getString("PopUpUnitMenu.itemTwo"));
+            itemTwo.setForeground(new Color(139,69,19));
         	add(itemTwo);
         	//buildItemOne(unit);
             buildItemTwo(unit);
         }
         else if (unit instanceof ConstructionSite) {
+        	itemOne = new JMenuItem(Msg.getString("PopUpUnitMenu.itemOne"));
+            itemOne.setForeground(new Color(139,69,19));
             add(itemOne);
         	buildItemOne(unit);
         }
-/*
-     // Determine what the GraphicsDevice can support.
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice gd = ge.getDefaultScreenDevice();
-        boolean isPerPixelTranslucencySupported =
-            gd.isWindowTranslucencySupported(PERPIXEL_TRANSLUCENT);
 
-        //If translucent windows aren't supported, exit.
-        if (!isPerPixelTranslucencySupported) {
-            System.out.println(
-                "Per-pixel translucency is not supported");
-                System.exit(0);
-        }
-*/
+     // Determine what the GraphicsDevice can support.
+//        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//        GraphicsDevice gd = ge.getDefaultScreenDevice();
+//        boolean isPerPixelTranslucencySupported =
+//            gd.isWindowTranslucencySupported(PERPIXEL_TRANSLUCENT);
+//
+//        //If translucent windows aren't supported, exit.
+//        if (!isPerPixelTranslucencySupported) {
+//            System.out.println(
+//                "Per-pixel translucency is not supported");
+//                System.exit(0);
+//        }
+
     }
 
 
