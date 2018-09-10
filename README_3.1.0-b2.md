@@ -1,7 +1,8 @@
 # Mars Simulation Project
+
 Copyright (C) 2018 Scott Davis
-[Project Website](https://mars-sim.github.io)
-[GitHub Page](https://github.com/mars-sim/mars-sim)
+https://mars-sim.github.io
+https://github.com/mars-sim/mars-sim
 
 ---------------------------------------------------------------------
 

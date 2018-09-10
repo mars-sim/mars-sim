@@ -29,9 +29,8 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-public class MissionTableModel
-extends AbstractTableModel
-implements MonitorModel, MissionManagerListener, MissionListener {
+public class MissionTableModel extends AbstractTableModel
+		implements MonitorModel, MissionManagerListener, MissionListener {
 
 	private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
 
@@ -64,7 +63,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 	private List<Mission> missionCache;
 
 	private static MissionManager missionManager = Simulation.instance().getMissionManager();
-	
+
 	public MissionTableModel() {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
@@ -90,12 +89,13 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 		missionCache = missionManager.getMissions();
 		missionManager.addListener(this);
 		Iterator<Mission> i = missionCache.iterator();
-		while (i.hasNext()) i.next().addMissionListener(this); 
+		while (i.hasNext())
+			i.next().addMissionListener(this);
 	}
 
 	/**
-	 * Get the name of this model. The name will be a description helping
-	 * the user understand the contents.
+	 * Get the name of this model. The name will be a description helping the user
+	 * understand the contents.
 	 *
 	 * @return Descriptive name.
 	 */
@@ -105,6 +105,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 
 	/**
 	 * Adds a new mission.
+	 * 
 	 * @param mission the new mission.
 	 */
 	public void addMission(Mission mission) {
@@ -123,6 +124,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 
 	/**
 	 * Removes an old mission.
+	 * 
 	 * @param mission the old mission.
 	 */
 	public void removeMission(Mission mission) {
@@ -138,6 +140,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 
 	/**
 	 * Return the type of the column requested.
+	 * 
 	 * @param columnIndex Index of column.
 	 * @return Class of specified column.
 	 */
@@ -150,6 +153,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 
 	/**
 	 * Return the name of the column requested.
+	 * 
 	 * @param columnIndex Index of column.
 	 * @return name of specified column.
 	 */
@@ -162,6 +166,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 
 	/**
 	 * Return the object at the specified row indexes.
+	 * 
 	 * @param row Index of the row object.
 	 * @return Object at the specified row.
 	 */
@@ -170,9 +175,8 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 	}
 
 	/**
-	 * Has this model got a natural order that the model conforms to. If this
-	 * value is true, then it implies that the user should not be allowed to
-	 * order.
+	 * Has this model got a natural order that the model conforms to. If this value
+	 * is true, then it implies that the user should not be allowed to order.
 	 */
 	public boolean getOrdered() {
 		return false;
@@ -182,15 +186,14 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 	 * Gets the model count string.
 	 */
 	public String getCountString() {
-		return " " + Msg.getString(
-			"MissionTableModel.numberOfMissions", //$NON-NLS-1$
+		return " " + Msg.getString("MissionTableModel.numberOfMissions", //$NON-NLS-2$
 //			Integer.toString(missionCache.size())
-			missionCache.size()
-		);
+				missionCache.size());
 	}
 
 	/**
 	 * Catch mission update event.
+	 * 
 	 * @param event the mission event.
 	 */
 	public void missionUpdate(MissionEvent event) {
@@ -200,21 +203,30 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 			int column2 = -1;
 
 			MissionEventType eventType = event.getType();
-			if (eventType == MissionEventType.NAME_EVENT) column1 = TYPE;
-			else if (eventType == MissionEventType.DESCRIPTION_EVENT) column1 = DESCRIPTION;
-			else if (eventType == MissionEventType.PHASE_EVENT) column1 = PHASE;
-			else if (eventType == MissionEventType.ADD_MEMBER_EVENT ||
-					eventType == MissionEventType.REMOVE_MEMBER_EVENT) column1 = MEMBER_NUM;
-			else if (eventType == MissionEventType.NAVPOINTS_EVENT) column1 = NAVPOINT_NUM;
-			else if (eventType == MissionEventType.VEHICLE_EVENT) column1 = VEHICLE;
-			else if (eventType == MissionEventType.STARTING_SETTLEMENT_EVENT) column1 = STARTING_SETTLEMENT;
+			if (eventType == MissionEventType.NAME_EVENT)
+				column1 = TYPE;
+			else if (eventType == MissionEventType.DESCRIPTION_EVENT)
+				column1 = DESCRIPTION;
+			else if (eventType == MissionEventType.PHASE_EVENT)
+				column1 = PHASE;
+			else if (eventType == MissionEventType.ADD_MEMBER_EVENT
+					|| eventType == MissionEventType.REMOVE_MEMBER_EVENT)
+				column1 = MEMBER_NUM;
+			else if (eventType == MissionEventType.NAVPOINTS_EVENT)
+				column1 = NAVPOINT_NUM;
+			else if (eventType == MissionEventType.VEHICLE_EVENT)
+				column1 = VEHICLE;
+			else if (eventType == MissionEventType.STARTING_SETTLEMENT_EVENT)
+				column1 = STARTING_SETTLEMENT;
 			else if (eventType == MissionEventType.DISTANCE_EVENT) {
 				column1 = TRAVELLED_DISTANCE;
 				column2 = REMAINING_DISTANCE;
 			}
 
-			if (column1 > -1) SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column1));
-			if (column2 > -1) SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column2));
+			if (column1 > -1)
+				SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column1));
+			if (column2 > -1)
+				SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column2));
 		}
 	}
 
@@ -224,6 +236,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 
 	/**
 	 * Return the number of columns
+	 * 
 	 * @return column count.
 	 */
 	public int getColumnCount() {
@@ -232,7 +245,8 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 
 	/**
 	 * Return the value of a Cell
-	 * @param rowIndex Row index of the cell.
+	 * 
+	 * @param rowIndex    Row index of the cell.
 	 * @param columnIndex Column index of the cell.
 	 */
 	public Object getValueAt(int rowIndex, int columnIndex) {
@@ -241,84 +255,93 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 		if (rowIndex < missionCache.size()) {
 			Mission mission = missionCache.get(rowIndex);
 
-			switch (columnIndex) {
+			if (mission != null) {
+				switch (columnIndex) {
 
-			case TYPE : {
-				result = mission.getName();
-			} break;
-
-			case DESCRIPTION : {
-				result = mission.getDescription();
-			} break;
-
-			case PHASE : {
-				result = mission.getPhaseDescription();
-			} break;
-
-			case VEHICLE : {
-				result = ""; //$NON-NLS-1$
-				if (mission instanceof VehicleMission) {
-					VehicleMission vehicleMission = (VehicleMission) mission;
-					if (vehicleMission.getVehicle() != null) result = vehicleMission.getVehicle().getName();
+				case TYPE: {
+					result = mission.getName();
 				}
-				else if (mission instanceof BuildingConstructionMission) {
-				    BuildingConstructionMission constructionMission = (BuildingConstructionMission) mission;
-                    List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
-                    if (constVehicles.size() > 0) {
-                        Vehicle vehicle = constVehicles.get(0);
-                        result = vehicle.getName();
-                    }
-				}
-				else if (mission instanceof BuildingSalvageMission) {
-				    BuildingSalvageMission salvageMission = (BuildingSalvageMission) mission;
-                    List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
-                    if (constVehicles.size() > 0) {
-                        Vehicle vehicle = constVehicles.get(0);
-                        result = vehicle.getName();
-                    }
-				}
-			} break;
+					break;
 
-			case STARTING_SETTLEMENT : {
-				result = ""; //$NON-NLS-1$
-				if (mission instanceof TravelMission) {
-					NavPoint nav0 = ((TravelMission) mission).getNavpoint(0);
-					if ((nav0 != null) && nav0.isSettlementAtNavpoint()) {
-						result = nav0.getSettlement().getName();
+				case DESCRIPTION: {
+					result = mission.getDescription();
+				}
+					break;
+
+				case PHASE: {
+					result = mission.getPhaseDescription();
+				}
+					break;
+
+				case VEHICLE: {
+					result = ""; //$NON-NLS-1$
+					if (mission instanceof VehicleMission) {
+						VehicleMission vehicleMission = (VehicleMission) mission;
+						if (vehicleMission.getVehicle() != null)
+							result = vehicleMission.getVehicle().getName();
+					} else if (mission instanceof BuildingConstructionMission) {
+						BuildingConstructionMission constructionMission = (BuildingConstructionMission) mission;
+						List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
+						if (constVehicles.size() > 0) {
+							Vehicle vehicle = constVehicles.get(0);
+							result = vehicle.getName();
+						}
+					} else if (mission instanceof BuildingSalvageMission) {
+						BuildingSalvageMission salvageMission = (BuildingSalvageMission) mission;
+						List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
+						if (constVehicles.size() > 0) {
+							Vehicle vehicle = constVehicles.get(0);
+							result = vehicle.getName();
+						}
 					}
 				}
-			} break;
+					break;
 
-			case MEMBER_NUM : {
-				result = mission.getMembersNumber();
-			} break;
-
-			case NAVPOINT_NUM : {
-				if (mission instanceof TravelMission) {
-					TravelMission travelMission = (TravelMission) mission;
-					result = travelMission.getNumberOfNavpoints();
-				}
-				else result = 0;
-			} break;
-
-			case TRAVELLED_DISTANCE : {
-				if (mission instanceof TravelMission) {
-					TravelMission travelMission = (TravelMission) mission;
-					result = decFormatter.format(travelMission.getTotalDistanceTravelled());
-				}
-				else result = 0;
-			} break;
-
-			case REMAINING_DISTANCE : {
-				if (mission instanceof TravelMission) {
-					TravelMission travelMission = (TravelMission) mission;
-					try {
-						result = decFormatter.format(travelMission.getTotalRemainingDistance());
+				case STARTING_SETTLEMENT: {
+					result = ""; //$NON-NLS-1$
+					if (mission instanceof TravelMission) {
+						NavPoint nav0 = ((TravelMission) mission).getNavpoint(0);
+						if ((nav0 != null) && nav0.isSettlementAtNavpoint()) {
+							result = nav0.getSettlement().getName();
+						}
 					}
-					catch (Exception e) {}
 				}
-				else result = 0;
-			}
+					break;
+
+				case MEMBER_NUM: {
+					result = mission.getMembersNumber();
+				}
+					break;
+
+				case NAVPOINT_NUM: {
+					if (mission instanceof TravelMission) {
+						TravelMission travelMission = (TravelMission) mission;
+						result = travelMission.getNumberOfNavpoints();
+					} else
+						result = 0;
+				}
+					break;
+
+				case TRAVELLED_DISTANCE: {
+					if (mission instanceof TravelMission) {
+						TravelMission travelMission = (TravelMission) mission;
+						result = decFormatter.format(travelMission.getTotalDistanceTravelled());
+					} else
+						result = 0;
+				}
+					break;
+
+				case REMAINING_DISTANCE: {
+					if (mission instanceof TravelMission) {
+						TravelMission travelMission = (TravelMission) mission;
+						try {
+							result = decFormatter.format(travelMission.getTotalRemainingDistance());
+						} catch (Exception e) {
+						}
+					} else
+						result = 0;
+				}
+				}
 			}
 		}
 
@@ -365,7 +388,8 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 		}
 
 		public void run() {
-			if (row < getRowCount()) fireTableRowsDeleted(row, row);
+			if (row < getRowCount())
+				fireTableRowsDeleted(row, row);
 		}
 	}
 }

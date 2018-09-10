@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsNode.java
- * @version 3.08 2015-04-18
+ * @version 3.1.0 2015-04-18
  * @author Manny Kung
  */
 
@@ -55,12 +55,12 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-/*
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
-import com.sibvisions.rad.ui.javafx.ext.mdi.windowmanagers.FXDesktopWindowManager;
-import com.sibvisions.rad.ui.javafx.ext.mdi.windowmanagers.FXGlobalModalWindowManager;
-*/
+
+//import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
+//import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
+//import com.sibvisions.rad.ui.javafx.ext.mdi.windowmanagers.FXDesktopWindowManager;
+//import com.sibvisions.rad.ui.javafx.ext.mdi.windowmanagers.FXGlobalModalWindowManager;
+
 /**
  * The MarsNode class is the is the container for housing
  * new javaFX UI tools.
@@ -90,35 +90,36 @@ public class MarsNode {
 		//windowManager = new FXDesktopWindowManager();
 
 	}
-/*
-	public FXDesktopPane createFXDesktopPane() {
-		fxDesktopPane = new FXDesktopPane();
-		fxDesktopPane.setWindowManager(windowManager);
 
+	
+//	public FXDesktopPane createFXDesktopPane() {
+//		fxDesktopPane = new FXDesktopPane();
+//		fxDesktopPane.setWindowManager(windowManager);
+//
+//
+//		//fxDesktopPane.getScene();
+//		//fxDesktopPane.setBackground(Color.BLACK);
+//
+//		// The FXDesktopPane supports window manager. The standard window manager shows multiple windows on the desktop and handles global windows.
+//
+//		// It's also possible to set a window manager for single-window mode. This window manager shows the content as maximized window:
+//
+//		//fxDesktopPane.setWindowManager(new FXGlobalModalWindowManager(new FXSingleWindowManager()));
+//		//If you don't need support for global windows:
+//		//fxDesktopPane.setWindowManager(new FXSingleWindowManager());
+//
+//		return fxDesktopPane;
+//	}
+//
+//	public FXDesktopPane getFXDesktopPane() {
+//		return fxDesktopPane;
+//	}
+//
+//	public void removeFXInternalWindow(FXInternalWindow fxInternalWindow ) {
+//		windowManager.removeWindow(fxInternalWindow);
+//	}
 
-		//fxDesktopPane.getScene();
-		//fxDesktopPane.setBackground(Color.BLACK);
-
-		// The FXDesktopPane supports window manager. The standard window manager shows multiple windows on the desktop and handles global windows.
-
-		// It's also possible to set a window manager for single-window mode. This window manager shows the content as maximized window:
-
-		//fxDesktopPane.setWindowManager(new FXGlobalModalWindowManager(new FXSingleWindowManager()));
-		//If you don't need support for global windows:
-		//fxDesktopPane.setWindowManager(new FXSingleWindowManager());
-
-		return fxDesktopPane;
-	}
-
-	public FXDesktopPane getFXDesktopPane() {
-		return fxDesktopPane;
-	}
-
-	public void removeFXInternalWindow(FXInternalWindow fxInternalWindow ) {
-		windowManager.removeWindow(fxInternalWindow);
-	}
-*/
-	//2015-11-10 Added createChatBox()
+	// Create the chat box
 	public void createChatBox() {
 		ChatBox cb = new ChatBox(mainScene);
 
@@ -146,16 +147,16 @@ public class MarsNode {
 	}
 
 	public void createMarsMap() {
-/*
-	    String fxmlFile = "/fxml/DemoApp.fxml";
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        Parent rootNode = null;
-		try {
-			rootNode = fxmlLoader.load(getClass().getResourceAsStream(fxmlFile));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-*/
+
+//	    String fxmlFile = "/fxml/DemoApp.fxml";
+//        FXMLLoader fxmlLoader = new FXMLLoader();
+//        Parent rootNode = null;
+//		try {
+//			rootNode = fxmlLoader.load(getClass().getResourceAsStream(fxmlFile));
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+
 		PannableView p = new PannableView();
 		ScrollPane s = p.createMap();
 
@@ -216,7 +217,7 @@ public class MarsNode {
 
 	}
 
-	//2015-09-27 for testing the use of fxml
+	// Test the use of fxml
 	public void createMaterialDesignWindow() {
 		//Pane pane = createPane("black");
 
@@ -231,63 +232,64 @@ public class MarsNode {
 
 		// TODO: can use createFXInternalWindow(String title, StackPane pane, //Pane pane, //Parent parent,
 		//		double prefWidth, double prefHeight, boolean resizable)
-/*
-		FXInternalWindow fxInternalWindow = new FXInternalWindow("Material Design Showcase");
-		fxInternalWindow.setContent(root);
-		fxInternalWindow.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
 
-		fxInternalWindow.setActive(true);
-		fxInternalWindow.setCloseable(false);
-		fxInternalWindow.setMinimizable(true);
-		fxInternalWindow.setPrefSize(1024, 640);
-		fxInternalWindow.setMinHeight(512);
-		fxInternalWindow.setMinWidth(1024);
-		fxInternalWindow.setMaximizeable(true);
-		//.setMaxSize(scene.getWidth(), scene.getHeight());
+//		FXInternalWindow fxInternalWindow = new FXInternalWindow("Material Design Showcase");
+//		fxInternalWindow.setContent(root);
+//		fxInternalWindow.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
+//
+//		fxInternalWindow.setActive(true);
+//		fxInternalWindow.setCloseable(false);
+//		fxInternalWindow.setMinimizable(true);
+//		fxInternalWindow.setPrefSize(1024, 640);
+//		fxInternalWindow.setMinHeight(512);
+//		fxInternalWindow.setMinWidth(1024);
+//		fxInternalWindow.setMaximizeable(true);
+//		//.setMaxSize(scene.getWidth(), scene.getHeight());
+//
+//		windowManager.addWindow(fxInternalWindow);
+//		windowManager.updateActiveWindow();
 
-		windowManager.addWindow(fxInternalWindow);
-		windowManager.updateActiveWindow();
-*/
-	}
-/*
-	public void createSettlementWindow() {
-		Pane pane = createPane("black");
-
-		FXInternalWindow fxInternalWindow = new FXInternalWindow("Settlements");
-		fxInternalWindow.setContent(pane);
-		fxInternalWindow.setActive(true);
-		fxInternalWindow.setCloseable(false);
-		fxInternalWindow.setMinimizable(true);
-		fxInternalWindow.setPrefSize(210, 210);
-		fxInternalWindow.setMinHeight(210);
-		fxInternalWindow.setMinWidth(210);
-		fxInternalWindow.setMaximizeable(false);
-		windowManager.addWindow(fxInternalWindow);
-		windowManager.updateActiveWindow();
 	}
 
+	
+//	public void createSettlementWindow() {
+//		Pane pane = createPane("black");
+//
+//		FXInternalWindow fxInternalWindow = new FXInternalWindow("Settlements");
+//		fxInternalWindow.setContent(pane);
+//		fxInternalWindow.setActive(true);
+//		fxInternalWindow.setCloseable(false);
+//		fxInternalWindow.setMinimizable(true);
+//		fxInternalWindow.setPrefSize(210, 210);
+//		fxInternalWindow.setMinHeight(210);
+//		fxInternalWindow.setMinWidth(210);
+//		fxInternalWindow.setMaximizeable(false);
+//		windowManager.addWindow(fxInternalWindow);
+//		windowManager.updateActiveWindow();
+//	}
 
-	public FXInternalWindow createFXInternalWindow(String title, Parent parent, //StackPane pane, //Pane pane, //Parent parent,
-			double prefWidth, double prefHeight, boolean resizable) {
-		FXInternalWindow fxInternalWindow = new FXInternalWindow(title);
 
-		fxInternalWindow.setActive(true);
-		fxInternalWindow.setCloseable(false);
-		fxInternalWindow.setMinimizable(true);
-		fxInternalWindow.setPrefSize(prefWidth, prefHeight); // not compatible with webView
-		//fxInternalWindow.setMinHeight(prefHeight);
-		//fxInternalWindow.setMinWidth(prefWidth);
-		fxInternalWindow.setMaxHeight(fxDesktopPane.getHeight());
-		fxInternalWindow.setMaxWidth(fxDesktopPane.getWidth());
-		fxInternalWindow.setResizeable(resizable);
-		fxInternalWindow.setMaximizeable(true);
-		fxInternalWindow.setContent(parent);
+//	public FXInternalWindow createFXInternalWindow(String title, Parent parent, //StackPane pane, //Pane pane, //Parent parent,
+//			double prefWidth, double prefHeight, boolean resizable) {
+//		FXInternalWindow fxInternalWindow = new FXInternalWindow(title);
+//
+//		fxInternalWindow.setActive(true);
+//		fxInternalWindow.setCloseable(false);
+//		fxInternalWindow.setMinimizable(true);
+//		fxInternalWindow.setPrefSize(prefWidth, prefHeight); // not compatible with webView
+//		//fxInternalWindow.setMinHeight(prefHeight);
+//		//fxInternalWindow.setMinWidth(prefWidth);
+//		fxInternalWindow.setMaxHeight(fxDesktopPane.getHeight());
+//		fxInternalWindow.setMaxWidth(fxDesktopPane.getWidth());
+//		fxInternalWindow.setResizeable(resizable);
+//		fxInternalWindow.setMaximizeable(true);
+//		fxInternalWindow.setContent(parent);
+//
+//		windowManager.addWindow(fxInternalWindow);
+//		windowManager.updateActiveWindow();
+//		return fxInternalWindow;
+//	}
 
-		windowManager.addWindow(fxInternalWindow);
-		windowManager.updateActiveWindow();
-		return fxInternalWindow;
-	}
-*/
 
 	/**
 	 * Creates settlement nodes
@@ -415,22 +417,24 @@ public class MarsNode {
 
       return popover;
 	}
-/*
-	public TitledPane createTemperatureGauge() {
 
-		TitledPane tp = new TitledPane();
-	    tp.setText("Weather");
+	
+//	public TitledPane createTemperatureGauge() {
+//
+//		TitledPane tp = new TitledPane();
+//	    tp.setText("Weather");
+//
+//	    String family = "Helvetica";
+//	    double size = 12;
+//
+//		TemperatureGauge temperatureGauge = new TemperatureGauge();
+//		Pane pane = temperatureGauge.toDraw();
+//		tp.setContent(pane);
+//
+//	    return tp;
+//	}
 
-	    String family = "Helvetica";
-	    double size = 12;
-
-		TemperatureGauge temperatureGauge = new TemperatureGauge();
-		Pane pane = temperatureGauge.toDraw();
-		tp.setContent(pane);
-
-	    return tp;
-	}
-*/
+	
 	private Collection<TitledPane> createPanes(Settlement settlement){
       Collection<TitledPane> result = new ArrayList<TitledPane>();
       TitledPane tp = new TitledPane();
@@ -605,29 +609,27 @@ public class MarsNode {
 	    return b;
 	}
 
-	/*
-	public void createDialog(Alert alert) {
-
-	    DialogPane dialogPane = alert.getDialogPane();
-	    dialogPane.getStylesheets().add(
-	    //getClass().getResource("dialog.css").toExternalForm());
-	    "/fxui/css/dialog.css");
-
-	    final DialogPane dlgPane = dlg.getDialogPane();
-	    dlgPane.getButtonTypes().add(ButtonType.OK);
-	    dlgPane.getButtonTypes().add(ButtonType.CANCEL);
-
-	    final Button btOk = (Button) dlg.getDialogPane().lookupButton(ButtonType.OK);
-	    btOk.addEventFilter(ActionEvent.ACTION, (event) -> {
-	      if (!validateAndStore()) {
-	        event.consume();
-	      }
-	    });
-
-	    dlg.showAndWait();
-	}
-	*/
-
+//	public void createDialog(Alert alert) {
+//
+//	    DialogPane dialogPane = alert.getDialogPane();
+//	    dialogPane.getStylesheets().add(
+//	    //getClass().getResource("dialog.css").toExternalForm());
+//	    "/fxui/css/dialog.css");
+//
+//	    final DialogPane dlgPane = dlg.getDialogPane();
+//	    dlgPane.getButtonTypes().add(ButtonType.OK);
+//	    dlgPane.getButtonTypes().add(ButtonType.CANCEL);
+//
+//	    final Button btOk = (Button) dlg.getDialogPane().lookupButton(ButtonType.OK);
+//	    btOk.addEventFilter(ActionEvent.ACTION, (event) -> {
+//	      if (!validateAndStore()) {
+//	        event.consume();
+//	      }
+//	    });
+//
+//	    dlg.showAndWait();
+//	}
+	
 
 	public class JmeTask implements Runnable {
 
@@ -643,40 +645,41 @@ public class MarsNode {
 		}
 	}
 
-/*
-	public void createJMEWindow(Stage stage) {
-		this.scene = stage.getScene();
 
-		jmePane = new Pane();
+//	public void createJMEWindow(Stage stage) {
+//		this.scene = stage.getScene();
+//
+//		jmePane = new Pane();
+//
+//		//SwingNode swingNode = new SwingNode();
+//
+//        //SwingUtilities.invokeLater(() -> {
+//    	//	swingNode.setContent(panel);
+//        //});
+//
+//		Runnable jmeTask = new JmeTask(panel);
+//
+//        SwingUtilities.invokeLater(jmeTask);
+//
+//        SwingNode swingNode = new SwingNode();
+//		swingNode.setContent(panel);
+//
+//
+//		jmePane.getChildren().add(swingNode);
+//
+//		jmeWindow = new FXInternalWindow("Mars Viewer");
+//		jmeWindow.setContent(jmePane);
+//		jmeWindow.setActive(true);
+//		jmeWindow.setCloseable(false);
+//		jmeWindow.setMinimizable(true);
+//		jmeWindow.setPrefSize(512, 512);
+//		jmeWindow.setMinHeight(480);
+//		jmeWindow.setMinWidth(480);
+//
+//		windowManager.addWindow(jmeWindow);
+//	}
 
-		//SwingNode swingNode = new SwingNode();
-
-        //SwingUtilities.invokeLater(() -> {
-    	//	swingNode.setContent(panel);
-        //});
-
-		Runnable jmeTask = new JmeTask(panel);
-
-        SwingUtilities.invokeLater(jmeTask);
-
-        SwingNode swingNode = new SwingNode();
-		swingNode.setContent(panel);
-
-
-		jmePane.getChildren().add(swingNode);
-
-		jmeWindow = new FXInternalWindow("Mars Viewer");
-		jmeWindow.setContent(jmePane);
-		jmeWindow.setActive(true);
-		jmeWindow.setCloseable(false);
-		jmeWindow.setMinimizable(true);
-		jmeWindow.setPrefSize(512, 512);
-		jmeWindow.setMinHeight(480);
-		jmeWindow.setMinWidth(480);
-
-		windowManager.addWindow(jmeWindow);
-	}
-*/
+	
     public void jmeCall() {
 
  		//JmeCanvas jmeCanvas = new JmeCanvas();
@@ -685,64 +688,63 @@ public class MarsNode {
     }
 
 
-/*
- *
-	public void createJMEWindow(Stage stage) {
-		this.scene = stage.getScene();
 
+//	public void createJMEWindow(Stage stage) {
+//		this.scene = stage.getScene();
+//
+//
+//		JmeCanvas jmeCanvas = new JmeCanvas();
+//		JPanel panel = new JPanel(new BorderLayout(0, 0));
+//		panel.add(jmeCanvas.setupJME());
+//
+//		jmePane = new Pane();
+//		//ChangeListener<Object> repoListener = new RepositionListener();
+//
+//		SwingNode swingNode = new SwingNode();
+//
+//        SwingUtilities.invokeLater(() -> {
+//    		swingNode.setContent(panel);
+//        });
+//
+//		jmePane.getChildren().add(swingNode);
+//
+//		jmeWindow = new FXInternalWindow("Mars Viewer");
+//		jmeWindow.setContent(jmePane);
+//		jmeWindow.setActive(true);
+//		jmeWindow.setCloseable(false);
+//		jmeWindow.setMinimizable(true);
+//		jmeWindow.setPrefSize(512, 512);
+//		jmeWindow.setMinHeight(480);
+//		jmeWindow.setMinWidth(480);
+//
+//		//fxDesktopPane.widthProperty().addListener(repoListener);
+//		//fxDesktopPane.heightProperty().addListener(repoListener);
+//
+//		//stage.xProperty().addListener(repoListener);
+//		//stage.yProperty().addListener(repoListener);
+//		//stage.getScene().xProperty().addListener(repoListener);
+//		//stage.getScene().yProperty().addListener(repoListener);
+//
+//		//jmePane.widthProperty().addListener(repoListener);
+//		//jmePane.heightProperty().addListener(repoListener);
+//
+//		windowManager.addWindow(jmeWindow);
+//	}
+//
+//	private class RepositionListener implements ChangeListener<Object> {
+//
+//		@Override
+//		public void changed(ObservableValue<? extends Object> arg0, Object arg1, Object arg2) {
+//			int x = (int) (fxDesktopPane.getLayoutX() + jmePane.getLocalToParentTransform().getTx());
+//			int y = (int) (fxDesktopPane.getLayoutY() + jmePane.getLocalToParentTransform().getTy());
+//			//int y = (int) (stage.getX() + jmePane.getLocalToSceneTransform().getTx()); //+ scene.getX()
+//			//int y = (int) (stage.getY() + jmePane.getLocalToSceneTransform().getTy()); // scene.getY()
+//			int w = (int) jmePane.getWidth();
+//			int h = (int) jmePane.getHeight();
+//			EventBus.publish(new JmeRepositionEvent(x, y, w, h));
+//		}
+//	}
 
-		JmeCanvas jmeCanvas = new JmeCanvas();
-		JPanel panel = new JPanel(new BorderLayout(0, 0));
-		panel.add(jmeCanvas.setupJME());
-
-		jmePane = new Pane();
-		//ChangeListener<Object> repoListener = new RepositionListener();
-
-		SwingNode swingNode = new SwingNode();
-
-        SwingUtilities.invokeLater(() -> {
-    		swingNode.setContent(panel);
-        });
-
-		jmePane.getChildren().add(swingNode);
-
-		jmeWindow = new FXInternalWindow("Mars Viewer");
-		jmeWindow.setContent(jmePane);
-		jmeWindow.setActive(true);
-		jmeWindow.setCloseable(false);
-		jmeWindow.setMinimizable(true);
-		jmeWindow.setPrefSize(512, 512);
-		jmeWindow.setMinHeight(480);
-		jmeWindow.setMinWidth(480);
-
-		//fxDesktopPane.widthProperty().addListener(repoListener);
-		//fxDesktopPane.heightProperty().addListener(repoListener);
-
-		//stage.xProperty().addListener(repoListener);
-		//stage.yProperty().addListener(repoListener);
-		//stage.getScene().xProperty().addListener(repoListener);
-		//stage.getScene().yProperty().addListener(repoListener);
-
-		//jmePane.widthProperty().addListener(repoListener);
-		//jmePane.heightProperty().addListener(repoListener);
-
-		windowManager.addWindow(jmeWindow);
-	}
-
-	private class RepositionListener implements ChangeListener<Object> {
-
-		@Override
-		public void changed(ObservableValue<? extends Object> arg0, Object arg1, Object arg2) {
-			int x = (int) (fxDesktopPane.getLayoutX() + jmePane.getLocalToParentTransform().getTx());
-			int y = (int) (fxDesktopPane.getLayoutY() + jmePane.getLocalToParentTransform().getTy());
-			//int y = (int) (stage.getX() + jmePane.getLocalToSceneTransform().getTx()); //+ scene.getX()
-			//int y = (int) (stage.getY() + jmePane.getLocalToSceneTransform().getTy()); // scene.getY()
-			int w = (int) jmePane.getWidth();
-			int h = (int) jmePane.getHeight();
-			EventBus.publish(new JmeRepositionEvent(x, y, w, h));
-		}
-	}
-*/
 
 }
 

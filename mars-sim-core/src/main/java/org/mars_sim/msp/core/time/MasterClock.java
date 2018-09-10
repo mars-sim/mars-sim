@@ -207,7 +207,7 @@ public class MasterClock implements Serializable {
 		setNoDelaysPerYield(config.getNoDelaysPerYield());
 		setMaxFrameSkips(config.getMaxFrameSkips());
 
-		logger.info("Based on # CPU cores/threads, the following parameters have been re-adjusted :");
+		logger.info("Based on # CPU cores/threads, the following parameters have been re-adjusted as follows :");
 		logger.info("Time Ratio (TR) : " + (int) adjustedTR + "x");
 		logger.info("Time between Updates (TBU) : " + Math.round(adjustedTBU_ms * 100D) / 100D + " ms");
 		logger.info("Ticks Per Second (TPS) : " + Math.round(adjustedFPS * 100D) / 100D + " Hz");
@@ -939,12 +939,19 @@ public class MasterClock implements Serializable {
 	public void firePauseChange(boolean showPane) {
 
 		clockListeners.forEach(cl -> cl.pauseChange(isPaused, showPane));
-		/*
-		 * synchronized (listeners) { Iterator<ClockListener> i = listeners.iterator();
-		 * while (i.hasNext()) { ClockListener cl = i.next(); try {
-		 * cl.pauseChange(isPaused); } catch (Exception e) { throw new
-		 * IllegalStateException("Error while firing pase change", e); } } }
-		 */
+		
+//		 synchronized (listeners) { 
+//			 Iterator<ClockListener> i = listeners.iterator();
+//			 while (i.hasNext()) { 
+//				 ClockListener cl = i.next(); try {
+//			 cl.pauseChange(isPaused); 
+//				 } catch (Exception e) { 
+//					 throw new
+//				 IllegalStateException("Error while firing pase change", e); 
+//				 } 
+//			} 
+//		 }
+		 
 	}
 
 	public double getPulsesPerSecond() {
