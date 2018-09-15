@@ -641,38 +641,38 @@ public class MalfunctionManager implements Serializable {
 //		}
 	}
 
-	/*
-	 * public void consumeFireExtingusher(int type) { if (type == 0) { if
-	 * (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR))
-	 * { entity.getInventory().retrieveItemResources(ItemResourceUtil.
-	 * fireExtinguisherAR, 1);
-	 * 
-	 * int rand = RandomUtil.getRandomInt(3); if (rand > 0) // Say 25% of the time,
-	 * a fire extinguisher is being used up.
-	 * entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR,
-	 * 1); } } else if (type == 1) { if
-	 * (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR))
-	 * { entity.getInventory().retrieveItemResources(ItemResourceUtil.
-	 * fireExtinguisherAR, 1);
-	 * 
-	 * int rand = RandomUtil.getRandomInt(3); if (rand > 1) // Say 50% of the time,
-	 * a fire extinguisher is being used up.
-	 * entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR,
-	 * 1); } } else if (type == 2) { if
-	 * (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR))
-	 * { entity.getInventory().retrieveItemResources(ItemResourceUtil.
-	 * fireExtinguisherAR, 1);
-	 * 
-	 * int rand = RandomUtil.getRandomInt(3); if (rand == 0) // Say 25% of the time,
-	 * a fire extinguisher is being used up.
-	 * entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR,
-	 * 2); else if (rand == 1) // Say 50% of the time, a fire extinguisher is being
-	 * used up.
-	 * entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR,
-	 * 1); } }
-	 * 
-	 * }
-	 */
+//	 public void consumeFireExtingusher(int type) {
+//		 if (type == 0) {
+//			 if (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR)) {
+//			 entity.getInventory().retrieveItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
+//	 
+//			 int rand = RandomUtil.getRandomInt(3); 
+//			 	if (rand > 0) // Say 25% of the time, a fire extinguisher is being used up.
+//				 entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 1); 
+//			 } 
+//		 } else if (type == 1) {
+//			 if (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR)) {
+//				entity.getInventory().retrieveItemResources(ItemResourceUtil.fireExtinguisherAR, 1);
+//	 
+//			 int rand = RandomUtil.getRandomInt(3); 
+//			 	if (rand > 1) // Say 50% of the time,  a fire extinguisher is being used up.
+//				 entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 1); 
+//			 } 
+//		 } 
+//		 else if (type == 2) {
+//			 if (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR)) {
+//				 entity.getInventory().retrieveItemResources(ItemResourceUtil.fireExtinguisherAR, 1); 
+//
+//		 int rand = RandomUtil.getRandomInt(3); 
+//		 if (rand == 0) // Say 25% of the time, a fire extinguisher is being used up.
+//			 entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 2); 
+//		 else if (rand == 1) 
+//			 // Say 50% of the time, a fire extinguisher is being used up.
+//			 entity.getInventory().storeItemResources(ItemResourceUtil.fireExtinguisherAR, 1); 
+//			 } 
+//		 }
+//	 }
+
 
 	/**
 	 * Time passing while the unit is being actively used.
@@ -845,6 +845,7 @@ public class MalfunctionManager implements Serializable {
 	 * Creates a series of related malfunctions
 	 * 
 	 * @param s the place of accident
+	 * @param r the robot who triggers the malfunction
 	 */
 	public void createASeriesOfMalfunctions(String s, Robot r) {
 		// handleStringTypeOne(s, r);
@@ -855,6 +856,7 @@ public class MalfunctionManager implements Serializable {
 	 * Creates a series of related malfunctions
 	 * 
 	 * @param s the place of accident
+	 * @param p the person who triggers the malfunction
 	 */
 	public void createASeriesOfMalfunctions(String s, Person p) {
 		// handleStringTypeOne(s, p);
@@ -862,6 +864,12 @@ public class MalfunctionManager implements Serializable {
 		determineNumOfMalfunctions(1, s, nervousness, p);
 	}
 
+	/**
+	 * Processes type one malfunctions
+	 * 
+	 * @param s the place of accident
+	 * @param u the person/robot who triggers the malfunction
+	 */	
 	public void handleStringTypeOne(String s, Unit u) {
 		StringBuilder sb = new StringBuilder(Conversion.capitalize(s));
 
@@ -873,16 +881,17 @@ public class MalfunctionManager implements Serializable {
 			// if it's a vehicle, no need of a/an
 			sb.insert(0, "in ");
 		}
-		/*
-		 * 
-		 * if (s.contains("EVA")) { sb.insert(0, "with "); }
-		 * 
-		 * else { // if it's a vehicle, no need of a/an sb.insert(0, "in ");
-		 * 
-		 * if (s.startsWith("A") || s.startsWith("E") || s.startsWith("I") ||
-		 * s.startsWith("O") || s.startsWith("U")) //Conversion.checkVowel(name))
-		 * sb.insert(0, "in an "); else sb.insert(0, "in a "); }
-		 */
+
+		 if (s.contains("EVA")) { 
+			 sb.insert(0, "with "); 
+		}
+		  
+//		 else { // if it's a vehicle, no need of a/an sb.insert(0, "in ");
+//		 
+//			 if (s.startsWith("A") || s.startsWith("E") || s.startsWith("I") ||
+//				 s.startsWith("O") || s.startsWith("U")) //Conversion.checkVowel(name))
+//				 sb.insert(0, "in an "); else sb.insert(0, "in a "); 
+//		 }
 
 		LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
 				"[" + u.getLocationTag().getImmediateLocation() + "] A Type-I accident occurs " + sb.toString() + ".",
@@ -892,6 +901,8 @@ public class MalfunctionManager implements Serializable {
 
 	/**
 	 * Creates a series of related malfunctions
+	 *
+	 * @param p the Person who triggers the malfunction
 	 */
 	public void createASeriesOfMalfunctions(Person p) {
 		// handleStringTypeTwo();
@@ -901,6 +912,8 @@ public class MalfunctionManager implements Serializable {
 
 	/**
 	 * Creates a series of related malfunctions
+	 * 
+	 * @param r the robot who triggers the malfunction
 	 */
 	public void createASeriesOfMalfunctions(Robot r) {
 		// handleStringTypeTwo();
@@ -929,6 +942,10 @@ public class MalfunctionManager implements Serializable {
 
 	/**
 	 * Determines the numbers of malfunctions.
+	 * 
+	 * @param type the type of malfunction
+	 * @param s the place of accident
+	 * @param actor the person/robot who triggers the malfunction
 	 */
 	public void determineNumOfMalfunctions(int type, String s, int score, Unit actor) {
 		// Multiple malfunctions may have occurred.
@@ -963,6 +980,10 @@ public class MalfunctionManager implements Serializable {
 
 	/**
 	 * Determines the numbers of malfunctions.
+	 * 
+	 * @param type the type of malfunction
+	 * @param s the place of accident
+	 * @param actor the person/robot who triggers the malfunction
 	 */
 	public void determineNumOfMalfunctions(int type, String s, Unit actor) {
 		// Multiple malfunctions may have occurred.

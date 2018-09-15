@@ -75,24 +75,24 @@ For a more detail description of this project, see our project website at at htt
 
 ### Prerequisites
 * Require JRE/JDK 8 (u77 or above) for binaries compiled under Java 8 
-* Require JRE/JDK 9 or above for binaries compiled under Java 9
+* Require JRE/JDK 9+ for binaries compiled under Java 9
 * For Windows OS, one should manually set up the following : 
   - Edit the `JAVA_HOME` and `PATH` in the System's "Environment Variables" in Control Panel 
-  - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jre1.8.0_151` or `C:\Program Files\Java\jdk1.8.0_151`
+  - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-10.0.2` or `C:\Program Files\Java\jre-10.0.2`
   - Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`         
   - Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It interferes with the correct version of 
     Java that should be used. 
   - Check if the correct version of Java is being enable in "Java Control Panel" in Windows's Control Panel. 
 
-> Note 1 The best approach is enabling only one Java build (such as Java 10.0.1) at a time and disable all other versions/builds.
+> Note 1 The BEST approach is enabling only one Java build (such as Java 10.0.2) at a time and disable all other java versions/builds.
 
 > Note 2 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
 
-> Note 3 : Remove all Java 9 related executables inside the folder `C:\ProgramData\Oracle\Java\javapath` in order to avoid loading the undesired version of jre/jdk.
+> Note 3 : Remove all Java related executables inside the folder `C:\ProgramData\Oracle\Java\javapath` in order to avoid loading the undesired version of jre/jdk.
 
 
 ## Feedback/Comments
-Feel free to provide your comments at our [facebook community]( https://www.facebook.com/groups/125541663548/). See also [old/archived discussions](https://sourceforge.net/p/mars-sim/discussion/)
+Feel free to provide your comments at our [Facebook community](https://www.facebook.com/groups/125541663548/). See also [old/archived discussions](https://sourceforge.net/p/mars-sim/discussion/)
 
 
 ## Issues/Tickets
