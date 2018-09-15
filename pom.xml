@@ -70,9 +70,11 @@
 			<timezone>-8</timezone>
 		</developer>
 	</developers>
+	
 	<!-- ************************************************************************************************* -->
 	<!-- * Project Tools Section * -->
 	<!-- ************************************************************************************************* -->
+<!-- 
 	<scm>
 		<connection>scm:svn:https://svn.code.sf.net/p/mars-sim/code/trunk/mars-sim</connection>
 		<developerConnection>scm:svn:https://svn.code.sf.net/p/mars-sim/code/trunk/mars-sim</developerConnection>
@@ -137,6 +139,7 @@
 			</notifier>
 		</notifiers>
 	</ciManagement>
+-->	
 	<!-- ************************************************************************************************* -->
 	<!-- * Module Section * -->
 	<!-- ************************************************************************************************* -->
@@ -147,7 +150,7 @@
 		<module>mars-sim-main</module>
 		<module>mars-sim-mapdata</module>
 		<module>mars-sim-network</module>
-		<!--module>mars-sim-service</module -->
+		<module>mars-sim-service</module>
 		<module>mars-sim-ui</module>
 	</modules>
 	<!-- ************************************************************************************************* -->
@@ -317,6 +320,7 @@
 	<!-- ************************************************************************************************* -->
 	<!-- * Distribution Management Section * -->
 	<!-- ************************************************************************************************* -->
+	<!-- 
 	<distributionManagement>
 		<repository>
 			<id>sourceforge.net</id>
@@ -336,6 +340,7 @@
 			<url>scp://shell.sourceforge.net/home/project-web/mars-sim/htdocs/site</url>
 		</site>
 	</distributionManagement>
+	-->
 	<pluginRepositories>
 		<pluginRepository>
 			<id>maven central</id>

@@ -7,6 +7,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -69,40 +70,45 @@ public class SimulationController {
 		HistoricalEventManager manager = simulation.getEventManager();
 		List<EventDTO> events = new ArrayList<EventDTO>();
 		
+		List<SimpleEvent> sEvents = manager.getEvents();
 		// Have to built the DTO list manually to handle the source property in the Historical Event
-		for (int idx = (page-1) * pageSize; (idx < manager.size()) && (events.size() < pageSize); idx++) {
-			HistoricalEvent event = manager.getEvent(idx);
-			Object source = event.getSource();
-			EntityReference entityRef = null;
-			String entityType = null;
+		for (int idx = (page-1) * pageSize; (idx < sEvents.size()) && (events.size() < pageSize); idx++) {
 
-			// A bit messy this code
-			if (source instanceof Vehicle) {
-				Unit unit = (Unit) source;
-				entityRef = new EntityReference(unit.getIdentifier(), unit.getName());
-				entityType = "vehicle";
-			}
-			else if (source instanceof Person) {
-				Unit unit = (Unit) source;
-				entityRef = new EntityReference(unit.getIdentifier(), unit.getName());
-				entityType = "person";
-			}
-			else if (source instanceof Settlement) {
-				Unit unit = (Unit) source;
-				entityRef = new EntityReference(unit.getIdentifier(), unit.getName());
-				entityType = "settlement";
-			}
-			else if (source instanceof Mission) {
-				Mission unit = (Mission) source;
-				entityRef = new EntityReference(unit.getIdentifier(), unit.getName());
-				entityType = "mission";
-			}
+// 			TODO: will need to remap to SimpleEvent
 			
-			events.add(new EventDTO(idx, event.getType().getName(), event.getWhatCause(), event.getTimestamp().getDateTimeStamp(),
-					   entityRef, entityType));
+//			HistoricalEvent event = manager.getEvent(idx);
+			SimpleEvent sEvent = sEvents.get(idx);
+//			Object source = event.getSource();
+//			EntityReference entityRef = null;
+//			String entityType = null;
+//
+//			// A bit messy this code
+//			if (source instanceof Vehicle) {
+//				Unit unit = (Unit) source;
+//				entityRef = new EntityReference(unit.getIdentifier(), unit.getName());
+//				entityType = "vehicle";
+//			}
+//			else if (source instanceof Person) {
+//				Unit unit = (Unit) source;
+//				entityRef = new EntityReference(unit.getIdentifier(), unit.getName());
+//				entityType = "person";
+//			}
+//			else if (source instanceof Settlement) {
+//				Unit unit = (Unit) source;
+//				entityRef = new EntityReference(unit.getIdentifier(), unit.getName());
+//				entityType = "settlement";
+//			}
+//			else if (source instanceof Mission) {
+//				Mission unit = (Mission) source;
+//				entityRef = new EntityReference(unit.getIdentifier(), unit.getName());
+//				entityType = "mission";
+//			}
+//			
+//			events.add(new EventDTO(idx, event.getType().getName(), event.getWhatCause(), event.getTimestamp().getDateTimeStamp(),
+//					   entityRef, entityType));
 		}
 		
-		return new PagedList<EventDTO>(events, page, events.size(), manager.size());
+		return new PagedList<EventDTO>(events, page, events.size(), sEvents.size());
 	}
 	
 }

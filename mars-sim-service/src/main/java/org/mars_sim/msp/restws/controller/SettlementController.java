@@ -130,7 +130,7 @@ public class SettlementController {
         Settlement found = findSettlement(settlementId);
         
         return personMapper.personsToPersonSummarys(
-        		new ArrayList<Person>(found.getInhabitants()));
+        		new ArrayList<Person>(found.getIndoorPeople()));
     }
 	
 	@ApiOperation(value = "get Settlement Vehicles", nickname = "getSettlementVehicles")

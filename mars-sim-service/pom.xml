@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.mars_sim</groupId>
 	<artifactId>mars-sim-service</artifactId>
-	<version>3.1.0-b1</version>
+	<version>3.1.0-b2</version>
 	<description>RESTful web service for the Mars Sim simulator.</description>
     <url>http://mars-sim.sourceforge.net/</url>
     <name>Mar Simulation Project</name>    
