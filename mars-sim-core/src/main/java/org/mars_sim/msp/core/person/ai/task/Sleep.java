@@ -411,6 +411,9 @@ public class Sleep extends Task implements Serializable {
 			circadian.setAwake(false);
 			circadian.getRested(time);
 
+			// Record the sleep time [in millisols]
+			circadian.recordSleep(time);
+			
 			circadian.setNumSleep(circadian.getNumSleep() + 1);
 			circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
 

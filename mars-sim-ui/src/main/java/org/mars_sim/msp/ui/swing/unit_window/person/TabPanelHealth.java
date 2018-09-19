@@ -23,6 +23,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.health.HealthProblem;
@@ -75,9 +76,12 @@ extends TabPanel {
 	private MedicationTableModel medicationTableModel;
 	private HealthProblemTableModel healthProblemTableModel;
 	private RadiationTableModel radiationTableModel;
+	private SleepTableModel sleepTableModel;
+	
 	private WebTable radiationTable;
 	private WebTable medicationTable;
 	private WebTable healthProblemTable;
+	private WebTable sleepTable;
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
 
@@ -182,25 +186,24 @@ extends TabPanel {
 		        formatter.format(performanceCache)), WebLabel.LEFT);
 		conditionPanel.add(performanceLabel);
 
-		// 2017-03-28 Prepare SpringLayout
+		// PrepareS SpringLayout
 		SpringUtilities.makeCompactGrid(conditionPanel,
-		                                6, 2, //rows, cols
-		                                100, 4,        //initX, initY
-		                                50, 3);       //xPad, yPad
-
-		// 2015-04-29 Added radiation dose info
+		                                3, 4, //rows, cols
+		                                35, 4,        //initX, initY
+		                                30, 3);       //xPad, yPad
+		
+		// Add radiation dose info
 		// Prepare radiation panel
 		WebPanel radiationPanel = new WebPanel(new BorderLayout());//new GridLayout(2, 1, 0, 0));
 		radiationPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(radiationPanel, BorderLayout.CENTER);
 
 		// Prepare radiation label
-		WebLabel radiationLabel = new WebLabel(Msg.getString("TabPanelHealth.label"), WebLabel.CENTER); //$NON-NLS-1$
+		WebLabel radiationLabel = new WebLabel(Msg.getString("TabPanelHealth.rad"), WebLabel.CENTER); //$NON-NLS-1$
 		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
 		//radiationLabel.setToolTipText(Msg.getString("TabPanelHealth.tooltip")); //$NON-NLS-1$
 		TooltipManager.setTooltip (radiationLabel, Msg.getString("TabPanelHealth.tooltip"), TooltipWay.down);
 			 
-
 		// Prepare radiation scroll panel
 		WebScrollPane radiationScrollPanel = new WebScrollPane();
 		radiationPanel.add(radiationScrollPanel, BorderLayout.CENTER);
@@ -209,27 +212,26 @@ extends TabPanel {
 		radiationTableModel = new RadiationTableModel(person);
 
 		// Create radiation table
-		radiationTable = new ZebraJTable(radiationTableModel) {
-		    //2016-04-15 Implemented radiation table header tool tips
-/*			
-		    protected JTableHeader createDefaultTableHeader() {
-		        return new JTableHeader(columnModel) {
-		            public String getToolTipText(MouseEvent e) {
-		                //String tip = null;
-		                java.awt.Point p = e.getPoint();
-		                int index = columnModel.getColumnIndexAtX(p.x);
-		                if (index > -1) {
-			                int realIndex = columnModel.getColumn(index).getModelIndex();
-			                return radiationToolTips[realIndex];
-		            	}
-		                else {
-		                	return Msg.getString("TabPanelHealth.tooltip");
-		                }
-		            }
-		        };
-		    }
-*/		        
-		};
+		radiationTable = new ZebraJTable(radiationTableModel);
+//		{
+		    // Implement radiation table header tool tips
+//		    protected JTableHeader createDefaultTableHeader() {
+//		        return new JTableHeader(columnModel) {
+//		            public String getToolTipText(MouseEvent e) {
+//		                //String tip = null;
+//		                java.awt.Point p = e.getPoint();
+//		                int index = columnModel.getColumnIndexAtX(p.x);
+//		                if (index > -1) {
+//			                int realIndex = columnModel.getColumn(index).getModelIndex();
+//			                return radiationToolTips[realIndex];
+//		            	}
+//		                else {
+//		                	return Msg.getString("TabPanelHealth.tooltip");
+//		                }
+//		            }
+//		        };
+//		    }		        
+//		};
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -239,7 +241,7 @@ extends TabPanel {
 		radiationTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
 		
 		//balloonToolTip.createBalloonTip(radiationTable, Msg.getString("TabPanelHealth.tooltip")); //$NON-NLS-1$
-		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 30));
+		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 55));
 		radiationTable.setCellSelectionEnabled(false);
 		radiationScrollPanel.setViewportView(radiationTable);
 		//radiationTable.setToolTipText(Msg.getString("TabPanelHealth.tooltip")); //$NON-NLS-1$
@@ -248,13 +250,50 @@ extends TabPanel {
         //if (!MainScene.OS.equals("linux")) {
         //	radiationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 		//}
-		// 2015-06-08 Added setTableStyle()
+		// Add setTableStyle()
 		TableStyle.setTableStyle(radiationTable);
 
 		// Prepare table panel.
-		WebPanel tablePanel = new WebPanel(new GridLayout(2, 1));
+		WebPanel tablePanel = new WebPanel(new GridLayout(3, 1));
 		centerContentPanel.add(tablePanel, BorderLayout.SOUTH);
 
+		// Prepare sleep time panel
+		WebPanel sleepPanel = new WebPanel(new BorderLayout());
+		sleepPanel.setBorder(new MarsPanelBorder());
+		tablePanel.add(sleepPanel);
+
+		// Prepare sleep time label
+		WebLabel sleepLabel = new WebLabel(Msg.getString("TabPanelHealth.sleep"), WebLabel.CENTER); //$NON-NLS-1$
+		sleepPanel.add(sleepLabel, BorderLayout.NORTH);
+
+		// Prepare sleep time scroll panel
+		WebScrollPane sleepScrollPanel = new WebScrollPane();
+		sleepPanel.add(sleepScrollPanel, BorderLayout.CENTER);
+
+		// Prepare sleep time table model
+		sleepTableModel = new SleepTableModel(person);
+		
+		// Create sleep time table
+		sleepTable = new ZebraJTable(sleepTableModel);
+		sleepTable.setPreferredScrollableViewportSize(new Dimension(225, 55));
+		sleepTable.getColumnModel().getColumn(0).setPreferredWidth(10);
+		sleepTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+		sleepTable.setCellSelectionEnabled(false);
+		sleepScrollPanel.setViewportView(sleepTable);
+
+		DefaultTableCellRenderer sleepRenderer = new DefaultTableCellRenderer();
+		sleepRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+		sleepTable.getColumnModel().getColumn(0).setCellRenderer(sleepRenderer);
+		sleepTable.getColumnModel().getColumn(1).setCellRenderer(sleepRenderer);
+		
+		
+		// Add sorting
+		sleepTable.setAutoCreateRowSorter(true);
+        //if (!MainScene.OS.equals("linux")) {
+        // 	sleepTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		//}
+		TableStyle.setTableStyle(sleepTable);
+		
 		// Prepare medication panel.
 		WebPanel medicationPanel = new WebPanel(new BorderLayout());
 		medicationPanel.setBorder(new MarsPanelBorder());
@@ -273,16 +312,15 @@ extends TabPanel {
 
 		// Prepare medication table.
 		medicationTable = new ZebraJTable(medicationTableModel);
-		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
+		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 10));
 		medicationTable.setCellSelectionEnabled(false);
 		medicationScrollPanel.setViewportView(medicationTable);
 
-		// 2015-06-08 Added sorting
+		// Add sorting
 		medicationTable.setAutoCreateRowSorter(true);
        //if (!MainScene.OS.equals("linux")) {
         //	medicationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 		//}
-		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(medicationTable);
 
 		// Prepare health problem panel
@@ -303,17 +341,17 @@ extends TabPanel {
 
 		// Create health problem table
 		healthProblemTable = new ZebraJTable(healthProblemTableModel);
-		healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
+		healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 10));
 		healthProblemTable.setCellSelectionEnabled(false);
 		healthProblemScrollPanel.setViewportView(healthProblemTable);
 
-		// 2015-06-08 Added sorting
+		// Add sorting
 		healthProblemTable.setAutoCreateRowSorter(true);
-       //if (!MainScene.OS.equals("linux")) {
-       // 	healthProblemTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+        //if (!MainScene.OS.equals("linux")) {
+        // 	healthProblemTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 		//}
-		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(healthProblemTable);
+		
 	}
 
 
@@ -328,6 +366,7 @@ extends TabPanel {
 			TableStyle.setTableStyle(radiationTable);
 			TableStyle.setTableStyle(medicationTable);
 			TableStyle.setTableStyle(healthProblemTable);
+			TableStyle.setTableStyle(sleepTable);
 		}
 		
 		// Update fatigue if necessary.
@@ -392,6 +431,9 @@ extends TabPanel {
 
 		// Update radiation dose table model
 		radiationTableModel.update();
+		
+		// Update sleep time table model
+		sleepTableModel.update();
 	}
 
 //	public class IconTextCellRenderer extends DefaultTableCellRenderer {
@@ -588,6 +630,77 @@ extends TabPanel {
 		}
 	}
 
+	
+	/**
+	 * Internal class used as model for the sleep time table.
+	 */
+	private static class SleepTableModel
+	extends AbstractTableModel {
+
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		private DecimalFormat fmt = new DecimalFormat("0.0");
+
+		private CircadianClock circadian;
+		private List<Double> sleepTime;
+
+		private SleepTableModel(Person person) {
+			circadian = person.getCircadianClock();
+			sleepTime = circadian.getSleepTime();
+		}
+
+		public int getRowCount() {
+			return sleepTime.size();
+		}
+
+		public int getColumnCount() {
+			return 2;
+		}
+
+		public Class<?> getColumnClass(int columnIndex) {
+			Class<?> dataType = super.getColumnClass(columnIndex);
+			if (columnIndex == 0) {
+			    dataType = Integer.class;
+			}
+			else if (columnIndex == 1) {
+			    dataType = Double.class;
+			}
+			return dataType;
+		}
+
+		public String getColumnName(int columnIndex) {
+			if (columnIndex == 0) {
+			    return "Mission Sol"; 
+			}
+			else if (columnIndex == 1) {
+			    return "Sleep Time [in millisols]";
+			}
+			else {
+			    return null;
+			}
+		}
+
+		public Object getValueAt(int row, int column) {
+			Object result = null;
+			if (row < getRowCount()) {
+				if (column == 0) {
+				    result = row;
+				}
+				else if (column == 1) {
+				    result = fmt.format(sleepTime.get(row));
+				}
+			}
+			return result;
+		}
+
+		public void update() {
+			sleepTime = circadian.getSleepTime();
+			
+			fireTableDataChanged();
+		}
+	}
+	
 	/**
 	 * Internal class used as model for the medication table.
 	 */
