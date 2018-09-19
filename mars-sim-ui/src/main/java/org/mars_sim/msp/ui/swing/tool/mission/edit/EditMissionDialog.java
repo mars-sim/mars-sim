@@ -53,7 +53,6 @@ public class EditMissionDialog extends ModalInternalFrame {
 	public EditMissionDialog(MainDesktopPane desktop, Mission mission, MissionWindow missionWindow) {
 		// Use ModalInternalFrame constructor
         super("Edit Mission");
-        //2016-09-24 Added missionWindow param
         this.missionWindow = missionWindow;
         
 		// Initialize data members.
@@ -103,7 +102,7 @@ public class EditMissionDialog extends ModalInternalFrame {
 		//setResizable(false);
 		//setVisible(true);
 		
-        // 2016-10-22 Add to its own tab pane
+        // Add to its own tab pane
         if (desktop.getMainScene() != null)
         	desktop.add(this);
         	//desktop.getMainScene().getDesktops().get(1).add(this);
@@ -214,12 +213,10 @@ public class EditMissionDialog extends ModalInternalFrame {
 		}
 	}
 	
-	// 2016-09-24 Added getInfoPanel()
 	public InfoPanel getInfoPanel() {
 		return infoPane;
 	}
 	
-	// 2016-09-24 Added getMissionWindow()
 	public MissionWindow getMissionWindow() {
 		return missionWindow;
 	}

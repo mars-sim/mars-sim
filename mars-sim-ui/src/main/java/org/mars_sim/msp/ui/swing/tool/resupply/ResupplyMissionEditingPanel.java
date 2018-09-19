@@ -32,12 +32,7 @@ import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 //import javax.swing.JTextField;
 import javax.swing.ListModel;
@@ -73,6 +68,12 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel.SupplyItem;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.radiobutton.WebRadioButton;
+import com.alee.laf.scroll.WebScrollPane;
+
 //import eu.hansolo.enzo.radialmenu.RadialMenu.ItemEvent;
 
 /**
@@ -83,23 +84,31 @@ public class ResupplyMissionEditingPanel
 extends TransportItemEditingPanel {
 
 	private static final Integer[] EMPTY_STRING_ARRAY = new Integer[0];
-
+	private static final int MAX_FUTURE_ORBITS = 5;
+	private static final int MAX_IMMIGRANTS = 48;
+	
 	// Data members
 	private String errorString = new String();
 	private boolean validation_result = true;
 	private Integer[] sols = new Integer[ResupplyUtil.MAX_NUM_SOLS_PLANNED];
 	private Number[] quantity = new Number[100000];
-	//private Number[] amount = new Number[100000];
-	private Integer[] immigrants = new Integer[25];
+	private Integer[] immigrants = new Integer[MAX_IMMIGRANTS];
 
 	private JComboBoxMW<Settlement> destinationCB;
-	private JRadioButton arrivalDateRB, timeUntilArrivalRB;
+	private WebRadioButton arrivalDateRB;
+	private WebRadioButton timeUntilArrivalRB;
 	private MartianSolComboBoxModel martianSolCBModel;
-	private JLabel arrivalDateTitleLabel, timeUntilArrivalLabel, solLabel, monthLabel, orbitLabel, solInfoLabel, errorLabel;
+	private WebLabel arrivalDateTitleLabel;
+	private WebLabel timeUntilArrivalLabel;
+	private WebLabel solLabel;
+	private WebLabel monthLabel;
+	private WebLabel orbitLabel;
+	private WebLabel solInfoLabel;
+	private WebLabel errorLabel;
 	private JComboBoxMW<?> solCB, solsFromCB, immigrantsCB, monthCB, orbitCB;
 	private SupplyTableModel supplyTableModel;
 	private JTable supplyTable;
-	private JButton removeSupplyButton;
+	private WebButton removeSupplyButton;
 
 	private Resupply resupply;
 	private NewTransportItemDialog newTransportItemDialog = null;
@@ -124,15 +133,15 @@ extends TransportItemEditingPanel {
 		setLayout(new BorderLayout(0, 0));
 
 		// Create top edit pane.
-		JPanel topEditPane = new JPanel(new BorderLayout(10, 10));
+		WebPanel topEditPane = new WebPanel(new BorderLayout(10, 10));
 		add(topEditPane, BorderLayout.NORTH);
 
 		// Create destination pane.
-		JPanel destinationPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		WebPanel destinationPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		topEditPane.add(destinationPane, BorderLayout.NORTH);
 
 		// Create destination title label.
-		JLabel destinationTitleLabel = new JLabel("Destination : ");
+		WebLabel destinationTitleLabel = new WebLabel("Destination : ");
 		destinationPane.add(destinationTitleLabel);
 
 		// Create destination combo box.
@@ -149,7 +158,7 @@ extends TransportItemEditingPanel {
 		destinationPane.add(destinationCB);
 
 		// Create arrival date pane.
-		JPanel arrivalDatePane = new JPanel(new GridLayout(4, 1, 10, 10));
+		WebPanel arrivalDatePane = new WebPanel(new GridLayout(4, 1, 10, 10));
 		arrivalDatePane.setBorder(new TitledBorder("Arrival Date"));
 		topEditPane.add(arrivalDatePane, BorderLayout.CENTER);
 
@@ -157,16 +166,16 @@ extends TransportItemEditingPanel {
 		ButtonGroup dateTypeRBGroup = new ButtonGroup();
 
 		// Create arrival date selection pane.
-		JPanel arrivalDateSelectionPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		WebPanel arrivalDateSelectionPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		arrivalDatePane.add(arrivalDateSelectionPane);
 
 		// Create arrival date radio button.
-		arrivalDateRB = new JRadioButton();
+		arrivalDateRB = new WebRadioButton();
 		dateTypeRBGroup.add(arrivalDateRB);
 		arrivalDateRB.setSelected(true);
 		arrivalDateRB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				JRadioButton rb = (JRadioButton) evt.getSource();
+				WebRadioButton rb = (WebRadioButton) evt.getSource();
 				setEnableArrivalDatePane(rb.isSelected());
 				setEnableTimeUntilArrivalPane(!rb.isSelected());
 			}
@@ -174,7 +183,7 @@ extends TransportItemEditingPanel {
 		arrivalDateSelectionPane.add(arrivalDateRB);
 
 		// Create arrival date title label.
-		arrivalDateTitleLabel = new JLabel("Arrival Date : ");
+		arrivalDateTitleLabel = new WebLabel("Arrival Date : ");
 		arrivalDateSelectionPane.add(arrivalDateTitleLabel);
 
 		// Get default resupply Martian time.
@@ -190,16 +199,16 @@ extends TransportItemEditingPanel {
 		martianSolCBModel = new MartianSolComboBoxModel(resupplyTime.getMonth(), resupplyTime.getOrbit());
 
 		// Create orbit label.
-		orbitLabel = new JLabel("Orbit");
+		orbitLabel = new WebLabel("Orbit");
 		arrivalDateSelectionPane.add(orbitLabel);
 
 		// Create orbit combo box.
 		NumberFormat formatter = NumberFormat.getInstance();
 		formatter.setMinimumIntegerDigits(2);
-		String[] orbitValues = new String[20];
+		String[] orbitValues = new String[MAX_FUTURE_ORBITS];
 		int startOrbit = resupplyTime.getOrbit();
 		for (int x = 0; x < 20; x++) {
-			orbitValues[x] = formatter.format(startOrbit + x);
+			orbitValues[x] = formatter.format(startOrbit + x - 1);
 		}
 		orbitCB = new JComboBoxMW<Object>(orbitValues);
 		orbitCB.setSelectedItem(formatter.format(startOrbit));
@@ -213,7 +222,7 @@ extends TransportItemEditingPanel {
 		arrivalDateSelectionPane.add(orbitCB);
 
 		// Create month label.
-		monthLabel = new JLabel("Month");
+		monthLabel = new WebLabel("Month");
 		arrivalDateSelectionPane.add(monthLabel);
 
 		// Create month combo box.
@@ -229,7 +238,7 @@ extends TransportItemEditingPanel {
 		arrivalDateSelectionPane.add(monthCB);
 
 		// Create sol label.
-		solLabel = new JLabel("Sol");
+		solLabel = new WebLabel("Sol");
 		arrivalDateSelectionPane.add(solLabel);
 
 		// Create sol combo box.
@@ -239,16 +248,16 @@ extends TransportItemEditingPanel {
 
 
 		// Create time until arrival pane.
-		JPanel timeUntilArrivalPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		WebPanel timeUntilArrivalPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		arrivalDatePane.add(timeUntilArrivalPane);
 
 		// Create time until arrival radio button.
-		timeUntilArrivalRB = new JRadioButton();
+		timeUntilArrivalRB = new WebRadioButton();
 		timeUntilArrivalRB.setSelected(false);
 		dateTypeRBGroup.add(timeUntilArrivalRB);
 		timeUntilArrivalRB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				JRadioButton rb = (JRadioButton) evt.getSource();
+				WebRadioButton rb = (WebRadioButton) evt.getSource();
 				setEnableTimeUntilArrivalPane(rb.isSelected());
 				setEnableArrivalDatePane(!rb.isSelected());
 			}
@@ -256,29 +265,29 @@ extends TransportItemEditingPanel {
 		timeUntilArrivalPane.add(timeUntilArrivalRB);
 
 		// create time until arrival label.
-		timeUntilArrivalLabel = new JLabel("Sols Until Arrival : ");
+		timeUntilArrivalLabel = new WebLabel("Sols Until Arrival : ");
 		timeUntilArrivalLabel.setEnabled(false);
 		timeUntilArrivalPane.add(timeUntilArrivalLabel);
 
 		// Create sols text field.
 		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		int solsDiff = (int) Math.round((MarsClock.getTimeDiff(resupplyTime, currentTime) / 1000D));
-/*
-		solsTF = new JTextField(6);
-		solsTF.setText(Integer.toString(solsDiff));
-		solsTF.setHorizontalAlignment(JTextField.RIGHT);
-		solsTF.setEnabled(false);
-		solsTF.setEditable(true);
 
-		timeUntilArrivalPane.add(solsTF);
-		// Implemented addChangeListener() to validate solsTF.
-		addChangeListener(solsTF, e -> validateSolsTF());
-*/
+//		solsTF = new JTextField(6);
+//		solsTF.setText(Integer.toString(solsDiff));
+//		solsTF.setHorizontalAlignment(JTextField.RIGHT);
+//		solsTF.setEnabled(false);
+//		solsTF.setEditable(true);
+//
+//		timeUntilArrivalPane.add(solsTF);
+//		// Implemented addChangeListener() to validate solsTF.
+//		addChangeListener(solsTF, e -> validateSolsTF());
+
 		// Switch to using ComboBoxMW for sols
 		int size = sols.length;
 		//int max = ResupplyUtil.MAX_NUM_SOLS_PLANNED;
 		int t = ResupplyUtil.AVG_TRANSIT_TIME;
-		for (int i = t+1; i<size+t+1; i++) {
+		for (int i = t+1; i < size+t+1; i++) {
 			if (i > t)
 				sols[i-t-1] = i;
 		}
@@ -289,31 +298,31 @@ extends TransportItemEditingPanel {
 		timeUntilArrivalPane.add(solsFromCB);
 
 		// Create sol information label.
-		solInfoLabel = new JLabel("(668 Sols = 1 Martian Orbit for a non-leap year)");
+		solInfoLabel = new WebLabel("(668 Sols = 1 Martian Orbit for a non-leap year)");
 		solInfoLabel.setEnabled(false);
 		timeUntilArrivalPane.add(solInfoLabel);
 
 		// Create sol information label.
-		JLabel limitLabel = new JLabel("  Note : cannot have more than one resupply per sol.");
+		WebLabel limitLabel = new WebLabel("  Note : cannot have more than one resupply per sol.");
 		limitLabel.setEnabled(true);
 		limitLabel.setForeground(Color.ORANGE);
 		arrivalDatePane.add(limitLabel);
 
 		// Create error pane.
-		JPanel errorPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+		WebPanel errorPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 		arrivalDatePane.add(errorPane);//, BorderLayout.SOUTH);
 
 		// Create error label
-		errorLabel = new JLabel(new String());
+		errorLabel = new WebLabel(new String());
 		errorLabel.setForeground(Color.RED);
 		errorPane.add(errorLabel);
 
 		// Create immigrants panel.
-		JPanel immigrantsPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		WebPanel immigrantsPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		topEditPane.add(immigrantsPane, BorderLayout.SOUTH);
 
 		// Create immigrants label.
-		JLabel immigrantsLabel = new JLabel("Number of Immigrants : ");
+		WebLabel immigrantsLabel = new WebLabel("Number of Immigrants : ");
 		immigrantsPane.add(immigrantsLabel);
 
 		// Create immigrants text field.
@@ -338,7 +347,7 @@ extends TransportItemEditingPanel {
 
 
 		// Create bottom edit pane.
-		JPanel bottomEditPane = new JPanel(new BorderLayout(0, 0));
+		WebPanel bottomEditPane = new WebPanel(new BorderLayout(0, 0));
 		bottomEditPane.setBorder(new TitledBorder("Supplies"));
 		add(bottomEditPane, BorderLayout.CENTER);
 
@@ -368,16 +377,16 @@ extends TransportItemEditingPanel {
 		supplyTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
 
 		// Create supply scroll pane.
-		JScrollPane supplyScrollPane = new JScrollPane(supplyTable);
+		WebScrollPane supplyScrollPane = new WebScrollPane(supplyTable);
 		supplyScrollPane.setPreferredSize(new Dimension(450, 200));
 		bottomEditPane.add(supplyScrollPane, BorderLayout.CENTER);
 
 		// Create supply button pane.
-		JPanel supplyButtonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+		WebPanel supplyButtonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
 		bottomEditPane.add(supplyButtonPane, BorderLayout.SOUTH);
 
 		// Create add supply button.
-		JButton addSupplyButton = new JButton("Add");
+		WebButton addSupplyButton = new WebButton("Add");
 		addSupplyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				// Add new supply row.
@@ -387,7 +396,7 @@ extends TransportItemEditingPanel {
 		supplyButtonPane.add(addSupplyButton);
 
 		// Create remove supply button.
-		removeSupplyButton = new JButton("Remove");
+		removeSupplyButton = new WebButton("Remove");
 		removeSupplyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				// Remove selected supply rows.
@@ -513,16 +522,16 @@ extends TransportItemEditingPanel {
 				supplyTable.setValueAt(defaultType, editingRow, 1);
 			}
 		}
-/*
-		public void updateSolsCB() {
-			List<Integer> list = new ArrayList<Integer>();
-			Collections.addAll(list, sols);
-			// Remove dates that have been chosen for other resupply missions.
-			list.removeAll(Arrays.asList(getMissionSols()));
-			sols = list.toArray(EMPTY_STRING_ARRAY);
-			solsFromCB = new JComboBoxMW<Integer>(sols);
-		}
-*/
+
+//		public void updateSolsCB() {
+//			List<Integer> list = new ArrayList<Integer>();
+//			Collections.addAll(list, sols);
+//			// Remove dates that have been chosen for other resupply missions.
+//			list.removeAll(Arrays.asList(getMissionSols()));
+//			sols = list.toArray(EMPTY_STRING_ARRAY);
+//			solsFromCB = new JComboBoxMW<Integer>(sols);
+//		}
+
 	}
 
 	/**
@@ -659,14 +668,14 @@ extends TransportItemEditingPanel {
 	    		  }
 	    	}
 	    });
-/*
+
 		//solsFromCB.addActionListener(new ActionListener() {
 		//	public void actionPerformed(ActionEvent evt) {
 		//		if (solsFromCB.isfo
 		//		timeUntilArrivalRB.requestFocusInWindow(true);
 		//	}
 		//});
-*/
+
 	}
 
 	@Override
@@ -1012,21 +1021,21 @@ extends TransportItemEditingPanel {
 
 		else if (timeUntilArrivalRB.isSelected()) {
 			marsCurrentTime = validateSolsFrom();
-/*
+
 			// Implemented addChangeListener() to validate solsTF.
-			String timeArrivalString = solsTF.getText().trim();
-			if (timeArrivalString.isEmpty()) {
-				validation_result = false;
-				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noSols"); //$NON-NLS-1$
-				errorLabel.setText(errorString);
-				enableButton(false);
-				System.out.println("Invalid Sols. It cannot be empty.");
-			}
-			else {
-				//System.out.println("calling validateSolsTF()");
-				marsCurrentTime = validateSolsTF();
-			}
-*/
+//			String timeArrivalString = solsTF.getText().trim();
+//			if (timeArrivalString.isEmpty()) {
+//				validation_result = false;
+//				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noSols"); //$NON-NLS-1$
+//				errorLabel.setText(errorString);
+//				enableButton(false);
+//				System.out.println("Invalid Sols. It cannot be empty.");
+//			}
+//			else {
+//				//System.out.println("calling validateSolsTF()");
+//				marsCurrentTime = validateSolsTF();
+//			}
+
 		}
 		return marsCurrentTime;
 	}
@@ -1038,17 +1047,17 @@ extends TransportItemEditingPanel {
 		errorString = null;
 		solsFromCB.setEditable(true);
 		solsFromCB.setSelectedIndex(0);
-/*		String timeArrivalString = (String) solsFromCB.getSelectedItem();//solsTF.getText().trim();
-		if (timeArrivalString.isEmpty()) {
-			validation_result = false;
-			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noSols"); //$NON-NLS-1$
-			errorLabel.setText(errorString);
-			//marsCurrentTime = null;
-			enableButton(false);
-			System.out.println("Invalid entry in Sols. It cannot be empty.");
-		}
-		else {
-*/
+//		String timeArrivalString = (String) solsFromCB.getSelectedItem();//solsTF.getText().trim();
+//		if (timeArrivalString.isEmpty()) {
+//			validation_result = false;
+//			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noSols"); //$NON-NLS-1$
+//			errorLabel.setText(errorString);
+//			//marsCurrentTime = null;
+//			enableButton(false);
+//			System.out.println("Invalid entry in Sols. It cannot be empty.");
+//		}
+//		else {
+
 			// Determine arrival date from time until arrival text field.
 			//if (timeArrivalString.equals("-"))
 			//	timeArrivalString = "-1";
@@ -1059,18 +1068,16 @@ extends TransportItemEditingPanel {
 				solsFromCB.setSelectedIndex(0);
 			}
 			//int inputSols = Integer.parseInt(solsTF.getText());
-/*
-			if (inputSol < 0D) {
-			//if (inputSols < 0D) {
-				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativeSols"); //$NON-NLS-1$
-				errorLabel.setText(errorString);
-				//marsCurrentTime = null;
-				validation_result = false;
-				enableButton(false);
-				System.out.println("Invalid entry in Sols. It cannot be less than zero.");
-			}
-			else {
-*/
+//			if (inputSol < 0D) {
+//			//if (inputSols < 0D) {
+//				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativeSols"); //$NON-NLS-1$
+//				errorLabel.setText(errorString);
+//				//marsCurrentTime = null;
+//				validation_result = false;
+//				enableButton(false);
+//				System.out.println("Invalid entry in Sols. It cannot be less than zero.");
+//			}
+//			else {
 				try {
 					boolean good = true;
 
@@ -1163,20 +1170,20 @@ extends TransportItemEditingPanel {
 			newTransportItemDialog.setCreateButton(value);
 	}
 
-	/**
-	 * Installs a listener to receive notification when the text of any
-	 * {@code JTextComponent} is changed. Internally, it installs a
-	 * {@link DocumentListener} on the text component's {@link Document},
-	 * and a {@link PropertyChangeListener} on the text component to detect
-	 * if the {@code Document} itself is replaced.
-	 *
-	 * @param text any text component, such as a {@link JTextField}
-	 *        or {@link JTextArea}
-	 * @param changeListener a listener to receieve {@link ChangeEvent}s
-	 *        when the text is changed; the source object for the events
-	 *        will be the text component
-	 * @throws NullPointerException if either parameter is null
-	 */
+//	/**
+//	 * Installs a listener to receive notification when the text of any
+//	 * {@code JTextComponent} is changed. Internally, it installs a
+//	 * {@link DocumentListener} on the text component's {@link Document},
+//	 * and a {@link PropertyChangeListener} on the text component to detect
+//	 * if the {@code Document} itself is replaced.
+//	 *
+//	 * @param text any text component, such as a {@link JTextField}
+//	 *        or {@link JTextArea}
+//	 * @param changeListener a listener to receieve {@link ChangeEvent}s
+//	 *        when the text is changed; the source object for the events
+//	 *        will be the text component
+//	 * @throws NullPointerException if either parameter is null
+//	 */
 	// see http://stackoverflow.com/questions/3953208/value-change-listener-to-jtextfield
 	public static void addChangeListener(JTextComponent text, ChangeListener changeListener) {
 	    Objects.requireNonNull(text);

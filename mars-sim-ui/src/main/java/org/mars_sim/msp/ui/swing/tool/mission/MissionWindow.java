@@ -107,45 +107,45 @@ extends ToolWindow {
 		// Create the edit mission button.
 		final WebButton editButton = new WebButton("Modify Mission");
 		editButton.setEnabled(false);
-/*
-		editButton.addActionListener(
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						// Edit the mission.
-						mission = (Mission) missionList.getSelectedValue();
-						if (mission != null) editMission(mission);
-					}
-				});
-		missionList.addListSelectionListener(
-			new ListSelectionListener() {
-				public void valueChanged(ListSelectionEvent e) {
-					// Enable button if mission is selected in list.
-					editButton.setEnabled(missionList.getSelectedValue() != null);
-				}
-			}
-		);
-*/
+
+//		editButton.addActionListener(
+//				new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						// Edit the mission.
+//						mission = (Mission) missionList.getSelectedValue();
+//						if (mission != null) editMission(mission);
+//					}
+//				});
+//		missionList.addListSelectionListener(
+//			new ListSelectionListener() {
+//				public void valueChanged(ListSelectionEvent e) {
+//					// Enable button if mission is selected in list.
+//					editButton.setEnabled(missionList.getSelectedValue() != null);
+//				}
+//			}
+//		);
+
 		buttonPane.add(editButton);
 
 		// Create the abort mission button.
 		final WebButton abortButton = new WebButton("Abort Mission");
 		abortButton.setEnabled(false);
-/*		
-		abortButton.addActionListener(
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						// End the mission.
-						mission = (Mission) missionList.getSelectedValue();
-						if (mission != null) endMission(mission);
-					}
-				});
-		missionList.addListSelectionListener(
-				new ListSelectionListener() {
-					public void valueChanged(ListSelectionEvent e) {
-						abortButton.setEnabled(missionList.getSelectedValue() != null);
-					}
-				});
-*/
+		
+//		abortButton.addActionListener(
+//				new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						// End the mission.
+//						mission = (Mission) missionList.getSelectedValue();
+//						if (mission != null) endMission(mission);
+//					}
+//				});
+//		missionList.addListSelectionListener(
+//				new ListSelectionListener() {
+//					public void valueChanged(ListSelectionEvent e) {
+//						abortButton.setEnabled(missionList.getSelectedValue() != null);
+//					}
+//				});
+
 		buttonPane.add(abortButton);
 
 		setSize(new Dimension(640, 640));//736));
@@ -194,35 +194,33 @@ extends ToolWindow {
 	/**
 	 * Open wizard to edit a mission.
 	 * @param mission the mission to edit.
+	 */
+//	private void editMission(Mission mission) {
+//
+//		if (ms != null)  {
+//			// Track the current pause state
+//			boolean previous = ms.startPause();
+//
+//			editMissionDialog = new EditMissionDialog(desktop, mission, this);
+//
+//			ms.endPause(previous);
+//
+//		} else
+//
+//			editMissionDialog = new EditMissionDialog(desktop, mission, this);
+//	}
 
-	private void editMission(Mission mission) {
-
-		if (ms != null)  {
-			// 2015-12-16 Track the current pause state
-			boolean previous = ms.startPause();
-
-			editMissionDialog = new EditMissionDialog(desktop, mission, this);
-
-			ms.endPause(previous);
-
-		} else
-
-			editMissionDialog = new EditMissionDialog(desktop, mission, this);
-	}
-*/
 	
 	/**
 	 * Ends the mission.
 	 * @param mission the mission to end.
-
-	private void endMission(Mission mission) {
-		//logger.info("End mission: " + mission.getName());
-		mission.endMission(Mission.USER_ABORTED_MISSION);
-		repaint();
-	}
-	
-*/
-	
+	 */
+//	private void endMission(Mission mission) {
+//		//logger.info("End mission: " + mission.getName());
+//		mission.endMission(Mission.USER_ABORTED_MISSION);
+//		repaint();
+//	}
+		
 	public CreateMissionWizard getCreateMissionWizard() {
 		return createMissionWizard;
 	}

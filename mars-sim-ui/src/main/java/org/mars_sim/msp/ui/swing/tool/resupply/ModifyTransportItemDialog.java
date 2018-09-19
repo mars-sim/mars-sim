@@ -12,8 +12,6 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
@@ -21,6 +19,9 @@ import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
+
+import com.alee.laf.button.WebButton;
+import com.alee.laf.panel.WebPanel;
 
 /**
  * A dialog for modifying transport items.
@@ -33,7 +34,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 	private TransportItemEditingPanel editingPanel;
 	private ResupplyWindow resupplyWindow;
 
-	private JButton commitButton;
+	private WebButton commitButton;
 	
 	/**
 	 * Constructor.
@@ -41,7 +42,6 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 	 * @param title title of dialog.
 	 * @param transportItem the transport item to modify.
 	 */
-	//2015-03-21 Switched from using JFrame to using desktop in param
 	public ModifyTransportItemDialog(MainDesktopPane desktop, ResupplyWindow resupplyWindow, String title, Transportable transportItem) {// , boolean isFX) {
 
 		// Use ModalInternalFrame constructor
@@ -54,7 +54,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 		this.setSize(560,500);
 
 		 // Create main panel
-        JPanel mainPane = new JPanel(new BorderLayout());
+        WebPanel mainPane = new WebPanel(new BorderLayout());
         setContentPane(mainPane);
 
         initEditingPanel();
@@ -62,13 +62,13 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 		mainPane.add(editingPanel, BorderLayout.CENTER);
 
 		// Create the button pane.
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
 
 		mainPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create commit button.
-		// 9/29/2014 Changed button text from "Modify" to "Commit Changes"
-		commitButton = new JButton("Commit Changes");
+		// Change button text from "Modify" to "Commit Changes"
+		commitButton = new WebButton("Commit Changes");
 		commitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				// Modify transport item and close dialog.
@@ -78,8 +78,8 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 		buttonPane.add(commitButton);
 
 		// Create cancel button.
-		// 9/29/2014 by Changed button text from "Cancel"  to "Discard Changes"
-		JButton cancelButton = new JButton("Discard Changes");
+		// Change button text from "Cancel"  to "Discard Changes"
+		WebButton cancelButton = new WebButton("Discard Changes");
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Close dialog.
@@ -89,7 +89,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 		});
 		buttonPane.add(cancelButton);
 
-        // 2016-10-22 Add to its own tab pane
+        // Add to its own tab pane
         if (desktop.getMainScene() != null)
         	desktop.add(this);
         	//desktop.getMainScene().getDesktops().get(2).add(this);

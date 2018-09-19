@@ -311,7 +311,10 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <version>0.3.0</version>
 		</dependency>
 
-<!-- load undecorator from bintray.com -->
+		<!-- Load undecorator from bintray.com 
+		https://arnaudnouard.wordpress.com/
+		Newer version at https://github.com/in-sideFX/UndecoratorBis
+		-->
 		<dependency>
 			<groupId>insidefx.undecorator</groupId>
 			<artifactId>undecorator</artifactId>
@@ -325,17 +328,21 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<!-- version>8.0.4</version-->
 			<version>9.0.6</version>
 		</dependency>
-<!-- The following artifacts are Needed by jfoenix
-		fontawesomefx 8.0.10 : 84 KB
-		datafx : 261 B
-		flow : 97 KB
-		core : 37 KB 
+		
+		<!-- The following artifacts are Needed by jfoenix
+			fontawesomefx 8.0.10 : 84 KB
+			datafx : 261 B
+			flow : 97 KB
+			core : 37 KB 
 		me.tatarka.retrolambda 3.6.1 : -->
-		<!-- dependency>
+		<!-- 
+		<dependency>
 		    <groupId>de.jensd</groupId>
 		    <artifactId>fontawesomefx</ artifactId>
 		    <version>8.0.13</version>
-		</dependency-->
+		</dependency>
+		-->
+		
 		<dependency>
 		    <groupId>io.datafx</groupId>
 		    <artifactId>datafx</artifactId>
@@ -427,7 +434,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	        </snapshots>
 	    </repository>
  		<repository>
-            <id>snapshots-repo</id>
+            <id>oss-sonatype-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
             <releases>
                 <enabled>true</enabled>
@@ -436,6 +443,16 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+ 		<repository>
+            <id>oss-sonatype</id>
+            <url>https://oss.sonatype.org/content/repositories/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>    
   		<repository>
 	        <id>jerady</id>
 	        <url>https://dl.bintray.com/jerady/maven/</url>

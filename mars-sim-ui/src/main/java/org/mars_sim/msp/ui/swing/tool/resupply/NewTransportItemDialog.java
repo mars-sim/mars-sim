@@ -13,21 +13,21 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.panel.WebPanel;
+
 /**
  * A dialog for creating a new transport item.
  * TODO externalize strings
  */
-//2015-03-21 Switched from extending JDialog to JinternalFrame
 public class NewTransportItemDialog extends ModalInternalFrame {
 
 	// Transport item types.
@@ -37,20 +37,20 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 
 	// Data members.
 	private TransportItemEditingPanel editingPanel;
-	private JPanel mainEditingPanel;
+	private WebPanel mainEditingPanel;
 	private CardLayout mainEditingLayout;
-	private JPanel emptyPanel;
+	private WebPanel emptyPanel;
 	private TransportItemEditingPanel resupplyMissionPanel;
 	private TransportItemEditingPanel arrivingSettlementPanel;
-	private JButton createButton;
+	private WebButton createButton;
 
 	private ResupplyWindow resupplyWindow;
+	
 	/**
 	 * Constructor.
 	 * @param MainDesktopPane desktop
 	 * @param transportItem the transport item to modify.
 	 */
-	//2015-03-21 Switched from using JFrame to using desktop in param
 	public NewTransportItemDialog(MainDesktopPane desktop, ResupplyWindow resupplyWindow) {
 
 		// Use ModalInternalFrame constructor
@@ -60,14 +60,14 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		setSize(580, 600);
 
 		 // Create main panel
-        JPanel mainPane = new JPanel(new BorderLayout());
+		WebPanel mainPane = new WebPanel(new BorderLayout());
         setContentPane(mainPane);
 
 		// Set the border.
 		((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
 
 		// Create transport type panel.
-		JPanel transportTypePanel = new JPanel(new FlowLayout(10, 10, FlowLayout.CENTER));
+		WebPanel transportTypePanel = new WebPanel(new FlowLayout(10, 10, FlowLayout.CENTER));
 		getContentPane().add(transportTypePanel, BorderLayout.NORTH);
 
 		// Create combo box for determining transport item type.
@@ -86,11 +86,11 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 
 		// Create main editing panel.
 		mainEditingLayout = new CardLayout();
-		mainEditingPanel = new JPanel(mainEditingLayout);
+		mainEditingPanel = new WebPanel(mainEditingLayout);
 		getContentPane().add(mainEditingPanel, BorderLayout.CENTER);
 
 		// Create empty default panel.
-		emptyPanel = new JPanel();
+		emptyPanel = new WebPanel();
 		emptyPanel.setBorder(new MarsPanelBorder());
 		mainEditingPanel.add(emptyPanel, DEFAULT_MESSAGE);
 
@@ -103,11 +103,11 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		mainEditingPanel.add(arrivingSettlementPanel, ARRIVING_SETTLEMENT);
 
 		// Create the button pane.
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		// Create create button.
-		createButton = new JButton("Create");
+		createButton = new WebButton("Create");
 		createButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				// Create transport item and close dialog.
@@ -118,7 +118,7 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		buttonPane.add(createButton);
 
 		// Create cancel button.
-		JButton cancelButton = new JButton("Cancel");
+		WebButton cancelButton = new WebButton("Cancel");
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Close dialog.
@@ -129,7 +129,7 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		});
 		buttonPane.add(cancelButton);
 
-        // 2016-10-22 Add to its own tab pane
+        // Add to its own tab pane
         if (desktop.getMainScene() != null)
         	desktop.add(this);
         	//desktop.getMainScene().getDesktops().get(2).add(this);
@@ -148,6 +148,7 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 
 	/**
 	 * Set the editing panel.
+	 * 
 	 * @param panelKey the panel key string.
 	 */
 	private void setEditingPanel(String panelKey) {

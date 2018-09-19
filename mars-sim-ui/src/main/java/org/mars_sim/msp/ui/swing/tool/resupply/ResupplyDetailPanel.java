@@ -138,11 +138,11 @@ implements ClockListener, HistoricalEventListener {
 		stateValueLabel = new WebLabel("", WebLabel.CENTER);
 		springPane.add(stateValueLabel);
 
-		// 2016-11-23 Create launch date panel.
+		// Create launch date panel.
 		//WebPanel launchDatePane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		//springPane.add(launchDatePane);
 
-		// 2016-11-23 Create launch date title label.
+		// reate launch date title label.
 		WebLabel launchDateTitleLabel = new WebLabel("Launch Date : ", WebLabel.RIGHT);
 		springPane.add(launchDateTitleLabel);
 
@@ -186,7 +186,7 @@ implements ClockListener, HistoricalEventListener {
 		immigrantsValueLabel = new WebLabel("", WebLabel.CENTER);
 		springPane.add(immigrantsValueLabel);
 
-		// 2017-03-31 Prepare SpringLayout
+		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(springPane,
 		                                6, 2, //rows, cols
 		                                20, 5,        //initX, initY
@@ -213,6 +213,7 @@ implements ClockListener, HistoricalEventListener {
 	/**
 	 * Set the resupply mission to show.
 	 * If resupply is null, clear displayed info.
+	 * 
 	 * @param resupply the resupply mission.
 	 */
 	public void setResupply(Resupply resupply) {
@@ -309,6 +310,7 @@ implements ClockListener, HistoricalEventListener {
 
 	/**
 	 * Create the building display panel.
+	 * 
 	 * @return panel.
 	 */
 	private WebPanel createBuildingsDisplayPanel() {
@@ -383,6 +385,7 @@ implements ClockListener, HistoricalEventListener {
 
 	/**
 	 * Create the vehicle display panel.
+	 * 
 	 * @return panel.
 	 */
 	private WebPanel createVehiclesDisplayPanel() {
@@ -457,6 +460,7 @@ implements ClockListener, HistoricalEventListener {
 
 	/**
 	 * Create the equipment display panel.
+	 * 
 	 * @return panel.
 	 */
 	private WebPanel createEquipmentDisplayPanel() {
@@ -517,6 +521,7 @@ implements ClockListener, HistoricalEventListener {
 
 	/**
 	 * Create the resources display panel.
+	 * 
 	 * @return panel.
 	 */
 	private WebPanel createResourcesDisplayPanel() {
@@ -580,6 +585,7 @@ implements ClockListener, HistoricalEventListener {
 
 	/**
 	 * Create the parts display panel.
+	 * 
 	 * @return panel.
 	 */
 	private WebPanel createPartsDisplayPanel() {

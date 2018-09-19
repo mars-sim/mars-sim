@@ -27,7 +27,6 @@ import java.util.List;
 /**
  * A wizard for creating new missions.
  */
-// 2015-03-24 Converted CreateMissionWizard from JDialog to JInternalFrame
 public class CreateMissionWizard
 extends ModalInternalFrame
 implements ActionListener {
@@ -323,17 +322,14 @@ implements ActionListener {
 	}
 	
 	
-	// 2016-09-24 Added getTypePanel()
 	public TypePanel getTypePanel() {
 		return typePanel;
 	}
 	
-	// 2016-09-24 Added getMissionWindow()
 	public MissionWindow getMissionWindow() {
 		return missionWindow;
 	}
 	
-	// 2016-09-24 Added getMissionBean() 
 	public MissionDataBean getMissionBean() {
 		return missionBean;
 	}

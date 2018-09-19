@@ -26,11 +26,7 @@ import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
@@ -75,33 +71,38 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+
 /**
  * The tab panel for showing mission details.
  */
 public class MainDetailPanel
-extends JPanel
+extends WebPanel
 implements ListSelectionListener, MissionListener, UnitListener {
 
 	// Custom mission panel IDs.
 	private final static String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
 
 	// Private members
-	private JLabel descriptionLabel;
-	private JLabel typeLabel;
-	private JLabel phaseLabel;
-	private JLabel memberNumLabel;
+	private WebLabel descriptionLabel;
+	private WebLabel typeLabel;
+	private WebLabel phaseLabel;
+	private WebLabel memberNumLabel;
 	private MemberTableModel memberTableModel;
 	private JTable memberTable;
-	private JButton centerMapButton;
-	private JButton vehicleButton;
-	private JLabel vehicleStatusLabel;
-	private JLabel speedLabel;
-	private JLabel distanceNextNavLabel;
-	private JLabel traveledLabel;
+	private WebButton centerMapButton;
+	private WebButton vehicleButton;
+	private WebLabel vehicleStatusLabel;
+	private WebLabel speedLabel;
+	private WebLabel distanceNextNavLabel;
+	private WebLabel traveledLabel;
 	
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("MainDetailPanel.decimalFormat")); //$NON-NLS-1$
 	private CardLayout customPanelLayout;
-	private JPanel missionCustomPane;
+	private WebPanel missionCustomPane;
 	
 	private Mission currentMission;
 	private Vehicle currentVehicle;
@@ -142,7 +143,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		infoPane.setBorder(new MarsPanelBorder());
 		mainBox.add(infoPane);
 		
-		JPanel topPane = new JPanel(new SpringLayout());
+		WebPanel topPane = new WebPanel(new SpringLayout());
 		infoPane.add(topPane);
 		
 		//JPanel descriptionPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -150,16 +151,16 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		//springPane0.add(descriptionPane);
 
 		// Create the description label.
-		JLabel descriptionLabel0 = new JLabel(Msg.getString("MainDetailPanel.description", JLabel.LEFT)); //$NON-NLS-1$
+		WebLabel descriptionLabel0 = new WebLabel(Msg.getString("MainDetailPanel.description", WebLabel.LEFT)); //$NON-NLS-1$
 		descriptionLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		topPane.add(descriptionLabel0);
 
-		descriptionLabel = new JLabel("None", JLabel.LEFT);
+		descriptionLabel = new WebLabel("None", WebLabel.LEFT);
 		//descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		descriptionLabel.setToolTipText(Msg.getString("MainDetailPanel.description")); //$NON-NLS-1$
 
 		String s = "";
-		// 2015-12-15 Implemented the missing descriptionLabel
+		// Implement the missing descriptionLabel
 		if (missionWindow.getCreateMissionWizard() != null) {
 			s = Conversion.capitalize(missionWindow.getCreateMissionWizard().getTypePanel().getDescription());
 			//System.out.println("Mission Description : " + s);
@@ -168,58 +169,56 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		else
 			descriptionLabel.setText("None");
 
-		JPanel wrapper0 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		WebPanel wrapper0 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper0.add(descriptionLabel);
 		topPane.add(wrapper0);
 
 		// Create the type label.
-		JLabel typeLabel0 = new JLabel(Msg.getString("MainDetailPanel.type", JLabel.LEFT)); //$NON-NLS-1$
+		WebLabel typeLabel0 = new WebLabel(Msg.getString("MainDetailPanel.type", WebLabel.LEFT)); //$NON-NLS-1$
 		typeLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		topPane.add(typeLabel0);
 		typeLabel0.setToolTipText(Msg.getString("MainDetailPanel.type"));//$NON-NLS-1$
 
-		typeLabel = new JLabel("None", JLabel.LEFT);
+		typeLabel = new WebLabel("None", WebLabel.LEFT);
 		//typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		JPanel wrapper1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		WebPanel wrapper1 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper1.add(typeLabel);
 		topPane.add(wrapper1);
 
 		// Create the phase label.
-		JLabel phaseLabel0 = new JLabel(Msg.getString("MainDetailPanel.phase", JLabel.LEFT)); //$NON-NLS-1$
+		WebLabel phaseLabel0 = new WebLabel(Msg.getString("MainDetailPanel.phase", WebLabel.LEFT)); //$NON-NLS-1$
 		phaseLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		topPane.add(phaseLabel0);
 
-		phaseLabel = new JLabel("None", JLabel.LEFT);
+		phaseLabel = new WebLabel("None", WebLabel.LEFT);
 		//phaseLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		JPanel wrapper2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		WebPanel wrapper2 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper2.add(phaseLabel);
 		topPane.add(wrapper2);
 
-		// 2017-05-03 Prepare SpringLayout
+		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(topPane,
 		                                3, 2, //rows, cols
 		                                10, 2,        //initX, initY
 		                                25, 1);       //xPad, yPad
 
-
-
 		// Create the travel panel.
 		Box travelBox = new CustomBox();
 		travelBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-		// 2017-05-03 Prepare SpringLayout
-		JPanel travelPane = new JPanel(new SpringLayout());
+		// Prepare SpringLayout
+		WebPanel travelPane = new WebPanel(new SpringLayout());
 		travelPane.setSize(new Dimension(200, 300));
 		//travelPane.setBorder(new MarsPanelBorder());
 		travelBox.add(travelPane);
 		mainBox.add(travelBox);
 
 		// Create the vehicle panel.
-		JPanel vehiclePane = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		WebPanel vehiclePane = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		vehiclePane.setAlignmentX(Component.BOTTOM_ALIGNMENT);
 		travelPane.add(vehiclePane);
 
 		// Create center map button
-		centerMapButton = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
+		centerMapButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
 		centerMapButton.setMargin(new Insets(2, 2, 2, 2));
 		centerMapButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -233,11 +232,11 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		vehiclePane.add(centerMapButton);
 
 		// Create the vehicle label.
-		JLabel vehicleLabel = new JLabel("   " + Msg.getString("MainDetailPanel.vehicle"), JLabel.RIGHT); //$NON-NLS-1$
+		WebLabel vehicleLabel = new WebLabel("   " + Msg.getString("MainDetailPanel.vehicle"), WebLabel.RIGHT); //$NON-NLS-1$
 		vehiclePane.add(vehicleLabel);
 
 		// Create the vehicle panel.
-		vehicleButton = new JButton("\t\t\t\t\t"); //$NON-NLS-1$
+		vehicleButton = new WebButton("\t\t\t\t\t"); //$NON-NLS-1$
 		vehicleButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		vehicleButton.setVisible(false);
 		vehicleButton.addActionListener(new ActionListener() {
@@ -270,56 +269,56 @@ implements ListSelectionListener, MissionListener, UnitListener {
                 }
 			}
 		});
-		JPanel wrapper00 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		WebPanel wrapper00 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper00.add(vehicleButton);
 		travelPane.add(wrapper00);
 
 		// Create the vehicle status label.
-		JLabel vehicleStatusLabel0 = new JLabel(Msg.getString("MainDetailPanel.vehicleStatus", JLabel.LEFT));//$NON-NLS-1$ //$NON-NLS-2$
+		WebLabel vehicleStatusLabel0 = new WebLabel(Msg.getString("MainDetailPanel.vehicleStatus", WebLabel.LEFT));//$NON-NLS-1$ //$NON-NLS-2$
 		//vehicleStatusLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(vehicleStatusLabel0);
 
-		vehicleStatusLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$ //$NON-NLS-2$
+		vehicleStatusLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$ //$NON-NLS-2$
 		//vehicleStatusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		JPanel wrapper01 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		WebPanel wrapper01 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper01.add(vehicleStatusLabel);
 		travelPane.add(wrapper01);
 
 
 		// Create the speed label.
-		JLabel speedLabel0 = new JLabel(Msg.getString("MainDetailPanel.vehicleSpeed", JLabel.LEFT)); //$NON-NLS-1$ //$NON-NLS-2$
+		WebLabel speedLabel0 = new WebLabel(Msg.getString("MainDetailPanel.vehicleSpeed", WebLabel.LEFT)); //$NON-NLS-1$ //$NON-NLS-2$
 		//speedLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(speedLabel0);
 
-		speedLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$ //$NON-NLS-2$
+		speedLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$ //$NON-NLS-2$
 		//speedLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		JPanel wrapper02 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		WebPanel wrapper02 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper02.add(speedLabel);
 		travelPane.add(wrapper02);
 
 		// Create the distance next navpoint label.
-		JLabel distanceNextNavLabel0 = new JLabel(Msg.getString("MainDetailPanel.distanceNextNavPoint", JLabel.LEFT)); //$NON-NLS-1$
+		WebLabel distanceNextNavLabel0 = new WebLabel(Msg.getString("MainDetailPanel.distanceNextNavPoint", WebLabel.LEFT)); //$NON-NLS-1$
 		//distanceNextNavLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(distanceNextNavLabel0);
 
-		distanceNextNavLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
+		distanceNextNavLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
 		//distanceNextNavLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		JPanel wrapper03 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		WebPanel wrapper03 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper03.add(distanceNextNavLabel);
 		travelPane.add(wrapper03);
 
 		// Create the traveled distance label.
-		JLabel traveledLabel0 = new JLabel(Msg.getString("MainDetailPanel.distanceTraveled", JLabel.LEFT)); //$NON-NLS-1$
+		WebLabel traveledLabel0 = new WebLabel(Msg.getString("MainDetailPanel.distanceTraveled", WebLabel.LEFT)); //$NON-NLS-1$
 		//traveledLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(traveledLabel0);
 
-		traveledLabel = new JLabel("", JLabel.LEFT); //$NON-NLS-1$
+		traveledLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
 		//traveledLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		JPanel wrapper04 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		WebPanel wrapper04 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper04.add(traveledLabel);
 		travelPane.add(wrapper04);
 
-		// 2017-05-03 Prepare SpringLayout
+		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(travelPane,
 		                                5, 2, //rows, cols
 		                                10, 2,        //initX, initY
@@ -331,22 +330,22 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		mainBox.add(memberPane);
 
 		// Create the member number label.
-		memberNumLabel = new JLabel(Msg.getString("MainDetailPanel.missionMembersMinMax","","","", JLabel.LEFT)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		memberNumLabel = new WebLabel(Msg.getString("MainDetailPanel.missionMembersMinMax","","","", WebLabel.LEFT)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		memberNumLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		memberPane.add(memberNumLabel);
 
 		// Create member bottom panel.
-		JPanel memberBottomPane = new JPanel(new BorderLayout(0, 0));
+		WebPanel memberBottomPane = new WebPanel(new BorderLayout(0, 0));
 		memberBottomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		memberPane.add(memberBottomPane);
 
 		// Prepare member list panel
-		JPanel memberListPane = new JPanel(new BorderLayout(0, 0));
+		WebPanel memberListPane = new WebPanel(new BorderLayout(0, 0));
 		memberListPane.setPreferredSize(new Dimension(100, 150));
 		memberBottomPane.add(memberListPane, BorderLayout.CENTER);
 
 		// Create scroll panel for member list.
-		JScrollPane memberScrollPane = new JScrollPane();
+		WebScrollPane memberScrollPane = new WebScrollPane();
 		//memberScrollPane.setPreferredSize(new Dimension(300, 250));
 		memberListPane.add(memberScrollPane, BorderLayout.CENTER);
 
@@ -387,18 +386,17 @@ implements ListSelectionListener, MissionListener, UnitListener {
 					}
 				});
 		memberScrollPane.setViewportView(memberTable);
-		
-/*		
-		JScrollPane scrollPane = new JScrollPane();
-		//scrollPane.setBorder(new MarsPanelBorder());
-		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		mainBox.add(scrollPane);//,  BorderLayout.CENTER);
-*/		
+	
+//		JScrollPane scrollPane = new JScrollPane();
+//		//scrollPane.setBorder(new MarsPanelBorder());
+//		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+//		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+//		mainBox.add(scrollPane);//,  BorderLayout.CENTER);
+	
 		// Create the mission custom panel.
 		customPanelLayout = new CardLayout();
 		//missionCustomPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		missionCustomPane = new JPanel(customPanelLayout);
+		missionCustomPane = new WebPanel(customPanelLayout);
 		//missionCustomPane.add(customPanelLayout);
 		missionCustomPane.setBorder(new MarsPanelBorder());
 		missionCustomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -406,7 +404,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		mainBox.add(missionCustomPane);
 				
 		// Create custom empty panel.
-		JPanel emptyCustomPane1 = new JPanel();
+		WebPanel emptyCustomPane1 = new WebPanel();
 		missionCustomPane.add(emptyCustomPane1, EMPTY);
 
 		customInfoPanels = new HashMap<String, MissionCustomInfoPanel>();
@@ -709,7 +707,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			if (type == MissionEventType.NAME_EVENT)
 				typeLabel.setText(mission.getName()); //$NON-NLS-1$
 			else if (type == MissionEventType.DESCRIPTION_EVENT) {
-				// 2015-12-15 Implemented the missing descriptionLabel
+				// Implement the missing descriptionLabel
 				if (missionWindow.getCreateMissionWizard() != null) {
 					String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription();
 					if (s == null) {
@@ -1034,7 +1032,6 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		}
 	}
 
-	// 2016-09-24 Added getMissionWindow()
 	public MissionWindow getMissionWindow() {
 		return missionWindow;
 	}

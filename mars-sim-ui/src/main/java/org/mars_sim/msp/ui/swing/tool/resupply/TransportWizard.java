@@ -70,7 +70,6 @@ import java.util.logging.Logger;
  * The TransportWizard class is a class for hosting building transport event manually.
  *
  */
-@SuppressWarnings("restriction")
 public class TransportWizard {
 
 	/** default logger. */
