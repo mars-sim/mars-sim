@@ -20,11 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
@@ -38,73 +34,77 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 //import org.mars_sim.msp.ui.swing.tool.monitor.personTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+
 /**
  * This is a tab panel for robots.
  */
-public class TabPanelBots
-extends TabPanel
-implements MouseListener, ActionListener {
+public class TabPanelBots extends TabPanel implements MouseListener, ActionListener {
 
-	private JLabel robotNumLabel;
-	private JLabel robotCapLabel;
+	private WebLabel robotNumLabel;
+	private WebLabel robotCapLabel;
+	private WebLabel robotIndoorLabel;
 	private RobotListModel robotListModel;
 	private JList<Robot> robotList;
-	private JScrollPane robotScrollPanel;
+	private WebScrollPane robotScrollPanel;
 	private int robotNumCache;
 	private int robotCapacityCache;
+	private int robotIndoorCache;
 
 	/**
 	 * Constructor.
-	 * @param unit the unit to display.
+	 * 
+	 * @param unit    the unit to display.
 	 * @param desktop the main desktop.
 	 */
 	public TabPanelBots(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(
-			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
-			null,
-			Msg.getString("TabPanelBots.tooltip"), //$NON-NLS-1$
-			unit, desktop
-		);
+		super(Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
+				null, Msg.getString("TabPanelBots.tooltip"), //$NON-NLS-1$
+				unit, desktop);
 
 		Settlement settlement = (Settlement) unit;
 
-		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel titlePane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
 
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelBots.title"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelBots.title"), WebLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		// titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		titlePane.add(titleLabel);
 
-
 		// Create robot count panel
-		JPanel robotCountPanel = new JPanel(new GridLayout(2, 2, 0, 0));
-		robotCountPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(robotCountPanel);
-
+		WebPanel countPanel = new WebPanel(new GridLayout(3, 1, 0, 0));
+		countPanel.setBorder(new MarsPanelBorder());
+		topContentPanel.add(countPanel);
 
 		// Create robot num label
 		robotNumCache = settlement.getNumCurrentRobots();
-		robotNumLabel = new JLabel(Msg.getString("TabPanelBots.robot",
-		        robotNumCache), JLabel.CENTER); //$NON-NLS-1$
-		robotCountPanel.add(robotNumLabel);
+		robotNumLabel = new WebLabel(Msg.getString("TabPanelBots.associated", robotNumCache), WebLabel.CENTER); // $NON-NLS-1$
+		countPanel.add(robotNumLabel);
 
+		// Create robot indoor label
+		robotIndoorCache = settlement.getNumCurrentRobots();
+		robotIndoorLabel = new WebLabel(Msg.getString("TabPanelBots.indoor", robotIndoorCache),
+				WebLabel.CENTER); // $NON-NLS-1$
+		countPanel.add(robotIndoorLabel);
+		
 		// Create robot capacity label
 		robotCapacityCache = settlement.getRobotCapacity();
-		robotCapLabel = new JLabel(Msg.getString("TabPanelBots.robotCapacity",
-		        robotCapacityCache), JLabel.CENTER); //$NON-NLS-1$
-		robotCountPanel.add(robotCapLabel);
-
+		robotCapLabel = new WebLabel(Msg.getString("TabPanelBots.capacity", robotCapacityCache), WebLabel.CENTER); // $NON-NLS-1$
+		countPanel.add(robotCapLabel);
 
 		// Create spring layout robot display panel
-		JPanel robotDisplayPanel = new JPanel(new SpringLayout());//FlowLayout(FlowLayout.LEFT));
+		WebPanel robotDisplayPanel = new WebPanel(new SpringLayout());// FlowLayout(FlowLayout.LEFT));
 		robotDisplayPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(robotDisplayPanel);
 
 		// Create scroll panel for robot list.
-		robotScrollPanel = new JScrollPane();
-		robotScrollPanel.setPreferredSize(new Dimension(175, 250));
+		robotScrollPanel = new WebScrollPane();
+		robotScrollPanel.setPreferredSize(new Dimension(120, 250));
 		robotDisplayPanel.add(robotScrollPanel);
 
 		// Create robot list model
@@ -116,17 +116,21 @@ implements MouseListener, ActionListener {
 		robotScrollPanel.setViewportView(robotList);
 
 		// Create robot monitor button
-		JButton monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
+		WebButton monitorButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
 		monitorButton.addActionListener(this);
 		monitorButton.setToolTipText(Msg.getString("TabPanelBots.tooltip.monitor")); //$NON-NLS-1$
-		robotDisplayPanel.add(monitorButton);
 
-		//Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(robotDisplayPanel,
-		                                1, 2, //rows, cols
-		                                30, 10,        //initX, initY
-		                                10, 10);       //xPad, yPad
+		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+//		buttonPane.setPreferredSize(new Dimension(25, 25));
+		buttonPane.add(monitorButton);
+		
+		robotDisplayPanel.add(buttonPane);
+		
+		// Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(robotDisplayPanel, 2, 1, // rows, cols
+				30, 10, // initX, initY
+				10, 10); // xPad, yPad
 	}
 
 	/**
@@ -138,15 +142,13 @@ implements MouseListener, ActionListener {
 		// Update robot num
 		if (robotNumCache != settlement.getNumCurrentRobots()) {
 			robotNumCache = settlement.getNumCurrentRobots();
-			robotNumLabel.setText(Msg.getString("TabPanelBots.robot",
-			        robotNumCache)); //$NON-NLS-1$
+			robotNumLabel.setText(Msg.getString("TabPanelBots.robot", robotNumCache)); // $NON-NLS-1$
 		}
 
 		// Update robot capacity
 		if (robotCapacityCache != settlement.getRobotCapacity()) {
 			robotCapacityCache = settlement.getRobotCapacity();
-			robotCapLabel.setText(Msg.getString("TabPanelBots.robotCapacity",
-			        robotCapacityCache)); //$NON-NLS-1$
+			robotCapLabel.setText(Msg.getString("TabPanelBots.robotCapacity", robotCapacityCache)); // $NON-NLS-1$
 		}
 
 		// Update robot list
@@ -159,68 +161,69 @@ implements MouseListener, ActionListener {
 	 */
 	private class RobotListModel extends AbstractListModel<Robot> {
 
-	    /** default serial id. */
-	    private static final long serialVersionUID = 1L;
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
 
-	    private Settlement settlement;
-	    private List<Robot> robotList;
+		private Settlement settlement;
+		private List<Robot> robotList;
 
-	    private RobotListModel(Settlement settlement) {
-	        this.settlement = settlement;
+		private RobotListModel(Settlement settlement) {
+			this.settlement = settlement;
 
-	        robotList = new ArrayList<Robot>(settlement.getRobots());
-	        Collections.sort(robotList);
-	    }
+			robotList = new ArrayList<Robot>(settlement.getRobots());
+			Collections.sort(robotList);
+		}
 
-        @Override
-        public Robot getElementAt(int index) {
+		@Override
+		public Robot getElementAt(int index) {
 
-            Robot result = null;
+			Robot result = null;
 
-            if ((index >= 0) && (index < robotList.size())) {
-                result = robotList.get(index);
-            }
+			if ((index >= 0) && (index < robotList.size())) {
+				result = robotList.get(index);
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        @Override
-        public int getSize() {
-            return robotList.size();
-        }
+		@Override
+		public int getSize() {
+			return robotList.size();
+		}
 
-        /**
-         * Update the robot list model.
-         */
-        public void update() {
+		/**
+		 * Update the robot list model.
+		 */
+		public void update() {
 
-            if (!robotList.containsAll(settlement.getRobots()) ||
-                    !settlement.getRobots().containsAll(robotList)) {
+			if (!robotList.containsAll(settlement.getRobots()) || !settlement.getRobots().containsAll(robotList)) {
 
-                List<Robot> oldRobotList = robotList;
+				List<Robot> oldRobotList = robotList;
 
-                List<Robot> tempRobotList = new ArrayList<Robot>(settlement.getRobots());
-                Collections.sort(tempRobotList);
+				List<Robot> tempRobotList = new ArrayList<Robot>(settlement.getRobots());
+				Collections.sort(tempRobotList);
 
-                robotList = tempRobotList;
-                fireContentsChanged(this, 0, getSize());
+				robotList = tempRobotList;
+				fireContentsChanged(this, 0, getSize());
 
-                oldRobotList.clear();
-            }
-        }
+				oldRobotList.clear();
+			}
+		}
 	}
 
 	/**
 	 * Action event occurs.
+	 * 
 	 * @param event the action event
 	 */
 	public void actionPerformed(ActionEvent event) {
 		// If the robot monitor button was pressed, create tab in monitor tool.
-		//desktop.addModel(new RobotTableModel((Settlement) unit, false));
+		// desktop.addModel(new RobotTableModel((Settlement) unit, false));
 	}
 
 	/**
 	 * Mouse clicked event occurs.
+	 * 
 	 * @param event the mouse event
 	 */
 	public void mouseClicked(MouseEvent event) {
@@ -234,11 +237,18 @@ implements MouseListener, ActionListener {
 		}
 	}
 
-	public void mousePressed(MouseEvent event) {}
-	public void mouseReleased(MouseEvent event) {}
-	public void mouseEntered(MouseEvent event) {}
-	public void mouseExited(MouseEvent event) {}
-	
+	public void mousePressed(MouseEvent event) {
+	}
+
+	public void mouseReleased(MouseEvent event) {
+	}
+
+	public void mouseEntered(MouseEvent event) {
+	}
+
+	public void mouseExited(MouseEvent event) {
+	}
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

@@ -28,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -185,6 +187,8 @@ public class Simulation implements ClockListener, Serializable {
 	// private GameWorld gameWorld;
 
 	private UpTimer ut;
+	
+	private Terminal terminal;
 
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
@@ -194,6 +198,7 @@ public class Simulation implements ClockListener, Serializable {
 		// simulationConfig = SimulationConfig.instance();
 		// logger.info("Simulation's constructor is on " +
 		// Thread.currentThread().getName() + " Thread");
+		
 		// INFO Simulation's constructor is on both JavaFX-Launcher Thread
 //        initializeTransientData();
 	}
@@ -373,10 +378,13 @@ public class Simulation implements ClockListener, Serializable {
 
 	/**
 	 * Start the simulation.
+	 * @param autosaveDefault. True if default is used for autosave
 	 */
 	public void start(boolean autosaveDefault) {
 		// SwingUtilities.invokeLater(() -> testConsole());
 
+		startTerminal();
+		
 		masterClock.addClockListener(this);
 		masterClock.startClockListenerExecutor();
 
@@ -407,6 +415,26 @@ public class Simulation implements ClockListener, Serializable {
 		ut = masterClock.getUpTimer();
 	}
 
+	/**
+	 * Start the jline3 terminal.
+	 */
+	public void startTerminal() {
+		try {
+			terminal = TerminalBuilder.terminal();
+	//		terminal = TerminalBuilder.builder()
+	//                .system(true)
+	//                .signalHandler(Terminal.SignalHandler.SIG_IGN)
+	//                .build();
+			
+	        terminal.writer().print("Activating Jline3 in this terminal...\n");
+	        terminal.writer().flush();
+	        
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	/*
 	 * Obtains the size of the file
 	 * 

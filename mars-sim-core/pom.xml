@@ -93,16 +93,31 @@
 
 		<!-- https://mvnrepository.com/artifact/nz.sodium/sodium : 112KB Recent 
 			fix on https://github.com/SodiumFRP/sodium Integrated into mars-sim-core -->
-<!-- 		<dependency>
+		<!-- 		
+		<dependency>
 			<groupId>nz.sodium</groupId>
 			<artifactId>sodium</artifactId>
 			<version>1.1.0</version>
-		</dependency> -->
-		<!-- <dependency> 
+		</dependency> 
+		-->
+		<!-- 
+		<dependency> 
 			<groupId>com.cedarsoftware</groupId> 
 			<artifactId>json-io</artifactId> 
 			<version>4.10.0</version> 
-		</dependency> -->
+		</dependency> 
+		-->
+		
+		<dependency>
+			<groupId>org.jline</groupId>
+    		<artifactId>jline</artifactId>
+  	  		<version>3.9.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jline</groupId>
+			<artifactId>jline-terminal-jansi</artifactId>
+			<version>3.9.0</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>

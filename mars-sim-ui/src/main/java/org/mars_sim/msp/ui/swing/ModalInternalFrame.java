@@ -22,6 +22,7 @@ import com.alee.laf.text.WebTextField;
 /**
  * An internal frame that supports modal behavior. Based on code found in:
  * https://community.oracle.com/thread/1358431?start=0&tstart=0
+ * see also https://stackoverflow.com/questions/16422939/jinternalframe-as-modal
  */
 public abstract class ModalInternalFrame extends WebInternalFrame {
 
@@ -94,12 +95,11 @@ public abstract class ModalInternalFrame extends WebInternalFrame {
 							dispatch = false;
 
 						}
-					} else if (event instanceof ActiveEvent) {
-
+					} 
+					
+					else if (event instanceof ActiveEvent) {
 						ActiveEvent activeEvent = (ActiveEvent) event;
-
 						activeEvent.dispatch();
-
 					}
 
 					if (dispatch) {

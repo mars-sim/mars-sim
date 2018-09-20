@@ -5,6 +5,56 @@ Copyright (C) 2018 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
+## v3.1.0-beta2 (build 44__) - 2018-09-__
+
+### KNOWN LIMITATIONS :
+
+1. In MacOS, a JavaFX WebEngine's bug may create garbled characters on certain 
+   webpages in Help Browser.
+
+2. In Linux, text fields do not allow text input.
+
+3. A JavaFX WebEngine's crypto issue cripples the full UI loading of certain secure 
+   websites such as GitHub pages
+
+4. When clicking on a combobox to pick an option, the option list would pop up
+   at the far edge of the main window
+
+
+### CORE ENGINE IMPROVEMENTS :
+
+1. Apply the natural logarithm when computing value of some goods
+
+2. Allow time-ratio switches in full headless mode.
+
+3. Enable the use of Java 11 SE for running mars-sim.
+
+4. Add commander proposals (experimental).
+
+5. Track/record settler's sleep time on each sol.
+
+6. Add terminal interactivity in case of headless mode.
+
+
+
+### UI IMPROVEMENT :
+
+1. Limit billboard x & y location to within the main window.
+
+
+### FIXES :
+
+1. Correct the bad path inside executable file for headless edition
+
+2. Solve unix End-Of-Line issue for the executable file.
+
+3. Fix the path for notifier.css in QNotification.
+
+4. Enable year 0 (orbit 0) in resupply mission.
+
+
+-----------------------------------------------------------------------------------------
+
 ## v3.1.0-beta1 (build 4421) - 2018-07-30
 
 ### KNOWN LIMITATIONS :

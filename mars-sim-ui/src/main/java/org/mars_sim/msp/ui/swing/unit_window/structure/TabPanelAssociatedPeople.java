@@ -20,11 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
@@ -38,65 +34,82 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+
 /**
  * The AssociatedPeopleTabPanel is a tab panel for information on all people
  * associated with a settlement.
  */
-public class TabPanelAssociatedPeople
-extends TabPanel
-implements MouseListener, ActionListener {
+public class TabPanelAssociatedPeople extends TabPanel implements MouseListener, ActionListener {
 
 	// Data members
 	private AssociatedPopulationListModel populationListModel;
 	private JList<Person> populationList;
-	private JScrollPane populationScrollPanel;
-
-	private JLabel populationNumLabel;
+	private WebScrollPane populationScrollPanel;
+	private WebLabel populationNumLabel;
+	private WebLabel populationCapacityLabel;
+	private WebLabel populationIndoorLabel;
 	private int populationNumCache;
+	private int populationCapacityCache;
+	private int populationIndoorCache;
+	
 	/**
 	 * Constructor.
-	 * @param unit the unit to display.
+	 * 
+	 * @param unit    the unit to display.
 	 * @param desktop the main desktop.
 	 */
 	public TabPanelAssociatedPeople(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(
-			Msg.getString("TabPanelAssociatedPeople.title"), //$NON-NLS-1$
-			null,
-			Msg.getString("TabPanelAssociatedPeople.tooltip"), //$NON-NLS-1$
-			unit, desktop
-		);
+		super(Msg.getString("TabPanelAssociatedPeople.title"), //$NON-NLS-1$
+				null, Msg.getString("TabPanelAssociatedPeople.tooltip"), //$NON-NLS-1$
+				unit, desktop);
 
 		Settlement settlement = (Settlement) unit;
 
-		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel titlePane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
 
 		// Create associated people label
-		JLabel heading = new JLabel(Msg.getString("TabPanelAssociatedPeople.heading"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel heading = new WebLabel(Msg.getString("TabPanelAssociatedPeople.heading"), WebLabel.CENTER); //$NON-NLS-1$
 		heading.setFont(new Font("Serif", Font.BOLD, 16));
-		//heading.setForeground(new Color(102, 51, 0)); // dark brown
+		// heading.setForeground(new Color(102, 51, 0)); // dark brown
 		titlePane.add(heading);
 
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(1, 2, 0, 0));
-		infoPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(infoPanel);
+		WebPanel countPanel = new WebPanel(new GridLayout(3, 1, 0, 0));
+		countPanel.setBorder(new MarsPanelBorder());
+		topContentPanel.add(countPanel);
 
-		// Create population num label
+		// Create associate label
 		populationNumCache = settlement.getAllAssociatedPeople().size();
-		populationNumLabel = new JLabel(Msg.getString("TabPanelAssociatedPeople.population",
-		        populationNumCache), JLabel.CENTER); //$NON-NLS-1$
-		infoPanel.add(populationNumLabel);
+		populationNumLabel = new WebLabel(Msg.getString("TabPanelAssociatedPeople.associated", populationNumCache),
+				WebLabel.CENTER); // $NON-NLS-1$
+		countPanel.add(populationNumLabel);
 
+		// Create population indoor label
+		populationIndoorCache = settlement.getIndoorPeopleCount();
+		populationIndoorLabel = new WebLabel(Msg.getString("TabPanelAssociatedPeople.indoor", populationIndoorCache),
+				WebLabel.CENTER); // $NON-NLS-1$
+		countPanel.add(populationIndoorLabel);
+		
+		// Create population capacity label
+		populationCapacityCache = settlement.getPopulationCapacity();
+		populationCapacityLabel = new WebLabel(Msg.getString("TabPanelAssociatedPeople.capacity", populationCapacityCache),
+				WebLabel.CENTER); // $NON-NLS-1$
+		countPanel.add(populationCapacityLabel);
+		
 		// Create spring layout population display panel
-		JPanel populationDisplayPanel = new JPanel(new SpringLayout());//FlowLayout(FlowLayout.LEFT));
+		WebPanel populationDisplayPanel = new WebPanel(new SpringLayout());// FlowLayout(FlowLayout.LEFT));
 		populationDisplayPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(populationDisplayPanel);
 
 		// Create scroll panel for population list.
-		populationScrollPanel = new JScrollPane();
-		populationScrollPanel.setPreferredSize(new Dimension(175, 250));
+		populationScrollPanel = new WebScrollPane();
+		populationScrollPanel.setPreferredSize(new Dimension(120, 250));
 		populationDisplayPanel.add(populationScrollPanel);
 
 		// Create population list model
@@ -108,17 +121,21 @@ implements MouseListener, ActionListener {
 		populationScrollPanel.setViewportView(populationList);
 
 		// Create population monitor button
-		JButton monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
+		WebButton monitorButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
 		monitorButton.addActionListener(this);
 		monitorButton.setToolTipText(Msg.getString("TabPanelAssociatedPeople.tooltip.monitor")); //$NON-NLS-1$
-		populationDisplayPanel.add(monitorButton);
+		
+		WebPanel buttonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+//		buttonPane.setPreferredSize(new Dimension(25, 25));
+		buttonPane.add(monitorButton);
+		
+		populationDisplayPanel.add(buttonPane);
 
-		//Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(populationDisplayPanel,
-		                                1, 2, //rows, cols
-		                                30, 10,        //initX, initY
-		                                10, 10);       //xPad, yPad
+		// Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(populationDisplayPanel, 2, 1, // rows, cols
+				30, 10, // initX, initY
+				10, 10); // xPad, yPad
 	}
 
 	/**
@@ -132,8 +149,7 @@ implements MouseListener, ActionListener {
 		// Update population num
 		if (populationNumCache != num) {
 			populationNumCache = num;
-			populationNumLabel.setText(Msg.getString("TabPanelAssociatedPeople.population",
-			        populationNumCache)); //$NON-NLS-1$
+			populationNumLabel.setText(Msg.getString("TabPanelAssociatedPeople.population", populationNumCache)); // $NON-NLS-1$
 		}
 
 		// Update population list
@@ -142,63 +158,64 @@ implements MouseListener, ActionListener {
 	}
 
 	/**
-     * List model for settlement population.
-     */
-    private class AssociatedPopulationListModel extends AbstractListModel<Person> {
+	 * List model for settlement population.
+	 */
+	private class AssociatedPopulationListModel extends AbstractListModel<Person> {
 
-        /** default serial id. */
-        private static final long serialVersionUID = 1L;
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
 
-        private Settlement settlement;
-        private List<Person> populationList;
+		private Settlement settlement;
+		private List<Person> populationList;
 
-        private AssociatedPopulationListModel(Settlement settlement) {
-            this.settlement = settlement;
+		private AssociatedPopulationListModel(Settlement settlement) {
+			this.settlement = settlement;
 
-            populationList = new ArrayList<Person>(settlement.getAllAssociatedPeople());
-            Collections.sort(populationList);
-        }
+			populationList = new ArrayList<Person>(settlement.getAllAssociatedPeople());
+			Collections.sort(populationList);
+		}
 
-        @Override
-        public Person getElementAt(int index) {
+		@Override
+		public Person getElementAt(int index) {
 
-            Person result = null;
+			Person result = null;
 
-            if ((index >= 0) && (index < populationList.size())) {
-                result = populationList.get(index);
-            }
+			if ((index >= 0) && (index < populationList.size())) {
+				result = populationList.get(index);
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        @Override
-        public int getSize() {
-            return populationList.size();
-        }
+		@Override
+		public int getSize() {
+			return populationList.size();
+		}
 
-        /**
-         * Update the population list model.
-         */
-        public void update() {
+		/**
+		 * Update the population list model.
+		 */
+		public void update() {
 
-            if (!populationList.containsAll(settlement.getAllAssociatedPeople()) ||
-                    !settlement.getAllAssociatedPeople().containsAll(populationList)) {
+			if (!populationList.containsAll(settlement.getAllAssociatedPeople())
+					|| !settlement.getAllAssociatedPeople().containsAll(populationList)) {
 
-                List<Person> oldPopulationList = populationList;
+				List<Person> oldPopulationList = populationList;
 
-                List<Person> tempPopulationList = new ArrayList<Person>(settlement.getAllAssociatedPeople());
-                Collections.sort(tempPopulationList);
+				List<Person> tempPopulationList = new ArrayList<Person>(settlement.getAllAssociatedPeople());
+				Collections.sort(tempPopulationList);
 
-                populationList = tempPopulationList;
-                fireContentsChanged(this, 0, getSize());
+				populationList = tempPopulationList;
+				fireContentsChanged(this, 0, getSize());
 
-                oldPopulationList.clear();
-            }
-        }
-    }
+				oldPopulationList.clear();
+			}
+		}
+	}
 
 	/**
 	 * Mouse clicked event occurs.
+	 * 
 	 * @param event the mouse event
 	 */
 	public void mouseClicked(MouseEvent event) {
@@ -211,20 +228,28 @@ implements MouseListener, ActionListener {
 		}
 	}
 
-	public void mousePressed(MouseEvent arg0) {}
-	public void mouseReleased(MouseEvent arg0) {}
-	public void mouseEntered(MouseEvent arg0) {}
-	public void mouseExited(MouseEvent arg0) {}
+	public void mousePressed(MouseEvent arg0) {
+	}
+
+	public void mouseReleased(MouseEvent arg0) {
+	}
+
+	public void mouseEntered(MouseEvent arg0) {
+	}
+
+	public void mouseExited(MouseEvent arg0) {
+	}
 
 	/**
 	 * Action event occurs.
+	 * 
 	 * @param event the action event
 	 */
 	public void actionPerformed(ActionEvent event) {
 		// If the population monitor button was pressed, create tab in monitor tool.
 		desktop.addModel(new PersonTableModel((Settlement) unit, true));
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
