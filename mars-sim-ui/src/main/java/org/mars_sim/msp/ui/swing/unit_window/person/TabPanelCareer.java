@@ -91,7 +91,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 	private JobHistoryTableModel jobHistoryTableModel;
 
-	private StarRater starRater, aveRater;
+	private StarRater starRater;
+	private StarRater aveRater;
 	private MarsClock marsClock;
 
 	/**
@@ -320,19 +321,20 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				checkingJobReassignment(person, list);
 		}
 
-		else if (unit instanceof Robot) {
-			/*
-			 * robot = (Robot) unit; botMind = robot.getBotMind(); // Prepare job combo box
-			 * jobCache = botMind.getRobotJob().getName(robot.getRobotType()); List<String>
-			 * jobNames = new ArrayList<String>(); for (RobotJob robotJob :
-			 * JobManager.getRobotJobs()) {
-			 * jobNames.add(robotJob.getName(robot.getRobotType())); }
-			 * Collections.sort(jobNames); jobComboBox = new
-			 * JComboBoxMW<Object>(jobNames.toArray());
-			 * jobComboBox.setSelectedItem(jobCache); jobComboBox.addActionListener(this);
-			 * jobPanel.add(jobComboBox);
-			 */
-		}
+//		else if (unit instanceof Robot) {
+//			 robot = (Robot) unit; 
+//			 botMind = robot.getBotMind(); // Prepare job combo box
+//			 jobCache = botMind.getRobotJob().getName(robot.getRobotType()); 
+//			 List<String> jobNames = new ArrayList<String>(); 
+//			 for (RobotJob robotJob : JobManager.getRobotJobs()) {
+//				 jobNames.add(robotJob.getName(robot.getRobotType())); 
+//			 }
+//			 Collections.sort(jobNames); 
+//			 jobComboBox = new JComboBoxMW<Object>(jobNames.toArray());
+//			 jobComboBox.setSelectedItem(jobCache); 
+//			 jobComboBox.addActionListener(this);
+//			 jobPanel.add(jobComboBox);
+//		}
 
 		// Prepare job title panel
 		WebPanel jobHistoryPanel = new WebPanel(new GridLayout(2, 1, 1, 1));
@@ -708,17 +710,18 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			}
 
 			else if (unit instanceof Robot) {
-				/*
-				 * robot = (Robot) unit;
-				 * 
-				 * RobotJob selectedJob = null; Iterator<RobotJob> i =
-				 * JobManager.getRobotJobs().iterator(); while (i.hasNext() && (selectedJob ==
-				 * null)) { RobotJob robotJob = i.next(); //System.out.println("job : " + job.);
-				 * if (jobName.equals(robotJob.getName(robot.getRobotType()))) { selectedJob =
-				 * robotJob; } }
-				 * 
-				 * robot.getBotMind().setRobotJob(selectedJob, true);
-				 */
+				
+//				 robot = (Robot) unit;
+//				
+//				 RobotJob selectedJob = null; Iterator<RobotJob> i =
+//				 JobManager.getRobotJobs().iterator();
+//				 while (i.hasNext() && (selectedJob == null)) {
+//					 RobotJob robotJob = i.next(); //System.out.println("job : " + job.);
+//					 if (jobName.equals(robotJob.getName(robot.getRobotType()))) {
+//						 selectedJob = robotJob; 
+//					 } 
+//				 }
+//				 robot.getBotMind().setRobotJob(selectedJob, true);
 			}
 		}
 
@@ -744,14 +747,15 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		 */
 		private JobHistoryTableModel(Unit unit) {
 			Person person = null;
-			Robot robot = null;
+//			Robot robot = null;
 			if (unit instanceof Person) {
 				person = (Person) unit;
 				jobHistory = person.getJobHistory();
-			} else if (unit instanceof Robot) {
-				// robot = (Robot) unit;
-				// jobHistory = robot.getJobHistory();
-			}
+			} 
+//				else if (unit instanceof Robot) {
+//				// robot = (Robot) unit;
+//				// jobHistory = robot.getJobHistory();
+//			}
 
 			jobAssignmentList = jobHistory.getJobAssignmentList();
 

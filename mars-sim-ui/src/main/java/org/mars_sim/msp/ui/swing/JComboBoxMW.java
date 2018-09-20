@@ -6,15 +6,11 @@
  */
 package org.mars_sim.msp.ui.swing;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
-import javax.swing.JTextField;
 
 import com.alee.laf.combobox.WebComboBox;
 
@@ -23,7 +19,7 @@ import com.alee.laf.combobox.WebComboBox;
  */
 public class JComboBoxMW<T> extends WebComboBox implements MouseWheelListener {
 
-	private static final long serialVersionUID = -3527247980947082803L;
+//	private static final long serialVersionUID = -3527247980947082803L;
 
 	private boolean layingOut = false;
 
@@ -42,8 +38,7 @@ public class JComboBoxMW<T> extends WebComboBox implements MouseWheelListener {
 	/**
 	 * constructor.
 	 * 
-	 * @param items
-	 *            {@link Vector}<T> the initial items.
+	 * @param items {@link Vector}<T> the initial items.
 	 */
 	public JComboBoxMW(Vector<T> items) {
 		super(items);
@@ -53,8 +48,7 @@ public class JComboBoxMW<T> extends WebComboBox implements MouseWheelListener {
 	/**
 	 * Constructor.
 	 * 
-	 * @param model
-	 *            {@link ComboBoxModel}<T>
+	 * @param model {@link ComboBoxModel}<T>
 	 */
 	public JComboBoxMW(ComboBoxModel<T> model) {
 		super(model);
@@ -64,8 +58,7 @@ public class JComboBoxMW<T> extends WebComboBox implements MouseWheelListener {
 	/**
 	 * Constructor.
 	 * 
-	 * @param items
-	 *            T[]
+	 * @param items T[]
 	 */
 	public JComboBoxMW(T[] items) {
 		super(items);

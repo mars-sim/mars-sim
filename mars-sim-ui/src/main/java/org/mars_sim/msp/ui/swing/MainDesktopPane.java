@@ -90,8 +90,8 @@ public class MainDesktopPane extends WebDesktopPane
 
 //	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;// 750D / MarsClock.SECONDS_IN_MILLISOL;
 
-	public final static String ORANGE_CSS = "/fxui/css/theme/nimrodskin.css";
-	public final static String BLUE_CSS = "/fxui/css/theme/snowBlue.css";
+	public final static String ORANGE_CSS = MainScene.ORANGE_CSS_THEME; //"/fxui/css/theme/nimrodskin.css";
+	public final static String BLUE_CSS = MainScene.BLUE_CSS_THEME; //"/fxui/css/theme/snowBlue.css";
 
 	// Data members
 //	private double timeCache = 0;
@@ -384,49 +384,6 @@ public class MainDesktopPane extends WebDesktopPane
 	public MainScene getMainScene() {
 		return mainScene;
 	}
-
-	/**
-	 * Create background tile when MainDesktopPane is first displayed. Recenter
-	 * logoLabel on MainWindow and set backgroundLabel to the size of
-	 * MainDesktopPane.
-	 * 
-	 * @param e the component event
-	 * 
-	 * @Override public void componentResized(ComponentEvent e) {
-	 * 
-	 *           // If displayed for the first time, create background image tile.
-	 *           // The size of the background tile cannot be determined during
-	 *           construction // since it requires the MainDesktopPane be displayed
-	 *           first. if (firstDisplay) { ImageIcon baseImageIcon =
-	 *           ImageLoader.getIcon(Msg.getString("img.background")); //$NON-NLS-1$
-	 *           Dimension screen_size =
-	 *           Toolkit.getDefaultToolkit().getScreenSize(); Image backgroundImage
-	 *           = createImage((int) screen_size.getWidth(), (int)
-	 *           screen_size.getHeight()); Graphics backgroundGraphics =
-	 *           backgroundImage.getGraphics();
-	 * 
-	 *           for (int x = 0; x < backgroundImage.getWidth(this); x +=
-	 *           baseImageIcon.getIconWidth()) { for (int y = 0; y <
-	 *           backgroundImage.getHeight(this); y +=
-	 *           baseImageIcon.getIconHeight()) { backgroundGraphics.drawImage(
-	 *           baseImageIcon.getImage(), x, y, this); } }
-	 * 
-	 *           backgroundImageIcon.setImage(backgroundImage);
-	 * 
-	 *           backgroundLabel.setSize(getSize());
-	 * 
-	 *           firstDisplay = false; }
-	 * 
-	 *           // Set the backgroundLabel size to the size of the desktop
-	 *           backgroundLabel.setSize(getSize());
-	 * 
-	 *           }
-	 * 
-	 *           // Additional Component Listener methods implemented but not used.
-	 * @Override public void componentMoved(ComponentEvent e) {}
-	 * @Override public void componentShown(ComponentEvent e) {}
-	 * @Override public void componentHidden(ComponentEvent e) {}
-	 */
 
 	/*
 	 * Creates tool windows
@@ -825,7 +782,6 @@ public class MainDesktopPane extends WebDesktopPane
 		// Play sound
 		String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
 		if (soundFilePath != null && soundFilePath.length() != 0) {
-			// soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
 			soundPlayer.playSound(soundFilePath);
 		}
 
@@ -898,8 +854,6 @@ public class MainDesktopPane extends WebDesktopPane
 		UnitWindow unitWindow;
 
 		private UnitWindowTask(UnitWindow unitWindow) {
-			// logger.info(Msg.getString("MainDesktopPane.unitWindow.thread.running"));
-			// //$NON-NLS-1$
 			this.unitWindow = unitWindow;
 		}
 
@@ -946,8 +900,6 @@ public class MainDesktopPane extends WebDesktopPane
 		}
 
 		private ToolWindowTask(ToolWindow toolWindow) {
-			// logger.info(Msg.getString("MainDesktopPane.toolWindow.thread.running"));
-			// //$NON-NLS-1$
 			this.toolWindow = toolWindow;
 		}
 

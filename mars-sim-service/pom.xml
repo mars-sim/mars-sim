@@ -13,7 +13,7 @@
     </parent>
     <properties>
     	<junit.version>4.12</junit.version>
-        <java.version>1.8</java.version>
+        <java.version>9</java.version>
         <org.mapstruct.version>1.0.0.Final</org.mapstruct.version>
     </properties>
     <dependencies>

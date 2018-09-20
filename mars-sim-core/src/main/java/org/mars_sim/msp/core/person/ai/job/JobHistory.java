@@ -49,7 +49,6 @@ public class JobHistory implements Serializable  {
     /**
      * Saves the new job assignment for a person.
      */
-    // 2015-03-30 Added saveJob(). Called by assignJob() in Mind.java
     public void saveJob(Job newJob, String initiator, JobAssignmentType status, String approvedBy, boolean addNewJobAssignment) {
     	String newJobStr = newJob.getName(person.getGender());
     	addJob(newJobStr, initiator, status, approvedBy, addNewJobAssignment);
@@ -58,27 +57,21 @@ public class JobHistory implements Serializable  {
     /**
      * Saves a pending new job assignment for a person.
      */
-    // 2015-03-30 Added saveJob()
-    // 2015-09-23 Renamed saveJob() to savePendingJob(). Called by TabPanelCareer's actionPerformed()
     public void savePendingJob(String newJobStr, String initiator, JobAssignmentType status, String approvedBy, boolean addAssignment) {
     	// Note: initiator is "User", status is "Pending", approvedBy is "null", addAssignment is true
-  		//if (status.equals(JobAssignmentType.PENDING)) { // sanity check okay
-	   		int last = jobAssignmentList.size() - 1;
-			// Obtain last entry's lastJobStr
-			//String lastJobStr = jobAssignmentList.get(last).getJobType();
-	
-        	if (clock == null)
-        		clock = masterClock.getMarsClock();
-			jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
-        	jobAssignmentList.get(last).setSolSubmitted();
-			//System.out.println("JobHistory.java : jobAssignmentList's size is now " + jobAssignmentList.size());
-  		//}
+	   	int last = jobAssignmentList.size() - 1;
+
+        if (clock == null)
+        	clock = masterClock.getMarsClock();
+		
+        jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
+        jobAssignmentList.get(last).setSolSubmitted();
+
     }
 
     /**
      * Adds the new job to the job assignment list
      */
-    //2015-09-23 Renamed processJob to addJob()
     public void addJob(String newJobStr, String initiator, JobAssignmentType status, String approvedBy, boolean addNewJobAssignment) {
     	if (clock == null)
     		clock = masterClock.getMarsClock();
@@ -88,11 +81,10 @@ public class JobHistory implements Serializable  {
     	}
 
     	else if (approvedBy.equals(JobManager.USER)) {
-    	   	//System.out.println("JobHistory.java : addJob() : the user approves the flexible job reassignment (for pop <= 4 only)");
+    	   	// user approves the flexible job reassignment (for pop <= 4 only)");
     		int last = jobAssignmentList.size() - 1;
 			// Obtain last entry's lastJobStr
-    		String lastJobStr = jobAssignmentList.get(last).getJobType();
-    		//System.out.println("JobHistory.java : newJobStr = " + newJobStr + "   lastJobStr = " + lastJobStr);
+//    		String lastJobStr = jobAssignmentList.get(last).getJobType();
      		jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
         	jobAssignmentList.get(last).setSolSubmitted();
      	}

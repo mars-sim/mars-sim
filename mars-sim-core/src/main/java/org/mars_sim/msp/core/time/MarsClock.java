@@ -728,10 +728,10 @@ public class MarsClock implements Serializable {
 			b.insert(0, ONE_ZERO);
 			// result = "0" + result;
 		}
-		if (millisol < 1) {
-			b.insert(0, ONE_ZERO);
+//		if (millisol < 1) {
+//			b.insert(0, ONE_ZERO);
 			// result = "0" + result;
-		}
+//		}
 //		while (b.length() < 3) {
 //			b.append(ONE_ZERO);
 //			// result += "0";

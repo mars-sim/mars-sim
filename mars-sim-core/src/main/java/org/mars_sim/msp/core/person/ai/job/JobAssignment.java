@@ -30,12 +30,12 @@ public class JobAssignment implements Serializable {
       
     private JobAssignmentType status; // JobAssignmentType.PENDING or JobAssignmentType.APPROVED
 
-    private static MarsClock timeAuthorized;
+//    private static MarsClock timeAuthorized;
     
 	private static MarsClock marsClock;
 
 	public JobAssignment(String timeSubmitted, String jobType, String initiator, JobAssignmentType status, String authorizedBy) {
-		// 2015-09-23 Changed the first parameter of JobAssignment.java from MarsClock to String.
+		// Change the first parameter of JobAssignment.java from MarsClock to String.
 		this.timeSubmitted = timeSubmitted;
 		this.jobType = jobType;
 		this.initiator = initiator;
@@ -86,7 +86,6 @@ public class JobAssignment implements Serializable {
 	}
 
 	public void setStatus(JobAssignmentType status) {
-		//System.out.println("setStatus : status is " + status);
 		this.status = status;
 	}
 

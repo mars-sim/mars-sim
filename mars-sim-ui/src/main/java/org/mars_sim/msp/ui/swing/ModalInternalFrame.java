@@ -85,7 +85,7 @@ public abstract class ModalInternalFrame extends WebInternalFrame {
 						MouseEvent e = (MouseEvent) event;
 						MouseEvent m = SwingUtilities.convertMouseEvent((Component) e.getSource(), e, this);
 
-						// 2016-11-15 Implemented this bug fix posted in
+						// Implement this bug fix posted in
 						// https://community.oracle.com/thread/1358431?start=0&tstart=0
 						//
 						if (!this.contains(m.getPoint()) && e.getID() != MouseEvent.MOUSE_DRAGGED
@@ -105,7 +105,7 @@ public abstract class ModalInternalFrame extends WebInternalFrame {
 					if (dispatch) {
 
 						if (source instanceof Component) {
-							// 2016-11-15 Attempting to give a text field correct focus for linux
+							// Attempting to give a text field correct focus for linux
 							if (source instanceof WebTextField) {
 								((WebTextField) source).setEditable(true);
 							}

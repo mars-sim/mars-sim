@@ -30,7 +30,6 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-//import org.mars_sim.msp.ui.swing.sidepanel.SlidePaneFactory;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
@@ -46,7 +45,7 @@ import com.jidesoft.swing.JideTabbedPane;
 /**
  * The UnitWindow is the base window for displaying units.
  */
-public abstract class UnitWindow extends WebInternalFrame { //
+public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFrame
 
 	// private static final int BLUR_SIZE = 7;
 
@@ -136,7 +135,6 @@ public abstract class UnitWindow extends WebInternalFrame { //
 		
 		if (unit instanceof Person) {
 			statusPanel.setPreferredSize(new Dimension(WIDTH / 8, 60));
-
 		}
 
 		int theme = 0;
@@ -154,7 +152,6 @@ public abstract class UnitWindow extends WebInternalFrame { //
 			theme = 7;
 
 		if (unit instanceof Person) {
-
 
 			WebLabel nameLabel = new WebLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
 			nameLabel.setMinimumSize(new Dimension(80, 60));
@@ -252,6 +249,7 @@ public abstract class UnitWindow extends WebInternalFrame { //
 		tabPanel.setBoldActiveTab(true);
 		tabPanel.setScrollSelectedTabOnWheel(true);
 		tabPanel.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
+		
 		if (MainScene.getTheme() == 7) {
 			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
 			tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); // COLOR_THEME_VSNET);
