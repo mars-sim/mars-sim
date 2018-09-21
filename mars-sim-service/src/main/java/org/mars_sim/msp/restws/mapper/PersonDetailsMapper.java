@@ -27,7 +27,7 @@ public interface PersonDetailsMapper {
 		@Mapping(source="physicalCondition.performanceFactor", target="performance"),
 		@Mapping(source="physicalCondition.healthSituation", target="healthSituation"),
 		@Mapping(source="mind.mission", target="mission"),
-		@Mapping(source="mind.personalityType.typeString", target="personalityType"),
+		@Mapping(source="mind.MBTI.typeString", target="personalityType"),
 		@Mapping(source="mind.taskManager.phase.name", target="taskPhase"),
 		@Mapping(source="mind.taskManager.taskName", target="task")
 	})

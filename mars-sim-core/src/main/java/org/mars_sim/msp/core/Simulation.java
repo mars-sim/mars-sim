@@ -21,6 +21,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.Month;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -28,8 +29,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jline.terminal.Terminal;
-import org.jline.terminal.TerminalBuilder;
+import org.beryx.textio.TextIO;
+import org.beryx.textio.TextIoFactory;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -188,7 +189,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	private UpTimer ut;
 	
-	private Terminal terminal;
+//	private Terminal terminal;
 
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
@@ -419,20 +420,37 @@ public class Simulation implements ClockListener, Serializable {
 	 * Start the jline3 terminal.
 	 */
 	public void startTerminal() {
-		try {
-			terminal = TerminalBuilder.terminal();
+//		try {
+//			terminal = TerminalBuilder.terminal();
 	//		terminal = TerminalBuilder.builder()
 	//                .system(true)
 	//                .signalHandler(Terminal.SignalHandler.SIG_IGN)
 	//                .build();
-			
-	        terminal.writer().print("Activating Jline3 in this terminal...\n");
-	        terminal.writer().flush();
-	        
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//			
+//	        terminal.writer().print("Activating Jline3 in this terminal...\n");
+//	        terminal.writer().flush();
+//	        
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		TextIO textIO = TextIoFactory.getTextIO();
+		String user = textIO.newStringInputReader()
+		        .withDefaultValue("admin")
+		        .read("Username");
+		String password = textIO.newStringInputReader()
+		        .withMinLength(6)
+		        .withInputMasking(true)
+		        .read("Password");
+		int age = textIO.newIntInputReader()
+		        .withMinVal(13)
+		        .read("Age");
+
+		Month month = textIO.newEnumInputReader(Month.class)
+		        .read("What month were you born in?");
+		textIO.getTextTerminal().printf("User %s is %d years old, was born in %s and has the password %s.\n",
+		                                user, age, month, password);
 	}
 	
 	/*

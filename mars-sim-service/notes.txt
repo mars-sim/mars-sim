@@ -1,0 +1,38 @@
+UnitManager
+-----------
+Appears to methods that should sit inside the Settlement class, i.e. elect*
+
+
+Unit
+----
+There appears to be methods that related to specific subtypes.
+
+A lot of instanceof use
+
+
+RobotAttributes & PersonAttributes
+----------------------------------
+Could these be combined to a single Enum and hence a single AttributeManager.
+This base class would have a list of applicable Attributes to be managed. Would be subclassed for Person & Robot.
+
+
+Vehicle, Robot & Person (& Equipment ?)
+-----------------------
+A lot of duplicate code concerning logins for inside or outside
+Would make sense to have a another subclass of MovableUnit & StaticUnit
+
+
+PersonTaskmanager RobotTaskManger
+---------------------------------
+These two seem very similar. Could they be combined
+
+
+MissionManager
+-------
+A lot of use instanceOf
+
+
+Simulation
+----------
+Sponsor would be better as a Enum
+Country also should be an Enum with a sub-property for Planet, i.e. Mars or Earth. Too much string manipulation

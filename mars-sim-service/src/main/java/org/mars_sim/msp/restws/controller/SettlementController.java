@@ -2,7 +2,7 @@ package org.mars_sim.msp.restws.controller;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,6 +17,7 @@ import org.mars_sim.msp.restws.mapper.BuildingMapper;
 import org.mars_sim.msp.restws.mapper.InventoryMapper;
 import org.mars_sim.msp.restws.mapper.MissionSummaryMapper;
 import org.mars_sim.msp.restws.mapper.PersonSummaryMapper;
+import org.mars_sim.msp.restws.mapper.RobotSummaryMapper;
 import org.mars_sim.msp.restws.mapper.SettlementDetailsMapper;
 import org.mars_sim.msp.restws.mapper.SettlementSummaryMapper;
 import org.mars_sim.msp.restws.mapper.VehicleSummaryMapper;
@@ -24,6 +25,7 @@ import org.mars_sim.msp.restws.model.BuildingDetails;
 import org.mars_sim.msp.restws.model.MissionSummary;
 import org.mars_sim.msp.restws.model.PagedList;
 import org.mars_sim.msp.restws.model.PersonSummary;
+import org.mars_sim.msp.restws.model.RobotSummary;
 import org.mars_sim.msp.restws.model.SettlementDetails;
 import org.mars_sim.msp.restws.model.SettlementSummary;
 import org.mars_sim.msp.restws.model.StoredAmount;
@@ -42,7 +44,7 @@ import io.swagger.annotations.ApiOperation;
  * This provides a REST controller that deliveries information on Settlement entities.
  */
 @RestController()
-public class SettlementController {
+public class SettlementController extends BaseController {
 	private static Log log = LogFactory.getLog(SettlementController.class);
 
 	@Autowired
@@ -72,6 +74,9 @@ public class SettlementController {
 	@Autowired
 	private MissionSummaryMapper missionMapper;
 	
+	@Autowired
+	private RobotSummaryMapper robotMapper;
+	
 	/**
 	 * Need a better way to find settlements
 	 * @param settlementId
@@ -94,26 +99,11 @@ public class SettlementController {
     @RequestMapping(method=RequestMethod.GET, path="/settlements", produces = "application/json")
     public PagedList<SettlementSummary> getSettlements(@RequestParam(value="page", defaultValue="1") int page,
     								   @RequestParam(value="size", defaultValue="10") int pageSize) {
-    	int start = 0;
-    	int end = Integer.MAX_VALUE;
+    	Collection<Settlement> allSettlements = manager.getSettlements();
+    	List<Settlement> filtered = filter(allSettlements, page, pageSize);
     	
-    	if (page  > 0) {
-    		start = (page - 1) * pageSize;
-    		end = start + pageSize;
-    	}
-  	
-    	int settlementTotal= manager.getSettlementNum();
-    	if (end > settlementTotal) {
-    		end = settlementTotal;
-    	}
-    	
-    	// Find required range; must be a better way of selected Unitof correct type    	
-    	Settlement[] all = new Settlement[0]; 
-    	all = manager.getSettlements().toArray(all);
-    	Settlement[] selected = Arrays.copyOfRange(all, start, end);
-    	
-		return new PagedList<SettlementSummary>(mapper.settlementsToSettlementSummarys(Arrays.asList(selected)),
-				 								page, pageSize, settlementTotal);
+		return new PagedList<SettlementSummary>(mapper.settlementsToSettlementSummarys(filtered),
+				 								page, pageSize, allSettlements.size());
     }
 
 	@ApiOperation(value = "get Settlement by Id", nickname = "getSettlement")
@@ -178,5 +168,14 @@ public class SettlementController {
         Settlement found = findSettlement(settlementId);
         
         return inventoryMapper.getItems(found.getInventory());
+    }
+
+	@ApiOperation(value = "get Settlement Robots", nickname = "getSettlementRobots")
+	@RequestMapping(method = RequestMethod.GET, path="/settlements/{id}/robots", produces = "application/json")
+    public List<RobotSummary> getRobots(@PathVariable(value="id") int settlementId) {
+		
+        Settlement found = findSettlement(settlementId);
+        
+        return robotMapper.robotsToRobotSummarys(found.getRobots());
     }
 }

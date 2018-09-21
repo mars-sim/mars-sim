@@ -2,6 +2,7 @@ package org.mars_sim.msp.restws.controller;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -31,7 +32,7 @@ import io.swagger.annotations.ApiOperation;
 
 
 @RestController()
-public class VehicleController {
+public class VehicleController extends BaseController {
 	private static Log log = LogFactory.getLog(VehicleController.class);
 
 	@Autowired
@@ -80,19 +81,11 @@ public class VehicleController {
     @RequestMapping(method=RequestMethod.GET, path="/vehicles", produces = "application/json")
     public PagedList<VehicleSummary> getVehicles(@RequestParam(value="page", defaultValue="1") int page,
     								   @RequestParam(value="size", defaultValue="10") int pageSize) {
-    	int start = 0;
-    	int end = Integer.MAX_VALUE;
-    	
-    	List<Vehicle> orderedList = new ArrayList<Vehicle>(vehicleManager.getVehicles());
-    	
-    	if (page  > 0) {
-    		start = (page - 1) * pageSize;
-    		end = start + pageSize;
-    	}
-    	end = (end < orderedList.size() ? end : (orderedList.size() - 1));
+		Collection<Vehicle> allVehicles = vehicleManager.getVehicles();
+    	List<Vehicle> filtered = filter(allVehicles, page, pageSize); 
 		
-		return new PagedList<VehicleSummary>(summaryMapper.vehiclesToVehicleSummarys(orderedList.subList(start, end)),
-											page, pageSize, orderedList.size());
+		return new PagedList<VehicleSummary>(summaryMapper.vehiclesToVehicleSummarys(filtered),
+											page, pageSize, allVehicles.size());
     }
 	
 	@ApiOperation(value = "get Vehicle Resources", nickname = "getVehicleResources")

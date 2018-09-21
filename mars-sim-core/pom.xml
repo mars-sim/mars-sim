@@ -107,7 +107,7 @@
 			<version>4.10.0</version> 
 		</dependency> 
 		-->
-		
+		<!--
 		<dependency>
 			<groupId>org.jline</groupId>
     		<artifactId>jline</artifactId>
@@ -118,6 +118,12 @@
 			<artifactId>jline-terminal-jansi</artifactId>
 			<version>3.9.0</version>
 		</dependency>
+		-->
+		<dependency>
+			<groupId>org.beryx</groupId>
+			<artifactId>text-io</artifactId>
+			<version>3.2.0</version>
+		</dependency>		
 	</dependencies>
 
 	<repositories>

@@ -13,7 +13,7 @@ import org.mars_sim.msp.restws.model.SettlementDetails;
 public interface SettlementDetailsMapper {
 	@Mappings({
 		@Mapping(source="identifier", target="id"),
-		@Mapping(source="currentPopulationNum", target="numPersons"),
+		@Mapping(source="numCurrentPopulation", target="numPersons"),
 		@Mapping(source="parkedVehicleNum", target="numParkedVehicles"),
 		
 		// Have to use expression because the Set class does not follow JavaBeans style

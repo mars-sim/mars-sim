@@ -13,7 +13,7 @@ import org.mars_sim.msp.restws.model.SettlementSummary;
 public interface SettlementSummaryMapper {
 	@Mappings({
 		@Mapping(source="identifier", target="id"),
-		@Mapping(source="currentPopulationNum", target="numPersons"),
+		@Mapping(source="numCurrentPopulation", target="numPersons"),
 		@Mapping(source="parkedVehicleNum", target="numParkedVehicles"),
 		
 		@Mapping(expression="java(settlement.getBuildingManager().getBuildings().size())", target="numBuildings")

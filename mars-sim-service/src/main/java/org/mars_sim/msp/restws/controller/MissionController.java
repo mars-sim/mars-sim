@@ -2,7 +2,6 @@ package org.mars_sim.msp.restws.controller;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.restws.mapper.MissionDetailsMapper;
 import org.mars_sim.msp.restws.mapper.MissionSummaryMapper;
 import org.mars_sim.msp.restws.mapper.PersonSummaryMapper;
+import org.mars_sim.msp.restws.mapper.RobotSummaryMapper;
 import org.mars_sim.msp.restws.model.MissionDetails;
 import org.mars_sim.msp.restws.model.MissionSummary;
 import org.mars_sim.msp.restws.model.PagedList;
@@ -39,7 +39,7 @@ import io.swagger.annotations.ApiOperation;
  * The missions entity is small enough such that it only needs a Summary DTO.
  */
 @RestController()
-public class MissionController {
+public class MissionController extends BaseController {
 
 	private Log log = LogFactory.getLog(MissionController.class);
 	
@@ -54,7 +54,9 @@ public class MissionController {
 	
 	@Autowired
 	private PersonSummaryMapper personMapper;
-	//private MemberSummaryMapper memberMapper;
+	
+	@Autowired
+	private RobotSummaryMapper robotMapper;
 	
 	/**
 	 * Need a better way to find missions
@@ -79,24 +81,12 @@ public class MissionController {
     @RequestMapping(method=RequestMethod.GET, path="/missions", produces = "application/json")
     public PagedList<MissionSummary> getMissions(@RequestParam(value="page", defaultValue="1") int page,
     								   @RequestParam(value="size", defaultValue="10") int pageSize) {
-    	int start = 0;
-    	int end = Integer.MAX_VALUE;
+    	List<Mission> allMissions = manager.getMissions();
+		List<Mission> filtered = filter(allMissions, page, pageSize);
     	
-    	if (page  > 0) {
-    		start = (page - 1) * pageSize;
-    		end = start + pageSize;
-    	} 
-   	
-    	int total = manager.getNumActiveMissions();
-    	end = Math.min(total, end);
-
-    	// Find required range; must be a better way of selected Unitof correct type    	
-    	Mission[] all = new Mission[0]; 
-    	all = manager.getMissions().toArray(all);
-    	Mission[] selected = Arrays.copyOfRange(all, start, end);
     	
-		return new PagedList<MissionSummary>(mapper.missionsToMissionSummarys(Arrays.asList(selected)),
-				 								page, pageSize, total);
+		return new PagedList<MissionSummary>(mapper.missionsToMissionSummarys(filtered),
+				 								page, pageSize, allMissions.size());
     }
 
 	/**
@@ -141,18 +131,7 @@ public class MissionController {
         return details;
     }
 
-/*	
-	@ApiOperation(value = "get Mission Members", nickname = "getMissionMembers")
-	@RequestMapping(method = RequestMethod.GET, path="/missions/{id}/members", produces = "application/json")
-    public List<MemberSummary> getMembers(@PathVariable(value="id") int missionId) {
-		
-        Mission found = findMission(missionId);
-        
-        return memberMapper.membersToMemberSummarys(
-        		new ArrayList<Member>(found.getMembers()));
-    }
-	
-*/	
+
 	@ApiOperation(value = "get Mission Persons", nickname = "getMissionPersons")
 	@RequestMapping(method = RequestMethod.GET, path="/missions/{id}/persons", produces = "application/json")
     public List<PersonSummary> getPersons(@PathVariable(value="id") int missionId) {

@@ -1,23 +1,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.mars_sim</groupId>
-	<artifactId>mars-sim-service</artifactId>
-	<version>3.1.0-b2</version>
-	<description>RESTful web service for the Mars Sim simulator.</description>
-    <url>http://mars-sim.sourceforge.net/</url>
-    <name>Mar Simulation Project</name>    
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.3.5.RELEASE</version>
+        <artifactId>mars-sim</artifactId>
+        <groupId>net.sf</groupId>
+        <version>3.1.0-b2</version>
     </parent>
+	<groupId>net.sf.mars-sim</groupId>
+	<artifactId>mars-sim-service</artifactId>
+    <name>mars-sim-service</name>    
     <properties>
     	<junit.version>4.12</junit.version>
         <java.version>9</java.version>
-        <org.mapstruct.version>1.0.0.Final</org.mapstruct.version>
+        <springfox-swagger.version>2.8.0</springfox-swagger.version>
+        <springframework.boot.version>2.0.2.RELEASE</springframework.boot.version>
+        <org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
     </properties>
-    <dependencies>
     
+    <dependencyManagement>
+      <dependencies>
+        <dependency>
+          <!-- Import dependency management from Spring Boot -->
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-dependencies</artifactId>
+          <version>${springframework.boot.version}</version>
+          <type>pom</type>
+          <scope>import</scope>
+        </dependency>
+      </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
     	<!--  Use remote repository http://mars-sim.sourceforge.net/maven-repo -->
       	<dependency>
     		<groupId>net.sf.mars-sim</groupId>
@@ -28,26 +40,7 @@
     		<groupId>net.sf.mars-sim</groupId>
     		<artifactId>mars-sim-mapdata</artifactId>
     		<version>${project.version}</version>
-		</dependency>
-		<!-->dependency>
-    		<groupId>org.jdom</groupId>
-    		<artifactId>jdom</artifactId>
-    		<version>1.1.3</version>
-    	</dependency>
-    	<dependency>
-    		<groupId>com.phoenixst</groupId>
-    		<artifactId>plexus-core</artifactId>
-    		<version>0.9</version>
-    	</dependency>  
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>19.0</version>
-		</dependency-->  	  	
+		</dependency>	  	
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -68,6 +61,11 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>        
+        <dependency>
         	<groupId>org.springframework</groupId>
         	<artifactId>spring-webmvc</artifactId>
         </dependency>
@@ -78,6 +76,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
+            <scope>test</scope>
         </dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
@@ -87,13 +86,13 @@
 		<dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>2.5.0</version>
+            <version>${springfox-swagger.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>2.5.0</version>
+            <version>${springfox-swagger.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -108,12 +107,20 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${springframework.boot.version}</version>
+                <executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
             </plugin>
         	<plugin>
 <!-- https://mvnrepository.com/artifact/org.bsc.maven/maven-processor-plugin -->
   				<groupId>org.bsc.maven</groupId>
   				<artifactId>maven-processor-plugin</artifactId>
-  				<version>3.3.1</version>
+  				<version>3.3.3</version>
             	<configuration>
                 	<defaultOutputDirectory>
                     	${project.build.directory}/generated-sources
@@ -123,14 +130,15 @@
                 	</processors>
             	</configuration>
             	<executions>
-<!--               	<execution>
+            	<!--
+               	    <execution>
                     	<id>process</id>
                     	<phase>generate-sources</phase>
                     	<goals>
                         	<goal>process</goal>
                     	</goals>
-                	</execution>
--->                 	
+                	</execution>  
+                -->	               	
             	</executions>
             	<dependencies>
                		<dependency>

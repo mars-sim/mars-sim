@@ -53,10 +53,12 @@ public class BuildingDetails {
 	public void setTemperature(double currentTemperature) {
 		this.temperature = currentTemperature;
 	}
+/*
 	public List<String> getFunctions() {
 		return functions;
 	}
 	public void setFunctions(List<String> functions) {
 		this.functions = functions;
 	}
+*/
 }

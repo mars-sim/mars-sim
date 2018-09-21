@@ -1,7 +1,7 @@
 package org.mars_sim.msp.restws.controller;
 
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,7 +28,7 @@ import io.swagger.annotations.ApiOperation;
 
 
 @RestController()
-public class PersonController {
+public class PersonController extends BaseController {
 	/** initialized logger for this class. */
 	private static Log log = LogFactory.getLog(PersonController.class);
 	
@@ -74,19 +74,10 @@ public class PersonController {
     @RequestMapping(method=RequestMethod.GET, path="/persons", produces = "application/json")
     public PagedList<PersonSummary> persons(@RequestParam(value="page", defaultValue="1") int page,
     								   @RequestParam(value="size", defaultValue="10") int pageSize) {
-    	int start = 0;
-    	int end = Integer.MAX_VALUE;
-    	
-    	List<Person> orderedList = new ArrayList<Person>(personManager.getPeople());
-    	
-    	if (page  > 0) {
-    		start = (page - 1) * pageSize;
-    		end = start + pageSize;
-    	}
-    	end = (end < orderedList.size() ? end : (orderedList.size() - 1));
-		
-		return new PagedList<PersonSummary>(summaryMapper.personsToPersonSummarys(orderedList.subList(start, end)),
-											page, pageSize, orderedList.size());
+    	Collection<Person> allPerson = personManager.getPeople();  	
+    	List<Person> filtered = filter(allPerson, page, pageSize);
+		return new PagedList<PersonSummary>(summaryMapper.personsToPersonSummarys(filtered),
+											page, pageSize, allPerson.size());
     }
 	
 	@ApiOperation(value = "get Person Resources", nickname = "getPersonResources")
