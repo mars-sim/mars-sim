@@ -1051,6 +1051,19 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
+	 * Updates the person's age
+	 *
+	 * @param newAge
+	 */
+	public void changeAge(int newAge) {
+		int year = 0;
+		// Figure out the year
+		year = earthClock.getYear() - newAge - 1;
+		birthTimeStamp.setYear(year);
+		age = newAge; 
+	}
+	
+	/**
 	 * Returns the person's height in cm
 	 *
 	 * @return the person's height
@@ -1126,10 +1139,29 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return gender;
 	}
 
+	/**
+	 * Sets the gender of the person.
+	 *
+	 * @param g the GenderType
+	 */
 	public void setGender(GenderType g) {
 		gender = g;
 	}
 
+	/**
+	 * Sets the gender of the person.
+	 *
+	 * @param g the gender String
+	 */
+	public void setGender(String g) {
+		if (g.equals("M") || g.equals("m"))
+			gender = GenderType.valueOfIgnoreCase("male");
+		else if (g.equals("F") || g.equals("f"))
+			gender = GenderType.valueOfIgnoreCase("female");
+		else
+			gender = GenderType.valueOfIgnoreCase("unknown");
+	}	
+	
 	/**
 	 * Gets the birthplace of the person
 	 *
@@ -1186,6 +1218,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return getName();
 	}
 
+	/**
+	 * Sets the person's name
+	 * 
+	 * @param name new name
+	 */
+	public void setName(String newName) {
+		System.out.println("Changing the name '" + name + "' to '" + newName + "'");
+		this.name = newName;
+		super.setName(newName);
+		super.setDescription(associatedSettlement.getName());
+	}
+	
 	/**
 	 * Gets the settlement the person is currently associated with.
 	 *

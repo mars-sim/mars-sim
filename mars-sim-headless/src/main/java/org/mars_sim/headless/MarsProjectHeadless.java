@@ -171,8 +171,11 @@ public class MarsProjectHeadless {
 		try {
 			SimulationConfig.loadConfig();
 
-			// Correct order:
 			Simulation.instance().destroyOldSimulation();
+			
+			// Input user info
+			Simulation.instance().startTerminal();
+			
 			Simulation.createNewSimulation(userTimeRatio);
 			Simulation.instance().start(true);
 

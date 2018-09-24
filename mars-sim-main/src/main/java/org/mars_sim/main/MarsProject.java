@@ -208,6 +208,9 @@ public class MarsProject {
 			startSimulation(false);
 		} else {
 			// go headless
+			
+			// Input user info
+			Simulation.instance().startTerminal();
 			// Start simulation.
 			startSimulation(true);
 		}

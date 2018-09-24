@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
+import org.beryx.textio.system.SystemTextTerminal;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -145,11 +146,21 @@ public class Simulation implements ClockListener, Serializable {
 
 	private double fileSize;
 
+	/** The name of the player */
+	private String user;
+	/** The gender of the player */
+	private String gender ;
+	
+	/** The time stamp of the last saved sim */	
 	private String lastSaveTimeStamp;
-	/* The build version of the SimulationConfig of the loading .sim */
+	/** The build version of the SimulationConfig of the loading .sim */
 	private String loadBuild;// = "unknown";
 
 	private String lastSaveStr = null;
+	
+	/** The age of the player */
+	private int age;
+	
 	// Note: Transient data members (aren't stored in save file)
 	// Added transient to avoid serialization error
 //	private transient Timer autosaveTimer;
@@ -286,7 +297,7 @@ public class Simulation implements ClockListener, Serializable {
 		if (sim.initialSimulationCreated) {
 			sim.destroyOldSimulation();
 		}
-
+				
 		sim.initialSimulationCreated = true;
 
 		// Initialize intransient data members.
@@ -383,8 +394,6 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public void start(boolean autosaveDefault) {
 		// SwingUtilities.invokeLater(() -> testConsole());
-
-		startTerminal();
 		
 		masterClock.addClockListener(this);
 		masterClock.startClockListenerExecutor();
@@ -417,7 +426,7 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	/**
-	 * Start the jline3 terminal.
+	 * Initialize the text-io terminal.
 	 */
 	public void startTerminal() {
 //		try {
@@ -435,22 +444,89 @@ public class Simulation implements ClockListener, Serializable {
 //			e.printStackTrace();
 //		}
 		
-		TextIO textIO = TextIoFactory.getTextIO();
-		String user = textIO.newStringInputReader()
-		        .withDefaultValue("admin")
-		        .read("Username");
-		String password = textIO.newStringInputReader()
-		        .withMinLength(6)
-		        .withInputMasking(true)
-		        .read("Password");
-		int age = textIO.newIntInputReader()
-		        .withMinVal(13)
+        SystemTextTerminal sysTerminal = new SystemTextTerminal();
+        TextIO textIO = new TextIO(sysTerminal);
+        
+        // Construct a terminal based on Java Swing 
+//		TextIO textIO = TextIoFactory.getTextIO();
+		
+		user = textIO.newStringInputReader()
+//		        .withDefaultValue("admin")
+		        .read("Do you want to be added as the commander of a settlement? [y/n]");	
+//		System.out.println("user is " + user + " and has " + user.length() + " character(s).");
+		
+		if (user.equals("y") || user.equals("Y")) {
+//		if (!user.equals("n") && !user.equals("N")) {	
+			String firstN = textIO.newStringInputReader()
+//		        .withDefaultValue("admin")
+		        .read("First Name [more than 2 characters]");		
+		
+			String lastN = textIO.newStringInputReader()
+//		        .withDefaultValue("admin")
+		        .read("Last Name [more than 2 characters]");	
+		
+			user = firstN + " " + lastN;
+
+//		String password = textIO.newStringInputReader()
+//		        .withMinLength(6)
+//		        .withInputMasking(true)
+//		        .read("Password");
+			gender = textIO.newStringInputReader()
+		        .withMinLength(1)
+//		        .withDefaultValue("M")
+//		        .withInputMasking(true)
+		        .read("Gender [m/f]");
+			age = textIO.newIntInputReader()
+		        .withMinVal(21)
 		        .read("Age");
 
-		Month month = textIO.newEnumInputReader(Month.class)
-		        .read("What month were you born in?");
-		textIO.getTextTerminal().printf("User %s is %d years old, was born in %s and has the password %s.\n",
-		                                user, age, month, password);
+//		Month month = textIO.newEnumInputReader(Month.class)
+//		        .read("What month were you born in?");
+			textIO.getTextTerminal().printf("Commander %s, your profile has been set up.\n", user);
+		
+//        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to terminate...");
+//        textIO.dispose("User '" + user + "' has left the building.");
+		}
+		else {
+			user = null;
+		}
+		
+	}
+	
+	/**
+	 * Checks if the user's name is provided
+	 * 
+	 * @return true if the name is not null
+	 */
+	public boolean isUserCommander() {
+//		System.out.println("isUserCommander() : " + user);
+		if (user != null)
+			return true;
+		else
+			return false;
+	}
+	
+	/**
+	 * Resets the user's name back to null
+	 */
+	public void resetUserCommander() {
+		user = null;
+	}
+	
+	/** Gets the name of the user */
+	public String getUser() {
+		return user;
+	}
+	
+	
+	/** Gets the gender of the user */
+	public String getGender() {
+		return gender;
+	}
+	
+	/** Gets the age of the player */
+	public int getAge() {
+		return age;
 	}
 	
 	/*

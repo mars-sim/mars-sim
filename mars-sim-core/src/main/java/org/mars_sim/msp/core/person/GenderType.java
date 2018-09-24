@@ -23,13 +23,20 @@ public enum GenderType {
 	}
 
 	/**
+	 * Gets the gender string
 	 * an internationalized translation for display in user interface.
+	 * 
 	 * @return {@link String}
 	 */
 	public String getName() {
 		return this.name;
 	}
 
+	/**
+	 * Gets the matched gender type
+	 * 
+	 * @param s the gender string
+	 */	
 	public static GenderType valueOfIgnoreCase(String s) {
 		return valueOf(s.toUpperCase().replace(' ','_'));
 	}

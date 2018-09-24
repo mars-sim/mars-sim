@@ -80,16 +80,16 @@ public class UnitManager implements Serializable {
 
 	// Data members
 	private int solCache = 0;
-	
+
 	/** Collection of all units. */
 	private Collection<Unit> units;
-	
-	// Transient members	
+
+	// Transient members
 	/** Flag true if the class has just been deserialized */
 	public transient boolean justReloaded = true;
 	/** List of unit manager listeners. */
 	private transient List<UnitManagerListener> listeners;
-	
+
 	// Static members
 	/** List of possible settlement names. */
 	private static List<String> settlementNames;
@@ -130,22 +130,23 @@ public class UnitManager implements Serializable {
 
 	private static MasterClock masterClock;
 	private static MarsClock marsClock;
-	
+
 	/**
 	 * Constructor.
 	 */
 	public UnitManager() {
-		//logger.info("UnitManager's constructor is in " + Thread.currentThread().getName() + " Thread");
-		
+		// logger.info("UnitManager's constructor is in " +
+		// Thread.currentThread().getName() + " Thread");
+
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
 
 		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
-		
+
 		if (partConfig == null)
 			partConfig = SimulationConfig.instance().getPartConfiguration();
-		
+
 		// Initialize unit collection
 		units = new ConcurrentLinkedQueue<Unit>();
 		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
@@ -161,8 +162,7 @@ public class UnitManager implements Serializable {
 	/**
 	 * Constructs initial units.
 	 *
-	 * @throws Exception
-	 *             in unable to load names.
+	 * @throws Exception in unable to load names.
 	 */
 	void constructInitialUnits() {
 
@@ -197,11 +197,13 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Initializes the list of possible person names.
+	 * 
 	 * @throws Exception if unable to load name list.
 	 */
 	private void initializePersonNames() {
 		try {
-			//PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+			// PersonConfig personConfig =
+			// SimulationConfig.instance().getPersonConfiguration();
 			List<String> personNames = personConfig.getPersonNameList();
 
 			personMaleNames = new ArrayList<String>();
@@ -228,12 +230,11 @@ public class UnitManager implements Serializable {
 		}
 	}
 
-
 	/**
 	 * Initializes a list of last names according for each space agency.
+	 * 
 	 * @throws Exception if unable to load the last name list.
 	 */
-    // 2016-04-06 Added initializeLastNames()
 	private void initializeLastNames() {
 		try {
 			List<Map<Integer, List<String>>> lastNames = personConfig.retrieveLastNameList();
@@ -245,12 +246,11 @@ public class UnitManager implements Serializable {
 		}
 	}
 
-
 	/**
 	 * Initializes a list of first names according for each space agency.
+	 * 
 	 * @throws Exception if unable to load the first name list.
 	 */
-    // 2016-04-06 Added initializeFirstNames()
 	private void initializeFirstNames() {
 
 		try {
@@ -265,9 +265,9 @@ public class UnitManager implements Serializable {
 		}
 	}
 
-
 	/**
 	 * Initializes the list of possible robot names.
+	 * 
 	 * @throws Exception if unable to load name list.
 	 */
 	private void initializeRobotNames() {
@@ -285,12 +285,12 @@ public class UnitManager implements Serializable {
 	/**
 	 * Initializes the list of possible vehicle names.
 	 *
-	 * @throws Exception
-	 *             if unable to load rover names.
+	 * @throws Exception if unable to load rover names.
 	 */
 	private void initializeVehicleNames() {
 		try {
-			//VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
+			// VehicleConfig vehicleConfig =
+			// SimulationConfig.instance().getVehicleConfiguration();
 			vehicleNames = vehicleConfig.getRoverNameList();
 		} catch (Exception e) {
 			throw new IllegalStateException("rover names could not be loaded: " + e.getMessage(), e);
@@ -300,8 +300,7 @@ public class UnitManager implements Serializable {
 	/**
 	 * Initializes the list of possible settlement names.
 	 *
-	 * @throws Exception
-	 *             if unable to load settlement names.
+	 * @throws Exception if unable to load settlement names.
 	 */
 	private void initializeSettlementNames() {
 		try {
@@ -314,8 +313,7 @@ public class UnitManager implements Serializable {
 	/**
 	 * Adds a unit to the unit manager if it doesn't already have it.
 	 *
-	 * @param unit
-	 *            new unit to add.
+	 * @param unit new unit to add.
 	 */
 	public void addUnit(Unit unit) {
 		if (!units.contains(unit)) {
@@ -332,8 +330,7 @@ public class UnitManager implements Serializable {
 	/**
 	 * Removes a unit from the unit manager.
 	 *
-	 * @param unit
-	 *            the unit to remove.
+	 * @param unit the unit to remove.
 	 */
 	public void removeUnit(Unit unit) {
 		if (units.contains(unit)) {
@@ -345,11 +342,12 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Gets a new name for a unit.
+	 * 
 	 * @param unitType {@link UnitType} the type of unit.
 	 * @param baseName the base name or null if none.
-	 * @param gender the gender of the person or null if not a person.
+	 * @param gender   the gender of the person or null if not a person.
 	 * @return new name
-	 * @throws IllegalArgumentException  if unitType is not valid.
+	 * @throws IllegalArgumentException if unitType is not valid.
 	 */
 	public String getNewName(UnitType unitType, String baseName, GenderType gender, RobotType robotType) {
 
@@ -489,12 +487,13 @@ public class UnitManager implements Serializable {
 
 				int populationNumber = settlementConfig.getInitialSettlementPopulationNumber(x);
 				int initialNumOfRobots = settlementConfig.getInitialSettlementNumOfRobots(x);
-				// 2014-10-29 Added settlement's id called sid
-				// 2015-01-16 Added scenarioID
+				// Add settlement's id called sid
+				// Add scenarioID
 				int scenarioID = settlementConfig.getInitialSettlementScenarioID(x);
 				// System.out.println("in unitManager, scenarioID is " +
 				// scenarioID);
-				addUnit(Settlement.createNewSettlement(name, scenarioID, template, sponsor, location, populationNumber, initialNumOfRobots));
+				addUnit(Settlement.createNewSettlement(name, scenarioID, template, sponsor, location, populationNumber,
+						initialNumOfRobots));
 
 			}
 		} catch (Exception e) {
@@ -508,22 +507,21 @@ public class UnitManager implements Serializable {
 	/**
 	 * Creates initial vehicles based on settlement templates.
 	 *
-	 * @throws Exception
-	 *             if vehicles could not be constructed.
+	 * @throws Exception if vehicles could not be constructed.
 	 */
 	private void createInitialVehicles() {
 
 		try {
-			//Iterator<Settlement> i = getSettlements().iterator();
-			//while (i.hasNext()) {
-			for (Settlement settlement : getSettlements()) {//= i.next();
+			// Iterator<Settlement> i = getSettlements().iterator();
+			// while (i.hasNext()) {
+			for (Settlement settlement : getSettlements()) {// = i.next();
 				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 				Map<String, Integer> vehicleMap = template.getVehicles();
 				Iterator<String> j = vehicleMap.keySet().iterator();
 				while (j.hasNext()) {
 					String vehicleType = j.next();
 					int number = vehicleMap.get(vehicleType);
-					//vehicleType = vehicleType.toLowerCase();
+					// vehicleType = vehicleType.toLowerCase();
 					for (int x = 0; x < number; x++) {
 						if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
 							String name = getNewName(UnitType.VEHICLE, "LUV", null, null);
@@ -537,30 +535,31 @@ public class UnitManager implements Serializable {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			//throw new IllegalStateException("Vehicles could not be created: " + e.getMessage(), e);
+			// throw new IllegalStateException("Vehicles could not be created: " +
+			// e.getMessage(), e);
 		}
 	}
 
 	/**
 	 * Creates the initial equipment at a settlement.
 	 *
-	 * @throws Exception
-	 *             if error constructing equipment.
+	 * @throws Exception if error constructing equipment.
 	 */
 	private void createInitialEquipment() {
 
 		try {
-			//Iterator<Settlement> i = getSettlements().iterator();
-			//while (i.hasNext()) {
-			for (Settlement settlement : getSettlements()) {//= i.next();
+			// Iterator<Settlement> i = getSettlements().iterator();
+			// while (i.hasNext()) {
+			for (Settlement settlement : getSettlements()) {// = i.next();
 				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 				Map<String, Integer> equipmentMap = template.getEquipment();
-				//Iterator<String> j = equipmentMap.keySet().iterator();
-				//while (j.hasNext()) {
-				for (String type : equipmentMap.keySet()) {//= j.next();
+				// Iterator<String> j = equipmentMap.keySet().iterator();
+				// while (j.hasNext()) {
+				for (String type : equipmentMap.keySet()) {// = j.next();
 					int number = (Integer) equipmentMap.get(type);
 					for (int x = 0; x < number; x++) {
-						Equipment equipment = EquipmentFactory.createEquipment(type, settlement.getCoordinates(), false);
+						Equipment equipment = EquipmentFactory.createEquipment(type, settlement.getCoordinates(),
+								false);
 						equipment.setName(getNewName(UnitType.EQUIPMENT, type, null, null));
 						settlement.getInventory().storeUnit(equipment);
 						addUnit(equipment);
@@ -573,11 +572,10 @@ public class UnitManager implements Serializable {
 	}
 
 	/**
-	 * Creates the initial resources at a settlement. Note: This is in addition
-	 * to any initial resources set in buildings.
+	 * Creates the initial resources at a settlement. Note: This is in addition to
+	 * any initial resources set in buildings.
 	 *
-	 * @throws Exception
-	 *             if error storing resources.
+	 * @throws Exception if error storing resources.
 	 */
 	private void createInitialResources() {
 
@@ -606,8 +604,7 @@ public class UnitManager implements Serializable {
 	/**
 	 * Create initial parts for a settlement.
 	 *
-	 * @throws Exception
-	 *             if error creating parts.
+	 * @throws Exception if error creating parts.
 	 */
 	private void createInitialParts() {
 
@@ -627,12 +624,14 @@ public class UnitManager implements Serializable {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			//throw new IllegalStateException("Parts could not be created: " + e.getMessage(), e);
+			// throw new IllegalStateException("Parts could not be created: " +
+			// e.getMessage(), e);
 		}
 	}
 
 	/**
 	 * Creates all pre-configured people as listed in people.xml.
+	 * 
 	 * @throws Exception if error parsing XML.
 	 */
 	private void createPreconfiguredPeople() {
@@ -675,8 +674,8 @@ public class UnitManager implements Serializable {
 					// TODO: If settlement cannot be found that matches the settlement name,
 					// should we put the person in a randomly selected settlement?
 					settlement = CollectionUtils.getRandomSettlement(col);
-					logger.log(Level.INFO, name + " is being sent to " + settlement
-							+ " since " + preConfigSettlementName + " doesn't exist.");
+					logger.log(Level.INFO, name + " is being sent to " + settlement + " since "
+							+ preConfigSettlementName + " doesn't exist.");
 				}
 
 			} else {
@@ -712,23 +711,22 @@ public class UnitManager implements Serializable {
 				}
 			}
 
-			// 2017-01-24 retrieve country & sponsor designation from people.xml (may be edited in CrewEditorFX)
+			// Retrieve country & sponsor designation from people.xml (may be edited in
+			// CrewEditorFX)
 			String sponsor = personConfig.getConfiguredPersonSponsor(x, crew_id);
 			String country = personConfig.getConfiguredPersonCountry(x, crew_id);
 
 			// Create person and add to the unit manager.
-			// 2017-04-11 Use Builder Pattern for creating an instance of Person
-			Person person = Person.create(name, settlement)
-									.setGender(gender)
-									.setCountry(country)
-									.setSponsor(sponsor)
-									.build();
+			// Use Builder Pattern for creating an instance of Person
+			Person person = Person.create(name, settlement).setGender(gender).setCountry(country).setSponsor(sponsor)
+					.build();
 			person.initialize();
 
 			// TODO: read from file
 			addUnit(person);
 
-			//System.out.println("done with addUnit() in createConfiguredPeople() in UnitManager");
+			// System.out.println("done with addUnit() in createConfiguredPeople() in
+			// UnitManager");
 
 			relationshipManager.addInitialSettler(person, settlement);
 
@@ -737,13 +735,14 @@ public class UnitManager implements Serializable {
 			if (jobName != null) {
 				Job job = JobManager.getJob(jobName);
 				if (job != null) {
-					// 2016-04-16 Designate a specific job to a person
-					person.getMind().setJob(job, true, JobManager.MISSION_CONTROL, JobAssignmentType.APPROVED, JobManager.MISSION_CONTROL);
+					// Designate a specific job to a person
+					person.getMind().setJob(job, true, JobManager.MISSION_CONTROL, JobAssignmentType.APPROVED,
+							JobManager.MISSION_CONTROL);
 					// Assign a job to a person based on settlement's need
 				}
 			}
 
-			// 2015-02-27 and 2015-03-24 Added Favorite class
+			// Add Favorite class
 			String mainDish = personConfig.getFavoriteMainDish(x, crew_id);
 			String sideDish = personConfig.getFavoriteSideDish(x, crew_id);
 			String dessert = personConfig.getFavoriteDessert(x, crew_id);
@@ -753,17 +752,17 @@ public class UnitManager implements Serializable {
 			person.getFavorite().setFavoriteSideDish(sideDish);
 			person.getFavorite().setFavoriteDessert(dessert);
 			person.getFavorite().setFavoriteActivity(FavoriteType.fromString(activity));
-			//System.out.println("done with setFavorite_() in createConfiguredPeople() in UnitManager");
+			// System.out.println("done with setFavorite_() in createConfiguredPeople() in
+			// UnitManager");
 
-
-			// 2015-11-23 Set the person's configured Big Five Personality traits (if any).
+			// Set the person's configured Big Five Personality traits (if any).
 			Map<String, Integer> bigFiveMap = personConfig.getBigFiveMap(x);
 			if (bigFiveMap != null) {
 				for (String type : bigFiveMap.keySet()) {
 					int value = bigFiveMap.get(type);
-					//System.out.println(type + " : " + value);
-					person.getMind().getTraitManager()
-					.setPersonalityTrait(PersonalityTraitType.fromString(type), value);
+					// System.out.println(type + " : " + value);
+					person.getMind().getTraitManager().setPersonalityTrait(PersonalityTraitType.fromString(type),
+							value);
 				}
 			}
 
@@ -773,7 +772,8 @@ public class UnitManager implements Serializable {
 				person.getMind().getMBTI().setTypeString(personalityType);
 			}
 
-			// 2016-11-05 Call syncUpExtraversion() to sync up the extraversion score between the two personality models
+			// Call syncUpExtraversion() to sync up the extraversion score between the two
+			// personality models
 			person.getMind().getMBTI().syncUpExtraversion();
 
 			// Set person's configured natural attributes (if any).
@@ -783,8 +783,8 @@ public class UnitManager implements Serializable {
 				while (i.hasNext()) {
 					String attributeName = i.next();
 					int value = (Integer) naturalAttributeMap.get(attributeName);
-					person.getNaturalAttributeManager().setAttribute(NaturalAttributeType
-							.valueOfIgnoreCase(attributeName), value);
+					person.getNaturalAttributeManager()
+							.setAttribute(NaturalAttributeType.valueOfIgnoreCase(attributeName), value);
 				}
 			}
 
@@ -796,22 +796,22 @@ public class UnitManager implements Serializable {
 					String skillName = i.next();
 					int level = (Integer) skillMap.get(skillName);
 					person.getMind().getSkillManager()
-					.addNewSkill(new Skill(SkillType.valueOfIgnoreCase(skillName), level));
+							.addNewSkill(new Skill(SkillType.valueOfIgnoreCase(skillName), level));
 				}
 			}
 
-			// 2015-06-07 Added Preference
+			// Initialize Preference
 			person.getPreference().initializePreference();
 
-			// 2015-12-12 Added setEmotionalStates()
-			//person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
+			// Initialize emotional states
+			// person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
 		}
 
-		// 2016-12-21 Call updateAllAssociatedPeople()
 		settlement.updateAllAssociatedPeople();
 		settlement.updateAllAssociatedRobots();
 
-		//System.out.println("b4 calling createConfiguredRelationships() in UnitManager");
+		// System.out.println("b4 calling createConfiguredRelationships() in
+		// UnitManager");
 		// Create all configured relationships.
 		createConfiguredRelationships();
 
@@ -819,11 +819,13 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Creates initial people based on available capacity at settlements.
+	 * 
 	 * @throws Exception if people can not be constructed.
 	 */
 	private void createInitialPeople() {
 
-		//PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+		// PersonConfig personConfig =
+		// SimulationConfig.instance().getPersonConfiguration();
 		if (relationshipManager == null)
 			relationshipManager = Simulation.instance().getRelationshipManager();
 
@@ -838,9 +840,9 @@ public class UnitManager implements Serializable {
 				while (settlement.getIndoorPeopleCount() < initPop) {
 
 					String sponsor = settlement.getSponsor();
-			    	//System.out.println("sponsor is " + sponsor);
+					// System.out.println("sponsor is " + sponsor);
 
-					//2016-08-30 Check for any duplicate full Name
+					// Check for any duplicate full Name
 					List<String> existingfullnames = new ArrayList<>();
 					Iterator<Person> j = getPeople().iterator();
 					while (j.hasNext()) {
@@ -858,7 +860,7 @@ public class UnitManager implements Serializable {
 					while (!isUniqueName) {
 
 						int index = -1;
-						
+
 						isUniqueName = true;
 
 						gender = GenderType.FEMALE;
@@ -875,68 +877,67 @@ public class UnitManager implements Serializable {
 						List<String> male_first_list = new ArrayList<>();
 						List<String> female_first_list = new ArrayList<>();
 
-						if (sponsor.contains("CNSA")) { //if (type == ReportingAuthorityType.CNSA) {
+						if (sponsor.contains("CNSA")) { // if (type == ReportingAuthorityType.CNSA) {
 							index = 0;
 
-						} else if (sponsor.contains("CSA")) {//if (type == ReportingAuthorityType.CSA) {
+						} else if (sponsor.contains("CSA")) {// if (type == ReportingAuthorityType.CSA) {
 							index = 1;
 
-						} else if (sponsor.contains("ESA")) {//if (type == ReportingAuthorityType.ESA) {
+						} else if (sponsor.contains("ESA")) {// if (type == ReportingAuthorityType.ESA) {
 							index = 2;
-							//System.out.println("country is " + country);
+							// System.out.println("country is " + country);
 							int countryID = getCountryID(country);
-							//System.out.println("countryID is " + countryID);
+							// System.out.println("countryID is " + countryID);
 							last_list = lastNamesByCountry.get(countryID);
 							male_first_list = maleFirstNamesByCountry.get(countryID);
 							female_first_list = femaleFirstNamesByCountry.get(countryID);
 
-						} else if (sponsor.contains("ISRO")) {//if (type == ReportingAuthorityType.ISRO) {
+						} else if (sponsor.contains("ISRO")) {// if (type == ReportingAuthorityType.ISRO) {
 							index = 3;
 
-						} else if (sponsor.contains("JAXA")) {//if (type == ReportingAuthorityType.JAXA) {
+						} else if (sponsor.contains("JAXA")) {// if (type == ReportingAuthorityType.JAXA) {
 							index = 4;
 
-			    		} else if (sponsor.contains("NASA")) {//if (type == ReportingAuthorityType.NASA) {
-			    			index = 5;
+						} else if (sponsor.contains("NASA")) {// if (type == ReportingAuthorityType.NASA) {
+							index = 5;
 
-						} else if (sponsor.contains("RKA")) { //if (type == ReportingAuthorityType.RKA) {
+						} else if (sponsor.contains("RKA")) { // if (type == ReportingAuthorityType.RKA) {
 							index = 6;
 
 						} else if (sponsor.contains("Mars Society")) {
 							index = 7;
-			    			skip = true;
-				    		fullname = getNewName(UnitType.PERSON, null, gender, null);
-				    		
+							skip = true;
+							fullname = getNewName(UnitType.PERSON, null, gender, null);
+
 						} else if (sponsor.contains("SpaceX")) {
 							index = 8;
-							
-			    		} else { // if belonging to the Mars Society
-			    			index = 7;
-			    			skip = true;
-				    		fullname = getNewName(UnitType.PERSON, null, gender, null);
-			    		}
+
+						} else { // if belonging to the Mars Society
+							index = 7;
+							skip = true;
+							fullname = getNewName(UnitType.PERSON, null, gender, null);
+						}
 
 						if (index != -1 && index != 2 && index != 7 && index != 8) {
-			    			last_list = lastNamesBySponsor.get(index);
+							last_list = lastNamesBySponsor.get(index);
 							male_first_list = maleFirstNamesBySponsor.get(index);
 							female_first_list = femaleFirstNamesBySponsor.get(index);
 						}
-						
+
 						if (!skip) {
-							
-			    			int rand0 = RandomUtil.getRandomInt(last_list.size()-1);
-			    			lastN = last_list.get(rand0);
 
-			    			if (gender == GenderType.MALE) {
-				    			int rand1 = RandomUtil.getRandomInt(male_first_list.size()-1);
-			    				firstN = male_first_list.get(rand1);
-			    			}
-			    			else {
-				    			int rand1 = RandomUtil.getRandomInt(female_first_list.size()-1);
-			    				firstN = female_first_list.get(rand1);
-			    			}
+							int rand0 = RandomUtil.getRandomInt(last_list.size() - 1);
+							lastN = last_list.get(rand0);
 
-			    			fullname = firstN + " " + lastN;
+							if (gender == GenderType.MALE) {
+								int rand1 = RandomUtil.getRandomInt(male_first_list.size() - 1);
+								firstN = male_first_list.get(rand1);
+							} else {
+								int rand1 = RandomUtil.getRandomInt(female_first_list.size() - 1);
+								firstN = female_first_list.get(rand1);
+							}
+
+							fullname = firstN + " " + lastN;
 
 						}
 
@@ -947,36 +948,33 @@ public class UnitManager implements Serializable {
 							if (n.equals(fullname)) {
 								isUniqueName = false;
 								logger.info(fullname + " is a duplicate name. Choose another one.");
-								//break;
+								// break;
 							}
 						}
 
 					}
 
-					// 2017-04-11 Use Builder Pattern for creating an instance of Person
-					person = Person.create(fullname, settlement)
-											.setGender(gender)
-											.setCountry(country)
-											.setSponsor(sponsor)
-											.build();
+					// Use Builder Pattern for creating an instance of Person
+					person = Person.create(fullname, settlement).setGender(gender).setCountry(country)
+							.setSponsor(sponsor).build();
 					person.initialize();
 
 					Mind m = person.getMind();
-					// 2016-11-05 Call syncUpExtraversion() to sync up the extraversion score between the two personality models
+					// Call syncUpExtraversion() to sync up the extraversion score between the two
+					// personality models
 					m.getMBTI().syncUpExtraversion();
 
 					addUnit(person);
 
 					relationshipManager.addInitialSettler(person, settlement);
 
-					// 2015-02-27 and 2015-03-24 Added Favorite class
+					// Add Favorite class
 					Favorite f = person.getFavorite();
 
-
-					// 2017-03-27 Use getRandomDishes() to obtain maind and side dishes
+					// Use getRandomDishes() to obtain main and side dishes
 					String[] dishes = f.getRandomDishes();
-					String mainDish = dishes[0];//f.getRandomMainDish();
-					String sideDish = dishes[1];//f.getRandomSideDish();
+					String mainDish = dishes[0];// f.getRandomMainDish();
+					String sideDish = dishes[1];// f.getRandomSideDish();
 					String dessert = f.getRandomDessert();
 					FavoriteType activity = f.getRandomActivity();
 
@@ -985,18 +983,18 @@ public class UnitManager implements Serializable {
 					f.setFavoriteDessert(dessert);
 					f.setFavoriteActivity(activity);
 
-					// 2015-06-07 Added Preference
+					// Add Preference
 					person.getPreference().initializePreference();
 
-					// 2015-06-18 Assign a job by calling getInitialJob
+					// Assign a job by calling getInitialJob
 					m.getInitialJob(JobManager.MISSION_CONTROL);
 
-				    // 2015-10-05 added setupReportingAuthority()
-				    person.assignReportingAuthority();
+					// Add setupReportingAuthority()
+					person.assignReportingAuthority();
 
 					ChainOfCommand cc = settlement.getChainOfCommand();
- 
-					// 2015-04-30 Assign a role to everyone
+
+					// Assign a role to everyone
 					if (initPop >= POPULATION_WITH_MAYOR) {
 						cc.set7Divisions(true);
 						cc.assignSpecialiststo7Divisions(person);
@@ -1005,14 +1003,13 @@ public class UnitManager implements Serializable {
 						cc.assignSpecialiststo3Divisions(person);
 					}
 
-
 				}
 
-				// 2016-12-21 Added calling updateAllAssociatedPeople(), not getAllAssociatedPeople()()
+				// Add calling updateAllAssociatedPeople(), not getAllAssociatedPeople()()
 				settlement.updateAllAssociatedPeople();
 				settlement.updateAllAssociatedRobots();
 
-				// 2015-07-02 Added setupShift()
+				// Set up work shift
 				setupShift(settlement, initPop);
 
 				// Establish a system of governance at settlement.
@@ -1022,13 +1019,14 @@ public class UnitManager implements Serializable {
 
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
-			//throw new IllegalStateException("People could not be created: " + e.getMessage(), e);
+			// throw new IllegalStateException("People could not be created: " +
+			// e.getMessage(), e);
 		}
 	}
 
-
 	/**
 	 * Establish a command structure for the settlement
+	 * 
 	 * @param settlement
 	 * @param pop
 	 */
@@ -1047,17 +1045,25 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Establish the mission roles for a one or two person settlement
+	 * 
 	 * @param settlement
 	 * @param pop
+	 */
+//	private void establishMissionRoles(Settlement settlement) {
+//		//electChief(settlement, RoleType.CHIEF_OF_SUPPLY_N_RESOURCES);
+//		//electChief(settlement, RoleType.CHIEF_OF_ENGINEERING);
+//		//electChief(settlement, RoleType.CHIEF_OF_SAFETY_N_HEALTH);
+//	}
 
-	private void establishMissionRoles(Settlement settlement) {
-		//electChief(settlement, RoleType.CHIEF_OF_SUPPLY_N_RESOURCES);
-		//electChief(settlement, RoleType.CHIEF_OF_ENGINEERING);
-		//electChief(settlement, RoleType.CHIEF_OF_SAFETY_N_HEALTH);
-	}
-	 */	
-	
-	// 2015-05-11 Added electCommanders()
+	/*
+	 * Elect the commanders
+	 * 
+	 * @param settlement
+	 * 
+	 * @param role
+	 * 
+	 * @param pop
+	 */
 	public void electCommanders(Settlement settlement, RoleType role, int pop) {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 		Person cc = null;
@@ -1102,25 +1108,36 @@ public class UnitManager implements Serializable {
 					cc_leadership = p_leadership;
 					cc_combined = p_combined;
 				}
-				/*
-				 * else { // if this person p has a lower combined score than
-				 * previous cc // but have a higher leadership score than the
-				 * previous cv if (pop >= POPULATION_WITH_SUB_COMMANDER) { if (
-				 * p_leadership > cv_leadership) { // this person p becomes the
-				 * sub-commander cv = p; cv_leadership = p_leadership;
-				 * cv_combined = p_combined; } else if ( p_leadership ==
-				 * cv_leadership) { if ( p_combined > cv_combined) { cv = p;
-				 * cv_leadership = p_leadership; cv_combined = p_combined; } } }
-				 * }
-				 */
-			} else if (pop >= POPULATION_WITH_SUB_COMMANDER) {
+//				 else { 
+					 // if this person p has a lower combined score than previous cc 
+					 // but have a higher leadership score than the previous cv 
+//					 if (pop >= POPULATION_WITH_SUB_COMMANDER) {
+//						 if ( p_leadership > cv_leadership) { 
+//							// this person p becomes the sub-commander 
+//							cv = p; 
+//							cv_leadership = p_leadership;
+//							cv_combined = p_combined; 
+//						 }
+//						 	
+//						 else if ( p_leadership == cv_leadership) {
+//						 	if (p_combined > cv_combined) {
+//								cv = p; 
+//								cv_leadership = p_leadership; 
+//								cv_combined = p_combined; 
+//							} 
+//						}
+//					}
+//				 }
+			}
+			else if (pop >= POPULATION_WITH_SUB_COMMANDER) {
 
 				if (p_leadership > cv_leadership) {
 					// this person p becomes the sub-commander
 					cv = p;
 					cv_leadership = p_leadership;
 					cv_combined = p_combined;
-				} else if (p_leadership == cv_leadership) {
+				} 
+				else if (p_leadership == cv_leadership) {
 					// compare person p's combined score with the cv's combined
 					// score
 					if (p_combined > cv_combined) {
@@ -1134,48 +1151,61 @@ public class UnitManager implements Serializable {
 		}
 		// TODO: look at other attributes and/or skills when comparing
 		// individuals
-		cc.setRole(RoleType.COMMANDER);
-
+		
+		// Check if the player is interested in becoming the commander
+		if (!Simulation.instance().isUserCommander()) {
+			cc.setRole(RoleType.COMMANDER);
+		}
+		else {
+			cc.setName(Simulation.instance().getUser());
+			cc.setGender(Simulation.instance().getGender());
+			cc.changeAge(Simulation.instance().getAge());
+			cc.setRole(RoleType.COMMANDER);	
+			Simulation.instance().resetUserCommander();
+		}
+		
 		if (pop >= POPULATION_WITH_SUB_COMMANDER)
 			cv.setRole(RoleType.SUB_COMMANDER);
 	}
+	
 
 	/**
 	 * Establish or reset the system of governance at a settlement.
+	 * 
 	 * @param settlement the settlement.
 	 */
 	public void establishSettlementGovernance(Settlement settlement) {
 
-	    int popSize = settlement.getAllAssociatedPeople().size();
-	    if (popSize >= POPULATION_WITH_MAYOR) {
-            establishGovernment(settlement);
-        }
-	    if (popSize >= 3) {
-	    	establishCommand(settlement, popSize);
-        }
-	    //else {
-        //   establishMissionRoles(settlement);
-        //}
+		int popSize = settlement.getAllAssociatedPeople().size();
+		if (popSize >= POPULATION_WITH_MAYOR) {
+			establishGovernment(settlement);
+		}
+		if (popSize >= 3) {
+			establishCommand(settlement, popSize);
+		}
+		// else {
+		// establishMissionRoles(settlement);
+		// }
 	}
 
-
 	/*
-	 * Determines the number of shifts for a settlement and assigns a work shift for each person
+	 * Determines the number of shifts for a settlement and assigns a work shift for
+	 * each person
+	 * 
 	 * @param settlement
+	 * 
 	 * @param pop population
 	 */
 	public void setupShift(Settlement settlement, int pop) {
 
 		int numShift = 0;
-		//ShiftType shiftType = ShiftType.OFF;
+		// ShiftType shiftType = ShiftType.OFF;
 
 		if (pop == 1) {
 			numShift = 1;
-		}
-		else if (pop < THREE_SHIFTS_MIN_POPULATION) {
+		} else if (pop < THREE_SHIFTS_MIN_POPULATION) {
 			numShift = 2;
-		}
-		else {//if pop >= 6
+		} else {// if pop >= 6
 			numShift = 3;
 		}
 
@@ -1184,14 +1214,18 @@ public class UnitManager implements Serializable {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 
 		for (Person p : people) {
-			//shiftType = settlement.getAnEmptyWorkShift(pop); // keep pop as a param just to speed up processing
+			// shiftType = settlement.getAnEmptyWorkShift(pop); // keep pop as a param just
+			// to speed up processing
 			p.setShiftType(settlement.getAnEmptyWorkShift(pop));
 		}
 
 	}
 
-
-	// 2015-04-30 Added establishGovernment()
+	/*
+	 * Establish the government in a settlement
+	 * 
+	 * @param settlement
+	 */
 	private void establishGovernment(Settlement settlement) {
 		electMayor(settlement, RoleType.MAYOR);
 
@@ -1205,13 +1239,19 @@ public class UnitManager implements Serializable {
 
 	}
 
-	// 2015-05-11 Added electMayor()
+	/*
+	 * Establish the mayor in a settlement
+	 * 
+	 * @param settlement
+	 * 
+	 * @param role
+	 */
 	public void electMayor(Settlement settlement, RoleType role) {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 		Person mayorCandidate = null;
 		int m_leadership = 0;
 		int m_combined = 0;
-		// compare their leadership scores
+		// Compare their leadership scores
 		for (Person p : people) {
 			NaturalAttributeManager mgr = p.getNaturalAttributeManager();
 			int p_leadership = mgr.getAttribute(NaturalAttributeType.LEADERSHIP);
@@ -1241,11 +1281,17 @@ public class UnitManager implements Serializable {
 		}
 
 		if (mayorCandidate != null) {
-		    mayorCandidate.setRole(RoleType.MAYOR);
+			mayorCandidate.setRole(RoleType.MAYOR);
 		}
 	}
 
-	// 2015-04-30 Added electChief()
+	/*
+	 * Establish the chiefs in a settlement
+	 * 
+	 * @param settlement
+	 * 
+	 * @param role
+	 */
 	public void electChief(Settlement settlement, RoleType role) {
 		// System.out.println("role is "+ role);
 		Collection<Person> people = settlement.getAllAssociatedPeople();
@@ -1312,8 +1358,7 @@ public class UnitManager implements Serializable {
 				// && (p.getRole().getType() != RoleType.SUB_COMMANDER)) {
 
 				int p_skills = 6 * skillMgr.getEffectiveSkillLevel(skill_1)
-						+ 5 * skillMgr.getEffectiveSkillLevel(skill_2)
-						+ 4 * skillMgr.getEffectiveSkillLevel(skill_3)
+						+ 5 * skillMgr.getEffectiveSkillLevel(skill_2) + 4 * skillMgr.getEffectiveSkillLevel(skill_3)
 						+ 3 * skillMgr.getEffectiveSkillLevel(skill_4);
 
 				int p_combined = mgr.getAttribute(NaturalAttributeType.LEADERSHIP)
@@ -1341,16 +1386,15 @@ public class UnitManager implements Serializable {
 			}
 		}
 		if (chief != null) {
-		    chief.setRole(role);
-		    // System.out.println("Chief is "+ chief.getName());
+			chief.setRole(role);
+			// System.out.println("Chief is "+ chief.getName());
 		}
 	}
 
 	/**
 	 * Creates all configured Robots.
 	 *
-	 * @throws Exception
-	 *             if error parsing XML.
+	 * @throws Exception if error parsing XML.
 	 */
 	private void createPreconfiguredRobots() {
 		int size = robotConfig.getNumberOfConfiguredRobots();
@@ -1366,7 +1410,7 @@ public class UnitManager implements Serializable {
 			// System.out.println("name is "+ name);
 
 			// Get robotType
-			//RobotType robotType = getABot(size);
+			// RobotType robotType = getABot(size);
 			RobotType robotType = robotConfig.getConfiguredRobotType(x);
 			// System.out.println("robotType is "+ robotType.getName());
 
@@ -1403,7 +1447,7 @@ public class UnitManager implements Serializable {
 				return;
 			}
 
-			// 2015-03-02 Added "if (settlement != null)" to stop the last
+			// Add "if (settlement != null)" to stop the last
 			// instance of robot from getting overwritten
 			if (settlement != null) {
 				// Set robot's job (if any).
@@ -1422,16 +1466,16 @@ public class UnitManager implements Serializable {
 
 					if (proceed) {
 						// Create robot and add to the unit manager.
-						//Robot robot = new Robot(name, robotType, "Mars", settlement, settlement.getCoordinates());
-						// 2017-04-16 Adopt Static Factory Method and Factory Builder Pattern
-						Robot robot = Robot.create(name, settlement, robotType)
-									.setCountry("Earth").build();
+						// Robot robot = new Robot(name, robotType, "Mars", settlement,
+						// settlement.getCoordinates());
+						// Adopt Static Factory Method and Factory Builder Pattern
+						Robot robot = Robot.create(name, settlement, robotType).setCountry("Earth").build();
 						robot.initialize();
 						addUnit(robot);
 
 						if (isDestinationChange)
-							logger.log(Level.INFO, name + " is being sent to " + settlement
-								+ " since " + preConfigSettlementName + " doesn't exist.");
+							logger.log(Level.INFO, name + " is being sent to " + settlement + " since "
+									+ preConfigSettlementName + " doesn't exist.");
 						// System.out.println("UnitManager : createConfiguredRobots() :
 						// a robot is added !");
 						// System.out.println("robotType is "+robotType.toString());
@@ -1440,7 +1484,6 @@ public class UnitManager implements Serializable {
 						if (robotJob != null) {
 							robot.getBotMind().setRobotJob(robotJob, true);
 						}
-
 
 						// Set robot's configured natural attributes (if any).
 						Map<String, Integer> attributeMap = robotConfig.getRoboticAttributeMap(x);
@@ -1473,6 +1516,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Creates initial Robots based on available capacity at settlements.
+	 * 
 	 * @throws Exception if Robots can not be constructed.
 	 */
 	private void createInitialRobots() {
@@ -1486,12 +1530,13 @@ public class UnitManager implements Serializable {
 					// Get a robotType randomly
 					RobotType robotType = getABot(settlement, initial);
 
-					//System.out.println("robotType is "+robotType.toString());
-					//Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Mars",
-					//		settlement, settlement.getCoordinates());
-					// 2017-04-16 Adopt Static Factory Method and Factory Builder Pattern
+					// System.out.println("robotType is "+robotType.toString());
+					// Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType),
+					// robotType, "Mars",
+					// settlement, settlement.getCoordinates());
+					// Adopt Static Factory Method and Factory Builder Pattern
 					Robot robot = Robot.create(getNewName(UnitType.ROBOT, null, null, robotType), settlement, robotType)
-								.setCountry("Earth").build();
+							.setCountry("Earth").build();
 					robot.initialize();
 
 					addUnit(robot);
@@ -1517,7 +1562,7 @@ public class UnitManager implements Serializable {
 
 	public RobotType getABot(Settlement s, int max) {
 
-		int[] numBots = new int[]{0,0,0,0,0,0,0};
+		int[] numBots = new int[] { 0, 0, 0, 0, 0, 0, 0 };
 
 		RobotType robotType = null;
 
@@ -1566,8 +1611,8 @@ public class UnitManager implements Serializable {
 				robotType = RobotType.MEDICBOT;
 			else if (numBots[5] < 1)
 				robotType = RobotType.DELIVERYBOT;
-			//else if (numBots[6] < 1)
-			//	robotType = RobotType.CONSTRUCTIONBOT;
+			// else if (numBots[6] < 1)
+			// robotType = RobotType.CONSTRUCTIONBOT;
 		}
 
 		else if (max <= 9) {
@@ -1719,12 +1764,13 @@ public class UnitManager implements Serializable {
 	/**
 	 * Creates all configured people relationships.
 	 *
-	 * @throws Exception
-	 *             if error parsing XML.
+	 * @throws Exception if error parsing XML.
 	 */
 	private void createConfiguredRelationships() {
-		//PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-		//RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+		// PersonConfig personConfig =
+		// SimulationConfig.instance().getPersonConfiguration();
+		// RelationshipManager relationshipManager =
+		// Simulation.instance().getRelationshipManager();
 		int size = personConfig.getNumberOfConfiguredPeople();
 		// Create all configured people relationships.
 		for (int x = 0; x < size; x++) {
@@ -1793,35 +1839,33 @@ public class UnitManager implements Serializable {
 	/**
 	 * Notify all the units that time has passed. Times they are a changing.
 	 *
-	 * @param time
-	 *            the amount time passing (in millisols)
-	 * @throws Exception
-	 *             if error during time passing.
+	 * @param time the amount time passing (in millisols)
+	 * @throws Exception if error during time passing.
 	 */
 	void timePassing(double time) {
-        int solElapsed = marsClock.getMissionSol();
+		int solElapsed = marsClock.getMissionSol();
 
-        if (solCache != solElapsed) {
-        	solCache = solElapsed;
-        	
-        	partConfig.computeReliability();
-        }
-		
+		if (solCache != solElapsed) {
+			solCache = solElapsed;
+
+			partConfig.computeReliability();
+		}
+
 		if (justReloaded) {
-        	partConfig.computeReliability();
-        	   
+			partConfig.computeReliability();
+
 			Collection<Settlement> c = CollectionUtils.getSettlement(units);
 			for (Settlement s : c) {
 				s.updateAllAssociatedPeople();
 				s.updateAllAssociatedRobots();
 			}
-			
+
 			justReloaded = false;
 		}
 
 		for (Unit u : units) {
 			u.timePassing(time);
-	
+
 		}
 
 	}
@@ -1896,13 +1940,12 @@ public class UnitManager implements Serializable {
 	 * @return Collection of people
 	 */
 	public Collection<Person> getOutsidePeople() {
-		return CollectionUtils.getPerson(units)
-				.stream()
-				.filter(p-> p.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY
-						 || p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
+		return CollectionUtils.getPerson(units).stream()
+				.filter(p -> p.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY
+						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
 				.collect(Collectors.toList());
 	}
-	
+
 	/**
 	 * Get number of Robots
 	 *
@@ -1923,6 +1966,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get the number of equipment.
+	 * 
 	 * @return number
 	 */
 	public int getEquipmentNum() {
@@ -1931,6 +1975,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get a collection of equipment.
+	 * 
 	 * @return collection
 	 */
 	public Collection<Equipment> getEquipment() {
@@ -1939,6 +1984,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * The total number of units
+	 * 
 	 * @return the total number of units
 	 */
 	public int getUnitNum() {
@@ -1947,6 +1993,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get all units in virtual Mars
+	 * 
 	 * @return Colleciton of units
 	 */
 	public Collection<Unit> getUnits() {
@@ -1955,6 +2002,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Adds a unit manager listener
+	 * 
 	 * @param newListener the listener to add.
 	 */
 	public final void addUnitManagerListener(UnitManagerListener newListener) {
@@ -1968,6 +2016,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Removes a unit manager listener
+	 * 
 	 * @param oldListener the listener to remove.
 	 */
 	public final void removeUnitManagerListener(UnitManagerListener oldListener) {
@@ -1981,8 +2030,9 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Fire a unit update event.
+	 * 
 	 * @param eventType the event type.
-	 * @param unit the unit causing the event.
+	 * @param unit      the unit causing the event.
 	 */
 	public final void fireUnitManagerUpdate(UnitManagerEventType eventType, Unit unit) {
 		if (listeners == null) {
@@ -1997,6 +2047,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Finds a unit in the simulation that has the given name.
+	 * 
 	 * @param name the name to search for.
 	 * @return unit or null if none.
 	 */
@@ -2014,19 +2065,19 @@ public class UnitManager implements Serializable {
 
 	public String getCountry(String sponsor) {
 
-		if (sponsor.contains("CNSA"))//.equals(Msg.getString("ReportingAuthorityType.CNSA")))
+		if (sponsor.contains("CNSA"))// .equals(Msg.getString("ReportingAuthorityType.CNSA")))
 			return "China";
-		else if (sponsor.contains("CSA"))//.equals(Msg.getString("ReportingAuthorityType.CSA")))
+		else if (sponsor.contains("CSA"))// .equals(Msg.getString("ReportingAuthorityType.CSA")))
 			return "Canada";
-		else if (sponsor.contains("ESA"))//.equals(Msg.getString("ReportingAuthorityType.ESA")))
+		else if (sponsor.contains("ESA"))// .equals(Msg.getString("ReportingAuthorityType.ESA")))
 			return countries.get(RandomUtil.getRandomInt(6, 27));
-		else if (sponsor.contains("ISRO"))//.equals(Msg.getString("ReportingAuthorityType.ISRO")))
+		else if (sponsor.contains("ISRO"))// .equals(Msg.getString("ReportingAuthorityType.ISRO")))
 			return "India";
-		else if (sponsor.contains("JAXA"))//.equals(Msg.getString("ReportingAuthorityType.JAXA")))
+		else if (sponsor.contains("JAXA"))// .equals(Msg.getString("ReportingAuthorityType.JAXA")))
 			return "Japan";
-		else if (sponsor.contains("NASA"))//.equals(Msg.getString("ReportingAuthorityType.NASA")))
+		else if (sponsor.contains("NASA"))// .equals(Msg.getString("ReportingAuthorityType.NASA")))
 			return "US";
-		else if (sponsor.contains("RKA"))//.equals(Msg.getString("ReportingAuthorityType.RKA")))
+		else if (sponsor.contains("RKA"))// .equals(Msg.getString("ReportingAuthorityType.RKA")))
 			return "Russia";
 		else if (sponsor.contains("MS"))
 			return "US";
@@ -2037,49 +2088,49 @@ public class UnitManager implements Serializable {
 
 	}
 
-/*
-	// 2017-01-21 Add createCountryList();
-	public void createCountryList() {
-
-		countries = new ArrayList<>();
-
-		countries.add("China"); //0
-		countries.add("Canada"); //1
-		countries.add("India"); //2
-		countries.add("Japan"); //3
-		countries.add("US"); //4
-		countries.add("Russia"); //5
-
-		countries.add("Austria");
-		countries.add("Belgium");
-		countries.add("Czech Republic");
-		countries.add("Denmark");
-		countries.add("Estonia");
-		countries.add("Finland");
-		countries.add("France");
-		countries.add("Germany");
-		countries.add("Greece");
-		countries.add("Hungary");
-		countries.add("Ireland");
-		countries.add("Italy");
-		countries.add("Luxembourg");
-		countries.add("The Netherlands");
-		countries.add("Norway");
-		countries.add("Poland");
-		countries.add("Portugal");
-		countries.add("Romania");
-		countries.add("Spain");
-		countries.add("Sweden");
-		countries.add("Switzerland");
-		countries.add("UK");
-
-	}
-	*/
+	/*
+	 * Create the country list
+	 * 
+	 */
+//	public void createCountryList() {
+//
+//		countries = new ArrayList<>();
+//
+//		countries.add("China"); //0
+//		countries.add("Canada"); //1
+//		countries.add("India"); //2
+//		countries.add("Japan"); //3
+//		countries.add("US"); //4
+//		countries.add("Russia"); //5
+//
+//		countries.add("Austria");
+//		countries.add("Belgium");
+//		countries.add("Czech Republic");
+//		countries.add("Denmark");
+//		countries.add("Estonia");
+//		countries.add("Finland");
+//		countries.add("France");
+//		countries.add("Germany");
+//		countries.add("Greece");
+//		countries.add("Hungary");
+//		countries.add("Ireland");
+//		countries.add("Italy");
+//		countries.add("Luxembourg");
+//		countries.add("The Netherlands");
+//		countries.add("Norway");
+//		countries.add("Poland");
+//		countries.add("Portugal");
+//		countries.add("Romania");
+//		countries.add("Spain");
+//		countries.add("Sweden");
+//		countries.add("Switzerland");
+//		countries.add("UK");
+//
+//	}
 
 	public int getCountryID(String country) {
 		return countries.indexOf(country);
 	}
-
 
 	/**
 	 * Prepare object for garbage collection.
@@ -2102,18 +2153,18 @@ public class UnitManager implements Serializable {
 		personFemaleNames = null;
 		listeners.clear();
 		listeners = null;
-		//personExecutor = null;
-		//settlementExecutor = null;
+		// personExecutor = null;
+		// settlementExecutor = null;
 		equipmentNumberMap.clear();
 		equipmentNumberMap = null;
 		vehicleNumberMap.clear();
 		vehicleNumberMap = null;
-		//masterClock = null;
+		// masterClock = null;
 //		firstSettlement = null;
 		personConfig = null;
 		settlementConfig = null;
 		relationshipManager = null;
-		//emotionJSONConfig = null;
+		// emotionJSONConfig = null;
 		vehicleConfig = null;
 	}
 }

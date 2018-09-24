@@ -560,6 +560,10 @@ public class ScenarioConfigEditorFX {
 
 	public class SimulationTask implements Runnable {
 		public void run() {
+			
+			// Input user info
+			Simulation.instance().startTerminal();
+			
 			Simulation.createNewSimulation(-1);
 			Simulation.instance().start(false);
 			Platform.runLater(() -> {

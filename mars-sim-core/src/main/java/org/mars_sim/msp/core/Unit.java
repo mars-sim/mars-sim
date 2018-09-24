@@ -215,7 +215,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * 
 	 * @param name new name
 	 */
-	public final void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 		fireUnitUpdate(UnitEventType.NAME_EVENT, name);
 	}

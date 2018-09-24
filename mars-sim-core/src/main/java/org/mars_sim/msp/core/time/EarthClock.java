@@ -61,7 +61,7 @@ implements Serializable {
 		// use ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
 		// see http://stackoverflow.com/questions/26142864/how-to-get-utc0-date-in-java-8
 
-		// 2017-03-23 Use ZonedDate
+		// Use ZonedDate
 		zonedDateTime = ZonedDateTime.now(ZoneOffset.UTC);
 
 		// Convert to GregorianCalendar
@@ -120,8 +120,6 @@ implements Serializable {
 		TimeZone gmt = TimeZone.getTimeZone("GMT");
 		f3.setTimeZone(gmt);
 		f3.setLenient(false);
-		
-		
 
 	}
 
@@ -269,13 +267,11 @@ implements Serializable {
 		return getTimeStampF0();
 	}
 
-	public int getDayOfMonth()
-	{
+	public int getDayOfMonth() {
 		return gregCal.get(Calendar.DATE);
 	}
 
-	public int getMonth()
-	{
+	public int getMonth() {
 		return gregCal.get(Calendar.MONTH);
 	}
 
@@ -314,6 +310,10 @@ implements Serializable {
 		return gregCal.get(Calendar.YEAR);
 	}
 
+	public void setYear(int year) {
+		gregCal.set(Calendar.YEAR, year);
+	}
+	
 	public int getSecond() { return gregCal.get(Calendar.SECOND);}
 
 	public String getSecondString() {

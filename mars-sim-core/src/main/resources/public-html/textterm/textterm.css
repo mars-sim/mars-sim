@@ -1,0 +1,47 @@
+#textterm {
+    font-family:    'courier', monospace;
+    background:     black;
+
+    height:         480px;
+    resize:         both;
+    overflow:       auto;
+    margin:         40px;
+    padding:        20px;
+    word-wrap:      break-word;
+}
+
+.textterm-normal-prompt {
+    color:          lightgreen;
+    font-weight:    normal;
+}
+
+.textterm-white-space-pre {
+    white-space: pre;
+}
+.textterm-white-space-normal {
+    white-space: normal;
+}
+
+.textterm-error-prompt {
+    color:          red;
+    font-weight:    bold;
+}
+
+/**
+* The input span where the input happens.
+* Also applied to the previous inputs made in the current session.
+*/
+#textterm .textterm-input {
+    color:          yellow;
+
+    height:         1em;
+    min-width:      1em;
+    outline-color:  transparent;
+    border:         none;
+    display:        inline-block;
+}
+
+#textterm p {
+    margin:         0;
+    padding:        0;
+}
