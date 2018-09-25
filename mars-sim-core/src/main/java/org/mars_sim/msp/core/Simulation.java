@@ -457,11 +457,11 @@ public class Simulation implements ClockListener, Serializable {
 //		if (!user.equals("n") && !user.equals("N")) {	
 			String firstN = textIO.newStringInputReader()
 //		        .withDefaultValue("admin")
-		        .read("First Name [more than 2 characters]");		
+		        .read("First Name");		
 		
 			String lastN = textIO.newStringInputReader()
 //		        .withDefaultValue("admin")
-		        .read("Last Name [more than 2 characters]");	
+		        .read("Last Name/Surname");	
 		
 			user = firstN + " " + lastN;
 
@@ -473,7 +473,7 @@ public class Simulation implements ClockListener, Serializable {
 		        .withMinLength(1)
 //		        .withDefaultValue("M")
 //		        .withInputMasking(true)
-		        .read("Gender [m/f]");
+		        .read("Gender [M/F]");
 			age = textIO.newIntInputReader()
 		        .withMinVal(21)
 		        .read("Age");

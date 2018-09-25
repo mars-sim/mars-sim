@@ -558,14 +558,12 @@ public class CrewEditorFX {
 		return g;
 	}
 
-	@SuppressWarnings("restriction")
 	public void setUpCrewName() {
 		for (int i = 0; i < SIZE_OF_CREW; i++) {
-			int crew_id = personConfig.getCrew(i);
+//			int crew_id = personConfig.getCrew(i);
 			// TODO: will assign this person to the crew
 			String n = personConfig.getConfiguredPersonName(i, ALPHA_CREW);
-			SimpleStringProperty np = new SimpleStringProperty(n);
-			// System.out.println(" name is "+ n);
+//			SimpleStringProperty np = new SimpleStringProperty(n);
 			JFXTextField tf = new JFXTextField();
 			//tf.setUnFocusColor(Color.rgb(255, 255, 255, 0.5));
 			tf.setFocusColor(Color.rgb(225, 206, 30, 1));
@@ -576,8 +574,6 @@ public class CrewEditorFX {
 			// np.bindBidirectional(tf.textProperty());
 			// tf.textProperty().addListener((observable, oldValue, newValue) ->
 			// {
-			// System.out.println("textfield changed from " + oldValue + " to "
-			// + newValue);
 			// tf.setText(newValue);
 			// });
 		}

@@ -637,6 +637,8 @@ public class UnitManager implements Serializable {
 	private void createPreconfiguredPeople() {
 		Settlement settlement = null;
 
+		List<Person> personList = new ArrayList<>();
+		
 		if (personConfig == null) // FOR PASSING MAVEN TEST
 			personConfig = SimulationConfig.instance().getPersonConfiguration();
 
@@ -652,9 +654,6 @@ public class UnitManager implements Serializable {
 
 			// Get person's name (required)
 			String name = personConfig.getConfiguredPersonName(x, crew_id);
-			if (name == null) {
-				throw new IllegalStateException("Person name is null");
-			}
 
 			// Get person's gender or randomly determine it if not configured.
 			GenderType gender = personConfig.getConfiguredPersonGender(x, crew_id);
@@ -663,6 +662,50 @@ public class UnitManager implements Serializable {
 				if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
 					gender = GenderType.MALE;
 				}
+			}
+			
+//			if (name == null
+//				throw new IllegalStateException("Person name is null");
+			
+			boolean invalid = false;
+			// Prevent mars-sim from using the user defined commander's name  
+			if (name == "" || name == null) {
+				logger.severe("A person's name is invalid in alpha crew list or in people.xml");
+				invalid = true;
+			}
+				
+			if (name.equals(Simulation.instance().getUser())) {
+				logger.severe("A person's name in people.xml collides with the user defined commander's name ");
+				invalid = true;
+			}
+			
+			if (invalid) {
+				boolean isUnique = false;
+				
+				String oldName = name;
+				
+				while (!isUnique) {
+					int num = 0;
+//					if (gender == GenderType.MALE) {
+//						num = 0;
+//					} else 
+					if (gender == GenderType.FEMALE) {
+						num = 1;
+					}
+					
+					List<String> list = marsSociety.get(num);
+					name = list.get(RandomUtil.getRandomInt(list.size()-1));	
+					
+					if (name.equals(Simulation.instance().getUser())) {
+						isUnique = false;						
+					}
+					else {
+						logger.info("'" + name + "' has been selected to replace '" + oldName + "' found in alpha crew list or in people.xml. ");
+						isUnique = true;
+					}
+
+				}
+
 			}
 
 			// Get person's settlement or randomly determine it if not configured.
@@ -722,11 +765,10 @@ public class UnitManager implements Serializable {
 					.build();
 			person.initialize();
 
+			personList.add(person);
+			
 			// TODO: read from file
 			addUnit(person);
-
-			// System.out.println("done with addUnit() in createConfiguredPeople() in
-			// UnitManager");
 
 			relationshipManager.addInitialSettler(person, settlement);
 
@@ -752,8 +794,6 @@ public class UnitManager implements Serializable {
 			person.getFavorite().setFavoriteSideDish(sideDish);
 			person.getFavorite().setFavoriteDessert(dessert);
 			person.getFavorite().setFavoriteActivity(FavoriteType.fromString(activity));
-			// System.out.println("done with setFavorite_() in createConfiguredPeople() in
-			// UnitManager");
 
 			// Set the person's configured Big Five Personality traits (if any).
 			Map<String, Integer> bigFiveMap = personConfig.getBigFiveMap(x);
@@ -810,10 +850,8 @@ public class UnitManager implements Serializable {
 		settlement.updateAllAssociatedPeople();
 		settlement.updateAllAssociatedRobots();
 
-		// System.out.println("b4 calling createConfiguredRelationships() in
-		// UnitManager");
 		// Create all configured relationships.
-		createConfiguredRelationships();
+		createConfiguredRelationships(personList);
 
 	}
 
@@ -823,9 +861,6 @@ public class UnitManager implements Serializable {
 	 * @throws Exception if people can not be constructed.
 	 */
 	private void createInitialPeople() {
-
-		// PersonConfig personConfig =
-		// SimulationConfig.instance().getPersonConfiguration();
 		if (relationshipManager == null)
 			relationshipManager = Simulation.instance().getRelationshipManager();
 
@@ -840,16 +875,19 @@ public class UnitManager implements Serializable {
 				while (settlement.getIndoorPeopleCount() < initPop) {
 
 					String sponsor = settlement.getSponsor();
-					// System.out.println("sponsor is " + sponsor);
 
 					// Check for any duplicate full Name
-					List<String> existingfullnames = new ArrayList<>();
+					List<String> existingfullnames = new ArrayList<>();	
 					Iterator<Person> j = getPeople().iterator();
 					while (j.hasNext()) {
 						String n = j.next().getName();
 						existingfullnames.add(n);
 					}
-
+					
+					// Prevent mars-sim from using the user defined commander's name  
+					if (!existingfullnames.contains(Simulation.instance().getUser()))
+						existingfullnames.add(Simulation.instance().getUser());
+					
 					boolean isUniqueName = false;
 					GenderType gender = null;
 					Person person = null;
@@ -952,6 +990,9 @@ public class UnitManager implements Serializable {
 							}
 						}
 
+						// Prevent mars-sim from using the user defined commander's name  
+						if (fullname.equals(Simulation.instance().getUser()))
+							isUniqueName = false;
 					}
 
 					// Use Builder Pattern for creating an instance of Person
@@ -1157,8 +1198,15 @@ public class UnitManager implements Serializable {
 			cc.setRole(RoleType.COMMANDER);
 		}
 		else {
-			cc.setName(Simulation.instance().getUser());
-			cc.setGender(Simulation.instance().getGender());
+//			String oldName = cc.getName();
+//			GenderType oldGender = cc.getGender();
+			
+			String newName = Simulation.instance().getUser();
+			String newGender = Simulation.instance().getGender();
+
+			// Set user as the commander 
+			cc.setName(newName);
+			cc.setGender(newGender);
 			cc.changeAge(Simulation.instance().getAge());
 			cc.setRole(RoleType.COMMANDER);	
 			Simulation.instance().resetUserCommander();
@@ -1766,35 +1814,37 @@ public class UnitManager implements Serializable {
 	 *
 	 * @throws Exception if error parsing XML.
 	 */
-	private void createConfiguredRelationships() {
-		// PersonConfig personConfig =
-		// SimulationConfig.instance().getPersonConfiguration();
-		// RelationshipManager relationshipManager =
-		// Simulation.instance().getRelationshipManager();
+	private void createConfiguredRelationships(List<Person> personList) {
+
 		int size = personConfig.getNumberOfConfiguredPeople();
+		
+		
 		// Create all configured people relationships.
 		for (int x = 0; x < size; x++) {
 			try {
 
 				// Get person's name
-				String name = personConfig.getConfiguredPersonName(x, PersonConfig.ALPHA_CREW);
-				if (name == null) {
-					throw new IllegalStateException("Person name is null");
-				}
+//				String name = personConfig.getConfiguredPersonName(x, PersonConfig.ALPHA_CREW);
+//				System.out.println("Alpha crew member : " + name);
+//				if (name == null || name.equals("")) {
+//					throw new IllegalStateException("Person name is null");
+//				}
 
 				// Get the person
-				Person person = null;
-				Iterator<Person> j = getPeople().iterator();
-				while (j.hasNext()) {
-					Person tempPerson = j.next();
-					if (tempPerson.getName().equals(name)) {
-						person = tempPerson;
-					}
-				}
-				if (person == null) {
-					throw new IllegalStateException("Person: " + name + " not found.");
-				}
+				Person person = personList.get(x);
+//				Person person = null;
+//				Iterator<Person> j = getPeople().iterator();
+//				while (j.hasNext()) {
+//					Person tempPerson = j.next();
+//					if (tempPerson.getName().equals(name)) {
+//						person = tempPerson;
+//					}
+//				}
+//				if (person == null) {
+//					throw new IllegalStateException("Person: " + name + " not found.");
+//				}
 
+				
 				// Set person's configured relationships (if any).
 				Map<String, Integer> relationshipMap = personConfig.getRelationshipMap(x);
 				if (relationshipMap != null) {
@@ -1802,9 +1852,9 @@ public class UnitManager implements Serializable {
 					while (i.hasNext()) {
 						String relationshipName = i.next();
 
-						// Get the other person in the relationship.
+						// Get the other people in the same settlement in the relationship.
 						Person relationshipPerson = null;
-						Iterator<Person> k = getPeople().iterator();
+						Iterator<Person> k = personList.iterator();
 						while (k.hasNext()) {
 							Person tempPerson = k.next();
 							if (tempPerson.getName().equals(relationshipName)) {

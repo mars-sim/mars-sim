@@ -84,11 +84,13 @@ For a more detail description of this project, see our project website at at htt
     Java that should be used. 
   - Check if the correct version of Java is being enable in "Java Control Panel" in Windows's Control Panel. 
 
-> Note 1 The BEST approach is enabling only one Java build (such as Java 10.0.2) at a time and disable all other java versions/builds.
+> Note 1 : The order of precedence inside `PATH` is crucial. The first available folder having Java executable inside will be the one to be loaded  by Windows OS. 
 
-> Note 2 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
+> Note 2 : The BEST approach is to enable only one Java build (such as Java 10.0.2) inside `PATH` and remove  all other folders referencing other java versions/builds.
 
-> Note 3 : Remove all Java related executables inside the folder `C:\ProgramData\Oracle\Java\javapath` in order to avoid loading the undesired version of jre/jdk.
+> Note 3 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
+
+> Note 4 : Remove all Java related executables inside the folder `C:\ProgramData\Oracle\Java\javapath` in order to avoid loading the undesired version of jre/jdk.
 
 
 ## Feedback/Comments
