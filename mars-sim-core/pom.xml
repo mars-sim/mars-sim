@@ -44,13 +44,13 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>25.0-jre</version>
+			<version>26.0-jre</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.google.inject/guice : 303 KB -->
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
-			<version>4.2.0</version>
+			<version>4.2.1</version>
 			<classifier>no_aop</classifier>
 		</dependency>
 
@@ -137,37 +137,41 @@
 		    <version>1.5.4</version>
 		</dependency>
 		-->
-		<!-- https://mvnrepository.com/artifact/io.ratpack/ratpack-guice -->
+		<!-- https://mvnrepository.com/artifact/io.ratpack/ratpack-guice
 		<dependency>
 		    <groupId>io.ratpack</groupId>
 		    <artifactId>ratpack-guice</artifactId>
 		    <version>1.5.4</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/io.ratpack/ratpack-session -->
+		-->
+		<!-- https://mvnrepository.com/artifact/io.ratpack/ratpack-session
 		<dependency>
 		    <groupId>io.ratpack</groupId>
 		    <artifactId>ratpack-session</artifactId>
 		    <version>1.5.4</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.glassfish/javax.activation -->
+		-->
+		<!-- https://mvnrepository.com/artifact/org.glassfish/javax.activation
 		<dependency>
 		    <groupId>org.glassfish</groupId>
 		    <artifactId>javax.activation</artifactId>
 		    <version>10.0-b28</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.sparkjava/spark-core -->
+		-->
+		<!-- https://mvnrepository.com/artifact/com.sparkjava/spark-core
 		<dependency>
 		    <groupId>com.sparkjava</groupId>
 		    <artifactId>spark-core</artifactId>
 		    <version>2.7.2</version>
 		</dependency>
+		-->
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-lang3</artifactId>
-		    <version>3.8</version>
-		</dependency>
-
+		    <version>3.8.1</version>
+		</dependency>	
+		
 		
 	</dependencies>
 

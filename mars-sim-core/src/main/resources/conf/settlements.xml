@@ -1156,14 +1156,14 @@
 			<location longitude="0.0 W" latitude="0.0 N" />
 			<population number="24" />
 			<number-of-robots number="12" />
-			<sponsor name="Mars Society (MS)"/>
+			<sponsor name="National Aeronautics and Space Administration (NASA)"/>
 		</settlement>
 
 		<settlement name="Plymouth Base" template="Mars Direct Base (Phase 2)">
 			<location longitude="4.2 E" latitude="15.9 S" />
 			<population number="8" />
 			<number-of-robots number="4" />
-			<sponsor name="National Aeronautics and Space Administration (NASA)"/>
+			<sponsor name="Mars Society (MS)"/>
 		</settlement>
 		
 		<settlement name="Schiaparelli Point" template="Mars Direct Base (Phase 1)">

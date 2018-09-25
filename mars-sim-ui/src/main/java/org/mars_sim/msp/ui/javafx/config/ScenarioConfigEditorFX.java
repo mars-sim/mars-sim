@@ -562,7 +562,7 @@ public class ScenarioConfigEditorFX {
 		public void run() {
 			
 			// Input user info
-			Simulation.instance().startTerminal();
+//			Simulation.instance().startTerminal();
 			
 			Simulation.createNewSimulation(-1);
 			Simulation.instance().start(false);

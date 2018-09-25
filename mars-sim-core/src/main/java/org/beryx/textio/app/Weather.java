@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.beryx.textio.demo.app;
+package org.beryx.textio.app;
 
 import org.beryx.textio.PropertiesConstants;
 import org.beryx.textio.TextIO;

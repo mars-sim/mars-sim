@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.beryx.textio.demo.app;
+package org.beryx.textio.app;
 
 import com.google.gson.Gson;
 import org.beryx.textio.TextTerminal;

@@ -9,8 +9,12 @@ module mars-sim-core {
     requires guice;
     requires log4j;
     requires commons-collections;
-
+    requires text-io;
+    requires gson;
+    requires commons-lang3;
     requires xz;
+    
+//	requires java.desktop;
     
 //    requires reactfx;
 //   requires fxgl;
