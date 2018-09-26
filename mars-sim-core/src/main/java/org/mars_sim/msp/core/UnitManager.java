@@ -885,8 +885,9 @@ public class UnitManager implements Serializable {
 					}
 					
 					// Prevent mars-sim from using the user defined commander's name  
-					if (!existingfullnames.contains(Simulation.instance().getUser()))
-						existingfullnames.add(Simulation.instance().getUser());
+					String userName = Simulation.instance().getUser();
+					if (userName != null && !existingfullnames.contains(userName))
+						existingfullnames.add(userName);
 					
 					boolean isUniqueName = false;
 					GenderType gender = null;
@@ -983,6 +984,7 @@ public class UnitManager implements Serializable {
 						Iterator<String> k = existingfullnames.iterator();
 						while (k.hasNext()) {
 							String n = k.next();
+//							System.out.println("n is "+ n + "   fullname is " + fullname);
 							if (n.equals(fullname)) {
 								isUniqueName = false;
 								logger.info(fullname + " is a duplicate name. Choose another one.");
