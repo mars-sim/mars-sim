@@ -34,7 +34,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData>, Seriali
 	
 	private Contact contact = new Contact();
     
-	TextTerminal<?> terminal;
+	private static TextTerminal<?> terminal;
 	
     private final List<Runnable> operations = new ArrayList<>();
 
