@@ -7,16 +7,15 @@
 
 package org.mars_sim.msp.core.terminal;
 
-//import org.beryx.textio.ReadAbortedException;
-//import org.beryx.textio.ReadHandlerData;
-//import org.beryx.textio.TextIO;
-//import org.beryx.textio.TextIoFactory;
-//import org.beryx.textio.TextTerminal;
-//import org.beryx.textio.app.AppUtil;
+import org.beryx.textio.ReadAbortedException;
+import org.beryx.textio.ReadHandlerData;
+import org.beryx.textio.TextIO;
+import org.beryx.textio.TextIoFactory;
+import org.beryx.textio.TextTerminal;
 
-import org.beryx.textio.*;
 import org.mars_sim.msp.core.UnitManager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -28,8 +27,11 @@ import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
 /**
  * Illustrates how to use read handlers to allow going back to a previous field.
  */
-public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
+public class CommanderProfile implements BiConsumer<TextIO, RunnerData>, Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = -4L;
+	
 	private Contact contact = new Contact();
     
 	TextTerminal<?> terminal;
@@ -106,7 +108,11 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     	return contact;
     }
     
-	public class Contact {
+	public class Contact implements Serializable {
+
+		/** default serial id. */
+		private static final long serialVersionUID = -4L;
+		
         private String firstName;
         private String lastName;
         private String gender;
