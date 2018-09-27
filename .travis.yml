@@ -1,13 +1,14 @@
 language: java
 dist: trusty
 script:
-- mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B
+- mvn install -DskipTests=true -Dmaven.javadoc.skip=true
 jdk:
 - oraclejdk10
 addons:
 apt:
 packages:
 - oracle-java10-installer
+export TRAVIS_WORKER_MAX_LOG_LENGTH = 10000000
 cache:
 directories:
 - $HOME/.m2
