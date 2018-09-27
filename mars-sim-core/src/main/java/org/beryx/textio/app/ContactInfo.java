@@ -16,7 +16,8 @@
 package org.beryx.textio.app;
 
 import org.beryx.textio.*;
-import org.beryx.textio.web.RunnerData;
+import org.mars_sim.msp.core.terminal.AppUtil;
+import org.mars_sim.msp.core.terminal.RunnerData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,7 @@ public class ContactInfo implements BiConsumer<TextIO, RunnerData> {
     }
 
     private final Contact contact = new Contact();
+    
     private final List<Runnable> operations = new ArrayList<>();
 
     public static void main(String[] args) {

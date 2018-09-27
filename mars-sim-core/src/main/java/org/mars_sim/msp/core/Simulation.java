@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core;
 
+import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
+
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,7 +30,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.beryx.textio.ReadHandlerData;
 import org.beryx.textio.TextIO;
+import org.beryx.textio.TextIoFactory;
+import org.beryx.textio.TextTerminal;
+import org.beryx.textio.app.ContactInfo;
 import org.beryx.textio.system.SystemTextTerminal;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
@@ -40,6 +46,7 @@ import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
+import org.mars_sim.msp.core.terminal.CommanderProfile;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
@@ -143,11 +150,6 @@ public class Simulation implements ClockListener, Serializable {
 	private boolean isFXGL = false;
 
 	private double fileSize;
-
-	/** The name of the player */
-	private String user;
-	/** The gender of the player */
-	private String gender ;
 	
 	/** The time stamp of the last saved sim */	
 	private String lastSaveTimeStamp;
@@ -156,9 +158,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	private String lastSaveStr = null;
 	
-	/** The age of the player */
-	private int age;
-	
+
 	// Note: Transient data members (aren't stored in save file)
 	// Added transient to avoid serialization error
 //	private transient Timer autosaveTimer;
@@ -198,8 +198,8 @@ public class Simulation implements ClockListener, Serializable {
 
 	private UpTimer ut;
 	
-//	private Terminal terminal;
-
+	private CommanderProfile profile;
+	
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
 	 * from other classes.
@@ -427,106 +427,44 @@ public class Simulation implements ClockListener, Serializable {
 	 * Initialize the text-io terminal.
 	 */
 	public void startTerminal() {
-//		try {
-//			terminal = TerminalBuilder.terminal();
-	//		terminal = TerminalBuilder.builder()
-	//                .system(true)
-	//                .signalHandler(Terminal.SignalHandler.SIG_IGN)
-	//                .build();
-//			
-//	        terminal.writer().print("Activating Jline3 in this terminal...\n");
-//	        terminal.writer().flush();
-//	        
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		
-        SystemTextTerminal sysTerminal = new SystemTextTerminal();
-        TextIO textIO = new TextIO(sysTerminal);
+//		TextIO textIO = TextIoFactory.getTextIO();
+//        TextTerminal<?> terminal = textIO.getTextTerminal();
+//        String backKeyStroke = "Ctrl-U";
+//        boolean registered = terminal.registerHandler(backKeyStroke, t -> new ReadHandlerData(ABORT));
+//        if (registered) {
+//            terminal.println("During data entry you can press '" + backKeyStroke + "' to go back to the previous field.\n");
+//        }
+        
+		
+		// Use existing terminal
+//        SystemTextTerminal sysTerminal = new SystemTextTerminal();
+//        TextIO textIO = new TextIO(sysTerminal);
         
         // Construct a terminal based on Java Swing 
-//		TextIO textIO = TextIoFactory.getTextIO();
+		TextIO textIO = TextIoFactory.getTextIO();
 		
-		user = textIO.newStringInputReader()
-//		        .withDefaultValue("admin")
+		profile = new CommanderProfile(textIO);
+		
+		char input = textIO.newCharInputReader()//.withDefaultValue('n')
 		        .read("Do you want to be added as the commander of a settlement? [y/n]");	
-//		System.out.println("user is " + user + " and has " + user.length() + " character(s).");
-		
-		if (user.equals("y") || user.equals("Y")) {
-//		if (!user.equals("n") && !user.equals("N")) {	
-			String firstN = textIO.newStringInputReader()
-//		        .withDefaultValue("admin")
-		        .read("First Name");		
-		
-			String lastN = textIO.newStringInputReader()
-//		        .withDefaultValue("admin")
-		        .read("Last Name/Surname");	
-		
-			user = firstN + " " + lastN;
-
-//		String password = textIO.newStringInputReader()
-//		        .withMinLength(6)
-//		        .withInputMasking(true)
-//		        .read("Password");
-			gender = textIO.newStringInputReader()
-		        .withMinLength(1)
-//		        .withDefaultValue("M")
-//		        .withInputMasking(true)
-		        .read("Gender [M/F]");
-			age = textIO.newIntInputReader()
-		        .withMinVal(21)
-		        .read("Age");
-
-//		Month month = textIO.newEnumInputReader(Month.class)
-//		        .read("What month were you born in?");
-			textIO.getTextTerminal().printf("Commander %s, your profile has been set up.\n", user);
-		
-//        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to terminate...");
-//        textIO.dispose("User '" + user + "' has left the building.");
-		}
-		else {
-			user = null;
+	
+		if (input == 'y' || input == 'Y') {        
+			profile.accept(textIO, null);
 		}
 		
 	}
 	
+
 	/**
-	 * Checks if the user's name is provided
+	 * Get the Commander's profile
 	 * 
-	 * @return true if the name is not null
+	 * @return profile
 	 */
-	public boolean isUserCommander() {
-//		System.out.println("isUserCommander() : " + user);
-		if (user != null)
-			return true;
-		else
-			return false;
+	public CommanderProfile getProfile() {
+		return profile;
 	}
-	
-	/**
-	 * Resets the user's name back to null
-	 */
-	public void resetUserCommander() {
-		user = null;
-	}
-	
-	/** Gets the name of the user */
-	public String getUser() {
-		return user;
-	}
-	
-	
-	/** Gets the gender of the user */
-	public String getGender() {
-		return gender;
-	}
-	
-	/** Gets the age of the player */
-	public int getAge() {
-		return age;
-	}
-	
+			
 	/*
 	 * Obtains the size of the file
 	 * 

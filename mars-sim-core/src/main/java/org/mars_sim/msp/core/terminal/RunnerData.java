@@ -13,18 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.beryx.textio.app;
+package org.mars_sim.msp.core.terminal;
 
-import com.google.gson.Gson;
-import org.beryx.textio.TextTerminal;
+import java.util.Collections;
+import java.util.Map;
 
-public class AppUtil {
-    public static void printGsonMessage(TextTerminal<?> terminal, String initData) {
-        if(initData != null && !initData.isEmpty()) {
-            String message = new Gson().fromJson(initData, String.class);
-            if(message != null && !message.isEmpty()) {
-                terminal.println(message);
-            }
-        }
+public class RunnerData {
+    private final String initData;
+    private Map<String, String> sessionData = Collections.emptyMap();
+
+    public RunnerData(String initData) {
+        this.initData = initData;
+    }
+
+    public String getInitData() {
+        return initData;
+    }
+
+    public Map<String, String> getSessionData() {
+        return sessionData;
+    }
+    public void setSessionData(Map<String, String> sessionData) {
+        this.sessionData = sessionData;
     }
 }

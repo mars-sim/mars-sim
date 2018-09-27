@@ -16,7 +16,8 @@
 package org.beryx.textio.app;
 
 import org.beryx.textio.*;
-import org.beryx.textio.web.RunnerData;
+import org.mars_sim.msp.core.terminal.AppUtil;
+import org.mars_sim.msp.core.terminal.RunnerData;
 
 import java.util.function.BiConsumer;
 

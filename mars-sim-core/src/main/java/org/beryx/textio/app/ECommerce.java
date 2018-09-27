@@ -19,7 +19,8 @@ import org.beryx.textio.TerminalProperties;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.TextTerminal;
-import org.beryx.textio.web.RunnerData;
+import org.mars_sim.msp.core.terminal.AppUtil;
+import org.mars_sim.msp.core.terminal.RunnerData;
 
 import java.util.function.BiConsumer;
 

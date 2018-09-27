@@ -14,12 +14,15 @@ module mars-sim-headless {
 	
 	requires java.util.Arrays;
 	requires java.util.List;
-	requires java.util.logging.Level;
-	requires java.util.logging.LogManager;
-	requires java.util.logging.Logger;
-	requires java.util.logging.Filter;
-	requires java.util.logging.LogRecord;
-	requires java.util.logging.Formatter;
+	
+	requires java.util.logging;
+	
+//	requires java.util.logging.Level;
+//	requires java.util.logging.LogManager;
+//	requires java.util.logging.Logger;
+//	requires java.util.logging.Filter;
+//	requires java.util.logging.LogRecord;
+//	requires java.util.logging.Formatter;
 	
     requires junit;
     requires mars-sim-core;

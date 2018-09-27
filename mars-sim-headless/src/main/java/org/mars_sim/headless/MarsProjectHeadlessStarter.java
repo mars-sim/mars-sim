@@ -101,8 +101,8 @@ public class MarsProjectHeadlessStarter {
 			else {
 
 				// Check for the headless switch
-				if (argList.contains("headless") || argList.contains("-headless"))
-					command.append(" -headless");
+//				if (argList.contains("headless") || argList.contains("-headless"))
+//					command.append(" -headless");
 
 				// Check for the new switch
 				if (argList.contains("new") || argList.contains("-new"))

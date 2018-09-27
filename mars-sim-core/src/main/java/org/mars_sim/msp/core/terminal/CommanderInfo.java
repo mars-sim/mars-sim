@@ -1,15 +1,23 @@
-/**
- * Mars Simulation Project
- * CommanderInfo.java
- * @version 3.1.0 2018-09-24
- * @author Manny Kung
+/*
+ * Copyright 2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
 package org.mars_sim.msp.core.terminal;
 
 import org.beryx.textio.*;
-import org.beryx.textio.app.AppUtil;
-import org.beryx.textio.web.RunnerData;
+import org.mars_sim.msp.core.terminal.AppUtil;
+import org.mars_sim.msp.core.terminal.RunnerData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,20 +34,28 @@ public class CommanderInfo implements BiConsumer<TextIO, RunnerData> {
     private static class Contact {
         String firstName;
         String lastName;
-        String gender;
-        String age;
-        
+        String streetAddress;
+        String city;
+        String zipCode;
+        String state;
+        String country;
+        String phone;
+
         @Override
         public String toString() {
-            return "\n\tFirst Name: " + firstName +
-                    "\n\tLast Name: " + lastName +
-                    "\n\tGender: " + gender +
-                    "\n\tAge: " + age
-                    ;
+            return "\n\tfirstName: " + firstName +
+                    "\n\tlastName: " + lastName +
+                    "\n\tstreetAddress: " + streetAddress +
+                    "\n\tcity: " + city +
+                    "\n\tzipCode: " + zipCode +
+                    "\n\tstate: " + state +
+                    "\n\tcountry: " + country +
+                    "\n\tphone: " + phone;
         }
     }
 
     private final Contact contact = new Contact();
+    
     private final List<Runnable> operations = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -55,10 +71,15 @@ public class CommanderInfo implements BiConsumer<TextIO, RunnerData> {
 
         addTask(textIO, "First name", () -> contact.firstName, s -> contact.firstName = s);
         addTask(textIO, "Last name", () -> contact.lastName, s -> contact.lastName = s);
-        addTask(textIO, "Gender", () -> contact.gender, s -> contact.gender = s);
-        addTask(textIO, "Age", () -> contact.age, s -> contact.age = s);
+        addTask(textIO, "Street address", () -> contact.streetAddress, s -> contact.streetAddress = s);
+        addTask(textIO, "City", () -> contact.city, s -> contact.city = s);
+        addTask(textIO, "Zip code", () -> contact.zipCode, s -> contact.zipCode = s);
+        addTask(textIO, "State", () -> contact.state, s -> contact.state = s);
+        addTask(textIO, "Country", () -> contact.country, s -> contact.country = s);
+        addTask(textIO, "Phone number", () -> contact.phone, s -> contact.phone = s);
 
-        String backKeyStroke = "Ctrl-U";
+
+        String backKeyStroke = "ctrl U";
         boolean registered = terminal.registerHandler(backKeyStroke, t -> new ReadHandlerData(ABORT));
         if(registered) {
             terminal.println("During data entry you can press '" + backKeyStroke + "' to go back to the previous field.\n");
@@ -76,7 +97,7 @@ public class CommanderInfo implements BiConsumer<TextIO, RunnerData> {
             step++;
         }
 
-        terminal.println("\nCommander's Profile: " + contact);
+        terminal.println("\nContact info: " + contact);
 
         textIO.newStringInputReader().withMinLength(0).read("\nPress enter to terminate...");
         textIO.dispose();
@@ -90,7 +111,7 @@ public class CommanderInfo implements BiConsumer<TextIO, RunnerData> {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ": reading commander's profile.\n" +
+        return getClass().getSimpleName() + ": reading contact info.\n" +
                 "(Illustrates how to use read handlers to allow going back to a previous field.)";
     }
 }

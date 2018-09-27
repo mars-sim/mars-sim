@@ -52,6 +52,7 @@ import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
+import org.mars_sim.msp.core.terminal.CommanderProfile;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -81,6 +82,8 @@ public class UnitManager implements Serializable {
 	// Data members
 	private int solCache = 0;
 
+	public static boolean isProfileRetrieved = true;	
+	
 	/** Collection of all units. */
 	private Collection<Unit> units;
 
@@ -674,7 +677,7 @@ public class UnitManager implements Serializable {
 				invalid = true;
 			}
 				
-			if (name.equals(Simulation.instance().getUser())) {
+			if (getFullname() != null && name.equals(getFullname())) {
 				logger.severe("A person's name in people.xml collides with the user defined commander's name ");
 				invalid = true;
 			}
@@ -696,7 +699,7 @@ public class UnitManager implements Serializable {
 					List<String> list = marsSociety.get(num);
 					name = list.get(RandomUtil.getRandomInt(list.size()-1));	
 					
-					if (name.equals(Simulation.instance().getUser())) {
+					if (name.equals(getFullname())) {
 						isUnique = false;						
 					}
 					else {
@@ -885,7 +888,7 @@ public class UnitManager implements Serializable {
 					}
 					
 					// Prevent mars-sim from using the user defined commander's name  
-					String userName = Simulation.instance().getUser();
+					String userName = getFullname();
 					if (userName != null && !existingfullnames.contains(userName))
 						existingfullnames.add(userName);
 					
@@ -993,7 +996,7 @@ public class UnitManager implements Serializable {
 						}
 
 						// Prevent mars-sim from using the user defined commander's name  
-						if (fullname.equals(Simulation.instance().getUser()))
+						if (fullname.equals(getFullname()))
 							isUniqueName = false;
 					}
 
@@ -1196,22 +1199,22 @@ public class UnitManager implements Serializable {
 		// individuals
 		
 		// Check if the player is interested in becoming the commander
-		if (!Simulation.instance().isUserCommander()) {
+		if (isProfileRetrieved) {
 			cc.setRole(RoleType.COMMANDER);
 		}
 		else {
 //			String oldName = cc.getName();
 //			GenderType oldGender = cc.getGender();
 			
-			String newName = Simulation.instance().getUser();
-			String newGender = Simulation.instance().getGender();
+			String newName = getFullname();
+			String newGender = getGender();
 
 			// Set user as the commander 
 			cc.setName(newName);
 			cc.setGender(newGender);
-			cc.changeAge(Simulation.instance().getAge());
+			cc.changeAge(getAge());
 			cc.setRole(RoleType.COMMANDER);	
-			Simulation.instance().resetUserCommander();
+			isProfileRetrieved = true;
 		}
 		
 		if (pop >= POPULATION_WITH_SUB_COMMANDER)
@@ -2184,6 +2187,42 @@ public class UnitManager implements Serializable {
 		return countries.indexOf(country);
 	}
 
+	/**
+	 * Checks if the commander's profile has been retrieved
+	 * 
+	 * @return true if the name is not null
+	 */
+	public boolean isProfileRetrieved() {
+		return isProfileRetrieved;
+	}
+	
+	/**
+	 * Resets the commander's name back to null
+	 */
+	public void resetCommanderProfile() {
+		isProfileRetrieved = true;
+	}
+	
+	/** Gets the commander's fullname */
+	public String getFullname() {
+		// During maven test, CommanderProfile/Contact instance doesn't exist
+		if (Simulation.instance().getProfile() != null)
+			return Simulation.instance().getProfile().getContact().getFullName();
+		else
+			return null;
+	}
+	
+	/** Gets the commander's gender */
+	public String getGender() {
+		return Simulation.instance().getProfile().getContact().getGender();
+	}
+	
+	/** Gets the commander's age */
+	public int getAge() {
+		return Simulation.instance().getProfile().getContact().getAge();
+	}
+	
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
