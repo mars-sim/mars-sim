@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.terminal.CommanderProfile;
+import org.mars_sim.msp.core.terminal.ExitMenu;
 import org.mars_sim.msp.core.terminal.TimeRatioMenu;
 import org.mars_sim.msp.core.terminal.RunnerData;
 import org.mars_sim.msp.core.terminal.SaveMenu;
@@ -141,6 +142,8 @@ public class Simulation implements ClockListener, Serializable {
 	private static boolean justSaved = true;
 
 	private static boolean autosaveDefault;
+	
+	private static boolean keepRunning = true;
 
 	// private static int autosave_minute;// = 15;
 
@@ -199,9 +202,9 @@ public class Simulation implements ClockListener, Serializable {
 
 	private UpTimer ut;
 	
-	private CommanderProfile profile;
+	private static CommanderProfile profile;
 	
-	private static TextIO textIO;
+	private static TextIO textIO = TextIoFactory.getTextIO();
 	
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
@@ -459,11 +462,12 @@ public class Simulation implements ClockListener, Serializable {
 	
 	public void initializeTerminal() {
         // Construct a terminal based on Java Swing 
-		textIO = TextIoFactory.getTextIO();
+		//textIO = TextIoFactory.getTextIO();
+		keepRunning = true;
 	}
 	
 	public void loadTerminalMenu() {
-		while (true) {
+		while (keepRunning) {
 		    BiConsumer<TextIO, RunnerData> app = chooseMenu(textIO);
 		    //TextIO textIO = chooseTextIO();
 	        textIO.getTextTerminal().printf("\n");
@@ -474,12 +478,13 @@ public class Simulation implements ClockListener, Serializable {
     private static BiConsumer<TextIO, RunnerData> chooseMenu(TextIO textIO) {
         List<BiConsumer<TextIO, RunnerData>> apps = Arrays.asList(
                 new TimeRatioMenu(),
-                new SaveMenu()
+                new SaveMenu(),
+                new ExitMenu()
         );
 //        textIO.getTextTerminal().printf("\n");
         BiConsumer<TextIO, RunnerData> app = textIO.<BiConsumer<TextIO, RunnerData>>newGenericInputReader(null)
             .withNumberedPossibleValues(apps)
-            .read("\n----------------------- Menu -----------------------\n");
+            .read("\n-------------------- Mars Simulation Project --------------------\n");
         String propsFileName = app.getClass().getSimpleName() + ".properties";
         System.setProperty(AbstractTextTerminal.SYSPROP_PROPERTIES_FILE_LOCATION, propsFileName);
 
@@ -771,7 +776,7 @@ public class Simulation implements ClockListener, Serializable {
 				Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
 			}
 
-			logger.info("Saving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
+			logger.info("Saving as " + DEFAULT_FILE + DEFAULT_EXTENSION + "...");
 
 		}
 
@@ -784,7 +789,7 @@ public class Simulation implements ClockListener, Serializable {
 			if (!f.contains(".sim"))
 				file = new File(dir, f + DEFAULT_EXTENSION);
 			// System.out.println("file is " + file);
-			logger.info("Saving as " + file);
+			logger.info("Saving as " + file + "...");
 		}
 
 		else if (type == AUTOSAVE_AS_DEFAULT) {
@@ -802,7 +807,7 @@ public class Simulation implements ClockListener, Serializable {
 				Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
 			}
 
-			logger.info("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
+			logger.info("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION + "...");
 
 		}
 
@@ -810,7 +815,7 @@ public class Simulation implements ClockListener, Serializable {
 			String autosaveFilename = lastSaveStr + "_Sol" + masterClock.getMarsClock().getMissionSol() + "_r" + BUILD
 					+ DEFAULT_EXTENSION;
 			file = new File(AUTOSAVE_DIR, autosaveFilename);
-			logger.info("Autosaving as " + autosaveFilename);
+			logger.info("Autosaving as " + autosaveFilename + "...");
 
 		}
 
@@ -914,7 +919,7 @@ public class Simulation implements ClockListener, Serializable {
 
 			xzout.finish();
 
-			logger.info("Done saving. Resuming the sim.");
+			logger.info("Done saving. The simulation resumes.");
 
 		} catch (NullPointerException e0) {
 			logger.log(Level.SEVERE, Msg.getString("Simulation.log.saveError"), e0); //$NON-NLS-1$
@@ -994,6 +999,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * Ends the current simulation
 	 */
 	public void endSimulation() {
+		keepRunning = false;
 		instance().defaultLoad = false;
 		instance().stop();
 		masterClock.endClockListenerExecutor();
@@ -1008,7 +1014,6 @@ public class Simulation implements ClockListener, Serializable {
 	/**
 	 * Stop the simulation.
 	 */
-	// called when loading a sim
 	public void stop() {
 		if (masterClock != null) {
 			// simExecutor.shutdown();

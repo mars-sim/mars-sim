@@ -411,8 +411,6 @@ public class MarsProjectFX extends Application {
 
 			else if (loadSim) {
 				// CASE E //
-				
-				initTerminal();
 			}
 
 		} 
@@ -435,6 +433,7 @@ public class MarsProjectFX extends Application {
 
 			else if (loadSim) {
 				// CASE B //
+				
 				// Initialize the simulation.
 				Simulation.createNewSimulation(-1);
 
@@ -465,8 +464,7 @@ public class MarsProjectFX extends Application {
 						// e2);
 					}
 				}
-				
-				initTerminal();
+
 			}
 			// Generate html files for in-game help
 			else if (generateHTML) {
@@ -501,7 +499,11 @@ public class MarsProjectFX extends Application {
 	}
 
 	
+	/**
+	 * Initialize interactive terminal and load menu
+	 */
 	public void initTerminal() {
+		System.out.println("initTerminal()");
 		// Initialize interactive terminal 
 		Simulation.instance().initializeTerminal();	
 		// Load the menu choice
@@ -580,6 +582,8 @@ public class MarsProjectFX extends Application {
 				// CASE A //
 			} else if (loadSim) {
 				// CASE B //
+				// Initialize interactive terminal and load menu
+				//initTerminal();
 			} else if (generateHTML) {
 				// CASE C //
 			} else if (helpPage) {
@@ -613,6 +617,9 @@ public class MarsProjectFX extends Application {
 
 		// Start the simulation.
 		startSimulation(true);
+		
+		// Initialize interactive terminal and load menu
+		initTerminal();
 	}
 
 	/**
@@ -638,6 +645,9 @@ public class MarsProjectFX extends Application {
 
 				// Start the simulation.
 				startSimulation(false);
+				
+				// Initialize interactive terminal and load menu
+				initTerminal();
 
 			} else {
 				exitWithError(

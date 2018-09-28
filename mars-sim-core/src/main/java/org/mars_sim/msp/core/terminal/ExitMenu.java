@@ -9,20 +9,24 @@ package org.mars_sim.msp.core.terminal;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.TextTerminal;
-import org.mars_sim.msp.core.MathUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.terminal.AppUtil;
 import org.mars_sim.msp.core.terminal.RunnerData;
 
 import java.util.function.BiConsumer;
+import java.util.logging.Logger;
+
 
 /**
  * A menu for choosing the time ratio in TextIO.
  */
-public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
+public class ExitMenu implements BiConsumer<TextIO, RunnerData> {
+	
+	private static Logger logger = Logger.getLogger(ExitMenu.class.getName());
+
     public static void main(String[] args) {
         TextIO textIO = TextIoFactory.getTextIO();
-        new TimeRatioMenu().accept(textIO, null);
+        new ExitMenu().accept(textIO, null);
     }
 
     @Override
@@ -31,21 +35,23 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
         String initData = (runnerData == null) ? null : runnerData.getInitData();
         AppUtil.printGsonMessage(terminal, initData);
 
-        int ratio = textIO.newIntInputReader()
-                .withMinVal(1).withMaxVal(16384)
-                .read("Time Ratio");
+        boolean toSave = textIO.newBooleanInputReader()//.withDefaultValue(true)
+                .read("Exit now");
 
         terminal.printf("\n");
         
-        if (MathUtils.isPowerOf2(ratio) && ratio <= 16384) {
-        	Simulation.instance().getMasterClock().setTimeRatio(ratio);   
-            terminal.printf("The New Time-Ratio is %dx\n", ratio);
+        if (toSave) {
+            terminal.printf("Exiting the Simulation...\n");
+        	Simulation.instance().endSimulation(); 
+    		Simulation.instance().getSimExecutor().shutdownNow();
+    		Simulation.instance().getMasterClock().exitProgram();
+    		logger.info("Exiting the Simulation.");
+			System.exit(0);
         }
         else
-            terminal.printf("Invalid value.\nPlease choose a number that's a power of 2 as well as between 1 and 16384\n");
-
+            terminal.printf("You don't want to exit the Simulation.\n");
         	
- //       textIO.newStringInputReader().withMinLength(0).read("\nPress enter to return to the menu\n");
+//        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to return to the menu\n");
 
     }
 
@@ -53,7 +59,7 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
     
     @Override
     public String toString() {
-        return "Change the Time Ratio";
+        return "Exit the Simulation\n";
 //        		getClass().getSimpleName() + ": reading personal data.\n" +
 //                "(Properties are initialized at start-up.\n" +
 //                "Properties file: " + getClass().getSimpleName() + ".properties.)";

@@ -1,6 +1,6 @@
 module mars-sim {
 
-    requires junit;
+//    requires junit;
     
     requires mars-sim-ui;
     requires mars-sim-mapdata;

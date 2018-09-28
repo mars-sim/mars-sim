@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.terminal;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.TextTerminal;
-import org.mars_sim.msp.core.MathUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.terminal.AppUtil;
 import org.mars_sim.msp.core.terminal.RunnerData;
@@ -31,19 +30,19 @@ public class SaveMenu implements BiConsumer<TextIO, RunnerData> {
         String initData = (runnerData == null) ? null : runnerData.getInitData();
         AppUtil.printGsonMessage(terminal, initData);
 
-        boolean toSave = textIO.newBooleanInputReader().withDefaultValue(true)
+        boolean toSave = textIO.newBooleanInputReader()//.withDefaultValue(true)
                 .read("Save now");
 
         terminal.printf("\n");
         
         if (toSave) {
             terminal.printf("Saving Simulation...\n");
-        	Simulation.instance().getMasterClock().setSaveSim(Simulation.AUTOSAVE_AS_DEFAULT, null); 
+        	Simulation.instance().getMasterClock().setSaveSim(Simulation.SAVE_DEFAULT, null); 
         }
         else
             terminal.printf("You don't want to save the Simulation.\n");
         	
-        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to return to the menu\n");
+//        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to return to the menu\n");
 
     }
 
@@ -51,7 +50,7 @@ public class SaveMenu implements BiConsumer<TextIO, RunnerData> {
     
     @Override
     public String toString() {
-        return "Save the Simulation\n";
+        return "Save the Simulation";
 //        		getClass().getSimpleName() + ": reading personal data.\n" +
 //                "(Properties are initialized at start-up.\n" +
 //                "Properties file: " + getClass().getSimpleName() + ".properties.)";

@@ -4,7 +4,7 @@ module mars-sim-mapdata {
     requires java.util;
     requires java.awt;
     
-    requires junit;
+//    requires junit;
     
 	exports mars-sim-mapdata;
 }

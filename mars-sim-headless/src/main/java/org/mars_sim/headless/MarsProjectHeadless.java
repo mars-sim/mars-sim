@@ -61,6 +61,9 @@ public class MarsProjectHeadless {
 		}
 	}
 
+	/**
+	 * 	Initialize interactive terminal and load menu
+	 */
 	public void initTerminal() {
 		// Initialize interactive terminal 
 		Simulation.instance().initializeTerminal();	
@@ -107,17 +110,16 @@ public class MarsProjectHeadless {
 				SimulationConfig.loadConfig();
 				Simulation.createNewSimulation(userTimeRatio);
 				handleLoadDefaultSimulation();
-				
-				this.initTerminal();
 
 				// FIXME : make it work
 			} catch (Exception e) {
 				showError("Could not load the desired simulation. Staring a new Simulation instead. ", e);
 				handleNewSimulation(userTimeRatio);
 				result = true;
-				// Load the menu choice
-				Simulation.instance().loadTerminalMenu();
 			}
+			
+			// Initialize interactive terminal and load menu
+			initTerminal();
 		} 
 		
 		else {

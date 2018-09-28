@@ -571,6 +571,9 @@ public class ScenarioConfigEditorFX {
 			});
 			if (multiplayerClient != null)
 				multiplayerClient.prepareListeners();
+			
+			// Load the menu choice
+			Simulation.instance().loadTerminalMenu();
 		}
 	}
 

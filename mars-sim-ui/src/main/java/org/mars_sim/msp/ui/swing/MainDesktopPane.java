@@ -681,7 +681,9 @@ public class MainDesktopPane extends WebDesktopPane
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.HELP_TAB))
 							ssm.select(MainScene.HELP_TAB);
-					mainScene.getMainSceneMenu().getHelpBrowserItem().setSelected(true);
+					// Check if getHelpBrowserItem() is null as it may not be fully loaded at the start of the sim.
+					if (mainScene.getMainSceneMenu().getHelpBrowserItem() != null)
+						mainScene.getMainSceneMenu().getHelpBrowserItem().setSelected(true);
 				}
 			});
 		}

@@ -26,10 +26,10 @@ import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
 /**
  * The class for setting up a customized commander profile. It reads handlers and allow going back to the previous field.
  */
-public class CommanderProfile implements BiConsumer<TextIO, RunnerData>, Serializable {
+public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {//, Serializable {
 
 	/** default serial id. */
-	private static final long serialVersionUID = -4L;
+//	private static final long serialVersionUID = -1L;
 	
 	private Contact contact = new Contact();
     
@@ -80,7 +80,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData>, Seriali
         
         UnitManager.isProfileRetrieved = false;
         
-        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to continue...\n");     
+//        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to continue...\n");     
 //		textIO.dispose();
 
         
@@ -110,10 +110,10 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData>, Seriali
     	return contact;
     }
     
-	public class Contact implements Serializable {
+	public class Contact {//implements Serializable {
 
 		/** default serial id. */
-		private static final long serialVersionUID = -4L;
+//		private static final long serialVersionUID = -1L;
 		
         private String firstName;
         private String lastName;
