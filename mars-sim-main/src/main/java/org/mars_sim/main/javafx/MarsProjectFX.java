@@ -411,22 +411,26 @@ public class MarsProjectFX extends Application {
 
 			else if (loadSim) {
 				// CASE E //
+				
+				initTerminal();
 			}
 
-		} else {
-
+		} 
+		
+		else {
 			// Using -headless (GUI-less mode)
 			if (newSim) {
 				// CASE A //
 				logger.info("Starting a new sim in headless mode in " + Simulation.OS);
 				
 				// Input user info
-				Simulation.instance().startTerminal();
-				
+				Simulation.instance().startTerminal();				
 				// Initialize the simulation.
 				Simulation.createNewSimulation(-1);
 				// Start the simulation.
-				startSimulation(true);
+				startSimulation(true);				
+				// Load the menu choice
+				Simulation.instance().loadTerminalMenu();
 			}
 
 			else if (loadSim) {
@@ -461,6 +465,8 @@ public class MarsProjectFX extends Application {
 						// e2);
 					}
 				}
+				
+				initTerminal();
 			}
 			// Generate html files for in-game help
 			else if (generateHTML) {
@@ -481,7 +487,9 @@ public class MarsProjectFX extends Application {
 					e.printStackTrace();
 					exitWithError("Could not generate help files ", e);
 				}
-			} else if (helpPage) {
+			} 
+			
+			else if (helpPage) {
 				// CASE D //
 				// logger.info("Displaying help instructions in headless mode in " +
 				// Simulation.OS);
@@ -492,6 +500,16 @@ public class MarsProjectFX extends Application {
 		}
 	}
 
+	
+	public void initTerminal() {
+		// Initialize interactive terminal 
+		Simulation.instance().initializeTerminal();	
+		// Load the menu choice
+		Simulation.instance().loadTerminalMenu();
+	}
+	
+	
+	
 	@Override
 	public void start(Stage primaryStage) {
 		// logger.info("MarsProjectFX's start() is on " +

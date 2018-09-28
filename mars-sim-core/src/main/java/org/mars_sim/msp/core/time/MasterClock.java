@@ -515,10 +515,14 @@ public class MasterClock implements Serializable {
 			else
 				currentTBU_ns = (long) (currentTBU_ns * .9975); // decrement by .5%
 
+			logger.info("Time-ratio : " + (int)currentTR + "x ==> " + (int)ratio + "x");
+			
 			adjustedTBU_s = currentTBU_ns / 1_000_000_000D;
 			currentTR = ratio;
-		} else
-			throw new IllegalArgumentException("Time ratio is out of bounds ");
+			
+		} 
+		
+		else throw new IllegalArgumentException("Time ratio is out of bounds ");
 	}
 
 	/**

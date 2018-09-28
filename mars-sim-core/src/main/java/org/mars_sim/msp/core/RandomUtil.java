@@ -27,10 +27,10 @@ public final class RandomUtil {
 	// Note 1: it is compatible with standard java.util.Randrom's method and require no mapping
 	// See intro at https://cran.r-project.org/web/packages/randtoolbox/vignettes/fullpres.pdf
 
-	// Added 2015-10-12 XORSHIFT maven artifact
+	// Add XORSHIFT maven artifact
 	// private final static XorShift1024StarRandom random = new XorShift1024StarRandom();
 
-	// Added 2015-10-12 two implementation of SIMD-oriented Fast Mersenne Twister PNRG in java.
+	// Add two implementation of SIMD-oriented Fast Mersenne Twister PNRG in java.
 	// Note 1: they are not compatible with standard java.util.Randrom's methods, require seeding and re-mapping of methods
 	// Note 2: other PRNG in the MT family can be found at https://github.com/zwxadz/SFMT-for-Java
 

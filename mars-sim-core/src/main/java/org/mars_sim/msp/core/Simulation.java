@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core;
 
-import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
-
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,19 +21,25 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.beryx.textio.ReadHandlerData;
+import org.beryx.textio.AbstractTextTerminal;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
-import org.beryx.textio.TextTerminal;
 import org.beryx.textio.app.ContactInfo;
-import org.beryx.textio.system.SystemTextTerminal;
+import org.beryx.textio.app.Cuboid;
+import org.beryx.textio.app.ECommerce;
+import org.beryx.textio.app.ShoppingList;
+import org.beryx.textio.app.UserDataCollector;
+import org.beryx.textio.app.Weather;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -47,6 +51,8 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.terminal.CommanderProfile;
+import org.mars_sim.msp.core.terminal.TimeRatioMenu;
+import org.mars_sim.msp.core.terminal.RunnerData;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
@@ -199,6 +205,8 @@ public class Simulation implements ClockListener, Serializable {
 	private UpTimer ut;
 	
 	private CommanderProfile profile;
+	
+	private TextIO textIO;
 	
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
@@ -441,8 +449,7 @@ public class Simulation implements ClockListener, Serializable {
 //        SystemTextTerminal sysTerminal = new SystemTextTerminal();
 //        TextIO textIO = new TextIO(sysTerminal);
         
-        // Construct a terminal based on Java Swing 
-		TextIO textIO = TextIoFactory.getTextIO();
+		initializeTerminal();
 		
 		profile = new CommanderProfile(textIO);
 		
@@ -455,6 +462,34 @@ public class Simulation implements ClockListener, Serializable {
 		
 	}
 	
+	public void initializeTerminal() {
+        // Construct a terminal based on Java Swing 
+		textIO = TextIoFactory.getTextIO();
+	}
+	
+	public void loadTerminalMenu() {
+		while (true) {
+		    BiConsumer<TextIO, RunnerData> app = chooseMenu(textIO);
+		    //TextIO textIO = chooseTextIO();
+	        textIO.getTextTerminal().printf("\n");
+		    app.accept(textIO, null);	    
+		}
+	}
+    
+    private static BiConsumer<TextIO, RunnerData> chooseMenu(TextIO textIO) {
+        List<BiConsumer<TextIO, RunnerData>> apps = Arrays.asList(
+                new TimeRatioMenu()
+        );
+//        textIO.getTextTerminal().printf("\n");
+        BiConsumer<TextIO, RunnerData> app = textIO.<BiConsumer<TextIO, RunnerData>>newGenericInputReader(null)
+            .withNumberedPossibleValues(apps)
+            .read("\n----------------------- Menu -----------------------\n");
+        String propsFileName = app.getClass().getSimpleName() + ".properties";
+        System.setProperty(AbstractTextTerminal.SYSPROP_PROPERTIES_FILE_LOCATION, propsFileName);
+
+        return app;
+    }
+    
 
 	/**
 	 * Get the Commander's profile

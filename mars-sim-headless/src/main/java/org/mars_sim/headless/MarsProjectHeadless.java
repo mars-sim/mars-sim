@@ -57,9 +57,17 @@ public class MarsProjectHeadless {
 			// headless mode
 			// Initialize the simulation.
 			initializeSimulation(args);
+
 		}
 	}
 
+	public void initTerminal() {
+		// Initialize interactive terminal 
+		Simulation.instance().initializeTerminal();	
+		// Load the menu choice
+		Simulation.instance().loadTerminalMenu();
+	}
+	
 	/**
 	 * Initialize the simulation.
 	 * 
@@ -88,26 +96,37 @@ public class MarsProjectHeadless {
 			// If new argument, create new simulation.
 			handleNewSimulation(userTimeRatio); // if this fails we always exit, continuing is useless
 			result = true;
-
-		} else if (argList.contains("-load")) {
+			// Load the menu choice
+			Simulation.instance().loadTerminalMenu();
+		} 
+		
+		else if (argList.contains("-load")) {
 			// If load argument, load simulation from file.
 			try {
 				// Initialize the simulation.
 				SimulationConfig.loadConfig();
 				Simulation.createNewSimulation(userTimeRatio);
 				handleLoadDefaultSimulation();
+				
+				this.initTerminal();
 
 				// FIXME : make it work
 			} catch (Exception e) {
 				showError("Could not load the desired simulation. Staring a new Simulation instead. ", e);
 				handleNewSimulation(userTimeRatio);
 				result = true;
+				// Load the menu choice
+				Simulation.instance().loadTerminalMenu();
 			}
-		} else {
+		} 
+		
+		else {
 			// if there is no args, load default.sim
 //                showError("Could not load the default simulation, trying to create a new Simulation...", e);
 			handleNewSimulation(userTimeRatio);
 			result = true;
+			// Load the menu choice
+			Simulation.instance().loadTerminalMenu();
 		}
 
 		return result;
@@ -172,12 +191,13 @@ public class MarsProjectHeadless {
 			SimulationConfig.loadConfig();
 
 			Simulation.instance().destroyOldSimulation();
-			
 			// Input user info
 			Simulation.instance().startTerminal();
 			
 			Simulation.createNewSimulation(userTimeRatio);
+			
 			Simulation.instance().start(true);
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -12,7 +12,6 @@ import org.beryx.textio.ReadHandlerData;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.TextTerminal;
-
 import org.mars_sim.msp.core.UnitManager;
 
 import java.io.Serializable;
@@ -25,7 +24,7 @@ import java.util.function.Supplier;
 import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
 
 /**
- * Illustrates how to use read handlers to allow going back to a previous field.
+ * The class for setting up a customized commander profile. It reads handlers and allow going back to the previous field.
  */
 public class CommanderProfile implements BiConsumer<TextIO, RunnerData>, Serializable {
 
@@ -56,13 +55,13 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData>, Seriali
 	
         addTask(textIO, "First Name", () -> contact.firstName, s -> contact.firstName = s);
         addTask(textIO, "Last Name", () -> contact.lastName, s -> contact.lastName = s);
-        addTask(textIO, "Gender [m/f]", () -> contact.gender, s -> contact.gender = s);
+        addTask(textIO, "Gender [M/F]", () -> contact.gender, s -> contact.gender = s);
         addIntTask(textIO, "Age", () -> contact.age, s -> contact.age = s);	
         
         String backKeyStroke = "ctrl U";
         boolean registered = terminal.registerHandler(backKeyStroke, t -> new ReadHandlerData(ABORT));
         if(registered) {
-            terminal.println("(Note : press '" + backKeyStroke + "' to go back to the previous field)\n");
+            terminal.println("\nNote : press '" + backKeyStroke + "' to go back to the previous field.\n");
         }
         int step = 0;
         while(step < operations.size()) {
@@ -81,8 +80,10 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData>, Seriali
         
         UnitManager.isProfileRetrieved = false;
         
-        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to continue...");     
-		textIO.dispose();
+        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to continue...\n");     
+//		textIO.dispose();
+
+        
     }
     
     private void addTask(TextIO textIO, String prompt, Supplier<String> defaultValueSupplier, Consumer<String> valueSetter) {
@@ -100,8 +101,9 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData>, Seriali
     
     @Override
     public String toString() {
-        return getClass().getSimpleName() + ": reading commander's profile.\n" +
-                "(Illustrates how to use read handlers to allow going back to a previous field.)";
+//        return getClass().getSimpleName() + ": reading commander's profile.\n" +
+//                "(Illustrates how to use read handlers to allow going back to a previous field.)";
+        return "Commander's Profile";
     }
     
     public Contact getContact() {

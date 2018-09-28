@@ -33,7 +33,7 @@ Copyright (C) 2018 Scott Davis
 
 5. Track/record settler's sleep time on each sol.
 
-6. Add terminal interactivity in case of headless mode.
+6. Add limited terminal interactivity in headless mode.
 
 
 
@@ -50,7 +50,7 @@ Copyright (C) 2018 Scott Davis
 
 3. Fix the path for notifier.css in QNotification.
 
-4. Enable year 0 (orbit 0) in resupply mission.
+4. Enable year 0 (orbit 0) in resupply or new arriving settlement mission.
 
 
 -----------------------------------------------------------------------------------------
