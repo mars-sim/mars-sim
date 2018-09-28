@@ -19,10 +19,10 @@ import java.util.function.BiConsumer;
 /**
  * A menu for choosing the time ratio in TextIO.
  */
-public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
+public class SaveMenu implements BiConsumer<TextIO, RunnerData> {
     public static void main(String[] args) {
         TextIO textIO = TextIoFactory.getTextIO();
-        new TimeRatioMenu().accept(textIO, null);
+        new SaveMenu().accept(textIO, null);
     }
 
     @Override
@@ -31,19 +31,17 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
         String initData = (runnerData == null) ? null : runnerData.getInitData();
         AppUtil.printGsonMessage(terminal, initData);
 
-        int ratio = textIO.newIntInputReader()
-                .withMinVal(1).withMaxVal(16384)
-                .read("Time Ratio");
+        boolean toSave = textIO.newBooleanInputReader().withDefaultValue(true)
+                .read("Save now");
 
         terminal.printf("\n");
         
-        if (MathUtils.isPowerOf2(ratio) && ratio <= 16384) {
-        	Simulation.instance().getMasterClock().setTimeRatio(ratio);   
-            terminal.printf("The New Time-Ratio is %dx\n", ratio);
+        if (toSave) {
+            terminal.printf("Saving Simulation...\n");
+        	Simulation.instance().getMasterClock().setSaveSim(Simulation.AUTOSAVE_AS_DEFAULT, null); 
         }
         else
-            terminal.printf("Invalid value.\nPlease choose a number that's a power of 2 as well as between 1 and 16384\n");
-
+            terminal.printf("You don't want to save the Simulation.\n");
         	
         textIO.newStringInputReader().withMinLength(0).read("\nPress enter to return to the menu\n");
 
@@ -53,7 +51,7 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
     
     @Override
     public String toString() {
-        return "Change the Time Ratio";
+        return "Save the Simulation\n";
 //        		getClass().getSimpleName() + ": reading personal data.\n" +
 //                "(Properties are initialized at start-up.\n" +
 //                "Properties file: " + getClass().getSimpleName() + ".properties.)";

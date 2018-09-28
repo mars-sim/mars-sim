@@ -34,12 +34,6 @@ import java.util.logging.Logger;
 import org.beryx.textio.AbstractTextTerminal;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
-import org.beryx.textio.app.ContactInfo;
-import org.beryx.textio.app.Cuboid;
-import org.beryx.textio.app.ECommerce;
-import org.beryx.textio.app.ShoppingList;
-import org.beryx.textio.app.UserDataCollector;
-import org.beryx.textio.app.Weather;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -53,6 +47,7 @@ import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.terminal.CommanderProfile;
 import org.mars_sim.msp.core.terminal.TimeRatioMenu;
 import org.mars_sim.msp.core.terminal.RunnerData;
+import org.mars_sim.msp.core.terminal.SaveMenu;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
@@ -84,7 +79,7 @@ public class Simulation implements ClockListener, Serializable {
 	public static final int OTHER = 0; // load other file
 	public static final int SAVE_DEFAULT = 1; // save as default.sim
 	public static final int SAVE_AS = 2; // save with other name
-	private static final int AUTOSAVE_AS_DEFAULT = 3; // save as default.sim
+	public static final int AUTOSAVE_AS_DEFAULT = 3; // save as default.sim
 	public static final int AUTOSAVE = 4; // save with build info/date/time stamp
 	/** # of thread(s). */
 	public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
@@ -206,7 +201,7 @@ public class Simulation implements ClockListener, Serializable {
 	
 	private CommanderProfile profile;
 	
-	private TextIO textIO;
+	private static TextIO textIO;
 	
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
@@ -478,7 +473,8 @@ public class Simulation implements ClockListener, Serializable {
     
     private static BiConsumer<TextIO, RunnerData> chooseMenu(TextIO textIO) {
         List<BiConsumer<TextIO, RunnerData>> apps = Arrays.asList(
-                new TimeRatioMenu()
+                new TimeRatioMenu(),
+                new SaveMenu()
         );
 //        textIO.getTextTerminal().printf("\n");
         BiConsumer<TextIO, RunnerData> app = textIO.<BiConsumer<TextIO, RunnerData>>newGenericInputReader(null)
