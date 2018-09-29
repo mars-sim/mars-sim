@@ -625,56 +625,64 @@ public class MainDesktopPane extends WebDesktopPane
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAP_TAB))
 							ssm.select(MainScene.MAP_TAB);
-					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);
+					if (mainScene.getMainSceneMenu().getMarsNavigatorItem() != null)
+						mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);
 				}
 
 				else if (toolName.equals(SettlementWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAP_TAB))
 							ssm.select(MainScene.MAP_TAB);
-					mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
+					if (mainScene.getMainSceneMenu().getSettlementMapToolItem() != null)
+						mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(SearchWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAIN_TAB))
 							ssm.select(MainScene.MAIN_TAB);// .MAIN_TAB);
-					mainScene.getMainSceneMenu().getSearchToolItem().setSelected(true);
+					if (mainScene.getMainSceneMenu().getSearchToolItem() != null)
+						mainScene.getMainSceneMenu().getSearchToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(TimeWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAIN_TAB))
 							ssm.select(MainScene.MAIN_TAB);// .MAIN_TAB);
-					mainScene.getMainSceneMenu().getTimeToolItem().setSelected(true);
+					if (mainScene.getMainSceneMenu().getTimeToolItem() != null)
+						mainScene.getMainSceneMenu().getTimeToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(MonitorWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAIN_TAB))
 							ssm.select(MainScene.MAIN_TAB);// MONITOR_TAB);
-					mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(true);
+					if (mainScene.getMainSceneMenu().getMonitorToolItem() != null)
+						mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(MissionWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAIN_TAB))
 							ssm.select(MainScene.MAIN_TAB);// .MISSION_TAB);
-					mainScene.getMainSceneMenu().getMissionToolItem().setSelected(true);
+					if (mainScene.getMainSceneMenu().getMissionToolItem() != null)
+						mainScene.getMainSceneMenu().getMissionToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(ResupplyWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAIN_TAB))
 							ssm.select(MainScene.MAIN_TAB);
-					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
+					if (mainScene.getMainSceneMenu().getResupplyToolItem() != null)
+						mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(ScienceWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAIN_TAB))
 							ssm.select(MainScene.MAIN_TAB);// .SCIENCE_TAB);
-					mainScene.getMainSceneMenu().getScienceToolItem().setSelected(true);
+					if (mainScene.getMainSceneMenu().getScienceToolItem() != null)
+						mainScene.getMainSceneMenu().getScienceToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(GuideWindow.NAME)) {

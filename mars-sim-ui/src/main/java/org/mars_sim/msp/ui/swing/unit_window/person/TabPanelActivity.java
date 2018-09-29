@@ -43,18 +43,17 @@ import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextArea;
 import com.alee.managers.tooltip.TooltipManager;
 
-
 /**
- * The TabPanelActivity is a tab panel for a person's current tasks and activities
+ * The TabPanelActivity is a tab panel for a person's current tasks and
+ * activities
  */
-public class TabPanelActivity
-extends TabPanel
-implements ActionListener {
+public class TabPanelActivity extends TabPanel implements ActionListener {
 
 	private static final int COL_WDITH = 16;
 
-    private static final String DEAD_PHRASE = " " + Msg.getString("TabPanelActivity.dead.phrase"); //" (at the Moment of Death)" ;
-    private static final String NONE = "None ";
+	private static final String DEAD_PHRASE = " " + Msg.getString("TabPanelActivity.dead.phrase"); // " (at the Moment
+																									// of Death)" ;
+	private static final String NONE = "None ";
 
 	/** data cache */
 	private String taskTextCache = ""; //$NON-NLS-1$
@@ -72,23 +71,20 @@ implements ActionListener {
 	private WebButton monitorButton;
 	private WebButton missionButton;
 
-
 	/**
 	 * Constructor.
-	 * @param unit {@link Unit} the unit to display.
+	 * 
+	 * @param unit    {@link Unit} the unit to display.
 	 * @param desktop {@link MainDesktopPane} the main desktop.
 	 */
 	public TabPanelActivity(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(
-			Msg.getString("TabPanelActivity.title"), //$NON-NLS-1$
-			null,
-			Msg.getString("TabPanelActivity.tooltip"), //$NON-NLS-1$
-			unit, desktop
-		);
+		super(Msg.getString("TabPanelActivity.title"), //$NON-NLS-1$
+				null, Msg.getString("TabPanelActivity.tooltip"), //$NON-NLS-1$
+				unit, desktop);
 
-	    Person person = null;
-	    Robot robot = null;
+		Person person = null;
+		Robot robot = null;
 		Mind mind = null;
 		BotMind botMind = null;
 		TaskManager taskManager = null;
@@ -96,19 +92,18 @@ implements ActionListener {
 		boolean dead = false;
 		DeathInfo deathInfo = null;
 
-	    if (unit instanceof Person) {
-	    	person = (Person) unit;
+		if (unit instanceof Person) {
+			person = (Person) unit;
 			mind = person.getMind();
 			taskManager = mind.getTaskManager();
 			dead = person.getPhysicalCondition().isDead();
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
-		}
-		else if (unit instanceof Robot) {
-	        robot = (Robot) unit;
+		} else if (unit instanceof Robot) {
+			robot = (Robot) unit;
 			botMind = robot.getBotMind();
 			botTaskManager = botMind.getBotTaskManager();
 			dead = robot.getSystemCondition().isInoperable();
-			//deathInfo = robot.getSystemCondition().getDeathDetails();
+			// deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
 
 		// Prepare activity label panel
@@ -154,8 +149,8 @@ implements ActionListener {
 			}
 		}
 
-		taskTextArea = new WebTextArea(2, COL_WDITH);
-		//if (taskText != null)
+		taskTextArea = new WebTextArea(4, COL_WDITH);
+		// if (taskText != null)
 		taskTextArea.setText(taskTextCache);
 		taskTextArea.setLineWrap(true);
 		taskTextArea.setEditable(false);
@@ -172,8 +167,7 @@ implements ActionListener {
 		// Prepare task phase text area
 		if (dead) {
 			taskPhaseCache = deathInfo.getTaskPhase();
-		}
-		else {
+		} else {
 
 			TaskPhase phase = null;
 
@@ -182,30 +176,28 @@ implements ActionListener {
 			else if (robot != null)
 				phase = botTaskManager.getPhase();
 
-
-		    if (phase != null) {
-		    	taskPhaseCache = phase.getName();
-		    }
-		    else {
-		    	taskPhaseCache = "";
-		    }
+			if (phase != null) {
+				taskPhaseCache = phase.getName();
+			} else {
+				taskPhaseCache = "";
+			}
 		}
 
-		taskPhaseArea = new WebTextArea(2, COL_WDITH);
-		//if (taskPhaseText != null)
+		taskPhaseArea = new WebTextArea(4, COL_WDITH);
+		// if (taskPhaseText != null)
 		taskPhaseArea.setText(taskPhaseCache);
 		taskPhaseArea.setLineWrap(true);
 		taskPhaseArea.setEditable(false);
 		taskPhasePanel.add(new WebScrollPane(taskPhaseArea), BorderLayout.CENTER);
 
 		// Prepare mission top panel
-		WebPanel missionTopPanel = new WebPanel(new BorderLayout(0, 0));//new FlowLayout(FlowLayout.CENTER));
-		//missionTopPanel.setBorder(new MarsPanelBorder());
+		WebPanel missionTopPanel = new WebPanel(new BorderLayout(0, 0));// new FlowLayout(FlowLayout.CENTER));
+		// missionTopPanel.setBorder(new MarsPanelBorder());
 		activityPanel.add(missionTopPanel);
 
 		// Prepare mission center panel
-		WebPanel missionCenterPanel = new WebPanel(new BorderLayout(0, 0));//new FlowLayout(FlowLayout.CENTER));
-		//missionCenterPanel.setBorder(new MarsPanelBorder());
+		WebPanel missionCenterPanel = new WebPanel(new BorderLayout(0, 0));// new FlowLayout(FlowLayout.CENTER));
+		// missionCenterPanel.setBorder(new MarsPanelBorder());
 
 		missionTopPanel.add(new WebPanel(), BorderLayout.NORTH);
 		missionTopPanel.add(missionCenterPanel, BorderLayout.CENTER);
@@ -215,11 +207,11 @@ implements ActionListener {
 
 		// Prepare mission panel
 		WebPanel missionTextPanel = new WebPanel(new BorderLayout(0, 0));
-		//missionLeftPanel.add(missionTextPanel);
+		// missionLeftPanel.add(missionTextPanel);
 		missionCenterPanel.add(missionTextPanel, BorderLayout.CENTER);
 
 		// Prepare mission label
-		WebLabel missionLabel = new WebLabel(Msg.getString("TabPanelActivity.mission"), WebLabel.CENTER); //$NON-NLS-1$
+		WebLabel missionLabel = new WebLabel(Msg.getString("TabPanelActivity.missionDesc"), WebLabel.CENTER); //$NON-NLS-1$
 		missionTextPanel.add(missionLabel, BorderLayout.NORTH);
 
 		// Prepare mission text area
@@ -231,26 +223,25 @@ implements ActionListener {
 			if (dead)
 				missionText = deathInfo.getMission();
 
-			else if (mind.getMission() != null)  {
+			else if (mind.getMission() != null) {
 				missionText = mind.getMission().getDescription();
-				//if (missionText == null)
-				//	missionText = "";
+				// if (missionText == null)
+				// missionText = "";
 			}
-		}
-		else if (robot != null) {
+		} else if (robot != null) {
 
 			if (dead)
 				missionText = deathInfo.getMission();
 
-			else if (botMind.getMission() != null)  {
+			else if (botMind.getMission() != null) {
 				missionText = botMind.getMission().getDescription();
-				//if (missionText == null)
-				//	missionText = "";
+				// if (missionText == null)
+				// missionText = "";
 			}
 		}
 
-		missionTextArea = new WebTextArea(2, COL_WDITH);
-		//if (missionText != null)
+		missionTextArea = new WebTextArea(4, COL_WDITH);
+		// if (missionText != null)
 		missionTextArea.setText(missionText);
 		missionTextArea.setLineWrap(true);
 		missionTextArea.setEditable(false);
@@ -258,7 +249,7 @@ implements ActionListener {
 
 		// Prepare mission phase panel
 		WebPanel missionPhasePanel = new WebPanel(new BorderLayout(0, 0));
-		//missionLeftPanel.add(missionPhasePanel);
+		// missionLeftPanel.add(missionPhasePanel);
 		missionCenterPanel.add(missionPhasePanel, BorderLayout.SOUTH);
 
 		// Prepare mission phase label
@@ -272,8 +263,7 @@ implements ActionListener {
 				missionPhaseText = deathInfo.getMissionPhase();
 			else if (mind.getMission() != null)
 				missionPhaseText = mind.getMission().getPhaseDescription();
-		}
-		else if (robot != null) {
+		} else if (robot != null) {
 			// Prepare mission phase text area
 			if (dead)
 				missionPhaseText = deathInfo.getMissionPhase();
@@ -281,14 +271,12 @@ implements ActionListener {
 				missionPhaseText = botMind.getMission().getPhaseDescription();
 		}
 
-
-		missionPhaseTextArea = new WebTextArea(2, COL_WDITH);
-		//if (missionPhase.equals(""))
+		missionPhaseTextArea = new WebTextArea(4, COL_WDITH);
+		// if (missionPhase.equals(""))
 		missionPhaseTextArea.setText(missionPhaseText);
 		missionPhaseTextArea.setLineWrap(true);
 		missionPhaseTextArea.setEditable(false);
 		missionPhasePanel.add(new WebScrollPane(missionPhaseTextArea), BorderLayout.CENTER);
-
 
 		// Prepare mission button panel.
 		WebPanel missionButtonPanel = new WebPanel(new GridLayout(1, 6, 10, 10));
@@ -299,16 +287,16 @@ implements ActionListener {
 		missionButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
 		missionButton.setSize(20, 20);
 		missionButton.setMargin(new Insets(1, 1, 1, 1));
-		TooltipManager.setTooltip (missionButton, Msg.getString("TabPanelActivity.tooltip.mission"), TooltipWay.down);
-		//missionButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
-		//balloonToolTip.createBalloonTip(missionButton, Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
+		TooltipManager.setTooltip(missionButton, Msg.getString("TabPanelActivity.tooltip.mission"), TooltipWay.down);
+		// missionButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.mission"));
+		// //$NON-NLS-1$
+		// balloonToolTip.createBalloonTip(missionButton,
+		// Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
 		missionButton.addActionListener(this);
-
 
 		if (person != null) {
 			missionButton.setEnabled(mind.getMission() != null);
-		}
-		else if (robot != null) {
+		} else if (robot != null) {
 			missionButton.setEnabled(botMind.getMission() != null);
 		}
 
@@ -320,15 +308,16 @@ implements ActionListener {
 		monitorButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
 		monitorButton.setSize(20, 20);
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
-		TooltipManager.setTooltip (monitorButton, Msg.getString("TabPanelActivity.tooltip.monitor"), TooltipWay.down);
-		//monitorButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
-		//balloonToolTip.createBalloonTip(monitorButton, Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
+		TooltipManager.setTooltip(monitorButton, Msg.getString("TabPanelActivity.tooltip.monitor"), TooltipWay.down);
+		// monitorButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.monitor"));
+		// //$NON-NLS-1$
+		// balloonToolTip.createBalloonTip(monitorButton,
+		// Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(this);
 
 		if (person != null) {
 			monitorButton.setEnabled(mind.getMission() != null);
-		}
-		else if (robot != null) {
+		} else if (robot != null) {
 			monitorButton.setEnabled(botMind.getMission() != null);
 		}
 
@@ -344,8 +333,8 @@ implements ActionListener {
 	@Override
 	public void update() {
 
-	    Person person = null;
-	    Robot robot = null;
+		Person person = null;
+		Robot robot = null;
 		Mind mind = null;
 		BotMind botMind = null;
 		TaskManager taskManager = null;
@@ -353,19 +342,17 @@ implements ActionListener {
 		boolean dead = false;
 		DeathInfo deathInfo = null;
 
-	    if (unit instanceof Person) {
-	    	person = (Person) unit;
+		if (unit instanceof Person) {
+			person = (Person) unit;
 			mind = person.getMind();
-			dead = person.getPhysicalCondition().isDead();//.isDeclaredDead();
+			dead = person.getPhysicalCondition().isDead();// .isDeclaredDead();
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
-		}
-		else if (unit instanceof Robot) {
-	        robot = (Robot) unit;
+		} else if (unit instanceof Robot) {
+			robot = (Robot) unit;
 			botMind = robot.getBotMind();
 			dead = robot.getSystemCondition().isInoperable();
-			//deathInfo = robot.getSystemCondition().getDeathDetails();
+			// deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
-
 
 		Mission mission = null;
 
@@ -394,36 +381,34 @@ implements ActionListener {
 
 			if (person != null) {
 				taskManager = mind.getTaskManager();
-				if (mind.hasActiveMission()) mission = mind.getMission();
+				if (mind.hasActiveMission())
+					mission = mind.getMission();
 
-			}
-			else if (robot != null) {
+			} else if (robot != null) {
 				botTaskManager = botMind.getBotTaskManager();
-				if (botMind.hasActiveMission()) mission = botMind.getMission();
+				if (botMind.hasActiveMission())
+					mission = botMind.getMission();
 
 			}
 
 			if (person != null) {
 				newTaskText = taskManager.getTaskDescription(false);
-			}
-			else if (robot != null) {
+			} else if (robot != null) {
 				newTaskText = botTaskManager.getTaskDescription(false);
 			}
 
-		    TaskPhase phase = null;
+			TaskPhase phase = null;
 
 			if (person != null)
-			    phase = taskManager.getPhase();
+				phase = taskManager.getPhase();
 			else
-			    phase = botTaskManager.getPhase();
+				phase = botTaskManager.getPhase();
 
-
-		    if (phase != null) {
-		    	newTaskPhase = phase.getName();
-		    }
-		    else {
-		    	newTaskPhase = "";
-		    }
+			if (phase != null) {
+				newTaskPhase = phase.getName();
+			} else {
+				newTaskPhase = "";
+			}
 
 		}
 
@@ -433,7 +418,7 @@ implements ActionListener {
 				taskTextArea.setText(newTaskText);
 			}
 
-			if (!newTaskPhase.equals("") && !taskPhaseCache.equals(newTaskPhase))  {
+			if (!newTaskPhase.equals("") && !taskPhaseCache.equals(newTaskPhase)) {
 				taskPhaseCache = newTaskPhase;
 				taskPhaseArea.setText(newTaskPhase);
 			}
@@ -468,7 +453,6 @@ implements ActionListener {
 				newMissionPhase = ""; //$NON-NLS-1$
 		}
 
-
 		if (!newMissionText.equals("") && !missionTextCache.equals(newMissionText)) {
 			missionTextCache = newMissionText;
 			missionTextArea.setText(newMissionText);
@@ -479,24 +463,21 @@ implements ActionListener {
 			missionPhaseTextArea.setText(newMissionPhase);
 		}
 
-/*
 		// Update mission phase text area if necessary.
-		if (dead) {
-			if (deathInfo.getMissionPhase() == null)
-				missionPhaseCache = "None " + DEAD_PHRASE;
-			else
-				missionPhaseCache = deathInfo.getMissionPhase() + DEAD_PHRASE;
-		}
-		else {
-			if (mission != null)
-				missionPhaseCache = mission.getPhaseDescription();
-			else missionPhaseCache = ""; //$NON-NLS-1$
-		}
-
-		if ((missionPhaseCache != null) && !missionPhaseCache.equals(missionPhaseTextArea.getText()))
-			missionPhaseTextArea.setText(missionPhaseCache);
-*/
-
+//		if (dead) {
+//			if (deathInfo.getMissionPhase() == null)
+//				missionPhaseCache = "None " + DEAD_PHRASE;
+//			else
+//				missionPhaseCache = deathInfo.getMissionPhase() + DEAD_PHRASE;
+//		}
+//		else {
+//			if (mission != null)
+//				missionPhaseCache = mission.getPhaseDescription();
+//			else missionPhaseCache = ""; //$NON-NLS-1$
+//		}
+//
+//		if ((missionPhaseCache != null) && !missionPhaseCache.equals(missionPhaseTextArea.getText()))
+//			missionPhaseTextArea.setText(missionPhaseCache);
 
 		// Update mission and monitor buttons.
 		missionButton.setEnabled(mission != null);
@@ -505,6 +486,7 @@ implements ActionListener {
 
 	/**
 	 * Action event occurs.
+	 * 
 	 * @param event {@link ActionEvent} the action event
 	 */
 	@Override
@@ -512,16 +494,16 @@ implements ActionListener {
 		Object source = event.getSource();
 		if ((source == missionButton) || (source == monitorButton)) {
 
-		    Person person = null;
-		    Robot robot = null;
+			Person person = null;
+			Robot robot = null;
 			Mind mind = null;
 			BotMind botMind = null;
 
 			boolean dead = false;
 			DeathInfo deathInfo = null;
 
-		    if (unit instanceof Person) {
-		    	person = (Person) unit;
+			if (unit instanceof Person) {
+				person = (Person) unit;
 				mind = person.getMind();
 				dead = person.getPhysicalCondition().isDead();
 				deathInfo = person.getPhysicalCondition().getDeathDetails();
@@ -530,28 +512,28 @@ implements ActionListener {
 					mind = person.getMind();
 					if (mind.hasActiveMission()) {
 						if (source == missionButton) {
-							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission(mind.getMission());
+							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME))
+									.selectMission(mind.getMission());
 							getDesktop().openToolWindow(MissionWindow.NAME);
-						}
-						else if (source == monitorButton)
+						} else if (source == monitorButton)
 							desktop.addModel(new PersonTableModel(mind.getMission()));
 					}
 				}
-			}
-			else if (unit instanceof Robot) {
-		        robot = (Robot) unit;
+			} else if (unit instanceof Robot) {
+				robot = (Robot) unit;
 				botMind = robot.getBotMind();
 				dead = robot.getSystemCondition().isInoperable();
-				//deathInfo = robot.getSystemCondition().getDeathDetails();
+				// deathInfo = robot.getSystemCondition().getDeathDetails();
 
 				if (!robot.getSystemCondition().isInoperable()) {
 					botMind = robot.getBotMind();
 					if (botMind.hasActiveMission()) {
 						if (source == missionButton) {
-							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission(botMind.getMission());
+							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME))
+									.selectMission(botMind.getMission());
 							getDesktop().openToolWindow(MissionWindow.NAME);
-						}
-						else if (source == monitorButton) desktop.addModel(new RobotTableModel(botMind.getMission()));
+						} else if (source == monitorButton)
+							desktop.addModel(new RobotTableModel(botMind.getMission()));
 					}
 				}
 			}

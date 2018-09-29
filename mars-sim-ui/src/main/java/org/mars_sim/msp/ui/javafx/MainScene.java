@@ -231,6 +231,7 @@ public class MainScene implements ClockListener {
 	public static int MACOS_WIDTH = 230;
 	public static int WIN_WIDTH = 230;
 	
+	public static int spacing = 0;
 
 	public static boolean isFXGL = false;
 	public static boolean menuBarVisible = false;
@@ -485,6 +486,7 @@ public class MainScene implements ClockListener {
 		if (gameScene != null) {
 			stage = ((Stage) gameScene.getRoot().getScene().getWindow());
 			isFXGL = true;
+			spacing = 10;
 			// stage.initStyle(StageStyle.DECORATED);
 		} else {
 			stage = new Stage();			
@@ -854,6 +856,7 @@ public class MainScene implements ClockListener {
 						Input input = FXGL.getInput();
 						input.mockKeyPress(KeyCode.ESCAPE);
 						input.mockKeyRelease(KeyCode.ESCAPE);
+						e.consume();
 					} else {
 						dialogOnExit();
 						e.consume();
@@ -1021,22 +1024,20 @@ public class MainScene implements ClockListener {
 	 */
 	public Scene initializeScene() {
 		IconFontFX.register(FontAwesome.getIconFont());
-
+		// Create swing node desktop 
 		createDesktopNode();
-
+		// Create menuBar
+		menuBar = new MainSceneMenu(this, desktop);
 		// Load soundPlayer from desktop 
 		soundPlayer = desktop.getSoundPlayer();
 		// Setup root for embedding key events
 		root = new Pane();
-
+		// Create marsnet flyout 
 		marsNetBox = createFlyout();
 		flag = false;
-
-		// EffectUtilities.makeDraggable(flyout.getScene().getRoot().getStage(),
-		// chatBox);
+		// EffectUtilities.makeDraggable(flyout.getScene().getRoot().getStage(),chatBox);
 		// Create ControlFX's StatusBar
 		// statusBar = createStatusBar();
-
 		createBlend();
 		createLastSaveBar();
 		createMarsTimeBar();
@@ -1044,13 +1045,10 @@ public class MainScene implements ClockListener {
 		createSpeedPanel();
 		createSoundPopup();
 		// createFarmPopup();
-
-		// Create menuBar
-		menuBar = new MainSceneMenu(this, desktop);
 		// Create Snackbar
 		// createJFXSnackbar();
 		createJFXTabs();
-
+		// Create pause pane
 		pausePane = new StackPane();
 		pausePane.setStyle("-fx-background-color:rgba(0,0,0,0.5);");
 		pausePane.getChildren().add(createPausePaneContent());
@@ -1098,12 +1096,12 @@ public class MainScene implements ClockListener {
 			AnchorPane.setTopAnchor(marsTimeBox, 0.0 + TITLE_HEIGHT);
 		}
 
-		AnchorPane.setRightAnchor(speedBtn, 5.0);
-		AnchorPane.setRightAnchor(marsNetBtn, 45.0);
-		AnchorPane.setRightAnchor(soundBtn, 85.0);
+		AnchorPane.setRightAnchor(speedBtn, 5.0 + spacing);
+		AnchorPane.setRightAnchor(marsNetBtn, 45.0 + spacing);
+		AnchorPane.setRightAnchor(soundBtn, 85.0 + spacing);
 		AnchorPane.setRightAnchor(marsTimeBox, sceneWidth.get() / 2);
 		AnchorPane.setRightAnchor(earthTimeBox, sceneWidth.get() / 2 - earthTimeBox.getPrefWidth() - 30);
-		AnchorPane.setRightAnchor(lastSaveLabel, 105.0);
+		AnchorPane.setRightAnchor(lastSaveLabel, 105.0 + spacing);
 
 		createBillboard();
 
@@ -1122,7 +1120,7 @@ public class MainScene implements ClockListener {
 			scene = gameScene.getRoot().getScene();
 			gameScene.addUINode(rootStackPane);
 		} else {
-			scene = new Scene(rootStackPane, sceneWidth.get(), sceneHeight.get(), Color.TRANSPARENT);// , Color.BROWN);
+			scene = new Scene(rootStackPane, sceneWidth.get() + spacing, sceneHeight.get(), Color.TRANSPARENT);// , Color.BROWN);
 //			scene = sceneManager.getScene("s0");	
 //			stage.changeScene(rootStackPane);
 		}
@@ -1137,7 +1135,7 @@ public class MainScene implements ClockListener {
 		rootStackPane.prefWidthProperty().bind(stage.widthProperty());
 
 		tabPane.prefHeightProperty().bind(stageAnchorPane.heightProperty());
-		tabPane.prefWidthProperty().bind(stageAnchorPane.widthProperty());
+		tabPane.prefWidthProperty().bind(stageAnchorPane.widthProperty().subtract(spacing));
 
 		dashboardStackPane.prefHeightProperty().bind(stageAnchorPane.heightProperty().subtract(120));
 		dashboardStackPane.prefWidthProperty().bind(stageAnchorPane.widthProperty());

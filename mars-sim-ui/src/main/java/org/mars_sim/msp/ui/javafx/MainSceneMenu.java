@@ -51,12 +51,25 @@ public class MainSceneMenu extends MenuBar {
 
 	private boolean isFullScreenCache = false;
 
-	private CheckMenuItem searchToolItem, timeToolItem, marsNavigatorItem, settlementMapToolItem, monitorToolItem,
-			missionToolItem, scienceToolItem, resupplyToolItem, guideToolItem;
+	private CheckMenuItem searchToolItem;
+	private CheckMenuItem timeToolItem;
+	private CheckMenuItem marsNavigatorItem;
+	private CheckMenuItem settlementMapToolItem;
+	private CheckMenuItem monitorToolItem;
+	private CheckMenuItem missionToolItem;
+	private CheckMenuItem scienceToolItem;
+	private CheckMenuItem resupplyToolItem;
+	private CheckMenuItem guideToolItem;
+	private CheckMenuItem showFullScreenItem;
+	private CheckMenuItem notificationItem;
+	private CheckMenuItem effectMuteItem;
+	private CheckMenuItem musicMuteItem;
 
-	private CheckMenuItem showFullScreenItem, notificationItem, effectMuteItem, musicMuteItem;
-
-	private MenuItem quotationItem, musicVolumeUpItem, musicVolumeDownItem, effectVolumeUpItem, effectVolumeDownItem;
+	private MenuItem quotationItem;
+	private MenuItem musicVolumeUpItem;
+	private MenuItem musicVolumeDownItem;
+	private MenuItem effectVolumeUpItem;
+	private MenuItem effectVolumeDownItem;
 
 	private Stage stage;
 	private MainScene mainScene;
@@ -686,6 +699,26 @@ public class MainSceneMenu extends MenuBar {
 
 	public void destroy() {
 
+		searchToolItem = null;
+		timeToolItem = null;
+		marsNavigatorItem = null;
+		settlementMapToolItem = null;
+		monitorToolItem = null;
+		missionToolItem = null;
+		scienceToolItem = null;
+		resupplyToolItem = null;
+		guideToolItem = null;
+		showFullScreenItem = null;
+		notificationItem = null;
+		effectMuteItem = null;
+		musicMuteItem = null;
+
+		quotationItem = null;
+		musicVolumeUpItem = null;
+		musicVolumeDownItem = null;
+		effectVolumeUpItem = null;
+		effectVolumeDownItem = null;
+	
 		stage = null;
 		mainScene.destroy();
 		mainScene = null;
