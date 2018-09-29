@@ -55,13 +55,13 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/log4j/log4j : 469 KB Needed by 
-			GraphUtils.java in plexus 0.13.1 -->
+			GraphUtils.java in plexus 0.13.1
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 		</dependency>
-
+ 		-->
 		<!-- OLD Group/Artifact https://mvnrepository.com/artifact/commons-collections/commons-collections. 
 			JAR size : 630 KB Needed by GraphUtils.java in plexus 0.13.1 -->
 		<dependency>

@@ -21,6 +21,7 @@ import org.mars_sim.headless.StreamConsumer;
  */
 public class MarsProjectStarter {
 
+//	private final static String ERROR_PREFIX = "? ";
 
     public static void main(String[] args) {
 
@@ -56,7 +57,7 @@ public class MarsProjectStarter {
         // OR .append(" org.mars_sim.main.MarsProject");
         // OR .append(" org.mars_sim.headless.MarsProject");
         
-        // 2016-05-28 Added checking for input args
+        // Add checking for input args
         List<String> argList = Arrays.asList(args);
 
         if (argList.isEmpty()) {
@@ -148,8 +149,8 @@ public class MarsProjectStarter {
             Process process = Runtime.getRuntime().exec(commandStr);
 
             // Creating stream consumers for processes.
-            StreamConsumer errorConsumer = new StreamConsumer(process.getErrorStream(), "OUTPUT");
-            StreamConsumer outputConsumer = new StreamConsumer(process.getInputStream(), "OUTPUT");
+            StreamConsumer errorConsumer = new StreamConsumer(process.getErrorStream(), "");
+            StreamConsumer outputConsumer = new StreamConsumer(process.getInputStream(), "");
 
             // Starting the stream consumers.
             errorConsumer.start();

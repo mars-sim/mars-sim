@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StreamConsumer.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2018-09-29
  * @author Scott Davis
  * $LastChangedDate$
  * $LastChangedRevision$
@@ -19,30 +19,33 @@ import java.io.InputStreamReader;
  */
 public class StreamConsumer extends Thread {
 
-    // Data members
-    InputStream in;
-    String type;
+//	private final static String PREFIX = "> ";
+	// Data members
+	private InputStream in;
+	private String type;
 
-    /**
-     * Constructor
-     * @param in the input stream to consume.
-     * @param type the stream type.
-     */
-    public StreamConsumer(InputStream in, String type) {
-        this.in = in;
-        this.type = type;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param in   the input stream to consume.
+	 * @param type the stream type.
+	 */
+	public StreamConsumer(InputStream in, String type) {
+		this.in = in;
+		this.type = type;
+	}
 
-    @Override
-    public void run() {
-        try {
-            InputStreamReader isr = new InputStreamReader(in);
-            BufferedReader br = new BufferedReader(isr);
-            String line = null;
-            while ((line = br.readLine()) != null)
-                System.out.println(type + ">" + line);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-    }
+	@Override
+	public void run() {
+		try {
+			InputStreamReader isr = new InputStreamReader(in);
+			BufferedReader br = new BufferedReader(isr);
+			String line = null;
+			while ((line = br.readLine()) != null)
+				System.out.println(type + line);
+			
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+	}
 }

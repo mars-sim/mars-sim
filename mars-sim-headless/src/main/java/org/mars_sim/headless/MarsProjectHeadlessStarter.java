@@ -21,6 +21,8 @@ import java.util.List;
  */
 public class MarsProjectHeadlessStarter {
 
+	private final static String ERROR_PREFIX = "? ";
+
 	public static void main(String[] args) {
 
 		StringBuilder command = new StringBuilder();
@@ -167,8 +169,8 @@ public class MarsProjectHeadlessStarter {
 			Process process = Runtime.getRuntime().exec(commandStr);
 
 			// Creating stream consumers for processes.
-			StreamConsumer errorConsumer = new StreamConsumer(process.getErrorStream(), "? ");
-			StreamConsumer outputConsumer = new StreamConsumer(process.getInputStream(), "> ");
+			StreamConsumer errorConsumer = new StreamConsumer(process.getErrorStream(), "");
+			StreamConsumer outputConsumer = new StreamConsumer(process.getInputStream(), "");
 
 			// Starting the stream consumers.
 			errorConsumer.start();

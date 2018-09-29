@@ -31,18 +31,23 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
         String initData = (runnerData == null) ? null : runnerData.getInitData();
         AppUtil.printGsonMessage(terminal, initData);
 
-        int ratio = textIO.newIntInputReader()
-                .withMinVal(1).withMaxVal(16384)
-                .read("Time Ratio");
+//        double oldRatio = Simulation.instance().getMasterClock().getTimeRatio();
+//        int oldSpeed = (int) Math.sqrt(oldRatio);        
+        
+        int speed = textIO.newIntInputReader()
+                .withMinVal(1).withMaxVal(14)//(16384)
+                .read("Speed [1 to 14]");
 
         terminal.printf("\n");
-        
-        if (MathUtils.isPowerOf2(ratio) && ratio <= 16384) {
+
+//        if (MathUtils.isPowerOf2(ratio) && ratio <= 16384) {      
+        if (speed >0 && speed <= 14) {
+        	double ratio = Math.pow(2, speed);
         	Simulation.instance().getMasterClock().setTimeRatio(ratio);   
-            terminal.printf("The New Time-Ratio is %dx\n", ratio);
+            terminal.printf("New Speed : %d  ==>  New Time-Ratio : %dx\n", speed, (int)ratio);
         }
         else
-            terminal.printf("Invalid value.\nPlease choose a number that's a power of 2 as well as between 1 and 16384\n");
+            terminal.printf("Invalid value.\nPlease choose a number between 1 and 14.\n");
 
         	
  //       textIO.newStringInputReader().withMinLength(0).read("\nPress enter to return to the menu\n");
@@ -53,7 +58,7 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
     
     @Override
     public String toString() {
-        return "Change the Time Ratio";
+        return "Change the Simulation Speed";
 //        		getClass().getSimpleName() + ": reading personal data.\n" +
 //                "(Properties are initialized at start-up.\n" +
 //                "Properties file: " + getClass().getSimpleName() + ".properties.)";
