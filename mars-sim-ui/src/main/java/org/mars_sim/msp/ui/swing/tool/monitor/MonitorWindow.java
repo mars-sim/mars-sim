@@ -101,7 +101,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private WebTable table;
 	private WebTable rowTable;
 	private Searchable searchable;
-	private SearchableBar _tableSearchableBar;
+	private SearchableBar searchBar;
 
 	/**
 	 * Constructor.
@@ -450,29 +450,29 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			// WildcardSupport WildcardSupport = new WildcardSupport();
 			// searchable.setWildcardSupport(new WildcardSupport());
 
-			if (_tableSearchableBar != null) {
-				_tableSearchableBar.setSearchingText("");
-				statusPanel.remove(_tableSearchableBar);
-				_tableSearchableBar = null;
+			if (searchBar != null) {
+				searchBar.setSearchingText("");
+				statusPanel.remove(searchBar);
+				searchBar = null;
 			}
 
-			_tableSearchableBar = new SearchableBar(searchable);
-			_tableSearchableBar.setSearchingText("");
-			_tableSearchableBar.setCompact(true);
+			searchBar = new SearchableBar(searchable);
+			searchBar.setSearchingText("");
+			searchBar.setCompact(true);
 			// _tableSearchableBar.setSearchingText("*" +
 			// _tableSearchableBar.getSearchingText());
 
 			// _tableSearchableBar.setVisibleButtons(1);
-			TooltipManager.setTooltip(_tableSearchableBar, "Use wildcards (*, +, ?) for searching. e.g. '*DaVinci' ");
+			TooltipManager.setTooltip(searchBar, "Use wildcards (*, +, ?) for searching. e.g. '*DaVinci' ");
 			
 			((TableSearchable) searchable).setMainIndex(-1); // -1 = search for all columns
-			_tableSearchableBar.setVisibleButtons(SearchableBar.SHOW_NAVIGATION | SearchableBar.SHOW_MATCHCASE
+			searchBar.setVisibleButtons(SearchableBar.SHOW_NAVIGATION | SearchableBar.SHOW_MATCHCASE
 					| SearchableBar.SHOW_WHOLE_WORDS | SearchableBar.SHOW_STATUS);
-			_tableSearchableBar.setName(table.getName());
-			_tableSearchableBar.setShowMatchCount(true);
-			_tableSearchableBar.setVisible(true);
+			searchBar.setName(table.getName());
+			searchBar.setShowMatchCount(true);
+			searchBar.setVisible(true);
 
-			statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
+			statusPanel.add(searchBar); // , BorderLayout.AFTER_LAST_LINE);
 
 			// pack();
 

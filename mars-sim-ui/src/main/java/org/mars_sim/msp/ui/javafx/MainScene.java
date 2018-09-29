@@ -340,7 +340,7 @@ public class MainScene implements ClockListener {
 	private StackPane settlementBox;
 	private StackPane chatBoxPane;
 	private StackPane pausePane;
-	private StackPane savePane;
+	private StackPane asPane;
 	private StackPane sPane;
 	private StackPane billboard;
 
@@ -641,8 +641,10 @@ public class MainScene implements ClockListener {
 			if (t.getCode() == KeyCode.ESCAPE) {
 				if (masterClock.isPaused()) {
 					masterClock.setPaused(false, true);
+					unpause();
 				} else {
 					masterClock.setPaused(true, true);
+					pause();
 				}
 			}
 		}
@@ -964,6 +966,9 @@ public class MainScene implements ClockListener {
 		return text;
 	}
 
+	/**
+	 * Toggle the music mute box and sound effect mute box
+	 */
 	public void toggleSound() {
 		if (!masterClock.isPaused()) {
 			musicMuteBox.setSelected(!musicMuteBox.isSelected());
@@ -1015,6 +1020,8 @@ public class MainScene implements ClockListener {
 			soundEffectSlider.setValue(effectSliderCache);
 			// uncheck the sound effect mute item in menuBar
 			menuBar.getSoundEffectMuteItem().setSelected(false);
+			
+			soundPlayer.setSoundVolume(convertSlider2Volume(soundEffectSlider.getValue()));
 		}
 
 		// soundPlayer.restore(isEffect, isMusic);
@@ -3662,91 +3669,39 @@ public class MainScene implements ClockListener {
 	 */
 	public void createProgressCircle(int type) {
 
-//		if (type == LOADING) {
-//			ProgressIndicator indicator = new ProgressIndicator();
-//			indicator.setSkin(null);
-//			// indicator.setOpacity(.5);
-//			indicator.setStyle("-fx-background-color: transparent; ");
-//			StackPane stackPane = new StackPane();
-//			Rectangle2D rect = Screen.getPrimary().getBounds();
-//			int w = (int) rect.getWidth();
-//			int h = (int) rect.getHeight();
-//			//stackPane.setLayoutX(w/2);
-//			//stackPane.setLayoutY(h/2);
-//			stackPane.setTranslateX(w/2);
-//			stackPane.setTranslateY(h/2);
-//			// stackPane.setOpacity(0.5);
-//			stackPane.getChildren().add(indicator);
-//			StackPane.setAlignment(indicator, Pos.CENTER);
-//			stackPane.setBackground(Background.EMPTY);
-//			stackPane.setStyle(
-//					// "-fx-border-style: none; "
-//					"-fx-background-color: transparent; "
-//			// + "-fx-background-radius: 3px;"
-//			);
-//			Scene scene = new Scene(stackPane, 100, 100);
-//			scene.setFill(Color.TRANSPARENT);
-//			loadingStage = new Stage();
-//			//loadingStage.centerOnScreen();
-//			// loadingCircleStage.setOpacity(1);
-//			if (!isFXGL) setEscapeEventHandler(true, loadingStage);
-//			//loadingStage.initOwner(stage);
-//			loadingStage.initModality(Modality.WINDOW_MODAL); // Modality.NONE is by default if initModality() is NOT
-//																// specified.
-//			loadingStage.getIcons()
-//					.add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-//			loadingStage.initStyle(StageStyle.TRANSPARENT);
-//			loadingStage.setScene(scene);
-//			loadingStage.hide();
-//		}
-
 		if (type == AUTOSAVING) {
 			// ProgressIndicator indicator = new ProgressIndicator();
-			MaskerPane mPane = new MaskerPane();
-			mPane.setText("Autosaving");
-			mPane.setSkin(null);
+			MaskerPane asMPane = new MaskerPane();
+			asMPane.setText("Autosaving");
+			asMPane.setSkin(null);
 			// indicator.setOpacity(.5);
-			mPane.setStyle("-fx-background-color: transparent; ");
+			asMPane.setStyle("-fx-background-color: transparent; ");
 			// indicator.setScaleX(1.5);
 			// indicator.setScaleY(1.5);
-			savePane = new StackPane();
+			asPane = new StackPane();
 			// stackPane.setOpacity(0.5);
-			savePane.getChildren().add(mPane);
-			StackPane.setAlignment(mPane, Pos.CENTER);
-			savePane.setBackground(Background.EMPTY);
-			savePane.setStyle(// "-fx-border-style: none; "
+			asPane.getChildren().add(asMPane);
+			StackPane.setAlignment(asMPane, Pos.CENTER);
+			asPane.setBackground(Background.EMPTY);
+			asPane.setStyle(// "-fx-border-style: none; "
 					"-fx-background-color: transparent; "
 			// + "-fx-background-radius: 3px;"
 			);
-
-			savingStage = new Stage();
-			savingStage.initOwner(stage);
-			savingStage.initModality(Modality.WINDOW_MODAL); // Modality.NONE is by default if initModality() is NOT
-																// specified.
-			savingStage.getIcons()
-					.add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-			savingStage.initStyle(StageStyle.TRANSPARENT);
-
-			savingScene = new Scene(savePane);// , 150, 150);
-			savingScene.setFill(Color.TRANSPARENT);
-			savingStage.setScene(savingScene);
-			savingStage.hide();
-
 		}
 
 		else if (type == SAVING) {
 			// ProgressIndicator indicator = new ProgressIndicator();
-			MaskerPane mPane = new MaskerPane();
-			mPane.setText("Saving");
-			mPane.setSkin(null);
+			MaskerPane sMPane= new MaskerPane();
+			sMPane.setText("Saving");
+			sMPane.setSkin(null);
 			// indicator.setOpacity(.5);
-			mPane.setStyle("-fx-background-color: transparent; ");
+			sMPane.setStyle("-fx-background-color: transparent; ");
 			// indicator.setScaleX(1.5);
 			// indicator.setScaleY(1.5);
 			sPane = new StackPane();
 			// stackPane.setOpacity(0.5);
-			sPane.getChildren().add(mPane);
-			StackPane.setAlignment(mPane, Pos.CENTER);
+			sPane.getChildren().add(sMPane);
+			StackPane.setAlignment(sMPane, Pos.CENTER);
 			sPane.setBackground(Background.EMPTY);
 			sPane.setStyle(// "-fx-border-style: none; "
 					"-fx-background-color: transparent; "
@@ -3755,13 +3710,21 @@ public class MainScene implements ClockListener {
 
 		}
 
-		// else if (type == PAUSED) {
-		// messagePopup = new MessagePopup();
-		// }
-
-		else
-			System.out.println("MainScene's createProgressCircle() : type is invalid");
-
+		if (savingStage == null) {
+			savingStage = new Stage();
+			savingStage.initOwner(stage);
+			savingStage.initModality(Modality.WINDOW_MODAL); // Modality.NONE is by default if initModality() is NOT
+																// specified.
+			savingStage.getIcons()
+					.add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+			savingStage.initStyle(StageStyle.TRANSPARENT);
+	
+			savingScene = new Scene(asPane);// , 150, 150);
+			savingScene.setFill(Color.TRANSPARENT);
+			savingStage.setScene(savingScene);
+			savingStage.hide();
+		}
+		
 	}
 
 	/**
@@ -3771,7 +3734,7 @@ public class MainScene implements ClockListener {
 	 */
 	public void showWaitStage(int type) {
 		if (type == AUTOSAVING) {
-			savingScene.setRoot(savePane);
+			savingScene.setRoot(asPane);
 		} else if (type == SAVING) {
 			savingScene.setRoot(sPane);
 		}
@@ -4157,6 +4120,7 @@ public class MainScene implements ClockListener {
 	}
 
 	public void unpause() {
+//		System.out.println("calling MainScene's unpause()");
 		isShowingDialog = false;
 		// Revert the sound setting
 		if (!musicMuteBox.isSelected())
@@ -4164,8 +4128,7 @@ public class MainScene implements ClockListener {
 		if (!soundEffectMuteBox.isSelected())
 			soundPlayer.setMusicVolume(convertSlider2Volume(soundEffectSlider.getValue()));
 		if (!soundPlayer.isSoundDisabled() 
-				//&& !soundPlayer.isMusicMute() 
-				//&& !MainMenu.isSoundDisabled() 
+				&& !musicMuteBox.isSelected()
 				&& musicSlider.getValue() > 0)
 					soundPlayer.playRandomMusicTrack();
 
@@ -4240,7 +4203,7 @@ public class MainScene implements ClockListener {
 		settlementBox = null;
 		chatBoxPane = null;
 		pausePane = null;
-		savePane = null;
+		asPane = null;
 		sPane = null;
 		billboard = null;
 		stageAnchorPane = null;
