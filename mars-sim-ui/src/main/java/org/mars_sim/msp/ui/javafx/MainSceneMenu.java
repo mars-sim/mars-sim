@@ -89,17 +89,16 @@ public class MainSceneMenu extends MenuBar {
 		this.mainScene = mainScene;
 		this.desktop = desktop;
 		// Puts the background task of responding to the pull down menu in a thread pool
-		Simulation.instance().getSimExecutor().submit(new CreateMenuTask());
-		// createGUI();
-		// fxDesktopPane = mainScene.getMarsNode().getFXDesktopPane();
-		// browser = new Browser(mainScene);
+		//Simulation.instance().getSimExecutor().submit(new CreateMenuTask());
+		 
+		createGUI();
 	}
 
-	class CreateMenuTask implements Runnable {
-		public void run() {
-			createGUI();
-		}
-	}
+//	class CreateMenuTask implements Runnable {
+//		public void run() {
+//			createGUI();
+//		}
+//	}
 
 	public void createGUI() {
 		// logger.info("MainSceneMenu's CreateGUI() is on " +

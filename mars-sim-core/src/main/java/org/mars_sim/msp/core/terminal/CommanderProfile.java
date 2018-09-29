@@ -46,6 +46,10 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {//, Ser
     	TextIO textIO = TextIoFactory.getTextIO();
         new CommanderProfile(textIO).accept(textIO, null);
     }
+    
+    public void disposeTerminal() {
+    	terminal.dispose(null);
+    }
 
     @Override
     public void accept(TextIO textIO, RunnerData runnerData) { 

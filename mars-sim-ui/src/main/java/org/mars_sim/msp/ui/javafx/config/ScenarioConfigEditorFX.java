@@ -498,8 +498,7 @@ public class ScenarioConfigEditorFX {
 				setConfiguration();
 
 				CompletableFuture.supplyAsync(() -> submitTask());
-
-
+				
 				// Lookup the thready service in the service registry
 				//ThreadSynchronize threadSync = ServiceUtils.getService(ThreadSynchronize.class).get();
 
@@ -567,13 +566,14 @@ public class ScenarioConfigEditorFX {
 			Simulation.createNewSimulation(-1);
 			Simulation.instance().start(false);
 			Platform.runLater(() -> {
-				mainScene.finalizeMainScene();
+				mainScene.finalizeMainScene();				
 			});
+			
 			if (multiplayerClient != null)
 				multiplayerClient.prepareListeners();
 			
 			// Load the menu choice
-			Simulation.instance().loadTerminalMenu();
+			Simulation.instance().loadTerminalMenu();	
 		}
 	}
 

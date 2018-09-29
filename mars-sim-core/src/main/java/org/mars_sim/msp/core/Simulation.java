@@ -436,17 +436,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 //		TextIO textIO = TextIoFactory.getTextIO();
 //        TextTerminal<?> terminal = textIO.getTextTerminal();
-//        String backKeyStroke = "Ctrl-U";
-//        boolean registered = terminal.registerHandler(backKeyStroke, t -> new ReadHandlerData(ABORT));
-//        if (registered) {
-//            terminal.println("During data entry you can press '" + backKeyStroke + "' to go back to the previous field.\n");
-//        }
-        
-		
-		// Use existing terminal
-//        SystemTextTerminal sysTerminal = new SystemTextTerminal();
-//        TextIO textIO = new TextIO(sysTerminal);
-        
+
 		initializeTerminal();
 		
 		profile = new CommanderProfile(textIO);
@@ -463,6 +453,10 @@ public class Simulation implements ClockListener, Serializable {
 	public void initializeTerminal() {
         // Construct a terminal based on Java Swing 
 		//textIO = TextIoFactory.getTextIO();
+		
+		// Use existing terminal
+//        SystemTextTerminal sysTerminal = new SystemTextTerminal();
+//        textIO = new TextIO(sysTerminal);
 		keepRunning = true;
 	}
 	
@@ -1000,6 +994,9 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public void endSimulation() {
 		keepRunning = false;
+//		textIO.getTextTerminal().abort();
+//		textIO.getTextTerminal().dispose();
+		profile.disposeTerminal();
 		instance().defaultLoad = false;
 		instance().stop();
 		masterClock.endClockListenerExecutor();

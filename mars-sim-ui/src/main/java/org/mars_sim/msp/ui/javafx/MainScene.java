@@ -521,6 +521,10 @@ public class MainScene implements ClockListener {
 				Input input = FXGL.getInput();
 				input.mockKeyPress(KeyCode.ESCAPE);
 				input.mockKeyRelease(KeyCode.ESCAPE);
+				endSim();
+				exitSimulation();
+				Platform.exit();
+				System.exit(0);
 			} else {
 				dialogOnExit();
 				e.consume();
@@ -3419,7 +3423,7 @@ public class MainScene implements ClockListener {
 	 */
 	private void endSim() {
 		Simulation.instance().endSimulation();
-		Simulation.instance().getSimExecutor().shutdownNow();
+		Simulation.instance().getSimExecutor().shutdown();//.shutdownNow();
 //		mainSceneExecutor.shutdownNow();
 		getDesktop().clearDesktop();
 		timeLabeltimer.stop();
