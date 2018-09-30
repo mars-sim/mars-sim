@@ -596,11 +596,15 @@ public class MainScene implements ClockListener {
 	public void prepareScene() {
 		// logger.info("MainMenu's prepareScene() is on " +
 		// Thread.currentThread().getName());
+		// TODO: Need to revamp the use of UIConfig
 		UIConfig.INSTANCE.useUIDefault();
-		
-		// creates and initialize scene
+		// Create swing node desktop 
+		createDesktopNode();
+		// Create menuBar
+		menuBar = new MainSceneMenu(this, desktop);
+		// Creates and initialize scene
 		scene = initializeScene();
-		// switch from the main menu's scene to the main scene's scene
+		// Switch from the main menu's scene to the main scene's scene
 		if (gameScene == null) {	
 			stage.setScene(scene);
 //			sceneManager = CustomStage.getDefaultSceneManager();
@@ -614,6 +618,10 @@ public class MainScene implements ClockListener {
 //			manager.getController("Scene"); //gets the Controller of Scene1.fxml
 		}
 
+		// Load soundPlayer from desktop 
+		soundPlayer = desktop.getSoundPlayer();
+		// Setup key events using wellbehavedfx
+		setupKeyEvents();
 	}
 
 	public void createLoadingIndicator() {
@@ -1035,12 +1043,6 @@ public class MainScene implements ClockListener {
 	 */
 	public Scene initializeScene() {
 		IconFontFX.register(FontAwesome.getIconFont());
-		// Create swing node desktop 
-		createDesktopNode();
-		// Create menuBar
-		menuBar = new MainSceneMenu(this, desktop);
-		// Load soundPlayer from desktop 
-		soundPlayer = desktop.getSoundPlayer();
 		// Setup root for embedding key events
 		root = new Pane();
 		// Create marsnet flyout 
@@ -1121,9 +1123,6 @@ public class MainScene implements ClockListener {
 		stageAnchorPane.getChildren().addAll(tabPane, marsNetBtn, speedBtn, lastSaveLabel, earthTimeBox, marsTimeBox,
 				soundBtn, dragNode);// , farmBtn);//badgeIcon,borderPane, timeBar, snackbar
 
-		dragNode.setLayoutX(320);
-		dragNode.setLayoutY(600);
-
 		// Set up stackPane for anchoring the JFXDialog box and others
 		rootStackPane = new StackPane(stageAnchorPane);
 
@@ -1158,6 +1157,10 @@ public class MainScene implements ClockListener {
 		mapsAnchorPane.prefHeightProperty().bind(stageAnchorPane.heightProperty());//.subtract(30));
 		mapsAnchorPane.prefWidthProperty().bind(stageAnchorPane.widthProperty());
 
+		// Set the location of the billboard node
+		dragNode.setLayoutX(sceneWidth.get() + spacing - 925 - 30);//320);
+		dragNode.setLayoutY(sceneHeight.get() - 80);
+		
 		// Setup key events using wellbehavedfx
 		setupKeyEvents();
 
@@ -3458,6 +3461,9 @@ public class MainScene implements ClockListener {
 		return stage;
 	}
 
+	/**
+	 * Create the desktop swing node
+	 */
 	private void createDesktopNode() {
 		// Create group to hold swingNode which in turns holds the Swing desktop
 		desktopNode = new SwingNode();

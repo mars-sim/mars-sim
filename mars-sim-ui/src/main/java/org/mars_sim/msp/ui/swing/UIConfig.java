@@ -96,15 +96,15 @@ public class UIConfig {
 		FileInputStream stream = null;
 
 		try {
-			/*
-			 * [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the
-			 * users home dir, because this will work properly.
-			 */
+			
+//			 [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the
+//			 users home dir, because this will work properly.
+			 
 			stream = new FileInputStream(new File(DIRECTORY, FILE_NAME));
-			/*
-			 * bug 2909888: read the inputstream with a specific encoding instead of the
-			 * system default.
-			 */
+			
+//			 bug 2909888: read the inputstream with a specific encoding instead of the
+//			 system default.
+			 
 			InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
 			SAXBuilder saxBuilder = new SAXBuilder(true);
 			configDoc = saxBuilder.build(reader);
@@ -186,12 +186,12 @@ public class UIConfig {
 			}
 
 			// Save to file.
-			/*
-			 * [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the
-			 * users home dir, because this will work properly. Also we will have to copy
-			 * the ui_settings.dtd to this folder because in a webstart environment, the
-			 * user has no initial data in his dirs.
-			 */
+	
+//			 [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the
+//			 users home dir, because this will work properly. Also we will have to copy
+//			 the ui_settings.dtd to this folder because in a webstart environment, the
+//			 user has no initial data in his dirs.
+			 
 			File configFile = new File(DIRECTORY, FILE_NAME);
 
 			// Create save directory if it doesn't exist.
@@ -207,10 +207,10 @@ public class UIConfig {
 			XMLOutputter fmt = new XMLOutputter();
 			fmt.setFormat(Format.getPrettyFormat());
 			stream = new FileOutputStream(configFile);
-			/*
-			 * bug 2909888: read the inputstream with a specific encoding instead of the
-			 * system default.
-			 */
+			
+//			 bug 2909888: read the inputstream with a specific encoding instead of the
+//			 system default.
+			 
 			OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
 			fmt.output(outputDoc, writer);
 		} catch (Exception e) {
@@ -281,12 +281,12 @@ public class UIConfig {
 			}
 
 			// Save to file.
-			/*
-			 * [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the
-			 * users home dir, because this will work properly. Also we will have to copy
-			 * the ui_settings.dtd to this folder because in a webstart environment, the
-			 * user has no initial data in his dirs.
-			 */
+			
+//			 [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the
+//			 users home dir, because this will work properly. Also we will have to copy
+//			 the ui_settings.dtd to this folder because in a webstart environment, the
+//			 user has no initial data in his dirs.
+			 
 			File configFile = new File(DIRECTORY, FILE_NAME);
 
 			// Create save directory if it doesn't exist.
@@ -302,10 +302,10 @@ public class UIConfig {
 			XMLOutputter fmt = new XMLOutputter();
 			fmt.setFormat(Format.getPrettyFormat());
 			stream = new FileOutputStream(configFile);
-			/*
-			 * bug 2909888: read the inputstream with a specific encoding instead of the
-			 * system default.
-			 */
+			
+//			 // bug 2909888: read the inputstream with a specific encoding instead of the
+//			 system default.
+			 
 			OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
 			fmt.output(outputDoc, writer);
 		} catch (Exception e) {

@@ -366,14 +366,7 @@ public class AudioPlayer implements ClockListener {
 		return currentSoundVol == 0;
 	}
 
-	/*
-	 * public void restore(boolean isSound, boolean isMusic) { if (isSound) { if
-	 * (currentSoundClip != null) currentSoundClip.setMute(lastSoundState);
-	 * restoreLastSoundVolume(); }
-	 * 
-	 * if (isMusic) { if (currentMusicTrack != null) {
-	 * currentMusicTrack.setMute(lastMusicState); } restoreLastMusicVolume(); } }
-	 */
+
 	public void unmute(boolean isSound, boolean isMusic) {
 		if (isSound) {
 			if (currentSoundClip != null)

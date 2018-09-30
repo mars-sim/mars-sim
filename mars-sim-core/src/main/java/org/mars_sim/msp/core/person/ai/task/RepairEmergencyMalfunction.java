@@ -74,7 +74,7 @@ implements Repair, Serializable {
          	this.person = (Person) unit;
 
          	int score = person.getPreference().getPreferenceScore(new RepairMalfunctionMeta());
-            //2016-09-24 Factored in a person's preference for the new stress modifier
+            // Factor in a person's preference for the new stress modifier
             super.setStressModifier(score/10D + STRESS_MODIFIER);
         }
 //        else if (unit instanceof Robot) {
@@ -234,16 +234,16 @@ implements Repair, Serializable {
     public static boolean hasEmergencyMalfunction(Robot robot) {
 
         boolean result = false;
-/*
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-        while (i.hasNext()) {
-            Malfunctionable entity = i.next();
-            MalfunctionManager manager = entity.getMalfunctionManager();
-            if (manager.hasEmergencyMalfunction()) {
-                result = true;
-            }
-        }
-*/
+
+//        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+//        while (i.hasNext()) {
+//            Malfunctionable entity = i.next();
+//            MalfunctionManager manager = entity.getMalfunctionManager();
+//            if (manager.hasEmergencyMalfunction()) {
+//                result = true;
+//            }
+//        }
+
         return result;
     }
     /**
@@ -265,19 +265,19 @@ implements Repair, Serializable {
             }
         }
         else if (robot != null) {
-/*
-            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-            while (i.hasNext() && (malfunction == null)) {
-                Malfunctionable e = i.next();
-                MalfunctionManager manager = e.getMalfunctionManager();
-                if (manager.hasEmergencyMalfunction()) {
-                    malfunction = manager.getMostSeriousEmergencyMalfunction();
-                    entity = e;
-                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunction.detail",
-                            malfunction.getName(), entity.getName())); //$NON-NLS-1$
-                }
-            }
-*/
+
+//            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+//            while (i.hasNext() && (malfunction == null)) {
+//                Malfunctionable e = i.next();
+//                MalfunctionManager manager = e.getMalfunctionManager();
+//                if (manager.hasEmergencyMalfunction()) {
+//                    malfunction = manager.getMostSeriousEmergencyMalfunction();
+//                    entity = e;
+//                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunction.detail",
+//                            malfunction.getName(), entity.getName())); //$NON-NLS-1$
+//                }
+//            }
+
         }
 
     }
