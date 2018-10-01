@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.terminal;
 
 import org.beryx.textio.ReadAbortedException;
 import org.beryx.textio.ReadHandlerData;
+import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.TextTerminal;
@@ -52,7 +53,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     	terminal.dispose(null);
     }
 
-    public void printJobs() {
+    public String printJobs() {
 //        List<Job> jobs = JobManager.getJobs();
 
 		List<String> jobs = JobType.getEditedList();
@@ -65,7 +66,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	}
         }
         
-        terminal.println(s);
+        return s;
+        //terminal.println(s);
         
 //        for (int i=0; i< jobs.size(); i++) {
 //        	terminal.println("(" + i + "). " + jobs.get(i).getClass().getSimpleName() + " \t\t");
@@ -76,7 +78,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 //        }
     }
     
-    public void printCountries() {
+    public String printCountries() {
     	List<String> countries = UnitManager.getCountryList();
     	String s = "";
         for (int i=0; i< countries.size(); i++) {  	
@@ -86,7 +88,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	}
         }
         
-        terminal.println(s);
+        return s;
+        //terminal.println(s);
         
 //        for (int i=0; i< countries.size(); i++) {
 //        	
@@ -107,23 +110,76 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	
         addString(textIO, "First Name", () -> contact.firstName, s -> contact.firstName = s);
         addString(textIO, "Last Name", () -> contact.lastName, s -> contact.lastName = s);
-        addChar(textIO, "Gender [M/F]", () -> contact.gender, s -> contact.gender = s);
+        addChar(textIO, "Gender (M/F)", () -> contact.gender, s -> contact.gender = s);
         addAge(textIO, "Age", () -> contact.age, s -> contact.age = s);	      
-        terminal.println(System.lineSeparator() + "Job List : ");
-        printJobs();
-        terminal.println();
-        addJobTask(textIO, "Job [0-15]", () -> contact.job, s -> contact.job = s);	
-        terminal.println("Country List : ");
-        printCountries();
-        terminal.println();
-        addCountryTask(textIO, "Country [0-27]", () -> contact.country, s -> contact.country = s);
-        addPhaseTask(textIO, "Settlement Phase [1-4]", () -> contact.phase, s -> contact.phase = s);	
+//        terminal.println(System.lineSeparator() + "Job List : ");
+//        printJobs();
+//        terminal.println();
+        addJobTask(textIO, "Job (0-15)", () -> contact.job, s -> contact.job = s);	
+//        terminal.println("Country List : ");
+//        printCountries();
+//        terminal.println();
+        addCountryTask(textIO, "Country (0-27)", () -> contact.country, s -> contact.country = s);
+        addPhaseTask(textIO, "Settlement Phase (1-4)", () -> contact.phase, s -> contact.phase = s);	
         
-        String backKeyStroke = "ctrl U";
-        boolean registered = terminal.registerHandler(backKeyStroke, t -> new ReadHandlerData(ABORT));
-        if(registered) {
-            terminal.println("Note : press '" + backKeyStroke + "' to go back to the previous field.\n");
+        
+//        terminal.println(System.lineSeparator());
+        
+        String keyJobs = "ctrl J";
+        
+        boolean isKeyJobs = terminal.registerHandler(keyJobs, t -> {
+            terminal.executeWithPropertiesPrefix("job",
+                    tt ->   {   
+			           	tt.print(System.lineSeparator() 
+			           		+ System.lineSeparator() 
+			           		+ "--------------List of Job Type --------------" 
+			           		+ System.lineSeparator());
+			        	tt.print(printJobs());   
+                    }
+            );
+            return new ReadHandlerData(ReadInterruptionStrategy.Action.RESTART).withRedrawRequired(true);
+        });
+        
+        if (isKeyJobs) {
+           	terminal.println("Press Ctrl-J to show a list of job type.");
         }
+        
+        String keyCountries = "ctrl C";
+        
+        boolean isKeyCountries = terminal.registerHandler(keyCountries, t -> {
+            terminal.executeWithPropertiesPrefix("country",
+                    tt ->   {   
+			           	tt.print(System.lineSeparator() 
+			           		+ System.lineSeparator() 
+			           		+ "--------------List of Countries --------------" 
+			           		+ System.lineSeparator());
+			        	tt.print(printCountries());   
+                    }
+            );
+            return new ReadHandlerData(ReadInterruptionStrategy.Action.RESTART).withRedrawRequired(true);
+        });
+        
+        if (isKeyCountries) {
+           	terminal.println("Press Ctrl-C to show a list of countries.");
+        }
+        
+//        String keyStrokeAbort = "alt Z";
+//        
+//        boolean registeredAbort = terminal.registerHandler(keyStrokeAbort,
+//                t -> new ReadHandlerData(ReadInterruptionStrategy.Action.ABORT)
+//                        .withPayload(System.getProperty("user.name", "nobody")));
+//        
+//        if (registeredAbort) {
+//            terminal.println("Press Alt-Z to abort the program.");
+//        }
+       
+        String backKeyStroke = "ctrl U";
+        
+        boolean registeredBackKeyStroke = terminal.registerHandler(backKeyStroke, t -> new ReadHandlerData(ABORT));
+        if (registeredBackKeyStroke) {
+            terminal.println("Press Ctrl-U to go back to the previous field." + System.lineSeparator());
+        }
+        
         int step = 0;
         while(step < operations.size()) {
             terminal.setBookmark("bookmark_" + step);
@@ -137,8 +193,9 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
             step++;
         }
         
-        terminal.println("\nCommander's Profile: " + contact);
         
+        
+        terminal.println("\nCommander's Profile: " + contact);
         UnitManager.isProfileRetrieved = false;
         
 //        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to continue...\n");     
@@ -155,6 +212,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 
     private void addChar(TextIO textIO, String prompt, Supplier<Character> defaultValueSupplier, Consumer<Character> valueSetter) {
         operations.add(() -> valueSetter.accept(textIO.newCharInputReader()
+        		.withDefaultValue('M')
                 .read(prompt)));
     }
     
@@ -183,7 +241,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     
     private void addPhaseTask(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
         operations.add(() -> valueSetter.accept(textIO.newIntInputReader()
-                .withDefaultValue(2)
+                .withDefaultValue(1)
                 .withMinVal(1)
                 .withMaxVal(4)//defaultValueSupplier.get())
                 .read(prompt)));
@@ -192,8 +250,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     
     @Override
     public String toString() {
-//        return getClass().getSimpleName() + ": reading commander's profile.\n" +
-//                "(Illustrates how to use read handlers to allow going back to a previous field.)";
         return "Commander's Profile";
     }
     

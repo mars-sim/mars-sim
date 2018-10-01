@@ -464,10 +464,19 @@ public class Simulation implements ClockListener, Serializable {
 		while (keepRunning) {
 		    BiConsumer<TextIO, RunnerData> app = chooseMenu(textIO);
 		    //TextIO textIO = chooseTextIO();
-	        textIO.getTextTerminal().printf("\n");
-		    app.accept(textIO, null);	    
+	        textIO.getTextTerminal().printf(System.lineSeparator());
+		    app.accept(textIO, null);
+		    delay(2000L);
 		}
 	}
+    
+    public static void delay(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
     
     private static BiConsumer<TextIO, RunnerData> chooseMenu(TextIO textIO) {
         List<BiConsumer<TextIO, RunnerData>> apps = Arrays.asList(
@@ -482,6 +491,8 @@ public class Simulation implements ClockListener, Serializable {
         String propsFileName = app.getClass().getSimpleName() + ".properties";
         System.setProperty(AbstractTextTerminal.SYSPROP_PROPERTIES_FILE_LOCATION, propsFileName);
 
+	    textIO.getTextTerminal().moveToLineStart();
+	    
         return app;
     }
     
