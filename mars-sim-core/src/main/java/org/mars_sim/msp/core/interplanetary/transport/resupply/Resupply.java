@@ -494,7 +494,6 @@ public class Resupply implements Serializable, Transportable {
 			if (amount > capacity)
 				amount = capacity;
 			inv.storeAmountResource(resource, amount, true);
-			// 2015-01-15 Add addSupplyAmount()
 			inv.addAmountSupplyAmount(resource, amount);
 		}
 
@@ -525,7 +524,7 @@ public class Resupply implements Serializable, Transportable {
 			String country = Simulation.instance().getUnitManager().getCountry(sponsor);
 			// Person immigrant = new Person(immigrantName, gender, country, settlement,
 			// sponsor); //TODO: read from file
-			// 2017-04-11 Use Builder Pattern for creating an instance of Person
+			// Use Builder Pattern for creating an instance of Person
 			Person immigrant = Person.create(immigrantName, settlement).setGender(gender).setCountry(country)
 					.setSponsor(sponsor).build();
 			immigrant.initialize();
@@ -536,18 +535,18 @@ public class Resupply implements Serializable, Transportable {
 			favorites.setFavoriteSideDish(favorites.getRandomSideDish());
 			favorites.setFavoriteDessert(favorites.getRandomDessert());
 			favorites.setFavoriteActivity(favorites.getRandomActivity());
-			immigrant.getPreference().initializePreference();
+//			immigrant.getPreference().initializePreference();
 
-			// Assign a job by calling getInitialJob
+			// Assign a job 
 			immigrant.getMind().getInitialJob(JobManager.MISSION_CONTROL);
 
-			// 2015-12-06 Called setShiftType(ShiftType.ON_CALL)
+			// Set up work shift 
 			immigrant.getTaskSchedule().setShiftType(ShiftType.ON_CALL);
 
-			// 2015-12-06 Added Preference
+			// Add preference
 			immigrant.getPreference().initializePreference();
 
-			// 2015-12-06 Added setupReportingAuthority()
+			// Assign sponsor
 			immigrant.assignReportingAuthority();
 
 			unitManager.addUnit(immigrant);
@@ -555,7 +554,7 @@ public class Resupply implements Serializable, Transportable {
 			immigrants.add(immigrant);
 
 			logger.info(immigrantName + " arrives on Mars at " + settlement.getName());
-			// 2015-04-22 Added fireUnitUpdate()
+			// Add fireUnitUpdate()
 			settlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, immigrant);
 		}
 

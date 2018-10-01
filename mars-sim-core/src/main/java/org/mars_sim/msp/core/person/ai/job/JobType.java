@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.job;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -60,9 +61,11 @@ public enum JobType {
 	
 	private String name;
 	
-	private static Set<JobType> jobSet = new HashSet<JobType>(16);
+	private static Set<JobType> jobSet = new HashSet<JobType>(17);
 	
-	private static List<String> jobList = new ArrayList<String>(16);
+	private static List<String> jobList = new ArrayList<String>(17);
+
+	private static List<String> editedJobList = new ArrayList<String>(16);
 
 	/** hidden constructor. */
 	private JobType(String name) {
@@ -108,7 +111,17 @@ public enum JobType {
 		return jobList;
 	}
 
+	public static List<String> getEditedList() {
+		editedJobList = JobType.getList();
+		editedJobList.remove("Politician");
+		Collections.sort(editedJobList);
+		return editedJobList;
+	}
 		
+	public static String getEditedJobString(int num) {
+		return editedJobList.get(num);
+	}
+	
 	/**
 	 * gives back a list of all valid values for the JobType enum.
 	 */

@@ -14,7 +14,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
@@ -56,50 +55,65 @@ public final class JobManager implements Serializable {
 	 * Initialize job list.
 	 */
 	private static void loadJobs() {
-		jobs = new ArrayList<Job>();
-		jobs.add(new Architect());
-		jobs.add(new Areologist());
-		jobs.add(new Astronomer());
-		jobs.add(new Biologist());
-		jobs.add(new Botanist());
-		jobs.add(new Chef());
-		jobs.add(new Chemist());
-		jobs.add(new Doctor());
-		jobs.add(new Driver());
-		jobs.add(new Engineer());
-		jobs.add(new Mathematician());
-		jobs.add(new Politician());
-		jobs.add(new Meteorologist());
-		jobs.add(new Physicist());
-		jobs.add(new Reporter());
-		jobs.add(new Trader());
-		jobs.add(new Technician());
+		if (jobs == null) {
+			jobs = new ArrayList<Job>();
+			jobs.add(new Architect());
+			jobs.add(new Areologist());
+			jobs.add(new Astronomer());
+			jobs.add(new Biologist());
+			jobs.add(new Botanist());
+			jobs.add(new Chef());
+			jobs.add(new Chemist());
+			jobs.add(new Doctor());
+			jobs.add(new Driver());
+			jobs.add(new Engineer());
+			jobs.add(new Mathematician());
+			jobs.add(new Politician());
+			jobs.add(new Meteorologist());
+			jobs.add(new Physicist());
+			jobs.add(new Reporter());
+			jobs.add(new Trader());
+			jobs.add(new Technician());
+		}
 	}
 
 	/**
 	 * Initialize robotJobs list.
 	 */
 	private static void loadRobotJobs() {
-		robotJobs = new ArrayList<RobotJob>();
-		robotJobs.add(new Chefbot());
-		robotJobs.add(new Constructionbot());
-		robotJobs.add(new Deliverybot());
-		robotJobs.add(new Gardenbot());
-		robotJobs.add(new Makerbot());
-		robotJobs.add(new Medicbot());
-		robotJobs.add(new Repairbot());
-
+		if (robotJobs == null) {
+			robotJobs = new ArrayList<RobotJob>();
+			robotJobs.add(new Chefbot());
+			robotJobs.add(new Constructionbot());
+			robotJobs.add(new Deliverybot());
+			robotJobs.add(new Gardenbot());
+			robotJobs.add(new Makerbot());
+			robotJobs.add(new Medicbot());
+			robotJobs.add(new Repairbot());
+		}
 	}
 
 	/**
 	 * Gets a list of available jobs in the simulation.
-	 * @return list of jobs
+	 * 
+	 * @return list of jobs.
 	 */
 	public static List<Job> getJobs() {
 		if (jobs == null) loadJobs();
 		return new ArrayList<Job>(jobs);
 	}
 
+	/**
+	 * Gets the Job object.
+	 * 
+	 * @param id
+	 * @return {@link Job}
+	 */
+	public static Job getJob(int id) {
+		if (jobs == null) loadJobs();
+		return jobs.get(id);
+	}
+	
 	/**
 	 * Gets a list of available jobs in the simulation.
 	 * @return list of jobs
@@ -189,7 +203,7 @@ public final class JobManager implements Serializable {
 		Job originalJob = person.getMind().getJob();
 		// Determine person's associated settlement.
 		Settlement settlement = null;
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
+		if (person.isInSettlement())
 			settlement = person.getSettlement();
 		else if (person.getMind().hasActiveMission())
 			settlement = person.getMind().getMission().getAssociatedSettlement();
@@ -200,7 +214,7 @@ public final class JobManager implements Serializable {
 			Iterator<Job> i = getJobs().iterator();
 			while (i.hasNext()) {
 				Job job = i.next();
-				// 2015-04-30 Exclude politician job which is reserved for Mayor only
+				// Exclude politician job which is reserved for Mayor only
 				if (!job.equals(JobManager.getJob(POLITICIAN))) {
     				double jobProspect = getJobProspect(person, job, settlement, true);
     				if (jobProspect >= newJobProspect) {
@@ -237,7 +251,7 @@ public final class JobManager implements Serializable {
 
 		// Determine robot's associated settlement.
 		Settlement settlement = null;
-		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
+		if (robot.isInSettlement())
 			settlement = robot.getSettlement();
 		else if (robot.getBotMind().hasActiveMission())
 			settlement = robot.getBotMind().getMission().getAssociatedSettlement();

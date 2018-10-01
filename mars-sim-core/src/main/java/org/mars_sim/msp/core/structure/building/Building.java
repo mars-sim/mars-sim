@@ -27,13 +27,10 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.hazard.HazardEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -203,9 +200,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected BuildingManager manager;
 	protected MalfunctionManager malfunctionManager;
 
-	private Inventory inv; // b_inv, s_inv;
+	private Inventory inv;
 	private Settlement settlement;
-
 	private ThermalGeneration furnace;
 	private PowerGeneration powerGen;
 	private PowerStorage powerStorage;
@@ -455,6 +451,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			}
 			// malfunctionManager.addScopeString(function.getFunctionType().getName());
 		}
+		
+//		for (Function f : functions)
+//			for (String s : f.getMalfunctionScopeStrings())
+//				malfunctionManager.addScopeString(f.getMalfunctionScopeStrings()[s]);
+		
 
 		// Initialize lab space for storing crop tissue cultures
 		if (hasFunction(FunctionType.RESEARCH) && getResearch().hasSpecialty(ScienceType.BOTANY)) {
@@ -480,9 +481,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * Gets the building inventory of this building.
 	 * 
 	 * @return inventory
-	 * 
-	 *         public Inventory getBuildingInventory() { return inv;//b_inv; }
-	 */
+	 */         
+//	 public Inventory getBuildingInventory() { return inv;//b_inv; }
+
 	/**
 	 * Gets the settlement inventory of this building.
 	 * 
@@ -876,14 +877,13 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				return f;
 			}
 		}
-		/*
-		 * functions.forEach(f -> { if (f.getFunction() == functionType) return f; });
-		 * 
-		 * 
-		 * Iterator<Function> i = functions.iterator(); while (i.hasNext()) { Function
-		 * function = i.next(); if (function.getFunction() == functionType) result =
-		 * function; }
-		 */
+//		
+//		 functions.forEach(f -> { if (f.getFunction() == functionType) return f; });
+//		 Iterator<Function> i = functions.iterator(); while (i.hasNext()) { Function
+//		 function = i.next(); if (function.getFunction() == functionType) result =
+//		 function; }
+//		 
+		
 		// if (result != null) return result;
 		// else throw new IllegalStateException(buildingType + " does not have " +
 		// functionType);
@@ -1261,14 +1261,14 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 					robots.add(occupant);
 			}
 		}
-		/*
-		 * if (hasFunction(BuildingFunction.ROBOTIC_STATION)) { RoboticStation
-		 * roboticStation = (RoboticStation)
-		 * getFunction(BuildingFunction.ROBOTIC_STATION); Iterator<Robot> i =
-		 * roboticStation.getRobotOccupants().iterator(); while (i.hasNext()) { Robot
-		 * occupant = i.next(); if (!robots.contains(occupant)) robots.add(occupant); }
-		 * }
-		 */
+		
+//		 if (hasFunction(BuildingFunction.ROBOTIC_STATION)) { RoboticStation
+//		 roboticStation = (RoboticStation)
+//		 getFunction(BuildingFunction.ROBOTIC_STATION); Iterator<Robot> i =
+//		 roboticStation.getRobotOccupants().iterator(); while (i.hasNext()) { Robot
+//		 occupant = i.next(); if (!robots.contains(occupant)) robots.add(occupant); }
+//		 }
+		 
 		// Check all robots in settlement.
 		Iterator<Robot> i = manager.getSettlement().getRobots().iterator();
 		while (i.hasNext()) {
@@ -1580,10 +1580,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		heatModeCache = null;
 		malfunctionManager.destroy();
 		malfunctionManager = null;
-		/*
-		 * Iterator<Function> i = functions.iterator(); while (i.hasNext()) {
-		 * i.next().destroy(); }
-		 */
+		
+//		Iterator<Function> i = functions.iterator(); while (i.hasNext()) {
+//		i.next().destroy(); }
+		
 	}
 
 	@Override

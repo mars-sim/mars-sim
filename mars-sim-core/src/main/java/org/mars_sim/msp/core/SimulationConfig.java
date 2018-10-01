@@ -99,9 +99,8 @@ public class SimulationConfig implements Serializable {
 
 	/*
 	 * -----------------------------------------------------------------------------
-	 * ----------------------- * Members
+	 * Members
 	 * -----------------------------------------------------------------------------
-	 * -----------------------
 	 */
 
 	/** DOM documents. */
@@ -131,9 +130,8 @@ public class SimulationConfig implements Serializable {
 
 	/*
 	 * -----------------------------------------------------------------------------
-	 * ----------------------- * Constructors
+	 * Constructors
 	 * -----------------------------------------------------------------------------
-	 * -----------------------
 	 */
 
 	/** hidden constructor. */
@@ -177,9 +175,8 @@ public class SimulationConfig implements Serializable {
 
 	/*
 	 * -----------------------------------------------------------------------------
-	 * ----------------------- * Static Members
+	 * Static Members
 	 * -----------------------------------------------------------------------------
-	 * -----------------------
 	 */
 
 	/** Eager Instantiation of Singleton Instance. */
@@ -187,9 +184,8 @@ public class SimulationConfig implements Serializable {
 
 	/*
 	 * -----------------------------------------------------------------------------
-	 * ----------------------- * Public Static Methods
+	 * Public Static Methods
 	 * -----------------------------------------------------------------------------
-	 * -----------------------
 	 */
 
 	/**
@@ -233,9 +229,8 @@ public class SimulationConfig implements Serializable {
 
 	/*
 	 * -----------------------------------------------------------------------------
-	 * ----------------------- * Getter
+	 * Getter
 	 * -----------------------------------------------------------------------------
-	 * -----------------------
 	 */
 
 	/**
@@ -287,7 +282,6 @@ public class SimulationConfig implements Serializable {
 	 * @return the time interval in milliseconds
 	 * @throws Exception if the value is not in configuration or is not valid.
 	 */
-	// 2015-10-31 getTimeBetweenUpdates()
 	public double getTimeBetweenUpdates() {
 		if (tbu != 0) {
 			return tbu;
@@ -333,7 +327,6 @@ public class SimulationConfig implements Serializable {
 	 * @return the number
 	 * @throws Exception if the value is not in configuration or is not valid.
 	 */
-	// 2015-10-31 getNoDelayPerYield()
 	public int getNoDelaysPerYield() {
 		if (data[0] != 0) {
 			return data[0];
@@ -380,7 +373,6 @@ public class SimulationConfig implements Serializable {
 	 * @return the number of frames
 	 * @throws Exception if the value is not in configuration or is not valid.
 	 */
-	// 2015-10-31 Added getMaxFrameSkips()
 	public int getMaxFrameSkips() {
 		if (data[1] != 0) {
 			return data[1];
@@ -464,7 +456,6 @@ public class SimulationConfig implements Serializable {
 	 * @return number of minutes.
 	 * @throws Exception if value is null or empty.
 	 */
-	// 2016-05-02 Added getAutosaveInterval()
 	public int getAutosaveInterval() {
 		if (data[2] != 0) {
 			return data[2];
@@ -505,7 +496,6 @@ public class SimulationConfig implements Serializable {
 	 * @return number of sols.
 	 * @throws Exception if value is null or empty.
 	 */
-	// 2016-11-23 Added getAverageTransitTime()
 	public int getAverageTransitTime() {
 		if (data[3] != 0) {
 			return data[3];
@@ -683,7 +673,6 @@ public class SimulationConfig implements Serializable {
 	 * 
 	 * @return foodProduction config
 	 */
-	// 2014-11-23 Added Food Production
 	public FoodProductionConfig getFoodProductionConfiguration() {
 		return foodProductionConfig;
 	}
@@ -693,7 +682,6 @@ public class SimulationConfig implements Serializable {
 	 * 
 	 * @return meal config
 	 */
-	// 2014-12-06 Added getMealConfiguration()
 	public MealConfig getMealConfiguration() {
 		// logger.info("calling getMealConfiguration()");
 		return mealConfig;
@@ -724,22 +712,23 @@ public class SimulationConfig implements Serializable {
 	 * @param useDTD   true if the XML DTD should be used.
 	 * @return DOM document
 	 * @throws Exception if XML could not be parsed or file could not be found.
-	 * 
-	 *                   public static Document parseXMLFileAsJDOMDocument(String
-	 *                   filename, boolean useDTD) { SAXBuilder builder = new
-	 *                   SAXBuilder(XMLReaders.DTDVALIDATING);
-	 * 
-	 *                   File xmlFile = new File(filename); Document document =
-	 *                   null; //System.out.println("Parsing FILE: "+
-	 *                   xmlFile.getAbsolutePath()); try {
-	 * 
-	 *                   document = builder.build(xmlFile);
-	 * 
-	 *                   } catch (IOException | JDOMException e) {
-	 *                   System.out.println(e.getMessage()); }
-	 * 
-	 *                   return result; }
 	 */
+//	 public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
+//		SAXBuilder builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
+//	  
+//	    File xmlFile = new File(filename); 
+//		Document document = null;
+//		System.out.println("Parsing FILE: "+ xmlFile.getAbsolutePath()); 
+//		try {
+//	  
+//	         document = builder.build(xmlFile);
+//	  
+//	       } catch (IOException | JDOMException e) {
+//	          System.out.println(e.getMessage()); 
+//			}
+//	  		return result; 
+//		}
+
 
 	/**
 	 * Parses an XML file into a DOM document.
@@ -754,15 +743,13 @@ public class SimulationConfig implements Serializable {
 	public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD)
 			throws IOException, JDOMException {
 		InputStream stream = getInputStream(filename);
-		/*
-		 * bug 2909888: read the inputstream with a specific encoding instead of the
-		 * system default.
-		 */
+		
+//		bug 2909888: read the inputstream with a specific encoding instead of the
+//		system default.	 
 		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
 		SAXBuilder saxBuilder = new SAXBuilder(useDTD);
-		/*
-		 * [landrus, 26.11.09]: Use an entity resolver to load dtds from the classpath
-		 */
+		
+//		[landrus, 26.11.09]: Use an entity resolver to load dtds from the classpath	 
 		saxBuilder.setEntityResolver(new ClasspathEntityResolver());
 		Document result = saxBuilder.build(reader);
 		stream.close();
@@ -772,9 +759,8 @@ public class SimulationConfig implements Serializable {
 
 	/*
 	 * -----------------------------------------------------------------------------
-	 * ----------------------- * Private Methods
+	 * Private Methods
 	 * -----------------------------------------------------------------------------
-	 * -----------------------
 	 */
 
 	private void loadDefaultConfiguration() {

@@ -7,7 +7,9 @@
 
 package org.mars_sim.msp.core.reportingAuthority;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -88,4 +90,38 @@ public enum ReportingAuthorityType {
 		// public ArrayList<ReportingAuthorityType> valuesList() {
 		// 	return new ArrayList<ReportingAuthorityType>(Arrays.asList(ReportingAuthorityType.values())); }
 	}
+	
+//	public static List<String> StringList() {
+//		String sponsor = (String) newValue;
+//		// System.out.println("sponsor is " + sponsor);
+//		int code = -1;
+//		List<String> list = new ArrayList<>();
+//
+//		if (sponsor.contains("CNSA"))
+//			list.add("China");
+//		else if (sponsor.contains("CSA"))
+//			list.add("Canada");
+//		else if (sponsor.contains("ISRO"))
+//			list.add("India"); // 2
+//		else if (sponsor.contains("JAXA"))
+//			list.add("Japan"); // 3
+//		else if (sponsor.contains("MS"))
+//			code = 0;
+//		else if (sponsor.contains("NASA"))
+//			list.add("US"); // 4
+//		else if (sponsor.contains("RKA"))
+//			list.add("Russia"); // 5
+//		else if (sponsor.contains("ESA"))
+//			code = 1;
+//
+//		if (code == 0) {
+//			list = personConfig.createCountryList();
+//		} else if (code == 1) {
+//			list = personConfig.createESACountryList();
+//		}
+//
+//		Collections.sort(list);
+//		
+//		return list;
+//	}
 }

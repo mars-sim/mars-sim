@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -52,7 +53,6 @@ import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
-import org.mars_sim.msp.core.terminal.CommanderProfile;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -169,7 +169,8 @@ public class UnitManager implements Serializable {
 	 */
 	void constructInitialUnits() {
 
-		countries = personConfig.createCountryList();
+		if (countries == null)
+			countries = personConfig.createCountryList();
 
 		// Initialize name lists
 		initializeRobotNames();
@@ -1029,13 +1030,13 @@ public class UnitManager implements Serializable {
 					f.setFavoriteDessert(dessert);
 					f.setFavoriteActivity(activity);
 
-					// Add Preference
+					// Set up preference
 					person.getPreference().initializePreference();
 
-					// Assign a job by calling getInitialJob
+					// Assign a job 
 					m.getInitialJob(JobManager.MISSION_CONTROL);
 
-					// Add setupReportingAuthority()
+					// Add sponsor
 					person.assignReportingAuthority();
 
 					ChainOfCommand cc = settlement.getChainOfCommand();
@@ -1213,7 +1214,9 @@ public class UnitManager implements Serializable {
 			cc.setName(newName);
 			cc.setGender(newGender);
 			cc.changeAge(getAge());
-			cc.setRole(RoleType.COMMANDER);	
+			cc.setRole(RoleType.COMMANDER);
+			setJob(cc, getJob());
+			cc.setCountry(personConfig.getCountry(getCountry()));
 			isProfileRetrieved = true;
 		}
 		
@@ -1221,6 +1224,11 @@ public class UnitManager implements Serializable {
 			cv.setRole(RoleType.SUB_COMMANDER);
 	}
 	
+	public void setJob(Person p, int id) {
+		// Designate a specific job to a person
+		p.getMind().setJob(JobManager.getJob(JobType.getEditedJobString(id)), true, JobManager.MISSION_CONTROL, JobAssignmentType.APPROVED,
+					JobManager.MISSION_CONTROL);
+	}
 
 	/**
 	 * Establish or reset the system of governance at a settlement.
@@ -2143,13 +2151,36 @@ public class UnitManager implements Serializable {
 
 	}
 
+	public static String getCountryByID(int id) {
+		return countries.get(id);
+	}
+	
+	public static String getSponsorByCountryID(int id) {
+		
+		if (id == 0)
+			return "CNSA";
+		else if (id == 1)
+			return "CSA";
+		else if (id == 2)
+			return "ISRO";
+		else if (id == 3)
+			return "JAXA";
+		else if (id == 4)
+			return "NASA";
+		else if (id == 5)			
+			return "RKA";	
+		else
+			return "ESA";
+		
+	}
+	
 	/*
 	 * Create the country list
 	 * 
 	 */
-//	public void createCountryList() {
+//	public static List<String> createCountryList() {
 //
-//		countries = new ArrayList<>();
+//		List<String> countries = new ArrayList<>();
 //
 //		countries.add("China"); //0
 //		countries.add("Canada"); //1
@@ -2181,12 +2212,19 @@ public class UnitManager implements Serializable {
 //		countries.add("Switzerland");
 //		countries.add("UK");
 //
+//		return countries;
 //	}
 
 	public int getCountryID(String country) {
 		return countries.indexOf(country);
 	}
 
+	public static List<String> getCountryList() {
+		if (countries == null)
+			countries = SimulationConfig.instance().getPersonConfiguration().createCountryList();
+		return countries;
+	}
+	
 	/**
 	 * Checks if the commander's profile has been retrieved
 	 * 
@@ -2221,7 +2259,21 @@ public class UnitManager implements Serializable {
 	public int getAge() {
 		return Simulation.instance().getProfile().getContact().getAge();
 	}
+
+	/** Gets the commander's job */
+	public int getJob() {
+		return Simulation.instance().getProfile().getContact().getJob();
+	}
 	
+	/** Gets the commander's country */
+	public int getCountry() {
+		return Simulation.instance().getProfile().getContact().getCountry();
+	}
+	
+	/** Gets the settlement's phase */
+	public int getPhase() {
+		return Simulation.instance().getProfile().getContact().getPhase();
+	}
 	
 	/**
 	 * Prepare object for garbage collection.

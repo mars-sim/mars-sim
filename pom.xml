@@ -181,12 +181,15 @@
 					<version>${springboot.version}</version> //not using <!executions> <execution> 
 					<goals> <goal>repackage</goal> </goals> </execution> </executions> </plugin> -->
 				<plugin>
+				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.7.0</version>
 					<configuration>
 						<source>${maven.compiler.source}</source>
 						<target>${maven.compiler.target}</target>
+						<showWarnings>false</showWarnings>
+                        <showDeprecation>false</showDeprecation>
 						<verbose>true</verbose>
 					</configuration>
 				</plugin>
@@ -206,7 +209,7 @@
 						<dependency>
 							<groupId>org.apache.maven.wagon</groupId>
 							<artifactId>wagon-ssh</artifactId>
-							<version>3.0.0</version>
+							<version>3.2.0</version>
 						</dependency>
 					</dependencies>
 				</plugin>
