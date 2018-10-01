@@ -108,7 +108,7 @@ public class AudioPlayer implements ClockListener {
 			soundTracks.add(SoundConstants.ST_CITY);
 			soundTracks.add(SoundConstants.ST_CLIPPITY);
 			soundTracks.add(SoundConstants.ST_MONKEY);
-			soundTracks.add(SoundConstants.ST_SURREAL);
+//			soundTracks.add(SoundConstants.ST_SURREAL);
 			soundTracks.add(SoundConstants.ST_FANTASCAPE);
 
 			num_tracks = soundTracks.size();

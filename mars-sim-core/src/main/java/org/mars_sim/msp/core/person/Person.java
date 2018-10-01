@@ -123,6 +123,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private String birthplace;
 	/** The person's name. */
 	private String name;
+	/** The person's first name. */
+	private String firstName;
+	/** The person's last name. */
+	private String lastName;
 	/** The person's sponsor. */
 	private String sponsor;
 	/** The person's country. */
@@ -227,9 +231,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		// Initialize data members
 		this.name = name;
+		firstName = name.substring(0, name.indexOf(" "));
+		lastName = name.substring(name.indexOf(" ")+1, name.length());
 		this.xLoc = 0D;
 		this.yLoc = 0D;
-		this.associatedSettlement = settlement;
+		this.associatedSettlement = settlement;		
+//		System.out.println("first name : " + firstName);
+//		System.out.println("last name : " + lastName);
 	}
 
 	/**
@@ -1527,6 +1535,23 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return pid;
 	}
 
+	/**
+	 * Gets the first name of the person
+	 * @return the first name
+	 */
+	public String getFirstName() {
+		return firstName;
+	}
+	
+	/**
+	 * Gets the last name of the person
+	 * @return the last name
+	 */
+	public String getLastName() {
+		return lastName;
+	}
+
+	
 	@Override
 	public void destroy() {
 		super.destroy();

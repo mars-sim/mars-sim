@@ -35,7 +35,7 @@ public interface SoundConstants {
 	public final static String ST_LOST_JUNGLE = "Lost_Jungle.ogg";
 	public final static String ST_MONKEY = "Monkey_Drama.ogg";
 	public final static String ST_ONE_WORLD = "One_World.ogg";
-	public final static String ST_SURREAL = "Surreal_Chase.ogg";
+//	public final static String ST_SURREAL = "Surreal_Chase.ogg";
 	
 	
 	/** Unit window sounds for equipment. */
