@@ -119,6 +119,8 @@ public enum JobType {
 	}
 		
 	public static String getEditedJobString(int num) {
+		if (editedJobList.isEmpty())
+			getEditedList();
 		return editedJobList.get(num);
 	}
 	

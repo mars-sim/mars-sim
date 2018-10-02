@@ -34,6 +34,9 @@ import java.util.logging.Logger;
 import org.beryx.textio.AbstractTextTerminal;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
+import org.beryx.textio.TextTerminal;
+import org.beryx.textio.jline.JLineTextTerminal;
+import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -470,6 +473,14 @@ public class Simulation implements ClockListener, Serializable {
 		}
 	}
     
+    public static void clearScreen(TextTerminal terminal) {
+        if (terminal instanceof JLineTextTerminal) {
+            terminal.print("\033[H\033[2J");
+        } else if (terminal instanceof SwingTextTerminal) {
+            ((SwingTextTerminal) terminal).resetToOffset(0);
+        }
+    }
+    
     public static void delay(long millis) {
         try {
             Thread.sleep(millis);
@@ -487,7 +498,7 @@ public class Simulation implements ClockListener, Serializable {
 //        textIO.getTextTerminal().printf("\n");
         BiConsumer<TextIO, RunnerData> app = textIO.<BiConsumer<TextIO, RunnerData>>newGenericInputReader(null)
             .withNumberedPossibleValues(apps)
-            .read("\n-------------------- Mars Simulation Project --------------------\n");
+            .read(System.lineSeparator() + "-------------------- Mars Simulation Project --------------------" + System.lineSeparator());
         String propsFileName = app.getClass().getSimpleName() + ".properties";
         System.setProperty(AbstractTextTerminal.SYSPROP_PROPERTIES_FILE_LOCATION, propsFileName);
 

@@ -195,7 +195,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         
         
         
-        terminal.println("\nCommander's Profile: " + contact);
+        terminal.println(System.lineSeparator() + "Commander's Profile: " + contact);
         UnitManager.isProfileRetrieved = false;
         
 //        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to continue...\n");     
@@ -298,13 +298,13 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         
         @Override
         public String toString() {
-            return "\n   First Name: " + firstName +
-                   "\n   Last Name: " + lastName +
-                   "\n   Gender: " + gender +
-                   "\n   Age: " + age +
-                   "\n   Job: " + JobType.getEditedJobString(job) +
-                   "\n   Country: " + UnitManager.getCountryByID(country) + "(" + UnitManager.getSponsorByCountryID(country) + ")" +
-                   "\n   Settlement Phase: " + phase;
+            return System.lineSeparator() + "   First Name: " + firstName +
+            	   System.lineSeparator() + "   Last Name: " + lastName +
+            	   System.lineSeparator() + "   Gender: " + gender +
+            	   System.lineSeparator() + "   Age: " + age +
+            	   System.lineSeparator() + "   Job: " + JobType.getEditedJobString(job) +
+            	   System.lineSeparator() + "   Country: " + UnitManager.getCountryByID(country) + " (" + UnitManager.getSponsorByCountryID(country) + ")" +
+            	   System.lineSeparator() + "   Settlement Phase: " + phase;
             
         }
     }

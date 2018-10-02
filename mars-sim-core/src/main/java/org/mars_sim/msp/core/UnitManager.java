@@ -2152,6 +2152,8 @@ public class UnitManager implements Serializable {
 	}
 
 	public static String getCountryByID(int id) {
+		if (countries == null)
+			getCountryList();
 		return countries.get(id);
 	}
 	
