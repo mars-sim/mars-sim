@@ -265,7 +265,7 @@ public class PersonConfig implements Serializable {
 					countries.get(2).add(name);
 				else if (country.equals("Japan"))
 					countries.get(3).add(name);
-				else if (country.equals("US"))
+				else if (country.equals("USA"))
 					countries.get(4).add(name);
 				else if (country.equals("Russia"))
 					countries.get(5).add(name);
@@ -431,7 +431,7 @@ public class PersonConfig implements Serializable {
 						malesByCountry.get(2).add(name);
 					else if (country.equals("Japan"))
 						malesByCountry.get(3).add(name);
-					else if (country.equals("US"))
+					else if (country.equals("USA"))
 						malesByCountry.get(4).add(name);
 					else if (country.equals("Russia"))
 						malesByCountry.get(5).add(name);
@@ -526,7 +526,7 @@ public class PersonConfig implements Serializable {
 						femalesByCountry.get(2).add(name);
 					else if (country.equals("Japan"))
 						femalesByCountry.get(3).add(name);
-					else if (country.equals("US"))
+					else if (country.equals("USA"))
 						femalesByCountry.get(4).add(name);
 					else if (country.equals("Russia"))
 						femalesByCountry.get(5).add(name);
@@ -1147,8 +1147,7 @@ public class PersonConfig implements Serializable {
 				roster.add(c);
 			}
 
-			// System.out.println("crewString : " + crewString + " crew size : " +
-			// roster.size());
+//			System.out.println("crewString : " + crewString + " crew size : " + roster.size());
 
 			return roster.size() - 1;
 		}
@@ -1168,7 +1167,8 @@ public class PersonConfig implements Serializable {
 		// roster.get(crew_id).getTeam().get(index));
 		// System.out.println("name : " +
 		// roster.get(crew_id).getTeam().get(index).getName());
-
+//		System.out.println("roster.size : " + roster.size());
+		
 		if (roster.get(crew_id) != null) {
 			if (roster.get(crew_id).getTeam().get(index).getName() != null) {
 				return roster.get(crew_id).getTeam().get(index).getName();
@@ -1285,7 +1285,7 @@ public class PersonConfig implements Serializable {
 
 	}
 
-	/*
+	/**
 	 * Sets the personality of a member of the alpha crew
 	 * 
 	 * @param index
@@ -1304,7 +1304,7 @@ public class PersonConfig implements Serializable {
 		// alphaCrewPersonality.add(value);
 	}
 
-	/*
+	/**
 	 * Sets the gender of a member of the alpha crew
 	 * 
 	 * @param index
@@ -1323,7 +1323,7 @@ public class PersonConfig implements Serializable {
 		// alphaCrewGender.add(value);
 	}
 
-	/*
+	/**
 	 * Sets the job of a member of the alpha crew
 	 * 
 	 * @param index
@@ -1342,7 +1342,7 @@ public class PersonConfig implements Serializable {
 		// alphaCrewJob.add(value);
 	}
 
-	/*
+	/**
 	 * Sets the country of a member of the alpha crew
 	 * 
 	 * @param index
@@ -1354,7 +1354,7 @@ public class PersonConfig implements Serializable {
 			roster.get(crew_id).getTeam().get(index).setCountry(value);
 	}
 
-	/*
+	/**
 	 * Sets the sponsor of a member of the alpha crew
 	 * 
 	 * @param index
@@ -1366,7 +1366,7 @@ public class PersonConfig implements Serializable {
 			roster.get(crew_id).getTeam().get(index).setSponsor(value);
 	}
 
-	/*
+	/**
 	 * Sets the destination of a member of the alpha crew
 	 * 
 	 * @param index
@@ -1443,7 +1443,7 @@ public class PersonConfig implements Serializable {
 		return result;
 	}
 
-	/*
+	/**
 	 * Gets the value of an element as a String
 	 * 
 	 * @param an element
@@ -1459,7 +1459,7 @@ public class PersonConfig implements Serializable {
 		return personElement.getAttributeValue(param);
 	}
 
-	/*
+	/**
 	 * Gets the value of an element as a double
 	 * 
 	 * @param an element
@@ -1599,7 +1599,7 @@ public class PersonConfig implements Serializable {
 			countries.add("Canada"); // 1
 			countries.add("India"); // 2
 			countries.add("Japan"); // 3
-			countries.add("US"); // 4
+			countries.add("USA"); // 4
 			countries.add("Russia"); // 5
 
 			countries.addAll(createESACountryList());
@@ -1608,7 +1608,7 @@ public class PersonConfig implements Serializable {
 
 		return countries;
 	}
-	
+
 	public String getCountry(int id) {
 		if (countries == null) {
 			countries = createCountryList();
@@ -1702,14 +1702,14 @@ public class PersonConfig implements Serializable {
 		return sponsors;
 	}
 
-	/*
+	/**
 	 * Gets a list of last names by sponsors and by countries
 	 */
 //	public List<Map<Integer, List<String>>> getLastNames() {
 //		return lastNames;
 //	}
 
-	/*
+	/**
 	 * Gets a list of first names by sponsors and by countries
 	 */
 //	public List<Map<Integer, List<String>>> getFirstNames() {

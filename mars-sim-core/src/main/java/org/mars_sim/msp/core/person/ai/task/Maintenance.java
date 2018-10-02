@@ -89,7 +89,7 @@ public class Maintenance extends Task implements Serializable {
 				endTask();
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, person + " is unable to perform maintenance.", e);
+//			logger.log(Level.SEVERE, person + " is unable to perform maintenance.", e);
 			endTask();
 		}
 
@@ -118,7 +118,7 @@ public class Maintenance extends Task implements Serializable {
 				endTask();
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, robot + " is unable to perform maintenance.", e);
+//			logger.log(Level.SEVERE, robot + " is unable to perform maintenance.", e);
 			endTask();
 		}
 

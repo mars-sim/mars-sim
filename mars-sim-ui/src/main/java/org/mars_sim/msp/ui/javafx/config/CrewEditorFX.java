@@ -28,7 +28,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -536,9 +535,13 @@ public class CrewEditorFX {
 		return g;
 	}
 
+	/**
+	 * Set up crew name
+	 */
 	public void setUpCrewName() {
 		for (int i = 0; i < SIZE_OF_CREW; i++) {
-//			int crew_id = personConfig.getCrew(i);
+			// Generate the crew
+			personConfig.getCrew(i);
 			// TODO: will assign this person to the crew
 			String n = personConfig.getConfiguredPersonName(i, ALPHA_CREW);
 //			SimpleStringProperty np = new SimpleStringProperty(n);

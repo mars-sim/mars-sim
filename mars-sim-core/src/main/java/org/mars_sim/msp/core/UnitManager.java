@@ -2139,15 +2139,15 @@ public class UnitManager implements Serializable {
 		else if (sponsor.contains("JAXA"))// .equals(Msg.getString("ReportingAuthorityType.JAXA")))
 			return "Japan";
 		else if (sponsor.contains("NASA"))// .equals(Msg.getString("ReportingAuthorityType.NASA")))
-			return "US";
+			return "USA";
 		else if (sponsor.contains("RKA"))// .equals(Msg.getString("ReportingAuthorityType.RKA")))
 			return "Russia";
 		else if (sponsor.contains("MS"))
-			return "US";
+			return "USA";
 		else if (sponsor.contains("SpaceX"))
-			return "US";
+			return "USA";
 		else
-			return "US";
+			return "USA";
 
 	}
 
@@ -2188,7 +2188,7 @@ public class UnitManager implements Serializable {
 //		countries.add("Canada"); //1
 //		countries.add("India"); //2
 //		countries.add("Japan"); //3
-//		countries.add("US"); //4
+//		countries.add("USA"); //4
 //		countries.add("Russia"); //5
 //
 //		countries.add("Austria");
