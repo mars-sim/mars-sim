@@ -21,22 +21,13 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.beryx.textio.AbstractTextTerminal;
-import org.beryx.textio.TextIO;
-import org.beryx.textio.TextIoFactory;
-import org.beryx.textio.TextTerminal;
-import org.beryx.textio.jline.JLineTextTerminal;
-import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -48,18 +39,11 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.terminal.CommanderProfile;
-import org.mars_sim.msp.core.terminal.ExitMenu;
-import org.mars_sim.msp.core.terminal.TimeRatioMenu;
-import org.mars_sim.msp.core.terminal.RunnerData;
-import org.mars_sim.msp.core.terminal.SaveMenu;
+import org.mars_sim.msp.core.terminal.InteractiveTerm;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
-
-//import org.reactfx.EventStreams;
-//import org.reactfx.util.FxTimer;
-//import org.reactfx.util.Timer;
 
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
@@ -205,10 +189,9 @@ public class Simulation implements ClockListener, Serializable {
 
 	private UpTimer ut;
 	
-	private static CommanderProfile profile;
+	private static InteractiveTerm term = new InteractiveTerm();
 	
-	private static TextIO textIO = TextIoFactory.getTextIO();
-	
+
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
 	 * from other classes.
@@ -432,95 +415,8 @@ public class Simulation implements ClockListener, Serializable {
 		ut = masterClock.getUpTimer();
 	}
 
-	/**
-	 * Initialize the text-io terminal.
-	 */
-	public void startTerminal() {
-		
-//		TextIO textIO = TextIoFactory.getTextIO();
-//        TextTerminal<?> terminal = textIO.getTextTerminal();
 
-		initializeTerminal();
-		
-		profile = new CommanderProfile(textIO);
-		
-		char input = textIO.newCharInputReader()//.withDefaultValue('n')
-		        .read("Do you want to be added as the commander of a settlement? [y/n]");	
-	
-		if (input == 'y' || input == 'Y') {        
-			profile.accept(textIO, null);
-		}
-		
-	}
-	
-	/**
-	 * Initialize the terminal
-	 */
-	public void initializeTerminal() {
-        // Construct a terminal based on Java Swing 
-		//textIO = TextIoFactory.getTextIO();
-		
-		// Use existing terminal
-//        SystemTextTerminal sysTerminal = new SystemTextTerminal();
-//        textIO = new TextIO(sysTerminal);
-		keepRunning = true;
-	}
-	
-	/**
-	 * Loads the terminal menu
-	 */
-	public void loadTerminalMenu() {
-		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
-		textIO.getTextTerminal().registerUserInterruptHandler(term -> {}, false);
-        
-		while (keepRunning) {
-		    BiConsumer<TextIO, RunnerData> app = chooseMenu(textIO);
-		    //TextIO textIO = chooseTextIO();
-	        textIO.getTextTerminal().printf(System.lineSeparator());
-		    app.accept(textIO, null);
-	    	// if the sim is being saved, enter this while loop
-			while (masterClock.isSavingSimulation()) {
-		    	delay(500L);
-		    }
-		}
-	}
-    
-	
-    public static void clearScreen(TextTerminal terminal) {
-        if (terminal instanceof JLineTextTerminal) {
-            terminal.print("\033[H\033[2J");
-        } else if (terminal instanceof SwingTextTerminal) {
-            ((SwingTextTerminal) terminal).resetToOffset(0);
-        }
-    }
-    
-    public static void delay(long millis) {
-        try {
-//            Thread.sleep(millis);
-			TimeUnit.MILLISECONDS.sleep(millis);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    private static BiConsumer<TextIO, RunnerData> chooseMenu(TextIO textIO) {
-        List<BiConsumer<TextIO, RunnerData>> apps = Arrays.asList(
-                new TimeRatioMenu(),
-                new SaveMenu(),
-                new ExitMenu()
-        );
-//        textIO.getTextTerminal().printf("\n");
-        BiConsumer<TextIO, RunnerData> app = textIO.<BiConsumer<TextIO, RunnerData>>newGenericInputReader(null)
-            .withNumberedPossibleValues(apps)
-            .read(System.lineSeparator() + "-------------------- Mars Simulation Project --------------------" + System.lineSeparator());
-        String propsFileName = app.getClass().getSimpleName() + ".properties";
-        System.setProperty(AbstractTextTerminal.SYSPROP_PROPERTIES_FILE_LOCATION, propsFileName);
 
-	    textIO.getTextTerminal().moveToLineStart();
-	    
-        return app;
-    }
-    
 
 	/**
 	 * Get the Commander's profile
@@ -528,7 +424,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @return profile
 	 */
 	public CommanderProfile getProfile() {
-		return profile;
+		return term.getProfile();
 	}
 			
 	/*
@@ -999,7 +895,7 @@ public class Simulation implements ClockListener, Serializable {
 		keepRunning = false;
 //		textIO.getTextTerminal().abort();
 //		textIO.getTextTerminal().dispose();
-		profile.disposeTerminal();
+		term.getProfile().disposeTerminal();
 		instance().defaultLoad = false;
 		instance().stop();
 		masterClock.endClockListenerExecutor();
@@ -1339,6 +1235,10 @@ public class Simulation implements ClockListener, Serializable {
 			masterClock.onUpdate(tpf);
 	}
 
+	public InteractiveTerm getTerm(){
+		return term;
+	}
+	
 	/**
 	 * Clock pulse from master clock
 	 * 

@@ -828,8 +828,8 @@ public class MainMenu {
 			mainScene.finalizeMainScene();
 
 			// Initialize interactive terminal and load menu
-			sim.initializeTerminal();
-			sim.loadTerminalMenu();
+			sim.getTerm().initializeTerminal();
+			sim.getTerm().loadTerminalMenu();
 		}
 	}
 

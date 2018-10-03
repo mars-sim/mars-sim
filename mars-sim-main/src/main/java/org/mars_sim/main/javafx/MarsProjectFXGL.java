@@ -453,7 +453,7 @@ public class MarsProjectFXGL extends GameApplication {
 				logger.info("Starting a new sim in headless mode in " + Simulation.OS);
 				
 				// Input user info
-				Simulation.instance().startTerminal();
+				sim.getTerm().startTerminal();
 				// Initialize the simulation.
 				Simulation.createNewSimulation(-1);
 				// Start the simulation.

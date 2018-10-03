@@ -44,9 +44,6 @@ implements Serializable {
 	 * Constructor.
 	 */
 	public TransportManager() {
-	//}
-	// 2015-02-04 Added run()
-	//public void run() {
 		//Initialize data
 		transportItems = new ConcurrentLinkedQueue<Transportable>();
 		// Create initial arriving settlements.

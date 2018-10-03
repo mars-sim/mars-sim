@@ -422,13 +422,13 @@ public class MarsProjectFX extends Application {
 				logger.info("Starting a new sim in headless mode in " + Simulation.OS);
 				
 				// Input user info
-				Simulation.instance().startTerminal();				
+				sim.getTerm().startTerminal();				
 				// Initialize the simulation.
 				Simulation.createNewSimulation(-1);
 				// Start the simulation.
 				startSimulation(true);				
 				// Load the menu choice
-				Simulation.instance().loadTerminalMenu();
+				sim.getTerm().loadTerminalMenu();
 			}
 
 			else if (loadSim) {
@@ -503,11 +503,11 @@ public class MarsProjectFX extends Application {
 	 * Initialize interactive terminal and load menu
 	 */
 	public void initTerminal() {
-		System.out.println("initTerminal()");
+//		System.out.println("initTerminal()");
 		// Initialize interactive terminal 
-		Simulation.instance().initializeTerminal();	
+		sim.getTerm().initializeTerminal();	
 		// Load the menu choice
-		Simulation.instance().loadTerminalMenu();
+		sim.getTerm().loadTerminalMenu();
 	}
 	
 	

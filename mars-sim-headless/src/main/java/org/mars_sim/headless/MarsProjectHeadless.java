@@ -33,6 +33,8 @@ public class MarsProjectHeadless {
 
 	static String[] args;
 
+	private Simulation sim = Simulation.instance();
+	
 	/** true if displaying graphic user interface. */
 	// private boolean useHeadless = true;
 
@@ -44,8 +46,8 @@ public class MarsProjectHeadless {
 	public MarsProjectHeadless(String args[]) {
 		// logger.info("MarsProject's constructor is on
 		// "+Thread.currentThread().getName() + " Thread");
-		Simulation.instance().startSimExecutor();
-		Simulation.instance().getSimExecutor().submit(new SimulationTask());
+		sim.startSimExecutor();
+		sim.getSimExecutor().submit(new SimulationTask());
 	}
 
 	public class SimulationTask implements Runnable {
@@ -67,9 +69,9 @@ public class MarsProjectHeadless {
 	 */
 	public void initTerminal() {
 		// Initialize interactive terminal 
-		Simulation.instance().initializeTerminal();	
+		sim.getTerm().initializeTerminal();	
 		// Load the menu choice
-		Simulation.instance().loadTerminalMenu();
+		sim.getTerm().loadTerminalMenu();
 	}
 	
 	/**
@@ -101,7 +103,7 @@ public class MarsProjectHeadless {
 			handleNewSimulation(userTimeRatio); // if this fails we always exit, continuing is useless
 			result = true;
 			// Load the menu choice
-			Simulation.instance().loadTerminalMenu();
+			sim.getTerm().loadTerminalMenu();
 		} 
 		
 		else if (argList.contains("-load")) {
@@ -129,7 +131,7 @@ public class MarsProjectHeadless {
 			handleNewSimulation(userTimeRatio);
 			result = true;
 			// Load the menu choice
-			Simulation.instance().loadTerminalMenu();
+			sim.getTerm().loadTerminalMenu();
 		}
 
 		return result;
@@ -171,7 +173,7 @@ public class MarsProjectHeadless {
 
 		try {
 			// Load the default simulation
-			Simulation.instance().loadSimulation(null);
+			sim.loadSimulation(null);
 
 		} catch (Exception e) {
 			// logger.log(Level.WARNING, "Could not load default simulation", e);
@@ -193,13 +195,13 @@ public class MarsProjectHeadless {
 		try {
 			SimulationConfig.loadConfig();
 
-			Simulation.instance().destroyOldSimulation();
+			sim.destroyOldSimulation();
 			// Input user info
-			Simulation.instance().startTerminal();
+			sim.getTerm().startTerminal();
 			
 			Simulation.createNewSimulation(userTimeRatio);
 			
-			Simulation.instance().start(true);
+			sim.start(true);
 			
 
 		} catch (Exception e) {
@@ -216,7 +218,7 @@ public class MarsProjectHeadless {
 		// "+Thread.currentThread().getName() + " Thread");
 
 		// Start the simulation.
-		Simulation.instance().start(useDefaultName);
+		sim.start(useDefaultName);
 	}
 
 	/**

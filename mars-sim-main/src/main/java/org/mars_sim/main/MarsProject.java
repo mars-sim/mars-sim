@@ -44,7 +44,7 @@ public class MarsProject {
 	/** true if help documents should be generated from config xml files. */
 	private boolean generateHelp = false;
 
-	// private ExecutorService worker;
+	private Simulation sim = Simulation.instance();
 
 	/**
 	 * Constructor 1.
@@ -54,8 +54,8 @@ public class MarsProject {
 	public MarsProject(String args[]) {
 		// logger.info("MarsProject's constructor is on
 		// "+Thread.currentThread().getName() + " Thread");
-		Simulation.instance().startSimExecutor();
-		Simulation.instance().getSimExecutor().submit(new SimulationTask());
+		sim.startSimExecutor();
+		sim.getSimExecutor().submit(new SimulationTask());
 	}
 
 	// public void submitWork(Runnable task) {
@@ -192,7 +192,7 @@ public class MarsProject {
 
 		try {
 			// Load the default simulation
-			Simulation.instance().loadSimulation(null);
+			sim.loadSimulation(null);
 
 		} catch (Exception e) {
 			// logger.log(Level.WARNING, "Could not load default simulation", e);
@@ -210,7 +210,7 @@ public class MarsProject {
 			// go headless
 			
 			// Input user info
-			Simulation.instance().startTerminal();
+			sim.getTerm().startTerminal();
 			// Start simulation.
 			startSimulation(true);
 		}

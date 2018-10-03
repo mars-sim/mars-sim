@@ -128,6 +128,8 @@ public class ScenarioConfigEditorFX {
 
 	private List<SettlementRegistry> settlementList;
 
+	private Simulation sim = Simulation.instance();
+	
 	/**
 	 * Constructor
 	 * @param mainMenu
@@ -541,7 +543,7 @@ public class ScenarioConfigEditorFX {
 	}
 
 	public Runnable runWait() {
-		Simulation.instance().getSimExecutor().execute(new WaitTask());
+		sim.getSimExecutor().execute(new WaitTask());
 		return null;
 	}
 
@@ -553,7 +555,7 @@ public class ScenarioConfigEditorFX {
 	}
 
 	public int submitTask() {
-		Simulation.instance().getSimExecutor().execute(new SimulationTask());
+		sim.getSimExecutor().execute(new SimulationTask());
 		return 1;
 	}
 
@@ -561,10 +563,10 @@ public class ScenarioConfigEditorFX {
 		public void run() {
 			
 			// Input user info
-			Simulation.instance().startTerminal();
+			sim.getTerm().startTerminal();
 			
 			Simulation.createNewSimulation(-1);
-			Simulation.instance().start(false);
+			sim.start(false);
 			Platform.runLater(() -> {
 				mainScene.finalizeMainScene();				
 			});
@@ -573,7 +575,7 @@ public class ScenarioConfigEditorFX {
 				multiplayerClient.prepareListeners();
 			
 			// Load the menu choice
-			Simulation.instance().loadTerminalMenu();	
+			sim.getTerm().loadTerminalMenu();	
 		}
 	}
 

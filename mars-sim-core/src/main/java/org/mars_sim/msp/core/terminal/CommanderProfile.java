@@ -11,15 +11,11 @@ import org.beryx.textio.ReadAbortedException;
 import org.beryx.textio.ReadHandlerData;
 import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.TextIO;
-import org.beryx.textio.TextIoFactory;
-import org.beryx.textio.TextTerminal;
+import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -32,108 +28,54 @@ import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
  */
 public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 
+    private static final String KEY_STROKE_UP = "pressed UP";
+    private static final String KEY_STROKE_DOWN = "pressed DOWN";
+
+    private String originalInput = "";
+    private int choiceIndex = -1;
+    private String[] choices = {};
 
 	private Contact contact = new Contact();
     
-	private static TextTerminal<?> terminal;
+//	private static TextTerminal<?> terminal;
+	
+	private SwingTextTerminal terminal;
+	
+	private static TextIO textIO;
 	
     private final List<Runnable> operations = new ArrayList<>();
 
-    public CommanderProfile(TextIO textIO) {
-        textIO = TextIoFactory.getTextIO();
-        terminal = textIO.getTextTerminal();
-    }
-    
-    public static void main(String[] args) {
-    	TextIO textIO = TextIoFactory.getTextIO();
-        new CommanderProfile(textIO).accept(textIO, null);
-    }
-    
-    public void disposeTerminal() {
-    	terminal.dispose(null);
-    }
+    public CommanderProfile(InteractiveTerm term) {	
+    	terminal = term.getTerminal();
+    	textIO = term.getTextIO();
+	}
 
-    public String printJobs() {
-//        List<Job> jobs = JobManager.getJobs();
-
-		List<String> jobs = JobType.getEditedList();
-
-    	String s = "";
-        for (int i=0; i< jobs.size(); i++) {  	
-        	s = s + "(" + i + "). " + jobs.get(i) + "  \t";
-        	if (jobs.size() < i+1) {
-        		s = s + "(" + i+1 + "). " + jobs.get(i+1) + System.lineSeparator();
-        	}
-        }
-        
-        return s;
-        //terminal.println(s);
-        
-//        for (int i=0; i< jobs.size(); i++) {
-//        	terminal.println("(" + i + "). " + jobs.get(i).getClass().getSimpleName() + " \t\t");
-//        	if (jobs.size() < i+1) {
-//        		terminal.print("(" + i+1 + "). " + jobs.get(i+1).getClass().getSimpleName() + "\t\t");//+ System.lineSeparator());
-//        		terminal.println();
-//        	}
-//        }
-    }
-    
-    public String printCountries() {
-    	List<String> countries = UnitManager.getCountryList();
-    	String s = "";
-        for (int i=0; i< countries.size(); i++) {  	
-        	s = s + "(" + i + "). " + countries.get(i).toString() + "  \t";
-        	if (countries.size() < i+1) {
-        		s = s + "(" + i+1 + "). " + countries.get(i+1).toString() + System.lineSeparator();
-        	}
-        }
-        
-        return s;
-        //terminal.println(s);
-        
-//        for (int i=0; i< countries.size(); i++) {
-//        	
-//        	terminal.println("(" + i + "). " + countries.get(i).toString() + "\t\t");
-//        	if (countries.size() < i+1) {
-//        		terminal.print("(" + i+1 + "). " + countries.get(i+1).toString() + "\t\t");//+ System.lineSeparator());
-//        		terminal.println();
-//        	}
-//        }
+    public void setChoices(String... choices) {
+        this.originalInput = "";
+        this.choiceIndex = -1;
+        this.choices = choices;
     }
 
     
     @Override
-    public void accept(TextIO textIO, RunnerData runnerData) { 
- //       TextTerminal<?> terminal = textIO.getTextTerminal();
+    public void accept(TextIO textIO, RunnerData runnerData) {    
         String initData = (runnerData == null) ? null : runnerData.getInitData();
         AppUtil.printGsonMessage(terminal, initData);
-	
+        
         addString(textIO, "First Name", () -> contact.firstName, s -> contact.firstName = s);
-        addString(textIO, "Last Name", () -> contact.lastName, s -> contact.lastName = s);
-        addChar(textIO, "Gender (M/F)", () -> contact.gender, s -> contact.gender = s);
+        addString(textIO, "Last Name", () -> contact.lastName, s -> contact.lastName = s);     
+        addGender(textIO, "Gender (M/F)", () -> contact.gender, s -> contact.gender = s);
         addAge(textIO, "Age", () -> contact.age, s -> contact.age = s);	      
-//        terminal.println(System.lineSeparator() + "Job List : ");
-//        printJobs();
-//        terminal.println();
         addJobTask(textIO, "Job (0-15)", () -> contact.job, s -> contact.job = s);	
-//        terminal.println("Country List : ");
-//        printCountries();
-//        terminal.println();
         addCountryTask(textIO, "Country (0-27)", () -> contact.country, s -> contact.country = s);
-//        addPhaseTask(textIO, "Settlement Phase (1-4)", () -> contact.phase, s -> contact.phase = s);	
-     
-//        terminal.println(System.lineSeparator());
-             
+          
         setUpCountryKey();
         setUpJobKey();
         setUpUndoKey();
-        
+//        setUpArrows();
+       
         terminal.println(System.lineSeparator() + "Commander's Profile: " + contact);
         UnitManager.setCommander(true);
-        
-//        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to continue...\n");     
-//		textIO.dispose();
-
     }
     
     public void setUpAbortKey() {
@@ -160,7 +102,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
                     tt ->   {   
 			           	tt.print(System.lineSeparator() 
 			           		+ System.lineSeparator() 
-			           		+ "--------------List of Countries --------------" 
+			           		+ "-------------- List of Countries --------------" 
 			           		+ System.lineSeparator());
 			        	tt.print(printCountries());   
                     }
@@ -181,7 +123,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
                     tt ->   {   
 			           	tt.print(System.lineSeparator() 
 			           		+ System.lineSeparator() 
-			           		+ "--------------List of Job Type --------------" 
+			           		+ "-------------- List of Job Type --------------" 
 			           		+ System.lineSeparator());
 			        	tt.print(printJobs());   
                     }
@@ -218,27 +160,104 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 
     }
 
+    public void setUpArrows() {
+        terminal.registerHandler(KEY_STROKE_UP, t -> {
+            if(choiceIndex < 0) {
+                originalInput = terminal.getPartialInput();
+            }
+            if(choiceIndex < choices.length - 1) {
+                choiceIndex++;
+                t.replaceInput(choices[choiceIndex], false);
+            }
+            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
+        });
+
+        terminal.registerHandler(KEY_STROKE_DOWN, t -> {
+            if(choiceIndex >= 0) {
+                choiceIndex--;
+                String text = (choiceIndex < 0) ? originalInput : choices[choiceIndex];
+                t.replaceInput(text, false);
+            }
+            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
+        });
+    }
+    		
     
     private void addString(TextIO textIO, String prompt, Supplier<String> defaultValueSupplier, Consumer<String> valueSetter) {
+//    	setChoices();
+    	
+ //   	terminal.println(printJobs());
+    	
+//    	String s = textIO.newStringInputReader()
+//                .withDefaultValue(defaultValueSupplier.get())
+//                .read(prompt);
+//    	
+//        operations.add(() -> valueSetter.accept(s));
+        
+//    	setChoices();	
         operations.add(() -> valueSetter.accept(textIO.newStringInputReader()
                 .withDefaultValue(defaultValueSupplier.get())
                 .read(prompt)));
     }
 
-    private void addChar(TextIO textIO, String prompt, Supplier<Character> defaultValueSupplier, Consumer<Character> valueSetter) {
-        operations.add(() -> valueSetter.accept(textIO.newCharInputReader()
-        		.withDefaultValue('M')
+    private void addGender(TextIO textIO, String prompt, Supplier<String> defaultValueSupplier, Consumer<String> valueSetter) {
+//    	setChoices("M", "F");
+    	
+//    	String g = textIO.newStringInputReader()
+////				.withInlinePossibleValues("m", "f", "M", "F")
+//                .withDefaultValue(defaultValueSupplier.get())
+//                .read(prompt);
+//                
+//        operations.add(() -> valueSetter.accept(g));
+        
+        operations.add(() -> valueSetter.accept(textIO.newStringInputReader()
+//				.withInlinePossibleValues("m", "f", "M", "F")
+                .withDefaultValue(defaultValueSupplier.get())
                 .read(prompt)));
     }
     
+//    private void addChar(TextIO textIO, String prompt, Supplier<Character> defaultValueSupplier, Consumer<Character> valueSetter) {
+//        setChoices("M", "F");
+//        
+//        operations.add(() -> valueSetter.accept(textIO.newCharInputReader()
+//        		.withDefaultValue('M')
+//                .read(prompt)));
+//    }
+    
     private void addAge(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
+//        int[] age = new int[] {21, 22, 23, 24};
+//        setChoices(age);//"21", "22");
+//    	setChoices();
+    	
+//        int i = textIO.newIntInputReader()
+//                .withDefaultValue(30)
+////				.withNumberedPossibleValues(age)
+//                .withMaxVal(70)
+//                .withMinVal(21) //defaultValueSupplier.get())
+//                .read(prompt);
+//        
+//        operations.add(() -> valueSetter.accept(i));
+//        
+        
         operations.add(() -> valueSetter.accept(textIO.newIntInputReader()
                 .withDefaultValue(30)
+//				.withNumberedPossibleValues(age)
+                .withMaxVal(70)
                 .withMinVal(21) //defaultValueSupplier.get())
                 .read(prompt)));
     }
 
     private void addJobTask(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
+//    	setChoices();
+    	
+//    	int i = textIO.newIntInputReader()
+//                .withDefaultValue(4)
+//                .withMinVal(0)
+//                .withMaxVal(15)//defaultValueSupplier.get())
+//                .read(prompt);
+//    	
+//        operations.add(() -> valueSetter.accept(i));
+//        
         operations.add(() -> valueSetter.accept(textIO.newIntInputReader()
                 .withDefaultValue(4)
                 .withMinVal(0)
@@ -247,6 +266,16 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     }
     
     private void addCountryTask(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
+//    	setChoices();
+//    	
+//    	int i = textIO.newIntInputReader()
+//                .withDefaultValue(4)
+//                .withMinVal(0)
+//                .withMaxVal(27)//defaultValueSupplier.get())
+//                .read(prompt);
+//    			
+//        operations.add(() -> valueSetter.accept(i));
+//        
         operations.add(() -> valueSetter.accept(textIO.newIntInputReader()
                 .withDefaultValue(4)
                 .withMinVal(0)
@@ -263,20 +292,72 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 //    }
     
     
+    public String printJobs() {
+//        List<Job> jobs = JobManager.getJobs();
+		List<String> jobs = JobType.getEditedList();
+
+    	String s = "";
+        for (int i=0; i< jobs.size(); i++) {  	
+        	s = s + "(" + i + "). " + jobs.get(i) + "  \t";
+        	if (jobs.size() < i+1) {
+        		s = s + "(" + i+1 + "). " + jobs.get(i+1) + System.lineSeparator();
+        	}
+        }
+        
+        return s;
+        //terminal.println(s);
+        
+//        for (int i=0; i< jobs.size(); i++) {
+//        	terminal.println("(" + i + "). " + jobs.get(i).getClass().getSimpleName() + " \t\t");
+//        	if (jobs.size() < i+1) {
+//        		terminal.print("(" + i+1 + "). " + jobs.get(i+1).getClass().getSimpleName() + "\t\t");//+ System.lineSeparator());
+//        		terminal.println();
+//        	}
+//        }
+    }
+    
+    public String printCountries() {
+    	List<String> countries = UnitManager.getCountryList();
+    	String s = "";
+        for (int i=0; i< countries.size(); i++) {  	
+        	s = s + "(" + i + "). " + countries.get(i).toString() + "  \t";
+        	if (countries.size() < i+1) {
+        		s = s + "(" + i+1 + "). " + countries.get(i+1).toString() + System.lineSeparator();
+        	}
+        }
+        
+        return s;
+        
+//        terminal.println(s);      
+//        for (int i=0; i< countries.size(); i++) {
+//        	
+//        	terminal.println("(" + i + "). " + countries.get(i).toString() + "\t\t");
+//        	if (countries.size() < i+1) {
+//        		terminal.print("(" + i+1 + "). " + countries.get(i+1).toString() + "\t\t");//+ System.lineSeparator());
+//        		terminal.println();
+//        	}
+//        }
+    }
+
     @Override
     public String toString() {
         return "Commander's Profile";
     }
     
+    public void disposeTerminal() {
+    	terminal.dispose(null);
+    }
+
     public Contact getContact() {
     	return contact;
     }
+    
     
 	public class Contact {
 		
         private String firstName;
         private String lastName;
-        private Character gender;
+        private String gender;
         private int age;
         private int job;
         private int phase;
@@ -292,7 +373,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         }
 
         public String getGender() {
-        	return gender.toString();
+        	return gender;
         }
 
         public int getCountry() {
