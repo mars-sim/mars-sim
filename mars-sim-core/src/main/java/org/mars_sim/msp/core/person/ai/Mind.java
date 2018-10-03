@@ -78,9 +78,6 @@ public class Mind implements Serializable {
 	 * @throws Exception if mind could not be created.
 	 */
 	public Mind(Person person) {
-		// logger.info("Mind's constructor is in " + Thread.currentThread().getName() +
-		// " Thread");
-
 		// Initialize data members
 		this.person = person;
 		mission = null;
@@ -110,9 +107,6 @@ public class Mind implements Serializable {
 	 * @throws Exception if error.
 	 */
 	public void timePassing(double time) {
-		// logger.info("Mind's timePassing() is in " + Thread.currentThread().getName()
-		// + " Thread");
-
 		if (taskManager != null)
 			taskManager.recordTask();
 
@@ -155,7 +149,7 @@ public class Mind implements Serializable {
 	/*
 	 * Checks if a person has a job. If not, get a new one.
 	 */
-	public void checkJob() { // String status, String approvedBy) {
+	public void checkJob() {
 		// Check if this person needs to get a new job or change jobs.
 		if (job == null) { // removing !jobLock
 			// Note: getNewJob() is checking if existing job is "good enough"/ or has good
@@ -208,7 +202,6 @@ public class Mind implements Serializable {
 			}
 
 			boolean hasActiveMission = hasActiveMission();// (mission != null);
-
 			// Check if mission creation at settlement (if any) is overridden.
 			boolean overrideMission = false;
 
@@ -244,13 +237,11 @@ public class Mind implements Serializable {
 	 * @param newJob           the new job
 	 * @param bypassingJobLock
 	 */
-	// Called by
-	// (1) ReviewJobReassignment's constructor or
-	// (2) TabPanelCareer's actionPerformed() [for a pop <= 4 settlement]
 	public void reassignJob(String newJobStr, boolean bypassingJobLock, String assignedBy, JobAssignmentType status,
 			String approvedBy) {
-		// System.out.println("\n< " + person.getName() + " > ");
-		// System.out.println("Mind.java : reassignJob() : starting ");
+		// Called by
+		// (1) ReviewJobReassignment's constructor or
+		// (2) TabPanelCareer's actionPerformed() [for a pop <= 4 settlement]
 		Job newJob = null;
 		Iterator<Job> i = JobManager.getJobs().iterator();
 		while (i.hasNext()) {
@@ -273,19 +264,14 @@ public class Mind implements Serializable {
 	 * @param status           of JobAssignmentType
 	 * @param approvedBy
 	 */
-	// Called by
-	// (1) setRole() in Person.java (if a person has a Manager role type)
-	// (2) checkJob() in Mind.java
-	// (3) getInitialJob() in Mind.java
-	public void setJob(Job newJob, boolean bypassingJobLock, String assignedBy, JobAssignmentType status,
-			String approvedBy) {
-		// System.out.println("\n< " + person.getName() + " > ");
-		// System.out.println("Mind.java : setJob() : starting");
-		// if (newJob == null) System.out.println("setJob() : newJob is null");
+	public void setJob(Job newJob, boolean bypassingJobLock, String assignedBy, 
+			JobAssignmentType status, String approvedBy) {
+		// Called by
+		// (1) setRole() in Person.java (if a person has a Manager role type)
+		// (2) checkJob() in Mind.java
+		// (3) getInitialJob() in Mind.java
 		// TODO : if jobLock is true, will it allow the job to be changed?
 		String newJobStr = newJob.getName(person.getGender());
-
-		// System.out.println("Mind.java : setJob() : calling assignJob() ");
 		assignJob(newJob, newJobStr, bypassingJobLock, assignedBy, status, approvedBy);
 	}
 
@@ -300,7 +286,6 @@ public class Mind implements Serializable {
 	 */
 	public void assignJob(Job newJob, String newJobStr, boolean bypassingJobLock, String assignedBy,
 			JobAssignmentType status, String approvedBy) {
-		// System.out.println("Mind.java : assignJob() : starting");
 		String jobStr = null;
 		JobHistory jh = person.getJobHistory();
 		Settlement s = person.getSettlement();
@@ -310,68 +295,42 @@ public class Mind implements Serializable {
 		else
 			jobStr = job.getName(person.getGender());
 
-		// System.out.println("Mind.java : assignJob() : old jobStr was " + jobStr);
-		// System.out.println("Mind.java : assignJob() : old job was " + job);
-		// System.out.println("Mind.java : assignJob() : bypassingJobLock = " +
-		// bypassingJobLock
-		// + " jobLock = " + jobLock);
-
 		// TODO : check if the initiator's role allows the job to be changed
 		if (!newJobStr.equals(jobStr)) {
 
 			if (bypassingJobLock || !jobLock) {
 				job = newJob;
-
-				// System.out.println("Mind.java : assignJob(): approvedBy is " + approvedBy);
 				// Set up 4 approvedBy conditions
 				if (approvedBy.equals(JobManager.SETTLEMENT)) { // automatically approved if pop <= 4
-					// System.out.println("Mind.java : assignJob() : pop > 4, calling JobHistory's
-					// saveJob(), approved by Settlement");
 					jh.saveJob(newJob, assignedBy, status, approvedBy, true);
 				} else if (approvedBy.equals(JobManager.USER)) {
-					// if (person.getAssociatedSettlement().getAllAssociatedPeople().size() <= 4) {
-					// System.out.println("Mind.java : assignJob() : pop <= 4, calling JobHistory's
-					// saveJob(), approved by User");
 					jh.saveJob(newJob, assignedBy, status, approvedBy, true);
 				} else if (approvedBy.equals(JobManager.MISSION_CONTROL)) { // at the start of sim
-					// System.out.println("Mind.java : assignJob() : calling JobHistory's saveJob(),
-					// approved by Mission Control");
 					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
-				} else { // if approvedBy = name of commander/subcommander/mayor/president
-							// System.out.println("Mind.java : assignJob() : calling JobHistory's saveJob(),
-							// approved by a Senior Official");
+				} else { // Call JobHistory's saveJob(),
+						// approved by a Senior Official");
 					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
 				}
 
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 
-				// int population = 0;
-
 				// Assign a new role type to the person and others in a settlement
 				// immediately after the change of one's job type
 				if (s != null) {
 					ChainOfCommand cc = s.getChainOfCommand();
-					// s.updateAllAssociatedPeople();
-					// population = s.getAllAssociatedPeople().size();
+
 					// Assign a role associate with
 					if (s.getAllAssociatedPeople().size() >= UnitManager.POPULATION_WITH_MAYOR) {
 						cc.set7Divisions(true);
 						cc.assignSpecialiststo7Divisions(person);
 					}
-					// else if (population >= UnitManager.POPULATION_WITH_SUB_COMMANDER) {
-					// person.getSettlement().set3Divisions(true);
-					// UnitManager.assignSpecialiststo3Divisions(person);
-					// }
 					else {
 						cc.set3Divisions(true);
 						cc.assignSpecialiststo3Divisions(person);
 					}
-
 				}
-
 				// the new job will be Locked in until the beginning of the next day
 				jobLock = true;
-				// System.out.println("Mind's assignJob() : just set jobLock = true");
 			}
 		}
 	}
@@ -393,10 +352,7 @@ public class Mind implements Serializable {
 	public void setInactive() {
 		taskManager.clearTask();
 		if (hasActiveMission()) {
-			// if (person != null) {
 			mission.removeMember(person);
-			// }
-
 			mission = null;
 		}
 	}
@@ -408,12 +364,9 @@ public class Mind implements Serializable {
 	 */
 	public void setMission(Mission newMission) {
 		if (newMission != mission) {
-
-			if (person != null) {
 				if (mission != null) {
 					mission.removeMember(person);
 				}
-
 				mission = newMission;
 
 				if (newMission != null) {
@@ -421,8 +374,6 @@ public class Mind implements Serializable {
 				}
 
 				person.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
-			}
-
 		}
 	}
 

@@ -1168,7 +1168,7 @@ public class PersonConfig implements Serializable {
 		// System.out.println("name : " +
 		// roster.get(crew_id).getTeam().get(index).getName());
 //		System.out.println("roster.size : " + roster.size());
-		
+
 		if (roster.get(crew_id) != null) {
 			if (roster.get(crew_id).getTeam().get(index).getName() != null) {
 				return roster.get(crew_id).getTeam().get(index).getName();
@@ -1266,11 +1266,10 @@ public class PersonConfig implements Serializable {
 			return getValueAsString(index, SETTLEMENT);
 	}
 
-	/*
+	/**
 	 * Sets the name of a member of the alpha crew
 	 * 
 	 * @param index
-	 * 
 	 * @param name
 	 */
 	public void setPersonName(int index, String value, int crew_id) {
@@ -1289,7 +1288,6 @@ public class PersonConfig implements Serializable {
 	 * Sets the personality of a member of the alpha crew
 	 * 
 	 * @param index
-	 * 
 	 * @param personality
 	 */
 	public void setPersonPersonality(int index, String value, int crew_id) {
@@ -1308,7 +1306,6 @@ public class PersonConfig implements Serializable {
 	 * Sets the gender of a member of the alpha crew
 	 * 
 	 * @param index
-	 * 
 	 * @param gender
 	 */
 	public void setPersonGender(int index, String value, int crew_id) {
@@ -1327,7 +1324,6 @@ public class PersonConfig implements Serializable {
 	 * Sets the job of a member of the alpha crew
 	 * 
 	 * @param index
-	 * 
 	 * @param job
 	 */
 	public void setPersonJob(int index, String value, int crew_id) {
@@ -1346,7 +1342,6 @@ public class PersonConfig implements Serializable {
 	 * Sets the country of a member of the alpha crew
 	 * 
 	 * @param index
-	 * 
 	 * @param country
 	 */
 	public void setPersonCountry(int index, String value, int crew_id) {
@@ -1358,7 +1353,6 @@ public class PersonConfig implements Serializable {
 	 * Sets the sponsor of a member of the alpha crew
 	 * 
 	 * @param index
-	 * 
 	 * @param sponsor
 	 */
 	public void setPersonSponsor(int index, String value, int crew_id) {
@@ -1370,7 +1364,6 @@ public class PersonConfig implements Serializable {
 	 * Sets the destination of a member of the alpha crew
 	 * 
 	 * @param index
-	 * 
 	 * @param destination
 	 */
 	public void setPersonDestination(int index, String value, int crew_id) {
@@ -1392,7 +1385,6 @@ public class PersonConfig implements Serializable {
 	 * @return map of natural attributes (empty map if not found).
 	 * @throws Exception if error in XML parsing.
 	 */
-	@SuppressWarnings("unchecked")
 	public Map<String, Integer> getNaturalAttributeMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		// Element root = personDoc.getRootElement();
@@ -1658,19 +1650,39 @@ public class PersonConfig implements Serializable {
 		return countries.indexOf(country);
 	}
 
-	public String convert2Sponsor(int id) {
+//	public String convert2Sponsor(int id) {
+//
+//		if (id == 0) {
+//			return Msg.getString("ReportingAuthorityType.CNSA");
+//		} else if (id == 1) {
+//			return Msg.getString("ReportingAuthorityType.CSA");
+//		} else if (id == 2) {
+//			return Msg.getString("ReportingAuthorityType.ISRO");
+//		} else if (id == 3) {
+//			return Msg.getString("ReportingAuthorityType.JAXA");
+//		} else if (id == 4) {
+//			return Msg.getString("ReportingAuthorityType.NASA");
+//		} else if (id == 5) {
+//			return Msg.getString("ReportingAuthorityType.RKA");
+//		} else {
+//			return Msg.getString("ReportingAuthorityType.ESA");
+//		}
+//
+//	}
 
-		if (id == 0) {
+	public String getSponsorFromCountry(String c) {
+
+		if (c.equalsIgnoreCase("China")) {
 			return Msg.getString("ReportingAuthorityType.CNSA");
-		} else if (id == 1) {
+		} else if (c.equalsIgnoreCase("Canada")) {
 			return Msg.getString("ReportingAuthorityType.CSA");
-		} else if (id == 2) {
+		} else if (c.equalsIgnoreCase("India")) {
 			return Msg.getString("ReportingAuthorityType.ISRO");
-		} else if (id == 3) {
+		} else if (c.equalsIgnoreCase("Japan")) {
 			return Msg.getString("ReportingAuthorityType.JAXA");
-		} else if (id == 4) {
+		} else if (c.equalsIgnoreCase("USA")) {
 			return Msg.getString("ReportingAuthorityType.NASA");
-		} else if (id == 5) {
+		} else if (c.equalsIgnoreCase("Russia")) {
 			return Msg.getString("ReportingAuthorityType.RKA");
 		} else {
 			return Msg.getString("ReportingAuthorityType.ESA");

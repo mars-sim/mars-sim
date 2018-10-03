@@ -1128,20 +1128,20 @@ public class ScenarioConfigEditorFX {
 
 		Iterator<SettlementBase> i = tableViewCombo.getSettlementBase().iterator();
 		while (i.hasNext()) {
-			SettlementBase settlement = i.next();
+			SettlementBase sb = i.next();
 
 			// Check that settlement name is valid.
-			if ((settlement.getName().trim() == null) || (settlement.getName().trim().isEmpty())
-					|| (settlement.getName().length() < 2) ) {
+			if ((sb.getName().trim() == null) || (sb.getName().trim().isEmpty())
+					|| (sb.getName().length() < 2) ) {
 				setError(Msg.getString("SimulationConfigEditor.error.nameMissing")); //$NON-NLS-1$
 			}
 
 			// Check if population is valid.
-			if ((settlement.getSettler().trim() == null) || (settlement.getSettler().trim().isEmpty())) {
+			if ((sb.getSettler().trim() == null) || (sb.getSettler().trim().isEmpty())) {
 				setError(Msg.getString("SimulationConfigEditor.error.populationMissing")); //$NON-NLS-1$
 			} else {
 				try {
-					int popInt = Integer.parseInt(settlement.getSettler().trim());
+					int popInt = Integer.parseInt(sb.getSettler().trim());
 					if (popInt < 0) {
 						setError(Msg.getString("SimulationConfigEditor.error.populationTooFew")); //$NON-NLS-1$
 					}
@@ -1152,11 +1152,11 @@ public class ScenarioConfigEditorFX {
 			}
 
 			// Check if number of robots is valid.
-			if ((settlement.getBot().trim() == null) || (settlement.getBot().trim().isEmpty())) {
+			if ((sb.getBot().trim() == null) || (sb.getBot().trim().isEmpty())) {
 				setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsMissing")); //$NON-NLS-1$
 			} else {
 				try {
-					int num = Integer.parseInt(settlement.getBot().trim());
+					int num = Integer.parseInt(sb.getBot().trim());
 					if (num < 0) {
 						setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsTooFew")); //$NON-NLS-1$
 					}

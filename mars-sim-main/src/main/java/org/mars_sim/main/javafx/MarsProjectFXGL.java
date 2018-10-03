@@ -274,6 +274,9 @@ public class MarsProjectFXGL extends GameApplication {
 				logger.info("Starting a new sim in GUI mode in " + Simulation.OS);
 				mainMenu.initMainMenu(getGameScene());
 
+				// Alert the user to see the interactive terminal 
+				logger.info("Please proceed to answering the question in the popped-up console.");
+
 				// Now in the Main Menu, wait for user to pick either options
 				// 1. 'New Sim' - call runOne(), go to ScenarioConfigEditorFX
 				// 2. 'Load Sim' -call runTwo(), need to call sim.runStartTask(false);

@@ -120,29 +120,38 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 //        printCountries();
 //        terminal.println();
         addCountryTask(textIO, "Country (0-27)", () -> contact.country, s -> contact.country = s);
-        addPhaseTask(textIO, "Settlement Phase (1-4)", () -> contact.phase, s -> contact.phase = s);	
-        
-        
+//        addPhaseTask(textIO, "Settlement Phase (1-4)", () -> contact.phase, s -> contact.phase = s);	
+     
 //        terminal.println(System.lineSeparator());
+             
+        setUpCountryKey();
+        setUpJobKey();
+        setUpUndoKey();
         
-        String keyJobs = "ctrl J";
+        terminal.println(System.lineSeparator() + "Commander's Profile: " + contact);
+        UnitManager.setCommander(true);
         
-        boolean isKeyJobs = terminal.registerHandler(keyJobs, t -> {
-            terminal.executeWithPropertiesPrefix("job",
-                    tt ->   {   
-			           	tt.print(System.lineSeparator() 
-			           		+ System.lineSeparator() 
-			           		+ "--------------List of Job Type --------------" 
-			           		+ System.lineSeparator());
-			        	tt.print(printJobs());   
-                    }
-            );
-            return new ReadHandlerData(ReadInterruptionStrategy.Action.RESTART).withRedrawRequired(true);
-        });
-        
-        if (isKeyJobs) {
-           	terminal.println("Press Ctrl-J to show a list of job type.");
-        }
+//        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to continue...\n");     
+//		textIO.dispose();
+
+    }
+    
+    public void setUpAbortKey() {
+
+//      String keyStrokeAbort = "alt Z";
+//      
+//      boolean registeredAbort = terminal.registerHandler(keyStrokeAbort,
+//              t -> new ReadHandlerData(ReadInterruptionStrategy.Action.ABORT)
+//                      .withPayload(System.getProperty("user.name", "nobody")));
+//      
+//      if (registeredAbort) {
+//          terminal.println("Press Alt-Z to abort the program.");
+//      }
+     
+ 
+    }
+    
+    public void setUpCountryKey() {
         
         String keyCountries = "ctrl C";
         
@@ -162,17 +171,31 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         if (isKeyCountries) {
            	terminal.println("Press Ctrl-C to show a list of countries.");
         }
+    }
+
+    public void setUpJobKey() {
+        String keyJobs = "ctrl J";
         
-//        String keyStrokeAbort = "alt Z";
-//        
-//        boolean registeredAbort = terminal.registerHandler(keyStrokeAbort,
-//                t -> new ReadHandlerData(ReadInterruptionStrategy.Action.ABORT)
-//                        .withPayload(System.getProperty("user.name", "nobody")));
-//        
-//        if (registeredAbort) {
-//            terminal.println("Press Alt-Z to abort the program.");
-//        }
-       
+        boolean isKeyJobs = terminal.registerHandler(keyJobs, t -> {
+            terminal.executeWithPropertiesPrefix("job",
+                    tt ->   {   
+			           	tt.print(System.lineSeparator() 
+			           		+ System.lineSeparator() 
+			           		+ "--------------List of Job Type --------------" 
+			           		+ System.lineSeparator());
+			        	tt.print(printJobs());   
+                    }
+            );
+            return new ReadHandlerData(ReadInterruptionStrategy.Action.RESTART).withRedrawRequired(true);
+        });
+        
+        if (isKeyJobs) {
+           	terminal.println("Press Ctrl-J to show a list of job type.");
+        }
+        
+    }
+
+    public void setUpUndoKey() {
         String backKeyStroke = "ctrl U";
         
         boolean registeredBackKeyStroke = terminal.registerHandler(backKeyStroke, t -> new ReadHandlerData(ABORT));
@@ -192,17 +215,9 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
             }
             step++;
         }
-        
-        
-        
-        terminal.println(System.lineSeparator() + "Commander's Profile: " + contact);
-        UnitManager.isProfileRetrieved = false;
-        
-//        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to continue...\n");     
-//		textIO.dispose();
 
-        
     }
+
     
     private void addString(TextIO textIO, String prompt, Supplier<String> defaultValueSupplier, Consumer<String> valueSetter) {
         operations.add(() -> valueSetter.accept(textIO.newStringInputReader()
@@ -239,13 +254,13 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
                 .read(prompt)));
     }
     
-    private void addPhaseTask(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
-        operations.add(() -> valueSetter.accept(textIO.newIntInputReader()
-                .withDefaultValue(1)
-                .withMinVal(1)
-                .withMaxVal(4)//defaultValueSupplier.get())
-                .read(prompt)));
-    }
+//    private void addPhaseTask(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
+//        operations.add(() -> valueSetter.accept(textIO.newIntInputReader()
+//                .withDefaultValue(1)
+//                .withMinVal(1)
+//                .withMaxVal(4)//defaultValueSupplier.get())
+//                .read(prompt)));
+//    }
     
     
     @Override
@@ -303,8 +318,9 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
             	   System.lineSeparator() + "   Gender: " + gender +
             	   System.lineSeparator() + "   Age: " + age +
             	   System.lineSeparator() + "   Job: " + JobType.getEditedJobString(job) +
-            	   System.lineSeparator() + "   Country: " + UnitManager.getCountryByID(country) + " (" + UnitManager.getSponsorByCountryID(country) + ")" +
-            	   System.lineSeparator() + "   Settlement Phase: " + phase;
+            	   System.lineSeparator() + "   Country: " + UnitManager.getCountryByID(country) + " (" + UnitManager.getSponsorByCountryID(country) + ")" 
+//            	   System.lineSeparator() + "   Settlement Phase: " + phase
+            	   ;
             
         }
     }

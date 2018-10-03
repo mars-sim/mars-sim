@@ -82,7 +82,7 @@ public class UnitManager implements Serializable {
 	// Data members
 	private int solCache = 0;
 
-	public static boolean isProfileRetrieved = true;	
+	public static boolean hasProposedCommander = false;	
 	
 	/** Collection of all units. */
 	private Collection<Unit> units;
@@ -138,9 +138,6 @@ public class UnitManager implements Serializable {
 	 * Constructor.
 	 */
 	public UnitManager() {
-		// logger.info("UnitManager's constructor is in " +
-		// Thread.currentThread().getName() + " Thread");
-
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
 
@@ -194,9 +191,14 @@ public class UnitManager implements Serializable {
 		// Create more robots to fill the settlement(s)
 		createInitialRobots();
 		// Create pre-configured settlers as stated in people.xml
-		createPreconfiguredPeople();
+		createPreconfiguredPeople();			
+		// Find the settlement match for the user proposed commander's sponsor 
+		if (hasProposedCommander)
+			matchSettlement();
 		// Create more settlers to fill the settlement(s)
 		createInitialPeople();
+		
+
 	}
 
 	/**
@@ -206,8 +208,6 @@ public class UnitManager implements Serializable {
 	 */
 	private void initializePersonNames() {
 		try {
-			// PersonConfig personConfig =
-			// SimulationConfig.instance().getPersonConfiguration();
 			List<String> personNames = personConfig.getPersonNameList();
 
 			personMaleNames = new ArrayList<String>();
@@ -293,8 +293,6 @@ public class UnitManager implements Serializable {
 	 */
 	private void initializeVehicleNames() {
 		try {
-			// VehicleConfig vehicleConfig =
-			// SimulationConfig.instance().getVehicleConfiguration();
 			vehicleNames = vehicleConfig.getRoverNameList();
 		} catch (Exception e) {
 			throw new IllegalStateException("rover names could not be loaded: " + e.getMessage(), e);
@@ -494,8 +492,6 @@ public class UnitManager implements Serializable {
 				// Add settlement's id called sid
 				// Add scenarioID
 				int scenarioID = settlementConfig.getInitialSettlementScenarioID(x);
-				// System.out.println("in unitManager, scenarioID is " +
-				// scenarioID);
 				addUnit(Settlement.createNewSettlement(name, scenarioID, template, sponsor, location, populationNumber,
 						initialNumOfRobots));
 
@@ -516,9 +512,7 @@ public class UnitManager implements Serializable {
 	private void createInitialVehicles() {
 
 		try {
-			// Iterator<Settlement> i = getSettlements().iterator();
-			// while (i.hasNext()) {
-			for (Settlement settlement : getSettlements()) {// = i.next();
+			for (Settlement settlement : getSettlements()) {
 				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 				Map<String, Integer> vehicleMap = template.getVehicles();
 				Iterator<String> j = vehicleMap.keySet().iterator();
@@ -552,14 +546,10 @@ public class UnitManager implements Serializable {
 	private void createInitialEquipment() {
 
 		try {
-			// Iterator<Settlement> i = getSettlements().iterator();
-			// while (i.hasNext()) {
-			for (Settlement settlement : getSettlements()) {// = i.next();
+			for (Settlement settlement : getSettlements()) {
 				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 				Map<String, Integer> equipmentMap = template.getEquipment();
-				// Iterator<String> j = equipmentMap.keySet().iterator();
-				// while (j.hasNext()) {
-				for (String type : equipmentMap.keySet()) {// = j.next();
+				for (String type : equipmentMap.keySet()) {
 					int number = (Integer) equipmentMap.get(type);
 					for (int x = 0; x < number; x++) {
 						Equipment equipment = EquipmentFactory.createEquipment(type, settlement.getCoordinates(),
@@ -690,9 +680,7 @@ public class UnitManager implements Serializable {
 				
 				while (!isUnique) {
 					int num = 0;
-//					if (gender == GenderType.MALE) {
-//						num = 0;
-//					} else 
+
 					if (gender == GenderType.FEMALE) {
 						num = 1;
 					}
@@ -947,13 +935,13 @@ public class UnitManager implements Serializable {
 						} else if (sponsor.contains("RKA")) { // if (type == ReportingAuthorityType.RKA) {
 							index = 6;
 
-						} else if (sponsor.contains("Mars Society")) {
+						} else if (sponsor.contains("Mars Society") || sponsor.contains("SpaceX")) {
 							index = 7;
 							skip = true;
 							fullname = getNewName(UnitType.PERSON, null, gender, null);
 
-						} else if (sponsor.contains("SpaceX")) {
-							index = 8;
+//						} else if (sponsor.contains("SpaceX")) {
+//							index = 8;
 
 						} else { // if belonging to the Mars Society
 							index = 7;
@@ -1102,13 +1090,11 @@ public class UnitManager implements Serializable {
 //		//electChief(settlement, RoleType.CHIEF_OF_SAFETY_N_HEALTH);
 //	}
 
-	/*
+	/**
 	 * Elect the commanders
 	 * 
 	 * @param settlement
-	 * 
 	 * @param role
-	 * 
 	 * @param pop
 	 */
 	public void electCommanders(Settlement settlement, RoleType role, int pop) {
@@ -1199,30 +1185,100 @@ public class UnitManager implements Serializable {
 		// TODO: look at other attributes and/or skills when comparing
 		// individuals
 		
-		// Check if the player is interested in becoming the commander
-		if (isProfileRetrieved) {
-			cc.setRole(RoleType.COMMANDER);
+		// Check if this settlement is the designated one for the user proposed commander
+		if (settlement.goCommander()) {
+			updateCommander(cc);
+			logger.info(cc + " will be assigned to " + settlement + " as its commander.");
 		}
+		
 		else {
-//			String oldName = cc.getName();
-//			GenderType oldGender = cc.getGender();
-			
-			String newName = getFullname();
-			String newGender = getGender();
-
-			// Set user as the commander 
-			cc.setName(newName);
-			cc.setGender(newGender);
-			cc.changeAge(getAge());
 			cc.setRole(RoleType.COMMANDER);
-			setJob(cc, getJob());
-			cc.setCountry(personConfig.getCountry(getCountry()));
-			isProfileRetrieved = true;
 		}
+		
+//		if (isProfileRetrieved) {
+//			cc.setRole(RoleType.COMMANDER);
+//		}
+//		
+//		else {
+//			
+//			String newCountry = personConfig.getCountry(getCountry()); 
+//			String newSponsor = personConfig.getSponsorFromCountry(newCountry);
+//			
+//			// If the user's commander has the sponsor that match this settlement's sponsor
+//			if (settlement.getSponsor().equals(newSponsor) || settlement.goCommander()) {
+////				String oldName = cc.getName();
+////				GenderType oldGender = cc.getGender();			
+//				String newName = getFullname();
+//				String newGender = getGender();
+//
+//				// Replace the commander 
+//				cc.setName(newName);
+//				cc.setGender(newGender);
+//				cc.changeAge(getAge());
+//				cc.setRole(RoleType.COMMANDER);
+//				setJob(cc, getJob());
+//				cc.setCountry(newCountry);
+//				cc.setSponsor(newSponsor);		
+//				isProfileRetrieved = true;
+//				
+//			}
+//		}
 		
 		if (pop >= POPULATION_WITH_SUB_COMMANDER)
 			cv.setRole(RoleType.SUB_COMMANDER);
 	}
+	
+	
+	public void updateCommander(Person cc) {
+		String newCountry = personConfig.getCountry(getCountry()); 
+		String newSponsor = personConfig.getSponsorFromCountry(newCountry);
+//		String oldName = cc.getName();
+//		GenderType oldGender = cc.getGender();			
+		String newName = getFullname();
+		String newGender = getGender();
+
+		// Replace the commander 
+		cc.setName(newName);
+		cc.setGender(newGender);
+		cc.changeAge(getAge());
+		cc.setRole(RoleType.COMMANDER);
+		setJob(cc, getJob());
+		cc.setCountry(newCountry);
+		cc.setSponsor(newSponsor);		
+//		isProfileRetrieved = true;
+		
+		System.out.println("updateCommander() : " + newCountry + "'s countryID : " + getCountryID(newCountry));
+	}
+	
+	
+	/**
+	 * Find the settlement match for the user proposed commander's sponsor 
+	 */
+	public void matchSettlement() {
+		
+		String country = personConfig.getCountry(getCountry()); 
+		String sponsor = personConfig.getSponsorFromCountry(country);
+		
+		List<Settlement> list = new ArrayList<>(getSettlements());
+		int size = getSettlements().size();
+		for (int j = 0; j < size; j++) {
+			Settlement s = list.get(j);		
+			// If the sponsors are a match
+			if (sponsor.equals(s.getSponsor()) ) {			
+				s.setGoCommander(true);
+				logger.info("'" + country + "' does have a settlement called '" + s + "'.");
+				return;
+			}
+			
+			// If this is the last settlement to examine
+			else if ((j == size - 1)) {			
+				s.setGoCommander(true);
+				logger.info("'" + country + "' doesn't have any settlements.");
+				return;
+			}
+		}			
+	}
+	
 	
 	public void setJob(Person p, int id) {
 		// Designate a specific job to a person
@@ -1238,23 +1294,25 @@ public class UnitManager implements Serializable {
 	public void establishSettlementGovernance(Settlement settlement) {
 
 		int popSize = settlement.getAllAssociatedPeople().size();
+		
 		if (popSize >= POPULATION_WITH_MAYOR) {
 			establishGovernment(settlement);
 		}
-		if (popSize >= 3) {
+		
+		else if (popSize >= 3) {
 			establishCommand(settlement, popSize);
 		}
+		
 		// else {
 		// establishMissionRoles(settlement);
 		// }
 	}
 
-	/*
+	/**
 	 * Determines the number of shifts for a settlement and assigns a work shift for
 	 * each person
 	 * 
 	 * @param settlement
-	 * 
 	 * @param pop population
 	 */
 	public void setupShift(Settlement settlement, int pop) {
@@ -1282,7 +1340,7 @@ public class UnitManager implements Serializable {
 
 	}
 
-	/*
+	/**
 	 * Establish the government in a settlement
 	 * 
 	 * @param settlement
@@ -1290,6 +1348,9 @@ public class UnitManager implements Serializable {
 	private void establishGovernment(Settlement settlement) {
 		electMayor(settlement, RoleType.MAYOR);
 
+		// Also need commander and subcommander
+		electCommanders(settlement, RoleType.COMMANDER, settlement.getInitialPopulation());
+				
 		electChief(settlement, RoleType.CHIEF_OF_AGRICULTURE);
 		electChief(settlement, RoleType.CHIEF_OF_ENGINEERING);
 		electChief(settlement, RoleType.CHIEF_OF_MISSION_PLANNING);
@@ -1300,11 +1361,10 @@ public class UnitManager implements Serializable {
 
 	}
 
-	/*
+	/**
 	 * Establish the mayor in a settlement
 	 * 
 	 * @param settlement
-	 * 
 	 * @param role
 	 */
 	public void electMayor(Settlement settlement, RoleType role) {
@@ -1346,11 +1406,10 @@ public class UnitManager implements Serializable {
 		}
 	}
 
-	/*
+	/**
 	 * Establish the chiefs in a settlement
 	 * 
 	 * @param settlement
-	 * 
 	 * @param role
 	 */
 	public void electChief(Settlement settlement, RoleType role) {
@@ -2176,7 +2235,7 @@ public class UnitManager implements Serializable {
 		
 	}
 	
-	/*
+	/**
 	 * Create the country list
 	 * 
 	 */
@@ -2232,15 +2291,15 @@ public class UnitManager implements Serializable {
 	 * 
 	 * @return true if the name is not null
 	 */
-	public boolean isProfileRetrieved() {
-		return isProfileRetrieved;
-	}
+//	public boolean isProfileRetrieved() {
+//		return isProfileRetrieved;
+//	}
 	
 	/**
 	 * Resets the commander's name back to null
 	 */
-	public void resetCommanderProfile() {
-		isProfileRetrieved = true;
+	public static void setCommander(boolean value) {
+		hasProposedCommander = value;
 	}
 	
 	/** Gets the commander's fullname */

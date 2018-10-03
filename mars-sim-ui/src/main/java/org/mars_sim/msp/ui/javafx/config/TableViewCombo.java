@@ -39,8 +39,8 @@ public class TableViewCombo {
     
     public static final int NUM_COLUMNS = 7;
     
-	private String[] headers = new String[]{"Settlement","Template","Settlers",
-            								"Bots","Sponsor","Latitude","Longitude"};
+	private String[] headers = new String[]{"Settlement", "Template", "Settlers",
+            								"Bots", "Sponsor", "Latitude", "Longitude"};
 
 	private static ReportingAuthorityType[] SPONSORS = ReportingAuthorityType.SPONSORS;
 
@@ -62,6 +62,8 @@ public class TableViewCombo {
 
 	private ScenarioConfigEditorFX editor;
 
+	private ListChangeListener<Object> listener;
+	
 	private int[] populations = new int[] {4, 8, 12, 24, 4, 4};
 
 	private int[] bots = new int[] {2, 4, 6, 12, 2, 2 };
@@ -131,10 +133,10 @@ public class TableViewCombo {
         		SPONSORS[4].toString(),
         		SPONSORS[5].toString(),
         		SPONSORS[6].toString(),
-        		SPONSORS[7].toString(),
-        		SPONSORS[8].toString()    		
+        		SPONSORS[7].toString()
+//        		SPONSORS[8].toString()    		
         		));
-        sponsorCol.setMinWidth(250);
+        sponsorCol.setMinWidth(300);
 
 
         latCol = new TableColumn<>(headers[5]);
@@ -150,9 +152,11 @@ public class TableViewCombo {
         longCol = setCellFactory(longCol);
         longCol.setMinWidth(70);
 
-        table_view.getColumns().addAll(nameCol,templateCol,settlerCol,botCol,sponsorCol,latCol, longCol);
+        table_view.getColumns().addAll(nameCol, templateCol ,settlerCol ,botCol ,sponsorCol ,latCol, longCol);
         table_view.getItems().addAll(generateDataInMap());
 
+		// attach a list change listener to allData
+		addListChangeListener();
     }
 
 	public TableColumn<SettlementBase, String> setCellFactory(TableColumn<SettlementBase, String> col) {
@@ -290,7 +294,7 @@ public class TableViewCombo {
 		//createObservableList(base);
 		allData.add(base);
 		// attach a list change listener to allData
-		//addListChangeLister();
+		addListChangeListener();
 		//table_view.refresh();
 		table_view.setItems(allData);
 	}
@@ -300,59 +304,84 @@ public class TableViewCombo {
 	//	allData.add(base);
 	//}
 
-	public void addListChangeLister() {
+	/**
+	 * Add a list change listener and watch for changes.
+	 */
+	public void removeListChangeListener() {
 
-	    allData.addListener(new ListChangeListener<Object>() {
+	    allData.removeListener(listener);
+	    
+	}
+	
+	/**
+	 * Add a list change listener and watch for changes.
+	 */
+	public void addListChangeListener() {
+
+	    listener = new ListChangeListener<Object>() {
 	    	@Override
-	    	public void onChanged(ListChangeListener.Change change) {
+	    	public void onChanged(ListChangeListener.Change<?> change) {
 	    		//System.out.println("onChange event: ");
 	    		while (change.next()) {
 	    			if (change.wasAdded() || change.wasPermutated() || change.wasReplaced() || change.wasUpdated()) {
-/*
-	    				ObservableList<SettlementBase> list = change.getList();
-	    				int i = change.getTo() - 1;
-	    				//System.out.println("i : " + i);
-	    				//String s = change.toString();
-	    				//System.out.println("s : " + s);
-	    				String name = list.get(i).getName().toString();
-
-
-	    				String template = list.get(i).getTemplate().toString();
-	    				String settler = list.get(i).getSettler().toString();
-	    				String bot = list.get(i).getBot().toString();
-	    				String sponsor = list.get(i).getSponsor().toString();
-	    				String latitude = list.get(i).getLatitude().toString();
-	    				String longitude = list.get(i).getLongitude().toString();
-
-    					//System.out.println("template : " + template);
-	    				int popNum = Integer.parseInt(settler);
-	    				int botNum = Integer.parseInt(bot);
-	    				//System.out.println("popNum : " + popNum);
-	    				//System.out.println("botNum : " + botNum);
-
-	    				if (template.equalsIgnoreCase(templates.get(i).getTemplateName()) && popNum > populations[i])
-	    					System.out.println("Warning : the # of settlers is more than the base can hold!");
-
-	    				if (template.equalsIgnoreCase(templates.get(i).getTemplateName()) && botNum > bots[i])
-	    					System.out.println("Warning : the # of bot is more than what the base is designed to support!");
-
-	    				//System.out.println("name : " + name);
-
-	    				if (editor.getStartButton() != null) {
-		    				if (name.contains("?")) {
-		    					System.out.println("invalid settlement name !");
-
-		    					editor.getStartButton().setDisable(true);
-		    				}
-		    				else
-		    					editor.getStartButton().setDisable(false);
+	    				ObservableList<SettlementBase> list = (ObservableList<SettlementBase>) change.getList();
+	    				//int i = change.getTo() - 1;
+//	    				//System.out.println("i : " + i);
+//	    				//String s = change.toString();
+//	    				//System.out.println("s : " + s);
+//	    				String name = list.get(i).getName().toString();
+//
+	    				for (int i=0 ; i< list.size(); i++) {
+		    				SettlementBase base = list.get(i);
+	
+		    				String name = list.get(i).getName().toString();
+		    				String template = list.get(i).getTemplate().toString();
+		    				String settler = list.get(i).getSettler().toString();
+		    				String bot = list.get(i).getBot().toString();
+		    				String sponsor = list.get(i).getSponsor().toString();
+		    				String latitude = list.get(i).getLatitude().toString();
+		    				String longitude = list.get(i).getLongitude().toString();
+		    				
+		    				base.setName(name);
+		    				base.setTemplate(template);
+		    				base.setSettler(settler);
+		    				base.setBot(bot);
+		    				base.setSponsor(sponsor);
+		    				base.setLatitude(latitude);
+		    				base.setLongitude(longitude);
+		    				
+		    				System.out.println("new sponsor : " + sponsor);
 	    				}
-*/
-
+//}
+//    					//System.out.println("template : " + template);
+//	    				int popNum = Integer.parseInt(settler);
+//	    				int botNum = Integer.parseInt(bot);
+//	    				//System.out.println("popNum : " + popNum);
+//	    				//System.out.println("botNum : " + botNum);
+//
+//	    				if (template.equalsIgnoreCase(templates.get(i).getTemplateName()) && popNum > populations[i])
+//	    					System.out.println("Warning : the # of settlers is more than the base can hold!");
+//
+//	    				if (template.equalsIgnoreCase(templates.get(i).getTemplateName()) && botNum > bots[i])
+//	    					System.out.println("Warning : the # of bot is more than what the base is designed to support!");
+//
+//	    				//System.out.println("name : " + name);
+//
+//	    				if (editor.getStartButton() != null) {
+//		    				if (name.contains("?")) {
+//		    					System.out.println("invalid settlement name !");
+//
+//		    					editor.getStartButton().setDisable(true);
+//		    				}
+//		    				else
+//		    					editor.getStartButton().setDisable(false);
+//	    				}
 	    			}
 	    		}
 	    	}
-	    });
+	    };
+	    
+	    allData.addListener(listener);
 	}
 
 	private ObservableList<SettlementBase> generateDataInMap() {
@@ -376,37 +405,35 @@ public class TableViewCombo {
 			settlements.add(base);
 
             allData.add(base);
-/*
-			List<String> texts = new ArrayList<>();
-			texts.add(base.getName());
-			texts.add(base.getTemplate());
-			texts.add(base.getSettler());
-			texts.add(base.getSettler());
-			texts.add(base.getSponsor());
-			texts.add(base.getLat());
-			texts.add(base.getLong());
 
-            Map<Integer, AutoFillTextBox> dataRow = new HashMap<>();
-
-			List<AutoFillTextBox> boxes = new ArrayList<>();
-			for (int j = 0; j < NUM_COLUMNS; j++) {
-				AutoFillTextBox b = null;
-				//if (j==4)
-				//	b = new AutoFillTextBox(createAutoCompleteData());
-				//else
-					b = new AutoFillTextBox();
-				b.setFilterMode(false);
-				b.getTextbox().setText(texts.get(j));
-				boxes.add(b);
-				dataRow.put(j, b);
-			}
-
-			//Iterator<AutoFillTextBox> i = boxes.iterator();
-			//while (i.hasNext()) {
-			//	AutoFillTextBox b = i.next();
-			//}
-*/
-
+//			List<String> texts = new ArrayList<>();
+//			texts.add(base.getName());
+//			texts.add(base.getTemplate());
+//			texts.add(base.getSettler());
+//			texts.add(base.getSettler());
+//			texts.add(base.getSponsor());
+//			texts.add(base.getLat());
+//			texts.add(base.getLong());
+//
+//            Map<Integer, AutoFillTextBox> dataRow = new HashMap<>();
+//
+//			List<AutoFillTextBox> boxes = new ArrayList<>();
+//			for (int j = 0; j < NUM_COLUMNS; j++) {
+//				AutoFillTextBox b = null;
+//				//if (j==4)
+//				//	b = new AutoFillTextBox(createAutoCompleteData());
+//				//else
+//					b = new AutoFillTextBox();
+//				b.setFilterMode(false);
+//				b.getTextbox().setText(texts.get(j));
+//				boxes.add(b);
+//				dataRow.put(j, b);
+//			}
+//
+//			//Iterator<AutoFillTextBox> i = boxes.iterator();
+//			//while (i.hasNext()) {
+//			//	AutoFillTextBox b = i.next();
+//			//}
 		}
 
         return allData;
@@ -417,14 +444,16 @@ public class TableViewCombo {
 	 * @param rowIndex the row index of the settlement to be removed.
 	 */
 	public void removeSettlement(int i) {
-	    //remove selected item from the table list
+	    // Remove selected item from the table list
         allData.remove(table_view.getItems().get(i));
-		// attach a list change listener to allData
-		//addListChangeLister();
-
+		// Remove the list change listener to allData
+        removeListChangeListener();
+//
+		// Attach the list change listener to allData
+		addListChangeListener();
+		
 		table_view.refresh();
 		table_view.setItems(allData);
-
 	}
 
 	/*
@@ -440,6 +469,8 @@ public class TableViewCombo {
 	 */
     private void recreateDefaultSettlements() {
 		settlements.clear();
+		// Remove the list change listener to allData
+        removeListChangeListener();
         // create a new instance of SettlementBase
 		SettlementBase base = new SettlementBase();
 		//SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
@@ -448,8 +479,8 @@ public class TableViewCombo {
 		for (int x = 0; x < size; x++) {
 			createARow(base, x);
 		}
-		// attach a list change listener to allData
-		//addListChangeLister();
+		// Attach a list change listener to allData
+		addListChangeListener();
     }
 
 
@@ -466,6 +497,8 @@ public class TableViewCombo {
 		base.setSponsor(allData.get(r).getSponsor().toString());
 		base.setLatitude(allData.get(r).getLatitude().toString());
 		base.setLongitude(allData.get(r).getLongitude().toString());
+
+		System.out.println("TableViewComobo : createARow : " + allData.get(r).getSponsor().toString());
 
 		settlements.add(base);
 		//createObservableList(base);
@@ -484,7 +517,31 @@ public class TableViewCombo {
 	public List<SettlementBase> getSettlementBase() {
 		return settlements;
 	}
-
+	
+//	public void setSponsor(String destination, String sponsor) {
+//		for (int i = 0; i < allData.size(); i++) {
+//			if (allData.get(i).getName().equals(destination)) {
+//				allData.get(i).setSponsor(sponsor);
+//			}
+//		}
+//	}
+	
+	public void setSameSponsor(String destination, String sponsor) {
+		for (int i = 0; i < allData.size(); i++) {
+			if (allData.get(i).getName().equals(destination)) {
+				allData.get(i).setSponsor(sponsor);
+			}
+		}
+	}
+		
+//	public void setSameDestination(String destination) {
+//		for (int i = 0; i < allData.size(); i++) {
+//			if (allData.get(i).getName().equals(destination)) {
+//				allData.get(i).setSponsor(sponsor);
+//			}
+//		}
+//	}
+	
 	public void destroy() {
 		table_view = null;
 		latCol = null;

@@ -7,9 +7,7 @@
 
 package org.mars_sim.msp.core.reportingAuthority;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -37,7 +35,8 @@ public enum ReportingAuthorityType {
 			NASA,
 			RKA,
 			MARS_SOCIETY,
-			SPACE_X};
+			SPACE_X
+			};
 
 	public static int numSponsors = SPONSORS.length;
 	private String name;

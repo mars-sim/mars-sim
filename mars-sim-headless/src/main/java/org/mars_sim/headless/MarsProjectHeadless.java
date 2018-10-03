@@ -54,7 +54,8 @@ public class MarsProjectHeadless {
 			// new Simulation(); // NOTE: NOT supposed to start another instance of the
 			// singleton Simulation
 			logger.info("Starting " + Simulation.title);
-			// headless mode
+			// Alert the user to see the interactive terminal 
+			logger.info("Please proceed to answering the question in the popped-up console.");
 			// Initialize the simulation.
 			initializeSimulation(args);
 

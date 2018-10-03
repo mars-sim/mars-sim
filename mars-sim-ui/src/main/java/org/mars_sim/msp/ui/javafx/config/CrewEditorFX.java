@@ -96,8 +96,9 @@ public class CrewEditorFX {
 
 	private boolean goodToGo = true;
 
-//	private String destinationStr;
-
+	private String destinationName;
+	private String sponsorName;
+	
 	private GridPane gridPane;
 
 	private JFXButton commitButton;
@@ -112,8 +113,10 @@ public class CrewEditorFX {
 	private List<JFXTextField> nameTF;
 	private List<SettlementBase> settlements;
 	private List<String> settlementNames = new ArrayList<String>();
-
+	private List<String> sponsorNames = new ArrayList<String>();
+	
 	private ObservableList<String> destinationsOList;
+	private ObservableList<String> sponsorsOList;
 
 	private Stage stage;
 
@@ -265,19 +268,16 @@ public class CrewEditorFX {
 		commitButton.setOnAction((event) -> {
 
 			goodToGo = true;
-
+			String destinationStr = (String) destinationCB.getValue();
+			destinationName = destinationStr;
+			
 			for (int i = 0; i < SIZE_OF_CREW; i++) {
-				// System.out.println(" i is " + i);
 				String nameStr = nameTF.get(i).getText().trim();
-				// System.out.println(" name is " + nameTF.get(i).getText());
 				// Added isBlank() and checking against invalid names
 				if (!isBlank(nameStr)) {
 					// update PersonConfig with the new name
 					personConfig.setPersonName(i, nameStr, ALPHA_CREW);
-					// System.out.println(" name is " +
-					// nameTF.get(i).getText());
 					goodToGo = true && goodToGo;
-					// System.out.println("goodToGo is "+ goodToGo);
 				} else {
 					Alert alert = new Alert(AlertType.ERROR, "A settler's name is invalid. Please double check again!");
 					alert.initOwner(stage);
@@ -285,65 +285,72 @@ public class CrewEditorFX {
 					alert.showAndWait();
 					goodToGo = false;
 					scenarioConfigEditorFX.disableStartButton();
-					// System.out.println("goodToGo is set to "+ goodToGo);
 					// event.consume();
-					// System.out.println("event is consumed");
 					nameTF.get(i).requestFocus();
-					// System.out.println("nameTF.get(i).getText() is " +
-					// nameTF.get(i).getText());
+
 					return;
 				}
 
-				// System.out.println("continue ");
 				String genderStr = genderList.get(i).getValue();
 				if (genderStr.equals("M"))
 					genderStr = "MALE";
 				else if (genderStr.equals("F"))
 					genderStr = "FEMALE";
-				// System.out.println(" gender is " + genderStr);
 				// update PersonConfig with the new gender
 				personConfig.setPersonGender(i, genderStr, ALPHA_CREW);
 
 				String personalityStr = getPersonality(i);
-				// System.out.println(" personality is " + personalityStr);
 				// update PersonConfig with the new personality
 				personConfig.setPersonPersonality(i, personalityStr, ALPHA_CREW);
 
-				// String jobStr = jobTF.get(i).getText();
 				String jobStr = (String) jobList.get(i).getValue();
-				// System.out.println(" job is " + jobStr);
-				// update PersonConfig with the new job
+
 				personConfig.setPersonJob(i, jobStr, ALPHA_CREW);
 
 				String sponsorStr = (String) sponsorList.get(i).getValue();
-				// String sponsorStr =
-				// personConfig.convert2Sponsor(personConfig.getCountryID(countryStr));
-				personConfig.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
+//				System.out.println("sponsorStr : " + sponsorStr);
 
+				personConfig.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
+				
 				String countryStr = (String) countryList.get(i).getValue();
 				if (!isBlank(countryStr)) {
-					// System.out.println(" country is " + countryStr);
-					// update PersonConfig with the new country
 					personConfig.setPersonCountry(i, countryStr, ALPHA_CREW);
 					goodToGo = true && goodToGo;
-					// System.out.println("goodToGo is "+ goodToGo);
 				} else {
 					goodToGo = false;
 				}
 
-				// Set up destination
-				// String destinationStr = (String)
-				// destinationsList.get(i).getValue();
-				String destinationStr = (String) destinationCB.getValue();
-
-				if (!isBlank(destinationStr))
+				if (!isBlank(destinationStr)) {
 					// update PersonConfig with the new destination
 					personConfig.setPersonDestination(i, destinationStr, ALPHA_CREW);
+
+				}
 				else {
 					goodToGo = false;
 				}
 			}
 
+			
+			boolean sameSponsor = false;
+			String s = "";
+			for (int i = 0; i < SIZE_OF_CREW; i++) {
+				if (i== 0) {
+					s = (String) sponsorList.get(i).getValue();
+				}
+				else if (s.equals( (String) sponsorList.get(i).getValue())) {
+					sameSponsor = true;
+				}
+			}
+			
+			if (sameSponsor) {
+				// Bring the changes back to the TableViewCombo?
+				scenarioConfigEditorFX.getTableViewCombo().setSameSponsor(destinationName, s);
+			}
+			else {
+				// Bring the changes back to the TableViewCombo?
+				scenarioConfigEditorFX.getTableViewCombo().setSameSponsor(destinationName, "Varied");				
+			}
+			
 			// System.out.println("goodToGo is "+ goodToGo);
 			if (goodToGo) {
 				scenarioConfigEditorFX.setCrewEditorOpen(false);
@@ -448,7 +455,6 @@ public class CrewEditorFX {
 	/*
 	 * Validates and saves the current alpha crew configuration
 	 */
-	// 2015-10-19 Added validateRecordChange
 	// public void validateRecordChange(ActionEvent event) {}
 
 	/**
@@ -469,7 +475,6 @@ public class CrewEditorFX {
 	 * @since 2.0
 	 * @author commons.apache.org
 	 */
-	// 2015-10-19 Added isBlank()
 	public static boolean isBlank(String str) {
 		int strLen;
 		if (str == null || (strLen = str.length()) == 0) {
@@ -572,7 +577,11 @@ public class CrewEditorFX {
 
 		return cb;
 	}
-
+	
+	/**
+	 * Set up crew gender
+	 * @param
+	 */
 	public void setUpCrewGender() {
 
 		String s[] = new String[SIZE_OF_CREW];
@@ -594,7 +603,10 @@ public class CrewEditorFX {
 		}
 	}
 
-	// 2015-10-07 Revised setUpCrewPersonality()
+	/**
+	 * Set up crew personality
+	 * @param col
+	 */
 	public void setUpCrewPersonality(int col) {
 		// String n[] = new String[SIZE_OF_CREW];
 
@@ -799,7 +811,7 @@ public class CrewEditorFX {
 				if (oldValue != newValue && newValue != null) {
 
 					String sponsor = (String) newValue;
-					// System.out.println("sponsor is " + sponsor);
+
 					int code = -1;
 					List<String> list = new ArrayList<>();
 
@@ -811,10 +823,10 @@ public class CrewEditorFX {
 						list.add("India"); // 2
 					else if (sponsor.contains("JAXA"))
 						list.add("Japan"); // 3
-					else if (sponsor.contains("MS"))
+					else if (sponsor.contains("MS") || sponsor.contains("SpaceX"))
 						code = 0;
 					else if (sponsor.contains("NASA"))
-						list.add("US"); // 4
+						list.add("USA"); // 4
 					else if (sponsor.contains("RKA"))
 						list.add("Russia"); // 5
 					else if (sponsor.contains("ESA"))
@@ -841,16 +853,23 @@ public class CrewEditorFX {
 
 	public void setUpCrewSponsor() {
 
-		String n[] = new String[SIZE_OF_CREW];
+//		String n[] = new String[SIZE_OF_CREW];
 
 		for (int i = 0; i < SIZE_OF_CREW; i++) {
-			n[i] = personConfig.getConfiguredPersonSponsor(i, ALPHA_CREW);
+			String sponsor = personConfig.getConfiguredPersonSponsor(i, ALPHA_CREW);
+
+			if (!sponsor.equals(sponsorName)) {
+				sponsor = sponsorName;
+			}
+				
 			JFXComboBox<String> g = setUpCB(SPONSOR_ROW, i); // 4 = sponsor
 			// g.setMaximumRowCount(8);
 			gridPane.add(g, i + 1, SPONSOR_ROW); // sponsor's row = 4
-			g.setValue(n[i]);
+			g.setValue(sponsor);//n[i]);
 			sponsorList.add(i, g);
+			
 		}
+
 	}
 
 	public JFXComboBox<String> setUpCountryCB(int index) {
@@ -892,14 +911,14 @@ public class CrewEditorFX {
 
 	public JFXComboBox<String> setUpDestinationCB() {
 
-		setupSettlementNames();
+		retrieveFromTable();
 		// destinationsOListComboBox = new JFXComboBox<String>(destinationsOList);
 		destinationsOListComboBox.setItems(destinationsOList);
 
 		return destinationsOListComboBox;
 	}
 
-	public void setupSettlementNames() {
+	public void retrieveFromTable() {
 		// TODO: how to properly sense the change and rebuild the combobox
 		// real-time?
 		// settlements =
@@ -910,14 +929,27 @@ public class CrewEditorFX {
 
 		for (int i = 0; i < settlements.size(); i++) {
 			settlementNames.add(settlements.get(i).getName());
+			sponsorNames.add(settlements.get(i).getSponsor());
+			
+			if (settlements.get(i).getTemplate().equals("Mars Direct Base (Phase 1)")
+					&& settlements.get(i).getName().equals("Schiaparelli Point")) {
+				sponsorName = settlements.get(i).getSponsor();
+			}
+			else if (settlements.get(i).getTemplate().equals("Mars Direct Base (Phase 1)")) {
+				sponsorName = settlements.get(i).getSponsor();
+			}
+			
+			// TODO: what to do if the template "Mars Direct Base (Phase 1)" is NOT selected ?
 		}
 
 		destinationsOList = FXCollections.observableArrayList(settlementNames);
+		sponsorsOList = FXCollections.observableArrayList(sponsorNames);
+
 	}
 
 	public void updateSettlementNames() {
 
-		setupSettlementNames();
+		retrieveFromTable();
 
 		destinationsOListComboBox.getItems().clear();
 		destinationsOListComboBox.setItems(destinationsOList);

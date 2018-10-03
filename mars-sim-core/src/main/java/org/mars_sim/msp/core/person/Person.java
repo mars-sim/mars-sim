@@ -1232,7 +1232,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param name new name
 	 */
 	public void setName(String newName) {
-		logger.info("Replace the previous commander '" + name + "' with '" + newName + "' in " + associatedSettlement + ".");
+		if (!name.equals(newName))
+			logger.info("Replace the previous commander '" + name + "' with '" + newName + "' in " + associatedSettlement + ".");
 		this.name = newName;
 		super.setName(newName);
 		super.setDescription(associatedSettlement.getName());

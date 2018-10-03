@@ -173,7 +173,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/** The maximum distance the rovers are allowed to travel */
 	private double maxMssionRange = 800;
 
-	// Added foodProductionOverride
+	/** The flag signifying this settlement as the destination of the user customized commander. */ 
+	private boolean goCommander = false;	
+	/** Override flag for food production. */
 	private boolean foodProductionOverride = false;
 	// private boolean reportSample = true;
 	/** Override flag for mission creation at settlement. */
@@ -3317,6 +3319,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		maxMssionRange = value;
 	}
 
+	public boolean goCommander() {
+		return goCommander;
+	}
+	
+	public void setGoCommander(boolean value) {
+		goCommander = value;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

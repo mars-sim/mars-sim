@@ -334,7 +334,7 @@ implements Transportable, Serializable {
                 }
             }
 
-			// 2016-12-21 Added calling updateAllAssociatedPeople(), not getAllAssociatedPeople()()
+			// Call updateAllAssociatedPeople(), not getAllAssociatedPeople()()
 			newSettlement.updateAllAssociatedPeople();
 			newSettlement.updateAllAssociatedRobots();
 
