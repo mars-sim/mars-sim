@@ -16,8 +16,8 @@ import org.mars_sim.msp.core.time.MarsClock;
 
 public class Role implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	private Person person;
 
@@ -25,12 +25,12 @@ public class Role implements Serializable {
 
 	private RoleType roleType;
 
-    private Map<RoleType, MarsClock> roleHistory = new ConcurrentHashMap<>();
+	private Map<RoleType, MarsClock> roleHistory = new ConcurrentHashMap<>();
 
-    // TODO: Use more methods of parallel operation in ConcurrentHashMap.
-    // see https://dzone.com/articles/concurrenthashmap-in-java8
-    // see https://dzone.com/articles/how-concurrenthashmap-works-internally-in-java
-    // see https://dzone.com/articles/concurrenthashmap-isnt-always-enough
+	// TODO: Use more methods of parallel operation in ConcurrentHashMap.
+	// see https://dzone.com/articles/concurrenthashmap-in-java8
+	// see https://dzone.com/articles/how-concurrenthashmap-works-internally-in-java
+	// see https://dzone.com/articles/concurrenthashmap-isnt-always-enough
 
 	public Role(Person person) {
 		this.person = person;
@@ -39,6 +39,7 @@ public class Role implements Serializable {
 
 	/**
 	 * Gets the type of role.
+	 * 
 	 * @return role type
 	 */
 	public RoleType getType() {
@@ -47,49 +48,51 @@ public class Role implements Serializable {
 
 	/**
 	 * Releases the old role type.
+	 * 
 	 * @param role type
 	 */
 	public void relinquishOldRoleType(RoleType oldType) {
 
 		if (oldType != null) {
-		    person.getAssociatedSettlement().getChainOfCommand().releaseRoleTypeMap(oldType);
+			person.getAssociatedSettlement().getChainOfCommand().releaseRoleTypeMap(oldType);
 		}
 	}
 
 	/**
 	 * Sets new role type.
+	 * 
 	 * @param role type
 	 */
 	public void setNewRoleType(RoleType newType) {
-        RoleType oldType = roleType;//getType();
+		RoleType oldType = roleType;// getType();
 
-	    if (newType != oldType) {
-	        this.roleType = newType;
-	        person.getAssociatedSettlement().getChainOfCommand().addRoleTypeMap(newType);
-	        person.fireUnitUpdate(UnitEventType.ROLE_EVENT, newType);
-	        relinquishOldRoleType(oldType);
+		if (newType != oldType) {
+			this.roleType = newType;
+			person.getAssociatedSettlement().getChainOfCommand().addRoleTypeMap(newType);
+			person.fireUnitUpdate(UnitEventType.ROLE_EVENT, newType);
+			relinquishOldRoleType(oldType);
 
-	       	// 2016-05-02 Added saving roleHistory
-	       	if (clock == null)
-        		clock = Simulation.instance().getMasterClock().getMarsClock();
-	       	roleHistory.put(newType, clock);
-	    }
-/*
-		if (type == RoleType.SAFETY_SPECIALIST)
-			person.getSettlement().getChainOfCommand().addRole(type);
-		else if (type == RoleType.ENGINEERING_SPECIALIST)
-			person.getSettlement().addEngr();
-		else if (type == RoleType.RESOURCE_SPECIALIST)
-			person.getSettlement().addResource();
-		else if (type == RoleType.MISSION_SPECIALIST)
-			person.getSettlement().addMission();
-		else if (type == RoleType.SCIENCE_SPECIALIST)
-			person.getSettlement().addScience();
-		else if (type == RoleType.LOGISTIC_SPECIALIST)
-			person.getSettlement().addLogistic();
-		else if (type == RoleType.AGRICULTURE_SPECIALIST)
-			person.getSettlement().addAgri();
-*/
+			// Add saving roleHistory
+			if (clock == null)
+				clock = Simulation.instance().getMasterClock().getMarsClock();
+			roleHistory.put(newType, clock);
+		}
+
+//		if (type == RoleType.SAFETY_SPECIALIST)
+//			person.getSettlement().getChainOfCommand().addRole(type);
+//		else if (type == RoleType.ENGINEERING_SPECIALIST)
+//			person.getSettlement().addEngr();
+//		else if (type == RoleType.RESOURCE_SPECIALIST)
+//			person.getSettlement().addResource();
+//		else if (type == RoleType.MISSION_SPECIALIST)
+//			person.getSettlement().addMission();
+//		else if (type == RoleType.SCIENCE_SPECIALIST)
+//			person.getSettlement().addScience();
+//		else if (type == RoleType.LOGISTIC_SPECIALIST)
+//			person.getSettlement().addLogistic();
+//		else if (type == RoleType.AGRICULTURE_SPECIALIST)
+//			person.getSettlement().addAgri();
+
 	}
 
 	/**

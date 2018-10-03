@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
@@ -79,6 +80,10 @@ public class UnitManager implements Serializable {
 	public static final int POPULATION_WITH_COMMANDER = 4;
 	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
 
+	public static final String PERSON_NAME = "Person";
+	public static final String VEHICLE_NAME = "Vehicle";
+	public static final String SETTLEMENT_NAME = "Settlement";
+	
 	// Data members
 	private int solCache = 0;
 
@@ -363,7 +368,7 @@ public class UnitManager implements Serializable {
 			while (si.hasNext()) {
 				usedNames.add(si.next().getName());
 			}
-			unitName = "Settlement";
+			unitName = SETTLEMENT_NAME;
 
 		} else if (unitType == UnitType.VEHICLE) {
 			if (baseName != null) {
@@ -380,7 +385,7 @@ public class UnitManager implements Serializable {
 				while (vi.hasNext()) {
 					usedNames.add(vi.next().getName());
 				}
-				unitName = "Vehicle";
+				unitName = VEHICLE_NAME;
 			}
 
 		} else if (unitType == UnitType.PERSON) {
@@ -395,7 +400,7 @@ public class UnitManager implements Serializable {
 			while (pi.hasNext()) {
 				usedNames.add(pi.next().getName());
 			}
-			unitName = "Person";
+			unitName = PERSON_NAME;
 
 		} else if (unitType == UnitType.ROBOT) {
 
@@ -792,7 +797,6 @@ public class UnitManager implements Serializable {
 			if (bigFiveMap != null) {
 				for (String type : bigFiveMap.keySet()) {
 					int value = bigFiveMap.get(type);
-					// System.out.println(type + " : " + value);
 					person.getMind().getTraitManager().setPersonalityTrait(PersonalityTraitType.fromString(type),
 							value);
 				}
@@ -908,34 +912,35 @@ public class UnitManager implements Serializable {
 						List<String> male_first_list = new ArrayList<>();
 						List<String> female_first_list = new ArrayList<>();
 
-						if (sponsor.contains("CNSA")) { // if (type == ReportingAuthorityType.CNSA) {
+						if (sponsor.contains(ReportingAuthorityType.CNSA.getName())) { // if (type == ReportingAuthorityType.CNSA) {
 							index = 0;
 
-						} else if (sponsor.contains("CSA")) {// if (type == ReportingAuthorityType.CSA) {
+						} else if (sponsor.contains(ReportingAuthorityType.CSA.getName())) {// if (type == ReportingAuthorityType.CSA) {
 							index = 1;
 
-						} else if (sponsor.contains("ESA")) {// if (type == ReportingAuthorityType.ESA) {
+						} else if (sponsor.contains(ReportingAuthorityType.ESA.getName())) {// if (type == ReportingAuthorityType.ESA) {
 							index = 2;
-							// System.out.println("country is " + country);
+
 							int countryID = getCountryID(country);
-							// System.out.println("countryID is " + countryID);
+
 							last_list = lastNamesByCountry.get(countryID);
 							male_first_list = maleFirstNamesByCountry.get(countryID);
 							female_first_list = femaleFirstNamesByCountry.get(countryID);
 
-						} else if (sponsor.contains("ISRO")) {// if (type == ReportingAuthorityType.ISRO) {
+						} else if (sponsor.contains(ReportingAuthorityType.ISRO.getName())) {// if (type == ReportingAuthorityType.ISRO) {
 							index = 3;
 
-						} else if (sponsor.contains("JAXA")) {// if (type == ReportingAuthorityType.JAXA) {
+						} else if (sponsor.contains(ReportingAuthorityType.JAXA.getName())) {// if (type == ReportingAuthorityType.JAXA) {
 							index = 4;
 
-						} else if (sponsor.contains("NASA")) {// if (type == ReportingAuthorityType.NASA) {
+						} else if (sponsor.contains(ReportingAuthorityType.NASA.getName())) {// if (type == ReportingAuthorityType.NASA) {
 							index = 5;
 
-						} else if (sponsor.contains("RKA")) { // if (type == ReportingAuthorityType.RKA) {
+						} else if (sponsor.contains(ReportingAuthorityType.RKA.getName())) { // if (type == ReportingAuthorityType.RKA) {
 							index = 6;
 
-						} else if (sponsor.contains("Mars Society") || sponsor.contains("SpaceX")) {
+						} else if (sponsor.contains(ReportingAuthorityType.MARS_SOCIETY.getName())
+								 || sponsor.contains(ReportingAuthorityType.SPACE_X.getName())) {
 							index = 7;
 							skip = true;
 							fullname = getNewName(UnitType.PERSON, null, gender, null);
@@ -976,7 +981,7 @@ public class UnitManager implements Serializable {
 						Iterator<String> k = existingfullnames.iterator();
 						while (k.hasNext()) {
 							String n = k.next();
-//							System.out.println("n is "+ n + "   fullname is " + fullname);
+
 							if (n.equals(fullname)) {
 								isUniqueName = false;
 								logger.info(fullname + " is a duplicate name. Choose another one.");
@@ -1060,12 +1065,12 @@ public class UnitManager implements Serializable {
 	}
 
 	/**
-	 * Establish a command structure for the settlement
+	 * Establish a command and control (C2) structure for the settlement
 	 * 
 	 * @param settlement
 	 * @param pop
 	 */
-	private void establishCommand(Settlement settlement, int pop) {
+	private void establishC2(Settlement settlement, int pop) {
 
 		electCommanders(settlement, RoleType.COMMANDER, pop);
 		// pop < POPULATION_WITH_MAYOR
@@ -1247,7 +1252,7 @@ public class UnitManager implements Serializable {
 		cc.setSponsor(newSponsor);		
 //		isProfileRetrieved = true;
 		
-		System.out.println("updateCommander() : " + newCountry + "'s countryID : " + getCountryID(newCountry));
+//		System.out.println("updateCommander() : " + newCountry + "'s countryID : " + getCountryID(newCountry));
 	}
 	
 	
@@ -1300,12 +1305,9 @@ public class UnitManager implements Serializable {
 		}
 		
 		else if (popSize >= 3) {
-			establishCommand(settlement, popSize);
+			establishC2(settlement, popSize);
 		}
-		
-		// else {
-		// establishMissionRoles(settlement);
-		// }
+
 	}
 
 	/**
@@ -1333,7 +1335,7 @@ public class UnitManager implements Serializable {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 
 		for (Person p : people) {
-			// shiftType = settlement.getAnEmptyWorkShift(pop); // keep pop as a param just
+			// keep pop as a param just
 			// to speed up processing
 			p.setShiftType(settlement.getAnEmptyWorkShift(pop));
 		}
@@ -1348,7 +1350,7 @@ public class UnitManager implements Serializable {
 	private void establishGovernment(Settlement settlement) {
 		electMayor(settlement, RoleType.MAYOR);
 
-		// Also need commander and subcommander
+		// Need commander and subcommander for operations
 		electCommanders(settlement, RoleType.COMMANDER, settlement.getInitialPopulation());
 				
 		electChief(settlement, RoleType.CHIEF_OF_AGRICULTURE);
@@ -1413,7 +1415,6 @@ public class UnitManager implements Serializable {
 	 * @param role
 	 */
 	public void electChief(Settlement settlement, RoleType role) {
-		// System.out.println("role is "+ role);
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 
 		RoleType specialty = null;
@@ -1507,7 +1508,6 @@ public class UnitManager implements Serializable {
 		}
 		if (chief != null) {
 			chief.setRole(role);
-			// System.out.println("Chief is "+ chief.getName());
 		}
 	}
 
@@ -1521,23 +1521,16 @@ public class UnitManager implements Serializable {
 		// Create all configured robot.
 		for (int x = 0; x < size; x++) {
 			boolean isDestinationChange = false;
-			// System.out.println("x is "+ x);
 			// Get robot's name (required)
 			String name = robotConfig.getConfiguredRobotName(x);
 			if (name == null) {
 				throw new IllegalStateException("Robot name is null");
 			}
-			// System.out.println("name is "+ name);
-
 			// Get robotType
-			// RobotType robotType = getABot(size);
 			RobotType robotType = robotConfig.getConfiguredRobotType(x);
-			// System.out.println("robotType is "+ robotType.getName());
-
 			// Get robot's settlement or randomly determine it if not
 			// configured.
 			String preConfigSettlementName = robotConfig.getConfiguredRobotSettlement(x);
-			// System.out.println("settlementName is " + settlementName);
 			Settlement settlement = null;
 			if (preConfigSettlementName != null) {
 				Collection<Settlement> col = CollectionUtils.getSettlement(units);
@@ -1572,7 +1565,6 @@ public class UnitManager implements Serializable {
 			if (settlement != null) {
 				// Set robot's job (if any).
 				String jobName = robotConfig.getConfiguredRobotJob(x);
-				// System.out.println("jobName is "+jobName);
 				if (jobName != null) {
 					String templateName = settlement.getTemplate();
 
@@ -1586,8 +1578,6 @@ public class UnitManager implements Serializable {
 
 					if (proceed) {
 						// Create robot and add to the unit manager.
-						// Robot robot = new Robot(name, robotType, "Mars", settlement,
-						// settlement.getCoordinates());
 						// Adopt Static Factory Method and Factory Builder Pattern
 						Robot robot = Robot.create(name, settlement, robotType).setCountry("Earth").build();
 						robot.initialize();
@@ -1596,10 +1586,7 @@ public class UnitManager implements Serializable {
 						if (isDestinationChange)
 							logger.log(Level.INFO, name + " is being sent to " + settlement + " since "
 									+ preConfigSettlementName + " doesn't exist.");
-						// System.out.println("UnitManager : createConfiguredRobots() :
-						// a robot is added !");
-						// System.out.println("robotType is "+robotType.toString());
-
+	
 						RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
 						if (robotJob != null) {
 							robot.getBotMind().setRobotJob(robotJob, true);
@@ -1649,25 +1636,16 @@ public class UnitManager implements Serializable {
 				while (settlement.getNumCurrentRobots() < initial) {
 					// Get a robotType randomly
 					RobotType robotType = getABot(settlement, initial);
-
-					// System.out.println("robotType is "+robotType.toString());
-					// Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType),
-					// robotType, "Mars",
-					// settlement, settlement.getCoordinates());
 					// Adopt Static Factory Method and Factory Builder Pattern
 					Robot robot = Robot.create(getNewName(UnitType.ROBOT, null, null, robotType), settlement, robotType)
 							.setCountry("Earth").build();
 					robot.initialize();
 
 					addUnit(robot);
-					// System.out.println("UnitManager : createInitialRobots() :
-					// a robot is added in " + settlement);
 
 					String jobName = RobotJob.getName(robotType);
 					if (jobName != null) {
-						// RobotJob robotJob = JobManager.getRobotJob(jobName);
 						RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
-						// System.out.println("jobName is "+jobName);
 						if (robotJob != null) {
 							robot.getBotMind().setRobotJob(robotJob, true);
 						}
@@ -1889,8 +1867,7 @@ public class UnitManager implements Serializable {
 	private void createConfiguredRelationships(List<Person> personList) {
 
 		int size = personConfig.getNumberOfConfiguredPeople();
-		
-		
+			
 		// Create all configured people relationships.
 		for (int x = 0; x < size; x++) {
 			try {
@@ -2187,23 +2164,23 @@ public class UnitManager implements Serializable {
 
 	public String getCountry(String sponsor) {
 
-		if (sponsor.contains("CNSA"))// .equals(Msg.getString("ReportingAuthorityType.CNSA")))
+		if (sponsor.contains(ReportingAuthorityType.CNSA.getName()))
 			return "China";
-		else if (sponsor.contains("CSA"))// .equals(Msg.getString("ReportingAuthorityType.CSA")))
+		else if (sponsor.contains(ReportingAuthorityType.CSA.getName()))
 			return "Canada";
-		else if (sponsor.contains("ESA"))// .equals(Msg.getString("ReportingAuthorityType.ESA")))
+		else if (sponsor.contains(ReportingAuthorityType.ESA.getName()))
 			return countries.get(RandomUtil.getRandomInt(6, 27));
-		else if (sponsor.contains("ISRO"))// .equals(Msg.getString("ReportingAuthorityType.ISRO")))
+		else if (sponsor.contains(ReportingAuthorityType.ISRO.getName()))
 			return "India";
-		else if (sponsor.contains("JAXA"))// .equals(Msg.getString("ReportingAuthorityType.JAXA")))
+		else if (sponsor.contains(ReportingAuthorityType.JAXA.getName()))
 			return "Japan";
-		else if (sponsor.contains("NASA"))// .equals(Msg.getString("ReportingAuthorityType.NASA")))
+		else if (sponsor.contains(ReportingAuthorityType.NASA.getName()))
 			return "USA";
-		else if (sponsor.contains("RKA"))// .equals(Msg.getString("ReportingAuthorityType.RKA")))
+		else if (sponsor.contains(ReportingAuthorityType.RKA.getName()))
 			return "Russia";
-		else if (sponsor.contains("MS"))
+		else if (sponsor.contains(ReportingAuthorityType.MARS_SOCIETY.getName()))
 			return "USA";
-		else if (sponsor.contains("SpaceX"))
+		else if (sponsor.contains(ReportingAuthorityType.SPACE_X.getName()))
 			return "USA";
 		else
 			return "USA";
@@ -2227,7 +2204,7 @@ public class UnitManager implements Serializable {
 		else if (id == 3)
 			return "JAXA";
 		else if (id == 4)
-			return "NASA";
+			return "NASA"; // MS or SpaceX
 		else if (id == 5)			
 			return "RKA";	
 		else

@@ -39,6 +39,7 @@ public enum ReportingAuthorityType {
 			};
 
 	public static int numSponsors = SPONSORS.length;
+	
 	private String name;
 	
 	private static Set<ReportingAuthorityType> sponsorSet;

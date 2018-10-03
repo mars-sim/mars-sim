@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.reportingAuthority.MarsSocietyMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.NASAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.RKAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -519,28 +520,28 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void assignReportingAuthority() {
 		if (ra == null) {
-			if (sponsor.contains("CNSA")) {
+			if (sponsor.contains(ReportingAuthorityType.CNSA.getName())) {
 				ra = CNSAMissionControl.createMissionControl(); // ProspectingMineral
 
-			} else if (sponsor.contains("CSA")) {
+			} else if (sponsor.contains(ReportingAuthorityType.CSA.getName())) {
 				ra = CSAMissionControl.createMissionControl(); // AdvancingSpaceKnowledge
 
-			} else if (sponsor.contains("ESA")) {
+			} else if (sponsor.contains(ReportingAuthorityType.ESA.getName())) {
 				ra = ESAMissionControl.createMissionControl(); // DevelopingSpaceActivity;
 
-			} else if (sponsor.contains("ISRO")) {
+			} else if (sponsor.contains(ReportingAuthorityType.ISRO.getName())) {
 				ra = ISROMissionControl.createMissionControl(); // DevelopingAdvancedTechnology
 
-			} else if (sponsor.contains("JAXA")) {
+			} else if (sponsor.contains(ReportingAuthorityType.JAXA.getName())) {
 				ra = JAXAMissionControl.createMissionControl(); // ResearchingSpaceApplication
 
-			} else if (sponsor.contains("NASA")) {
+			} else if (sponsor.contains(ReportingAuthorityType.NASA.getName())) {
 				ra = NASAMissionControl.createMissionControl(); // FindingLife
 
-			} else if (sponsor.contains("MS")) {
+			} else if (sponsor.contains(ReportingAuthorityType.MARS_SOCIETY.getName())) {
 				ra = MarsSocietyMissionControl.createMissionControl(); // SettlingMars
 
-			} else if (sponsor.contains("RKA")) {
+			} else if (sponsor.contains(ReportingAuthorityType.RKA.getName())) {
 				ra = RKAMissionControl.createMissionControl(); // ResearchingHealthHazard
 
 			} else {

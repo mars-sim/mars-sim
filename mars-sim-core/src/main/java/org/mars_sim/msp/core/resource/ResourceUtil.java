@@ -199,7 +199,7 @@ public class ResourceUtil implements Serializable {
 		savedARs();
     }
 
-    public void initializeSavedSim() {
+    public void prep4ResourcesSavedSim() {
     	// Restores the saved ARs references
     	restoreSavedARs();
 		mapARs();

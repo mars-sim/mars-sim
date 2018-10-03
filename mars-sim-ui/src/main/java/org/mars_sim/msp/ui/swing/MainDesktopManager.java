@@ -65,11 +65,13 @@ class MainDesktopManager extends DefaultDesktopManager {
 			if (f != null)
 				f.setBounds(boundedX, boundedY, newWidth, newHeight);
 		} else {
-			f.setBounds(newX, newY, newWidth, newHeight);
+			if (f != null)
+				f.setBounds(newX, newY, newWidth, newHeight);
 		}
 
 		if (hitBoundary) {
-			f.validate();
+			if (f != null)
+				f.validate();
 		}
 
 	}
