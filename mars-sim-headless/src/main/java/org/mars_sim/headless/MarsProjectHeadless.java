@@ -111,18 +111,23 @@ public class MarsProjectHeadless {
 			try {
 				// Initialize the simulation.
 				SimulationConfig.loadConfig();
+				
 				Simulation.createNewSimulation(userTimeRatio);
+				
 				handleLoadDefaultSimulation();
+				// Initialize interactive terminal and load menu
+				initTerminal();
 
 				// FIXME : make it work
 			} catch (Exception e) {
 				showError("Could not load the desired simulation. Staring a new Simulation instead. ", e);
 				handleNewSimulation(userTimeRatio);
 				result = true;
+				// Load the menu choice
+				sim.getTerm().loadTerminalMenu();
 			}
 			
-			// Initialize interactive terminal and load menu
-			initTerminal();
+
 		} 
 		
 		else {
@@ -195,15 +200,15 @@ public class MarsProjectHeadless {
 		try {
 			SimulationConfig.loadConfig();
 
-			sim.destroyOldSimulation();
-			// Input user info
-			sim.getTerm().startTerminal();
+			// Start interactive terminal 
+			sim.getTerm().startCommanderMode(); 
 			
+			sim.destroyOldSimulation();
+
 			Simulation.createNewSimulation(userTimeRatio);
 			
 			sim.start(true);
 			
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			exitWithError("Could not create a new simulation, startup cannot continue", e);

@@ -162,6 +162,8 @@ public class MainMenu {
 
 	private AnimationTimer starsTimer;
 
+	private Simulation sim = Simulation.instance();
+	
 	public MainMenu() {
 		// logger.info("MainMenu's constructor is on " +
 		// Thread.currentThread().getName());
@@ -802,7 +804,6 @@ public class MainMenu {
 			// logger.info("LoadSimulationTask is on " + Thread.currentThread().getName() +
 			// " Thread");
 
-			Simulation sim = Simulation.instance();
 			// Initialize the simulation.
 			Simulation.createNewSimulation(-1);
 

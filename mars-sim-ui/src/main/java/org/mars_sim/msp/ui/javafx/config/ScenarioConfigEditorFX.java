@@ -562,11 +562,13 @@ public class ScenarioConfigEditorFX {
 	public class SimulationTask implements Runnable {
 		public void run() {
 			
-			// Input user info
-			sim.getTerm().startTerminal();
+			// Start interactive terminal 
+			sim.getTerm().startCommanderMode();
 			
 			Simulation.createNewSimulation(-1);
+			
 			sim.start(false);
+			
 			Platform.runLater(() -> {
 				mainScene.finalizeMainScene();				
 			});

@@ -189,7 +189,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	private UpTimer ut;
 	
-	private static InteractiveTerm term = new InteractiveTerm();
+	private static InteractiveTerm interactiveTerm = new InteractiveTerm();
 	
 
 	/**
@@ -324,6 +324,7 @@ public class Simulation implements ClockListener, Serializable {
 	private void initializeIntransientData(int timeRatio) {
 		// logger.info("Simulation's initializeIntransientData() is on " +
 		// Thread.currentThread().getName() + " Thread");
+		
 		malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
 		mars = new Mars();
 		missionManager = new MissionManager();
@@ -340,7 +341,7 @@ public class Simulation implements ClockListener, Serializable {
 		// System.out.println("running Simulation's initializeIntransientData()");
 		// ResourceUtil.getInstance().initializeNewSim();
 		// ResourceUtil.printID();
-
+		
 		ut = masterClock.getUpTimer();
 	}
 
@@ -424,7 +425,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @return profile
 	 */
 	public CommanderProfile getProfile() {
-		return term.getProfile();
+		return interactiveTerm.getProfile();
 	}
 			
 	/*
@@ -895,7 +896,7 @@ public class Simulation implements ClockListener, Serializable {
 		keepRunning = false;
 //		textIO.getTextTerminal().abort();
 //		textIO.getTextTerminal().dispose();
-		term.getProfile().disposeTerminal();
+		interactiveTerm.getProfile().disposeTerminal();
 		instance().defaultLoad = false;
 		instance().stop();
 		masterClock.endClockListenerExecutor();
@@ -1236,7 +1237,7 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	public InteractiveTerm getTerm(){
-		return term;
+		return interactiveTerm;
 	}
 	
 	/**

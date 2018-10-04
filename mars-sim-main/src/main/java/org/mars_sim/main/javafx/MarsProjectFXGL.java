@@ -451,9 +451,8 @@ public class MarsProjectFXGL extends GameApplication {
 			if (newSim) {
 				// CASE A //
 				logger.info("Starting a new sim in headless mode in " + Simulation.OS);
-				
-				// Input user info
-				sim.getTerm().startTerminal();
+				// Start interactive terminal 
+				sim.getTerm().startCommanderMode();
 				// Initialize the simulation.
 				Simulation.createNewSimulation(-1);
 				// Start the simulation.
@@ -492,6 +491,8 @@ public class MarsProjectFXGL extends GameApplication {
 						// e2);
 					}
 				}
+				// init terminal
+				initTerminal();
 			}
 			// Generate html files for in-game help
 			else if (generateHTML) {
@@ -523,6 +524,18 @@ public class MarsProjectFXGL extends GameApplication {
 		}
 	}
 
+	/**
+	 * Initialize interactive terminal and load menu
+	 */
+	public void initTerminal() {
+//		System.out.println("initTerminal()");
+		// Initialize interactive terminal 
+		sim.getTerm().initializeTerminal();	
+		// Load the menu choice
+		sim.getTerm().loadTerminalMenu();
+	}
+	
+	
 	/**
 	 * Loads the simulation from a save file.
 	 * 

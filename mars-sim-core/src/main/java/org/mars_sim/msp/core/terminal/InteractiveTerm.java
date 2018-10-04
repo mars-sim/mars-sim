@@ -41,7 +41,6 @@ public class InteractiveTerm {
 	private boolean keepRunning;
 	
 	public InteractiveTerm() {
-		masterClock = Simulation.instance().getMasterClock();
 		
         terminal = new SwingTextTerminal();
         terminal.init();
@@ -52,13 +51,13 @@ public class InteractiveTerm {
 	}
 	
     public static void main(String[] args) {	
-    	new InteractiveTerm().startTerminal(); 
+    	new InteractiveTerm().startCommanderMode(); 
     }
     
 	/**
 	 * Initialize the text-io terminal.
 	 */
-	public void startTerminal() {
+	public void startCommanderMode() {
 
 		initializeTerminal();
 		
@@ -101,6 +100,8 @@ public class InteractiveTerm {
 	 * Loads the terminal menu
 	 */
 	public void loadTerminalMenu() {
+		keepRunning = true;
+		
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
 		terminal.registerUserInterruptHandler(term -> {}, false);
         
@@ -109,7 +110,9 @@ public class InteractiveTerm {
 		    //TextIO textIO = chooseTextIO();
 		    terminal.printf(System.lineSeparator());
 		    app.accept(textIO, null);
-	    	// if the sim is being saved, enter this while loop
+	    	if (masterClock == null)
+	    		masterClock = Simulation.instance().getMasterClock();
+		    // if the sim is being saved, enter this while loop
 			while (masterClock.isSavingSimulation()) {
 		    	delay(500L);
 		    }

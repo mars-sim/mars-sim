@@ -126,13 +126,17 @@ public class MarsProject {
 			try {
 				// Initialize the simulation.
 				SimulationConfig.loadConfig();
+				
 				Simulation.createNewSimulation(-1);
+				
 				handleLoadSimulation(argList);
 
 				// FIXME : make it work
 			} catch (Exception e) {
 				showError("Could not load the desired simulation, trying to create a new Simulation...", e);
+				
 				handleNewSimulation();
+				
 				result = true;
 			}
 		} else {
@@ -140,11 +144,14 @@ public class MarsProject {
 			try {
 				// Initialize the simulation.
 				SimulationConfig.loadConfig();
+				
 				Simulation.createNewSimulation(-1);
+				
 				handleLoadDefaultSimulation();
 			} catch (Exception e) {
 //                showError("Could not load the default simulation, trying to create a new Simulation...", e);
 				handleNewSimulation();
+				
 				result = true;
 			}
 		}
@@ -210,7 +217,7 @@ public class MarsProject {
 			// go headless
 			
 			// Input user info
-			sim.getTerm().startTerminal();
+			sim.getTerm().startCommanderMode();
 			// Start simulation.
 			startSimulation(true);
 		}
