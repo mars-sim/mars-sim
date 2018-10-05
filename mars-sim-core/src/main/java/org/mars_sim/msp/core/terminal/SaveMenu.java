@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.terminal;
 
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
-import org.beryx.textio.TextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.terminal.AppUtil;
@@ -20,6 +19,16 @@ import java.util.function.BiConsumer;
  * A menu for choosing the time ratio in TextIO.
  */
 public class SaveMenu implements BiConsumer<TextIO, RunnerData> {
+	
+//	private static final String KEY_STROKE_UP = "pressed UP";
+//	private static final String KEY_STROKE_DOWN = "pressed DOWN";
+//
+//	private String originalInput = "";
+//	private int choiceIndex = -1;
+//	private String[] choices = {};
+	    
+	private SwingTextTerminal terminal;
+	
     public static void main(String[] args) {
         TextIO textIO = TextIoFactory.getTextIO();
         new SaveMenu().accept(textIO, null);
@@ -27,24 +36,41 @@ public class SaveMenu implements BiConsumer<TextIO, RunnerData> {
 
     @Override
     public void accept(TextIO textIO, RunnerData runnerData) {
-    	SwingTextTerminal terminal = (SwingTextTerminal)textIO.getTextTerminal();
+    	terminal = (SwingTextTerminal)textIO.getTextTerminal();
         String initData = (runnerData == null) ? null : runnerData.getInitData();
         AppUtil.printGsonMessage(terminal, initData);
-
+   
         boolean toSave = textIO.newBooleanInputReader()//.withDefaultValue(true)
-                .read("Save now");
+               .read("Save now");
 
-        terminal.printf("\n");
+        terminal.println(System.lineSeparator());
         
+//       	terminal.println("Press UP/DOWN to show a list of possible values"
+//       			+ System.lineSeparator());
+//   
+//		setChoices("y", "n");
+//		
+//		String input = textIO.newStringInputReader()//.withDefaultValue('n')
+////				.withInlinePossibleValues("y", "n")
+//			    .read("Do you want to be added as the commander of a settlement? [y/n]");	
+//		
+//		if (input.equals("y") || input.equals("Y")) {
+//			terminal.print(
+////					System.lineSeparator() +
+////					"Press UP and DOWN to show a possible list of values (if available)" +
+//					System.lineSeparator());
+//			setChoices();
+//			profile.accept(textIO, null);
+//		}
+//		
         if (toSave) {
-            terminal.printf("Saving Simulation...\n");
+            terminal.printf("Saving Simulation..." + System.lineSeparator());
         	Simulation.instance().getMasterClock().setSaveSim(Simulation.SAVE_DEFAULT, null); 
         }
-        else
-            terminal.printf("You don't want to save the Simulation.\n");
-        	
-//        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to return to the menu\n");
-
+        else {
+            terminal.printf("You don't want to save the Simulation." + System.lineSeparator());
+        }
+            
     }
 
     

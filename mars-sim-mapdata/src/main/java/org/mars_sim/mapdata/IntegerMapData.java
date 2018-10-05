@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * IntegerMapData.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2018-10-04
  * @author Scott Davis
  */
 
@@ -16,6 +15,7 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -35,7 +35,7 @@ abstract class IntegerMapData implements MapData {
     public static final int MAP_WIDTH = 2880; // Source map width in pixels.
     public static final double PIXEL_RHO = (double) MAP_HEIGHT / Math.PI;
     private static final double TWO_PI = Math.PI * 2D;
-    
+     
     // Data members.
     private List<int[]> mapColors = null;
     
@@ -48,11 +48,11 @@ abstract class IntegerMapData implements MapData {
         
         // Load data files
         try {
-            int[] index = loadIndexData(indexFileName);
+            int[] index = loadIndexData(indexFileName);       
             mapColors = loadMapData(mapFileName, index);
         }
         catch (IOException e) {
-            logger.log(Level.SEVERE,"Could not find map data files.", e) ;
+            logger.log(Level.SEVERE,"Could not find .index or .dat files.", e) ;
         }
     }
     
@@ -69,7 +69,7 @@ abstract class IntegerMapData implements MapData {
         ClassLoader loader = getClass().getClassLoader();
         InputStream indexStream = loader.getResourceAsStream(filename);
         if (indexStream == null) throw new IOException("Can not load " + filename);
-
+  
         // Read stream into an array.
         BufferedInputStream indexBuff = new BufferedInputStream(indexStream);
         DataInputStream indexReader = new DataInputStream(indexBuff);
@@ -82,6 +82,7 @@ abstract class IntegerMapData implements MapData {
        
         return index;
     }
+
     
     /** 
      * Loads the map data from a file.
@@ -97,6 +98,9 @@ abstract class IntegerMapData implements MapData {
         ClassLoader loader = getClass().getClassLoader();
         InputStream mapStream = loader.getResourceAsStream(filename);
         if (mapStream == null) throw new IOException("Can not load " + filename);
+              
+        // Decompress the xz file
+        //new DecompressXZ(filename);
         
         // Read stream into an array.
         BufferedInputStream mapBuff = new BufferedInputStream(mapStream);

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDataFactory.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2018-10-04
  * @author Scott Davis
  */
 
@@ -17,6 +16,8 @@ class MapDataFactory {
     static final String SURFACE_MAP_DATA = "surface map data";
     static final String TOPO_MAP_DATA = "topographical map data";
     
+//	private boolean decompressed = false;
+	
     // Data members.
     private MapData surfaceMapData;
     private MapData topoMapData;
@@ -25,7 +26,7 @@ class MapDataFactory {
      * Constructor.
      */
     MapDataFactory() {
-        
+
     }
     
     /**
@@ -36,6 +37,13 @@ class MapDataFactory {
     MapData getMapData(String mapType) {
         MapData result = null;
         
+  		// Decompress the dat maps 
+//		if (!decompressed) {
+//			new DecompressXZ();
+//			// Only need to do it once
+//			decompressed = true;
+//		}
+		
         if (mapType.equals(SURFACE_MAP_DATA)) {
             result = getSurfaceMapData();
         }

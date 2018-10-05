@@ -62,9 +62,11 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         String initData = (runnerData == null) ? null : runnerData.getInitData();
         AppUtil.printGsonMessage(terminal, initData);
         
+        setUpArrows();
+        
         addString(textIO, "First Name", () -> contact.firstName, s -> contact.firstName = s);
         addString(textIO, "Last Name", () -> contact.lastName, s -> contact.lastName = s);     
-        addGender(textIO, "Gender (M/F)", () -> contact.gender, s -> contact.gender = s);
+        addGender(textIO, "Gender", () -> contact.gender, s -> contact.gender = s);
         addAge(textIO, "Age", () -> contact.age, s -> contact.age = s);	      
         addJobTask(textIO, "Job (0-15)", () -> contact.job, s -> contact.job = s);	
         addCountryTask(textIO, "Country (0-27)", () -> contact.country, s -> contact.country = s);
@@ -72,7 +74,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         setUpCountryKey();
         setUpJobKey();
         setUpUndoKey();
-//        setUpArrows();
        
         terminal.println(System.lineSeparator() + "Commander's Profile: " + contact);
         UnitManager.setCommander(true);
@@ -195,9 +196,12 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 //        operations.add(() -> valueSetter.accept(s));
         
 //    	setChoices();	
-        operations.add(() -> valueSetter.accept(textIO.newStringInputReader()
+        operations.add(() -> {
+        	setChoices();
+        	valueSetter.accept(textIO.newStringInputReader()
                 .withDefaultValue(defaultValueSupplier.get())
-                .read(prompt)));
+                .read(prompt));
+        	});
     }
 
     private void addGender(TextIO textIO, String prompt, Supplier<String> defaultValueSupplier, Consumer<String> valueSetter) {
@@ -210,10 +214,17 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 //                
 //        operations.add(() -> valueSetter.accept(g));
         
-        operations.add(() -> valueSetter.accept(textIO.newStringInputReader()
+        operations.add(() -> {
+        	String[] sex = {"M", "F"};
+        	setChoices(sex);
+        	valueSetter.accept(textIO.newStringInputReader()
+                    .withInlinePossibleValues(sex)
+                    .withIgnoreCase()
+//                    .withPromptAdjustments(false)
 //				.withInlinePossibleValues("m", "f", "M", "F")
                 .withDefaultValue(defaultValueSupplier.get())
-                .read(prompt)));
+                .read(prompt));
+        	});
     }
     
 //    private void addChar(TextIO textIO, String prompt, Supplier<Character> defaultValueSupplier, Consumer<Character> valueSetter) {
@@ -239,12 +250,15 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 //        operations.add(() -> valueSetter.accept(i));
 //        
         
-        operations.add(() -> valueSetter.accept(textIO.newIntInputReader()
+        operations.add(() -> {
+        	setChoices();
+        	valueSetter.accept(textIO.newIntInputReader()       
                 .withDefaultValue(30)
 //				.withNumberedPossibleValues(age)
                 .withMaxVal(70)
                 .withMinVal(21) //defaultValueSupplier.get())
-                .read(prompt)));
+                .read(prompt));
+        	});
     }
 
     private void addJobTask(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
@@ -258,11 +272,14 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 //    	
 //        operations.add(() -> valueSetter.accept(i));
 //        
-        operations.add(() -> valueSetter.accept(textIO.newIntInputReader()
+        operations.add(() -> {
+        	setChoices();
+        	valueSetter.accept(textIO.newIntInputReader()
                 .withDefaultValue(4)
                 .withMinVal(0)
                 .withMaxVal(15)//defaultValueSupplier.get())
-                .read(prompt)));
+                .read(prompt));
+        	});
     }
     
     private void addCountryTask(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
@@ -276,11 +293,14 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 //    			
 //        operations.add(() -> valueSetter.accept(i));
 //        
-        operations.add(() -> valueSetter.accept(textIO.newIntInputReader()
+        operations.add(() -> {
+        	setChoices();
+        	valueSetter.accept(textIO.newIntInputReader()
                 .withDefaultValue(4)
                 .withMinVal(0)
                 .withMaxVal(27)//defaultValueSupplier.get())
-                .read(prompt)));
+                .read(prompt));
+    		});
     }
     
 //    private void addPhaseTask(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
@@ -399,7 +419,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
             	   System.lineSeparator() + "   Gender: " + gender +
             	   System.lineSeparator() + "   Age: " + age +
             	   System.lineSeparator() + "   Job: " + JobType.getEditedJobString(job) +
-            	   System.lineSeparator() + "   Country: " + UnitManager.getCountryByID(country) + " (" + UnitManager.getSponsorByCountryID(country) + ")" 
+            	   System.lineSeparator() + "   Country: " + UnitManager.getCountryByID(country) + 
+            	   System.lineSeparator() + "   Space Agency: " + UnitManager.getSponsorByCountryID(country) + "" 
 //            	   System.lineSeparator() + "   Settlement Phase: " + phase
             	   ;
             

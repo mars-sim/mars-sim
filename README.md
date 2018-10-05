@@ -12,28 +12,28 @@ The Mars Simulation Project is a Java based open source project that simulates t
 
 
 ## Simulation
-mars-sim is a "general purpose" simulator depicting the early development of the human settlements on Mars. According to Encyclopædia Britannica, Computer simulation is the use of a computer to represent the dynamic responses of one system by the behavior of another system modeled after it. A simulation uses a mathematical description, or model, of a real system in the form of a computer program. 
+mars-sim is a `general purpose` simulator depicting the early development of the human settlements on Mars. According to Encyclopædia Britannica, Computer Simulation is the use of a computer to represent the dynamic responses of one system by the behavior of another system modeled after it. A simulation is a mathematical description, or model, of a real system in the form of a computer program. 
 
-mars-sim attempts to incorporate Mathematical modeling of many systems or scientific disciplines (such as in physics, chemistry, biology, economics, psychology, and social science) and simulate the behaviors of these systems under the Object-Oriented programming paradigm in Java. 
+mars-sim attempts to incorporate as much mathematical modeling of many systems or scientific disciplines (such as in physics, chemistry, biology, economics, psychology, and social science) as possible to simulate the dynamics and behaviors of people, systems, and environment. 
 
-As each settler in mars-sim is a computer agent possessing certain properties, based on these properties and the external characteristics imposed on them, they make weight decisions and interact with one another to produce unexpected results in a sandbox world.
+As each settler in mars-sim is a computer agent possessing certain properties, one has prescribed properties and the external characteristics imposed on them, they make weight decisions and interact with one another to produce unexpected results in a sandbox world.
 
 For instance, each settler has a well-defined job, a role, a bunch of technical skills, a set of personality, natural attributes, and task preferences (likes and dislikes). They build relationship as they interact and work with one another. They are there to live, dream, explore, and settle Mars. 
 
 
 ## Operation Modeling
-mars-sim adopts a rich set of scientific vocabulary from research journal and paper when it comes to defining operation paradigms and programming models  based on the present day technologies that are applicable for the near-term human exploration and settlement on Mars.
+mars-sim adopts a rich set of scientific vocabulary from research journal and paper when it comes to defining operation paradigms and programming models based on the present day technologies that are applicable for the near-term human exploration and settlement on Mars.
 
 For instance, a low pressure atmosphere of 34 kPa (5 psi) is chosen for humans to live inside the settlement, as opposed to the Earth's 
 sea level atmosphere of 101 kPa (14.7 psi). The amount of oxygen, carbon dioxide, and water moisture indoor will be continuously monitored 
-and replenished periodically for each building. These gases are generated via systems such as Sabatier Reverse Water Gas (SRWG), and Oxygen Generation System, etc..
+and replenished periodically for each building as each building are equipped and entitled with various [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function). These gases are generated via systems such as Sabatier Reverse Water Gas (SRWG), and Oxygen Generation System, etc..
 
 Another example is the mode of operation involved in EVA. Prior to each EVA activity, one of the settlers will be selected as the airlock operator. The airlock would have to be pressurized and depressurized (gases captured and released and reheated) with inner/outer doors opened and closed at a specific sequence in order to allow the ingress/egress of the settlers onto the surface of Mars.
 
-The third example is the radiation modeling and how often the Galactic Cosmic Ray (GCR) and Solar Energetic Particles (SEP) would occur during EVA as the dose is closely monitored and tracked presumably over the career lifetime of a settler. 
+The third example is the [Radiation Modeling](https://github.com/mars-sim/mars-sim/wiki/Radiation-Exposure), which accounts for how often the Galactic Cosmic Ray (GCR) and Solar Energetic Particles (SEP) would occur during EVA as the dose is closely monitored and tracked presumably over the career lifetime of a settler. 
  
 ## Settlement Development 
-Player may create numerous settlements spreading across the surface of Mars. Each settlement has a command structure and a developmental objective. They can be as simple as a four-person initial base (loosely following the Mars Direct Mission Plan by Robert Zubrin), a trading outpost, a mining depot near sites with high mineral concentration; or a self-contained colony with 48+ settlers having an elected mayor. 
+Player may create numerous settlements spreading across the surface of Mars. Each settlement has a command structure and a [developmental objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective). They can be as simple as a four-person initial base (loosely following the Mars Direct Mission Plan by Robert Zubrin), a trading outpost, a mining depot near sites with high mineral concentration; or a self-contained colony with 48+ settlers having an elected mayor. 
 
 
 ## Economics
@@ -41,14 +41,14 @@ In terms of economic modeling, mars-sim implements a value point (VP) system, wh
 VPs of the resources in exchanged would be computed in each trading session.
 
 
-## Tasks and Missions
-Settlers spend much of their time learning to "live off the land". They engage in maintenance, ensuring life support resources are well balanced, growing crops in greenhouses, making secondary food products, and manufacturing needed parts and equipment in workshops.
+## Jobs and Missions
+Settlers spend much of their time learning to "live off the land". Assigning meaningful [jobs](https://github.com/mars-sim/mars-sim/wiki/Jobs) to the settlers are vital to the health of the economy of the settlements. Settlers engage in various [tasks](https://github.com/mars-sim/mars-sim/wiki/Tasks) such as maintenance, ensuring life support resources are well balanced, growing crops in [greenhouses](https://github.com/mars-sim/mars-sim/wiki/Greenhouse-Operation), making secondary [food products](https://github.com/mars-sim/mars-sim/wiki/Food-Production), and manufacturing needed parts and equipment in workshops.
 
-Settlers will also go out on field missions to explore and study surrounding landscapes, to prospect and mine minerals, and to trade with neighboring settlements. They may even decide to migrate from one settlment to another.
+Settlers will also go out on field [Missions](https://github.com/mars-sim/mars-sim/wiki/Missions) to explore and study the surrounding landscapes, to prospect and mine minerals, and to trade with neighboring settlements, etc. They may even decide to migrate from one settlement to another.
 
 
 ## Reliability and Malfunctions
-The perils of living on Mars are very real. There are close to 30 types of malfunctions that can strike. The failure rate, the Mean Time Between Failure (MTBF) and the reliability of parts are tracked real-time and updated dynamically based on field available data during the simulation.
+The perils of living on Mars are very real. There are close to 30 types of [Malfunctions](https://github.com/mars-sim/mars-sim/wiki/Field-Reliability-and-Malfunctions) that can strike. The failure rate, the Mean Time Between Failure (MTBF) and the reliability of parts are tracked real-time and updated dynamically based on field available data during the simulation.
 
 
 ## Summary

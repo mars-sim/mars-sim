@@ -52,8 +52,6 @@ public class ExitMenu implements BiConsumer<TextIO, RunnerData> {
         else
             terminal.printf("You don't want to exit the Simulation.\n");
         	
-//        textIO.newStringInputReader().withMinLength(0).read("\nPress enter to return to the menu\n");
-
     }
 
     

@@ -79,28 +79,30 @@ public class Msg {
 	 * @param param1 {@link String}
 	 * @return {@link String}
 	 *
-	public static String getString(
-		final String key,
-		final String param1
-	) {
-		return getString(key)
-		.replace("{0}",param1);
-	}
-*/
+	 */
+//	public static String getString(
+//		final String key,
+//		final String param1
+//	) {
+//		return getString(key)
+//		.replace("{0}",param1);
+//	}
+
 	/*
 	 * replaces all occurrences of "{0}" with the given parameter.
 	 * @param key {@link String}
 	 * @param param1 {@link Integer}
 	 * @return {@link String}
 	 *
-	public static String getString(
-		final String key,
-		final int param1
-	) {
-		return getString(key)
-		.replace("{0}",Integer.toString(param1));
-	}
-*/
+     */
+//	public static String getString(
+//		final String key,
+//		final int param1
+//	) {
+//		return getString(key)
+//		.replace("{0}",Integer.toString(param1));
+//	}
+
 	/**
 	 * replaces all occurrences of "{n}" (with n an integer)
 	 * with the
@@ -127,14 +129,15 @@ public class Msg {
 	 * @param param1 {@link Double}
 	 * @return {@link String}
 	 *
-	public static String getString(
-		final String key,
-		final double param1
-	) {
-		return getString(key)
-		.replace("{0}",Double.toString(param1));
-	}
-*/
+	 */
+//	public static String getString(
+//		final String key,
+//		final double param1
+//	) {
+//		return getString(key)
+//		.replace("{0}",Double.toString(param1));
+//	}
+
 	/*
 	 * replaces all occurrences of "{0}" with the given parameter.
 	 * replaces all occurrences of "{1}" with the given second parameter.
@@ -143,16 +146,17 @@ public class Msg {
 	 * @param param2 {@link String}
 	 * @return {@link String}
 	 *
-	public static String getString(
-		final String key,
-		final String param1,
-		final String param2
-	) {
-		return getString(key)
-		.replace("{0}",param1)
-		.replace("{1}",param2);
-	}
-*/
+	 */
+//	public static String getString(
+//		final String key,
+//		final String param1,
+//		final String param2
+//	) {
+//		return getString(key)
+//		.replace("{0}",param1)
+//		.replace("{1}",param2);
+//	}
+
 	public static boolean getBool(String key) {
 		try {
 			return Boolean.parseBoolean(RESOURCE_BUNDLE.getString(key));
@@ -221,8 +225,9 @@ public class Msg {
 
 	/** prints an error message to the console. */
 	public static final String handle(Exception e,String key) {
-		// 2017-05-09 Upgrade from StringBuffer to StringBuilder
-		StringBuilder msg = new StringBuilder();
+		// Note : StringBuffer is thread safe and synchronized whereas StringBuilder is not, 
+		// thats why StringBuilder is more faster than StringBuffer.
+		StringBuffer msg = new StringBuffer();
 		msg.append("!!") //$NON-NLS-1$
 		.append(key)
 		.append("??") //$NON-NLS-1$

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MapData.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2018-10-04
  * @author Scott Davis
  */
 

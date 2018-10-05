@@ -1,3 +1,12 @@
+/**
+ * Mars Simulation Project
+ * InteractiveTerm.java
+ * @version 3.1.0 2018-10-04
+ * @author Manny Kung
+ * $LastChangedDate$
+ * $LastChangedRevision$
+ */
+
 package org.mars_sim.msp.core.terminal;
 
 import java.util.Arrays;
@@ -10,7 +19,6 @@ import org.beryx.textio.ReadHandlerData;
 import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
-import org.beryx.textio.app.SwingHandler;
 import org.beryx.textio.jline.JLineTextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.Simulation;
@@ -26,16 +34,12 @@ public class InteractiveTerm {
     private int choiceIndex = -1;
     private String[] choices = {};
 
-	private final SwingTextTerminal terminal;// = new SwingTextTerminal();
-	
-//	private static TextTerminal<?> terminal;
-	
+	private final SwingTextTerminal terminal;
+
 	private static CommanderProfile profile;
 	
-	private static TextIO textIO;//TextIoFactory.getTextIO();
+	private static TextIO textIO;
 	
-	private static SwingHandler handler;
-
 	private static MasterClock masterClock;
 	
 	private boolean keepRunning;
@@ -69,10 +73,6 @@ public class InteractiveTerm {
 				+ System.lineSeparator());
 		
 		setChoices("y", "n");
-//		char input = textIO.newCharInputReader()//.withDefaultValue('n')
-//		        .read("Do you want to be added as the commander of a settlement? [y/n]");	
-//		if (input == 'y' || input == 'Y') {        
-
 		String input = textIO.newStringInputReader()//.withDefaultValue('n')
 //				.withInlinePossibleValues("y", "n")
 			    .read("Do you want to be added as the commander of a settlement? [y/n]");	
@@ -130,7 +130,6 @@ public class InteractiveTerm {
     
     public static void delay(long millis) {
         try {
-//            Thread.sleep(millis);
 			TimeUnit.MILLISECONDS.sleep(millis);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -143,7 +142,7 @@ public class InteractiveTerm {
                 new SaveMenu(),
                 new ExitMenu()
         );
-//        textIO.getTextTerminal().printf("\n");
+
         BiConsumer<TextIO, RunnerData> app = textIO.<BiConsumer<TextIO, RunnerData>>newGenericInputReader(null)
             .withNumberedPossibleValues(apps)
             .read(System.lineSeparator() 
@@ -198,12 +197,11 @@ public class InteractiveTerm {
     	return terminal;
     }
     
-    public SwingHandler getHander() {
-    	return handler;
-    }
-    
     public TextIO getTextIO() {
     	return textIO;
     }
 	
+    public void setKeepRunning(boolean value) {
+    	keepRunning = value;
+    }
 }

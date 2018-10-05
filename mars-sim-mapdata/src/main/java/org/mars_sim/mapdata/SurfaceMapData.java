@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceMapData.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2018-10-04
  * @author Scott Davis
  */
 
@@ -15,7 +14,7 @@ public class SurfaceMapData extends IntegerMapData {
 
     // Static members.
     private static final String INDEX_FILE = "SurfaceMarsMap.index";
-    private static final String MAP_FILE = "SurfaceMarsMap.dat";
+    private static final String MAP_FILE = "SurfaceMarsMap.dat"; //"SurfaceMarsMap.xz"; //
     
     /**
      * Constructor

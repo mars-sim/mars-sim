@@ -12,7 +12,7 @@ module mars-sim-core {
     requires text-io;
     requires gson;
     requires commons-lang3;
-    requires xz;
+//    requires xz;
     
 //	requires java.desktop;
     

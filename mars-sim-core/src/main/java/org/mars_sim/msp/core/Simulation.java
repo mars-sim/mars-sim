@@ -130,10 +130,6 @@ public class Simulation implements ClockListener, Serializable {
 
 	private static boolean autosaveDefault;
 	
-	private static boolean keepRunning = true;
-
-	// private static int autosave_minute;// = 15;
-
 	private boolean initialSimulationCreated = false;
 
 	private boolean changed = true;
@@ -893,9 +889,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * Ends the current simulation
 	 */
 	public void endSimulation() {
-		keepRunning = false;
-//		textIO.getTextTerminal().abort();
-//		textIO.getTextTerminal().dispose();
+		interactiveTerm.setKeepRunning(false);
 		interactiveTerm.getProfile().disposeTerminal();
 		instance().defaultLoad = false;
 		instance().stop();

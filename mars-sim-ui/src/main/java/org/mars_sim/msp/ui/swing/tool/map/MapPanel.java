@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.mapdata.DecompressXZ;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -100,6 +101,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 		mapType = SurfMarsMap.TYPE;
 		oldMapType = mapType;
+
 		topoMap = new TopoMarsMap(this);
 		surfMap = new SurfMarsMap(this);
 		map = surfMap;
@@ -117,13 +119,12 @@ public class MapPanel extends WebPanel implements ClockListener {
 	/*
 	 * Sets up the mouse dragging capability
 	 */
-	// 2015-06-26 Added setNavWin()
 	public void setNavWin(final NavigatorWindow navwin) {
 		//showMap(centerCoords);
 		setMapType(getMapType());
 		map.drawMap(centerCoords);
 
-		// 2015-06-26 Note: need navWin prior to calling addMouseMotionListener()
+		// Note: need navWin prior to calling addMouseMotionListener()
 		addMouseMotionListener(new MouseAdapter() {
 
 			@Override

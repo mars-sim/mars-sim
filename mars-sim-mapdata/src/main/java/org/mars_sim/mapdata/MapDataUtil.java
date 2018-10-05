@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MapDataUtility.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2018-10-04
  * @author Scott Davis
  */
 
@@ -17,6 +16,7 @@ public final class MapDataUtil {
     private static MapDataUtil instance;
     private static MapDataFactory mapDataFactory;
     
+
     /**
      * Private constructor for static utility class.
      */

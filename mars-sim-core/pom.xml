@@ -84,13 +84,13 @@
 			<version>1.1.2</version>
 		</dependency>
 		<!-- http://tukaani.org/xz/java.html https://mvnrepository.com/artifact/org.tukaani/xz 
-			: 120 KB Note that 1.8 has issues that affects saving -->
+			: 120 KB Note that 1.8 has issues that affects saving		
 		<dependency>
 			<groupId>org.tukaani</groupId>
 			<artifactId>xz</artifactId>
 			<version>1.7</version>
 		</dependency>
-
+ 		-->
 		<!-- https://mvnrepository.com/artifact/nz.sodium/sodium : 112KB Recent 
 			fix on https://github.com/SodiumFRP/sodium Integrated into mars-sim-core -->
 		<!-- 		
