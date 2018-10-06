@@ -2939,6 +2939,9 @@ public class MainScene implements ClockListener {
 		return marsNetBox;
 	}
 
+	/**
+	 * Open the chat box
+	 */
 	public void openChatBox() {
 		try {
 			TimeUnit.MILLISECONDS.sleep(200L);
@@ -2948,6 +2951,8 @@ public class MainScene implements ClockListener {
 		chatBox.getAutoFillTextBox().getTextbox().clear();
 		chatBox.getAutoFillTextBox().getTextbox().requestFocus();
 		marsNetBox.show(marsNetBtn, PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
+		
+		chatBox.checkConnection();
 	}
 
 	public JFXPopup getFlyout() {

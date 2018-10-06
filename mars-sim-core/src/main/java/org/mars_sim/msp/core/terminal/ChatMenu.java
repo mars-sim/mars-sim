@@ -44,46 +44,57 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
         String initData = (runnerData == null) ? null : runnerData.getInitData();
         AppUtil.printGsonMessage(terminal, initData);
 
-       	terminal.println("Press UP/DOWN to show a list of possible values"
-       			+ System.lineSeparator());
-       	
-        setUpArrows();
-        
-        // Person
-        // Robot
-        // Settlement
-        // Vehicle
-     
-        List<String> names = CollectionUtils.createAutoCompleteData();//.createSettlerNames();
-        String[] array = names.toArray(new String[names.size()]);
-        boolean quit = false;
-          
-        while (!quit) {
-	        setChoices(array);
+        if (ChatUtils.getConnectionMode() == 1) {
+        	terminal.println("Cannot establish more than one line of connections. Please disactivate the graphic chat box first." + System.lineSeparator());			
+		}
+		else if (ChatUtils.getConnectionMode() == -1) {
+			// Set to headless mode
+			ChatUtils.setConnectionMode(0);
+
+	       	terminal.println("<< Connection to MarsNet established >>"
+		       	+ System.lineSeparator() + System.lineSeparator() 
+		       	+ "Press UP/DOWN to show a list of possible values"
+		       	+ System.lineSeparator());
+	       	
+	        setUpArrows();
 	        
-	        String party = textIO.newStringInputReader()
-	//        		.withInlinePossibleValues(array)
-	                .read(">");//What party do you want to reach");
-	
-	//        terminal.printf(System.lineSeparator());
-	    
-			// if no settlement, robot, person, or vehicle has been selected yet
-			if (ChatUtils.personCache == null && ChatUtils.robotCache == null 
-					&& ChatUtils.settlementCache == null && ChatUtils.vehicleCache == null) {	
-				// Call parse() to obtain a new value of unit
-				parse(party);
-			} 
-			
-			else {
-				// Call ask() to further engage the conversion
-				ask(party);
-				// Note : if all _Cache are null, then leave
-				// ask() and go back to parse()
-			}
-			
-			if (ChatUtils.isQuitting(party)) {
-				quit = true;
-			}				
+	        // Person
+	        // Robot
+	        // Settlement
+	        // Vehicle
+	     
+	        List<String> names = CollectionUtils.createAutoCompleteData();//.createSettlerNames();
+	        String[] array = names.toArray(new String[names.size()]);
+	        boolean quit = false;
+	          
+	        while (!quit) {
+		        setChoices(array);
+		        
+		        String party = textIO.newStringInputReader()
+		//        		.withInlinePossibleValues(array)
+		                .read(">");//What party do you want to reach");
+		
+		//        terminal.printf(System.lineSeparator());
+		    
+				// if no settlement, robot, person, or vehicle has been selected yet
+				if (ChatUtils.personCache == null && ChatUtils.robotCache == null 
+						&& ChatUtils.settlementCache == null && ChatUtils.vehicleCache == null) {	
+					// Call parse() to obtain a new value of unit
+					parse(party);
+				} 
+				
+				else {
+					// Call ask() to further engage the conversion
+					ask(party);
+					// Note : if all _Cache are null, then leave
+					// ask() and go back to parse()
+				}
+				
+				if (ChatUtils.isQuitting(party)) {
+					quit = true;
+					ChatUtils.setConnectionMode(-1);
+				}				
+	        }
         }
     }
     
@@ -113,7 +124,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 		
 		else {
 			terminal.printf(System.lineSeparator());
-	        ChatUtils.setHeadlessMode(true);
+	        //ChatUtils.setConnectionMode(0);
 			// Call ChatUtils' parseText	
 			responseText = ChatUtils.parseText(text);
 		}
@@ -138,7 +149,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 		String questionText = null;
 		String responseText = "";
 				
-        ChatUtils.setHeadlessMode(true);
+        //ChatUtils.setConnectionMode(0);
 		String[] ss = ChatUtils.askQuestion(text);
 		
 		// Obtain responses

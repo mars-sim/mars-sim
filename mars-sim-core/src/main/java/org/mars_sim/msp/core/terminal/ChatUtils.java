@@ -75,7 +75,10 @@ public class ChatUtils {
 		
 	public static String keywordText;
 			
-	private static boolean headlessMode = false;
+	/**
+	 * The mode of connection. -1 if none, 0 if headless, 1 if gui
+	 */
+	private static int connectionMode = -1;
 	
 	public static Person personCache;
 	public static Robot robotCache;
@@ -379,7 +382,7 @@ public class ChatUtils {
 
 //				help = true;
 				questionText = REQUEST_KEYS;
-				if (headlessMode) {
+				if (connectionMode == 0) {
 					keywordText = KEYWORDS_TEXT;
 				}
 				else {
@@ -394,7 +397,7 @@ public class ChatUtils {
 
 //				help = true;
 				questionText = REQUEST_HELP;
-				if (headlessMode) {
+				if (connectionMode == 0) {
 					helpText = HELP_TEXT;
 				}
 				else {
@@ -788,7 +791,7 @@ public class ChatUtils {
 	
 				else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
 					questionText = REQUEST_KEYS;
-					if (headlessMode) {
+					if (connectionMode == 0) {
 						keywordText = KEYWORDS_TEXT;
 					}
 					else {
@@ -801,7 +804,7 @@ public class ChatUtils {
 				else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
 						|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
 					questionText = REQUEST_HELP;
-					if (headlessMode) {
+					if (connectionMode == 0) {
 						helpText = HELP_TEXT;
 					}
 					else {
@@ -868,7 +871,7 @@ public class ChatUtils {
 		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
 
 			responseText.append(System.lineSeparator());
-			if (headlessMode) {
+			if (connectionMode == 0) {
 				keywordText = KEYWORDS_TEXT;
 			}
 			else {
@@ -881,7 +884,7 @@ public class ChatUtils {
 				|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
 
 			responseText.append(System.lineSeparator());
-			if (headlessMode) {
+			if (connectionMode == 0) {
 				helpText = HELP_TEXT;
 			}
 			else {
@@ -1198,8 +1201,12 @@ public class ChatUtils {
 
 	}
 
-	public static void setHeadlessMode(boolean value) {
-		headlessMode = value;
+	public static void setConnectionMode(int value) {
+		connectionMode = value;
+	}
+
+	public static int getConnectionMode() {
+		return connectionMode;
 	}
 	
 	/**

@@ -137,23 +137,30 @@ public class ChatBox extends BorderPane {
 
 		setCenter(textArea);
 		setBottom(hbox);
-
-		connect();
 	}
 
-	public void connect() {
-		textArea.appendText("<< Connection to MarsNet established >>" + System.lineSeparator());
-
-		int rand = RandomUtil.getRandomInt(2);
-
-		if (rand == 0)
-			textArea.appendText("System : how can I help you ? /h for help");
-		else if (rand == 1)
-			textArea.appendText("System : how may I assist you ? /h for help");
-		else if (rand == 2)
-			textArea.appendText("System : Is there anything I can help ? /h for help");
-
-		textArea.appendText(System.lineSeparator());
+	public void checkConnection() {
+		if (ChatUtils.getConnectionMode() == 0) {
+			textArea.appendText(System.lineSeparator() + "Cannot establish more than one line of connections. Please disactivate the console chat first." + System.lineSeparator());			
+		}
+		
+		else if (ChatUtils.getConnectionMode() == -1) {
+			// Set the GUI mode
+			ChatUtils.setConnectionMode(1);
+			
+			textArea.appendText(System.lineSeparator() + "<< Connection to MarsNet established >>" + System.lineSeparator());
+	
+			int rand = RandomUtil.getRandomInt(2);
+	
+			if (rand == 0)
+				textArea.appendText("System : how can I help you ? /h for help");
+			else if (rand == 1)
+				textArea.appendText("System : how may I assist you ? /h for help");
+			else if (rand == 2)
+				textArea.appendText("System : Is there anything I can help ? /h for help");
+	
+			textArea.appendText(System.lineSeparator());
+		}
 	}
 
 	/*
@@ -198,6 +205,7 @@ public class ChatBox extends BorderPane {
 		}
 	}
 
+	
 	public void closeChatBox(boolean disconnected) {
 
 		if (disconnected) {
@@ -206,6 +214,8 @@ public class ChatBox extends BorderPane {
 			ChatUtils.robotCache = null;
 			ChatUtils.settlementCache = null;
 			ChatUtils.vehicleCache = null;
+			
+			ChatUtils.setConnectionMode(-1);
 		}
 
 		mainScene.getFlyout().hide();
@@ -226,7 +236,7 @@ public class ChatBox extends BorderPane {
 		questionText = resetBoxHeight(text)[0];
 		responseText = resetBoxHeight(text)[1];
 			
-        ChatUtils.setHeadlessMode(false);
+        //ChatUtils.setConnectionMode(false);
 		String[] ss =  ChatUtils.askQuestion(text);
 		
 		// Obtain responses
@@ -259,7 +269,7 @@ public class ChatBox extends BorderPane {
 			String[] txt = ChatUtils.farewell(ChatUtils.SYSTEM_PROMPT);
 			// questionText = txt[0];
 			responseText = txt[1];
-
+			// Close the chat box
 			closeChatBox(true);
 		}
 		// Add changing the height of the chat box
@@ -298,11 +308,10 @@ public class ChatBox extends BorderPane {
 		}
 	
 		else {
-	        ChatUtils.setHeadlessMode(false);
+	        //ChatUtils.setConnectionMode(false);
 			// Call ChatUtils' parseText
 			responseText = ChatUtils.parseText(text);
 		}
-
 		
 		if (len > 0)
 			textArea.appendText(responseText + System.lineSeparator());
