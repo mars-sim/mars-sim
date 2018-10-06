@@ -200,7 +200,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 					newLast = oldLast.substring(0, 10);
 				}
 				newName = newFirst + " " + newLast;
-				// System.out.println("oldName : " + name + " newName : " + newName);
+
 			}
 
 			return newName;
@@ -236,7 +236,6 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 */
 	protected final void setDescription(String description) {
 		this.description = description;
-		// System.out.println("Description is : "+ description);
 		fireUnitUpdate(UnitEventType.DESCRIPTION_EVENT, description);
 	}
 

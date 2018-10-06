@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupportType;
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -19,6 +18,7 @@ import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * This class represents the System Condition of a robot.

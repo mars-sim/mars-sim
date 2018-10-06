@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core;
+package org.mars_sim.msp.core.tool;
 
 public class MathUtils {
 

@@ -27,8 +27,8 @@ import com.jfoenix.controls.JFXPopup.PopupVPosition;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.terminal.ChatUtils;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 
 public class ChatBox extends BorderPane {

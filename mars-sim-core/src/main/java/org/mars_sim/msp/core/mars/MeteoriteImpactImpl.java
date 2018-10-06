@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 

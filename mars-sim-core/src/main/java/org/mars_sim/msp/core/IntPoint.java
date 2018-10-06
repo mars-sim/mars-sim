@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.core;
 
-import java.awt.*;
+import java.awt.Point;
 
 /**
  * The IntPoint class is an extension of

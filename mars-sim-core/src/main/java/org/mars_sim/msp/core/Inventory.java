@@ -191,7 +191,6 @@ implements Serializable {
 
     	if (amountSupplyRequestMap.containsKey(r)) {
     		int oldNum = amountSupplyRequestMap.get(r);
-			//System.out.println( resource.getName() + " demandSuccessful : " + oldNum+1);
     		amountSupplyRequestMap.put(r, oldNum + 1);
     	}
 
@@ -204,7 +203,6 @@ implements Serializable {
   
     	if (amountSupplyRequestMap.containsKey(r)) {
     		int oldNum = amountSupplyRequestMap.get(r);
-			//System.out.println( resource.getName() + " demandSuccessful : " + oldNum+1);
     		amountSupplyRequestMap.put(r, oldNum + 1);
     	}
 
@@ -310,7 +308,6 @@ implements Serializable {
 		if (amountDemandTotalRequestMap.containsKey(r)) {
 
 			int oldNum = amountDemandTotalRequestMap.get(r);
-			//System.out.println( resource.getName() + " demandTotal : " + oldNum+1);
 			amountDemandTotalRequestMap.put(r, oldNum + 1);
 		}
 		else
@@ -323,7 +320,6 @@ implements Serializable {
 		if (amountDemandTotalRequestMap.containsKey(r)) {
 
 			int oldNum = amountDemandTotalRequestMap.get(r);
-			//System.out.println( resource.getName() + " demandTotal : " + oldNum+1);
 			amountDemandTotalRequestMap.put(r, oldNum + 1);
 		}
 		else
@@ -341,7 +337,6 @@ implements Serializable {
     	if (amountDemandMap.containsKey(r)) {
 
     		double oldAmount = amountDemandMap.get(r);
-			//System.out.println( resource.getName() + " demandReal : " + amount + oldAmount);
     		amountDemandMap.put(r, amount + oldAmount);
 
     	}
@@ -363,7 +358,6 @@ implements Serializable {
     	if (amountDemandMap.containsKey(r)) {
 
     		double oldAmount = amountDemandMap.get(r);
-			//System.out.println( resource.getName() + " demandReal : " + amount + oldAmount);
     		amountDemandMap.put(r, amount + oldAmount);
 
     	}
@@ -380,7 +374,6 @@ implements Serializable {
     	if (itemDemandMap.containsKey(r)) {
 
     		int oldNumber = itemDemandMap.get(r);
-			//System.out.println( resource.getName() + " demandReal : " + amount + oldAmount);
     		itemDemandMap.put(r, number + oldNumber);
 
     	}
@@ -396,7 +389,6 @@ implements Serializable {
 
     	if (amountDemandMetRequestMap.containsKey(r)) {
     		int oldNum = amountDemandMetRequestMap.get(r);
-			//System.out.println( resource.getName() + " demandSuccessful : " + oldNum+1);
     		amountDemandMetRequestMap.put(r, oldNum + 1);
     	}
 
@@ -411,7 +403,6 @@ implements Serializable {
    		
     	if (amountDemandMetRequestMap.containsKey(r)) {
     		int oldNum = amountDemandMetRequestMap.get(r);
-			//System.out.println( resource.getName() + " demandSuccessful : " + oldNum+1);
     		amountDemandMetRequestMap.put(r, oldNum + 1);
     	}
 
@@ -425,7 +416,6 @@ implements Serializable {
 
     	if (itemDemandMetRequestMap.containsKey(r)) {
     		int oldNum = itemDemandMetRequestMap.get(r);
-			//System.out.println( resource.getName() + " demandSuccessful : " + oldNum+1);
     		itemDemandMetRequestMap.put(r, oldNum + 1);
     	}
 
@@ -440,16 +430,14 @@ implements Serializable {
      * @param capacity the extra capacity amount (kg).
      */
     public void addAmountResourceTypeCapacity(AmountResource resource, double capacity) {
-    	addARTypeCapacity(resource.getID(), capacity);
-/*    	
-        // Set capacity cache to dirty because capacity values are changing.
-        setAmountResourceCapacityCacheDirty(resource);
-        // Initialize resource storage if necessary.
-        if (resourceStorage == null) {
-            resourceStorage = new AmountResourceStorage();
-        }
-        resourceStorage.addAmountResourceTypeCapacity(resource, capacity);
-*/        
+    	addARTypeCapacity(resource.getID(), capacity); 	
+//        // Set capacity cache to dirty because capacity values are changing.
+//        setAmountResourceCapacityCacheDirty(resource);
+//        // Initialize resource storage if necessary.
+//        if (resourceStorage == null) {
+//            resourceStorage = new AmountResourceStorage();
+//        }
+//        resourceStorage.addAmountResourceTypeCapacity(resource, capacity);        
     }
 
     /**
@@ -467,7 +455,6 @@ implements Serializable {
      * @param capacity the extra capacity amount (kg).
      */
     public void addARTypeCapacity(int resource, double capacity) {
-    	//AmountResource ar = ResourceUtil.findAmountResource(resource);
         // Set capacity cache to dirty because capacity values are changing.
         setARCapacityCacheDirty(resource);
         // Initialize resource storage if necessary.
@@ -484,17 +471,14 @@ implements Serializable {
      */
     public void removeAmountResourceTypeCapacity(AmountResource resource,
             double capacity) {
-
-    	removeARTypeCapacity(resource.getID(), capacity);
- /*   	
-        // Set capacity cache to dirty because capacity values are changing.
-        setAmountResourceCapacityCacheDirty(resource);
-        // Initialize resource storage if necessary.
-        if (resourceStorage == null) {
-            resourceStorage = new AmountResourceStorage();
-        }
-        resourceStorage.removeAmountResourceTypeCapacity(resource, capacity);
- */       
+    	removeARTypeCapacity(resource.getID(), capacity);  	
+//        // Set capacity cache to dirty because capacity values are changing.
+//        setAmountResourceCapacityCacheDirty(resource);
+//        // Initialize resource storage if necessary.
+//        if (resourceStorage == null) {
+//            resourceStorage = new AmountResourceStorage();
+//        }
+//        resourceStorage.removeAmountResourceTypeCapacity(resource, capacity);     
     }
 
     /**
@@ -1794,21 +1778,7 @@ implements Serializable {
      * Initializes the amount resource capacity cache.
      */
     public synchronized void initializeAmountResourceCapacityCache() {
-    	initializeARCapacityCache();
-/*    	
-        Collection<AmountResource> resources = ResourceUtil.getInstance().getAmountResources();
-        amountResourceCapacityCache = new HashMap<AmountResource, Double>();
-        amountResourceCapacityCacheDirty = new HashMap<AmountResource, Boolean>();
-        amountResourceContainersCapacityCache = new HashMap<AmountResource, Double>();
-        amountResourceContainersCapacityCacheDirty = new HashMap<AmountResource, Boolean>();
-
-        for (AmountResource resource : resources) {
-            amountResourceCapacityCache.put(resource, 0D);
-            amountResourceCapacityCacheDirty.put(resource, true);
-            amountResourceContainersCapacityCache.put(resource, 0D);
-            amountResourceContainersCapacityCacheDirty.put(resource, true);
-        }
-*/        
+    	initializeARCapacityCache();  	
     }
 
     /**
@@ -1836,18 +1806,7 @@ implements Serializable {
      * @return true if resource is dirty in cache.
      */
     private boolean isAmountResourceCapacityCacheDirty(AmountResource resource) {
-    	return isARCapacityCacheDirty(resource.getID());
-/*    	
-        // Initialize amount resource capacity cache if necessary.
-        if (amountResourceCapacityCache == null) {
-            initializeAmountResourceCapacityCache();
-        }
-        // 2016-12-21 Check if amountResourceCapacityCacheDirty contains the resource
-        if (amountResourceCapacityCacheDirty.containsKey(resource))
-        	return amountResourceCapacityCacheDirty.get(resource);
-        else
-        	return true;
-*/
+    	return isARCapacityCacheDirty(resource.getID());   	
     }
 
     /**
@@ -1861,7 +1820,7 @@ implements Serializable {
         if (capacityCache == null) {
             initializeAmountResourceCapacityCache();
         }
-        // 2016-12-21 Check if amountResourceCapacityCacheDirty contains the resource
+        // Check if amountResourceCapacityCacheDirty contains the resource
         if (capacityCacheDirty.containsKey(resource))
         	return capacityCacheDirty.get(resource);
         else
@@ -1874,15 +1833,7 @@ implements Serializable {
      * @param resource the dirty resource.
      */
     private void setAmountResourceCapacityCacheDirty(AmountResource resource) {
-    	setARCapacityCacheDirty(resource.getID());
-/*   	
-        // Initialize amount resource capacity cache if necessary.
-        if (amountResourceCapacityCache == null) {
-            initializeAmountResourceCapacityCache();
-        }
-
-        amountResourceCapacityCacheDirty.put(resource, true);
-*/        
+    	setARCapacityCacheDirty(resource.getID());  	  
     }
 
     /**
@@ -1905,28 +1856,7 @@ implements Serializable {
      */
     private void setAmountResourceCapacityCacheAllDirty(boolean containersDirty) {
     	setARCapacityCacheAllDirty(containersDirty);
-/*
-        // Initialize amount resource capacity cache if necessary.
-        if (amountResourceCapacityCache == null) {
-            initializeAmountResourceCapacityCache();
-        }
 
-        for (AmountResource amountResource : ResourceUtil.getInstance().getAmountResources()) {
-            setAmountResourceCapacityCacheDirty(amountResource);
-
-            if (containersDirty) {
-                amountResourceContainersCapacityCacheDirty.put(amountResource, true);
-            }
-        }
-
-        // Set owner unit's amount resource capacity cache as dirty (if any).
-        if (owner != null) {
-            Unit container = owner.getContainerUnit();
-            if (container != null) {
-                container.getInventory().setAmountResourceCapacityCacheAllDirty(true);
-            }
-        }
-*/        
     }
 
     /**
@@ -1964,27 +1894,7 @@ implements Serializable {
      * @return capacity (kg) for the amount resource.
      */
     private double getAmountResourceCapacityCacheValue(AmountResource resource, boolean allowDirty) {
-    	return getARCapacityCacheValue(resource.getID(), allowDirty);
-/*    	
-        // Initialize amount resource capacity cache if necessary.
-        if (amountResourceCapacityCache == null) {
-            initializeAmountResourceCapacityCache();
-        }
-
-        // Update amount resource capacity cache if it is dirty.
-        if (isAmountResourceCapacityCacheDirty(resource) && !allowDirty) {
-            updateAmountResourceCapacityCache(resource);
-        }
-
-        // 2017-03-21 Check if amountResourceCapacityCache contains the resource
-        if (amountResourceCapacityCache.containsKey(resource))
-        	return amountResourceCapacityCache.get(resource);
-        else {
-        	amountResourceCapacityCache.put(resource, 0D);
-        	return 0;
-        }
-        //return amountResourceCapacityCache.get(resource);
-*/        
+    	return getARCapacityCacheValue(resource.getID(), allowDirty);   	
     }
 
     /**
@@ -2005,7 +1915,7 @@ implements Serializable {
             updateARCapacityCache(resource);
         }
 
-        // 2017-03-21 Check if amountResourceCapacityCache contains the resource
+        // Check if amountResourceCapacityCache contains the resource
         if (capacityCache.containsKey(resource))
         	return capacityCache.get(resource);
         else {
@@ -2021,84 +1931,6 @@ implements Serializable {
      */
     private void updateAmountResourceCapacityCache(AmountResource resource) {
     	updateARCapacityCache(resource.getID());
-/*    	
-        // Initialize amount resource capacity cache if necessary.
-        if (amountResourceCapacityCache == null) {
-            initializeAmountResourceCapacityCache();
-        }
-
-        // Determine local resource capacity.
-        double capacity = 0D;
-        if (resourceStorage != null) {
-            capacity += resourceStorage.getAmountResourceCapacity(resource);
-        }
-
-        // Determine capacity for all contained units.
-        double containedCapacity = 0D;
-        // 2016-12-21 Check for null
-        if (amountResourceContainersCapacityCacheDirty.containsKey(resource)) {
-	        if (amountResourceContainersCapacityCacheDirty.get(resource)) {
-	            if (containedUnits != null) {
-	                for (Unit unit : containedUnits) {
-	                    if (unit instanceof Container) {
-	                        containedCapacity += unit.getInventory().getAmountResourceCapacity(resource, false);
-	                    }
-	                }
-	            }
-	            amountResourceContainersCapacityCache.put(resource, containedCapacity);
-	            amountResourceContainersCapacityCacheDirty.put(resource, false);
-	        }
-	        // 2016-12-21 Check for null
-	        else if (amountResourceContainersCapacityCache.containsKey(resource)) {
-	            containedCapacity = amountResourceContainersCapacityCache.get(resource);
-	        }
-        }
-        // 2016-12-21 Check for null
-        else if (amountResourceContainersCapacityCache.containsKey(resource)) {
-            containedCapacity = amountResourceContainersCapacityCache.get(resource);
-        }
-
-        // Determine stored resources for all contained units.
-        double containedStored = 0D;
-        if (amountResourceContainersStoredCache == null) {
-            initializeAmountResourceStoredCache();
-        }
-
-        // 2017-03-21 Add checking for amountResourceContainersStoredCacheDirty and add if else clause
-        if (amountResourceContainersStoredCacheDirty.containsKey(resource)) {
-         	if (amountResourceContainersStoredCacheDirty.get(resource)) {
-	            if (containedUnits != null) {
-	                for (Unit unit : containedUnits) {
-	                    if (unit instanceof Container) {
-	                        containedStored += unit.getInventory().getAmountResourceStored(resource, false);
-	                    }
-	                }
-	            }
-	            amountResourceContainersStoredCache.put(resource,  containedStored);
-	            amountResourceContainersStoredCacheDirty.put(resource, false);
-	        }
-	        else {
-	            containedStored = amountResourceContainersStoredCache.get(resource);
-	        }
-        }
-        else {
-            //amountResourceContainersStoredCacheDirty.put(resource, false);
-            //containedStored = amountResourceContainersStoredCache.get(resource);
-        }
-
-        // Limit container capacity to this inventory's remaining general capacity.
-        // Add container's resource stored as this is already factored into inventory's
-        // remaining general capacity.
-        double generalResourceCapacity = getRemainingGeneralCapacity(false) + containedStored;
-        if (containedCapacity > generalResourceCapacity) {
-            containedCapacity = generalResourceCapacity;
-        }
-
-        capacity += containedCapacity;
-
-        amountResourceCapacityCache.put(resource, capacity);
-        amountResourceCapacityCacheDirty.put(resource, false);
-*/        
     }
 
     
@@ -2121,7 +1953,7 @@ implements Serializable {
 
         // Determine capacity for all contained units.
         double containedCapacity = 0D;
-        // 2016-12-21 Check for null
+        // Check for null
         if (containersCapacityCacheDirty.containsKey(resource)) {
 	        if (containersCapacityCacheDirty.get(resource)) {
 	            if (containedUnits != null) {
@@ -2134,12 +1966,12 @@ implements Serializable {
 	            containersCapacityCache.put(resource, containedCapacity);
 	            containersCapacityCacheDirty.put(resource, false);
 	        }
-	        // 2016-12-21 Check for null
+	        // Check for null
 	        else if (containersCapacityCache.containsKey(resource)) {
 	            containedCapacity = containersCapacityCache.get(resource);
 	        }
         }
-        // 2016-12-21 Check for null
+        // Check for null
         else if (containersCapacityCache.containsKey(resource)) {
             containedCapacity = containersCapacityCache.get(resource);
         }
@@ -2150,7 +1982,7 @@ implements Serializable {
             initializeAmountResourceStoredCache();
         }
 
-        // 2017-03-21 Add checking for amountResourceContainersStoredCacheDirty and add if else clause
+        // Add checking for amountResourceContainersStoredCacheDirty and add if else clause
         if (containersStoredCacheDirty.containsKey(resource)) {
          	if (containersStoredCacheDirty.get(resource)) {
 	            if (containedUnits != null) {
@@ -2192,20 +2024,6 @@ implements Serializable {
      */
     private synchronized void initializeAmountResourceStoredCache() {
     	initializeARStoredCache();
-/*    	
-        Collection<AmountResource> resources = ResourceUtil.getInstance().getAmountResources();
-        amountResourceStoredCache = new HashMap<AmountResource, Double>();
-        amountResourceStoredCacheDirty = new HashMap<AmountResource, Boolean>();
-        amountResourceContainersStoredCache = new HashMap<AmountResource, Double>();
-        amountResourceContainersStoredCacheDirty = new HashMap<AmountResource, Boolean>();
-
-        for (AmountResource resource : resources) {
-            amountResourceStoredCache.put(resource, 0D);
-            amountResourceStoredCacheDirty.put(resource, true);
-            amountResourceContainersStoredCache.put(resource, 0D);
-            amountResourceContainersStoredCacheDirty.put(resource, true);
-        }
-*/        
     }
 
     /**
@@ -2233,18 +2051,6 @@ implements Serializable {
      */
     private boolean isAmountResourceStoredCacheDirty(AmountResource resource) {
     	return isARStoredCacheDirty(resource.getID());
-    	/* 
-    	// Initialize amount resource stored cache if necessary.
-        if (amountResourceStoredCacheDirty == null) {
-            initializeAmountResourceStoredCache();
-        }
-
-        // 2016-12-21 Check if amountResourceStoredCacheDirty contains the resource
-        if (amountResourceStoredCacheDirty.containsKey(resource))
-        	return amountResourceStoredCacheDirty.get(resource);
-        else
-        	return true;
-*/        
     }
 
     /**
@@ -2258,7 +2064,7 @@ implements Serializable {
             initializeAmountResourceStoredCache();
         }
 
-        // 2016-12-21 Check if amountResourceStoredCacheDirty contains the resource
+        // Check if amountResourceStoredCacheDirty contains the resource
         if (storedCacheDirty.containsKey(resource))
         	return storedCacheDirty.get(resource);
         else
@@ -2271,14 +2077,6 @@ implements Serializable {
      */
     private void setAmountResourceStoredCacheDirty(AmountResource resource) {
     	setARStoredCacheDirty(resource.getID());
-/*    	
-        // Initialize amount resource stored cache if necessary.
-        if (amountResourceStoredCache == null) {
-            initializeAmountResourceStoredCache();
-        }
-
-        amountResourceStoredCacheDirty.put(resource, true);
-*/        
     }
 
     /**
@@ -2301,28 +2099,6 @@ implements Serializable {
      */
     private void setAmountResourceStoredCacheAllDirty(boolean containersDirty) {
     	setARStoredCacheAllDirty(containersDirty);
-/*    	
-        // Initialize amount resource stored cache if necessary.
-        if (amountResourceStoredCache == null) {
-            initializeAmountResourceStoredCache();
-        }
-
-        for (AmountResource amountResource : ResourceUtil.getInstance().getAmountResources()) {
-            setAmountResourceStoredCacheDirty(amountResource);
-
-            if (containersDirty) {
-                amountResourceContainersStoredCacheDirty.put(amountResource, true);
-            }
-        }
-
-        // Set owner unit's amount resource stored cache as dirty (if any).
-        if (owner != null) {
-            Unit container = owner.getContainerUnit();
-            if (container != null) {
-                container.getInventory().setAmountResourceStoredCacheAllDirty(true);
-            }
-        }
-*/        
     }
 
     /**
@@ -2361,27 +2137,6 @@ implements Serializable {
      */
     private double getAmountResourceStoredCacheValue(final AmountResource resource, final boolean allowDirty) {
     	return getARStoredCacheValue(resource.getID(), allowDirty);
-/*   	
-        // Initialize amount resource stored cache if necessary.
-        if (amountResourceStoredCache == null) {
-            initializeAmountResourceStoredCache();
-        }
-
-        // Update amount resource stored cache if it is dirty.
-        if (!allowDirty && isAmountResourceStoredCacheDirty(resource)) {
-            updateAmountResourceStoredCache(resource);
-        }
-
-        // 2017-03-21 Check if amountResourceStoredCache contains the resource
-        if (amountResourceStoredCache.containsKey(resource))
-        	return amountResourceStoredCache.get(resource);
-        else {
-        	amountResourceCapacityCache.put(resource, 0D);
-        	return 0;
-        }
-
-        //return amountResourceStoredCache.get(resource);
-*/
     }
 
     /**
@@ -2402,7 +2157,7 @@ implements Serializable {
             updateARStoredCache(resource);
         }
 
-        // 2017-03-21 Check if amountResourceStoredCache contains the resource
+        // Check if amountResourceStoredCache contains the resource
         if (storedCache.containsKey(resource))
         	return storedCache.get(resource);
         else {
@@ -2420,44 +2175,6 @@ implements Serializable {
      */
     private void updateAmountResourceStoredCache(AmountResource resource) {
     	updateARStoredCache(resource.getID());
-/*    	
-        double stored = 0D;
-
-        if (resourceStorage != null) {
-            stored += resourceStorage.getAmountResourceStored(resource);
-        }
-
-        double containerStored = 0D;
-        // 2016-12-21 Add checking for amountResourceContainersStoredCacheDirty
-        if (amountResourceContainersStoredCacheDirty.containsKey(resource)) {
-	        if (amountResourceContainersStoredCacheDirty.get(resource)) {
-	            if (containedUnits != null) {
-	                for (Unit unit : containedUnits) {
-	                    if (unit instanceof Container) {
-	                        containerStored += unit.getInventory().getAmountResourceStored(resource, false);
-	                    }
-	                }
-	            }
-	            amountResourceContainersStoredCache.put(resource, containerStored);
-	            amountResourceContainersStoredCacheDirty.put(resource, false);
-	        }
-	        else {
-	            containerStored = amountResourceContainersStoredCache.get(resource);
-	        }
-        }
-        // 2016-12-21 Add checking amountResourceContainersStoredCache
-        else if (amountResourceContainersStoredCache.containsKey(resource)) {
-        	containerStored = amountResourceContainersStoredCache.get(resource);
-        }
-        else {
-        	//containerStored = amountResourceContainersStoredCache.get(resource);
-        }
-
-        stored += containerStored;
-
-        amountResourceStoredCache.put(resource, stored);
-        amountResourceStoredCacheDirty.put(resource, false);
-*/        
     }
 
     /**
@@ -2473,7 +2190,7 @@ implements Serializable {
         }
 
         double containerStored = 0D;
-        // 2016-12-21 Add checking for amountResourceContainersStoredCacheDirty
+        // Add checking for amountResourceContainersStoredCacheDirty
         if (containersStoredCacheDirty.containsKey(resource)) {
 	        if (containersStoredCacheDirty.get(resource)) {
 	            if (containedUnits != null) {
@@ -2490,7 +2207,7 @@ implements Serializable {
 	            containerStored = containersStoredCache.get(resource);
 	        }
         }
-        // 2016-12-21 Add checking amountResourceContainersStoredCache
+        // Add checking amountResourceContainersStoredCache
         else if (containersStoredCache.containsKey(resource)) {
         	containerStored = containersStoredCache.get(resource);
         }
@@ -2526,23 +2243,7 @@ implements Serializable {
      * Sets the all stored amount resources cache as dirty.
      */
     private void setAllStoredAmountResourcesCacheDirty() {
-    	setAllStoredARCacheDirty();
-    	/*
-        // Update all stored amount resources cache if it hasn't been initialized.
-        if (allStoredAmountResourcesCache == null) {
-            initializeAllStoredAmountResourcesCache();
-        }
-
-        allStoredAmountResourcesCacheDirty = true;
-
-        // Mark owner unit's all stored amount resources stored as dirty, if any.
-        if (owner != null) {
-            Unit container = owner.getContainerUnit();
-            if (container != null) {
-                container.getInventory().setAllStoredAmountResourcesCacheDirty();
-            }
-        }
-*/        
+    	setAllStoredARCacheDirty(); 
     }
 
     /**
@@ -2564,7 +2265,8 @@ implements Serializable {
                 container.getInventory().setAllStoredARCacheDirty();
             }
         }
-    }    
+    }  
+    
     /**
      * Gets the all stored amount resources cache.
      * @param allowDirty true if cache value can be dirty.
@@ -2576,19 +2278,6 @@ implements Serializable {
     		set.add(ResourceUtil.findAmountResource(ar));
     	}
     	return set;
-    	
-/*    	
-        // Update all stored amount resources cache if it hasn't been initialized.
-        if (allStoredAmountResourcesCache == null) {
-            initializeAllStoredAmountResourcesCache();
-        }
-
-        if (allStoredAmountResourcesCacheDirty && !allowDirty) {
-            updateAllStoredAmountResourcesCache();
-        }
-
-        return allStoredAmountResourcesCache;
-*/        
     }
 
     /**
@@ -2615,24 +2304,6 @@ implements Serializable {
      */
     private void updateAllStoredAmountResourcesCache() {
     	updateAllStoredARCache();
-/*    	
-        Set<AmountResource> tempAllStored = new HashSet<AmountResource>();
-
-        if (resourceStorage != null) {
-            tempAllStored.addAll(resourceStorage.getAllAmountResourcesStored(false));
-        }
-
-        if (containedUnits != null) {
-            for (Unit unit : containedUnits) {
-                if (unit instanceof Container) {
-                    tempAllStored.addAll(unit.getInventory().getAllAmountResourcesStored(false));
-                }
-            }
-        }
-
-        allStoredAmountResourcesCache = tempAllStored;
-        allStoredAmountResourcesCacheDirty = false;
-*/        
     }
     
     /**
@@ -2880,10 +2551,6 @@ implements Serializable {
     	if (resourceStorage != null)
     		resourceStorage.restoreARs(ars);
     }
-    
-    //public AmountResourceStorage getAmountResourceStorage() {
-    //	return resourceStorage;
-    //}
     
     
     /**

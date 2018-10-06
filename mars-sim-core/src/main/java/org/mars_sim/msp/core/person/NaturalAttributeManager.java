@@ -10,8 +10,8 @@ package org.mars_sim.msp.core.person;
 import java.io.Serializable;
 import java.util.Hashtable;
 
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The NaturalAttributeManager class manages a person's natural attributes.

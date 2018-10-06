@@ -12,9 +12,9 @@ import java.awt.Font;
 
 import javax.swing.Icon;
 
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;

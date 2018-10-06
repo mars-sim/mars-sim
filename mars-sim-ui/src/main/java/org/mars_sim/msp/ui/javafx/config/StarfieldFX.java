@@ -9,7 +9,7 @@ package org.mars_sim.msp.ui.javafx.config;
 
 import java.util.Random;
 
-import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 import javafx.application.Application;
 import javafx.scene.Group;

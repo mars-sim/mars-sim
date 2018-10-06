@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.mars;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
@@ -15,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 import java.io.Serializable;
 import java.util.Iterator;

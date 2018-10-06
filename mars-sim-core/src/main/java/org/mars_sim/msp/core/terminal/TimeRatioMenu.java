@@ -12,10 +12,10 @@ import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.TextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
-import org.mars_sim.msp.core.MathUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.terminal.AppUtil;
 import org.mars_sim.msp.core.terminal.RunnerData;
+import org.mars_sim.msp.core.tool.MathUtils;
 
 import java.util.function.BiConsumer;
 

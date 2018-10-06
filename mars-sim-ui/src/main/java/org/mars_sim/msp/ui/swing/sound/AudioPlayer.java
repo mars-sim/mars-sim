@@ -17,10 +17,10 @@ import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;

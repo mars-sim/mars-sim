@@ -11,6 +11,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 
 import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Spherical Coordinates. Represents a location on virtual Mars in

@@ -9,9 +9,9 @@ package org.mars_sim.msp.core.mars;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.mars.MineralMapConfig.MineralType;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 import javax.swing.*;
 import java.awt.*;

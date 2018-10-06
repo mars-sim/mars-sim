@@ -8,8 +8,6 @@ package org.mars_sim.msp.core.tool;
 
 import java.util.Arrays;
 
-import org.mars_sim.msp.core.JumpPolynomial;
-
 /**
  * A SIMD-oriented Fast Mersenne Twister generator.
  * <dl>

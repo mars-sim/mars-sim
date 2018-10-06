@@ -8,8 +8,7 @@ package org.mars_sim.msp.core;
 
 import java.util.EventObject;
 
-public class UnitManagerEvent
-extends EventObject {
+public class UnitManagerEvent extends EventObject {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -20,9 +19,10 @@ extends EventObject {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param unitManager the unit manager throwing this event.
-	 * @param eventType the type of event.
-	 * @param unit the target of the event.
+	 * @param eventType   the type of event.
+	 * @param unit        the target of the event.
 	 */
 	public UnitManagerEvent(UnitManager unitManager, UnitManagerEventType eventType, Unit unit) {
 		// User EventObject constructor.
@@ -33,6 +33,7 @@ extends EventObject {
 
 	/**
 	 * Gets the event type.
+	 * 
 	 * @return type string.
 	 */
 	public UnitManagerEventType getEventType() {
@@ -41,6 +42,7 @@ extends EventObject {
 
 	/**
 	 * Gets the unit target of this event.
+	 * 
 	 * @return unit
 	 */
 	public Unit getUnit() {

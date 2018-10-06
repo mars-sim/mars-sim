@@ -12,19 +12,24 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-/*
- * 
- * see https://stackoverflow.com/questions/9132193/log4j-standard-way-to-prevent-repetitive-log-messages#37619797
-	Do
- 		LogConsolidated.log(logger, Level.WARN, 5000, "File: " + f + " not found.", e);
-	Instead of:
-		logger.warn("File: " + f + " not found.", e);
- */
+//  See https://stackoverflow.com/questions/9132193/log4j-standard-way-to-prevent-repetitive-log-messages#37619797
+//	Do
+// 		LogConsolidated.log(logger, Level.WARN, 5000, "File: " + f + " not found.", e);
+//	Instead of:
+//		logger.warn("File: " + f + " not found.", e);
+ 
 
 public class LogConsolidated {
 
     private static HashMap<String, TimeAndCount> lastLoggedTime = new HashMap<>();
 
+    private static final String OPEN_BRACKET = "[x";
+    private static final String CLOSED_BRACKET = "] ";
+    private static final String COLON = " : ";
+    private static final String COLON_2 = ":";
+    private static final String ONCE = "[x1] "; 
+    private static final String QUESTION = "?";
+    
 	//private static Logger logger = Logger.getLogger(LogConsolidated.class.getName());
 	//private static java.util.logging.Logger logj = java.util.logging.Logger.getLogger(LogConsolidated.class.getName());
 
@@ -61,13 +66,13 @@ public class LogConsolidated {
                         //    log(logger, level, sourceName + " : " + message, t);
                     	//}
                     	//else
-                    		log(logger, level, "[x" + lastTimeAndCount.count + "] " + className + " : " +  message, t);
+                    		log(logger, level, OPEN_BRACKET + lastTimeAndCount.count + CLOSED_BRACKET + className + COLON +  message, t);
                     }
                 }
             } 
             
             else {
-            	log(logger, level, "[x1] " + className + " : " + message, t);
+            	log(logger, level, ONCE + className + COLON + message, t);
             }
             
             lastLoggedTime.put(uniqueIdentifier, new TimeAndCount());
@@ -82,22 +87,22 @@ public class LogConsolidated {
                 enteredLogConsolidated = true;
             } else if (enteredLogConsolidated) {
                 // We have now file/line before entering LogConsolidated.
-                return ste.getFileName() + ":" + ste.getLineNumber();
+                return ste.getFileName() + COLON_2 + ste.getLineNumber();
             }
         }
-        return "?";
+        return QUESTION;
     }       
 
     private static void log(Logger logger, Level level, String message, Throwable t) {
-/*
-    	java.util.logging.Level l2 = null;
-    	if (level == Level.INFO)
-    		l2 =  java.util.logging.Level.INFO;
-    	else if (level == Level.WARN || level == Level.ERROR)
-    		l2 =  java.util.logging.Level.WARNING;
-    	else if (level == Level.FATAL)
-    		l2 =  java.util.logging.Level.SEVERE;
- */   	
+
+//    	java.util.logging.Level l2 = null;
+//    	if (level == Level.INFO)
+//    		l2 =  java.util.logging.Level.INFO;
+//    	else if (level == Level.WARN || level == Level.ERROR)
+//    		l2 =  java.util.logging.Level.WARNING;
+//    	else if (level == Level.FATAL)
+//    		l2 =  java.util.logging.Level.SEVERE;
+  	
         if (t == null) {
             logger.log(level, message);
             

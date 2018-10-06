@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
@@ -35,6 +34,7 @@ import org.mars_sim.msp.core.person.ai.job.Meteorologist;
 import org.mars_sim.msp.core.person.ai.job.Physicist;
 import org.mars_sim.msp.core.person.ai.job.Technician;
 import org.mars_sim.msp.core.person.ai.job.Trader;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The ChainOfCommand class creates and assigns a person a role type based on

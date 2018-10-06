@@ -13,12 +13,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonalityTraitType;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The MBTI (Myers-Briggs Type Indicator) personality type for the person.

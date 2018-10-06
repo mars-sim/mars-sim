@@ -6,8 +6,8 @@
  */
 package org.mars_sim.msp.core.person.health;
 
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
