@@ -37,32 +37,46 @@ public class ChatUtils {
 	public final static String YOU_PROMPT = "You : ";
 	public final static String REQUEST_HEIGHT_CHANGE = YOU_PROMPT + "I'd like to change the chat box height to ";
 	public final static String REQUEST_HELP = YOU_PROMPT
-			+ "I need some help! What are the available keywords/commands ? ";
+			+ "I need some help! What are the available commands ?";
 
-	public final static String INSTRUCTIONS_TEXT =  System.lineSeparator() + " ***** INSTRUCTIONS ***** " + System.lineSeparator()
-			+ "(1) Type in the name of a person, a bot, or a settlement to connect with." + System.lineSeparator()
-			+ "(2) Use keywords or type in a number between 1 and 15 (each representing a specific question on a person, a bot or a settlement)."  + System.lineSeparator()		
-			+ "(3) Type '/k' or 'key' to see a list of keywords." + System.lineSeparator() 
-			+ "(4) Type 'settlement' to obtain a list of the names of all the established settlements." + System.lineSeparator()
-			+ "(5) Type 'bye', 'exit', 'quit', '/b', '/x', '/q' to close this chat box" + System.lineSeparator()
-			+ "(6) Type '?', 'help', '/?', '/h' for this instruction page" + System.lineSeparator()
-			+ "(7) Type 'y_' to change the chat box height; '/y1'-> 256 pixels (default) '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
+	public final static String REQUEST_KEYS = YOU_PROMPT
+			+ "I need a list of the keywords. Would you tell me what they are ?";
+	
+	public final static String HELP_TEXT =  System.lineSeparator() 
+			+ "    -------------------- H E L P -------------------- " + System.lineSeparator()
+			+ "(1) Type in the NAME of a person, a bot, or a settlement to connect with." + System.lineSeparator()
+			+ "(2) Use KEYWORDS or type in a number between 1 and 15 (specific QUESTIONS on a person/bot/vehicle/settlement)."  + System.lineSeparator()		
+			+ "(3) Type '/k' or 'key' to see a list of KEYWORDS." + System.lineSeparator() 
+			+ "(4) Type 'settlement' to obtain the NAMES of the established settlements." + System.lineSeparator()
+			+ "(5) Type 'bye', '/b', 'exit', 'x', 'quit', '/q' to close the chat box." + System.lineSeparator()
+			+ "(6) Type '?', 'help', '/?', '/h' for this help page." + System.lineSeparator();
+
+	public final static String HELP_HEIGHT = "(7) Type 'y_' to change the chat box height; '/y1'-> 256 pixels (default) '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
 			+ System.lineSeparator();
 
-	public final static String KEYWORDS_TEXT = System.lineSeparator() + " ***** KEYWORDS ***** " + System.lineSeparator()
+	public final static String KEYWORDS_TEXT = System.lineSeparator() 
+			+ "    -------------------- K E Y W O R D S -------------------- " + System.lineSeparator()
 			+ "(1) 'where', 'location', 'located', 'task', 'activity', 'action', 'mission', " + System.lineSeparator()
 			+ "(2) 'bed', 'quarters', 'building', 'inside', 'outside'," + System.lineSeparator()
 			+ "(3) 'settlement', 'settlements', 'associated settlement', 'association', 'home', 'home town',"
 			+ System.lineSeparator() // 'buried settlement', 'buried'
 			+ "(4) 'vehicle inside', 'vehicle outside', 'vehicle park', 'vehicle settlement'," + System.lineSeparator()
-			+ "(5) 'vehicle container', 'vehicle top container'" + System.lineSeparator() + " ***** NUMERAL ***** "
-			+ System.lineSeparator() + " 1 to 15 are specific questions on a person/bot/settlement"
-			+ System.lineSeparator() + " *****  MISCS  ***** " + System.lineSeparator()
-			+ "'bye', 'exit', 'quit', '/q', '/x', to close chat box" + System.lineSeparator()
-			+ "'help', '/h' for guidance/help" + System.lineSeparator()
-			+ "'/y1' to reset height to 256 pixels (by default) after closing chat box. '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
-			+ System.lineSeparator();
+			+ "(5) 'vehicle container', 'vehicle top container'" + System.lineSeparator() 
+			+ "    -------------------- N U M E R A L -------------------- " + System.lineSeparator() 
+			+ "(6) 1 to 15 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator() 
+			+ "    --------------------  M I S C S -------------------- " + System.lineSeparator()
+			+ "(7) 'bye', '/b', 'exit', 'x', 'quit', '/q' to close the chat box" + System.lineSeparator()
+			+ "(8) 'help', '/h' for the help page" + System.lineSeparator();
 
+	public final static String KEYWORDS_HEIGHT = "(9) '/y1' to reset height to 256 pixels (by default) after closing chat box. '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
+	+ System.lineSeparator();
+
+	public static String helpText;
+		
+	public static String keywordText;
+			
+	private static boolean headlessMode = false;
+	
 	public static Person personCache;
 	public static Robot robotCache;
 	public static Settlement settlementCache;
@@ -73,6 +87,8 @@ public class ChatUtils {
 //	public static Building building;
 //	public static Equipment equipment;
 
+	public ChatUtils() {
+	}
 	
 	public static String[] clarify(String prompt) {
 		String questionText = YOU_PROMPT + "You were mumbling something about....";
@@ -362,8 +378,14 @@ public class ChatUtils {
 			else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
 
 //				help = true;
-				questionText = REQUEST_HELP;
-				responseText.append(KEYWORDS_TEXT);
+				questionText = REQUEST_KEYS;
+				if (headlessMode) {
+					keywordText = KEYWORDS_TEXT;
+				}
+				else {
+					keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
+				}
+				responseText.append(keywordText);
 
 			}
 
@@ -372,7 +394,13 @@ public class ChatUtils {
 
 //				help = true;
 				questionText = REQUEST_HELP;
-				responseText.append(INSTRUCTIONS_TEXT);
+				if (headlessMode) {
+					helpText = HELP_TEXT;
+				}
+				else {
+					helpText = HELP_TEXT + HELP_HEIGHT;
+				}
+				responseText.append(helpText);
 
 			}
 			
@@ -759,15 +787,27 @@ public class ChatUtils {
 				}
 	
 				else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
-					questionText = REQUEST_HELP;
-					responseText.append(KEYWORDS_TEXT);
+					questionText = REQUEST_KEYS;
+					if (headlessMode) {
+						keywordText = KEYWORDS_TEXT;
+					}
+					else {
+						keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
+					}
+					responseText.append(keywordText);
 	
 				}
 	
 				else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
 						|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
 					questionText = REQUEST_HELP;
-					responseText.append(INSTRUCTIONS_TEXT);
+					if (headlessMode) {
+						helpText = HELP_TEXT;
+					}
+					else {
+						helpText = HELP_TEXT + HELP_HEIGHT;
+					}
+					responseText.append(helpText);
 	
 				}
 				
@@ -779,7 +819,6 @@ public class ChatUtils {
 					questionText = txt[0];
 					responseText.append(txt[1]);
 				}
-
 			}
 		}
 
@@ -829,14 +868,26 @@ public class ChatUtils {
 		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
 
 			responseText.append(System.lineSeparator());
-			responseText.append(INSTRUCTIONS_TEXT);
+			if (headlessMode) {
+				keywordText = KEYWORDS_TEXT;
+			}
+			else {
+				keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
+			}
+			responseText.append(keywordText);
 		}
 
 		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
 				|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
 
 			responseText.append(System.lineSeparator());
-			responseText.append(KEYWORDS_TEXT);
+			if (headlessMode) {
+				helpText = HELP_TEXT;
+			}
+			else {
+				helpText = HELP_TEXT + HELP_HEIGHT;
+			}
+			responseText.append(helpText);
 		}		
 		
 		// Add proposals
@@ -917,7 +968,7 @@ public class ChatUtils {
 				Collection<Vehicle> list = s.getAllAssociatedVehicles();
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append(s);
-				responseText.append(" : ");
+				responseText.append(" has ");
 				responseText.append(list);
 				responseText.append(System.lineSeparator()); 			
 			}
@@ -1147,6 +1198,9 @@ public class ChatUtils {
 
 	}
 
+	public static void setHeadlessMode(boolean value) {
+		headlessMode = value;
+	}
 	
 	/**
 	 * Prepare object for garbage collection.

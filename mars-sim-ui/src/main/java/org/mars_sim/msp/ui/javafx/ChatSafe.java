@@ -3,8 +3,8 @@ package org.mars_sim.msp.ui.javafx;
 import java.util.Objects;
 import javafx.application.Platform;
 
-public final class ChatUtil {
-    private ChatUtil() {
+public final class ChatSafe {
+    private ChatSafe() {
         throw new UnsupportedOperationException();
     }
 

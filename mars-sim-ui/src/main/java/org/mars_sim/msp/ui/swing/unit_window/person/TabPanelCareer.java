@@ -83,10 +83,13 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 	private WebTable table;
 
-	private WebLabel jobLabel, roleLabel, jobChangeLabel, ratingLabel;
+	private WebLabel jobLabel;
+	private WebLabel roleLabel;
+	private WebLabel jobChangeLabel;
+	private WebLabel ratingLabel;
+	
 	private WebTextField roleTF;
 
-//	private JComboBoxMW<?> jobComboBox;
 	private WebComboBox jobComboBox;
 
 	private JobHistoryTableModel jobHistoryTableModel;
@@ -107,9 +110,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				null, Msg.getString("TabPanelCareer.tooltip"), //$NON-NLS-1$
 				unit, desktop);
 
-		// MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		// int solElapsed = MarsClock.getSolOfYear(clock);
 
 		Person person = null;
 		Robot robot = null;
@@ -157,8 +158,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			// Prepare job label
 			jobLabel = new WebLabel(Msg.getString("TabPanelCareer.jobType"), WebLabel.RIGHT); //$NON-NLS-1$
 			topPanel.add(jobLabel);
-			// balloonToolTip.createBalloonTip(jobLabel,
-			// Msg.getString("TabPanelCareer.jobType.tooltip")); //$NON-NLS-1$
 			TooltipManager.setTooltip(jobLabel, Msg.getString("TabPanelCareer.jobType.tooltip"), TooltipWay.down);
 
 			// Prepare job combo box
@@ -169,20 +168,17 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			}
 
 			Collections.sort(jobNames);
-//			jobComboBox = new JComboBoxMW<Object>(jobNames.toArray());
+
 			jobComboBox = new WebComboBox(jobNames.toArray());
+//			jobComboBox.setWidePopup(true);
 			jobComboBox.setSelectedItem(jobCache);
 			jobComboBox.addActionListener(this);
-
 			WebPanel jobPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT)); // new GridLayout(3, 1, 0, 0)); //
 			jobPanel.add(jobComboBox);
-
 			topPanel.add(jobPanel);
+
 			TooltipManager.setTooltip(jobComboBox, Msg.getString("TabPanelCareer.jobComboBox.tooltip"),
 					TooltipWay.down);
-			// balloonToolTip.createBalloonTip(jobComboBox,
-			// Msg.getString("TabPanelCareer.jobComboBox.tooltip")); //$NON-NLS-1$
-
 			// check if a job reassignment is still pending for review
 			// if true, disable the combobox
 
@@ -211,8 +207,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			jobChangeLabel.setFont(new Font("Courier New", Font.ITALIC, 12));
 			jobChangeLabel.setForeground(Color.blue);
 			firstPanel.add(jobChangeLabel, BorderLayout.SOUTH);
-			// balloonToolTip.createBalloonTip(roleLabel, roleTip);
-			// balloonToolTip.createBalloonTip(roleTF, roleTip);
 			TooltipManager.setTooltip(roleLabel, Msg.getString("TabPanelCareer.roleType.tooltip"), TooltipWay.down);//$NON-NLS-1$
 
 			// Prepare SpringLayout
@@ -239,9 +233,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			aveRater.setEnabled(false);
 			springPanel.add(aveRater);
 
-			// String tip = Msg.getString("TabPanelCareer.aveRater.tooltip");
-			// balloonToolTip.createBalloonTip(aveRatingLabel, tip); //$NON-NLS-1$
-			// balloonToolTip.createBalloonTip(aveRater, tip); //$NON-NLS-1$
 			TooltipManager.setTooltip(aveRatingLabel, Msg.getString("TabPanelCareer.aveRater.tooltip"), //$NON-NLS-1$
 					TooltipWay.down);
 
@@ -251,12 +242,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 			TooltipManager.setTooltip(raterLabel, Msg.getString("TabPanelCareer.raterLabel.tooltip"), TooltipWay.down);//$NON-NLS-1$
 			TooltipManager.setTooltip(starRater, Msg.getString("TabPanelCareer.starRater.tooltip"), TooltipWay.down);//$NON-NLS-1$
-			// starRater.setToolTipText("Click to submit your rating to supervisor (once
-			// every 7 sols)");
-			// balloonToolTip.createBalloonTip(raterLabel,
-			// Msg.getString("TabPanelCareer.raterLabel.tooltip")); //$NON-NLS-1$
-			// balloonToolTip.createBalloonTip(starRater,
-			// Msg.getString("TabPanelCareer.starRater.tooltip")); //$NON-NLS-1$
 
 			starRater.addStarListener(new StarRater.StarListener() {
 				public void handleSelection(int selection) {
@@ -321,21 +306,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				checkingJobReassignment(person, list);
 		}
 
-//		else if (unit instanceof Robot) {
-//			 robot = (Robot) unit; 
-//			 botMind = robot.getBotMind(); // Prepare job combo box
-//			 jobCache = botMind.getRobotJob().getName(robot.getRobotType()); 
-//			 List<String> jobNames = new ArrayList<String>(); 
-//			 for (RobotJob robotJob : JobManager.getRobotJobs()) {
-//				 jobNames.add(robotJob.getName(robot.getRobotType())); 
-//			 }
-//			 Collections.sort(jobNames); 
-//			 jobComboBox = new JComboBoxMW<Object>(jobNames.toArray());
-//			 jobComboBox.setSelectedItem(jobCache); 
-//			 jobComboBox.addActionListener(this);
-//			 jobPanel.add(jobComboBox);
-//		}
-
 		// Prepare job title panel
 		WebPanel jobHistoryPanel = new WebPanel(new GridLayout(2, 1, 1, 1));
 		centerContentPanel.add(jobHistoryPanel, BorderLayout.NORTH);
@@ -398,12 +368,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			// solRatingSubmitted from JobAssignment
 			if (list.get(size - 1).getStatus().equals(JobAssignmentType.PENDING)) {
 				solRatingSubmitted = list.get(size - 2).getSolRatingSubmitted();
-				// System.out.println("Yes Pending, solRatingSubmitted is "+
-				// solRatingSubmitted);
 			} else {
 				solRatingSubmitted = list.get(size - 1).getSolRatingSubmitted();
-				// System.out.println("Nothing Pending. solRatingSubmitted is "+
-				// solRatingSubmitted);
 			}
 		}
 
@@ -454,9 +420,9 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		Settlement settlement = null;
 		if (person.getAssociatedSettlement() != null)
 			settlement = person.getAssociatedSettlement();
-		else if (person.isOutside()) {// .getLocationSituation() == LocationSituation.OUTSIDE) {
+		else if (person.isOutside()) {
 			settlement = (Settlement) person.getTopContainerUnit();
-		} else if (person.isInVehicle()) {// .getLocationSituation() == LocationSituation.IN_VEHICLE) {
+		} else if (person.isInVehicle()) {
 			Vehicle vehicle = (Vehicle) person.getContainerUnit();
 			settlement = vehicle.getSettlement();
 		}
@@ -611,6 +577,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			// deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
 
+//		SwingUtilities.invokeLater(() -> {
+//		jobComboBox.updateUI();
+//	});
+
 	}
 
 	/**
@@ -663,12 +633,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 					// if the population is beyond 4
 					if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
-						// System.out.println("\n< " + person.getName() + " > ");
-						// System.out.println("TabPanelCareer : actionPerformed() : pop > 4");
-
-						// if (clock == null)
-						// clock = Simulation.instance().getMasterClock().getMarsClock();
-
+	
 						jobChangeLabel.setForeground(Color.BLUE);
 						jobChangeLabel
 								.setText("Job reassignment submitted on " + MarsClock.getDateTimeStamp(marsClock));
@@ -676,8 +641,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 						JobHistory jh = person.getJobHistory();
 
 						statusCache = JobAssignmentType.PENDING;
-						// System.out.println("TabPanelCareer : actionPerformed() : calling
-						// savePendingJob()");
+	
 						jh.savePendingJob(selectedJobStr, JobManager.USER, statusCache, null, true);
 						// set the combobox selection back to its previous job type for the time being
 						// until the reassignment is approved
@@ -690,7 +654,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					}
 
 					else if (pop > 0 && pop <= UnitManager.POPULATION_WITH_COMMANDER) {
-						// System.out.println("TabPanelCareer : actionPerformed() : pop <= 4");
 						jobChangeLabel.setForeground(Color.RED);
 						jobChangeLabel.setText("");
 						jobComboBox.setSelectedItem(selectedJobStr);
@@ -709,29 +672,34 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				}
 			}
 
-			else if (unit instanceof Robot) {
-				
-//				 robot = (Robot) unit;
-//				
-//				 RobotJob selectedJob = null; Iterator<RobotJob> i =
-//				 JobManager.getRobotJobs().iterator();
-//				 while (i.hasNext() && (selectedJob == null)) {
-//					 RobotJob robotJob = i.next(); //System.out.println("job : " + job.);
-//					 if (jobName.equals(robotJob.getName(robot.getRobotType()))) {
-//						 selectedJob = robotJob; 
-//					 } 
-//				 }
-//				 robot.getBotMind().setRobotJob(selectedJob, true);
-			}
+//			else if (unit instanceof Robot) {
+//			}
 		}
 
-		jobComboBox.updateUI();
+//		if (desktop.getMainScene() != null) {
+//			Platform.runLater(() -> {
+//				this.jobComboBox.updateUI();
+//			});
+//		}
+	}
+
+	public void destroy() {
+		table = null;
+		jobLabel = null;
+		roleTF = null;
+		desktop = null;
+		jobChangeLabel = null;
+		ratingLabel = null;
+		jobComboBox = null;
+		jobHistoryTableModel = null;
+		starRater = null;
+		marsClock = null;
 	}
 
 	/**
 	 * Internal class used as model for the attribute table.
 	 */
-	private class JobHistoryTableModel extends AbstractTableModel {
+	class JobHistoryTableModel extends AbstractTableModel {
 
 		private static final long serialVersionUID = 1L;
 
@@ -745,7 +713,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		 * 
 		 * @param unit {@link Unit}
 		 */
-		private JobHistoryTableModel(Unit unit) {
+		JobHistoryTableModel(Unit unit) {
 			Person person = null;
 //			Robot robot = null;
 			if (unit instanceof Person) {
@@ -827,25 +795,11 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		/**
 		 * Prepares the job history of the person
 		 */
-		private void update() {
+		void update() {
 			jobAssignmentList = jobHistory.getJobAssignmentList();
 			fireTableDataChanged();
 		}
 
-	}
-
-	public void destroy() {
-		table = null;
-		jobLabel = null;
-		roleTF = null;
-		desktop = null;
-		jobChangeLabel = null;
-		ratingLabel = null;
-		jobComboBox = null;
-		jobHistoryTableModel = null;
-		starRater = null;
-		marsClock = null;
-		// balloonToolTip = null;
 	}
 
 }

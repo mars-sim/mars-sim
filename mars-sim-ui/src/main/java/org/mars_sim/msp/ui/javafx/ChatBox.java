@@ -217,7 +217,7 @@ public class ChatBox extends BorderPane {
 	 * 
 	 * @param text
 	 */
-	public void askQuestion(String text) { 
+	public void ask(String text) { 
 //		System.out.println("askQuestion() in ChatBox");
 		String questionText = "";
 		String responseText = "";
@@ -226,6 +226,7 @@ public class ChatBox extends BorderPane {
 		questionText = resetBoxHeight(text)[0];
 		responseText = resetBoxHeight(text)[1];
 			
+        ChatUtils.setHeadlessMode(false);
 		String[] ss =  ChatUtils.askQuestion(text);
 		
 		// Obtain responses
@@ -246,7 +247,7 @@ public class ChatBox extends BorderPane {
 	 * 
 	 * @param input text
 	 */
-	public void parseText(String text) {
+	public void parse(String text) {
 //		System.out.println("parseText() in ChatBox");
 		String responseText = null;
 
@@ -297,6 +298,7 @@ public class ChatBox extends BorderPane {
 		}
 	
 		else {
+	        ChatUtils.setHeadlessMode(false);
 			// Call ChatUtils' parseText
 			responseText = ChatUtils.parseText(text);
 		}
@@ -315,20 +317,19 @@ public class ChatBox extends BorderPane {
 	
 		if (text != "" && text != null && !text.trim().isEmpty()) {
 			textArea.appendText(ChatUtils.YOU_PROMPT + text + System.lineSeparator());
-//			Unit u = null;
 
 			// if no settlement, robot, person, or vehicle has been selected yet
 			if (ChatUtils.personCache == null && ChatUtils.robotCache == null 
 					&& ChatUtils.settlementCache == null && ChatUtils.vehicleCache == null) {	
-				// Call parseText to obtain a new value of unit
-				parseText(text);
+				// Call parse() to obtain a new value of unit
+				parse(text);
 			} 
 			
 			else {
-				// Call askQuestion() to further engage the conversion
-				askQuestion(text);
-				// Note : if both personCache and robotCache are set to null, then quit 
-				// askQuestion() and go back to parseText()
+				// Call ask() to further engage the conversion
+				ask(text);
+				// Note : if all _Cache are null, then leave
+				// ask() and go back to parse()
 			}
 
 			// Checks if the text already exists
@@ -376,7 +377,7 @@ public class ChatBox extends BorderPane {
 
 			historyPointer--;
 			// System.out.println("historyPointer is " + historyPointer);
-			ChatUtil.runSafe(() -> {
+			ChatSafe.runSafe(() -> {
 				/// textField.setText(history.get(historyPointer));
 				// textField.selectAll();
 				autoFillTextBox.getTextbox().setText(history.get(historyPointer));
@@ -392,7 +393,7 @@ public class ChatBox extends BorderPane {
 
 			historyPointer++;
 			// System.out.println("historyPointer is " + historyPointer);
-			ChatUtil.runSafe(() -> {
+			ChatSafe.runSafe(() -> {
 				// textField.setText(history.get(historyPointer));
 				// textField.selectAll();
 				autoFillTextBox.getTextbox().setText(history.get(historyPointer));
@@ -419,21 +420,21 @@ public class ChatBox extends BorderPane {
 	}
 
 	public void clear() {
-		ChatUtil.runSafe(() -> textArea.clear());
+		ChatSafe.runSafe(() -> textArea.clear());
 	}
 
 	public void print(final String text) {
 		Objects.requireNonNull(text, "text");
-		ChatUtil.runSafe(() -> textArea.appendText(text));
+		ChatSafe.runSafe(() -> textArea.appendText(text));
 	}
 
 	public void println(final String text) {
 		Objects.requireNonNull(text, "text");
-		ChatUtil.runSafe(() -> textArea.appendText(text + System.lineSeparator()));
+		ChatSafe.runSafe(() -> textArea.appendText(text + System.lineSeparator()));
 	}
 
 	public void println() {
-		ChatUtil.runSafe(() -> textArea.appendText(System.lineSeparator()));
+		ChatSafe.runSafe(() -> textArea.appendText(System.lineSeparator()));
 	}
 
 	public TextArea getTextArea() {

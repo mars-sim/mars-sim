@@ -29,6 +29,7 @@ public class LogConsolidated {
     private static final String COLON_2 = ":";
     private static final String ONCE = "[x1] "; 
     private static final String QUESTION = "?";
+    private static final String PERIOD = ".";   
     
 	//private static Logger logger = Logger.getLogger(LogConsolidated.class.getName());
 	//private static java.util.logging.Logger logj = java.util.logging.Logger.getLogger(LogConsolidated.class.getName());
@@ -50,7 +51,7 @@ public class LogConsolidated {
      */
     public static void log(Logger logger, Level level, long timeBetweenLogs, String sourceName, String message, Throwable t) {
     	
-		String className = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
+		String className = sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length());
 		
         //if (logger.isEnabledFor(level)) {
             String uniqueIdentifier = getFileAndLine();
