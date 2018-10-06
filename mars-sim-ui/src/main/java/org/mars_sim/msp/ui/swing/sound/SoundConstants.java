@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing.sound;
 /**
  * Constants for sounds used in the simulation.
  */
-
 public interface SoundConstants {
 
 	/** The path (relative to classpath) for sounds. */

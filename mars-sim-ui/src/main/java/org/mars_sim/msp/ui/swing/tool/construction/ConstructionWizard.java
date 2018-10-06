@@ -210,7 +210,8 @@ public class ConstructionWizard {
 	    }
 
 	    if (mainScene != null)
-	    	mainScene.unpauseSimulation();
+	    	Simulation.instance().getMasterClock().setPaused(false, true);
+//	    	mainScene.unpauseSimulation();
 	    	//mainScene.speedUpTimeRatio(previous);//.endPause(previous);
 
 	    settlement.fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, site);

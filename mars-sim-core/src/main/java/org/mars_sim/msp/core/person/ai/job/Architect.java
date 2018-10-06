@@ -85,7 +85,7 @@ implements Serializable {
 		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
 		result+= result * ((averageAptitude - 50D) / 100D);
 
-		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0;
 
 		return result;
 	}

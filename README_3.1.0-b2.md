@@ -245,27 +245,36 @@ where the jar file is at.
 
 ## Questions
 
-- For general questions regarding mars-sim, discuss them to our [facebook](https://www.facebook.com/groups/125541663548/) community
+- For general questions regarding mars-sim, discuss them to our 
+[facebook](https://www.facebook.com/groups/125541663548/) community
 
 - For technical questions/comments or submitting a ticket, post it at
 our GitHub [issue tracker](https://github.com/mars-sim/mars-sim/issues)
 
-- If you'd like to join in development, post what you would liek to 
+- If you'd like to join in development, post what you would like to 
 contribute in [GitHub](https://github.com/mars-sim/mars-sim/issues). 
 Another way to contact us is via developer [mailing list](mars-sim-developers@lists.sourceforge.net) 
 
 ---------------------------------------------------------------------
 ## Credits
 
-- A full list of contributors is available from the Help menu within nthe application. The credits can also be viewed by opening the file e/docs/help/about.html in mars-sim's built-in help browser.
+- A full list of contributors is available from the Help menu within 
+the application. The credits can also be viewed by opening the file 
+/docs/help/about.html in mars-sim's built-in help browser.
 
 ---------------------------------------------------------------------
 
 ## License
 
 - This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by ythe Free Software Foundation; either version 3 of the License, or (at tyour option) any later version..
-- This program is distributed in the hope that it will be useful, buttWITHOUT ANY WARRANTY; without even the implied warranty offMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
-General Public License 3 for more details.
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation; either version 3 of the License, or (at 
+your option) any later version..
+- This program is distributed in the hope that it will be useful, but 
+WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the General 
+Public License 3 for more details.
 
-- You should have received a copy of the GNU General Public License ealong with this program; if not, write to the Free SoftwareeFoundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307USA
+- You should have received a copy of the GNU General Public License 
+along with this program; if not, write to the Free Software Foundation,
+ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307USA

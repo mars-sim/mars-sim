@@ -307,6 +307,9 @@ public class MainScene implements ClockListener {
 	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
 	private boolean isFullScreenCache = false;
+	
+	private boolean lastMusicMuteBoxSetting;
+	private boolean lastSoundEffectMuteBoxSetting;
 
 	private DoubleProperty sceneWidth;// = new SimpleDoubleProperty(DEFAULt_WIDTH);//1366-40;
 	private DoubleProperty sceneHeight;// = new SimpleDoubleProperty(DEFAULt_HEIGHT); //768-40;
@@ -649,10 +652,8 @@ public class MainScene implements ClockListener {
 			if (t.getCode() == KeyCode.ESCAPE) {
 				if (masterClock.isPaused()) {
 					masterClock.setPaused(false, true);
-					unpause();
 				} else {
 					masterClock.setPaused(true, true);
-					pause();
 				}
 			}
 		}
@@ -703,7 +704,8 @@ public class MainScene implements ClockListener {
 			// boolean previous = startPause(); ?
 			pauseSimulation(false);
 			transportWizard.deliverBuildings(buildingManager);
-			unpauseSimulation();
+			masterClock.setPaused(false, true);
+//			unpauseSimulation();
 		});
 	}
 
@@ -721,7 +723,8 @@ public class MainScene implements ClockListener {
 			// double previous = slowDownTimeRatio();
 			pauseSimulation(false);
 			constructionWizard.selectSite(mission);
-			unpauseSimulation();
+			masterClock.setPaused(false, true);
+//			unpauseSimulation();
 			// speedUpTimeRatio(previous);
 		});
 	}
@@ -984,56 +987,83 @@ public class MainScene implements ClockListener {
 		}
 	}
 
-	public void mute(boolean isEffect, boolean isMusic) {
+	/**
+	 * Mute various sound control in the main scene
+	 * 
+	 * @param isEffect
+	 * @param isMusic
+	 */
+	public void muteControls(boolean isEffect, boolean isMusic) {
+//		System.out.println("MainScene's mute(" + isEffect + ", " + isMusic + ")");
 		if (isMusic) {
-			// mute it
-			soundPlayer.mute(false, true);
-			// save the slider value into the cache
+			// mute the music mute box						
+			//musicMuteBox.setSelected(true);
+			// mute the sound player
+			//soundPlayer.mutePlayer(false, true);
+			// save the music slider value into the cache
 			musicSliderCache = musicSlider.getValue();
-			// set the slider value to zero
+			// set the music slider value to zero
 			musicSlider.setValue(0);
 			// check the music mute item in menuBar
 			menuBar.getMusicMuteItem().setSelected(true);
 		}
+		
 		if (isEffect) {
-			// mute it
-			soundPlayer.mute(true, false);
-			// save the slider value into the cache
+			// mute the sound effect mute box			
+			//soundEffectMuteBox.setSelected(true);
+			// mute the sound player
+			//soundPlayer.mutePlayer(true, false);
+			// save the sound effect slider value into the cache
 			effectSliderCache = soundEffectSlider.getValue();
-			// set the slider value to zero
+			// set the sound effect slider value to zero
 			soundEffectSlider.setValue(0);
 			// check the sound effect mute item in menuBar
 			menuBar.getSoundEffectMuteItem().setSelected(true);
 
 		}
-		// soundPlayer.pause(isEffect, isMusic);
 	}
 
-	public void unmute(boolean isEffect, boolean isMusic) {
+	/**
+	 * Unmute various sound control in the main scene
+	 * 
+	 * @param isEffect
+	 * @param isMusic
+	 */
+	public void unmuteControls(boolean isEffect, boolean isMusic) {
+//		System.out.println("MainScene's unmute(" + isEffect + ", " + isMusic + ")");
 		if (isMusic) {
-			// unmute it
-			soundPlayer.unmute(false, true);
+			// mute the music mute box						
+			//musicMuteBox.setSelected(false);
+			// unmute the sound player
+			//soundPlayer.unmutePlayer(false, true);
 			// restore the slider value from the cache
 			musicSlider.setValue(musicSliderCache);
 			// uncheck the music mute item in menuBar
 			menuBar.getMusicMuteItem().setSelected(false);
 			
-			soundPlayer.setMusicVolume(convertSlider2Volume(musicSlider.getValue()));
+			//soundPlayer.setMusicVolume(convertSlider2Volume(musicSlider.getValue()));
+			
+			// Play the music track			
+			if (!soundPlayer.isSoundDisabled() 
+					&& !MainMenu.isSoundDisabled()
+					&& !musicMuteBox.isSelected()
+					&& musicSlider.getValue() > 0)
+						soundPlayer.resumeMusic();//.playRandomMusicTrack();
 
 		}
+		
 		if (isEffect) {
-			// unmute it
-			soundPlayer.unmute(true, false);
+			// mute the sound effect mute box			
+			//soundEffectMuteBox.setSelected(true);
+			// unmute the sound player
+			//soundPlayer.unmutePlayer(true, false);
 			// restore the slider value from the cache
 			soundEffectSlider.setValue(effectSliderCache);
 			// uncheck the sound effect mute item in menuBar
 			menuBar.getSoundEffectMuteItem().setSelected(false);
 			
-			soundPlayer.setSoundVolume(convertSlider2Volume(soundEffectSlider.getValue()));
+			//soundPlayer.setSoundVolume(convertSlider2Volume(soundEffectSlider.getValue()));
 		}
-
-		// soundPlayer.restore(isEffect, isMusic);
-
 	}
 
 	/**
@@ -1436,17 +1466,6 @@ public class MainScene implements ClockListener {
 		return l;
 	}
 
-	/*
-	 * public String timeRatioString(int t) { String s = null; if (t < 10) s = "   "
-	 * + t; else if (t < 100) s = "  " + t; else if (t < 1000) s = " " + t; else s =
-	 * "" + t; return s; }
-	 */
-	/*
-	 * public static Label createIconLabel(String iconName, int iconSize){ return
-	 * LabelBuilder.create() .text(iconName) .styleClass("icons")
-	 * .style("-fx-font-size: " + iconSize + "px;") .build(); }
-	 */
-
 	/**
 	 * Creates and returns the sound popup box
 	 */
@@ -1517,15 +1536,17 @@ public class MainScene implements ClockListener {
 		musicSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
 				if (old_val != new_val) {
-					double sliderValue = new_val.doubleValue();
-					// Set to the new music volume in the sound player
-					// System.out.println((float) convertSlider2Volume(sliderValue));
-					soundPlayer.setMusicVolume(convertSlider2Volume(sliderValue));
+					double newValue = new_val.doubleValue();
+					double oldValue = old_val.doubleValue();				
+					if (oldValue - newValue > 1 || newValue - oldValue > 1) {
+						// Set to the new music volume in the sound player
+						soundPlayer.setMusicVolume(convertSlider2Volume(newValue));
+					}
 
-					if (sliderValue <= 0) {
+					if (newValue <= 0) {
 						// check the music mute box
 						musicMuteBox.setSelected(true);
-					} else {
+					} else if (oldValue == 0){
 						// uncheck the music mute box
 						musicMuteBox.setSelected(false);
 					}
@@ -1546,30 +1567,17 @@ public class MainScene implements ClockListener {
 		musicMuteBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				// System.out.println("oldValue : " + oldValue + " newValue : " + newValue);
-				if (oldValue != newValue) {
-					musicMuteBox.setSelected(newValue);
-					if (!masterClock.isPaused()) {
-						if (musicMuteBox.isSelected()) {
-							mute(false, true);
-						} else {
-							unmute(false, true);
-						}
+//				System.out.println("musicMuteBox oldValue : " + oldValue + "  newValue : " + newValue);
+				if (oldValue != newValue) {					
+					if (musicMuteBox.isSelected()) {
+						muteControls(false, true);
+					}
+					else {
+						unmuteControls(false, true);
 					}
 				}
 			}
 		});
-
-//		musicMuteBox.setOnAction(e -> { 
-//			if (!masterClock.isPaused()) { 
-//				if (musicMuteBox.isSelected()) { 
-//					mute(false, true); 
-//				} else { 
-//					unmute(false,true); 
-//				}
-//			} 
-//			e.consume(); 
-//		});
 
 		// Set up a settlement view zoom bar
 		soundEffectSlider = new JFXSlider();
@@ -1600,16 +1608,16 @@ public class MainScene implements ClockListener {
 			public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
 
 				if (old_val != new_val) {
-					double sliderValue = new_val.doubleValue();
-					// Set to the new sound effect volume in the sound player
-					soundPlayer.setSoundVolume(convertSlider2Volume(sliderValue));
-
-					// soundPlayer.setSoundVolume(convertSlider2Volume((float)soundEffectProperty.get()));
-
-					if (sliderValue <= 0) {
+					double newValue = new_val.doubleValue();
+					double oldValue = old_val.doubleValue();				
+					if (oldValue - newValue > 1 || newValue - oldValue > 1) {
+						// Set to the new music volume in the sound player
+						soundPlayer.setSoundVolume(convertSlider2Volume(newValue));
+					}
+					if (newValue <= 0) {
 						// check the sound effect mute box
 						soundEffectMuteBox.setSelected(true);
-					} else {
+					} else if (oldValue == 0) {
 						// uncheck the sound effect mute box
 						soundEffectMuteBox.setSelected(false);
 					}
@@ -1632,13 +1640,12 @@ public class MainScene implements ClockListener {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				if (oldValue != newValue) {
-					soundEffectMuteBox.setSelected(newValue);
-					if (!masterClock.isPaused()) {
-						if (soundEffectMuteBox.isSelected()) {
-							mute(true, false);
-						} else {
-							unmute(true, false);
-						}
+//					System.out.println("soundEffectMuteBox oldValue : " + oldValue + "  newValue : " + newValue);
+					if (soundEffectMuteBox.isSelected()) {
+						muteControls(true, false);
+					}
+					else {
+						unmuteControls(true, false);
 					}
 				}
 			}
@@ -3017,10 +3024,10 @@ public class MainScene implements ClockListener {
 //		double tr = masterClock.getTimeRatio();
 		// if (msol % 10 == 0) {
 		// Check to see if a background sound track is being played.
-		if (!soundPlayer.isSoundDisabled() && !soundPlayer.isMusicMute() && !MainMenu.isSoundDisabled()
-			 && musicSlider.getValue() > 0)
-				soundPlayer.playRandomMusicTrack();
-		// }
+		if (!soundPlayer.isSoundDisabled() && !soundPlayer.isMusicMute() 
+				&& !MainMenu.isSoundDisabled() && musicSlider.getValue() > 0) {
+				soundPlayer.resumeMusic();//playRandomMusicTrack();
+		}
 
 		if (simSpeedPopup.isShowing() || solCache == 0) {
 			double tps = 0;
@@ -3371,16 +3378,7 @@ public class MainScene implements ClockListener {
 	public void pauseSimulation(boolean showPane) {
 		if (exitDialog == null || !exitDialog.isVisible()) {
 			masterClock.setPaused(true, showPane);
-			pause();
 		}
-	}
-
-	/**
-	 * Unpauses the simulation.
-	 */
-	public void unpauseSimulation() {	
-		unpause();
-		masterClock.setPaused(false, true);
 	}
 
 	public boolean startPause() {
@@ -3417,11 +3415,11 @@ public class MainScene implements ClockListener {
 		boolean now = masterClock.isPaused();
 		if (!previous) {
 			if (now) {
-				unpauseSimulation();
+				masterClock.setPaused(false, true);
 			}
 		} else {
 			if (!now) {
-				unpauseSimulation();
+				masterClock.setPaused(false, true);
 			}
 		}
 		desktop.getTimeWindow().enablePauseButton(true);
@@ -3476,9 +3474,7 @@ public class MainScene implements ClockListener {
 		mainPane.setSize(screen_width, screen_height);
 		mainPane.add(desktop, BorderLayout.CENTER);		
 		SwingUtilities.invokeLater(() -> desktopNode.setContent(mainPane));
-
 //		SwingUtilities.invokeLater(() -> desktopNode.setContent(desktop));
-
 //		desktopNode.requestFocus();
 	}
 
@@ -3656,12 +3652,6 @@ public class MainScene implements ClockListener {
 	}
 
 	private MenuItem registerAction(MenuItem menuItem) {
-		/*
-		 * menuItem.setOnAction(new EventHandler<ActionEvent>() { public void
-		 * handle(ActionEvent t) { // showPopup(borderPane, "You clicked the " +
-		 * menuItem.getText() + " icon"); System.out.println("You clicked the " +
-		 * menuItem.getText() + " icon"); ? } });
-		 */
 		menuItem.setOnAction(e -> {
 			System.out.println("You clicked the " + menuItem.getText() + " icon");
 			e.consume();
@@ -3816,7 +3806,6 @@ public class MainScene implements ClockListener {
 			pane.setPrefWidth(sceneHeight.get());
 			// pane.prefHeightProperty().bind(scene.heightProperty());
 			// pane.prefWidthProperty().bind(scene.widthProperty());
-
 			startUpLoc = new StartUpLocation(pane.getPrefWidth(), pane.getPrefHeight());
 		} else {
 			startUpLoc = new StartUpLocation(rootStackPane.getWidth(), rootStackPane.getHeight());
@@ -3902,20 +3891,6 @@ public class MainScene implements ClockListener {
 		tt.getStyleClass().add("ttip");
 		Tooltip.install(n, tt);
 		tt.setOnShowing(ev -> tt.setText(s));
-		/*
-		 * 
-		 * 
-		 * n.setOnMouseEntered(new EventHandler<MouseEvent>() {
-		 * 
-		 * @Override public void handle(MouseEvent event) { // position tooltip at
-		 * bottom right of the node Point2D p =
-		 * n.localToScreen(n.getLayoutBounds().getMaxX(),
-		 * n.getLayoutBounds().getMaxY()); tt.show(n, p.getX(), p.getY()); } });
-		 * 
-		 * n.setOnMouseExited(new EventHandler<MouseEvent>() {
-		 * 
-		 * @Override public void handle(MouseEvent event) { tt.hide(); } });
-		 */
 	}
 
 	private double convertSlider2Volume(double y) {
@@ -3971,10 +3946,6 @@ public class MainScene implements ClockListener {
 		return (int) sceneHeight.get();// screen_height;
 	}
 
-	// public void setSound(float music_volume, float sound_effect_volume) {
-	// this.music_volume = music_volume;
-	// this.sound_effect_volume = sound_effect_volume;
-	// }
 
 	public float getMusic() {
 		return (float) musicProperty.get();
@@ -4010,6 +3981,7 @@ public class MainScene implements ClockListener {
 	
 	/**
 	 * Sends a message to the new ticker billboard
+	 * 
 	 * @param str the message string
 	 */
 	public void sendMsg(String str) {
@@ -4051,20 +4023,6 @@ public class MainScene implements ClockListener {
 					if (now > lastTimerCall + 10_000_000l) {
 						if (x < -textLengthInPixel) {
 							x = matrix.getCols() + 7;
-							// System.out.println("x is " + x
-							// + "; textLengthInPixel is " + textLengthInPixel
-							// + "; textLength is " + textLength);
-							// if (matrix.getMatrixFont().equals(MatrixFont8x8.INSTANCE)) {
-							// matrix.setMatrixFont(MatrixFont8x11.INSTANCE);
-							// offset = 1;
-							// matrix.setDotShape(DotShape.SQUARE);
-							// } else {
-							// matrix.setMatrixFont(MatrixFont8x8.INSTANCE);
-							// offset = 3;
-							// matrix.setDotShape(DotShape.ROUND);
-							// }
-							// textLength = text.length();
-							// textLengthInPixel = textLength * 8;
 						}
 						int color = RED;
 						if (newsHeader.equals(MISSION_REPORTS))
@@ -4088,6 +4046,9 @@ public class MainScene implements ClockListener {
 		}
 	}
 
+	/**
+	 * Create the tool windows tool bar
+	 */
 	public void createJFXToolbar() {
 //		JFXButton b0 = new JFXButton("Help");
 		JFXButton b1 = new JFXButton("Search");
@@ -4127,40 +4088,48 @@ public class MainScene implements ClockListener {
 
 	public void unpause() {
 //		System.out.println("calling MainScene's unpause()");
+		// Remove Dialog
 		isShowingDialog = false;
 		// Revert the sound setting
+		musicMuteBox.setSelected(lastMusicMuteBoxSetting);
+		soundEffectMuteBox.setSelected(lastSoundEffectMuteBoxSetting);
+		// Note : sound player doesn't necessarily know the current music/sound volume in main scene.
 		if (!musicMuteBox.isSelected())
 			soundPlayer.setSoundVolume(convertSlider2Volume(musicSlider.getValue()));
 		if (!soundEffectMuteBox.isSelected())
 			soundPlayer.setMusicVolume(convertSlider2Volume(soundEffectSlider.getValue()));
-		if (!soundPlayer.isSoundDisabled() 
-				&& !musicMuteBox.isSelected()
-				&& musicSlider.getValue() > 0)
-					soundPlayer.playRandomMusicTrack();
-
+		// Play music track
+		if (!soundPlayer.isSoundDisabled() && !musicMuteBox.isSelected()
+			&& musicSlider.getValue() > 0)
+				soundPlayer.resumeMusic();//playRandomMusicTrack();
+		// Play time label timer
 		timeLabeltimer.play();
+		// Play billboard timer
 		if (billboardTimer != null)
 			billboardTimer.start();
+		// Stop pause popup
 		stopPausePopup();
 
 	}
 	
 	public void pause() {
+//		System.out.println("calling MainScene's pause()");
+		// Show Dialog
 		isShowingDialog = true;
+		// Save the mute boxes setting
+		lastMusicMuteBoxSetting = musicMuteBox.isSelected();
+		lastSoundEffectMuteBoxSetting = soundEffectMuteBox.isSelected();
+		// Check the mute boxes
+		musicMuteBox.setSelected(true);
+		soundEffectMuteBox.setSelected(true);
+		// Pause time label timer
 		timeLabeltimer.pause();
+		// Stop billboard timer
 		if (billboardTimer != null)
 			billboardTimer.stop();
+		// Start pause popup
 		startPausePopup();
-
 	}
-	
-//	public static FXGraphics2D getFXGraphics2D() {
-//		return g2;
-//	}
-//	
-//	public static Canvas getCanvas() {
-//		return getCanvas();
-//	}
 	
 
 	@Override
@@ -4177,6 +4146,7 @@ public class MainScene implements ClockListener {
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
+//		System.out.println("calling MainScene's pauseChange(). isPaused : " + isPaused);
 		if (isPaused) {
 			if (!masterClock.isSavingSimulation()) {
 				if (exitDialog == null || !exitDialog.isVisible()) {

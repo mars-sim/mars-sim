@@ -9,6 +9,7 @@
 package org.mars_sim.msp.ui.swing.sound;
 
 import java.io.BufferedInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
@@ -33,6 +34,9 @@ import com.jcraft.jorbis.Comment;
 import com.jcraft.jorbis.DspState;
 import com.jcraft.jorbis.Info;
 
+/**
+ * A class that creates a sound clip
+ */
 public class OGGSoundClip {
 
 	private static Logger logger = Logger.getLogger(OGGSoundClip.class.getName());
@@ -208,7 +212,7 @@ public class OGGSoundClip {
 			} else {
 				// in case of some versions of linux in which MASTER_GAIN is not supported
 				logger.log(Level.SEVERE, "Please ensure sound driver is working. MasterGain not supported. ");
-				disableSound();
+//				disableSound();
 			}
 
 		} catch (IllegalArgumentException e) {
@@ -216,28 +220,11 @@ public class OGGSoundClip {
 			// ubuntu ?
 			// e.printStackTrace();
 			logger.log(Level.SEVERE, "Please ensure sound interface is working. Speakers NOT detected. " + e);
-			disableSound();
+//			disableSound();
 		}
 
 	}
 
-	// public float getVolume() {
-	// return volume;
-	// }
-
-	/*
-	 * public void setVolume() { try { // use FloatControl.Type.VOLUME FloatControl
-	 * control = (FloatControl) outputLine.getControl(FloatControl.Type.VOLUME);
-	 * float max = control.getMaximum(); float min = control.getMinimum(); float
-	 * range = max - min; float value = min + (range * gain); if (value < min) value
-	 * = min; else if (value > max) value = max;
-	 * 
-	 * control.setValue(value);
-	 * 
-	 * System.out.println("max : " + max); System.out.println("min : " + min);
-	 * System.out.println("range : " + range); System.out.println("value : " +
-	 * value); } catch (IllegalArgumentException e) { e.printStackTrace(); } }
-	 */
 
 	/**
 	 * Attempt to set the balance between the two speakers. -1.0 is full left speak,
@@ -355,7 +342,7 @@ public class OGGSoundClip {
 			bitStream.reset();
 		} catch (IOException e) {
 			// ignore if no mark
-			logger.log(Level.SEVERE, "IOException", e.getMessage());
+			logger.log(Level.SEVERE, "IOException in OGGSoundClip's play()", e.getMessage());
 			disableSound();
 		}
 
@@ -374,7 +361,7 @@ public class OGGSoundClip {
 					// e.printStackTrace();
 					logger.log(Level.SEVERE, "Trouble resetting the bit stream for the audio file " + name,
 							e.getMessage());
-					disableSound();
+//					disableSound();
 				}
 			};
 		};
@@ -406,7 +393,7 @@ public class OGGSoundClip {
 					// e.printStackTrace();
 					playerThread = null;
 					logger.log(Level.SEVERE, "Can't play the bit stream. ", e.getMessage());
-					disableSound();
+//					disableSound();
 				}
 
 				try {
@@ -415,7 +402,7 @@ public class OGGSoundClip {
 					// e.printStackTrace();
 					logger.log(Level.SEVERE, "Trouble reseting the bit stream for the background track " + name,
 							e.getMessage());
-					disableSound();
+//					disableSound();
 				}
 				// }
 			};
@@ -639,12 +626,14 @@ public class OGGSoundClip {
 
 				index = oy.buffer(BUFSIZE);
 				buffer = oy.data;
+				
 				try {
 					bytes = bitStream.read(buffer, index, BUFSIZE);
 				} catch (Exception e) {
 					// throw new InternalException(e);
-					logger.log(Level.SEVERE, "Exception", e.getMessage());
+					logger.log(Level.SEVERE, "Exception in reading bitstream.", e.getMessage());
 				}
+				
 				if (bytes == 0 && i < 2) {
 					// throw new InternalException("End of file before finding all Vorbis
 					// headers!");

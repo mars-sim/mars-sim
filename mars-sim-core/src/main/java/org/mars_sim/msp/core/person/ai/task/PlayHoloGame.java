@@ -88,17 +88,17 @@ implements Serializable {
 				Building recBuilding = getAvailableRecreationBuilding(person);
 				if (recBuilding != null) {
 					// Walk to recreation building.
-					// 2016-01-10 Added BuildingFunction.RECREATION
+					// Add BuildingFunction.RECREATION
 				    walkToActivitySpotInBuilding(recBuilding, FunctionType.RECREATION, true);
 				    walkSite = true;
 				} else {
-                	// 2016-01-10 if rec building is not available, go to a gym
+                	// if rec building is not available, go to a gym
                 	Building gym = Workout.getAvailableGym(person);
                 	if (gym != null) {
 	                	walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
 	                	walkSite = true;
 	                } else {
-						// 2016-01-10 if gym is not available, go back to his quarters
+						//  if gym is not available, go back to his quarters
 		                Building quarters = person.getQuarters();    
 		                if (quarters != null) {
 		                	walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMODATIONS, true);
@@ -144,9 +144,6 @@ implements Serializable {
         return FunctionType.LIVING_ACCOMODATIONS;//RECREATION;
     }
 
-    //protected BuildingFunction getRelatedBuildingRoboticFunction() {
-    //    return BuildingFunction.ROBOTIC_STATION;
-    //}
 
 	@Override
 	protected double performMappedPhase(double time) {

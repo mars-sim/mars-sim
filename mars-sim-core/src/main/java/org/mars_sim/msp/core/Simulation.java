@@ -890,7 +890,7 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public void endSimulation() {
 		interactiveTerm.setKeepRunning(false);
-		interactiveTerm.getProfile().disposeTerminal();
+		interactiveTerm.disposeTerminal();
 		instance().defaultLoad = false;
 		instance().stop();
 		masterClock.endClockListenerExecutor();

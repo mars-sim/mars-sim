@@ -13,7 +13,6 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -26,159 +25,152 @@ import org.mars_sim.msp.core.vehicle.Rover;
 /**
  * The WriteReport class is a task for writing reports in an office space
  */
-public class WriteReport
-extends Task
-implements Serializable {
+public class WriteReport extends Task implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /** Task name */
-    private static final String NAME = Msg.getString(
-            "Task.description.writeReport"); //$NON-NLS-1$
+	/** Task name */
+	private static final String NAME = Msg.getString("Task.description.writeReport"); //$NON-NLS-1$
 
-    /** Task phases. */
-    private static final TaskPhase WRITING_REPORT = new TaskPhase(Msg.getString(
-            "Task.phase.writingReport")); //$NON-NLS-1$
+	/** Task phases. */
+	private static final TaskPhase WRITING_REPORT = new TaskPhase(Msg.getString("Task.phase.writingReport")); //$NON-NLS-1$
 
-    // Static members
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -1D;
+	// Static members
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = -1D;
 
-    // Data members
-    /** The administration building the person is using. */
-    private Administration office;
+	// Data members
+	/** The administration building the person is using. */
+	private Administration office;
 
-    public RoleType roleType;
+	public RoleType roleType;
 
-    /**
-     * Constructor. This is an effort-driven task.
-     * @param person the person performing the task.
-     */
-    public WriteReport(Person person) {
-        // Use Task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER, true,
-                10D + RandomUtil.getRandomDouble(20D));
+	/**
+	 * Constructor. This is an effort-driven task.
+	 * 
+	 * @param person the person performing the task.
+	 */
+	public WriteReport(Person person) {
+		// Use Task constructor.
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(20D));
 
-        if (person.isInSettlement()) {
+		if (person.isInSettlement()) {
 
-            // If person is in a settlement, try to find an office building.
-	            Building officeBuilding = getAvailableOffice(person);
-	            if (officeBuilding != null) {
-	                // Walk to the office building.
-	                walkToActivitySpotInBuilding(officeBuilding, false);
-	                office = officeBuilding.getAdministration();
-	                office.addstaff();
-	            }
-	            	            
-                // set the boolean to true so that it won't be done again today
-                person.getPreference().setTaskDue(this, true);
-            //}
-        }
-        else if (person.isInVehicle()) {
+			// If person is in a settlement, try to find an office building.
+			Building officeBuilding = getAvailableOffice(person);
+			if (officeBuilding != null) {
+				// Walk to the office building.
+				walkToActivitySpotInBuilding(officeBuilding, false);
+				office = officeBuilding.getAdministration();
+				office.addstaff();
+			}
 
-            if (person.getVehicle() instanceof Rover) {
-                walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-                
-                // set the boolean to true so that it won't be done again today
-                person.getPreference().setTaskDue(this, true);
-            }
+			// set the boolean to true so that it won't be done again today
+			person.getPreference().setTaskDue(this, true);
+			// }
+		} else if (person.isInVehicle()) {
 
-        }
-        
-        else {
-            endTask();
-        }
+			if (person.getVehicle() instanceof Rover) {
+				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
 
-        // Initialize phase
-        addPhase(WRITING_REPORT);
-        setPhase(WRITING_REPORT);
-    }
+				// set the boolean to true so that it won't be done again today
+				person.getPreference().setTaskDue(this, true);
+			}
 
-    @Override
-    protected FunctionType getLivingFunction() {
-        return FunctionType.ADMINISTRATION;
-    }
+		}
 
-    @Override
-    protected double performMappedPhase(double time) {
-        if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
-        }
-        else if (WRITING_REPORT.equals(getPhase())) {
-            return writingPhase(time);
-        }
-        else {
-            return time;
-        }
-    }
+		else {
+			endTask();
+		}
 
-    /**
-     * Performs the writing phase.
-     * @param time the amount of time (millisols) to perform the phase.
-     * @return the amount of time (millisols) left over after performing the phase.
-     */
-    private double writingPhase(double time) {
-        // Do nothing
-        return 0D;
-    }
+		// Initialize phase
+		addPhase(WRITING_REPORT);
+		setPhase(WRITING_REPORT);
+	}
 
-    @Override
-    protected void addExperience(double time) {
-        // This task adds no experience.
-    }
+	@Override
+	protected FunctionType getLivingFunction() {
+		return FunctionType.ADMINISTRATION;
+	}
 
-    @Override
-    public void endTask() {
-        super.endTask();
+	@Override
+	protected double performMappedPhase(double time) {
+		if (getPhase() == null) {
+			throw new IllegalArgumentException("Task phase is null");
+		} else if (WRITING_REPORT.equals(getPhase())) {
+			return writingPhase(time);
+		} else {
+			return time;
+		}
+	}
 
-        // Remove person from administration function so others can use it.
-        if (office != null && office.getNumStaff() > 0) {
-            office.removeStaff();
-        }
-    }
+	/**
+	 * Performs the writing phase.
+	 * 
+	 * @param time the amount of time (millisols) to perform the phase.
+	 * @return the amount of time (millisols) left over after performing the phase.
+	 */
+	private double writingPhase(double time) {
+		// Do nothing
+		return 0D;
+	}
 
-    /**
-     * Gets an available building with the administration function.
-     * @param person the person looking for the office.
-     * @return an available office space or null if none found.
-     */
-    public static Building getAvailableOffice(Person person) {
-        Building result = null;
+	@Override
+	protected void addExperience(double time) {
+		// This task adds no experience.
+	}
 
-        // If person is in a settlement, try to find a building with an office.
-        if (person.isInSettlement()) {
-            BuildingManager buildingManager = person.getSettlement()
-                    .getBuildingManager();
-            List<Building> offices = buildingManager.getBuildings(FunctionType.ADMINISTRATION);
-            offices = BuildingManager.getNonMalfunctioningBuildings(offices);
-            offices = BuildingManager.getLeastCrowdedBuildings(offices);
+	@Override
+	public void endTask() {
+		super.endTask();
 
-            if (offices.size() > 0) {
-                Map<Building, Double> selectedOffices = BuildingManager.getBestRelationshipBuildings(
-                        person, offices);
-                result = RandomUtil.getWeightedRandomObject(selectedOffices);
-            }
-        }
+		// Remove person from administration function so others can use it.
+		if (office != null && office.getNumStaff() > 0) {
+			office.removeStaff();
+		}
+	}
 
-        return result;
-    }
+	/**
+	 * Gets an available building with the administration function.
+	 * 
+	 * @param person the person looking for the office.
+	 * @return an available office space or null if none found.
+	 */
+	public static Building getAvailableOffice(Person person) {
+		Building result = null;
 
-    @Override
-    public int getEffectiveSkillLevel() {
-        return 0;
-    }
+		// If person is in a settlement, try to find a building with an office.
+		if (person.isInSettlement()) {
+			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
+			List<Building> offices = buildingManager.getBuildings(FunctionType.ADMINISTRATION);
+			offices = BuildingManager.getNonMalfunctioningBuildings(offices);
+			offices = BuildingManager.getLeastCrowdedBuildings(offices);
 
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> results = new ArrayList<SkillType>(0);
-        return results;
-    }
+			if (offices.size() > 0) {
+				Map<Building, Double> selectedOffices = BuildingManager.getBestRelationshipBuildings(person, offices);
+				result = RandomUtil.getWeightedRandomObject(selectedOffices);
+			}
+		}
 
-    @Override
-    public void destroy() {
-        super.destroy();
+		return result;
+	}
 
-        office = null;
-    }
+	@Override
+	public int getEffectiveSkillLevel() {
+		return 0;
+	}
+
+	@Override
+	public List<SkillType> getAssociatedSkills() {
+		List<SkillType> results = new ArrayList<SkillType>(0);
+		return results;
+	}
+
+	@Override
+	public void destroy() {
+		super.destroy();
+
+		office = null;
+	}
 }

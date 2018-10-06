@@ -144,7 +144,7 @@ public class AudioPlayer implements ClockListener {
 			}
 
 			currentSoundClip = allSoundClips.get(SoundConstants.SND_PERSON_FEMALE1);
-			currentMusicTrack = null;
+			//currentMusicTrack = null;
 
 		}
 		// if (UIConfig.INSTANCE.useUIDefault()) {
@@ -288,18 +288,6 @@ public class AudioPlayer implements ClockListener {
 
 	}
 
-	public void restoreLastMusicVolume() {
-		if (!isSoundDisabled && hasMasterGain && currentMusicTrack != null) {
-			// currentMusicTrack.resume();
-			currentMusicTrack.determineGain(lastMusicVol);
-		}
-	}
-
-	public void restoreLastSoundVolume() {
-		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null)
-			currentSoundClip.determineGain(lastSoundVol);
-	}
-
 	/**
 	 * Sets the volume of the audio player.
 	 * 
@@ -314,11 +302,19 @@ public class AudioPlayer implements ClockListener {
 		lastMusicVol = currentMusicVol;
 		currentMusicVol = volume;
 
-		if (!isSoundDisabled && hasMasterGain && currentMusicTrack != null) {// && !currentMusicTrack.isMute()){
+		if (!isSoundDisabled && hasMasterGain && currentMusicTrack != null) {
 			currentMusicTrack.determineGain(volume);
+			//currentMusicTrack.resume();
 		}
 	}
 
+	public void restoreLastMusicVolume() {
+		if (!isSoundDisabled && hasMasterGain && currentMusicTrack != null) {
+			currentMusicTrack.determineGain(lastMusicVol);
+			//currentMusicTrack.resume();
+		}
+	}
+	
 	/**
 	 * Sets the volume of the audio player.
 	 * 
@@ -333,8 +329,15 @@ public class AudioPlayer implements ClockListener {
 		lastSoundVol = currentSoundVol;
 		currentSoundVol = volume;
 
-		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null) {// && !currentSoundClip.isMute()) {
+		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null) {
 			currentSoundClip.determineGain(volume);
+		}
+	}
+
+
+	public void restoreLastSoundVolume() {
+		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null) {
+			currentSoundClip.determineGain(lastSoundVol);
 		}
 	}
 
@@ -367,29 +370,40 @@ public class AudioPlayer implements ClockListener {
 	}
 
 
-	public void unmute(boolean isSound, boolean isMusic) {
+	/**
+	 * Unmute the sound clip and/or music clip
+	 * 
+	 * @param isSound
+	 * @param isMusic
+	 */
+	public void unmutePlayer(boolean isSound, boolean isMusic) {
 		if (isSound) {
-			if (currentSoundClip != null)
+			if (currentSoundClip != null && currentSoundClip.isMute()) {
 				currentSoundClip.setMute(false);
+				//currentSoundClip.resume();
+			}
 			restoreLastSoundVolume();
 		}
 
 		if (isMusic) {
-			if (currentMusicTrack != null)
+			if (currentMusicTrack != null && currentMusicTrack.isMute()) {
 				currentMusicTrack.setMute(false);
+				resumeMusic();
+			}
 			restoreLastMusicVolume();
 		}
 	}
 
 	/**
-	 * Sets the state of the audio player to mute or unmute.
+	 * Mute the sound clip and/or music clip
 	 * 
 	 * @param mute true if it will be set to mute
 	 */
-	public void mute(boolean isSound, boolean isMusic) {
+	public void mutePlayer(boolean isSound, boolean isMusic) {
 		if (isSound) {
-			if (currentSoundClip != null) {
+			if (currentSoundClip != null && !currentSoundClip.isMute()) {
 				currentSoundClip.setMute(true);
+				currentSoundClip.stop();
 				currentSoundClip.determineGain(0);
 			}
 			lastSoundVol = currentSoundVol;
@@ -397,7 +411,9 @@ public class AudioPlayer implements ClockListener {
 		}
 
 		if (isMusic) {
-			if (currentMusicTrack != null) {
+			if (currentMusicTrack != null && !currentMusicTrack.isMute()) {
+				// Note: should check if it is already mute since 
+				// user may pause and unpause consecutively too fast 
 				currentMusicTrack.setMute(true);
 				currentMusicTrack.determineGain(0);
 			}
@@ -457,6 +473,15 @@ public class AudioPlayer implements ClockListener {
 
 	}
 
+	public void resumeMusic() {
+		if (currentMusicTrack != null && currentMusicTrack.isPaused()) {
+			currentMusicTrack.resume();
+		}
+		else {
+			playRandomMusicTrack();
+		}
+	}
+	
 	/**
 	 * Play a randomly selected music track
 	 */
@@ -528,10 +553,12 @@ public class AudioPlayer implements ClockListener {
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		if (isPaused) {
 //			marqueeTicker.pauseMarqueeTimer(true);
-			mute(true, true);
+			// if the muteboxes is checked
+			mutePlayer(true, true);
 		} else {
 //			marqueeTicker.pauseMarqueeTimer(false);
-			unmute(true, true);
+			// if the muteboxes is NOT checked
+			unmutePlayer(true, true);
 		}
 	}
 

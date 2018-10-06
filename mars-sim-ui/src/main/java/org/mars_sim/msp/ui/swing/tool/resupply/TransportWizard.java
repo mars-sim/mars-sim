@@ -78,7 +78,7 @@ public class TransportWizard {
     // Default width and length for variable size buildings if not otherwise determined.
     private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 9D;
     private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 9D;
-	// 2016-03-08 Added key bindings related declarations
+	// Add key bindings related declarations
     private static final int ANIMATION_DELAY = 5;
     
     private static int wait_time_in_secs = 90; // in seconds
@@ -168,7 +168,7 @@ public class TransportWizard {
 	/**
      * Delivers buildings to the destination settlement.
      */
-	// 2015-01-02 Added keyword synchronized to avoid JOption crash
+	// Add keyword synchronized to avoid JOption crash
     public synchronized void deliverBuildings(BuildingManager mgr) {
     	logger.info("deliverBuildings() is on " + Thread.currentThread().getName()); // normally on JavaFX Application Thread
 	    resupply = mgr.getResupply();
@@ -181,7 +181,6 @@ public class TransportWizard {
    		// TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
     	// how to make each building ask for a position ?
 
-		//System.out.println("Just open Settlement Map Tool");
 		if (mainScene != null) {
 			mainScene.setSettlement(mgr.getSettlement());
 		}
@@ -196,7 +195,7 @@ public class TransportWizard {
         	mainScene.pauseSimulation(false);
 			determineEachBuildingPosition(mgr);
 			//mainScene.endPause(previous);
-			mainScene.unpauseSimulation();
+	    	Simulation.instance().getMasterClock().setPaused(false, true);
 			
 		}
         else {
@@ -204,14 +203,13 @@ public class TransportWizard {
         	determineEachBuildingPosition(mgr);
         }
 
-        // 2015-11-12 Deliver the rest of the supplies and add people.
-	    // 2016-09-24 Needed to get back to the original thread that started the resupply event
+        // Deliver the rest of the supplies and add people.
+	    // Needed to get back to the original thread that started the resupply event
 	    Simulation.instance().getMasterClock().getClockListenerExecutor()
 	    		.execute(new DeliverTask(mgr));
     }
 
 
-	//2016-09-24 Added DeliverTask
 	class DeliverTask implements Runnable {
 
 		private BuildingManager mgr;
@@ -228,75 +226,73 @@ public class TransportWizard {
 		}
     }
 
-    /**
-     * Asks user if all arrival buildings use the default template positions
+//    /**
+//     * Asks user if all arrival buildings use the default template positions
+//
+//    @SuppressWarnings("restriction")
+//	public synchronized void askDefaultPosition(BuildingManager mgr, String missionName, boolean previousPause) {
+//
+//		String header = "Building Delivery from a Resupply Transport";
+//
+//        if (missionName != null)
+//			header = "Building Delivery for \"" + missionName + "\"";
+//
+//    	String message = "Use default positions for all arriving buildings in "
+//    			+ mgr.getSettlement() + "?";
+//
+//
+//    	Alert alert = new Alert(AlertType.CONFIRMATION);
+//		alert.setTitle(TITLE);
+//    	alert.initOwner(mainScene.getStage());
+//		alert.initModality(Modality.NONE); // Modality.NONE is by default if initModality() is NOT specified.
+//    	//Note: with Modality.NONE, users can zoom in/out, move around the settlement map and move a vehicle elsewhere
+//		alert.initModality(Modality.APPLICATION_MODAL); // not working. the use of this will block the first alert dialog
+//		//alert.initModality(Modality.WINDOW_MODAL); // the use of this will not block the second aler dialog from appearing
+//		alert.setHeaderText("Building Delivery for a Resuply Mission");
+//		alert.setContentText(message);
+//		//DialogPane dialogPane = alert.getDialogPane();
+//
+//		ButtonType buttonTypeYes = new ButtonType("Yes");
+//		ButtonType buttonTypeNo = new ButtonType("No");
+//		alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+//
+//		alert.showAndWait().ifPresent(response -> {
+//		     if (response == buttonTypeYes) {
+//		    	 unpause(previousPause);
+//		    	 SwingUtilities.invokeLater(() -> {
+//			 			resupply.deliverBuildings();
+//					});
+//		    	 logger.info("All buildings are put in place at default positions at " + mgr.getSettlement());
+//		     }
+//		     else if (response == buttonTypeNo) {
+//		    	 unpause(previousPause);
+//		    	 determineEachBuildingPosition(mgr);
+//		     }
+//
+//		});
+//
+//		// Make "Enter" key to work like the space bar for firing the button on focus
+//		EventHandler<KeyEvent> fireOnEnter = event -> {
+//		    if (KeyCode.ENTER.equals(event.getCode())
+//		            && event.getTarget() instanceof Button) {
+//		        ((Button) event.getTarget()).fire();
+//		    }
+//		};
+//
+//		alert.getButtonTypes().stream()
+//		        .map(alert.getDialogPane()::lookupButton)
+//		        .forEach(button ->
+//		                button.addEventHandler(
+//		                        KeyEvent.KEY_PRESSED,
+//		                        fireOnEnter
+//		                )
+//		        );
+//    }
 
-	// 2015-12-07 Added askDefaultPosition()
-    @SuppressWarnings("restriction")
-	public synchronized void askDefaultPosition(BuildingManager mgr, String missionName, boolean previousPause) {
-
-		String header = "Building Delivery from a Resupply Transport";
-
-        if (missionName != null)
-			header = "Building Delivery for \"" + missionName + "\"";
-
-    	String message = "Use default positions for all arriving buildings in "
-    			+ mgr.getSettlement() + "?";
-
-
-    	Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle(TITLE);
-    	alert.initOwner(mainScene.getStage());
-		alert.initModality(Modality.NONE); // Modality.NONE is by default if initModality() is NOT specified.
-    	//Note: with Modality.NONE, users can zoom in/out, move around the settlement map and move a vehicle elsewhere
-		alert.initModality(Modality.APPLICATION_MODAL); // not working. the use of this will block the first alert dialog
-		//alert.initModality(Modality.WINDOW_MODAL); // the use of this will not block the second aler dialog from appearing
-		alert.setHeaderText("Building Delivery for a Resuply Mission");
-		alert.setContentText(message);
-		//DialogPane dialogPane = alert.getDialogPane();
-
-		ButtonType buttonTypeYes = new ButtonType("Yes");
-		ButtonType buttonTypeNo = new ButtonType("No");
-		alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
-
-		alert.showAndWait().ifPresent(response -> {
-		     if (response == buttonTypeYes) {
-		    	 unpause(previousPause);
-		    	 SwingUtilities.invokeLater(() -> {
-			 			resupply.deliverBuildings();
-					});
-		    	 logger.info("All buildings are put in place at default positions at " + mgr.getSettlement());
-		     }
-		     else if (response == buttonTypeNo) {
-		    	 unpause(previousPause);
-		    	 determineEachBuildingPosition(mgr);
-		     }
-
-		});
-
-		// 2015-10-15 Made "Enter" key to work like the space bar for firing the button on focus
-		EventHandler<KeyEvent> fireOnEnter = event -> {
-		    if (KeyCode.ENTER.equals(event.getCode())
-		            && event.getTarget() instanceof Button) {
-		        ((Button) event.getTarget()).fire();
-		    }
-		};
-
-		alert.getButtonTypes().stream()
-		        .map(alert.getDialogPane()::lookupButton)
-		        .forEach(button ->
-		                button.addEventHandler(
-		                        KeyEvent.KEY_PRESSED,
-		                        fireOnEnter
-		                )
-		        );
-    }
-*/
 
 	/**
 	 * Determines the placement of each building manually, instead of using the template positions
 	 */
-    // 2015-12-07 Added determineEachBuildingPosition()
 	public synchronized void determineEachBuildingPosition(BuildingManager mgr) {
 		//logger.info("determineEachBuildingPosition() is in " + Thread.currentThread().getName() + " Thread");
 		// normally on JavaFX Application Thread
@@ -304,18 +300,18 @@ public class TransportWizard {
         //System.out.println("orderedBuildings.size() : " + orderedBuildings.size());
         //if (orderedBuildings.size() > 0) {
 
-	        // 2015-12-19 Added the use of ComparatorOfBuildingID()
+	        // Add the use of ComparatorOfBuildingID()
 	        Collections.sort(orderedBuildings, new ComparatorOfBuildingID());
 	        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
 	        while (buildingI.hasNext()) {
 	           BuildingTemplate template = buildingI.next();
 	           //System.out.println("TransportWizard : BuildingTemplate for " + template.getNickName());
-	/*    	   // check if it's a building connector and if it's connecting the two buildings at their template position
-	        	   boolean isConnector = buildingConfig.hasBuildingConnection(template.getBuildingType());
-	           if (isConnector) confirmBuildingLocation(correctedTemplate, false);
-	           else confirmBuildingLocation(correctedTemplate, true);
-	*/
-	           // 2015-12-06 Added this recursive method checkTemplatePosition()
+	    	   // check if it's a building connector and if it's connecting the two buildings at their template position
+//	        	   boolean isConnector = buildingConfig.hasBuildingConnection(template.getBuildingType());
+//	           if (isConnector) confirmBuildingLocation(correctedTemplate, false);
+//	           else confirmBuildingLocation(correctedTemplate, true);
+	
+	           // Add this recursive method checkTemplatePosition()
 	           // to handle the creation of a new building template in case of an obstacle.
 	           checkTemplatePosition(mgr, template, true);
 	           // TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
@@ -325,13 +321,12 @@ public class TransportWizard {
 	        mgr.getSettlement().fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, building);
 
         //resupply.deliverOthers();
-        //2016-01-12 Needed to get back to the original thread in Resupply.java that started the instance
+        // Need to get back to the original thread in Resupply.java that started the instance
         //Simulation.instance().getMasterClock().getClockListenerExecutor().submit(new DeliverOthersTask(mgr));
 
 	}
 
 
-	//2016-01-12 Added DeliverOthersTask
 	class DeliverOthersTask implements Runnable {
 		BuildingManager mgr;
 		DeliverOthersTask(BuildingManager mgr) {
@@ -340,7 +335,7 @@ public class TransportWizard {
 
 		public void run() {
 			logger.info("DeliverOthersTask's run() is in " + Thread.currentThread().getName() + " Thread");
-	       	// 2015-11-12 Deliver the rest of the supplies and add people.
+	       	// Deliver the rest of the supplies and add people.
 	        resupply.deliverOthers();
 		}
     }
@@ -351,7 +346,6 @@ public class TransportWizard {
      * @param template the position of the proposed building
      * @param checkVehicle if it has checked/moved the vehicle already
      */
-    // 2015-12-06 Added checkTemplatePosition()
     public synchronized void checkTemplatePosition(BuildingManager mgr, BuildingTemplate template, boolean defaultPosition) {
 
         // Replace width and length defaults to deal with variable width and length buildings.
@@ -361,8 +355,7 @@ public class TransportWizard {
         }
         if (width <= 0D) {
             width = DEFAULT_VARIABLE_BUILDING_WIDTH;
-            //System.out.println("TransportWizard : set width to " + DEFAULT_VARIABLE_BUILDING_WIDTH);
-        }
+         }
 
         double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getBuildingType());
         if (template.getLength() > 0D) {
@@ -370,11 +363,10 @@ public class TransportWizard {
         }
         if (length <= 0D) {
             length = DEFAULT_VARIABLE_BUILDING_LENGTH;
-            //System.out.println("TransportWizard : set length to " + DEFAULT_VARIABLE_BUILDING_LENGTH);
         }
 
         int buildingID = mgr.getNextTemplateID();
-        // 2015-12-13 Added buildingTypeID
+
         int buildingTypeID = mgr.getNextBuildingTypeID(template.getBuildingType());
 
         int scenarioID = mgr.getSettlement().getID();
@@ -389,8 +381,6 @@ public class TransportWizard {
 
 		newT = clearCollision(newT, mgr, Resupply.MAX_COUNTDOWN);
 
-		//System.out.println("inside checkTemplatePosition(), calling checkTemplateAddBuilding() now ");
-     	// 2015-12-08 Added checkTemplateAddBuilding()
 		if (newT != null)
 			pauseAndCheck(mgr, newT, true);
 
@@ -402,7 +392,6 @@ public class TransportWizard {
      * and creates the building based on the template to the settlement
      * @param correctedTemplate
      */
-    // 2015-12-07 Added checkTemplateAddBuilding()
     public synchronized void pauseAndCheck(BuildingManager mgr, BuildingTemplate correctedTemplate, boolean preconfigured) {
     	//System.out.println("inside checkTemplateAddBuilding()");
     	// TODO: make use of the preconfigured boolean field to distinguish between the planned template loaded from xml vs. a newly created template
@@ -431,7 +420,8 @@ public class TransportWizard {
 		}
 
 		if (mainScene != null)
-			mainScene.unpauseSimulation();
+	    	Simulation.instance().getMasterClock().setPaused(false, true);
+//			mainScene.unpauseSimulation();
 			//mainScene.endPause(previous);
 
     }
@@ -477,7 +467,6 @@ public class TransportWizard {
      * @param count number of counts
      * @return Updated building template
      */
-    // 2015-12-07 Added clearCollision()
     public BuildingTemplate clearCollision(BuildingTemplate bt, BuildingManager mgr, int count) {
     	return resupply.clearCollision(bt, count);
     }
@@ -491,7 +480,6 @@ public class TransportWizard {
      * @param coordinates
      * @return true if the location is clear of collision
      */
-    // 2015-12-07 Added checkCollisionMoveVehicle()
     public boolean isCollisionFreeVehicle(Building b, BuildingManager mgr) {
 
     	double xLoc = b.getXLocation();
@@ -515,7 +503,6 @@ public class TransportWizard {
      * @param count The number of times remaining checking collision
      * @return true if no collision.
      */
-    // 2015-12-07 Added checkCollisionImmovable()
     public boolean isCollisionFreeImmovable(Building b, BuildingManager mgr, int count) {
     	count--;
 		logger.info(count + " : calling checkCollisionImmovable(b, mgr) for " + b.getNickName());
@@ -662,7 +649,7 @@ public class TransportWizard {
 				alert.setTitle(title);
 				alert.setHeaderText(header);
 				alert.setContentText(msg.get());
-				// 2015-12-19 Used JavaFX binding
+				// Use JavaFX binding
 				alert.getDialogPane().contentTextProperty().bind(msg);
 				//alert.getDialogPane().headerTextProperty().bind(arg0);
 
@@ -678,13 +665,13 @@ public class TransportWizard {
 					alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancelTimer, buttonTypeMouseKB);
 
 					IntegerProperty i = new SimpleIntegerProperty(wait_time_in_secs);
-					// 2015-12-19 Added ReactFX's Timer and FxTimer
+					// Add ReactFX's Timer and FxTimer
 					timer = FxTimer.runPeriodically(java.time.Duration.ofMillis(1000), () -> {
 			        	int num = i.get() - 1;
 			        	if (num >= 0) {
 			        		i.set(num);
 			        	}
-			        	//System.out.println(num);
+			        	
 			        	if (num == 0) {
 			        		Button button = (Button) alert.getDialogPane().lookupButton(buttonTypeYes);
 			        	    button.fire();
@@ -719,16 +706,14 @@ public class TransportWizard {
 				} else if (result.isPresent() && result.get() == buttonTypeNo) {
 			    	mgr.removeBuilding(newBuilding);
 			    	mapPanel.repaint();
-			    	//System.out.println("just removing building");
+
 			    	BuildingTemplate repositionedTemplate = resupply.positionNewResupplyBuilding(template.getBuildingType());
-			    	//System.out.println("obtain new repositionedTemplate");
-			    	// 2015-12-16 Added setMissionName()
+
+			    	// Add setMissionName()
 					repositionedTemplate.setMissionName(template.getMissionName());
-					//System.out.println("just called setMissionName()");
+
 					pauseAndCheck(mgr, repositionedTemplate, false);
 					//checkTemplatePosition(mgr, repositionedTemplate, false);
-					//System.out.println("done calling checkTemplatePosition()");
-
 
 				} else if (result.isPresent() && result.get() == buttonTypeMouseKB) {
 					placementDialog(title, header, newBuilding, mgr);
@@ -752,7 +737,6 @@ public class TransportWizard {
 	 * @param header
 	 * @param site
 	 */
-	// 2015-12-25 Added mouseDialog()
 	@SuppressWarnings("restriction")
 	public void placementDialog(String title, String header, Building newBuilding, BuildingManager mgr) {
 
@@ -800,28 +784,26 @@ public class TransportWizard {
 
 
 			KeyboardDetection keyboard = new KeyboardDetection(newBuilding, mgr);
-/*
-			// 2016-03-08 Added keyboard mapping and key bindings
-			for (KeyboardDirection dir : KeyboardDirection.values()) {
-				enumMap.put(dir, Boolean.FALSE);
-			}
-
-			keyboardMap.put(java.awt.event.KeyEvent.VK_UP, KeyboardDirection.UP);
-			keyboardMap.put(java.awt.event.KeyEvent.VK_DOWN, KeyboardDirection.DOWN);
-			keyboardMap.put(java.awt.event.KeyEvent.VK_LEFT, KeyboardDirection.LEFT);
-			keyboardMap.put(java.awt.event.KeyEvent.VK_RIGHT, KeyboardDirection.RIGHT);
-			keyboardMap.put(java.awt.event.KeyEvent.VK_R, KeyboardDirection.TURN);
-
-			keyboardMap.put(java.awt.event.KeyEvent.VK_KP_UP, KeyboardDirection.UP);
-			keyboardMap.put(java.awt.event.KeyEvent.VK_KP_DOWN, KeyboardDirection.DOWN);
-			keyboardMap.put(java.awt.event.KeyEvent.VK_KP_LEFT, KeyboardDirection.LEFT);
-			keyboardMap.put(java.awt.event.KeyEvent.VK_KP_RIGHT, KeyboardDirection.RIGHT);
-			keyboardMap.put(java.awt.event.KeyEvent.VK_F, KeyboardDirection.TURN);
-
-			setKeyBindings();
-			animationTimer = new javax.swing.Timer(ANIMATION_DELAY, new AnimationListener(newBuilding, mgr));
-			animationTimer.start();
-*/
+			// Add keyboard mapping and key bindings
+//			for (KeyboardDirection dir : KeyboardDirection.values()) {
+//				enumMap.put(dir, Boolean.FALSE);
+//			}
+//
+//			keyboardMap.put(java.awt.event.KeyEvent.VK_UP, KeyboardDirection.UP);
+//			keyboardMap.put(java.awt.event.KeyEvent.VK_DOWN, KeyboardDirection.DOWN);
+//			keyboardMap.put(java.awt.event.KeyEvent.VK_LEFT, KeyboardDirection.LEFT);
+//			keyboardMap.put(java.awt.event.KeyEvent.VK_RIGHT, KeyboardDirection.RIGHT);
+//			keyboardMap.put(java.awt.event.KeyEvent.VK_R, KeyboardDirection.TURN);
+//
+//			keyboardMap.put(java.awt.event.KeyEvent.VK_KP_UP, KeyboardDirection.UP);
+//			keyboardMap.put(java.awt.event.KeyEvent.VK_KP_DOWN, KeyboardDirection.DOWN);
+//			keyboardMap.put(java.awt.event.KeyEvent.VK_KP_LEFT, KeyboardDirection.LEFT);
+//			keyboardMap.put(java.awt.event.KeyEvent.VK_KP_RIGHT, KeyboardDirection.RIGHT);
+//			keyboardMap.put(java.awt.event.KeyEvent.VK_F, KeyboardDirection.TURN);
+//
+//			setKeyBindings();
+//			animationTimer = new javax.swing.Timer(ANIMATION_DELAY, new AnimationListener(newBuilding, mgr));
+//			animationTimer.start();
 
 			MouseMotionDetection mouseMotion = new MouseMotionDetection(newBuilding, mgr);
 
@@ -831,36 +813,34 @@ public class TransportWizard {
 				mapPanel.addKeyListener(keyboard);
 				mapPanel.addMouseMotionListener(mouseMotion);
 				logger.info("addKeyListener() and addMouseMotionListener()");  
-/*
-				mapPanel.addMouseListener(new MouseListener() {
-				    @Override
-				    public void mouseClicked(MouseEvent evt) {
-					//	Point location = MouseInfo.getPointerInfo().getLocation();
-						// empty
-				    }
-
-					@Override
-					public void mouseEntered(MouseEvent evt) {
-						// empty
-					}
-
-					@Override
-					public void mouseExited(MouseEvent evt) {
-						// empty
-					}
-
-					@Override
-					public synchronized void mousePressed(MouseEvent evt) {
-						// empty
-					}
-
-					@Override
-					public synchronized void mouseReleased(MouseEvent evt) {
-						// empty
-					}
-
-				});
-*/				
+//				mapPanel.addMouseListener(new MouseListener() {
+//				    @Override
+//				    public void mouseClicked(MouseEvent evt) {
+//					//	Point location = MouseInfo.getPointerInfo().getLocation();
+//						// empty
+//				    }
+//
+//					@Override
+//					public void mouseEntered(MouseEvent evt) {
+//						// empty
+//					}
+//
+//					@Override
+//					public void mouseExited(MouseEvent evt) {
+//						// empty
+//					}
+//
+//					@Override
+//					public synchronized void mousePressed(MouseEvent evt) {
+//						// empty
+//					}
+//
+//					@Override
+//					public synchronized void mouseReleased(MouseEvent evt) {
+//						// empty
+//					}
+//
+//				});			
 			//});
 
 			Optional<ButtonType> result = alert.showAndWait();
@@ -978,7 +958,6 @@ public class TransportWizard {
 	    return withinRadius;
 	}
 
-	// 2016-03-08 Added setKeyBindings()
 	private void setKeyBindings() {
 	      int condition = javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 	      final javax.swing.InputMap inputMap = mapPanel.getInputMap(condition);
@@ -1000,7 +979,6 @@ public class TransportWizard {
 	      }
 	   }
 
-	// 2016-03-08 Added removeKeyBindings()
 	private void removeKeyBindings() {
 	      int condition = javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 	      final javax.swing.InputMap inputMap = mapPanel.getInputMap(condition);
@@ -1022,7 +1000,6 @@ public class TransportWizard {
 	      }
 	   }
 
-	// 2016-03-08 KeyBindingsAction class
 	   private class KeyBindingsAction extends AbstractAction {
 	      private KeyboardDirection dir;
 	      boolean pressed;
@@ -1114,7 +1091,6 @@ public class TransportWizard {
 	      }
 	}
 
-	// 2015-12-25 Added MouseDetection
 	class MouseMotionDetection implements MouseMotionListener{
 		private Building newBuilding;
 		private BuildingManager mgr;
@@ -1152,7 +1128,6 @@ public class TransportWizard {
 	
 	}
 
-	// 2015-12-25 Added KeyboardDetection
 	class KeyboardDetection implements KeyListener{
 		private Building newBuilding;
 		private BuildingManager mgr;
@@ -1217,7 +1192,6 @@ public class TransportWizard {
 	 * @param xPixel
 	 * @param yPixel
 	 */
-	// 2015-12-26 Added moveNewBuildingAt()
 	public void moveNewBuildingTo(Building b, double xPixel, double yPixel) {
 		Point.Double pixel = mapPanel.convertToSettlementLocation((int)xPixel, (int)yPixel);
 
@@ -1363,7 +1337,6 @@ public class TransportWizard {
 	 * @param b
 	 * @param c
 	 */
-	// 2016-03-08 Renamed to handleKeyboardInput()
 	public void handleKeyPress(Building b, int c) {
 
 	    if (c == java.awt.event.KeyEvent.VK_UP // 38
@@ -1481,7 +1454,6 @@ public class TransportWizard {
 	/**
 	 * Compares and sorts a list of BuildingTemplates according to its building id
 	 */
-    // 2015-12-19 Added ComparatorOfBuildingID()
 	class ComparatorOfBuildingID implements Comparator<BuildingTemplate>{
 
 		@Override

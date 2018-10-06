@@ -441,9 +441,9 @@ public class MainSceneMenu extends MenuBar {
 			@Override
 			public void handle(ActionEvent arg0) {
 				if (musicMuteItem.isSelected())
-					mainScene.mute(false, true);// desktop.getSoundPlayer().pause(false, true);
+					mainScene.muteControls(false, true);// desktop.getSoundPlayer().pause(false, true);
 				else
-					mainScene.unmute(false, true);// desktop.getSoundPlayer().restore(false, true);
+					mainScene.unmuteControls(false, true);// desktop.getSoundPlayer().restore(false, true);
 			}
 		});
 
@@ -451,9 +451,9 @@ public class MainSceneMenu extends MenuBar {
 			@Override
 			public void handle(ActionEvent arg0) {
 				if (effectMuteItem.isSelected())
-					mainScene.mute(true, false);// desktop.getSoundPlayer().pause(true, false);
+					mainScene.muteControls(true, false);// desktop.getSoundPlayer().pause(true, false);
 				else
-					mainScene.unmute(true, false);// desktop.getSoundPlayer().restore(true, false);
+					mainScene.unmuteControls(true, false);// desktop.getSoundPlayer().restore(true, false);
 			}
 		});
 

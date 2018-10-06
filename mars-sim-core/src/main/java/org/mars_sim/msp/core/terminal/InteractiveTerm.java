@@ -204,4 +204,9 @@ public class InteractiveTerm {
     public void setKeepRunning(boolean value) {
     	keepRunning = value;
     }
+    
+    public void disposeTerminal() {
+    	terminal.dispose(null);
+    }
+    
 }

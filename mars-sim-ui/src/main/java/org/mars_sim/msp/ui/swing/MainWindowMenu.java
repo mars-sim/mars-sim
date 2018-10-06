@@ -487,16 +487,16 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 		else if (selectedItem == musicMuteItem) {
 			if (musicMuteItem.isSelected())
-				desktop.getSoundPlayer().mute(false, true);
+				desktop.getSoundPlayer().mutePlayer(false, true);
 			else
-				desktop.getSoundPlayer().unmute(false, true);
+				desktop.getSoundPlayer().unmutePlayer(false, true);
 		}
 
 		else if (selectedItem == effectMuteItem) {
 			if (effectMuteItem.isSelected())
-				desktop.getSoundPlayer().mute(true, false);
+				desktop.getSoundPlayer().mutePlayer(true, false);
 			else
-				desktop.getSoundPlayer().unmute(true, false);
+				desktop.getSoundPlayer().unmutePlayer(true, false);
 		}
 
 		else if (selectedItem == aboutMspItem) {

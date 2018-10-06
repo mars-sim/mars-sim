@@ -171,8 +171,30 @@
 		    <artifactId>commons-lang3</artifactId>
 		    <version>3.8.1</version>
 		</dependency>	
-		
-		
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple 
+		     For getting rid of the statement : SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder"
+		     See https://stackoverflow.com/questions/7421612/slf4j-failed-to-load-class-org-slf4j-impl-staticloggerbinder#9919375
+
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-simple</artifactId>
+		    <version>1.7.25</version>
+		    <scope>test</scope>
+		</dependency>
+		-->
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-nop</artifactId>
+		    <version>1.7.25</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-api</artifactId>
+		    <version>1.7.25</version>
+		</dependency>
+		-->
+				
 	</dependencies>
 
 	<repositories>

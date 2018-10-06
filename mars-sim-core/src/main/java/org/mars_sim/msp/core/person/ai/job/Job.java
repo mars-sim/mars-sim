@@ -18,8 +18,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 /**
  * The Job class represents a person's job.
  */
-public abstract class Job
-implements Serializable {
+public abstract class Job implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -35,7 +34,7 @@ implements Serializable {
 	private static final String MALE_STR = "male.";
 	private static final String FEMALE_STR = "female.";
 	private static final String UNKNOWN = "unknown.";
-	
+
 	// Domain members
 	protected Class<? extends Job> jobClass;
 	/** List of tasks related to the job. */
@@ -47,6 +46,7 @@ implements Serializable {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param name the name of the job.
 	 */
 	public Job(Class<? extends Job> jobClass) {
@@ -57,23 +57,29 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the job's internationalized name for display in user interface.
-	 * This uses directly the name of the class that extends {@link Job},
-	 * so take care not to rename those, or if you do then remember to
-	 * change the keys in <code>messages.properties</code> accordingly.
+	 * Gets the job's internationalized name for display in user interface. This
+	 * uses directly the name of the class that extends {@link Job}, so take care
+	 * not to rename those, or if you do then remember to change the keys in
+	 * <code>messages.properties</code> accordingly.
+	 * 
 	 * @param gender {@link GenderType}
 	 * @return name
 	 */
 	public String getName(GenderType gender) {
-		StringBuffer key = new StringBuffer()
-		.append(JOB_STR); //$NON-NLS-1$
+		StringBuffer key = new StringBuffer().append(JOB_STR); // $NON-NLS-1$
 		switch (gender) {
-			case MALE : key.append(MALE_STR); break; //$NON-NLS-1$
-			case FEMALE : key.append(FEMALE_STR); break; //$NON-NLS-1$
-			default : key.append(UNKNOWN); break; //$NON-NLS-1$
+		case MALE:
+			key.append(MALE_STR);
+			break; // $NON-NLS-1$
+		case FEMALE:
+			key.append(FEMALE_STR);
+			break; // $NON-NLS-1$
+		default:
+			key.append(UNKNOWN);
+			break; // $NON-NLS-1$
 		}
 		key.append(jobClass.getSimpleName());
-		return Msg.getString(key.toString()); //$NON-NLS-1$
+		return Msg.getString(key.toString()); // $NON-NLS-1$
 	};
 
 	public Class<? extends Job> getJobClass() {
@@ -82,6 +88,7 @@ implements Serializable {
 
 	/**
 	 * Gets a person/robot's capability to perform this job.
+	 * 
 	 * @param person/robot the person/robot to check.
 	 * @return capability (min 0.0).
 	 */
@@ -89,47 +96,54 @@ implements Serializable {
 
 	/**
 	 * Gets a robot's capability to perform this job.
+	 * 
 	 * @param robot the robot to check.
 	 * @return capability (min 0.0).
 	 */
-	//public abstract double getCapability(Robot robot);
-
+	// public abstract double getCapability(Robot robot);
 
 	/**
 	 * Gets the probability modifier for starting a non-job-related task.
+	 * 
 	 * @param taskClass the task class
 	 * @return modifier >= 0.0
 	 */
 	public double getStartTaskProbabilityModifier(Class<?> taskClass) {
 		double result = 1D;
-		if (!jobTasks.contains(taskClass)) result = NON_JOB_TASK_PENALTY;
+		if (!jobTasks.contains(taskClass))
+			result = NON_JOB_TASK_PENALTY;
 		return result;
 	}
 
 	/**
 	 * Gets the probability modifier for starting a non-job-related mission.
+	 * 
 	 * @param missionClass the mission class
 	 * @return modifier >= 0.0
 	 */
 	public double getStartMissionProbabilityModifier(Class<?> missionClass) {
 		double result = 1D;
-		if (!jobMissionStarts.contains(missionClass)) result = NON_JOB_MISSION_START_PENALTY;
+		if (!jobMissionStarts.contains(missionClass))
+			result = NON_JOB_MISSION_START_PENALTY;
 		return result;
 	}
 
 	/**
 	 * Gets the probability modifier for joining a non-job-related mission.
+	 * 
 	 * @param missionClass the mission class
 	 * @return modifier >= 0.0
 	 */
 	public double getJoinMissionProbabilityModifier(Class<?> missionClass) {
 		double result = 1D;
-		if (!jobMissionJoins.contains(missionClass)) result = NON_JOB_MISSION_JOIN_PENALTY;
+		if (!jobMissionJoins.contains(missionClass))
+			result = NON_JOB_MISSION_JOIN_PENALTY;
 		return result;
 	}
 
 	/**
 	 * Gets the base settlement need for this job.
+	 * 
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
 	 */
@@ -137,6 +151,7 @@ implements Serializable {
 
 	/**
 	 * Checks if a task is related to this job.
+	 * 
 	 * @param taskClass the task class
 	 * @return true if job related task.
 	 */
