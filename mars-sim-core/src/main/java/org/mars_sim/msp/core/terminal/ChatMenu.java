@@ -53,6 +53,8 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 
 	       	terminal.println("<< Connection to MarsNet established >>"
 		       	+ System.lineSeparator() + System.lineSeparator() 
+		       	+ "/h for help and /k for keywords"
+		       	+ System.lineSeparator()
 		       	+ "Press UP/DOWN to show a list of possible values"
 		       	+ System.lineSeparator());
 	       	
@@ -117,7 +119,6 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 			questionText = txt[0];
 			responseText = txt[1];
 
-			// Leave this chat
 			terminal.printf(System.lineSeparator());
 			
 		}

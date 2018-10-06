@@ -21,18 +21,16 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
-/** The GroundVehicle class represents a ground-type vehicle.  It is
- *  abstract and should be extended to a particular type of ground
- *  vehicle.
+/**
+ * The GroundVehicle class represents a ground-type vehicle. It is abstract and
+ * should be extended to a particular type of ground vehicle.
  */
-public abstract class GroundVehicle
-extends Vehicle
-implements Serializable {
+public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	//public final static String STUCK = "Stuck - using winch";
+	// public final static String STUCK = "Stuck - using winch";
 
 	// Data members
 	/** Current elevation in km. */
@@ -41,28 +39,27 @@ implements Serializable {
 	private double terrainHandlingCapability;
 	/** True if vehicle is stuck. */
 	private boolean isStuck;
-	
-	private static SurfaceFeatures surface;	
-	private static TerrainElevation terrain;
-	
 
-	/** 
+	private static SurfaceFeatures surface;
+	private static TerrainElevation terrain;
+
+	/**
 	 * Constructs a {@link GroundVehicle} object at a given settlement.
-	 * @param name name of the ground vehicle
-	 * @param description the configuration description of the vehicle.
-	 * @param settlement settlement the ground vehicle is parked at
+	 * 
+	 * @param name                name of the ground vehicle
+	 * @param description         the configuration description of the vehicle.
+	 * @param settlement          settlement the ground vehicle is parked at
 	 * @param maintenanceWorkTime the work time required for maintenance (millisols)
 	 */
-	public GroundVehicle(String name, String description, Settlement settlement, 
-			double maintenanceWorkTime) {
+	public GroundVehicle(String name, String description, Settlement settlement, double maintenanceWorkTime) {
 		// use Vehicle constructor
 		super(name, description, settlement, maintenanceWorkTime);
 
 		// Add scope to malfunction manager.
-		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());//"GroundVehicle");
+		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());// "GroundVehicle");
 
 		setTerrainHandlingCapability(0D); // Default terrain capability
-		
+
 		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		terrain = surface.getTerrainElevation();
 		elevation = terrain.getElevation(getCoordinates());
@@ -70,28 +67,33 @@ implements Serializable {
 
 	/**
 	 * Returns vehicle's current status
+	 * 
 	 * @return the vehicle's current status
 	 */
 	public StatusType getStatus() {
 		StatusType status = null;
 
-		if (isStuck) status = StatusType.STUCK;
-		else status = super.getStatus();
+		if (isStuck)
+			status = StatusType.STUCK;
+		else
+			status = super.getStatus();
 
 		return status;
 	}
 
 	/**
-	 * Returns the elevation of the vehicle in km. 
+	 * Returns the elevation of the vehicle in km.
+	 * 
 	 * @return elevation of the ground vehicle (in km)
 	 */
 	public double getElevation() {
-		//return terrain.getElevation(getCoordinates());
+		// return terrain.getElevation(getCoordinates());
 		return elevation;
 	}
 
 	/**
-	 * Sets the elevation of the vehicle (in km.) 
+	 * Sets the elevation of the vehicle (in km.)
+	 * 
 	 * @param elevation new elevation for ground vehicle
 	 */
 	public void setElevation(double elevation) {
@@ -99,7 +101,8 @@ implements Serializable {
 	}
 
 	/**
-	 * Returns the vehicle's terrain capability 
+	 * Returns the vehicle's terrain capability
+	 * 
 	 * @return terrain handling capability of the ground vehicle
 	 */
 	public double getTerrainHandlingCapability() {
@@ -107,34 +110,43 @@ implements Serializable {
 	}
 
 	/**
-	 * Sets the vehicle's terrain capability 
+	 * Sets the vehicle's terrain capability
+	 * 
 	 * @param c sets the ground vehicle's terrain handling capability
 	 */
 	public void setTerrainHandlingCapability(double c) {
 		terrainHandlingCapability = c;
 	}
 
-	/** 
-	 * Gets the average angle of terrain over next 7.4km distance in direction vehicle is traveling.
-	 * @return ground vehicle's current terrain grade angle from horizontal (radians)
+	/**
+	 * Gets the average angle of terrain over next 7.4km distance in direction
+	 * vehicle is traveling.
+	 * 
+	 * @return ground vehicle's current terrain grade angle from horizontal
+	 *         (radians)
 	 */
 	public double getTerrainGrade() {
 		return getTerrainGrade(getDirection());
 	}
 
-	/** 
-	 * Gets the average angle of terrain over next 7.4km distance in a given direction from the vehicle.
-	 * @return ground vehicle's current terrain grade angle from horizontal (radians)
+	/**
+	 * Gets the average angle of terrain over next 7.4km distance in a given
+	 * direction from the vehicle.
+	 * 
+	 * @return ground vehicle's current terrain grade angle from horizontal
+	 *         (radians)
 	 */
 	public double getTerrainGrade(Direction direction) {
 		// Determine the terrain grade in a given direction from the vehicle.
-		//SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		//TerrainElevation terrain = surface.getTerrainElevation();
+		// SurfaceFeatures surface =
+		// Simulation.instance().getMars().getSurfaceFeatures();
+		// TerrainElevation terrain = surface.getTerrainElevation();
 		return terrain.determineTerrainDifficulty(getCoordinates(), direction);
 	}
 
 	/**
-	 * Returns true if ground vehicle is stuck 
+	 * Returns true if ground vehicle is stuck
+	 * 
 	 * @return true if vehicle is currently stuck, false otherwise
 	 */
 	public boolean isStuck() {
@@ -142,7 +154,8 @@ implements Serializable {
 	}
 
 	/**
-	 * Sets the ground vehicle's stuck value 
+	 * Sets the ground vehicle's stuck value
+	 * 
 	 * @param stuck true if vehicle is currently stuck, false otherwise
 	 */
 	public void setStuck(boolean stuck) {
@@ -155,6 +168,7 @@ implements Serializable {
 
 	/**
 	 * Gets the driver of the ground vehicle.
+	 * 
 	 * @return the vehicle driver.
 	 */
 	public VehicleOperator getDriver() {
@@ -163,6 +177,7 @@ implements Serializable {
 
 	/**
 	 * Sets the driver of the ground vehicle.
+	 * 
 	 * @param operator the driver
 	 */
 	public void setDriver(VehicleOperator operator) {
@@ -182,8 +197,8 @@ implements Serializable {
 
 		// If settlement has garages, place vehicle near a random garage.
 		// Otherwise place vehicle near settlement center.
-		List<Building> garageList = settlement.getBuildingManager().getBuildings(
-				FunctionType.GROUND_VEHICLE_MAINTENANCE);
+		List<Building> garageList = settlement.getBuildingManager()
+				.getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 		if (garageList.size() >= 1) {
 			Collections.shuffle(garageList);
 			Building garage = garageList.get(0);
@@ -197,7 +212,7 @@ implements Serializable {
 		boolean foundGoodLocation = false;
 
 		// Try iteratively outward from 10m to 500m distance range.
-		for (int x = 15; (x < 500) && !foundGoodLocation; x+= 10) {
+		for (int x = 15; (x < 500) && !foundGoodLocation; x += 10) {
 			// Try ten random locations at each distance range.
 			for (int y = 0; (y < 10) && !foundGoodLocation; y++) {
 				double distance = RandomUtil.getRandomDouble(10D) + x;
@@ -207,8 +222,8 @@ implements Serializable {
 				newFacing = RandomUtil.getRandomDouble(360D);
 
 				// Check if new vehicle location collides with anything.
-				foundGoodLocation = LocalAreaUtil.checkBoundedObjectNewLocationCollision(this, 
-						newXLoc, newYLoc, newFacing, getCoordinates());
+				foundGoodLocation = LocalAreaUtil.checkBoundedObjectNewLocationCollision(this, newXLoc, newYLoc,
+						newFacing, getCoordinates());
 			}
 		}
 

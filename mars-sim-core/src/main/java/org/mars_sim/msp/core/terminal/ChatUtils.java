@@ -341,15 +341,16 @@ public class ChatUtils {
 					|| text.contains("vehicle")) {
 
 				questionText = YOU_PROMPT + "What are the vehicles in the settlement ? ";
-				responseText.append(" ** Rovers/Vehicles Inventory **");
 				responseText.append(System.lineSeparator());
-				responseText.append("(1). Total # of Rovers/Vehicles : ");
+				responseText.append("     ----- Rovers/Vehicles Inventory -----");
+				responseText.append(System.lineSeparator());
+				responseText.append("(1). Total # : ");
 				responseText.append(settlementCache.getAllAssociatedVehicles().size());
 				responseText.append(System.lineSeparator());
-				responseText.append("(2). Total # of Rovers/Vehicles on Mission : ");
+				responseText.append("(2). Total # on Mission : ");
 				responseText.append(settlementCache.getMissionVehicles().size());
 				responseText.append(System.lineSeparator());
-				responseText.append("(3). Total # of Parked Rovers/Vehicles (NOT on Mission) : ");
+				responseText.append("(3). Total # Parked (NOT on Mission) : ");
 				responseText.append(settlementCache.getParkedVehicleNum());
 				responseText.append(System.lineSeparator());
 				responseText.append("(4). # Cargo Rovers on Mission : ");
@@ -388,6 +389,7 @@ public class ChatUtils {
 				else {
 					keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
 				}
+				//responseText.append(System.lineSeparator());
 				responseText.append(keywordText);
 
 			}
@@ -403,6 +405,7 @@ public class ChatUtils {
 				else {
 					helpText = HELP_TEXT + HELP_HEIGHT;
 				}
+				//responseText.append(System.lineSeparator());
 				responseText.append(helpText);
 
 			}
@@ -797,6 +800,7 @@ public class ChatUtils {
 					else {
 						keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
 					}
+					responseText.append(System.lineSeparator());
 					responseText.append(keywordText);
 	
 				}
@@ -810,6 +814,7 @@ public class ChatUtils {
 					else {
 						helpText = HELP_TEXT + HELP_HEIGHT;
 					}
+					responseText.append(System.lineSeparator());
 					responseText.append(helpText);
 	
 				}
@@ -870,7 +875,7 @@ public class ChatUtils {
 
 		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
 
-			responseText.append(System.lineSeparator());
+			//responseText.append(System.lineSeparator());
 			if (connectionMode == 0) {
 				keywordText = KEYWORDS_TEXT;
 			}
@@ -883,7 +888,7 @@ public class ChatUtils {
 		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
 				|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
 
-			responseText.append(System.lineSeparator());
+			//responseText.append(System.lineSeparator());
 			if (connectionMode == 0) {
 				helpText = HELP_TEXT;
 			}

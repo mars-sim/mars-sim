@@ -28,6 +28,8 @@ Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
 <vehicle-configuration>
 
 	<vehicle type="Explorer Rover" width="3.5" length="8.0">
+		<!-- Note: the vehicle types used here must match those in message.properties -->
+		
 		<description>A rover for collecting rock samples from remote sites and ice prospecting.</description>
 
 		<!-- The drivetrain efficiency of the rover (in %) (required) -->
