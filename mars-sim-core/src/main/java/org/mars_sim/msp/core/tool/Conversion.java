@@ -12,21 +12,20 @@ public class Conversion {
 	public Conversion() {
 
 	}
-/*
-	public void capitalize(String nameStr) {
 
-		// convert nameStr down into an array
-		// create new String at each whitespace
-
-		// at each word, do
-
-		String word = null;
-		word = word.substring(0,1).toUpperCase()+ word.substring(1).toLowerCase();
-
-		// convert the array back to one single String
-
-	}
-*/
+//	public void capitalize(String nameStr) {
+//
+//		// convert nameStr down into an array
+//		// create new String at each whitespace
+//
+//		// at each word, do
+//
+//		String word = null;
+//		word = word.substring(0,1).toUpperCase()+ word.substring(1).toLowerCase();
+//
+//		// convert the array back to one single String
+//
+//	}
 
 
 	public static boolean checkVowel(String name) {

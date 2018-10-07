@@ -45,7 +45,7 @@ public class ChatUtils {
 	public final static String HELP_TEXT =  System.lineSeparator() 
 			+ "    -------------------- H E L P -------------------- " + System.lineSeparator()
 			+ "(1) Type in the NAME of a person, a bot, or a settlement to connect with." + System.lineSeparator()
-			+ "(2) Use KEYWORDS or type in a number between 1 and 15 (specific QUESTIONS on a person/bot/vehicle/settlement)."  + System.lineSeparator()		
+			+ "(2) Use KEYWORDS or type in a number between 0 and 18 (specific QUESTIONS on a person/bot/vehicle/settlement)."  + System.lineSeparator()		
 			+ "(3) Type '/k' or 'key' to see a list of KEYWORDS." + System.lineSeparator() 
 			+ "(4) Type 'settlement' to obtain the NAMES of the established settlements." + System.lineSeparator()
 			+ "(5) Type 'bye', '/b', 'exit', 'x', 'quit', '/q' to close the chat box." + System.lineSeparator()
@@ -56,14 +56,14 @@ public class ChatUtils {
 
 	public final static String KEYWORDS_TEXT = System.lineSeparator() 
 			+ "    -------------------- K E Y W O R D S -------------------- " + System.lineSeparator()
-			+ "(1) 'where', 'location', 'located', 'task', 'activity', 'action', 'mission', " + System.lineSeparator()
-			+ "(2) 'bed', 'quarters', 'building', 'inside', 'outside'," + System.lineSeparator()
-			+ "(3) 'settlement', 'settlements', 'associated settlement', 'association', 'home', 'home town',"
+			+ "(1) 'status', 'feeling', 'how old', 'age', 'birth', 'country', 'nationality', 'job', 'specialty', 'career', " + System.lineSeparator() 
+			+ "(2) 'where', 'location', 'located', 'task', 'activity', 'action', 'mission', " + System.lineSeparator()
+			+ "(3) 'bed', 'quarters', 'sleep', 'building', 'inside', 'outside'," + System.lineSeparator()
+			+ "(4) 'settlement', 'settlements', 'associated settlement', 'association', 'home', 'home town',"
 			+ System.lineSeparator() // 'buried settlement', 'buried'
-			+ "(4) 'vehicle inside', 'vehicle outside', 'vehicle park', 'vehicle settlement'," + System.lineSeparator()
-			+ "(5) 'vehicle container', 'vehicle top container'" + System.lineSeparator() 
+			+ "(5) 'vehicle inside', 'vehicle outside', 'vehicle park', 'vehicle settlement', 'vehicle container'" + System.lineSeparator()
 			+ "    -------------------- N U M E R A L -------------------- " + System.lineSeparator() 
-			+ "(6) 1 to 15 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator() 
+			+ "(6) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator() 
 			+ "    --------------------  M I S C S -------------------- " + System.lineSeparator()
 			+ "(7) 'bye', '/b', 'exit', 'x', 'quit', '/q' to close the chat box" + System.lineSeparator()
 			+ "(8) 'help', '/h' for the help page" + System.lineSeparator();
@@ -188,6 +188,612 @@ public class ChatUtils {
 		return true;
 	}
 
+	/**
+	 * Asks the settlement when the input is a number
+	 * 
+	 * @param text the input number
+	 * @return the response string[]
+	 */
+	public static String[] askSettlementNum(int num) {
+		String questionText = "";
+		StringBuilder responseText = new StringBuilder();
+		
+		
+		if (num == 1) {
+			questionText = YOU_PROMPT + "how many beds are there in total ? ";
+			responseText.append("The total number of beds is ");
+			responseText.append(settlementCache.getPopulationCapacity());
+
+		}
+
+		else if (num == 2) {
+			questionText = YOU_PROMPT + "how many beds that have already been designated to a person ? ";
+			responseText.append("There are ");
+			responseText.append(settlementCache.getTotalNumDesignatedBeds());
+			responseText.append(" designated beds. ");
+
+		}
+
+		else if (num == 3) {
+			questionText = YOU_PROMPT + "how many beds that are currently NOT occupied ? ";
+			responseText.append("There are ");
+			responseText.append(settlementCache.getPopulationCapacity() - settlementCache.getSleepers());
+			responseText.append(" unoccupied beds. ");
+
+		}
+
+		else if (num == 4) {
+			questionText = YOU_PROMPT + "how many beds are currently occupied ? ";
+			responseText.append("There are ");
+			responseText.append(settlementCache.getSleepers());
+			responseText.append(" occupied beds with people sleeping on it at this moment. ");
+
+		}
+
+		else {
+			questionText = YOU_PROMPT + "You entered '" + num + "'.";
+			responseText.append("Sorry. This number is not assigned to a valid question.");
+		}
+		
+		return new String[] {questionText , responseText.toString()};
+	}
+	
+	/**
+	 * Asks the settlement when the input is a string
+	 * 
+	 * @param text the input string
+	 * @param name the input name of the settlement
+	 * @return the response string[]
+	 */
+	public static String[] askSettlementStr(String text, String name) {
+		String questionText = "";
+		StringBuilder responseText = new StringBuilder();
+		
+		if (text.contains("bed") || text.contains("sleep") || text.equalsIgnoreCase("lodging")
+				|| text.contains("quarters")) {
+
+			questionText = YOU_PROMPT + "how well are the beds utilized ? ";
+			responseText.append("Total number of beds : ");
+			responseText.append(settlementCache.getPopulationCapacity());
+			responseText.append(System.lineSeparator());
+			responseText.append("Desginated beds : ");
+			responseText.append(settlementCache.getTotalNumDesignatedBeds());
+			responseText.append(System.lineSeparator());
+			responseText.append("Unoccupied beds : ");
+			responseText.append(settlementCache.getPopulationCapacity() - settlementCache.getSleepers());
+			responseText.append(System.lineSeparator());
+			responseText.append("Occupied beds : ");
+			responseText.append(settlementCache.getSleepers());
+			responseText.append(System.lineSeparator());
+		}
+
+		else if (text.equalsIgnoreCase("vehicle") || text.equalsIgnoreCase("rover") || text.contains("rover")
+				|| text.contains("vehicle")) {
+
+			questionText = YOU_PROMPT + "What are the vehicles in the settlement ? ";
+			responseText.append(System.lineSeparator());
+			responseText.append("     ----- Rovers/Vehicles Inventory -----");
+			responseText.append(System.lineSeparator());
+			responseText.append("(1). Total # : ");
+			responseText.append(settlementCache.getAllAssociatedVehicles().size());
+			responseText.append(System.lineSeparator());
+			responseText.append("(2). Total # on Mission : ");
+			responseText.append(settlementCache.getMissionVehicles().size());
+			responseText.append(System.lineSeparator());
+			responseText.append("(3). Total # Parked (NOT on Mission) : ");
+			responseText.append(settlementCache.getParkedVehicleNum());
+			responseText.append(System.lineSeparator());
+			responseText.append("(4). # Cargo Rovers on Mission : ");
+			responseText.append(settlementCache.getCargoRovers(2).size());
+			responseText.append(System.lineSeparator());
+			responseText.append("(5). # Transport Rovers on Mission : ");
+			responseText.append(settlementCache.getTransportRovers(2).size());
+			responseText.append(System.lineSeparator());
+			responseText.append("(6). # Explorer Rovers on Mission : ");
+			responseText.append(settlementCache.getExplorerRovers(2).size());
+			responseText.append(System.lineSeparator());
+			responseText.append("(7). # Light Utility Vehicles (LUVs) on Mission : ");
+			responseText.append(settlementCache.getLUVs(2).size());
+			responseText.append(System.lineSeparator());
+			responseText.append("(8). # Parked Cargo Rovers : ");
+			responseText.append(settlementCache.getCargoRovers(1).size());
+			responseText.append(System.lineSeparator());
+			responseText.append("(9). # Parked Transport Rovers : ");
+			responseText.append(settlementCache.getTransportRovers(1).size());
+			responseText.append(System.lineSeparator());
+			responseText.append("(10). # Parked Explorer Rovers : ");
+			responseText.append(settlementCache.getExplorerRovers(1).size());
+			responseText.append(System.lineSeparator());
+			responseText.append("(11). # Parked Light Utility Vehicles (LUVs) : ");
+			responseText.append(settlementCache.getLUVs(1).size());
+			responseText.append(System.lineSeparator());
+		}
+
+		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
+
+//			help = true;
+			questionText = REQUEST_KEYS;
+			if (connectionMode == 0) {
+				keywordText = KEYWORDS_TEXT;
+			}
+			else {
+				keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
+			}
+			//responseText.append(System.lineSeparator());
+			responseText.append(keywordText);
+
+		}
+
+		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
+				|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
+
+//			help = true;
+			questionText = REQUEST_HELP;
+			if (connectionMode == 0) {
+				helpText = HELP_TEXT;
+			}
+			else {
+				helpText = HELP_TEXT + HELP_HEIGHT;
+			}
+			//responseText.append(System.lineSeparator());
+			responseText.append(helpText);
+
+		}
+		
+		else {
+			
+			String[] txt = clarify(name);
+			questionText = txt[0];
+			responseText.append(txt[1]);
+		}
+		
+		return new String[] {questionText , responseText.toString()};
+	}
+	
+	/**
+	 * Asks the person or the robot
+	 * 
+	 * @param text the string input
+	 * @param num the number input
+	 * @param name the number of the person or robot
+	 * @param u the unit
+	 * @return string array
+	 */
+	public static String[] askPersonRobot(String text, int num, String name, Unit u) {
+		String questionText = "";
+		StringBuilder responseText = new StringBuilder();
+		
+		responseText.append(name);
+		responseText.append(": ");
+
+		if (num == 0 || text.toLowerCase().contains("status")
+				|| text.toLowerCase().contains("how you doing")
+				|| text.toLowerCase().contains("feeling")
+				|| text.toLowerCase().contains("how have you been")) {
+			questionText = YOU_PROMPT + "how have you been ?"; // what is your Location Situation [Expert Mode only] ?";
+
+			if (personCache != null) {
+				responseText.append("I'm ");
+				responseText.append(personCache.getStatus());
+				
+			} else if (robotCache != null) {
+				responseText.append("I'm operational.");
+//				responseText.append(robotCache...());
+			}
+
+		}
+		 
+		else if (num == 1 || text.toLowerCase().contains("age")
+				 || text.toLowerCase().contains("born")
+				 || text.toLowerCase().contains("when were you born")
+				 || text.toLowerCase().contains("how old")
+				 || text.toLowerCase().contains("what is your age")) {
+			questionText = YOU_PROMPT + "What is your age ?"; // what is your Location Situation [Expert Mode only] ?";
+
+			if (personCache != null) {
+				responseText.append("I was born in ");
+				responseText.append(personCache.getBirthDate());
+				responseText.append(" and I'm ");
+				responseText.append(personCache.updateAge());
+				
+			} else if (robotCache != null) {
+				responseText.append("I was assembled in ");
+				responseText.append(robotCache.getBirthDate());
+				responseText.append(" and I'm ");
+				responseText.append(robotCache.updateAge());
+			}
+
+		}		
+		 
+		else if (num == 2 || text.contains("what your job") 
+				|| text.toLowerCase().contains("what your specialty")
+				|| text.toLowerCase().contains("job")
+				|| text.toLowerCase().contains("career")
+				|| text.toLowerCase().contains("specialty")) {
+			questionText = YOU_PROMPT + "What is your job ? ";
+			
+			if (personCache != null) {
+				String job = personCache.getMind().getJob().getName(personCache.getGender());
+				String article = "";
+				if (Conversion.checkVowel(job))
+					article = "an";
+				else
+					article = "a";
+				responseText.append("I'm ");
+				responseText.append(article);
+				responseText.append(" ");
+				responseText.append(job);
+				responseText.append(".");
+				
+			} else if (robotCache != null) {
+				String job = robotCache.getBotMind().getRobotJob().toString();//.getName(robotCache.getRobotType());
+				String article = "";
+				if (Conversion.checkVowel(job))
+					article = "an";
+				else
+					article = "a";
+				responseText.append("I'm ");
+				responseText.append(article);
+				responseText.append(" ");
+				responseText.append(job);
+				responseText.append(".");		
+			}
+		}
+		
+		else if (num == 3 || text.equalsIgnoreCase("where you from") 
+				|| text.toLowerCase().contains("what country")
+				|| text.toLowerCase().contains("what nationality")
+				|| text.toLowerCase().contains("nationality")
+				|| text.toLowerCase().contains("country")) {
+			questionText = YOU_PROMPT + "What country were you from ? ";
+			
+			if (personCache != null) {
+				responseText.append("I was born in ");
+				responseText.append(personCache.getCountry());
+				
+			} else if (robotCache != null) {
+				responseText.append("I was assembled on ");
+				responseText.append(robotCache.getCountry());
+			}
+			
+		}
+		 
+		else if (num == 4 || text.toLowerCase().contains("outside")
+				|| text.toLowerCase().contains("inside")
+				|| text.toLowerCase().contains("container")) {
+			questionText = YOU_PROMPT + "Are you inside or outside?";
+			Unit c = u.getContainerUnit();//getTopContainerUnit();
+			if (c != null) {
+				responseText.append("I'm inside ").append(c.getName()).append(".");
+			}
+
+			else
+				responseText.append("I'm outside");// don't have a Top Container unit.";
+
+		}
+		 
+		 else if (num == 5 || text.toLowerCase().contains("where")) {
+			questionText = YOU_PROMPT + "Where are you ?"; // what is your Location Situation [Expert Mode only] ?";
+			responseText.append("I'm located at ");
+			if (personCache != null) {
+				responseText.append(Conversion.capitalize(personCache.getLocationTag().getQuickLocation()));//getLocationSituation().getName()));
+			} else if (robotCache != null) {
+				responseText.append(Conversion.capitalize(robotCache.getLocationTag().getQuickLocation()));//getLocationSituation().getName()));
+			} else if (vehicleCache != null) {
+				responseText.append(Conversion.capitalize(vehicleCache.getLocationTag().getQuickLocation()));					
+			}
+
+		 }
+
+		 else if (num == 6 || text.toLowerCase().contains("located") 
+				 || text.toLowerCase().contains("location")) {
+			questionText = YOU_PROMPT + "What is your exact location ?";
+			LocationStateType stateType = null; 
+
+			if (personCache != null) {
+				stateType = personCache.getLocationStateType();
+				responseText.append("I'm ");
+				responseText.append(stateType.getName());
+
+				if (personCache.getBuildingLocation() != null) {
+					responseText.append(" (");
+					responseText.append(personCache.getLocationTag().getExtendedLocations());// .getBuildingLocation().getNickName());
+					responseText.append(")");
+				}
+
+			} else if (robotCache != null) {
+				stateType = robotCache.getLocationStateType();
+				responseText.append("I'm ");
+				responseText.append(stateType.getName());
+				responseText.append(" (");
+				responseText.append(robotCache.getLocationTag().getExtendedLocations());// .getBuildingLocation().getNickName());
+				responseText.append(")");
+			}
+			
+			else if (vehicleCache != null) {
+				stateType = vehicleCache.getLocationStateType();
+				responseText.append("I'm ");
+				responseText.append(stateType.getName());
+
+				if (vehicleCache.getBuildingLocation() != null) {
+					responseText.append(" (");
+					responseText.append(vehicleCache.getLocationTag().getExtendedLocations());// .getBuildingLocation().getNickName());
+					responseText.append(")");
+				}
+			}
+	
+		 }
+
+		 else if (num == 7 || text.toLowerCase().contains("task") 
+				 || text.toLowerCase().contains("activity")
+				 || text.toLowerCase().contains("action")) {
+			questionText = YOU_PROMPT + "What are you doing ?";
+			if (personCache != null) {
+				responseText.append(personCache.getTaskDescription());
+			} else if (robotCache != null) {
+				responseText.append(robotCache.getTaskDescription());
+			}
+
+		}
+
+		else if (num == 8 || text.toLowerCase().contains("mission")
+				|| text.toLowerCase().contains("trip")) {
+			// sys = name;
+			questionText = YOU_PROMPT + "Are you involved in a particular mission at this moment?";
+			Mission mission = null;
+			if (personCache != null) {
+				mission = personCache.getMind().getMission();
+			} else if (robotCache != null) {
+				mission = robotCache.getBotMind().getMission();
+			} else if (vehicleCache != null) {
+				Person p = (Person)vehicleCache.getOperator();
+				if (p != null)
+					mission = p.getMind().getMission();
+//					else
+//						mission = "Mission data not available.";
+			}
+
+			if (mission == null)
+				responseText.append("No. I'm not. ");
+			else
+				responseText.append(mission.getDescription());
+
+		}
+
+		else if (num == 9 || text.equalsIgnoreCase("building")) {
+			questionText = YOU_PROMPT + "What building are you at ?";
+			Settlement s = u.getSettlement();
+			if (s != null) {
+				// Building b1 = s.getBuildingManager().getBuilding(cache);
+				Building b = u.getBuildingLocation();
+				if (b != null) {// && b1 != null)
+					responseText.append("The building I'm in is ").append(b.getNickName());
+					// + " (aka " + b1.getNickName() + ").";
+				} else
+					responseText.append("I'm not in a building.");
+			} else
+				responseText.append("I'm not in a building.");
+
+		}
+
+		else if (num == 10 || text.equalsIgnoreCase("settlement")) {
+			questionText = YOU_PROMPT + "What settlement are you at ?";
+			Settlement s = u.getSettlement();
+			if (s != null) {
+				responseText.append("I'm at ").append(s.getName());
+			} else
+				responseText.append("I'm not inside a settlement");
+
+		}
+
+		else if (num == 11 || text.equalsIgnoreCase("associated settlement") || text.equalsIgnoreCase("association")
+				|| text.equalsIgnoreCase("home") || text.equalsIgnoreCase("home town")
+				|| text.equalsIgnoreCase("hometown")) {
+			questionText = YOU_PROMPT + "What is your associated settlement ?";
+			Settlement s = u.getAssociatedSettlement();
+			if (s != null) {
+				responseText.append("My associated settlement is ").append(s.getName());
+			} else
+				responseText.append("I don't have an associated settlement");
+		}
+
+//	    	else if (num == 9 || text.equalsIgnoreCase("buried settlement")) {
+//	    		questionText = YOU_PROMPT + "What is his/her buried settlement ?";
+//	    		if personCache.
+//	    		Settlement s = cache.getBuriedSettlement();
+//	    		if (s == null) {
+//	           		responseText = "The buried settlement is " + s.getName();
+//	           		sys = "System : ";
+//	       		}
+//	       		else
+//	       			responseText = "I'm not dead.";
+//	    	}
+
+		else if (num == 12 || text.equalsIgnoreCase("vehicle")) {
+			questionText = YOU_PROMPT + "What vehicle are you in and where is it ?";
+			Vehicle v = u.getVehicle();
+			if (v != null) {
+				String d = u.getVehicle().getDescription();
+				StatusType status = u.getVehicle().getStatus();
+				responseText.append("My vehicle is ");
+				responseText.append(v.getName());
+				responseText.append(" (a ");
+				responseText.append(Conversion.capitalize(d));
+				responseText.append(" type). It's currently ");
+				responseText.append(status.getName().toLowerCase());
+				responseText.append(".");
+			} else
+				responseText.append("I'm not in a vehicle.");
+		}
+
+		else if (num == 13 || text.equalsIgnoreCase("vehicle inside") || text.equalsIgnoreCase("vehicle container")
+				|| text.contains("vehicle") && text.contains("container")) {
+			questionText = YOU_PROMPT + "Where is your vehicle at?";// 's container unit ?";
+			Vehicle v = personCache.getVehicle();
+			if (v != null) {
+				Unit c = v.getContainerUnit();
+				if (c != null) {
+					responseText.append("My vehicle is at ");
+					responseText.append(c.getName());
+				}
+
+				else
+					responseText.append("My vehicle is not inside");// doesn't have a container unit.";
+
+			} else
+				responseText.append("I'm not in a vehicle.");
+		}
+
+		else if (num == 14 || text.equalsIgnoreCase("vehicle outside")
+				|| text.equalsIgnoreCase("vehicle top container")
+				|| text.contains("vehicle") && text.contains("top") && text.contains("container")) {
+			questionText = YOU_PROMPT + "What is your vehicle located?";// 's top container unit ?";
+			Vehicle v = u.getVehicle();
+			if (v != null) {
+				Unit tc = v.getTopContainerUnit();
+				if (tc != null) {
+					responseText.append("My vehicle is at ");
+					responseText.append(tc.getName());
+				} else
+					responseText.append("My vehicle is not inside");// doesn't have a top container unit.";
+			} else
+				responseText.append("I'm not in a vehicle.");
+		}
+
+		else if (num == 15 || (text.contains("vehicle") && text.contains("park"))) {
+			questionText = YOU_PROMPT + "What building does your vehicle park at ?";
+			Vehicle v = u.getVehicle();
+			if (v != null) {
+				Settlement s = v.getSettlement();
+				if (s != null) {
+					Building b = s.getBuildingManager().getBuilding(v);
+					if (b != null) {
+						responseText.append("My vehicle is parked inside ");
+						responseText.append(b.getNickName());
+					}
+
+					else
+						responseText.append("My vehicle does not park inside a building/garage");
+				} else
+					responseText.append("My vehicle is not at a settlement.");
+			} else
+				responseText.append("I'm not on a vehicle.");
+		}
+
+		else if (num == 16 || text.contains("vehicle") && text.contains("settlement")) {
+			questionText = YOU_PROMPT + "What settlement is your vehicle located at ?";
+			Vehicle v = u.getVehicle();
+			if (v != null) {
+				Settlement s = v.getSettlement();
+				if (s != null) {
+					responseText.append("My vehicle is at ");
+					responseText.append(s.getName());
+				} else
+					responseText.append("My vehicle is not at a settlement.");
+			} else
+				responseText.append("I'm not on a vehicle.");
+		}
+
+		else if (num == 17 || text.equalsIgnoreCase("bed") || text.equalsIgnoreCase("quarter")
+				|| text.equalsIgnoreCase("quarters")) {
+			questionText = YOU_PROMPT + "Where is your designated quarters/bed ? ";
+			Point2D bed = personCache.getBed();
+			if (bed == null) {
+				if (personCache != null) {
+					responseText.append("I haven't got my own private quarters/bed yet.");
+				} else if (robotCache != null) {
+					responseText.append("I don't need one. My battery can be charged at any robotic station.");
+				}
+			} else {
+				if (personCache != null) {
+					Settlement s1 = personCache.getSettlement();
+					if (s1 != null) {
+						// check to see if a person is on a trading mission
+						Settlement s2 = personCache.getAssociatedSettlement();
+						if (s2 != null) {
+							responseText.append("My designated quarters/bed is at (");
+							responseText.append(bed.getX());
+							responseText.append(", ");
+							responseText.append(bed.getY());
+							responseText.append(") in ");
+							responseText.append(personCache.getQuarters());
+							responseText.append(" at ");
+
+							if (s1 == s2) {
+								responseText.append(s1);
+							}
+
+							else {
+								// yes, a person is on a trading mission
+								responseText.append(s2);
+							}
+						}
+					} else {
+						responseText.append("My designated quarters/bed is at (");
+						responseText.append(bed.getX());
+						responseText.append(", ");
+						responseText.append(bed.getY());
+						responseText.append(") in ");
+						responseText.append(personCache.getQuarters());
+						responseText.append(" at ");
+					}
+				}
+
+				else if (robotCache != null) {
+					responseText.append("I don't need one. My battery can be charged at any robotic station.");
+				}
+			}
+		}
+		 
+		else if (num == 18 || text.contains("sleep hour") || text.contains("bed time")) {
+			questionText = YOU_PROMPT + "What is your preferred/usual bed time ?";
+
+			int[] twos = ((Person) u).getCircadianClock().getPreferredSleepHours();
+			int small = Math.min(twos[0], twos[1]);
+			int large = Math.max(twos[0], twos[1]);
+
+			responseText.append("My preferred sleep hours are at either " + small + " or " + large + " millisols.");
+
+		}
+
+		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
+			questionText = REQUEST_KEYS;
+			if (connectionMode == 0) {
+				keywordText = KEYWORDS_TEXT;
+			}
+			else {
+				keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
+			}
+			responseText.append(System.lineSeparator());
+			responseText.append(keywordText);
+
+		}
+
+		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
+				|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
+			questionText = REQUEST_HELP;
+			if (connectionMode == 0) {
+				helpText = HELP_TEXT;
+			}
+			else {
+				helpText = HELP_TEXT + HELP_HEIGHT;
+			}
+			responseText.append(System.lineSeparator());
+			responseText.append(helpText);
+
+		}
+		
+		// Add changing the height of the chat box
+		// DELETED
+		
+		else {
+			String[] txt = clarify(name);
+			questionText = txt[0];
+			responseText.append(txt[1]);
+		}
+		
+		return new String[] {questionText , responseText.toString()};
+	}
 	
 	/**
 	 * Processes a question and return an answer regarding an unit
@@ -227,22 +833,23 @@ public class ChatUtils {
 //		System.out.println("name is " + name);
 		
 		// Case 0 : exit the conversation
-		if (isQuitting(text)) {		
+		if (isQuitting(text)) {
 			String[] bye = null; 
 	
 			if (u != null) {
 				bye = farewell(name);
 				questionText = bye[0];
 				responseText.append(bye[1]);
-				responseText.append(System.lineSeparator());		
+				responseText.append(System.lineSeparator());
+				responseText.append(System.lineSeparator());	
 				responseText.append(name);
 				
 				int rand1 = RandomUtil.getRandomInt(1);
 
 				if (rand1 == 0)
-					responseText.append(" has left the conversation.");
+					responseText.append(" has left the conversation. Disconnected.");
 				else
-					responseText.append(" is disconnected.");
+					responseText.append(" is disconnected from the line.");
 				
 				// set personCache and robotCache to null so as to quit the conversation 
 				personCache = null;
@@ -277,154 +884,32 @@ public class ChatUtils {
 		else if (settlementCache != null) {
 
 			if (isInteger(text, 10)) {
-
+				
 				int num = Integer.parseUnsignedInt(text, 10);
 
-				if (num == 1) {
-					questionText = YOU_PROMPT + "how many beds are there in total ? ";
-					responseText.append("The total number of beds is ");
-					responseText.append(settlementCache.getPopulationCapacity());
-
-				}
-
-				else if (num == 2) {
-					questionText = YOU_PROMPT + "how many beds that have already been designated to a person ? ";
-					responseText.append("There are ");
-					responseText.append(settlementCache.getTotalNumDesignatedBeds());
-					responseText.append(" designated beds. ");
-
-				}
-
-				else if (num == 3) {
-					questionText = YOU_PROMPT + "how many beds that are currently NOT occupied ? ";
-					responseText.append("There are ");
-					responseText.append(settlementCache.getPopulationCapacity() - settlementCache.getSleepers());
-					responseText.append(" unoccupied beds. ");
-
-				}
-
-				else if (num == 4) {
-					questionText = YOU_PROMPT + "how many beds are currently occupied ? ";
-					responseText.append("There are ");
-					responseText.append(settlementCache.getSleepers());
-					responseText.append(" occupied beds with people sleeping on it at this moment. ");
-
-				}
-
-				else {
-					questionText = YOU_PROMPT + "You entered '" + num + "'.";
-					responseText.append("Sorry. This number is not assigned to a valid question.");
-				}
+				String[] ans = askSettlementNum(num); 
+				
+				questionText = ans[0];
+				responseText.append(ans[1]);
 
 				// if it's not a integer input
-			}
-
-			else if (text.contains("bed") || text.contains("sleep") || text.equalsIgnoreCase("lodging")
-					|| text.contains("quarters")) {
-
-				questionText = YOU_PROMPT + "how well are the beds utilized ? ";
-				responseText.append("Total number of beds : ");
-				responseText.append(settlementCache.getPopulationCapacity());
-				responseText.append(System.lineSeparator());
-				responseText.append("Desginated beds : ");
-				responseText.append(settlementCache.getTotalNumDesignatedBeds());
-				responseText.append(System.lineSeparator());
-				responseText.append("Unoccupied beds : ");
-				responseText.append(settlementCache.getPopulationCapacity() - settlementCache.getSleepers());
-				responseText.append(System.lineSeparator());
-				responseText.append("Occupied beds : ");
-				responseText.append(settlementCache.getSleepers());
-				responseText.append(System.lineSeparator());
-			}
-
-			else if (text.equalsIgnoreCase("vehicle") || text.equalsIgnoreCase("rover") || text.contains("rover")
-					|| text.contains("vehicle")) {
-
-				questionText = YOU_PROMPT + "What are the vehicles in the settlement ? ";
-				responseText.append(System.lineSeparator());
-				responseText.append("     ----- Rovers/Vehicles Inventory -----");
-				responseText.append(System.lineSeparator());
-				responseText.append("(1). Total # : ");
-				responseText.append(settlementCache.getAllAssociatedVehicles().size());
-				responseText.append(System.lineSeparator());
-				responseText.append("(2). Total # on Mission : ");
-				responseText.append(settlementCache.getMissionVehicles().size());
-				responseText.append(System.lineSeparator());
-				responseText.append("(3). Total # Parked (NOT on Mission) : ");
-				responseText.append(settlementCache.getParkedVehicleNum());
-				responseText.append(System.lineSeparator());
-				responseText.append("(4). # Cargo Rovers on Mission : ");
-				responseText.append(settlementCache.getCargoRovers(2).size());
-				responseText.append(System.lineSeparator());
-				responseText.append("(5). # Transport Rovers on Mission : ");
-				responseText.append(settlementCache.getTransportRovers(2).size());
-				responseText.append(System.lineSeparator());
-				responseText.append("(6). # Explorer Rovers on Mission : ");
-				responseText.append(settlementCache.getExplorerRovers(2).size());
-				responseText.append(System.lineSeparator());
-				responseText.append("(7). # Light Utility Vehicles (LUVs) on Mission : ");
-				responseText.append(settlementCache.getLUVs(2).size());
-				responseText.append(System.lineSeparator());
-				responseText.append("(8). # Parked Cargo Rovers : ");
-				responseText.append(settlementCache.getCargoRovers(1).size());
-				responseText.append(System.lineSeparator());
-				responseText.append("(9). # Parked Transport Rovers : ");
-				responseText.append(settlementCache.getTransportRovers(1).size());
-				responseText.append(System.lineSeparator());
-				responseText.append("(10). # Parked Explorer Rovers : ");
-				responseText.append(settlementCache.getExplorerRovers(1).size());
-				responseText.append(System.lineSeparator());
-				responseText.append("(11). # Parked Light Utility Vehicles (LUVs) : ");
-				responseText.append(settlementCache.getLUVs(1).size());
-				responseText.append(System.lineSeparator());
-			}
-
-			else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
-
-//				help = true;
-				questionText = REQUEST_KEYS;
-				if (connectionMode == 0) {
-					keywordText = KEYWORDS_TEXT;
-				}
-				else {
-					keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
-				}
-				//responseText.append(System.lineSeparator());
-				responseText.append(keywordText);
-
-			}
-
-			else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
-					|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
-
-//				help = true;
-				questionText = REQUEST_HELP;
-				if (connectionMode == 0) {
-					helpText = HELP_TEXT;
-				}
-				else {
-					helpText = HELP_TEXT + HELP_HEIGHT;
-				}
-				//responseText.append(System.lineSeparator());
-				responseText.append(helpText);
-
 			}
 			
 			else {
 				
-//				help = true;
-				String[] txt = clarify(name);
-				questionText = txt[0];
-				responseText.append(txt[1]);
+				String[] ans = askSettlementStr(text, name);
+				
+				questionText = ans[0];
+				responseText.append(ans[1]);
 			}
 
 		}
+		
 		// Case 2: ask to talk to a person or robot
 		else if (settlementCache == null) {
 			// Note : this is better than personCache != null || robotCache != null since it can
 											// incorporate help and other commands
-
-			int num = 0;
+			int num = -1;
 
 			if (isInteger(text, 10))
 				num = Integer.parseUnsignedInt(text, 10);
@@ -484,349 +969,10 @@ public class ChatUtils {
 			
 			else {
 
-				responseText.append(name);
-				responseText.append(": ");
+				String[] ans = askPersonRobot(text, num, name, u); 
 				
-				 if (num == 1 || text.toLowerCase().contains("where")) {
-					questionText = YOU_PROMPT + "Where are you ?"; // what is your Location Situation [Expert Mode only] ?";
-					responseText.append("I'm located at ");
-					if (personCache != null) {
-						responseText.append(Conversion.capitalize(personCache.getLocationTag().getQuickLocation()));//getLocationSituation().getName()));
-					} else if (robotCache != null) {
-						responseText.append(Conversion.capitalize(robotCache.getLocationTag().getQuickLocation()));//getLocationSituation().getName()));
-					} else if (vehicleCache != null) {
-						responseText.append(Conversion.capitalize(vehicleCache.getLocationTag().getQuickLocation()));					
-					}
-	
-				}
-	
-				else if (num == 2 || text.contains("located") || text.contains("location") && text.contains("situation")) {
-					questionText = YOU_PROMPT + "What is your exact location ?";
-					LocationStateType stateType = null; 
-	
-					if (personCache != null) {
-						stateType = personCache.getLocationStateType();
-						responseText.append("I'm ");
-						responseText.append(stateType.getName());
-	
-						if (personCache.getBuildingLocation() != null) {
-							responseText.append(" (");
-							responseText.append(personCache.getLocationTag().getExtendedLocations());// .getBuildingLocation().getNickName());
-							responseText.append(")");
-						}
-	
-					} else if (robotCache != null) {
-						stateType = robotCache.getLocationStateType();
-						responseText.append("I'm ");
-						responseText.append(stateType.getName());
-						responseText.append(" (");
-						responseText.append(robotCache.getLocationTag().getExtendedLocations());// .getBuildingLocation().getNickName());
-						responseText.append(")");
-					}
-					
-					else if (vehicleCache != null) {
-						stateType = vehicleCache.getLocationStateType();
-						responseText.append("I'm ");
-						responseText.append(stateType.getName());
-	
-						if (vehicleCache.getBuildingLocation() != null) {
-							responseText.append(" (");
-							responseText.append(vehicleCache.getLocationTag().getExtendedLocations());// .getBuildingLocation().getNickName());
-							responseText.append(")");
-						}
-					}
-			
-				}
-	
-				else if (num == 3 || text.equalsIgnoreCase("task") || text.equalsIgnoreCase("activity")
-						|| text.equalsIgnoreCase("action")) {
-					questionText = YOU_PROMPT + "What are you doing ?";
-					if (personCache != null) {
-						responseText.append(personCache.getTaskDescription());
-					} else if (robotCache != null) {
-						responseText.append(robotCache.getTaskDescription());
-					}
-	
-				}
-	
-				else if (num == 4 || text.equalsIgnoreCase("mission")) {
-	
-					// sys = name;
-					questionText = YOU_PROMPT + "Are you involved in a particular mission at this moment?";
-					Mission mission = null;
-					if (personCache != null) {
-						mission = personCache.getMind().getMission();
-					} else if (robotCache != null) {
-						mission = robotCache.getBotMind().getMission();
-					} else if (vehicleCache != null) {
-						Person p = (Person)vehicleCache.getOperator();
-						if (p != null)
-							mission = p.getMind().getMission();
-	//					else
-	//						mission = "Mission data not available.";
-					}
-	
-					if (mission == null)
-						responseText.append("No. I'm not. ");
-					else
-						responseText.append(mission.getDescription());
-	
-				}
-	
-				else if (num == 5 || text.equalsIgnoreCase("bed") || text.equalsIgnoreCase("quarter")
-						|| text.equalsIgnoreCase("quarters")) {
-					questionText = YOU_PROMPT + "Where is your designated quarters/bed ? ";
-					Point2D bed = personCache.getBed();
-					if (bed == null) {
-						if (personCache != null) {
-							responseText.append("I haven't got my own private quarters/bed yet.");
-						} else if (robotCache != null) {
-							responseText.append("I don't need one. My battery can be charged at any robotic station.");
-						}
-					} else {
-						if (personCache != null) {
-							Settlement s1 = personCache.getSettlement();
-							if (s1 != null) {
-								// check to see if a person is on a trading mission
-								Settlement s2 = personCache.getAssociatedSettlement();
-								if (s2 != null) {
-									responseText.append("My designated quarters/bed is at (");
-									responseText.append(bed.getX());
-									responseText.append(", ");
-									responseText.append(bed.getY());
-									responseText.append(") in ");
-									responseText.append(personCache.getQuarters());
-									responseText.append(" at ");
-	
-									if (s1 == s2) {
-										responseText.append(s1);
-									}
-	
-									else {
-										// yes, a person is on a trading mission
-										responseText.append(s2);
-									}
-								}
-							} else {
-								responseText.append("My designated quarters/bed is at (");
-								responseText.append(bed.getX());
-								responseText.append(", ");
-								responseText.append(bed.getY());
-								responseText.append(") in ");
-								responseText.append(personCache.getQuarters());
-								responseText.append(" at ");
-							}
-						}
-	
-						else if (robotCache != null) {
-							responseText.append("I don't need one. My battery can be charged at any robotic station.");
-						}
-					}
-				}
-	
-				else if (num == 6 || text.equalsIgnoreCase("inside") || text.equalsIgnoreCase("container")) {
-					questionText = YOU_PROMPT + "Are you inside?"; // what is your Container unit [Expert Mode only] ?";
-					Unit c = u.getContainerUnit();
-					if (c != null) {
-						responseText.append("I'm at/in ").append(c.getName());
-					} else
-						responseText.append("I'm not inside a building or vehicle"); // "I don't have a Container unit. ";
-				}
-	
-				else if (num == 7 || text.equalsIgnoreCase("outside")
-						|| text.contains("top") && text.contains("container")) {
-					questionText = YOU_PROMPT + "Are you inside?"; // YOU_PROMPT + "what is your Top Container unit [Expert
-																	// Mode only] ?";
-					Unit tc = u.getTopContainerUnit();
-					if (tc != null) {
-						responseText.append("I'm in ").append(tc.getName());
-					}
-	
-					else
-						responseText.append("I'm nowhere");// don't have a Top Container unit.";
-	
-				}
-	
-				else if (num == 8 || text.equalsIgnoreCase("building")) {
-					questionText = YOU_PROMPT + "What building are you at ?";
-					Settlement s = u.getSettlement();
-					if (s != null) {
-						// Building b1 = s.getBuildingManager().getBuilding(cache);
-						Building b = u.getBuildingLocation();
-						if (b != null) {// && b1 != null)
-							responseText.append("The building I'm in is ").append(b.getNickName());
-							// + " (aka " + b1.getNickName() + ").";
-						} else
-							responseText.append("I'm not in a building.");
-					} else
-						responseText.append("I'm not in a building.");
-	
-				}
-	
-				else if (num == 9 || text.equalsIgnoreCase("settlement")) {
-					questionText = YOU_PROMPT + "What settlement are you at ?";
-					Settlement s = u.getSettlement();
-					if (s != null) {
-						responseText.append("I'm at ").append(s.getName());
-					} else
-						responseText.append("I'm not inside a settlement");
-	
-				}
-	
-				else if (num == 10 || text.equalsIgnoreCase("associated settlement") || text.equalsIgnoreCase("association")
-						|| text.equalsIgnoreCase("home") || text.equalsIgnoreCase("home town")
-						|| text.equalsIgnoreCase("hometown")) {
-					questionText = YOU_PROMPT + "What is your associated settlement ?";
-					Settlement s = u.getAssociatedSettlement();
-					if (s != null) {
-						responseText.append("My associated settlement is ").append(s.getName());
-					} else
-						responseText.append("I don't have an associated settlement");
-				}
-	
-	//	    	else if (num == 9 || text.equalsIgnoreCase("buried settlement")) {
-	//	    		questionText = YOU_PROMPT + "What is his/her buried settlement ?";
-	//	    		if personCache.
-	//	    		Settlement s = cache.getBuriedSettlement();
-	//	    		if (s == null) {
-	//	           		responseText = "The buried settlement is " + s.getName();
-	//	           		sys = "System : ";
-	//	       		}
-	//	       		else
-	//	       			responseText = "I'm not dead.";
-	//	    	}
-	
-				else if (num == 11 || text.equalsIgnoreCase("vehicle")) {
-					questionText = YOU_PROMPT + "What vehicle are you in and where is it ?";
-					Vehicle v = u.getVehicle();
-					if (v != null) {
-						String d = u.getVehicle().getDescription();
-						StatusType status = u.getVehicle().getStatus();
-						responseText.append("My vehicle is ");
-						responseText.append(v.getName());
-						responseText.append(" (a ");
-						responseText.append(Conversion.capitalize(d));
-						responseText.append(" type). It's currently ");
-						responseText.append(status.getName().toLowerCase());
-						responseText.append(".");
-					} else
-						responseText.append("I'm not in a vehicle.");
-				}
-	
-				else if (num == 12 || text.equalsIgnoreCase("vehicle inside") || text.equalsIgnoreCase("vehicle container")
-						|| text.contains("vehicle") && text.contains("container")) {
-					questionText = YOU_PROMPT + "Where is your vehicle at?";// 's container unit ?";
-					Vehicle v = personCache.getVehicle();
-					if (v != null) {
-						Unit c = v.getContainerUnit();
-						if (c != null) {
-							responseText.append("My vehicle is at ");
-							responseText.append(c.getName());
-						}
-	
-						else
-							responseText.append("My vehicle is not inside");// doesn't have a container unit.";
-	
-					} else
-						responseText.append("I'm not in a vehicle.");
-				}
-	
-				else if (num == 13 || text.equalsIgnoreCase("vehicle outside")
-						|| text.equalsIgnoreCase("vehicle top container")
-						|| text.contains("vehicle") && text.contains("top") && text.contains("container")) {
-					questionText = YOU_PROMPT + "What is your vehicle located?";// 's top container unit ?";
-					Vehicle v = u.getVehicle();
-					if (v != null) {
-						Unit tc = v.getTopContainerUnit();
-						if (tc != null) {
-							responseText.append("My vehicle is at ");
-							responseText.append(tc.getName());
-						} else
-							responseText.append("My vehicle is not inside");// doesn't have a top container unit.";
-					} else
-						responseText.append("I'm not in a vehicle.");
-				}
-	
-				else if (num == 14 || text.contains("vehicle") && text.contains("park")) {
-					questionText = YOU_PROMPT + "What building does your vehicle park at ?";
-					Vehicle v = u.getVehicle();
-					if (v != null) {
-						Settlement s = v.getSettlement();
-						if (s != null) {
-							Building b = s.getBuildingManager().getBuilding(v);
-							if (b != null) {
-								responseText.append("My vehicle is parked inside ");
-								responseText.append(b.getNickName());
-							}
-	
-							else
-								responseText.append("My vehicle does not park inside a building/garage");
-						} else
-							responseText.append("My vehicle is not at a settlement.");
-					} else
-						responseText.append("I'm not on a vehicle.");
-				}
-	
-				else if (num == 15 || text.contains("vehicle") && text.contains("settlement")) {
-					questionText = YOU_PROMPT + "What settlement is your vehicle located at ?";
-					Vehicle v = u.getVehicle();
-					if (v != null) {
-						Settlement s = v.getSettlement();
-						if (s != null) {
-							responseText.append("My vehicle is at ");
-							responseText.append(s.getName());
-						} else
-							responseText.append("My vehicle is not at a settlement.");
-					} else
-						responseText.append("I'm not on a vehicle.");
-				}
-	
-				else if (num == 16 || text.contains("sleep hour") || text.contains("bed time")) {
-					questionText = YOU_PROMPT + "What is your preferred/usual bed time ?";
-	
-					int[] twos = ((Person) u).getCircadianClock().getPreferredSleepHours();
-					int small = Math.min(twos[0], twos[1]);
-					int large = Math.max(twos[0], twos[1]);
-	
-					responseText.append("My preferred sleep hours are at either " + small + " or " + large + " millisols.");
-	
-				}
-	
-				else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
-					questionText = REQUEST_KEYS;
-					if (connectionMode == 0) {
-						keywordText = KEYWORDS_TEXT;
-					}
-					else {
-						keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
-					}
-					responseText.append(System.lineSeparator());
-					responseText.append(keywordText);
-	
-				}
-	
-				else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
-						|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
-					questionText = REQUEST_HELP;
-					if (connectionMode == 0) {
-						helpText = HELP_TEXT;
-					}
-					else {
-						helpText = HELP_TEXT + HELP_HEIGHT;
-					}
-					responseText.append(System.lineSeparator());
-					responseText.append(helpText);
-	
-				}
-				
-				// Add changing the height of the chat box
-				// DELETED
-				
-				else {
-					String[] txt = clarify(name);
-					questionText = txt[0];
-					responseText.append(txt[1]);
-				}
+				questionText = ans[0];
+				responseText.append(ans[1]);
 			}
 		}
 
@@ -1156,9 +1302,9 @@ public class ChatUtils {
 						if (s_name.equalsIgnoreCase(text)) {
 							// name = "System";
 							responseText.append(SYSTEM_PROMPT);
-							responseText.append("Yes, what would like to know about \"");
+							responseText.append("Yes, what would like to know about '");
 							responseText.append(s_name);
-							responseText.append("\" ?");
+							responseText.append("' ?");
 
 							settlementCache = settlement;
 							// System.out.println("matching settlement name " + s_name);
@@ -1168,37 +1314,42 @@ public class ChatUtils {
 						else if (s_name.toLowerCase().contains(text.toLowerCase())
 								|| text.toLowerCase().contains(s_name.toLowerCase())) {
 							responseText.append(SYSTEM_PROMPT);
-							responseText.append("Do you mean \"");
+							responseText.append("Do you mean '");
 							responseText.append(s_name);
-							responseText.append("\" ?");
+							responseText.append("' ?");
 							// System.out.println("partially matching settlement name " + s_name);
 							break;
 						}
 						 else {
+//								String[] txt = clarify(name);
+//								questionText = txt[0];
+//								responseText.append(txt[1]);
+								
 							responseText.append(SYSTEM_PROMPT);
-							responseText.append("I do not recognize anyone or any settlements by \"");
+							responseText.append("I do not recognize anyone or any settlements by '");
 							responseText.append(text);
-							responseText.append("\".");
+							responseText.append("'.");
+							return responseText.toString();
 						}
 						// TODO: check vehicle names
-
 						// TODO: check commander's name
-
 					}
 					
 				} else {
 					responseText.append(SYSTEM_PROMPT);
-					responseText.append("I do not recognize anyone or any settlements by \"");
+					responseText.append("I do not recognize anyone or any settlements by '");
 					responseText.append(text);
-					responseText.append("\".");
+					responseText.append("'.");
+					return responseText.toString();
 				}
 			}
-
+	
 			else {
 				responseText.append(SYSTEM_PROMPT);
-				responseText.append("I do not recognize anyone or any settlements by \"");
+				responseText.append("I do not recognize anyone or any settlements by '");
 				responseText.append(text);
-				responseText.append("\".");
+				responseText.append("'.");
+				return responseText.toString();
 			}
 		}
 

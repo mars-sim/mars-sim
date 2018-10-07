@@ -12,7 +12,6 @@ import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.terminal.AppUtil;
 import org.mars_sim.msp.core.terminal.RunnerData;
 
@@ -53,7 +52,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 
 	       	terminal.println("<< Connection to MarsNet established >>"
 		       	+ System.lineSeparator() + System.lineSeparator() 
-		       	+ "/h for help and /k for keywords"
+		       	+ "Type '/h' for help or '/k' for keywords"
 		       	+ System.lineSeparator()
 		       	+ "Press UP/DOWN to show a list of possible values"
 		       	+ System.lineSeparator());

@@ -136,7 +136,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private String bloodType;
 	/** The person's last word before departing. */
 	private String lastWord;
-
+	/** The person's status. */
+	private String status;
+	
 	/** The gender of the person (male or female). */
 	private GenderType gender;
 	/** The birth time of the person. */
@@ -204,6 +206,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	private MasterClock masterClock;
 
+	
 	// private PersonConfig config;
 
 	/**
@@ -1553,6 +1556,49 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return lastName;
 	}
 
+	
+	/** 
+	 * Gets the status of the person 
+	 * 
+	 * @param status
+	 */
+	public String getStatus() {
+		status = "okay";
+		double p = condition.getPerformanceFactor();
+		double h = condition.getHunger();
+		double t = condition.getThirst();
+		double s = condition.getStress();
+		double f = condition.getFatigue();
+		if (p > .9) {
+			if (h < 150 && t < 100 && s == 0 && f < 100) {
+				status = "terrific";
+			}
+			else if (h < 250 && t < 150 && s < 10) {
+				status = "very well";
+			}
+			else if (h < 450 && t < 350) {
+				status = "reasonably well";
+			}
+		} else if (p > .7) {		
+			if (h < 400 && t < 300) {
+				status = "good";
+			}
+			else if (h < 600 && t < 500) {
+				status = "alright but hungry/thirsty";	
+			}
+		} else if (p > .4) {		
+			if (h < 600 && t < 500) {
+				status = "getting hungry/thirsty";
+			}
+			else if (h < 800 && t < 700) {
+				status = "really hungry/thirsty";	
+			}
+		}
+		else {
+			status = "not feeling well";
+		}
+		return status;
+	}
 	
 	@Override
 	public void destroy() {
