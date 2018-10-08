@@ -319,6 +319,8 @@ public class CollectionUtils {
 		// Creates an array with the names of all of settlements
 		Collection<Settlement> settlements = Simulation.instance().getUnitManager().getSettlements();
 		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+		System.out.println("# settlements : " + settlementList.size());
+//		Collection<Settlement> settlements = getSettlement(Simulation.instance().getUnitManager().getUnits());
 
 		// autoCompleteArray = settlementList.toArray(new
 		// String[settlementList.size()]);

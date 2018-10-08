@@ -22,12 +22,12 @@ import java.util.function.BiConsumer;
  */
 public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
 	
-	private static final String KEY_STROKE_UP = "pressed UP";
-	private static final String KEY_STROKE_DOWN = "pressed DOWN";
-
-	private String originalInput = "";
-	private int choiceIndex = -1;
-	private String[] choices = {};
+//	private static final String KEY_STROKE_UP = "pressed UP";
+//	private static final String KEY_STROKE_DOWN = "pressed DOWN";
+//
+//	private String originalInput = "";
+//	private int choiceIndex = -1;
+//	private String[] choices = {};
 	    
 	private SwingTextTerminal terminal;
 	
@@ -42,77 +42,119 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
         String initData = (runnerData == null) ? null : runnerData.getInitData();
         AppUtil.printGsonMessage(terminal, initData);
 
-       	terminal.println("Press UP/DOWN to show a list of possible values"
-       			+ System.lineSeparator());
-       	
-        setUpArrows();
+        Speed s = new Speed();
+        SwingHandler handler = new SwingHandler(textIO, s);
         
-        String[] nums = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"};
-        
-        setChoices(nums);
-        
-        double tr =  Simulation.instance().getMasterClock().getTimeRatio();
-        tr = Math.log(tr)/Math.log(2);
-        String trStr = "" + (int)tr;
- 
-        String speed = textIO.newStringInputReader()
-        		.withDefaultValue(trStr)
-//        		.withInlinePossibleValues(nums)
-                //.withMinVal(1).withMaxVal(14)//(16384)
-                .read("Speed (0 to 14)");
+        terminal.println("----------------------------------------------------------------");
+        terminal.println("|   Press UP/DOWN arrow keys to scroll through choices.        |");
+        terminal.println("----------------------------------------------------------------"
+        		+ System.lineSeparator());
 
-//        terminal.printf(System.lineSeparator());
+        handler.addIntTask("speed", "Enter the new simulation speed", false)
+        	.withInputReaderConfigurator(r -> r.withMinVal(0).withMaxVal(14))
+        	.addChoices(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+        
+        handler.execute();
 
-//        if (MathUtils.isPowerOf2(ratio) && ratio <= 16384) {  
-    	int speedInt = Integer.parseInt(speed);
-        if (speedInt >= 0 && speedInt <= 14) {
+        
+//       	terminal.println("Press UP/DOWN to show a list of possible values"
+//       			+ System.lineSeparator());
+//       	
+//        setUpArrows();
+//        
+//        String[] nums = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"};
+//        
+//        setChoices(nums);
+//        
+//        double tr =  Simulation.instance().getMasterClock().getTimeRatio();
+//        tr = Math.log(tr)/Math.log(2);
+//        String trStr = "" + (int)tr;
+// 
+//        String speed = textIO.newStringInputReader()
+//        		.withDefaultValue(trStr)
+////        		.withInlinePossibleValues(nums)
+//                //.withMinVal(1).withMaxVal(14)//(16384)
+//                .read("Speed (0 to 14)");
+//
+////        terminal.printf(System.lineSeparator());
+//
+////        if (MathUtils.isPowerOf2(ratio) && ratio <= 16384) {  
+//    	int speedInt = -1; 
+//    	
+//    	if (isInteger(speed)) {
+//    		speedInt = Integer.parseInt(speed);
+        int speedInt = Speed.speed;
+        
+		if ( speedInt >= 0 && speedInt <= 14) {
         	double ratio = Math.pow(2, speedInt);
         	Simulation.instance().getMasterClock().setTimeRatio(ratio);   
-            terminal.printf("New Speed = %d  -->  New Time-Ratio = 2 ^ speed = %dx" 
+            terminal.printf("New Speed = %d  -->  New Time-Ratio = 2^speed = %dx" 
             		+ System.lineSeparator(),
-            		speed, (int)ratio);
-        }
+            		speedInt, (int)ratio);
+		}
         else
             terminal.printf(
             		"Invalid value." 
             		+ System.lineSeparator() 
             		+  "Please choose a number between 0 and 14." 
-            		+ System.lineSeparator());
-
+                		+ System.lineSeparator());
+  
+        // set choices to null
+//        handler.setChoices();
 
     }
 
-    public void setChoices(String... choices) {
-        this.originalInput = "";
-        this.choiceIndex = -1;
-        this.choices = choices;
+
+    public boolean isInteger(String string) {
+        try {
+            Integer.valueOf(string);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
+
+//    public void setChoices(String... choices) {
+//        this.originalInput = "";
+//        this.choiceIndex = -1;
+//        this.choices = choices;
+//    }
     
-    public void setUpArrows() {
-        terminal.registerHandler(KEY_STROKE_UP, t -> {
-            if(choiceIndex < 0) {
-                originalInput = terminal.getPartialInput();
-            }
-            if(choiceIndex < choices.length - 1) {
-                choiceIndex++;
-                t.replaceInput(choices[choiceIndex], false);
-            }
-            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
-        });
-
-        terminal.registerHandler(KEY_STROKE_DOWN, t -> {
-            if(choiceIndex >= 0) {
-                choiceIndex--;
-                String text = (choiceIndex < 0) ? originalInput : choices[choiceIndex];
-                t.replaceInput(text, false);
-            }
-            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
-        });
-    }
+//    public void setUpArrows() {
+//        terminal.registerHandler(KEY_STROKE_UP, t -> {
+//            if(choiceIndex < 0) {
+//                originalInput = terminal.getPartialInput();
+//            }
+//            if(choiceIndex < choices.length - 1) {
+//                choiceIndex++;
+//                t.replaceInput(choices[choiceIndex], false);
+//            }
+//            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
+//        });
+//
+//        terminal.registerHandler(KEY_STROKE_DOWN, t -> {
+//            if(choiceIndex >= 0) {
+//                choiceIndex--;
+//                String text = (choiceIndex < 0) ? originalInput : choices[choiceIndex];
+//                t.replaceInput(text, false);
+//            }
+//            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
+//        });
+//    }
     	
     
     @Override
     public String toString() {
         return "Change the Simulation Speed";
     }
+    
+    private static class Speed {
+        public static int speed;
+
+        @Override
+        public String toString() {
+            return "\n\tThe new simulation speed : " + speed;
+        }
+    }
+    
 }

@@ -39,10 +39,10 @@ public class ExitMenu implements BiConsumer<TextIO, RunnerData> {
         boolean toSave = textIO.newBooleanInputReader()//.withDefaultValue(true)
                 .read("Exit now");
 
-        terminal.printf("\n");
+        terminal.printf(System.lineSeparator());
         
         if (toSave) {
-            terminal.printf("Exiting the Simulation...\n");
+            terminal.printf("Exiting the Simulation..." + System.lineSeparator());
         	Simulation.instance().endSimulation(); 
     		Simulation.instance().getSimExecutor().shutdownNow();
     		Simulation.instance().getMasterClock().exitProgram();
@@ -50,7 +50,7 @@ public class ExitMenu implements BiConsumer<TextIO, RunnerData> {
 			System.exit(0);
         }
         else
-            terminal.printf("You don't want to exit the Simulation.\n");
+            terminal.printf("You don't want to exit the Simulation." + System.lineSeparator());
         	
     }
 
@@ -58,7 +58,7 @@ public class ExitMenu implements BiConsumer<TextIO, RunnerData> {
     
     @Override
     public String toString() {
-        return "Exit the Simulation\n";
+        return "Exit the Simulation" + System.lineSeparator();
 //        		getClass().getSimpleName() + ": reading personal data.\n" +
 //                "(Properties are initialized at start-up.\n" +
 //                "Properties file: " + getClass().getSimpleName() + ".properties.)";

@@ -786,9 +786,12 @@ public class ExitAirlock extends Task implements Serializable {
 								+ person + " has tried to exit the airlock " + airlock.getCheckEVASuit() + " times.",
 						null);
 
-				if (airlock.getCheckEVASuit() > 10)
-					// Repair this EVASuit by himself/herself
-					person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
+				// Repair this EVASuit by himself/herself
+				person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
+				
+//				if (airlock.getCheckEVASuit() > 21) {
+//					// Repair this EVASuit by himself/herself
+////					person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
 //	    				LogConsolidated.log(logger, Level.INFO, 2000, sourceName, 
 //	    						"[" + person.getLocationTag().getQuickLocation() 
 //	    						+ "] " + person + " has already tried to exit the airlock " + airlock.getCheckEVASuit() + " times."
@@ -798,8 +801,10 @@ public class ExitAirlock extends Task implements Serializable {
 				return false;
 			}
 
-			else
+			else {
+				airlock.resetCheckEVASuit();			
 				return true;
+			}
 		}
 
 		else if (person.isInVehicle()) {
@@ -830,7 +835,7 @@ public class ExitAirlock extends Task implements Serializable {
 					// Repair this EVASuit by himself/herself
 					person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
 
-					if (airlock.getCheckEVASuit() > 10)
+					if (airlock.getCheckEVASuit() > 21)
 						// Set the emergency beacon on since no EVA suit is available
 						((VehicleMission) m).setEmergencyBeacon(person, v, true, Mission.NO_GOOD_EVA_SUIT);
 

@@ -106,10 +106,11 @@ public class InteractiveTerm {
 		terminal.registerUserInterruptHandler(term -> {}, false);
         
 		while (keepRunning) {
-		    BiConsumer<TextIO, RunnerData> app = chooseMenu(textIO);
+		    BiConsumer<TextIO, RunnerData> menu = chooseMenu(textIO);
 		    //TextIO textIO = chooseTextIO();
 		    terminal.printf(System.lineSeparator());
-		    app.accept(textIO, null);
+//			setChoices();//"1", "2", "3", "4");
+		    menu.accept(textIO, null);
 	    	if (masterClock == null)
 	    		masterClock = Simulation.instance().getMasterClock();
 		    // if the sim is being saved, enter this while loop

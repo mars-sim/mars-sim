@@ -71,6 +71,8 @@ public class SaveMenu implements BiConsumer<TextIO, RunnerData> {
             terminal.printf("You don't want to save the Simulation." + System.lineSeparator());
         }
             
+        // set choices to null
+//        setChoices();
     }
 
     

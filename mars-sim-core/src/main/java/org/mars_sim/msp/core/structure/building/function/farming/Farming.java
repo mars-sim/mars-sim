@@ -543,7 +543,7 @@ public class Farming extends Function implements Serializable {
 				percent = amountStored / requestedAmount * 100D;
 				requestedAmount = amountStored;
 				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-						"[" + settlement + "]" + Math.round(requestedAmount * 100.0) / 100.0 + " kg " + tissueName
+						"[" + settlement + "] " + Math.round(requestedAmount * 100.0) / 100.0 + " kg " + tissueName
 								+ " is partially available.",
 						null);
 			}

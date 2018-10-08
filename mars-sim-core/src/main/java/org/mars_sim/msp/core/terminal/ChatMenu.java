@@ -43,9 +43,13 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
         String initData = (runnerData == null) ? null : runnerData.getInitData();
         AppUtil.printGsonMessage(terminal, initData);
 
+ //       Party party = new Party();
+ //       SwingHandler handler = new SwingHandler(textIO, party);
+      
         if (ChatUtils.getConnectionMode() == 1) {
         	terminal.println("Cannot establish more than one line of connections. Please disactivate the graphic chat box first." + System.lineSeparator());			
 		}
+        
 		else if (ChatUtils.getConnectionMode() == -1) {
 			// Set to headless mode
 			ChatUtils.setConnectionMode(0);
@@ -53,9 +57,16 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	       	terminal.println("<< Connection to MarsNet established >>"
 		       	+ System.lineSeparator() + System.lineSeparator() 
 		       	+ "Type '/h' for help or '/k' for keywords"
-		       	+ System.lineSeparator()
-		       	+ "Press UP/DOWN to show a list of possible values"
-		       	+ System.lineSeparator());
+		       	+ System.lineSeparator() + System.lineSeparator());
+		       		       
+	        terminal.println(" -------------------------------------------------------------- ");
+//	        terminal.println("|     Press UP arrow key to autocomplete the keyword.          |");
+	        terminal.println("|     Press UP/DOWN arrow keys to scroll through choices.      |");
+	        terminal.println(" -------------------------------------------------------------- "
+	        		+ System.lineSeparator()); 
+		        
+//		       	+ "Press UP/DOWN to show a list of possible values"
+//		       	+ System.lineSeparator());
 	       	
 	        setUpArrows();
 	        
@@ -69,29 +80,39 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	        boolean quit = false;
 	          
 	        while (!quit) {
+//	    		System.out.println("while loop in accept() in ChatMenu");
 		        setChoices(array);
 		        
-		        String party = textIO.newStringInputReader()
+		        Party.party = textIO.newStringInputReader()
 		//        		.withInlinePossibleValues(array)
 		                .read(">");//What party do you want to reach");
 		
 		//        terminal.printf(System.lineSeparator());
 		    
+//		        handler.addStringTask("party", ">", false).addChoices(names);//.constrainInputToChoices();
+//		        handler.execute();
+		        
+//		        System.out.println("personCache : " + ChatUtils.personCache);
+//		        System.out.println("robotCache : " + ChatUtils.robotCache);
+//		        System.out.println("settlementCache : " + ChatUtils.settlementCache);
+//		        System.out.println("vehicleCache : " + ChatUtils.vehicleCache);
+		        
 				// if no settlement, robot, person, or vehicle has been selected yet
 				if (ChatUtils.personCache == null && ChatUtils.robotCache == null 
 						&& ChatUtils.settlementCache == null && ChatUtils.vehicleCache == null) {	
 					// Call parse() to obtain a new value of unit
-					parse(party);
+					parse(Party.party);
 				} 
 				
 				else {
 					// Call ask() to further engage the conversion
-					ask(party);
+					ask(Party.party);
 					// Note : if all _Cache are null, then leave
 					// ask() and go back to parse()
 				}
 				
-				if (ChatUtils.isQuitting(party)) {
+		        
+				if (ChatUtils.isQuitting(Party.party)) {
 					quit = true;
 					ChatUtils.setConnectionMode(-1);
 				}				
@@ -145,7 +166,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	 * @param text
 	 */
 	public void ask(String text) { 
-//		System.out.println("askQuestion() in ChatBox");
+//		System.out.println("ask() in ChatMenu");
 		String questionText = null;
 		String responseText = "";
 				
@@ -201,5 +222,14 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
     @Override
     public String toString() {
         return "Chat with a party";
+    }
+    
+    private static class Party {
+        public static String party;
+
+        @Override
+        public String toString() {
+            return System.lineSeparator() +">" + party;
+        }
     }
 }

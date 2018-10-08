@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -346,9 +345,9 @@ public class Crop implements Serializable {
 				currentPhaseWorkCompleted = 1000D * phases.get(0).getWorkRequired() * (100D - tissuePercent) / 100D;
 				phaseType = PhaseType.INCUBATION;
 				LogConsolidated.log(logger, Level.INFO, 10000, sourceName,
-						"[" + settlement + "] " + capitalizedCropName + " needs a work period of "
+						"[" + settlement + "] A work period of "
 								+ Math.round(currentPhaseWorkCompleted / 1000D * 10D) / 10D
-								+ " sols to clone enough tissues before planting in " + farmName + ".",
+								+ " sols is needed to clone enough " + capitalizedCropName + " tissues before planting in " + farmName + ".",
 						null);
 			}
 

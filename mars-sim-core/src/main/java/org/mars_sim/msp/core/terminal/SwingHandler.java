@@ -21,6 +21,7 @@ import org.beryx.textio.swing.SwingTextTerminal;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -112,15 +113,17 @@ public class SwingHandler {
 
     public class Task<T,B extends Task<T,B, R>, R extends InputReader<T, ?>> implements Runnable {
         protected final String prompt;
+        protected boolean showPrevious;
         protected final Supplier<R> inputReaderSupplier;
-        protected final Supplier<T> defaultValueSupplier;
+        protected Supplier<T> defaultValueSupplier;
         protected final Consumer<T> valueSetter;
         protected final List<T> choices = new ArrayList<>();
         protected boolean constrainedInput;
         protected Consumer<R> inputReaderConfigurator;
 
-        public Task(String prompt, Supplier<R> inputReaderSupplier, Supplier<T> defaultValueSupplier, Consumer<T> valueSetter) {
+        public Task(String prompt, boolean showPrevious, Supplier<R> inputReaderSupplier, Supplier<T> defaultValueSupplier, Consumer<T> valueSetter) {
             this.prompt = prompt;
+            this.showPrevious = showPrevious;
             this.inputReaderSupplier = inputReaderSupplier;
             this.defaultValueSupplier = defaultValueSupplier;
             this.valueSetter = valueSetter;
@@ -129,17 +132,22 @@ public class SwingHandler {
         @Override
         public void run() {
             setChoices(choices.stream().map(Object::toString).collect(Collectors.toList()));
-            R inputReader = inputReaderSupplier.get();
-            inputReader.withDefaultValue(defaultValueSupplier.get());
-            if(inputReaderConfigurator != null) {
-                inputReaderConfigurator.accept(inputReader);
-            }
-            if(constrainedInput) {
-                inputReader.withValueChecker((val,name) -> choices.contains(val) ? null
-                        : Arrays.asList("'" + val + "' is not in the choice list."));
+            try {
+                R inputReader = inputReaderSupplier.get();
+                if (showPrevious)
+                	inputReader.withDefaultValue(defaultValueSupplier.get());
+                if(inputReaderConfigurator != null) {
+                    inputReaderConfigurator.accept(inputReader);
+                }
+                if(constrainedInput) {
+                    inputReader.withValueChecker((val,name) -> choices.contains(val) ? null
+                            : Arrays.asList("'" + val + "' is not in the choice list."));
 
+                }
+                valueSetter.accept(inputReader.read(prompt));
+            } finally {
+                setChoices(Collections.emptyList());
             }
-            valueSetter.accept(inputReader.read(prompt));
         }
 
         @SuppressWarnings("unchecked")
@@ -157,6 +165,10 @@ public class SwingHandler {
         public void constrainInputToChoices() {
             this.constrainedInput = true;
         }
+        
+//        public void showNoPreviousChoice() {
+//        	 this.defaultValueSupplier = null;
+//        }
     }
 
     private void setChoices(List<String> choices) {
@@ -174,8 +186,9 @@ public class SwingHandler {
     }
 
     public class StringTask extends Task<String, StringTask, StringInputReader> {
-        public StringTask(String fieldName, String prompt) {
+        public StringTask(String fieldName, String prompt, boolean showPrevious) {
             super(prompt,
+            		showPrevious,
                     stringInputReaderSupplier,
                     getDefaultValueSupplier(fieldName),
                     getValueSetter(fieldName));
@@ -187,16 +200,17 @@ public class SwingHandler {
         }
     }
 
-    public StringTask addStringTask(String fieldName, String prompt) {
-        StringTask task = new StringTask(fieldName, prompt);
+    public StringTask addStringTask(String fieldName, String prompt, boolean showPrevious) {
+        StringTask task = new StringTask(fieldName, prompt, showPrevious);
         tasks.add(task);
         return task;
     }
 
 
     public class IntTask extends Task<Integer, IntTask, IntInputReader> {
-        public IntTask(String fieldName, String prompt) {
+        public IntTask(String fieldName, String prompt, boolean showPrevious) {
             super(prompt,
+            		showPrevious,
                     intInputReaderSupplier,
                     getDefaultValueSupplier(fieldName),
                     getValueSetter(fieldName));
@@ -207,16 +221,17 @@ public class SwingHandler {
         }
     }
 
-    public IntTask addIntTask(String fieldName, String prompt) {
-        IntTask task = new IntTask(fieldName, prompt);
+    public IntTask addIntTask(String fieldName, String prompt, boolean showPrevious) {
+        IntTask task = new IntTask(fieldName, prompt, showPrevious);
         tasks.add(task);
         return task;
     }
 
 
     public class LongTask extends Task<Long, LongTask, LongInputReader> {
-        public LongTask(String fieldName, String prompt) {
+        public LongTask(String fieldName, String prompt, boolean showPrevious) {
             super(prompt,
+            		showPrevious,
                     longInputReaderSupplier,
                     getDefaultValueSupplier(fieldName),
                     getValueSetter(fieldName));
@@ -227,16 +242,17 @@ public class SwingHandler {
         }
     }
 
-    public LongTask addLongTask(String fieldName, String prompt) {
-        LongTask task = new LongTask(fieldName, prompt);
+    public LongTask addLongTask(String fieldName, String prompt, boolean showPrevious) {
+        LongTask task = new LongTask(fieldName, prompt, showPrevious);
         tasks.add(task);
         return task;
     }
 
 
     public class DoubleTask extends Task<Double, DoubleTask, DoubleInputReader> {
-        public DoubleTask(String fieldName, String prompt) {
+        public DoubleTask(String fieldName, String prompt, boolean showPrevious) {
             super(prompt,
+            		showPrevious,
                     doubleInputReaderSupplier,
                     getDefaultValueSupplier(fieldName),
                     getValueSetter(fieldName));
@@ -247,15 +263,14 @@ public class SwingHandler {
         }
     }
 
-    public DoubleTask addDoubleTask(String fieldName, String prompt) {
-        DoubleTask task = new DoubleTask(fieldName, prompt);
+    public DoubleTask addDoubleTask(String fieldName, String prompt, boolean showPrevious) {
+        DoubleTask task = new DoubleTask(fieldName, prompt, showPrevious);
         tasks.add(task);
         return task;
     }
 
 
 // TODO - implement Task specializations for: boolean, byte, char, enum, float, short etc.
-
 
     public void execute() {
         int step = 0;

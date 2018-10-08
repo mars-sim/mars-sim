@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.terminal;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,24 +30,22 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-
 public class ChatUtils {
 
 	public final static String SYSTEM = "System";
 	public final static String SYSTEM_PROMPT = "System : ";
 	public final static String YOU_PROMPT = "You : ";
 	public final static String REQUEST_HEIGHT_CHANGE = YOU_PROMPT + "I'd like to change the chat box height to ";
-	public final static String REQUEST_HELP = YOU_PROMPT
-			+ "I need some help! What are the available commands ?";
+	public final static String REQUEST_HELP = YOU_PROMPT + "I need some help! What are the available commands ?";
 
 	public final static String REQUEST_KEYS = YOU_PROMPT
 			+ "I need a list of the keywords. Would you tell me what they are ?";
-	
-	public final static String HELP_TEXT =  System.lineSeparator() 
+
+	public final static String HELP_TEXT = System.lineSeparator()
 			+ "    -------------------- H E L P -------------------- " + System.lineSeparator()
 			+ "(1) Type in the NAME of a person, a bot, or a settlement to connect with." + System.lineSeparator()
-			+ "(2) Use KEYWORDS or type in a number between 0 and 18 (specific QUESTIONS on a person/bot/vehicle/settlement)."  + System.lineSeparator()		
-			+ "(3) Type '/k' or 'key' to see a list of KEYWORDS." + System.lineSeparator() 
+			+ "(2) Use KEYWORDS or type in a number between 0 and 18 (specific QUESTIONS on a person/bot/vehicle/settlement)."
+			+ System.lineSeparator() + "(3) Type '/k' or 'key' to see a list of KEYWORDS." + System.lineSeparator()
 			+ "(4) Type 'settlement' to obtain the NAMES of the established settlements." + System.lineSeparator()
 			+ "(5) Type 'bye', '/b', 'exit', 'x', 'quit', '/q' to close the chat box." + System.lineSeparator()
 			+ "(6) Type '?', 'help', '/?', '/h' for this help page." + System.lineSeparator();
@@ -54,32 +53,33 @@ public class ChatUtils {
 	public final static String HELP_HEIGHT = "(7) Type 'y_' to change the chat box height; '/y1'-> 256 pixels (default) '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
 			+ System.lineSeparator();
 
-	public final static String KEYWORDS_TEXT = System.lineSeparator() 
+	public final static String KEYWORDS_TEXT = System.lineSeparator()
 			+ "    -------------------- K E Y W O R D S -------------------- " + System.lineSeparator()
-			+ "(1) 'status', 'feeling', 'how old', 'age', 'birth', 'country', 'nationality', 'job', 'specialty', 'career', " + System.lineSeparator() 
-			+ "(2) 'where', 'location', 'located', 'task', 'activity', 'action', 'mission', " + System.lineSeparator()
-			+ "(3) 'bed', 'quarters', 'sleep', 'building', 'inside', 'outside'," + System.lineSeparator()
+			+ "(1) 'status', 'feeling', 'how old', 'age', 'birth', 'country', 'nationality', 'job', 'specialty', 'career', "
+			+ System.lineSeparator() + "(2) 'where', 'location', 'located', 'task', 'activity', 'action', 'mission', "
+			+ System.lineSeparator() + "(3) 'bed', 'quarters', 'sleep', 'building', 'inside', 'outside',"
+			+ System.lineSeparator()
 			+ "(4) 'settlement', 'settlements', 'associated settlement', 'association', 'home', 'home town',"
 			+ System.lineSeparator() // 'buried settlement', 'buried'
-			+ "(5) 'vehicle inside', 'vehicle outside', 'vehicle park', 'vehicle settlement', 'vehicle container'" + System.lineSeparator()
-			+ "    -------------------- N U M E R A L -------------------- " + System.lineSeparator() 
-			+ "(6) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator() 
-			+ "    --------------------  M I S C S -------------------- " + System.lineSeparator()
-			+ "(7) 'bye', '/b', 'exit', 'x', 'quit', '/q' to close the chat box" + System.lineSeparator()
-			+ "(8) 'help', '/h' for the help page" + System.lineSeparator();
+			+ "(5) 'vehicle inside', 'vehicle outside', 'vehicle park', 'vehicle settlement', 'vehicle container'"
+			+ System.lineSeparator() + "    -------------------- N U M E R A L -------------------- "
+			+ System.lineSeparator() + "(6) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement"
+			+ System.lineSeparator() + "    --------------------  M I S C S -------------------- "
+			+ System.lineSeparator() + "(7) 'bye', '/b', 'exit', 'x', 'quit', '/q' to close the chat box"
+			+ System.lineSeparator() + "(8) 'help', '/h' for the help page" + System.lineSeparator();
 
 	public final static String KEYWORDS_HEIGHT = "(9) '/y1' to reset height to 256 pixels (by default) after closing chat box. '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
-	+ System.lineSeparator();
+			+ System.lineSeparator();
 
 	public static String helpText;
-		
+
 	public static String keywordText;
-			
+
 	/**
 	 * The mode of connection. -1 if none, 0 if headless, 1 if gui
 	 */
 	private static int connectionMode = -1;
-	
+
 	public static Person personCache;
 	public static Robot robotCache;
 	public static Settlement settlementCache;
@@ -92,7 +92,13 @@ public class ChatUtils {
 
 	public ChatUtils() {
 	}
-	
+
+	/**
+	 * Asks for clarification
+	 * 
+	 * @param prompt
+	 * @return a string array
+	 */
 	public static String[] clarify(String prompt) {
 		String questionText = YOU_PROMPT + "You were mumbling something about....";
 		String responseText = null;
@@ -111,12 +117,23 @@ public class ChatUtils {
 		return new String[] { questionText, responseText };
 	}
 
+	/**
+	 * Assembles a farewell phrase
+	 * 
+	 * @param respondent
+	 * @return a string array
+	 */
 	public static String[] farewell(String respondent) {
 		String questionText = YOU_PROMPT + farewellText();// + System.lineSeparator();
 		String responseText = respondent + " : " + farewellText();// + System.lineSeparator();
 		return new String[] { questionText, responseText };
 	}
 
+	/**
+	 * Returns a farewell phrase
+	 * 
+	 * @return a string
+	 */
 	public static String farewellText() {
 
 		int r0 = RandomUtil.getRandomInt(6);
@@ -138,36 +155,32 @@ public class ChatUtils {
 
 	/*
 	 * Checks if the user wants to quit chatting
+	 * 
+	 * @param text
 	 */
 	public static boolean isQuitting(String text) {
-		if (text.equalsIgnoreCase("quit") || text.equalsIgnoreCase("/quit") 
-				|| text.equalsIgnoreCase("/q")
+		if (text.equalsIgnoreCase("quit") || text.equalsIgnoreCase("/quit") || text.equalsIgnoreCase("/q")
 //				|| text.equalsIgnoreCase("\\quit")
 //				|| text.equalsIgnoreCase("\\q") 
 
-				|| text.equalsIgnoreCase("exit") || text.equalsIgnoreCase("/exit") 
-				|| text.equalsIgnoreCase("/x")
+				|| text.equalsIgnoreCase("exit") || text.equalsIgnoreCase("/exit") || text.equalsIgnoreCase("/x")
 //				|| text.equalsIgnoreCase("\\exit")
 //				|| text.equalsIgnoreCase("\\x") 
 
-				|| text.equalsIgnoreCase("bye") || text.equalsIgnoreCase("/bye") 
+				|| text.equalsIgnoreCase("bye") || text.equalsIgnoreCase("/bye")
 //				|| text.equalsIgnoreCase("\\bye")
-				|| text.equalsIgnoreCase("/b")
-				) {
+				|| text.equalsIgnoreCase("/b")) {
 			return true;
-			
+
 		}
-		
-		else 
+
+		else
 			return false;
 	}
-	
-	// public String checkGreetings(String text) {
-	// String result = null;
-	// return result;
 
-	/** 
+	/**
 	 * Check if the input string is integer
+	 * 
 	 * @param s
 	 * @param radix
 	 * @return true if the input is an integer
@@ -195,13 +208,13 @@ public class ChatUtils {
 	 * @return the response string[]
 	 */
 	public static String[] askSettlementNum(int num) {
+//		System.out.println("askSettlementNum() in ChatUtils");
 		String questionText = "";
 		StringBuilder responseText = new StringBuilder();
-		
-		
+
 		if (num == 1) {
 			questionText = YOU_PROMPT + "how many beds are there in total ? ";
-			responseText.append("The total number of beds is ");
+			responseText.append("The total # of beds is ");
 			responseText.append(settlementCache.getPopulationCapacity());
 
 		}
@@ -234,10 +247,10 @@ public class ChatUtils {
 			questionText = YOU_PROMPT + "You entered '" + num + "'.";
 			responseText.append("Sorry. This number is not assigned to a valid question.");
 		}
-		
-		return new String[] {questionText , responseText.toString()};
+
+		return new String[] { questionText, responseText.toString() };
 	}
-	
+
 	/**
 	 * Asks the settlement when the input is a string
 	 * 
@@ -246,10 +259,29 @@ public class ChatUtils {
 	 * @return the response string[]
 	 */
 	public static String[] askSettlementStr(String text, String name) {
+//		System.out.println("askSettlementStr() in ChatUtils");
 		String questionText = "";
 		StringBuilder responseText = new StringBuilder();
+
+		if (text.contains("people") || text.contains("settlers") || text.contains("persons")) {
+			questionText = YOU_PROMPT + "Who are the settlers ? ";
+			responseText.append(settlementCache + " : we have " 
+					+ settlementCache.getIndoorPeopleCount() + " settlers as follows :");
+			Collection<Person> list = settlementCache.getAllAssociatedPeople();
+			List<Person> namelist = new ArrayList<>(list);
+			Collections.sort(namelist);
+			String s = "";
+			for (int i = 0; i < namelist.size(); i++) {
+				s = s + "(" + (i+1) + "). " + namelist.get(i).toString() + System.lineSeparator();
+			}
+			//		.replace("[", "").replace("]", "");//.replaceAll(", ", ",\n");
+			//System.out.println("list : " + list);
+			responseText.append(System.lineSeparator());
+			responseText.append(s);
+			responseText.append(System.lineSeparator());
+		}
 		
-		if (text.contains("bed") || text.contains("sleep") || text.equalsIgnoreCase("lodging")
+		else if (text.contains("bed") || text.contains("sleep") || text.equalsIgnoreCase("lodging")
 				|| text.contains("quarters")) {
 
 			questionText = YOU_PROMPT + "how well are the beds utilized ? ";
@@ -280,31 +312,31 @@ public class ChatUtils {
 			responseText.append("(2). Total # on Mission : ");
 			responseText.append(settlementCache.getMissionVehicles().size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(3). Total # Parked (NOT on Mission) : ");
+			responseText.append("(3). Total # of Parked (NOT on Mission) : ");
 			responseText.append(settlementCache.getParkedVehicleNum());
 			responseText.append(System.lineSeparator());
-			responseText.append("(4). # Cargo Rovers on Mission : ");
+			responseText.append("(4). # of Cargo Rovers on Mission : ");
 			responseText.append(settlementCache.getCargoRovers(2).size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(5). # Transport Rovers on Mission : ");
+			responseText.append("(5). # of Transport Rovers on Mission : ");
 			responseText.append(settlementCache.getTransportRovers(2).size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(6). # Explorer Rovers on Mission : ");
+			responseText.append("(6). # of Explorer Rovers on Mission : ");
 			responseText.append(settlementCache.getExplorerRovers(2).size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(7). # Light Utility Vehicles (LUVs) on Mission : ");
+			responseText.append("(7). # of Light Utility Vehicles (LUVs) on Mission : ");
 			responseText.append(settlementCache.getLUVs(2).size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(8). # Parked Cargo Rovers : ");
+			responseText.append("(8). # of Parked Cargo Rovers : ");
 			responseText.append(settlementCache.getCargoRovers(1).size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(9). # Parked Transport Rovers : ");
+			responseText.append("(9). # of Parked Transport Rovers : ");
 			responseText.append(settlementCache.getTransportRovers(1).size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(10). # Parked Explorer Rovers : ");
+			responseText.append("(10). # of Parked Explorer Rovers : ");
 			responseText.append(settlementCache.getExplorerRovers(1).size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(11). # Parked Light Utility Vehicles (LUVs) : ");
+			responseText.append("(11). # of Parked Light Utility Vehicles (LUVs) : ");
 			responseText.append(settlementCache.getLUVs(1).size());
 			responseText.append(System.lineSeparator());
 		}
@@ -315,79 +347,77 @@ public class ChatUtils {
 			questionText = REQUEST_KEYS;
 			if (connectionMode == 0) {
 				keywordText = KEYWORDS_TEXT;
-			}
-			else {
+			} else {
 				keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
 			}
-			//responseText.append(System.lineSeparator());
+			// responseText.append(System.lineSeparator());
 			responseText.append(keywordText);
 
 		}
 
-		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
-				|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
+		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") || text.equalsIgnoreCase("/?")
+				|| text.equalsIgnoreCase("?")) {
 
 //			help = true;
 			questionText = REQUEST_HELP;
 			if (connectionMode == 0) {
 				helpText = HELP_TEXT;
-			}
-			else {
+			} else {
 				helpText = HELP_TEXT + HELP_HEIGHT;
 			}
-			//responseText.append(System.lineSeparator());
+			// responseText.append(System.lineSeparator());
 			responseText.append(helpText);
 
 		}
-		
+
 		else {
-			
+
 			String[] txt = clarify(name);
 			questionText = txt[0];
 			responseText.append(txt[1]);
 		}
-		
-		return new String[] {questionText , responseText.toString()};
+
+		return new String[] { questionText, responseText.toString() };
 	}
-	
+
 	/**
 	 * Asks the person or the robot
 	 * 
 	 * @param text the string input
-	 * @param num the number input
+	 * @param num  the number input
 	 * @param name the number of the person or robot
-	 * @param u the unit
+	 * @param u    the unit
 	 * @return string array
 	 */
 	public static String[] askPersonRobot(String text, int num, String name, Unit u) {
+//		System.out.println("askPersonRobot() in ChatUtils");
 		String questionText = "";
 		StringBuilder responseText = new StringBuilder();
-		
+
 		responseText.append(name);
 		responseText.append(": ");
 
-		if (num == 0 || text.toLowerCase().contains("status")
-				|| text.toLowerCase().contains("how you doing")
-				|| text.toLowerCase().contains("feeling")
-				|| text.toLowerCase().contains("how have you been")) {
+		if (num == 0 || text.toLowerCase().contains("status") || text.toLowerCase().contains("how you doing")
+				|| text.toLowerCase().contains("feeling") || text.toLowerCase().contains("how you been")) {
 			questionText = YOU_PROMPT + "how have you been ?"; // what is your Location Situation [Expert Mode only] ?";
 
 			if (personCache != null) {
 				responseText.append("I'm ");
 				responseText.append(personCache.getStatus());
-				
+
 			} else if (robotCache != null) {
-				responseText.append("I'm operational.");
+				if (robotCache.getSystemCondition().isInoperable())
+					responseText.append("I'm inoperable.");
+				else 
+					responseText.append("I'm operational.");					
 //				responseText.append(robotCache...());
 			}
 
 		}
-		 
-		else if (num == 1 || text.toLowerCase().contains("age")
-				 || text.toLowerCase().contains("born")
-				 || text.toLowerCase().contains("when were you born")
-				 || text.toLowerCase().contains("how old")
-				 || text.toLowerCase().contains("what is your age")) {
+
+		else if (num == 1 || text.toLowerCase().contains("age") || text.toLowerCase().contains("born")
+				|| text.toLowerCase().contains("when were you born") || text.toLowerCase().contains("how old")
+				|| text.toLowerCase().contains("what is your age")) {
 			questionText = YOU_PROMPT + "What is your age ?"; // what is your Location Situation [Expert Mode only] ?";
 
 			if (personCache != null) {
@@ -395,7 +425,7 @@ public class ChatUtils {
 				responseText.append(personCache.getBirthDate());
 				responseText.append(" and I'm ");
 				responseText.append(personCache.updateAge());
-				
+
 			} else if (robotCache != null) {
 				responseText.append("I was assembled in ");
 				responseText.append(robotCache.getBirthDate());
@@ -403,15 +433,13 @@ public class ChatUtils {
 				responseText.append(robotCache.updateAge());
 			}
 
-		}		
-		 
-		else if (num == 2 || text.contains("what your job") 
-				|| text.toLowerCase().contains("what your specialty")
-				|| text.toLowerCase().contains("job")
-				|| text.toLowerCase().contains("career")
+		}
+
+		else if (num == 2 || text.contains("what your job") || text.toLowerCase().contains("what your specialty")
+				|| text.toLowerCase().contains("job") || text.toLowerCase().contains("career")
 				|| text.toLowerCase().contains("specialty")) {
 			questionText = YOU_PROMPT + "What is your job ? ";
-			
+
 			if (personCache != null) {
 				String job = personCache.getMind().getJob().getName(personCache.getGender());
 				String article = "";
@@ -424,9 +452,9 @@ public class ChatUtils {
 				responseText.append(" ");
 				responseText.append(job);
 				responseText.append(".");
-				
+
 			} else if (robotCache != null) {
-				String job = robotCache.getBotMind().getRobotJob().toString();//.getName(robotCache.getRobotType());
+				String job = robotCache.getBotMind().getRobotJob().toString();// .getName(robotCache.getRobotType());
 				String article = "";
 				if (Conversion.checkVowel(job))
 					article = "an";
@@ -436,33 +464,30 @@ public class ChatUtils {
 				responseText.append(article);
 				responseText.append(" ");
 				responseText.append(job);
-				responseText.append(".");		
+				responseText.append(".");
 			}
 		}
-		
-		else if (num == 3 || text.equalsIgnoreCase("where you from") 
-				|| text.toLowerCase().contains("what country")
-				|| text.toLowerCase().contains("what nationality")
-				|| text.toLowerCase().contains("nationality")
+
+		else if (num == 3 || text.equalsIgnoreCase("where you from") || text.toLowerCase().contains("what country")
+				|| text.toLowerCase().contains("what nationality") || text.toLowerCase().contains("nationality")
 				|| text.toLowerCase().contains("country")) {
 			questionText = YOU_PROMPT + "What country were you from ? ";
-			
+
 			if (personCache != null) {
 				responseText.append("I was born in ");
 				responseText.append(personCache.getCountry());
-				
+
 			} else if (robotCache != null) {
 				responseText.append("I was assembled on ");
 				responseText.append(robotCache.getCountry());
 			}
-			
+
 		}
-		 
-		else if (num == 4 || text.toLowerCase().contains("outside")
-				|| text.toLowerCase().contains("inside")
+
+		else if (num == 4 || text.toLowerCase().contains("outside") || text.toLowerCase().contains("inside")
 				|| text.toLowerCase().contains("container")) {
 			questionText = YOU_PROMPT + "Are you inside or outside?";
-			Unit c = u.getContainerUnit();//getTopContainerUnit();
+			Unit c = u.getContainerUnit();// getTopContainerUnit();
 			if (c != null) {
 				responseText.append("I'm inside ").append(c.getName()).append(".");
 			}
@@ -471,24 +496,23 @@ public class ChatUtils {
 				responseText.append("I'm outside");// don't have a Top Container unit.";
 
 		}
-		 
-		 else if (num == 5 || text.toLowerCase().contains("where")) {
+
+		else if (num == 5 || text.toLowerCase().contains("where")) {
 			questionText = YOU_PROMPT + "Where are you ?"; // what is your Location Situation [Expert Mode only] ?";
 			responseText.append("I'm located at ");
 			if (personCache != null) {
-				responseText.append(Conversion.capitalize(personCache.getLocationTag().getQuickLocation()));//getLocationSituation().getName()));
+				responseText.append(Conversion.capitalize(personCache.getLocationTag().getQuickLocation()));// getLocationSituation().getName()));
 			} else if (robotCache != null) {
-				responseText.append(Conversion.capitalize(robotCache.getLocationTag().getQuickLocation()));//getLocationSituation().getName()));
+				responseText.append(Conversion.capitalize(robotCache.getLocationTag().getQuickLocation()));// getLocationSituation().getName()));
 			} else if (vehicleCache != null) {
-				responseText.append(Conversion.capitalize(vehicleCache.getLocationTag().getQuickLocation()));					
+				responseText.append(Conversion.capitalize(vehicleCache.getLocationTag().getQuickLocation()));
 			}
 
-		 }
+		}
 
-		 else if (num == 6 || text.toLowerCase().contains("located") 
-				 || text.toLowerCase().contains("location")) {
+		else if (num == 6 || text.toLowerCase().contains("located") || text.toLowerCase().contains("location")) {
 			questionText = YOU_PROMPT + "What is your exact location ?";
-			LocationStateType stateType = null; 
+			LocationStateType stateType = null;
 
 			if (personCache != null) {
 				stateType = personCache.getLocationStateType();
@@ -509,7 +533,7 @@ public class ChatUtils {
 				responseText.append(robotCache.getLocationTag().getExtendedLocations());// .getBuildingLocation().getNickName());
 				responseText.append(")");
 			}
-			
+
 			else if (vehicleCache != null) {
 				stateType = vehicleCache.getLocationStateType();
 				responseText.append("I'm ");
@@ -521,12 +545,11 @@ public class ChatUtils {
 					responseText.append(")");
 				}
 			}
-	
-		 }
 
-		 else if (num == 7 || text.toLowerCase().contains("task") 
-				 || text.toLowerCase().contains("activity")
-				 || text.toLowerCase().contains("action")) {
+		}
+
+		else if (num == 7 || text.toLowerCase().contains("task") || text.toLowerCase().contains("activity")
+				|| text.toLowerCase().contains("action")) {
 			questionText = YOU_PROMPT + "What are you doing ?";
 			if (personCache != null) {
 				responseText.append(personCache.getTaskDescription());
@@ -536,8 +559,7 @@ public class ChatUtils {
 
 		}
 
-		else if (num == 8 || text.toLowerCase().contains("mission")
-				|| text.toLowerCase().contains("trip")) {
+		else if (num == 8 || text.toLowerCase().contains("mission") || text.toLowerCase().contains("trip")) {
 			// sys = name;
 			questionText = YOU_PROMPT + "Are you involved in a particular mission at this moment?";
 			Mission mission = null;
@@ -546,7 +568,7 @@ public class ChatUtils {
 			} else if (robotCache != null) {
 				mission = robotCache.getBotMind().getMission();
 			} else if (vehicleCache != null) {
-				Person p = (Person)vehicleCache.getOperator();
+				Person p = (Person) vehicleCache.getOperator();
 				if (p != null)
 					mission = p.getMind().getMission();
 //					else
@@ -644,8 +666,7 @@ public class ChatUtils {
 				responseText.append("I'm not in a vehicle.");
 		}
 
-		else if (num == 14 || text.equalsIgnoreCase("vehicle outside")
-				|| text.equalsIgnoreCase("vehicle top container")
+		else if (num == 14 || text.equalsIgnoreCase("vehicle outside") || text.equalsIgnoreCase("vehicle top container")
 				|| text.contains("vehicle") && text.contains("top") && text.contains("container")) {
 			questionText = YOU_PROMPT + "What is your vehicle located?";// 's top container unit ?";
 			Vehicle v = u.getVehicle();
@@ -744,7 +765,7 @@ public class ChatUtils {
 				}
 			}
 		}
-		 
+
 		else if (num == 18 || text.contains("sleep hour") || text.contains("bed time")) {
 			questionText = YOU_PROMPT + "What is your preferred/usual bed time ?";
 
@@ -760,8 +781,7 @@ public class ChatUtils {
 			questionText = REQUEST_KEYS;
 			if (connectionMode == 0) {
 				keywordText = KEYWORDS_TEXT;
-			}
-			else {
+			} else {
 				keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
 			}
 			responseText.append(System.lineSeparator());
@@ -769,32 +789,31 @@ public class ChatUtils {
 
 		}
 
-		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
-				|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
+		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") || text.equalsIgnoreCase("/?")
+				|| text.equalsIgnoreCase("?")) {
 			questionText = REQUEST_HELP;
 			if (connectionMode == 0) {
 				helpText = HELP_TEXT;
-			}
-			else {
+			} else {
 				helpText = HELP_TEXT + HELP_HEIGHT;
 			}
 			responseText.append(System.lineSeparator());
 			responseText.append(helpText);
 
 		}
-		
+
 		// Add changing the height of the chat box
 		// DELETED
-		
+
 		else {
 			String[] txt = clarify(name);
 			questionText = txt[0];
 			responseText.append(txt[1]);
 		}
-		
-		return new String[] {questionText , responseText.toString()};
+
+		return new String[] { questionText, responseText.toString() };
 	}
-	
+
 	/**
 	 * Processes a question and return an answer regarding an unit
 	 * 
@@ -807,57 +826,57 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuilder responseText = new StringBuilder();
 		String name = SYSTEM;
-		
+
 		Unit u = null;
-		
+
 		if (personCache != null) {
 			u = personCache;
 			name = personCache.getName();
-		} 
-		
+		}
+
 		else if (robotCache != null) {
 			u = robotCache;
 			name = robotCache.getName();
-		} 
-		
+		}
+
 		else if (settlementCache != null) {
 			u = settlementCache;
 			name = settlementCache.getName();
-		} 
-		
+		}
+
 		else if (vehicleCache != null) {
 			u = vehicleCache;
 			name = vehicleCache.getName();
 		}
-		
+
 //		System.out.println("name is " + name);
-		
+
 		// Case 0 : exit the conversation
 		if (isQuitting(text)) {
-			String[] bye = null; 
-	
+			String[] bye = null;
+
 			if (u != null) {
 				bye = farewell(name);
 				questionText = bye[0];
 				responseText.append(bye[1]);
 				responseText.append(System.lineSeparator());
-				responseText.append(System.lineSeparator());	
+				responseText.append(System.lineSeparator());
 				responseText.append(name);
-				
+
 				int rand1 = RandomUtil.getRandomInt(1);
 
 				if (rand1 == 0)
 					responseText.append(" has left the conversation. Disconnected.");
 				else
 					responseText.append(" is disconnected from the line.");
-				
-				// set personCache and robotCache to null so as to quit the conversation 
+
+				// set personCache and robotCache to null so as to quit the conversation
 				personCache = null;
 				robotCache = null;
 				settlementCache = null;
 				vehicleCache = null;
 			}
-			
+
 			else {
 				bye = farewell(name);
 				questionText = bye[0];
@@ -876,7 +895,7 @@ public class ChatUtils {
 //			responseText.append("2. Manufacturing Priority");
 //			responseText.append("3. Food Allocation Plan");
 //		}
-		
+
 		// Add changing the height of the chat box
 		// DELETED
 
@@ -884,31 +903,36 @@ public class ChatUtils {
 		else if (settlementCache != null) {
 
 			if (isInteger(text, 10)) {
-				
+
 				int num = Integer.parseUnsignedInt(text, 10);
 
-				String[] ans = askSettlementNum(num); 
-				
+				String[] ans = askSettlementNum(num);
+
 				questionText = ans[0];
 				responseText.append(ans[1]);
 
 				// if it's not a integer input
 			}
-			
+
 			else {
+				personCache = null;
+				robotCache = null;
+				//settlementCache = null;
+				vehicleCache = null;
 				
 				String[] ans = askSettlementStr(text, name);
-				
+
 				questionText = ans[0];
 				responseText.append(ans[1]);
 			}
 
 		}
-		
+
 		// Case 2: ask to talk to a person or robot
 		else if (settlementCache == null) {
-			// Note : this is better than personCache != null || robotCache != null since it can
-											// incorporate help and other commands
+			// Note : this is better than personCache != null || robotCache != null since it
+			// can
+			// incorporate help and other commands
 			int num = -1;
 
 			if (isInteger(text, 10))
@@ -966,10 +990,10 @@ public class ChatUtils {
 					vehicleCache = null;
 				}
 			}
-			
-			else {
 
-				String[] ans = askPersonRobot(text, num, name, u); 
+			else {
+				
+				String[] ans = askPersonRobot(text, num, name, u);
 				
 				questionText = ans[0];
 				responseText.append(ans[1]);
@@ -983,11 +1007,11 @@ public class ChatUtils {
 			questionText = txt[0];
 			responseText.append(txt[1]);
 		}
-		
-		return new String[] {questionText, responseText.toString()};
-		
+
+		return new String[] { questionText, responseText.toString() };
+
 	}
-		
+
 	/*
 	 * Parses the text and interprets the contents in the chat box
 	 * 
@@ -996,22 +1020,22 @@ public class ChatUtils {
 	public static String parseText(String text) {
 //		System.out.println("parseText() in ChatUtils");
 		StringBuilder responseText = new StringBuilder();
-		
+
 		// String SYSTEM_PROMPT = "System : ";
 		boolean available = true;
 		int nameCase = 0;
 		boolean proceed = false;
-		
+
 //		Unit unit = null;
 		Person person = null;
 		Robot robot = null;
-		
+
 		// System.out.println("A: text is " + text + ". Running parseText()");
 		text = text.trim();
 		int len = text.length();
 
-		List<Person> personList = new ArrayList<>();
-		List<Robot> robotList = new ArrayList<>();
+//		List<Person> personList = new ArrayList<>();
+//		List<Robot> robotList = new ArrayList<>();
 
 		// Detect "\" backslash and the name that follows
 		if (len >= 3 && text.substring(0, 1).equalsIgnoreCase("\\")) {
@@ -1021,35 +1045,35 @@ public class ChatUtils {
 
 		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
 
-			//responseText.append(System.lineSeparator());
+			// responseText.append(System.lineSeparator());
 			if (connectionMode == 0) {
 				keywordText = KEYWORDS_TEXT;
-			}
-			else {
+			} else {
 				keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
 			}
 			responseText.append(keywordText);
+			return responseText.toString();
 		}
 
-		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
-				|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
+		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") || text.equalsIgnoreCase("/?")
+				|| text.equalsIgnoreCase("?")) {
 
-			//responseText.append(System.lineSeparator());
+			// responseText.append(System.lineSeparator());
 			if (connectionMode == 0) {
 				helpText = HELP_TEXT;
-			}
-			else {
+			} else {
 				helpText = HELP_TEXT + HELP_HEIGHT;
 			}
 			responseText.append(helpText);
-		}		
-		
+			return responseText.toString();
+		}
+
 		// Add proposals
 		else if (text.equalsIgnoreCase("/p")) {
 //			System.out.println("/p is submitted");
 			responseText.append(System.lineSeparator());
 			responseText.append(SYSTEM_PROMPT);
-			responseText.append("[EXPERIMENTAL & NON-FUNCTIONAL] Below is a list of proposals for your review :");	
+			responseText.append("[EXPERIMENTAL & NON-FUNCTIONAL] Below is a list of proposals for your review :");
 			responseText.append(System.lineSeparator());
 			responseText.append("1. Safety and Health Measures");
 			responseText.append(System.lineSeparator());
@@ -1057,6 +1081,7 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append("3. Food Allocation Plan");
 			responseText.append(System.lineSeparator());
+			return responseText.toString();
 		}
 
 		// Add asking about settlements in general
@@ -1085,6 +1110,7 @@ public class ChatUtils {
 				responseText.append(num);
 				responseText.append(" settlements : ");
 				responseText.append(s);
+				return responseText.toString();
 			}
 
 			else if (num == 2) {
@@ -1094,17 +1120,20 @@ public class ChatUtils {
 				responseText.append(num);
 				responseText.append(" settlements : ");
 				responseText.append(s);
+				return responseText.toString();
 			}
 
 			else if (num == 1) {
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append("There is just one settlement : ");
 				responseText.append(settlementList.get(0));
+				return responseText.toString();
 			}
 
 			else {
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append("Currently, there is no settlement established on Mars.");
+				return responseText.toString();
 			}
 
 		}
@@ -1117,18 +1146,19 @@ public class ChatUtils {
 			// Creates an array with the names of all of settlements
 			List<Settlement> settlementList = new ArrayList<Settlement>(
 					Simulation.instance().getUnitManager().getSettlements());
-		
+
 			for (Settlement s : settlementList) {
 				Collection<Vehicle> list = s.getAllAssociatedVehicles();
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append(s);
 				responseText.append(" has ");
 				responseText.append(list);
-				responseText.append(System.lineSeparator()); 			
+				responseText.append(System.lineSeparator());
 			}
 
+			return responseText.toString();
 		}
-		
+
 		else if (len >= 5 && text.substring(0, 5).equalsIgnoreCase("hello")
 				|| len >= 4 && text.substring(0, 4).equalsIgnoreCase("helo")) {
 
@@ -1144,6 +1174,8 @@ public class ChatUtils {
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append("Hello, how can I help?    [/h for help]");
 			}
+			
+			return responseText.toString();
 		}
 
 		else if (len >= 3 && text.substring(0, 3).equalsIgnoreCase("hey")) {
@@ -1156,6 +1188,8 @@ public class ChatUtils {
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append("Hello, how can I help?    [/h for help]");
 			}
+			
+			return responseText.toString();
 		}
 
 		else if (len >= 2 && text.substring(0, 2).equalsIgnoreCase("hi")) {
@@ -1168,6 +1202,8 @@ public class ChatUtils {
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append("Hello, how can I help?    [/h for help]");
 			}
+
+			return responseText.toString();
 		}
 
 		else if (len >= 2) {
@@ -1182,8 +1218,11 @@ public class ChatUtils {
 		}
 
 		else if (proceed) { // && text.length() > 1) {
-			// System.out.println("B: text is " + text);
+			System.out.println("proceed is true: text is " + text);
 
+			List<Person> personList = new ArrayList<>();
+			List<Robot> robotList = new ArrayList<>();
+			
 			// person and robot
 			Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
 			while (i.hasNext()) {
@@ -1218,8 +1257,9 @@ public class ChatUtils {
 				responseText.append(text);
 				responseText.append("\". Would you be more specific?");
 				// System.out.println(responseText);
-
-				// Case 2: there is one person
+				return responseText.toString();
+				
+			// Case 2: there is one person
 			} else if (nameCase == 1) {
 
 				if (!available) {
@@ -1229,6 +1269,7 @@ public class ChatUtils {
 					responseText.append("I'm sorry. ");
 					responseText.append(text);
 					responseText.append(" is unavailable at this moment");
+					return responseText.toString();
 
 				} else {
 //					System.out.println("personList's size : " + personList.size());
@@ -1244,15 +1285,16 @@ public class ChatUtils {
 								responseText.append(text);
 								responseText.append(" has passed away and is buried at ");
 								responseText.append(person.getBuriedSettlement().getName());
-							}
-							else {
+							} else {
 								responseText.append(SYSTEM_PROMPT);
 								responseText.append("Perhaps you don't know that ");
 								responseText.append(text);
 								responseText.append(" is dead and is buried at ");
 								responseText.append(person.getBuriedSettlement().getName());
 							}
-						} else {
+							return responseText.toString();
+						}
+						else {
 							personCache = person;
 //							unitCache = person;
 						}
@@ -1266,6 +1308,7 @@ public class ChatUtils {
 							responseText.append("I'm sorry. ");
 							responseText.append(text);
 							responseText.append(" has been decomissioned.");
+							return responseText.toString();
 						} else {
 							robotCache = robot;
 //							unitCache = robot;
@@ -1276,15 +1319,17 @@ public class ChatUtils {
 						responseText.append(robotCache.getName());
 						responseText.append(" : This is ");
 						responseText.append(text);
-						responseText.append(". ");	
-						
+						responseText.append(". ");
+						return responseText.toString();
+
 					}
-					
+
 					else if (personCache != null) {
 						responseText.append(personCache.getName());
 						responseText.append(" : This is ");
-						responseText.append(text);
+						responseText.append(text);					
 						responseText.append(". ");
+						return responseText.toString();
 					}
 				}
 
@@ -1293,13 +1338,14 @@ public class ChatUtils {
 
 				// System.out.println("nameCase is 0");
 				// Match a settlement's name
-				if (text.length() >= 2) {
+				if (text.length() > 1) {
+					boolean notMatched = true;
 					Iterator<Settlement> j = Simulation.instance().getUnitManager().getSettlements().iterator();
 					while (j.hasNext()) {
 						Settlement settlement = j.next();
 						String s_name = settlement.getName();
 
-						if (s_name.equalsIgnoreCase(text)) {
+						if (s_name.equalsIgnoreCase(text.toLowerCase())) {
 							// name = "System";
 							responseText.append(SYSTEM_PROMPT);
 							responseText.append("Yes, what would like to know about '");
@@ -1308,53 +1354,56 @@ public class ChatUtils {
 
 							settlementCache = settlement;
 							// System.out.println("matching settlement name " + s_name);
-							break;
+							return responseText.toString();
 						}
 
-						else if (s_name.toLowerCase().contains(text.toLowerCase())
-								|| text.toLowerCase().contains(s_name.toLowerCase())) {
+						else if (s_name.toLowerCase().contains(text.toLowerCase())) {
 							responseText.append(SYSTEM_PROMPT);
 							responseText.append("Do you mean '");
 							responseText.append(s_name);
-							responseText.append("' ?");
+							responseText.append("' or something else ?");
 							// System.out.println("partially matching settlement name " + s_name);
-							break;
-						}
-						 else {
-//								String[] txt = clarify(name);
-//								questionText = txt[0];
-//								responseText.append(txt[1]);
-								
-							responseText.append(SYSTEM_PROMPT);
-							responseText.append("I do not recognize anyone or any settlements by '");
-							responseText.append(text);
-							responseText.append("'.");
 							return responseText.toString();
-						}
+						} 
+						
+
 						// TODO: check vehicle names
 						// TODO: check commander's name
 					}
-					
-				} else {
+						
+					if (notMatched) {
+						responseText.append(SYSTEM_PROMPT);
+						responseText.append("I do not recognize any person or settlement by the name of '");
+						responseText.append(text);
+						responseText.append("'.");
+						return responseText.toString();
+					}
+
+				}
+				
+				else {
 					responseText.append(SYSTEM_PROMPT);
-					responseText.append("I do not recognize anyone or any settlements by '");
+					responseText.append("I do not recognize any person or settlement by the name of '");
 					responseText.append(text);
 					responseText.append("'.");
 					return responseText.toString();
 				}
 			}
-	
+
 			else {
 				responseText.append(SYSTEM_PROMPT);
-				responseText.append("I do not recognize anyone or any settlements by '");
+				responseText.append("I do not recognize any person or settlement by the name of '");
 				responseText.append(text);
 				responseText.append("'.");
 				return responseText.toString();
 			}
 		}
 
+		responseText.append(SYSTEM_PROMPT);
+		responseText.append("I do not recognize any person or settlement by the name of '");
+		responseText.append(text);
+		responseText.append("'.");
 		return responseText.toString();
-
 	}
 
 	public static void setConnectionMode(int value) {
@@ -1364,7 +1413,7 @@ public class ChatUtils {
 	public static int getConnectionMode() {
 		return connectionMode;
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
