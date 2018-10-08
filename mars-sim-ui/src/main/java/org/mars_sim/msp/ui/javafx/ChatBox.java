@@ -266,7 +266,7 @@ public class ChatBox extends BorderPane {
 		int len = text.length();
 
 		if (ChatUtils.isQuitting(text)) {
-			String[] txt = ChatUtils.farewell(ChatUtils.SYSTEM_PROMPT);
+			String[] txt = ChatUtils.farewell(ChatUtils.SYSTEM_PROMPT, false);
 			// questionText = txt[0];
 			responseText = txt[1];
 			// Close the chat box

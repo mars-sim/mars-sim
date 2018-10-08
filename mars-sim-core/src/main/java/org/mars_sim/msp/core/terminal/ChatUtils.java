@@ -124,9 +124,9 @@ public class ChatUtils {
 	 * @param respondent
 	 * @return a string array
 	 */
-	public static String[] farewell(String respondent) {
-		String questionText = YOU_PROMPT + farewellText();// + System.lineSeparator();
-		String responseText = respondent + " : " + farewellText();// + System.lineSeparator();
+	public static String[] farewell(String respondent, boolean isHuman) {
+		String questionText = YOU_PROMPT + farewellText(true);// + System.lineSeparator();
+		String responseText = respondent + " : " + farewellText(isHuman);// + System.lineSeparator();
 		return new String[] { questionText, responseText };
 	}
 
@@ -135,23 +135,37 @@ public class ChatUtils {
 	 * 
 	 * @return a string
 	 */
-	public static String farewellText() {
+	public static String farewellText(boolean isHuman) {
 
-		int r0 = RandomUtil.getRandomInt(6);
-		if (r0 == 0)
-			return "Bye!";
-		else if (r0 == 1)
-			return "Farewell!";
-		else if (r0 == 2)
-			return "Next time!";
-		else if (r0 == 3)
-			return "Have a nice sol!";
-		else if (r0 == 4)
-			return "Take it easy!";
-		else if (r0 == 5)
-			return "Take care!";
-		else
-			return "See ya!";
+		if (isHuman) {
+			int r0 = RandomUtil.getRandomInt(7);
+			if (r0 == 0)
+				return "Bye !";
+			else if (r0 == 1)
+				return "Farewell !";
+			else if (r0 == 2)
+				return "Next time !";
+			else if (r0 == 3)
+				return "Have a nice sol !";
+			else if (r0 == 4)
+				return "Take it easy !";
+			else if (r0 == 5)
+				return "Take care !";
+			else if (r0 == 6)
+				return "Take care !";
+			else
+				return "I have to leave. Bye !";
+		}
+		
+		else {
+			int r0 = RandomUtil.getRandomInt(2);
+			if (r0 == 0)
+				return "Bye !";
+			else if (r0 == 1)
+				return "Farewell !";
+			else
+				return "Goodbye !";
+		}
 	}
 
 	/*
@@ -860,27 +874,32 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuilder responseText = new StringBuilder();
 		String name = SYSTEM;
-
+		int cacheType = -1;
+		
 		Unit u = null;
 
 		if (personCache != null) {
 			u = personCache;
 			name = personCache.getName();
+			cacheType = 0;
 		}
 
 		else if (robotCache != null) {
 			u = robotCache;
 			name = robotCache.getName();
+			cacheType = 1;
 		}
 
 		else if (settlementCache != null) {
 			u = settlementCache;
 			name = settlementCache.getName();
+			cacheType = 2;
 		}
 
 		else if (vehicleCache != null) {
 			u = vehicleCache;
 			name = vehicleCache.getName();
+			cacheType = 3;
 		}
 
 //		System.out.println("name is " + name);
@@ -890,19 +909,28 @@ public class ChatUtils {
 			String[] bye = null;
 
 			if (u != null) {
-				bye = farewell(name);
+				if (cacheType == 0 || cacheType == 1)
+					bye = farewell(name, true);
+				else
+					bye = farewell(name, false);
 				questionText = bye[0];
 				responseText.append(bye[1]);
 				responseText.append(System.lineSeparator());
 				responseText.append(System.lineSeparator());
 				responseText.append(name);
 
-				int rand1 = RandomUtil.getRandomInt(1);
-
-				if (rand1 == 0)
-					responseText.append(" has left the conversation. Disconnected.");
-				else
+				if (settlementCache != null || vehicleCache != null) {
 					responseText.append(" is disconnected from the line.");
+				}
+				else {
+					int rand1 = RandomUtil.getRandomInt(1);
+	
+					if (rand1 == 0)
+						responseText.append(" has left the conversation.");
+					else
+						responseText.append(" just hung up the line.");
+				}
+				
 
 				// set personCache and robotCache to null so as to quit the conversation
 				personCache = null;
@@ -912,7 +940,7 @@ public class ChatUtils {
 			}
 
 			else {
-				bye = farewell(name);
+				bye = farewell(name, false);
 				questionText = bye[0];
 				responseText.append(bye[1]);
 				responseText.append(System.lineSeparator());
@@ -1382,9 +1410,9 @@ public class ChatUtils {
 						if (s_name.equalsIgnoreCase(text.toLowerCase())) {
 							// name = "System";
 							responseText.append(SYSTEM_PROMPT);
-							responseText.append("Yes, what would like to know about '");
+							responseText.append("You are now connected with ");
 							responseText.append(s_name);
-							responseText.append("' ?");
+							responseText.append(". What would like to know ?");
 
 							settlementCache = settlement;
 							// System.out.println("matching settlement name " + s_name);

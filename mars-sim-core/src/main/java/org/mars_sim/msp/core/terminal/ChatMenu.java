@@ -56,7 +56,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 
 	       	terminal.println("<< Connection to MarsNet established >>"
 		       	+ System.lineSeparator() + System.lineSeparator() 
-		       	+ "Type '/h' for help or '/k' for keywords"
+		       	+ "Type '/h' for help,   '/k' for keywords,   '/q' to quit"
 		       	+ System.lineSeparator() + System.lineSeparator());
 		       		       
 	        terminal.println(" -------------------------------------------------------------- ");
@@ -80,7 +80,18 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	        boolean quit = false;
 	          
 	        while (!quit) {
-//	    		System.out.println("while loop in accept() in ChatMenu");
+	        	String prompt = "Which party do you want to connect with >";
+
+	        	if (ChatUtils.personCache != null)
+	        		prompt = "Connected with " + ChatUtils.personCache.toString() +" >";
+	        	else if (ChatUtils.robotCache != null) 
+	        		prompt = "Connected with " + ChatUtils.robotCache.toString() +" >";
+	        	else if (ChatUtils.settlementCache != null)
+	        		prompt = "Connected with " + ChatUtils.settlementCache.toString() +" >";	
+	        	else if (ChatUtils.vehicleCache != null)
+	        		prompt = "Connected with " + ChatUtils.vehicleCache.toString() +" >";	
+	        	
+//	        	System.out.println("prompt : " + prompt);
 //		        setChoices(array);
 		        
 //		        Party.party = textIO.newStringInputReader()
@@ -89,7 +100,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 		
 		//        terminal.printf(System.lineSeparator());
 		    
-		        handler.addStringTask("party", ">", false).addChoices(names);//.constrainInputToChoices();
+		        handler.addStringTask("party", prompt, false).addChoices(names);//.constrainInputToChoices();
 		        handler.executeOneTask();
 		        
 //		        System.out.println("personCache : " + ChatUtils.personCache);
@@ -135,7 +146,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 //		int len = text.length();
 
 		if (ChatUtils.isQuitting(text)) {
-			String[] txt = ChatUtils.farewell(ChatUtils.SYSTEM);
+			String[] txt = ChatUtils.farewell(ChatUtils.SYSTEM, false);
 			questionText = txt[0];
 			responseText = txt[1];
 

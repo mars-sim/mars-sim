@@ -288,6 +288,10 @@ public class SwingHandler {
     }
 
     public void executeOneTask() {
+    	// Remove the last task
+    	if (tasks.size() > 1)
+    		tasks.remove(0);
+        terminal.setBookmark("bookmark_" + 0);
         try {
             tasks.get(0).run();
         } catch (ReadAbortedException e) {
