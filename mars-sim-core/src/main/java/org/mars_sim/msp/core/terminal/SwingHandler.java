@@ -287,6 +287,14 @@ public class SwingHandler {
         }
     }
 
+    public void executeOneTask() {
+        try {
+            tasks.get(0).run();
+        } catch (ReadAbortedException e) {
+            terminal.resetToBookmark("bookmark_" + 0);
+        }
+    }
+    
     private Field getField(String fieldName) {
         try {
             return dataObject.getClass().getField(fieldName);

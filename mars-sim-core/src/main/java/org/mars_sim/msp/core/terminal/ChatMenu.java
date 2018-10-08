@@ -23,12 +23,12 @@ import java.util.function.BiConsumer;
  */
 public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	
-	private static final String KEY_STROKE_UP = "pressed UP";
-	private static final String KEY_STROKE_DOWN = "pressed DOWN";
-
-	private String originalInput = "";
-	private int choiceIndex = -1;
-	private String[] choices = {};
+//	private static final String KEY_STROKE_UP = "pressed UP";
+//	private static final String KEY_STROKE_DOWN = "pressed DOWN";
+//
+//	private String originalInput = "";
+//	private int choiceIndex = -1;
+//	private String[] choices = {};
 	    
 	private SwingTextTerminal terminal;
 	
@@ -43,8 +43,8 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
         String initData = (runnerData == null) ? null : runnerData.getInitData();
         AppUtil.printGsonMessage(terminal, initData);
 
- //       Party party = new Party();
- //       SwingHandler handler = new SwingHandler(textIO, party);
+        Party party = new Party();
+        SwingHandler handler = new SwingHandler(textIO, party);
       
         if (ChatUtils.getConnectionMode() == 1) {
         	terminal.println("Cannot establish more than one line of connections. Please disactivate the graphic chat box first." + System.lineSeparator());			
@@ -60,7 +60,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 		       	+ System.lineSeparator() + System.lineSeparator());
 		       		       
 	        terminal.println(" -------------------------------------------------------------- ");
-//	        terminal.println("|     Press UP arrow key to autocomplete the keyword.          |");
+	        terminal.println("|     Press UP arrow key to autocomplete the keyword.          |");
 	        terminal.println("|     Press UP/DOWN arrow keys to scroll through choices.      |");
 	        terminal.println(" -------------------------------------------------------------- "
 	        		+ System.lineSeparator()); 
@@ -68,7 +68,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 //		       	+ "Press UP/DOWN to show a list of possible values"
 //		       	+ System.lineSeparator());
 	       	
-	        setUpArrows();
+//	        setUpArrows();
 	        
 	        // Person
 	        // Robot
@@ -76,21 +76,21 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	        // Vehicle
 	     
 	        List<String> names = CollectionUtils.createAutoCompleteData();//.createSettlerNames();
-	        String[] array = names.toArray(new String[names.size()]);
+//	        String[] array = names.toArray(new String[names.size()]);
 	        boolean quit = false;
 	          
 	        while (!quit) {
 //	    		System.out.println("while loop in accept() in ChatMenu");
-		        setChoices(array);
+//		        setChoices(array);
 		        
-		        Party.party = textIO.newStringInputReader()
-		//        		.withInlinePossibleValues(array)
-		                .read(">");//What party do you want to reach");
+//		        Party.party = textIO.newStringInputReader()
+//		//        		.withInlinePossibleValues(array)
+//		                .read(">");//What party do you want to reach");
 		
 		//        terminal.printf(System.lineSeparator());
 		    
-//		        handler.addStringTask("party", ">", false).addChoices(names);//.constrainInputToChoices();
-//		        handler.execute();
+		        handler.addStringTask("party", ">", false).addChoices(names);//.constrainInputToChoices();
+		        handler.executeOneTask();
 		        
 //		        System.out.println("personCache : " + ChatUtils.personCache);
 //		        System.out.println("robotCache : " + ChatUtils.robotCache);
@@ -190,33 +190,33 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	}
 	
 
-    public void setChoices(String... choices) {
-        this.originalInput = "";
-        this.choiceIndex = -1;
-        this.choices = choices;
-    }
-    
-    public void setUpArrows() {
-        terminal.registerHandler(KEY_STROKE_UP, t -> {
-            if(choiceIndex < 0) {
-                originalInput = terminal.getPartialInput();
-            }
-            if(choiceIndex < choices.length - 1) {
-                choiceIndex++;
-                t.replaceInput(choices[choiceIndex], false);
-            }
-            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
-        });
-
-        terminal.registerHandler(KEY_STROKE_DOWN, t -> {
-            if(choiceIndex >= 0) {
-                choiceIndex--;
-                String text = (choiceIndex < 0) ? originalInput : choices[choiceIndex];
-                t.replaceInput(text, false);
-            }
-            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
-        });
-    }
+//    public void setChoices(String... choices) {
+//        this.originalInput = "";
+//        this.choiceIndex = -1;
+//        this.choices = choices;
+//    }
+//    
+//    public void setUpArrows() {
+//        terminal.registerHandler(KEY_STROKE_UP, t -> {
+//            if(choiceIndex < 0) {
+//                originalInput = terminal.getPartialInput();
+//            }
+//            if(choiceIndex < choices.length - 1) {
+//                choiceIndex++;
+//                t.replaceInput(choices[choiceIndex], false);
+//            }
+//            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
+//        });
+//
+//        terminal.registerHandler(KEY_STROKE_DOWN, t -> {
+//            if(choiceIndex >= 0) {
+//                choiceIndex--;
+//                String text = (choiceIndex < 0) ? originalInput : choices[choiceIndex];
+//                t.replaceInput(text, false);
+//            }
+//            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
+//        });
+//    }
     	
     
     @Override

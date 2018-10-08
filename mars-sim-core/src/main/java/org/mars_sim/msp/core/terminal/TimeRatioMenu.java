@@ -54,7 +54,7 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
         	.withInputReaderConfigurator(r -> r.withMinVal(0).withMaxVal(14))
         	.addChoices(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
         
-        handler.execute();
+        handler.executeOneTask();//execute();
 
         
 //       	terminal.println("Press UP/DOWN to show a list of possible values"

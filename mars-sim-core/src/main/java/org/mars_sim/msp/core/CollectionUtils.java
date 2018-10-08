@@ -319,7 +319,7 @@ public class CollectionUtils {
 		// Creates an array with the names of all of settlements
 		Collection<Settlement> settlements = Simulation.instance().getUnitManager().getSettlements();
 		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
-		System.out.println("# settlements : " + settlementList.size());
+//		System.out.println("# settlements : " + settlementList.size());
 //		Collection<Settlement> settlements = getSettlement(Simulation.instance().getUnitManager().getUnits());
 
 		// autoCompleteArray = settlementList.toArray(new
@@ -332,10 +332,73 @@ public class CollectionUtils {
 
 		nameList.add("settlement");
 		nameList.add("settlements");
+		
+		// Questions regarding a settlement 
+		nameList.add("people");
+		nameList.add("settler");
+		nameList.add("persons");
+		
+		nameList.add("robot");
+		nameList.add("bot");
+
+		nameList.add("bed");
+		nameList.add("sleep");
+		nameList.add("lodging");
+		nameList.add("quarters");
+
 		nameList.add("vehicle");
-		nameList.add("vehicles");
 		nameList.add("rover");
-		nameList.add("rovers");
+		
+		// Questions regarding a person/robot
+		nameList.add("feeling");
+		nameList.add("status");
+
+		nameList.add("birth");
+		nameList.add("age");
+		nameList.add("how old");
+		nameList.add("born");
+
+		nameList.add("job");
+		nameList.add("nationality");
+		nameList.add("specialty");
+		nameList.add("career");
+
+		nameList.add("country");
+		nameList.add("nationality");
+		
+		nameList.add("outside");
+		nameList.add("inside");
+		nameList.add("container");
+
+		nameList.add("where");
+		nameList.add("location");
+		nameList.add("located");
+
+		nameList.add("task");
+		nameList.add("activity");
+		nameList.add("action");
+		nameList.add("mission");
+		nameList.add("trip");
+		nameList.add("excursion");
+
+		nameList.add("building");
+		nameList.add("associated");
+		nameList.add("association");
+		nameList.add("home");
+		nameList.add("home town");
+		
+		nameList.add("vehicle top container");		
+		nameList.add("vehicle container");
+		nameList.add("garage");
+		nameList.add("vehicle park");
+		nameList.add("vehicle settlement");
+		nameList.add("vehicle outside");		
+		nameList.add("vehicle inside");
+		
+		nameList.add("bed time");
+		nameList.add("sleep hour");
+				
+				
 		nameList.addAll(createShortcutHelp());
 		
 		Iterator<Settlement> i = settlementList.iterator();

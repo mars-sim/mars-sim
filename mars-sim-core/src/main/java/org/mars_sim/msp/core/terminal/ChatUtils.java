@@ -55,18 +55,19 @@ public class ChatUtils {
 
 	public final static String KEYWORDS_TEXT = System.lineSeparator()
 			+ "    -------------------- K E Y W O R D S -------------------- " + System.lineSeparator()
-			+ "(1) 'status', 'feeling', 'how old', 'age', 'birth', 'country', 'nationality', 'job', 'specialty', 'career', "
+			+ "(1) 'people', 'settler', 'persons', 'robot', 'bot', 'status', 'feeling', 'how old', 'age', 'birth', 'country', 'nationality', 'job', 'specialty', 'career', "
 			+ System.lineSeparator() + "(2) 'where', 'location', 'located', 'task', 'activity', 'action', 'mission', "
-			+ System.lineSeparator() + "(3) 'bed', 'quarters', 'sleep', 'building', 'inside', 'outside',"
+			+ System.lineSeparator() + "(3) 'bed', 'bed time', 'quarters', 'sleep', 'sleep hour', 'building', 'inside', 'outside', ' container'"
 			+ System.lineSeparator()
-			+ "(4) 'settlement', 'settlements', 'associated settlement', 'association', 'home', 'home town',"
+			+ "(4) 'settlement', 'settlements', 'associated', 'association', 'home', 'home town',"
 			+ System.lineSeparator() // 'buried settlement', 'buried'
-			+ "(5) 'vehicle inside', 'vehicle outside', 'vehicle park', 'vehicle settlement', 'vehicle container'"
+			+ "(5) 'garage', 'vehicle inside' , 'vehicle outside', 'vehicle park', 'vehicle settlement', 'vehicle container', 'vehicle top container'"
 			+ System.lineSeparator() + "    -------------------- N U M E R A L -------------------- "
 			+ System.lineSeparator() + "(6) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement"
 			+ System.lineSeparator() + "    --------------------  M I S C S -------------------- "
 			+ System.lineSeparator() + "(7) 'bye', '/b', 'exit', 'x', 'quit', '/q' to close the chat box"
-			+ System.lineSeparator() + "(8) 'help', '/h' for the help page" + System.lineSeparator();
+			+ System.lineSeparator() + "(8) 'help', '/h' for the help page" 
+			+ System.lineSeparator();
 
 	public final static String KEYWORDS_HEIGHT = "(9) '/y1' to reset height to 256 pixels (by default) after closing chat box. '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
 			+ System.lineSeparator();
@@ -263,11 +264,20 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuilder responseText = new StringBuilder();
 
-		if (text.contains("people") || text.contains("settlers") || text.contains("persons")) {
-			questionText = YOU_PROMPT + "Who are the settlers ? ";
-			responseText.append(settlementCache + " : we have " 
-					+ settlementCache.getIndoorPeopleCount() + " settlers as follows :");
+		if (text.toLowerCase().contains("people") || text.toLowerCase().contains("settlers") 
+				|| text.toLowerCase().contains("persons")) {
+			
 			Collection<Person> list = settlementCache.getAllAssociatedPeople();
+			int total = list.size();
+			int indoor = settlementCache.getIndoorPeopleCount();
+			int outdoor = total - indoor;
+			questionText = YOU_PROMPT + "Who are the settlers ? ";
+			responseText.append(settlementCache + " : we have a total of " 
+					+ total + " settlers "
+					+ "(indoor : " + indoor
+					+ ", outdoor : " + outdoor
+					+ ") as follows :");
+
 			List<Person> namelist = new ArrayList<>(list);
 			Collections.sort(namelist);
 			String s = "";
@@ -281,8 +291,9 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 		}
 		
-		else if (text.contains("bed") || text.contains("sleep") || text.equalsIgnoreCase("lodging")
-				|| text.contains("quarters")) {
+		else if (text.toLowerCase().contains("bed") || text.toLowerCase().contains("sleep") 
+				|| text.equalsIgnoreCase("lodging")
+				|| text.toLowerCase().contains("quarters")) {
 
 			questionText = YOU_PROMPT + "how well are the beds utilized ? ";
 			responseText.append("Total number of beds : ");
@@ -299,20 +310,21 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 		}
 
-		else if (text.equalsIgnoreCase("vehicle") || text.equalsIgnoreCase("rover") || text.contains("rover")
-				|| text.contains("vehicle")) {
+		else if (text.equalsIgnoreCase("vehicle") || text.equalsIgnoreCase("rover") 
+				|| text.equalsIgnoreCase("rover")
+				|| text.equalsIgnoreCase("vehicle")) {
 
 			questionText = YOU_PROMPT + "What are the vehicles in the settlement ? ";
 			responseText.append(System.lineSeparator());
 			responseText.append("     ----- Rovers/Vehicles Inventory -----");
 			responseText.append(System.lineSeparator());
-			responseText.append("(1). Total # : ");
+			responseText.append("(1). Total : ");
 			responseText.append(settlementCache.getAllAssociatedVehicles().size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(2). Total # on Mission : ");
+			responseText.append("(2). Total on Mission : ");
 			responseText.append(settlementCache.getMissionVehicles().size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(3). Total # of Parked (NOT on Mission) : ");
+			responseText.append("(3). Total NOT on Mission : ");
 			responseText.append(settlementCache.getParkedVehicleNum());
 			responseText.append(System.lineSeparator());
 			responseText.append("(4). # of Cargo Rovers on Mission : ");
@@ -341,6 +353,25 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 		}
 
+		else if (text.equalsIgnoreCase("bot") || text.equalsIgnoreCase("bots") 
+				|| text.equalsIgnoreCase("robot") || text.equalsIgnoreCase("robot")) {
+			questionText = YOU_PROMPT + "What kind of bots do you have? ";
+			responseText.append(settlementCache + " : we have " 
+					+ settlementCache.getNumCurrentRobots() + " bots as follows :");
+			Collection<Robot> list = settlementCache.getRobots();
+			List<Robot> namelist = new ArrayList<>(list);
+			Collections.sort(namelist);
+			String s = "";
+			for (int i = 0; i < namelist.size(); i++) {
+				s = s + "(" + (i+1) + "). " + namelist.get(i).toString() + System.lineSeparator();
+			}
+			//		.replace("[", "").replace("]", "");//.replaceAll(", ", ",\n");
+			//System.out.println("list : " + list);
+			responseText.append(System.lineSeparator());
+			responseText.append(s);
+			responseText.append(System.lineSeparator());
+		}
+		
 		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
 
 //			help = true;
@@ -355,8 +386,8 @@ public class ChatUtils {
 
 		}
 
-		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") || text.equalsIgnoreCase("/?")
-				|| text.equalsIgnoreCase("?")) {
+		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
+				|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
 
 //			help = true;
 			questionText = REQUEST_HELP;
@@ -468,8 +499,8 @@ public class ChatUtils {
 			}
 		}
 
-		else if (num == 3 || text.equalsIgnoreCase("where you from") || text.toLowerCase().contains("what country")
-				|| text.toLowerCase().contains("what nationality") || text.toLowerCase().contains("nationality")
+		else if (num == 3 || text.equalsIgnoreCase("where you from")
+				|| text.toLowerCase().contains("nationality")
 				|| text.toLowerCase().contains("country")) {
 			questionText = YOU_PROMPT + "What country were you from ? ";
 
@@ -559,7 +590,8 @@ public class ChatUtils {
 
 		}
 
-		else if (num == 8 || text.toLowerCase().contains("mission") || text.toLowerCase().contains("trip")) {
+		else if (num == 8 || text.toLowerCase().contains("mission") || text.toLowerCase().contains("trip")
+				|| text.toLowerCase().contains("excursion")) {
 			// sys = name;
 			questionText = YOU_PROMPT + "Are you involved in a particular mission at this moment?";
 			Mission mission = null;
@@ -608,9 +640,8 @@ public class ChatUtils {
 
 		}
 
-		else if (num == 11 || text.equalsIgnoreCase("associated settlement") || text.equalsIgnoreCase("association")
-				|| text.equalsIgnoreCase("home") || text.equalsIgnoreCase("home town")
-				|| text.equalsIgnoreCase("hometown")) {
+		else if (num == 11 || text.equalsIgnoreCase("associated") || text.equalsIgnoreCase("association")
+				|| text.equalsIgnoreCase("home") || text.equalsIgnoreCase("home town")) {
 			questionText = YOU_PROMPT + "What is your associated settlement ?";
 			Settlement s = u.getAssociatedSettlement();
 			if (s != null) {
@@ -648,8 +679,9 @@ public class ChatUtils {
 				responseText.append("I'm not in a vehicle.");
 		}
 
-		else if (num == 13 || text.equalsIgnoreCase("vehicle inside") || text.equalsIgnoreCase("vehicle container")
-				|| text.contains("vehicle") && text.contains("container")) {
+		else if (num == 13 || text.equalsIgnoreCase("vehicle container")
+				|| (text.contains("vehicle") && text.contains("container"))
+				|| (text.contains("vehicle") && text.contains("inside"))) {
 			questionText = YOU_PROMPT + "Where is your vehicle at?";// 's container unit ?";
 			Vehicle v = personCache.getVehicle();
 			if (v != null) {
@@ -666,8 +698,9 @@ public class ChatUtils {
 				responseText.append("I'm not in a vehicle.");
 		}
 
-		else if (num == 14 || text.equalsIgnoreCase("vehicle outside") || text.equalsIgnoreCase("vehicle top container")
-				|| text.contains("vehicle") && text.contains("top") && text.contains("container")) {
+		else if (num == 14
+				|| (text.contains("vehicle") && text.contains("outside"))
+				|| (text.contains("vehicle") && text.contains("top") && text.contains("container"))) {
 			questionText = YOU_PROMPT + "What is your vehicle located?";// 's top container unit ?";
 			Vehicle v = u.getVehicle();
 			if (v != null) {
@@ -681,7 +714,8 @@ public class ChatUtils {
 				responseText.append("I'm not in a vehicle.");
 		}
 
-		else if (num == 15 || (text.contains("vehicle") && text.contains("park"))) {
+		else if (num == 15 || text.equalsIgnoreCase("garage")
+				|| (text.contains("vehicle") && text.contains("park"))) {
 			questionText = YOU_PROMPT + "What building does your vehicle park at ?";
 			Vehicle v = u.getVehicle();
 			if (v != null) {
@@ -701,7 +735,7 @@ public class ChatUtils {
 				responseText.append("I'm not on a vehicle.");
 		}
 
-		else if (num == 16 || text.contains("vehicle") && text.contains("settlement")) {
+		else if (num == 16 || (text.contains("vehicle") && text.contains("settlement"))) {
 			questionText = YOU_PROMPT + "What settlement is your vehicle located at ?";
 			Vehicle v = u.getVehicle();
 			if (v != null) {
@@ -715,8 +749,8 @@ public class ChatUtils {
 				responseText.append("I'm not on a vehicle.");
 		}
 
-		else if (num == 17 || text.equalsIgnoreCase("bed") || text.equalsIgnoreCase("quarter")
-				|| text.equalsIgnoreCase("quarters")) {
+		else if (num == 17 || text.equalsIgnoreCase("bed") 
+				|| text.contains("quarters")) {
 			questionText = YOU_PROMPT + "Where is your designated quarters/bed ? ";
 			Point2D bed = personCache.getBed();
 			if (bed == null) {
@@ -767,7 +801,7 @@ public class ChatUtils {
 		}
 
 		else if (num == 18 || text.contains("sleep hour") || text.contains("bed time")) {
-			questionText = YOU_PROMPT + "What is your preferred/usual bed time ?";
+			questionText = YOU_PROMPT + "What is your preferred or usual bed time ?";
 
 			int[] twos = ((Person) u).getCircadianClock().getPreferredSleepHours();
 			int small = Math.min(twos[0], twos[1]);
@@ -1218,7 +1252,7 @@ public class ChatUtils {
 		}
 
 		else if (proceed) { // && text.length() > 1) {
-			System.out.println("proceed is true: text is " + text);
+//			System.out.println("proceed is true: text is " + text);
 
 			List<Person> personList = new ArrayList<>();
 			List<Robot> robotList = new ArrayList<>();
