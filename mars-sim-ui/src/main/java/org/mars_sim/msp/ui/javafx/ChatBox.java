@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -51,7 +53,7 @@ public class ChatBox extends BorderPane {
 	protected final TextArea textArea;
 	
 	protected final JFXButton broadcastButton;
-	// protected final TextField textField = new TextField();
+
 	protected final AutoFillTextBox<String> autoFillTextBox;
 
 	protected final List<String> history = new ArrayList<>();
@@ -63,6 +65,8 @@ public class ChatBox extends BorderPane {
 
 	/**
 	 * Constructor for ChatBox
+	 * 
+	 * @param {{@link MainScene}
 	 */
 	public ChatBox(MainScene mainScene) {
 		this.mainScene = mainScene;
@@ -81,6 +85,14 @@ public class ChatBox extends BorderPane {
 		ObservableList<String> autoCompleteData = FXCollections.observableArrayList(CollectionUtils.createAutoCompleteData());
 
 		textArea = new TextArea();
+		textArea.textProperty().addListener(new ChangeListener<Object>() {
+		    @Override
+		    public void changed(ObservableValue<?> observable, Object oldValue,
+		            Object newValue) {
+		    	textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
+		        //use Double.MIN_VALUE to scroll to the top
+		    }
+		});
 		// textArea.setPadding(new Insets(2, 0, 2, 0));
 		// textArea.setPrefWidth(560);
 		textArea.setEditable(false);
@@ -139,6 +151,9 @@ public class ChatBox extends BorderPane {
 		setBottom(hbox);
 	}
 
+	/**
+	 * Checks if it is in GUI mode or console mode
+	 */
 	public void checkConnection() {
 		if (ChatUtils.getConnectionMode() == 0) {
 			textArea.appendText(System.lineSeparator() + "Cannot establish more than one line of connections. Please disactivate the console chat first." + System.lineSeparator());			
@@ -206,6 +221,11 @@ public class ChatBox extends BorderPane {
 	}
 
 	
+	/**
+	 * Close the chat box
+	 * 
+	 * @param disconnected
+	 */
 	public void closeChatBox(boolean disconnected) {
 
 		if (disconnected) {
@@ -250,6 +270,8 @@ public class ChatBox extends BorderPane {
 		// print response
 		textArea.appendText(responseText);
 		textArea.appendText(System.lineSeparator());
+		
+		//textArea.positionCaret(textArea.length());
 	}
 	
 	/*

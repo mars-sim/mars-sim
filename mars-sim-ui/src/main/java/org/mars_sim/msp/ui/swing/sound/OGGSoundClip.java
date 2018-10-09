@@ -49,7 +49,7 @@ public class OGGSoundClip {
 	private byte[] buffer = null;
 	private int bytes = 0;
 
-	private double balance;
+	private double balance = 0;
 	private double volume = .5f;
 
 	private boolean mute = false;
@@ -60,7 +60,7 @@ public class OGGSoundClip {
 
 	private String name;
 
-	private static FloatControl floatControl;
+	private FloatControl floatControl;
 	private SourceDataLine outputLine;
 
 	private SyncState oy;
@@ -112,32 +112,6 @@ public class OGGSoundClip {
 	public double getVol() {
 		return volume;
 	}
-
-	/**
-	 * Attempt to set the global gain for the playback. If the control is not
-	 * supported this method has no effect. 1.0 will set maximum gain, 0.0 minimum
-	 * gain
-	 *
-	 * @param gain The gain value
-	 * 
-	 *             public void setGain(float gain) { if (gain != -1) { if ((gain <
-	 *             0) || (gain > 1)) { throw new IllegalArgumentException("Volume
-	 *             must be between 0.0 and 1.0"); } }
-	 * 
-	 *             this.gain = gain;
-	 * 
-	 *             if (outputLine == null) { return; }
-	 * 
-	 *             try { FloatControl control = (FloatControl)
-	 *             outputLine.getControl(FloatControl.Type.MASTER_GAIN); if (gain ==
-	 *             -1) { control.setValue(0); } else { float max =
-	 *             control.getMaximum(); float min = control.getMinimum(); //
-	 *             negative values all seem to // be zero? float range = max - min;
-	 * 
-	 *             control.setValue(min + (range * gain)); } } catch
-	 *             (IllegalArgumentException e) { // gain not supported
-	 *             e.printStackTrace(); } }
-	 */
 
 	/**
 	 * Compute the gain value for the playback--based on the new value of volume in
@@ -233,21 +207,22 @@ public class OGGSoundClip {
 	 *
 	 * @param balance The balance value
 	 */
-	public void setBalance(double balance) {
-		this.balance = balance;
-
-		if (outputLine == null) {
-			return;
-		}
-
-		try {
-			FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.BALANCE);
-			control.setValue((float)balance);
-		} catch (IllegalArgumentException e) {
-			// balance not supported
-			disableSound();
-		}
-	}
+//	public void setBalance(double balance) {
+//		this.balance = balance;
+//
+//		if (outputLine == null) {
+//			return;
+//		}
+//
+//		try {
+//			FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.BALANCE);
+//			control.setValue((float)balance);
+//		} catch (IllegalArgumentException e) {
+//			//logger.log(Level.SEVERE, "Sound balance not supported. " + e);
+//			// balance not supported
+//			//disableSound();
+//		}
+//	}
 
 	/**
 	 * Check the state of the playback
@@ -272,9 +247,11 @@ public class OGGSoundClip {
 
 	/**
 	 * Pause the playback
-	 * 
-	 * public void pause() { paused = true; //oldGain = gain; determineGain(0); }
 	 */
+	 public void pause() { 
+		 paused = true; //oldGain = gain; determineGain(0); }
+	 }
+
 
 	/**
 	 * Check if the stream is paused
@@ -323,7 +300,7 @@ public class OGGSoundClip {
 	private void init(InputStream in) throws IOException {
 		if (in == null) {
 			// throw new IOException("Couldn't find input source");
-			logger.log(Level.SEVERE, "Couldn't find input source");
+			logger.log(Level.SEVERE, "Couldn't find the input source");
 			disableSound();
 		}
 		bitStream = new BufferedInputStream(in);
@@ -343,23 +320,24 @@ public class OGGSoundClip {
 		} catch (IOException e) {
 			// ignore if no mark
 			logger.log(Level.SEVERE, "IOException in OGGSoundClip's play()", e.getMessage());
-			disableSound();
+			//disableSound();
 		}
 
 		playerThread = new Thread() {
 			public void run() {
-				// try {
-				playStream(Thread.currentThread());
-				// } catch (InternalException e) {
-				// e.printStackTrace();
-				// logger.log(Level.SEVERE, "InternalException", e.getMessage());
-				// }
+				 try {
+					 playStream(Thread.currentThread());
+				 } catch (Exception e) {
+					 e.printStackTrace();
+					 logger.log(Level.SEVERE, "Can't play the bit stream in play()", e.getMessage());
+				 }
 
 				try {
+
 					bitStream.reset();
 				} catch (IOException e) {
 					// e.printStackTrace();
-					logger.log(Level.SEVERE, "Trouble resetting the bit stream for the audio file " + name,
+					logger.log(Level.SEVERE, "Trouble resetting the bit stream for the sound effect of " + name,
 							e.getMessage());
 //					disableSound();
 				}
@@ -378,6 +356,8 @@ public class OGGSoundClip {
 		try {
 			bitStream.reset();
 		} catch (IOException e) {
+			logger.log(Level.SEVERE, "IOException in OGGSoundClip's loop()", e.getMessage());
+			//disableSound();
 			// ignore if no mark
 		}
 
@@ -392,7 +372,7 @@ public class OGGSoundClip {
 					// + "Please check your audio source.", e.getMessage());
 					// e.printStackTrace();
 					playerThread = null;
-					logger.log(Level.SEVERE, "Can't play the bit stream. ", e.getMessage());
+					logger.log(Level.SEVERE, "Can't play the bit stream in loop(). ", e.getMessage());
 //					disableSound();
 				}
 
@@ -402,7 +382,7 @@ public class OGGSoundClip {
 					// e.printStackTrace();
 					logger.log(Level.SEVERE, "Trouble reseting the bit stream for the background track " + name,
 							e.getMessage());
-//					disableSound();
+//					//disableSound();
 				}
 				// }
 			};
@@ -417,7 +397,6 @@ public class OGGSoundClip {
 //		}
 //		else
 		AudioPlayer.disableSound();
-
 		MainMenu.disableSound();
 	}
 
@@ -490,7 +469,7 @@ public class OGGSoundClip {
 			this.rate = rate;
 			this.channels = channels;
 
-			setBalance(balance);
+//			setBalance(balance);
 			determineGain(volume);
 		} catch (Exception ee) {
 			logger.log(Level.SEVERE, "Sound system NOT supported. Run the sim without audio." + ee);
@@ -787,15 +766,6 @@ public class OGGSoundClip {
 	public String toString() {
 		return name;
 	}
-	/*
-	 * private class InternalException extends Exception {
-	 * 
-	 * private static final long serialVersionUID = 1L;
-	 * 
-	 * public InternalException(Exception e) { super(e); }
-	 * 
-	 * public InternalException(String msg) { super(msg); } }
-	 */
 
 	public void destroy() {
 		oy = null;
