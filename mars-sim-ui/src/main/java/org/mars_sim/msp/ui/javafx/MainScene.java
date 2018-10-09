@@ -349,6 +349,7 @@ public class MainScene implements ClockListener {
 
 	private AnchorPane stageAnchorPane;
 	private AnchorPane mapsAnchorPane;
+	private AnchorPane mapToolAnchorPane;
 	private SwingNode desktopNode;
 	private SwingNode mapNode;
 	private SwingNode minimapNode;
@@ -1091,6 +1092,8 @@ public class MainScene implements ClockListener {
 		// Create Snackbar
 		// createJFXSnackbar();
 		createJFXTabs();
+		createMapToolBox();
+		
 		// Create pause pane
 		pausePane = new StackPane();
 		pausePane.setStyle("-fx-background-color:rgba(0,0,0,0.5);");
@@ -1145,7 +1148,7 @@ public class MainScene implements ClockListener {
 		AnchorPane.setRightAnchor(marsTimeBox, sceneWidth.get() / 2);
 		AnchorPane.setRightAnchor(earthTimeBox, sceneWidth.get() / 2 - earthTimeBox.getPrefWidth() - 30);
 		AnchorPane.setRightAnchor(lastSaveLabel, 105.0 + spacing);
-
+		
 		createBillboard();
 
 		stageAnchorPane = new AnchorPane();
@@ -1159,7 +1162,8 @@ public class MainScene implements ClockListener {
 		if (gameScene != null) {
 			scene = gameScene.getRoot().getScene();
 			gameScene.addUINode(rootStackPane);
-		} else {
+		}
+		else {
 			scene = new Scene(rootStackPane, sceneWidth.get() + spacing, sceneHeight.get(), Color.TRANSPARENT);// , Color.BROWN);
 //			scene = sceneManager.getScene("s0");	
 //			stage.changeScene(rootStackPane);
@@ -1186,10 +1190,10 @@ public class MainScene implements ClockListener {
 		// anchorTabPane is within jfxTabPane
 		mapsAnchorPane.prefHeightProperty().bind(stageAnchorPane.heightProperty());//.subtract(30));
 		mapsAnchorPane.prefWidthProperty().bind(stageAnchorPane.widthProperty());
-
+		
 		// Set the location of the billboard node
-		dragNode.setLayoutX(sceneWidth.get() + spacing - 925 - 30);//320);
-		dragNode.setLayoutY(sceneHeight.get() - 80);
+		dragNode.setLayoutX(sceneWidth.get() + spacing - 925 - 60);//320);
+		dragNode.setLayoutY(sceneHeight.get() - 90); // 70 pixels from bottom
 		
 		// Setup key events using wellbehavedfx
 		setupKeyEvents();
@@ -1197,6 +1201,9 @@ public class MainScene implements ClockListener {
 		return scene;
 	}
 
+	/**
+	 * Creates the earth time bar
+	 */
 	public void createEarthTimeBar() {
 
 		if (masterClock == null)
@@ -1512,7 +1519,7 @@ public class MainScene implements ClockListener {
 		// Set up a settlement view zoom bar
 		musicSlider = new JFXSlider();
 		// soundSlider.setEffect(blend);
-		musicSlider.getStyleClass().add("jfx-slider; -fx-background-color:transparent;");
+		musicSlider.getStyleClass().add("jfx-slider");
 		// soundSlider.setEffect(blend);
 		musicSlider.setPrefWidth(220);
 		musicSlider.setPrefHeight(20);
@@ -1582,7 +1589,7 @@ public class MainScene implements ClockListener {
 		// Set up a settlement view zoom bar
 		soundEffectSlider = new JFXSlider();
 		// soundSlider.setEffect(blend);
-		soundEffectSlider.getStyleClass().add("jfx-slider; -fx-background-color:transparent;");
+		soundEffectSlider.getStyleClass().add("jfx-slider");
 		// soundSlider.setEffect(blend);
 		soundEffectSlider.setPrefWidth(220);
 		soundEffectSlider.setPrefHeight(20);
@@ -1929,12 +1936,28 @@ public class MainScene implements ClockListener {
 	public void createMapToolBox() {
 		// Add toolStackPane for map tool
 //		sMapToolPane = new StackPane();
+		
+		// Set up the map tool anchor pane
+		mapToolAnchorPane = new AnchorPane();
+		// mapsAnchorPane.setStyle("-fx-background-color: transparent; ");
+		//mapToolAnchorPane.setStyle("-fx-background-color: lightgrey; ");
+		
+		mapToolAnchorPane.setPrefHeight(600);
+		mapToolAnchorPane.setPrefWidth(200);
+		
+		sMapStackPane.getChildren().add(mapToolAnchorPane);
+		
+		AnchorPane.setTopAnchor(mapToolAnchorPane, 90.0);
+		AnchorPane.setRightAnchor(mapToolAnchorPane, 10.0);
+		
 		createMapButtons();
 		createMapCacheToggles();
 		createFXSettlementComboBox();
 		createFXZoomSlider();
 		createFXMapLabelBox();
 
+		anchorAllMapWidgets();
+		
 		// detect mouse wheel scrolling
 		sMapStackPane.setOnScroll(new EventHandler<ScrollEvent>() {
 			public void handle(ScrollEvent event) {
@@ -2027,13 +2050,6 @@ public class MainScene implements ClockListener {
 		rotateCWBtn = new JFXButton();
 		rotateCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.cw"))))); //$NON-NLS-1$
 		rotateCWBtn.setStyle("-fx-background-color: transparent; ");
-		// IconNode rotateCWIcon = new IconNode(FontAwesome.ar.ARROW_CIRCLE_O_RIGHT);
-		// rotateCWIcon.setIconSize(30);
-		// rotateCWBtn.setGraphic(rotateCWIcon);
-		// Tooltip t0 = new
-		// Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.clockwise"));
-		// //$NON-NLS-1$
-		// rotateCWBtn.setTooltip(t0);
 		setQuickToolTip(rotateCWBtn, Msg.getString("SettlementTransparentPanel.tooltip.clockwise"));
 		rotateCWBtn.setOnAction(e -> {
 			mapPanel.setRotation(mapPanel.getRotation() + ROTATION_CHANGE);
@@ -2044,13 +2060,6 @@ public class MainScene implements ClockListener {
 		rotateCCWBtn
 				.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.ccw"))))); //$NON-NLS-1$
 		rotateCCWBtn.setStyle("-fx-background-color: transparent; ");
-		// IconNode rotateCCWIcon = new IconNode(FontAwesome.ARROW_CIRCLE_O_LEFT);
-		// rotateCCWIcon.setIconSize(30);
-		// rotateCCWBtn.setGraphic(rotateCCWIcon);
-		// Tooltip t1 = new
-		// Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise"));
-		// //$NON-NLS-1$
-		// rotateCCWBtn.setTooltip(t1);
 		setQuickToolTip(rotateCCWBtn, Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise"));
 		rotateCCWBtn.setOnAction(e -> {
 			mapPanel.setRotation(mapPanel.getRotation() - ROTATION_CHANGE);
@@ -2061,13 +2070,6 @@ public class MainScene implements ClockListener {
 		recenterBtn.setGraphic(
 				new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.recenter"))))); //$NON-NLS-1$
 		recenterBtn.setStyle("-fx-background-color: transparent; ");
-		// IconNode recenterIcon = new IconNode(FontAwesome.ALIGN_CENTER);
-		// recenterIcon.setIconSize(30);
-		// recenterBtn.setGraphic(recenterIcon);
-		// Tooltip t2 = new
-		// Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.recenter"));
-		// //$NON-NLS-1$
-		// recenterBtn.setTooltip(t2);
 		setQuickToolTip(recenterBtn, Msg.getString("SettlementTransparentPanel.tooltip.recenter"));
 		recenterBtn.setOnAction(e -> {
 			mapPanel.reCenter();
@@ -2078,24 +2080,18 @@ public class MainScene implements ClockListener {
 	}
 
 	public void createFXZoomSlider() {
-		// logger.info("MainScene's createFXZoomSlider() is on " +
-		// Thread.currentThread().getName() + " Thread");
-
 		// Set up a settlement view zoom bar
 		zoomSlider = new JFXSlider();
 		zoomSlider.getStyleClass().add("jfx-slider");
-		// zoom.setMinHeight(100);
-		// zoom.setMaxHeight(200);
-		zoomSlider.prefHeightProperty().bind(sMapStackPane.heightProperty().multiply(.3d));
-		zoomSlider.setMin(1);
+		zoomSlider.setMin(0);
 		zoomSlider.setMax(35);
 		zoomSlider.setValue(DEFAULT_ZOOM);
-		zoomSlider.setMajorTickUnit(34);
-		zoomSlider.setMinorTickCount(1);
+		zoomSlider.setMajorTickUnit(10);
+		zoomSlider.setMinorTickCount(5);
 		zoomSlider.setShowTickLabels(true);
 		zoomSlider.setShowTickMarks(true);
 		zoomSlider.setSnapToTicks(false);
-		zoomSlider.setBlockIncrement(.5);
+		zoomSlider.setBlockIncrement(5);
 		zoomSlider.setOrientation(Orientation.VERTICAL);
 		zoomSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
 
@@ -2110,11 +2106,11 @@ public class MainScene implements ClockListener {
 					double newScale = 0;
 					if (sliderValue > 0) {
 						newScale = sliderValue;// * SettlementTransparentPanel.ZOOM_CHANGE;
+						mapPanel.setScale(newScale);
 					}
-					// else if (sliderValue < 0) {
-					// newScale = 1 + sliderValue;//* SettlementTransparentPanel.ZOOM_CHANGE));
-					// }
-					mapPanel.setScale(newScale);
+					else {
+						zoomSlider.setValue(1);
+					}
 				}
 			}
 		});
@@ -2122,12 +2118,8 @@ public class MainScene implements ClockListener {
 
 	public void createFXSettlementComboBox() {
 		sBox = new JFXComboBox<>();
-		// sBox.setAlignment(Pos.CENTER_RIGHT);
-		// JFXListView<Settlement> list = new JFXListView<Settlement>();
 		sBox.getStyleClass().add("jfx-combo-box");
 		setQuickToolTip(sBox, Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
-		// ObservableList<Settlement> names = sim.getUnitManager().getSettlementOList();
-		// sBox.itemsProperty().setValue(sim.getUnitManager().getSettlementOList());
 		sBox.itemsProperty().setValue(FXCollections.observableArrayList(sim.getUnitManager().getSettlements()));
 		sBox.setPromptText("Select a settlement to view");
 		sBox.getSelectionModel().selectFirst();
@@ -2155,7 +2147,6 @@ public class MainScene implements ClockListener {
 		mapLabelBox.setSpacing(5);
 		mapLabelBox.setMaxSize(180, 150);
 		mapLabelBox.setPrefSize(180, 150);
-		// mapLabelBox.setAlignment(Pos.CENTER_RIGHT);
 
 		JFXCheckBox box0 = new JFXCheckBox(Msg.getString("SettlementWindow.menu.daylightTracking"));
 		JFXCheckBox box1 = new JFXCheckBox(Msg.getString("SettlementWindow.menu.buildings"));
@@ -2299,10 +2290,11 @@ public class MainScene implements ClockListener {
 		mainTab.setText("Main");
 		mainTab.setContent(mainStackPane);
 
-		// Set up the "Map" Tab
+		// Set up the map anchor pane
 		mapsAnchorPane = new AnchorPane();
 		// mapsAnchorPane.setStyle("-fx-background-color: transparent; ");
 		mapsAnchorPane.setStyle("-fx-background-color: black; ");
+			
 		
 		Tab mapTab = new Tab();
 		mapTab.setText("Map");
@@ -2322,13 +2314,11 @@ public class MainScene implements ClockListener {
 	
 		mapNode = new SwingNode();
 		mapNode.setStyle("-fx-background-color: transparent; ");	
-		sMapStackPane = new StackPane(mapNode);
-		
 		mapNode.setContent(settlementWindow);
+		
+		sMapStackPane = new StackPane(mapNode);
 		sMapStackPane.setStyle("-fx-background-color: transparent; ");
 //		setGlow(mapNode);
-		
-		createMapToolBox();
 
 		// Set up the "Help" Tab
 		BrowserJFX helpBrowser = desktop.getBrowserJFX();
@@ -2379,25 +2369,30 @@ public class MainScene implements ClockListener {
 
 	}
 
-	public void anchorMapTool() {
+	/**
+	 * Anchors all the map widgets
+	 */
+	public void anchorAllMapWidgets() {
 
 		AnchorPane.setRightAnchor(zoomSlider, 65.0);
-		AnchorPane.setTopAnchor(zoomSlider, 350.0);
+		AnchorPane.setTopAnchor(zoomSlider, 270.0);//350.0);
 
 		AnchorPane.setRightAnchor(rotateCWBtn, 110.0);
-		AnchorPane.setTopAnchor(rotateCWBtn, 300.0);
+		AnchorPane.setTopAnchor(rotateCWBtn, 220.0);//300.0);
 
 		AnchorPane.setRightAnchor(rotateCCWBtn, 30.0);
-		AnchorPane.setTopAnchor(rotateCCWBtn, 300.0);
+		AnchorPane.setTopAnchor(rotateCCWBtn, 220.0);//300.0);
 
 		AnchorPane.setRightAnchor(recenterBtn, 70.0);
-		AnchorPane.setTopAnchor(recenterBtn, 300.0);
-
-		AnchorPane.setRightAnchor(settlementBox, 15.0);
-		AnchorPane.setTopAnchor(settlementBox, 100.0);
+		AnchorPane.setTopAnchor(recenterBtn, 220.0);//300.0);
 
 		AnchorPane.setRightAnchor(mapLabelBox, -10.0);
-		AnchorPane.setTopAnchor(mapLabelBox, 140.0);
+		AnchorPane.setTopAnchor(mapLabelBox, 60.0);//140.0);
+		
+		AnchorPane.setRightAnchor(settlementBox, 15.0);
+		AnchorPane.setTopAnchor(settlementBox, 20.0);//100.0);
+
+		mapToolAnchorPane.getChildren().addAll(settlementBox, mapLabelBox, recenterBtn, rotateCCWBtn, rotateCWBtn, zoomSlider);
 
 	}
 
@@ -2416,6 +2411,9 @@ public class MainScene implements ClockListener {
 
 	}
 
+	/**
+	 * Opens the Minimap / Mars Navigator
+	 */
 	public void openMinimap() {
 		desktop.openToolWindow(NavigatorWindow.NAME);
 
@@ -2433,8 +2431,11 @@ public class MainScene implements ClockListener {
 			mapsAnchorPane.getChildren().addAll(minimapGroup);
 
 		navWin.getGlobeDisplay().drawSphere();// updateDisplay();
+		navWin.showSurfaceMap();
+		
 		navWin.toFront();
-		navWin.requestFocus();
+		navWin.requestFocus();	
+
 		minimapGroup.toFront();
 		minimapToggle.setSelected(true);
 		minimapToggle.setText("Minimap On");
@@ -2442,6 +2443,9 @@ public class MainScene implements ClockListener {
 
 	}
 
+	/**
+	 * Opens the settlement map
+	 */
 	public void openSettlementMap() {
 
 		sMapStackPane.prefWidthProperty().unbind();
@@ -2452,44 +2456,30 @@ public class MainScene implements ClockListener {
 		AnchorPane.setRightAnchor(sMapStackPane, 0.0);
 		AnchorPane.setTopAnchor(sMapStackPane, 0.0);
 
-		anchorMapTool();
-
-		boolean hasMap = false, hasZoom = false, hasButtons = false, hasSettlements = false, hasMapLabel = false;
-
 		ObservableList<Node> nodes = mapsAnchorPane.getChildrenUnmodifiable();
-
+			
+		boolean hasTool = false;
+		boolean hasMap = false;
+		
 		for (Node node : nodes) {
 
-			if (node == settlementBox) {
-				hasSettlements = true;
+			if (node == mapToolAnchorPane) {
+				hasTool = true;
 			} else if (node == sMapStackPane) {
 				hasMap = true;
-			} else if (node == zoomSlider) {
-				hasZoom = true;
-			} else if (node == recenterBtn || node == rotateCWBtn || node == rotateCCWBtn) {
-				hasButtons = true;
-			} else if (node == mapLabelBox)
-				hasMapLabel = true;
+			}
 
 		}
+		
+		if (!hasTool) {
+			mapsAnchorPane.getChildren().addAll(mapToolAnchorPane);
+		}
+		if (!hasMap) {
+			mapsAnchorPane.getChildren().addAll(sMapStackPane);	
+		}
+		
+		mapToolAnchorPane.toFront();
 
-		if (!hasMap)
-			mapsAnchorPane.getChildren().addAll(sMapStackPane);
-
-		if (!hasSettlements)
-			mapsAnchorPane.getChildren().addAll(settlementBox);
-
-		if (!hasMapLabel)
-			mapsAnchorPane.getChildren().addAll(mapLabelBox);
-
-		if (!hasZoom)
-			mapsAnchorPane.getChildren().addAll(zoomSlider);
-
-		if (!hasButtons)
-			mapsAnchorPane.getChildren().addAll(rotateCWBtn, rotateCCWBtn, recenterBtn);
-
-		mapLabelBox.toFront();
-		settlementBox.toFront();
 		mapToggle.toFront();
 		cacheToggle.toFront();
 		minimapToggle.toFront();
@@ -2520,8 +2510,9 @@ public class MainScene implements ClockListener {
 	public void closeSettlementMap() {
 		desktop.closeToolWindow(SettlementWindow.NAME);
 		Platform.runLater(() -> {
-			mapsAnchorPane.getChildren().removeAll(sMapStackPane, settlementBox, mapLabelBox, zoomSlider, rotateCWBtn,
-					rotateCCWBtn, recenterBtn);
+			mapsAnchorPane.getChildren().remove(sMapStackPane); // mapToolAnchorPane
+			//, settlementBox, mapLabelBox, zoomSlider, rotateCWBtn,
+			//		rotateCCWBtn, recenterBtn);
 			mapToggle.setSelected(false);
 			mapToggle.setText("Settlement Map Off");
 			tabPane.requestFocus();
@@ -2534,8 +2525,8 @@ public class MainScene implements ClockListener {
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.closeToolWindow(NavigatorWindow.NAME);
 			Platform.runLater(() -> {
-				mapsAnchorPane.getChildren().removeAll(minimapGroup, sMapStackPane, zoomSlider, rotateCWBtn,
-						rotateCCWBtn, recenterBtn, settlementBox, mapLabelBox);
+				mapsAnchorPane.getChildren().removeAll(sMapStackPane, minimapGroup);// );//(mapToolAnchorPane,, zoomSlider, rotateCWBtn,
+				//		rotateCCWBtn, recenterBtn, settlementBox, mapLabelBox);
 				minimapToggle.setSelected(false);
 				minimapToggle.setText("Minimap Off");
 				mapToggle.setSelected(false);
@@ -2756,9 +2747,6 @@ public class MainScene implements ClockListener {
 		setStylesheet(soundVBox, cssFile);
 
 		// setStylesheet(timeSlider, cssFile);
-		setStylesheet(zoomSlider, cssFile);
-		setStylesheet(musicSlider, cssFile);
-		setStylesheet(soundEffectSlider, cssFile);
 
 		datePickerFX.getStylesheets().clear();
 		datePickerFX.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
@@ -2801,6 +2789,10 @@ public class MainScene implements ClockListener {
 			tabPane.getStyleClass().add("jfx-tab-pane");
 			toolbar.getStylesheets().add(getClass().getResource(JFX_ORANGE_CSS).toExternalForm());
 			toolbar.getStyleClass().add("jfx-tool-bar");
+			
+			setStylesheet(zoomSlider, JFX_ORANGE_CSS);
+			setStylesheet(musicSlider, JFX_ORANGE_CSS);
+			setStylesheet(soundEffectSlider, JFX_ORANGE_CSS);
 			setGlow(calendarPane);
 		}
 
@@ -2821,6 +2813,11 @@ public class MainScene implements ClockListener {
 			tabPane.getStyleClass().add("jfx-tab-pane");
 			toolbar.getStylesheets().add(getClass().getResource(JFX_BLUE_CSS).toExternalForm());
 			toolbar.getStyleClass().add("jfx-tool-bar");
+			
+			setStylesheet(zoomSlider, JFX_BLUE_CSS);
+			setStylesheet(musicSlider, JFX_BLUE_CSS);
+			setStylesheet(soundEffectSlider, JFX_BLUE_CSS);
+			
 			borderGlow.setColor(Color.BLUE);
 			setGlow(calendarPane);
 		}
@@ -3305,6 +3302,9 @@ public class MainScene implements ClockListener {
 		}
 	}
 	
+	/**
+	 * Opens the pause popup
+	 */
 	public void startPausePopup() {
 		if (gameScene == null) {
 			// if (messagePopup.numPopups() < 1) {
@@ -3331,6 +3331,9 @@ public class MainScene implements ClockListener {
 		}
 	}
 
+	/**
+	 * Closes the pause popup
+	 */
 	public void stopPausePopup() {
 		if (gameScene == null) {
 			Platform.runLater(() -> {

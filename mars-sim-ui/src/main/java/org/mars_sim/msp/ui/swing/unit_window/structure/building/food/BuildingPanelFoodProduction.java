@@ -27,12 +27,9 @@ import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
@@ -47,13 +44,17 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+
 /**
  * A building panel displaying the foodProduction building function.
  */
-public class BuildingPanelFoodProduction
-extends BuildingFunctionPanel {
+public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 
-	private static int processStringWidth = 40;
+	private static int processStringWidth = 60;
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(BuildingPanelFoodProduction.class.getName());
@@ -61,22 +62,23 @@ extends BuildingFunctionPanel {
 	/** The foodProduction building. */
 	private FoodProduction foodFactory;
 	/** Panel for displaying process panels. */
-	private JPanel processListPane;
-	private JScrollPane scrollPanel;
+	private WebPanel processListPane;
+	private WebScrollPane scrollPanel;
 	/** List of foodProduction processes in building. */
 	private List<FoodProductionProcess> processCache;
 	/** Process selector. */
-	private JComboBoxMW processComboBox;
+	private JComboBoxMW<FoodProductionProcessInfo> processComboBox;
 	/** List of available processes. */
 	private Vector<FoodProductionProcessInfo> processComboBoxCache;
 
 	/** Process selection button. */
-	private JButton newProcessButton;
+	private WebButton newProcessButton;
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param foodFactory the manufacturing building function.
-	 * @param desktop the main desktop.
+	 * @param desktop     the main desktop.
 	 */
 	public BuildingPanelFoodProduction(FoodProduction foodFactory, MainDesktopPane desktop) {
 		// Use BuildingFunctionPanel constructor.
@@ -85,100 +87,97 @@ extends BuildingFunctionPanel {
 		// Initialize data model.
 		this.foodFactory = foodFactory;
 
-        // Set panel layout
-        setLayout(new BorderLayout());
+		// Set panel layout
+		setLayout(new BorderLayout());
 
-        // Prepare label panel
-        JPanel labelPanel = new JPanel();
-        labelPanel.setLayout(new GridLayout(3, 1, 0, 0));
+		// Prepare label panel
+		WebPanel labelPanel = new WebPanel();
+		labelPanel.setLayout(new GridLayout(3, 1, 0, 0));
 
-        add(labelPanel, BorderLayout.NORTH);
+		add(labelPanel, BorderLayout.NORTH);
 
-        // Prepare manufacturing label
-        JLabel foodProductionLabel = new JLabel("Food Production", JLabel.CENTER);
-        foodProductionLabel.setFont(new Font("Serif", Font.BOLD, 16));
-        labelPanel.add(foodProductionLabel);
+		// Prepare manufacturing label
+		WebLabel foodProductionLabel = new WebLabel("Food Production", WebLabel.CENTER);
+		foodProductionLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		labelPanel.add(foodProductionLabel);
 
-        // Prepare tech level label
-        JLabel techLabel = new JLabel("Tech Level: " + foodFactory.getTechLevel(), JLabel.CENTER);
-        labelPanel.add(techLabel);
+		// Prepare tech level label
+		WebLabel techLabel = new WebLabel("Tech Level: " + foodFactory.getTechLevel(), WebLabel.CENTER);
+		labelPanel.add(techLabel);
 
-        // Prepare processCapacity label
-        JLabel processCapacityLabel = new JLabel("Process Capacity: " + foodFactory.getConcurrentProcesses(), JLabel.CENTER);
-        labelPanel.add(processCapacityLabel);
+		// Prepare processCapacity label
+		WebLabel processCapacityLabel = new WebLabel("Process Capacity: " + foodFactory.getConcurrentProcesses(),
+				WebLabel.CENTER);
+		labelPanel.add(processCapacityLabel);
 
-        // Create scroll pane for food production processes
-        scrollPanel = new JScrollPane();
-        scrollPanel.setPreferredSize(new Dimension(170, 90));
-        add(scrollPanel, BorderLayout.CENTER);
-        scrollPanel.setOpaque(false);
-        scrollPanel.setBackground(new Color(0,0,0,128));
-        scrollPanel.getViewport().setOpaque(false);
-        scrollPanel.getViewport().setBackground(new Color(0, 0, 0, 0));
-        scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
+		// Create scroll pane for food production processes
+		scrollPanel = new WebScrollPane();
+		scrollPanel.setPreferredSize(new Dimension(170, 90));
+		add(scrollPanel, BorderLayout.CENTER);
+		scrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
+		// Create process list main panel
+		WebPanel processListMainPane = new WebPanel(new BorderLayout(0, 0));
+		scrollPanel.setViewportView(processListMainPane);
 
-        // Create process list main panel
-        JPanel processListMainPane = new JPanel(new BorderLayout(0, 0));
-        scrollPanel.setViewportView(processListMainPane);
+		// Create process list panel
+		processListPane = new WebPanel(new FlowLayout(10, 10 ,10));
+		processListPane.setLayout(new BoxLayout(processListPane, BoxLayout.Y_AXIS));
+		processListMainPane.add(processListPane, BorderLayout.NORTH);
 
-        // Create process list panel
-        processListPane = new JPanel();
-        processListPane.setLayout(new BoxLayout(processListPane, BoxLayout.Y_AXIS));
-        processListMainPane.add(processListPane, BorderLayout.NORTH);
+		List<FoodProductionProcess> list = foodFactory.getProcesses();
+		// Collections.sort(list);
 
-        List<FoodProductionProcess> list = foodFactory.getProcesses();
-		//Collections.sort(list);
+		// Create process panels
+		processCache = new ArrayList<FoodProductionProcess>(list);
+		Iterator<FoodProductionProcess> i = processCache.iterator();
+		while (i.hasNext())
+			processListPane.add(new FoodProductionPanel(i.next(), false, processStringWidth));
 
-        // Create process panels
-        processCache = new ArrayList<FoodProductionProcess>(list);
-        Iterator<FoodProductionProcess> i = processCache.iterator();
-        while (i.hasNext()) processListPane.add(new FoodProductionPanel(i.next(), false, processStringWidth));
+		// Create interaction panel.
+		WebPanel interactionPanel = new WebPanel(new GridLayout(2, 1, 10, 10));
+		add(interactionPanel, BorderLayout.SOUTH);
 
-        // Create interaction panel.
-        JPanel interactionPanel = new JPanel(new GridLayout(2, 1, 0, 0));
-        add(interactionPanel, BorderLayout.SOUTH);
- 
-        // Create new foodProduction process selection.
-        processComboBoxCache = getAvailableProcesses();
-        //2015-10-15 Enabled Collections.sorts by implementing Comparable<>
-        Collections.sort(processComboBoxCache);
-        processComboBox = new JComboBoxMW(processComboBoxCache);
+		// Create new foodProduction process selection.
+		processComboBoxCache = getAvailableProcesses();
+		processComboBox = new JComboBoxMW<FoodProductionProcessInfo>(processComboBoxCache);
 
-        processComboBox.setRenderer(new FoodProductionSelectionListCellRenderer());
-        processComboBox.setToolTipText("Select An Available Food Production Process");
-        interactionPanel.add(processComboBox);
+		processComboBox.setRenderer(new FoodProductionSelectionListCellRenderer());
+		processComboBox.setToolTipText("Select An Available Food Production Process");
+		interactionPanel.add(processComboBox);
 
-        // Create new process button.
-        JPanel btnPanel = new JPanel(new FlowLayout()); 
-        newProcessButton = new JButton("Create New Process");
-        btnPanel.add(newProcessButton);
+		if (processComboBoxCache.size() > 0) 
+			processComboBox.setSelectedIndex(0);
 
-        newProcessButton.setEnabled(processComboBox.getItemCount() > 0);
-        newProcessButton.setToolTipText("Create a New Food Production Process or Salvage a Process");
-        newProcessButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent event) {
-        		try {
-        		    Object selectedItem = processComboBox.getSelectedItem();
-        		    if (selectedItem != null) {
-        		        if (selectedItem instanceof FoodProductionProcessInfo) {
-        		            FoodProductionProcessInfo selectedProcess = (FoodProductionProcessInfo) selectedItem;
-        		            if (FoodProductionUtil.canProcessBeStarted(selectedProcess, getFoodFactory())) {
-                                getFoodFactory().addProcess(new FoodProductionProcess(selectedProcess, getFoodFactory()));
-                                update();
-                            }
-        		        }
+		// Create new process button.
+		WebPanel btnPanel = new WebPanel(new FlowLayout());
+		newProcessButton = new WebButton("Create New Process");
+		btnPanel.add(newProcessButton);
 
-        		    }
-        		}
-        		catch (Exception e) {
-        			logger.log(Level.SEVERE, "new process button", e);
-        		}
-        	}
-        });
-        interactionPanel.add(btnPanel);
+		newProcessButton.setEnabled(processComboBox.getItemCount() > 0);
+		newProcessButton.setToolTipText("Create a New Food Production Process or Salvage a Process");
+		newProcessButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				try {
+					Object selectedItem = processComboBox.getSelectedItem();
+					if (selectedItem != null) {
+						if (selectedItem instanceof FoodProductionProcessInfo) {
+							FoodProductionProcessInfo selectedProcess = (FoodProductionProcessInfo) selectedItem;
+							if (FoodProductionUtil.canProcessBeStarted(selectedProcess, getFoodFactory())) {
+								getFoodFactory()
+										.addProcess(new FoodProductionProcess(selectedProcess, getFoodFactory()));
+								update();
+							}
+						}
+
+					}
+				} catch (Exception e) {
+					logger.log(Level.SEVERE, "new process button", e);
+				}
+			}
+		});
+		interactionPanel.add(btnPanel);
 	}
-
 
 	@Override
 	public void update() {
@@ -201,14 +200,14 @@ extends BuildingFunctionPanel {
 				FoodProductionProcess process = j.next();
 				if (!processes.contains(process)) {
 					FoodProductionPanel panel = getFoodProductionPanel(process);
-					if (panel != null) processListPane.remove(panel);
+					if (panel != null)
+						processListPane.remove(panel);
 				}
 			}
 
 			// Update processCache
 			processCache.clear();
 			processCache.addAll(processes);
-
 
 			scrollPanel.validate();
 		}
@@ -217,7 +216,8 @@ extends BuildingFunctionPanel {
 		Iterator<FoodProductionProcess> i = processes.iterator();
 		while (i.hasNext()) {
 			FoodProductionPanel panel = getFoodProductionPanel(i.next());
-			if (panel != null) panel.update();
+			if (panel != null)
+				panel.update();
 
 		}
 		// Update process selection list.
@@ -226,21 +226,20 @@ extends BuildingFunctionPanel {
 		if (!newProcesses.equals(processComboBoxCache)) {
 
 			processComboBoxCache = newProcesses;
-			//salvageSelectionCache = newSalvages;
+
 			Object currentSelection = processComboBox.getSelectedItem();
+
 			processComboBox.removeAllItems();
 
-			Collections.sort(processComboBoxCache);
-			
 			Iterator<FoodProductionProcessInfo> k = processComboBoxCache.iterator();
-			
-			while (k.hasNext()) 
-				processComboBox.addItem(k.next());
-			
+
+			while (k.hasNext()) processComboBox.addItem(k.next());
+
 			if (currentSelection != null) {
 				if (processComboBoxCache.contains(currentSelection))
 					processComboBox.setSelectedItem(currentSelection);
-			}
+			} else if (processComboBoxCache.size() > 0)
+				processComboBox.setSelectedIndex(0);
 		}
 
 		// Update new process button.
@@ -249,6 +248,7 @@ extends BuildingFunctionPanel {
 
 	/**
 	 * Gets the panel for a foodProduction process.
+	 * 
 	 * @param process the foodProduction process.
 	 * @return foodProduction panel or null if none.
 	 */
@@ -259,7 +259,8 @@ extends BuildingFunctionPanel {
 			Component component = processListPane.getComponent(x);
 			if (component instanceof FoodProductionPanel) {
 				FoodProductionPanel panel = (FoodProductionPanel) component;
-				if (panel.getFoodProductionProcess().equals(process)) result = panel;
+				if (panel.getFoodProductionProcess().equals(process))
+					result = panel;
 
 			}
 		}
@@ -269,6 +270,7 @@ extends BuildingFunctionPanel {
 
 	/**
 	 * Gets all manufacturing processes available at the foodFactory.
+	 * 
 	 * @return vector of processes.
 	 */
 	private Vector<FoodProductionProcessInfo> getAvailableProcesses() {
@@ -276,37 +278,40 @@ extends BuildingFunctionPanel {
 
 		if (foodFactory.getProcesses().size() < foodFactory.getConcurrentProcesses()) {
 
-		    // Determine highest materials science skill level at settlement.
-		    Settlement settlement = foodFactory.getBuilding().getBuildingManager().getSettlement();
-		    int highestSkillLevel = 0;
-            Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-            while (i.hasNext()) {
-                Person tempPerson = i.next();
-                SkillManager skillManager = tempPerson.getMind().getSkillManager();
-                int skill = skillManager.getSkillLevel(SkillType.COOKING);
-                if (skill > highestSkillLevel) {
-                    highestSkillLevel = skill;
-                }
-            }
+			// Determine highest materials science skill level at settlement.
+			Settlement settlement = foodFactory.getBuilding().getBuildingManager().getSettlement();
+			int highestSkillLevel = 0;
+			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+			while (i.hasNext()) {
+				Person tempPerson = i.next();
+				SkillManager skillManager = tempPerson.getMind().getSkillManager();
+				int skill = skillManager.getSkillLevel(SkillType.COOKING);
+				if (skill > highestSkillLevel) {
+					highestSkillLevel = skill;
+				}
+			}
 
 			try {
-				Iterator<FoodProductionProcessInfo> j = Collections.unmodifiableList(
-				        FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
-				        foodFactory.getTechLevel(), highestSkillLevel)).iterator();
+				Iterator<FoodProductionProcessInfo> j = Collections.unmodifiableList(FoodProductionUtil
+						.getFoodProductionProcessesForTechSkillLevel(foodFactory.getTechLevel(), highestSkillLevel))
+						.iterator();
 				while (j.hasNext()) {
 					FoodProductionProcessInfo process = j.next();
 					if (FoodProductionUtil.canProcessBeStarted(process, foodFactory))
 						result.add(process);
 				}
+			} catch (Exception e) {
 			}
-			catch (Exception e) {}
 		}
 
+		// Enable Collections.sorts by implementing Comparable<>
+		Collections.sort(result);
 		return result;
 	}
 
 	/**
 	 * Gets the foodFactory for this panel.
+	 * 
 	 * @return foodFactory
 	 */
 	private FoodProduction getFoodFactory() {
@@ -319,19 +324,19 @@ extends BuildingFunctionPanel {
 	private static class FoodProductionSelectionListCellRenderer extends DefaultListCellRenderer {
 
 		@Override
-		public Component getListCellRendererComponent(JList<?> list, Object value, int index,
-				boolean isSelected, boolean cellHasFocus) {
-			Component result = super.getListCellRendererComponent(list, value, index, isSelected,
-					cellHasFocus);
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
+			Component result = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			if (value instanceof FoodProductionProcessInfo) {
-			    FoodProductionProcessInfo info = (FoodProductionProcessInfo) value;
-			    if (info != null) {
-			    	// 2014-11-21 Capitalized processName
-			        String processName = Conversion.capitalize(info.getName());
-			        if (processName.length() > processStringWidth) processName = processName.substring(0, processStringWidth) + "...";
-			        ((JLabel) result).setText(processName);
-			        ((JComponent) result).setToolTipText(FoodProductionPanel.getToolTipString(info, null));
-			    }
+				FoodProductionProcessInfo info = (FoodProductionProcessInfo) value;
+				if (info != null) {
+					// Capitalize processName
+					String processName = Conversion.capitalize(info.getName());
+					if (processName.length() > processStringWidth)
+						processName = processName.substring(0, processStringWidth) + "...";
+					((JLabel) result).setText(processName);
+					((JComponent) result).setToolTipText(FoodProductionPanel.getToolTipString(info, null));
+				}
 			}
 
 			return result;

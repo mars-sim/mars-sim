@@ -42,3 +42,50 @@
     -fx-stroke: #3291D2;
     -fx-stroke-width: 1pt;
 }
+
+/*******************************************************************************
+ *                                                                             *
+ * JFX Slider                                                                  *
+ *                                                                             *
+ ******************************************************************************/
+
+.svg-slider .thumb {
+    -fx-stroke: black;
+    -fx-fill: black;
+}
+
+/*******************************************************
+*                           						   *
+* For the main demo sliders 						   *
+*                          							   *
+*******************************************************/
+
+.jfx-slider{
+    -jfx-default-thumb: #03a9f4;
+    -jfx-default-track: #03a9f4;
+}
+
+.jfx-slider {
+    -jfx-indicator-position: right;
+}
+
+.jfx-slider > .thumb {
+    -fx-background-color: #03a9f4;
+    -fx-stroke: black;
+    -fx-fill: black;
+}
+
+.jfx-slider .track {
+    -fx-background-color: #7596ad;
+    -fx-pref-height: 5px;
+    -fx-pref-width: 5px;
+}
+
+.jfx-slider .animated-thumb{
+    -fx-background-color: blue;
+}
+
+.jfx-slider .sliderValue {
+    -fx-stroke: #7ebcea;
+    -fx-font-size: 12.0;
+}

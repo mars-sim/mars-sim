@@ -256,11 +256,9 @@
 	-fx-fill : black;
 }
 
-/*
 .jfx-slider: disabled {
 	-fx-opacity: 0.4;
 }
- */
 
 .jfx-slider > .thumb {
 	-fx-background-color: #03a9f4;

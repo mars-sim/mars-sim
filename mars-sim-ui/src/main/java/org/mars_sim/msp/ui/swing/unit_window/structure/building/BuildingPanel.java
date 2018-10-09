@@ -75,7 +75,6 @@ public class BuildingPanel extends WebPanel {
 
 	private String newName;
 
-	// private boolean isTranslucent = false;
 	/** The function panels. */
 	private List<BuildingFunctionPanel> functionPanels;
 
@@ -172,13 +171,7 @@ public class BuildingPanel extends WebPanel {
 		scrollPanel.setPreferredSize(new Dimension(PopUpUnitMenu.WIDTH - 80, PopUpUnitMenu.HEIGHT - 70));
 		scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
 		add(scrollPanel, BorderLayout.CENTER);
-		/*
-		 * if (isTranslucent) { scrollPanel.setOpaque(false);
-		 * //scrollPanel.getViewport().setOpaque(false);
-		 * scrollPanel.setBorder(BorderFactory.createLineBorder(Color.orange));
-		 * //scrollPanel.setViewportBorder(BorderFactory.createLineBorder(Color.orange))
-		 * ; scrollPanel.setBackground(new Color(0,0,0,128)); }
-		 */
+
 		// Add SVG Image loading for the building
 		Dimension expectedDimension = new Dimension(100, 100);
 		// GraphicsNode node = SVGMapUtil.getSVGGraphicsNode("building", buildingType);
@@ -194,8 +187,6 @@ public class BuildingPanel extends WebPanel {
 
 		WebPanel borderPanel = new WebPanel();
 		// borderPanel.setBorder(new MarsPanelBorder());//
-		// BorderFactory.createLineBorder(Color.black, 2, true));//
-		// borderPanel.setBackground(new Color(255,255,255,255));
 		borderPanel.add(svgPanel);
 
 		Box box = new Box(BoxLayout.Y_AXIS);
@@ -204,9 +195,6 @@ public class BuildingPanel extends WebPanel {
 		// box.setBorder(BorderFactory.createLineBorder(Color.black, 2, true));
 		box.add(borderPanel);
 		box.add(Box.createVerticalGlue());
-		// box.setOpaque(false);
-		// box.setBackground(new Color(0,0,0,128)); //
-		// box.setBackground(new Color(255,255,255,255));
 		functionListPanel.add(box);
 
 		// Prepare inhabitable panel if building has lifeSupport.
@@ -266,7 +254,7 @@ public class BuildingPanel extends WebPanel {
 //			catch (BuildingException e) {}
 		}
 
-		// 2014-11-11 Added preparing dessert function
+		// Add preparing dessert function
 		// Prepare dessert panel if building has preparing dessert function.
 		if (building.hasFunction(FunctionType.PREPARING_DESSERT)) {
 //			try {
@@ -345,7 +333,7 @@ public class BuildingPanel extends WebPanel {
 //            catch (BuildingException e) {}
 		}
 
-		// 2014-10-27 mkung: Modified Heating Panel
+		//  Modify Heating Panel
 		if (building.hasFunction(FunctionType.THERMAL_GENERATION)) {
 //          try {
 			ThermalGeneration heat = building.getThermalGeneration();
@@ -356,16 +344,6 @@ public class BuildingPanel extends WebPanel {
 //        }
 //      catch (BuildingException e) {}
 		}
-		/*
-		 * // Prepare heating storage panel if building has heating storage. if
-		 * (building.hasFunction(BuildingFunction.THERMAL_STORAGE)) { // try {
-		 * ThermalStorage storage = (ThermalStorage)
-		 * building.getFunction(BuildingFunction.THERMAL_STORAGE); BuildingFunctionPanel
-		 * heatStoragePanel = new BuildingPanelThermalStorage(storage, desktop);
-		 * functionPanels.add(heatStoragePanel);
-		 * functionListPanel.add(heatStoragePanel); //if (isTranslucent)
-		 * setPanelStyle(heatStoragePanel); // } // catch (BuildingException e) {} }
-		 */
 
 		// Prepare resource processing panel if building has resource processes.
 		if (building.hasFunction(FunctionType.RESOURCE_PROCESSING)) {
@@ -406,28 +384,6 @@ public class BuildingPanel extends WebPanel {
 //        setPanelTranslucent();
 	}
 
-//	public void setPanelTranslucent() {
-///*
-//		if (isTranslucent) {
-//	        Iterator<BuildingFunctionPanel> i = functionPanels.iterator();
-//	   	 	while (i.hasNext()) {
-//	   	 		BuildingFunctionPanel p = i.next();
-//	   	 		setPanelStyle(p);
-//	   	 	}
-//		}
-//*/
-//	    //setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16, false, true, true, true));
-//
-//	}
-
-	// public void setPanelStyle(JPanel p) {
-	// System.out.println("BuildingPanel.java : isTranslucent is "+ isTranslucent);
-	// if (isTranslucent) {
-	// p.setOpaque(false);
-	// p.setBackground(new Color(0,0,0,128));
-
-	// }
-	// }
 
 	/**
 	 * Ask for a new building name using JOptionPane
@@ -488,20 +444,6 @@ public class BuildingPanel extends WebPanel {
 					alert.initOwner(desktop.getMainScene().getStage());
 					alert.showAndWait();
 				}
-
-				/*
-				 * 
-				 * String n = askNameFX(oldName); //newName = name1; // Note: do not use if
-				 * (newName.trim().equals(null), will throw java.lang.NullPointerException if
-				 * (isBlank(n)) { //n == null || n.trim() == "" || (n.trim().length() == 0)) {
-				 * //System.out.println("newName is " + newName); n = askNameFX(oldName); if
-				 * (isBlank(n)) //n == null || n.trim() == "" || (n.trim().length() == 0))
-				 * return; else { building.setNickName(n); logger.info("New name is now " + n);
-				 * } }
-				 * 
-				 * else { building.setNickName(n); logger.info("New name is now " + n); }
-				 * 
-				 */
 			});
 
 		}

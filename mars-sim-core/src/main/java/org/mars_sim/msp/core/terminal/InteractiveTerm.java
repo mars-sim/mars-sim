@@ -148,7 +148,7 @@ public class InteractiveTerm {
         BiConsumer<TextIO, RunnerData> app = textIO.<BiConsumer<TextIO, RunnerData>>newGenericInputReader(null)
             .withNumberedPossibleValues(apps)
             .read(System.lineSeparator() 
-            		+ "---------------------- Mars Simulation Project ----------------------" 
+            		+ "-------------------  C O N S O L E   M E N U  -------------------" 
             		+ System.lineSeparator());
         String propsFileName = app.getClass().getSimpleName() + ".properties";
         System.setProperty(AbstractTextTerminal.SYSPROP_PROPERTIES_FILE_LOCATION, propsFileName);
