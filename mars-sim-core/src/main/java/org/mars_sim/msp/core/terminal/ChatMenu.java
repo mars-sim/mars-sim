@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.terminal;
 
-import org.beryx.textio.ReadHandlerData;
-import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.swing.SwingTextTerminal;

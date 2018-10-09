@@ -8,15 +8,22 @@
 package org.mars_sim.msp.core.terminal;
 
 import java.awt.geom.Point2D;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.mars.OrbitInfo;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.health.Complaint;
@@ -25,6 +32,8 @@ import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -32,6 +41,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public class ChatUtils {
 
+	private static final double RADIANS_TO_DEGREES = 180D/Math.PI;
+	
 	public final static String SYSTEM = "System";
 	public final static String SYSTEM_PROMPT = "System : ";
 	public final static String YOU_PROMPT = "You : ";
@@ -91,7 +102,22 @@ public class ChatUtils {
 //	public static Building building;
 //	public static Equipment equipment;
 
+	private static Weather weather;
+	private static SurfaceFeatures surfaceFeatures;
+	private static Mars mars;
+	private static MarsClock marsClock;
+	private static OrbitInfo orbitInfo;
+	
+	private static DecimalFormat fmt = new DecimalFormat("##0");
+	//private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
+	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
+	
 	public ChatUtils() {
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		mars = Simulation.instance().getMars();
+		weather = mars.getWeather();
+		surfaceFeatures = mars.getSurfaceFeatures();
+		orbitInfo = mars.getOrbitInfo();
 	}
 
 	/**
@@ -278,7 +304,81 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuilder responseText = new StringBuilder();
 
-		if (text.toLowerCase().contains("people") || text.toLowerCase().contains("settlers") 
+		if (text.toLowerCase().contains("weather")) {
+			questionText = YOU_PROMPT + "How's the weather in " + settlementCache.toString() + " ?";
+			
+			if (marsClock == null) marsClock = Simulation.instance().getMasterClock().getMarsClock();
+			if (mars == null) mars = Simulation.instance().getMars();
+			if (weather == null) weather = mars.getWeather();
+			if (surfaceFeatures == null) surfaceFeatures = mars.getSurfaceFeatures();
+			if (orbitInfo == null) orbitInfo = mars.getOrbitInfo();
+			
+			Coordinates location = settlementCache.getCoordinates();
+//			System.out.println("location in ChatUtils : " + location);
+//			String lat = location.getFormattedLatitudeString();
+//			String lon = location.getFormattedLongitudeString();
+			
+			responseText.append(System.lineSeparator());
+//			responseText.append(settlementCache + " is at " + location);//(" + lat + ", " + lon + ")"); 
+			responseText.append("Location : " + location);
+			responseText.append(System.lineSeparator());
+
+			String date = marsClock.getDateString();
+			responseText.append("On " + date); 
+
+			String time = marsClock.getDecimalTimeString();
+			responseText.append(" at " + time); 
+			
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			
+			double t = weather.getTemperature(location);
+			String tt = fmt.format(t) + " " + Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$		
+			responseText.append("Current outside temperature : " + tt); 
+			responseText.append(System.lineSeparator());
+			
+			double p = weather.getAirPressure(location);
+			String pp = fmt2.format(p) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$		
+			responseText.append("Current air pressure : " + pp); 
+			responseText.append(System.lineSeparator());
+			
+			double ad = weather.getAirDensity(location);
+			String aad = fmt2.format(ad) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
+			responseText.append("Current air density : " + aad);
+			responseText.append(System.lineSeparator());
+			
+			double ws = weather.getWindSpeed(location);
+			String wws = fmt2.format(ws) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
+			responseText.append("Current wind speed : " + wws); 		
+			responseText.append(System.lineSeparator());
+			
+			double wd = weather.getWindDirection(location);
+			String wwd = fmt.format(wd) + " " + Msg.getString("windDirection.unit.deg"); //$NON-NLS-1$
+			responseText.append("Current wind direction : " + wwd); 		
+			responseText.append(System.lineSeparator());
+			
+	 		double od = surfaceFeatures.getOpticalDepth(location);
+	 		String ood = fmt2.format(od);
+			responseText.append("Current optical depth : " + ood); 
+			responseText.append(System.lineSeparator());
+			
+			double sza = orbitInfo.getSolarZenithAngle(location);
+			String ssza = fmt2.format(sza* RADIANS_TO_DEGREES) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+			responseText.append("Current solar zenith angle : " + ssza); 
+			responseText.append(System.lineSeparator());
+			
+			double sda = orbitInfo.getSolarDeclinationAngleDegree();
+			String ssda = fmt2.format(sda) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+			responseText.append("Current solar declination angel : " + ssda); 
+			responseText.append(System.lineSeparator());
+			
+			double si = surfaceFeatures.getSolarIrradiance(location);
+			String ssi = fmt2.format(si) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$		
+			responseText.append("Current solar irradiance : " + ssi); 		
+			responseText.append(System.lineSeparator());
+		}
+		
+		else if (text.toLowerCase().contains("people") || text.toLowerCase().contains("settlers") 
 				|| text.toLowerCase().contains("persons")) {
 			
 			Collection<Person> list = settlementCache.getAllAssociatedPeople();

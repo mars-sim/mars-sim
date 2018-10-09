@@ -334,6 +334,8 @@ public class CollectionUtils {
 		nameList.add("settlements");
 		
 		// Questions regarding a settlement 
+		nameList.add("weather");
+		
 		nameList.add("people");
 		nameList.add("settler");
 		nameList.add("persons");
