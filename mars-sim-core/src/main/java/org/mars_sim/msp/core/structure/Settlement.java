@@ -262,8 +262,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		location = getCoordinates();
 		unitManager = Simulation.instance().getUnitManager();
 
-		updateAllAssociatedPeople();
-		updateAllAssociatedRobots();
+//		updateAllAssociatedPeople();
+//		updateAllAssociatedRobots();
 	}
 
 	/**

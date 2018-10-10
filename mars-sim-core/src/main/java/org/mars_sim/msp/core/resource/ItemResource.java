@@ -43,14 +43,12 @@ implements Serializable {
        	ResourceUtil.getInstance();
 	}
 
-
-	/*
-	 * Default private constructor
-	 *
-	private ItemResource() {
-		throw new UnsupportedOperationException("invalid constructor");
-	}
-	 */
+//	/*
+//	 * Default private constructor
+//	 *
+//	private ItemResource() {
+//		throw new UnsupportedOperationException("invalid constructor");
+//	}
 
 
 	/**
@@ -129,24 +127,24 @@ implements Serializable {
 		return hash;
 	}
 
-	/**
-	 * Finds an item resource by name.
-	 * @param name the name of the resource.
-	 * @return resource
-	 * @throws ResourceException if resource could not be found.
+//	/**
+//	 * Finds an item resource by name.
+//	 * @param name the name of the resource.
+//	 * @return resource
+//	 * @throws ResourceException if resource could not be found.
+//
+//	public static ItemResource findItemResource(String name) {
+//		ItemResource result = null;
+//		Iterator<Part> i = getItemResources().iterator();
+//		while (i.hasNext()) {
+//			ItemResource resource = i.next();
+//			// Add equalsIgnoreCase()
+//			if (resource.getName().equalsIgnoreCase(name)) result = resource;
+//		}
+//		if (result != null) return result;
+//		else throw new UnknownResourceName(name);
+//	}
 
-	public static ItemResource findItemResource(String name) {
-		ItemResource result = null;
-		Iterator<Part> i = getItemResources().iterator();
-		while (i.hasNext()) {
-			ItemResource resource = i.next();
-			//2014-12-01 Added equalsIgnoreCase()
-			if (resource.getName().equalsIgnoreCase(name)) result = resource;
-		}
-		if (result != null) return result;
-		else throw new UnknownResourceName(name);
-	}
-	 */
 
 	/**
 	 * Finds an item resource by name.
@@ -188,10 +186,10 @@ implements Serializable {
 			super("Unknown resource name : " + name);
 			this.name = name;
 		}
-		/*
-		public String getName() {
-			return name;
-		}
-		 */
+		
+//		public String getName() {
+//			return name;
+//		}
+		 
 	}
 }
