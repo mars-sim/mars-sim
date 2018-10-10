@@ -239,6 +239,7 @@ public class Mind implements Serializable {
 	 */
 	public void reassignJob(String newJobStr, boolean bypassingJobLock, String assignedBy, JobAssignmentType status,
 			String approvedBy) {
+		// TODO: Add position of the one who approve 
 		// Called by
 		// (1) ReviewJobReassignment's constructor or
 		// (2) TabPanelCareer's actionPerformed() [for a pop <= 4 settlement]

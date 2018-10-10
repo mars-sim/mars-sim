@@ -568,7 +568,7 @@ public class ChatUtils {
 					double score = bestFriends.get(p);
 					String pronoun = "him";
 					String relation = RelationshipManager.describeRelationship(score);
-					if (!relation.equals("trusting") && !relation.equals("hatred"))
+					if (!relation.equals("trusting") && !relation.equals("hating"))
 						relation = relation + " to ";
 					else
 						relation = relation + " ";
@@ -590,7 +590,7 @@ public class ChatUtils {
 						double score = bestFriends.get(p);
 						String pronoun = "him";
 						String relation = RelationshipManager.describeRelationship(score);
-						if (!relation.equals("trusting") && !relation.equals("hatred"))
+						if (!relation.equals("trusting") && !relation.equals("hating"))
 							relation = relation + " to ";
 						else
 							relation = relation + " ";
@@ -627,7 +627,7 @@ public class ChatUtils {
 					double score = friends.get(p);
 					String pronoun = "him";
 					String relation = RelationshipManager.describeRelationship(score);
-					if (!relation.equals("trusting") && !relation.equals("hatred"))
+					if (!relation.equals("trusting") && !relation.equals("hating"))
 						relation = relation + " to ";
 					else
 						relation = relation + " ";
@@ -645,7 +645,7 @@ public class ChatUtils {
 						double score = friends.get(p);
 						String pronoun = "him";
 						String relation = RelationshipManager.describeRelationship(score);
-						if (!relation.equals("trusting") && !relation.equals("hatred"))
+						if (!relation.equals("trusting") && !relation.equals("hating"))
 							relation = relation + " to ";
 						else
 							relation = relation + " ";

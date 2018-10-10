@@ -10,7 +10,7 @@ package org.mars_sim.msp.core.structure.building;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
- * This interface accounts for units that can stay indoor inside a settlement) 
+ * This interface accounts for units that can stay indoor inside a settlement
  */
 public interface Indoor {
 

@@ -81,6 +81,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 	private int solRatingSubmitted = -1;
 
+	private boolean firstNotification = true;
+	
 	private WebTable table;
 
 	private WebLabel jobLabel;
@@ -97,6 +99,9 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	private StarRater starRater;
 	private StarRater aveRater;
 	private MarsClock marsClock;
+	
+	private Person person = null;
+	private Robot robot = null;
 
 	/**
 	 * Constructor.
@@ -112,8 +117,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-		Person person = null;
-		Robot robot = null;
 		Mind mind = null;
 		BotMind botMind = null;
 		boolean dead = false;
@@ -251,6 +254,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 						int sol = marsClock.getMissionSol();
 						dateTimeRatingSubmitted = MarsClock.getDateTimeStamp(marsClock);
 						ratingLabel.setText("Job rating submitted on " + dateTimeRatingSubmitted);
+						logger.info(person + "'s job rating was submitted on " + dateTimeRatingSubmitted);
 						ratingLabel.setHorizontalAlignment(SwingConstants.CENTER);
 						starRater.setRating(selection);
 
@@ -387,10 +391,17 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			} else {
 				starRater.setSelection(0);
 				starRater.setEnabled(false);
-				if (dateTimeRatingSubmitted != null)
-					ratingLabel.setText("Job rating last submitted on " + dateTimeRatingSubmitted);
-				else
-					ratingLabel.setText("Job rating last submitted on Sol " + solRatingSubmitted);
+				String s = "";
+				if (dateTimeRatingSubmitted != null) {
+					s = person + "'s job rating last submitted on " + dateTimeRatingSubmitted;
+					ratingLabel.setText(s);
+					logger.info(s);
+				}
+				else {
+					s = person + "'s job rating last submitted on sol " + solRatingSubmitted;
+					ratingLabel.setText(s);
+					logger.info(s);
+				}
 			}
 		}
 	}
@@ -444,7 +455,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				jobComboBox.setEnabled(false);
 				// jobComboBox.setSelectedItem(jobCache);
 				jobChangeLabel.setForeground(Color.blue);
-				jobChangeLabel.setText("Job reassignment submitted on " + list.get(last).getTimeSubmitted());
+				String s = person + "'s job reassignment was submitted on " + list.get(last).getTimeSubmitted();
+				jobChangeLabel.setText(s);
+				if (firstNotification) logger.info(s);
+				firstNotification = false;
 			}
 
 			// detects a change of status from pending to approved
@@ -452,7 +466,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				if (status.equals(JobAssignmentType.APPROVED)) {
 					statusCache = JobAssignmentType.APPROVED;
 					logger.info(person.getName() + "'s job reassignment had been reviewed and approved.");
-
 					String selectedJobStr = list.get(last).getJobType();
 					jobCache = selectedJobStr; // must update the jobCache prior to setSelectedItem or else a new job
 												// reassignment will be submitted in
@@ -471,11 +484,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 				}
 
-				// int solElapsed = MarsClock.getSolOfYear(clock);
-				// if (solElapsed != solCache) {
-				// solCache = solElapsed;
-				// person.getJobHistory().setSolCache(solCache);
-
 				jobComboBox.setEnabled(true);
 				jobChangeLabel.setText("");
 
@@ -491,18 +499,12 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 				String roleNew = person.getRole().toString();
 				if (!roleCache.equals(roleNew)) {
-					// System.out.println("TabPanelCareer : Old Role : " + roleCache + " New Role :
-					// " + roleNew);
+
 					roleCache = roleNew;
 					roleTF.setText(roleCache);
 					// System.out.println("TabPanelCareer : just set New Role in TextField");
 				}
-				// } // end of if (solElapsed != solCache)
-				// else {
-				// jobChangeLabel.setForeground(Color.blue);
-				// jobChangeLabel.setText("The new job " + selectedJobStr + " will be effective
-				// at the start of next sol");
-				// }
+
 			} // if (statusCache.equals(JobAssignmentType.PENDING))
 			else {
 				; // do nothing. at the start of sim
@@ -635,8 +637,11 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
 	
 						jobChangeLabel.setForeground(Color.BLUE);
-						jobChangeLabel
-								.setText("Job reassignment submitted on " + MarsClock.getDateTimeStamp(marsClock));
+						
+						String s = person + "'s job reassignment submitted on " + MarsClock.getDateTimeStamp(marsClock);
+						jobChangeLabel.setText(s);
+						logger.info(s);
+						firstNotification = true;
 
 						JobHistory jh = person.getJobHistory();
 
@@ -671,9 +676,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					}
 				}
 			}
-
-//			else if (unit instanceof Robot) {
-//			}
 		}
 
 //		if (desktop.getMainScene() != null) {

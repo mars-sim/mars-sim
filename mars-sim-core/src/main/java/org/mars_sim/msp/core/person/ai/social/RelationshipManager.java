@@ -10,13 +10,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
@@ -40,8 +44,7 @@ import com.phoenixst.plexus.Traverser;
  * <br/>
  * The simulation instance has only one relationship manager.
  */
-public class RelationshipManager // extends Thread
-		implements Serializable {
+public class RelationshipManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -234,9 +237,32 @@ public class RelationshipManager // extends Thread
 					friends.put(pp, score);
 			}
 		}
-//		System.out.println("friends in RelationshipManager: " + friends);
-//		Collections.sort(friends);
-		return friends;
+
+		return sortByValue(friends);
+	}
+	
+	/**
+	 * Sorts the map according to the value of each entry
+	 * 
+	 * @param map
+	 * @return a map
+	 */
+	private static <K, V> Map<K, V> sortByValue(Map<K, V> map) {
+	    List<Entry<K, V>> list = new ArrayList<>(map.entrySet());
+	    Collections.sort(list, new Comparator<Object>() {
+	        @SuppressWarnings("unchecked")
+	        public int compare(Object o1, Object o2) {
+	            return ((Comparable<V>) ((Map.Entry<K, V>) (o1)).getValue()).compareTo(((Map.Entry<K, V>) (o2)).getValue());
+	        }
+	    });
+
+	    Map<K, V> result = new LinkedHashMap<>();
+	    for (Iterator<Entry<K, V>> it = list.iterator(); it.hasNext();) {
+	        Map.Entry<K, V> entry = (Map.Entry<K, V>) it.next();
+	        result.put(entry.getKey(), entry.getValue());
+	    }
+
+	    return result;
 	}
 	
 	/**
@@ -486,4 +512,5 @@ public class RelationshipManager // extends Thread
 	public void destroy() {
 		relationshipGraph = null;
 	}
+
 }
