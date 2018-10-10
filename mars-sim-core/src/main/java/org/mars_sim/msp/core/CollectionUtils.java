@@ -352,6 +352,11 @@ public class CollectionUtils {
 		nameList.add("rover");
 		
 		// Questions regarding a person/robot
+		nameList.add("friend");
+		nameList.add("relationship");
+		nameList.add("social");
+		nameList.add("relation");
+		
 		nameList.add("feeling");
 		nameList.add("status");
 

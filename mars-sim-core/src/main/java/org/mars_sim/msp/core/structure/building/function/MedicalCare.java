@@ -25,235 +25,241 @@ import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 
 /**
- * The MedicalCare class represents a building function for providing medical care.
+ * The MedicalCare class represents a building function for providing medical
+ * care.
  */
-public class MedicalCare
-extends Function
-implements MedicalAid, Serializable {
+public class MedicalCare extends Function implements MedicalAid, Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    private static final FunctionType FUNCTION = FunctionType.MEDICAL_CARE;
+	private static final FunctionType FUNCTION = FunctionType.MEDICAL_CARE;
 
-    private MedicalStation medicalStation;
-    
-    private Building building;
+	private MedicalStation medicalStation;
 
-    private static BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-    
-    /**
-     * Constructor.
-     * @param building the building this function is for.
-     * @throws BuildingException if function could not be constructed.
-     */
-    public MedicalCare(Building building) {
-        // Use Function constructor.
-        super(FUNCTION, building);
+	private Building building;
 
-        this.building = building;
-        int techLevel = config.getMedicalCareTechLevel(building.getBuildingType());
-        int beds = config.getMedicalCareBeds(building.getBuildingType());
-        medicalStation = new MedicalStation(techLevel, beds);
-        medicalStation.setBuilding(building);
+	private static BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-        // Load activity spots
-        loadActivitySpots(config.getMedicalCareActivitySpots(building.getBuildingType()));
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param building the building this function is for.
+	 * @throws BuildingException if function could not be constructed.
+	 */
+	public MedicalCare(Building building) {
+		// Use Function constructor.
+		super(FUNCTION, building);
 
-    /**
-     * Gets the value of the function for a named building.
-     * @param buildingName the building name.
-     * @param newBuilding true if adding a new building.
-     * @param settlement the settlement.
-     * @return value (VP) of building function.
-     * @throws Exception if error getting function value.
-     */
-    public static double getFunctionValue(String buildingName, boolean newBuilding,
-            Settlement settlement) {
+		this.building = building;
+		int techLevel = config.getMedicalCareTechLevel(building.getBuildingType());
+		int beds = config.getMedicalCareBeds(building.getBuildingType());
+		medicalStation = new MedicalStation(techLevel, beds);
+		medicalStation.setBuilding(building);
 
-        // Demand is 5 medical points per inhabitant.
-        double demand = settlement.getAllAssociatedPeople().size() * 5D;
+		// Load activity spots
+		loadActivitySpots(config.getMedicalCareActivitySpots(building.getBuildingType()));
+	}
 
-        double supply = 0D;
-        boolean removedBuilding = false;
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
-                removedBuilding = true;
-            }
-            else {
-                MedicalCare medFunction = building.getMedical();//(MedicalCare) building.getFunction(FUNCTION);
-                double tech = medFunction.getTechLevel();
-                double beds = medFunction.getSickBedNum();
-                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-                supply += (tech * tech) * beds * wearModifier;
-            }
-        }
+	/**
+	 * Gets the value of the function for a named building.
+	 * 
+	 * @param buildingName the building name.
+	 * @param newBuilding  true if adding a new building.
+	 * @param settlement   the settlement.
+	 * @return value (VP) of building function.
+	 * @throws Exception if error getting function value.
+	 */
+	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
 
-        double medicalPointValue = demand / (supply + 1D) / 10D;
+		// Demand is 5 medical points per inhabitant.
+		double demand = settlement.getAllAssociatedPeople().size() * 5D;
 
-        //BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        double tech = config.getMedicalCareTechLevel(buildingName);
-        double beds = config.getMedicalCareBeds(buildingName);
-        double medicalPoints = (tech * tech) * beds;
+		double supply = 0D;
+		boolean removedBuilding = false;
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
+			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
+				removedBuilding = true;
+			} else {
+				MedicalCare medFunction = building.getMedical();// (MedicalCare) building.getFunction(FUNCTION);
+				double tech = medFunction.getTechLevel();
+				double beds = medFunction.getSickBedNum();
+				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+				supply += (tech * tech) * beds * wearModifier;
+			}
+		}
 
-        return medicalPoints * medicalPointValue;
-    }
+		double medicalPointValue = demand / (supply + 1D) / 10D;
 
-    /**
-     * Gets the number of sick beds.
-     * @return Sick bed count.
-     */
-    public int getSickBedNum() {
-        return medicalStation.getSickBedNum();
-    }
+		// BuildingConfig config =
+		// SimulationConfig.instance().getBuildingConfiguration();
+		double tech = config.getMedicalCareTechLevel(buildingName);
+		double beds = config.getMedicalCareBeds(buildingName);
+		double medicalPoints = (tech * tech) * beds;
 
-    /**
-     * Gets the current number of people being treated here.
-     * @return Patient count.
-     */
-    public int getPatientNum() {
-        return medicalStation.getPatientNum();
-    }
+		return medicalPoints * medicalPointValue;
+	}
 
-    /**
-     * Gets the patients at this medical station.
-     * @return Collection of People.
-     */
-    public Collection<Person> getPatients() {
-        return medicalStation.getPatients();
-    }
+	/**
+	 * Gets the number of sick beds.
+	 * 
+	 * @return Sick bed count.
+	 */
+	public int getSickBedNum() {
+		return medicalStation.getSickBedNum();
+	}
 
-    /**
-     * Gets the number of people using this medical aid to treat sick people.
-     * @return number of people
-     */
-    public int getPhysicianNum() {
-        int result = 0;
+	/**
+	 * Gets the current number of people being treated here.
+	 * 
+	 * @return Patient count.
+	 */
+	public int getPatientNum() {
+		return medicalStation.getPatientNum();
+	}
 
-        if (getBuilding().hasFunction(FunctionType.LIFE_SUPPORT)) {
-            try {
-                LifeSupport lifeSupport = getBuilding().getLifeSupport();
-                Iterator<Person> i = lifeSupport.getOccupants().iterator();
-                while (i.hasNext()) {
-                    Task task = i.next().getMind().getTaskManager().getTask();
-                    if (task instanceof MedicalAssistance) {
-                        MedicalAid aid = ((MedicalAssistance) task).getMedicalAid();
-                        if ((aid != null) && (aid == this)) result++;
-                    }
-                }
-            }
-            catch (Exception e) {}
-        }
+	/**
+	 * Gets the patients at this medical station.
+	 * 
+	 * @return Collection of People.
+	 */
+	public Collection<Person> getPatients() {
+		return medicalStation.getPatients();
+	}
 
-        return result;
-    }
+	/**
+	 * Gets the number of people using this medical aid to treat sick people.
+	 * 
+	 * @return number of people
+	 */
+	public int getPhysicianNum() {
+		int result = 0;
 
-    @Override
-    public List<HealthProblem> getProblemsAwaitingTreatment() {
-        return medicalStation.getProblemsAwaitingTreatment();
-    }
+		if (getBuilding().hasFunction(FunctionType.LIFE_SUPPORT)) {
+			try {
+				LifeSupport lifeSupport = getBuilding().getLifeSupport();
+				Iterator<Person> i = lifeSupport.getOccupants().iterator();
+				while (i.hasNext()) {
+					Task task = i.next().getMind().getTaskManager().getTask();
+					if (task instanceof MedicalAssistance) {
+						MedicalAid aid = ((MedicalAssistance) task).getMedicalAid();
+						if ((aid != null) && (aid == this))
+							result++;
+					}
+				}
+			} catch (Exception e) {
+			}
+		}
 
-    @Override
-    public List<HealthProblem> getProblemsBeingTreated() {
-        return medicalStation.getProblemsBeingTreated();
-    }
+		return result;
+	}
 
-    @Override
-    public List<Treatment> getSupportedTreatments() {
-        return medicalStation.getSupportedTreatments();
-    }
+	@Override
+	public List<HealthProblem> getProblemsAwaitingTreatment() {
+		return medicalStation.getProblemsAwaitingTreatment();
+	}
 
-    @Override
-    public boolean canTreatProblem(HealthProblem problem) {
-        return medicalStation.canTreatProblem(problem);
-    }
+	@Override
+	public List<HealthProblem> getProblemsBeingTreated() {
+		return medicalStation.getProblemsBeingTreated();
+	}
 
-    @Override
-    public void requestTreatment(HealthProblem problem) {
-        medicalStation.requestTreatment(problem);
-    }
+	@Override
+	public List<Treatment> getSupportedTreatments() {
+		return medicalStation.getSupportedTreatments();
+	}
 
-    @Override
-    public void cancelRequestTreatment(HealthProblem problem) {
-        medicalStation.cancelRequestTreatment(problem);
-    }
+	@Override
+	public boolean canTreatProblem(HealthProblem problem) {
+		return medicalStation.canTreatProblem(problem);
+	}
 
-    @Override
-    public void startTreatment(HealthProblem problem, double treatmentDuration) {
-        medicalStation.startTreatment(problem, treatmentDuration);
-    }
+	@Override
+	public void requestTreatment(HealthProblem problem) {
+		medicalStation.requestTreatment(problem);
+	}
 
-    @Override
-    public void stopTreatment(HealthProblem problem) {
-        medicalStation.stopTreatment(problem);
-    }
+	@Override
+	public void cancelRequestTreatment(HealthProblem problem) {
+		medicalStation.cancelRequestTreatment(problem);
+	}
 
-    @Override
-    public List<Person> getRestingRecoveryPeople() {
-        return medicalStation.getRestingRecoveryPeople();
-    }
+	@Override
+	public void startTreatment(HealthProblem problem, double treatmentDuration) {
+		medicalStation.startTreatment(problem, treatmentDuration);
+	}
 
-    @Override
-    public void startRestingRecovery(Person person) {
-        medicalStation.startRestingRecovery(person);
-    }
+	@Override
+	public void stopTreatment(HealthProblem problem) {
+		medicalStation.stopTreatment(problem);
+	}
 
-    @Override
-    public void stopRestingRecovery(Person person) {
-        medicalStation.stopRestingRecovery(person);
-    }
+	@Override
+	public List<Person> getRestingRecoveryPeople() {
+		return medicalStation.getRestingRecoveryPeople();
+	}
 
-    @Override
-    public void timePassing(double time) {
+	@Override
+	public void startRestingRecovery(Person person) {
+		medicalStation.startRestingRecovery(person);
+	}
 
-        // Do nothing.
-    }
+	@Override
+	public void stopRestingRecovery(Person person) {
+		medicalStation.stopRestingRecovery(person);
+	}
 
-    @Override
-    public double getFullPowerRequired() {
-        return 0D;
-    }
+	@Override
+	public void timePassing(double time) {
 
-    @Override
-    public double getPoweredDownPowerRequired() {
-        return 0D;
-    }
+		// Do nothing.
+	}
 
-    /**
-     * Gets the treatment level.
-     * @return treatment level
-     */
-    public int getTechLevel() {
-        return medicalStation.getTreatmentLevel();
-    }
+	@Override
+	public double getFullPowerRequired() {
+		return 0D;
+	}
 
-    public Building getBuilding() {
-    	return building;
-    }
-    
-    @Override
-    public double getMaintenanceTime() {
+	@Override
+	public double getPoweredDownPowerRequired() {
+		return 0D;
+	}
 
-        double result = 0D;
+	/**
+	 * Gets the treatment level.
+	 * 
+	 * @return treatment level
+	 */
+	public int getTechLevel() {
+		return medicalStation.getTreatmentLevel();
+	}
 
-        // Add maintenance for treatment level.
-        result += medicalStation.getTreatmentLevel() * 10D;
+	public Building getBuilding() {
+		return building;
+	}
 
-        // Add maintenance for number of sick beds.
-        result += medicalStation.getSickBedNum() * 10D;
+	@Override
+	public double getMaintenanceTime() {
 
-        return result;
-    }
+		double result = 0D;
 
-    @Override
-    public void destroy() {
-        super.destroy();
+		// Add maintenance for treatment level.
+		result += medicalStation.getTreatmentLevel() * 10D;
 
-        medicalStation = null;
-    }
+		// Add maintenance for number of sick beds.
+		result += medicalStation.getSickBedNum() * 10D;
+
+		return result;
+	}
+
+	@Override
+	public void destroy() {
+		super.destroy();
+
+		medicalStation = null;
+	}
 
 	@Override
 	public double getFullHeatRequired() {

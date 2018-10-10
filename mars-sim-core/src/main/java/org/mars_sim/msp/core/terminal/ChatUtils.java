@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
@@ -24,8 +25,10 @@ import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.HealthProblem;
@@ -33,7 +36,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -66,7 +68,7 @@ public class ChatUtils {
 
 	public final static String KEYWORDS_TEXT = System.lineSeparator()
 			+ "    -------------------- K E Y W O R D S -------------------- " + System.lineSeparator()
-			+ "(1) 'people', 'settler', 'persons', 'robot', 'bot', 'status', 'feeling', 'how old', 'age', 'birth', 'country', 'nationality', 'job', 'specialty', 'career', "
+			+ "(1) 'weather', 'friend', 'relationship', 'relation', 'social', 'people', 'settler', 'persons', 'robot', 'bot', 'status', 'feeling', 'how old', 'age', 'birth', 'country', 'nationality', 'job', 'specialty', 'career', "
 			+ System.lineSeparator() + "(2) 'where', 'location', 'located', 'task', 'activity', 'action', 'mission', "
 			+ System.lineSeparator() + "(3) 'bed', 'bed time', 'quarters', 'sleep', 'sleep hour', 'building', 'inside', 'outside', ' container'"
 			+ System.lineSeparator()
@@ -107,9 +109,10 @@ public class ChatUtils {
 	private static Mars mars;
 	private static MarsClock marsClock;
 	private static OrbitInfo orbitInfo;
+	private static RelationshipManager relationshipManager;
 	
 	private static DecimalFormat fmt = new DecimalFormat("##0");
-	//private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
+	private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
 	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
 	
 	public ChatUtils() {
@@ -118,6 +121,8 @@ public class ChatUtils {
 		weather = mars.getWeather();
 		surfaceFeatures = mars.getSurfaceFeatures();
 		orbitInfo = mars.getOrbitInfo();
+		
+		relationshipManager = Simulation.instance().getRelationshipManager();
 	}
 
 	/**
@@ -525,6 +530,7 @@ public class ChatUtils {
 		return new String[] { questionText, responseText.toString() };
 	}
 
+	
 	/**
 	 * Asks the person or the robot
 	 * 
@@ -542,7 +548,119 @@ public class ChatUtils {
 		responseText.append(name);
 		responseText.append(": ");
 
-		if (num == 0 || text.toLowerCase().contains("status") || text.toLowerCase().contains("how you doing")
+		if (text.toLowerCase().contains("friend")) {
+			questionText = YOU_PROMPT + "Who's your best friend ?";
+
+			if (relationshipManager == null)
+				relationshipManager = Simulation.instance().getRelationshipManager();
+			
+			Map<Person, Double> bestFriends = relationshipManager.getBestFriends(personCache);
+//			System.out.println("bestFriends : " + bestFriends);
+			if (bestFriends.isEmpty()) {
+				responseText.append("I don't have any friends yet.");
+			}
+			else { 
+				List<Person> list = new ArrayList<>(bestFriends.keySet());
+				int size = list.size();
+				
+				if (size == 1) {
+					Person p = list.get(0);
+					double score = bestFriends.get(p);
+					String pronoun = "him";
+					String relation = RelationshipManager.describeRelationship(score);
+					if (!relation.equals("trusting") && !relation.equals("hatred"))
+						relation = relation + " to ";
+					else
+						relation = relation + " ";
+					if (p.getGender() == GenderType.FEMALE)
+						pronoun = "her";
+					if (score < 45)
+						responseText.append("My friend includes " + p + ". ");
+					else
+						responseText.append("My best friend is " + p + ". ");
+					responseText.append("I'm " + relation + pronoun + " (");
+					responseText.append("score : " + fmt1.format(score) + ").");
+				}
+				else if (size >= 2) {
+					responseText.append("My best friends are ");
+					responseText.append(System.lineSeparator());
+					for (int i = 0; i < size; i++) {
+
+						Person p = list.get(i);
+						double score = bestFriends.get(p);
+						String pronoun = "him";
+						String relation = RelationshipManager.describeRelationship(score);
+						if (!relation.equals("trusting") && !relation.equals("hatred"))
+							relation = relation + " to ";
+						else
+							relation = relation + " ";
+						if (p.getGender() == GenderType.FEMALE)
+							pronoun = "her";
+						responseText.append("(" + (i+1) + "). " + p + " -- ");
+						responseText.append("I'm " + relation + pronoun + " (");
+						responseText.append("score : " + fmt1.format(score) + ").");
+						responseText.append(System.lineSeparator());
+					}
+				}	
+			}
+		}
+		
+		else if (text.toLowerCase().contains("relationship")
+				|| text.toLowerCase().contains("relation")
+				|| text.toLowerCase().contains("social")) {
+			questionText = YOU_PROMPT + "How are your relationship with others ?"; 
+
+			if (relationshipManager == null)
+				relationshipManager = Simulation.instance().getRelationshipManager();
+			
+			Map<Person, Double> friends = relationshipManager.getFriends(personCache);
+//			System.out.println("friends in ChatUtils : " + friends);
+			if (friends.isEmpty()) {
+				responseText.append("I don't have any friends yet.");
+			}
+			else { 
+				List<Person> list = new ArrayList<>(friends.keySet());
+				int size = list.size();
+				
+				if (size == 1) {
+					Person p = list.get(0);
+					double score = friends.get(p);
+					String pronoun = "him";
+					String relation = RelationshipManager.describeRelationship(score);
+					if (!relation.equals("trusting") && !relation.equals("hatred"))
+						relation = relation + " to ";
+					else
+						relation = relation + " ";
+					if (p.getGender() == GenderType.FEMALE)
+						pronoun = "her";
+					responseText.append("My relationship is simple with " + p + ". ");
+					responseText.append("I'm " + relation + pronoun + " (");
+					responseText.append("score : " + fmt1.format(score) + ").");
+				}
+				else if (size >= 2) {
+					responseText.append("My relationship with those I know are : ");
+					responseText.append(System.lineSeparator());	
+					for (int i = 0; i < size; i++) {
+						Person p = list.get(i);
+						double score = friends.get(p);
+						String pronoun = "him";
+						String relation = RelationshipManager.describeRelationship(score);
+						if (!relation.equals("trusting") && !relation.equals("hatred"))
+							relation = relation + " to ";
+						else
+							relation = relation + " ";
+						if (p.getGender() == GenderType.FEMALE)
+							pronoun = "her";					
+						responseText.append("(" + (i+1) + "). " + p + " -- ");
+						responseText.append("I'm " + relation + pronoun + " (");
+						responseText.append("score : " + fmt1.format(score) + ").");
+						responseText.append(System.lineSeparator());
+					}
+				}	
+			}
+		}
+		
+		else if (num == 0 || text.toLowerCase().contains("status") || text.toLowerCase().contains("how you doing")
 				|| text.toLowerCase().contains("feeling") || text.toLowerCase().contains("how you been")) {
 			questionText = YOU_PROMPT + "how have you been ?"; // what is your Location Situation [Expert Mode only] ?";
 
@@ -865,11 +983,11 @@ public class ChatUtils {
 
 		else if (num == 17 || text.equalsIgnoreCase("bed") 
 				|| text.contains("quarters")) {
-			questionText = YOU_PROMPT + "Where is your designated quarters/bed ? ";
+			questionText = YOU_PROMPT + "Where is your designated quarters ? ";
 			Point2D bed = personCache.getBed();
 			if (bed == null) {
 				if (personCache != null) {
-					responseText.append("I haven't got my own private quarters/bed yet.");
+					responseText.append("I haven't got my own private quarters yet.");
 				} else if (robotCache != null) {
 					responseText.append("I don't need one. My battery can be charged at any robotic station.");
 				}
@@ -880,7 +998,7 @@ public class ChatUtils {
 						// check to see if a person is on a trading mission
 						Settlement s2 = personCache.getAssociatedSettlement();
 						if (s2 != null) {
-							responseText.append("My designated quarters/bed is at (");
+							responseText.append("My designated quarters is at (");
 							responseText.append(bed.getX());
 							responseText.append(", ");
 							responseText.append(bed.getY());
@@ -898,7 +1016,7 @@ public class ChatUtils {
 							}
 						}
 					} else {
-						responseText.append("My designated quarters/bed is at (");
+						responseText.append("My designated quarters is at (");
 						responseText.append(bed.getX());
 						responseText.append(", ");
 						responseText.append(bed.getY());

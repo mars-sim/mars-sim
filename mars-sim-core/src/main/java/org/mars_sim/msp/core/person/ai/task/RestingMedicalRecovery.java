@@ -10,10 +10,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.health.HealthProblem;
@@ -37,6 +38,8 @@ public class RestingMedicalRecovery extends Task implements Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(RestingMedicalRecovery.class.getName());
+
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -95,7 +98,9 @@ public class RestingMedicalRecovery extends Task implements Serializable {
             }
         }
         else {
-            logger.severe("Medical aid could not be determined.");
+            //logger.severe(person + " can't find any medical aid.");
+      		LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(), 
+      				person + " can't find any medical aid in " + person.getLocationTag().getExtendedLocations(), null);
             endTask();
         }
 
@@ -112,10 +117,10 @@ public class RestingMedicalRecovery extends Task implements Serializable {
 
         MedicalAid result = null;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             result = determineMedicalAidAtSettlement();
         }
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
             result = determineMedicalAidInVehicle();
         }
 

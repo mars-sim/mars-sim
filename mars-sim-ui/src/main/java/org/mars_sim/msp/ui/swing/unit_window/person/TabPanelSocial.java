@@ -24,7 +24,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-
+import org.mars_sim.msp.core.terminal.ChatUtils;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -203,17 +204,7 @@ implements ListSelectionListener {
 		}
 
 		private String getRelationshipString(double opinion) {
-			String result = null;
-			if (opinion < 5) result = Msg.getString("TabPanelSocial.opinion.0"); //$NON-NLS-1$
-			else if (opinion < 20) result = Msg.getString("TabPanelSocial.opinion.1"); //$NON-NLS-1$
-			else if (opinion < 35) result = Msg.getString("TabPanelSocial.opinion.2"); //$NON-NLS-1$
-			else if (opinion < 45) result = Msg.getString("TabPanelSocial.opinion.3"); //$NON-NLS-1$
-			else if (opinion < 55) result = Msg.getString("TabPanelSocial.opinion.4"); //$NON-NLS-1$
-			else if (opinion < 65) result = Msg.getString("TabPanelSocial.opinion.5"); //$NON-NLS-1$
-			else if (opinion < 80) result = Msg.getString("TabPanelSocial.opinion.6"); //$NON-NLS-1$
-			else if (opinion < 95) result = Msg.getString("TabPanelSocial.opinion.7"); //$NON-NLS-1$
-			else result = Msg.getString("TabPanelSocial.opinion.8"); //$NON-NLS-1$
-			return result;
+			return Conversion.capitalize(RelationshipManager.describeRelationship(opinion));
 		}
 	}
 }

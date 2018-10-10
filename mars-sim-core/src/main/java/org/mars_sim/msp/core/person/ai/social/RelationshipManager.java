@@ -9,12 +9,16 @@ package org.mars_sim.msp.core.person.ai.social;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -31,13 +35,13 @@ import com.phoenixst.plexus.NoSuchNodeException;
 import com.phoenixst.plexus.Traverser;
 
 /**
- * The RelationshipManager class keeps track of all the social
- * relationships between people.<br/>
+ * The RelationshipManager class keeps track of all the social relationships
+ * between people.<br/>
  * <br/>
  * The simulation instance has only one relationship manager.
  */
 public class RelationshipManager // extends Thread
-implements Serializable {
+		implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -61,7 +65,10 @@ implements Serializable {
 	private static final double BASE_GENDER_BONDING_MODIFIER = .02D;
 	/** The base personality diff modifier per millisol for relationship change. */
 	private static final double PERSONALITY_DIFF_MODIFIER = .1D;
-	/** The base settler modifier per millisol as settlers are trained to get along with each other. */
+	/**
+	 * The base settler modifier per millisol as settlers are trained to get along
+	 * with each other.
+	 */
 	private static final double SETTLER_MODIFIER = .02D;
 
 	/** The relationship graph. */
@@ -79,7 +86,8 @@ implements Serializable {
 	/**
 	 * Adds an initial settler who will have an existing relationship with all the
 	 * other inhabitants if his/her settlement.
-	 * @param person the person to add.
+	 * 
+	 * @param person     the person to add.
 	 * @param settlement the settlement the person starts at.
 	 */
 	public void addInitialSettler(Person person, Settlement settlement) {
@@ -89,7 +97,8 @@ implements Serializable {
 	/**
 	 * Adds a new resupply immigrant who will have an existing relationship with the
 	 * other immigrants in his/her group.
-	 * @param person the person to add.
+	 * 
+	 * @param person         the person to add.
 	 * @param immigrantGroup the groups of immigrants this person belongs to.
 	 */
 	public void addNewImmigrant(Person person, Collection<Person> immigrantGroup) {
@@ -98,8 +107,10 @@ implements Serializable {
 
 	/**
 	 * Adds a new person for the relationship manager.
-	 * @param person the new person
-	 * @param initialGroup the group that this person has existing relationships with.
+	 * 
+	 * @param person       the new person
+	 * @param initialGroup the group that this person has existing relationships
+	 *                     with.
 	 */
 	private void addPerson(Person person, Collection<Person> initialGroup) {
 		if ((person == null) || (initialGroup == null))
@@ -114,8 +125,9 @@ implements Serializable {
 				if (person2 != person) {
 					addRelationship(person, person2, Relationship.EXISTING_RELATIONSHIP);
 
-					if(logger.isLoggable(Level.FINEST)) {
-						logger.finest(person.getName() + " and " + person2.getName() + " have existing relationship.  " + count);
+					if (logger.isLoggable(Level.FINEST)) {
+						logger.finest(person.getName() + " and " + person2.getName() + " have existing relationship.  "
+								+ count);
 					}
 				}
 			}
@@ -124,32 +136,37 @@ implements Serializable {
 
 	/**
 	 * Adds a new relationship between two people.
-	 * @param person1 the first person (order isn't important)
-	 * @param person2 the second person (order isn't important)
-	 * @param relationshipType the type of relationship (see Relationship static members)
+	 * 
+	 * @param person1          the first person (order isn't important)
+	 * @param person2          the second person (order isn't important)
+	 * @param relationshipType the type of relationship (see Relationship static
+	 *                         members)
 	 */
 	public void addRelationship(Person person1, Person person2, String relationshipType) {
 		try {
 			Relationship relationship = new Relationship(person1, person2, relationshipType);
 			relationshipGraph.addEdge(relationship, person1, person2, false);
 			count++;
+		} catch (NoSuchNodeException e) {
 		}
-		catch (NoSuchNodeException e) {}
 	}
 
 	/**
 	 * Checks if a person has a relationship with another person.
+	 * 
 	 * @param person1 the first person (order isn't important)
 	 * @param person2 the second person (order isn't important)
 	 * @return true if the two people have a relationship
 	 */
 	public boolean hasRelationship(Person person1, Person person2) {
-		EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(person1, person2, GraphUtils.UNDIRECTED_MASK);
+		EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(person1, person2,
+				GraphUtils.UNDIRECTED_MASK);
 		return (relationshipGraph.getEdge(edgePredicate) != null);
 	}
 
 	/**
 	 * Gets the relationship between two people.
+	 * 
 	 * @param person1 the first person (order isn't important)
 	 * @param person2 the second person (order isn't important)
 	 * @return the relationship or null if none.
@@ -157,7 +174,8 @@ implements Serializable {
 	public Relationship getRelationship(Person person1, Person person2) {
 		Relationship result = null;
 		if (hasRelationship(person1, person2)) {
-			EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(person1, person2, GraphUtils.UNDIRECTED_MASK);
+			EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(person1, person2,
+					GraphUtils.UNDIRECTED_MASK);
 			result = (Relationship) relationshipGraph.getEdge(edgePredicate).getUserObject();
 		}
 		return result;
@@ -165,6 +183,7 @@ implements Serializable {
 
 	/**
 	 * Gets all of a person's relationships.
+	 * 
 	 * @param person the person
 	 * @return a list of the person's Relationship objects.
 	 */
@@ -181,6 +200,7 @@ implements Serializable {
 
 	/**
 	 * Gets all the people that a person knows (has met).
+	 * 
 	 * @param person the person
 	 * @return a list of the people the person knows.
 	 */
@@ -195,11 +215,76 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the opinion that a person has of another person.
-	 * Note: If the people don't have a relationship, return default value of 50.
+	 * Gets a map of friends
+	 * 
+	 * @param person
+	 * @return {@link Person} array
+	 */
+	public Map<Person, Double> getFriends(Person person) {
+		Map<Person, Double> friends = new HashMap<>();
+		Collection<Person> list = getAllKnownPeople(person);
+//		System.out.println("list : " + list);
+		double highestScore = 0;
+//		double nextScore = 0;	
+		if (!list.isEmpty()) {
+			for (Person pp : list) {
+				double score = getOpinionOfPerson(person, pp);
+				if (highestScore <= score)
+					highestScore = score;
+					friends.put(pp, score);
+			}
+		}
+//		System.out.println("friends in RelationshipManager: " + friends);
+//		Collections.sort(friends);
+		return friends;
+	}
+	
+	/**
+	 * Gets the best friends, the ones having the highest relationship score
+	 * 
+	 * @param person
+	 * @return {@link Person} array
+	 */
+	public Map<Person, Double> getBestFriends(Person person) {
+		Map<Person, Double> bestFriends = getFriends(person);
+		int size = bestFriends.size();
+		if (size == 1) {
+			return bestFriends;
+		}
+		
+		else if (size > 1) {
+			double hScore = 0;
+			for (Person p : bestFriends.keySet()) {
+				double score = bestFriends.get(p);
+				if (hScore < score) {
+					hScore = score;
+				}
+			}
+//			System.out.println("best score : " + hScore);		
+			Map<Person, Double> list = new HashMap<>();
+			for (Person p : bestFriends.keySet()) {
+				double score = bestFriends.get(p);
+				if (score >= hScore) {
+					// in case if more than one person has the same score
+					list.put(p, score);
+				}
+			}
+//			System.out.println("list : " + list);
+			return list;
+			
+		}
+//		System.out.println("bestFriends : " + bestFriends);
+		return bestFriends;
+	}
+	
+	/**
+	 * Gets the opinion that a person has of another person. Note: If the people
+	 * don't have a relationship, return default value of 50.
+	 * 
 	 * @param person1 the person holding the opinion.
 	 * @param person2 the person who the opinion is of.
-	 * @return opinion value from 0 (enemy) to 50 (indifferent) to 100 (close friend).
+	 * @return opinion value from 0 (enemy) to 50 (indifferent) to 100 (close
+	 *         friend).
 	 */
 	public double getOpinionOfPerson(Person person1, Person person2) {
 		double result = 50D;
@@ -213,34 +298,39 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the average opinion that a person has of a group of people.
-	 * Note: If person1 doesn't have a relationship with any of the people, return default value of 50.
+	 * Gets the average opinion that a person has of a group of people. Note: If
+	 * person1 doesn't have a relationship with any of the people, return default
+	 * value of 50.
+	 * 
 	 * @param person1 the person holding the opinion.
-	 * @param people the collection of people who the opinion is of.
-	 * @return opinion value from 0 (enemy) to 50 (indifferent) to 100 (close friend).
+	 * @param people  the collection of people who the opinion is of.
+	 * @return opinion value from 0 (enemy) to 50 (indifferent) to 100 (close
+	 *         friend).
 	 */
 	public double getAverageOpinionOfPeople(Person person1, Collection<Person> people) {
 
-		if (people == null) throw new IllegalArgumentException("people is null");
+		if (people == null)
+			throw new IllegalArgumentException("people is null");
 
 		if (people.size() > 0) {
 			double result = 0D;
 			Iterator<Person> i = people.iterator();
 			while (i.hasNext()) {
 				Person person2 = i.next();
-				result+= getOpinionOfPerson(person1, person2);
+				result += getOpinionOfPerson(person1, person2);
 			}
 
 			result = result / people.size();
 			return result;
-		}
-		else return 50D;
+		} else
+			return 50D;
 	}
 
 	/**
 	 * Time passing for a person's relationships.
+	 * 
 	 * @param person the person
-	 * @param time the time passing (millisols)
+	 * @param time   the time passing (millisols)
 	 * @throws Exception if error.
 	 */
 	public void timePassing(Person person, double time) {
@@ -254,8 +344,9 @@ implements Serializable {
 
 	/**
 	 * Updates the person's relationships
+	 * 
 	 * @param person the person to update
-	 * @param time the time passing (millisols)
+	 * @param time   the time passing (millisols)
 	 * @throws Exception if error
 	 */
 	private void updateRelationships(Person person, double time) {
@@ -276,8 +367,9 @@ implements Serializable {
 			if (!hasRelationship(person, localPerson)) {
 				addRelationship(person, localPerson, Relationship.FIRST_IMPRESSION);
 
-				if(logger.isLoggable(Level.FINEST)) {
-					logger.finest(person.getName() + " and " + localPerson.getName() + " meet for the first time.  " + count);
+				if (logger.isLoggable(Level.FINEST)) {
+					logger.finest(
+							person.getName() + " and " + localPerson.getName() + " meet for the first time.  " + count);
 				}
 			}
 
@@ -288,52 +380,61 @@ implements Serializable {
 
 				// Randomly determine change amount (negative or positive)
 				double changeAmount = RandomUtil.getRandomDouble(BASE_RELATIONSHIP_CHANGE_AMOUNT) * time;
-				if (RandomUtil.lessThanRandPercent(50)) changeAmount = 0 - changeAmount;
+				if (RandomUtil.lessThanRandPercent(50))
+					changeAmount = 0 - changeAmount;
 
 				// Modify based on difference in other person's opinion.
-				double otherOpinionModifier = (getOpinionOfPerson(localPerson, person) - getOpinionOfPerson(person, localPerson)) / 100D;
-				otherOpinionModifier*= BASE_OPINION_MODIFIER * time;
-				changeAmount+= RandomUtil.getRandomDouble(otherOpinionModifier);
+				double otherOpinionModifier = (getOpinionOfPerson(localPerson, person)
+						- getOpinionOfPerson(person, localPerson)) / 100D;
+				otherOpinionModifier *= BASE_OPINION_MODIFIER * time;
+				changeAmount += RandomUtil.getRandomDouble(otherOpinionModifier);
 
 				// Modify based on the conversation attribute of other person.
-				double conversation = localPerson.getNaturalAttributeManager().getAttribute(NaturalAttributeType.CONVERSATION);
+				double conversation = localPerson.getNaturalAttributeManager()
+						.getAttribute(NaturalAttributeType.CONVERSATION);
 				double conversationModifier = (conversation - 50D) / 50D;
-				conversationModifier*= BASE_CONVERSATION_MODIFIER * time;
-				changeAmount+= RandomUtil.getRandomDouble(conversationModifier);
+				conversationModifier *= BASE_CONVERSATION_MODIFIER * time;
+				changeAmount += RandomUtil.getRandomDouble(conversationModifier);
 
 				// Modify based on attractiveness attribute if people are of opposite genders.
-				// Note: We may add sexual orientation later that will add further complexity to this.
-				double attractiveness = localPerson.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ATTRACTIVENESS);
+				// Note: We may add sexual orientation later that will add further complexity to
+				// this.
+				double attractiveness = localPerson.getNaturalAttributeManager()
+						.getAttribute(NaturalAttributeType.ATTRACTIVENESS);
 				double attractivenessModifier = (attractiveness - 50D) / 50D;
-				attractivenessModifier*= BASE_ATTRACTIVENESS_MODIFIER * time;
+				attractivenessModifier *= BASE_ATTRACTIVENESS_MODIFIER * time;
 				boolean oppositeGenders = (!person.getGender().equals(localPerson.getGender()));
-				if (oppositeGenders) RandomUtil.getRandomDouble(changeAmount+= attractivenessModifier);
+				if (oppositeGenders)
+					RandomUtil.getRandomDouble(changeAmount += attractivenessModifier);
 
 				// Modify based on same-gender bonding.
 				double genderBondingModifier = BASE_GENDER_BONDING_MODIFIER * time;
-				if (!oppositeGenders) RandomUtil.getRandomDouble(changeAmount+= genderBondingModifier);
+				if (!oppositeGenders)
+					RandomUtil.getRandomDouble(changeAmount += genderBondingModifier);
 
 				// Modify based on personality differences.
 				PersonalityType personPersonality = person.getMind().getMBTI();
 				PersonalityType localPersonality = localPerson.getMind().getMBTI();
-				double personalityDiffModifier = (2D - (double) personPersonality.getPersonalityDifference(localPersonality.getTypeString())) / 2D;
-				personalityDiffModifier*= PERSONALITY_DIFF_MODIFIER * time;
-				changeAmount+= RandomUtil.getRandomDouble(personalityDiffModifier);
+				double personalityDiffModifier = (2D
+						- (double) personPersonality.getPersonalityDifference(localPersonality.getTypeString())) / 2D;
+				personalityDiffModifier *= PERSONALITY_DIFF_MODIFIER * time;
+				changeAmount += RandomUtil.getRandomDouble(personalityDiffModifier);
 
 				// Modify based on settlers being trained to get along with each other.
 				double settlerModifier = SETTLER_MODIFIER * time;
-				changeAmount+= RandomUtil.getRandomDouble(settlerModifier);
+				changeAmount += RandomUtil.getRandomDouble(settlerModifier);
 
 				// Modify magnitude based on the collective stress of the two people.
 				double stressChangeModifier = 1 + ((personStress + localPersonStress) / 100D);
-				changeAmount*= stressChangeModifier;
+				changeAmount *= stressChangeModifier;
 
 				// Change the person's opinion of the other person.
 				Relationship relationship = getRelationship(person, localPerson);
 				if (relationship != null)
 					relationship.setPersonOpinion(person, relationship.getPersonOpinion(person) + changeAmount);
-				if(logger.isLoggable(Level.FINEST)){
-					logger.finest(person.getName() + " has changed opinion of " + localPerson.getName() + " by " + changeAmount);
+				if (logger.isLoggable(Level.FINEST)) {
+					logger.finest(person.getName() + " has changed opinion of " + localPerson.getName() + " by "
+							+ changeAmount);
 				}
 			}
 		}
@@ -342,21 +443,43 @@ implements Serializable {
 
 	/**
 	 * Modifies the person's stress based on relationships with local people.
+	 * 
 	 * @param person the person
-	 * @param time the time passing (millisols)
+	 * @param time   the time passing (millisols)
 	 * @throws Exception if error
 	 */
 	private void modifyStress(Person person, double time) {
 		double stressModifier = 0D;
 
 		Iterator<Person> i = person.getLocalGroup().iterator();
-		while (i.hasNext()) stressModifier-= ((getOpinionOfPerson(person, i.next()) - 50D) / 50D);
+		while (i.hasNext())
+			stressModifier -= ((getOpinionOfPerson(person, i.next()) - 50D) / 50D);
 
 		stressModifier = stressModifier * BASE_STRESS_MODIFIER * time;
 		PhysicalCondition condition = person.getPhysicalCondition();
 		condition.setStress(condition.getStress() + stressModifier);
 	}
 
+	/**
+	 * Describes a relationship, given the opinion score
+	 * 
+	 * @param opinion
+	 * @return the description
+	 */
+	public static String describeRelationship(double opinion) {
+		String result = null;
+		if (opinion < 5) result = Msg.getString("TabPanelSocial.opinion.0"); //$NON-NLS-1$
+		else if (opinion < 15) result = Msg.getString("TabPanelSocial.opinion.1"); //$NON-NLS-1$
+		else if (opinion < 25) result = Msg.getString("TabPanelSocial.opinion.2"); //$NON-NLS-1$
+		else if (opinion < 40) result = Msg.getString("TabPanelSocial.opinion.3"); //$NON-NLS-1$
+		else if (opinion < 55) result = Msg.getString("TabPanelSocial.opinion.4"); //$NON-NLS-1$
+		else if (opinion < 70) result = Msg.getString("TabPanelSocial.opinion.5"); //$NON-NLS-1$
+		else if (opinion < 85) result = Msg.getString("TabPanelSocial.opinion.6"); //$NON-NLS-1$
+		else if (opinion < 95) result = Msg.getString("TabPanelSocial.opinion.7"); //$NON-NLS-1$
+		else result = Msg.getString("TabPanelSocial.opinion.8"); //$NON-NLS-1$	
+		return result.toLowerCase();
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
