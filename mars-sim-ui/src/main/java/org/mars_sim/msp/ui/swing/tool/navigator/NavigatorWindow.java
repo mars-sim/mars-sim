@@ -162,11 +162,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		if (desktop.getMainScene() != null) {
 
 			// setTitleName(null);
-			// Remove title bar
+			// ...
 			putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
 			getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+			// Remove title bar
 			BasicInternalFrameUI bi = (BasicInternalFrameUI) super.getUI();
 			bi.setNorthPane(null);
+			// Remove border (not working)
 			setBorder(null);
 
 			// Prepare content pane

@@ -22,9 +22,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
 /**
- * The MarsGlobe class generates the Martian globe for the
- * GlobeDisplay object. It can center the globe at any set of
- * coordinates.
+ * The MarsGlobe class generates the Martian globe for the GlobeDisplay object.
+ * It can center the globe at any set of coordinates.
  */
 public class MarsGlobe {
 
@@ -33,25 +32,25 @@ public class MarsGlobe {
 
 	// Constant data members
 	/** Height of map source image (pixels). */
-	//private final static int map_height = 150;
-	public final static int map_height = 300;//GlobeDisplay.GLOBE_BOX_HEIGHT;
+	// private final static int map_height = 150;
+	public final static int map_height = 300;// GlobeDisplay.GLOBE_BOX_HEIGHT;
 	/** Width of map source image (pixels). */
-	public final static int map_width = map_height * 2 ;
+	public final static int map_width = map_height * 2;
 
 	private final double PI_half = Math.PI / 2D;
 	private final double PI_double = Math.PI * 2D;
-	
+
 	private double rho = map_height / Math.PI;
 	private double col_array_modifier = 1D / PI_double;
 	private int half_map = map_height / 2;
-	
+
 	// Data members
 	/** Center position of globe. */
 	private Coordinates centerCoords;
 	/** point colors in variably-sized vectors. */
 	private Vector<Integer>[] sphereColor;
-	//	/** "surface" or "topo" */
-	//	private String globeType;
+	// /** "surface" or "topo" */
+	// private String globeType;
 	/** cylindrical map image. */
 	private Image marsMap;
 	/** finished image of sphere with transparency. */
@@ -63,11 +62,12 @@ public class MarsGlobe {
 
 	/**
 	 * Constructs a MarsGlobe object
-	 * @param globeType the type of globe: "surface" or "topo"
+	 * 
+	 * @param globeType   the type of globe: "surface" or "topo"
 	 * @param displayArea the display component for the globe
 	 */
 	@SuppressWarnings("unchecked")
-	public MarsGlobe (MarsGlobeType globeType, JComponent displayArea) {
+	public MarsGlobe(MarsGlobeType globeType, JComponent displayArea) {
 
 		// Initialize Variables
 		// this.globeType = globeType;
@@ -77,33 +77,34 @@ public class MarsGlobe {
 
 		// Load Surface Map Image, which is now part of the globe enum
 		String imageName = globeType.getPath();
-/*		switch (globeType) {
-			case SURFACE : imageName = "SurfaceMarsMapSmall.jpg"; break;
-			case TOPO : imageName = "TopoMarsMapSmall.jpg"; break;
-			default : imageName = "";
-		}
-*/
+//		switch (globeType) {
+//			case SURFACE : imageName = "SurfaceMarsMapSmall.jpg"; break;
+//			case TOPO : imageName = "TopoMarsMapSmall.jpg"; break;
+//			default : imageName = "";
+//		}
+
 		MediaTracker mtrack = new MediaTracker(displayArea);
 		marsMap = ImageLoader.getImage(imageName);
 		mtrack.addImage(marsMap, 0);
 		try {
 			mtrack.waitForAll();
 		} catch (InterruptedException e) {
-			logger.log(Level.SEVERE,Msg.getString("MarsGlobe.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
+			logger.log(Level.SEVERE, Msg.getString("MarsGlobe.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
 		}
 
 		// Prepare Sphere
 		setup_sphere();
 	}
 
-	/** Creates a Sphere Image at given center point
-	 *  @param newCenter new center location
+	/**
+	 * Creates a Sphere Image at given center point
+	 * 
+	 * @param newCenter new center location
 	 */
 	public synchronized void drawSphere(Coordinates newCenter) {
-		//System.out.println("drawSphere()");
+		// System.out.println("drawSphere()");
 		// Adjust coordinates
-		Coordinates adjNewCenter =
-				new Coordinates(newCenter.getPhi(), newCenter.getTheta() + Math.PI);
+		Coordinates adjNewCenter = new Coordinates(newCenter.getPhi(), newCenter.getTheta() + Math.PI);
 
 		// If current center point equals new center point, don't recreate sphere
 		if (centerCoords.equals(adjNewCenter)) {
@@ -115,8 +116,8 @@ public class MarsGlobe {
 
 		centerCoords.setCoords(adjNewCenter);
 
-		//double PI_half = Math.PI / 2D;
-		//double PI_double = Math.PI * 2D;
+		// double PI_half = Math.PI / 2D;
+		// double PI_double = Math.PI * 2D;
 
 		double end_row = centerCoords.getPhi() - PI_half;
 		double start_row = end_row + Math.PI;
@@ -138,18 +139,18 @@ public class MarsGlobe {
 
 		// More variable initializations
 		double col_correction = -PI_half - centerCoords.getTheta();
-		//double rho = map_height / Math.PI;
+		// double rho = map_height / Math.PI;
 		double sin_offset = Math.sin(centerCoords.getPhi() + Math.PI);
 		double cos_offset = Math.cos(centerCoords.getPhi() + Math.PI);
-		//double col_array_modifier = 1D / PI_double;
-		//int half_map = map_height / 2;
+		// double col_array_modifier = 1D / PI_double;
+		// int half_map = map_height / 2;
 
 		// Create array to hold image
 		int[] buffer_array = new int[map_height * map_height];
 
 		// Go through each row of the sphere
-		for (double row = start_row; (((north) && (row >= end_row)) ||
-				((!north) && (row <= end_row))); row += row_iterate) {
+		for (double row = start_row; (((north) && (row >= end_row))
+				|| ((!north) && (row <= end_row))); row += row_iterate) {
 			if (row < 0)
 				continue;
 			if (row >= Math.PI)
@@ -165,15 +166,13 @@ public class MarsGlobe {
 			// Determine visible boundry of row
 			double col_boundry = Math.PI;
 			if (centerCoords.getPhi() <= PI_half) {
-				if ((row >= PI_half * Math.cos(centerCoords.getPhi())) &&
-						(row < PI_half)) {
+				if ((row >= PI_half * Math.cos(centerCoords.getPhi())) && (row < PI_half)) {
 					col_boundry = PI_half * (1D + row_cos);
 				} else if (row >= PI_half) {
 					col_boundry = PI_half;
 				}
 			} else {
-				if ((row <= PI_half * Math.cos(centerCoords.getPhi())) &&
-						(row > PI_half)) {
+				if ((row <= PI_half * Math.cos(centerCoords.getPhi())) && (row > PI_half)) {
 					col_boundry = PI_half * (1D - row_cos);
 				} else if (row <= PI_half) {
 					col_boundry = PI_half;
@@ -187,7 +186,7 @@ public class MarsGlobe {
 
 			// Error adjustment for theta center close to PI_half
 			double error_correction = centerCoords.getPhi() - PI_half;
-			
+
 			if (error_correction > 0D) {
 				if (error_correction < row_iterate) {
 					col_boundry = PI_half;
@@ -210,7 +209,7 @@ public class MarsGlobe {
 
 			// Go through each column in row
 			for (double col = start_col; col <= end_col; col += col_iterate) {
-				int array_x = (int)(col_array_modifier2 * col);
+				int array_x = (int) (col_array_modifier2 * col);
 
 				if (array_x < 0) {
 					array_x += circum;
@@ -221,40 +220,39 @@ public class MarsGlobe {
 				double temp_col = col + col_correction;
 
 				// Determine x and y position of point on image
-				int buff_x = (int) Math.round(temp_buff_x * Math.cos(temp_col)) +
-						half_map;
-				int buff_y = (int) Math.round((temp_buff_y1 * Math.sin(temp_col)) +
-						temp_buff_y2) + half_map;
+				int buff_x = (int) Math.round(temp_buff_x * Math.cos(temp_col)) + half_map;
+				int buff_y = (int) Math.round((temp_buff_y1 * Math.sin(temp_col)) + temp_buff_y2) + half_map;
 
 				// Put point in buffer array
 				buffer_array[buff_x + (map_height * buff_y)] = sphereColor[array_y].elementAt(array_x);
-				//buffer_array[buff_x + (map_height * buff_y)] = 0xFFFFFFFF; // if in gray scale
+				// buffer_array[buff_x + (map_height * buff_y)] = 0xFFFFFFFF; // if in gray
+				// scale
 			}
 		}
 
 		// Create image out of buffer array
-		globeImage = displayArea.createImage(
-				new MemoryImageSource(map_height, map_height, buffer_array, 0,
-						map_height));
+		globeImage = displayArea
+				.createImage(new MemoryImageSource(map_height, map_height, buffer_array, 0, map_height));
 
 		MediaTracker mt = new MediaTracker(displayArea);
 		mt.addImage(globeImage, 0);
-		//System.out.println("mt.addImage(globeImage, 0)");
+		// System.out.println("mt.addImage(globeImage, 0)");
 		try {
 			mt.waitForID(0);
 			// Indicate that image is complete
 			imageDone = true;
-			//System.out.println("mt.waitForID(0)");
-			
-		} catch (InterruptedException e) {
-			logger.log(Level.SEVERE,Msg.getString("MarsGlobe.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
-		}
+			// System.out.println("mt.waitForID(0)");
 
+		} catch (InterruptedException e) {
+			logger.log(Level.SEVERE, Msg.getString("MarsGlobe.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
+		}
 
 	}
 
-	/** Returns globe image
-	 *  @return globe image
+	/**
+	 * Returns globe image
+	 * 
+	 * @return globe image
 	 */
 	public Image getGlobeImage() {
 		return globeImage;
@@ -274,12 +272,11 @@ public class MarsGlobe {
 		int[][] map_pixels = new int[map_width][map_height];
 
 		// Grab mars_surface image into pixels_color array using PixelGrabber
-		PixelGrabber pg_color = new PixelGrabber(marsMap, 0, 0, map_width, map_height,
-				pixels_color, 0, map_width);
+		PixelGrabber pg_color = new PixelGrabber(marsMap, 0, 0, map_width, map_height, pixels_color, 0, map_width);
 		try {
 			pg_color.grabPixels();
 		} catch (InterruptedException e) {
-			logger.log(Level.SEVERE,Msg.getString("MarsGlobe.log.grabberError") + e); //$NON-NLS-1$
+			logger.log(Level.SEVERE, Msg.getString("MarsGlobe.log.grabberError") + e); //$NON-NLS-1$
 		}
 		if ((pg_color.status() & ImageObserver.ABORT) != 0)
 			logger.info(Msg.getString("MarsGlobe.log.grabberError")); //$NON-NLS-1$
@@ -290,7 +287,7 @@ public class MarsGlobe {
 				map_pixels[x][y] = pixels_color[x + (y * map_width)];
 
 		// Initialize variables
-		//rho = map_height / Math.PI;
+		// rho = map_height / Math.PI;
 		offset = Math.PI / (2 * ih_d);
 
 		// Go through each row and create Sphere_Color vector with it
@@ -301,8 +298,7 @@ public class MarsGlobe {
 			sphereColor[row] = new Vector<Integer>(col_num);
 
 			// Fill vector with colors
-			for (theta = 0; theta < (2 * Math.PI);
-					theta += ((Math.PI * 2) / circum)) {
+			for (theta = 0; theta < (2 * Math.PI); theta += ((Math.PI * 2) / circum)) {
 				if (theta == 0) {
 					map_col = 0;
 				} else {
@@ -314,13 +310,15 @@ public class MarsGlobe {
 		}
 	}
 
-	/** determines if a requested sphere is complete
-	 *  @return true if image is done
+	/**
+	 * determines if a requested sphere is complete
+	 * 
+	 * @return true if image is done
 	 */
 	public boolean isImageDone() {
 		return imageDone;
 	}
-	
+
 	/**
 	 * Prepare globe for deletion.
 	 */
@@ -330,7 +328,7 @@ public class MarsGlobe {
 		sphereColor = null;
 		marsMap = null;
 		globeImage = null;
-		displayArea= null;
+		displayArea = null;
 	}
 
 }

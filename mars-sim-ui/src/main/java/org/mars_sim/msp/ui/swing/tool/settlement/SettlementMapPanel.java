@@ -1129,7 +1129,7 @@ implements ClockListener {
 	@Override
 	public void uiPulse(double time) {
 		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMapTabOpen() && mainScene.isMapOn()) {//&& !masterClock.isPaused()) {			
+			if (!mainScene.isMinimized() && mainScene.isMapTabOpen() && mainScene.isSettlementMapOn()) {//&& !masterClock.isPaused()) {			
 //				timeCache += time;
 //				if (timeCache > PERIOD_IN_MILLISOLS * time) {
 //					System.out.println(masterClock.getTimeRatio() + " : " + Math.round(PERIOD_IN_MILLISOLS * time*100.0)/100.0);

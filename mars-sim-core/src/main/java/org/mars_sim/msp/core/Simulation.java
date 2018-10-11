@@ -145,8 +145,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	private String lastSaveStr = null;
 	
-
-	// Note: Transient data members (aren't stored in save file)
+	// Note: Transient data members aren't stored in save file
 	// Added transient to avoid serialization error
 //	private transient Timer autosaveTimer;
 	// private transient Timeline timer;
@@ -203,14 +202,14 @@ public class Simulation implements ClockListener, Serializable {
 
 	/** (NOT USED) Eager Initialization Singleton instance. */
 	// private static final Simulation instance = new Simulation();
-	/**
-	 * Gets a Eager Initialization Singleton instance of the simulation.
-	 * 
-	 * @return Simulation instance
-	 */
-	// public static Simulation instance() {
-	// return instance;
-	// }
+//	/**
+//	 * Gets a Eager Initialization Singleton instance of the simulation.
+//	 * 
+//	 * @return Simulation instance
+//	 */
+//	public static Simulation instance() {
+//		return instance;
+//	}
 
 	/**
 	 * Initializes an inner static helper class for Bill Pugh Singleton Pattern
@@ -306,9 +305,9 @@ public class Simulation implements ClockListener, Serializable {
 		SimulationConfig.instance().build = Simulation.BUILD;
 	}
 
-	/**
-	 * Initialize transient data in the simulation.
-	 */
+//	/**
+//	 * Initialize transient data in the simulation.
+//	 */
 //    private void initializeTransientData() {
 //       //logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
 //       eventManager = new HistoricalEventManager();

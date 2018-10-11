@@ -33,19 +33,32 @@
     -fx-padding: 5 5 5 5;
 }
 
+/*******************************************************************************
+ *                                                                             *
+ * JFX Tab Pane                                                                *
+ *                                                                             *
+ ******************************************************************************/
+
 
 .jfx-tab-pane .headers-region > .tab:selected > .tab-container > .tab-label  {
     -fx-text-fill: #654b00;
     -fx-background-color: #654b00; /* #654b00; or (101,75,0) is mild brown, #F9BF00; is yellowish orange */
 }
+
 .jfx-tab-pane .tab-header-background {
     -fx-text-fill: #654b00;
     -fx-background-color: #654b00;
 }
-.jfx-tab-pane .tab-selected-line {
-    -fx-stroke: #F9BF00;
-    -fx-stroke-width: 1pt;
+
+.jfx-tab-pane .tab-header-area .jfx-rippler {
+    -jfx-rippler-fill: -fx-focus-color;
 }
+
+.jfx-tab-pane .tab-selected-line {
+    -fx-background-color: #654b00;
+}
+
+
 
 /*******************************************************************************
  *                                                                             *
@@ -67,10 +80,8 @@
 .jfx-slider{
     -jfx-default-thumb: #F9BF00;
     -jfx-default-track: #F9BF00;
-}
-
-.jfx-slider {
     -jfx-indicator-position: right;
+    -fx-text-fill: white;
 }
 
 .jfx-slider > .thumb {
@@ -83,13 +94,27 @@
     -fx-background-color: #654b00;
     -fx-pref-height: 5px;
     -fx-pref-width: 5px;
+    -fx-text-fill: white; 
 }
 
 .jfx-slider .animated-thumb{
-    -fx-background-color: darkorange;
+    -fx-background-color: F9BF00;
 }
 
 .jfx-slider .sliderValue {
-    -fx-stroke: #f8c202;
+    -fx-stroke: white;
     -fx-font-size: 12.0;
+    -fx-fill: white;
+}
+
+.jfx-slider .axis .axis-tick-mark, .slider .axis .axis-minor-tick-mark {
+    -fx-fill: white;
+    -fx-stroke: white;
+}
+
+.jfx-slider .axis {
+    -fx-tick-label-fill: white;
+    -fx-tick-length: 5px;
+    -fx-minor-tick-length: 3px;
+    -fx-border-color: null;
 }

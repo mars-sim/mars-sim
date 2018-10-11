@@ -84,14 +84,33 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>miglayout-javafx</artifactId>
 		    <version>5.1</version>
 		</dependency-->
-		<!-- https://mvnrepository.com/artifact/com.github.insubstantial/trident : 80KB
-			https://github.com/Insubstantial/insubstantial/tree/master/trident-->
+		<!-- trident is required by steelseries.extras in mars-sim-ui		
+		https://mvnrepository.com/artifact/com.github.insubstantial/trident : (106 KB) 
+			https://github.com/Insubstantial/insubstantial/tree/master/trident
+			Use radiance-trident instead
 		<dependency>
 			<groupId>com.github.insubstantial</groupId>
 			<artifactId>trident</artifactId>
 			<version>7.3</version>
 		</dependency>
-
+		-->	
+		<!-- trident animation library is required by steelseries.extras in mars-sim-ui	
+		     https://search.maven.org/artifact/org.pushing-pixels/radiance-trident/1.0.1/jar 
+		     https://github.com/kirill-grouchnikov/radiance/blob/master/docs/trident/trident.md79KB -->
+		<dependency>
+		  <groupId>org.pushing-pixels</groupId>
+		  <artifactId>radiance-trident</artifactId>
+		  <version>1.0.1</version>
+		</dependency>
+		<!-- https://github.com/kirill-grouchnikov/radiance
+		     https://github.com/kirill-grouchnikov/radiance/blob/master/docs/substance/substance.md
+		     https://search.maven.org/search?q=g:org.pushing-pixels%20AND%20a:radiance-substance 1.4 MB
+		<dependency>
+		  <groupId>org.pushing-pixels</groupId>
+		  <artifactId>radiance-substance</artifactId>
+		  <version>1.0.1</version>
+		</dependency>
+		 -->
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder/1.10 : 125KB
 			1.9 has java.lang.NoClassDefFoundError: org/apache/batik/i18n/Localizable, which is caused by a bug with Apache FOP
 			see http://stackoverflow.com/questions/43371411/apache-fop-2-2-migration-error-classnotfoundexception-org-apache-batik-i18n-l
@@ -424,7 +443,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	</dependency>		
 	-->
   </dependencies>
-  
+ 
 	<repositories>
 	    <repository>
 	        <id>maven-central-repo</id>

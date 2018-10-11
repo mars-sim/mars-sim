@@ -236,37 +236,6 @@
 	-jfx-toggle-color: #f8c202; /* f8c202 is mud mid orange */
 }
 
-.jfx-slider {
-  	-fx-background-color: transparent; /* only this setting works. other color settings on jfx-slider don't */
-	-fx-indicator-position: right;
-  	-fx-snap-to-ticks : true;
-    -fx-font-size: 14px;
-    -fx-text-fill: #f8c202;
-}
-
-.jfx-slider .thumb{
-	-fx-stroke : black;
-	-fx-fill : black;
-}
-
-.jfx-slider: disabled {
-	-fx-opacity: 0.4;
-}
-
-.jfx-slider > .thumb {
-	-fx-background-color: #f8c202;
-}
-
-.jfx-slider > .track {
-	-fx-background-color: gray;
-	-fx-pref-height: 2px;
-	-fx-pref-width: 2px;
-}
-
-.jfx-slider > .sliderValue {
-	-fx-stroke: #f8c202; /* 00cc66 is mid green */
-	-fx-font-size: 12.0;
-}
 
 .jfx-popup-container{
 	-fx-background-color: black;
@@ -279,56 +248,6 @@
 	-fx-border-style: solid;
 }
 
-
-/*******************************************************************************
-*                                                                              *
-* JFX Check Box                                                                *
-*                                                                              *
-*******************************************************************************/
-
-.jfx-check-box > .box {
-    -jfx-checked-color: gray;
-    -jfx-unchecked-color: gray;
-    -fx-text-fill: white; /* #f8c202;*/
-	-jfx-background-color: transparent; 
-}
-
-
-.jfx-check-box {
-    -jfx-checked-color: gray;
-    -jfx-unchecked-color: gray;
-    -fx-text-fill: white; /* #f8c202;*/
-	-fx-background-color: transparent;  
-    -fx-font-weight: BOLD;
-    -fx-font-size: 12;
-    -fx-font-weight: italic;
-}
-
-/*******************************************************************************/
-
-.combo-box-base {
-    -fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";
-    -fx-background-color: transparent, transparent, transparent, transparent;
-    -fx-text-fill: #f8c202;
-    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
-    -fx-background-radius: 3px, 3px, 2px, 1px;
-}
-
-.jfx-combo-box .list-cell  {
-	-fx-font-size: 12.0;
-	-fx-background: transparent;
-    -fx-background-color: #917215; /* #917215; */
-    -fx-text-fill: #f8c202;
-}
-
-.jfx-combo-box .text-field {
-	-fx-font-size: 12.0;
-	-fx-background: transparent;
-    -fx-background-color: #654b00;
-    -fx-text-fill: #f8c202;
-    -fx-cell-size: 1.66667em;
-    -fx-pref-height: 25;
-}
 
 /*******************************************************************************/
 
@@ -451,24 +370,74 @@
     -fx-font-weight: italic;
 }
 
-.vbox {
-	-fx-background-color: transparent;
+/*******************************************************************************
+*                                                                              *
+* JFX Check Box                                                                *
+*                                                                              *
+*******************************************************************************/
+
+.jfx-check-box {
+    -jfx-checked-color: gray;
+    -jfx-unchecked-color: gray;
+    -fx-text-fill: white;
+	-fx-background-color: transparent;  
+    -fx-font-weight: BOLD;
+    -fx-font-size: 12;
+    -fx-font-weight: italic;
 }
 
-.slider .thumb:hover {
-
+.jfx-check-box > .box {
+    -jfx-checked-color: gray;
+    -jfx-unchecked-color: gray;
+    -fx-text-fill: white;
+	-jfx-background-color: transparent; 
 }
 
-.slider .thumb:pressed {
-	
+
+/*******************************************************************************
+*                                                                              *
+* JFX Combo Box                                                               *
+*                                                                              *
+*******************************************************************************/
+
+.combo-box-base {
+    -fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";
+    -fx-background-color: transparent, transparent, transparent, transparent;
+    -fx-text-fill: white;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-background-radius: 3px, 3px, 2px, 1px;
 }
 
-.slider:focused .thumb {
-    -fx-background-color: -fx-focus-color, -fx-inner-border, -fx-body-color, -fx-faint-focus-color, -fx-body-color;
-    -fx-background-insets: -0.2, 1, 2, -1.4, 2.6;
-    -fx-background-radius: 3, 2, 1, 4, 1;
+.jfx-combo-box .list-cell  {
+	-fx-font-size: 12.0;
+	-fx-background: transparent;
+    -fx-background-color: grey;
+    -fx-text-fill: white;
 }
 
-.slider:disabled {
-	
+.jfx-combo-box .text-field {
+	-fx-font-size: 12.0;
+	-fx-background: transparent;
+    -fx-background-color: grey;
+    -fx-text-fill: white;
+    -fx-cell-size: 1.66667em;
+    -fx-pref-height: 25;
+}
+
+#map-tool-anchor-pane {
+	-fx-background-color:
+		linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+		linear-gradient(#020b02, #3a3a3a),
+		linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #343534 80%, #242424 100%),
+		linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #343534 80%, #262626 100%),
+		linear-gradient(#777777 0%, #606060 50%, #505250 51%, #2a2b2a 100%);
+	-fx-background-insets: 0,1,4,5,6;
+	-fx-background-radius: 9,8,5,4,3;
+	-fx-padding: 1 1 1 1;
+	-fx-font-family: 'Helvetica';
+	-fx-font-size: 12px;
+	-fx-font-weight: bold;
+	-fx-opacity: .75;
+	-fx-text-fill: white;
+	-fx-effect: dropshadow( three-pass-box , rgba(128, 128, 128, 0.2), 1, 0.0, 0, 1);
 }

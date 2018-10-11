@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -122,17 +121,17 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 	// private Mars mars;
 	private MainDesktopPane desktop;
-	private NavigatorWindow navwin;
+//	private NavigatorWindow navwin;
 	private SurfaceFeatures surfaceFeatures;
 	private MainScene mainScene;
 
-	private static MasterClock masterClock = Simulation.instance().getMasterClock();
+//	private static MasterClock masterClock = Simulation.instance().getMasterClock();
 
 	private Graphics dbg;
 	private Image dbImage = null;
 	private Image starfield;
 
-	private boolean isOpenCache = false; // justLoaded = true,
+//	private boolean isOpenCache = false; // justLoaded = true,
 	// private int difxCache, difyCache;
 	private double globeCircumference;
 	private double rho;
@@ -146,7 +145,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 */
 	public GlobeDisplay(final NavigatorWindow navwin) {// , int width, int height) {
 
-		this.navwin = navwin;
+//		this.navwin = navwin;
 		this.desktop = navwin.getDesktop();
 		this.mainScene = desktop.getMainScene();
 
@@ -168,7 +167,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		// Set component size
 		setPreferredSize(new Dimension(width, height));
 		setMaximumSize(getPreferredSize());
-		setMinimumSize(getPreferredSize());
+//		setMinimumSize(getPreferredSize());
 
 		// Construct sphere objects for both real and topographical modes
 		marsSphere = new MarsGlobe(MarsGlobeType.SURFACE_MID, this);

@@ -408,7 +408,7 @@ public class MainScene implements ClockListener {
 	private JFXComboBox<Settlement> sBox;
 	private JFXToggleButton cacheToggle;
 	private JFXToggleButton minimapToggle;
-	private JFXToggleButton mapToggle;
+	private JFXToggleButton sMapToggle;
 	private JFXSlider zoomSlider;
 	private JFXToolbar toolbar;
 
@@ -1844,11 +1844,6 @@ public class MainScene implements ClockListener {
 						+ "Autumn Equinox -> Ls = 180 ; "
 						+ "Winter Solstice -> Ls = 270");
 
-//		HBox LsBox = new HBox();
-//		LsBox.setPadding(new Insets(2, 2, 2, 2));
-//		LsBox.setAlignment(Pos.BOTTOM_CENTER);
-//		LsBox.getChildren().addAll(LsLabel, LSText);
-
 		Label radiusLabel = new Label("Mars-to-Sun : ");
 		setQuickToolTip(radiusLabel, "The distance between Mars and Sun in A.U.");
 		double radius = orbitInfo.getDistanceToSun();
@@ -1933,22 +1928,40 @@ public class MainScene implements ClockListener {
 		setGlow(calendarPane);
 	}
 
-	public void createMapToolBox() {
-		// Add toolStackPane for map tool
-//		sMapToolPane = new StackPane();
-		
+	public void createMapToolBox() {		
 		// Set up the map tool anchor pane
 		mapToolAnchorPane = new AnchorPane();
-		// mapsAnchorPane.setStyle("-fx-background-color: transparent; ");
+		mapToolAnchorPane.setId("map-tool-anchor-pane");
 		//mapToolAnchorPane.setStyle("-fx-background-color: lightgrey; ");
-		
-		mapToolAnchorPane.setPrefHeight(600);
-		mapToolAnchorPane.setPrefWidth(200);
+		// see https://introjava.wordpress.com/2012/03/23/java-fx-2-linear-gradients/
+//		mapToolAnchorPane.setStyle(
+////				"-fx-background-radius: 15px;"
+////				+ "-fx-background-color:  linear-gradient(lightgrey, darkgrey);"
+//				//+ "-fx-background-color: darkgrey;"
+//					"-fx-background-color:"
+//				+ "linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),"
+//				+ "    linear-gradient(#020b02, #3a3a3a),"
+//			    + "    linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #343534 80%, #242424 100%),"
+//			    + "    linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #343534 80%, #262626 100%),"
+//			    + "    linear-gradient(#777777 0%, #606060 50%, #505250 51%, #2a2b2a 100%);"
+//			    + "-fx-background-insets: 0,1,4,5,6;"
+//			    + "-fx-background-radius: 9,8,5,4,3;"
+//			    + "-fx-padding: 1 1 1 1;"
+////			    + "-fx-font-family: 'Helvetica';"
+//			    + "-fx-font-size: 12px;"
+////			    + "-fx-font-weight: bold;"
+//			    + "-fx-opacity: .75;"
+//			    + "-fx-text-fill: white;"
+//			    + "-fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2),1 ,0.0 ,0 ,1);"
+//				);
+//		mapToolAnchorPane.setOpacity(.75);
+		mapToolAnchorPane.setPrefHeight(450);
+		mapToolAnchorPane.setPrefWidth(140);
 		
 		sMapStackPane.getChildren().add(mapToolAnchorPane);
 		
-		AnchorPane.setTopAnchor(mapToolAnchorPane, 90.0);
-		AnchorPane.setRightAnchor(mapToolAnchorPane, 10.0);
+		AnchorPane.setTopAnchor(mapToolAnchorPane, 110.0);
+		AnchorPane.setRightAnchor(mapToolAnchorPane, 20.0);
 		
 		createMapButtons();
 		createMapCacheToggles();
@@ -2002,12 +2015,12 @@ public class MainScene implements ClockListener {
 			e.consume();
 		});
 
-		mapToggle = new JFXToggleButton();
-		mapToggle.setText("Settlement Map Off");
-		mapToggle.setSelected(false);
-		setQuickToolTip(mapToggle, "Pin Settlement Map");
-		mapToggle.setOnAction(e -> {
-			if (mapToggle.isSelected()) {
+		sMapToggle = new JFXToggleButton();
+		sMapToggle.setText("Settlement Map Off");
+		sMapToggle.setSelected(false);
+		setQuickToolTip(sMapToggle, "Pin Settlement Map");
+		sMapToggle.setOnAction(e -> {
+			if (sMapToggle.isSelected()) {
 				if (!desktop.isToolWindowOpen(SettlementWindow.NAME))
 					openSettlementMap();
 				if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
@@ -2037,7 +2050,7 @@ public class MainScene implements ClockListener {
 					minimapGroup.toFront();
 
 				minimapToggle.toFront();
-				mapToggle.toFront();
+				sMapToggle.toFront();
 			} else
 				cacheToggle.setText("Map Cache Off");
 
@@ -2048,6 +2061,7 @@ public class MainScene implements ClockListener {
 
 	public void createMapButtons() {
 		rotateCWBtn = new JFXButton();
+		rotateCWBtn.setOpacity(1);
 		rotateCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.cw"))))); //$NON-NLS-1$
 		rotateCWBtn.setStyle("-fx-background-color: transparent; ");
 		setQuickToolTip(rotateCWBtn, Msg.getString("SettlementTransparentPanel.tooltip.clockwise"));
@@ -2057,6 +2071,7 @@ public class MainScene implements ClockListener {
 		});
 
 		rotateCCWBtn = new JFXButton();
+		rotateCCWBtn.setOpacity(1);
 		rotateCCWBtn
 				.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.ccw"))))); //$NON-NLS-1$
 		rotateCCWBtn.setStyle("-fx-background-color: transparent; ");
@@ -2067,6 +2082,7 @@ public class MainScene implements ClockListener {
 		});
 
 		recenterBtn = new JFXButton();
+		recenterBtn.setOpacity(1);
 		recenterBtn.setGraphic(
 				new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.recenter"))))); //$NON-NLS-1$
 		recenterBtn.setStyle("-fx-background-color: transparent; ");
@@ -2082,12 +2098,13 @@ public class MainScene implements ClockListener {
 	public void createFXZoomSlider() {
 		// Set up a settlement view zoom bar
 		zoomSlider = new JFXSlider();
+		zoomSlider.setOpacity(1);
 		zoomSlider.getStyleClass().add("jfx-slider");
 		zoomSlider.setMin(0);
-		zoomSlider.setMax(35);
+		zoomSlider.setMax(40);
 		zoomSlider.setValue(DEFAULT_ZOOM);
 		zoomSlider.setMajorTickUnit(10);
-		zoomSlider.setMinorTickCount(5);
+		//zoomSlider.setMinorTickCount(5);
 		zoomSlider.setShowTickLabels(true);
 		zoomSlider.setShowTickMarks(true);
 		zoomSlider.setSnapToTicks(false);
@@ -2131,6 +2148,7 @@ public class MainScene implements ClockListener {
 		});
 
 		settlementBox = new StackPane(sBox);
+		settlementBox.setOpacity(1);
 		settlementBox.setMaxSize(180, 30);
 		settlementBox.setPrefSize(180, 30);
 		settlementBox.setAlignment(Pos.CENTER_RIGHT);
@@ -2144,6 +2162,7 @@ public class MainScene implements ClockListener {
 	public void createFXMapLabelBox() {
 
 		mapLabelBox = new VBox();
+//		mapLabelBox.setOpacity(1);
 		mapLabelBox.setSpacing(5);
 		mapLabelBox.setMaxSize(180, 150);
 		mapLabelBox.setPrefSize(180, 150);
@@ -2305,6 +2324,7 @@ public class MainScene implements ClockListener {
 		navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
 
 		minimapNode = new SwingNode();
+		minimapNode.setStyle("-fx-background-color: transparent; -fx-border-color: black; ");	
 		minimapGroup = new Group(minimapNode);
 		minimapNode.setContent(navWin);
 				
@@ -2313,11 +2333,11 @@ public class MainScene implements ClockListener {
 		mapPanel = settlementWindow.getMapPanel();
 	
 		mapNode = new SwingNode();
-		mapNode.setStyle("-fx-background-color: transparent; ");	
+		mapNode.setStyle("-fx-background-color: transparent; -fx-border-color: black;");	
 		mapNode.setContent(settlementWindow);
 		
 		sMapStackPane = new StackPane(mapNode);
-		sMapStackPane.setStyle("-fx-background-color: transparent; ");
+		sMapStackPane.setStyle("-fx-background-color: transparent; -fx-border-color: black;");
 //		setGlow(mapNode);
 
 		// Set up the "Help" Tab
@@ -2357,7 +2377,7 @@ public class MainScene implements ClockListener {
 			}
 
 			else {
-				mapsAnchorPane.getChildren().removeAll(cacheToggle, minimapToggle, mapToggle);
+				mapsAnchorPane.getChildren().removeAll(cacheToggle, minimapToggle, sMapToggle);
 			}
 
 		});
@@ -2374,7 +2394,7 @@ public class MainScene implements ClockListener {
 	 */
 	public void anchorAllMapWidgets() {
 
-		AnchorPane.setRightAnchor(zoomSlider, 65.0);
+		AnchorPane.setRightAnchor(zoomSlider, 70.0);
 		AnchorPane.setTopAnchor(zoomSlider, 270.0);//350.0);
 
 		AnchorPane.setRightAnchor(rotateCWBtn, 110.0);
@@ -2404,10 +2424,10 @@ public class MainScene implements ClockListener {
 		AnchorPane.setLeftAnchor(minimapToggle, 10.0);
 		AnchorPane.setTopAnchor(minimapToggle, 17.0); // 55.0
 
-		AnchorPane.setRightAnchor(mapToggle, 15.0);
-		AnchorPane.setTopAnchor(mapToggle, 17.0); // 55.0
+		AnchorPane.setRightAnchor(sMapToggle, 15.0);
+		AnchorPane.setTopAnchor(sMapToggle, 17.0); // 55.0
 
-		mapsAnchorPane.getChildren().addAll(cacheToggle, minimapToggle, mapToggle);
+		mapsAnchorPane.getChildren().addAll(cacheToggle, minimapToggle, sMapToggle);
 
 	}
 
@@ -2416,6 +2436,8 @@ public class MainScene implements ClockListener {
 	 */
 	public void openMinimap() {
 		desktop.openToolWindow(NavigatorWindow.NAME);
+
+		navWin.getGlobeDisplay().drawSphere();// updateDisplay();
 
 		AnchorPane.setLeftAnchor(minimapGroup, 3.0);
 		AnchorPane.setTopAnchor(minimapGroup, 0.0); // 45.0
@@ -2430,13 +2452,13 @@ public class MainScene implements ClockListener {
 		if (!flag)
 			mapsAnchorPane.getChildren().addAll(minimapGroup);
 
-		navWin.getGlobeDisplay().drawSphere();// updateDisplay();
+		minimapGroup.toFront();
+		
 		navWin.showSurfaceMap();
 		
 		navWin.toFront();
 		navWin.requestFocus();	
 
-		minimapGroup.toFront();
 		minimapToggle.setSelected(true);
 		minimapToggle.setText("Minimap On");
 		minimapToggle.toFront();
@@ -2480,23 +2502,36 @@ public class MainScene implements ClockListener {
 		
 		mapToolAnchorPane.toFront();
 
-		mapToggle.toFront();
+		sMapToggle.toFront();
 		cacheToggle.toFront();
 		minimapToggle.toFront();
 
-		mapToggle.setText("Settlement Map On");
-		mapToggle.setSelected(true);
+		sMapToggle.setText("Settlement Map On");
+		sMapToggle.setSelected(true);
 
 	}
 
-	public boolean isMapOn() {
-		return mapToggle.isSelected();
+	/**
+	 * Checks if the settlement map is on
+	 * 
+	 * @return
+	 */
+	public boolean isSettlementMapOn() {
+		return sMapToggle.isSelected();
 	}
 
+	/**
+	 * Checks if minimap is on
+	 * 
+	 * @return
+	 */
 	public boolean isMinimapOn() {
-		return mapToggle.isSelected();
+		return minimapToggle.isSelected();
 	}
 
+	/**
+	 * Closes the minimap
+	 */
 	public void closeMinimap() {
 		desktop.closeToolWindow(NavigatorWindow.NAME);
 		Platform.runLater(() -> {
@@ -2510,27 +2545,24 @@ public class MainScene implements ClockListener {
 	public void closeSettlementMap() {
 		desktop.closeToolWindow(SettlementWindow.NAME);
 		Platform.runLater(() -> {
-			mapsAnchorPane.getChildren().remove(sMapStackPane); // mapToolAnchorPane
-			//, settlementBox, mapLabelBox, zoomSlider, rotateCWBtn,
-			//		rotateCCWBtn, recenterBtn);
-			mapToggle.setSelected(false);
-			mapToggle.setText("Settlement Map Off");
+			mapsAnchorPane.getChildren().remove(sMapStackPane);
+			sMapToggle.setSelected(false);
+			sMapToggle.setText("Settlement Map Off");
 			tabPane.requestFocus();
 		});
 	}
 
 	public void closeMaps() {
-		mapsAnchorPane.getChildren().removeAll(cacheToggle, minimapToggle, mapToggle);
+		mapsAnchorPane.getChildren().removeAll(cacheToggle, minimapToggle, sMapToggle);
 		if (!isCacheButtonOn()) {
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.closeToolWindow(NavigatorWindow.NAME);
 			Platform.runLater(() -> {
-				mapsAnchorPane.getChildren().removeAll(sMapStackPane, minimapGroup);// );//(mapToolAnchorPane,, zoomSlider, rotateCWBtn,
-				//		rotateCCWBtn, recenterBtn, settlementBox, mapLabelBox);
+				mapsAnchorPane.getChildren().removeAll(sMapStackPane, minimapGroup);
 				minimapToggle.setSelected(false);
 				minimapToggle.setText("Minimap Off");
-				mapToggle.setSelected(false);
-				mapToggle.setText("Settlement Map Off");
+				sMapToggle.setSelected(false);
+				sMapToggle.setText("Settlement Map Off");
 			});
 		}
 		tabPane.requestFocus();
@@ -2712,6 +2744,10 @@ public class MainScene implements ClockListener {
 		if (!OS.contains("mac"))
 			menuBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 
+		mapToolAnchorPane.getStyleClass().clear();
+		mapToolAnchorPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		mapToolAnchorPane.setId("map-tool-anchor-pane");
+		
 		// Note : menu bar color
 		// orange theme : F4BA00
 		// blue theme : 3291D2
@@ -2723,23 +2759,26 @@ public class MainScene implements ClockListener {
 
 		toolbar.getStylesheets().clear();
 //		setStylesheet(toolbar, cssFile);
-
-		// setStylesheet(marsTimeBox, cssFile);
-		setStylesheet(toolbarBox, cssFile);
-		setStylesheet(marsTimeButton, cssFile);
-		setStylesheet(marsTimeLabel, cssFile);
-
+	
 		marsTimeIcon.getStyleClass().clear();
 		marsTimeIcon.getStyleClass().add(getClass().getResource(cssFile).toExternalForm());
 
 		setStylesheet(lastSaveLabel, cssFile);
 		setStylesheet(cacheToggle, cssFile);
 		setStylesheet(minimapToggle, cssFile);
-		setStylesheet(mapToggle, cssFile);
+		setStylesheet(sMapToggle, cssFile);
 
-		setStylesheet(settlementBox, cssFile);
-		setStylesheet(mapLabelBox, cssFile);
+		setStylesheet(sBox, cssFile);
+		//setStylesheet(mapLabelBox, cssFile);
 
+		for (Node node : mapLabelBox.getChildren()) {
+			if (node instanceof JFXCheckBox) {
+				((JFXCheckBox)node).getStylesheets().clear();
+				((JFXCheckBox)node).getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+				((JFXCheckBox)node).getStyleClass().add("jfx-check-box");
+			}
+		}
+				
 		setStylesheet(speedPane, cssFile);
 		setStylesheet(speedVBox, cssFile);
 		setStylesheet(calendarPane, cssFile);
@@ -2759,6 +2798,11 @@ public class MainScene implements ClockListener {
 		timePickerFX.getStylesheets().clear();
 		timePickerFX.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 
+		// setStylesheet(marsTimeBox, cssFile);
+		setStylesheet(toolbarBox, cssFile);
+		setStylesheet(marsTimeButton, cssFile);
+		setStylesheet(marsTimeLabel, cssFile);
+	
 		if (settlementWindow == null) {
 			settlementWindow = (SettlementWindow) (desktop.getToolWindow(SettlementWindow.NAME));
 			if (settlementWindow != null) {
@@ -2793,6 +2837,8 @@ public class MainScene implements ClockListener {
 			setStylesheet(zoomSlider, JFX_ORANGE_CSS);
 			setStylesheet(musicSlider, JFX_ORANGE_CSS);
 			setStylesheet(soundEffectSlider, JFX_ORANGE_CSS);
+			
+			borderGlow.setColor(Color.ORANGE);
 			setGlow(calendarPane);
 		}
 
@@ -2826,6 +2872,12 @@ public class MainScene implements ClockListener {
 
 	}
 
+	public void setStylesheet(JFXComboBox<Settlement> c, String cssFile) {
+		c.getStylesheets().clear();
+		c.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		c.getStyleClass().add("jfx-combo-box");
+	}
+	
 	public void setStylesheet(JFXTabPane t, String cssFile) {
 		t.getStylesheets().clear();
 		t.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());

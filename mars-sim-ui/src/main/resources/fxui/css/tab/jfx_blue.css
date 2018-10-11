@@ -32,16 +32,30 @@
     -fx-padding: 5 5 5 5;
 }
 
+/*******************************************************************************
+ *                                                                             *
+ * JFX Tab Pane                                                                *
+ *                                                                             *
+ ******************************************************************************/
+
+
 .jfx-tab-pane .headers-region > .tab:selected > .tab-container > .tab-label {
     -fx-background-color: #065185;
+    -fx-alignment: CENTER;    
 }
+
 .jfx-tab-pane .tab-header-background {
     -fx-background-color: #065185; 
 }
-.jfx-tab-pane .tab-selected-line {
-    -fx-stroke: #3291D2;
-    -fx-stroke-width: 1pt;
+
+.jfx-tab-pane .tab-header-area .jfx-rippler {
+    -jfx-rippler-fill: -fx-focus-color;
 }
+
+.jfx-tab-pane .tab-selected-line {
+    -fx-background-color: #065185;
+}
+
 
 /*******************************************************************************
  *                                                                             *
@@ -50,8 +64,8 @@
  ******************************************************************************/
 
 .svg-slider .thumb {
-    -fx-stroke: black;
-    -fx-fill: black;
+    -fx-stroke: white;
+    -fx-fill: white;
 }
 
 /*******************************************************
@@ -63,29 +77,40 @@
 .jfx-slider{
     -jfx-default-thumb: #03a9f4;
     -jfx-default-track: #03a9f4;
-}
-
-.jfx-slider {
     -jfx-indicator-position: right;
+    -fx-text-fill: white; 
 }
 
 .jfx-slider > .thumb {
     -fx-background-color: #03a9f4;
     -fx-stroke: black;
-    -fx-fill: black;
+    -fx-fill: white;
 }
 
 .jfx-slider .track {
     -fx-background-color: #7596ad;
     -fx-pref-height: 5px;
     -fx-pref-width: 5px;
+    -fx-text-fill: white; 
 }
 
 .jfx-slider .animated-thumb{
-    -fx-background-color: blue;
+    -fx-background-color: 03a9f4;
 }
 
 .jfx-slider .sliderValue {
-    -fx-stroke: #7ebcea;
+    -fx-stroke: white; /* #7ebcea; */
     -fx-font-size: 12.0;
+}
+
+.jfx-slider .axis .axis-tick-mark, .slider .axis .axis-minor-tick-mark {
+    -fx-fill: white;
+    -fx-stroke: white;
+}
+
+.jfx-slider .axis {
+    -fx-tick-label-fill: white;
+    -fx-tick-length: 5px;
+    -fx-minor-tick-length: 3px;
+    -fx-border-color: null;
 }
