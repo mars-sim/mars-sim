@@ -71,8 +71,8 @@ public abstract class Mission implements Serializable {
 	public static final String NO_ONGOING_SCIENTIFIC_STUDY = "No on-going Scientific study in this subject";
 	public static final String VEHICLE_NOT_LOADABLE = "Cannot load resources into the rover";
 	public static final String NO_EXPLORATION_SITES = "Exploration sites could not be determined";
-	// public static final String VEHICLE_NOT_LOADABLE = "Vehicle is not loadable at
-	// CollectingResourcesMission";
+	public static final String NOT_ENOUGH_MEMBERS = "Not enough members";
+	
 
 	public static final String MISSION = " mission";
 	public static final String[] EXPRESSIONS = new String[] {
@@ -375,7 +375,7 @@ public abstract class Mission implements Serializable {
 				fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 
 				if ((members.size() == 0) && !done) {
-					endMission("Not enough members.");
+					endMission(NOT_ENOUGH_MEMBERS);
 				}
 
 				// logger.fine(member.getName() + " removed from mission : " + name);

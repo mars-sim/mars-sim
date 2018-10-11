@@ -35,10 +35,6 @@ public class CollectRegolithMeta implements MetaMission {
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 1;
 
-	//public int sol = 0; 
-	
-	//private static MarsClock marsClock;
-	
     @Override
     public String getName() {
         return NAME;

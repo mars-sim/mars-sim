@@ -55,13 +55,11 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 	// Static members
 	public static final int MIN_STAYING_MEMBERS = 1;
-
 	public static final int MIN_GOING_MEMBERS = 2;
 	private static final int MAX_GOING_MEMBERS = 3;
 
 	public static final double BASE_RESCUE_MISSION_WEIGHT = 1000D;
 	public static final double BASE_SALVAGE_MISSION_WEIGHT = 5D;
-
 	private static final double RESCUE_RESOURCE_BUFFER = 1D;
 
 	// Mission phases
@@ -375,7 +373,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 		// Set mission event.
 		if (rescue) {
-			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this, "Stranded Vehicle", // cause
+			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
+					"Stranded Vehicle", // cause
 					this.getName(), // during
 					member.getName(), // member
 					member.getVehicle().getName(), // loc0
@@ -383,8 +382,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		} else {
-			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this, "Salvaged Vehicle",
-					this.getName(), member.getName(), member.getVehicle().getName(),
+			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
+					"Salvaged Vehicle", this.getName(), member.getName(), member.getVehicle().getName(),
 					vehicleTarget.getLocationTag().getLocale());
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		}
@@ -838,12 +837,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		super.destroy();
 
 		vehicleTarget = null;
-
 		unitManager = null;
 		missionManager = null;
-
-//    	oxygenAR = null;
-//    	waterAR = null;
-//    	foodAR = null;
 	}
 }

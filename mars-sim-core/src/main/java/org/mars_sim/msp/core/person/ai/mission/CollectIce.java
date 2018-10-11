@@ -19,21 +19,18 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
- * This class is a mission to travel in a rover to several
- * random locations around a settlement and collect ice.
- * TODO externalize strings
+ * This class is a mission to travel in a rover to several random locations
+ * around a settlement and collect ice. TODO externalize strings
  */
-public class CollectIce
-extends CollectResourcesMission {
+public class CollectIce extends CollectResourcesMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	//	private static Logger logger = Logger.getLogger(CollectIce.class.getName());
+	// private static Logger logger = Logger.getLogger(CollectIce.class.getName());
 
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = Msg.getString(
-			"Mission.description.collectIce"); //$NON-NLS-1$
+	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
 
 	/** Amount of ice to be gathered at a given site (kg). */
 	private static final double SITE_GOAL = 1000D;
@@ -52,43 +49,43 @@ extends CollectResourcesMission {
 
 	/**
 	 * Constructor
+	 * 
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
 	public CollectIce(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson, ResourceUtil.iceID, SITE_GOAL,
-				COLLECTION_RATE, EquipmentType.str2int(Bag.TYPE), 
-				REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
+		super(DEFAULT_DESCRIPTION, startingPerson, ResourceUtil.iceID, SITE_GOAL, COLLECTION_RATE,
+				EquipmentType.str2int(Bag.TYPE), REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
 	}
 
 	/**
 	 * Constructor with explicit data.
-	 * @param members collection of mission members.
+	 * 
+	 * @param members            collection of mission members.
 	 * @param startingSettlement the starting settlement.
 	 * @param iceCollectionSites the sites to collect ice.
-	 * @param rover the rover to use.
-	 * @param description the mission's description.
+	 * @param rover              the rover to use.
+	 * @param description        the mission's description.
 	 * @throws MissionException if error constructing mission.
 	 */
 	public CollectIce(Collection<MissionMember> members, Settlement startingSettlement,
-			List<Coordinates> iceCollectionSites, Rover rover,
-			String description) {
+			List<Coordinates> iceCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, members, startingSettlement, ResourceUtil.iceID, SITE_GOAL,
-				COLLECTION_RATE, EquipmentType.str2int(Bag.TYPE), 
-				REQUIRED_BAGS, iceCollectionSites.size(),
+		super(description, members, startingSettlement, ResourceUtil.iceID, SITE_GOAL, COLLECTION_RATE,
+				EquipmentType.str2int(Bag.TYPE), REQUIRED_BAGS, iceCollectionSites.size(),
 				RoverMission.MIN_GOING_MEMBERS, rover, iceCollectionSites);
 	}
 
 	/**
 	 * Gets the description of a collection site.
+	 * 
 	 * @param siteNum the number of the site.
 	 * @return description
 	 */
 	protected String getCollectionSiteDescription(int siteNum) {
 		return "prospecting site";
 	}
-	
+
 }

@@ -1,9 +1,11 @@
+/**
+ * Mars Simulation Project
+ * MissionEventType.java
+ * @version 3.1.0 2018-10-10
+ * @author stpa
+ */
 package org.mars_sim.msp.core.person.ai.mission;
 
-/**
- * @author stpa
- * 2014-02-06
- */
 public enum MissionEventType {
 
 	// from Mission.java

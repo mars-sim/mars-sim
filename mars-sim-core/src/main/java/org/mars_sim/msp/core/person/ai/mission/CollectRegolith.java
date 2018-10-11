@@ -19,21 +19,19 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
- * This class is a mission to travel in a rover to several
- * random locations around a settlement and collect Regolith.
- * TODO externalize strings
+ * This class is a mission to travel in a rover to several random locations
+ * around a settlement and collect Regolith. TODO externalize strings
  */
-public class CollectRegolith
-extends CollectResourcesMission {
+public class CollectRegolith extends CollectResourcesMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	//	private static Logger logger = Logger.getLogger(CollectRegolith.class.getName());
+	// private static Logger logger =
+	// Logger.getLogger(CollectRegolith.class.getName());
 
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = Msg.getString(
-			"Mission.description.collectRegolith"); //$NON-NLS-1$
+	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
 
 	/** Amount of regolith to be gathered at a given site (kg). */
 	private static final double SITE_GOAL = 1000D;
@@ -50,42 +48,40 @@ extends CollectResourcesMission {
 	/** Minimum number of people to do mission. */
 	public final static int MIN_PEOPLE = 2;
 
-
 	/**
 	 * Constructor.
+	 * 
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public CollectRegolith (Person startingPerson) {
+	public CollectRegolith(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson,
-				ResourceUtil.regolithID, SITE_GOAL,
-				COLLECTION_RATE,
-				EquipmentType.str2int(Bag.TYPE), REQUIRED_BAGS,
-				NUM_SITES, MIN_PEOPLE);
+		super(DEFAULT_DESCRIPTION, startingPerson, ResourceUtil.regolithID, SITE_GOAL, COLLECTION_RATE,
+				EquipmentType.str2int(Bag.TYPE), REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
 	}
 
 	/**
 	 * Constructor with explicit data.
-	 * @param members collection of mission members.
-	 * @param startingSettlement the starting settlement.
+	 * 
+	 * @param members                 collection of mission members.
+	 * @param startingSettlement      the starting settlement.
 	 * @param regolithCollectionSites the sites to collect regolith.
-	 * @param rover the rover to use.
-	 * @param description the mission's description.
+	 * @param rover                   the rover to use.
+	 * @param description             the mission's description.
 	 * @throws MissionException if error constructing mission.
 	 */
-	public CollectRegolith (Collection<MissionMember> members, Settlement startingSettlement,
+	public CollectRegolith(Collection<MissionMember> members, Settlement startingSettlement,
 			List<Coordinates> regolithCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, members, startingSettlement, ResourceUtil.regolithID,
-				SITE_GOAL, COLLECTION_RATE,
+		super(description, members, startingSettlement, ResourceUtil.regolithID, SITE_GOAL, COLLECTION_RATE,
 				EquipmentType.str2int(Bag.TYPE), REQUIRED_BAGS, regolithCollectionSites.size(),
 				RoverMission.MIN_GOING_MEMBERS, rover, regolithCollectionSites);
 	}
 
 	/**
 	 * Gets the description of a collection site.
+	 * 
 	 * @param siteNum the number of the site.
 	 * @return description
 	 */
@@ -93,13 +89,4 @@ extends CollectResourcesMission {
 		return "prospecting site";
 	}
 
-	/**
-	 * Gets the regolith resource.
-	 * @return regolith resource.
-	 * @throws MissionException if error getting regolith resource.
-
-	private static AmountResource getRegolithResource() {
-		return ResourceUtil.regolithAR;
-	}
-	*/
 }

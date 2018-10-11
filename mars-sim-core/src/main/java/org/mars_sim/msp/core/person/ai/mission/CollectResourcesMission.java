@@ -23,9 +23,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -35,8 +33,6 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CollectResources;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -90,11 +86,6 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	private Integer resourceType;
 
 	// Static members
-//	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-//	private static AmountResource waterAR = ResourceUtil.waterAR;
-//	private static AmountResource foodAR = ResourceUtil.foodAR;
-//	private static AmountResource methaneAR = ResourceUtil.methaneAR;
-
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 	private static int foodID = ResourceUtil.foodID;
@@ -126,8 +117,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		// Use RoverMission constructor
 		super(missionName, startingPerson, minPeople);
 
-		Settlement s = null;
-
+		Settlement s = startingPerson.getSettlement();
+		
+		// If the mission has started and on-going and is NOT done.
 		if (!isDone()) {
 
 			// Set mission capacity.
@@ -175,11 +167,6 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(Msg.getString("Mission.phase.embarking.description", s.getName())); //$NON-NLS-1$
 		}
-
-		// int emptyContainers =
-		// numCollectingContainersAvailable(getStartingSettlement(), containerType);
-		// logger.info("Starting " + getName() + " with " + emptyContainers + " " +
-		// containerType);
 	}
 
 	/**
@@ -271,8 +258,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @param missionType   the mission class.
 	 * @return the weighted probability
 	 */
-	public static double getNewMissionProbability(Person person, Class<? extends Unit> containerType,
-			int containerNum, int minPeople) {
+	public static double getNewMissionProbability(Person person, Class<? extends Unit> containerType, int containerNum,
+			int minPeople) {
 		double result = 1;
 
 		Settlement settlement = person.getSettlement();
@@ -309,7 +296,6 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			// return 0;
 
 			// Check if starting settlement has minimum amount of methane fuel.
-			// AmountResource methane = AmountResource.findAmountResource("methane");
 			if (settlement.getInventory().getARStored(methaneID, false) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE)
 				return 0;
 
@@ -662,50 +648,21 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		int crewNum = getPeopleNumber();
 
 		// Determine life support supplies needed for trip.
-		// AmountResource oxygen =
-		// AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()// * WATER_MARGIN
-				* timeSols * crewNum;
+		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
 		if (result.containsKey(oxygenID))
 			oxygenAmount += (Double) result.get(oxygenID);
 		result.put(oxygenID, oxygenAmount);
 
-		// AmountResource water =
-		// AmountResource.findAmountResource(LifeSupportType.WATER);
-		double waterAmount = PhysicalCondition.getWaterConsumptionRate()// * WATER_MARGIN
-				* timeSols * crewNum;
+		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
 		if (result.containsKey(waterID))
 			waterAmount += (Double) result.get(waterID);
 		result.put(waterID, waterAmount);
 
-		// AmountResource food =
-		// AmountResource.findAmountResource(LifeSupportType.FOOD);
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate()// * PhysicalCondition.FOOD_RESERVE_FACTOR
-				* timeSols * crewNum;
+		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
 		if (result.containsKey(foodID))
 			foodAmount += (Double) result.get(foodID);
 		result.put(foodID, foodAmount);
 
-		/*
-		 * // 2015-03-09 Added the chosen dessert for the journey String []
-		 * availableDesserts = PreparingDessert.getArrayOfDesserts(); // Added
-		 * PreparingDessert.DESSERT_SERVING_FRACTION since eating desserts is optional
-		 * and is only meant to help if food is low. double dessertAmount =
-		 * PhysicalCondition.getDessertConsumptionRate() * timeSols * crewNum;// *
-		 * PreparingDessert.DESSERT_SERVING_FRACTION; // Put together a list of
-		 * available dessert for(String n : availableDesserts) { AmountResource dessert
-		 * = AmountResource.findAmountResource(n); // match the chosen dessert for the
-		 * journey // TODO: or load vehicle.getTypeOfDessertLoaded() if
-		 * (result.containsKey(dessert)) dessertAmount += (Double) result.get(dessert);
-		 * result.put(dessert, dessertAmount); }
-		 */
-		/*
-		 * // 2015-01-04 Added Soymilk AmountResource dessert1 =
-		 * AmountResource.findAmountResource("Soymilk"); double dessert1Amount =
-		 * PhysicalCondition.getFoodConsumptionRate() / 6D timeSols * crewNum; if
-		 * (result.containsKey(dessert1)) dessert1Amount += (Double)
-		 * result.get(dessert1); result.put(dessert1, dessert1Amount);
-		 */
 		return result;
 	}
 
@@ -797,14 +754,6 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		if (foodTimeLimit < timeLimit)
 			timeLimit = foodTimeLimit;
 
-		/*
-		 * // 2015-01-04 Added Soymilk // Check dessert1 capacity as time limit.
-		 * AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
-		 * double dessert1ConsumptionRate = config.getFoodConsumptionRate() / 6D; double
-		 * dessert1Capacity = vInv.getAmountResourceCapacity(dessert1, false); double
-		 * dessert1TimeLimit = dessert1Capacity / (dessert1ConsumptionRate * memberNum);
-		 * if (dessert1TimeLimit < timeLimit) timeLimit = dessert1TimeLimit;
-		 */
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
 		double waterCapacity = vInv.getARCapacity(waterID, false);

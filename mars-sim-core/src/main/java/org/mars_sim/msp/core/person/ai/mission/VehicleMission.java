@@ -310,12 +310,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * 
 	 * @param reason the reason of ending the mission.
 	 */
-	// 2016-09-19 Revised endMission() to check if user aborted the mission and if
-	// the vehicle has been disembarked.
+
 	public void endMission(String reason) {
 		// logger.info("Reason : " + reason);
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
+			// Check if user aborted the mission and if
+			// the vehicle has been disembarked.
 			if (reason.equals(Mission.USER_ABORTED_MISSION)) {
 				if (vehicle.getSettlement() == null) { // if the vehicle has not arrived or departed a settlement
 					String s = null;
@@ -332,19 +333,22 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				setPhaseEnded(true);
 				super.endMission(reason);
 
-				/*
-				 * if (EMBARKING.equals(getPhase())) { setPhaseEnded(true); }
-				 * 
-				 * else if (TRAVELLING.equals(getPhase())) { setPhaseEnded(true); }
-				 * 
-				 * else if (DISEMBARKING.equals(getPhase())) { logger.
-				 * info("Can't be aborted. This mission is at the very last phase of the mission. "
-				 * +
-				 * "Members are unloading resources and being disembarked. Please be patient!");
-				 * }
-				 * 
-				 * //else { // setPhaseEnded(true); // super.endMission(reason); //}
-				 */
+
+//				 if (EMBARKING.equals(getPhase())) { 
+//					 setPhaseEnded(true); 
+//				 }
+//
+//				 else if (TRAVELLING.equals(getPhase())) { 
+//					 setPhaseEnded(true); 
+//				 }
+//				 
+//				 else if (DISEMBARKING.equals(getPhase())) { 
+//					 logger.info("Can't be aborted. This mission is at the very last phase of the mission. "
+//							 + "Members are unloading resources and being disembarked. Please be patient!");
+//				 }
+				 //else { // setPhaseEnded(true); // super.endMission(reason); //}
+				 
+				 
 			}
 
 			else if (reason.equals(Mission.NOT_ENOUGH_RESOURCES) || reason.equals(Mission.UNREPAIRABLE_MALFUNCTION)
@@ -558,7 +562,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// If vehicle has not reached destination and isn't broken down, travel to
 		// destination.
 		boolean reachedDestination = false, malfunction = false;
-		// 2016-12-21 Avoid NullPointerException by checking if vehicle/destination is
+		// Avoid NullPointerException by checking if vehicle/destination is
 		// null
 		if (vehicle != null && destination != null) {
 			if (vehicle.getCoordinates() != null && destination.getLocation() != null) {
@@ -1116,7 +1120,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public void timePassing(double time) {
 		// Add this mission as a vehicle listener (does nothing if already listening to
 		// vehicle).
-		// Note this is needed so that mission will reattach itself as a vehicle
+		// Note : this is needed so that mission will re-attach itself as a vehicle
 		// listener after deserialization
 		// since listener collection is transient. - Scott
 		if (hasVehicle() && !vehicle.hasUnitListener(this)) {

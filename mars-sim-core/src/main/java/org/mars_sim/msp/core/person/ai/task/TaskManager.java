@@ -32,13 +32,12 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The TaskManager class keeps track of a person's current task and can randomly
- * assign a new task to a person based on a list of possible tasks and that person's
- * current situation.
+ * assign a new task to a person based on a list of possible tasks and that
+ * person's current situation.
  *
  * There is one instance of TaskManager per person.
  */
-public class TaskManager
-implements Serializable {
+public class TaskManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -46,48 +45,51 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TaskManager.class.getName());
 
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
+	private static final String WALK = "walk";
 	
 	// Data members
-    /** The cache for msolInt */     
- 	private double msolCache = -1.0;
- 	
- 	private transient double totalProbCache;
-	
+	/** The cache for msolInt */
+	private double msolCache = -1.0;
+
+	private transient double totalProbCache;
+
 	private String taskNameCache = "";
-	
+
 	private String taskDescriptionCache = "Relaxing";
-	
+
 	private String taskPhaseNameCache = "Relaxing";
 
 	/** The current task the person/robot is doing. */
 	private transient Task currentTask;
-	/** The last task the person/robot was doing. */	
+	/** The last task the person/robot was doing. */
 	private Task lastTask;
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
 
 	private Person person = null;
-	
+
 	private PhysicalCondition health;
-	
+
 	private CircadianClock circadian;
 
 	private TaskSchedule ts;
-	
+
 	private MarsClock marsClock;
-	
+
 	private MissionManager missionManager;
-	
+
 	private transient MarsClock timeCache;
-	
+
 	private transient Map<MetaTask, Double> taskProbCache;
-	
+
 	private transient List<MetaTask> mtListCache;
-	
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param mind the mind that uses this task manager.
 	 */
 	public TaskManager(Mind mind) {
@@ -95,15 +97,15 @@ implements Serializable {
 		this.mind = mind;
 
 		person = mind.getPerson();
-		
+
 		missionManager = Simulation.instance().getMissionManager();
-		
+
 		circadian = person.getCircadianClock();
-		
+
 		health = person.getPhysicalCondition();
-		
+
 		ts = person.getTaskSchedule();
-		
+
 		currentTask = null;
 
 		// Initialize cache values.
@@ -117,6 +119,7 @@ implements Serializable {
 
 	/**
 	 * Returns true if person has an active task.
+	 * 
 	 * @return true if person has an active task
 	 */
 	public boolean hasActiveTask() {
@@ -125,6 +128,7 @@ implements Serializable {
 
 	/**
 	 * Returns true if person has a task (may be inactive).
+	 * 
 	 * @return true if person has a task
 	 */
 	public boolean hasTask() {
@@ -132,8 +136,9 @@ implements Serializable {
 	}
 
 	/**
-	 * Returns the name of the current task for UI purposes.
-	 * Returns a blank string if there is no current task.
+	 * Returns the name of the current task for UI purposes. Returns a blank string
+	 * if there is no current task.
+	 * 
 	 * @return name of the current task
 	 */
 	public String getTaskName() {
@@ -145,7 +150,9 @@ implements Serializable {
 	}
 
 	/**
-	 * Returns the task name of the current or last task (one without the word "walk" in it).
+	 * Returns the task name of the current or last task (one without the word
+	 * "walk" in it).
+	 * 
 	 * @return task name
 	 */
 	// 2016-12-01 Added getFilteredTaskName()
@@ -157,21 +164,19 @@ implements Serializable {
 				s = lastTask.getName();
 				if (lastTask != null && !s.toLowerCase().contains("walk")) {
 					return s;
-				}
-				else
+				} else
 					return "";
-			}
-			else
+			} else
 				return "";
-		}
-		else
+		} else
 			return s;
 
 	}
 
 	/**
-	 * Returns the name of the current task for UI purposes.
-	 * Returns a blank string if there is no current task.
+	 * Returns the name of the current task for UI purposes. Returns a blank string
+	 * if there is no current task.
+	 * 
 	 * @return name of the current task
 	 */
 	public String getTaskClassName() {
@@ -182,10 +187,10 @@ implements Serializable {
 		}
 	}
 
-
 	/**
-	 * Returns a description of current task for UI purposes.
-	 * Returns a blank string if there is no current task.
+	 * Returns a description of current task for UI purposes. Returns a blank string
+	 * if there is no current task.
+	 * 
 	 * @return a description of the current task
 	 */
 	public String getTaskDescription(boolean subTask) {
@@ -194,26 +199,20 @@ implements Serializable {
 			if (t != null)
 				return t;
 			else
-				return "";		
-		} 
-		else
+				return "";
+		} else
 			return "";
 	}
-/*	
-	public FunctionType getFunction(boolean subTask) {
-		if (currentTask != null && currentTask.getFunction(subTask) != null) {
-			return currentTask.getFunction(subTask);
-		} 
-		else {
-			return FunctionType.UNKNOWN;
-		}
-	}
-*/	
+	/*
+	 * public FunctionType getFunction(boolean subTask) { if (currentTask != null &&
+	 * currentTask.getFunction(subTask) != null) { return
+	 * currentTask.getFunction(subTask); } else { return FunctionType.UNKNOWN; } }
+	 */
 
 	/**
-	 * Returns the current task phase if there is one.
-	 * Returns null if current task has no phase.
-	 * Returns null if there is no current task.
+	 * Returns the current task phase if there is one. Returns null if current task
+	 * has no phase. Returns null if there is no current task.
+	 * 
 	 * @return the current task phase
 	 */
 	public TaskPhase getPhase() {
@@ -225,9 +224,9 @@ implements Serializable {
 	}
 
 	/**
-	 * Returns the current task phase if there is one.
-	 * Returns null if current task has no phase.
-	 * Returns null if there is no current task.
+	 * Returns the current task phase if there is one. Returns null if current task
+	 * has no phase. Returns null if there is no current task.
+	 * 
 	 * @return the current task phase
 	 */
 	public TaskPhase getMainTaskPhase() {
@@ -239,8 +238,8 @@ implements Serializable {
 	}
 
 	/**
-	 * Returns the current task.
-	 * Return null if there is no current task.
+	 * Returns the current task. Return null if there is no current task.
+	 * 
 	 * @return the current task
 	 */
 	public Task getTask() {
@@ -254,7 +253,6 @@ implements Serializable {
 	public String getLastTaskDescription() {
 		return taskDescriptionCache;
 	}
-
 
 	/**
 	 * Sets the current task to null.
@@ -275,21 +273,20 @@ implements Serializable {
 	public void recordTask() {
 		String taskDescription = getTaskDescription(false);
 		String taskName = getTaskClassName();
-		
+
 		String missionName = "";
 		if (missionManager.getMission(person) != null)
 			missionName = missionManager.getMission(person).toString();
 
-		// Remove tasks such as Walk, WalkRoverInterior, WalkSettlementInterior, WalkSteps
+		// Remove tasks such as Walk, WalkRoverInterior, WalkSettlementInterior,
+		// WalkSteps
 		// Filters off descriptions such as "Walking inside a settlement"
-		if (!taskName.toLowerCase().contains("walk")
-			&& !taskDescription.equals(taskDescriptionCache)
-			&& !taskDescription.toLowerCase().contains("walk")
-			&& !taskDescription.equals("")) {
+		if (!taskName.toLowerCase().contains(WALK) && !taskDescription.equals(taskDescriptionCache)
+				&& !taskDescription.toLowerCase().contains(WALK) && !taskDescription.equals("")) {
 
 			String taskPhaseName = null;
 			TaskPhase tp = getMainTaskPhase();
-			
+
 			if (tp != null) {
 
 				taskPhaseName = tp.getName();
@@ -299,10 +296,10 @@ implements Serializable {
 
 			}
 
-		    if (ts == null)
-		    	ts = person.getTaskSchedule();
-		    
-		    // TODO: decide if it needs to record the same task description as the last
+			if (ts == null)
+				ts = person.getTaskSchedule();
+
+			// TODO: decide if it needs to record the same task description as the last
 			ts.recordTask(taskName, taskDescription, taskPhaseName, missionName);
 			taskDescriptionCache = taskDescription;
 
@@ -311,6 +308,7 @@ implements Serializable {
 
 	/**
 	 * Adds a task to the stack of tasks.
+	 * 
 	 * @param newTask the task to be added
 	 */
 	public void addTask(Task newTask) {
@@ -341,25 +339,27 @@ implements Serializable {
 
 	/**
 	 * Reduce the person's caloric energy over time.
+	 * 
 	 * @param time the passing time (
 	 */
-    public void reduceEnergy(double time) {
-    	if (health == null)
-    		health = person.getPhysicalCondition();
+	public void reduceEnergy(double time) {
+		if (health == null)
+			health = person.getPhysicalCondition();
 		health.reduceEnergy(time);
 
-    }
+	}
 
 	/**
 	 * Perform the current task for a given amount of time.
-	 * @param time amount of time to perform the action
+	 * 
+	 * @param time       amount of time to perform the action
 	 * @param efficiency The performance rating of person performance task.
 	 * @return remaining time.
 	 * @throws Exception if error in performing task.
 	 */
 	public double executeTask(double time, double efficiency) {
 		double remainingTime = 0D;
-			
+
 		if (currentTask != null) {
 			// For effort driven task, reduce the effective time based on efficiency.
 			if (efficiency < .1D) {
@@ -369,34 +369,34 @@ implements Serializable {
 			if (currentTask.isEffortDriven()) {
 				time *= efficiency;
 			}
-			
-			//if (person.isInside()) {
-			//	checkForEmergency();
-			//}
-			
+
+			// if (person.isInside()) {
+			// checkForEmergency();
+			// }
+
 			remainingTime = currentTask.performTask(time);
 
 			// Expend energy based on activity.
-		    double energyTime = time - remainingTime;
+			double energyTime = time - remainingTime;
 
-		    // Double energy expenditure if performing effort-driven task.
-		    if (currentTask != null && currentTask.isEffortDriven()) { // why java.lang.NullPointerException at TR = 2048 ?
-		        energyTime *= 2D;
-		    }
+			// Double energy expenditure if performing effort-driven task.
+			if (currentTask != null && currentTask.isEffortDriven()) { // why java.lang.NullPointerException at TR =
+																		// 2048 ?
+				energyTime *= 2D;
+			}
 
-		    if (energyTime > 0D) {
+			if (energyTime > 0D) {
 				if (person.isOutside()) {
-					
+
 					if (circadian == null)
 						circadian = person.getCircadianClock();
-					
+
 					// it takes more energy to be in EVA doing work
 					reduceEnergy(energyTime);
-			        circadian.exercise(time);
-				}
-				else
-					reduceEnergy(energyTime);		
-		    }
+					circadian.exercise(time);
+				} else
+					reduceEnergy(energyTime);
+			}
 		}
 
 		return remainingTime;
@@ -404,9 +404,8 @@ implements Serializable {
 	}
 
 	private boolean doingEmergencyRepair() {
-	    // Check if person is already repairing either a EVA or non-EVA emergency.
-	    return (currentTask != null) 
-	    		&& ((currentTask instanceof RepairEmergencyMalfunctionEVA) 
+		// Check if person is already repairing either a EVA or non-EVA emergency.
+		return (currentTask != null) && ((currentTask instanceof RepairEmergencyMalfunctionEVA)
 				|| (currentTask instanceof RepairEmergencyMalfunction));
 
 	}
@@ -427,54 +426,56 @@ implements Serializable {
 
 	/**
 	 * Checks if the person or robot is walking through a given building.
+	 * 
 	 * @param building the building.
 	 * @return true if walking through building.
 	 */
 	public boolean isWalkingThroughBuilding(Building building) {
 
-	    boolean result = false;
+		boolean result = false;
 
-	    Task task = currentTask;
-	    while ((task != null) && !result) {
-	        if (task instanceof Walk) {
-	            Walk walkTask = (Walk) task;
-	            if (walkTask.isWalkingThroughBuilding(building)) {
-	                result = true;
-	            }
-	        }
-	        task = task.getSubTask();
-	    }
+		Task task = currentTask;
+		while ((task != null) && !result) {
+			if (task instanceof Walk) {
+				Walk walkTask = (Walk) task;
+				if (walkTask.isWalkingThroughBuilding(building)) {
+					result = true;
+				}
+			}
+			task = task.getSubTask();
+		}
 
-	    return result;
+		return result;
 	}
 
 	/**
 	 * Checks if the person or robot is walking through a given vehicle.
+	 * 
 	 * @param vehicle the vehicle.
 	 * @return true if walking through vehicle.
 	 */
 	public boolean isWalkingThroughVehicle(Vehicle vehicle) {
 
-	    boolean result = false;
+		boolean result = false;
 
-        Task task = currentTask;
-        while ((task != null) && !result) {
-            if (task instanceof Walk) {
-                Walk walkTask = (Walk) task;
-                if (walkTask.isWalkingThroughVehicle(vehicle)) {
-                    result = true;
-                }
-            }
-            task = task.getSubTask();
-        }
+		Task task = currentTask;
+		while ((task != null) && !result) {
+			if (task instanceof Walk) {
+				Walk walkTask = (Walk) task;
+				if (walkTask.isWalkingThroughVehicle(vehicle)) {
+					result = true;
+				}
+			}
+			task = task.getSubTask();
+		}
 
-        return result;
+		return result;
 	}
 
-	/**
-	 * Checks if any emergencies are happening in the person's local.
-	 * Adds an emergency task if necessary.
-	 */
+//	/**
+//	 * Checks if any emergencies are happening in the person's local.
+//	 * Adds an emergency task if necessary.
+//	 */
 //	private void checkForEmergency() {
 //
 //		// Check for emergency malfunction.
@@ -525,6 +526,7 @@ implements Serializable {
 
 	/**
 	 * Gets a new task for the person based on tasks available.
+	 * 
 	 * @return new task
 	 */
 	public Task getNewTask() {
@@ -537,43 +539,38 @@ implements Serializable {
 		double totalProbability = getTotalTaskProbability(true);
 
 		if (totalProbability == 0D) {
-			throw new IllegalStateException(mind.getPerson() +
-						" has zero total task probability weight.");
+			throw new IllegalStateException(mind.getPerson() + " has zero total task probability weight.");
 		}
 
 		double r = RandomUtil.getRandomDouble(totalProbability);
 
 		MetaTask selectedMetaTask = null;
-		//System.out.println("size of metaTask : " + taskProbCache.size());
+		// System.out.println("size of metaTask : " + taskProbCache.size());
 
-/*
-		taskProbCache.keySet().forEach(mt -> {
-			double probWeight = taskProbCache.get(mt);
-			if (r <= probWeight) {
-				selectedMetaTask = mt;
-			}
-			else {
-				r -= probWeight;
-			}
-		});
-*/
+//		taskProbCache.keySet().forEach(mt -> {
+//			double probWeight = taskProbCache.get(mt);
+//			if (r <= probWeight) {
+//				selectedMetaTask = mt;
+//			}
+//			else {
+//				r -= probWeight;
+//			}
+//		});
+
 		// Determine which task is selected.
 		for (MetaTask mt : taskProbCache.keySet()) {
 			double probWeight = taskProbCache.get(mt);
 			if (r <= probWeight) {
 				// Select this task
 				selectedMetaTask = mt;
-			}
-			else {
+			} else {
 				r -= probWeight;
 			}
 		}
 
 		if (selectedMetaTask == null) {
-			throw new IllegalStateException(mind.getPerson() +
-						" could not determine a new task.");
-		}
-		else {
+			throw new IllegalStateException(mind.getPerson() + " could not determine a new task.");
+		} else {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			result = selectedMetaTask.constructInstance(mind.getPerson());
 		}
@@ -585,6 +582,7 @@ implements Serializable {
 
 	/**
 	 * Determines the total probability weight for available tasks.
+	 * 
 	 * @return total probability weight
 	 */
 	public double getTotalTaskProbability(boolean useCache) {
@@ -600,93 +598,90 @@ implements Serializable {
 	 */
 	private void calculateProbability() {
 
-	    List<MetaTask> mtList = null;
+		List<MetaTask> mtList = null;
 
 //    	if (marsClock == null) {
 //    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 //    	}
-    	
-	    if (timeCache == null) {
-	    	timeCache = Simulation.instance().getMasterClock().getMarsClock();
-	    	marsClock = timeCache;
-	    }
-	    
-	    //int msol = marsClock.getMsol0();
-	    
-	    double msol1 = marsClock.getMsol1();
-	    
-	    if (msolCache != msol1) {
-	    	msolCache = msol1;
-	
-		    if (ts == null)
-		    	ts = person.getTaskSchedule();
-		    
-		    ShiftType st = ts.getShiftType();
-		    		    
-		    //boolean isOnCall = (st == ShiftType.ON_CALL);
-		    //boolean isOff = (st == ShiftType.OFF);
-		    //boolean isShiftHour = true;
-	
-		    if (st == ShiftType.ON_CALL) {
-		    	mtList = MetaTaskUtil.getAllMetaTasks();//getAnyHourTasks();
-		    }
-		    else if (st == ShiftType.OFF) {
-		    	mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
-		    }
-		    else {
-		    	// is the person off the shift ?
-		    	//isShiftHour = ts.isShiftHour(millisols);
-	
-			    if (ts.isShiftHour((int)msol1)) {
-			    	mtList = MetaTaskUtil.getWorkHourMetaTasks();
-			    }
-			    else {
-			    	mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
-			    }
-		    }
-	
-		    if (mtListCache != mtList && mtList != null) {
-		    	// TODO: is there a better way to compare them this way ?
-		    	mtListCache = mtList;
-		    	taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
-		    }
-		    
-	
+
+		if (timeCache == null) {
+			timeCache = Simulation.instance().getMasterClock().getMarsClock();
+			marsClock = timeCache;
+		}
+
+		// int msol = marsClock.getMsol0();
+
+		double msol1 = marsClock.getMsol1();
+
+		if (msolCache != msol1) {
+			msolCache = msol1;
+
+			if (ts == null)
+				ts = person.getTaskSchedule();
+
+			ShiftType st = ts.getShiftType();
+
+			// boolean isOnCall = (st == ShiftType.ON_CALL);
+			// boolean isOff = (st == ShiftType.OFF);
+			// boolean isShiftHour = true;
+
+			if (st == ShiftType.ON_CALL) {
+				mtList = MetaTaskUtil.getAllMetaTasks();// getAnyHourTasks();
+			} else if (st == ShiftType.OFF) {
+				mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
+			} else {
+				// is the person off the shift ?
+				// isShiftHour = ts.isShiftHour(millisols);
+
+				if (ts.isShiftHour((int) msol1)) {
+					mtList = MetaTaskUtil.getWorkHourMetaTasks();
+				} else {
+					mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
+				}
+			}
+
+			if (mtListCache != mtList && mtList != null) {
+				// TODO: is there a better way to compare them this way ?
+				mtListCache = mtList;
+				taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
+			}
+
 			// Clear total probabilities.
 			totalProbCache = 0D;
 			// Determine probabilities.
 			for (MetaTask mt : mtListCache) {
 				double probability = mt.getProbability(person);
-	
-				if ((probability >= 0D) && (!Double.isNaN(probability)) 
-						&& (!Double.isInfinite(probability))) {
+
+				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 					taskProbCache.put(mt, probability);
 					totalProbCache += probability;
-				}
-				else {
+				} else {
 					taskProbCache.put(mt, 0D);
-	
-					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
-							"Task probability is invalid when calculating for " + mind.getPerson().getName() 
-								+ " on " + mt.getName() + " : Probability is " + probability + ".", null);
+
+					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
+							"Task probability is invalid when calculating for " + mind.getPerson().getName() + " on "
+									+ mt.getName() + " : Probability is " + probability + ".",
+							null);
 				}
 			}
-	
+
 			// Set the time cache to the current time.
-			//if (marsClock != null)
-			//	marsClock = Simulation.instance().getMasterClock().getMarsClock();
+			// if (marsClock != null)
+			// marsClock = Simulation.instance().getMasterClock().getMarsClock();
 			timeCache = (MarsClock) marsClock.clone();
-			
-	    }
+
+		}
 	}
 
 	/**
 	 * Checks if task probability cache should be used.
+	 * 
 	 * @return true if cache should be used.
 	 */
 	private boolean useCache() {
-		//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		//return currentTime.equals(timeCache);
+		// MarsClock currentTime =
+		// Simulation.instance().getMasterClock().getMarsClock();
+		// return currentTime.equals(timeCache);
 		return marsClock.equals(timeCache);
 	}
 
@@ -700,7 +695,7 @@ implements Serializable {
 		person = null;
 		timeCache = null;
 		lastTask = null;
-		health = null;	
+		health = null;
 		circadian = null;
 		ts = null;
 		marsClock = null;
