@@ -158,6 +158,7 @@ import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTimePicker;
 import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.controls.JFXToolbar;
+import com.jfoenix.controls.JFXDialog.DialogTransition;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
 
@@ -3554,47 +3555,53 @@ public class MainScene implements ClockListener {
 			if (exitDialog == null) {
 				isShowingDialog = true;
 
-				Label l = createBlendLabel(Msg.getString("MainScene.exit.header"));
-				l.setPadding(new Insets(10, 10, 10, 10));
-				l.setFont(Font.font(null, FontWeight.BOLD, 14));
-				l.setStyle("-fx-text-fill: white;");
-
-				HBox hb = new HBox();
-				hb.setAlignment(Pos.CENTER);
-				JFXButton b0 = new JFXButton("Save & Exit");
-				b0.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
-				JFXButton b1 = new JFXButton("Exit");
-				b1.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
-				JFXButton b2 = new JFXButton("Back");
-				b2.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
-				// b0.setPadding(new Insets(2, 2, 2, 2));
-
-				hb.getChildren().addAll(b0, b1, b2);
-				HBox.setMargin(b0, new Insets(3, 3, 3, 3));
-				HBox.setMargin(b1, new Insets(3, 3, 3, 3));
-				HBox.setMargin(b2, new Insets(3, 3, 3, 3));
-
-				VBox vb = new VBox();
-				vb.setPadding(new Insets(5, 5, 5, 5));
-				vb.getChildren().addAll(l, hb);
-				vb.setAlignment(Pos.CENTER);
-
-				StackPane sp = new StackPane(vb);
-				sp.setStyle("-fx-background-color: black;");// rgba(0,0,0,0.1);");
-				StackPane.setMargin(vb, new Insets(10, 10, 10, 10));
+				JFXButton b1 = new JFXButton("Save & Exit");
+				JFXButton b2 = new JFXButton("Exit");	
+				JFXButton b3 = new JFXButton("Back");
+				StackPane sp = MainMenu.getExitDialogPane(b1, b2, b3);		
+				
+//				Label l = createBlendLabel(Msg.getString("MainScene.exit.header"));
+//				l.setPadding(new Insets(10, 10, 10, 10));
+//				l.setFont(Font.font(null, FontWeight.BOLD, 14));
+//				l.setStyle("-fx-text-fill: white;");
+//
+//				HBox hb = new HBox();
+//				hb.setAlignment(Pos.CENTER);
+//				JFXButton b0 = new JFXButton("Save & Exit");
+//				b0.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
+//				JFXButton b1 = new JFXButton("Exit");
+//				b1.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
+//				JFXButton b2 = new JFXButton("Back");
+//				b2.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
+//				// b0.setPadding(new Insets(2, 2, 2, 2));
+//
+//				hb.getChildren().addAll(b0, b1, b2);
+//				HBox.setMargin(b0, new Insets(3, 3, 3, 3));
+//				HBox.setMargin(b1, new Insets(3, 3, 3, 3));
+//				HBox.setMargin(b2, new Insets(3, 3, 3, 3));
+//
+//				VBox vb = new VBox();
+//				vb.setPadding(new Insets(5, 5, 5, 5));
+//				vb.getChildren().addAll(l, hb);
+//				vb.setAlignment(Pos.CENTER);
+//
+//				StackPane sp = new StackPane(vb);
+//				sp.setStyle("-fx-background-color: black;");
+//				StackPane.setMargin(vb, new Insets(10, 10, 10, 10));
 
 				exitDialog = new JFXDialog();
+				exitDialog.setTransitionType(DialogTransition.TOP);
 				exitDialog.setDialogContainer(rootStackPane);
 				exitDialog.setContent(sp);
 				exitDialog.show();
 
-				b0.setOnAction(e -> {
+				b1.setOnAction(e -> {
 					exitDialog.close();
 					saveOnExit();
 					e.consume();
 				});
 
-				b1.setOnAction(e -> {
+				b2.setOnAction(e -> {
 					exitDialog.close();
 					endSim();
 					exitSimulation();
@@ -3603,7 +3610,7 @@ public class MainScene implements ClockListener {
 					e.consume();
 				});
 
-				b2.setOnAction(e -> {
+				b3.setOnAction(e -> {
 					isShowingDialog = false;
 					exitDialog.close();
 					e.consume();

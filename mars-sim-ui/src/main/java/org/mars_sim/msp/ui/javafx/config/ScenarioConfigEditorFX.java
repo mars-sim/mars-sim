@@ -16,6 +16,7 @@ import org.mars_sim.network.SettlementRegistry;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialog.DialogTransition;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -1539,39 +1540,27 @@ public class ScenarioConfigEditorFX {
 	 */
 	public void dialogOnExit(StackPane pane) {
 		isShowingDialog = true;
-		Label l = mainScene.createBlendLabel(Msg.getString("MainScene.exit.header"));
-		l.setPadding(new Insets(10, 10, 10, 10));
-		l.setFont(Font.font(null, FontWeight.BOLD, 14));
-		HBox hb = new HBox();
+		
 		JFXButton b1 = new JFXButton("Exit");
-		b1.setStyle("-fx-background-color: white;");
-		JFXButton b2 = new JFXButton("Back");
-		b2.setStyle("-fx-background-color: white;");
-		hb.getChildren().addAll(b1, b2);
-		hb.setAlignment(Pos.CENTER);
-		HBox.setMargin(b1, new Insets(3,3,3,3));
-		HBox.setMargin(b2, new Insets(3,3,3,3));
-		VBox vb = new VBox();
-		vb.setAlignment(Pos.CENTER);
-		vb.setPadding(new Insets(5, 5, 5, 5));
-		vb.getChildren().addAll(l, hb);
-		StackPane sp = new StackPane(vb);
-		sp.setStyle("-fx-background-color:rgba(0,0,0,0.1);");
-		StackPane.setMargin(vb, new Insets(10,10,10,10));
-		JFXDialog dialog = new JFXDialog();
-		dialog.setDialogContainer(pane);
-		dialog.setContent(sp);
-		dialog.show();
+		JFXButton b2 = new JFXButton("Back");	
+		
+		StackPane sp = MainMenu.getExitDialogPane(b1, b2, null);	
+		
+		JFXDialog exitDialog = new JFXDialog();
+		exitDialog.setTransitionType(DialogTransition.TOP);
+		exitDialog.setDialogContainer(pane);
+		exitDialog.setContent(sp);
+		exitDialog.show();
 
 		b1.setOnAction(e -> {
 			isExit = true;
-			dialog.close();
+			exitDialog.close();
 			Platform.exit();
 			System.exit(0);
 		});
 		
 		b2.setOnAction(e -> {
-			dialog.close();
+			exitDialog.close();
 			isShowingDialog = false;
 			e.consume();
 		});

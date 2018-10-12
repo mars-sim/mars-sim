@@ -57,6 +57,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.config.controller.MainMenuController;
@@ -111,7 +112,7 @@ public class MainMenu {
 
 	private final Random random = new Random();
 
-	private boolean isExit = false;
+	private static boolean isExit = false;
 
 	public int mainscene_width = 1366; // 1920;//
 	public int mainscene_height = 768; // 1080;//
@@ -152,9 +153,9 @@ public class MainMenu {
 
 	private MenuApp menuApp;
 
-	private JFXDialog settingDialog;
+	private static JFXDialog settingDialog;
 
-	private JFXDialog exitDialog;
+	private static JFXDialog exitDialog;
 
 	private List<Resolution> resList;
 
@@ -977,39 +978,54 @@ public class MainMenu {
 		return globeSPane;
 	}
 
+	public static StackPane getExitDialogPane(JFXButton b1, JFXButton b2, JFXButton b3) {
+		Label l = new Label("Do you really want to exit ?");// mainScene.createBlendLabel(Msg.getString("MainScene.exit.header")); // 
+		l.setPadding(new Insets(10, 10, 10, 10));
+		l.setFont(Font.font(null, FontWeight.BOLD, 14));
+		l.setStyle("-fx-text-fill: white;");
+		
+		b1.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
+		b2.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
+		if (b3 != null)
+			b3.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
+		
+		HBox hb = new HBox();
+		hb.setAlignment(Pos.CENTER);
+		if (b3 != null)
+			hb.getChildren().addAll(b1, b2, b3);
+		else
+			hb.getChildren().addAll(b1, b2);
+		
+		HBox.setMargin(b1, new Insets(3, 3, 3, 3));
+		HBox.setMargin(b2, new Insets(3, 3, 3, 3));
+		if (b3 != null)
+			HBox.setMargin(b3, new Insets(3, 3, 3, 3));
+		
+		VBox vb = new VBox();
+		vb.setAlignment(Pos.CENTER);
+		vb.setPadding(new Insets(5, 5, 5, 5));
+		vb.getChildren().addAll(l, hb);
+
+		StackPane sp = new StackPane(vb);
+		sp.setStyle("-fx-background-color: black;");
+		StackPane.setMargin(vb, new Insets(10, 10, 10, 10));
+		return sp;
+	}
+
+	
 	/**
 	 * Open the exit dialog box
 	 * 
 	 * @param pane
 	 */
-	public void dialogOnExit(StackPane pane) {
+	public static void dialogOnExit(StackPane pane) {
 
 		if (exitDialog == null && (settingDialog == null || (settingDialog != null && !settingDialog.isVisible()))) {
 
-			Label l = new Label("Do you really want to exit ?");// mainScene.createBlendLabel(Msg.getString("MainScene.exit.header"));
-			l.setPadding(new Insets(10, 10, 10, 10));
-			l.setFont(Font.font(null, FontWeight.BOLD, 14));
-			l.setStyle("-fx-text-fill: white;");
-
-			HBox hb = new HBox();
 			JFXButton b1 = new JFXButton("Exit");
-			b1.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
-			JFXButton b2 = new JFXButton("Back");
-			b2.setStyle("-fx-background-color: grey;-fx-text-fill: white;");
-
-			hb.getChildren().addAll(b1, b2);
-			hb.setAlignment(Pos.CENTER);
-			HBox.setMargin(b1, new Insets(3, 3, 3, 3));
-			HBox.setMargin(b2, new Insets(3, 3, 3, 3));
-
-			VBox vb = new VBox();
-			vb.setAlignment(Pos.CENTER);
-			vb.setPadding(new Insets(5, 5, 5, 5));
-			vb.getChildren().addAll(l, hb);
-
-			StackPane sp = new StackPane(vb);
-			sp.setStyle("-fx-background-color: black;");
-			StackPane.setMargin(vb, new Insets(10, 10, 10, 10));
+			JFXButton b2 = new JFXButton("Back");	
+			
+			StackPane sp = getExitDialogPane(b1, b2, null);			
 
 			exitDialog = new JFXDialog();
 			// exitDialog.setDialogContainer(pane);
@@ -1035,6 +1051,7 @@ public class MainMenu {
 		}
 	}
 
+	
 	/**
 	 * Obtains the resolution of the current screen
 	 */
@@ -1342,7 +1359,6 @@ public class MainMenu {
 		Resolution(int width, int height) {
 			this.width = width;
 			this.height = height;
-
 		}
 
 		public int getHeight() {
@@ -1358,4 +1374,6 @@ public class MainMenu {
 			return width + " x " + height;
 		}
 	}
+	
+	
 }

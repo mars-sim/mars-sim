@@ -1,4 +1,4 @@
-package org.mars_sim.msp.ui.sodiumFRP;
+package org.mars_sim.msp.ui.sodium;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -15,11 +15,18 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import nz.sodium.Cell;
+import nz.sodium.CellLoop;
+import nz.sodium.Listener;
+import nz.sodium.Stream;
+import nz.sodium.StreamSink;
+import nz.sodium.Transaction;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
-import nz.sodium.*;
 
 class Element {
     Element(Polygon polygon) {
