@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Driver;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -25,7 +24,6 @@ import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -487,7 +485,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	@Override
 	protected boolean isCapableOfMission(MissionMember member) {
 		if (super.isCapableOfMission(member)) {
-			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			if (member.isInSettlement()) {
 				if (member.getSettlement() == getStartingSettlement()) {
 					return true;
 				}
@@ -504,7 +502,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 //        if (isCapableOfMission(member)) {
 		result = super.getMissionQualification(member);
 
-		if (member instanceof Person) {
+//		if (member instanceof Person) {
 			Person person = (Person) member;
 
 			RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
@@ -541,14 +539,14 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			if (person.getMind().getJob() instanceof Politician) {
 				result += 10D;
 			}
-		} else if (member instanceof Robot) {
-			Robot robot = (Robot) member;
-
-			// If robot has the "Driver" job, add 1 to their qualification.
-			if (robot.getBotMind().getRobotJob() instanceof Deliverybot) {
-				result += 1D;
-			}
-		}
+//		} else if (member instanceof Robot) {
+//			Robot robot = (Robot) member;
+//
+//			// If robot has the "Driver" job, add 1 to their qualification.
+//			if (robot.getBotMind().getRobotJob() instanceof Deliverybot) {
+//				result += 1D;
+//			}
+//		}
 //        }
 
 		return result;

@@ -879,8 +879,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		setBuriedSettlement(associatedSettlement);
 		// Remove the person from being a member of the associated settlement
 		setAssociatedSettlement(null);
-		// Update the associated people
-		buriedSettlement.updateAllAssociatedPeople();
 		// Set work shift to OFF
 		setShiftType(ShiftType.OFF);
 		// Set unit description to "Dead"
@@ -1264,25 +1262,26 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param newSettlement the new associated settlement or null if none.
 	 */
 	public void setAssociatedSettlement(Settlement newSettlement) {
+		
 		if (associatedSettlement != newSettlement) {
+			
 			Settlement oldSettlement = associatedSettlement;
 			associatedSettlement = newSettlement;
 			fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT, associatedSettlement);
+			
 			if (oldSettlement != null) {
-				oldSettlement.removePerson(this);
+				oldSettlement.removePerson(this);				
 				oldSettlement.fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
+				// Call to update people list in the old settlement
+				oldSettlement.updateAllAssociatedPeople();
 			}
+			
 			if (newSettlement != null) {
 				newSettlement.addPerson(this);
 				newSettlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
+				// Call to update people list in the new settlement
+				newSettlement.updateAllAssociatedPeople();
 			}
-
-			// set description for this person
-			// if (associatedSettlement == null) {
-			// setBuriedSettlement(oldSettlement);
-			// super.setDescription("Dead");
-			// } else
-//				super.setDescription(associatedSettlement.getName());
 		}
 	}
 
@@ -1487,9 +1486,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return the person's vehicle
 	 */
 	public Vehicle getVehicle() {
-		// if (getLocationSituation() == LocationSituation.IN_VEHICLE)
-		// return (Vehicle) getContainerUnit();
-		// else
 		return vehicle;
 	}
 
