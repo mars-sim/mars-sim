@@ -251,7 +251,7 @@ implements Serializable {
 
 		// Check if building has needed living accommodations for settlement population.
 		if (building.hasFunction(FunctionType.LIVING_ACCOMODATIONS)) {
-			int popSize = settlement.getAllAssociatedPeople().size();
+			int popSize = settlement.getNumCitizens();
 			int popCapacity = settlement.getPopulationCapacity();
 			LivingAccommodations livingAccommodations = building.getLivingAccommodations();//(LivingAccommodations) building.getFunction(FunctionType.LIVING_ACCOMODATIONS);
 			int buildingPopCapacity = livingAccommodations.getBeds();

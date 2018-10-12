@@ -64,7 +64,7 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
                 	|| roleType.equals(RoleType.MAYOR)
             		|| roleType.equals(RoleType.COMMANDER)
         			|| roleType.equals(RoleType.SUB_COMMANDER)
-        			|| (roleType.equals(RoleType.MISSION_SPECIALIST) && (person.getAssociatedSettlement().getNumAssociatedPeople() <= 4))) {
+        			|| (roleType.equals(RoleType.MISSION_SPECIALIST) && (person.getAssociatedSettlement().getNumCitizens() <= 4))) {
 
 //	            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
 //            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)

@@ -879,12 +879,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		setBuriedSettlement(associatedSettlement);
 		// Remove the person from being a member of the associated settlement
 		setAssociatedSettlement(null);
+		// Update the associated people
+		buriedSettlement.updateAllAssociatedPeople();
 		// Set work shift to OFF
 		setShiftType(ShiftType.OFF);
 		// Set unit description to "Dead"
 		super.setDescription("Dead");
-		// Relinquish the role
+		// Relinquish his role
 		role.relinquishOldRoleType(role.getType());
+		// Re-elect his role
+		buriedSettlement.getChainOfCommand().reelect(role.getType());
 		// Throw unit event.
 		fireUnitUpdate(UnitEventType.BURIAL_EVENT);
 	}
@@ -981,9 +985,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				}
 
 				buryBody();
-			
-				// Re-elect his role
-				this.getBuriedSettlement().getChainOfCommand().reelect(role.getType());
 			}
 		}
 

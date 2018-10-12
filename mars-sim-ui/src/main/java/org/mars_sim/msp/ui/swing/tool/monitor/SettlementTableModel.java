@@ -207,7 +207,7 @@ public class SettlementTableModel extends UnitTableModel {
 					break;
 
 				case POPULATION: {
-					result = settle.getAllAssociatedPeople().size();
+					result = settle.getNumCitizens();
 				}
 					break;
 

@@ -81,7 +81,7 @@ public class ExplorationMeta implements MetaMission {
             }
 
             // Check for embarking missions.
-            else if (settlement.getAllAssociatedPeople().size()/4.0 < VehicleMission.numEmbarkingMissions(settlement)){
+            else if (settlement.getNumCitizens()/4.0 < VehicleMission.numEmbarkingMissions(settlement)){
             	return 0;
             }
 

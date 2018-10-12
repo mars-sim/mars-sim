@@ -784,8 +784,8 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		String id = clientID + "";
 		String name = s.getName();
 		String template = s.getTemplate();
-		String pop = s.getAllAssociatedPeople().size() + "";
-		String bots = s.getAllAssociatedRobots().size() + "";
+		String pop = s.getNumCitizens() + "";
+		String bots = s.getNumBots() + "";
 		String lat = Math.round(s.getCoordinates().getLatitudeDouble() * 10.0)/10.0 + ""; //.getPhi()
 		String lo = Math.round(s.getCoordinates().getLongitudeDouble() * 10.0)/10.0 + "";
 
@@ -1157,7 +1157,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 		}
 		if (hasChanged) {
 			//System.out.println("MultiplayerClient : unitUpdate() : hasChanged is true");
-			int n = settlement.getAllAssociatedPeople().size();
+			int n = settlement.getNumCitizens();
 			String name = settlement.getName();
 			sendGetRecords();
 			//System.out.println(playerName + " "  + name);

@@ -67,7 +67,7 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
             		|| roleType.equals(RoleType.COMMANDER)
         			|| roleType.equals(RoleType.SUB_COMMANDER) 
         			|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-        			|| (roleType.equals(RoleType.MISSION_SPECIALIST) && (person.getAssociatedSettlement().getNumAssociatedPeople() <= 4))) {
+        			|| (roleType.equals(RoleType.MISSION_SPECIALIST) && (person.getAssociatedSettlement().getNumCitizens() <= 4))) {
 
 	            // Probability affected by the person's stress and fatigue.
 	            PhysicalCondition condition = person.getPhysicalCondition();

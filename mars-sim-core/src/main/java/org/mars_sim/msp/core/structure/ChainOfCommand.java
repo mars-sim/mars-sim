@@ -152,10 +152,10 @@ public class ChainOfCommand implements Serializable {
 		int pop = 0;
 		if (person.getSettlement() == null)
 			logger.warning("person.getSettlement() = null");
-		else if (person.getSettlement().getAllAssociatedPeople() == null)
-			logger.warning("person.getSettlement().getAllAssociatedPeople() = null");
+//		else if (person.getSettlement().getAllAssociatedPeople() == null)
+//			logger.warning("person.getSettlement().getAllAssociatedPeople() = null");
 		else {
-			pop = person.getSettlement().getAllAssociatedPeople().size();
+			pop = person.getSettlement().getNumCitizens();
 			if (pop == 0) {
 				// logger.warning("person.getSettlement().getAllAssociatedPeople().size() = 0");
 				pop = person.getSettlement().getIndoorPeopleCount();
@@ -279,7 +279,7 @@ public class ChainOfCommand implements Serializable {
 
 		Job job = person.getMind().getJob();
 		Role role = person.getRole();
-		int pop = person.getSettlement().getAllAssociatedPeople().size();
+		int pop = person.getSettlement().getNumCitizens();
 		// int slot = (int) ((pop - 2 - 7 )/ 7);
 
 		boolean allSlotsFilledOnce = areAllFilled(1);
@@ -432,7 +432,7 @@ public class ChainOfCommand implements Serializable {
 				|| key == RoleType.CHIEF_OF_SAFETY_N_HEALTH) {
 			unitManager.electChief(settlement, key);
 		} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
-			int pop = settlement.getAllAssociatedPeople().size();
+			int pop = settlement.getNumCitizens();
 			unitManager.electCommanders(settlement, pop);
 		} else if (key == RoleType.MAYOR) {
 			unitManager.electMayor(settlement, key);

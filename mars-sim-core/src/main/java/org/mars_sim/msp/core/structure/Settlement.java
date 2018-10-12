@@ -146,7 +146,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private int cropsNeedingTendingCache = 5;
 	private int millisolCache = -5;
 	private int numConnectorsCache = 0;
-
+	/**  Numbers of associated people in this settlement. */
+	private int numCitizens;
+	/**  Numbers of associated bots in this settlement. */
+	private int numBots;
+		
 	/** Goods manager update time. */
 	private double goodsManagerUpdateTime = 0D;
 
@@ -186,10 +190,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private boolean resourceProcessOverride = false;
 	/* Override flag for construction/salvage mission creation at settlement. */
 	private boolean constructionOverride = false;
-	/* Flag showing if the instance of Settlement has just been deserialized */
-	public transient boolean justReloadedPeople = true;
-
-	public transient boolean justReloadedRobots = true;
+	/* Flag showing if the people list has been reloaded. */
+	public transient boolean justReloadedPeople = false;
+	/* Flag showing if the bots list has been reloaded. */
+	public transient boolean justReloadedRobots = false;
 
 	private boolean[] exposed = { false, false, false };
 
@@ -522,7 +526,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		for (Building building : bs) {
 			result += building.getLivingAccommodations().getSleepers();
 		}
-
 		return result;
 	}
 
@@ -604,7 +607,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return the available population capacity
 	 */
 	public int getAvailableSpace() {
-		return getPopulationCapacity() - getIndoorPeopleCount();
+		return getPopulationCapacity() - numCitizens;//getIndoorPeopleCount();
 	}
 
 	/**
@@ -657,20 +660,19 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		return result;
 	}
 
-	/**
-	 * Gets the current number of robots in the settlement
-	 * 
-	 * @return the number of robots
-	 */
-	public int getNumCurrentRobots() {
-		int n = 0;
-		for (Unit u : getInventory().getAllContainedUnits()) {
-			if (u instanceof Robot)
-				n++;
-		}
-		return n;
-		// return getRobots().size();
-	}
+//	/**
+//	 * Gets the current number of robots in the settlement
+//	 * 
+//	 * @return the number of robots
+//	 */
+//	public int getNumCurrentRobots() {
+//		int n = 0;
+//		for (Unit u : getInventory().getAllContainedUnits()) {
+//			if (u instanceof Robot)
+//				n++;
+//		}
+//		return n;
+//	}
 
 	/**
 	 * Gets a collection of the number of robots of the settlement.
@@ -687,7 +689,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return the available robots capacity
 	 */
 	public int getAvailableRobotCapacity() {
-		return getRobotCapacity() - getNumCurrentRobots();
+		return getRobotCapacity() - numBots;
 	}
 
 	/**
@@ -1861,9 +1863,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 *
 	 * @return the number of associated people.
 	 */
-	public int getNumAssociatedPeople() {
-		return getAllAssociatedPeople().size();
+	public int getNumCitizens() {
+		return numCitizens;
 	}
+
 	
 	/**
 	 * Gets all people associated with this settlement, even if they are out on
@@ -1872,7 +1875,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return collection of associated people.
 	 */
 	public Collection<Person> getAllAssociatedPeople() {
-		if (!justReloadedPeople)
+		if (justReloadedPeople)
 			return allAssociatedPeople;
 
 		else {
@@ -1893,7 +1896,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				.collect(Collectors.toList());
 
 		allAssociatedPeople = result;
-		justReloadedPeople = false;
+		justReloadedPeople = true;
+		numCitizens = result.size();
+		
 		return result;
 	}
 
@@ -2158,7 +2163,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return collection of associated Robots.
 	 */
 	public Collection<Robot> getAllAssociatedRobots() {
-		if (!justReloadedRobots)
+		if (justReloadedRobots)
 			// if (!allAssociatedPeople.isEmpty())
 			return allAssociatedRobots;
 
@@ -2175,17 +2180,27 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * 
 	 * @return collection of associated robots.
 	 */
-	// Added updateAllAssociatedRobots()
 	public Collection<Robot> updateAllAssociatedRobots() {
 		// using java 8 stream
 		Collection<Robot> result = unitManager.getRobots().stream().filter(r -> r.getAssociatedSettlement() == this)
 				.collect(Collectors.toList());
 
 		allAssociatedRobots = result;
-		justReloadedRobots = false;
+		justReloadedRobots = true;
+		numBots = result.size();
 		return result;
 	}
 
+	
+	/**
+	 * Gets the number of associated bots with this settlement 
+	 *
+	 * @return the number of associated bots.
+	 */
+	public int getNumBots() {
+		return numBots;
+	}
+			
 	/**
 	 * Gets all vehicles currently on mission and are associated with this
 	 * settlement.
@@ -3210,7 +3225,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		else if (sand_value <= 3)
 			return 0;
 
-		int pop = getAllAssociatedPeople().size();// getCurrentPopulationNum();
+		int pop = numCitizens;//getAllAssociatedPeople().size();// getCurrentPopulationNum();
 
 		double regolith_available = getInventory().getAmountResourceStored(ResourceUtil.regolithAR, false);
 		double sand_available = getInventory().getAmountResourceStored(ResourceUtil.sandAR, false);
@@ -3269,7 +3284,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// double oxygen_available =
 		// getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false);
 
-		int pop = getAllAssociatedPeople().size();// getCurrentPopulationNum();
+		int pop = numCitizens;// getCurrentPopulationNum();
 
 		// TODO: create a task to find local ice and simulate the probability of finding
 		// local ice and its quantity

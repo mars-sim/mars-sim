@@ -74,7 +74,7 @@ public class Administration extends Function implements Serializable {
 	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
 
 		// Settlements need enough administration buildings to support population.
-		double demand = settlement.getAllAssociatedPeople().size();
+		double demand = settlement.getNumCitizens();
 
 		// Supply based on wear condition of buildings.
 		double supply = 0D;

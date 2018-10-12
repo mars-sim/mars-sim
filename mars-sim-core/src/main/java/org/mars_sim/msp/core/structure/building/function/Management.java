@@ -57,7 +57,7 @@ implements Serializable {
             Settlement settlement) {
 
         // Settlements need enough management buildings to support population.
-        double demand = settlement.getAllAssociatedPeople().size();
+        double demand = settlement.getNumCitizens();
 
         // Supply based on wear condition of buildings.
         double supply = 0D;

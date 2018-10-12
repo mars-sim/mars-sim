@@ -316,7 +316,7 @@ implements Serializable {
             Settlement settlement) {
 
         // Demand is 1 cooking capacity for every five inhabitants.
-        double demand = settlement.getAllAssociatedPeople().size() / 5D;
+        double demand = settlement.getNumCitizens() / 5D;
 
         double supply = 0D;
         boolean removedBuilding = false;

@@ -261,7 +261,7 @@ implements Serializable {
 
         // TODO: calibrate this demand
     	// Demand is 1 for every 5 inhabitants.
-        double demand = settlement.getAllAssociatedPeople().size() / 5D;
+        double demand = settlement.getNumCitizens() / 5D;
 
         double supply = 0D;
         boolean removedBuilding = false;

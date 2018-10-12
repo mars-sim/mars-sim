@@ -82,12 +82,12 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 		topContentPanel.add(countPanel);
 
 		// Create robot num label
-		robotNumCache = settlement.getNumCurrentRobots();
+		robotNumCache = settlement.getNumBots();
 		robotNumLabel = new WebLabel(Msg.getString("TabPanelBots.associated", robotNumCache), WebLabel.CENTER); // $NON-NLS-1$
 		countPanel.add(robotNumLabel);
 
 		// Create robot indoor label
-		robotIndoorCache = settlement.getNumCurrentRobots();
+		robotIndoorCache = settlement.getNumBots();
 		robotIndoorLabel = new WebLabel(Msg.getString("TabPanelBots.indoor", robotIndoorCache),
 				WebLabel.CENTER); // $NON-NLS-1$
 		countPanel.add(robotIndoorLabel);
@@ -140,8 +140,8 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 		Settlement settlement = (Settlement) unit;
 
 		// Update robot num
-		if (robotNumCache != settlement.getNumCurrentRobots()) {
-			robotNumCache = settlement.getNumCurrentRobots();
+		if (robotNumCache != settlement.getNumBots()) {
+			robotNumCache = settlement.getNumBots();
 			robotNumLabel.setText(Msg.getString("TabPanelBots.robot", robotNumCache)); // $NON-NLS-1$
 		}
 

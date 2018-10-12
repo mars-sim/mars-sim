@@ -268,7 +268,7 @@ public class DashboardController implements Initializable {
        	//System.out.println("handleList()");
      	if (controller != null)
     		controller.updateSettlers(s);
-     	int total = s.getAllAssociatedPeople().size();
+     	int total = s.getNumCitizens();
      	int inside = s.getIndoorPeopleCount();
      	int outside = total - inside;
         insertLabel.setText(total + SETTLERS_IN + s.getName() + " (" + INSIDE + inside + OUTSIDE + outside + ")");

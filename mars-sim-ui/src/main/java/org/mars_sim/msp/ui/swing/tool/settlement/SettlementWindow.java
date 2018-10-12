@@ -276,7 +276,7 @@ extends ToolWindow {
     		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
     	sol = marsClock.getMissionSol();
-    	pop = mapPanel.getSettlement().getAllAssociatedPeople().size();
+    	pop = mapPanel.getSettlement().getNumCitizens();
     	cap = mapPanel.getSettlement().getPopulationCapacity();
 
 		String statusText = "" + sol;
@@ -399,7 +399,7 @@ extends ToolWindow {
 		}
 	*/
     	int s = marsClock.getMissionSol();
-    	int p = mapPanel.getSettlement().getAllAssociatedPeople().size();
+    	int p = mapPanel.getSettlement().getNumCitizens();
     	int c = mapPanel.getSettlement().getPopulationCapacity();
 
 

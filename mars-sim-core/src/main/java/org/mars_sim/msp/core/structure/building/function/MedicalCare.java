@@ -73,7 +73,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
 
 		// Demand is 5 medical points per inhabitant.
-		double demand = settlement.getAllAssociatedPeople().size() * 5D;
+		double demand = settlement.getNumCitizens() * 5D;
 
 		double supply = 0D;
 		boolean removedBuilding = false;

@@ -85,7 +85,7 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 		topContentPanel.add(countPanel);
 
 		// Create associate label
-		populationNumCache = settlement.getAllAssociatedPeople().size();
+		populationNumCache = settlement.getNumCitizens();
 		populationNumLabel = new WebLabel(Msg.getString("TabPanelAssociatedPeople.associated", populationNumCache),
 				WebLabel.CENTER); // $NON-NLS-1$
 		countPanel.add(populationNumLabel);
@@ -145,7 +145,7 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 
 		Settlement settlement = (Settlement) unit;
 
-		int num = settlement.getAllAssociatedPeople().size();
+		int num = settlement.getNumCitizens();
 		// Update population num
 		if (populationNumCache != num) {
 			populationNumCache = num;
@@ -180,7 +180,7 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 
 			Person result = null;
 
-			if ((index >= 0) && (index < populationList.size())) {
+			if ((index >= 0) && (index < settlement.getNumCitizens())) {
 				result = populationList.get(index);
 			}
 
@@ -189,7 +189,7 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 
 		@Override
 		public int getSize() {
-			return populationList.size();
+			return settlement.getNumCitizens();//populationList.size();
 		}
 
 		/**

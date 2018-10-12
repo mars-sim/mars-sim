@@ -69,7 +69,7 @@ public class EmergencySupplyMissionMeta implements MetaMission {
 	            }
 	
 	            int min_num = 0;
-	            int all = settlement.getAllAssociatedPeople().size();
+	            int all = settlement.getNumCitizens();
 	            if (all == 2)
 	            	min_num = 0;
 	            else 

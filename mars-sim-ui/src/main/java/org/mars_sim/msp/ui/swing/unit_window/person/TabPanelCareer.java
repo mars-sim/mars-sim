@@ -444,7 +444,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		JobAssignmentType status = list.get(last).getStatus();
 
-		pop = settlement.getAllAssociatedPeople().size();
+		pop = settlement.getNumCitizens();
 
 		if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
 
@@ -631,7 +631,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 						settlement = vehicle.getSettlement();
 					}
 
-					pop = settlement.getAllAssociatedPeople().size();
+					pop = settlement.getNumCitizens();
 
 					// if the population is beyond 4
 					if (pop > UnitManager.POPULATION_WITH_COMMANDER) {

@@ -82,7 +82,7 @@ implements Serializable {
 			Settlement settlement) {
 
 		// Demand is one airlock capacity for every four inhabitants.
-		double demand = settlement.getAllAssociatedPeople().size() / 4D;
+		double demand = settlement.getNumCitizens() / 4D;
 
 		double supply = 0D;
 		boolean removedBuilding = false;

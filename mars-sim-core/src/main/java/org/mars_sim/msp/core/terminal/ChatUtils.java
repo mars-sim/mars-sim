@@ -387,7 +387,7 @@ public class ChatUtils {
 				|| text.toLowerCase().contains("persons")) {
 			
 			Collection<Person> list = settlementCache.getAllAssociatedPeople();
-			int total = list.size();
+			int total = settlementCache.getNumCitizens();
 			int indoor = settlementCache.getIndoorPeopleCount();
 			int outdoor = total - indoor;
 			questionText = YOU_PROMPT + "Who are the settlers ? ";
@@ -476,7 +476,7 @@ public class ChatUtils {
 				|| text.equalsIgnoreCase("robot") || text.equalsIgnoreCase("robot")) {
 			questionText = YOU_PROMPT + "What kind of bots do you have? ";
 			responseText.append(settlementCache + " : we have " 
-					+ settlementCache.getNumCurrentRobots() + " bots as follows :");
+					+ settlementCache.getNumBots() + " bots as follows :");
 			Collection<Robot> list = settlementCache.getRobots();
 			List<Robot> namelist = new ArrayList<>(list);
 			Collections.sort(namelist);

@@ -652,7 +652,7 @@ public class Farming extends Function implements Serializable {
 		// Demand is farming area (m^2) needed to produce food for settlement
 		// population.
 		double requiredFarmingAreaPerPerson = getFarmingAreaNeededPerPerson();
-		double demand = requiredFarmingAreaPerPerson * settlement.getAllAssociatedPeople().size();
+		double demand = requiredFarmingAreaPerPerson * settlement.getNumCitizens();
 
 		// Supply is total farming area (m^2) of all farming buildings at settlement.
 		double supply = 0D;

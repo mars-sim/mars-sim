@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.ui.javafx.config;
 
-
 import insidefx.undecorator.UndecoratorScene;
 
 import org.mars_sim.msp.ui.javafx.MainScene;
@@ -55,8 +54,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.scene.Cursor;
@@ -78,16 +75,17 @@ public class ScenarioConfigEditorFX {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ScenarioConfigEditorFX.class.getName());
-	//private static final char CVS_SEPARADOR = new DecimalFormatSymbols().getPatternSeparator();
-	//private static final int HORIZONTAL_SIZE = 1024;
+	// private static final char CVS_SEPARADOR = new
+	// DecimalFormatSymbols().getPatternSeparator();
+	// private static final int HORIZONTAL_SIZE = 1024;
 
 	// Data members.
 	private int clientID = 0;
-	//private double orgSceneX, orgSceneY;
-	//private double orgTranslateX, orgTranslateY;
-	
+	// private double orgSceneX, orgSceneY;
+	// private double orgTranslateX, orgTranslateY;
+
 	private boolean isExit = false;
-    private boolean isShowingDialog = false;
+	private boolean isShowingDialog = false;
 	private boolean hasError;
 	private boolean hasSettlement;
 	private boolean isCrewEditorOpen = false;
@@ -95,26 +93,26 @@ public class ScenarioConfigEditorFX {
 	private String playerName;
 	private String gameMode;
 
-    private AnchorPane anchorpane;
-    private StackPane stackPane;
+	private AnchorPane anchorpane;
+	private StackPane stackPane;
 
 	private JFXButton startButton;
 	private JFXButton addButton;
 	private JFXButton removeButton;
 	private JFXButton undoButton;
 	private JFXButton crewButton;
-	
+
 	private Label errorLabel;
 	private Label titleLabel;
-	//private Label gameModeLabel;
+	// private Label gameModeLabel;
 	private Label clientIDLabel;
 	private Label playerLabel;
-	
+
 	private TilePane titlePane;
 	private VBox topVB;
 	private BorderPane borderAll;
 	private Parent parent;
-	
+
 	private Stage stage;
 	private Stage cstage;
 
@@ -130,13 +128,14 @@ public class ScenarioConfigEditorFX {
 	private List<SettlementRegistry> settlementList;
 
 	private Simulation sim = Simulation.instance();
-	
+
 	/**
 	 * Constructor
+	 * 
 	 * @param mainMenu
-	 * @param config the simulation configuration.
+	 * @param config   the simulation configuration.
 	 */
-	public ScenarioConfigEditorFX(MainMenu mainMenu) {																		// {
+	public ScenarioConfigEditorFX(MainMenu mainMenu) { // {
 		// logger.info("ScenarioConfigEditorFX's constructor is on " +
 		// Thread.currentThread().getName() );
 
@@ -185,7 +184,8 @@ public class ScenarioConfigEditorFX {
 
 		try {
 			fxmlLoader = new FXMLLoader();
-			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/ConfigEditorFX.fxml")); // ClientArea.fxml"));																// //
+			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/ConfigEditorFX.fxml")); // ClientArea.fxml")); //
+																								// //
 			fxmlLoader.setController(this);
 			parent = (Parent) fxmlLoader.load();
 		} catch (IOException e) {
@@ -202,7 +202,7 @@ public class ScenarioConfigEditorFX {
 			// stage.getIcons().add(new
 			// Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
 
-			Region root = (Region) parent;//stackPane;
+			Region root = (Region) parent;// stackPane;
 			// The Undecorator as a Scene
 			final UndecoratorScene undecoratorScene = new UndecoratorScene(stage, root);
 
@@ -269,7 +269,7 @@ public class ScenarioConfigEditorFX {
 				}
 				// need e.consume() in order to call setFadeOutTransition() below
 				e.consume();
-				
+
 				if (isExit) {
 					borderAll.setOpacity(0);
 					// undecorator.setFadeOutTransition();
@@ -277,7 +277,7 @@ public class ScenarioConfigEditorFX {
 					Platform.exit();
 				}
 			});
-	        //bar.valueProperty().addListener(this::scrolled);
+			// bar.valueProperty().addListener(this::scrolled);
 		});
 
 	}
@@ -289,8 +289,8 @@ public class ScenarioConfigEditorFX {
 		topVB = new VBox();
 		topVB.setAlignment(Pos.CENTER);
 		topVB.setPadding(new Insets(0, 5, 5, 5));
-		//gameModeLabel = new Label(gameMode);
-		//gameModeLabel.setId("gameModeLabel");
+		// gameModeLabel = new Label(gameMode);
+		// gameModeLabel.setId("gameModeLabel");
 
 		// Create the title label.
 		if (multiplayerClient != null) {
@@ -336,12 +336,12 @@ public class ScenarioConfigEditorFX {
 		tableView = tableViewCombo.createGUI();
 		tableView.setMaxHeight(200);
 		tableView.setPrefHeight(200);
-		borderAll.setCenter(tableView);//bar);
+		borderAll.setCenter(tableView);// bar);
 
-		//SpreadsheetView ssv = settlementTableView.createGUI();
-		//ssv.setMaxHeight(200);
-		//ssv.setPrefHeight(200);
-		//borderAll.setCenter(ssv);
+		// SpreadsheetView ssv = settlementTableView.createGUI();
+		// ssv.setMaxHeight(200);
+		// ssv.setPrefHeight(200);
+		// borderAll.setCenter(ssv);
 
 		// Create configuration button outer panel.
 		BorderPane borderButtons = new BorderPane();
@@ -354,37 +354,42 @@ public class ScenarioConfigEditorFX {
 		vbTopLeft.setPadding(new Insets(5, 5, 5, 5));
 
 		// Create add settlement button.
-		//addButton = new JFXButton("+");// Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
+		// addButton = new JFXButton("+");//
+		// Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
 		addButton = new JFXButton();
-		addButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/button-add.png"))));
+		addButton.setGraphic(
+				new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/button-add.png"))));
 		setMouseCursor(addButton);
 		addButton.getStyleClass().add("button-small");
 		setQuickToolTip(addButton, Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
 		addButton.setOnAction((event) -> {
 			addNewSettlement();
 		});
-		vbTopLeft.getChildren().addAll(new Label(),new Label());
+		vbTopLeft.getChildren().addAll(new Label(), new Label());
 		vbTopLeft.getChildren().add(addButton);
 
 		// Create remove settlement button.
-		removeButton = new JFXButton();//"-");// Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
-		removeButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/button-delete.png"))));
+		removeButton = new JFXButton();// "-");// Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
+		removeButton.setGraphic(
+				new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/button-delete.png"))));
 		setMouseCursor(removeButton);
 		setQuickToolTip(removeButton, Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
 		// removeButton.setId("removeButton");
 		removeButton.getStyleClass().add("button-small");
 
 		removeButton.setOnAction((event) -> {
-			//ObservableList list = settlementTableView.getTableView().getSelectionModel().getSelectedIndices();
+			// ObservableList list =
+			// settlementTableView.getTableView().getSelectionModel().getSelectedIndices();
 			int index = -1;
 			index = tableViewCombo.getTableView().getSelectionModel().getSelectedIndex();
-			//System.out.println("index is " + index);
+			// System.out.println("index is " + index);
 
 			if (index > -1) {
 				boolean isYes = confirmDeleteDialog("Removing settlement", "Are you sure you want to do this?");
 				if (isYes) {
-					//Object o = settlementTableView.getTableView().getSelectionModel().getSelectedItem();
-					//settlementTableView.getTableView().getSelectionModel().clearSelection();
+					// Object o =
+					// settlementTableView.getTableView().getSelectionModel().getSelectedItem();
+					// settlementTableView.getTableView().getSelectionModel().clearSelection();
 					removeSelectedSettlements(index);
 					// mainMenu.getStage().setIconified(true);
 				}
@@ -392,38 +397,35 @@ public class ScenarioConfigEditorFX {
 		});
 		vbTopLeft.getChildren().add(removeButton);
 
-
 		// Create refresh/defaultButton button.
-		undoButton = new JFXButton();//Msg.getString("SimulationConfigEditor.button.default")); //$NON-NLS-1$
-		undoButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/red_undo_32.png"))));//button-undo.png"))));
-		undoButton.getStyleClass().add("button-mid");//-sign");
+		undoButton = new JFXButton();// Msg.getString("SimulationConfigEditor.button.default")); //$NON-NLS-1$
+		undoButton.setGraphic(
+				new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/red_undo_32.png"))));// button-undo.png"))));
+		undoButton.getStyleClass().add("button-mid");// -sign");
 		setMouseCursor(undoButton);
 		setQuickToolTip(undoButton, Msg.getString("SimulationConfigEditor.tooltip.undo"));//$NON-NLS-1$
 
 		undoButton.setOnAction((event) -> {
 			if (multiplayerClient != null && hasSettlement) {
-				boolean isYes = confirmDeleteDialog(
-						"Undo ALL changes",
-						"Proceed ?");
+				boolean isYes = confirmDeleteDialog("Undo ALL changes", "Proceed ?");
 				if (isYes)
-					;//setExistingSettlements();
+					;// setExistingSettlements();
 			} else {
-				boolean isYes = confirmDeleteDialog(
-						"Undo ALL changes and refresh",
-						"Proceed ?");
+				boolean isYes = confirmDeleteDialog("Undo ALL changes and refresh", "Proceed ?");
 				if (isYes)
 					setDefaultSettlements();
 			}
 			// mainMenu.getStage().setIconified(true);
 		});
 		// vbCenter.getChildren().add(defaultButton);
-		//vbTopLeft.getChildren().add(refreshDefaultButton);
+		// vbTopLeft.getChildren().add(refreshDefaultButton);
 
 		// Added Edit Alpha Crew button.
-		crewButton = new JFXButton();//Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
-		crewButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/people32.png"))));
+		crewButton = new JFXButton();// Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
+		crewButton
+				.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/people32.png"))));
 		setMouseCursor(crewButton);
-		crewButton.getStyleClass().add("button-mid");//-sign");//raised");
+		crewButton.getStyleClass().add("button-mid");// -sign");//raised");
 		setQuickToolTip(crewButton, Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
 
 		// alphaButton.setStyle("-fx-font: 16 arial; -fx-base: #cce6ff;");
@@ -431,7 +433,7 @@ public class ScenarioConfigEditorFX {
 			editCrewProfile("alpha");
 		});
 		// bottomButtonPanel.getChildren().add(alphaButton);
-		//vbTopLeft.getChildren().add(crewButton);
+		// vbTopLeft.getChildren().add(crewButton);
 
 		// Create configuration button inner bottom panel.
 		VBox vbCenter = new VBox();
@@ -455,11 +457,13 @@ public class ScenarioConfigEditorFX {
 		// bottomPanel.setBottom(bottomButtonPanel);
 
 		// Create the start button.
-		startButton = new JFXButton();//"  " + Msg.getString("SimulationConfigEditor.button.newSim") + "  "); //$NON-NLS-1$
+		startButton = new JFXButton();// " " + Msg.getString("SimulationConfigEditor.button.newSim") + " ");
+										// //$NON-NLS-1$
 		// startButton = new JFXButton();
 		// Icon value = new Icon("HEART");
 		// value.setPadding(new Insets(10));
-		startButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_48.png"))));
+		startButton.setGraphic(
+				new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_48.png"))));
 		startButton.getStyleClass().add("button-large");
 		setMouseCursor(startButton);
 		setQuickToolTip(startButton, Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
@@ -484,12 +488,12 @@ public class ScenarioConfigEditorFX {
 			}
 
 			// Make sure any editing cell is completed, then check if error.
-			//if (tableCellEditor != null) {
-			//	tableCellEditor.stopCellEditing();
-			//}
+			// if (tableCellEditor != null) {
+			// tableCellEditor.stopCellEditing();
+			// }
 
-			//checkForErrors();
-			//System.out.println("hasError is " + hasError);
+			// checkForErrors();
+			// System.out.println("hasError is " + hasError);
 
 			if (!hasError) {
 				// create wait indicators
@@ -501,21 +505,24 @@ public class ScenarioConfigEditorFX {
 				setConfiguration();
 
 				CompletableFuture.supplyAsync(() -> submitTask());
-				
+
 				// Lookup the thready service in the service registry
-				//ThreadSynchronize threadSync = ServiceUtils.getService(ThreadSynchronize.class).get();
+				// ThreadSynchronize threadSync =
+				// ServiceUtils.getService(ThreadSynchronize.class).get();
 
-				//CompletableFuture.runAsync(() -> submitTask()).thenAcceptAsync( (Consumer<? super Void>) threadSync.wrap(() -> {
-				//	mainScene.createIndicator();
-				//	mainScene.showWaitStage(MainScene.LOADING);
-				//}));
+				// CompletableFuture.runAsync(() -> submitTask()).thenAcceptAsync( (Consumer<?
+				// super Void>) threadSync.wrap(() -> {
+				// mainScene.createIndicator();
+				// mainScene.showWaitStage(MainScene.LOADING);
+				// }));
 
-				//threadSync.scheduleExecution(200, runWait()).thenAcceptAsync( d -> submitTask());
+				// threadSync.scheduleExecution(200, runWait()).thenAcceptAsync( d ->
+				// submitTask());
 
 				closeWindow();
 
 				// scene.setCursor(Cursor.DEFAULT); //Change cursor to default style
-				
+
 			} // end of if (!hasError)
 
 		});
@@ -530,10 +537,7 @@ public class ScenarioConfigEditorFX {
 		tileButtons.setPadding(new Insets(0, 5, 0, 5));
 		tileButtons.setHgap(200.0);
 		tileButtons.setVgap(3.0);
-		tileButtons.getChildren().addAll(
-				undoButton,
-				startButton,
-				crewButton);
+		tileButtons.getChildren().addAll(undoButton, startButton, crewButton);
 		tileButtons.setAlignment(Pos.CENTER);
 
 		bottomPanel.setBottom(tileButtons);
@@ -562,28 +566,29 @@ public class ScenarioConfigEditorFX {
 
 	public class SimulationTask implements Runnable {
 		public void run() {
-			
-			// Start interactive terminal 
+
+			// Start interactive terminal
 			sim.getTerm().startCommanderMode();
-			
+
 			Simulation.createNewSimulation(-1);
-			
+
 			sim.start(false);
-			
+
 			Platform.runLater(() -> {
-				mainScene.finalizeMainScene();				
+				mainScene.finalizeMainScene();
 			});
-			
+
 			if (multiplayerClient != null)
 				multiplayerClient.prepareListeners();
-			
+
 			// Load the menu choice
-			sim.getTerm().loadTerminalMenu();	
+			sim.getTerm().loadTerminalMenu();
 		}
 	}
 
 	/**
 	 * Swaps the mouse cursor type between DEFAULT and HAND
+	 * 
 	 * @param node
 	 */
 	public void setMouseCursor(Node node) {
@@ -596,13 +601,12 @@ public class ScenarioConfigEditorFX {
 		});
 	}
 
-
 	/**
 	 * Adds a new settlement with default values.
 	 */
 	private void addNewSettlement() {
-		//SettlementInfo settlement = determineNewSettlementConfiguration();
-		//settlementTableView.addSettlement(settlement);
+		// SettlementInfo settlement = determineNewSettlementConfiguration();
+		// settlementTableView.addSettlement(settlement);
 		SettlementBase base = determineNewSettlementConfiguration();
 		tableViewCombo.addSettlement(base);
 		updateSettlementNames();
@@ -612,7 +616,7 @@ public class ScenarioConfigEditorFX {
 	 * Removes the settlement selected on the table.
 	 */
 	private void removeSelectedSettlements(int i) {
-		//settlementTableModel.removeSettlements(settlementTable.getSelectedRows());
+		// settlementTableModel.removeSettlements(settlementTable.getSelectedRows());
 		tableViewCombo.removeSettlement(i);
 		updateSettlementNames();
 	}
@@ -650,15 +654,14 @@ public class ScenarioConfigEditorFX {
 	 * Sets the default settlements from the loaded configuration.
 	 */
 	private void setDefaultSettlements() {
-		//settlementTableModel.loadDefaultSettlements();
-		//tableViewCombo.loadDefaultSettlements();
+		// settlementTableModel.loadDefaultSettlements();
+		// tableViewCombo.loadDefaultSettlements();
 		tableView = tableViewCombo.createGUI();
 		tableView.setMaxHeight(200);
 		tableView.setPrefHeight(200);
-		borderAll.setCenter(tableView);//bar);
+		borderAll.setCenter(tableView);// bar);
 		updateSettlementNames();
 	}
-
 
 	/**
 	 * Set the simulation configuration based on dialog choices.
@@ -695,13 +698,12 @@ public class ScenarioConfigEditorFX {
 		double lat = SettlementRegistry.convertLatLong2Double(latitude);
 		double lo = SettlementRegistry.convertLatLong2Double(longitude);
 
-		settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots,
-				sponsor, latitude, longitude);
+		settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, sponsor, latitude, longitude);
 		// Send the newly created settlement to host server
 		if (multiplayerClient != null) {
 			// create an instance of SettlementRegistry
-			SettlementRegistry newS = new SettlementRegistry(playerName, clientID, name, template,
-					populationNum, numOfRobots, sponsor, lat, lo);
+			SettlementRegistry newS = new SettlementRegistry(playerName, clientID, name, template, populationNum,
+					numOfRobots, sponsor, lat, lo);
 			multiplayerClient.sendNew(newS);
 		}
 	}
@@ -751,7 +753,7 @@ public class ScenarioConfigEditorFX {
 	 * Close and dispose dialog window.
 	 */
 	private void closeWindow() {
-		if (crewEditorFX != null || isCrewEditorOpen) {//crewEditorFX.getStage() != null) {
+		if (crewEditorFX != null || isCrewEditorOpen) {// crewEditorFX.getStage() != null) {
 			crewEditorFX.getStage().hide();
 			crewEditorFX.getStage().close();
 		}
@@ -762,27 +764,24 @@ public class ScenarioConfigEditorFX {
 
 	/**
 	 * Determines the configuration of a new settlement.
+	 * 
 	 * @return SettlementBase configuration.
 	 */
 	private SettlementBase determineNewSettlementConfiguration() {
 		String template = determineNewSettlementTemplate();
 		String sponsor = determineNewSettlementSponsor();
 		SettlementBase base = new SettlementBase(
-			//playerName,
-			determineNewSettlementName(sponsor),
-			template,
-			determineNewSettlementPopulation(template),
-			determineNewSettlementNumOfRobots(template),
-			sponsor,
-			determineNewSettlementLatitude(),
-			determineNewSettlementLongitude()
-		);
+				// playerName,
+				determineNewSettlementName(sponsor), template, determineNewSettlementPopulation(template),
+				determineNewSettlementNumOfRobots(template), sponsor, determineNewSettlementLatitude(),
+				determineNewSettlementLongitude());
 
 		return base;
 	}
 
 	/**
 	 * Determines a new settlement's name.
+	 * 
 	 * @return name.
 	 */
 	private String determineNewSettlementName(String sponsor) {
@@ -790,7 +789,7 @@ public class ScenarioConfigEditorFX {
 
 		// Try to find unique name in configured settlement name list.
 		// Randomly shuffle settlement name list first.
-		//SettlementConfig settlementConfig = config.getSettlementConfiguration();
+		// SettlementConfig settlementConfig = config.getSettlementConfiguration();
 		List<String> settlementNames = settlementConfig.getSettlementNameList(sponsor);
 		Collections.shuffle(settlementNames);
 		Iterator<String> i = settlementNames.iterator();
@@ -799,13 +798,15 @@ public class ScenarioConfigEditorFX {
 			// Make sure settlement name isn't already being used in table.
 			boolean nameUsed = false;
 			for (int x = 0; x < tableViewCombo.getRowCount(); x++) {
-				//if (name.equals(settlementTableModel.getValueAt(x, SettlementTable.COLUMN_SETTLEMENT_NAME))) {
+				// if (name.equals(settlementTableModel.getValueAt(x,
+				// SettlementTable.COLUMN_SETTLEMENT_NAME))) {
 				if (name.equals(tableViewCombo.getAllData().get(x).getName())) {
 					nameUsed = true;
 				}
 			}
 
-			// TODO: check if the name is being used in the host server's settlement registry or not
+			// TODO: check if the name is being used in the host server's settlement
+			// registry or not
 			// If not being used already, use this settlement name.
 			if (!nameUsed) {
 				result = name;
@@ -823,7 +824,8 @@ public class ScenarioConfigEditorFX {
 			// Make sure settlement name isn't already being used in table.
 			boolean nameUsed = false;
 			for (int x = 0; x < tableViewCombo.getRowCount(); x++) {
-				//if (name.equals(settlementTableModel.getValueAt(x, SettlementTable.COLUMN_SETTLEMENT_NAME))) {
+				// if (name.equals(settlementTableModel.getValueAt(x,
+				// SettlementTable.COLUMN_SETTLEMENT_NAME))) {
 				if (name.equals(tableViewCombo.getAllData().get(x).getName())) {
 					nameUsed = true;
 				}
@@ -844,12 +846,13 @@ public class ScenarioConfigEditorFX {
 
 	/**
 	 * Determines a new settlement's template.
+	 * 
 	 * @return template name.
 	 */
 	private String determineNewSettlementTemplate() {
 		String result = null;
 
-		//SettlementConfig settlementConfig = config.getSettlementConfiguration();
+		// SettlementConfig settlementConfig = config.getSettlementConfiguration();
 		List<SettlementTemplate> templates = settlementConfig.getSettlementTemplates();
 		if (templates.size() > 0) {
 			int index = RandomUtil.getRandomInt(templates.size() - 1);
@@ -862,6 +865,7 @@ public class ScenarioConfigEditorFX {
 
 	/**
 	 * Determines the new settlement population.
+	 * 
 	 * @param templateName the settlement template name.
 	 * @return the new population number.
 	 */
@@ -870,7 +874,7 @@ public class ScenarioConfigEditorFX {
 		String result = "0"; //$NON-NLS-1$
 
 		if (templateName != null) {
-			//SettlementConfig settlementConfig = config.getSettlementConfiguration();
+			// SettlementConfig settlementConfig = config.getSettlementConfiguration();
 			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
 			while (i.hasNext()) {
 				SettlementTemplate template = i.next();
@@ -885,13 +889,14 @@ public class ScenarioConfigEditorFX {
 
 	/**
 	 * Determines the new settlement number of robots.
+	 * 
 	 * @param templateName the settlement template name.
 	 * @return number of robots.
 	 */
 	public String determineNewSettlementNumOfRobots(String templateName) {
 		String result = "0"; //$NON-NLS-1$
 		if (templateName != null) {
-			//SettlementConfig settlementConfig = config.getSettlementConfiguration();
+			// SettlementConfig settlementConfig = config.getSettlementConfiguration();
 			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
 			while (i.hasNext()) {
 				SettlementTemplate template = i.next();
@@ -907,9 +912,9 @@ public class ScenarioConfigEditorFX {
 		return result;
 	}
 
-
 	/**
 	 * Determines a new settlement's sponsor.
+	 * 
 	 * @return sponsor name.
 	 */
 	private String determineNewSettlementSponsor() {
@@ -967,19 +972,19 @@ public class ScenarioConfigEditorFX {
 		dialog.setHeaderText(header);
 		dialog.setContentText(text);
 		dialog.getDialogPane().setPrefSize(300, 180);
-		//ButtonType buttonTypeYes = new ButtonType("Yes");
-		//ButtonType buttonTypeNo = new ButtonType("No");
-		//dialog.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+		// ButtonType buttonTypeYes = new ButtonType("Yes");
+		// ButtonType buttonTypeNo = new ButtonType("No");
+		// dialog.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
 		dialog.getButtonTypes().clear();
 		dialog.getButtonTypes().addAll(ButtonType.YES, ButtonType.NO);
-	    //Deactivate Defaultbehavior for yes-Button:
-	    Button yesButton = (Button) dialog.getDialogPane().lookupButton( ButtonType.YES );
-	    yesButton.setDefaultButton(false);
-	    //Activate Defaultbehavior for no-Button:
-	    Button noButton = (Button) dialog.getDialogPane().lookupButton( ButtonType.NO );
-	    noButton.setDefaultButton(true);
+		// Deactivate Defaultbehavior for yes-Button:
+		Button yesButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.YES);
+		yesButton.setDefaultButton(false);
+		// Activate Defaultbehavior for no-Button:
+		Button noButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.NO);
+		noButton.setDefaultButton(true);
 		final Optional<ButtonType> result = dialog.showAndWait();
-		//return result.get() == buttonTypeYes;
+		// return result.get() == buttonTypeYes;
 		return result.get() == ButtonType.YES;
 	}
 
@@ -1027,23 +1032,21 @@ public class ScenarioConfigEditorFX {
 	public void setHasError(boolean value) {
 		hasError = value;
 	}
-/*
-	public JScrollPane getSettlementScrollPane() {
-		return settlementScrollPane;
-	}
-*/
+
+	/*
+	 * public JScrollPane getSettlementScrollPane() { return settlementScrollPane; }
+	 */
 	public List<SettlementRegistry> getSettlementList() {
 		return settlementList;
 	}
-/*
-	public SettlementTableModel getSettlementTableModel() {
-		return settlementTableModel;
-	}
-*/
+	/*
+	 * public SettlementTableModel getSettlementTableModel() { return
+	 * settlementTableModel; }
+	 */
 
-	//public SettlementTableView getSettlementTableView() {
-	//	return tableViewCombo;
-	//}
+	// public SettlementTableView getSettlementTableView() {
+	// return tableViewCombo;
+	// }
 
 	public TableViewCombo getTableViewCombo() {
 		return tableViewCombo;
@@ -1057,46 +1060,47 @@ public class ScenarioConfigEditorFX {
 		return tableViewCombo.getRowCount();
 	}
 
-    private ScrollBar getVerticalScrollbar(TableView<?> table) {
-        ScrollBar result = null;
-        for (Node n : table.lookupAll(".scroll-bar")) {
-            if (n instanceof ScrollBar) {
-                ScrollBar bar = (ScrollBar) n;
-                if (bar.getOrientation().equals(Orientation.VERTICAL)) {
-                    result = bar;
-                }
-            }
-        }
-        return result;
-    }
+	private ScrollBar getVerticalScrollbar(TableView<?> table) {
+		ScrollBar result = null;
+		for (Node n : table.lookupAll(".scroll-bar")) {
+			if (n instanceof ScrollBar) {
+				ScrollBar bar = (ScrollBar) n;
+				if (bar.getOrientation().equals(Orientation.VERTICAL)) {
+					result = bar;
+				}
+			}
+		}
+		return result;
+	}
 
-    void scrolled(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-        double value = newValue.doubleValue();
-        //System.out.println("Scrolled to " + value);
-        ScrollBar bar = getVerticalScrollbar(tableView);
-        if (value == bar.getMax()) {
-            //System.out.println("Adding new persons.");
-            //double targetValue = value * items.size();
-            //addPersons();
-            //bar.setValue(targetValue / items.size());
-        }
-    }
+	void scrolled(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+		double value = newValue.doubleValue();
+		// System.out.println("Scrolled to " + value);
+		ScrollBar bar = getVerticalScrollbar(tableView);
+		if (value == bar.getMax()) {
+			// System.out.println("Adding new persons.");
+			// double targetValue = value * items.size();
+			// addPersons();
+			// bar.setValue(targetValue / items.size());
+		}
+	}
 
 	/**
 	 * Sets an edit-check error.
+	 * 
 	 * @param errorString the error description.
 	 */
 	private void setError(String errorString) {
 		// Platform.runLater is needed to switch from Swing EDT to JavaFX Thread
-		//Platform.runLater(() -> {
+		// Platform.runLater(() -> {
 		if (!getHasError()) {
 			setHasError(true);
-    		getErrorLabel().setText("\t\t" + errorString);
-    			//errorLabel.setStyle("-fx-font-color:red;");
-    		getErrorLabel().setTextFill(Color.RED);
-    		getStartButton().setDisable(true);
-    	}
-		//});
+			getErrorLabel().setText("\t\t" + errorString);
+			// errorLabel.setStyle("-fx-font-color:red;");
+			getErrorLabel().setTextFill(Color.RED);
+			getStartButton().setDisable(true);
+		}
+		// });
 	}
 
 	/**
@@ -1104,31 +1108,33 @@ public class ScenarioConfigEditorFX {
 	 */
 	private void clearError() {
 		// Platform.runLater is needed to switch from Swing EDT to JavaFX Thread
-		//Platform.runLater(() -> {
+		// Platform.runLater(() -> {
 		setHasError(false);
-        getErrorLabel().setText(""); //$NON-NLS-1$
-        getErrorLabel().setTextFill(Color.BLACK);
-        getStartButton().setDisable(false);
-        //});
+		getErrorLabel().setText(""); //$NON-NLS-1$
+		getErrorLabel().setTextFill(Color.BLACK);
+		getStartButton().setDisable(false);
+		// });
 	}
-
 
 	/**
 	 * Check for errors in table settlement values.
 	 */
 	public void checkForErrors() {
-		//System.out.println("checkForErrors"); // runs only when a user click on a cell
-		//checkNumExistingSettlement();
+		// System.out.println("checkForErrors"); // runs only when a user click on a
+		// cell
+		// checkNumExistingSettlement();
 		clearError();
 
-		// TODO: in multiplayer mode, check to ensure the latitude/longitude has NOT been chosen already in the table 
+		// TODO: in multiplayer mode, check to ensure the latitude/longitude has NOT
+		// been chosen already in the table
 		// by another settlement registered by the host server
 
-		// TODO: incorporate checking for user locale and its decimal separation symbol (. or ,)
+		// TODO: incorporate checking for user locale and its decimal separation symbol
+		// (. or ,)
 
-		// TODO: use decimal separator as defined by user locale 
-		//char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
-		
+		// TODO: use decimal separator as defined by user locale
+		// char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
+
 		checkLatLong();
 
 		Iterator<SettlementBase> i = tableViewCombo.getSettlementBase().iterator();
@@ -1136,8 +1142,7 @@ public class ScenarioConfigEditorFX {
 			SettlementBase sb = i.next();
 
 			// Check that settlement name is valid.
-			if ((sb.getName().trim() == null) || (sb.getName().trim().isEmpty())
-					|| (sb.getName().length() < 2) ) {
+			if ((sb.getName().trim() == null) || (sb.getName().trim().isEmpty()) || (sb.getName().length() < 2)) {
 				setError(Msg.getString("SimulationConfigEditor.error.nameMissing")); //$NON-NLS-1$
 			}
 
@@ -1189,8 +1194,9 @@ public class ScenarioConfigEditorFX {
 				boolean isComma_lon = false;
 
 				// CHECK LATITUDE
-				String latStr = tableViewCombo.getAllData().get(x).getLatitude().toString().trim().toUpperCase();;
-	
+				String latStr = tableViewCombo.getAllData().get(x).getLatitude().toString().trim().toUpperCase();
+				;
+
 				// check if it's empty or having a length less than 2 characters.
 				if (latStr == null || latStr.length() < 2) {
 					setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
@@ -1198,64 +1204,69 @@ public class ScenarioConfigEditorFX {
 				}
 
 				// check if the last character is a digit, if digit, setError
-				if (Character.isDigit(latStr.charAt(latStr.length() - 1))){
+				if (Character.isDigit(latStr.charAt(latStr.length() - 1))) {
 					setError(Msg.getString("SimulationConfigEditor.error.latitudeEndWith", //$NON-NLS-1$
 							Msg.getString("direction.northShort"), //$NON-NLS-1$
 							Msg.getString("direction.southShort") //$NON-NLS-1$
-							));
+					));
 					return;
 				}
 
-				if (!latStr.endsWith(Msg.getString("direction.northShort")) &&
-				        !latStr.endsWith(Msg.getString("direction.southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
-					setError(Msg.getString(
-							"SimulationConfigEditor.error.latitudeEndWith", //$NON-NLS-1$
+				if (!latStr.endsWith(Msg.getString("direction.northShort"))
+						&& !latStr.endsWith(Msg.getString("direction.southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
+					setError(Msg.getString("SimulationConfigEditor.error.latitudeEndWith", //$NON-NLS-1$
 							Msg.getString("direction.northShort"), //$NON-NLS-1$
 							Msg.getString("direction.southShort") //$NON-NLS-1$
-						));
+					));
 				}
 
-				//else {
-					//String numLatitude = latStr.substring(0, latStr.length() - 1);
-					//try {
-						//double doubleLatitude = Double.parseDouble(numLatitude.trim());
-						//if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
-							//setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
-							//return;
-						//}
-					//}
-					//catch(NumberFormatException e) {
-					//	setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
-					//	e.printStackTrace();
-					//	return;
-					//}
-				//}
+				// else {
+				// String numLatitude = latStr.substring(0, latStr.length() - 1);
+				// try {
+				// double doubleLatitude = Double.parseDouble(numLatitude.trim());
+				// if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
+				// setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith"));
+				// //$NON-NLS-1$
+				// return;
+				// }
+				// }
+				// catch(NumberFormatException e) {
+				// setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith"));
+				// //$NON-NLS-1$
+				// e.printStackTrace();
+				// return;
+				// }
+				// }
 
-				// check if the second from the last character is a digit or a letter, if a letter, setError
-				if (Character.isLetter(latStr.charAt(latStr.length() - 2))){
+				// check if the second from the last character is a digit or a letter, if a
+				// letter, setError
+				if (Character.isLetter(latStr.charAt(latStr.length() - 2))) {
 					setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
 					return;
 				}
 
-				// check if the second from the last character is a whitespace or not, if not true, setError
-				if (latStr.charAt(latStr.length() - 2) != ' '){
-					//System.out.println("has no whitespace");
+				// check if the second from the last character is a whitespace or not, if not
+				// true, setError
+				if (latStr.charAt(latStr.length() - 2) != ' ') {
+					// System.out.println("has no whitespace");
 					setError(Msg.getString("SimulationConfigEditor.error.latitudeMissingSpace")); //$NON-NLS-1$
 					return;
 				}
 
 				if (latStr.length() > 2) {
-					// check if the third from the last character is a digit or not, if not true, setError
-					if (!Character.isDigit(latStr.charAt(latStr.length() - 3))){
+					// check if the third from the last character is a digit or not, if not true,
+					// setError
+					if (!Character.isDigit(latStr.charAt(latStr.length() - 3))) {
 						System.out.println("3rd from last");
 						setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 						return;
 					}
 				}
-				//else {
-				//	setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
-				//	return;
-				//}
+				// else {
+				// setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat"));
+				// //$NON-NLS-1$
+				// return;
+				// }
 
 				if (latStr.length() > 3) {
 					/// 2017-03-29 Add checking for comma as well
@@ -1263,8 +1274,9 @@ public class ScenarioConfigEditorFX {
 						isDot_lat = true;
 					if (latStr.charAt(latStr.length() - 4) == ',')
 						isComma_lat = true;
-					// check if the fourth from the last character is a whitespace or not, if not true, setError
-					if (!(isDot_lat || isComma_lat)){
+					// check if the fourth from the last character is a whitespace or not, if not
+					// true, setError
+					if (!(isDot_lat || isComma_lat)) {
 						System.out.println("4th from last : " + latStr.charAt(latStr.length() - 4));
 						setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 						return;
@@ -1272,8 +1284,9 @@ public class ScenarioConfigEditorFX {
 				}
 
 				if (latStr.length() > 4) {
-					// check if the fifth from the last character is a digit or not, if not true, setError
-					if (!Character.isDigit(latStr.charAt(latStr.length() - 5))){
+					// check if the fifth from the last character is a digit or not, if not true,
+					// setError
+					if (!Character.isDigit(latStr.charAt(latStr.length() - 5))) {
 						System.out.println("5th from last");
 						setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 						return;
@@ -1281,8 +1294,9 @@ public class ScenarioConfigEditorFX {
 				}
 
 				if (latStr.length() > 5) {
-					// check if the sixth from the last character is a digit or not, if not true, setError
-					if (!Character.isDigit(latStr.charAt(latStr.length() - 6))){
+					// check if the sixth from the last character is a digit or not, if not true,
+					// setError
+					if (!Character.isDigit(latStr.charAt(latStr.length() - 6))) {
 						System.out.println("6th from last");
 						setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 						return;
@@ -1291,55 +1305,60 @@ public class ScenarioConfigEditorFX {
 
 				// CHECK LONGITUDE
 
-				String longStr = tableViewCombo.getAllData().get(x).getLongitude().toString().trim().toUpperCase();;
+				String longStr = tableViewCombo.getAllData().get(x).getLongitude().toString().trim().toUpperCase();
+				;
 
-				if (longStr == null || longStr.length() < 2 ) {
+				if (longStr == null || longStr.length() < 2) {
 					setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
 					return;
 				}
 
 				// check if the last character is a digit or a letter, if digit, setError
-				if (Character.isDigit(longStr.charAt(longStr.length() - 1))){
-					setError(Msg.getString(
-								"SimulationConfigEditor.error.longitudeEndWith", //$NON-NLS-1$
-								Msg.getString("direction.eastShort"), //$NON-NLS-1$
-								Msg.getString("direction.westShort") //$NON-NLS-1$
-							));
+				if (Character.isDigit(longStr.charAt(longStr.length() - 1))) {
+					setError(Msg.getString("SimulationConfigEditor.error.longitudeEndWith", //$NON-NLS-1$
+							Msg.getString("direction.eastShort"), //$NON-NLS-1$
+							Msg.getString("direction.westShort") //$NON-NLS-1$
+					));
 					return;
 				}
 
-				//else {
-					//String numLong = longStr.substring(0, longStr.length() - 1);
-					//try {
-						//double doubleLong = Double.parseDouble(numLong.trim());
-						//if ((doubleLong < 0) || (doubleLong > 180)) {
-							//setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
-							//return;
-						//}
-					//}
-					//catch(NumberFormatException e) {
-					//	setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
-					//	e.printStackTrace();
-					//	return;
-					//}
-				//}
+				// else {
+				// String numLong = longStr.substring(0, longStr.length() - 1);
+				// try {
+				// double doubleLong = Double.parseDouble(numLong.trim());
+				// if ((doubleLong < 0) || (doubleLong > 180)) {
+				// setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith"));
+				// //$NON-NLS-1$
+				// return;
+				// }
+				// }
+				// catch(NumberFormatException e) {
+				// setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith"));
+				// //$NON-NLS-1$
+				// e.printStackTrace();
+				// return;
+				// }
+				// }
 
-				// check if the second from the last character is a digit or a letter, if a letter, setError
-				if (Character.isLetter(longStr.charAt(longStr.length() - 2))){
+				// check if the second from the last character is a digit or a letter, if a
+				// letter, setError
+				if (Character.isLetter(longStr.charAt(longStr.length() - 2))) {
 					setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
 					return;
 				}
 
-				// check if the second from the last character is a whitespace or not, if not true, setError
-				if (longStr.charAt(longStr.length() - 2) != ' '){
-					//System.out.println("has no whitespace");
+				// check if the second from the last character is a whitespace or not, if not
+				// true, setError
+				if (longStr.charAt(longStr.length() - 2) != ' ') {
+					// System.out.println("has no whitespace");
 					setError(Msg.getString("SimulationConfigEditor.error.longitudeMissingSpace")); //$NON-NLS-1$
 					return;
 				}
 
-				// check if the third from the last character is a digit or not, if not true, setError
+				// check if the third from the last character is a digit or not, if not true,
+				// setError
 				if (longStr.length() > 2) {
-					if (!Character.isDigit(longStr.charAt(longStr.length() - 3))){
+					if (!Character.isDigit(longStr.charAt(longStr.length() - 3))) {
 						setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
 						return;
 					}
@@ -1351,16 +1370,18 @@ public class ScenarioConfigEditorFX {
 						isDot_lon = true;
 					if (longStr.charAt(longStr.length() - 4) == ',')
 						isComma_lon = true;
-					// check if the fourth from the last character is a whitespace or not, if not true, setError
-					if (!(isDot_lon || isComma_lon)){
+					// check if the fourth from the last character is a whitespace or not, if not
+					// true, setError
+					if (!(isDot_lon || isComma_lon)) {
 						setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
 						return;
 					}
 				}
 
 				if (longStr.length() > 4) {
-					// check if the fifth from the last character is a digit or not, if not true, setError
-					if (!Character.isDigit(longStr.charAt(longStr.length() - 5))){
+					// check if the fifth from the last character is a digit or not, if not true,
+					// setError
+					if (!Character.isDigit(longStr.charAt(longStr.length() - 5))) {
 						setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
 						return;
 					}
@@ -1368,18 +1389,19 @@ public class ScenarioConfigEditorFX {
 
 				// NOW COMPARE BETWEEN LATITUDES
 
-				if (x + 1 < size ) {
+				if (x + 1 < size) {
 
 					// CHECK LATITUDES
 
 					// if it has another settlement after this one
-					String latNextStr = tableViewCombo.getAllData().get(x+1).getLatitude().toString().trim().toUpperCase();;
+					String latNextStr = tableViewCombo.getAllData().get(x + 1).getLatitude().toString().trim()
+							.toUpperCase();
+					;
 
-					if ( latNextStr == null || latNextStr.length() < 2) {
+					if (latNextStr == null || latNextStr.length() < 2) {
 						setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
 						return;
-					}
-					else if (latStr.equals(latNextStr)) {
+					} else if (latStr.equals(latNextStr)) {
 						repeated = true;
 						break;
 					}
@@ -1389,7 +1411,7 @@ public class ScenarioConfigEditorFX {
 						String numLat = latStr.substring(0, latStr.length() - 1);
 						String numLatNext = latNextStr.substring(0, latNextStr.length() - 1);
 
-						//System.out.println("isComma_lat : " + isComma_lat);
+						// System.out.println("isComma_lat : " + isComma_lat);
 
 						/// 2017-03-29 Add checking for comma as well
 						if (latNextStr.length() > 3) {
@@ -1400,7 +1422,7 @@ public class ScenarioConfigEditorFX {
 						if (isComma_lat) {
 							numLat = numLat.replace(",", ".");
 							numLatNext = numLatNext.replace(",", ".");
-							//System.out.println("numLatNext : " + numLatNext);
+							// System.out.println("numLatNext : " + numLatNext);
 						}
 
 						try {
@@ -1408,10 +1430,7 @@ public class ScenarioConfigEditorFX {
 							double doubleLat = Double.parseDouble(numLat.trim());
 							double doubleLatNext = Double.parseDouble(numLatNext.trim());
 
-
-							if (doubleLat < 0 || doubleLat > 90
-								|| doubleLatNext < 0 || doubleLatNext > 90
-								) {
+							if (doubleLat < 0 || doubleLat > 90 || doubleLatNext < 0 || doubleLatNext > 90) {
 								setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
 								return;
 							}
@@ -1428,7 +1447,7 @@ public class ScenarioConfigEditorFX {
 							}
 						}
 
-						catch(NumberFormatException e) {
+						catch (NumberFormatException e) {
 							setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 							e.printStackTrace();
 							return;
@@ -1438,13 +1457,14 @@ public class ScenarioConfigEditorFX {
 
 					// CHECK LONGITUDES
 
-					String longNextStr = tableViewCombo.getAllData().get(x+1).getLongitude().toString().trim().toUpperCase();;
+					String longNextStr = tableViewCombo.getAllData().get(x + 1).getLongitude().toString().trim()
+							.toUpperCase();
+					;
 
-					if ( longNextStr == null ||  longNextStr.length() < 2) {
+					if (longNextStr == null || longNextStr.length() < 2) {
 						setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
 						return;
-					}
-					else if (longStr.equals(longNextStr)) {
+					} else if (longStr.equals(longNextStr)) {
 						repeated = true;
 						break;
 					}
@@ -1468,9 +1488,7 @@ public class ScenarioConfigEditorFX {
 							double doubleLong = Double.parseDouble(numLong.trim());
 							double doubleLongNext = Double.parseDouble(numLongNext.trim());
 
-							if (doubleLong < 0 || doubleLong > 360
-								|| doubleLongNext < 0 || doubleLongNext > 360
-								) {
+							if (doubleLong < 0 || doubleLong > 360 || doubleLongNext < 0 || doubleLongNext > 360) {
 								setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
 								return;
 							}
@@ -1486,8 +1504,8 @@ public class ScenarioConfigEditorFX {
 								break;
 							}
 						}
-						
-						catch(NumberFormatException e) {
+
+						catch (NumberFormatException e) {
 							setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
 							e.printStackTrace();
 							return;
@@ -1501,7 +1519,7 @@ public class ScenarioConfigEditorFX {
 				return;
 			}
 
-		} catch(NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeBadEntry")); //$NON-NLS-1$
 			e.printStackTrace();
 		}
@@ -1509,8 +1527,9 @@ public class ScenarioConfigEditorFX {
 
 	/**
 	 * Sets up the JavaFX's tooltip
+	 * 
 	 * @param node
-	 * @param tooltip's hint text
+	 * @param      tooltip's hint text
 	 */
 	public void setQuickToolTip(Node n, String s) {
 		Tooltip tt = new Tooltip(s);
@@ -1518,34 +1537,36 @@ public class ScenarioConfigEditorFX {
 
 		n.setOnMouseEntered(new EventHandler<MouseEvent>() {
 
-		    @Override
-		    public void handle(MouseEvent event) {
-		        Point2D p = n.localToScreen(n.getLayoutBounds().getMaxX(), n.getLayoutBounds().getMaxY()); //I position the tooltip at bottom right of the node (see below for explanation)
-		        tt.show(n, p.getX(), p.getY());
-		    }
+			@Override
+			public void handle(MouseEvent event) {
+				// Position the tooltip at bottom right of the node (see below for explanation)
+				Point2D p = n.localToScreen(n.getLayoutBounds().getMaxX(), n.getLayoutBounds().getMaxY()); 
+				tt.show(n, p.getX(), p.getY());
+			}
 		});
 		n.setOnMouseExited(new EventHandler<MouseEvent>() {
 
-		    @Override
-		    public void handle(MouseEvent event) {
-		        tt.hide();
-		    }
+			@Override
+			public void handle(MouseEvent event) {
+				tt.hide();
+			}
 		});
 
 	}
 
 	/**
 	 * Open the exit dialog box
+	 * 
 	 * @param pane
 	 */
 	public void dialogOnExit(StackPane pane) {
 		isShowingDialog = true;
-		
+
 		JFXButton b1 = new JFXButton("Exit");
-		JFXButton b2 = new JFXButton("Back");	
-		
-		StackPane sp = MainMenu.getExitDialogPane(b1, b2, null);	
-		
+		JFXButton b2 = new JFXButton("Back");
+
+		StackPane sp = MainMenu.getExitDialogPane(b1, b2, null);
+
 		JFXDialog exitDialog = new JFXDialog();
 		exitDialog.setTransitionType(DialogTransition.TOP);
 		exitDialog.setDialogContainer(pane);
@@ -1558,15 +1579,15 @@ public class ScenarioConfigEditorFX {
 			Platform.exit();
 			System.exit(0);
 		});
-		
+
 		b2.setOnAction(e -> {
 			exitDialog.close();
 			isShowingDialog = false;
 			e.consume();
 		});
 
-	}	
-	
+	}
+
 	public void destroy() {
 
 		startButton = null;
@@ -1574,7 +1595,7 @@ public class ScenarioConfigEditorFX {
 		removeButton = null;
 		undoButton = null;
 		crewButton = null;
-		
+
 		config = null;
 		mainMenu = null;
 		mainScene = null;

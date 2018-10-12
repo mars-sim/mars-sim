@@ -696,7 +696,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 				amountNeededSol = config.getFoodConsumptionRate();
 
 			double amountNeededOrbit = amountNeededSol * (MarsClock.SOLS_PER_MONTH_LONG * 3D);
-			int numPeople = startingSettlement.getAllAssociatedPeople().size();
+			int numPeople = startingSettlement.getNumCitizens();
 			result = numPeople * amountNeededOrbit;
 		} else {
 			if (resource.equals(methaneID)) {
@@ -772,7 +772,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		Map<Integer, Double> result = new HashMap<>();
 
 		double solsMonth = MarsClock.SOLS_PER_MONTH_LONG;
-		int numPeople = settlement.getAllAssociatedPeople().size();
+		int numPeople = settlement.getNumCitizens();
 		Inventory inv = settlement.getInventory();
 		// Determine oxygen amount needed.
 		double oxygenAmountNeeded = config.getNominalO2ConsumptionRate() * numPeople * solsMonth

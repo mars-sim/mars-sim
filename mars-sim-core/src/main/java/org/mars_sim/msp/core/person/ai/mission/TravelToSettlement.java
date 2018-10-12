@@ -103,7 +103,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			// Check mission available space
 			if (!isDone()) {
 				int availableSpace = destinationSettlement.getPopulationCapacity()
-						- destinationSettlement.getAllAssociatedPeople().size();
+						- destinationSettlement.getNumCitizens();
 
 				if (availableSpace < getMissionCapacity()) {
 					setMissionCapacity(availableSpace);
@@ -387,9 +387,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		// Determine available space in destination settlement relative to
 		// starting settlement.
 		int startingCrowding = startingSettlement.getPopulationCapacity()
-				- startingSettlement.getAllAssociatedPeople().size() - 1;
+				- startingSettlement.getNumCitizens() - 1;
 		int destinationCrowding = destinationSettlement.getPopulationCapacity()
-				- destinationSettlement.getAllAssociatedPeople().size();
+				- destinationSettlement.getNumCitizens();
 		double crowdingFactor = destinationCrowding - startingCrowding;
 
 		// Determine science achievement factor for destination relative to starting

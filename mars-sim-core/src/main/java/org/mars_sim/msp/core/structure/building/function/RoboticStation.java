@@ -87,7 +87,7 @@ public class RoboticStation extends Function implements Serializable {
             boolean newBuilding, Settlement settlement) {
 
         // Demand is one stations for every robot
-        double demand = settlement.getAllAssociatedRobots().size() * 1D;
+        double demand = settlement.getNumBots() * 1D;
 
         double supply = 0D;
         boolean removedBuilding = false;
@@ -161,37 +161,35 @@ public class RoboticStation extends Function implements Serializable {
      */
     public void powerUsage(double millisols) {
 
-        Settlement settlement = getBuilding().getBuildingManager()
-                .getSettlement();
-        double energyPerRobot = POWER_USAGE_PER_ROBOT * millisols * SECONDS_IN_MILLISOL;
-        double energyUsageSettlement = energyPerRobot * settlement.getNumCurrentRobots();
-        double buildingProportionCap = (double) slots / (double) settlement.getRobotCapacity();
-        double energyUsageBuilding = energyUsageSettlement * buildingProportionCap;
+//        Settlement settlement = getBuilding().getBuildingManager()
+//                .getSettlement();
+//        double energyPerRobot = POWER_USAGE_PER_ROBOT * millisols * SECONDS_IN_MILLISOL;
+//        double energyUsageSettlement = energyPerRobot * settlement.getNumBots();
+//        double buildingProportionCap = (double) slots / (double) settlement.getRobotCapacity();
+//        double energyUsageBuilding = energyUsageSettlement * buildingProportionCap;
 
-        /*
-        Inventory inv = getBuilding().getSettlementInventory();
-        AmountResource water = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
-        double waterUsed = powerUsageBuilding;
-        double waterAvailable = inv.getAmountResourceStored(water, false);
-    	// 2015-01-09 Added addDemandTotalRequest()
-        inv.addDemandTotalRequest(water);
-        if (waterUsed > waterAvailable)
-            waterUsed = waterAvailable;
-        inv.retrieveAmountResource(water, waterUsed);
-    	// 2015-01-09 addDemandRealUsage()
-       	inv.addDemandAmount(water, waterUsed);
-
-        AmountResource wasteWater = AmountResource
-                .findAmountResource("waste water");
-        double wasteWaterProduced = waterUsed;
-        double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(
-                wasteWater, false, false);
-        if (wasteWaterProduced > wasteWaterCapacity)
-            wasteWaterProduced = wasteWaterCapacity;
-        inv.storeAmountResource(wasteWater, wasteWaterProduced, false);
-        // 2015-01-15 Add addSupplyAmount()
-        inv.addSupplyAmount(wasteWater, wasteWaterProduced);
-    */
+//        Inventory inv = getBuilding().getSettlementInventory();
+//        AmountResource water = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
+//        double waterUsed = powerUsageBuilding;
+//        double waterAvailable = inv.getAmountResourceStored(water, false);
+//    	// 2015-01-09 Added addDemandTotalRequest()
+//        inv.addDemandTotalRequest(water);
+//        if (waterUsed > waterAvailable)
+//            waterUsed = waterAvailable;
+//        inv.retrieveAmountResource(water, waterUsed);
+//    	// 2015-01-09 addDemandRealUsage()
+//       	inv.addDemandAmount(water, waterUsed);
+//
+//        AmountResource wasteWater = AmountResource
+//                .findAmountResource("waste water");
+//        double wasteWaterProduced = waterUsed;
+//        double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(
+//                wasteWater, false, false);
+//        if (wasteWaterProduced > wasteWaterCapacity)
+//            wasteWaterProduced = wasteWaterCapacity;
+//        inv.storeAmountResource(wasteWater, wasteWaterProduced, false);
+//        // 2015-01-15 Add addSupplyAmount()
+//        inv.addSupplyAmount(wasteWater, wasteWaterProduced);
     }
 
     /**

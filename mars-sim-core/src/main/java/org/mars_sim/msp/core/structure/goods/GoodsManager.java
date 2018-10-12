@@ -608,7 +608,7 @@ public class GoodsManager implements Serializable {
 			}
 
 			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
-			int numPeople = settlement.getAllAssociatedPeople().size();
+			int numPeople = settlement.getNumCitizens();
 			
 			if (resource.equals(ResourceUtil.foodAR)) {
 				return 8*Math.log(numPeople) * amountNeededOrbit * LIFE_SUPPORT_FACTOR * trade_factor;
@@ -628,7 +628,7 @@ public class GoodsManager implements Serializable {
 	private double getFuelDemand(AmountResource resource) {
 		if (resource.equals(ResourceUtil.methaneAR)) {
 			double amountNeededOrbit = METHANE_AVERAGE_DEMAND * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
-			int numPeople = settlement.getAllAssociatedPeople().size();
+			int numPeople = settlement.getNumCitizens();
 			return 10* Math.log(numPeople) * amountNeededOrbit * FUEL_FACTOR * trade_factor;
 		}
 
@@ -1143,7 +1143,7 @@ public class GoodsManager implements Serializable {
 		// SimulationConfig.instance().getPersonConfiguration();
 		double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
 		double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
-		int numPeople = settlement.getAllAssociatedPeople().size();
+		int numPeople = settlement.getNumCitizens();
 		double cookedMealDemand = 10*Math.log(numPeople) * cookedMealDemandOrbit;
 
 		// Determine demand for the resource as an ingredient for each cooked meal
@@ -1191,7 +1191,7 @@ public class GoodsManager implements Serializable {
 				// SimulationConfig.instance().getPersonConfiguration();
 				double amountNeededSol = personConfig.getDessertConsumptionRate() / dessert.length;
 				double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
-				int numPeople = settlement.getAllAssociatedPeople().size();
+				int numPeople = settlement.getNumCitizens();
 				demand = 5*Math.log(numPeople) * amountNeededOrbit * DESSERT_FACTOR;
 			}
 		}
@@ -2168,7 +2168,7 @@ public class GoodsManager implements Serializable {
 
 		// Determine number of EVA suits that are needed
 		if (EVASuit.class.equals(equipmentClass)) {
-			numDemand += 2D * settlement.getAllAssociatedPeople().size() * EVA_SUIT_FACTOR;
+			numDemand += 2D * settlement.getNumCitizens() * EVA_SUIT_FACTOR;
 		}
 
 		// Determine the number of containers that are needed.
@@ -2555,7 +2555,7 @@ public class GoodsManager implements Serializable {
 
 		if (TRAVEL_TO_SETTLEMENT_MISSION.equals(missionType)) {
 			demand = getDriverNum();
-			demand *= ((double) settlement.getAllAssociatedPeople().size()
+			demand *= ((double) settlement.getNumCitizens()
 					/ (double) settlement.getPopulationCapacity());
 		} else if (EXPLORATION_MISSION.equals(missionType)) {
 			demand = getAreologistNum();

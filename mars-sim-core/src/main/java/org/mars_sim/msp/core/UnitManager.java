@@ -1299,7 +1299,7 @@ public class UnitManager implements Serializable {
 	 */
 	public void establishSettlementGovernance(Settlement settlement) {
 
-		int popSize = settlement.getAllAssociatedPeople().size();
+		int popSize = settlement.getNumCitizens();
 		
 		if (popSize >= POPULATION_WITH_MAYOR) {
 			establishGovernment(settlement);
@@ -1557,7 +1557,7 @@ public class UnitManager implements Serializable {
 			}
 
 			// If settlement does not have initial robot capacity, try another settlement.
-			if (settlement.getInitialNumOfRobots() <= settlement.getNumCurrentRobots()) {
+			if (settlement.getInitialNumOfRobots() <= settlement.getNumBots()) {
 				return;
 			}
 
@@ -1634,7 +1634,8 @@ public class UnitManager implements Serializable {
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
 				int initial = settlement.getInitialNumOfRobots();
-				while (settlement.getNumCurrentRobots() < initial) {
+				// Note : need to call updateAllAssociatedRobots() first to compute numBots in Settlement
+				while (settlement.updateAllAssociatedRobots().size() < initial) {
 					// Get a robotType randomly
 					RobotType robotType = getABot(settlement, initial);
 					// Adopt Static Factory Method and Factory Builder Pattern
@@ -1954,18 +1955,17 @@ public class UnitManager implements Serializable {
 		if (justReloaded) {
 			partConfig.computeReliability();
 
-			Collection<Settlement> c = CollectionUtils.getSettlement(units);
-			for (Settlement s : c) {
-				s.updateAllAssociatedPeople();
-				s.updateAllAssociatedRobots();
-			}
+//			Collection<Settlement> c = CollectionUtils.getSettlement(units);
+//			for (Settlement s : c) {
+				//s.updateAllAssociatedPeople();
+				//s.updateAllAssociatedRobots();
+//			}
 
 			justReloaded = false;
 		}
 
 		for (Unit u : units) {
 			u.timePassing(time);
-
 		}
 
 	}

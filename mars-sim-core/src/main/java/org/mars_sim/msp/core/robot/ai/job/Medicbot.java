@@ -68,7 +68,7 @@ implements Serializable {
 		double result = 1D;
 
 		// Add total population / 10
-		int population = settlement.getAllAssociatedPeople().size();
+		int population = settlement.getNumCitizens();
 		result+= population / 15D; // changed from /10D to /15D
 
 		// Add (tech level / 2) for all medical infirmaries.

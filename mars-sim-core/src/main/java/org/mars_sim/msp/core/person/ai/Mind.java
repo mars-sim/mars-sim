@@ -321,7 +321,7 @@ public class Mind implements Serializable {
 					ChainOfCommand cc = s.getChainOfCommand();
 
 					// Assign a role associate with
-					if (s.getAllAssociatedPeople().size() >= UnitManager.POPULATION_WITH_MAYOR) {
+					if (s.getNumCitizens() >= UnitManager.POPULATION_WITH_MAYOR) {
 						cc.set7Divisions(true);
 						cc.assignSpecialiststo7Divisions(person);
 					}
