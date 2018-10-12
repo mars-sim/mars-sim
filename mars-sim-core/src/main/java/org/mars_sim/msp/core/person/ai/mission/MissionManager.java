@@ -120,7 +120,7 @@ public class MissionManager implements Serializable {
 	 */
 	public int getNumActiveMissions() {
 		// Remove inactive missions.
-		cleanMissions();
+		//cleanMissions();
 		return missions.size();
 	}
 
@@ -130,10 +130,11 @@ public class MissionManager implements Serializable {
 	 * @return list of missions.
 	 */
 	public List<Mission> getMissions() {
-		// Remove inactive missions.
-		cleanMissions();
+//		// Remove inactive missions.
+//		//cleanMissions();
 		if (missions != null)
 			return new ArrayList<Mission>(missions);
+//			return missions;
 		else
 			return new ArrayList<Mission>();
 	}
@@ -239,7 +240,7 @@ public class MissionManager implements Serializable {
 	 * 
 	 * @param the mission to be removed
 	 */
-	private void removeMission(Mission oldMission) {
+	public void removeMission(Mission oldMission) {
 
 		if (missions.contains(oldMission)) {
 			missions.remove(oldMission);
@@ -610,10 +611,13 @@ public class MissionManager implements Serializable {
 	 * @param time amount of time passing (millisols)
 	 */
 	public void timePassing(double time) {
-		Iterator<Mission> i = missions.iterator();
-		while (i.hasNext()) {
-			i.next().timePassing(time);
-		}
+		// Remove inactive missions
+		cleanMissions();
+		
+//		Iterator<Mission> i = missions.iterator();
+//		while (i.hasNext()) {
+//			i.next().timePassing(time);
+//		}
 	}
 
 	/**
@@ -645,13 +649,8 @@ public class MissionManager implements Serializable {
 	 * @param person
 	 * @param {{@link MissionPlanning}
 	 */
-	public MissionPlanning requestMissionApproval(Mission mission, Person person) {
-		MissionPlanning plan = new MissionPlanning(mission, person.getName(), person.getRole().getType());
-		LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "[" + person.getSettlement().getName() + "] " 
-				+ person.getName() + " (" + person.getRole().getType() 
-				+ ") is requesting approval for " + mission.getDescription(), null);
+	public void requestMissionApproval(MissionPlanning plan) {
 		addMissionPlanning(plan);
-		return plan;
 	}
 	
 	/**

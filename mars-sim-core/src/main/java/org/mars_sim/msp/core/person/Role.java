@@ -54,7 +54,10 @@ public class Role implements Serializable {
 	public void relinquishOldRoleType(RoleType oldType) {
 
 		if (oldType != null) {
-			person.getAssociatedSettlement().getChainOfCommand().releaseRoleTypeMap(oldType);
+			if (person.getAssociatedSettlement() != null)		
+				person.getAssociatedSettlement().getChainOfCommand().releaseRoleTypeMap(oldType);
+			else 
+				person.getBuriedSettlement().getChainOfCommand().releaseRoleTypeMap(oldType);
 		}
 	}
 

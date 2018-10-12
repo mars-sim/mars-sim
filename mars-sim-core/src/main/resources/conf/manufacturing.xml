@@ -2804,8 +2804,10 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 
 		or 1.3939 kW for 8 kg of ice
 		
+		Note: assume using vacuum chamber/microwaving/other techniques to reduce
+		      power usage and speed up melting ?
 	     -->
-	<process name="melt and filter ice" tech="1" skill="0" work-time="5" process-time="25"
+	<process name="melt and filter ice" tech="1" skill="0" work-time="2" process-time="5"
 			power-required="1.39">
 		<inputs>
 			<resource name="ice" amount="10.0" />
@@ -2819,7 +2821,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 		<!-- Melting permafrost ice and filtering the water (large batch). -->
-	<process name="melt and filter ice (large batch)" tech="1" skill="0" work-time="5" process-time="25"
+	<process name="melt and filter ice (large batch)" tech="1" skill="0" work-time="2" process-time="5"
 			power-required="6.97">
 		<inputs>
 			<resource name="ice" amount="50.0" />

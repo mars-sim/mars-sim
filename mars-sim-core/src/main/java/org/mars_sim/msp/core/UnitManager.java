@@ -1073,7 +1073,7 @@ public class UnitManager implements Serializable {
 	 */
 	private void establishC2(Settlement settlement, int pop) {
 
-		electCommanders(settlement, RoleType.COMMANDER, pop);
+		electCommanders(settlement, pop);
 		// pop < POPULATION_WITH_MAYOR
 		if (pop >= POPULATION_WITH_SUB_COMMANDER) {
 			// electCommanders(settlement, RoleType.SUB_COMMANDER, pop);
@@ -1103,7 +1103,7 @@ public class UnitManager implements Serializable {
 	 * @param role
 	 * @param pop
 	 */
-	public void electCommanders(Settlement settlement, RoleType role, int pop) {
+	public void electCommanders(Settlement settlement, int pop) {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 		Person cc = null;
 		int cc_leadership = 0;
@@ -1352,7 +1352,7 @@ public class UnitManager implements Serializable {
 		electMayor(settlement, RoleType.MAYOR);
 
 		// Need commander and subcommander for operations
-		electCommanders(settlement, RoleType.COMMANDER, settlement.getInitialPopulation());
+		electCommanders(settlement, settlement.getInitialPopulation());
 				
 		electChief(settlement, RoleType.CHIEF_OF_AGRICULTURE);
 		electChief(settlement, RoleType.CHIEF_OF_ENGINEERING);

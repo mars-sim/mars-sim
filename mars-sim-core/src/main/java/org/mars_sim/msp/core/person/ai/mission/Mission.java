@@ -73,6 +73,7 @@ public abstract class Mission implements Serializable {
 	public static final String NO_EXPLORATION_SITES = "Exploration sites could not be determined";
 	public static final String NOT_ENOUGH_MEMBERS = "Not enough members";
 	public static final String NO_MEMBERS_ON_MISSION = "No members on mission";
+	public static final String MISSION_NOT_APPROVED = "Mission not approved";
 	
 
 	public static final String MISSION = " mission";
@@ -756,6 +757,9 @@ public abstract class Mission implements Serializable {
 					"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()
 							+ " is calling endMission() to end the " + missionName + ". Reason : '" + reason + "'",
 					null);
+		
+		// Proactively call removeMission to update the list in MissionManager right away
+//		missionManager.removeMission(this); // not legit ! will crash the mission tab in monitor tool
 	}
 
 	/**
@@ -1201,14 +1205,24 @@ public abstract class Mission implements Serializable {
 	}
 
 	/**
-	 * Obtains approval from the commander of the settlement for the mission.
+	 * Request approval from the commander of the settlement for the mission.
 	 * 
 	 * @param member the mission member currently performing the mission.
 	 */	
-	protected void obtainApprovalPhase(MissionMember member) {	
-		if (!requested) {
-			plan = missionManager.requestMissionApproval(this, (Person)member);
-			requested = true;
+	protected void requestApprovalPhase(MissionMember member) {	
+		if (!approved && plan == null) {
+			Person p = (Person)member;
+//			System.out.println(p.getName()+ "'s" + this.getDescription() + " is going to make a plan.");
+			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());
+			
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + p.getSettlement().getName() + "] " 
+					+ p.getName() + " (" + p.getRole().getType() 
+					+ ") is requesting approval for " + getDescription(), null);
+			 missionManager.requestMissionApproval(plan);
+		}
+		
+		else if (plan != null && plan.getStatus() == PlanType.NOT_APPROVED) {
+			endMission(MISSION_NOT_APPROVED);
 		}
 		
 		if (approved) {

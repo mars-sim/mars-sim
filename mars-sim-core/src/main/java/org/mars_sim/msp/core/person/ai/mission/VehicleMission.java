@@ -556,7 +556,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected void performPhase(MissionMember member) {
 		super.performPhase(member);
 		if (APPROVAL.equals(getPhase())) {
-			obtainApprovalPhase(member);
+			requestApprovalPhase(member);
 		}
 		else if (EMBARKING.equals(getPhase())) {
 			performEmbarkFromSettlementPhase(member);
@@ -674,8 +674,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * 
 	 * @param member the mission member currently performing the mission.
 	 */	
-	protected void obtainApprovalPhase(MissionMember member) {
-		super.obtainApprovalPhase(member);	
+	protected void requestApprovalPhase(MissionMember member) {
+		super.requestApprovalPhase(member);	
 	}
 	
 	/**

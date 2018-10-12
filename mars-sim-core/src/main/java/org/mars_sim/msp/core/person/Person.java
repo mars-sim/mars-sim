@@ -883,12 +883,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		setShiftType(ShiftType.OFF);
 		// Set unit description to "Dead"
 		super.setDescription("Dead");
+		// Relinquish the role
+		role.relinquishOldRoleType(role.getType());
 		// Throw unit event.
 		fireUnitUpdate(UnitEventType.BURIAL_EVENT);
 	}
 
 	/**
-	 * Declares the person dead, removes the designated quarter and work shift
+	 * Declares the person dead and removes the designated quarter 
 	 */
 	void setDeclaredDead() {
 
@@ -979,6 +981,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				}
 
 				buryBody();
+			
+				// Re-elect his role
+				this.getBuriedSettlement().getChainOfCommand().reelect(role.getType());
 			}
 		}
 

@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -23,7 +24,6 @@ import org.mars_sim.msp.core.person.ai.job.JobAssignment;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -68,7 +68,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 	 */
 	public ReviewJobReassignment(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 50D + RandomUtil.getRandomDouble(100D));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 100D);//+ RandomUtil.getRandomDouble(10D));
 
 		if (person.isInside()) {
 			// if (roleType == null)
@@ -88,10 +88,9 @@ public class ReviewJobReassignment extends Task implements Serializable {
 				// Note: office building is optional
 				if (officeBuilding != null) {
 					// Walk to the office building.
-					walkToActivitySpotInBuilding(officeBuilding, false);
-
+					//walkToActivitySpotInBuilding(officeBuilding, false);
 					office = officeBuilding.getAdministration();
-					
+					office.addstaff();
 					this.walkToActivitySpotInBuilding(officeBuilding, true);
 				}
 
@@ -186,17 +185,30 @@ public class ReviewJobReassignment extends Task implements Serializable {
 							+ "'s job reassignment as " + pendingJobStr, null);
 				}
 				
+				addExperience(time);
+				
 				// Do only one review each time
 				break;
 			}
 		} // end of while
 		
-		return 0D;
+		return 0;
 	}
 
 	@Override
 	protected void addExperience(double time) {
-		// This task adds no experience.
+        double newPoints = time / 20D;
+//        if (person != null) {
+            int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+                    NaturalAttributeType.EXPERIENCE_APTITUDE);
+            int leadershipAptitude = person.getNaturalAttributeManager().getAttribute(
+                    NaturalAttributeType.LEADERSHIP);
+            newPoints += newPoints * (experienceAptitude + leadershipAptitude- 100D) / 100D;
+            newPoints *= getTeachingExperienceModifier();
+            person.getMind().getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints);
+//        }
+//        else if (robot != null) {	
+//        }
 	}
 
 	@Override

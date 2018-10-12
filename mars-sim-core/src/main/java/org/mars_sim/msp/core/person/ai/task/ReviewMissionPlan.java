@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -71,7 +72,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 */
 	public ReviewMissionPlan(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 50D + RandomUtil.getRandomDouble(100D));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 50D);// + RandomUtil.getRandomDouble(100D));
 
 		if (person.isInside()) {
 
@@ -88,11 +89,12 @@ public class ReviewMissionPlan extends Task implements Serializable {
 				// Note: office building is optional
 				if (officeBuilding != null) {
 					// Walk to the office building.
-					walkToActivitySpotInBuilding(officeBuilding, false);
+//					walkToActivitySpotInBuilding(officeBuilding, false);
 
 					office = officeBuilding.getAdministration();
+					office.addstaff();
 					
-					this.walkToActivitySpotInBuilding(officeBuilding, true);
+					walkToActivitySpotInBuilding(officeBuilding, true);
 				}
 
 				// TODO: add other workplace if administration building is not available
@@ -193,18 +195,33 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								+ "'s " + m.getDescription() + " mission plan.", null);
 					}
 					
+					
+				      // Add experience
+			        addExperience(time);
+		        
 					// Do only one review each time
 					break;
 				}
 			}
 		} // end of while
 		
-		return 0D;
+        return 0;
 	}
 
 	@Override
 	protected void addExperience(double time) {
-		// This task adds no experience.
+        double newPoints = time / 20D;
+//        if (person != null) {
+            int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+                    NaturalAttributeType.EXPERIENCE_APTITUDE);
+            int leadershipAptitude = person.getNaturalAttributeManager().getAttribute(
+                    NaturalAttributeType.LEADERSHIP);
+            newPoints += newPoints * (experienceAptitude + leadershipAptitude- 100D) / 100D;
+            newPoints *= getTeachingExperienceModifier();
+            person.getMind().getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints);
+//        }
+//        else if (robot != null) {	
+//        }
 	}
 
 	@Override

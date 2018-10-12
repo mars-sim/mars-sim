@@ -67,7 +67,7 @@ public class MissionTableModel extends AbstractTableModel
 	public MissionTableModel() {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[STARTING_MEMBER] = Msg.getString("MissionTableModel.column.type"); //$NON-NLS-1$
+		columnNames[STARTING_MEMBER] = Msg.getString("MissionTableModel.column.name"); //$NON-NLS-1$
 		columnTypes[STARTING_MEMBER] = String.class;
 		columnNames[DESCRIPTION] = Msg.getString("MissionTableModel.column.description"); //$NON-NLS-1$
 		columnTypes[DESCRIPTION] = String.class;
@@ -197,6 +197,9 @@ public class MissionTableModel extends AbstractTableModel
 	 * @param event the mission event.
 	 */
 	public void missionUpdate(MissionEvent event) {
+		// Update the missionCache
+//		missionCache = missionManager.getMissions(); // not legit. not needed
+		
 		int index = missionCache.indexOf(event.getSource());
 		if ((index > -1) && (index < missionCache.size())) {
 			int column1 = -1;

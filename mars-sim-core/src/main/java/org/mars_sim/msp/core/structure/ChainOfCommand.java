@@ -433,7 +433,7 @@ public class ChainOfCommand implements Serializable {
 			unitManager.electChief(settlement, key);
 		} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
 			int pop = settlement.getAllAssociatedPeople().size();
-			unitManager.electCommanders(settlement, key, pop);
+			unitManager.electCommanders(settlement, pop);
 		} else if (key == RoleType.MAYOR) {
 			unitManager.electMayor(settlement, key);
 		}
