@@ -1,8 +1,10 @@
 package org.mars_sim.msp.ui.sodium.swidgets;
 
-import nz.sodium.*;
 import javax.swing.*;
 import javax.swing.SwingUtilities;
+
+import org.mars_sim.msp.core.sodium.*;
+
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class SLabel extends JLabel

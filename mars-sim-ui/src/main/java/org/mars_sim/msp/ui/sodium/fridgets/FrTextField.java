@@ -3,7 +3,8 @@ package org.mars_sim.msp.ui.sodium.fridgets;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Optional;
-import nz.sodium.*;
+
+import org.mars_sim.msp.core.sodium.*;
 
 class TextUpdate {
     TextUpdate(String txt, int newX) {

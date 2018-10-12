@@ -1,12 +1,13 @@
 package org.mars_sim.msp.ui.sodium.swidgets;
 
-import nz.sodium.*;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Optional;
 import java.util.Vector;
 import java.awt.FlowLayout;
 import javax.swing.JComponent;
+
+import org.mars_sim.msp.core.sodium.*;
 
 public class SDateField extends JComponent {
     public SDateField() {

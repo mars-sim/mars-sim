@@ -16,12 +16,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import nz.sodium.Cell;
-import nz.sodium.CellLoop;
-import nz.sodium.Listener;
-import nz.sodium.Stream;
-import nz.sodium.StreamSink;
-import nz.sodium.Transaction;
+import org.mars_sim.msp.core.sodium.Cell;
+import org.mars_sim.msp.core.sodium.CellLoop;
+import org.mars_sim.msp.core.sodium.Listener;
+import org.mars_sim.msp.core.sodium.Stream;
+import org.mars_sim.msp.core.sodium.StreamSink;
+import org.mars_sim.msp.core.sodium.Transaction;
 
 import java.util.Map;
 import java.util.HashMap;

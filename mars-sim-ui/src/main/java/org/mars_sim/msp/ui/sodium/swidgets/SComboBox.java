@@ -1,9 +1,11 @@
 package org.mars_sim.msp.ui.sodium.swidgets;
 
-import nz.sodium.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.*;
+
+import org.mars_sim.msp.core.sodium.*;
+
 import java.util.Optional;
 import java.util.Vector;
 

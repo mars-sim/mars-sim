@@ -3,9 +3,8 @@ package org.mars_sim.msp.ui.sodium.fridgets.app;
 
 import javax.swing.*;
 
+import org.mars_sim.msp.core.sodium.*;
 import org.mars_sim.msp.ui.sodium.fridgets.*;
-
-import nz.sodium.*;
 
 public class button {
     public static void main(String[] args) {

@@ -4,7 +4,8 @@ import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Optional;
-import nz.sodium.*;
+
+import org.mars_sim.msp.core.sodium.*;
 
 public abstract class Fridget {
     public static class Output {

@@ -2,10 +2,10 @@ package org.mars_sim.msp.ui.sodium.fridgets.app;
 
 import javax.swing.*;
 
+import org.mars_sim.msp.core.sodium.*;
 import org.mars_sim.msp.ui.sodium.fridgets.*;
 
 import java.util.ArrayList;
-import nz.sodium.*;
 
 public class textfield {
     public static void main(String[] args) {

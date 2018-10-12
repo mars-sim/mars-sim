@@ -1235,6 +1235,11 @@ public class UnitManager implements Serializable {
 	}
 	
 	
+	/**
+	 * Update the commander's profile
+	 * 
+	 * @param cc the person instance
+	 */
 	public void updateCommander(Person cc) {
 		String newCountry = personConfig.getCountry(getCountry()); 
 		String newSponsor = personConfig.getSponsorFromCountry(newCountry);
@@ -1635,7 +1640,7 @@ public class UnitManager implements Serializable {
 				Settlement settlement = i.next();
 				int initial = settlement.getInitialNumOfRobots();
 				// Note : need to call updateAllAssociatedRobots() first to compute numBots in Settlement
-				while (settlement.updateAllAssociatedRobots().size() < initial) {
+				while (settlement.getIndoorRobotsCount() < initial) {
 					// Get a robotType randomly
 					RobotType robotType = getABot(settlement, initial);
 					// Adopt Static Factory Method and Factory Builder Pattern
@@ -1948,18 +1953,19 @@ public class UnitManager implements Serializable {
 
 		if (solCache != solElapsed) {
 			solCache = solElapsed;
-
+			// Compute reliability daily
 			partConfig.computeReliability();
 		}
 
 		if (justReloaded) {
+			// Only need to run all these below once at the start of the sim
 			partConfig.computeReliability();
 
-//			Collection<Settlement> c = CollectionUtils.getSettlement(units);
-//			for (Settlement s : c) {
-				//s.updateAllAssociatedPeople();
-				//s.updateAllAssociatedRobots();
-//			}
+			Collection<Settlement> c = CollectionUtils.getSettlement(units);
+			for (Settlement s : c) {
+				s.updateAllAssociatedPeople();
+				s.updateAllAssociatedRobots();
+			}
 
 			justReloaded = false;
 		}

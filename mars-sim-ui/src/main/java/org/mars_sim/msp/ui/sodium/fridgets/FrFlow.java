@@ -3,7 +3,8 @@ package org.mars_sim.msp.ui.sodium.fridgets;
 import java.awt.Dimension;
 import java.util.Collection;
 import java.util.Optional;
-import nz.sodium.*;
+
+import org.mars_sim.msp.core.sodium.*;
 
 public class FrFlow extends Fridget {
     public enum Direction { HORIZONTAL, VERTICAL };

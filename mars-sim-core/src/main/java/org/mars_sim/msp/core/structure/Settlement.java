@@ -635,44 +635,37 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public int getRobotCapacity() {
 		int result = 0;
 		int stations = 0;
-		// Iterator<Building> i =
-		// buildingManager.getBuildings().iterator();//getACopyOfBuildings().iterator();.getACopyOfBuildings().iterator();
-		// while (i.hasNext()) {
-		// Building building = i.next();
-		// List<Building> bs = buildingManager.getBuildings();
-		// for (Building b : bs) {
-		// result++;
-		// }
-		// result = bs.size();
-		// Iterator<Building> j =
-		// buildingManager.getBuildings(FunctionType.ROBOTIC_STATION).iterator();
-		// while (j.hasNext()) {
-		// Building building = j.next();
 		List<Building> bs = buildingManager.getBuildings(FunctionType.ROBOTIC_STATION);
 		for (Building b : bs) {
 			stations += b.getRoboticStation().getSlots();
-			// stations++;
 		}
-		// stations = stations * 2;
 
 		result = result + stations;
 
 		return result;
 	}
 
-//	/**
-//	 * Gets the current number of robots in the settlement
-//	 * 
-//	 * @return the number of robots
-//	 */
-//	public int getNumCurrentRobots() {
+	/**
+	 * Gets the current number of robots in the settlement
+	 * 
+	 * @return the number of robots
+	 */
+	public int getIndoorRobotsCount() {
+
 //		int n = 0;
-//		for (Unit u : getInventory().getAllContainedUnits()) {
-//			if (u instanceof Robot)
+//		Iterator<Unit> i = getInventory().getAllContainedUnits().iterator();
+//		while (i.hasNext()) {
+//			if (i.next() instanceof Robot)
 //				n++;
 //		}
-//		return n;
-//	}
+		
+		int n = 0;
+		for (Unit u : getInventory().getAllContainedUnits()) {
+			if (u instanceof Robot)
+				n++;
+		}
+		return n;
+	}
 
 	/**
 	 * Gets a collection of the number of robots of the settlement.

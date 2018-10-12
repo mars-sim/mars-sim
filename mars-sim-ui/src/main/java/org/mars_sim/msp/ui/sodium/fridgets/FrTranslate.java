@@ -3,7 +3,8 @@ package org.mars_sim.msp.ui.sodium.fridgets;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
-import nz.sodium.*;
+
+import org.mars_sim.msp.core.sodium.*;
 
 public class FrTranslate extends Fridget {
     public FrTranslate(Fridget fr, Cell<Dimension> offset) {

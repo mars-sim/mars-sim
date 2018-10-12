@@ -1,8 +1,10 @@
 package org.mars_sim.msp.ui.sodium.swidgets.app;
 
 import javax.swing.*;
+
+import org.mars_sim.msp.core.sodium.*;
+
 import java.awt.*;
-import nz.sodium.*;
 
 public class spinme {
     public static void main(String[] args) {

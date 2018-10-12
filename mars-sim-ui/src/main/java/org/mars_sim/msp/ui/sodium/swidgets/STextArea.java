@@ -1,9 +1,11 @@
 package org.mars_sim.msp.ui.sodium.swidgets;
 
-import nz.sodium.*;
 import java.awt.Point;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import org.mars_sim.msp.core.sodium.*;
+
 import javax.swing.*;
 import javax.swing.SwingUtilities;
 import java.util.concurrent.ArrayBlockingQueue;

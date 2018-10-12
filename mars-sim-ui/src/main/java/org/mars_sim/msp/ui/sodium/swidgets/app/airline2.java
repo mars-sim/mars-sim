@@ -2,13 +2,12 @@ package org.mars_sim.msp.ui.sodium.swidgets.app;
 
 import javax.swing.*;
 
+import org.mars_sim.msp.core.sodium.*;
 import org.mars_sim.msp.ui.sodium.swidgets.SButton;
 import org.mars_sim.msp.ui.sodium.swidgets.SDateField;
 
 import java.awt.*;
 import java.util.Calendar;
-//import swidgets.*;
-import nz.sodium.*;
 
 class Rule {
     public Rule(Lambda2<Calendar, Calendar, Boolean> f) {

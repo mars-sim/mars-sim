@@ -1,6 +1,9 @@
 package org.mars_sim.msp.ui.sodium.swidgets.app;
 
 
+import org.mars_sim.msp.core.sodium.CellLoop;
+import org.mars_sim.msp.core.sodium.Stream;
+import org.mars_sim.msp.core.sodium.Transaction;
 import org.mars_sim.msp.ui.sodium.swidgets.SButton;
 import org.mars_sim.msp.ui.sodium.swidgets.SLabel;
 
@@ -9,9 +12,6 @@ import javafx.embed.swing.SwingNode;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import nz.sodium.CellLoop;
-import nz.sodium.Stream;
-import nz.sodium.Transaction;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;

@@ -2,14 +2,13 @@ package org.mars_sim.msp.ui.sodium.swidgets.app;
 
 import javax.swing.*;
 
+import org.mars_sim.msp.core.sodium.*;
 import org.mars_sim.msp.ui.sodium.swidgets.SButton;
 import org.mars_sim.msp.ui.sodium.swidgets.SLabel;
 import org.mars_sim.msp.ui.sodium.swidgets.STextField;
 
 import java.awt.*;
 import java.awt.event.*;
-//import swidgets.*;
-import nz.sodium.*;
 
 public class translate {
     public static void main(String[] args) {

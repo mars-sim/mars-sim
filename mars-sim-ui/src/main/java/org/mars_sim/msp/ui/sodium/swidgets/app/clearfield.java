@@ -1,12 +1,11 @@
 package org.mars_sim.msp.ui.sodium.swidgets.app;
 import javax.swing.*;
 
+import org.mars_sim.msp.core.sodium.*;
 import org.mars_sim.msp.ui.sodium.swidgets.SButton;
 import org.mars_sim.msp.ui.sodium.swidgets.STextField;
 
 import java.awt.FlowLayout;
-//import swidgets.*;
-import nz.sodium.*;
 
 public class clearfield {
     public static void main(String[] args) {

@@ -4,10 +4,9 @@ import java.awt.FlowLayout;
 
 import javax.swing.JFrame;
 
+import org.mars_sim.msp.core.sodium.Cell;
 import org.mars_sim.msp.ui.sodium.swidgets.SLabel;
 import org.mars_sim.msp.ui.sodium.swidgets.STextField;
-
-import nz.sodium.Cell;
 
 
 public class add {
