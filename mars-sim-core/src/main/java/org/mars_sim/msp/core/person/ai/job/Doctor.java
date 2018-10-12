@@ -57,9 +57,6 @@ implements Serializable {
 		// Use Job constructor
 		super(Doctor.class);
 
-		// 2015-01-03 Added PrepareDessert
-		//jobTasks.add(PrepareDessert.class);
-
 		// Add doctor-related tasks.
 		jobTasks.add(PrescribeMedication.class);
 		jobTasks.add(TreatMedicalPatient.class);
@@ -75,10 +72,6 @@ implements Serializable {
 
 		// Add side tasks
 		jobTasks.add(ConsolidateContainers.class);
-		jobTasks.add(DigLocalRegolith.class);
-		jobTasks.add(DigLocalIce.class);
-		jobTasks.add(ReviewJobReassignment.class);
-		jobTasks.add(WriteReport.class);
 
 		// Add doctor-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

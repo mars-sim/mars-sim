@@ -933,8 +933,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 				if (!condition.isDead()) {
 
-					// Added calling preference
-					preference.timePassing(time);
+					// Call preference
+					// preference.timePassing(time);
 
 					try {
 						// Mental changes with time passing.

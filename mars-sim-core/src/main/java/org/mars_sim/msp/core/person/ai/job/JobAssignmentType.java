@@ -15,11 +15,6 @@ public enum JobAssignmentType {
 	APPROVED				(Msg.getString("JobAssignmentType.approved")), //$NON-NLS-1$
 	NOT_APPROVED			(Msg.getString("JobAssignmentType.notApproved")); //$NON-NLS-1$
 
-	//SETTLEMENT			(Msg.getString("JobAssignmentType.settlement")), //$NON-NLS-1$
-	//MARSSIMMER			(Msg.getString("JobAssignmentType.marssimmer")), //$NON-NLS-1$
-	//MISSION_CONTROL		(Msg.getString("JobAssignmentType.missionControl")), //$NON-NLS-1$
-	//;
-
 	private String name;
 
 	/** hidden constructor. */

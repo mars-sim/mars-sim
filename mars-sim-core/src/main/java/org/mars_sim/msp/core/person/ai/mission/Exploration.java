@@ -146,8 +146,8 @@ public class Exploration extends RoverMission implements Serializable {
 			addPhase(EXPLORE_SITE);
 
 			// Set initial mission phase.
-			setPhase(VehicleMission.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.embarking.description", s.getName())); // $NON-NLS-1$
+			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+			setPhaseDescription(Msg.getString("Mission.phase.approval.description", s.getName())); // $NON-NLS-1$
 		}
 	}
 
@@ -212,8 +212,8 @@ public class Exploration extends RoverMission implements Serializable {
 		addPhase(EXPLORE_SITE);
 
 		// Set initial mission phase.
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", startingSettlement.getName())); // $NON-NLS-1$
+		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+		setPhaseDescription(Msg.getString("Mission.phase.approval.description", startingSettlement.getName())); // $NON-NLS-1$
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable())
@@ -260,7 +260,13 @@ public class Exploration extends RoverMission implements Serializable {
 
 	@Override
 	protected void determineNewPhase() {
-		if (EMBARKING.equals(getPhase())) {
+		if (APPROVAL.equals(getPhase())) {
+			setPhase(VehicleMission.EMBARKING);
+			setPhaseDescription(
+					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getSettlement()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
+		}
+		
+		else if (EMBARKING.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(

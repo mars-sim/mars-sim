@@ -57,7 +57,7 @@ implements Serializable {
 		super(Technician.class);
 
 		// Add technician-related tasks.
-		jobTasks.add(ConsolidateContainers.class);
+		//jobTasks.add(ConsolidateContainers.class);
 		jobTasks.add(LoadVehicleEVA.class);
         jobTasks.add(LoadVehicleGarage.class);
 		jobTasks.add(Maintenance.class);
@@ -74,10 +74,7 @@ implements Serializable {
 		jobTasks.add(SalvageGood.class);
 
 		// Add side tasks
-		jobTasks.add(DigLocalRegolith.class);
-		jobTasks.add(DigLocalIce.class);
-		jobTasks.add(ReviewJobReassignment.class);
-		jobTasks.add(WriteReport.class);
+		// None
 
 		// Add engineer-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

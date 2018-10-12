@@ -54,6 +54,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			logger.getName().length());
 
 	/** Mission phases. */
+	final public static MissionPhase APPROVAL = new MissionPhase(Msg.getString("Mission.phase.approval")); //$NON-NLS-1$
 	final public static MissionPhase EMBARKING = new MissionPhase(Msg.getString("Mission.phase.embarking")); //$NON-NLS-1$
 	final public static MissionPhase TRAVELLING = new MissionPhase(Msg.getString("Mission.phase.travelling")); //$NON-NLS-1$
 	final public static MissionPhase DISEMBARKING = new MissionPhase(Msg.getString("Mission.phase.disembarking")); //$NON-NLS-1$
@@ -96,6 +97,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		this.startingMember = startingMember;
 
 		// Add mission phases.
+		addPhase(APPROVAL);
 		addPhase(EMBARKING);
 		addPhase(TRAVELLING);
 		addPhase(DISEMBARKING);
@@ -121,6 +123,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		this.startingMember = startingMember;
 
 		// Add mission phases.
+		addPhase(APPROVAL);
 		addPhase(EMBARKING);
 		addPhase(TRAVELLING);
 		addPhase(DISEMBARKING);
@@ -522,18 +525,29 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @throws MissionException if problem setting a new phase.
 	 */
 	protected void determineNewPhase() {
-		if (EMBARKING.equals(getPhase())) {
+		if (APPROVAL.equals(getPhase())) {
+			//startTravelToNextNode();
+			setPhase(VehicleMission.EMBARKING);
+			setPhaseDescription(
+					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getSettlement()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
+		}
+		
+		else if (EMBARKING.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} else if (TRAVELLING.equals(getPhase())) {
+		} 
+		
+		else if (TRAVELLING.equals(getPhase())) {
 			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
 				setPhase(VehicleMission.DISEMBARKING);
 				setPhaseDescription(
 						Msg.getString("Mission.phase.disembarking.description", getCurrentNavpoint().getDescription())); // $NON-NLS-1$
 			}
-		} else if (DISEMBARKING.equals(getPhase())) {
+		} 
+		
+		else if (DISEMBARKING.equals(getPhase())) {
 			endMission(SUCCESSFULLY_DISEMBARKED);
 		}
 	}
@@ -541,11 +555,16 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	@Override
 	protected void performPhase(MissionMember member) {
 		super.performPhase(member);
-		if (EMBARKING.equals(getPhase())) {
+		if (APPROVAL.equals(getPhase())) {
+			obtainApprovalPhase(member);
+		}
+		else if (EMBARKING.equals(getPhase())) {
 			performEmbarkFromSettlementPhase(member);
-		} else if (TRAVELLING.equals(getPhase())) {
+		} 
+		else if (TRAVELLING.equals(getPhase())) {
 			performTravelPhase(member);
-		} else if (DISEMBARKING.equals(getPhase())) {
+		} 
+		else if (DISEMBARKING.equals(getPhase())) {
 			performDisembarkToSettlementPhase(member, getCurrentNavpoint().getSettlement());
 		}
 	}
@@ -561,7 +580,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		// If vehicle has not reached destination and isn't broken down, travel to
 		// destination.
-		boolean reachedDestination = false, malfunction = false;
+		boolean reachedDestination = false;
+		boolean malfunction = false;
 		// Avoid NullPointerException by checking if vehicle/destination is
 		// null
 		if (vehicle != null && destination != null) {
@@ -649,6 +669,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	protected abstract void performEmbarkFromSettlementPhase(MissionMember member);
 
+	/**
+	 * Obtains approval from the commander of the settlement for the mission.
+	 * 
+	 * @param member the mission member currently performing the mission.
+	 */	
+	protected void obtainApprovalPhase(MissionMember member) {
+		super.obtainApprovalPhase(member);	
+	}
+	
 	/**
 	 * Performs the disembark to settlement phase of the mission.
 	 * 
@@ -1276,7 +1305,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		return result;
 	}
-
+	
 	@Override
 	public void destroy() {
 		super.destroy();

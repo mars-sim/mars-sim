@@ -211,6 +211,7 @@ public class MetaTaskUtil {
 			tasks.add(new RespondToStudyInvitationMeta());
 			// tasks.add(new ReturnLightUtilityVehicleMeta());
 			tasks.add(new ReviewJobReassignmentMeta());
+			tasks.add(new ReviewMissionPlanMeta());
 			tasks.add(new SalvageBuildingMeta());
 			tasks.add(new SalvageGoodMeta());
 			tasks.add(new StudyFieldSamplesMeta());

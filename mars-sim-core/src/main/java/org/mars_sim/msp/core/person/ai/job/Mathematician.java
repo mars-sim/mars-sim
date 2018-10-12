@@ -73,10 +73,6 @@ implements Serializable {
 
 		// Add side tasks
 		jobTasks.add(ConsolidateContainers.class);
-		jobTasks.add(DigLocalRegolith.class);
-		jobTasks.add(DigLocalIce.class);
-		jobTasks.add(ReviewJobReassignment.class);
-		jobTasks.add(WriteReport.class);
 
 		// Add mathematician-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

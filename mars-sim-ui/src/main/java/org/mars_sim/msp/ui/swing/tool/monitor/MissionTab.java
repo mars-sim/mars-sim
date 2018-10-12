@@ -17,8 +17,7 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 /**
  * This class represents a mission table displayed within the Monitor Window.
  */
-public class MissionTab
-extends TableTab {
+public class MissionTab extends TableTab {
 
 	/**
 	 * Constructor.
@@ -30,6 +29,7 @@ extends TableTab {
 
 	/**
 	 * Display selected mission in mission tool.
+	 * 
 	 * @param desktop the main desktop.
 	 */
 	public void displayMission(MainDesktopPane desktop) {
@@ -45,6 +45,7 @@ extends TableTab {
 
 	/**
 	 * Center the map on the first selected row.
+	 * 
 	 * @param desktop Main window of application.
 	 */
 	public void centerMap(MainDesktopPane desktop) {
@@ -53,7 +54,7 @@ extends TableTab {
 		if (it.hasNext()) {
 			Mission mission = (Mission) it.next();
 			if (mission.getMembersNumber() > 0) {
-			    MissionMember member = (MissionMember) mission.getMembers().toArray()[0];
+				MissionMember member = (MissionMember) mission.getMembers().toArray()[0];
 				desktop.centerMapGlobe(member.getCoordinates());
 			}
 		}

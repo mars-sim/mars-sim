@@ -154,8 +154,8 @@ public class Mining extends RoverMission {
 		addPhase(MINING_SITE);
 
 		// Set initial mission phase.
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+		setPhaseDescription(Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
 	}
 
 	/**
@@ -229,8 +229,8 @@ public class Mining extends RoverMission {
 		addPhase(MINING_SITE);
 
 		// Set initial mission phase.
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+		setPhaseDescription(Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
 	}
 
 	/**
@@ -293,7 +293,13 @@ public class Mining extends RoverMission {
 
 	@Override
 	protected void determineNewPhase() {
-		if (EMBARKING.equals(getPhase())) {
+		if (APPROVAL.equals(getPhase())) {
+			setPhase(VehicleMission.EMBARKING);
+			setPhaseDescription(
+					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getSettlement()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
+		}
+		
+		else if (EMBARKING.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(

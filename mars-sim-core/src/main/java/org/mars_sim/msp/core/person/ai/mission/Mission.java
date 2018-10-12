@@ -72,6 +72,7 @@ public abstract class Mission implements Serializable {
 	public static final String VEHICLE_NOT_LOADABLE = "Cannot load resources into the rover";
 	public static final String NO_EXPLORATION_SITES = "Exploration sites could not be determined";
 	public static final String NOT_ENOUGH_MEMBERS = "Not enough members";
+	public static final String NO_MEMBERS_ON_MISSION = "No members on mission";
 	
 
 	public static final String MISSION = " mission";
@@ -111,15 +112,22 @@ public abstract class Mission implements Serializable {
 	private boolean phaseEnded;
 	/** True if mission is completed. */
 	private boolean done;
+	/** True if the mission has been approved. */
+	protected boolean approved = false;
+	/** True if the mission has been requested. */
+	protected boolean requested = false;
 	/** Name of mission. */
 	private String missionName;
+	/** The description of the current phase of operation. */
+	private String phaseDescription;
+	
 
 	/** The current phase of the mission. */
 	private MissionPhase phase;
-	/** The description of the current phase of operation. */
-	private String phaseDescription;
 	/** The name of the starting member */
 	private MissionMember startingMember;
+	/** The mission plan. */
+	private MissionPlanning plan;
 
 	/** Mission members. */
 	private Collection<MissionMember> members;
@@ -132,6 +140,7 @@ public abstract class Mission implements Serializable {
 
 	// Static members
 	private static UnitManager unitManager;
+	private static MissionManager missionManager;
 
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -157,30 +166,15 @@ public abstract class Mission implements Serializable {
 		this.minMembers = minMembers;
 		missionCapacity = Integer.MAX_VALUE;
 
-		unitManager = Simulation.instance().getUnitManager();
-
+		Simulation sim = Simulation.instance();
+		unitManager = sim.getUnitManager();
+		missionManager = sim.getMissionManager();
+				
 		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
 
 		Person person = (Person) startingMember;
 		String loc0 = null;
 		String loc1 = null;
-//        if (person.isInSettlement()) {
-//			loc0 = person.getBuildingLocation().getNickName();
-//			loc1 = person.getSettlement().getName();           	
-//        }
-//        else if (person.isInVehicle()) {
-//			loc0 = person.getVehicle().getName();
-//			
-//			if (person.getVehicle().getBuildingLocation() != null)
-//				loc1 = person.getVehicle().getSettlement().getName();
-//			else
-//				loc1 = person.getCoordinates().toString();
-//        }
-//        else {
-//			loc0 = OUTSIDE;
-//			loc1 = person.getCoordinates().toString();
-//        }
-// 
 
 		if (person.isInSettlement()) {
 			loc0 = person.getBuildingLocation().getNickName();
@@ -201,9 +195,14 @@ public abstract class Mission implements Serializable {
 				str = "' with 1 other.";
 			else
 				str = "' with " + n + " others.";
+			
+			String article = "a ";
+					
+			if(Conversion.isVowel(missionName))
+				article = "an ";
 
-			LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "[" + person.getSettlement() + "] "
-					+ startingMember.getName() + " started a " + missionName + " mission" + str, null);
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getSettlement() + "] "
+					+ startingMember.getName() + " is organizing " + article + missionName + " mission" + str, null);
 
 			// Add starting member to mission.
 			// Temporarily set the shift type to none during the mission
@@ -727,7 +726,7 @@ public abstract class Mission implements Serializable {
 
 			// logger.info("Calling endMission(). Mission ended. Reason : " + reason);
 
-			LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+			LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
 					"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()
 							+ " ended the " + missionName + " mission. Reason : " + reason,
 					null);
@@ -738,9 +737,9 @@ public abstract class Mission implements Serializable {
 
 			if (members != null) {
 				if (!members.isEmpty()) {
-					LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
 							"[" + startingMember.getLocationTag().getQuickLocation()
-									+ "] Removing the following mission members : " + members,
+									+ "] Disbanding mission member(s) : " + members,
 							null);
 					Iterator<MissionMember> i = members.iterator();
 					while (i.hasNext()) {
@@ -753,7 +752,7 @@ public abstract class Mission implements Serializable {
 			// logger.info(description + " ending at the " + phase + " phase due to " +
 			// reason);
 		} else
-			LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+			LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
 					"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()
 							+ " is calling endMission() to end the " + missionName + ". Reason : '" + reason + "'",
 					null);
@@ -1150,7 +1149,7 @@ public abstract class Mission implements Serializable {
 				else {
 					int rand = RandomUtil.getRandomInt(2);
 					String theInitial = missionName.substring(0);
-					if (Conversion.checkVowel(theInitial))
+					if (Conversion.isVowel(theInitial))
 						s.append(EXPRESSIONS[rand]).append("an ").append(missionName).append("?");
 					else
 						s.append(EXPRESSIONS[rand]).append("a ").append(missionName).append("?");
@@ -1164,7 +1163,7 @@ public abstract class Mission implements Serializable {
 				else {
 					int rand = RandomUtil.getRandomInt(2);
 					String theInitial = missionName.substring(0);
-					if (Conversion.checkVowel(theInitial))
+					if (Conversion.isVowel(theInitial))
 						s.append(EXPRESSIONS[rand]).append("an ").append(missionName).append(MISSION).append("?");
 					else
 						s.append(EXPRESSIONS[rand]).append("a ").append(missionName).append(MISSION).append("?");
@@ -1201,6 +1200,58 @@ public abstract class Mission implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Obtains approval from the commander of the settlement for the mission.
+	 * 
+	 * @param member the mission member currently performing the mission.
+	 */	
+	protected void obtainApprovalPhase(MissionMember member) {	
+		if (!requested) {
+			plan = missionManager.requestMissionApproval(this, (Person)member);
+			requested = true;
+		}
+		
+		if (approved) {
+			setPhaseEnded(true);
+		}
+	}
+
+	/**
+	 * Sets the mission plan status
+	 * 
+	 * @param value
+	 */
+	public void setApproval(boolean value) {
+		approved = value;
+	}
+	
+	/**
+	 * Checks if the mission plan has been approved
+	 * 
+	 * @return
+	 */
+	public boolean isApproved() {
+		return approved;
+	}
+	
+	/**
+	 * Returns the mission plan
+	 * 
+	 * @return {@link MissionPlanning}
+	 */
+	public MissionPlanning getPlan() {
+		return plan;
+	}
+	
+	/**
+	 * Returns the starting member
+	 * 
+	 * @return {@link Person}
+	 */
+	public Person getStartingMember() {
+		return (Person)startingMember;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

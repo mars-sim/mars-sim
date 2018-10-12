@@ -12,6 +12,11 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
+import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
+import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
+import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
+import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -54,6 +59,13 @@ public abstract class Job implements Serializable {
 		jobTasks = new ArrayList<Class<?>>();
 		jobMissionStarts = new ArrayList<Class<?>>();
 		jobMissionJoins = new ArrayList<Class<?>>();
+		
+		// Every settler will need to tasks
+		jobTasks.add(DigLocalIce.class);
+		jobTasks.add(DigLocalRegolith.class);
+		jobTasks.add(ReviewJobReassignment.class);
+		jobTasks.add(ReviewMissionPlan.class);
+		jobTasks.add(WriteReport.class);
 	}
 
 	/**

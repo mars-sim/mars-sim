@@ -13,8 +13,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
@@ -39,9 +41,14 @@ public class MissionManager implements Serializable {
 	/** default logger. */
 	private static transient Logger logger = Logger.getLogger(MissionManager.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
 	/** Current missions in the simulation. */
 	private List<Mission> missions;
 
+	private Map<Integer, List<MissionPlanning>> historicalMissions;
+	
 	/** Mission listeners. */
 	private transient List<MissionManagerListener> listeners;
 
@@ -53,6 +60,8 @@ public class MissionManager implements Serializable {
 	private transient MarsClock robotTimeCache;
 	private transient Map<MetaMission, Double> missionProbCache;
 	private transient Map<MetaMission, Double> robotMissionProbCache;
+	
+	private transient MarsClock marsClock;
 
 	/**
 	 * Constructor.
@@ -62,9 +71,11 @@ public class MissionManager implements Serializable {
 		personTimeCache = null;
 		robotTimeCache = null;
 		totalProbCache = 0D;
-
+		//marsClock = Simulation.instance().getMasterClock().getMarsClock(); // null at the start of the sim
+		
 		// Initialize data members
 		missions = new ArrayList<Mission>(0);
+		historicalMissions = new HashMap<>();
 		listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
 		missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getMetaMissions().size());
 		robotMissionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getRobotMetaMissions().size());
@@ -217,7 +228,6 @@ public class MissionManager implements Serializable {
 				}
 			}
 
-			// 2015-10-22 Added recordMission()
 			// recordMission(newMission);
 
 			logger.finer("MissionManager: Added new mission - " + newMission.getName());
@@ -378,20 +388,54 @@ public class MissionManager implements Serializable {
 			throw new IllegalArgumentException("settlement is null");
 		}
 
-		List<Mission> settlementMissions = new ArrayList<Mission>();
-		if (!getMissions().isEmpty()) {
-			Iterator<Mission> i = getMissions().iterator();
+		List<Mission> m0 = new ArrayList<Mission>();
+		List<Mission> m1 = getMissions();
+		if (!m1.isEmpty()) {		
+			Iterator<Mission> i = m1.iterator();
 			while (i.hasNext()) {
-				Mission mission = i.next();
-				if (!mission.isDone() && (settlement == mission.getAssociatedSettlement())) {
-					settlementMissions.add(mission);
+				Mission m = i.next();
+				if (!m.isDone() 
+						&& settlement == m.getAssociatedSettlement()) {
+					m0.add(m);
 				}
 			}
 		}
 
-		return settlementMissions;
+		return m0;
 	}
 
+	/**
+	 * Gets the missions pending for approval in a given settlement.
+	 * 
+	 * @param settlement
+	 * @return list of pending missions associated with the settlement.
+	 */
+	public List<Mission> getPendingMissions(Settlement settlement) {
+
+		if (settlement == null) {
+			// System.out.println("settlement is null");
+			throw new IllegalArgumentException("settlement is null");
+		}
+		
+		List<Mission> m0 = new ArrayList<Mission>();
+		List<Mission> m1 = getMissions();
+		if (!m1.isEmpty()) {		
+			Iterator<Mission> i = m1.iterator();
+			while (i.hasNext()) {
+				Mission m = i.next();
+				if (!m.isDone() 
+						&& (settlement == m.getAssociatedSettlement())
+						&& !m.isApproved()
+						&& m.getPlan() != null
+						&& m.getPlan().getStatus() == PlanType.PENDING) {
+					m0.add(m);
+				}
+			}
+		}
+
+		return m0;
+	}
+	
 	/**
 	 * Gets a mission that the given vehicle is a part of.
 	 * 
@@ -457,8 +501,8 @@ public class MissionManager implements Serializable {
 	 * Remove missions that are already completed.
 	 */
 	private void cleanMissions() {
-
 		int index = 0;
+		
 		if (missions != null) { // for passing maven test
 			while (index < missions.size()) {
 				Mission tempMission = missions.get(index);
@@ -503,6 +547,11 @@ public class MissionManager implements Serializable {
 		personTimeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 	}
 
+	/**
+	 * Calculates and caches the probabilities.
+	 * 
+	 * @param robot the robot to check for.
+	 */
 	private void calculateProbability(Robot robot) {
 		if (robotMissionProbCache == null) {
 			robotMissionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getRobotMetaMissions().size());
@@ -543,6 +592,12 @@ public class MissionManager implements Serializable {
 		return currentTime.equals(personTimeCache);// && (person == personCache);
 	}
 
+	/**
+	 * Checks if task probability cache should be used.
+	 * 
+	 * @param the robot to check for.
+	 * @return true if cache should be used.
+	 */
 	private boolean useCache(Robot robot) {
 		// if (currentTime == null)
 		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
@@ -561,6 +616,71 @@ public class MissionManager implements Serializable {
 		}
 	}
 
+	/**
+	 * Adds a mission plan
+	 * 
+	 * @param plan
+	 */
+	public void addMissionPlanning(MissionPlanning plan) {
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		int mSol = marsClock.getMissionSol();
+			
+		if (historicalMissions.containsKey(mSol)) {
+			List<MissionPlanning> plans = historicalMissions.get(mSol);
+			plans.add(plan);
+		}
+		else {
+			List<MissionPlanning> plans = new ArrayList<>();
+			plans.add(plan);
+			historicalMissions.put(mSol, plans);
+		}
+	}
+	
+	
+	/**
+	 * Submit a request for approving a mission plan
+	 * 
+	 * @param mission
+	 * @param person
+	 * @param {{@link MissionPlanning}
+	 */
+	public MissionPlanning requestMissionApproval(Mission mission, Person person) {
+		MissionPlanning plan = new MissionPlanning(mission, person.getName(), person.getRole().getType());
+		LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "[" + person.getSettlement().getName() + "] " 
+				+ person.getName() + " (" + person.getRole().getType() 
+				+ ") is requesting approval for " + mission.getDescription(), null);
+		addMissionPlanning(plan);
+		return plan;
+	}
+	
+	/**
+	 * Reviews a mission plan
+	 * 
+	 * @param missionPlan
+	 * @param person
+	 * @param status
+	 */
+	public void reviewMissionPlan(MissionPlanning missionPlan, Person person, PlanType status) {
+//		if (marsClock == null) marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		
+		for (int mSol : historicalMissions.keySet()) {
+			List<MissionPlanning> plans = historicalMissions.get(mSol);
+			for (MissionPlanning mp : plans) {
+				if (mp == missionPlan) {
+					mp.setReviewedBy(person.getName());
+					mp.setReviewedRole(person.getRole().getType());
+					mp.setStatus(status);
+					if (status == PlanType.APPROVED)
+						mp.getMission().setApproval(true);
+//					else if (status == PlanType.NOT_APPROVED)
+//						mp.getMission().setApproval(false);
+				}
+				break;
+			}
+		}
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -586,6 +706,5 @@ public class MissionManager implements Serializable {
 			robotMissionProbCache.clear();
 			robotMissionProbCache = null;
 		}
-
 	}
 }

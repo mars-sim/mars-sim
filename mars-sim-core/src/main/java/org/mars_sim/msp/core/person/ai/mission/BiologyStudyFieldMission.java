@@ -136,8 +136,8 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 			addPhase(RESEARCH_SITE);
 
 			// Set initial mission phase.
-			setPhase(VehicleMission.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.embarking.description" //$NON-NLS-1$
+			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+			setPhaseDescription(Msg.getString("Mission.phase.approval.description" //$NON-NLS-1$
 					, s.getName()));
 
 		}
@@ -186,8 +186,8 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 		addPhase(RESEARCH_SITE);
 
 		// Set initial mission phase.
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description" //$NON-NLS-1$
+		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+		setPhaseDescription(Msg.getString("Mission.phase.approval.description" //$NON-NLS-1$
 				, getStartingSettlement().getName()));
 
 		// Check if vehicle can carry enough supplies for the mission.
@@ -414,7 +414,13 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 
 	@Override
 	protected void determineNewPhase() {
-		if (EMBARKING.equals(getPhase())) {
+		if (APPROVAL.equals(getPhase())) {
+			setPhase(VehicleMission.EMBARKING);
+			setPhaseDescription(
+					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getSettlement()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
+		}
+		
+		else if (EMBARKING.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(Msg.getString("Mission.phase.travelling.description" //$NON-NLS-1$

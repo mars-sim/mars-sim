@@ -121,9 +121,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			}
 
 			// Set initial phase
-			setPhase(VehicleMission.EMBARKING);
+			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
 			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName())); // $NON-NLS-1$
+					Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
 		}
 		// logger.info("Travel to Settlement mission");
 	}
@@ -162,8 +162,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		}
 
 		// Set initial phase
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+		setPhaseDescription(Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -178,7 +178,13 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	 */
 	@Override
 	protected void determineNewPhase() {
-		if (EMBARKING.equals(getPhase())) {
+		if (APPROVAL.equals(getPhase())) {
+			setPhase(VehicleMission.EMBARKING);
+			setPhaseDescription(
+					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getSettlement()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
+		}
+		
+		else if (EMBARKING.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(

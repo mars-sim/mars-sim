@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -36,9 +37,7 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.reviewJobReassignment"); //$NON-NLS-1$
 
-    public RoleType roleType;
-
-    public MarsClock marsClock;
+    public static MarsClock marsClock;
 
     @Override
     public String getName() {
@@ -54,38 +53,36 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
-        //System.out.println("ReviewJobReassignmentMeta : getProbability()");
 
         if (person.isInside()) {
 
         	//if (roleType == null)
         	//NOTE: sometimes enum is null. sometimes it is NOT. why?
-            roleType = person.getRole().getType();
-
-            //System.out.println("ReviewJobReassignmentMeta " + person.getName() + " (" + roleType + ") checking in");
+        	RoleType roleType = person.getRole().getType();
 
             if (roleType.equals(RoleType.PRESIDENT)
                 	|| roleType.equals(RoleType.MAYOR)
             		|| roleType.equals(RoleType.COMMANDER)
-        			|| roleType.equals(RoleType.SUB_COMMANDER) ) {
+        			|| roleType.equals(RoleType.SUB_COMMANDER)
+        			|| (roleType.equals(RoleType.MISSION_SPECIALIST) && (person.getAssociatedSettlement().getNumAssociatedPeople() <= 4))) {
 
+//	            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
+//            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
+//            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
+//            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
+//            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
+//            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
+//            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY) )
+//            	result += 100D;
+
+            	
 	            // Probability affected by the person's stress and fatigue.
 	            PhysicalCondition condition = person.getPhysicalCondition();
 	            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
 
 		            result += 10D;
-	/*
-		            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
-		            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
-		            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-		            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-		            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
-		            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-		            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY) )
-		            	result += 100D;
-	*/
 
-		       	    // Get highest person skill level.
+
 	        	    Iterator<Person> i = person.getAssociatedSettlement().getAllAssociatedPeople().iterator();
 	                while (i.hasNext()) {
 	                    Person p = i.next();
@@ -99,40 +96,46 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 			                    && p.getRole().getType().equals(RoleType.COMMANDER))
 	    		            result -= 50D;
 
+	                    else if (roleType.equals(RoleType.MAYOR)
+			                    && p.getRole().getType().equals(RoleType.MAYOR))
+	                    	result -= 25D;
+
+		                else if (roleType.equals(RoleType.PRESIDENT)
+				                 && p.getRole().getType().equals(RoleType.PRESIDENT))
+		    		        result -= 50D;
+	                    
 	                    List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
 	                    JobAssignmentType status = list.get(list.size()-1).getStatus();
 
-	                    if (status != null) {
-		                    if (status.equals(JobAssignmentType.PENDING)) {
+	                    if (status != null && status == JobAssignmentType.PENDING) {
 
-		                    	result += 500D;
-		                    	//result = result + result * preference / 10D ;
-		                    	
-		                    	// 2015-09-24 Added adjustment based on how many sol the request has since been submitted
-	                            if (marsClock == null)
-	                               marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	                            // if the job assignment submitted date is > 1 sol
-	                            int sol = marsClock.getMissionSol();
-	                            int solRequest = list.get(list.size()-1).getSolSubmitted();
-	                            if (sol == solRequest+1)
-	                                result += 1000D;
-	                            else if (sol == solRequest+2)
-	                                result += 1500D;
-	                            else if (sol == solRequest+3)
-	                                result += 2000D;
-	                            else if (sol > solRequest+3)
-	                                result += 3000D;
-		                    }
+	                    	result += 500D;
+	                    	//result = result + result * preference / 10D ;
+	                    	
+	                    	// Add adjustment based on how many sol the request has since been submitted
+                            if (marsClock == null)
+                               marsClock = Simulation.instance().getMasterClock().getMarsClock();
+                            // if the job assignment submitted date is > 1 sol
+                            int sol = marsClock.getMissionSol();
+                            int solRequest = list.get(list.size()-1).getSolSubmitted();
+                            if (sol - solRequest == 1)
+                                result += 500D;
+                            else if (sol - solRequest == 2)
+                                result += 1000D;
+                            else if (sol - solRequest == 3)
+                                result += 1500D;
+                            else if (sol - solRequest > 3)
+                                result += 2000D;
 	                    }
 	                }
 	                
 	                if (result > 0D) {
 	                    // Get an available office space.
-	                    Building building = ReviewJobReassignment.getAvailableOffice(person);
+	                    Building building = Administration.getAvailableOffice(person);
 	                    if (building != null) {
 	                        result += 200D;
 	                        result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-	                        //result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+	                        result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 	                    }
 
 	                    // Modify if operation is the person's favorite activity.
@@ -140,7 +143,6 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 	                        result *= 1.5D;
 	                    }
 
-	                    // 2015-06-07 Added Preference modifier
 	                    if (result > 0)
 	                        //result += result / 8D * person.getPreference().getPreferenceScore(this);
 	                    	result = result + result * person.getPreference().getPreferenceScore(this)/5D;

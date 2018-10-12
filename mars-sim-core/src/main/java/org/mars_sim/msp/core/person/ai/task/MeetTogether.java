@@ -64,7 +64,6 @@ implements Serializable {
      * Constructor. This is an effort-driven task.
      * @param person the person performing the task.
      */
-    // 2016-03-01 Added 8 situations for having a conversation
     public MeetTogether(Person person) {
         // Use Task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 5D + RandomUtil.getRandomDouble(10));

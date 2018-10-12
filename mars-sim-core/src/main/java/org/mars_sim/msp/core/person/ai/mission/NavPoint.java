@@ -118,4 +118,13 @@ public class NavPoint implements Serializable {
 	public int hashCode() {
 		return getLocation().hashCode() * settlement.hashCode();
 	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		// take care to avoid null exceptions
+		settlement = null;
+		location = null;
+	}
 }

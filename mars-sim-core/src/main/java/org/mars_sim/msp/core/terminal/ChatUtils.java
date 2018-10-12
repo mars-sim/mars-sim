@@ -706,7 +706,7 @@ public class ChatUtils {
 			if (personCache != null) {
 				String job = personCache.getMind().getJob().getName(personCache.getGender());
 				String article = "";
-				if (Conversion.checkVowel(job))
+				if (Conversion.isVowel(job))
 					article = "an";
 				else
 					article = "a";
@@ -719,7 +719,7 @@ public class ChatUtils {
 			} else if (robotCache != null) {
 				String job = robotCache.getBotMind().getRobotJob().toString();// .getName(robotCache.getRobotType());
 				String article = "";
-				if (Conversion.checkVowel(job))
+				if (Conversion.isVowel(job))
 					article = "an";
 				else
 					article = "a";

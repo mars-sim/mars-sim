@@ -30,8 +30,6 @@ public class JobAssignment implements Serializable {
       
     private JobAssignmentType status; // JobAssignmentType.PENDING or JobAssignmentType.APPROVED
 
-//    private static MarsClock timeAuthorized;
-    
 	private static MarsClock marsClock;
 
 	public JobAssignment(String timeSubmitted, String jobType, String initiator, JobAssignmentType status, String authorizedBy) {

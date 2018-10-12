@@ -36,7 +36,7 @@ public class MissionTableModel extends AbstractTableModel
 
 	// Column indexes
 	/** Type column. */
-	private final static int TYPE = 0;
+	private final static int STARTING_MEMBER = 0;
 	/** Description column. */
 	private final static int DESCRIPTION = 1;
 	/** Phase column. */
@@ -67,8 +67,8 @@ public class MissionTableModel extends AbstractTableModel
 	public MissionTableModel() {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[TYPE] = Msg.getString("MissionTableModel.column.type"); //$NON-NLS-1$
-		columnTypes[TYPE] = String.class;
+		columnNames[STARTING_MEMBER] = Msg.getString("MissionTableModel.column.type"); //$NON-NLS-1$
+		columnTypes[STARTING_MEMBER] = String.class;
 		columnNames[DESCRIPTION] = Msg.getString("MissionTableModel.column.description"); //$NON-NLS-1$
 		columnTypes[DESCRIPTION] = String.class;
 		columnNames[PHASE] = Msg.getString("MissionTableModel.column.phase"); //$NON-NLS-1$
@@ -204,7 +204,7 @@ public class MissionTableModel extends AbstractTableModel
 
 			MissionEventType eventType = event.getType();
 			if (eventType == MissionEventType.NAME_EVENT)
-				column1 = TYPE;
+				column1 = STARTING_MEMBER;
 			else if (eventType == MissionEventType.DESCRIPTION_EVENT)
 				column1 = DESCRIPTION;
 			else if (eventType == MissionEventType.PHASE_EVENT)
@@ -258,8 +258,8 @@ public class MissionTableModel extends AbstractTableModel
 			if (mission != null) {
 				switch (columnIndex) {
 
-				case TYPE: {
-					result = mission.getName();
+				case STARTING_MEMBER: {
+					result = mission.getStartingMember().getName();
 				}
 					break;
 

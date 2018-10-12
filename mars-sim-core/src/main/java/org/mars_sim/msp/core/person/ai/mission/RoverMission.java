@@ -77,6 +77,7 @@ public abstract class RoverMission extends VehicleMission {
 
 	// Data members
 	private Settlement startingSettlement;
+	
 	private Map<Integer, Double> dessertResources;
 
 	/**
@@ -280,16 +281,10 @@ public abstract class RoverMission extends VehicleMission {
 	protected void performEmbarkFromSettlementPhase(MissionMember member) {
 
 		if (getVehicle() == null) {
-			// throw new NullPointerException("getVehicle() is null");
-			// logger.info(member.getName() + " can't find any vehicles in " +
-			// member.getSettlement());
 			endMission(Mission.NO_AVAILABLE_VEHICLES);
 		}
-		// else if (getVehicle().getSettlement() == null)
-		// throw new NullPointerException("getVehicle().getSettlement() is null");
 
 		else {
-//			LocationSituation ls = member.getLocationSituation();
 			Settlement settlement = getVehicle().getSettlement();
 			if (settlement == null)
 				throw new IllegalStateException(
@@ -307,7 +302,7 @@ public abstract class RoverMission extends VehicleMission {
 				} else {
 					// Check if vehicle can hold enough supplies for mission.
 					if (isVehicleLoadable()) {
-						if (member.isInSettlement()) {// LocationSituation.IN_SETTLEMENT == ls) {
+						if (member.isInSettlement()) {
 							// Load rover
 							// Random chance of having person load (this allows person to do other things
 							// sometimes)
@@ -323,8 +318,6 @@ public abstract class RoverMission extends VehicleMission {
 									}
 								} else {
 									// Check if it is day time.
-									// SurfaceFeatures surface =
-									// Simulation.instance().getMars().getSurfaceFeatures();
 									if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D)
 											|| surface.inDarkPolarRegion(member.getCoordinates())) {
 										// TODO Refactor.
@@ -343,11 +336,11 @@ public abstract class RoverMission extends VehicleMission {
 						return;
 					}
 				}
-			} else {
+			}
+			
+			else {
 				// If person is not aboard the rover, board rover.
-				if (!member.isInVehicle()) { // LocationSituation.IN_VEHICLE != ls
-					// && !member.isOutside()) {//LocationSituation.BURIED != ls) {
-
+				if (!member.isInVehicle()) {
 					// Move person to random location within rover.
 					Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
 					Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
@@ -459,7 +452,7 @@ public abstract class RoverMission extends VehicleMission {
 		}
 
 		// Have member exit rover if necessary.
-		if (!member.isInSettlement()) {// .getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
+		if (!member.isInSettlement()) {
 			// member should be in a vehicle
 
 			// Get closest airlock building at settlement.
@@ -602,7 +595,7 @@ public abstract class RoverMission extends VehicleMission {
 				// Unload rover if necessary.
 				boolean roverUnloaded = rover.getInventory().getTotalInventoryMass(false) == 0D;
 				if (!roverUnloaded) {
-					if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+					if (member.isInSettlement()) {
 						// Random chance of having person unload (this allows person to do other things
 						// sometimes)
 						if (RandomUtil.lessThanRandPercent(50)) {
@@ -966,9 +959,9 @@ public abstract class RoverMission extends VehicleMission {
 			if (lastPerson != null) {
 				lastPerson.getMind().setMission(null);
 				if (getMembersNumber() < getMinMembers()) {
-					endMission("Not enough members.");
+					endMission(NOT_ENOUGH_MEMBERS);
 				} else if (getPeopleNumber() == 0) {
-					endMission("No people on mission.");
+					endMission(NO_MEMBERS_ON_MISSION);
 				}
 			}
 		}

@@ -164,8 +164,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			addPhase(COLLECT_RESOURCES);
 
 			// Set initial mission phase.
-			setPhase(VehicleMission.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.embarking.description", s.getName())); //$NON-NLS-1$
+			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+			setPhaseDescription(Msg.getString("Mission.phase.approval.description", s.getName())); //$NON-NLS-1$
 		}
 	}
 
@@ -240,8 +240,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		addPhase(COLLECT_RESOURCES);
 
 		// Set initial mission phase.
-		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+		setPhaseDescription(Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable())
@@ -319,7 +319,13 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @throws MissionException if problem setting a new phase.
 	 */
 	protected void determineNewPhase() {
-		if (EMBARKING.equals(getPhase())) {
+		if (APPROVAL.equals(getPhase())) {
+			setPhase(VehicleMission.EMBARKING);
+			setPhaseDescription(
+					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getSettlement()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
+		}
+		
+		else if (EMBARKING.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(

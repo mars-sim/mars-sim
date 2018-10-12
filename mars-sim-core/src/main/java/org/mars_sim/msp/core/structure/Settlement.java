@@ -603,7 +603,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * 
 	 * @return the available population capacity
 	 */
-	public int getAvailablePopulationCapacity() {
+	public int getAvailableSpace() {
 		return getPopulationCapacity() - getIndoorPeopleCount();
 	}
 
@@ -1856,6 +1856,15 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		return template;
 	}
 
+	/**
+	 * Gets the number of associated people with this settlement 
+	 *
+	 * @return the number of associated people.
+	 */
+	public int getNumAssociatedPeople() {
+		return getAllAssociatedPeople().size();
+	}
+	
 	/**
 	 * Gets all people associated with this settlement, even if they are out on
 	 * missions.
@@ -3174,6 +3183,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		return cropsNeedingTendingCache;
 	}
 
+	@Override
 	public String toString() {
 		return name;
 	}

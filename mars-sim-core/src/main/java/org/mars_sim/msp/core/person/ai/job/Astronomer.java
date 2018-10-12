@@ -75,10 +75,6 @@ implements Serializable {
 
 		// Add side tasks
 		jobTasks.add(ConsolidateContainers.class);
-		jobTasks.add(DigLocalRegolith.class);
-		jobTasks.add(DigLocalIce.class);
-		jobTasks.add(WriteReport.class);
-		jobTasks.add(ReviewJobReassignment.class);
 
 		// Add astronomer-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

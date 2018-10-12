@@ -27,37 +27,45 @@ public class Conversion {
 //
 //	}
 
-
-	public static boolean checkVowel(String name) {
-		if (name.toLowerCase().startsWith("a")
-				|| name.startsWith("e")
-				|| name.startsWith("i")
-				|| name.startsWith("o")
-				|| name.startsWith("u"))
+	/**
+	 * Checks if the initial of the string is a vowel
+	 * 
+	 * @param word
+	 * @return true/false
+	 */
+	public static boolean isVowel(String word) {
+		if (word.toLowerCase().startsWith("a") || word.toLowerCase().startsWith("e")
+				|| word.toLowerCase().startsWith("i") || word.toLowerCase().startsWith("o")
+				|| word.toLowerCase().startsWith("u"))
 			return true;
 		else
 			return false;
 	}
 
+	/**
+	 * Sets the first word to lower case
+	 * 
+	 * @param input the word
+	 * @return modified word
+	 */
 	public static String setFirstWordLowercase(String input) {
 		if (input != null) {
-		    StringBuilder titleCase = new StringBuilder();
-		    boolean nextTitleCase = true;
+			StringBuilder titleCase = new StringBuilder();
+			boolean nextTitleCase = true;
 
-		    for (char c : input.toCharArray()) {
-		        if (Character.isSpaceChar(c)|| c == '/' ) {
-		            nextTitleCase = true;
-		        } else if (nextTitleCase) {
-		            c = Character.toLowerCase(c);
-		            nextTitleCase = false;
-		        }
+			for (char c : input.toCharArray()) {
+				if (Character.isSpaceChar(c) || c == '/') {
+					nextTitleCase = true;
+				} else if (nextTitleCase) {
+					c = Character.toLowerCase(c);
+					nextTitleCase = false;
+				}
 
-		        titleCase.append(c);
-		    }
+				titleCase.append(c);
+			}
 
-		    return titleCase.toString().replaceAll("eVA", "EVA");
-		}
-		else
+			return titleCase.toString().replaceAll("eVA", "EVA");
+		} else
 			return null;
 //		
 //		StringBuilder s = new StringBuilder();
@@ -68,27 +76,31 @@ public class Conversion {
 //
 //		return s.toString();
 	}
-	
-	
+
+	/**
+	 * Capitalizes the input word
+	 * 
+	 * @param input
+	 * @return the modified word
+	 */
 	public static String capitalize(String input) {
 		if (input != null) {
-		    StringBuilder titleCase = new StringBuilder();
-		    boolean nextTitleCase = true;
+			StringBuilder titleCase = new StringBuilder();
+			boolean nextTitleCase = true;
 
-		    for (char c : input.toCharArray()) {
-		        if (Character.isSpaceChar(c) || c == '(' ) {
-		            nextTitleCase = true;
-		        } else if (nextTitleCase) {
-		            c = Character.toTitleCase(c);
-		            nextTitleCase = false;
-		        }
+			for (char c : input.toCharArray()) {
+				if (Character.isSpaceChar(c) || c == '(') {
+					nextTitleCase = true;
+				} else if (nextTitleCase) {
+					c = Character.toTitleCase(c);
+					nextTitleCase = false;
+				}
 
-		        titleCase.append(c);
-		    }
+				titleCase.append(c);
+			}
 
-		    return titleCase.toString();
-		}
-		else
+			return titleCase.toString();
+		} else
 			return null;
 	}
 

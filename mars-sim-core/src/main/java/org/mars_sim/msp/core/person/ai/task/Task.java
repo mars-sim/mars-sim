@@ -620,8 +620,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				Job job = person.getMind().getJob();
 
 				if ((job != null) && job.isJobRelatedTask(this.getClass())) {
-					// logger.info("Job: " + job.getName() + " related to " + this.getName() + "
-					// task");
 					effectiveStressModifier *= JOB_STRESS_MODIFIER;
 				}
 

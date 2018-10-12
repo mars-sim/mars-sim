@@ -62,10 +62,6 @@ implements Serializable {
 		// Use Job constructor
 		super(Botanist.class);
 
-		// 2015-01-03 Added PrepareDessert
-		//jobTasks.add(PrepareDessert.class);
-		//jobTasks.add(CookMeal.class);
-
 		// Add botany-related tasks.
 		jobTasks.add(PerformLaboratoryExperiment.class);
 		jobTasks.add(ProduceFood.class);
@@ -84,12 +80,7 @@ implements Serializable {
 		jobTasks.add(RespondToStudyInvitation.class);
 
 		// Add side tasks
-		jobTasks.add(ConsolidateContainers.class);
-		jobTasks.add(DigLocalRegolith.class);
-		jobTasks.add(DigLocalIce.class);
-		jobTasks.add(ReviewJobReassignment.class);
-		jobTasks.add(WriteReport.class);
-
+		// None
 
 		// Add botanist-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

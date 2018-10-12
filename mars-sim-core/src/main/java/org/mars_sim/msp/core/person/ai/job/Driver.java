@@ -58,9 +58,6 @@ implements Serializable {
 		// Use Job constructor
 		super(Driver.class);
 
-		// 2015-01-03 Added PrepareDessert
-		//jobTasks.add(PrepareDessert.class);
-
 		// Add driver-related tasks.
 		jobTasks.add(MaintainGroundVehicleGarage.class);
 		jobTasks.add(MaintainGroundVehicleEVA.class);
@@ -73,10 +70,6 @@ implements Serializable {
 
 		// Add side tasks
 		jobTasks.add(ConsolidateContainers.class);
-		jobTasks.add(DigLocalRegolith.class);
-		jobTasks.add(DigLocalIce.class);
-		jobTasks.add(ReviewJobReassignment.class);
-		jobTasks.add(WriteReport.class);
 
 		// Add driver-related mission joins.
 		jobMissionJoins.add(Exploration.class);
