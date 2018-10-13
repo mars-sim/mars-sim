@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
@@ -68,7 +69,8 @@ public class ChatUtils {
 
 	public final static String KEYWORDS_TEXT = System.lineSeparator()
 			+ "    -------------------- K E Y W O R D S -------------------- " + System.lineSeparator()
-			+ "(1) 'weather', 'friend', 'relationship', 'relation', 'social', 'people', 'settler', 'persons', 'robot', 'bot', 'status', 'feeling', 'how old', 'age', 'birth', 'country', 'nationality', 'job', 'specialty', 'career', "
+			+ "(1) 'weather', 'friend', 'relationship', 'relation', 'social', 'people', 'settler', 'persons', 'robot', 'bot', "
+			+ "'status', 'feeling', 'how old', 'age', 'birth', 'country', 'nationality', 'job', 'role', 'specialty', 'career', "
 			+ System.lineSeparator() + "(2) 'where', 'location', 'located', 'task', 'activity', 'action', 'mission', "
 			+ System.lineSeparator() + "(3) 'bed', 'bed time', 'quarters', 'sleep', 'sleep hour', 'building', 'inside', 'outside', ' container'"
 			+ System.lineSeparator()
@@ -309,7 +311,48 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuilder responseText = new StringBuilder();
 
-		if (text.toLowerCase().contains("weather")) {
+		if (text.toLowerCase().contains("role")) {
+			questionText = YOU_PROMPT + "What are the roles ?";
+
+			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
+					.sorted((p1, p2)-> p1.getRole().getType().getName().compareTo(p2.getRole().getType().getName()))
+					.collect(Collectors.toList());
+			
+			for (Person p : list) {
+				String role = p.getRole().getType().getName();
+				responseText.append(p);
+				int num = 30 - p.getName().length();// - role.length();
+				for (int i=0; i<num; i++) {
+					responseText.append(" ");
+				}
+//				responseText.append("        \t\t        ");
+				responseText.append(role);
+				responseText.append(System.lineSeparator());
+			} 
+		}
+		
+		else if (text.contains("job")) {
+			questionText = YOU_PROMPT + "What are the jobs ?";
+
+			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
+					.sorted((p1, p2)-> p1.getMind().getJob().getName(p1.getGender()).compareTo(p2.getMind().getJob().getName(p2.getGender())))
+					.collect(Collectors.toList());
+			
+			for (Person p : list) {
+				String job = p.getMind().getJob().getName(p.getGender());
+				responseText.append(p);
+				int num = 30 - p.getName().length();// - job.length();
+				for (int i=0; i<num; i++) {
+					responseText.append(" ");
+				}
+//				responseText.append("        \t\t        ");
+				responseText.append(job);
+				responseText.append(System.lineSeparator());
+			}
+			
+		}
+		
+		else if (text.toLowerCase().contains("weather")) {
 			questionText = YOU_PROMPT + "How's the weather in " + settlementCache.toString() + " ?";
 			
 			if (marsClock == null) marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -698,6 +741,24 @@ public class ChatUtils {
 
 		}
 
+		else if (num == 2 || text.contains("what your role")
+				|| text.toLowerCase().contains("role")) {
+			questionText = YOU_PROMPT + "What is your role ?";
+
+			if (personCache != null) {
+				String role = personCache.getRole().getType().getName();
+				responseText.append("I'm the ");
+				responseText.append(role);
+				responseText.append(" of ");
+				responseText.append(personCache.getAssociatedSettlement().getName());
+				responseText.append(".");
+			} 
+			
+			else if (robotCache != null) {
+				responseText.append("I'm just a robot.");
+			}
+		}
+		
 		else if (num == 2 || text.contains("what your job") || text.toLowerCase().contains("what your specialty")
 				|| text.toLowerCase().contains("job") || text.toLowerCase().contains("career")
 				|| text.toLowerCase().contains("specialty")) {

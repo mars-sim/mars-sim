@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -366,7 +367,7 @@ public class CollectionUtils {
 		nameList.add("born");
 
 		nameList.add("job");
-		nameList.add("nationality");
+		nameList.add("role");
 		nameList.add("specialty");
 		nameList.add("career");
 
@@ -472,7 +473,9 @@ public class CollectionUtils {
 			nameList.add(v.getName());
 		}
 		
-		return nameList;
+		return nameList.stream()
+				.sorted((s1, s2)-> s1.compareTo(s2))
+				.collect(Collectors.toList());
 	}
 
 	/**

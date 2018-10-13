@@ -74,14 +74,12 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		// Use Task constructor.
 		super(NAME, person, true, false, STRESS_MODIFIER, true, 50D);// + RandomUtil.getRandomDouble(100D));
 
-		if (person.isInside()) {
+		roleType = person.getRole().getType();
+		
+		if (person.isInside() && roleType != null) {
 
-			// if (roleType == null)
-			// NOTE: sometimes enum is null. sometimes it is NOT. why?
-			roleType = person.getRole().getType();
-
-			if (roleType.equals(RoleType.PRESIDENT) || roleType.equals(RoleType.MAYOR)
-					|| roleType.equals(RoleType.COMMANDER) || roleType.equals(RoleType.SUB_COMMANDER)) {
+			if (roleType == RoleType.PRESIDENT || roleType == RoleType.MAYOR
+					|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER) {
 
 				// If person is in a settlement, try to find an office building.
 				Building officeBuilding = Administration.getAvailableOffice(person);
@@ -175,7 +173,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 					// 4. modified by the affinity between them
 					// 5. Approve/disapprove the job change
 					
-					String s = person.getSettlement().getName();
+					String s = person.getAssociatedSettlement().getName();
 					
 					if (rating < 2.5 || cumulative_rating < 2.5) {
 						// not approved

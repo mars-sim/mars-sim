@@ -45,14 +45,6 @@ public class ChainOfCommand implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(ChainOfCommand.class.getName());
 
-//    int safetySlot = 0;
-//    int engrSlot = 0;
-//    int resourceSlot = 0;
-//	int missionSlot = 0;
-//	int agriSlot = 0;
-//	int scienceSlot = 0;
-//	int logSlot = 0;
-
 	private boolean has7Divisions = false;
 	private boolean has3Divisions = false;
 
@@ -74,14 +66,7 @@ public class ChainOfCommand implements Serializable {
 		roleType = new ConcurrentHashMap<>();
 
 		unitManager = Simulation.instance().getUnitManager();
-
-//		initializeRoleType();
-
 	}
-
-//	public void initializeRoleType() {
-//
-//	}
 
 	/**
 	 * Assigns a person with one of the three specialist role types
@@ -93,51 +78,16 @@ public class ChainOfCommand implements Serializable {
 		int safety = getNumFilled(RoleType.SAFETY_SPECIALIST);
 		int resource = getNumFilled(RoleType.RESOURCE_SPECIALIST);
 		int engr = getNumFilled(RoleType.ENGINEERING_SPECIALIST);
-		// System.out.println(person.getName());
 
 		// fill up a particular role in sequence without considering one's job type
 		if (safety == num - 1) {
 			person.getRole().setNewRoleType(RoleType.SAFETY_SPECIALIST);
-			// System.out.println(person.getRole().toString());
 		} else if (engr == num - 1) {
 			person.getRole().setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
-			// System.out.println(person.getRole().toString());
 		} else if (resource == num - 1) {
 			person.getRole().setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-			// System.out.println(person.getRole().toString());
+
 		}
-
-//        if (job.equals(JobManager.getJob("Architect")))
-//        	person.getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-//        else if (job.equals(JobManager.getJob("Areologist")))
-//        	person.getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-//        else if (job.equals(JobManager.getJob("Astronomer")))
-//        	person.getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-//        else if (job.equals(JobManager.getJob("Biologist")))
-//       		person.getRole().setRoleType(RoleType.RESOURCE_SPECIALIST);
-//        else if (job.equals(JobManager.getJob("Botanist")))
-//        	person.getRole().setRoleType(RoleType.RESOURCE_SPECIALIST);
-//        else if (job.equals(JobManager.getJob("Chef")))
-//        	person.getRole().setRoleType(RoleType.RESOURCE_SPECIALIST);
-//        else if (job.equals(JobManager.getJob("Chemist")))
-//        	person.getRole().setRoleType(RoleType.RESOURCE_SPECIALIST);
-//        else if (job.equals(JobManager.getJob("Doctor")))
-//        	person.getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-//        else if (job.equals(JobManager.getJob("Driver")))
-//            person.getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-//        else if (job.equals(JobManager.getJob("Engineer")))
-//        	person.getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-//        else if (job.equals(JobManager.getJob("Mathematician")))
-//           	person.getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-//        else if (job.equals(JobManager.getJob("Meteorologist")))
-//        	person.getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-//        else if (job.equals(JobManager.getJob("Physicist")))
-//            person.getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-//        else if (job.equals(JobManager.getJob("Technician")))
-//           	person.getRole().setRoleType(RoleType.ENGINEERING_SPECIALIST);
-//        else if (job.equals(JobManager.getJob("Trader")))
-//           	person.getRole().setRoleType(RoleType.SAFETY_SPECIALIST);
-
 	}
 
 	/**
@@ -150,22 +100,19 @@ public class ChainOfCommand implements Serializable {
 		Job job = person.getMind().getJob();
 		Role role = person.getRole();
 		int pop = 0;
-		if (person.getSettlement() == null)
-			logger.warning("person.getSettlement() = null");
-//		else if (person.getSettlement().getAllAssociatedPeople() == null)
-//			logger.warning("person.getSettlement().getAllAssociatedPeople() = null");
-		else {
-			pop = person.getSettlement().getNumCitizens();
+
+		if (person.getSettlement() == null) {
+			logger.warning(person.getName() + " is not in a settlement.");
+		} else {
+			pop = person.getSettlement().getIndoorPeopleCount();
 			if (pop == 0) {
-				// logger.warning("person.getSettlement().getAllAssociatedPeople().size() = 0");
-				pop = person.getSettlement().getIndoorPeopleCount();
-				if (pop == 0)
-					logger.warning("person.getSettlement().getCurrentPopulationNum() = 0");
+				logger.warning("No one is inside " + person.getName() + "'s settlement.");
+			}
+			pop = person.getAssociatedSettlement().updateAllAssociatedPeople().size();
+			if (pop == 0) {
+				logger.warning("Imppossible to have no associated people in " + person.getName() + "'s settlement.");
 			}
 		}
-		// if (pop == 0)
-		// pop = person.getSettlement().getCurrentPopulationNum();
-		// int slot = (int) ((pop - 2 - 3 )/ 3);
 
 		boolean allSlotsFilledOnce = areAllFilled(1);
 
@@ -177,41 +124,23 @@ public class ChainOfCommand implements Serializable {
 		if (pop > 8)
 			allSlotsFilledTriple = areAllFilled(3);
 
-//            //boolean allSlotsFilledQuad = true;
-//            //if (pop > 12)
-//            //	allSlotsFilledQuad = areAllFilled(4);
-//
-//            //boolean allSlotsFilledPenta = true;
-//			// if (pop > 24)
-//            //	allSlotsFilledPenta = areAllFilled(5);
-
 		if (!allSlotsFilledOnce) {
-			// System.out.println("inside if (!allSlotsFilledOnce)");
 			assignRole(job, person, 1);
 		} else if (!allSlotsFilledTwice) {
-			// System.out.println("inside if (!allSlotsFilledTwice)");
 			assignRole(job, person, 2);
 		} else if (!allSlotsFilledTriple) {
 			assignRole(job, person, 3);
 		}
 
-		// else if (!allSlotsFilledQuad) {
-		// assignRole(job, person, 4);
-		// }
-		// else if (!allSlotsFilledPenta) {
-		// assignRole(job, person, 5);
-		// }
-
 		else {
-			// System.out.println("inside else");
-			// System.out.println("job is " + job.toString());
+
 			if (job.equals(JobManager.getJob(Architect.class.getSimpleName()))) {
 				if (RandomUtil.getRandomInt(1, 2) == 1) {
 					role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
 				} else {
 					role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
 				}
-			} else if (job.equals(JobManager.getJob(Areologist.class.getSimpleName()))) 
+			} else if (job.equals(JobManager.getJob(Areologist.class.getSimpleName())))
 				role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
 			else if (job.equals(JobManager.getJob(Astronomer.class.getSimpleName())))
 				role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
@@ -301,10 +230,8 @@ public class ChainOfCommand implements Serializable {
 			allSlotsFilledPenta = areAllFilled(5);
 
 		if (!allSlotsFilledOnce) {
-			// System.out.println("inside if (!allSlotsFilledOnce)");
 			assignRole(job, person, 1);
 		} else if (!allSlotsFilledTwice) {
-			// System.out.println("inside if (!allSlotsFilledTwice)");
 			assignRole(job, person, 2);
 		} else if (!allSlotsFilledTriple) {
 			assignRole(job, person, 3);
@@ -383,20 +310,6 @@ public class ChainOfCommand implements Serializable {
 		}
 	}
 
-//    public int getSafetySlot() {
-//    	return safetySlot;
-//    }
-//    public int getEngrSlot() {
-//    	return engrSlot;
-//    }
-//    public int getResourceSlot() {
-//    	return resourceSlot;
-//    }
-//    public void addSafety() {
-//    	safetySlot++;
-//       	//System.out.println("safetySlot : "+ safetySlot);
-//    }
-
 	/**
 	 * Increments the number of the target role type in the map
 	 * 
@@ -449,55 +362,13 @@ public class ChainOfCommand implements Serializable {
 		if (roleType.containsKey(key))
 			value = roleType.get(key);
 		return value;
-		// return roleType.getOrDefault(key, 0);
 	}
-
-//    public void decrementSafety() {
-//    	safetySlot--;
-//    }
-//    public void setSafetySlot(int value) {
-//    	safetySlot = value;
-//    }
-//    public void addEngr() {
-//    	engrSlot++;
-//    }
-//    public void decrementEngr() {
-//    	engrSlot--;
-//       	//System.out.println("engrSlot : "+ engrSlot);
-//    }
-//    public void setEngrSlot(int value) {
-//    	engrSlot = value;
-//    }
-//    public void addResource() {
-//    	resourceSlot++;
-//       	//System.out.println("resourceSlot : "+ resourceSlot);
-//    }
-//    public void decrementResource() {
-//    	resourceSlot--;
-//       	//System.out.println("resourceSlot : "+ resourceSlot);
-//    }
-//    public void setResourceSlot(int value) {
-//    	resourceSlot = value;
-//    }
-//    public void addScience() {
-//    	scienceSlot++;
-//    }
-//    public void addLogistic() {
-//    	logSlot++;
-//    }
-//    public void addAgri() {
-//    	agriSlot++;
-//    }
-//    public void addMission() {
-//    	missionSlot++;
-//    }
 
 	/**
 	 * Sets this settlement to have 3 divisions
 	 */
 	public void set3Divisions(boolean value) {
 		has3Divisions = value;
-		// System.out.println("has3Divisions = " + has3Divisions);
 	}
 
 	/**
@@ -505,7 +376,6 @@ public class ChainOfCommand implements Serializable {
 	 */
 	public void set7Divisions(boolean value) {
 		has7Divisions = value;
-		// System.out.println("has7Divisions = " + has7Divisions);
 	}
 
 	/**
@@ -528,9 +398,7 @@ public class ChainOfCommand implements Serializable {
 					&& getNumFilled(RoleType.SCIENCE_SPECIALIST) >= value
 					&& getNumFilled(RoleType.LOGISTIC_SPECIALIST) >= value)
 				result = true;
-			// System.out.println("result of 7 : : "+ result);
 		}
-		// System.out.println("areAllFilled : "+ result);
 		return result;
 	}
 

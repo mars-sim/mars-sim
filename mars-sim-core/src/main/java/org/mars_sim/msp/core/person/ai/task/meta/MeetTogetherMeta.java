@@ -43,23 +43,23 @@ public class MeetTogetherMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
     	
         double result = 0D;
-
-        if (person.isInSettlement()) {
-
-	        RoleType roleType = person.getRole().getType();
+        
+        RoleType roleType = person.getRole().getType();
+        
+        if (person.isInSettlement() && roleType != null) {
 	
-	        if (roleType.equals(RoleType.PRESIDENT)
-	                	|| roleType.equals(RoleType.MAYOR)
-	            		|| roleType.equals(RoleType.COMMANDER))
+	        if (roleType == RoleType.PRESIDENT
+	                	|| roleType == RoleType.MAYOR
+	            		|| roleType == RoleType.COMMANDER)
 	        	result += 50D;
 	
-	        else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
-	            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
-	            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-	            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-	            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
-	            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-	            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES))
+	        else if (roleType == RoleType.CHIEF_OF_AGRICULTURE
+	            	|| roleType == RoleType.CHIEF_OF_ENGINEERING
+	            	|| roleType == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
+	            	|| roleType == RoleType.CHIEF_OF_MISSION_PLANNING
+	            	|| roleType == RoleType.CHIEF_OF_SAFETY_N_HEALTH
+	            	|| roleType == RoleType.CHIEF_OF_SCIENCE
+	            	|| roleType == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES)
 	        	result += 30D;
 	 
 	

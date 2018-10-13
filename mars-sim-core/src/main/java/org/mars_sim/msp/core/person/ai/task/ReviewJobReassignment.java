@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,13 +69,15 @@ public class ReviewJobReassignment extends Task implements Serializable {
 		// Use Task constructor.
 		super(NAME, person, true, false, STRESS_MODIFIER, true, 100D);//+ RandomUtil.getRandomDouble(10D));
 
-		if (person.isInside()) {
+		roleType = person.getRole().getType();
+		
+		if (person.isInside() && roleType != null) {
 			// if (roleType == null)
 			// NOTE: sometimes enum is null. sometimes it is NOT. why?
 			roleType = person.getRole().getType();
 
-			if (roleType.equals(RoleType.PRESIDENT) || roleType.equals(RoleType.MAYOR)
-					|| roleType.equals(RoleType.COMMANDER) || roleType.equals(RoleType.SUB_COMMANDER)) {
+			if (roleType == RoleType.PRESIDENT || roleType == RoleType.MAYOR
+					|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER) {
 
 				// System.out.println("ReviewJobReassignment : "
 				// + person.getName() + " (" + roleType
@@ -167,12 +168,14 @@ public class ReviewJobReassignment extends Task implements Serializable {
 				// 4. Modified by the affinity between them
 				// 5. Approve/disapprove the job change
 				
+				String s = person.getAssociatedSettlement().getName();
+				
 				if (rating < 2.5 || cumulative_rating < 2.5) {
 					tempPerson.getMind().reassignJob(lastJobStr, true, JobManager.USER,
 							JobAssignmentType.NOT_APPROVED, approvedBy);
 
 					LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-							"[" + person.getSettlement() + "] " + approvedBy + " did NOT approve " + tempPerson
+							"[" + s + "] " + approvedBy + " did NOT approve " + tempPerson
 							+ "'s job reassignment as " + pendingJobStr
 							+ "Try again when the performance rating is higher.", null);
 				} else {
@@ -181,7 +184,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 					tempPerson.getMind().reassignJob(pendingJobStr, true, JobManager.USER,
 							JobAssignmentType.APPROVED, approvedBy);
 					LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-							"[" + person.getSettlement() + "] " + approvedBy + " just approved " + tempPerson
+							"[" + s + "] " + approvedBy + " just approved " + tempPerson
 							+ "'s job reassignment as " + pendingJobStr, null);
 				}
 				

@@ -263,20 +263,13 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 * Create the new arriving settlement.
 	 */
 	private Settlement createNewSettlement() {
-
 		// Create new settlement with unit manager.
 		UnitManager unitManager = Simulation.instance().getUnitManager();
 		// Compute sid
-		// List<Settlement> settlements = new
-		// ArrayList<Settlement>(unitManager.getSettlements());
 		scenarioID = 9; // NOTE: scenarioID will be updated later and NOT important here
-		// System.out.println("ArrivingSettlement.java : createNewSettlement() :
-		// scenarioID is " + scenarioID);
 		// TODO: add the option of choosing sponsor
 		String sponsor = Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$ //"Mars Society (MS)";
 
-		// Settlement newSettlement = new Settlement(name, scenarioID, template,
-		// sponsor, landingLocation, populationNum, numOfRobots);
 		Settlement newSettlement = Settlement.createNewSettlement(name, scenarioID, template, sponsor, landingLocation,
 				populationNum, numOfRobots);
 		unitManager.addUnit(newSettlement);
@@ -376,9 +369,6 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			RobotType robotType = unitManager.getABot(newSettlement, numOfRobots);
 
 			// Create arriving robot.
-			// Robot robot = new Robot(unitManager.getNewName(UnitType.ROBOT, null, null,
-			// robotType), robotType, "Earth",
-			// newSettlement, newSettlement.getCoordinates());
 			// Adopt Static Factory Method and Factory Builder Pattern
 			Robot robot = Robot
 					.create(unitManager.getNewName(UnitType.ROBOT, null, null, robotType), newSettlement, robotType)
@@ -523,24 +513,16 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	public synchronized void performArrival() {
 		// Create new settlement.
 		Settlement newSettlement = createNewSettlement();
-		// System.out.println("ArrivingSettlement.java : performArrival() : just done
-		// calling");
-
 		// Create new immigrants with arriving settlement.
 		createNewImmigrants(newSettlement);
-
 		// Create new robots.
 		createNewRobots(newSettlement);
-
 		// Create new equipment.
 		createNewEquipment(newSettlement);
-
 		// Create new parts.
 		createNewParts(newSettlement);
-
 		// Create new resources.
 		createNewResources(newSettlement);
-
 		// Create new vehicles.
 		createNewVehicles(newSettlement);
 	}
