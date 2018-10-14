@@ -90,7 +90,7 @@ public class Sleep extends Task implements Serializable {
 	// designated(D).
 	// thus a 2x2 matrix with 4 possibilities: EU, ED, OU, OD
 	public Sleep(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, true, (250D + RandomUtil.getRandomDouble(10D)));
+		super(NAME, person, false, false, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(10D)));
 
 		if (masterClock == null)
 			masterClock = sim.getMasterClock();
@@ -495,40 +495,12 @@ public class Sleep extends Task implements Serializable {
 			quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings, unmarked);
 			if (quartersBuildings.size() > 0) {
 				quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
-				// if (unmarked)
-				// ;//logger.info("Stage 1: it has empty and unmarked (EU) beds");
-				// else
-				// ;//logger.info("Stage 1: it has empty (either unmarked or designated) beds");
 			}
-			// else if (quartersBuildings.isEmpty())
-			// if (unmarked)
-			// ;//logger.info("Stage 1: no buildings has empty and unmarked (EU) beds");
-			// else
-			// ;//logger.info("Stage 1: no buildings has empty (either unmarked or
-			// designated) beds");
-
 			if (quartersBuildings.size() > 0) {
 				Map<Building, Double> quartersBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
 						quartersBuildings);
 				result = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);
-				// if (unmarked)
-				// ;//logger.info("Stage 2: it has empty and unmarked (EU) beds");
-				// else
-				// ;//logger.info("Stage 2: it has empty (either unmarked or designated) beds");
 			}
-			// else if (quartersBuildings.isEmpty())
-			// if (unmarked)
-			// ;//logger.info("Stage 2: no buildings has empty and unmarked (EU) beds");
-			// else
-			// ;//logger.info("Stage 2: no buildings has empty (either unmarked or
-			// designated) beds");
-
-			// if (result != null)
-			// ;//logger.info("Stage 3: " + result.getNickName() + " has a bed available : "
-			// + result.getNickName());
-			// else
-			// ;//logger.info("Stage 3: no buildings are available");
-
 		}
 
 		return result;
@@ -554,13 +526,6 @@ public class Sleep extends Task implements Serializable {
 				selected = RandomUtil.getRandomInt(size - 1);
 				result = buildings.get(selected);
 			}
-			// System.out.println("selected is "+selected);
-			// if (quartersBuildings.size() > 0) {
-			// Map<Building, Double> quartersBuildingProbs =
-			// BuildingManager.getBestRelationshipBuildings(
-			// robot, quartersBuildings);
-			// result = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);
-			// }
 		}
 
 		return result;

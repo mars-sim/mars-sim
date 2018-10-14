@@ -71,18 +71,18 @@ public class SleepMeta implements MetaTask, Serializable {
     @Override
     public Task constructInstance(Person person) {
     	return new Sleep(person);
-/*        Sleep sleep = person.getSleep();
-    	if (sleep == null) {
-    		sleep = new Sleep(person);
-    		person.setSleep(sleep);
-    	}
-    	else {
-    		sleep.taskCompute();
-    		sleep.compute();
-    	}
-    	
-    	return sleep;
-*/    	
+///       Sleep sleep = person.getSleep();
+//    	if (sleep == null) {
+//    		sleep = new Sleep(person);
+//    		person.setSleep(sleep);
+//    	}
+//    	else {
+//    		sleep.taskCompute();
+//    		sleep.compute();
+//    	}
+//    	
+//    	return sleep;
+   	
     }
 
     @Override
@@ -290,7 +290,6 @@ public class SleepMeta implements MetaTask, Serializable {
 		  	  		person.updateSleepCycle(now, false);
 		        	// shouldn't be zero since it's possible a person did not have enough sleep at other time and now fall asleep
 			    	result = result / 10D;
-
 			    	//System.out.println("spaceOut : " + spaceOut + "   now : " + now + "  suppressHabit : " + habit);
 
 			    	circadian.setSuppressHabit(habit+1);
@@ -330,18 +329,17 @@ public class SleepMeta implements MetaTask, Serializable {
 	@Override
 	public Task constructInstance(Robot robot) {
 		return new Sleep(robot);
- /*       Sleep sleep = robot.getSleep();
-    	if (sleep == null) {
-    		sleep = new Sleep(robot);
-    		robot.setSleep(sleep);
-    	}
-    	else {
-    	    sleep.taskCompute();
-    		sleep.botCompute();
-    	}
-    	
-    	return sleep; 
-*/    	  	
+//        Sleep sleep = robot.getSleep();
+//    	if (sleep == null) {
+//    		sleep = new Sleep(robot);
+//    		robot.setSleep(sleep);
+//    	}
+//    	else {
+//    	    sleep.taskCompute();
+//    		sleep.botCompute();
+//    	}
+//    	
+//    	return sleep;    	  	
 	}
 
 	@Override
@@ -359,13 +357,12 @@ public class SleepMeta implements MetaTask, Serializable {
         // TODO: in what case should a bot "relax" or slow down its pace?
         // result += robot.getPhysicalCondition().getStress();
 
-        /*
         // Fatigue modifier.
-        double fatigue = robot.getPhysicalCondition().getFatigue();
-        if (fatigue > 500D) {
-            result = (fatigue - 500D) / 4D;
-        }
-        */
+//        double fatigue = robot.getPhysicalCondition().getFatigue();
+//        if (fatigue > 500D) {
+//            result = (fatigue - 500D) / 4D;
+//        }
+
         // Dark outside modifier.
         //SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
         //if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
@@ -381,8 +378,6 @@ public class SleepMeta implements MetaTask, Serializable {
             if (building != null) {
             	result += 1D;
 
-                //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, building);
-                //result *= TaskProbabilityUtil.getRelationshipModifier(robot, building);
             }
         }
 

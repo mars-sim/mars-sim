@@ -68,6 +68,8 @@ public class ResourceUtil implements Serializable {
 	public static final String PEANUT_OIL = "peanut oil";
 
 	public static final String TOILET_TISSUE = "toilet tissue";
+	
+	public static final String SOYMILK = "soymilk";
 
 	// Data members.
 	// private Set<AmountResource> resources;// = new TreeSet<AmountResource>();
@@ -272,6 +274,8 @@ public class ResourceUtil implements Serializable {
 
 	public void mapARs() {
 
+		// in Integer
+		
 		foodID = findAmountResource(LifeSupportType.FOOD).getID(); // 1
 		waterID = findAmountResource(LifeSupportType.WATER).getID(); // 2
 
@@ -286,18 +290,22 @@ public class ResourceUtil implements Serializable {
 
 		iceID = findAmountResource(ICE).getID(); // 13
 
-		rockSamplesID = findAmountResource("rock samples").getID(); //
-		blackWaterID = findAmountResource("black water").getID(); //
+		rockSamplesID = findAmountResource(ROCK_SAMLES).getID(); //
+		blackWaterID = findAmountResource(BLACK_WATER).getID(); //
 
 		greyWaterID = findAmountResource(GREY_WATER).getID(); // 20
 		cropWasteID = findAmountResource(CROP_WASTE).getID(); // 15
 		fertilizerID = findAmountResource(FERTILIZER).getID(); // 139
 
 		regolithID = findAmountResource(REGOLITH).getID(); // 156
-		sandID = findAmountResource("sand").getID(); // 156
+		sandID = findAmountResource(SAND).getID();
 
-		soymilkID = findAmountResource("soymilk").getID();
+		soymilkID = findAmountResource(SOYMILK).getID();
 
+		
+		// in AmountResource
+		
+		
 		foodAR = findAmountResource(LifeSupportType.FOOD); // 1
 		waterAR = findAmountResource(LifeSupportType.WATER); // 2
 		oxygenAR = findAmountResource(LifeSupportType.OXYGEN); // 3

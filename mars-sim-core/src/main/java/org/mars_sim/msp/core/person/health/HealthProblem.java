@@ -366,7 +366,9 @@ public class HealthProblem implements Serializable {
 					}
 					usedAid = null;
 				}
-			} else if (state == DEGRADING) {
+			} 
+			
+			else if (state == DEGRADING) {
 				if (duration != 0D) {
 					// Illness has moved to next phase, if null then dead
 					Complaint nextPhase = illness.getNextPhase();

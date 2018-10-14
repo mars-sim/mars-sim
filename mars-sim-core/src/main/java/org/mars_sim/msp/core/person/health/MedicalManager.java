@@ -110,32 +110,32 @@ public class MedicalManager implements Serializable {
 
 		// Most serious complaint
 		suffocation = createEnvironmentComplaint(ComplaintType.SUFFOCATION, 80, 
-				personConfig.getOxygenDeprivationTime(), 5, 80, true);
+				personConfig.getOxygenDeprivationTime(), .5, 20, true);
 		addEnvComplaint(suffocation);
 		
 		// Very serious complaint
 		decompression = createEnvironmentComplaint(ComplaintType.DECOMPRESSION, 70, 
-				personConfig.getDecompressionTime(), 50, 70, true);
+				personConfig.getDecompressionTime(), .5, 30, true);
 		addEnvComplaint(decompression);
 		
 		// Somewhat serious complaint
-		heatStroke = createEnvironmentComplaint(ComplaintType.HEAT_STROKE, 60, 
-				200D, 10, 60, true);
+		heatStroke = createEnvironmentComplaint(ComplaintType.HEAT_STROKE, 40, 
+				200D, 1, 60, true);
 		addEnvComplaint(heatStroke);
 		
 		// Serious complaint
 		freezing = createEnvironmentComplaint(ComplaintType.FREEZING, 50, 
-				personConfig.getFreezingTime(), 10, 50, false);
+				personConfig.getFreezingTime(), 1, 50, false);
 		addEnvComplaint(freezing);
 		
 		// Somewhat serious complaint
-		dehydration = createEnvironmentComplaint(ComplaintType.DEHYDRATION, 40, 
-				(personConfig.getWaterDeprivationTime() - personConfig.getDehydrationStartTime()) * 1000D, 5, 40, false);
+		dehydration = createEnvironmentComplaint(ComplaintType.DEHYDRATION, 20, 
+				(personConfig.getWaterDeprivationTime() - personConfig.getDehydrationStartTime()) * 1000D, 1, 80, false);
 		addEnvComplaint(dehydration);
 
 		// Least serious complaint
-		starvation = createEnvironmentComplaint(ComplaintType.STARVATION, 20, 
-				(personConfig.getFoodDeprivationTime() - personConfig.getStarvationStartTime()) * 1000D, 1, 20, false);		
+		starvation = createEnvironmentComplaint(ComplaintType.STARVATION, 40, 
+				(personConfig.getFoodDeprivationTime() - personConfig.getStarvationStartTime()) * 1000D, 1, 60, false);		
 		addEnvComplaint(starvation);
 	}
 	
@@ -357,15 +357,15 @@ public class MedicalManager implements Serializable {
 
 		if (complaint == suffocation)
 			result = true;
-		if (complaint == dehydration)
+		else if (complaint == dehydration)
 			result = true;
-		if (complaint == starvation)
+		else if (complaint == starvation)
 			result = true;
-		if (complaint == decompression)
+		else if (complaint == decompression)
 			result = true;
-		if (complaint == freezing)
+		else if (complaint == freezing)
 			result = true;
-		if (complaint == heatStroke)
+		else if (complaint == heatStroke)
 			result = true;
 
 		return result;

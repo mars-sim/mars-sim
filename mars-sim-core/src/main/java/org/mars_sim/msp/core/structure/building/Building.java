@@ -99,8 +99,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			logger.getName().length());
 
 	public static final int TISSUE_CAPACITY = 20;
-
-	public static final double HEIGHT = 2.5; // assume an uniform height of 2.5 meters in all buildings
+	/** The height of an airlock in meters */
+	// Assume an uniform height of 2.5 meters in all buildings
+	public static final double HEIGHT = 2.5; 
 	/** The volume of an airlock in cubic meters */
 	public static final double AIRLOCK_VOLUME_IN_CM = BuildingAirlock.AIRLOCK_VOLUME_IN_CM; // 3 * 2 * 2; //in m^3
 	/** 500 W heater for use during EVA ingress */
@@ -161,7 +162,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/** The cache for msols */
 	private int msolCache;
 	/**
-	 * an unique template id assigned for the settlement template that this building
+	 * Unique template id assigned for the settlement template that this building
 	 * belong
 	 */
 	protected int templateID;
@@ -183,14 +184,14 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/** Checked by getAllImmovableBoundedObjectsAtLocation() in LocalAreaUtil */
 	boolean inTransportMode = true;
 
-	// Changed from "name" to "buildingType"
+	/** Type of building. */
 	protected String buildingType;
-
+	/** Nick name for this building. */
 	private String nickName;
-	// Added description for each building
-	private String description;// = "Stay tuned";
+	/** Description for this building. */
+	private String description;
 
-	// protected Set<Function> functions;
+	/** A list of functions of this building. */
 	protected List<Function> functions;
 	// private List<BuildingKit> buildingKit;
 	private Map<Integer, ItemResource> itemMap = new HashMap<Integer, ItemResource>();

@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -57,9 +56,6 @@ implements Serializable {
 	private static final double STRESS_MODIFIER = -.2D;
 
 	// Data members
-	/** Log cache array for storing previous log statements */
-	//private static String[] logCache = new String[] {"", ""};
-
 	/** The kitchen the person is making dessert. */
 	private PreparingDessert kitchen;
 
@@ -96,14 +92,11 @@ implements Serializable {
 		        // Add task phase
 		        addPhase(PREPARING_DESSERT);
 		        setPhase(PREPARING_DESSERT);
-
 		        //String jobName = person.getMind().getJob().getName(person.getGender());
 
 		    	//String newLog = jobName + " " + person.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
 		        //       " at " + person.getSettlement();
-
 				//LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
-
 	        }
 	        else {
 	            // No dessert available or enough desserts have been prepared for now.
@@ -148,11 +141,7 @@ implements Serializable {
 
 		    	//String newLog = jobName + " " + robot.getName() + " prepared desserts in " + kitchen.getBuilding().getNickName() +
 		        //        " at " + robot.getSettlement();
-
-
 				//`LogConsolidated.log(logger, Level.INFO, 5000, sourceName, newLog, null);
-
-
 	        }
 	        else {
 	            // No dessert available or enough has been prepared for now.
@@ -195,8 +184,6 @@ implements Serializable {
      * @return the amount of time (millisol) left after performing the phase.
      */
     private double preparingDessertPhase(double time) {
-
-
         // If kitchen has malfunction, end task.
         if (kitchen.getBuilding().getMalfunctionManager().hasMalfunction()) {
             endTask();
@@ -356,13 +343,13 @@ implements Serializable {
         }
     }
 
-    /**
-     * Gets the name of dessert the chef is making based on the time.
-     * @return result
-     */
-    private String getDessertName() {
-    	return "a Dessert";
-    }
+//    /**
+//     * Gets the name of dessert the chef is making based on the time.
+//     * @return result
+//     */
+//    private String getDessertName() {
+//    	return "a Dessert";
+//    }
 
     /**
      * Gets an available kitchen building at the person's settlement.
@@ -372,8 +359,7 @@ implements Serializable {
     public static Building getAvailableKitchen(Person person) {
         Building result = null;
 
-        LocationSituation location = person.getLocationSituation();
-        if (location == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> kitchenBuildings = manager.getBuildings(FunctionType.PREPARING_DESSERT);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
@@ -395,8 +381,7 @@ implements Serializable {
     public static Building getAvailableKitchen(Robot robot) {
         Building result = null;
 
-        LocationSituation location = robot.getLocationSituation();
-        if (location == LocationSituation.IN_SETTLEMENT) {
+        if (robot.isInSettlement()) {
             BuildingManager manager = robot.getSettlement().getBuildingManager();
             List<Building> kitchenBuildings = manager.getBuildings(FunctionType.PREPARING_DESSERT);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
@@ -405,9 +390,6 @@ implements Serializable {
 				kitchenBuildings = BuildingManager.getLeastCrowded4BotBuildings(kitchenBuildings);
 
             if (kitchenBuildings.size() > 0) {
-               // Map<Building, Double> kitchenBuildingProbs = BuildingManager.getBestRelationshipBuildings(
-                //        robot, kitchenBuildings);
-               // result = RandomUtil.getWeightedRandomObject(kitchenBuildingProbs);
                 int selected = RandomUtil.getRandomInt(kitchenBuildings.size()-1);
             	result = kitchenBuildings.get(selected);
             }
@@ -429,7 +411,7 @@ implements Serializable {
             Iterator<Building> i = kitchenBuildings.iterator();
             while (i.hasNext()) {
                 Building building = i.next();
-                PreparingDessert kitchen = (PreparingDessert) building.getFunction(FunctionType.PREPARING_DESSERT);
+                PreparingDessert kitchen = building.getPreparingDessert();
                 if (kitchen.getNumCooks() < kitchen.getCookCapacity()) {
                     result.add(building);
                 }

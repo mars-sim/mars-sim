@@ -100,7 +100,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<!-- Default: 3.38 -->
 	<oxygen-deprivation-time value="3.38" />
 
-	<!-- Number of sols a person can go without food before dying -->
+	<!-- Number of sols a person can go without water before dying -->
 	<!-- Default: 7.0 -->
 	<water-deprivation-time value="7.0" />
 

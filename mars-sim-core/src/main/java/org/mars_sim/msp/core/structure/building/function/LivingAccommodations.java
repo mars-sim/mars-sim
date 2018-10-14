@@ -286,13 +286,9 @@ public class LivingAccommodations extends Function implements Serializable {
 		// This includes showering, washing hands, washing dishes, etc.
 		double usage = TOILET_CHANCE * washWaterUsage * time * numBed;
 		// If settlement is rationing water, reduce water usage according to its level
-		int level = settlement.waterRationLevel();
+		int level = settlement.computeWaterRation();
 		if (level != 0)
 			usage = usage / 1.5D / level / 2D;
-
-		// System.out.println("numBed : " + numBed);
-		// System.out.println("level : " + level);
-		// System.out.println("usage : " + usage);
 		// Account for people who are out there in an excursion and NOT in the
 		// settlement
 		double absentee_factor = settlement.getIndoorPeopleCount() / settlement.getPopulationCapacity();
@@ -300,9 +296,7 @@ public class LivingAccommodations extends Function implements Serializable {
 		double waterUsed = usage * time * numBed * absentee_factor;
 		// double waterProduced = wasteWaterProduced * time * numBed * absentee_factor;
 		double wasteWaterProduced = usage * WASH_AND_WASTE_WATER_RATIO;
-		// System.out.println("absentee_factor : " + absentee_factor);
-		// System.out.println("waterUsed : " + waterUsed);
-		// System.out.println("wasteWaterProduced : " + wasteWaterProduced);
+
 		// Remove wash water from settlement.
 		if (inv == null)
 			inv = settlement.getInventory();
@@ -313,8 +307,6 @@ public class LivingAccommodations extends Function implements Serializable {
 		// Black water is only produced by waste water.
 		double blackWaterProduced = wasteWaterProduced * (1 - greyWaterFraction);
 
-		// System.out.println("greyWaterProduced : " + greyWaterProduced);
-		// System.out.println("blackWaterProduced : " + blackWaterProduced);
 		if (greyWaterProduced > 0)
 			Storage.storeAnResource(greyWaterProduced, ResourceUtil.greyWaterAR, inv, sourceName + "::generateWaste");
 		if (blackWaterProduced > 0)

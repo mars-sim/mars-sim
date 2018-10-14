@@ -2985,15 +2985,15 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 
 	/**
-	 * Sets water ration level at the settlement due to low water supplies.
+	 * Computes the water ration level at the settlement due to low water supplies.
 	 * 
 	 * @return level of water ration.
 	 */
-	public int waterRationLevel() {
+	public int computeWaterRation() {
 		int result = 0;
 
 		double storedWater = getInventory().getARStored(ResourceUtil.waterID, false);
-		double requiredDrinkingWaterOrbit = water_consumption * getIndoorPeopleCount()
+		double requiredDrinkingWaterOrbit = water_consumption * getNumCitizens() //getIndoorPeopleCount()
 				* MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 		// If stored water is less than 20% of required drinking water for Orbit, wash

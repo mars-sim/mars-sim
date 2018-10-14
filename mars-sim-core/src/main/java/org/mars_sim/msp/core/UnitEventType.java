@@ -35,6 +35,7 @@ public enum UnitEventType {
 	// For PhysicalCondition
 	FATIGUE_EVENT					("fatigue event"),
 	HUNGER_EVENT					("hunger event"),
+	THIRST_EVENT					("thirst event"),
 	STRESS_EVENT					("stress event"),
 	PERFORMANCE_EVENT				("performance event"),
 	ILLNESS_EVENT					("illness event"),

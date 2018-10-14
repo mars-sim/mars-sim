@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskProbabilityUtil.java
- * @version 3.07 2014-08-04
+ * @version 3.1.0 2018-10-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -41,14 +41,14 @@ public class TaskProbabilityUtil {
         if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
 
             // Increase probability if current building is overcrowded.
-            LifeSupport currentLS = (LifeSupport) currentBuilding.getFunction(FunctionType.LIFE_SUPPORT);
+            LifeSupport currentLS = currentBuilding.getLifeSupport();
             int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
             if (currentOverCrowding > 0) {
                 modifier *= ((double) currentOverCrowding + 2);
             }
 
             // Decrease probability if new building is overcrowded.
-            LifeSupport newLS = (LifeSupport) newBuilding.getFunction(FunctionType.LIFE_SUPPORT);
+            LifeSupport newLS = newBuilding.getLifeSupport();
             int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
             if (newOverCrowding > 0) {
                 modifier /= ((double) newOverCrowding + 2);
@@ -66,7 +66,7 @@ public class TaskProbabilityUtil {
         if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
 
             // Increase probability if current building is overcrowded.
-        	RoboticStation currentRS = (RoboticStation) currentBuilding.getFunction(FunctionType.ROBOTIC_STATION);
+        	RoboticStation currentRS = currentBuilding.getRoboticStation();
 
             int currentOverCrowding = currentRS.getRobotOccupantNumber() - currentRS.getOccupantCapacity();
             if (currentOverCrowding > 0) {
@@ -74,7 +74,7 @@ public class TaskProbabilityUtil {
             }
 
             // Decrease probability if new building is overcrowded.
-           	RoboticStation newRS = (RoboticStation) newBuilding.getFunction(FunctionType.ROBOTIC_STATION);
+           	RoboticStation newRS = newBuilding.getRoboticStation();
 
             int newOverCrowding = newRS.getRobotOccupantNumber() - newRS.getOccupantCapacity();
             if (newOverCrowding > 0) {
@@ -102,7 +102,7 @@ public class TaskProbabilityUtil {
         }
         else {
             if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-                LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+                LifeSupport lifeSupport = building.getLifeSupport();
                 double totalOpinion = 0D;
                 Iterator<Person> i = lifeSupport.getOccupants().iterator();
                 while (i.hasNext()) {

@@ -67,13 +67,7 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
             		|| roleType.equals(RoleType.COMMANDER)
         			|| roleType.equals(RoleType.SUB_COMMANDER) 
         			|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-        			|| (roleType.equals(RoleType.MISSION_SPECIALIST) && (person.getAssociatedSettlement().getNumCitizens() <= 4))) {
-
-	            // Probability affected by the person's stress and fatigue.
-	            PhysicalCondition condition = person.getPhysicalCondition();
-	            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
-
-		            result += 50D;
+        			|| (roleType.equals(RoleType.MISSION_SPECIALIST) && (person.getAssociatedSettlement().getNumCitizens() <= 8))) {
 
 //		            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
 //		            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
@@ -84,7 +78,7 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 //		            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY) )
 //		            	result += 100D;
 
-		       	    // Get highest person skill level.
+	       	    // Get highest person skill level.
 //	        	    Iterator<Person> i = person.getSettlement().getAllAssociatedPeople().iterator();
 //	                while (i.hasNext()) {
 //	                    Person p = i.next();
@@ -103,65 +97,71 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 //	    		            result -= 50D;
 //
 //	                }
-	                
-                    if (missionManager == null)
-                    	missionManager = Simulation.instance().getMissionManager();
-                    
-                    List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
+                
+                if (missionManager == null)
+                	missionManager = Simulation.instance().getMissionManager();
+                
+                List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
 
-                    for (Mission m : missions) {
-                    	
-                    	if (m.getPlan() != null) {
-		                    PlanType status = m.getPlan().getStatus();
-	
-		                    if (status != null && status == PlanType.PENDING) {
-		                    	result += 500D;                    	
-		                    	// Add adjustment based on how many sol the request has since been submitted
-	                            if (marsClock == null)
-	                               marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	                            // if the job assignment submitted date is > 1 sol
-	                            int sol = marsClock.getMissionSol();
-	                            int solRequest = m.getPlan().getMissionSol();
-	                            if (sol - solRequest == 1)
-	                                result += 500D;
-	                            else if (sol - solRequest == 2)
-	                                result += 1000D;
-	                            else if (sol - solRequest == 3)
-	                                result += 1500D;
-	                            else if (sol - solRequest > 3)
-	                                result += 2000D;
-		                    }
-                    	}
-                    }
-	                
-	                if (result > 0D) {
-	                    // Get an available office space.
-	                    Building building = Administration.getAvailableOffice(person);
-	                    if (building != null) {
-	                        result += 200D;
-	                        result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-	                        result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+                for (Mission m : missions) {
+                	
+                	if (m.getPlan() != null) {
+	                    PlanType status = m.getPlan().getStatus();
+
+	                    if (status != null && status == PlanType.PENDING) {
+	                    	result += 500D;                    	
+	                    	// Add adjustment based on how many sol the request has since been submitted
+                            if (marsClock == null)
+                               marsClock = Simulation.instance().getMasterClock().getMarsClock();
+                            // if the job assignment submitted date is > 1 sol
+                            int sol = marsClock.getMissionSol();
+                            int solRequest = m.getPlan().getMissionSol();
+                            if (sol - solRequest == 1)
+                                result += 500D;
+                            else if (sol - solRequest == 2)
+                                result += 1000D;
+                            else if (sol - solRequest == 3)
+                                result += 1500D;
+                            else if (sol - solRequest > 3)
+                                result += 2000D;
 	                    }
-
-	                    // Modify if operation is the person's favorite activity.
-	                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-	                        result *= 1.5D;
-	                    }
-
-	                    if (result > 0)
-	                        //result += result / 8D * person.getPreference().getPreferenceScore(this);
-	                    	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
-	                    // Effort-driven task modifier.
-	                    result *= person.getPerformanceRating();
-	                }
-                    
-                    if (result < 0) {
-                        result = 0;
+                	}
+                }
+                
+                if (result > 0D) {
+                	
+    	            // Probability affected by the person's stress and fatigue.
+//	    	            PhysicalCondition condition = person.getPhysicalCondition();
+//	    	            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
+//	    		            result += 50D;
+//	    	            }
+    	            
+                    // Get an available office space.
+                    Building building = Administration.getAvailableOffice(person);
+                    if (building != null) {
+                        result += 200D;
+                        result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+                        result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
                     }
+
+                    // Modify if operation is the person's favorite activity.
+                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
+                        result *= 1.5D;
+                    }
+
+                    if (result > 0)
+                        //result += result / 8D * person.getPreference().getPreferenceScore(this);
+                    	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+
+                    // Effort-driven task modifier.
+                    result *= person.getPerformanceRating();
+                }
+                
+                if (result < 0) {
+                    result = 0;
+                }
 
 //                    if (result > 0) System.out.println("ReviewJobReassignmentMeta : probability is " + result);
-	            }
             }
         }
 

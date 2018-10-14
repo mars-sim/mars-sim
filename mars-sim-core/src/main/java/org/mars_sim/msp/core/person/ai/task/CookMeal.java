@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -75,12 +74,7 @@ implements Serializable {
 	private static final String NO_INGREDIENT = " cannot cook any meals. None of the ingredients are available.";
 
 	// Data members
-	//private int counter;
-	//private int solElapsedCache;
-
-	/** Log cache array for storing previous log statements */
-	//private static String[] logCache = new String[]{"", "", "", ""};
-
+	
 	/** The kitchen the person is cooking at. */
 	private Cooking kitchen;
 	private Building kitchenBuilding;
@@ -128,16 +122,15 @@ implements Serializable {
 		    }
 
 	        if (size == 0) {
-/*
-	        	counter++;
 
-	        	// display the msg when no ingredients are detected at first and after n warnings
-	        	if (counter % 30 == 0 && counter < 150) {
-	        		logger.severe("Warning: cannot cook meals in "
-	            		+ person.getSettlement().getName()
-	            		+ " because none of the ingredients of a meal are available ");
-	        	}
-*/
+//	        	counter++;
+//
+//	        	// display the msg when no ingredients are detected at first and after n warnings
+//	        	if (counter % 30 == 0 && counter < 150) {
+//	        		logger.severe("Warning: cannot cook meals in "
+//	            		+ person.getSettlement().getName()
+//	            		+ " because none of the ingredients of a meal are available ");
+//	        	}
 
 				StringBuilder log = new StringBuilder();
 				
@@ -145,18 +138,14 @@ implements Serializable {
 				
 				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, log.toString(), null);
 				
+//	            MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//	            int solElapsed = marsClock.getSolElapsedFromStart();
+//	            if (solElapsed != solElapsedCache) {
+//	            	counter = 0;
+//	            	logCache[2] = "";
+//	            	solElapsedCache = solElapsed;
+//	            }
 
-
-/*
-	            // 2015-01-15 Added solElapsed
-	            MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	            int solElapsed = marsClock.getSolElapsedFromStart();
-	            if (solElapsed != solElapsedCache) {
-	            	counter = 0;
-	            	logCache[2] = "";
-	            	solElapsedCache = solElapsed;
-	            }
-*/
 	            endTask();
 		    }
 	        else {
@@ -201,7 +190,6 @@ implements Serializable {
 	    	walkToActivitySpotInBuilding(kitchenBuilding, false);
 
 		    //int size = kitchen.getMealRecipesWithAvailableIngredients().size();
-	    	// 2015-12-10 Used getNumCookableMeal()
 		    int numGoodRecipes = kitchen.getNumCookableMeal();
 
         	// Need to reset numGoodRecipes periodically since it's a cache value
@@ -216,13 +204,11 @@ implements Serializable {
 		    }
 
 	    	if (numGoodRecipes == 0) {
-/*
-	    		counter++;
-	        	if (counter % 30 == 0 && counter < 150)
-	        		logger.severe("Warning: cannot cook meals in "
-	            		+ robot.getSettlement().getName()
-	            		+ " because none of the ingredients of any meals are available ");
-*/
+//	    		counter++;
+//	        	if (counter % 30 == 0 && counter < 150)
+//	        		logger.severe("Warning: cannot cook meals in "
+//	            		+ robot.getSettlement().getName()
+//	            		+ " because none of the ingredients of any meals are available ");
 
 				StringBuilder log = new StringBuilder();
 				
@@ -484,7 +470,6 @@ implements Serializable {
         if ((modifiedTime >= DINNER_START) && (modifiedTime <= (DINNER_START + MEALTIME_DURATION))) {
             result = true;
         }
-    	// 2014-12-03 Added MIDNIGHT_SHIFT_MEAL_START
         if ((modifiedTime >= MIDNIGHT_SHIFT_MEAL_START) && (modifiedTime <= (MIDNIGHT_SHIFT_MEAL_START + MEALTIME_DURATION))) {
             result = true;
         }
@@ -520,7 +505,6 @@ implements Serializable {
         if ((modifiedTime >= DINNER_START) && (modifiedTime <= (DINNER_START + MEALTIME_DURATION))) {
             result = "Dinner";
         }
-    	// 2014-12-03 Added MIDNIGHT_SHIFT_MEAL_START
         if ((modifiedTime >= MIDNIGHT_SHIFT_MEAL_START) && (modifiedTime <= (MIDNIGHT_SHIFT_MEAL_START + MEALTIME_DURATION))) {
             result = "Midnight Meal";
         }
@@ -536,8 +520,7 @@ implements Serializable {
     public static Building getAvailableKitchen(Person person) {
         Building result = null;
 
-        LocationSituation location = person.getLocationSituation();
-        if (location == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> kitchenBuildings = manager.getBuildings(FunctionType.COOKING);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
@@ -559,8 +542,7 @@ implements Serializable {
     public static Building getAvailableKitchen(Robot robot) {
         Building result = null;
 
-        LocationSituation location = robot.getLocationSituation();
-        if (location == LocationSituation.IN_SETTLEMENT) {
+        if (robot.isInSettlement()) {
             BuildingManager manager = robot.getSettlement().getBuildingManager();
             List<Building> kitchenBuildings = manager.getBuildings(FunctionType.COOKING);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
@@ -591,7 +573,7 @@ implements Serializable {
             Iterator<Building> i = kitchenBuildings.iterator();
             while (i.hasNext()) {
                 Building building = i.next();
-                Cooking kitchen = (Cooking) building.getFunction(FunctionType.COOKING);
+                Cooking kitchen = building.getCooking();
                 if (kitchen.getNumCooks() < kitchen.getCookCapacity()) {
                     result.add(building);
                 }

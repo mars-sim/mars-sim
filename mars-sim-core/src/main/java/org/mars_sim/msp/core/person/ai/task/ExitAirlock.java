@@ -996,7 +996,7 @@ public class ExitAirlock extends Task implements Serializable {
 		// it's okay even if there's not enough water
 		if (!hasEnoughWater)
 			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-					"Won't be able to feed enough water to " + suit.getNickName(), null);
+					suit.getContainerUnit() + " won't be able to feed enough water to " + suit.getNickName(), null);
 
 		return hasEnoughOxygen;// && hasEnoughWater;
 	}

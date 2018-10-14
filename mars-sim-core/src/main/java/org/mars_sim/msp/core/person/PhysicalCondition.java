@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -449,9 +450,9 @@ public class PhysicalCondition implements Serializable {
 					// Advance each problem, they may change into a worse problem.
 					// If the current is completed or a new problem exists then
 					// remove this one.
-					Complaint ct = problem.timePassing(time, this);
+					Complaint nextPhase = problem.timePassing(time, this);
 
-					if (problem.isCured() || (ct != null)) {
+					if (problem.isCured()) {// || (nextPhase != null)) {
 						Complaint c = problem.getIllness();
 
 						if (c.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
@@ -474,8 +475,8 @@ public class PhysicalCondition implements Serializable {
 					}
 
 					// If a new problem, check it doesn't exist already
-					if (ct != null) {
-						newProblems.add(ct);
+					if (nextPhase != null) {
+						newProblems.add(nextPhase);
 					}
 				}
 
@@ -793,6 +794,8 @@ public class PhysicalCondition implements Serializable {
 		if (thirst > dehydrationStartTime) {
 			if (!isDehydrated && !problems.containsKey(dehydration)) {
 				addMedicalComplaint(dehydration);
+
+				System.out.print(person + "'s thirst : " + thirst + "   dehydrationStartTime : " + dehydrationStartTime);
 				isDehydrated = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 			}
@@ -810,12 +813,16 @@ public class PhysicalCondition implements Serializable {
 		}
 
 		else if (isDehydrated && thirst < 500D) {
+			
 			if (dehydrated == null)
 				dehydrated = problems.get(dehydration);
+			
 			if (dehydrated != null) {
 				dehydrated.startRecovery();
 				// isDehydrated = false;
 			}
+			// Set to not dehydrated
+			isDehydrated = false;
 		}
 	}
 
@@ -1573,6 +1580,114 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
+	 * Give the status of a person's hunger level
+	 *
+	 * @param hunger
+	 * @return status
+	 */
+	public static String getHungerStatus(double hunger, double energy) {
+		String status = "N/A";
+		if (hunger < 200 || energy > 5000)
+			status = Msg.getString("PersonTableModel.column.energy.level1");
+		else if (hunger < 500 || energy > 3000)
+			status = Msg.getString("PersonTableModel.column.energy.level2");
+		else if (hunger < 1000 || energy > 1500)
+			status = Msg.getString("PersonTableModel.column.energy.level3");
+		else if (hunger < 2000 || energy > 300)
+			status = Msg.getString("PersonTableModel.column.energy.level4");
+		else
+			status = Msg.getString("PersonTableModel.column.energy.level5"); // very hungry
+		return status;
+	}
+
+	/**
+	 * Give the status of a person's water level
+	 *
+	 * @param water
+	 * @return status
+	 */
+	public static String getThirstyStatus(double thirst) {
+		String status = "N/A";
+		if (thirst < 150)
+			status = Msg.getString("PersonTableModel.column.water.level1");
+		else if (thirst < 500)
+			status = Msg.getString("PersonTableModel.column.water.level2");
+		else if (thirst < 1000)
+			status = Msg.getString("PersonTableModel.column.water.level3");
+		else if (thirst < 1600) 
+			// Note : Use getDehydrationStartTime()
+			status = Msg.getString("PersonTableModel.column.water.level4");
+		else
+			status = Msg.getString("PersonTableModel.column.water.level5");
+		return status;
+	}
+	
+	/**
+	 * Give the status of a person's fatigue level
+	 *
+	 * @param fatigue
+	 * @return status
+	 */
+	public static String getFatigueStatus(double value) {
+		String status = "N/A";
+		if (value < 500)
+			status = Msg.getString("PersonTableModel.column.fatigue.level1");
+		else if (value < 800)
+			status = Msg.getString("PersonTableModel.column.fatigue.level2");
+		else if (value < 1200)
+			status = Msg.getString("PersonTableModel.column.fatigue.level3");
+		else if (value < 1600)
+			status = Msg.getString("PersonTableModel.column.fatigue.level4");
+		else
+			status = Msg.getString("PersonTableModel.column.fatigue.level5");
+		return status;
+	}
+
+	/**
+	 * Give the status of a person's stress level
+	 *
+	 * @param hunger
+	 * @return status
+	 */
+	public static String getStressStatus(double value) {
+		String status = "N/A";
+		if (value < 10)
+			status = Msg.getString("PersonTableModel.column.stress.level1");
+		else if (value < 40)
+			status = Msg.getString("PersonTableModel.column.stress.level2");
+		else if (value < 75)
+			status = Msg.getString("PersonTableModel.column.stress.level3");
+		else if (value < 95)
+			status = Msg.getString("PersonTableModel.column.stress.level4");
+		else
+			status = Msg.getString("PersonTableModel.column.stress.level5");
+		return status;
+	}
+
+	/**
+	 * Give the status of a person's hunger level
+	 *
+	 * @param hunger
+	 * @return status
+	 */
+	public static String getPerformanceStatus(double value) {
+		String status = "N/A";
+		if (value > 95)
+			status = Msg.getString("PersonTableModel.column.performance.level1");
+		else if (value > 75)
+			status = Msg.getString("PersonTableModel.column.performance.level2");
+		else if (value > 50)
+			status = Msg.getString("PersonTableModel.column.performance.level3");
+		else if (value > 25)
+			status = Msg.getString("PersonTableModel.column.performance.level4");
+		else 
+			status = Msg.getString("PersonTableModel.column.performance.level5");
+		// logger.info(" Perf : " + Math.round(value) + " ; status : " +
+		// status);
+		return status;
+	}
+
+	/**
 	 * Checks if the person has any serious medical problems.
 	 * 
 	 * @return true if serious medical problems
@@ -1721,6 +1836,15 @@ public class PhysicalCondition implements Serializable {
 		musculoskeletal[2] = musculoskeletal[0] + .1; // muscle soreness
 	}
 
+	public double getStarvationStartTime() {
+		return starvationStartTime;
+	}
+
+	
+	public double getDehydrationStartTime() {
+		return dehydrationStartTime;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

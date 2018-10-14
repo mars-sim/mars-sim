@@ -647,11 +647,11 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
 
 		// Check if it was previously on pause
-		boolean previous = masterClock.isPaused();
+//		boolean previous = masterClock.isPaused();
 		// Pause simulation.
-		if (!previous) {
+//		if (!previous) {
 			masterClock.setPaused(true, false);
-		}
+//		}
 
 		Simulation sim = instance();
 		sim.halt();
@@ -871,16 +871,16 @@ public class Simulation implements ClockListener, Serializable {
 			justSaved = true;
 
 			// Check if it was previously on pause
-			boolean now = masterClock.isPaused();
-			if (!previous) {
-				if (now) {
+//			boolean now = masterClock.isPaused();
+//			if (!previous) {
+//				if (now) {
 					masterClock.setPaused(false, false);
-				}
-			} else {
-				if (!now) {
-					masterClock.setPaused(false, false);
-				}
-			}
+//				}
+//			} else {
+//				if (!now) {
+//					masterClock.setPaused(false, false);
+//				}
+//			}
 		}
 	}
 

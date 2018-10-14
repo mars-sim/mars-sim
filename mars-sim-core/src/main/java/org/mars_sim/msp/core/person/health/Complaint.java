@@ -132,11 +132,11 @@ public class Complaint implements Serializable {
 		return degradePeriod;
 	}
 
-	/**
-	 * Get the name of complaint.
-	 * 
-	 * @return Complaint name.
-	 */
+//	/**
+//	 * Get the name of complaint.
+//	 * 
+//	 * @return Complaint name.
+//	 */
 	// public String getName() {
 	// return name;
 	// }

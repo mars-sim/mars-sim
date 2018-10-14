@@ -909,19 +909,18 @@ public class MasterClock implements Serializable {
 	 * @param isPaused true if simulation is paused.
 	 */
 	public void setPaused(boolean isPaused, boolean showPane) {
-		// logger.info("MasterClock's setPaused() is on " +
-		// Thread.currentThread().getName());
 		uptimer.setPaused(isPaused);
 
-		if (isPaused && sim.getAutosaveTimer() != null && !sim.getAutosaveTimer().isShutdown()
+		if (isPaused && sim.getAutosaveTimer() != null 
+				&& !sim.getAutosaveTimer().isShutdown()
 				&& !sim.getAutosaveTimer().isTerminated()) {
-			sim.getAutosaveTimer().shutdown();// .pause(); // note: using sim (instead of Simulation.instance()) won't
-												// work when loading a saved sim.
+			
+			sim.getAutosaveTimer().shutdown(); 
+			// Note: using sim (instead of Simulation.instance()) 
+			// won't work when loading a saved sim.
 		} else
-			sim.startAutosaveTimer();// getAutosaveTimer().restart();//.play();
+			sim.startAutosaveTimer();
 
-		// if (isPaused) System.out.println("MasterClock.java : setPaused() : isPause is
-		// true");
 		this.isPaused = isPaused;
 		// Fire pause change to all clock listeners.
 		firePauseChange(showPane);
@@ -933,7 +932,6 @@ public class MasterClock implements Serializable {
 	 * @return true if paused.
 	 */
 	public boolean isPaused() {
-		// System.out.println("MasterClock : isPause is " + isPaused);
 		return isPaused;
 	}
 
@@ -959,10 +957,7 @@ public class MasterClock implements Serializable {
 	}
 
 	public double getPulsesPerSecond() {
-		// System.out.println("totalPulses : " + Math.round(totalPulses*100.0)/100.0
-		// + " uptimeMillis: " + Math.round(uptimer.getUptimeMillis()*100.0)/100.0
-		// + " tps: " + 1000L * totalPulses / uptimer.getUptimeMillis());
-		return 1000.0 / elapsedLast * totalPulses;// uptimer.getUptimeMillis();
+		return 1000.0 / elapsedLast * totalPulses;
 	}
 
 	/**
@@ -1033,11 +1028,11 @@ public class MasterClock implements Serializable {
 			// + " tpf: " + Math.round(tpf *1000.0)/1000.0
 			// + " cal_tbu_s : " + Math.round(cal_tbu_s *1000.0)/1000.0);
 			if (tpfCache >= adjustedTBU_s) {
-				/*
-				 * TPFList.add(tpfCache); // Remove the first 5 if (TPFList.size() > 20) {
-				 * List<Double> list = new ArrayList<>(TPFList); for (int i = 0; i < 5; i++) {
-				 * list.remove(i); } TPFList = list; }
-				 */
+				
+//				 TPFList.add(tpfCache); // Remove the first 5 if (TPFList.size() > 20) {
+//				 List<Double> list = new ArrayList<>(TPFList); for (int i = 0; i < 5; i++) {
+//				 list.remove(i); } TPFList = list; }
+				 
 				// elapsedLast = uptimer.getUptimeMillis();
 				// System.out.println("tpfCache >= default_tbu_ms");
 				// if (isPaused) {

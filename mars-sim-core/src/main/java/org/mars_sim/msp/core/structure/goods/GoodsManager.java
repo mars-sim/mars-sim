@@ -126,6 +126,7 @@ public class GoodsManager implements Serializable {
 	private static final double EVA_SUIT_FACTOR = 100D;
 	private static final double VEHICLE_FACTOR = 1000D;
 	private static final double LIFE_SUPPORT_FACTOR = 1D;
+	private static final double WATER_FACTOR = 10D;
 	private static final double FUEL_FACTOR = 5D;
 	private static final double VEHICLE_FUEL_FACTOR = 1D;
 	private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5D;
@@ -198,13 +199,11 @@ public class GoodsManager implements Serializable {
 	public GoodsManager(Settlement settlement) {
 		this.settlement = settlement;
 		inv = settlement.getInventory();
-		// count++;
-		// System.out.println(" calling GoodsManager.java " + count + " times");
-
 		sim = Simulation.instance();
+		
 		if (Simulation.instance().getMasterClock() != null) // for passing maven test
 			marsClock = sim.getMasterClock().getMarsClock();
-		// marsClock = sim.getMasterClock().getMarsClock();
+		
 		missionManager = sim.getMissionManager();
 		unitManager = Simulation.instance().getUnitManager();
 
@@ -293,10 +292,13 @@ public class GoodsManager implements Serializable {
 		Iterator<Good> i = goodsValues.keySet().iterator();
 		while (i.hasNext())
 			updateGoodValue(i.next(), true);
-		/*
-		 * while (i.hasNext()) { Good good = i.next(); logger.info("Good : " +
-		 * good.toString()); updateGoodValue(good, true); }
-		 */
+//		
+//		 while (i.hasNext()) {
+//			Good good = i.next(); 
+//			logger.info("Good : " + good.toString());
+//			updateGoodValue(good, true); 
+//		}
+//		 
 		settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT);
 
 		initialized = true;
@@ -599,22 +601,22 @@ public class GoodsManager implements Serializable {
 
 		if (resource.isLifeSupport()) {
 			double amountNeededSol = 0D;
-			if (resource.equals(ResourceUtil.oxygenAR))
-				amountNeededSol = personConfig.getNominalO2ConsumptionRate();
-			if (resource.equals(ResourceUtil.waterAR))
-				amountNeededSol = personConfig.getWaterConsumptionRate();
-			if (resource.equals(ResourceUtil.foodAR)) {
-				amountNeededSol = personConfig.getFoodConsumptionRate();// * FOOD_FACTOR;
-			}
-
 			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getNumCitizens();
 			
-			if (resource.equals(ResourceUtil.foodAR)) {
+			if (resource.equals(ResourceUtil.oxygenAR)) {
+				amountNeededSol = personConfig.getNominalO2ConsumptionRate();
+			}
+			else if (resource.equals(ResourceUtil.waterAR)) {
+				amountNeededSol = personConfig.getWaterConsumptionRate();
+			}
+			else if (resource.equals(ResourceUtil.foodAR)) {
+				amountNeededSol = personConfig.getFoodConsumptionRate();// * FOOD_FACTOR;
 				return 8*Math.log(numPeople) * amountNeededOrbit * LIFE_SUPPORT_FACTOR * trade_factor;
 			}
-			else
-				return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR * trade_factor;
+			
+			return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR * trade_factor;
+			
 		} else
 			return 0D;
 	}
@@ -679,14 +681,14 @@ public class GoodsManager implements Serializable {
 	 * @return demand (kg)
 	 */
 	private double getPotableWaterUsageDemand(AmountResource resource) {
-		// AmountResource water =
-		// AmountResource.findAmountResource(LifeSupportType.WATER);
+
 		if (resource.equals(ResourceUtil.waterAR)) {
-			// double amountNeededSol = LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL;
+			// Add the awareness of the water ration level in adjusting the water demand
+			double waterRationLevel = settlement.computeWaterRation();
 			double amountNeededSol = personConfig.getWaterUsageRate();
 			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getIndoorPeopleCount();
-			return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR * trade_factor;
+			return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR * WATER_FACTOR * trade_factor * (1 + waterRationLevel) * 10;
 		} else
 			return 0D;
 	}

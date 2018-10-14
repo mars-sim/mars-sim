@@ -72,31 +72,31 @@ implements Serializable {
 				10D + RandomUtil.getRandomDouble(50D));
 
 		// Initialize data members
-		if (person.getSettlement() != null) {
+		if (person.isInSettlement()) {
 		    //setDescription(Msg.getString("Task.description.produceFood.detail",
             //        person.getParkedSettlement().getName())); //$NON-NLS-1$
+	
+			// Get available foodProduction foodFactory if any.
+			Building foodProductionBuilding = getAvailableFoodProductionBuilding(person);
+			if (foodProductionBuilding != null) {
+				foodFactory = foodProductionBuilding.getFoodProduction();
+	
+				// Walk to foodProduction building.
+				walkToActivitySpotInBuilding(foodProductionBuilding, false);
+			}
+			else {
+				endTask();
+			}
+	
+			skillManager = person.getMind().getSkillManager();
+	
+			// Initialize phase
+			addPhase(PRODUCE_FOOD);
+			setPhase(PRODUCE_FOOD);
 		}
 		else {
 			endTask();
 		}
-
-		// Get available foodProduction foodFactory if any.
-		Building foodProductionBuilding = getAvailableFoodProductionBuilding(person);
-		if (foodProductionBuilding != null) {
-			foodFactory = (FoodProduction) foodProductionBuilding.getFunction(FunctionType.FOOD_PRODUCTION);
-
-			// Walk to foodProduction building.
-			walkToActivitySpotInBuilding(foodProductionBuilding, false);
-		}
-		else {
-			endTask();
-		}
-
-		skillManager = person.getMind().getSkillManager();
-
-		// Initialize phase
-		addPhase(PRODUCE_FOOD);
-		setPhase(PRODUCE_FOOD);
 	}
 
 	public ProduceFood(Robot robot) {
@@ -104,30 +104,27 @@ implements Serializable {
 				10D + RandomUtil.getRandomDouble(50D));
 
 		// Initialize data members
-		if (robot.getSettlement() != null) {
+		if (robot.isInSettlement()) {
 		    //setDescription(Msg.getString("Task.description.produceFood.detail",
             //        robot.getParkedSettlement().getName())); //$NON-NLS-1$
+	
+			// Get available foodProduction foodFactory if any.
+			Building foodProductionBuilding = getAvailableFoodProductionBuilding(robot);
+			if (foodProductionBuilding != null) {
+				foodFactory = foodProductionBuilding.getFoodProduction();
+				// Walk to foodProduction building.
+				walkToActivitySpotInBuilding(foodProductionBuilding, false);
+			}
+			else {
+				endTask();
+			}
+	
+			skillManager = robot.getBotMind().getSkillManager();
+	
+			// Initialize phase
+			addPhase(PRODUCE_FOOD);
+			setPhase(PRODUCE_FOOD);
 		}
-		else {
-			endTask();
-		}
-
-		// Get available foodProduction foodFactory if any.
-		Building foodProductionBuilding = getAvailableFoodProductionBuilding(robot);
-		if (foodProductionBuilding != null) {
-			foodFactory = foodProductionBuilding.getFoodProduction();
-			// Walk to foodProduction building.
-			walkToActivitySpotInBuilding(foodProductionBuilding, false);
-		}
-		else {
-			endTask();
-		}
-
-		skillManager = robot.getBotMind().getSkillManager();
-
-		// Initialize phase
-		addPhase(PRODUCE_FOOD);
-		setPhase(PRODUCE_FOOD);
 	}
     @Override
     protected FunctionType getLivingFunction() {

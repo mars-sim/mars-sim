@@ -1953,6 +1953,7 @@ public class UnitManager implements Serializable {
 
 		if (solCache != solElapsed) {
 			solCache = solElapsed;
+			logger.info("The mission sol " + solCache + " has begun.");
 			// Compute reliability daily
 			partConfig.computeReliability();
 		}

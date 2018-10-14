@@ -1565,41 +1565,59 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param status
 	 */
 	public String getStatus() {
-		status = "okay";
+//		status = "okay";
 		double p = condition.getPerformanceFactor();
 		double h = condition.getHunger();
+		double e = condition.getHunger();
 		double t = condition.getThirst();
 		double s = condition.getStress();
 		double f = condition.getFatigue();
-		if (p > .9) {
-			if (h < 150 && t < 100 && s == 0 && f < 100) {
-				status = "terrific";
-			}
-			else if (h < 250 && t < 150 && s < 10) {
-				status = "very well";
-			}
-			else if (h < 450 && t < 350) {
-				status = "reasonably well";
-			}
-		} else if (p > .7) {		
-			if (h < 400 && t < 300) {
-				status = "good";
-			}
-			else if (h < 600 && t < 500) {
-				status = "alright but hungry/thirsty";	
-			}
-		} else if (p > .4) {		
-			if (h < 600 && t < 500) {
-				status = "getting hungry/thirsty";
-			}
-			else if (h < 800 && t < 700) {
-				status = "really hungry/thirsty";	
-			}
-		}
-		else {
-			status = "not feeling well";
-		}
-		return status;
+		
+		String pStr = PhysicalCondition.getPerformanceStatus(p);
+		String hStr = PhysicalCondition.getHungerStatus(h, e);
+		String tStr = PhysicalCondition.getThirstyStatus(t);
+		String sStr = PhysicalCondition.getStressStatus(s);
+		String fStr = PhysicalCondition.getFatigueStatus(f);
+		
+		return 
+				pStr + " in performance, " 
+				+ sStr + ", " 
+				+ fStr + ", "
+				+ hStr + ", and " 
+				+ tStr + "." 
+				;
+		
+//		if (p > .9) {
+//			if (h < 150 && t < 100 && s == 0 && f < 100) {
+//				status = "terrific";
+//			}
+//			else if (h < 250 && t < 150 && s < 10) {
+//				status = "very well";
+//			}
+//			else if (h < 450 && t < 350) {
+//				status = "reasonably well";
+//			}
+//		} else if (p > .7) {		
+//			if (h < 400 && t < 300) {
+//				status = "good";
+//			}
+//			else if (h < 600 && t < 500) {
+//				status = "alright but hungry/thirsty";	
+//			}
+//		} else if (p > .4) {		
+//			if (h < 600 && t < 500) {
+//				status = "getting hungry/thirsty";
+//			}
+//			else if (h < 800 && t < 700) {
+//				status = "really hungry/thirsty";	
+//			}
+//		}
+//		else {
+//			status = "not feeling well";
+//		}
+		
+		
+		//return status;
 	}
 	
 	/**

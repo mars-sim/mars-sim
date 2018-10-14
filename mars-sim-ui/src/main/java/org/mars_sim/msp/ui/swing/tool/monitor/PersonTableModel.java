@@ -76,24 +76,26 @@ public class PersonTableModel extends UnitTableModel {
 	private final static int PERSONALITY = 8;
 	/** Health column. */
 	private final static int HEALTH = 9;
-	/** Hunger column. */
-	private final static int HUNGER = 10;
+	/** Energy/Hunger column. */
+	private final static int ENERGY = 10;
+	/** Water/Thirst column. */
+	private final static int WATER = 11;
 	/** Fatigue column. */
-	private final static int FATIGUE = 11;
+	private final static int FATIGUE = 12;
 	/** Stress column. */
-	private final static int STRESS = 12;
+	private final static int STRESS = 13;
 	/** Performance column. */
-	private final static int PERFORMANCE = 13;
+	private final static int PERFORMANCE = 14;
 
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 14;
+	private final static int COLUMNCOUNT = 15;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
 	private static Class<?> columnTypes[];
 
 	private final static String DEYDRATED = "Deydrated";
-	private final static String THIRSTY = "Thirsty";
+//	private final static String THIRSTY = "Thirsty";
 	private final static String STARVING = "Starving";
 	private final static String MALE = "male";
 	private final static String M = "M";
@@ -114,8 +116,10 @@ public class PersonTableModel extends UnitTableModel {
 		columnTypes[PERSONALITY] = String.class;
 		columnNames[HEALTH] = Msg.getString("PersonTableModel.column.health"); //$NON-NLS-1$
 		columnTypes[HEALTH] = String.class;
-		columnNames[HUNGER] = Msg.getString("PersonTableModel.column.hunger"); //$NON-NLS-1$
-		columnTypes[HUNGER] = String.class;
+		columnNames[ENERGY] = Msg.getString("PersonTableModel.column.energy"); //$NON-NLS-1$
+		columnTypes[ENERGY] = String.class;
+		columnNames[WATER] = Msg.getString("PersonTableModel.column.water"); //$NON-NLS-1$
+		columnTypes[WATER] = String.class;
 		columnNames[FATIGUE] = Msg.getString("PersonTableModel.column.fatigue"); //$NON-NLS-1$
 		columnTypes[FATIGUE] = String.class;
 		columnNames[STRESS] = Msg.getString("PersonTableModel.column.stress"); //$NON-NLS-1$
@@ -152,7 +156,7 @@ public class PersonTableModel extends UnitTableModel {
 	private Settlement settlement;
 	private Mission mission;
 
-	private MainDesktopPane desktop;
+//	private MainDesktopPane desktop;
 
 	private UnitListener crewListener;
 	private UnitListener settlementListener;
@@ -176,7 +180,7 @@ public class PersonTableModel extends UnitTableModel {
 				"PersonTableModel.countingPeople", //$NON-NLS-1$
 				columnNames, columnTypes);
 
-		this.desktop = desktop;
+//		this.desktop = desktop;
 		sourceType = ValidSourceType.ALL_PEOPLE;
 		setSource(unitManager.getPeople());
 		unitManagerListener = new LocalUnitManagerListener();
@@ -284,19 +288,23 @@ public class PersonTableModel extends UnitTableModel {
 
 				double hunger = condition.getHunger();
 				double energy = condition.getEnergy();
-				String hungerString = getHungerStatus(hunger, energy);
-				performanceItemMap.put(HUNGER, hungerString);
+				String hungerString = PhysicalCondition.getHungerStatus(hunger, energy);
+				performanceItemMap.put(ENERGY, hungerString);
 
+				double thirst = condition.getThirst();
+				String thirstString = PhysicalCondition.getThirstyStatus(thirst);
+				performanceItemMap.put(WATER, thirstString);
+				
 				double fatigue = condition.getFatigue();
-				String fatigueString = getFatigueStatus(fatigue);
+				String fatigueString = PhysicalCondition.getFatigueStatus(fatigue);
 				performanceItemMap.put(FATIGUE, fatigueString);
 
 				double stress = condition.getStress();
-				String stressString = getStressStatus(stress);
+				String stressString = PhysicalCondition.getStressStatus(stress);
 				performanceItemMap.put(STRESS, stressString);
 
 				double performance = condition.getPerformanceFactor() * 100D;
-				String performanceString = getPerformanceStatus(performance);
+				String performanceString = PhysicalCondition.getPerformanceStatus(performance);
 				performanceItemMap.put(PERFORMANCE, performanceString);
 
 				performanceValueCache.put(newUnit, performanceItemMap);
@@ -411,29 +419,37 @@ public class PersonTableModel extends UnitTableModel {
 			}
 				break;
 
-			case HUNGER: {
+			case ENERGY: {
+				PhysicalCondition pc = person.getPhysicalCondition();
+				if (pc.isDead())
+					result = "";
+				else if (pc.isStarving())
+					result = STARVING;
+				else {
+					result = PhysicalCondition.getHungerStatus(pc.getHunger(), pc.getEnergy());
+				}
+			}
+				break;
+
+			case WATER: {
 				PhysicalCondition pc = person.getPhysicalCondition();
 				if (pc.isDead())
 					result = "";
 				else if (pc.isDeydrated())
 					result = DEYDRATED;
-				else if (pc.isThirsty())
-					result = THIRSTY;
-				else if (pc.isStarving())
-					result = STARVING;
 				else {
-					result = getHungerStatus(pc.getHunger(), pc.getEnergy());
+					result = PhysicalCondition.getThirstyStatus(pc.getThirst());
 				}
 			}
 				break;
-
+				
 			case FATIGUE: {
 				// double fatigue = person.getPhysicalCondition().getFatigue();
 				// result = new Float(fatigue).intValue();
 				if (person.getPhysicalCondition().isDead())
 					result = "";
 				else
-					result = getFatigueStatus(person.getPhysicalCondition().getFatigue());
+					result = PhysicalCondition.getFatigueStatus(person.getPhysicalCondition().getFatigue());
 			}
 				break;
 
@@ -443,7 +459,7 @@ public class PersonTableModel extends UnitTableModel {
 				if (person.getPhysicalCondition().isDead())
 					result = "";
 				else
-					result = getStressStatus(person.getPhysicalCondition().getStress());
+					result = PhysicalCondition.getStressStatus(person.getPhysicalCondition().getStress());
 			}
 				break;
 
@@ -453,7 +469,7 @@ public class PersonTableModel extends UnitTableModel {
 				if (person.getPhysicalCondition().isDead())
 					result = "";
 				else
-					result = getPerformanceStatus(person.getPhysicalCondition().getPerformanceFactor() * 100D);
+					result = PhysicalCondition.getPerformanceStatus(person.getPhysicalCondition().getPerformanceFactor() * 100D);
 			}
 				break;
 
@@ -515,91 +531,6 @@ public class PersonTableModel extends UnitTableModel {
 		return result;
 	}
 
-	/**
-	 * Give the status of a person's hunger level
-	 *
-	 * @param hunger
-	 * @return status
-	 */
-	public String getHungerStatus(double hunger, double energy) {
-		String status = "N/A";
-		if (hunger < 200 || energy > 5000)
-			status = Msg.getString("PersonTableModel.column.hunger.level1");
-		else if (hunger < 500 || energy > 3000)
-			status = Msg.getString("PersonTableModel.column.hunger.level2");
-		else if (hunger < 1000 || energy > 1500)
-			status = Msg.getString("PersonTableModel.column.hunger.level3");
-		else if (hunger < 2000 || energy > 300)
-			status = Msg.getString("PersonTableModel.column.hunger.level4");
-		else
-			status = Msg.getString("PersonTableModel.column.hunger.level5"); // very hungry
-		return status;
-	}
-
-	/**
-	 * Give the status of a person's fatigue level
-	 *
-	 * @param fatigue
-	 * @return status
-	 */
-	public String getFatigueStatus(double value) {
-		String status = "N/A";
-		if (value < 500)
-			status = Msg.getString("PersonTableModel.column.fatigue.level1");
-		else if (value < 800)
-			status = Msg.getString("PersonTableModel.column.fatigue.level2");
-		else if (value < 1200)
-			status = Msg.getString("PersonTableModel.column.fatigue.level3");
-		else if (value < 1500)
-			status = Msg.getString("PersonTableModel.column.fatigue.level4");
-		else
-			status = Msg.getString("PersonTableModel.column.fatigue.level5");
-		return status;
-	}
-
-	/**
-	 * Give the status of a person's stress level
-	 *
-	 * @param hunger
-	 * @return status
-	 */
-	public String getStressStatus(double value) {
-		String status = "N/A";
-		if (value < 15)
-			status = Msg.getString("PersonTableModel.column.stress.level1");
-		else if (value < 40)
-			status = Msg.getString("PersonTableModel.column.stress.level2");
-		else if (value < 75)
-			status = Msg.getString("PersonTableModel.column.stress.level3");
-		else if (value < 95)
-			status = Msg.getString("PersonTableModel.column.stress.level4");
-		else
-			status = Msg.getString("PersonTableModel.column.stress.level5");
-		return status;
-	}
-
-	/**
-	 * Give the status of a person's hunger level
-	 *
-	 * @param hunger
-	 * @return status
-	 */
-	public String getPerformanceStatus(double value) {
-		String status = "N/A";
-		if (value > 95)
-			status = Msg.getString("PersonTableModel.column.performance.level1");
-		else if (value > 75)
-			status = Msg.getString("PersonTableModel.column.performance.level2");
-		else if (value > 50)
-			status = Msg.getString("PersonTableModel.column.performance.level3");
-		else if (value > 25)
-			status = Msg.getString("PersonTableModel.column.performance.level4");
-		else if (value <= 25)
-			status = Msg.getString("PersonTableModel.column.performance.level5");
-		// logger.info(" Perf : " + Math.round(value) + " ; status : " +
-		// status);
-		return status;
-	}
 
 	/**
 	 * Prepares the model for deletion.
@@ -656,7 +587,8 @@ public class PersonTableModel extends UnitTableModel {
 			HashMap<UnitEventType, Integer> m = new HashMap<UnitEventType, Integer>();
 			m.put(UnitEventType.NAME_EVENT, NAME);
 			m.put(UnitEventType.LOCATION_EVENT, LOCATION);
-			m.put(UnitEventType.HUNGER_EVENT, HUNGER);
+			m.put(UnitEventType.HUNGER_EVENT, ENERGY);
+			m.put(UnitEventType.THIRST_EVENT, ENERGY);
 			m.put(UnitEventType.FATIGUE_EVENT, FATIGUE);
 			m.put(UnitEventType.STRESS_EVENT, STRESS);
 			m.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
@@ -733,21 +665,35 @@ public class PersonTableModel extends UnitTableModel {
 				Person person = (Person) event.getSource();
 				double hunger = person.getPhysicalCondition().getHunger();
 				double energy = person.getPhysicalCondition().getEnergy();
-				String hungerString = tableModel.getHungerStatus(hunger, energy);
+				String hungerString = PhysicalCondition.getHungerStatus(hunger, energy);
 				if ((tableModel.performanceValueCache != null)
 						&& tableModel.performanceValueCache.containsKey(person)) {
 					Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);
-					String oldHungerString = performanceItemMap.get(HUNGER);
+					String oldHungerString = performanceItemMap.get(ENERGY);
 					if (hungerString.equals(oldHungerString)) {
 						return;
 					} else {
-						performanceItemMap.put(HUNGER, hungerString);
+						performanceItemMap.put(ENERGY, hungerString);
 					}
 				}
+			} else if (eventType == UnitEventType.THIRST_EVENT) {
+				Person person = (Person) event.getSource();
+				double thirst = person.getPhysicalCondition().getThirst();
+				String thirstString = PhysicalCondition.getThirstyStatus(thirst);
+				if ((tableModel.performanceValueCache != null)
+						&& tableModel.performanceValueCache.containsKey(person)) {
+					Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);
+					String oldThirstString = performanceItemMap.get(WATER);
+					if (thirstString.equals(oldThirstString)) {
+						return;
+					} else {
+						performanceItemMap.put(WATER, thirstString);
+					}
+				}	
 			} else if (eventType == UnitEventType.FATIGUE_EVENT) {
 				Person person = (Person) event.getSource();
 				double fatigue = person.getPhysicalCondition().getFatigue();
-				String fatigueString = tableModel.getFatigueStatus(fatigue);
+				String fatigueString = PhysicalCondition.getFatigueStatus(fatigue);
 				if ((tableModel.performanceValueCache != null)
 						&& tableModel.performanceValueCache.containsKey(person)) {
 					Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);
@@ -761,7 +707,7 @@ public class PersonTableModel extends UnitTableModel {
 			} else if (eventType == UnitEventType.STRESS_EVENT) {
 				Person person = (Person) event.getSource();
 				double stress = person.getPhysicalCondition().getStress();
-				String stressString = tableModel.getStressStatus(stress);
+				String stressString = PhysicalCondition.getStressStatus(stress);
 				if ((tableModel.performanceValueCache != null)
 						&& tableModel.performanceValueCache.containsKey(person)) {
 					Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);
@@ -775,7 +721,7 @@ public class PersonTableModel extends UnitTableModel {
 			} else if (eventType == UnitEventType.PERFORMANCE_EVENT) {
 				Person person = (Person) event.getSource();
 				double performance = person.getPhysicalCondition().getPerformanceFactor() * 100D;
-				String performanceString = tableModel.getPerformanceStatus(performance);
+				String performanceString = PhysicalCondition.getPerformanceStatus(performance);
 				if ((tableModel.performanceValueCache != null)
 						&& tableModel.performanceValueCache.containsKey(person)) {
 					Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);

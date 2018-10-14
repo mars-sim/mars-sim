@@ -33,7 +33,7 @@
 
 			<!-- Percentage of person's normal performance when disabled by this illness. (required) -->
 			<!-- Values: 0.0 (bedridden) to 100.0 (normal fitness) -->
-			<performance-percent value="10.0" />
+			<performance-percent value="50.0" />
 
 			<!--  Does recovery require bed rest at a medical aid? -->
 			<bed-rest-recovery value="true" />

@@ -73,31 +73,32 @@ implements Serializable {
 				10D + RandomUtil.getRandomDouble(50D));
 
 		// Initialize data members
-		if (person.getSettlement() != null) {
+		if (person.isInSettlement()) {
 		    //setDescription(Msg.getString("Task.description.manufactureGood.detail",
             //        person.getParkedSettlement().getName())); //$NON-NLS-1$
+		
+			skillManager = person.getMind().getSkillManager();
+	
+			// Get available manufacturing workshop if any.
+			Building manufactureBuilding = getAvailableManufacturingBuilding(person);
+			if (manufactureBuilding != null) {
+				workshop = manufactureBuilding.getManufacture();//(Manufacture) manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
+	
+				// Walk to manufacturing building.
+				walkToActivitySpotInBuilding(manufactureBuilding, false);
+			}
+			else {
+				endTask();
+			}
+	
+			// Initialize phase
+			addPhase(MANUFACTURE);
+			setPhase(MANUFACTURE);
+			
 		}
 		else {
 			endTask();
 		}
-
-		skillManager = person.getMind().getSkillManager();
-
-		// Get available manufacturing workshop if any.
-		Building manufactureBuilding = getAvailableManufacturingBuilding(person);
-		if (manufactureBuilding != null) {
-			workshop = manufactureBuilding.getManufacture();//(Manufacture) manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
-
-			// Walk to manufacturing building.
-			walkToActivitySpotInBuilding(manufactureBuilding, false);
-		}
-		else {
-			endTask();
-		}
-
-		// Initialize phase
-		addPhase(MANUFACTURE);
-		setPhase(MANUFACTURE);
 	}
 
 	public ManufactureGood(Robot robot) {
@@ -105,31 +106,31 @@ implements Serializable {
 				10D + RandomUtil.getRandomDouble(50D));
 
 		// Initialize data members
-		if (robot.getSettlement() != null) {
+		if (robot.isInSettlement()) {
 		    //setDescription(Msg.getString("Task.description.manufactureGood.detail",
             //        robot.getParkedSettlement().getName())); //$NON-NLS-1$
+	
+			skillManager = robot.getBotMind().getSkillManager();
+	
+			// Get available manufacturing workshop if any.
+			Building manufactureBuilding = getAvailableManufacturingBuilding(robot);
+			if (manufactureBuilding != null) {
+				workshop = manufactureBuilding.getManufacture();//(Manufacture) manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
+	
+				// Walk to manufacturing building.
+				walkToActivitySpotInBuilding(manufactureBuilding, false);
+			}
+			else {
+				endTask();
+			}
+	
+			// Initialize phase
+			addPhase(MANUFACTURE);
+			setPhase(MANUFACTURE);
 		}
 		else {
 			endTask();
 		}
-
-		skillManager = robot.getBotMind().getSkillManager();
-
-		// Get available manufacturing workshop if any.
-		Building manufactureBuilding = getAvailableManufacturingBuilding(robot);
-		if (manufactureBuilding != null) {
-			workshop = manufactureBuilding.getManufacture();//(Manufacture) manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
-
-			// Walk to manufacturing building.
-			walkToActivitySpotInBuilding(manufactureBuilding, false);
-		}
-		else {
-			endTask();
-		}
-
-		// Initialize phase
-		addPhase(MANUFACTURE);
-		setPhase(MANUFACTURE);
 	}
 
 
