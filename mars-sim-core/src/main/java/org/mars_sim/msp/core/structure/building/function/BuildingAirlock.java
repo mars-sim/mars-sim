@@ -91,7 +91,7 @@ public class BuildingAirlock extends Airlock {
             	// check if the airlock has been sealed from outside and pressurized, ready to 
             	// open the inner door to release the person into the settlement
             	
-//                if (person.isOutside()) {
+                if (person.isOutside()) {
                     // Pump air into the airlock to make it breathable
                 	if (air == null)
                 		air = building.getSettlement().getCompositionOfAir();
@@ -105,19 +105,19 @@ public class BuildingAirlock extends Airlock {
                 	inv.storeUnit(person);
                     BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
 
-//                }
-//                else {
-//                	//if (LocationSituation.BURIED != person.getLocationSituation()) {
-//                    throw new IllegalStateException(person + " is entering " + getEntityName() +
-//                            " from an airlock but is not from outside.");
-//                }
+                }
+                else {
+                	//if (LocationSituation.BURIED != person.getLocationSituation()) {
+                    throw new IllegalStateException(person + " is entering " + getEntityName() +
+                            " from an airlock but is not from outside.");
+                }
             }
             
             else if (DEPRESSURIZED.equals(getState())) { 
             	// check if the airlock has been depressurized, ready to open the outer door to 
             	// get exposed to the outside air and release the person
             	
-//                if (person.isInSettlement()) {
+               if (person.isInSettlement()) {
                     // Upon depressurization, there is heat loss to the Martian air in Heating class
                 	if (heating == null)
                 		heating = building.getThermalGeneration().getHeating();
@@ -136,12 +136,12 @@ public class BuildingAirlock extends Airlock {
                     inv.retrieveUnit(person);
                     BuildingManager.removePersonOrRobotFromBuilding(person, building);
 
-//                }
-//                else {
-//                	//if (LocationSituation.BURIED != person.getLocationSituation()) {
-//                    throw new IllegalStateException(person + " is exiting " + getEntityName() +
-//                            " from an airlock but is not from inside.");
-//                }
+                }
+                else {
+                	//if (LocationSituation.BURIED != person.getLocationSituation()) {
+                    throw new IllegalStateException(person + " is exiting " + getEntityName() +
+                            " from an airlock but is not from inside.");
+                }
             }
             else {
                 logger.severe("Building airlock in incorrect state for exiting: " + getState());

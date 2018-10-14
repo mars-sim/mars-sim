@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -74,8 +73,6 @@ public class ChatUtils {
 			"space agency", "sponsor", 
 			"specialty",
 			"outside", "inside", "container", 
-			"task", "activity", "action", 
-			"mission", "trip","excursion",
 			"building", "associated", "association", "home", "home town",		
 			"garage", "vehicle top container", "vehicle container",  "vehicle park", "vehicle settlement", "vehicle outside", "vehicle inside",			
 			"bed time", "sleep hour"
@@ -84,7 +81,9 @@ public class ChatUtils {
 	public final static String[] ALL_PARTIES_KEYS = new String[] {
 			"bed", "sleep", "lodging", "quarters", 
 			"where", "location", "located",	
-			"job", "role", "career"
+			"job", "role", "career",
+			"task", "activity", "action", "doing", 
+			"mission", "trip", "excursion",
 	};
 	
 	public final static String[] SYSTEM_KEYS = new String[] {
@@ -122,7 +121,9 @@ public class ChatUtils {
 			+ System.lineSeparator();
 
 	public final static String DASHES = " ----------------------------------------- ";
-	
+
+	public final static String DASHES_1 = "----------";
+
 	public static String helpText;
 
 	public static String keywordText;
@@ -354,8 +355,168 @@ public class ChatUtils {
 //		System.out.println("askSettlementStr() in ChatUtils");
 		String questionText = "";
 		StringBuilder responseText = new StringBuilder();
+		
+		
+		if (text.toLowerCase().contains("task") 
+				|| text.toLowerCase().contains("activity")
+				|| text.toLowerCase().contains("doing")
+				|| text.toLowerCase().contains("action")) {
+			questionText = YOU_PROMPT + "What is everybody doing at this moment? ";
+			responseText.append(settlementCache + " : ");
+			responseText.append("Here are the task rosters.");
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			responseText.append("(A). Settlers");
+			responseText.append(System.lineSeparator());
+			
+			Map<String, List<Person>> map =
+					settlementCache.getAllAssociatedPeople().stream().collect(Collectors.groupingBy(Person::getTaskDescription));
+								
+			for (Entry<String, List<Person>> entry : map.entrySet()) {
+				String task = entry.getKey();
+				List<Person> plist = entry.getValue();
+			
+				if (task != null) {
+					responseText.append(System.lineSeparator());
+					responseText.append("  ");
+					responseText.append(task);
+					responseText.append(System.lineSeparator());
+					responseText.append(" ");
+					int num = task.length() + 2;
+					if (num > 0) {
+						for (int i=0; i<num; i++) {
+							responseText.append("-");
+						}
+					}
+					responseText.append(System.lineSeparator());
+									
+				}
+				else {
+					responseText.append(System.lineSeparator());
+					responseText.append("  ");	
+					responseText.append("None");
+					responseText.append(System.lineSeparator());
+					responseText.append(" ");
+					int num = 6;
+					if (num > 0) {
+						for (int i=0; i<num; i++) {
+							responseText.append("-");
+						}
+					}
+					responseText.append(System.lineSeparator());
+				}
+				
+				for (Person p : plist) {
+					responseText.append("  -  ");
+					responseText.append(p.getName());
+					responseText.append(System.lineSeparator());
+				}
+			}
+			
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			responseText.append("(B). Bots");
+			responseText.append(System.lineSeparator());
+			
+			Map<String, List<Robot>> botMap =
+					settlementCache.getAllAssociatedRobots().stream().collect(Collectors.groupingBy(Robot::getTaskDescription));
+								
+			for (Entry<String, List<Robot>> entry : botMap.entrySet()) {
+				String task = entry.getKey();
+				List<Robot> plist = entry.getValue();
+			
+				if (task != null) {
+					responseText.append(System.lineSeparator());
+					responseText.append(" ");					
+					responseText.append(task);
+					responseText.append(System.lineSeparator());
+					responseText.append(" ");
+					int num = task.length() + 2;
+					if (num > 0) {
+						for (int i=0; i<num; i++) {
+							responseText.append("-");
+						}
+					}
+					responseText.append(System.lineSeparator());
+									
+				}
+				else {
+					responseText.append(System.lineSeparator());
+					responseText.append(" ");			
+					responseText.append("None");
+					responseText.append(System.lineSeparator());
+					responseText.append(" ");
+					int num = 6;
+					if (num > 0) {
+						for (int i=0; i<num; i++) {
+							responseText.append("-");
+						}
+					}
+					responseText.append(System.lineSeparator());
+				}
+				
+				for (Robot r : plist) {
+					responseText.append("  -  ");
+					responseText.append(r.getName());
+					responseText.append(System.lineSeparator());
+				}
+			}
+		}
 
-		if (text.toLowerCase().contains("where")
+		else if (text.toLowerCase().contains("mission") || text.toLowerCase().contains("trip")
+				|| text.toLowerCase().contains("excursion")) {
+			questionText = YOU_PROMPT + "What missions are on-going at this moment? ";
+			responseText.append(settlementCache + " : ");
+			responseText.append("Here's the mission roster.");
+			responseText.append(System.lineSeparator());
+			
+			Map<String, List<Person>> map =
+					settlementCache.getAllAssociatedPeople().stream()
+					.collect(Collectors.groupingBy(Person::getMissionDescription));
+								
+			for (Entry<String, List<Person>> entry : map.entrySet()) {
+				String mission = entry.getKey();
+				List<Person> plist = entry.getValue();
+			
+				if (mission != null) {
+					responseText.append(System.lineSeparator());
+					responseText.append(" ");			
+					responseText.append(mission);
+					responseText.append(System.lineSeparator());
+					responseText.append(" ");
+					int num = mission.length() + 2;
+					if (num > 0) {
+						for (int i=0; i<num; i++) {
+							responseText.append("-");
+						}
+					}
+					responseText.append(System.lineSeparator());
+									
+				}
+				else {
+					responseText.append(System.lineSeparator());
+					responseText.append(" ");			
+					responseText.append("None");
+					responseText.append(System.lineSeparator());
+					responseText.append(" ");
+					int num = 6;
+					if (num > 0) {
+						for (int i=0; i<num; i++) {
+							responseText.append("-");
+						}
+					}
+					responseText.append(System.lineSeparator());
+				}
+				
+				for (Person p : plist) {
+					responseText.append("  -  ");
+					responseText.append(p.getName());
+					responseText.append(System.lineSeparator());
+				}
+			}
+		}
+		
+		else if (text.toLowerCase().contains("where")
 				|| text.toLowerCase().contains("location")
 				|| text.toLowerCase().contains("located")) {
 			questionText = YOU_PROMPT + "Where is the settlement ?"; 
@@ -1039,7 +1200,9 @@ public class ChatUtils {
 
 		}
 
-		else if (num == 7 || text.toLowerCase().contains("task") || text.toLowerCase().contains("activity")
+		else if (num == 7 || text.toLowerCase().contains("task") 
+				|| text.toLowerCase().contains("activity")
+				|| text.toLowerCase().contains("doing")
 				|| text.toLowerCase().contains("action")) {
 			questionText = YOU_PROMPT + "What are you doing ?";
 			if (personCache != null) {

@@ -1069,7 +1069,7 @@ public class ExitAirlock extends Task implements Serializable {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if ((airlock != null) && person.equals(airlock.getOperator())) {
 			LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName,
-					person + " ending exiting airlock task prematurely, " + "clearing as airlock operator for "
+					person + " is ending the task of exiting airlock task prematurely and is no longer being the airlock operator for "
 							+ airlock.getEntityName(),
 					null);
 			airlock.clearOperator();

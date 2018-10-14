@@ -1602,6 +1602,23 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return status;
 	}
 	
+	/**
+	 * Return the mission description if a person is on a mission
+	 * 
+	 * @return description
+	 */
+	public String getMissionDescription() {
+		Mission m = null;
+		if (getMind().getMission() != null) {
+			m = getMind().getMission();
+			return m.getDescription();
+		}
+		else {
+			return "";
+		}
+	}
+	
+	
 	@Override
 	public void destroy() {
 		super.destroy();
