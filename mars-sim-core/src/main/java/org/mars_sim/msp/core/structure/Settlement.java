@@ -133,14 +133,20 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private int initialPopulation;
 	private int initialNumOfRobots;
 	private int scenarioID;
-	private int solCache = 0;// , counter30 = 1; // NOTE: can't be static since each settlement needs to keep
-								// tracking of it
+	
+	private int solCache = 0;
+	// NOTE: can't be static since each settlement needs to keep tracking of it
 	private int numShift;
-	private int numA; // number of people with work shift A
-	private int numB; // number of people with work shift B
-	private int numX; // number of people with work shift X
-	private int numY; // number of people with work shift Y
-	private int numZ; // number of people with work shift Z
+	/**  number of people with work shift A */	
+	private int numA;
+	/**  number of people with work shift B */
+	private int numB;
+	/**  number of people with work shift X */	
+	private int numX;
+	/**  number of people with work shift Y */	
+	private int numY;
+	/**  number of people with work shift Z */
+	private int numZ; 
 	private int numOnCall;
 	private int sumOfCurrentManuProcesses = 0;
 	private int cropsNeedingTendingCache = 5;
@@ -153,28 +159,27 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		
 	/** Goods manager update time. */
 	private double goodsManagerUpdateTime = 0D;
-
+	/** The settlement's current indoor temperature. */
 	private double currentTemperature = 22.5;
-
-	private double currentPressure = NORMAL_AIR_PRESSURE; // [in kPa], not Pascal
-
+	/** The settlement's current indoor pressure [in kPa], not Pascal. */
+	private double currentPressure = NORMAL_AIR_PRESSURE; 
 	/** Amount of time (millisols) that the settlement has had zero population. */
 	private double zeroPopulationTime;
-
+	/** The settlement's current meal replenishment rate. */
 	public double mealsReplenishmentRate = 0.6;
-
+	/** The settlement's current dessert replenishment rate. */
 	public double dessertsReplenishmentRate = 0.7;
-
+	/** The settlement's current probability value for ice. */
 	private double iceProbabilityValue = 0;
-
+	/** The settlement's current probability value for regolith. */
 	private double regolithProbabilityValue = 0;
-
+	/** The settlement's current probability value for oxygen. */
 	private double oxygenProbabilityValue = 0;
-
+	/** The settlement's current probability value for methane. */
 	private double methaneProbabilityValue = 0;
-
+	/** The settlement's outside temperature. */
 	private double outside_temperature;
-	/** The maximum distance the rovers are allowed to travel */
+	/** The maximum distance the rovers are allowed to travel. */
 	private double maxMssionRange = 800;
 
 	/** The flag signifying this settlement as the destination of the user customized commander. */ 
@@ -194,26 +199,25 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public transient boolean justReloadedPeople = false;
 	/* Flag showing if the bots list has been reloaded. */
 	public transient boolean justReloadedRobots = false;
-
+	/** The Flag showing if the settlement has been exposed to the last radiation event. */
 	private boolean[] exposed = { false, false, false };
-
+	/** The settlement life support requirements. */
 	private double[][] life_support_value = new double[2][7];
-
+	/** The settlement sponsor. */
 	private String sponsor;
-
-	private String objectiveName;
 	/** The settlement template name. */
 	private String template;
-
+	/** The settlement name. */
 	private String name;
-
+	
+	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType;
-
+	/** The settlement objective type string array. */
 	private final static String[] objectiveArray = new String[] { Msg.getString("ObjectiveType.crop"),
 			Msg.getString("ObjectiveType.manu"), Msg.getString("ObjectiveType.research"),
 			Msg.getString("ObjectiveType.transportation"), Msg.getString("ObjectiveType.trade"),
 			Msg.getString("ObjectiveType.tourism") };
-
+	/** The settlement objective type array. */
 	private final static ObjectiveType[] objectives = new ObjectiveType[] { ObjectiveType.CROP_FARM,
 			ObjectiveType.MANUFACTURING, ObjectiveType.RESEARCH_CENTER, ObjectiveType.TRANSPORTATION_HUB,
 			ObjectiveType.TRADE_TOWN, ObjectiveType.TOURISM };
@@ -231,24 +235,24 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	// Added heating system
 	/** The settlement's heating system. */
 	protected ThermalSystem thermalSystem;
-	// private Inventory inv = getInventory();
+	/** The settlement's chain of command. */
 	private ChainOfCommand chainOfCommand;
-
+	/** The settlement's composition of air. */
 	private CompositionOfAir compositionOfAir;
-
+	/** The settlement's location. */
 	private Coordinates location;
 
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
-	// private Map<Integer, Double> resourceMapCache = new HashMap<>();
+	/** The settlement's resource statistics. */
 	private Map<Integer, Map<Integer, List<Double>>> resourceStat = new HashMap<>();
-
+	/** The settlement's list of citizens. */
 	private Collection<Person> allAssociatedPeople = new ConcurrentLinkedQueue<Person>();
-
+	/** The settlement's list of robots. */
 	private Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
-
+	/** The settlement's map of adjacent buildings. */
 	private Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
-
+	/** The settlement's last dust storm. */
 	private DustStorm storm;
 
 	// Static members
@@ -1073,26 +1077,26 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 
 	public void sampleOneResource(int resourceType) {
-		AmountResource resource = null;
+		int resource = -1;
 
 		if (resourceType == 0) {
-			resource = ResourceUtil.oxygenAR;// LifeSupportType.OXYGEN;
+			resource = ResourceUtil.oxygenID;// LifeSupportType.OXYGEN;
 		} else if (resourceType == 1) {
-			resource = ResourceUtil.hydrogenAR;// "hydrogen";
+			resource = ResourceUtil.hydrogenID;// "hydrogen";
 		} else if (resourceType == 2) {
-			resource = ResourceUtil.carbonDioxideAR;// "carbon dioxide";
+			resource = ResourceUtil.co2ID;// "carbon dioxide";
 		} else if (resourceType == 3) {
-			resource = ResourceUtil.methaneAR;// "methane";
+			resource = ResourceUtil.methaneID;// "methane";
 		} else if (resourceType == 4) {
-			resource = ResourceUtil.waterAR;// LifeSupportType.WATER;
+			resource = ResourceUtil.waterID;// LifeSupportType.WATER;
 		} else if (resourceType == 5) {
-			resource = ResourceUtil.greyWaterAR;// "grey water";
+			resource = ResourceUtil.greyWaterID;// "grey water";
 		} else if (resourceType == 6) {
-			resource = ResourceUtil.blackWaterAR;// "black water";
+			resource = ResourceUtil.blackWaterID;// "black water";
 		} else if (resourceType == 7) {
-			resource = ResourceUtil.rockSamplesAR;// "rock samples";
+			resource = ResourceUtil.rockSamplesID;// "rock samples";
 		} else if (resourceType == 8) {
-			resource = ResourceUtil.iceAR;// "ice";
+			resource = ResourceUtil.iceID;// "ice";
 		}
 
 		if (resourceStat.containsKey(solCache)) {
@@ -1144,21 +1148,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		if (resourceStat.containsKey(sol)) {
 			Map<Integer, List<Double>> map = resourceStat.get(sol);
-			// System.out.println("Sol " + solCache + " : yes to resourceStat.containsKey("
-			// + sol + ")");
-			// System.out.println("map.containsKey(resourceType) is " +
 			// map.containsKey(resourceType));
 			if (map.containsKey(resourceType)) {
 				List<Double> list = map.get(resourceType);
-				// System.out.println("sol : " + solCache + " solType : " + solType + " list is
-				// " + list);
 				size = list.size();
 				for (int i = 0; i < size; i++) {
 					average += list.get(i);
-					// System.out.println("list.get(i) is " + list.get(i));
 				}
 
-				// System.out.println("size is " + size + " average is " + average);
 				average = average / size;
 
 			} else {
@@ -1200,11 +1197,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 *
 	 */
 	public void getFoodEnergyIntakeReport() {
-		// System.out.println("\n<<< Sol " + solCache + " End of Day Food Energy
-		// Intake Report at " + this.getName() + " >>>");
-		// System.out.println("** An settler on Mars is estimated to consume
-		// about 10100 kJ per sol **");
-		// Iterator<Person> i = getInhabitants().iterator();
 		Iterator<Person> i = getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			Person p = i.next();
@@ -1222,21 +1214,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// check for the passing of each day
 		int solElapsed = marsClock.getMissionSol();
 		if (solCache != solElapsed) {
-
 			// getFoodEnergyIntakeReport();
-
 			reassignWorkShift();
-
 			refreshResourceStat();
-
 			refreshSleepMap(solElapsed);
-
 			// getSupplyDemandSampleReport(solElapsed);
-
 			refreshDataMap(solElapsed);
 
 			solCache = solElapsed;
-
 		}
 	}
 
@@ -1282,10 +1267,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/*
 	 * Reassigns the work shift for all
 	 */
-	// TODO: should call this method at, say, 800 millisols, not right at 1000
-	// millisols
 	public void reassignWorkShift() {
-
+		// TODO: should call this method at, say, 800 millisols, not right at 1000
+		// millisols
 		Collection<Person> people = getIndoorPeople();
 		int pop = people.size();
 
@@ -1319,12 +1303,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 						// For now, we may assume it will usually be X or Z, but Y
 						// since Y is usually where midday is at unless a person is at polar region.
-
 						if (oldShift == ShiftType.Y) {
 
 							boolean x_ok = isWorkShiftSaturated(ShiftType.X, false);
 							boolean z_ok = isWorkShiftSaturated(ShiftType.Z, false);
-
 							// TODO: Instead of throwing a dice,
 							// take the shift that has less sunlight
 							int rand;
@@ -1345,9 +1327,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 								newShift = ShiftType.Z;
 
 							p.setShiftType(newShift);
-							// System.out.println(p + " old shift : " + oldShift + " new shift : " +
-							// newShift);
-
 						}
 
 					} // end of if (isAstronomer)
@@ -1364,8 +1343,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 							// to avoid taking a work shift that overlaps his sleep hour
 
 							if (newShift != oldShift && tendency > 50) { // sanity check
-								// System.out.println(this.getName() + "-- " + p + "'s old shift : " + oldShift
-								// + ", new shift : " + newShift);
 								p.setShiftType(newShift);
 							}
 						}
@@ -1380,8 +1357,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 							if (!oldShift_ok) {
 
 								if (newShift != oldShift && tendency > 50) { // sanity check
-									// System.out.println(this.getName() + "-- " + p + "'s old shift : " + oldShift
-									// + ", new shift : " + newShift);
 									p.setShiftType(newShift);
 								}
 							}
@@ -1397,8 +1372,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 					ShiftType oldShift = p.getTaskSchedule().getShiftType();
 
 					if (oldShift != ShiftType.ON_CALL) {
-						// System.out.println(p + " old shift : " + oldShift + " new shift : " +
-						// ShiftType.ON_CALL);
 						p.setShiftType(ShiftType.ON_CALL);
 					}
 				}
@@ -1434,7 +1407,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		int demandSuccessfulRequest1 = getInventory().getAmountDemandMetRequest(sample1);
 		int demandSuccessfulRequest2 = getInventory().getAmountDemandMetRequest(sample2);
-
 		// int numOfGoodsInDemandAmountMap = getInventory().getDemandAmountMapSize();
 		// int numOfGoodsInDemandTotalRequestMap =
 		// getInventory().getDemandTotalRequestMapSize();
@@ -1447,7 +1419,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// numOfGoodsInDemandSuccessfulRequestMap);
 		// logger.info(" numOfGoodsInDemandAmountMap : " +
 		// numOfGoodsInDemandAmountMap);
-
 		logger.info(sample1 + " Supply Amount : " + Math.round(supplyAmount1 * 100.0) / 100.0);
 		logger.info(sample1 + " Supply Request : " + supplyRequest1);
 
@@ -1570,8 +1541,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		while (i.hasNext()) {
 			Person person = i.next();
-			if (person.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT
-					&& initiator.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
+			if (person.isInSettlement() //.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT
+					&& initiator.isInSettlement()) {//getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
 				Task task = person.getMind().getTaskManager().getTask();
 
 				if (sameBuilding) {

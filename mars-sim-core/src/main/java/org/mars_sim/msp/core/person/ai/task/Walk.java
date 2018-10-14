@@ -772,7 +772,12 @@ implements Serializable {
 	        	if (building != null) { // && step.building != null) {
 		        	// Going from building to step.building
 		        	//setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
-		            addSubTask(new WalkSettlementInterior(person, step.building, x, y));
+	        		if (step.building != null)
+	        			addSubTask(new WalkSettlementInterior(person, step.building, x, y));
+	        		else {
+		    			logger.severe(person + " in " + person.getBuildingLocation() + " can't find a destination building to go.");
+		            	endTask();
+	        		}
 	        	}
 	            else {
 	    			logger.severe(person + " is not in a building.");

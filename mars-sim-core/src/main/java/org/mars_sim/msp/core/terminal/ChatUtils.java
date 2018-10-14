@@ -12,15 +12,19 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.OrbitInfo;
@@ -55,38 +59,70 @@ public class ChatUtils {
 	public final static String REQUEST_KEYS = YOU_PROMPT
 			+ "I need a list of the keywords. Would you tell me what they are ?";
 
+	public final static String[] SETTLEMENT_KEYS = new String[] {
+			"weather", 
+			"people", "settler", "persons",
+			"robot", "bot"
+	};
+	
+	public final static String[] PERSON_KEYS = new String[] {
+			"feeling", "status", 
+			"birth", "age", "how old", "born",
+			"friend",
+			"relationship", "social", "relation",
+			"country", "nationality", 
+			"space agency", "sponsor", 
+			"specialty",
+			"outside", "inside", "container", 
+			"task", "activity", "action", 
+			"mission", "trip","excursion",
+			"building", "associated", "association", "home", "home town",		
+			"garage", "vehicle top container", "vehicle container",  "vehicle park", "vehicle settlement", "vehicle outside", "vehicle inside",			
+			"bed time", "sleep hour"
+	};
+	
+	public final static String[] ALL_PARTIES_KEYS = new String[] {
+			"bed", "sleep", "lodging", "quarters", 
+			"where", "location", "located",	
+			"job", "role", "career"
+	};
+	
+	public final static String[] SYSTEM_KEYS = new String[] {
+			"settlement", 
+			"vehicle", "rover", 
+			"hi", "hello", "hey"
+	};
+	
 	public final static String HELP_TEXT = System.lineSeparator()
-			+ "    -------------------- H E L P -------------------- " + System.lineSeparator()
+			+ "    ------------------------- H E L P ------------------------- " + System.lineSeparator()
 			+ "(1) Type in the NAME of a person, a bot, or a settlement to connect with." + System.lineSeparator()
 			+ "(2) Use KEYWORDS or type in a number between 0 and 18 (specific QUESTIONS on a person/bot/vehicle/settlement)."
 			+ System.lineSeparator() + "(3) Type '/k' or 'key' to see a list of KEYWORDS." + System.lineSeparator()
 			+ "(4) Type 'settlement' to obtain the NAMES of the established settlements." + System.lineSeparator()
-			+ "(5) Type 'bye', '/b', 'exit', 'x', 'quit', '/q' to close the chat box." + System.lineSeparator()
+			+ "(5) Type 'bye', '/b', 'exit', 'x', 'quit', '/q' to leave the chat." + System.lineSeparator()
 			+ "(6) Type '?', 'help', '/?', '/h' for this help page." + System.lineSeparator();
 
 	public final static String HELP_HEIGHT = "(7) Type 'y_' to change the chat box height; '/y1'-> 256 pixels (default) '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
 			+ System.lineSeparator();
 
 	public final static String KEYWORDS_TEXT = System.lineSeparator()
-			+ "    -------------------- K E Y W O R D S -------------------- " + System.lineSeparator()
-			+ "(1) 'weather', 'friend', 'relationship', 'relation', 'social', 'people', 'settler', 'persons', 'robot', 'bot', "
-			+ "'status', 'feeling', 'how old', 'age', 'birth', 'country', 'nationality', 'job', 'role', 'specialty', 'career', "
-			+ System.lineSeparator() + "(2) 'where', 'location', 'located', 'task', 'activity', 'action', 'mission', "
-			+ System.lineSeparator() + "(3) 'bed', 'bed time', 'quarters', 'sleep', 'sleep hour', 'building', 'inside', 'outside', ' container'"
-			+ System.lineSeparator()
-			+ "(4) 'settlement', 'settlements', 'associated', 'association', 'home', 'home town',"
-			+ System.lineSeparator() // 'buried settlement', 'buried'
-			+ "(5) 'garage', 'vehicle inside' , 'vehicle outside', 'vehicle park', 'vehicle settlement', 'vehicle container', 'vehicle top container'"
-			+ System.lineSeparator() + "    -------------------- N U M E R A L -------------------- "
-			+ System.lineSeparator() + "(6) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement"
-			+ System.lineSeparator() + "    --------------------  M I S C S -------------------- "
-			+ System.lineSeparator() + "(7) 'bye', '/b', 'exit', 'x', 'quit', '/q' to close the chat box"
-			+ System.lineSeparator() + "(8) 'help', '/h' for the help page" 
+			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
+			+ "(1) FOR MARSNET SYSTEM : " + convertKeywords(SYSTEM_KEYS) + "or any NAMES of a settlement/vehicle/bot/person"
+			+ System.lineSeparator() + "(2) FOR SETTLEMENT : " + convertKeywords(SETTLEMENT_KEYS)
+			+ System.lineSeparator() + "(3) FOR SETTLER : " + convertKeywords(PERSON_KEYS)
+			+ System.lineSeparator() + "(4) FOR ALL PARTIES : " + convertKeywords(ALL_PARTIES_KEYS)
+			+ System.lineSeparator() + "    ------------------------- N U M E R A L ------------------------- "
+			+ System.lineSeparator() + "(5) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement"
+			+ System.lineSeparator() + "    --------------------------  M I S C S -------------------------- "
+			+ System.lineSeparator() + "(6) 'bye', '/b', 'exit', 'x', 'quit', '/q' to leave the chat"
+			+ System.lineSeparator() + "(7) 'help', '/h' for the help page" 
 			+ System.lineSeparator();
 
-	public final static String KEYWORDS_HEIGHT = "(9) '/y1' to reset height to 256 pixels (by default) after closing chat box. '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
+	public final static String KEYWORDS_HEIGHT = "(8) '/y1' to reset height to 256 pixels (by default) after closing chat box. '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
 			+ System.lineSeparator();
 
+	public final static String DASHES = " ----------------------------------------- ";
+	
 	public static String helpText;
 
 	public static String keywordText;
@@ -127,6 +163,14 @@ public class ChatUtils {
 		relationshipManager = Simulation.instance().getRelationshipManager();
 	}
 
+	public static String convertKeywords(String[] keywords) {
+		String text = "";
+		for (int i=0 ; i <keywords.length; i++) {
+			text = text + keywords[i] + ", ";
+		}
+		return text;
+	}
+	
 	/**
 	 * Asks for clarification
 	 * 
@@ -311,29 +355,91 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuilder responseText = new StringBuilder();
 
-		if (text.toLowerCase().contains("role")) {
+		if (text.toLowerCase().contains("where")
+				|| text.toLowerCase().contains("location")
+				|| text.toLowerCase().contains("located")) {
+			questionText = YOU_PROMPT + "Where is the settlement ?"; 
+			// TODO: add to tell nearby georgraphical features. e.g. at what basin
+			responseText.append(settlementCache + " : ");
+			responseText.append("We're located at ");
+			responseText.append(settlementCache.getCoordinates());
+		}
+		
+		else if (text.toLowerCase().contains("country")
+				|| text.toLowerCase().contains("nation")
+				|| text.toLowerCase().contains("nationality")) {
+			questionText = YOU_PROMPT + "What countries are the people of this settlement composed of ?";
+			responseText.append(System.lineSeparator());
+			responseText.append(settlementCache + " : ");
+			responseText.append("See below.");
+			
+//			List<Person> list = new ArrayList<>(settlementCache.getAllAssociatedPeople());
+			
+//			String oneLiner = settlementCache.getAllAssociatedPeople().stream()
+//					.map(Person::getCountry)  
+//					.collect(Collectors.joining(", ", "Countries: ", "."));		
+//			responseText.append(oneLiner);
+			
+//			Map<String, Person> map = settlementCache.getAllAssociatedPeople().stream()
+//					.collect(Collectors.toMap(Person::getName, Function.identity())); 
+			
+			Map<String, List<Person>> map =
+					settlementCache.getAllAssociatedPeople().stream().collect(Collectors.groupingBy(Person::getCountry));
+								
+			for (Entry<String, List<Person>> entry : map.entrySet()) {
+				String country = entry.getKey();
+				String sponsor = UnitManager.mapCountry2Sponsor(country);
+				responseText.append(System.lineSeparator());
+				responseText.append(" ----- ");
+				responseText.append(country);
+				responseText.append(" (");
+				responseText.append(sponsor);
+				responseText.append(") ");
+				responseText.append(" ----- ");
+				responseText.append(System.lineSeparator());
+				List<Person> list = entry.getValue();
+				for (int i=0; i<list.size(); i++) {
+					responseText.append("(" + (i+1) + "). ");
+					responseText.append(list.get(i));
+					responseText.append(System.lineSeparator());
+				}
+			}
+		}
+		
+		else if (text.toLowerCase().contains("role")) {
 			questionText = YOU_PROMPT + "What are the roles ?";
-
+			responseText.append(System.lineSeparator());
+			responseText.append(settlementCache + " : ");
+			responseText.append("See below.");
+			
 			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
-					.sorted((p1, p2)-> p1.getRole().getType().getName().compareTo(p2.getRole().getType().getName()))
+//					.sorted(Comparator.reverseOrder())
+//					.sorted((f1, f2) -> Long.compare(f2.getRole().getType().ordinal(), f1.getRole().getType().ordinal()))
+					//.sorted((p1, p2)-> p1.getRole().getType().getName().compareTo(p2.getRole().getType().getName()))
+					.sorted(Comparator.comparing(o -> o.getRole().getType().ordinal()))
 					.collect(Collectors.toList());
 			
 			for (Person p : list) {
 				String role = p.getRole().getType().getName();
 				responseText.append(p);
 				int num = 30 - p.getName().length();// - role.length();
-				for (int i=0; i<num; i++) {
-					responseText.append(" ");
+				if (num > 0) {
+					for (int i=0; i<num; i++) {
+						responseText.append(" ");
+					}
 				}
-//				responseText.append("        \t\t        ");
 				responseText.append(role);
 				responseText.append(System.lineSeparator());
 			} 
 		}
 		
-		else if (text.contains("job")) {
+		else if (text.contains("job")
+				|| text.contains("career")) {
 			questionText = YOU_PROMPT + "What are the jobs ?";
-
+			responseText.append(System.lineSeparator());
+			responseText.append(settlementCache + " : ");
+			responseText.append("See below.");
+			
 			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
 					.sorted((p1, p2)-> p1.getMind().getJob().getName(p1.getGender()).compareTo(p2.getMind().getJob().getName(p2.getGender())))
 					.collect(Collectors.toList());
@@ -342,10 +448,11 @@ public class ChatUtils {
 				String job = p.getMind().getJob().getName(p.getGender());
 				responseText.append(p);
 				int num = 30 - p.getName().length();// - job.length();
-				for (int i=0; i<num; i++) {
-					responseText.append(" ");
+				if (num > 0) {
+					for (int i=0; i<num; i++) {
+						responseText.append(" ");
+					}
 				}
-//				responseText.append("        \t\t        ");
 				responseText.append(job);
 				responseText.append(System.lineSeparator());
 			}
@@ -354,6 +461,9 @@ public class ChatUtils {
 		
 		else if (text.toLowerCase().contains("weather")) {
 			questionText = YOU_PROMPT + "How's the weather in " + settlementCache.toString() + " ?";
+			responseText.append(System.lineSeparator());
+			responseText.append(settlementCache + " : ");
+			responseText.append("See below.");
 			
 			if (marsClock == null) marsClock = Simulation.instance().getMasterClock().getMarsClock();
 			if (mars == null) mars = Simulation.instance().getMars();
@@ -434,11 +544,11 @@ public class ChatUtils {
 			int indoor = settlementCache.getIndoorPeopleCount();
 			int outdoor = total - indoor;
 			questionText = YOU_PROMPT + "Who are the settlers ? ";
-			responseText.append(settlementCache + " : we have a total of " 
+			responseText.append(settlementCache + " : We have a total of " 
 					+ total + " settlers "
 					+ "(indoor : " + indoor
 					+ ", outdoor : " + outdoor
-					+ ") as follows :");
+					+ ")");
 
 			List<Person> namelist = new ArrayList<>(list);
 			Collections.sort(namelist);
@@ -458,6 +568,8 @@ public class ChatUtils {
 				|| text.toLowerCase().contains("quarters")) {
 
 			questionText = YOU_PROMPT + "how well are the beds utilized ? ";
+			responseText.append(System.lineSeparator());
+			
 			responseText.append("Total number of beds : ");
 			responseText.append(settlementCache.getPopulationCapacity());
 			responseText.append(System.lineSeparator());
@@ -472,46 +584,86 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 		}
 
-		else if (text.equalsIgnoreCase("vehicle") || text.equalsIgnoreCase("rover") 
-				|| text.equalsIgnoreCase("rover")
-				|| text.equalsIgnoreCase("vehicle")) {
+		else if (text.equalsIgnoreCase("vehicle") || text.equalsIgnoreCase("rover")) {
 
 			questionText = YOU_PROMPT + "What are the vehicles in the settlement ? ";
 			responseText.append(System.lineSeparator());
-			responseText.append("     ----- Rovers/Vehicles Inventory -----");
+			
+			Collection<Vehicle> list = settlementCache.getAllAssociatedVehicles();
+			
+			responseText.append(DASHES);
 			responseText.append(System.lineSeparator());
-			responseText.append("(1). Total : ");
+			int num = (DASHES.length() - settlementCache.getName().length())/2;
+			if (num > 0) {
+				for (int i=0; i<num; i++) {
+					responseText.append(" ");
+				}
+			}
+			
+			responseText.append(settlementCache.getName());
+			responseText.append(System.lineSeparator());
+			responseText.append(DASHES);
+			responseText.append(System.lineSeparator());
+				
+			responseText.append("(1).  Grand Total : ");
 			responseText.append(settlementCache.getAllAssociatedVehicles().size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(2). Total on Mission : ");
+			responseText.append("(2).  # on Mission : ");
 			responseText.append(settlementCache.getMissionVehicles().size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(3). Total NOT on Mission : ");
-			responseText.append(settlementCache.getParkedVehicleNum());
-			responseText.append(System.lineSeparator());
-			responseText.append("(4). # of Cargo Rovers on Mission : ");
+			responseText.append("(2a). # of Cargo Rovers on Mission : ");
 			responseText.append(settlementCache.getCargoRovers(2).size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(5). # of Transport Rovers on Mission : ");
+			responseText.append("(2b). # of Transport Rovers on Mission : ");
 			responseText.append(settlementCache.getTransportRovers(2).size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(6). # of Explorer Rovers on Mission : ");
+			responseText.append("(2c). # of Explorer Rovers on Mission : ");
 			responseText.append(settlementCache.getExplorerRovers(2).size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(7). # of Light Utility Vehicles (LUVs) on Mission : ");
+			responseText.append("(2d). # of Light Utility Vehicles (LUVs) on Mission : ");
 			responseText.append(settlementCache.getLUVs(2).size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(8). # of Parked Cargo Rovers : ");
+			
+			responseText.append("(3).  # NOT on mission : ");
+			responseText.append(settlementCache.getParkedVehicleNum());
+			responseText.append(System.lineSeparator());
+			responseText.append("(3a). # of Parked Cargo Rovers : ");
 			responseText.append(settlementCache.getCargoRovers(1).size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(9). # of Parked Transport Rovers : ");
+			responseText.append("(3b). # of Parked Transport Rovers : ");
 			responseText.append(settlementCache.getTransportRovers(1).size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(10). # of Parked Explorer Rovers : ");
+			responseText.append("(3c). # of Parked Explorer Rovers : ");
 			responseText.append(settlementCache.getExplorerRovers(1).size());
 			responseText.append(System.lineSeparator());
-			responseText.append("(11). # of Parked Light Utility Vehicles (LUVs) : ");
+			responseText.append("(3d). # of Parked Light Utility Vehicles (LUVs) : ");
 			responseText.append(settlementCache.getLUVs(1).size());
+			responseText.append(System.lineSeparator());
+			
+			responseText.append(System.lineSeparator());
+			responseText.append("      ----------------------------");
+			responseText.append(System.lineSeparator());
+			responseText.append("           I n v e n t o r y");
+			responseText.append(System.lineSeparator());
+			responseText.append("      ----------------------------");
+			responseText.append(System.lineSeparator());
+			
+			List<Vehicle> vlist = list.stream()
+					.sorted((p1, p2)-> p1.getVehicleType().compareTo(p2.getVehicleType()))
+					.collect(Collectors.toList());
+			
+			for (Vehicle v : vlist) {
+				responseText.append(v.getName());
+				int num2 = 25 - v.getName().length();
+				if (num2 > 0) {
+					for (int i=0; i<num2; i++) {
+						responseText.append(" ");
+					}
+				}
+				responseText.append(v.getVehicleType());
+				responseText.append(System.lineSeparator());
+			}
+		
 			responseText.append(System.lineSeparator());
 		}
 
@@ -519,7 +671,7 @@ public class ChatUtils {
 				|| text.equalsIgnoreCase("robot") || text.equalsIgnoreCase("robot")) {
 			questionText = YOU_PROMPT + "What kind of bots do you have? ";
 			responseText.append(settlementCache + " : we have " 
-					+ settlementCache.getNumBots() + " bots as follows :");
+					+ settlementCache.getNumBots() + " bots.");
 			Collection<Robot> list = settlementCache.getRobots();
 			List<Robot> namelist = new ArrayList<>(list);
 			Collections.sort(namelist);
@@ -591,14 +743,29 @@ public class ChatUtils {
 		responseText.append(name);
 		responseText.append(": ");
 
-		if (text.toLowerCase().contains("friend")) {
+		if (text.equalsIgnoreCase("space agency")
+				|| text.toLowerCase().contains("sponsor")) {
+			questionText = YOU_PROMPT + "What is your sponsoring space agency ? ";
+
+			if (personCache != null) {
+				String sponsor = personCache.getReportingAuthority().getOrg().getName();
+				responseText.append("I was sponsored by ");
+				responseText.append(sponsor);
+
+			} else if (robotCache != null) {
+				responseText.append("I was assembled on ");
+				responseText.append(robotCache.getSettlement().getName());
+			}
+
+		}
+	
+		else if (text.toLowerCase().contains("friend")) {
 			questionText = YOU_PROMPT + "Who's your best friend ?";
 
 			if (relationshipManager == null)
 				relationshipManager = Simulation.instance().getRelationshipManager();
 			
 			Map<Person, Double> bestFriends = relationshipManager.getBestFriends(personCache);
-//			System.out.println("bestFriends : " + bestFriends);
 			if (bestFriends.isEmpty()) {
 				responseText.append("I don't have any friends yet.");
 			}
@@ -807,7 +974,7 @@ public class ChatUtils {
 			}
 
 		}
-
+	
 		else if (num == 4 || text.toLowerCase().contains("outside") || text.toLowerCase().contains("inside")
 				|| text.toLowerCase().contains("container")) {
 			questionText = YOU_PROMPT + "Are you inside or outside?";
@@ -1354,12 +1521,11 @@ public class ChatUtils {
 	}
 
 	/*
-	 * Parses the text and interprets the contents in the chat box
+	 * Asks the system a question
 	 * 
 	 * @param input text
 	 */
-	public static String parseText(String text) {
-//		System.out.println("parseText() in ChatUtils");
+	public static String askSystem(String text) {
 		StringBuilder responseText = new StringBuilder();
 
 		// String SYSTEM_PROMPT = "System : ";
@@ -1426,7 +1592,7 @@ public class ChatUtils {
 		}
 
 		// Add asking about settlements in general
-		else if (text.toLowerCase().equals("settlement") || text.toLowerCase().equals("settlements")) {
+		else if (text.toLowerCase().contains("settlement")) {
 
 			// questionText = YOU_PROMPT + "What are the names of the settlements ?";
 
@@ -1480,20 +1646,49 @@ public class ChatUtils {
 		}
 
 		// Add asking about vehicles in general
-		else if (text.toLowerCase().equals("vehicle") || text.toLowerCase().equals("vehicles")) {
-
+		else if (text.toLowerCase().contains("vehicle") || text.toLowerCase().contains("rover")) {
 			// questionText = YOU_PROMPT + "What are the names of the vehicles ?";
-
+			responseText.append(SYSTEM_PROMPT);
+			responseText.append("Here's the roster list of vehicles in each settlement.");
+			responseText.append(System.lineSeparator());
+			
 			// Creates an array with the names of all of settlements
 			List<Settlement> settlementList = new ArrayList<Settlement>(
 					Simulation.instance().getUnitManager().getSettlements());
 
 			for (Settlement s : settlementList) {
 				Collection<Vehicle> list = s.getAllAssociatedVehicles();
-				responseText.append(SYSTEM_PROMPT);
-				responseText.append(s);
-				responseText.append(" has ");
-				responseText.append(list);
+				
+				responseText.append(DASHES);
+				responseText.append(System.lineSeparator());
+				int num = (DASHES.length() - s.getName().length())/2;
+				if (num > 0) {
+					for (int i=0; i<num; i++) {
+						responseText.append(" ");
+					}
+				}
+				
+				responseText.append(s.getName());
+				responseText.append(System.lineSeparator());
+				responseText.append(DASHES);
+				responseText.append(System.lineSeparator());
+				
+				List<Vehicle> vlist = list.stream()
+						.sorted((p1, p2)-> p1.getVehicleType().compareTo(p2.getVehicleType()))
+						.collect(Collectors.toList());
+				
+				for (Vehicle v : vlist) {
+					responseText.append(v.getName());
+					int num2 = 25 - v.getName().length();
+					if (num2 > 0) {
+						for (int i=0; i<num2; i++) {
+							responseText.append(" ");
+						}
+					}
+					responseText.append(v.getVehicleType());
+					responseText.append(System.lineSeparator());
+				}
+			
 				responseText.append(System.lineSeparator());
 			}
 

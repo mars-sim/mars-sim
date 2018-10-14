@@ -78,7 +78,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	        boolean quit = false;
 	          
 	        while (!quit) {
-	        	String prompt = "Which party do you want to connect with >";
+	        	String prompt = "MarsNet System >";
 
 	        	if (ChatUtils.personCache != null)
 	        		prompt = "Connected with " + ChatUtils.personCache.toString() +" >";
@@ -156,7 +156,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 			terminal.printf(System.lineSeparator());
 	        //ChatUtils.setConnectionMode(0);
 			// Call ChatUtils' parseText	
-			responseText = ChatUtils.parseText(text);
+			responseText = ChatUtils.askSystem(text);
 		}
 		
 		// print question

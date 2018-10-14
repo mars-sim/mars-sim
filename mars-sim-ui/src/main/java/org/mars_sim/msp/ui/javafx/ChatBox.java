@@ -332,7 +332,7 @@ public class ChatBox extends BorderPane {
 		else {
 	        //ChatUtils.setConnectionMode(false);
 			// Call ChatUtils' parseText
-			responseText = ChatUtils.parseText(text);
+			responseText = ChatUtils.askSystem(text);
 		}
 		
 		if (len > 0)

@@ -60,11 +60,11 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
         	//NOTE: sometimes enum is null. sometimes it is NOT. why?
         	RoleType roleType = person.getRole().getType();
 
-            if (roleType.equals(RoleType.PRESIDENT)
-                	|| roleType.equals(RoleType.MAYOR)
-            		|| roleType.equals(RoleType.COMMANDER)
-        			|| roleType.equals(RoleType.SUB_COMMANDER)
-        			|| (roleType.equals(RoleType.MISSION_SPECIALIST) && (person.getAssociatedSettlement().getNumCitizens() <= 4))) {
+            if (roleType != null && roleType == RoleType.PRESIDENT
+                	|| roleType == RoleType.MAYOR
+            		|| roleType == RoleType.COMMANDER
+        			|| roleType == RoleType.SUB_COMMANDER
+        			|| (roleType == RoleType.MISSION_SPECIALIST && person.getAssociatedSettlement().getNumCitizens() <= 4)) {
 
 //	            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
 //            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
@@ -82,26 +82,27 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 
 		            result += 10D;
 
-
 	        	    Iterator<Person> i = person.getAssociatedSettlement().getAllAssociatedPeople().iterator();
 	                while (i.hasNext()) {
 	                    Person p = i.next();
 
+	                    RoleType role2 = p.getRole().getType();
+	                    
 	                    // TODO: should commander and sub-commander approve his/her own job reassignment ?
-	                    if (roleType.equals(RoleType.SUB_COMMANDER)
-		                    && p.getRole().getType().equals(RoleType.SUB_COMMANDER))
+	                    if (roleType == RoleType.SUB_COMMANDER
+		                    && role2 != null && role2 == RoleType.SUB_COMMANDER)
 	    		            result -= 25D;
 
-	                    else if (roleType.equals(RoleType.COMMANDER)
-			                    && p.getRole().getType().equals(RoleType.COMMANDER))
+	                    else if (roleType == RoleType.COMMANDER
+			                    && role2 != null && role2 == RoleType.COMMANDER)
 	    		            result -= 50D;
 
-	                    else if (roleType.equals(RoleType.MAYOR)
-			                    && p.getRole().getType().equals(RoleType.MAYOR))
+	                    else if (roleType == RoleType.MAYOR
+			                    && role2 != null && role2 == RoleType.MAYOR)
 	                    	result -= 25D;
 
-		                else if (roleType.equals(RoleType.PRESIDENT)
-				                 && p.getRole().getType().equals(RoleType.PRESIDENT))
+		                else if (roleType == RoleType.PRESIDENT
+				                 && role2 != null && role2 == RoleType.PRESIDENT)
 		    		        result -= 50D;
 	                    
 	                    List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();

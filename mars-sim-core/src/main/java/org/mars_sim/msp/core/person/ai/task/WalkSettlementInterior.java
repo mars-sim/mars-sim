@@ -328,16 +328,18 @@ implements Serializable {
 
         	if (person != null) {
         		Building startBuilding = BuildingManager.getBuilding(person);
-                logger.finer(person.getName() + " walked from " + startBuilding.getNickName() + " to " +
-                        destBuilding.getNickName());
+        		if (startBuilding == null || destBuilding == null) 
+        			System.out.println("[" + person.getSettlement() + "] " + person + " is leaving " + startBuilding + " & going to " + destBuilding);
+                //logger.finer(person.getName() + " walked from " + startBuilding.getNickName() + " to " +
+                //        destBuilding.getNickName());
                 InsidePathLocation location = walkingPath.getNextPathLocation();
                 person.setXLocation(location.getXLocation());
                 person.setYLocation(location.getYLocation());
         	}
         	else if (robot != null) {
         		Building startBuilding = BuildingManager.getBuilding(robot);
-                logger.finer(robot.getName() + " walked from " + startBuilding.getNickName() + " to " +
-                        destBuilding.getNickName());
+                //logger.finer(robot.getName() + " walked from " + startBuilding.getNickName() + " to " +
+                //        destBuilding.getNickName());
                 InsidePathLocation location = walkingPath.getNextPathLocation();
                 robot.setXLocation(location.getXLocation());
                 robot.setYLocation(location.getYLocation());

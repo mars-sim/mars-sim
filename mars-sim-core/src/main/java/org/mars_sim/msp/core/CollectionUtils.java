@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.terminal.ChatUtils;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -330,83 +331,17 @@ public class CollectionUtils {
 
 		// Creates an array with the names of all of people and robots
 		List<String> nameList = new ArrayList<>();
-
-		nameList.add("settlement");
-		nameList.add("settlements");
 		
-		// Questions regarding a settlement 
-		nameList.add("weather");
-		
-		nameList.add("people");
-		nameList.add("settler");
-		nameList.add("persons");
-		
-		nameList.add("robot");
-		nameList.add("bot");
-
-		nameList.add("bed");
-		nameList.add("sleep");
-		nameList.add("lodging");
-		nameList.add("quarters");
-
-		nameList.add("vehicle");
-		nameList.add("rover");
-		
-		// Questions regarding a person/robot
-		nameList.add("friend");
-		nameList.add("relationship");
-		nameList.add("social");
-		nameList.add("relation");
-		
-		nameList.add("feeling");
-		nameList.add("status");
-
-		nameList.add("birth");
-		nameList.add("age");
-		nameList.add("how old");
-		nameList.add("born");
-
-		nameList.add("job");
-		nameList.add("role");
-		nameList.add("specialty");
-		nameList.add("career");
-
-		nameList.add("country");
-		nameList.add("nationality");
-		
-		nameList.add("outside");
-		nameList.add("inside");
-		nameList.add("container");
-
-		nameList.add("where");
-		nameList.add("location");
-		nameList.add("located");
-
-		nameList.add("task");
-		nameList.add("activity");
-		nameList.add("action");
-		nameList.add("mission");
-		nameList.add("trip");
-		nameList.add("excursion");
-
-		nameList.add("building");
-		nameList.add("associated");
-		nameList.add("association");
-		nameList.add("home");
-		nameList.add("home town");
-		
-		nameList.add("vehicle top container");		
-		nameList.add("vehicle container");
-		nameList.add("garage");
-		nameList.add("vehicle park");
-		nameList.add("vehicle settlement");
-		nameList.add("vehicle outside");		
-		nameList.add("vehicle inside");
-		
-		nameList.add("bed time");
-		nameList.add("sleep hour");
+		// Questions for mars net chat system
+		nameList.addAll(Arrays.asList(ChatUtils.SYSTEM_KEYS));
+		// Questions common to all parties	
+		nameList.addAll(Arrays.asList(ChatUtils.ALL_PARTIES_KEYS));
+		// Questions unique to a settlement 
+		nameList.addAll(Arrays.asList(ChatUtils.SETTLEMENT_KEYS));
+		// Questions unique to a person/robot
+		nameList.addAll(Arrays.asList(ChatUtils.PERSON_KEYS));			
 				
-				
+		
 		nameList.addAll(createShortcutHelp());
 		
 		Iterator<Settlement> i = settlementList.iterator();

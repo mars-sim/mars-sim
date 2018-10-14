@@ -80,7 +80,7 @@ public enum ReportingAuthorityType {
 	}
 
 	/**
-	 * gives back a list of all valid values for the ReportingAuthorityType enum.
+	 * Returns a list of ReportingAuthorityType enum.
 	 */
 	public static List<ReportingAuthorityType> valuesList() {
 		return Arrays.asList(ReportingAuthorityType.values());

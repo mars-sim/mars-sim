@@ -2169,7 +2169,7 @@ public class UnitManager implements Serializable {
 		return result;
 	}
 
-	public String getCountry(String sponsor) {
+	public static String getCountry(String sponsor) {
 
 		if (sponsor.contains(ReportingAuthorityType.CNSA.getName()))
 			return "China";
@@ -2220,6 +2220,16 @@ public class UnitManager implements Serializable {
 	}
 	
 	/**
+	 * Maps the country to its sponsor
+	 * 
+	 * @param country
+	 * @return sponsor
+	 */
+	public static String mapCountry2Sponsor(String country) {
+		return getSponsorByCountryID(getCountryID(country));
+	}
+	
+	/**
 	 * Create the country list
 	 * 
 	 */
@@ -2260,7 +2270,7 @@ public class UnitManager implements Serializable {
 //		return countries;
 //	}
 
-	public int getCountryID(String country) {
+	public static int getCountryID(String country) {
 		return countries.indexOf(country);
 	}
 
