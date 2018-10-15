@@ -71,11 +71,6 @@ implements Serializable {
 	private LocalBoundedObject interiorObject;
 	private Point2D returnInsideLoc;
 	
-	//private static MarsClock marsClock;
-	
-	//private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	//private static AmountResource waterAR = ResourceUtil.waterAR;
-
 	/**
 	 * Constructor.
 	 * @param name the name of the task
@@ -134,22 +129,21 @@ implements Serializable {
                         person.getVehicle());
             }
         }
-/*        
-        else { // already outside
-        	
-            // Add task phases.
-            addPhase(WALK_BACK_INSIDE);
-
-            // Set initial phase.
-            setPhase(WALK_BACK_INSIDE);
-            
-            logger.info(person.getName() +
-                    " is already outside and is about to do an EVA to walk back inside");          
-            //throw new IllegalStateException(person.getName() +
-            //       " is not in a valid location situation to start EVA task: " +
-            //        person.getLocationSituation());
-        }
-*/
+       
+//        else { // already outside
+//        	
+//            // Add task phases.
+//            addPhase(WALK_BACK_INSIDE);
+//
+//            // Set initial phase.
+//            setPhase(WALK_BACK_INSIDE);
+//            
+//            logger.info(person.getName() +
+//                    " is already outside and is about to do an EVA to walk back inside");          
+//            //throw new IllegalStateException(person.getName() +
+//            //       " is not in a valid location situation to start EVA task: " +
+//            //        person.getLocationSituation());
+//        }
 
     }
 
@@ -158,42 +152,39 @@ implements Serializable {
 
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
-/*
         // Initialize data members
-        this.hasSiteDuration = hasSiteDuration;
-        this.siteDuration = siteDuration;
-        timeOnSite = 0D;
-
-        // Check if robot is in a settlement or a rover.
-        if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
-            interiorObject = BuildingManager.getBuilding(robot);
-            if (interiorObject == null) {
-                throw new IllegalStateException(robot.getName() + " not in building.");
-            }
-        }
-        else if (LocationSituation.IN_VEHICLE == robot.getLocationSituation()) {
-            if (robot.getVehicle() instanceof Rover) {
-                interiorObject = (Rover) robot.getVehicle();
-            }
-            else {
-                throw new IllegalStateException(robot.getName() + " not in a rover vehicle: " +
-                		robot.getVehicle());
-            }
-        }
-        else {
-            throw new IllegalStateException(robot.getName() +
-                    " not in a valid location situation to start EVA task: " +
-                    robot.getLocationSituation());
-        }
-
-        // Add task phases.
-        addPhase(WALK_TO_OUTSIDE_SITE);
-        addPhase(WALK_BACK_INSIDE);
-
-        // Set initial phase.
-        setPhase(WALK_TO_OUTSIDE_SITE);
-
-*/
+//        this.hasSiteDuration = hasSiteDuration;
+//        this.siteDuration = siteDuration;
+//        timeOnSite = 0D;
+//
+//        // Check if robot is in a settlement or a rover.
+//        if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
+//            interiorObject = BuildingManager.getBuilding(robot);
+//            if (interiorObject == null) {
+//                throw new IllegalStateException(robot.getName() + " not in building.");
+//            }
+//        }
+//        else if (LocationSituation.IN_VEHICLE == robot.getLocationSituation()) {
+//            if (robot.getVehicle() instanceof Rover) {
+//                interiorObject = (Rover) robot.getVehicle();
+//            }
+//            else {
+//                throw new IllegalStateException(robot.getName() + " not in a rover vehicle: " +
+//                		robot.getVehicle());
+//            }
+//        }
+//        else {
+//            throw new IllegalStateException(robot.getName() +
+//                    " not in a valid location situation to start EVA task: " +
+//                    robot.getLocationSituation());
+//        }
+//
+//        // Add task phases.
+//        addPhase(WALK_TO_OUTSIDE_SITE);
+//        addPhase(WALK_BACK_INSIDE);
+//
+//        // Set initial phase.
+//        setPhase(WALK_TO_OUTSIDE_SITE);
     }
     /**
      * Check if EVA should end.

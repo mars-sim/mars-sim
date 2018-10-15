@@ -933,7 +933,7 @@ implements Serializable {
      */
     public void timePassing(double time) {
 
-	    int msol = marsClock.getMsol0();
+	    int msol = marsClock.getMillisolInt();
 	    if (msolCache != msol && msol % RECHECKING_FREQ == 0) {
 	    	msolCache = msol;
 	    	// reset

@@ -50,13 +50,11 @@ public class ReviewJobReassignment extends Task implements Serializable {
 
 	// Static members
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.1D;
+	private static final double STRESS_MODIFIER = .1D;
 
 	// Data members
 	/** The administration building the person is using. */
 	private Administration office;
-
-	// private MarsClock clock;
 
 	public RoleType roleType;
 
@@ -67,21 +65,14 @@ public class ReviewJobReassignment extends Task implements Serializable {
 	 */
 	public ReviewJobReassignment(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 100D);//+ RandomUtil.getRandomDouble(10D));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 50D + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D));
 
 		roleType = person.getRole().getType();
 		
-		if (person.isInside() && roleType != null) {
-			// if (roleType == null)
-			// NOTE: sometimes enum is null. sometimes it is NOT. why?
-			roleType = person.getRole().getType();
+		if (person.isInside()) {
 
-			if (roleType == RoleType.PRESIDENT || roleType == RoleType.MAYOR
+			if (roleType != null && roleType == RoleType.PRESIDENT || roleType == RoleType.MAYOR
 					|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER) {
-
-				// System.out.println("ReviewJobReassignment : "
-				// + person.getName() + " (" + roleType
-				// + ") is going to review job reassignment");
 
 				// If person is in a settlement, try to find an office building.
 				Building officeBuilding = Administration.getAvailableOffice(person);
@@ -89,13 +80,23 @@ public class ReviewJobReassignment extends Task implements Serializable {
 				// Note: office building is optional
 				if (officeBuilding != null) {
 					// Walk to the office building.
-					//walkToActivitySpotInBuilding(officeBuilding, false);
 					office = officeBuilding.getAdministration();
 					office.addstaff();
-					this.walkToActivitySpotInBuilding(officeBuilding, true);
+					walkToActivitySpotInBuilding(officeBuilding, true);
 				}
-
-				// TODO: add other workplace if administration building is not available
+				else {
+					Building dining = EatMeal.getAvailableDiningBuilding(person, false);
+					// Note: dining building is optional
+					if (dining != null) {
+						// Walk to the dining building.
+						walkToActivitySpotInBuilding(dining, true);
+					}
+//					else {
+//						// work anywhere
+//					}				
+				}
+				
+				// TODO: if administration building is not available, go to 
 
 			} // end of roleType
 			else {
@@ -143,8 +144,6 @@ public class ReviewJobReassignment extends Task implements Serializable {
 			JobAssignmentType status = list.get(last).getStatus();
 
 			if (status != null && status == JobAssignmentType.PENDING) {
-				// System.out.println("ReviewJobReassignment : start reviewing job reassignment
-				// request from " + tempPerson.getName() + "\n");
 				String pendingJobStr = list.get(last).getJobType();
 				String lastJobStr = null;
 				if (last == 0)
@@ -174,18 +173,20 @@ public class ReviewJobReassignment extends Task implements Serializable {
 					tempPerson.getMind().reassignJob(lastJobStr, true, JobManager.USER,
 							JobAssignmentType.NOT_APPROVED, approvedBy);
 
-					LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
 							"[" + s + "] " + approvedBy + " did NOT approve " + tempPerson
-							+ "'s job reassignment as " + pendingJobStr
-							+ "Try again when the performance rating is higher.", null);
+							+ "'s job reassignment as " + pendingJobStr + "."
+							//+ "Try again when the performance rating is higher."
+							, null);
 				} else {
 
 					// Updates the job
 					tempPerson.getMind().reassignJob(pendingJobStr, true, JobManager.USER,
 							JobAssignmentType.APPROVED, approvedBy);
-					LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
 							"[" + s + "] " + approvedBy + " just approved " + tempPerson
-							+ "'s job reassignment as " + pendingJobStr, null);
+							+ "'s job reassignment as " + pendingJobStr + "."
+							, null);
 				}
 				
 				addExperience(time);

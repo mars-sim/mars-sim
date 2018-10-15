@@ -705,7 +705,7 @@ public class Weather implements Serializable {
 			marsClock = masterClock.getMarsClock();
 
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
-		msols = marsClock.getMsol0();
+		msols = marsClock.getMillisolInt();
 
 		int quotient = msols / RECORDING_FREQUENCY;
 

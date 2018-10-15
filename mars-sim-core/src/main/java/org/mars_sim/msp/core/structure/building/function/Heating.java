@@ -1101,7 +1101,7 @@ implements Serializable {
 		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
 	
-		int msol =  marsClock.getMsol0();
+		int msol =  marsClock.getMillisolInt();
 
 		if (msolCache != msol) {
 			msolCache = msol;

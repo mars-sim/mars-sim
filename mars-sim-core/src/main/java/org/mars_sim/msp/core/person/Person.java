@@ -921,7 +921,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			marsClock = masterClock.getMarsClock();
 		}
 
-		double msol1 = marsClock.getMsol1();
+		double msol1 = marsClock.getMillisolOneDecimal();
 
 		if (msolCache != msol1) {
 			msolCache = msol1;

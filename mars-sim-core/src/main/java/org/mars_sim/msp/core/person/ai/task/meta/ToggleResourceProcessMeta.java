@@ -82,7 +82,7 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
 				try {
 					Building building = ToggleResourceProcess.getResourceProcessingBuilding(person);
 					if (building != null) {
-						ResourceProcess process = ToggleResourceProcess.getResourceProcess(building);
+						ResourceProcess process = ToggleResourceProcess.getResourceProcess(building);					
 //                        isEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
 						double diff = ToggleResourceProcess.getResourcesValueDiff(settlement, process);
 						double baseProb = diff * FACTOR;

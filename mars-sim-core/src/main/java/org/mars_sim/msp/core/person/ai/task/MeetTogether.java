@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -37,7 +36,7 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(MeetTogether.class.getName());
+//    private static Logger logger = Logger.getLogger(MeetTogether.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -79,21 +78,21 @@ implements Serializable {
             Collection<Person> ppl = settlement.getAllAssociatedPeople(); 
             RoleType roleType = person.getRole().getType();
             
-            if (roleType.equals(RoleType.PRESIDENT)
-                	|| roleType.equals(RoleType.MAYOR)
-            		|| roleType.equals(RoleType.COMMANDER)
-            		|| roleType.equals(RoleType.SUB_COMMANDER)) {
+            if (roleType != null && roleType == RoleType.PRESIDENT
+                	|| roleType == RoleType.MAYOR
+            		|| roleType == RoleType.COMMANDER
+            		|| roleType == RoleType.SUB_COMMANDER) {
             	
                 for (Person p : ppl) {
                     RoleType type = p.getRole().getType();
 
-                    if (type.equals(RoleType.CHIEF_OF_AGRICULTURE)
-                    	|| type.equals(RoleType.CHIEF_OF_ENGINEERING)
-                    	|| type.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-                    	|| type.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-                    	|| type.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
-                    	|| type.equals(RoleType.CHIEF_OF_SCIENCE)
-                    	|| type.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) ) {
+                    if (type != null &&  type == RoleType.CHIEF_OF_AGRICULTURE
+                    	|| type == RoleType.CHIEF_OF_ENGINEERING
+                    	|| type == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
+                    	|| type == RoleType.CHIEF_OF_MISSION_PLANNING
+                    	|| type == RoleType.CHIEF_OF_SAFETY_N_HEALTH
+                    	|| type == RoleType.CHIEF_OF_SCIENCE
+                    	|| type == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
      
                     	if (p.getBuildingLocation() != null)
                     		// if that person is inside the settlement and within a building
@@ -111,13 +110,13 @@ implements Serializable {
                 
             }
             
-            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
-                	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
-                	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-                	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-                	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
-                	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-                	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES)) {
+            else if (roleType != null && roleType == RoleType.CHIEF_OF_AGRICULTURE
+                	|| roleType == RoleType.CHIEF_OF_ENGINEERING
+                	|| roleType == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
+                	|| roleType == RoleType.CHIEF_OF_MISSION_PLANNING
+                	|| roleType == RoleType.CHIEF_OF_SAFETY_N_HEALTH
+                	|| roleType == RoleType.CHIEF_OF_SCIENCE
+                	|| roleType == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
     	
             	pool = getPool(ppl, roleType);
             }
@@ -236,10 +235,17 @@ implements Serializable {
     }
 
 
+    /**
+     * Gets a pool of candidates
+     * 
+     * @param ppl
+     * @param roleType
+     * @return a set of persons
+     */
     public Set<Person> getPool(Collection<Person> ppl, RoleType roleType) {
         Set<Person> pool = new HashSet<Person>();
     	
-    	if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)) {
+    	if (roleType == RoleType.CHIEF_OF_AGRICULTURE) {
             for (Person p : ppl) {
             	if (p.getRole().getType() == RoleType.AGRICULTURE_SPECIALIST) {
 	            	if (p.getBuildingLocation() != null)
@@ -248,7 +254,7 @@ implements Serializable {
             	}
             }	
     	}
-    	else if (roleType.equals(RoleType.CHIEF_OF_ENGINEERING)) {
+    	else if (roleType == RoleType.CHIEF_OF_ENGINEERING) {
             for (Person p : ppl) {
             	if (p.getRole().getType() == RoleType.ENGINEERING_SPECIALIST) {
 	            	if (p.getBuildingLocation() != null)
@@ -257,7 +263,7 @@ implements Serializable {
             	}
             }	
     	}
-    	else if (roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)) {
+    	else if (roleType == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS) {
             for (Person p : ppl) {
             	if (p.getRole().getType() == RoleType.LOGISTIC_SPECIALIST) {
 	            	if (p.getBuildingLocation() != null)
@@ -266,7 +272,7 @@ implements Serializable {
             	}
             }		
     	}
-    	else if (roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)) {
+    	else if (roleType == RoleType.CHIEF_OF_MISSION_PLANNING) {
             for (Person p : ppl) {
             	if (p.getRole().getType() == RoleType.MISSION_SPECIALIST) {
 	            	if (p.getBuildingLocation() != null)
@@ -275,7 +281,7 @@ implements Serializable {
             	}
             }	
     	}
-    	else if (roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)) {
+    	else if (roleType == RoleType.CHIEF_OF_SAFETY_N_HEALTH) {
             for (Person p : ppl) {
             	if (p.getRole().getType() == RoleType.SAFETY_SPECIALIST) {
 	            	if (p.getBuildingLocation() != null)
@@ -284,7 +290,7 @@ implements Serializable {
             	}
             }	
     	}
-    	else if (roleType.equals(RoleType.CHIEF_OF_SCIENCE)) {
+    	else if (roleType == RoleType.CHIEF_OF_SCIENCE) {
             for (Person p : ppl) {
             	if (p.getRole().getType() == RoleType.SCIENCE_SPECIALIST) {
 	            	if (p.getBuildingLocation() != null)
@@ -293,7 +299,7 @@ implements Serializable {
             	}
             }	
     	}
-    	else if (roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES)) {
+    	else if (roleType == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
             for (Person p : ppl) {
             	if (p.getRole().getType() == RoleType.RESOURCE_SPECIALIST) {
 	            	if (p.getBuildingLocation() != null)

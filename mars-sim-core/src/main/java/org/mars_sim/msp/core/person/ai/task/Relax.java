@@ -75,7 +75,7 @@ implements Serializable {
 	public void compute() {
 		
 		// If during person's work shift, only relax for short period.
-		int msols = marsClock.getMsol0();
+		int msols = marsClock.getMillisolInt();
         boolean isShiftHour = person.getTaskSchedule().isShiftHour(msols);
 		if (isShiftHour) {
 		    setDuration(10D);
@@ -118,42 +118,42 @@ implements Serializable {
 
 	public Relax(Robot robot) {
 		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D);// + RandomUtil.getRandomDouble(10D));
-/*		
-		// If robot is in a settlement, try to find a place to relax.
-		boolean walkSite = false;
-
-		if (robot.isInSettlement()) {
-			try {
-				Building recBuilding = Sleep.getAvailableRoboticStationBuilding(robot);
-				if (recBuilding != null) {
-					// Walk to recreation building.
-				    walkToActivitySpotInBuilding(recBuilding, true);
-				    walkSite = true;
-				}
-			}
-			catch (Exception e) {
-				logger.log(Level.SEVERE,"Relax.constructor(): " + e.getMessage());
-				endTask();
-			}
-		}
 		
-		if (!walkSite) {
-		    if (robot.isInVehicle()) {
-                // If robot is in rover, walk to passenger activity spot.
-                if (robot.getVehicle() instanceof Rover) {
-                    walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), true);
-                }
-            }
-		    else {
-                // Walk to random location.
-                walkToRandomLocation(true);
-            }
-		}
+		// If robot is in a settlement, try to find a place to relax.
+//		boolean walkSite = false;
+//
+//		if (robot.isInSettlement()) {
+//			try {
+//				Building recBuilding = Sleep.getAvailableRoboticStationBuilding(robot);
+//				if (recBuilding != null) {
+//					// Walk to recreation building.
+//				    walkToActivitySpotInBuilding(recBuilding, true);
+//				    walkSite = true;
+//				}
+//			}
+//			catch (Exception e) {
+//				logger.log(Level.SEVERE,"Relax.constructor(): " + e.getMessage());
+//				endTask();
+//			}
+//		}
+//		
+//		if (!walkSite) {
+//		    if (robot.isInVehicle()) {
+//                // If robot is in rover, walk to passenger activity spot.
+//                if (robot.getVehicle() instanceof Rover) {
+//                    walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), true);
+//                }
+//            }
+//		    else {
+//                // Walk to random location.
+//                walkToRandomLocation(true);
+//            }
+//		}
+//
+//		// Initialize phase
+//		addPhase(RELAXING);
+//		setPhase(RELAXING);
 
-		// Initialize phase
-		addPhase(RELAXING);
-		setPhase(RELAXING);
-*/
 	}
 
     @Override

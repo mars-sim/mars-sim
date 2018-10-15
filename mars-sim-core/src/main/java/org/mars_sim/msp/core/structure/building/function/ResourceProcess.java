@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The ResourceProcess class represents a process of converting one set of
@@ -30,16 +32,21 @@ public class ResourceProcess implements Serializable {
 
 	/** The work time required to toggle this process on or off. */
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 10D;
-
+	
 	private String name;
 	private Map<Integer, Double> maxInputResourceRates;
 	private Map<Integer, Double> maxAmbientInputResourceRates;
 	private Map<Integer, Double> maxOutputResourceRates;
 	private Map<Integer, Double> maxWasteOutputResourceRates;
+	
 	private boolean runningProcess;
+	private int[] timeLimit = new int[] {1, 0};
+	
 	private double currentProductionLevel;
 	private double toggleRunningWorkTime;
 	private double powerRequired;
+
+	private static MarsClock marsClock;
 
 	/**
 	 * Constructor.
@@ -58,6 +65,9 @@ public class ResourceProcess implements Serializable {
 		runningProcess = defaultOn;
 		currentProductionLevel = 1D;
 		this.powerRequired = powerRequired;
+		
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	/**
@@ -350,6 +360,42 @@ public class ResourceProcess implements Serializable {
 		return powerRequired;
 	}
 
+	/**
+	 * Checks if it has exceeded the time limit
+	 * 
+	 * @return
+	 */
+	public boolean hasPassedTimeLimit() {
+		int sol = marsClock.getMissionSol();
+		int millisol = marsClock.getMillisolInt();
+		if (sol == timeLimit[0]) {
+			if (millisol > timeLimit[1]) {
+				return true;
+			}
+			else
+				return false;
+		}
+		else {
+			if (millisol > timeLimit[1] + 1000) {
+				return true;
+			}
+			else
+				return false;
+		}
+		
+	}
+
+	/**
+	 * Sets the time permission for the next toggling
+	 * 
+	 * @param sol
+	 * @param millisols
+	 */
+	public void setTimeLimit(int sol, int millisols) {
+		timeLimit[0] = sol;
+		timeLimit[1] = millisols;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

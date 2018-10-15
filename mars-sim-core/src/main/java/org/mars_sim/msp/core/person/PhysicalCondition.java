@@ -525,7 +525,7 @@ public class PhysicalCondition implements Serializable {
 			// unless dead. - Scott
 			// reduceEnergy(time);
 
-			int msol = marsClock.getMsol0();
+			int msol = marsClock.getMillisolInt();
 			if (msol % 7 == 0) {
 
 				if (!restingTask) {
@@ -794,8 +794,6 @@ public class PhysicalCondition implements Serializable {
 		if (thirst > dehydrationStartTime) {
 			if (!isDehydrated && !problems.containsKey(dehydration)) {
 				addMedicalComplaint(dehydration);
-
-				System.out.print(person + "'s thirst : " + thirst + "   dehydrationStartTime : " + dehydrationStartTime);
 				isDehydrated = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 			}

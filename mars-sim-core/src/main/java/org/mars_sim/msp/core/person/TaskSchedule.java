@@ -143,7 +143,7 @@ public class TaskSchedule implements Serializable {
 	 */
 	public void recordTask(String task, String description, String phase, String mission) {
 
-		int startTime = marsClock.getMsol0();
+		int startTime = marsClock.getMillisolInt();
 		int solElapsed = marsClock.getMissionSol();
 		if (solElapsed != solCache) {
 			// Removed the sol log from LAST_SOL ago
@@ -460,7 +460,7 @@ public class TaskSchedule implements Serializable {
 					if (marsClock == null)
 						marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-					int now = marsClock.getMsol0();
+					int now = marsClock.getMillisolInt();
 					boolean isOnShiftNow = isShiftHour(now);
 					boolean isOnCall = getShiftType() == ShiftType.ON_CALL;
 

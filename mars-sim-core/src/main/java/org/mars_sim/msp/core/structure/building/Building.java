@@ -1343,7 +1343,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
 
-		int msol = marsClock.getMsol0();
+		int msol = marsClock.getMillisolInt();
 
 		if (msolCache != msol) {
 			msolCache = msol;
@@ -1409,7 +1409,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		}
 
 		if (isImpactImminent) {
-			int now = marsClock.getMsol0();
+			int now = marsClock.getMillisolInt();
 			// Note: at the fastest sim speed, up to ~5 millisols may be skipped.
 			// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
 			int delta = (int) Math.sqrt(Math.sqrt(masterClock.getTimeRatio()));

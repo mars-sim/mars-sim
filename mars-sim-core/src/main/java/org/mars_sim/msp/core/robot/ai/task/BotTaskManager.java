@@ -491,7 +491,7 @@ implements Serializable {
 	    }
 	    
 	    
-	    double msol1 = marsClock.getMsol1();
+	    double msol1 = marsClock.getMillisolOneDecimal();
 	    
 	    if (msolCache != msol1) {
 	    	msolCache = msol1;

@@ -64,7 +64,7 @@ implements Serializable {
 	@Override
 	public void timePassing(double time) {
 		MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-	    int millisols =  clock.getMsol0();
+	    int millisols =  clock.getMillisolInt();
 		//System.out.println("millisols : " + millisols);
 		
 		if (millisols % 100 == 1) {	

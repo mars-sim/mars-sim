@@ -110,7 +110,7 @@ public class Mind implements Serializable {
 		if (taskManager != null)
 			taskManager.recordTask();
 
-		double msol1 = marsClock.getMsol1();
+		double msol1 = marsClock.getMillisolOneDecimal();
 
 		if (msolCache != msol1) {
 			msolCache = msol1;

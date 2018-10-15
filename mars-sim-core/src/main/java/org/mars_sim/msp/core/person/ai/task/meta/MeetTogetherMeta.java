@@ -68,7 +68,7 @@ public class MeetTogetherMeta implements MetaTask, Serializable {
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();
 	
-	    	int now = Simulation.instance().getMasterClock().getMarsClock().getMsol0();
+	    	int now = Simulation.instance().getMasterClock().getMarsClock().getMillisolInt();
 	        boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
 	        
 	        if (isOnShiftNow)

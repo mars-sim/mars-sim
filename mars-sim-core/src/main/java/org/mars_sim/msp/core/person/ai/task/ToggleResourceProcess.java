@@ -11,10 +11,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -36,7 +39,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * The ToggleResourceProcess class is an EVA task for toggling a particular
  * automated resource process on or off.
  */
-public class ToggleResourceProcess extends EVAOperation implements Serializable {
+public class ToggleResourceProcess extends Task implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -44,10 +47,18 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ToggleResourceProcess.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
+	/** The minimum period of time in millisols the process must stay on or off. */
+	public static final int DURATION = 100;
+
 	/** Task name */
 	private static final String NAME_ON = Msg.getString("Task.description.toggleResourceProcess.on"); //$NON-NLS-1$
 	private static final String NAME_OFF = Msg.getString("Task.description.toggleResourceProcess.off"); //$NON-NLS-1$
-
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .25D;
+	
 	/** Task phases. */
 	private static final TaskPhase TOGGLE_PROCESS = new TaskPhase(Msg.getString("Task.phase.toggleProcess")); //$NON-NLS-1$
 
@@ -55,14 +66,19 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	private static final String ON = "on";
 
 	// Data members
+	/** True if process is to be turned on, false if turned off. */
+	private boolean toBeToggledOn;
 	/** True if toggling process is EVA operation. */
 //	private boolean needEVA;
+	
 	/** The resource process to toggle. */
 	private ResourceProcess process;
 	/** The building the resource process is in. */
-	private Building building;
-	/** True if process is to be turned on, false if turned off. */
-	private boolean toggleOn;
+	private Building resourceProcessBuilding;
+	/** The building the person can go to remotely control the resource process. */
+	private Building destination;
+
+	private static MarsClock marsClock;
 
 	/**
 	 * Constructor.
@@ -70,51 +86,86 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	 * @param person the person performing the task.
 	 */
 	public ToggleResourceProcess(Person person) {
-		super(NAME_ON, person, false, 0D);
+        super(NAME_ON, person, true, false, STRESS_MODIFIER, true, 5D + RandomUtil.getRandomInt(5));
+		//super(NAME_ON, person, false, 0D);
 
         if (person.isInSettlement()) {
-        	
-        
-			building = getResourceProcessingBuilding(person);
+        	  
+			resourceProcessBuilding = getResourceProcessingBuilding(person);
 	
-			if (building != null) {
-				process = getResourceProcess(building);
-				toggleOn = !process.isProcessRunning();
+			if (resourceProcessBuilding != null) {
+				process = getResourceProcess(resourceProcessBuilding);
+				
+				if (marsClock == null)
+					marsClock = Simulation.instance().getMasterClock().getMarsClock();
+				
+				// Compute the time limit
+				int sol = marsClock.getMissionSol();
+				int millisols = marsClock.getMillisolInt() + DURATION;
+				if (millisols >= 1000) {
+					millisols = millisols - 1000;
+					sol = sol + 1;
+				}				
+				// Tag this particular process for toggling
+				process.setTimeLimit(sol, millisols);
+				// Copy the current state of this process running 
+				toBeToggledOn = !process.isProcessRunning();
 	
-				if (!toggleOn) {
+				if (!toBeToggledOn) {
 					setName(NAME_OFF);
 					setDescription(NAME_OFF);
 				}
-	
+				else {
+					setDescription(NAME_ON);
+				}
+				
 				// Assume the toggling is NOW handled remotely in the command control center
 	//            needEVA = false;
-	
-				// Pick an administrative building for remote access to the resource building
-				Building destination = null;
-				List<Building> c2_buildings = person.getSettlement().getBuildingManager()
-						.getBuildings(FunctionType.ADMINISTRATION);
-				for (Building b : c2_buildings) {
-					if (b.getBuildingType().equalsIgnoreCase("Command and Control")) {
-						Administration admin = b.getAdministration();
-						// check if a spot is available
-						if (!admin.isFull()) {
-							destination = b;
-							break;
-						}
-					} else {
-						Administration admin = b.getAdministration();
-						// check if a spot is available
-						if (!admin.isFull()) {
-							destination = b;
-							break;
-						}
-					}
-				}
-	
-				if (destination != null)
+				
+				Administration admin = resourceProcessBuilding.getAdministration();
+				if (admin != null && !admin.isFull()) {
+					destination = resourceProcessBuilding;
 					walkToActivitySpotInBuilding(destination, false);
-				else
-					endTask();
+				}
+				
+				else {
+					boolean done = false;
+					// Pick an administrative building for remote access to the resource building
+					List<Building> admins = person.getSettlement().getBuildingManager()
+							.getBuildings(FunctionType.ADMINISTRATION);
+					
+					if (!admins.isEmpty()) {
+						
+						List<Building> adminsNotFull = new ArrayList<>();
+						
+						for (Building b : admins) {
+							if (b.getBuildingType().toLowerCase().equals("command and control")) {
+								destination = b;
+								walkToActivitySpotInBuilding(b, false);
+								done = true;
+								break;
+							}
+							else if (b.getAdministration() != null && !b.getAdministration().isFull()) {
+								adminsNotFull.add(b);
+							}
+						}
+						// TODO: find the closest one
+						
+						if (!done && !adminsNotFull.isEmpty()) {
+							int rand = RandomUtil.getRandomInt(admins.size()-1);
+							destination = admins.get(rand);
+							walkToActivitySpotInBuilding(destination, false);
+						}
+
+						else
+							endTask();
+					}
+					
+					else
+						endTask();
+				}
+
+				
 				// NOTE : no longer require EVA to physically go out there and manually touching
 				// a toggle switch
 	
@@ -163,9 +214,9 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 
 		boolean goodLocation = false;
 		for (int x = 0; (x < 50) && !goodLocation; x++) {
-			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
+			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(resourceProcessBuilding, 1D);
 			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
-					building);
+					resourceProcessBuilding);
 			goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
 					person.getCoordinates());
 		}
@@ -220,10 +271,12 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 			Iterator<ResourceProcess> i = processing.getProcesses().iterator();
 			while (i.hasNext()) {
 				ResourceProcess process = i.next();
-				double diff = getResourcesValueDiff(settlement, process);
-				if (diff > bestDiff) {
-					bestDiff = diff;
-					result = process;
+				if (process.hasPassedTimeLimit()) {
+					double diff = getResourcesValueDiff(settlement, process);
+					if (diff > bestDiff) {
+						bestDiff = diff;
+						result = process;
+					}
 				}
 			}
 		}
@@ -386,16 +439,14 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 //		}
 	}
 
-	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return TOGGLE_PROCESS;
-	}
+//	@Override
+//	protected TaskPhase getOutsideSitePhase() {
+//		return TOGGLE_PROCESS;
+//	}
 
 	@Override
 	protected double performMappedPhase(double time) {
-
-		time = super.performMappedPhase(time);
-
+//		time = super.performMappedPhase(time);
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("Task phase is null");
 		} else if (TOGGLE_PROCESS.equals(getPhase())) {
@@ -446,22 +497,34 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 		// Add experience points
 		addExperience(time);
 
-		// Check if process has already been completed.
-		if (process.isProcessRunning() == toggleOn) {
+		// Check for one last time if the process has already been completed by another person.
+		if (process.isProcessRunning() == toBeToggledOn) {
 //			if (needEVA) {
 //				setPhase(WALK_BACK_INSIDE);
 //			} else {
 				endTask();
 //			}
-
-			Settlement settlement = building.getBuildingManager().getSettlement();
+		}
+		else {
+	
+			Settlement s = person.getSettlement(); 	
+			
 			String toggle = OFF;
-			if (toggleOn) {
+			if (toBeToggledOn) {
 				toggle = ON;
 			}
 
-			logger.info(person.getName() + " is turning " + toggle + " " + process.getProcessName() 
-				+ " at " + building.getNickName() + " in " + settlement.getName() + ".");
+			if (destination == resourceProcessBuilding) {
+				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+						"[" + s.getName() + "] " + person.getName() + " at " + destination.getNickName() 
+						+ " is working on turning the " + process.getProcessName()  + " " + toggle + ".", null);
+			}
+			else {
+				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+						"[" + s.getName() + "] " + person.getName() + " at " + destination.getNickName() 
+					+ " gains remote access to the " + process.getProcessName() 
+					+ " of " + resourceProcessBuilding.getNickName() + " and is working on turning it " + toggle + ".", null);
+			}
 		}
 
 		// Check if an accident happens during toggle process.
@@ -493,15 +556,15 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 		}
 
 		// Modify based on the building's wear condition.
-		chance *= building.getMalfunctionManager().getWearConditionAccidentModifier();
+		chance *= resourceProcessBuilding.getMalfunctionManager().getWearConditionAccidentModifier();
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 			if (person != null) {
 //	            logger.info("[" + person.getLocationTag().getShortLocationName() +  "] " + person.getName() + " has an accident while toggling a resource process.");
-				building.getMalfunctionManager().createASeriesOfMalfunctions(person);
+				resourceProcessBuilding.getMalfunctionManager().createASeriesOfMalfunctions(person);
 			} else if (robot != null) {
 //				logger.info("[" + robot.getLocationTag().getShortLocationName() +  "] " + robot.getName() + " has an accident while toggling a resource process.");
-				building.getMalfunctionManager().createASeriesOfMalfunctions(robot);
+				resourceProcessBuilding.getMalfunctionManager().createASeriesOfMalfunctions(robot);
 			}
 
 		}
@@ -512,6 +575,6 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 		super.destroy();
 
 		process = null;
-		building = null;
+		resourceProcessBuilding = null;
 	}
 }
