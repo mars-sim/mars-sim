@@ -389,11 +389,12 @@ public class MasterClock implements Serializable {
 	 * @param oldListener the clock listener task to remove.
 	 */
 	public ClockListenerTask retrieveClockListenerTask(ClockListener oldListener) {
-		/*
-		 * ClockListenerTask c = null; clockListenerTaskList.forEach(t -> {
-		 * ClockListenerTask l = c; if (t.getClockListener().equals(oldListener)) l = t;
-		 * });
-		 */
+		
+//		 ClockListenerTask c = null; clockListenerTaskList.forEach(t -> {
+//		 ClockListenerTask l = c; 
+//		if (t.getClockListener().equals(oldListener)) l = t;
+//		 });
+		 
 		ClockListenerTask t = null;
 		Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
 		while (i.hasNext()) {
@@ -422,7 +423,6 @@ public class MasterClock implements Serializable {
 	 */
 	public void setSaveSim(int type, File file) {
 		saveType = type;
-		// System.out.println("file is "+ file);
 		this.file = file;
 	}
 
@@ -454,7 +454,6 @@ public class MasterClock implements Serializable {
 			return true;
 		else
 			return false;
-		// return saveSimulation || autosaveSimulation;
 	}
 
 	/**
@@ -611,8 +610,6 @@ public class MasterClock implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		private ClockThreadTask() {
-			// logger.info("MasterClock's ClockThreadTask's constructor is on " +
-			// Thread.currentThread().getName() + " Thread");
 		}
 
 		@Override
@@ -658,8 +655,6 @@ public class MasterClock implements Serializable {
 							TimeUnit.NANOSECONDS.sleep(sleepTime);
 						} catch (InterruptedException e) {
 							Thread.currentThread().interrupt();
-							// logger.log(Level.WARNING, "program terminated while running sleep() in
-							// MasterClock.run() ", e);
 						}
 
 						overSleepTime = (System.nanoTime() - t2) - sleepTime;
@@ -762,13 +757,8 @@ public class MasterClock implements Serializable {
 	 * of the time pulse
 	 */
 	private boolean checkSave() {
-		// logger.info("MasterClock's checkSave() is on " +
-		// Thread.currentThread().getName() + " Thread");
-
 		if (saveType != 0) {
 			try {
-				// logger.info("MasterClock's checkSave() is on " +
-				// Thread.currentThread().getName() + " Thread");
 				sim.saveSimulation(saveType, file);
 			} catch (IOException e) {
 				logger.log(Level.SEVERE,
@@ -993,18 +983,11 @@ public class MasterClock implements Serializable {
 			clockListenerExecutor.shutdownNow();
 	}
 
-	// public ThreadPoolExecutor getClockListenerExecutor() {
-	// return clockListenerExecutor;
-	// }
-
 	// To be called by TransportWizard and ConstructionWizard
 	public ExecutorService getClockListenerExecutor() {
 		return clockListenerExecutor;
 	}
 
-//	public long getDiffCache() {
-//		return diffCache;
-//	}
 
 	public double getFPS() {
 //		List<Double> list = new ArrayList<>(TPFList);
@@ -1021,12 +1004,8 @@ public class MasterClock implements Serializable {
 	 * Sends out a clock pulse if using FXGL
 	 */
 	public void onUpdate(double tpf) {
-//        logger.info("MasterClock onUpdate() is on " + Thread.currentThread().getName() + " Thread");
 		if (!isPaused) {
 			tpfCache += tpf;
-			// System.out.println("tpfCache: " + Math.round(tpfCache *1000.0)/1000.0
-			// + " tpf: " + Math.round(tpf *1000.0)/1000.0
-			// + " cal_tbu_s : " + Math.round(cal_tbu_s *1000.0)/1000.0);
 			if (tpfCache >= adjustedTBU_s) {
 				
 //				 TPFList.add(tpfCache); // Remove the first 5 if (TPFList.size() > 20) {
@@ -1034,7 +1013,6 @@ public class MasterClock implements Serializable {
 //				 list.remove(i); } TPFList = list; }
 				 
 				// elapsedLast = uptimer.getUptimeMillis();
-				// System.out.println("tpfCache >= default_tbu_ms");
 				// if (isPaused) {
 				// resetTotalPulses();
 				// }
@@ -1042,25 +1020,18 @@ public class MasterClock implements Serializable {
 				double t = tpfCache * currentTR;
 				// Get the time pulse length in millisols.
 				double timePulse = t / MarsClock.SECONDS_PER_MILLISOL;
-				// System.out.println("tpfCache : " + Math.round(tpfCache *1000.0)/1000.0
-				// + " tpfCache * timeRatio : " + Math.round(t *1000.0)/1000.0
-				// + " elapsedLast : " + Math.round(elapsedLast *1000.0)/1000.0
-				// + " timePulse : " + Math.round(timePulse *1000.0)/1000.0);
 				// tpfCache : 0.117 tpfCache * timeRatio : 14.933 elapsedLast : 9315.0(inc)
 				// timePulse : 0.168
 
 				// Incrementing total time pulse number.
 				// totalPulses++;
 				// if (totalPulses > 100_000) resetTotalPulses();
-				// System.out.println(totalPulses);
 				if (timePulse > 0 && keepRunning && !isPaused
 				// || !clockListenerExecutor.isTerminating()
 						&& clockListenerExecutor != null && !clockListenerExecutor.isTerminated()
 						&& !clockListenerExecutor.isShutdown()) {
-					// logger.info(millis + "");
 					// Add time pulse length to Earth and Mars clocks.
-					// System.out.println(Math.round(timePulse *10000.0)/10000.0);
-					earthClock.addTime(1000D * t);// millis*timeRatio);
+					earthClock.addTime(1000D * t);
 					marsTime.addTime(timePulse);
 					fireClockPulse(timePulse);
 				}
@@ -1084,7 +1055,7 @@ public class MasterClock implements Serializable {
 			// Exit program if exitProgram flag is true.
 			if (exitProgram) {
 				if (sim.getAutosaveTimer() != null)
-					sim.getAutosaveTimer().shutdownNow();// .stop();
+					sim.getAutosaveTimer().shutdownNow();
 				System.exit(0);
 			}
 

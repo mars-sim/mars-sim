@@ -40,6 +40,7 @@ public enum NaturalAttributeType {
 
 	/**
 	 * gives an internationalized string for display in user interface.
+	 * 
 	 * @return {@link String}
 	 */
 	public String getName() {

@@ -14,6 +14,9 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
+import org.mars_sim.msp.core.person.ai.task.ListenToMusic;
+import org.mars_sim.msp.core.person.ai.task.PlayHoloGame;
+import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
 import org.mars_sim.msp.core.person.ai.task.WriteReport;
@@ -63,6 +66,9 @@ public abstract class Job implements Serializable {
 		// Every settler will need to tasks
 		jobTasks.add(DigLocalIce.class);
 		jobTasks.add(DigLocalRegolith.class);
+		jobTasks.add(ListenToMusic.class);
+		jobTasks.add(PlayHoloGame.class);
+		jobTasks.add(Read.class);
 		jobTasks.add(ReviewJobReassignment.class);
 		jobTasks.add(ReviewMissionPlan.class);
 		jobTasks.add(WriteReport.class);

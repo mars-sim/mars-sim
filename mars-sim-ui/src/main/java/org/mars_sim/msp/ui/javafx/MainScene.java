@@ -4179,16 +4179,20 @@ public class MainScene implements ClockListener {
 
 	}
 	
-	public void pause() {
+	public void pause(boolean music, boolean sound) {
 //		System.out.println("calling MainScene's pause()");
 		// Show Dialog
 		isShowingDialog = true;
 		// Save the mute boxes setting
-		lastMusicMuteBoxSetting = musicMuteBox.isSelected();
-		lastSoundEffectMuteBoxSetting = soundEffectMuteBox.isSelected();
+		if (music)
+			lastMusicMuteBoxSetting = musicMuteBox.isSelected();
+		if (sound)
+			lastSoundEffectMuteBoxSetting = soundEffectMuteBox.isSelected();
 		// Check the mute boxes
-		musicMuteBox.setSelected(true);
-		soundEffectMuteBox.setSelected(true);
+		if (music)		
+			musicMuteBox.setSelected(true);
+		if (sound)
+			soundEffectMuteBox.setSelected(true);
 		// Pause time label timer
 		timeLabeltimer.pause();
 		// Stop billboard timer
@@ -4217,7 +4221,10 @@ public class MainScene implements ClockListener {
 		if (isPaused) {
 			if (!masterClock.isSavingSimulation()) {
 				if (exitDialog == null || !exitDialog.isVisible()) {
-					pause();
+					if (!soundPlayer.isMusicMute())
+						pause(true, false);
+					if (!soundPlayer.isSoundMute())
+						pause(false, true);
 				}
 			}
 

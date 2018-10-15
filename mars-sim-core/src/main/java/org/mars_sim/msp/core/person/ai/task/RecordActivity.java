@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -18,109 +19,111 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
- * The RecordActivity class is a task for recording events/activities 
+ * The RecordActivity class is a task for recording events/activities
  */
-public class RecordActivity
-extends Task
-implements Serializable {
+public class RecordActivity extends Task implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /** Task name */
-    private static final String NAME = Msg.getString(
-            "Task.description.recordActivity"); //$NON-NLS-1$
+	/** Task name */
+	private static final String NAME = Msg.getString("Task.description.recordActivity"); //$NON-NLS-1$
 
-    /** Task phases. */
-    private static final TaskPhase RECORDING = new TaskPhase(Msg.getString(
-            "Task.phase.recordingActivity")); //$NON-NLS-1$
+	/** Task phases. */
+	private static final TaskPhase RECORDING = new TaskPhase(Msg.getString("Task.phase.recordingActivity")); //$NON-NLS-1$
 
-    // Static members
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -1D;
+	// Static members
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = -1D;
 
-    /**
-     * Constructor. This is an effort-driven task.
-     * @param person the person performing the task.
-     */
-    public RecordActivity(Person person) {
-        // Use Task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER, true,
-                RandomUtil.getRandomDouble(10D));
+	/**
+	 * Constructor. This is an effort-driven task.
+	 * 
+	 * @param person the person performing the task.
+	 */
+	public RecordActivity(Person person) {
+		// Use Task constructor.
+		super(NAME, person, true, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(10D));
 
-        if (person.isInSettlement()) {
-        	this.walkToRandomLocation(false);
-        }
-        
-        else if (person.isInVehicle()) {
+		if (person.isInSettlement()) {
+			walkToRandomLocation(false);
+		}
 
-            if (person.getVehicle() instanceof Rover) {
-                walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-            }
-        }
-        
-        else {
-            endTask();
-        }
+		else if (person.isInVehicle()) {
 
-        // Initialize phase
-        addPhase(RECORDING);
-        setPhase(RECORDING);
-    }
+			if (person.getVehicle() instanceof Rover) {
+				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+			}
+		}
 
-    @Override
-    protected FunctionType getLivingFunction() {
-        return FunctionType.ADMINISTRATION;
-    }
+		else {
+			endTask();
+		}
 
-    @Override
-    protected double performMappedPhase(double time) {
-        if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
-        }
-        else if (RECORDING.equals(getPhase())) {
-            return recordingPhase(time);
-        }
-        else {
-            return time;
-        }
-    }
+		// Initialize phase
+		addPhase(RECORDING);
+		setPhase(RECORDING);
+	}
 
-    /**
-     * Performs the recording phase.
-     * @param time the amount of time (millisols) to perform the phase.
-     * @return the amount of time (millisols) left over after performing the phase.
-     */
-    private double recordingPhase(double time) {
-        // Do nothing
-        return 0D;
-    }
+	@Override
+	protected FunctionType getLivingFunction() {
+		return FunctionType.ADMINISTRATION;
+	}
 
-    @Override
-    protected void addExperience(double time) {
-        // This task adds no experience.
-    }
+	@Override
+	protected double performMappedPhase(double time) {
+		if (getPhase() == null) {
+			throw new IllegalArgumentException("Task phase is null");
+		} else if (RECORDING.equals(getPhase())) {
+			return recordingPhase(time);
+		} else {
+			return time;
+		}
+	}
 
-    @Override
-    public void endTask() {
-        super.endTask();
-    }
+	/**
+	 * Performs the recording phase.
+	 * 
+	 * @param time the amount of time (millisols) to perform the phase.
+	 * @return the amount of time (millisols) left over after performing the phase.
+	 */
+	private double recordingPhase(double time) {
+		// TODO: need to define what to do with this activity
 
+		return 0D;
+	}
 
-    @Override
-    public int getEffectiveSkillLevel() {
-        return 0;
-    }
+	@Override
+	protected void addExperience(double time) {
+		// TODO: what experience to add
+		double newPoints = time / 20D;
+		int exp = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+		int art = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ARTISTRY);
+		newPoints += newPoints * (exp + art - 100D) / 100D;
+		newPoints *= getTeachingExperienceModifier();
+		person.getMind().getSkillManager().addExperience(SkillType.REPORTING, newPoints);
 
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> results = new ArrayList<SkillType>(0);
-        return results;
-    }
+	}
 
-    @Override
-    public void destroy() {
-        super.destroy();
+	@Override
+	public void endTask() {
+		super.endTask();
+	}
 
-    }
+	@Override
+	public int getEffectiveSkillLevel() {
+		return 0;
+	}
+
+	@Override
+	public List<SkillType> getAssociatedSkills() {
+		List<SkillType> results = new ArrayList<SkillType>(0);
+		return results;
+	}
+
+	@Override
+	public void destroy() {
+		super.destroy();
+
+	}
 }

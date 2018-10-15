@@ -553,11 +553,12 @@ public class AudioPlayer implements ClockListener {
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		if (isPaused) {
 //			marqueeTicker.pauseMarqueeTimer(true);
-			// if the muteboxes is checked
-			mutePlayer(true, true);
+			if (!isMusicMute())
+				mutePlayer(false, true);
+			if (!isSoundMute())
+				mutePlayer(true, false);
 		} else {
-//			marqueeTicker.pauseMarqueeTimer(false);
-			// if the muteboxes is NOT checked
+//			marqueeTicker.pauseMarqueeTimer(false);	
 			unmutePlayer(true, true);
 		}
 	}

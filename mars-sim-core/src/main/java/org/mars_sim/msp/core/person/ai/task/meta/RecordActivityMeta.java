@@ -17,6 +17,8 @@ import org.mars_sim.msp.core.person.ai.task.RecordActivity;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 
+import jdk.javadoc.doclet.Reporter;
+
 /**
  * Meta task for the RecordActivity task.
  */
@@ -29,7 +31,7 @@ public class RecordActivityMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.recordActivity"); //$NON-NLS-1$
 
-    private static final String REPORTER = "Reporter";
+//    private static final String REPORTER = "Reporter";
     
     @Override
     public String getName() {
@@ -49,8 +51,11 @@ public class RecordActivityMeta implements MetaTask, Serializable {
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
         
-        if (person.getMind().getJob().getName(person.getGender()).equals(REPORTER))
-        	result += 100D;
+        if (person.getMind().getJob().getName(person.getGender()).equals(Reporter.class.getSimpleName())) {
+        
+        	result += 300D;
+        	
+        }
         
         if (person.isInside()) {
                     
@@ -82,31 +87,30 @@ public class RecordActivityMeta implements MetaTask, Serializable {
         if (result > 0) {
             RoleType roleType = person.getRole().getType();
 
-            if (roleType.equals(RoleType.PRESIDENT))
-            	result -= 30D;
+            if (roleType != null && roleType == RoleType.PRESIDENT)
+            	result -= 400D;
             
-        	else if (roleType.equals(RoleType.MAYOR))
-            	result -= 25D;
+        	else if (roleType == RoleType.MAYOR)
+            	result -= 200D;
         			
-        	else if (roleType.equals(RoleType.COMMANDER))
-                result -= 15D;
+        	else if (roleType == RoleType.COMMANDER)
+                result -= 100D;
         	
-        	else if (roleType.equals(RoleType.SUB_COMMANDER))
-        		result -= 10D;
+        	else if (roleType == RoleType.SUB_COMMANDER)
+        		result -= 50D;
             
-            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
-            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
-            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
-            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES)){
+            else if (roleType == RoleType.CHIEF_OF_AGRICULTURE
+            	|| roleType == RoleType.CHIEF_OF_ENGINEERING
+            	|| roleType == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
+            	|| roleType == RoleType.CHIEF_OF_MISSION_PLANNING
+            	|| roleType == RoleType.CHIEF_OF_SAFETY_N_HEALTH
+            	|| roleType == RoleType.CHIEF_OF_SCIENCE
+            	|| roleType == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
             
             	result -= 10D;
             }
         }
         
-        // 2015-06-07 Added Preference modifier
         if (result > 0)
          	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 

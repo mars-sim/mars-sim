@@ -17,12 +17,9 @@ import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.ConnectWithEarth;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
-import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.MeetTogether;
 import org.mars_sim.msp.core.person.ai.task.RecordActivity;
-import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class Reporter
@@ -44,7 +41,7 @@ implements Serializable {
 		// Use Job constructor.
 		super(Reporter.class);
 
-		// Add Manager-related tasks.
+		// Add main tasks.
 		jobTasks.add(MeetTogether.class);
 		jobTasks.add(ConnectWithEarth.class);
 		jobTasks.add(HaveConversation.class);

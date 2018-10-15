@@ -51,7 +51,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			logger.getName().length());
 
 	/** The minimum period of time in millisols the process must stay on or off. */
-	public static final int DURATION = 100;
+	public static final int DURATION = 200;
 
 	/** Task name */
 	private static final String NAME_ON = Msg.getString("Task.description.toggleResourceProcess.on"); //$NON-NLS-1$

@@ -18,9 +18,6 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
-import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
@@ -30,16 +27,11 @@ import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
 import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
-import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.SalvageGood;
 import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
 import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
-import org.mars_sim.msp.core.person.ai.task.WriteReport;
-import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
-import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class Technician
