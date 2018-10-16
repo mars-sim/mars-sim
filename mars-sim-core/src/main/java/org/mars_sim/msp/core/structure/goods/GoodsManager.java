@@ -24,12 +24,10 @@ import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
@@ -55,7 +53,6 @@ import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -178,18 +175,13 @@ public class GoodsManager implements Serializable {
 	private Settlement settlement;
 	private Inventory inv;
 
-	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 
-	private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
+//	private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
 	private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
 	private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
 	private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
 	private static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-
-	private static MissionManager missionManager;
-	private static UnitManager unitManager;
-	private static MarsClock marsClock;
 
 	/**
 	 * Constructor.
@@ -199,14 +191,8 @@ public class GoodsManager implements Serializable {
 	public GoodsManager(Settlement settlement) {
 		this.settlement = settlement;
 		inv = settlement.getInventory();
-		sim = Simulation.instance();
-		
-		if (Simulation.instance().getMasterClock() != null) // for passing maven test
-			marsClock = sim.getMasterClock().getMarsClock();
-		
-		missionManager = sim.getMissionManager();
-		unitManager = Simulation.instance().getUnitManager();
 
+	
 		populateGoodsValues();
 	}
 
@@ -370,10 +356,9 @@ public class GoodsManager implements Serializable {
 		double projectedDemand = 0D;
 		double totalSupply = 0;
 		double tradeDemand = 0;
-
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // needed for loading a saved sim
-		int solElapsed = marsClock.getMissionSol();
+	
+		// needed for loading a saved sim
+		int solElapsed = Simulation.instance().getMasterClock().getMarsClock().getMissionSol();
 		// System.out.println("GoodManager : solElapsed : "+ solElapsed);
 		// Compact and/or clear supply and demand maps every 5 days
 		solElapsed = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
@@ -740,7 +725,7 @@ public class GoodsManager implements Serializable {
 		Collection<Vehicle> vehicles = settlement.getParkedVehicles();
 
 		// Add associated vehicles out on missions.
-		Iterator<Mission> i = sim.getMissionManager().getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
@@ -1542,10 +1527,8 @@ public class GoodsManager implements Serializable {
 		// Get amount of resource in settlement storage.
 		amount += settlement.getInventory().getAmountResourceStored(resource, false);
 
-		if (missionManager == null)
-			missionManager = sim.getMissionManager(); // needed for loading a saved sim
 		// Get amount of resource out on mission vehicles.
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
@@ -2097,7 +2080,7 @@ public class GoodsManager implements Serializable {
 		number += settlement.getInventory().getItemResourceNum(resource);
 
 		// Get number of resources out on mission vehicles.
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
@@ -2343,7 +2326,7 @@ public class GoodsManager implements Serializable {
 		number += settlement.getInventory().findNumEmptyUnitsOfClass(equipmentClass, false);
 
 		// Get number of equipment out on mission vehicles.
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
@@ -2584,7 +2567,7 @@ public class GoodsManager implements Serializable {
 		} else if (BIOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
 			demand = getBiologistNum();
 		} else if (EMERGENCY_SUPPLY_MISSION.equals(missionType)) {
-			demand = unitManager.getSettlementNum() - 1D;
+			demand = Simulation.instance().getUnitManager().getSettlementNum() - 1D;
 			if (demand < 0D) {
 				demand = 0D;
 			}
@@ -2805,9 +2788,7 @@ public class GoodsManager implements Serializable {
 		} else {
 			double bestTradeValue = 0D;
 
-			if (unitManager == null)
-				unitManager = sim.getUnitManager(); // needed for loading a saved sim
-			for (Settlement tempSettlement : unitManager.getSettlements()) {
+			for (Settlement tempSettlement : Simulation.instance().getUnitManager().getSettlements()) {
 				if (tempSettlement != settlement) {
 					double baseValue = tempSettlement.getGoodsManager().getGoodValuePerItem(good);
 					double distance = settlement.getCoordinates().getDistance(tempSettlement.getCoordinates());

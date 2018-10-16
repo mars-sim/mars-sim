@@ -51,38 +51,11 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
         		+ System.lineSeparator());
 
         handler.addIntTask("speed", "Enter the new simulation speed", false)
-        	.withInputReaderConfigurator(r -> r.withMinVal(0).withMaxVal(14))
-        	.addChoices(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+        	.withInputReaderConfigurator(r -> r.withMinVal(0).withMaxVal(13))
+        	.addChoices(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
         
-        handler.executeOneTask();//execute();
+        handler.executeOneTask();
 
-        
-//       	terminal.println("Press UP/DOWN to show a list of possible values"
-//       			+ System.lineSeparator());
-//       	
-//        setUpArrows();
-//        
-//        String[] nums = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"};
-//        
-//        setChoices(nums);
-//        
-//        double tr =  Simulation.instance().getMasterClock().getTimeRatio();
-//        tr = Math.log(tr)/Math.log(2);
-//        String trStr = "" + (int)tr;
-// 
-//        String speed = textIO.newStringInputReader()
-//        		.withDefaultValue(trStr)
-////        		.withInlinePossibleValues(nums)
-//                //.withMinVal(1).withMaxVal(14)//(16384)
-//                .read("Speed (0 to 14)");
-//
-////        terminal.printf(System.lineSeparator());
-//
-////        if (MathUtils.isPowerOf2(ratio) && ratio <= 16384) {  
-//    	int speedInt = -1; 
-//    	
-//    	if (isInteger(speed)) {
-//    		speedInt = Integer.parseInt(speed);
         int speedInt = Speed.speed;
         
 		if ( speedInt >= 0 && speedInt <= 14) {
@@ -99,9 +72,6 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
             		+  "Please choose a number between 0 and 14." 
                 		+ System.lineSeparator());
   
-        // set choices to null
-//        handler.setChoices();
-
     }
 
 

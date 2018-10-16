@@ -34,6 +34,7 @@ public class ResourceProcessing extends Function implements Serializable {
 	public static final double PROCESS_MAX_VALUE = 100D;
 
 	private double powerDownProcessingLevel;
+	
 	private List<ResourceProcess> resourceProcesses;
 
 	private static BuildingConfig config;

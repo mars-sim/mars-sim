@@ -54,7 +54,7 @@ public final class PartConfig implements Serializable {
 
 	private static MarsClock marsClock;
 
-	private static UnitManager unitManager;
+//	private static UnitManager unitManager;
 
 	// Data members.
 	// private Set<ItemResource> itemResources = new HashSet<ItemResource>();
@@ -81,7 +81,7 @@ public final class PartConfig implements Serializable {
 		nextID = ResourceUtil.FIRST_ITEM_RESOURCE;// SimulationConfig.instance().getResourceConfiguration().getNextID()
 													// + 1;
 
-		unitManager = Simulation.instance().getUnitManager();
+//		unitManager = Simulation.instance().getUnitManager();
 
 		loadItemResources(itemResourceDoc);
 
@@ -154,9 +154,9 @@ public final class PartConfig implements Serializable {
 	public double computeMTBF(double numSols, int numFailures, Part p) {
 		int numItem = 0;
 		// obtain the total # of this part in used from all settlements
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
-		Collection<Settlement> ss = unitManager.getSettlements();
+//		if (unitManager == null)
+//			unitManager = Simulation.instance().getUnitManager();
+		Collection<Settlement> ss = Simulation.instance().getUnitManager().getSettlements();
 		for (Settlement s : ss) {
 			Inventory inv = s.getInventory();
 			int num = inv.getItemResourceNum(p);

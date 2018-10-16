@@ -257,10 +257,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	// Static members
 	private static Simulation sim = Simulation.instance();
-	private static UnitManager unitManager = sim.getUnitManager();
+	// WARNING : The UnitManager instance will be stale after loading from a saved sim
+	// It will fail to run methods in Settlement and without any warning as to why that it fails.
+//	private static UnitManager unitManager;
 	private static MissionManager missionManager = sim.getMissionManager();
-	private static Weather weather;// = sim.getMars().getWeather();
-	private static MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
+	private static Weather weather;
+	private static MarsClock marsClock;
 
 	/** 
 	 * Constructor 1 called by ConstructionStageTest 
@@ -268,10 +270,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private Settlement() {
 		super(null, null);
 		location = getCoordinates();
-		unitManager = Simulation.instance().getUnitManager();
+//		unitManager = Simulation.instance().getUnitManager();
 
-//		updateAllAssociatedPeople();
-//		updateAllAssociatedRobots();
+		updateAllAssociatedPeople();
+		updateAllAssociatedRobots();
 	}
 
 	/**
@@ -291,8 +293,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		this.name = name;
 		this.scenarioID = scenarioID;
 		this.location = location;
-		if (unitManager == null) // for passing maven test
-			unitManager = Simulation.instance().getUnitManager();
+//		if (unitManager == null) // for passing maven test
+//			unitManager = Simulation.instance().getUnitManager();
 		if (missionManager == null) // for passing maven test
 			missionManager = Simulation.instance().getMissionManager();
 	}
@@ -326,7 +328,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		weather = sim.getMars().getWeather();
 
 		// inv = getInventory();
-		unitManager = Simulation.instance().getUnitManager();
+//		unitManager = Simulation.instance().getUnitManager();
 		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
@@ -1485,7 +1487,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>(getIndoorPeople());
 
 		// Check all people.
-		Iterator<Person> i = unitManager.getPeople().iterator();
+		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			Task task = person.getMind().getTaskManager().getTask();
@@ -1531,7 +1533,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		if (allSettlements) {
 			// could be either radio (non face-to-face) conversation, don't care
-			i = unitManager.getPeople().iterator();
+			i = Simulation.instance().getUnitManager().getPeople().iterator();
 			sameBuilding = false;
 		} else {
 			// the only initiator's settlement
@@ -1854,9 +1856,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return collection of associated people.
 	 */
 	public Collection<Person> updateAllAssociatedPeople() {
-
 		// using java 8 stream
-		Collection<Person> result = unitManager.getPeople().stream().filter(p -> p.getAssociatedSettlement() == this)
+		Collection<Person> result = Simulation.instance().getUnitManager().getPeople().stream().filter(p -> p.getAssociatedSettlement() == this)
 				.collect(Collectors.toList());
 
 		allAssociatedPeople = result;
@@ -2146,7 +2147,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public Collection<Robot> updateAllAssociatedRobots() {
 		// using java 8 stream
-		Collection<Robot> result = unitManager.getRobots().stream().filter(r -> r.getAssociatedSettlement() == this)
+		Collection<Robot> result = Simulation.instance().getUnitManager().getRobots().stream().filter(r -> r.getAssociatedSettlement() == this)
 				.collect(Collectors.toList());
 
 		allAssociatedRobots = result;

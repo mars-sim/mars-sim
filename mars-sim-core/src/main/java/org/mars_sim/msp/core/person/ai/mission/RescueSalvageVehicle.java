@@ -70,7 +70,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 	private Vehicle vehicleTarget;
 
-	private static UnitManager unitManager;
+//	private static UnitManager unitManager;
 	private static MissionManager missionManager;
 
 	private static int oxygenID = ResourceUtil.oxygenID;
@@ -87,7 +87,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		// Use RoverMission constructor
 		super(DEFAULT_DESCRIPTION, startingPerson, MIN_GOING_MEMBERS);
 
-		unitManager = Simulation.instance().getUnitManager();
+//		unitManager = Simulation.instance().getUnitManager();
 		missionManager = Simulation.instance().getMissionManager();
 
 		if (!isDone()) {
@@ -168,7 +168,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		// Use RoverMission constructor.
 		super(description, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
-		unitManager = Simulation.instance().getUnitManager();
+//		unitManager = Simulation.instance().getUnitManager();
 		missionManager = Simulation.instance().getMissionManager();
 
 		setStartingSettlement(startingSettlement);
@@ -569,12 +569,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		Collection<Vehicle> emergencyBeaconVehicles = new ConcurrentLinkedQueue<Vehicle>();
 		Collection<Vehicle> vehiclesNeedingRescue = new ConcurrentLinkedQueue<Vehicle>();
 
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
+//		if (unitManager == null)
+//			unitManager = Simulation.instance().getUnitManager();
 		// Find all available vehicles.
 		// Iterator<Vehicle> iV = unitManager.getVehicles().iterator();
 		// while (iV.hasNext()) {
-		for (Vehicle vehicle : unitManager.getVehicles()) {// = iV.next();
+		for (Vehicle vehicle : Simulation.instance().getUnitManager().getVehicles()) {// = iV.next();
 			if (vehicle.isBeaconOn() && !isVehicleAlreadyMissionTarget(vehicle)) {
 				emergencyBeaconVehicles.add(vehicle);
 
@@ -787,7 +787,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 		double distance = thisSettlement.getCoordinates().getDistance(thisVehicle.getCoordinates());
 
-		Iterator<Settlement> iS = unitManager.getSettlements().iterator();
+		Iterator<Settlement> iS = Simulation.instance().getUnitManager().getSettlements().iterator();
 		while (iS.hasNext() && result) {
 			Settlement settlement = iS.next();
 			if (settlement != thisSettlement) {
@@ -843,7 +843,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		super.destroy();
 
 		vehicleTarget = null;
-		unitManager = null;
 		missionManager = null;
 	}
 }

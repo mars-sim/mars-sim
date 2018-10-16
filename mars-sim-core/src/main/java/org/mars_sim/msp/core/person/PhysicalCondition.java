@@ -39,7 +39,6 @@ import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -60,11 +59,6 @@ public class PhysicalCondition implements Serializable {
 	public static final String WELL = "Well";
 	public static final String DEAD = "Dead : ";
 	public static final String ILL = "Sick : ";
-
-//	public static final int OXYGEN;
-//	public static final int WATER;
-//	public static final int FOOD;
-//	public static final int CO2;
 
 	public static final int THIRST_THRESHOLD = 100;
 
@@ -202,14 +196,9 @@ public class PhysicalCondition implements Serializable {
 
 	private NaturalAttributeManager naturalAttributeManager;
 
-	private static EatMealMeta eatMealMeta = new EatMealMeta();
-
-	private static MedicalManager medicalManager;
-
-	private static MasterClock masterClock;
 	private static MarsClock marsClock;
-	private static Simulation sim;
-
+	private static EatMealMeta eatMealMeta = new EatMealMeta();
+	private static MedicalManager medicalManager;
 	private static Complaint depression;
 	private static Complaint panicAttack;
 	private static Complaint highFatigue;
@@ -243,11 +232,9 @@ public class PhysicalCondition implements Serializable {
 		person = newPerson;
 		name = newPerson.getName();
 
-		sim = Simulation.instance();
-
 		circadian = person.getCircadianClock();
 
-		medicalManager = sim.getMedicalManager();
+		medicalManager = Simulation.instance().getMedicalManager();
 
 		taskMgr = person.getMind().getTaskManager();
 
@@ -370,12 +357,8 @@ public class PhysicalCondition implements Serializable {
 
 			boolean illnessEvent = false;
 
-			if (masterClock == null)
-				masterClock = sim.getMasterClock();
-
-			if (marsClock == null)
-				marsClock = masterClock.getMarsClock();
-
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+			
 			int solElapsed = marsClock.getMissionSol();
 
 			if (solCache != solElapsed) {
@@ -1074,6 +1057,9 @@ public class PhysicalCondition implements Serializable {
 					if (probability > 0D) {
 						double taskModifier = 1;
 						double tendency = 1;
+						
+						marsClock = Simulation.instance().getMasterClock().getMarsClock();
+
 						int msol = marsClock.getMissionSol();
 
 						if (healthLog.get(ct) != null && msol > 3)
@@ -1180,7 +1166,7 @@ public class PhysicalCondition implements Serializable {
 			} else {
 				clocks = new ArrayList<>();
 			}
-			clocks.add(marsClock.getDateTimeStamp());
+			clocks.add(Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp());
 			healthHistory.put(type, clocks);
 
 			String n = type.getName().toLowerCase();
@@ -1860,9 +1846,7 @@ public class PhysicalCondition implements Serializable {
 		starved = null;
 		dehydrated = null;
 		medicalManager = null;
-		masterClock = null;
 		marsClock = null;
-		sim = null;
 		dehydration = null;
 		starvation = null;
 		freezing = null;

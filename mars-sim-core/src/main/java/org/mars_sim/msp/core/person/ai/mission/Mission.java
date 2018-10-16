@@ -140,7 +140,7 @@ public abstract class Mission implements Serializable {
 	private transient List<MissionListener> listeners;
 
 	// Static members
-	private static UnitManager unitManager;
+//	private static UnitManager unitManager;
 	private static MissionManager missionManager;
 
 	/**
@@ -168,7 +168,7 @@ public abstract class Mission implements Serializable {
 		missionCapacity = Integer.MAX_VALUE;
 
 		Simulation sim = Simulation.instance();
-		unitManager = sim.getUnitManager();
+//		unitManager = sim.getUnitManager();
 		missionManager = sim.getMissionManager();
 				
 		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
@@ -877,7 +877,7 @@ public abstract class Mission implements Serializable {
 
 		// Get all people qualified for the mission.
 		Collection<Person> qualifiedPeople = new ConcurrentLinkedQueue<Person>();
-		Iterator<Person> i = unitManager.getPeople().iterator();
+		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (isCapableOfMission(person)) {

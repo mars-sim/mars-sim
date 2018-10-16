@@ -98,7 +98,6 @@ implements SettlementMapLayer {
 	}
 
 	@Override
-	// 2014-11-04 Added building parameter
 	public void displayLayer(
 		Graphics2D g2d, Settlement settlement, Building building,
 		double xPos, double yPos, int mapWidth, int mapHeight,
@@ -158,14 +157,14 @@ implements SettlementMapLayer {
 				String words[] = name.split(" ");
 				int size = words.length;
 				if (name.contains("Hallway")) {
-					// 2016-09-25 Shrank the size of a hallway label.
+					// Shrink the size of a hallway label.
 					//e.g. Turned "Hallway 12 " into "H12"
 					String newName = "H " + words[1];
 					drawLabel(g2d, newName, building.getXLocation(), building.getYLocation(),
 							HALLWAY_LABEL_COLOR, WHITE_LABEL_OUTLINE_COLOR, 12);
 				}
 				else if (name.contains("Tunnel")) {
-					// 2016-09-25 Shrank the size of a hallway label.
+					// Shrink the size of a hallway label.
 					//e.g. Turned "Hallway 12 " into "H12"
 					String newName = "T " + words[1];
 					drawLabel(g2d, newName, building.getXLocation(), building.getYLocation(),

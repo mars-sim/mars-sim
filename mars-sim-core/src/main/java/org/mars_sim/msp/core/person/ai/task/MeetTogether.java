@@ -183,6 +183,10 @@ implements Serializable {
      */
     private double meetingTogether(double time) {
 
+    	// When loading from a saved sim, candidate will be null
+    	if (candidate == null)
+    		return time;
+    	
     	if (inviter == null) {
     		// The person is setting up and inviting the candidate
        		Building building = settlement.getBuildingManager()

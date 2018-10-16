@@ -96,8 +96,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			if (resourceProcessBuilding != null) {
 				process = getResourceProcess(resourceProcessBuilding);
 				
-				if (marsClock == null)
-					marsClock = Simulation.instance().getMasterClock().getMarsClock();
+				marsClock = Simulation.instance().getMasterClock().getMarsClock();
 				
 				// Compute the time limit
 				int sol = marsClock.getMissionSol();

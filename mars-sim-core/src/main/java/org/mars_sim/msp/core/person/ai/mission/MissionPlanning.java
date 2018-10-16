@@ -35,12 +35,9 @@ public class MissionPlanning implements Serializable {
 	private PlanType status = PlanType.PENDING;
 	private Mission mission;
 	
-	private static MarsClock marsClock;
-	
 	public MissionPlanning(Mission mission, String requestedBy, RoleType role) {
-		if (marsClock == null) marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		this.requestedSol = marsClock.getMissionSol();
-		this.requestTimeStamp = marsClock.getDateTimeStamp();
+		this.requestedSol = Simulation.instance().getMasterClock().getMarsClock().getMissionSol();
+		this.requestTimeStamp = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
 		this.mission = mission;
 		this.requestedBy = requestedBy;
 		this.requesterRole = role;
@@ -48,7 +45,8 @@ public class MissionPlanning implements Serializable {
 	
 	public void setReviewedBy(String name) {
 		this.reviewedBy = name;
-		reviewedTimeStamp = marsClock.getDateTimeStamp();
+		// Note : resetting marsClock is needed after loading from a saved sim 
+		reviewedTimeStamp = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
 	}
 	
 	public void setStatus(PlanType status) {

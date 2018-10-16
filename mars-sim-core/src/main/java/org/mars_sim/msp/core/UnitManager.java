@@ -137,18 +137,14 @@ public class UnitManager implements Serializable {
 	private static RobotConfig robotConfig;
 	private static PartConfig partConfig;
 
-	private static MasterClock masterClock;
 	private static MarsClock marsClock;
 
 	/**
 	 * Constructor.
 	 */
 	public UnitManager() {
-		if (masterClock == null)
-			masterClock = Simulation.instance().getMasterClock();
-
 		if (marsClock == null)
-			marsClock = masterClock.getMarsClock();
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
 		if (partConfig == null)
 			partConfig = SimulationConfig.instance().getPartConfiguration();
@@ -1257,8 +1253,6 @@ public class UnitManager implements Serializable {
 		cc.setCountry(newCountry);
 		cc.setSponsor(newSponsor);		
 //		isProfileRetrieved = true;
-		
-//		System.out.println("updateCommander() : " + newCountry + "'s countryID : " + getCountryID(newCountry));
 	}
 	
 	
@@ -1881,7 +1875,6 @@ public class UnitManager implements Serializable {
 
 				// Get person's name
 //				String name = personConfig.getConfiguredPersonName(x, PersonConfig.ALPHA_CREW);
-//				System.out.println("Alpha crew member : " + name);
 //				if (name == null || name.equals("")) {
 //					throw new IllegalStateException("Person name is null");
 //				}
@@ -1949,16 +1942,25 @@ public class UnitManager implements Serializable {
 	 * @throws Exception if error during time passing.
 	 */
 	void timePassing(double time) {
+		// Note : resetting marsClock is needed after loading from a saved sim 
+		// Cannot add "if (marsClock == null)"		
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		
 		int solElapsed = marsClock.getMissionSol();
 
 		if (solCache != solElapsed) {
 			solCache = solElapsed;
-			logger.info("The mission sol " + solCache + " has begun.");
+			
+			if (solElapsed != 1)
+				// Note that when loading from a saved sim...
+				logger.info("The mission sol " + solCache + " has begun.");
+			
 			// Compute reliability daily
 			partConfig.computeReliability();
 		}
 
 		if (justReloaded) {
+//			System.out.println("justReloaded is true");
 			// Only need to run all these below once at the start of the sim
 			partConfig.computeReliability();
 
@@ -2280,15 +2282,6 @@ public class UnitManager implements Serializable {
 			countries = SimulationConfig.instance().getPersonConfiguration().createCountryList();
 		return countries;
 	}
-	
-	/**
-	 * Checks if the commander's profile has been retrieved
-	 * 
-	 * @return true if the name is not null
-	 */
-//	public boolean isProfileRetrieved() {
-//		return isProfileRetrieved;
-//	}
 	
 	/**
 	 * Resets the commander's name back to null
