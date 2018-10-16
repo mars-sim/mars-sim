@@ -81,7 +81,7 @@ public enum JobType {
 		return getName();
 	}
 	
-	public static JobType fromString(String name) {
+	public static JobType getJobType(String name) {
 		if (name != null) {
 	    	for (JobType ra : JobType.values()) {
 	    		if (name.equalsIgnoreCase(ra.name)) {

@@ -13,11 +13,10 @@ import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.RoleType;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.task.RecordActivity;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
-
-import jdk.javadoc.doclet.Reporter;
 
 /**
  * Meta task for the RecordActivity task.
@@ -31,7 +30,7 @@ public class RecordActivityMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.recordActivity"); //$NON-NLS-1$
 
-//    private static final String REPORTER = "Reporter";
+    private static final String REPORTER = "Reporter";
     
     @Override
     public String getName() {
@@ -46,12 +45,12 @@ public class RecordActivityMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-        double result = 0D;
+         double result = 0D;
       
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
         
-        if (person.getMind().getJob().getName(person.getGender()).equals(Reporter.class.getSimpleName())) {
+        if (JobType.getJobType(person.getMind().getJob().getName(person.getGender())) == JobType.getJobType(REPORTER)) {
         
         	result += 300D;
         	

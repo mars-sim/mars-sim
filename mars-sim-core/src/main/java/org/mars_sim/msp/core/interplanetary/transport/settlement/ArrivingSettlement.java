@@ -298,7 +298,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			String birthplace = "Earth"; // TODO: randomize from list of countries/federations
 			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
 			String sponsor = newSettlement.getSponsor();
-			String country = unitManager.getCountry(sponsor);
+			String country = UnitManager.getCountry(sponsor);
 			// Person immigrant = new Person(immigrantName, gender, country, newSettlement,
 			// sponsor);
 			// Use Builder Pattern for creating an instance of Person

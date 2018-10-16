@@ -50,6 +50,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.person.GenderType;
 
 import com.jfoenix.controls.JFXButton;
@@ -159,26 +160,10 @@ public class CrewEditorFX {
 	 */
 	public void createGUI() {
 
-//		 if (!nameTF.isEmpty()) 
-//			 for (int i = 0; i< SIZE_OF_CREW; i++) {
-//				 System.out.println(" i is " + i); 
-//				 String nameStr = nameTF.get(i).getText(); 
-//				 System.out.println(" name is " + nameStr); 
-//			}
-
 		scenarioConfigEditorFX.setCrewEditorOpen(true);
 
 		BorderPane borderPane = new BorderPane();
 		borderPane.setPadding(new Insets(5, 5, 5, 5));
-
-//		Label titleLabel = new Label("Alpha Crew Roster");
-//		titleLabel.setAlignment(Pos.CENTER);
-//		titleLabel.setPadding(new Insets(5, 5, 5, 15));
-//
-//		HBox hTop = new HBox();
-//		hTop.setAlignment(Pos.CENTER);
-//		hTop.getChildren().add(titleLabel);
-//		borderPane.setTop(titleLabel);
 
 		// Create list panel.
 		gridPane = new GridPane();
@@ -308,7 +293,6 @@ public class CrewEditorFX {
 				personConfig.setPersonJob(i, jobStr, ALPHA_CREW);
 
 				String sponsorStr = (String) sponsorList.get(i).getValue();
-//				System.out.println("sponsorStr : " + sponsorStr);
 
 				personConfig.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
 				
@@ -351,7 +335,6 @@ public class CrewEditorFX {
 				scenarioConfigEditorFX.getTableViewCombo().setSameSponsor(destinationName, "Varied");				
 			}
 			
-			// System.out.println("goodToGo is "+ goodToGo);
 			if (goodToGo) {
 				scenarioConfigEditorFX.setCrewEditorOpen(false);
 				stage.hide();
@@ -659,7 +642,6 @@ public class CrewEditorFX {
 				public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
 					if (group.getSelectedToggle() != null) {
 						String s = group.getSelectedToggle().getUserData().toString();
-						// System.out.println(" selected : " + s);
 						if (s.equals(quadrant1A) | s.equals(quadrant2A) | s.equals(quadrant3A) | s.equals(quadrant4A))
 							personalityArray[r][col - 1] = true;
 						else
@@ -713,17 +695,11 @@ public class CrewEditorFX {
 				break;
 			}
 		}
-		// System.out.println("For " + col + " type is " + type);
 		return type;
 	}
 
-	// public FilterJFXComboBox<String> setUpJobCB() {
 	public JFXComboBox<String> setUpJobCB(int index) {
-		
-//		 ObservableList<String> options = FXCollections.observableArrayList(
-//		 "Option 1", "Option 2", "Option 3" ); final ComboBox comboBox = new
-//		 ComboBox(options);
-		
+				
 		List<String> jobs = JobType.getList();
 
 		jobs.remove(POLITICIAN);
@@ -733,16 +709,7 @@ public class CrewEditorFX {
 		ObservableList<String> jobsOList = FXCollections.observableArrayList(jobs);
 		JFXComboBox<String> cb = new JFXComboBox<String>(jobsOList);
 
-		// jobCBs.add(index, cb);
-
 		return cb;
-
-		// AutoCompleteJFXComboBox<String> jobsACCB = new
-		// AutoCompleteComboBox<>(FXCollections.observableArrayList(jobs));
-		// FilterJFXComboBox<String> jobsFCB = new
-		// FilterComboBox<>(FXCollections.observableArrayList(jobs));
-
-		// return jobsFCB;
 	}
 
 	public void setUpCrewJob() {
@@ -780,18 +747,9 @@ public class CrewEditorFX {
 					public void updateItem(String item, boolean empty) {
 						super.updateItem(item, empty);
 						if (item != null) {
-							// System.out.println("item != null");
 							setText(item);
-							
-//							 if (empty) {// || item.equals("")) {
-//							System.out.println("empty is true.");
-//							 setTextFill(Color.RED); 
-//							} else {
-//							System.out.println("empty is false.");
-//							 setTextFill(Color.BLACK); }
-							 
+
 						} else {
-							// System.out.println("item = null");
 							setText(null);
 							// setTextFill(Color.RED);
 						}
@@ -815,21 +773,22 @@ public class CrewEditorFX {
 					int code = -1;
 					List<String> list = new ArrayList<>();
 
-					if (sponsor.contains("CNSA"))
+					if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA)
 						list.add("China");
-					else if (sponsor.contains("CSA"))
+					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA)
 						list.add("Canada");
-					else if (sponsor.contains("ISRO"))
+					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO)
 						list.add("India"); // 2
-					else if (sponsor.contains("JAXA"))
+					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA)
 						list.add("Japan"); // 3
-					else if (sponsor.contains("MS") || sponsor.contains("SpaceX"))
+					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY
+						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACE_X)
 						code = 0;
-					else if (sponsor.contains("NASA"))
+					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA)
 						list.add("USA"); // 4
-					else if (sponsor.contains("RKA"))
+					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA)
 						list.add("Russia"); // 5
-					else if (sponsor.contains("ESA"))
+					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA)
 						code = 1;
 
 					if (code == 0) {
@@ -841,7 +800,6 @@ public class CrewEditorFX {
 					Collections.sort(list);
 
 					ObservableList<String> countryOList = FXCollections.observableArrayList(list);
-					// System.out.println("list size is " + list.size());
 
 					countryList.get(index).setItems(countryOList);
 				}
@@ -880,15 +838,7 @@ public class CrewEditorFX {
 		ObservableList<String> countryOList = FXCollections.observableArrayList(countries);
 		JFXComboBox<String> cb = new JFXComboBox<String>(countryOList);
 		
-//		 ValidationSupport vs = new ValidationSupport(); vs.registerValidator(cb,
-//		 Validator.createEmptyValidator( "ComboBox Selection required"));
-//		 vs.validationResultProperty().addListener( (o, oldValue, newValue) -> {
-//		 //Collection<?> c boolean b =
-//		 o.getValue().getMessages().contains("ComboBox Selection required"); if (b)
-//		 System.out.
-//		 println("Missing ComboBox Selection(s) for country in Crew Editor. Please double check!"
-//		 ); //if (o.getValue() == null || o.getValue().equals("")) //
-//		 System.out.println("invalid choice of country of origin !"); } );
+//		 ValidationSupport vs = new ValidationSupport(); 
 
 		return cb;
 
@@ -955,22 +905,7 @@ public class CrewEditorFX {
 		destinationsOListComboBox.setItems(destinationsOList);
 	}
 
-//	 public void setUpCrewDestination() {
-//	 List<SettlementInfo> settlements =
-//	 scenarioConfigEditorFX.getSettlementTableModel().getSettlements(); //int size
-//	 = settlements.size(); //System.out.println("size is " + size); String n[] =
-//	 new String[SIZE_OF_CREW];
-//	
-//	 for (int i = 0 ; i < SIZE_OF_CREW; i++) { n[i] =
-//	 personConfig.getConfiguredPersonDestination(i);
-//	 System.out.println("n[i] is "+ n[i]); JFXComboBox<String> destinationCB =
-//	 setUpCB(5); // 5 = Destination //g.setMaximumRowCount(8);
-//	 gridPane.add(destinationCB, i+1, 5); // destination's row = 5
-//	 destinationCB.setValue(n[i]); destinationsList.add(destinationCB); } }
-
-
 	boolean isGoodToGo() {
-		// System.out.println("calling isGoodToGo(). goodToGo is "+ goodToGo );
 		return goodToGo;
 	}
 
@@ -994,18 +929,6 @@ public class CrewEditorFX {
 		}
 	}
 
-	// create some content to be displayed on top of the frozen glass panel.
-//	private Label createContent() {
-//		Label label = new Label(
-//				"Create a new question for drop shadow effects.\n\nDrag to move\n\nDouble click to close");
-//		label.setPadding(new Insets(10));
-//
-//		label.setStyle("-fx-font-size: 14px; -fx-text-fill: green;");
-//		label.setMaxWidth(250);
-//		label.setWrapText(true);
-//
-//		return label;
-//	}
 
 	// Makes a stage draggable using a given node.
 	public void makeDraggable(final Stage stage, final Node byNode) {
@@ -1028,7 +951,6 @@ public class CrewEditorFX {
 					background.setImage(copyBackground(stage));
 					layout.getChildren().set(0, background);
 
-					// 2016-02-07 Added calling setMonitor()
 					scenarioConfigEditorFX.getMainMenu().setMonitor(stage);
 					stage.show();
 

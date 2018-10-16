@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.person.ai.job.JobAssignment;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.BotMind;
@@ -604,21 +605,21 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				String jobStrCache = person.getMind().getJob().getName(person.getGender());
 
 				// if job is Politician, loads and set to the previous job and quit;
-				if (jobStrCache.equals(POLITICIAN)) {
+				if (JobType.getJobType(jobStrCache) == JobType.getJobType(POLITICIAN)) {
 					jobComboBox.setSelectedItem(jobStrCache);
 					jobChangeLabel.setForeground(Color.red);
 					jobChangeLabel.setText("Mayor cannot switch job arbitrarily!");
 					jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 				}
 
-				else if (selectedJobStr.equals(POLITICIAN)) {
+				else if (JobType.getJobType(selectedJobStr) == JobType.getJobType(POLITICIAN)) {
 					jobComboBox.setSelectedItem(jobStrCache);
 					jobChangeLabel.setForeground(Color.red);
 					jobChangeLabel.setText("The Job Politician is currently reserved for Mayor only.");
 					jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 				}
 
-				else if (!jobCache.equals(selectedJobStr)) {
+				else if (JobType.getJobType(jobCache) != JobType.getJobType(selectedJobStr)) {
 					// Use getAssociatedSettlement instead of getSettlement()
 					int pop = 0;
 					Settlement settlement = null;

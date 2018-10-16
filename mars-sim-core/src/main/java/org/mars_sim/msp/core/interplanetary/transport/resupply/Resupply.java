@@ -503,7 +503,7 @@ public class Resupply implements Serializable, Transportable {
 
 			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
 			String sponsor = settlement.getSponsor();
-			String country = Simulation.instance().getUnitManager().getCountry(sponsor);
+			String country = UnitManager.getCountry(sponsor);
 			// Use Builder Pattern for creating an instance of Person
 			Person immigrant = Person.create(immigrantName, settlement).setGender(gender).setCountry(country)
 					.setSponsor(sponsor).build();

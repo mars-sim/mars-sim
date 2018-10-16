@@ -31,8 +31,6 @@ implements Serializable {
 
 	private static double TRADING_RANGE = 1500D;
 	private static double SETTLEMENT_MULTIPLIER = 3D;
-
-//	private NaturalAttributeManager attributes;
 	
 	/**
 	 * Constructor.

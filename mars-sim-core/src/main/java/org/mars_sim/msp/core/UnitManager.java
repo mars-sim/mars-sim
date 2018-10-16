@@ -913,13 +913,13 @@ public class UnitManager implements Serializable {
 						List<String> male_first_list = new ArrayList<>();
 						List<String> female_first_list = new ArrayList<>();
 
-						if (sponsor.contains(ReportingAuthorityType.CNSA.getName())) { // if (type == ReportingAuthorityType.CNSA) {
+						if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA) {
 							index = 0;
 
-						} else if (sponsor.contains(ReportingAuthorityType.CSA.getName())) {// if (type == ReportingAuthorityType.CSA) {
+						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA) {
 							index = 1;
 
-						} else if (sponsor.contains(ReportingAuthorityType.ESA.getName())) {// if (type == ReportingAuthorityType.ESA) {
+						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA) {
 							index = 2;
 
 							int countryID = getCountryID(country);
@@ -928,23 +928,23 @@ public class UnitManager implements Serializable {
 							male_first_list = maleFirstNamesByCountry.get(countryID);
 							female_first_list = femaleFirstNamesByCountry.get(countryID);
 
-						} else if (sponsor.contains(ReportingAuthorityType.ISRO.getName())) {// if (type == ReportingAuthorityType.ISRO) {
+						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO) {
 							index = 3;
 
-						} else if (sponsor.contains(ReportingAuthorityType.JAXA.getName())) {// if (type == ReportingAuthorityType.JAXA) {
+						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA) {
 							index = 4;
 
-						} else if (sponsor.contains(ReportingAuthorityType.NASA.getName())) {// if (type == ReportingAuthorityType.NASA) {
+						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA) {
 							index = 5;
 
-						} else if (sponsor.contains(ReportingAuthorityType.RKA.getName())) { // if (type == ReportingAuthorityType.RKA) {
+						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA) {
 							index = 6;
 
-						} else if (sponsor.contains(ReportingAuthorityType.MARS_SOCIETY.getName())
-								 || sponsor.contains(ReportingAuthorityType.SPACE_X.getName())) {
-							index = 7;
-							skip = true;
-							fullname = getNewName(UnitType.PERSON, null, gender, null);
+//						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY
+//								 || ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACE_X) {
+//							index = 7;
+//							skip = true;
+//							fullname = getNewName(UnitType.PERSON, null, gender, null);
 
 //						} else if (sponsor.contains("SpaceX")) {
 //							index = 8;
@@ -2172,23 +2172,23 @@ public class UnitManager implements Serializable {
 
 	public static String getCountry(String sponsor) {
 
-		if (sponsor.contains(ReportingAuthorityType.CNSA.getName()))
+		if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA)
 			return "China";
-		else if (sponsor.contains(ReportingAuthorityType.CSA.getName()))
+		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA)
 			return "Canada";
-		else if (sponsor.contains(ReportingAuthorityType.ESA.getName()))
+		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA)
 			return countries.get(RandomUtil.getRandomInt(6, 27));
-		else if (sponsor.contains(ReportingAuthorityType.ISRO.getName()))
+		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO)
 			return "India";
-		else if (sponsor.contains(ReportingAuthorityType.JAXA.getName()))
+		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA)
 			return "Japan";
-		else if (sponsor.contains(ReportingAuthorityType.NASA.getName()))
+		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA)
 			return "USA";
-		else if (sponsor.contains(ReportingAuthorityType.RKA.getName()))
+		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA)
 			return "Russia";
-		else if (sponsor.contains(ReportingAuthorityType.MARS_SOCIETY.getName()))
+		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY)
 			return "USA";
-		else if (sponsor.contains(ReportingAuthorityType.SPACE_X.getName()))
+		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACE_X)
 			return "USA";
 		else
 			return "USA";
@@ -2204,19 +2204,19 @@ public class UnitManager implements Serializable {
 	public static String getSponsorByCountryID(int id) {
 		
 		if (id == 0)
-			return "CNSA";
+			return ReportingAuthorityType.CNSA.getName();
 		else if (id == 1)
-			return "CSA";
+			return ReportingAuthorityType.CSA.getName();
 		else if (id == 2)
-			return "ISRO";
+			return ReportingAuthorityType.ISRO.getName();
 		else if (id == 3)
-			return "JAXA";
+			return ReportingAuthorityType.JAXA.getName();
 		else if (id == 4)
-			return "NASA"; // MS or SpaceX
+			return ReportingAuthorityType.NASA.getName(); // MS or SpaceX
 		else if (id == 5)			
-			return "RKA";	
+			return ReportingAuthorityType.RKA.getName();	
 		else
-			return "ESA";
+			return ReportingAuthorityType.ESA.getName();
 		
 	}
 	

@@ -126,13 +126,11 @@ public class MetaTaskUtil {
 			// nonWorkHourTasks.
 			// Therefore, add anyHourTasks into the other two sets
 
-			// 2015-09-28 Incorporate anyHourTasks into workHourTasks
+			// Incorporate anyHourTasks into workHourTasks
 			workHourMetaTasks.addAll(anyHourMetaTasks);
 
-			// 2015-09-28 Incorporate anyHourTasks into nonWorkHourTasks
+			// Incorporate anyHourTasks into nonWorkHourTasks
 			nonWorkHourMetaTasks.addAll(anyHourMetaTasks);
-
-			// System.out.println("done initializeMetaTasks()");
 
 		}
 	}
@@ -167,7 +165,6 @@ public class MetaTaskUtil {
 			tasks.add(new WalkMeta());
 
 			anyHourMetaTasks.addAll(tasks);
-			// System.out.println("size of anyHourTasks : " + anyHourTasks.size());
 		}
 	}
 
@@ -234,8 +231,6 @@ public class MetaTaskUtil {
 			workHourMetaTasks.addAll(tasks);
 			// Note: do NOT add anyHourTasks to workHourTasks at this point
 			// workHourTasks.addAll(anyHourTasks);
-
-			// System.out.println("size of workHourTasks : " + workHourTasks.size());
 		}
 	}
 
@@ -269,8 +264,6 @@ public class MetaTaskUtil {
 			nonWorkHourMetaTasks.addAll(tasks);
 			// Note: do NOT add anyHourTasks to nonWorkHourTasks at this point
 			// nonWorkHourTasks.addAll(anyHourTasks);
-
-			// System.out.println("size of nonWorkHourTasks : " + nonWorkHourTasks.size());
 		}
 	}
 
@@ -315,7 +308,8 @@ public class MetaTaskUtil {
 			initializeMetaTasks();
 		}
 
-		// System.out.println("size of metaTasks : " + metaTasks.size()); // 55 so far
+//		System.out.println("size of metaTasks : " + allMetaTasks.size()); 
+		// Note : 58 meta tasks so far
 
 		// Return copy of meta task list.
 		// return new ArrayList<MetaTask>(metaTasks);

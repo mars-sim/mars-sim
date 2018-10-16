@@ -23,7 +23,18 @@ public enum ReportingAuthorityType {
 	NASA				(Msg.getString("ReportingAuthorityType.NASA")), //$NON-NLS-1$
 	RKA					(Msg.getString("ReportingAuthorityType.RKA")), //$NON-NLS-1$
 	MARS_SOCIETY		(Msg.getString("ReportingAuthorityType.MarsSociety")), //$NON-NLS-1$
-	SPACE_X				(Msg.getString("ReportingAuthorityType.SpaceX")) //$NON-NLS-1$
+	SPACE_X				(Msg.getString("ReportingAuthorityType.SpaceX")), //$NON-NLS-1$
+	
+	CNSA_L				(Msg.getString("ReportingAuthorityType.long.CNSA")), //$NON-NLS-1$
+	CSA_L				(Msg.getString("ReportingAuthorityType.long.CSA")), //$NON-NLS-1$
+	ESA_L				(Msg.getString("ReportingAuthorityType.long.ESA")), //$NON-NLS-1$
+	ISRO_L				(Msg.getString("ReportingAuthorityType.long.ISRO")), //$NON-NLS-1$
+	JAXA_L				(Msg.getString("ReportingAuthorityType.long.JAXA")), //$NON-NLS-1$
+	NASA_L				(Msg.getString("ReportingAuthorityType.long.NASA")), //$NON-NLS-1$
+	RKA_L				(Msg.getString("ReportingAuthorityType.long.RKA")), //$NON-NLS-1$
+	MARS_SOCIETY_L		(Msg.getString("ReportingAuthorityType.long.MarsSociety")), //$NON-NLS-1$
+	SPACE_X_L			(Msg.getString("ReportingAuthorityType.long.SpaceX")) //$NON-NLS-1$
+	
 	;
 
 	public static ReportingAuthorityType[] SPONSORS = new ReportingAuthorityType[]{
@@ -38,6 +49,18 @@ public enum ReportingAuthorityType {
 			SPACE_X
 			};
 
+	public static ReportingAuthorityType[] SPONSORS_LONG = new ReportingAuthorityType[]{
+			CNSA_L,
+			CSA_L,
+			ESA_L,
+			ISRO_L,
+			JAXA_L,
+			NASA_L,
+			RKA_L,
+			MARS_SOCIETY_L,
+			SPACE_X_L
+			};
+	
 	public static int numSponsors = SPONSORS.length;
 	
 	private String name;
@@ -58,7 +81,7 @@ public enum ReportingAuthorityType {
 		return getName();
 	}
 	
-	public static ReportingAuthorityType str2enum(String name) {
+	public static ReportingAuthorityType getType(String name) {
 		if (name != null) {
 	    	for (ReportingAuthorityType ra : ReportingAuthorityType.values()) {
 	    		if (name.equalsIgnoreCase(ra.name)) {

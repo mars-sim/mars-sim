@@ -237,23 +237,23 @@ public class PersonConfig implements Serializable {
 				String name = nameElement.getAttributeValue(VALUE);
 				String country = nameElement.getAttributeValue(COUNTRY);
 
-				if (sponsor.equals("CNSA"))// && type[i] == ReportingAuthorityType.CNSA)
+				if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA)
 					sponsors.get(0).add(name);
-				else if (sponsor.equals("CSA"))// && type[i] == ReportingAuthorityType.CSA)
+				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA)
 					sponsors.get(1).add(name);
-				else if (sponsor.equals("ESA"))// && type[i] == ReportingAuthorityType.ESA)
+				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA)
 					sponsors.get(2).add(name);
-				else if (sponsor.equals("ISRO"))// && type[i] == ReportingAuthorityType.ISRO)
+				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO)
 					sponsors.get(3).add(name);
-				else if (sponsor.equals("JAXA"))// && type[i] == ReportingAuthorityType.JAXA)
+				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA)
 					sponsors.get(4).add(name);
-				else if (sponsor.equals("NASA"))// && type[i] == ReportingAuthorityType.NASA)
+				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA)
 					sponsors.get(5).add(name);
-				else if (sponsor.equals("RKA"))// && type[i] == ReportingAuthorityType.RKA)
+				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA)
 					sponsors.get(6).add(name);
-				else if (sponsor.equals("Mars Society"))// && type[i] == ReportingAuthorityType.RKA)
+				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY)
 					sponsors.get(7).add(name);
-				else if (sponsor.equals("SpaceX"))// && type[i] == ReportingAuthorityType.RKA)
+				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACE_X)
 					sponsors.get(8).add(name);
 
 				/* CNSA,CSA,ISRO,JAXA,NASA,RKA */
