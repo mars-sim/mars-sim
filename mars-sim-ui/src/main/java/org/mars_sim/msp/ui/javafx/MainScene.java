@@ -403,7 +403,8 @@ public class MainScene implements ClockListener {
 	private VBox speedVBox;
 	private static VBox soundVBox;
 	private VBox toolbarBox;
-	private Tab mainTab, dashboardTab;
+	private Tab mainTab;
+	private Tab dashboardTab;
 
 	private Spinner<Integer> timeRatioSpinner;
 	private JFXComboBox<Settlement> sBox;
@@ -2758,9 +2759,6 @@ public class MainScene implements ClockListener {
 		tabPane.getStylesheets().clear();
 //		setStylesheet(tabPane, cssFile);
 
-		toolbar.getStylesheets().clear();
-//		setStylesheet(toolbar, cssFile);
-	
 		marsTimeIcon.getStyleClass().clear();
 		marsTimeIcon.getStyleClass().add(getClass().getResource(cssFile).toExternalForm());
 
@@ -2838,7 +2836,8 @@ public class MainScene implements ClockListener {
 			setStylesheet(zoomSlider, JFX_ORANGE_CSS);
 			setStylesheet(musicSlider, JFX_ORANGE_CSS);
 			setStylesheet(soundEffectSlider, JFX_ORANGE_CSS);
-			
+			setStylesheet(toolbar, JFX_ORANGE_CSS);
+		
 			borderGlow.setColor(Color.ORANGE);
 			setGlow(calendarPane);
 		}
@@ -2864,6 +2863,7 @@ public class MainScene implements ClockListener {
 			setStylesheet(zoomSlider, JFX_BLUE_CSS);
 			setStylesheet(musicSlider, JFX_BLUE_CSS);
 			setStylesheet(soundEffectSlider, JFX_BLUE_CSS);
+			setStylesheet(toolbar, JFX_BLUE_CSS);
 			
 			borderGlow.setColor(Color.BLUE);
 			setGlow(calendarPane);

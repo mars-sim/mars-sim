@@ -95,7 +95,7 @@
 }
 
 .jfx-slider .animated-thumb{
-    -fx-background-color: 03a9f4;
+    -fx-background-color: #03a9f4;
 }
 
 .jfx-slider .sliderValue {
@@ -113,4 +113,22 @@
     -fx-tick-length: 5px;
     -fx-minor-tick-length: 3px;
     -fx-border-color: null;
+}
+
+.jfx-tool-bar {
+    -fx-font-size: 20;
+    -fx-font-weight: BOLD;
+    -fx-background-color: transparent;
+    -fx-pref-width: 100%;
+    -fx-pref-height: 96px;
+}
+
+.jfx-tool-bar HBox {
+    -fx-alignment: center;
+    -fx-spacing: 10;
+    -fx-padding: 0 0;
+}
+
+.jfx-tool-bar Label {
+    -fx-text-fill: WHITE;
 }
