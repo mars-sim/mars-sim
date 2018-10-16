@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -62,12 +61,12 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
         	//NOTE: sometimes enum is null. sometimes it is NOT. why?
         	RoleType roleType = person.getRole().getType();
 
-            if (roleType.equals(RoleType.PRESIDENT)
-                	|| roleType.equals(RoleType.MAYOR)
-            		|| roleType.equals(RoleType.COMMANDER)
-        			|| roleType.equals(RoleType.SUB_COMMANDER) 
-        			|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-        			|| (roleType.equals(RoleType.MISSION_SPECIALIST) && (person.getAssociatedSettlement().getNumCitizens() <= 8))) {
+            if (roleType == RoleType.PRESIDENT
+                	|| roleType == RoleType.MAYOR
+            		|| roleType == RoleType.COMMANDER
+        			|| roleType == RoleType.SUB_COMMANDER
+        			|| roleType == RoleType.CHIEF_OF_MISSION_PLANNING
+        			|| (roleType == RoleType.MISSION_SPECIALIST && person.getAssociatedSettlement().getNumCitizens() <= 8)) {
 
 //		            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
 //		            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
@@ -109,7 +108,7 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 	                    PlanType status = m.getPlan().getStatus();
 
 	                    if (status != null && status == PlanType.PENDING) {
-	                    	result += 500D;                    	
+	                    	result += 200D;                    	
 	                    	// Add adjustment based on how many sol the request has since been submitted
                             if (marsClock == null)
                                marsClock = Simulation.instance().getMasterClock().getMarsClock();

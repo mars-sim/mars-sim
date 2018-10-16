@@ -20,14 +20,7 @@ import java.util.function.BiConsumer;
  * A menu for choosing the time ratio in TextIO.
  */
 public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
-	
-//	private static final String KEY_STROKE_UP = "pressed UP";
-//	private static final String KEY_STROKE_DOWN = "pressed DOWN";
-//
-//	private String originalInput = "";
-//	private int choiceIndex = -1;
-//	private String[] choices = {};
-	    
+	   
 	private SwingTextTerminal terminal;
 	
     public static void main(String[] args) {
@@ -62,10 +55,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	        terminal.println("|     Press UP/DOWN arrow keys to scroll through choices.      |");
 	        terminal.println(" -------------------------------------------------------------- "
 	        		+ System.lineSeparator()); 
-		        
-//		       	+ "Press UP/DOWN to show a list of possible values"
-//		       	+ System.lineSeparator());
-	       	
+     	
 //	        setUpArrows();
 	        
 	        // Person
@@ -88,24 +78,10 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	        		prompt = "Connected with " + ChatUtils.settlementCache.toString() +" >";	
 	        	else if (ChatUtils.vehicleCache != null)
 	        		prompt = "Connected with " + ChatUtils.vehicleCache.toString() +" >";	
-	        	
-//	        	System.out.println("prompt : " + prompt);
-//		        setChoices(array);
-		        
-//		        Party.party = textIO.newStringInputReader()
-//		//        		.withInlinePossibleValues(array)
-//		                .read(">");//What party do you want to reach");
-		
-		//        terminal.printf(System.lineSeparator());
-		    
+
 		        handler.addStringTask("party", prompt, false).addChoices(names);//.constrainInputToChoices();
 		        handler.executeOneTask();
-		        
-//		        System.out.println("personCache : " + ChatUtils.personCache);
-//		        System.out.println("robotCache : " + ChatUtils.robotCache);
-//		        System.out.println("settlementCache : " + ChatUtils.settlementCache);
-//		        System.out.println("vehicleCache : " + ChatUtils.vehicleCache);
-		        
+		        		        
 				// if no settlement, robot, person, or vehicle has been selected yet
 				if (ChatUtils.personCache == null && ChatUtils.robotCache == null 
 						&& ChatUtils.settlementCache == null && ChatUtils.vehicleCache == null) {	
@@ -135,13 +111,11 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	 * @param input text
 	 */
     public void parse(String text) {
-//		System.out.println("parse() in ChatMenu");
+
 		String responseText = "";
 		String questionText = "";
 
-		// System.out.println("A: text is " + text + ". Running parse()");
 		text = text.trim();
-//		int len = text.length();
 
 		if (ChatUtils.isQuitting(text)) {
 			String[] txt = ChatUtils.farewell(ChatUtils.SYSTEM, false);
@@ -175,7 +149,6 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	 * @param text
 	 */
 	public void ask(String text) { 
-//		System.out.println("ask() in ChatMenu");
 		String questionText = null;
 		String responseText = "";
 				
@@ -199,35 +172,6 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	}
 	
 
-//    public void setChoices(String... choices) {
-//        this.originalInput = "";
-//        this.choiceIndex = -1;
-//        this.choices = choices;
-//    }
-//    
-//    public void setUpArrows() {
-//        terminal.registerHandler(KEY_STROKE_UP, t -> {
-//            if(choiceIndex < 0) {
-//                originalInput = terminal.getPartialInput();
-//            }
-//            if(choiceIndex < choices.length - 1) {
-//                choiceIndex++;
-//                t.replaceInput(choices[choiceIndex], false);
-//            }
-//            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
-//        });
-//
-//        terminal.registerHandler(KEY_STROKE_DOWN, t -> {
-//            if(choiceIndex >= 0) {
-//                choiceIndex--;
-//                String text = (choiceIndex < 0) ? originalInput : choices[choiceIndex];
-//                t.replaceInput(text, false);
-//            }
-//            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
-//        });
-//    }
-    	
-    
     @Override
     public String toString() {
         return "Chat with a party";

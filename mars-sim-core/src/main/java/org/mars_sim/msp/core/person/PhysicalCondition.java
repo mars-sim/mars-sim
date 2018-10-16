@@ -66,7 +66,7 @@ public class PhysicalCondition implements Serializable {
 //	public static final int FOOD;
 //	public static final int CO2;
 
-	public static final int THIRST_THRESHOLD = 150;
+	public static final int THIRST_THRESHOLD = 100;
 
 	/** Life support minimum value. */
 	private static int MIN_VALUE = 0;

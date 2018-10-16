@@ -67,25 +67,32 @@ public class InteractiveTerm {
 		
 		profile = new CommanderProfile(this);
 
+		CommanderInput ci = new CommanderInput();
+		
+        SwingHandler handler = new SwingHandler(textIO, ci);
+        
 		terminal.print(System.lineSeparator() 
-				+ "---------------------- Mars Simulation Project ----------------------" 
+				+ " -----------------  M A R S   S I M U L A T I O N   P R O J E C T  -----------------" 
 				+ System.lineSeparator()
 				+ System.lineSeparator());
 		
-		setChoices("y", "n");
-		String input = textIO.newStringInputReader()//.withDefaultValue('n')
-//				.withInlinePossibleValues("y", "n")
-			    .read("Do you want to be added as the commander of a settlement? [y/n]");	
+//		setChoices("y", "n");
+//		String input = textIO.newStringInputReader()//.withDefaultValue('n')
+////				.withInlinePossibleValues("y", "n")
+//			    .read("Do you want to be added as the commander of a settlement? [y/n]");	
 		
-		if (input.equals("y") || input.equals("Y")) {
+        handler.addStringTask("input", "Input commander's profile ? [y/n]", false).addChoices("y", "n").constrainInputToChoices();
+        handler.executeOneTask();
+        
+		if ((CommanderInput.input).equals("y")) {// || CommanderInput.input.equals("Y")) {
 			terminal.print(
 //					System.lineSeparator() +
 //					"Press UP and DOWN to show a possible list of values (if available)" +
 					System.lineSeparator());
-			setChoices();
+//			setChoices();
 			profile.accept(textIO, null);
 		}
-		
+        
 	}
 	
 	
@@ -209,6 +216,15 @@ public class InteractiveTerm {
     
     public void disposeTerminal() {
     	terminal.dispose(null);
+    }
+    
+    private static class CommanderInput {
+        public static String input;
+
+        @Override
+        public String toString() {
+            return System.lineSeparator() +">" + input;
+        }
     }
     
 }

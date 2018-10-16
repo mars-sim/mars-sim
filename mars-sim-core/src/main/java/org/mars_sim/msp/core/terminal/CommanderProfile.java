@@ -150,7 +150,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         });
         
         if (isKeyJobs) {
-           	terminal.println("Press Ctrl-J to show a list of job type.");
+           	terminal.println("Press Ctrl-J to show a list of jobs.");
         }
         
     }

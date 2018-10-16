@@ -72,14 +72,15 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 */
 	public ReviewMissionPlan(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 50D);// + RandomUtil.getRandomDouble(100D));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 20D);// + RandomUtil.getRandomDouble(100D));
 
 		roleType = person.getRole().getType();
 		
 		if (person.isInside() && roleType != null) {
 
 			if (roleType == RoleType.PRESIDENT || roleType == RoleType.MAYOR
-					|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER) {
+					|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER
+					|| (roleType == RoleType.MISSION_SPECIALIST && person.getAssociatedSettlement().getNumCitizens() <= 8)) {
 
 				// If person is in a settlement, try to find an office building.
 				Building officeBuilding = Administration.getAvailableOffice(person);
