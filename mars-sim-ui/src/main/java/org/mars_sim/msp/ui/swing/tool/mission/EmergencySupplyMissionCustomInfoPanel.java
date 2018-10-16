@@ -14,9 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
@@ -24,6 +21,10 @@ import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.structure.goods.Good;
+
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
 
 /**
  * A panel for displaying emergency supply mission information.
@@ -46,17 +47,17 @@ extends MissionCustomInfoPanel {
 		setLayout(new BorderLayout());
 
 		// Create the emergency supplies label.
-		JLabel emergencySuppliesLabel = new JLabel(Msg.getString("EmergencySupplyMissionCustomInfoPanel.emergencySupplies"), JLabel.LEFT); //$NON-NLS-1$
+		WebLabel emergencySuppliesLabel = new WebLabel(Msg.getString("EmergencySupplyMissionCustomInfoPanel.emergencySupplies"), WebLabel.LEFT); //$NON-NLS-1$
 		add(emergencySuppliesLabel, BorderLayout.NORTH);
 
 		// Create a scroll pane for the emergency supplies table.
-		JScrollPane emergencySuppliesScrollPane = new JScrollPane();
+		WebScrollPane emergencySuppliesScrollPane = new WebScrollPane();
 		emergencySuppliesScrollPane.setPreferredSize(new Dimension(-1, -1));
 		add(emergencySuppliesScrollPane, BorderLayout.CENTER);
 
 		// Create the emergency supplies table and model.
 		emergencySuppliesTableModel = new EmergencySuppliesTableModel();
-		JTable emergencySuppliesTable = new JTable(emergencySuppliesTableModel);
+		WebTable emergencySuppliesTable = new WebTable(emergencySuppliesTableModel);
 		emergencySuppliesScrollPane.setViewportView(emergencySuppliesTable);
 	}
 

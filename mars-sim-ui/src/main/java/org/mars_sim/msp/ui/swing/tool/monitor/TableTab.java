@@ -216,15 +216,15 @@ extends MonitorTab {
             		else super.tableChanged(e);
             	}
 
-                /**
-                 * Display the cell contents as a tooltip. Useful when cell
-                 * contents in wider than the cell
-                 
-                public String getToolTipText(MouseEvent e) {
-                	// TODO: create tooltip text for greenhouse crop
-                    return getCellText(e);
-                };
-                */
+//                /**
+//                 * Display the cell contents as a tooltip. Useful when cell
+//                 * contents in wider than the cell
+//                 
+//                public String getToolTipText(MouseEvent e) {
+//                	// TODO: create tooltip text for greenhouse crop
+//                    return getCellText(e);
+//                };
+
             };
 
 
@@ -309,7 +309,6 @@ extends MonitorTab {
             TableStyle.setTableStyle(table);
 	     	//adjustColumnPreferredWidths(table);
 	    //});
-
 
         // Enable use of RowFilter with Swingbits
         // see https://github.com/eugener/oxbow/wiki/Table-Filtering
@@ -428,17 +427,15 @@ extends MonitorTab {
         if ((column >= 0) && (row >= 0)) {
             Object cell = table.getValueAt(row, column);
             if (cell != null) {
-            	// TODO: below is NOT working 
-/*            	
-            	MonitorModel target = (sortedModel != null ? sortedModel : getModel());
-                if (target instanceof CropTableModel) {
-                	System.out.println("It's CropTableModel");
-                	CropTableModel model = (CropTableModel) (table.getModel());
-                	result = model.getToolTip(row, column);
-                }
-                
-                else
-*/                	
+            	// TODO: below is NOT working           	
+//            	MonitorModel target = (sortedModel != null ? sortedModel : getModel());
+//                if (target instanceof CropTableModel) {
+//                	System.out.println("It's CropTableModel");
+//                	CropTableModel model = (CropTableModel) (table.getModel());
+//                	result = model.getToolTip(row, column);
+//                }
+//                
+//                else               	
                 	result = cell.toString();
             }
         }

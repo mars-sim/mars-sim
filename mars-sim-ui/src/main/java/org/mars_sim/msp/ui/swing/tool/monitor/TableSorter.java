@@ -167,17 +167,17 @@ public class TableSorter extends AbstractTableModel
     // NlogN depending on the initial order but the main reason for
     // using it here is that, unlike qsort, it is stable.
     /*
-    private void shuttlesort(int from[], int to[], int low, int high) {
-        if (high - low < 2) {
-            return;
-        }
-        int middle = (low + high)/2;
-        shuttlesort(to, from, low, middle);
-        shuttlesort(to, from, middle, high);
+//    private void shuttlesort(int from[], int to[], int low, int high) {
+//        if (high - low < 2) {
+//            return;
+//        }
+//        int middle = (low + high)/2;
+//        shuttlesort(to, from, low, middle);
+//        shuttlesort(to, from, middle, high);
+//
+//        int p = low;
+//        int q = middle;
 
-        int p = low;
-        int q = middle;
-    */
         /* This is an optional short-cut; at each recursive call,
         check to see if the elements in this subset are already
         ordered.  If so, no further comparisons are needed; the
@@ -192,26 +192,26 @@ public class TableSorter extends AbstractTableModel
         for partially ordered lists but some analysis is needed to
         find out how the performance drops to Nlog(N) as the initial
         order diminishes - it may drop very quickly.  */
-    /*
-        if (high - low >= 4 && compare(from[middle-1], from[middle]) <= 0) {
-            for (int i = low; i < high; i++) {
-                to[i] = from[i];
-            }
-            return;
-        }
 
-        // A normal merge.
+//        if (high - low >= 4 && compare(from[middle-1], from[middle]) <= 0) {
+//            for (int i = low; i < high; i++) {
+//                to[i] = from[i];
+//            }
+//            return;
+//        }
+//
+//        // A normal merge.
+//
+//        for (int i = low; i < high; i++) {
+//            if (q >= high || (p < middle && compare(from[p], from[q]) <= 0)) {
+//                to[i] = from[p++];
+//            }
+//            else {
+//                to[i] = from[q++];
+//            }
+//        }
+//    }
 
-        for (int i = low; i < high; i++) {
-            if (q >= high || (p < middle && compare(from[p], from[q]) <= 0)) {
-                to[i] = from[p++];
-            }
-            else {
-                to[i] = from[q++];
-            }
-        }
-    }
-    */
 
     public int getColumnCount() {
         return sourceModel.getColumnCount();

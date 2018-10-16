@@ -12,9 +12,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-
 import javax.swing.JList;
-
 import javax.swing.ListSelectionModel;
 
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -191,10 +189,10 @@ extends ToolWindow {
 
 	}
 
-	/**
-	 * Open wizard to edit a mission.
-	 * @param mission the mission to edit.
-	 */
+//	/**
+//	 * Open wizard to edit a mission.
+//	 * @param mission the mission to edit.
+//	 */
 //	private void editMission(Mission mission) {
 //
 //		if (ms != null)  {
@@ -211,10 +209,10 @@ extends ToolWindow {
 //	}
 
 	
-	/**
-	 * Ends the mission.
-	 * @param mission the mission to end.
-	 */
+//	/**
+//	 * Ends the mission.
+//	 * @param mission the mission to end.
+//	 */
 //	private void endMission(Mission mission) {
 //		//logger.info("End mission: " + mission.getName());
 //		mission.endMission(Mission.USER_ABORTED_MISSION);

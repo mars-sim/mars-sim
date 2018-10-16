@@ -9,9 +9,6 @@ package org.mars_sim.msp.ui.swing.tool.mission;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
@@ -22,6 +19,9 @@ import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.Rover;
+
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
 
 /**
  * A panel for displaying collect resources mission information.
@@ -34,7 +34,7 @@ implements UnitListener {
 	private CollectResourcesMission mission;
 	private AmountResource resource;
 	private Rover missionRover;
-	private JLabel collectionValueLabel;
+	private WebLabel collectionValueLabel;
 	private double resourceAmountCache;
 
 	/**
@@ -51,22 +51,22 @@ implements UnitListener {
 		setLayout(new BorderLayout());
 
 		// Create content panel.
-		JPanel contentPanel = new JPanel(new GridLayout(1, 2));
+		WebPanel contentPanel = new WebPanel(new GridLayout(1, 2));
 		add(contentPanel, BorderLayout.NORTH);
 
 		// Create collection title label.
 		String resourceString = resource.getName().substring(0, 1).toUpperCase() + 
 				resource.getName().substring(1);
-		JLabel collectionTitleLabel = new JLabel(Msg.getString("CollectResourcesMissionCustomInfoPanel.totalCollected", Conversion.capitalize(resourceString))); //$NON-NLS-1$
+		WebLabel collectionTitleLabel = new WebLabel(Msg.getString("CollectResourcesMissionCustomInfoPanel.totalCollected", Conversion.capitalize(resourceString))); //$NON-NLS-1$
 		contentPanel.add(collectionTitleLabel);
 
 		// Create collection value label.
-		collectionValueLabel = new JLabel(
+		collectionValueLabel = new WebLabel(
 			Msg.getString(
 				"CollectResourcesMissionCustomInfoPanel.kilograms", //$NON-NLS-1$
 				Integer.toString(0)
 			),
-			JLabel.LEFT
+			WebLabel.LEFT
 		);
 		contentPanel.add(collectionValueLabel);
 	}

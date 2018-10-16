@@ -15,12 +15,21 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.*;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-import javax.swing.*;
-import java.awt.*;
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.progressbar.WebProgressBar;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.Iterator;
+
+import javax.swing.BoundedRangeModel;
+
 
 /**
  * A panel for displaying salvage custom mission information.
@@ -33,9 +42,9 @@ implements ConstructionListener {
 	private MainDesktopPane desktop;
 	private BuildingSalvageMission mission;
 	private ConstructionSite site;
-	private JLabel stageLabel;
+	private WebLabel stageLabel;
 	private BoundedRangeModel progressBarModel;
-	private JButton settlementButton;
+	private WebButton settlementButton;
 
 	/**
 	 * Constructor.
@@ -51,22 +60,22 @@ implements ConstructionListener {
 		// Set layout.
 		setLayout(new BorderLayout());
 
-		JPanel contentsPanel = new JPanel(new GridLayout(4, 1));
+		WebPanel contentsPanel = new WebPanel(new GridLayout(4, 1));
 		add(contentsPanel, BorderLayout.NORTH);
 
-		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel titlePanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		contentsPanel.add(titlePanel);
 
-		JLabel titleLabel = new JLabel("Salvage Construction Site");
+		WebLabel titleLabel = new WebLabel("Salvage Construction Site");
 		titlePanel.add(titleLabel);
 
-		JPanel settlementPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		WebPanel settlementPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		contentsPanel.add(settlementPanel);
 
-		JLabel settlementLabel = new JLabel("Settlement: ");
+		WebLabel settlementLabel = new WebLabel("Settlement: ");
 		settlementPanel.add(settlementLabel);
 
-		settlementButton = new JButton("   ");
+		settlementButton = new WebButton("   ");
 		settlementPanel.add(settlementButton);
 		settlementButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -77,16 +86,16 @@ implements ConstructionListener {
 			}
 		});
 
-		JPanel stagePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		WebPanel stagePanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		contentsPanel.add(stagePanel);
 
-		stageLabel = new JLabel("Stage:");
+		stageLabel = new WebLabel("Stage:");
 		stagePanel.add(stageLabel);
 
-		JPanel progressBarPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		WebPanel progressBarPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		contentsPanel.add(progressBarPanel);
 
-		JProgressBar progressBar = new JProgressBar();
+		WebProgressBar progressBar = new WebProgressBar();
 		progressBarModel = progressBar.getModel();
 		progressBar.setStringPainted(true);
 		progressBarPanel.add(progressBar);

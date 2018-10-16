@@ -20,7 +20,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
@@ -140,8 +139,6 @@ public abstract class Mission implements Serializable {
 	private transient List<MissionListener> listeners;
 
 	// Static members
-//	private static UnitManager unitManager;
-	private static MissionManager missionManager;
 
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -166,10 +163,6 @@ public abstract class Mission implements Serializable {
 		phaseEnded = false;
 		this.minMembers = minMembers;
 		missionCapacity = Integer.MAX_VALUE;
-
-		Simulation sim = Simulation.instance();
-//		unitManager = sim.getUnitManager();
-		missionManager = sim.getMissionManager();
 				
 		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
 
@@ -1218,7 +1211,8 @@ public abstract class Mission implements Serializable {
 			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + p.getSettlement().getName() + "] " 
 					+ p.getName() + " (" + p.getRole().getType() 
 					+ ") is requesting approval for " + getDescription(), null);
-			 missionManager.requestMissionApproval(plan);
+
+			 Simulation.instance().getMissionManager().requestMissionApproval(plan);
 		}
 		
 		else if (plan != null && plan.getStatus() == PlanType.NOT_APPROVED) {

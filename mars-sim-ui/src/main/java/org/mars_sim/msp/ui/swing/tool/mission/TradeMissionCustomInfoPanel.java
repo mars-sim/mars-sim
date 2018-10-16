@@ -15,10 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -26,6 +22,11 @@ import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.structure.goods.Good;
+
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
 
 /**
  * A panel for displaying trade mission information.
@@ -36,9 +37,9 @@ extends MissionCustomInfoPanel {
 	// Data members.
 	private Trade mission;
 	private SellingGoodsTableModel sellingGoodsTableModel;
-	private JLabel desiredGoodsProfitLabel;
+	private WebLabel desiredGoodsProfitLabel;
 	private DesiredGoodsTableModel desiredGoodsTableModel;
-	private JLabel boughtGoodsProfitLabel;
+	private WebLabel boughtGoodsProfitLabel;
 	private BoughtGoodsTableModel boughtGoodsTableModel;
 
 	/**
@@ -52,73 +53,73 @@ extends MissionCustomInfoPanel {
 		setLayout(new GridLayout(3, 1));
 
 		// Create the selling goods panel.
-		JPanel sellingGoodsPane = new JPanel(new BorderLayout());
+		WebPanel sellingGoodsPane = new WebPanel(new BorderLayout());
 		add(sellingGoodsPane);
 
 		// Create the selling goods label.
-		JLabel sellingGoodsLabel = new JLabel("Goods to Sell:", JLabel.LEFT);
+		WebLabel sellingGoodsLabel = new WebLabel("Goods to Sell:", WebLabel.LEFT);
 		sellingGoodsPane.add(sellingGoodsLabel, BorderLayout.NORTH);
 
 		// Create a scroll pane for the selling goods table.
-		JScrollPane sellingGoodsScrollPane = new JScrollPane();
+		WebScrollPane sellingGoodsScrollPane = new WebScrollPane();
 		sellingGoodsScrollPane.setPreferredSize(new Dimension(-1, -1));
 		sellingGoodsPane.add(sellingGoodsScrollPane, BorderLayout.CENTER);
 
 		// Create the selling goods table and model.
 		sellingGoodsTableModel = new SellingGoodsTableModel();
-		JTable sellingGoodsTable = new JTable(sellingGoodsTableModel);
+		WebTable sellingGoodsTable = new WebTable(sellingGoodsTableModel);
 		sellingGoodsScrollPane.setViewportView(sellingGoodsTable);
 
 		// Create the desired goods panel.
-		JPanel desiredGoodsPane = new JPanel(new BorderLayout());
+		WebPanel desiredGoodsPane = new WebPanel(new BorderLayout());
 		add(desiredGoodsPane);
 
 		// Create the desired goods label panel.
-		JPanel desiredGoodsLabelPane = new JPanel(new GridLayout(1, 2, 0, 0));
+		WebPanel desiredGoodsLabelPane = new WebPanel(new GridLayout(1, 2, 0, 0));
 		desiredGoodsPane.add(desiredGoodsLabelPane, BorderLayout.NORTH);
 
 		// Create the desired goods label.
-		JLabel desiredGoodsLabel = new JLabel("Desired Goods to Buy:", JLabel.LEFT);
+		WebLabel desiredGoodsLabel = new WebLabel("Desired Goods to Buy:", WebLabel.LEFT);
 		desiredGoodsLabelPane.add(desiredGoodsLabel);
 
 		// Create the desired goods profit label.
-		desiredGoodsProfitLabel = new JLabel("Profit:", JLabel.LEFT);
+		desiredGoodsProfitLabel = new WebLabel("Profit:", WebLabel.LEFT);
 		desiredGoodsLabelPane.add(desiredGoodsProfitLabel);
 
 		// Create a scroll pane for the desired goods table.
-		JScrollPane desiredGoodsScrollPane = new JScrollPane();
+		WebScrollPane desiredGoodsScrollPane = new WebScrollPane();
 		desiredGoodsScrollPane.setPreferredSize(new Dimension(-1, -1));
 		desiredGoodsPane.add(desiredGoodsScrollPane, BorderLayout.CENTER);
 
 		// Create the desired goods table and model.
 		desiredGoodsTableModel = new DesiredGoodsTableModel();
-		JTable desiredGoodsTable = new JTable(desiredGoodsTableModel);
+		WebTable desiredGoodsTable = new WebTable(desiredGoodsTableModel);
 		desiredGoodsScrollPane.setViewportView(desiredGoodsTable);
 
 		// Create the bought goods panel.
-		JPanel boughtGoodsPane = new JPanel(new BorderLayout());
+		WebPanel boughtGoodsPane = new WebPanel(new BorderLayout());
 		add(boughtGoodsPane);
 
 		// Create the bought goods label panel.
-		JPanel boughtGoodsLabelPane = new JPanel(new GridLayout(1, 2, 0, 0));
+		WebPanel boughtGoodsLabelPane = new WebPanel(new GridLayout(1, 2, 0, 0));
 		boughtGoodsPane.add(boughtGoodsLabelPane, BorderLayout.NORTH);
 
 		// Create the bought goods label.
-		JLabel boughtGoodsLabel = new JLabel("Goods Bought:", JLabel.LEFT);
+		WebLabel boughtGoodsLabel = new WebLabel("Goods Bought:", WebLabel.LEFT);
 		boughtGoodsLabelPane.add(boughtGoodsLabel);
 
 		// Create the bought goods profit label.
-		boughtGoodsProfitLabel = new JLabel("Profit:", JLabel.LEFT);
+		boughtGoodsProfitLabel = new WebLabel("Profit:", WebLabel.LEFT);
 		boughtGoodsLabelPane.add(boughtGoodsProfitLabel);
 
 		// Create a scroll pane for the bought goods table.
-		JScrollPane boughtGoodsScrollPane = new JScrollPane();
+		WebScrollPane boughtGoodsScrollPane = new WebScrollPane();
 		boughtGoodsScrollPane.setPreferredSize(new Dimension(-1, -1));
 		boughtGoodsPane.add(boughtGoodsScrollPane, BorderLayout.CENTER);
 
 		// Create the bought goods table and model.
 		boughtGoodsTableModel = new BoughtGoodsTableModel();
-		JTable boughtGoodsTable = new JTable(boughtGoodsTableModel);
+		WebTable boughtGoodsTable = new WebTable(boughtGoodsTableModel);
 		boughtGoodsScrollPane.setViewportView(boughtGoodsTable);
 	}
 

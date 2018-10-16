@@ -24,13 +24,13 @@ extends InternalFrameAdapter {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ToolFrameListener.class.getName());
-/*
-	protected ToolWindow toolWindow;
 
-	public ToolFrameListener (ToolWindow toolWindow) {
-		this.toolWindow = toolWindow;
-	}
-*/
+//	protected ToolWindow toolWindow;
+//
+//	public ToolFrameListener (ToolWindow toolWindow) {
+//		this.toolWindow = toolWindow;
+//	}
+
 	/** opens internal frame (overridden) */
 	@Override
 	public void internalFrameOpened(InternalFrameEvent e) {
@@ -47,30 +47,29 @@ extends InternalFrameAdapter {
 		}
 	}
 
-	/** closes internal frame
-	 *
-	 *
-	// 2015-10-01 Note: NOT working. Reverted to using ToolWindow's update()
-	@Override
-	public void internalFrameClosed(InternalFrameEvent e) {
-		//System.out.println("running internalFrameClosed");
-		JInternalFrame frame = (JInternalFrame) e.getSource();
-		try {
-			frame.setClosed(true);
-			toolWindow.update();
-		}
-		catch (java.beans.PropertyVetoException v) {
-			System.err.println( "Closing exception!" );
-			logger.log(
-				Level.SEVERE,
-				Msg.getString(
-					"ToolFrameListener.log.veto", //$NON-NLS-1$
-					frame.getTitle()
-				)
-			);
-		}
-	}
-*/
+//	/** closes internal frame
+//	 *
+//	 *
+//	// Note: NOT working. Reverted to using ToolWindow's update()
+//	@Override
+//	public void internalFrameClosed(InternalFrameEvent e) {
+//		//System.out.println("running internalFrameClosed");
+//		JInternalFrame frame = (JInternalFrame) e.getSource();
+//		try {
+//			frame.setClosed(true);
+//			toolWindow.update();
+//		}
+//		catch (java.beans.PropertyVetoException v) {
+//			System.err.println( "Closing exception!" );
+//			logger.log(
+//				Level.SEVERE,
+//				Msg.getString(
+//					"ToolFrameListener.log.veto", //$NON-NLS-1$
+//					frame.getTitle()
+//				)
+//			);
+//		}
+//	}
 
 }
 

@@ -130,7 +130,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		// Create graph button
 		buttonPie = new WebButton(ImageLoader.getNewIcon(PIE_ICON));
-		TooltipManager.setTooltip(buttonPie, Msg.getString("MonitorWindow.tooltip.singleColumnPieChart"), TooltipWay.up); //$NON-NLS-1$
+		TooltipManager.setTooltip(buttonPie, Msg.getString("MonitorWindow.tooltip.singleColumnPieChart"), //$NON-NLS-1$
+				TooltipWay.up);
 
 		buttonPie.addActionListener(this);
 	
@@ -144,10 +145,10 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		statusPanel.add(buttonBar);
 
 		buttonRemoveTab = new WebButton(ImageLoader.getNewIcon(TRASH_ICON)); // $NON-NLS-1$
-		TooltipManager.setTooltip(buttonRemoveTab, Msg.getString("MonitorWindow.tooltip.tabRemove"), TooltipWay.up); //$NON-NLS-1$
+		TooltipManager.setTooltip(buttonRemoveTab, Msg.getString("MonitorWindow.tooltip.tabRemove"), //$NON-NLS-1$
+				TooltipWay.up); 
 		buttonRemoveTab.addActionListener(this);
 	
-		
 		statusPanel.add(buttonRemoveTab);
 	
 		// Create buttons based on selection
@@ -187,7 +188,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		buttonFilter.addActionListener(this);
 
 		statusPanel.add(buttonFilter);
-
 
 		// Create tabbed pane for the table
 		tabsSection = new WebTabbedPane();
@@ -446,7 +446,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			searchable.setWildcardEnabled(true);
 			searchable.setHeavyweightComponentEnabled(true);
 			// searchable.setSearchableProvider(searchableProvider)
-			searchable.setMismatchForeground(java.awt.Color.PINK);
+			searchable.setMismatchForeground(Color.PINK);
 			// WildcardSupport WildcardSupport = new WildcardSupport();
 			// searchable.setWildcardSupport(new WildcardSupport());
 

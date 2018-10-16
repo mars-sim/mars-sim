@@ -11,6 +11,7 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,7 +28,6 @@ import java.util.Map;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JList;
-import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
@@ -75,6 +75,8 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.table.WebTable;
+import com.alee.laf.text.WebTextField;
 
 /**
  * The tab panel for showing mission details.
@@ -87,21 +89,26 @@ implements ListSelectionListener, MissionListener, UnitListener {
 	private final static String EMPTY = Msg.getString("MainDetailPanel.empty"); //$NON-NLS-1$
 
 	// Private members
-	private WebLabel descriptionLabel;
+	private WebTextField descriptionTF;	
+//	private WebLabel descriptionLabel;
 	private WebLabel typeLabel;
+	private WebLabel startingLabel;
 	private WebLabel phaseLabel;
 	private WebLabel memberNumLabel;
-	private MemberTableModel memberTableModel;
-	private JTable memberTable;
-	private WebButton centerMapButton;
-	private WebButton vehicleButton;
 	private WebLabel vehicleStatusLabel;
 	private WebLabel speedLabel;
 	private WebLabel distanceNextNavLabel;
 	private WebLabel traveledLabel;
 	
+	private MemberTableModel memberTableModel;
+	private WebTable memberTable;
+	
+	private WebButton centerMapButton;
+	private WebButton vehicleButton;
+	
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("MainDetailPanel.decimalFormat")); //$NON-NLS-1$
 	private CardLayout customPanelLayout;
+	
 	private WebPanel missionCustomPane;
 	
 	private Mission currentMission;
@@ -110,9 +117,12 @@ implements ListSelectionListener, MissionListener, UnitListener {
 	private MainDesktopPane desktop;
 	
 	private Map<String, MissionCustomInfoPanel> customInfoPanels;
-	
-    private static AmountResource iceAR = ResourceUtil.iceAR;//.findAmountResource("ice");
-    private static AmountResource regolithAR = ResourceUtil.regolithAR;//AmountResource.findAmountResource("regolith");
+
+//	private static int iceID = ResourceUtil.iceID;
+//	private static int regolithID = ResourceUtil.regolithID;
+
+    private static AmountResource iceAR = ResourceUtil.iceAR;
+    private static AmountResource regolithAR = ResourceUtil.regolithAR;
 
 
 	/**
@@ -146,44 +156,56 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		WebPanel topPane = new WebPanel(new SpringLayout());
 		infoPane.add(topPane);
 		
-		//JPanel descriptionPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		//descriptionPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-		//springPane0.add(descriptionPane);
-
 		// Create the description label.
-		WebLabel descriptionLabel0 = new WebLabel(Msg.getString("MainDetailPanel.description", WebLabel.LEFT)); //$NON-NLS-1$
+		WebLabel descriptionLabel0 = new WebLabel(Msg.getString("MainDetailPanel.title.description", WebLabel.LEFT)); //$NON-NLS-1$
 		descriptionLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		topPane.add(descriptionLabel0);
-
-		descriptionLabel = new WebLabel("None", WebLabel.LEFT);
-		//descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		descriptionLabel.setToolTipText(Msg.getString("MainDetailPanel.description")); //$NON-NLS-1$
+		
+		descriptionTF = new WebTextField("None");
+		//descriptionTF.setEditable(true);
+		descriptionTF.setColumns(15);
+		//descriptionTF.setOpaque(false);
+		//descriptionTF.setFont(new Font("Serif", Font.PLAIN, 10));
+		descriptionTF.setToolTipText(Msg.getString("MainDetailPanel.tf.description")); //$NON-NLS-1$
+		
+//		descriptionLabel = new WebLabel("None", WebLabel.LEFT);
+//		//descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+//		descriptionLabel.setToolTipText(Msg.getString("MainDetailPanel.description")); //$NON-NLS-1$
 
 		String s = "";
 		// Implement the missing descriptionLabel
 		if (missionWindow.getCreateMissionWizard() != null) {
 			s = Conversion.capitalize(missionWindow.getCreateMissionWizard().getTypePanel().getDescription());
-			//System.out.println("Mission Description : " + s);
-			descriptionLabel.setText(s);
+			descriptionTF.setText(s);
 		}
-		else
-			descriptionLabel.setText("None");
 
 		WebPanel wrapper0 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
-		wrapper0.add(descriptionLabel);
+		wrapper0.add(descriptionTF);
 		topPane.add(wrapper0);
 
+		// Create the type label.
+		WebLabel startingLabel0 = new WebLabel(Msg.getString("MainDetailPanel.startingMember", WebLabel.LEFT)); //$NON-NLS-1$
+		startingLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
+		topPane.add(startingLabel0);
+		//startingLabel0.setToolTipText(Msg.getString("MainDetailPanel.starting"));//$NON-NLS-1$
+
+		startingLabel = new WebLabel("None", WebLabel.LEFT);
+		//typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		WebPanel wrapper1 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		wrapper1.add(startingLabel);
+		topPane.add(wrapper1);
+		
 		// Create the type label.
 		WebLabel typeLabel0 = new WebLabel(Msg.getString("MainDetailPanel.type", WebLabel.LEFT)); //$NON-NLS-1$
 		typeLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		topPane.add(typeLabel0);
-		typeLabel0.setToolTipText(Msg.getString("MainDetailPanel.type"));//$NON-NLS-1$
+		//typeLabel0.setToolTipText(Msg.getString("MainDetailPanel.type"));//$NON-NLS-1$
 
 		typeLabel = new WebLabel("None", WebLabel.LEFT);
 		//typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		WebPanel wrapper1 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
-		wrapper1.add(typeLabel);
-		topPane.add(wrapper1);
+		WebPanel wrapper2 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		wrapper2.add(typeLabel);
+		topPane.add(wrapper2);
 
 		// Create the phase label.
 		WebLabel phaseLabel0 = new WebLabel(Msg.getString("MainDetailPanel.phase", WebLabel.LEFT)); //$NON-NLS-1$
@@ -192,14 +214,14 @@ implements ListSelectionListener, MissionListener, UnitListener {
 
 		phaseLabel = new WebLabel("None", WebLabel.LEFT);
 		//phaseLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		WebPanel wrapper2 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
-		wrapper2.add(phaseLabel);
-		topPane.add(wrapper2);
+		WebPanel wrapper3 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		wrapper3.add(phaseLabel);
+		topPane.add(wrapper3);
 
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(topPane,
-		                                3, 2, //rows, cols
-		                                10, 2,        //initX, initY
+		                                4, 2, //rows, cols
+		                                3, 2,        //initX, initY
 		                                25, 1);       //xPad, yPad
 
 		// Create the travel panel.
@@ -493,25 +515,49 @@ implements ListSelectionListener, MissionListener, UnitListener {
 
 		if (mission != null) {
 			// Update mission info in UI.
-
-			if (mission.getDescription() != null) {
-				descriptionLabel.setText(Conversion.capitalize(mission.getDescription()));
+		
+			if (missionWindow.getCreateMissionWizard() != null 
+					&& missionWindow.getCreateMissionWizard().getTypePanel().getDescription() != null) {
+				String now = missionWindow.getCreateMissionWizard().getTypePanel().getDescription();
+				// Set the description based on what has been input by the mission creation wizard
+				mission.setDescription(now);
+				descriptionTF.setText(now);
 			}
-			//2016-09-25 Used getTypePanel().getDescription()
-			else if (missionWindow.getCreateMissionWizard().getTypePanel().getDescription() != null) {
-				String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription();
-				//System.out.println("Mission Description : " + s);
-				descriptionLabel.setText(s);
-			}
-
+			
+			else if (mission.getDescription() != null) {
+				descriptionTF.setText(Conversion.capitalize(mission.getDescription()));
+			}			
+		
+//			String previous = Conversion.capitalize(mission.getDescription());
+			
+//			String desTF = descriptionTF.getText();
+//			
+//			if (desTF != null && oldDes != null && !desTF.equals(oldDes) && !desTF.equals("None")) {
+//				// Set the description based on what has been input in the textfield
+//				mission.setDescription(desTF);
+//				descriptionTF.setText(oldDes);
+//			}
+//			
+//			else if (missionWindow.getCreateMissionWizard() != null 
+//					&& missionWindow.getCreateMissionWizard().getTypePanel().getDescription() != null) {
+//				String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription();
+//				//descriptionTF.setText(s);
+//				// Set the description based on what has been input by the mission creation wizard
+//				mission.setDescription(s);
+//			}
+//			
+//			else if (oldDes != null && desTF != null && desTF.equals("None")) {
+//				descriptionTF.setText(Conversion.capitalize(oldDes));
+//			}
 
 			typeLabel.setText(mission.getName()); //$NON-NLS-1$
 			String phaseText = mission.getPhaseDescription();
 
+			startingLabel.setText(mission.getStartingMember().getName()); //$NON-NLS-1$
+			
 			phaseLabel.setToolTipText(phaseText);
 			if (phaseText.length() > 48) phaseText = phaseText.substring(0, 48) + "...";
 			phaseLabel.setText(phaseText); //$NON-NLS-1$
-
 
 			int memberNum = mission.getMembersNumber();
 			int minMembers = mission.getMinMembers();
@@ -611,7 +657,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		}
 		else {
 			// Clear mission info in UI.
-			descriptionLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+			descriptionTF.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
 			typeLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
 			phaseLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
 			memberNumLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
@@ -716,13 +762,13 @@ implements ListSelectionListener, MissionListener, UnitListener {
 					else {
 						s = Conversion.capitalize(s);
 					}
-					descriptionLabel.setText(s);
+					descriptionTF.setText(s);
 				}
 				else {
 					String s = mission.getDescription();
 					if (s == null)
 						s = "None";
-					descriptionLabel.setText(s);
+					descriptionTF.setText(s);
 				}
 			}
 			else if (type == MissionEventType.PHASE_DESCRIPTION_EVENT) {

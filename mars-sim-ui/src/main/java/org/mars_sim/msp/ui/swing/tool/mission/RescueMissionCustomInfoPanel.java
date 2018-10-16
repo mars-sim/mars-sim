@@ -12,9 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -25,6 +22,10 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+
 /**
  * A panel for displaying rescue/salvage vehicle mission information.
  */
@@ -33,10 +34,10 @@ public class RescueMissionCustomInfoPanel extends MissionCustomInfoPanel {
     // Data members
     private MainDesktopPane desktop;
     private RescueSalvageVehicle rescueMission;
-    private JButton rescueVehicleButton;
-    private JLabel vehicleStatusValueLabel;
-    private JLabel malfunctionListLabel;
-    private JPanel contentPanel;
+    private WebButton rescueVehicleButton;
+    private WebLabel vehicleStatusValueLabel;
+    private WebLabel malfunctionListLabel;
+    private WebPanel contentPanel;
 
     RescueMissionCustomInfoPanel(MainDesktopPane desktop) {
         // Use MissionCustomInfoPanel constructor.
@@ -49,20 +50,20 @@ public class RescueMissionCustomInfoPanel extends MissionCustomInfoPanel {
         setLayout(new BorderLayout());
 
         // Create content panel.
-        contentPanel = new JPanel(new SpringLayout());//new GridLayout(3, 1));
+        contentPanel = new WebPanel(new SpringLayout());//new GridLayout(3, 1));
         add(contentPanel, BorderLayout.NORTH);
 
         // Create rescue vehicle panel.
-        JPanel rescueVehiclePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        WebPanel rescueVehiclePanel = new WebPanel(new FlowLayout(FlowLayout.RIGHT));
         contentPanel.add(rescueVehiclePanel);
 
         // Create rescue vehicle title label.
-        JLabel rescueVehicleTitleLabel = new JLabel("Vehicle to Rescue : ", JLabel.LEFT);
+        WebLabel rescueVehicleTitleLabel = new WebLabel("Vehicle to Rescue : ", WebLabel.LEFT);
         rescueVehiclePanel.add(rescueVehicleTitleLabel);
 
         // Create rescue vehicle button.
-        rescueVehicleButton = new JButton("");
-		JPanel wrapper0 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        rescueVehicleButton = new WebButton("");
+        WebPanel wrapper0 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper0.add(rescueVehicleButton);
 		contentPanel.add(wrapper0);
         //contentPanel.add(rescueVehicleButton);
@@ -74,30 +75,30 @@ public class RescueMissionCustomInfoPanel extends MissionCustomInfoPanel {
         });
 
         // Create status panel.
-        JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        WebPanel statusPanel = new WebPanel(new FlowLayout(FlowLayout.RIGHT));
         contentPanel.add(statusPanel);
 
         // Create vehicle status title label.
-        JLabel vehicleStatusTitleLabel = new JLabel("Vehicle Status : ", JLabel.RIGHT);
+        WebLabel vehicleStatusTitleLabel = new WebLabel("Vehicle Status : ", WebLabel.RIGHT);
         statusPanel.add(vehicleStatusTitleLabel);
 
         // Create vehicle status value label.
-        vehicleStatusValueLabel = new JLabel("", JLabel.LEFT);
-		JPanel wrapper1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        vehicleStatusValueLabel = new WebLabel("", WebLabel.LEFT);
+        WebPanel wrapper1 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper1.add(vehicleStatusValueLabel);
 		contentPanel.add(wrapper1);
 
         // Create malfunction panel.
-        JPanel malfunctionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		WebPanel malfunctionPanel = new WebPanel(new FlowLayout(FlowLayout.RIGHT));
         contentPanel.add(malfunctionPanel);
 
         // Create malfunction title panel.
-        JLabel malfunctionTitleLabel = new JLabel("Vehicle Malfunctions : ", JLabel.RIGHT);
+        WebLabel malfunctionTitleLabel = new WebLabel("Vehicle Malfunctions : ", WebLabel.RIGHT);
         malfunctionPanel.add(malfunctionTitleLabel);
 
         // Create malfunction list label.
-        malfunctionListLabel = new JLabel("", JLabel.LEFT);
-		JPanel wrapper2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        malfunctionListLabel = new WebLabel("", WebLabel.LEFT);
+        WebPanel wrapper2 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper2.add(malfunctionListLabel);
 		contentPanel.add(wrapper2);
 

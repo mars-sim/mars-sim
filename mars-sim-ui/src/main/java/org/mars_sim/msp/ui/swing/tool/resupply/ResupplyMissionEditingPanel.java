@@ -208,7 +208,7 @@ extends TransportItemEditingPanel {
 		String[] orbitValues = new String[MAX_FUTURE_ORBITS];
 		int startOrbit = resupplyTime.getOrbit();
 		for (int x = 0; x < 20; x++) {
-			orbitValues[x] = formatter.format(startOrbit + x - 1);
+			orbitValues[x] = formatter.format(startOrbit + x);
 		}
 		orbitCB = new JComboBoxMW<Object>(orbitValues);
 		orbitCB.setSelectedItem(formatter.format(startOrbit));

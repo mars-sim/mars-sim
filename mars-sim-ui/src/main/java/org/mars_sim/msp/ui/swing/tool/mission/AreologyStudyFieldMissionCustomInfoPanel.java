@@ -13,11 +13,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
@@ -30,6 +25,11 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.progressbar.WebProgressBar;
+
 /**
  * A panel for displaying areology study field mission information.
  */
@@ -41,9 +41,9 @@ implements ScientificStudyListener {
 	private MainDesktopPane desktop;
 	private ScientificStudy study;
 	private AreologyStudyFieldMission areologyMission;
-	private JLabel studyNameLabel;
-	private JLabel researcherNameLabel;
-	private JProgressBar studyResearchBar;
+	private WebLabel studyNameLabel;
+	private WebLabel researcherNameLabel;
+	private WebProgressBar studyResearchBar;
 
 	/**
 	 * Constructor.
@@ -60,15 +60,15 @@ implements ScientificStudyListener {
 		setLayout(new BorderLayout());
 
 		// Create content panel.
-		JPanel contentPanel = new JPanel(new GridLayout(3, 1));
+		WebPanel contentPanel = new WebPanel(new GridLayout(3, 1));
 		add(contentPanel, BorderLayout.NORTH);
 
 		// Create study panel.
-		JPanel studyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		WebPanel studyPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		contentPanel.add(studyPanel);
 
 		// Create science tool button.
-		JButton scienceToolButton = new JButton(ImageLoader.getIcon(Msg.getString("img.science"))); //$NON-NLS-1$
+		WebButton scienceToolButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.science"))); //$NON-NLS-1$
 		scienceToolButton.setMargin(new Insets(1, 1, 1, 1));
 		scienceToolButton.setToolTipText(Msg.getString("AreologyStudyFieldMissionCustomInfoPanel.tooltip.openInScienceTool")); //$NON-NLS-1$
 		scienceToolButton.addActionListener(new ActionListener() {
@@ -79,35 +79,35 @@ implements ScientificStudyListener {
 		studyPanel.add(scienceToolButton);
 
 		// Create study title label.
-		JLabel studyTitleLabel = new JLabel(Msg.getString("AreologyStudyFieldMissionCustomInfoPanel.areologyFieldStudy")); //$NON-NLS-1$
+		WebLabel studyTitleLabel = new WebLabel(Msg.getString("AreologyStudyFieldMissionCustomInfoPanel.areologyFieldStudy")); //$NON-NLS-1$
 		studyPanel.add(studyTitleLabel);
 
 		// Create study name label.
-		studyNameLabel = new JLabel(""); //$NON-NLS-1$
+		studyNameLabel = new WebLabel(""); //$NON-NLS-1$
 		studyPanel.add(studyNameLabel);
 
 		// Create researcher panel.
-		JPanel researcherPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		WebPanel researcherPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		contentPanel.add(researcherPanel);
 
 		// Create researcher title label.
-		JLabel researcherTitleLabel = new JLabel(Msg.getString("AreologyStudyFieldMissionCustomInfoPanel.leadResearcher")); //$NON-NLS-1$
+		WebLabel researcherTitleLabel = new WebLabel(Msg.getString("AreologyStudyFieldMissionCustomInfoPanel.leadResearcher")); //$NON-NLS-1$
 		researcherPanel.add(researcherTitleLabel);
 
 		// Create researcher name label.
-		researcherNameLabel = new JLabel(""); //$NON-NLS-1$
+		researcherNameLabel = new WebLabel(""); //$NON-NLS-1$
 		researcherPanel.add(researcherNameLabel);
 
 		// Create study research panel.
-		JPanel studyResearchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		WebPanel studyResearchPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		contentPanel.add(studyResearchPanel);
 
 		// Create study research title label.
-		JLabel studyResearchTitleLabel = new JLabel(Msg.getString("AreologyStudyFieldMissionCustomInfoPanel.researchCompletion")); //$NON-NLS-1$
+		WebLabel studyResearchTitleLabel = new WebLabel(Msg.getString("AreologyStudyFieldMissionCustomInfoPanel.researchCompletion")); //$NON-NLS-1$
 		studyResearchPanel.add(studyResearchTitleLabel);
 
 		// Create study research progress bar.
-		studyResearchBar = new JProgressBar(0, 100);
+		studyResearchBar = new WebProgressBar(0, 100);
 		studyResearchBar.setStringPainted(true);
 		studyResearchPanel.add(studyResearchBar);
 	}

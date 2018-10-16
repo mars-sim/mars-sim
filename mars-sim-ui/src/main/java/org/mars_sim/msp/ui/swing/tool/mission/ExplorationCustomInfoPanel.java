@@ -15,10 +15,6 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import javax.swing.Box;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -26,6 +22,11 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.tool.Conversion;
+
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.progressbar.WebProgressBar;
+import com.alee.laf.scroll.WebScrollPane;
 
 /**
  * A panel for displaying exploration mission information.
@@ -48,7 +49,7 @@ extends MissionCustomInfoPanel {
 		setLayout(new BorderLayout());
 
 		// Create the main scroll panel.
-		JScrollPane mainScrollPane = new JScrollPane();
+		WebScrollPane mainScrollPane = new WebScrollPane();
 		add(mainScrollPane, BorderLayout.NORTH);
 
 		// Create main panel.
@@ -115,14 +116,14 @@ extends MissionCustomInfoPanel {
 	 * Inner class panel for displaying exploration site info.
 	 */
 	private class ExplorationSitePanel
-	extends JPanel {
+	extends WebPanel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
 		// Data members
 		private double completion;
-		private JProgressBar completionBar;
+		private WebProgressBar completionBar;
 
 		/**
 		 * Constructor
@@ -137,16 +138,16 @@ extends MissionCustomInfoPanel {
 
 			setLayout(new GridLayout(1, 2));
 
-			JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 10));
+			WebPanel namePanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 1, 10));
 			add(namePanel);
 
-			JLabel nameLabel = new JLabel(Conversion.capitalize(siteName), SwingConstants.LEFT);
+			WebLabel nameLabel = new WebLabel(Conversion.capitalize(siteName), SwingConstants.LEFT);
 			namePanel.add(nameLabel);
 
-			JPanel barPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 1, 10));
+			WebPanel barPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER, 1, 10));
 			add(barPanel);
 
-			completionBar = new JProgressBar(0, 100);
+			completionBar = new WebProgressBar(0, 100);
 			completionBar.setStringPainted(true);
 			completionBar.setValue((int) (completion * 100D));
 			barPanel.add(completionBar);

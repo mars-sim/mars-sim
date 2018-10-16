@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 
 public class InteractiveTerm {
 
-
     private static final String KEY_STROKE_UP = "pressed UP";
     private static final String KEY_STROKE_DOWN = "pressed DOWN";
 
@@ -34,7 +33,7 @@ public class InteractiveTerm {
     private int choiceIndex = -1;
     private String[] choices = {};
 
-	private final SwingTextTerminal terminal;
+	private MarsTerminal terminal;
 
 	private static CommanderProfile profile;
 	
@@ -45,9 +44,11 @@ public class InteractiveTerm {
 	private boolean keepRunning;
 	
 	public InteractiveTerm() {
-		
-        terminal = new SwingTextTerminal();
+		terminal = new MarsTerminal();
         terminal.init();
+        
+//        terminal = new SwingTextTerminal();
+//        terminal.init();
         
         textIO = new TextIO(terminal);
         
@@ -75,21 +76,12 @@ public class InteractiveTerm {
 				+ " -----------------  M A R S   S I M U L A T I O N   P R O J E C T  -----------------" 
 				+ System.lineSeparator()
 				+ System.lineSeparator());
-		
-//		setChoices("y", "n");
-//		String input = textIO.newStringInputReader()//.withDefaultValue('n')
-////				.withInlinePossibleValues("y", "n")
-//			    .read("Do you want to be added as the commander of a settlement? [y/n]");	
-		
+			
         handler.addStringTask("input", "Input commander's profile ? [y/n]", false).addChoices("y", "n").constrainInputToChoices();
         handler.executeOneTask();
         
-		if ((CommanderInput.input).equals("y")) {// || CommanderInput.input.equals("Y")) {
-			terminal.print(
-//					System.lineSeparator() +
-//					"Press UP and DOWN to show a possible list of values (if available)" +
-					System.lineSeparator());
-//			setChoices();
+		if ((CommanderInput.input).equals("y")) {
+			terminal.print(System.lineSeparator());
 			profile.accept(textIO, null);
 		}
         
@@ -159,9 +151,7 @@ public class InteractiveTerm {
             		+ System.lineSeparator());
         String propsFileName = app.getClass().getSimpleName() + ".properties";
         System.setProperty(AbstractTextTerminal.SYSPROP_PROPERTIES_FILE_LOCATION, propsFileName);
-
-//        profile.term().moveToLineStart();
-	    
+//        profile.term().moveToLineStart();	    
         return app;
     }
     
@@ -202,7 +192,7 @@ public class InteractiveTerm {
 		return profile;
 	}
 	
-    public SwingTextTerminal getTerminal() {
+    public MarsTerminal getTerminal() {
     	return terminal;
     }
     

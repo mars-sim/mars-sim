@@ -106,10 +106,10 @@ public class ChatUtils {
 
 	public final static String KEYWORDS_TEXT = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "(1) FOR MARSNET SYSTEM : " + convertKeywords(SYSTEM_KEYS) + "or any NAMES of a settlement/vehicle/bot/person"
-			+ System.lineSeparator() + "(2) FOR SETTLEMENT : " + convertKeywords(SETTLEMENT_KEYS)
-			+ System.lineSeparator() + "(3) FOR SETTLER : " + convertKeywords(PERSON_KEYS)
-			+ System.lineSeparator() + "(4) FOR ALL PARTIES : " + convertKeywords(ALL_PARTIES_KEYS)
+			+ "(1) For MarsNet : " + convertKeywords(SYSTEM_KEYS) + "or any NAMES of a settlement/vehicle/bot/person"
+			+ System.lineSeparator() + "(2) For Settlement : " + convertKeywords(SETTLEMENT_KEYS)
+			+ System.lineSeparator() + "(3) For Settler : " + convertKeywords(PERSON_KEYS)
+			+ System.lineSeparator() + "(4) For All Parties : " + convertKeywords(ALL_PARTIES_KEYS)
 			+ System.lineSeparator() + "    ------------------------- N U M E R A L ------------------------- "
 			+ System.lineSeparator() + "(5) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement"
 			+ System.lineSeparator() + "    --------------------------  M I S C S -------------------------- "

@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -134,6 +133,7 @@ import jiconfont.javafx.IconFontFX;
 import jiconfont.javafx.IconNode;
 
 import com.alee.laf.WebLookAndFeel;
+import com.alee.laf.panel.WebPanel;
 import com.alee.managers.UIManagers;
 //import com.alee.managers.UIManagers;
 import com.almasb.fxgl.app.FXGL;
@@ -228,9 +228,9 @@ public class MainScene implements ClockListener {
 	public static final int TITLE_BAR_HEIGHT = 25;
 	
 	public static int chatBoxHeight = 256;
-	public static int LINUX_WIDTH = 270;
-	public static int MACOS_WIDTH = 230;
-	public static int WIN_WIDTH = 230;
+	public static int LINUX_WIDTH = 270+10;
+	public static int MACOS_WIDTH = 230+10;
+	public static int WIN_WIDTH = 230+10;
 	
 	public static int spacing = 0;
 
@@ -3531,7 +3531,7 @@ public class MainScene implements ClockListener {
 		// SwingUtilities.invokeLater(() -> desktopNode.setContent(desktop));
 
 		// Add main pane
-		JPanel mainPane = new JPanel(new BorderLayout());
+		WebPanel mainPane = new WebPanel(new BorderLayout());
 		mainPane.setSize(screen_width, screen_height);
 		mainPane.add(desktop, BorderLayout.CENTER);		
 		SwingUtilities.invokeLater(() -> desktopNode.setContent(mainPane));

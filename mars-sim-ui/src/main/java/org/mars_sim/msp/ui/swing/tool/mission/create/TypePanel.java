@@ -45,6 +45,8 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	private static MissionManager missionManager;
 
 	//private CreateMissionWizard wizard;
+	
+	
 	/**
 	 * Constructor.
 	 * @param wizard {@link CreateMissionWizard} the create mission wizard.

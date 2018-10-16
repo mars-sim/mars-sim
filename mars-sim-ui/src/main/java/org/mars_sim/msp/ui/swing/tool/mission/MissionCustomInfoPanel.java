@@ -6,16 +6,16 @@
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
 
-import javax.swing.JPanel;
-
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+
+import com.alee.laf.panel.WebPanel;
 
 /**
  * A panel for displaying custom mission information.
  */
 public abstract class MissionCustomInfoPanel
-extends JPanel {
+extends WebPanel {
 
 	/**
 	 * Updates the panel based on a mission event.

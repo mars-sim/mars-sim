@@ -295,7 +295,9 @@ public class EatMeal extends Task implements Serializable {
 
 		consumeWater(true);
 		
-		return time * .8;
+		endTask();
+		
+		return 0;
 	}
 	
 	/**

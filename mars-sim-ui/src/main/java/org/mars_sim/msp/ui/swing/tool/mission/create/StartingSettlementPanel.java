@@ -15,9 +15,7 @@ import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -35,11 +33,9 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -64,7 +60,7 @@ class StartingSettlementPanel extends WizardPanel {
 	private WebTable settlementTable;
 	private WebLabel errorMessageLabel;
 
-	public static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+//	public static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
 	/**
 	 * Constructor.
@@ -218,7 +214,7 @@ class StartingSettlementPanel extends WizardPanel {
 			columns.add("Oxygen");
 			columns.add("Water");
 			columns.add("Food");
-			columns.add("Dessert");
+//			columns.add("Dessert");
 			columns.add("Methane");
 			columns.add("EVA Suits");
 		}
@@ -251,13 +247,13 @@ class StartingSettlementPanel extends WizardPanel {
 					else if (column == 5) {
 						result = (int) inv.getARStored(ResourceUtil.foodID, false);
 					}
+//					else if (column == 6) {
+//						result = (int) determineHighestDessertResources(inv);
+//					}
 					else if (column == 6) {
-						result = (int) determineHighestDessertResources(inv);
+						result = (int) inv.getAmountResourceStored(ResourceUtil.methaneID, false);
 					}
-					else if (column == 7) {
-						result = (int) inv.getAmountResourceStored(ResourceUtil.methaneAR, false);
-					}
-					else if (column == 8)
+					else if (column == 7)
 						result = inv.findNumUnitsOfClass(EVASuit.class);
 
 					String type = getWizard().getMissionData().getType();
@@ -292,54 +288,54 @@ class StartingSettlementPanel extends WizardPanel {
 			return result;
 		}
 
+		
+//		/**
+//		 * Determine an unprepared dessert resource to load on the mission.
+//		 */
+//		private double determineHighestDessertResources(Inventory inv) {
+//
+//			double highestAmount = 0;
+//	        AmountResource dessertAR = null;
+//
+//	        //AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+//	        for (AmountResource ar : availableDesserts) {
+//
+//	        	double amount = inv.getAmountResourceStored(ar, false);
+//	        	if (highestAmount <= amount) {
+//	        		highestAmount = amount;
+//	        		dessertAR = ar;
+//	        	}
+//
+//	        }
+//
+//	        return highestAmount;
+//		}
 
-		/**
-		 * Determine an unprepared dessert resource to load on the mission.
-		 */
-		private double determineHighestDessertResources(Inventory inv) {
-
-			double highestAmount = 0;
-	        AmountResource dessertAR = null;
-
-	        //AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
-	        for (AmountResource ar : availableDesserts) {
-
-	        	double amount = inv.getAmountResourceStored(ar, false);
-	        	if (highestAmount <= amount) {
-	        		highestAmount = amount;
-	        		dessertAR = ar;
-	        	}
-
-	        }
-
-	        return highestAmount;
-		}
-
-		/**
-		 * Determine an unprepared dessert resource to load on the mission.
-		 */
-		private Map<AmountResource, Double> determineDessertResources(Inventory inv) {
-
-			Map<AmountResource, Double> dessert = new HashMap<AmountResource, Double>(1);
-
-			double highestAmount = 0;
-	        AmountResource dessertAR = null;
-
-	        //AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
-	        for (AmountResource ar : availableDesserts) {
-
-	        	double amount = inv.getAmountResourceStored(ar, false);
-	        	if (highestAmount <= amount) {
-	        		highestAmount = amount;
-	        		dessertAR = ar;
-	        	}
-
-	        }
-
-	        dessert.put(dessertAR, highestAmount);
-
-	        return dessert;
-		}
+//		/**
+//		 * Determine an unprepared dessert resource to load on the mission.
+//		 */
+//		private Map<AmountResource, Double> determineDessertResources(Inventory inv) {
+//
+//			Map<AmountResource, Double> dessert = new HashMap<AmountResource, Double>(1);
+//
+//			double highestAmount = 0;
+//	        AmountResource dessertAR = null;
+//
+//	        //AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+//	        for (AmountResource ar : availableDesserts) {
+//
+//	        	double amount = inv.getAmountResourceStored(ar, false);
+//	        	if (highestAmount <= amount) {
+//	        		highestAmount = amount;
+//	        		dessertAR = ar;
+//	        	}
+//
+//	        }
+//
+//	        dessert.put(dessertAR, highestAmount);
+//
+//	        return dessert;
+//		}
 
 		/**
 		 * Updates the table data.
@@ -380,50 +376,50 @@ class StartingSettlementPanel extends WizardPanel {
 					if (inv.findNumUnitsOfClass(Rover.class) == 0) result = true;
 				}
 				else if (column == 3) {
-					if (inv.getAmountResourceStored(ResourceUtil.oxygenAR, false) < 100D) result = true;
+					if (inv.getAmountResourceStored(ResourceUtil.oxygenID, false) < 100D) result = true;
 				}
 				else if (column == 4) {
-					if (inv.getAmountResourceStored(ResourceUtil.waterAR, false) < 100D) result = true;
+					if (inv.getAmountResourceStored(ResourceUtil.waterID, false) < 100D) result = true;
 				}
 				else if (column == 5) {
-					if (inv.getAmountResourceStored(ResourceUtil.foodAR, false) < 100D) result = true;
+					if (inv.getAmountResourceStored(ResourceUtil.foodID, false) < 100D) result = true;
 				}
+//				else if (column == 6) {
+//					if (determineHighestDessertResources(inv) < 10D) result = true;
+//				}
 				else if (column == 6) {
-					if (determineHighestDessertResources(inv) < 10D) result = true;
+					if (inv.getAmountResourceStored(ResourceUtil.methaneID, false) < 100D) result = true;
 				}
 				else if (column == 7) {
-					if (inv.getAmountResourceStored(ResourceUtil.methaneAR, false) < 100D) result = true;
-				}
-				else if (column == 8) {
 					if (inv.findNumUnitsOfClass(EVASuit.class) == 0) result = true;
 				}
 
 				String type = getWizard().getMissionData().getType();
 				if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
-					if (column == 9) {
+					if (column == 8) {
 						if (inv.findNumEmptyUnitsOfClass(SpecimenContainer.class, true) <
 								Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
 					}
 				}
 				else if (type.equals(MissionDataBean.ICE_MISSION) ||
 						type.equals(MissionDataBean.REGOLITH_MISSION)) {
-					if (column == 9) {
+					if (column == 8) {
 						if (inv.findNumEmptyUnitsOfClass(Bag.class, true) <
 								CollectIce.REQUIRED_BAGS) result = true;
 					}
 				}
 				else if (type.equals(MissionDataBean.MINING_MISSION)) {
-					if (column == 9) {
+					if (column == 8) {
 						if (inv.findNumEmptyUnitsOfClass(Bag.class, true) <
 								CollectIce.REQUIRED_BAGS) result = true;
 					}
-					if (column == 10) {
+					if (column == 9) {
 						if (inv.findNumUnitsOfClass(LightUtilityVehicle.class) == 0) result = true;
 					}
-					else if (column == 11) {
+					else if (column == 10) {
 						if (inv.getItemResourceNum(ItemResourceUtil.pneumaticDrillAR) == 0) result = true;
 					}
-					else if (column == 12) {
+					else if (column == 11) {
 						if (inv.getItemResourceNum(ItemResourceUtil.backhoeAR) == 0) result = true;
 					}
 				}
