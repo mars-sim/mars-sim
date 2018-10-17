@@ -44,6 +44,7 @@ public class InteractiveTerm {
 	private boolean keepRunning;
 	
 	public InteractiveTerm() {
+		
 		terminal = new MarsTerminal();
         terminal.init();
         
@@ -104,6 +105,9 @@ public class InteractiveTerm {
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
 		terminal.registerUserInterruptHandler(term -> {}, false);
         
+		// Call ChatUils' default constructor to initialize instances
+		new ChatUtils();
+		
 		while (keepRunning) {
 		    BiConsumer<TextIO, RunnerData> menu = chooseMenu(textIO);
 		    //TextIO textIO = chooseTextIO();

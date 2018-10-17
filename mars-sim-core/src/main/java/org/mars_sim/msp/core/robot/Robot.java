@@ -644,7 +644,7 @@ public class Robot
 	 * @return the robot's birth date
 	 */
 	public String getBirthDate() {
-		return birthTimeStamp.getDateString();
+		return birthTimeStamp.getDateStringF0();
 	}
 
 //    /**

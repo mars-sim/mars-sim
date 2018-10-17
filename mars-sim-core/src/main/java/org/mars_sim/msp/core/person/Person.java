@@ -1094,7 +1094,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return the person's birth date
 	 */
 	public String getBirthDate() {
-		return birthTimeStamp.getDateString();
+		return birthTimeStamp.getDateStringF0();
 	}
 
 	/**

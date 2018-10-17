@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -65,7 +66,7 @@ public class ChatUtils {
 	};
 	
 	public final static String[] PERSON_KEYS = new String[] {
-			"feeling", "status", 
+			"feeling", "status",
 			"birth", "age", "how old", "born",
 			"friend",
 			"relationship", "social", "relation",
@@ -79,7 +80,7 @@ public class ChatUtils {
 	};
 	
 	public final static String[] ALL_PARTIES_KEYS = new String[] {
-			"bed", "sleep", "lodging", "quarters", 
+			"bed", "sleep", "lodging", "quarters", "time",
 			"where", "location", "located",	
 			"job", "role", "career",
 			"task", "activity", "action", "doing", 
@@ -87,7 +88,7 @@ public class ChatUtils {
 	};
 	
 	public final static String[] SYSTEM_KEYS = new String[] {
-			"settlement", 
+			"settlement",
 			"vehicle", "rover", 
 			"hi", "hello", "hey"
 	};
@@ -143,9 +144,11 @@ public class ChatUtils {
 //	public static Building building;
 //	public static Equipment equipment;
 
+	private static Simulation sim = Simulation.instance();
 	private static Weather weather;
 	private static SurfaceFeatures surfaceFeatures;
 	private static Mars mars;
+	private static MasterClock masterClock;
 	private static MarsClock marsClock;
 	private static OrbitInfo orbitInfo;
 	private static RelationshipManager relationshipManager;
@@ -155,8 +158,9 @@ public class ChatUtils {
 	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
 	
 	public ChatUtils() {
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		mars = Simulation.instance().getMars();
+		masterClock = sim.getMasterClock();
+		marsClock = masterClock.getMarsClock();
+		mars = sim.getMars();
 		weather = mars.getWeather();
 		surfaceFeatures = mars.getSurfaceFeatures();
 		orbitInfo = mars.getOrbitInfo();
@@ -345,6 +349,76 @@ public class ChatUtils {
 	}
 
 	/**
+	 * Prints the mission sol and Mars and Earth's date and time
+	 * 
+	 * @return StringBuffer
+	 */
+	public static StringBuffer printTime() {
+		
+		StringBuffer responseText = new StringBuffer();
+		// Mars/Earth Date and Time
+//		String earthDateTime = masterClock.getEarthClock().getTimeStampF2();
+		String earthDate = masterClock.getEarthClock().getDateStringF3();
+		String earthTime = masterClock.getEarthClock().getTimeStringF0();
+		int missionSol = marsClock.getMissionSol();
+//		String marsDateTime = marsClock.getDateTimeStamp();
+		String marsDate = marsClock.getDateString();
+		String marsTime = marsClock.getDecimalTimeString();
+		
+
+		responseText.append(System.lineSeparator());
+		
+		String s0 = "Mission Sol : ";
+		int num = 20 - s0.length();
+		for (int i=0; i<num; i++) {
+			responseText.append(" ");
+		}
+		responseText.append(s0);
+		responseText.append(missionSol);
+		responseText.append(System.lineSeparator());
+		responseText.append(System.lineSeparator());
+		
+		String s1 = "Mars Date : ";
+		num = 20 - s1.length();
+		for (int i=0; i<num; i++) {
+			responseText.append(" ");
+		}
+		responseText.append(s1);
+		responseText.append(marsDate);
+		responseText.append(System.lineSeparator());
+		
+		String s2 = "Mars Time : ";
+		num = 20 - s2.length();
+		for (int i=0; i<num; i++) {
+			responseText.append(" ");
+		}
+		responseText.append(s2);
+		responseText.append(marsTime);
+		responseText.append(System.lineSeparator());
+		responseText.append(System.lineSeparator());
+		
+		String s3 = "Earth Date : ";
+		num = 20 - s3.length();
+		for (int i=0; i<num; i++) {
+			responseText.append(" ");
+		}
+		responseText.append(s3);
+		responseText.append(earthDate);
+		responseText.append(System.lineSeparator());
+		
+		String s4 = "Earth Time : ";
+		num = 20 - s4.length();
+		for (int i=0; i<num; i++) {
+			responseText.append(" ");
+		}
+		responseText.append(s4);
+		responseText.append(earthTime);
+		responseText.append(System.lineSeparator());
+		
+		return responseText;
+	}
+	
+	/**
 	 * Asks the settlement when the input is a string
 	 * 
 	 * @param text the input string
@@ -356,8 +430,17 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuilder responseText = new StringBuilder();
 		
+		if (text.toLowerCase().contains("time")) {
+			questionText = YOU_PROMPT + "What time is it ?"; 
+			responseText.append(settlementCache.getName() + " : ");
+			responseText.append("Here's the latest time info.");
+			responseText.append(System.lineSeparator());
+			
+			responseText.append(printTime());
+			
+		}
 		
-		if (text.toLowerCase().contains("task") 
+		else if (text.toLowerCase().contains("task") 
 				|| text.toLowerCase().contains("activity")
 				|| text.toLowerCase().contains("doing")
 				|| text.toLowerCase().contains("action")) {
@@ -904,7 +987,18 @@ public class ChatUtils {
 		responseText.append(name);
 		responseText.append(": ");
 
-		if (text.equalsIgnoreCase("space agency")
+		if (text.toLowerCase().contains("time")) {
+			questionText = YOU_PROMPT + "What time is it ?"; 
+			
+//			responseText.append(personCache.getName() + " : ");
+			responseText.append("According to Marsnet, here's the latest time info.");
+			responseText.append(System.lineSeparator());
+			
+			responseText.append(printTime());
+			
+		}
+		
+		else if (text.equalsIgnoreCase("space agency")
 				|| text.toLowerCase().contains("sponsor")) {
 			questionText = YOU_PROMPT + "What is your sponsoring space agency ? ";
 
@@ -1511,8 +1605,6 @@ public class ChatUtils {
 			cacheType = 3;
 		}
 
-//		System.out.println("name is " + name);
-
 		// Case 0 : exit the conversation
 		if (isQuitting(text)) {
 			String[] bye = null;
@@ -1522,6 +1614,7 @@ public class ChatUtils {
 					bye = farewell(name, true);
 				else
 					bye = farewell(name, false);
+				
 				questionText = bye[0];
 				responseText.append(bye[1]);
 				responseText.append(System.lineSeparator());
@@ -1713,6 +1806,27 @@ public class ChatUtils {
 			proceed = true;
 		}
 
+		else if (text.toLowerCase().contains("time")) {
+			
+			responseText.append(SYSTEM_PROMPT);
+			responseText.append("Here's the latest time info.");
+			responseText.append(System.lineSeparator());
+			
+			responseText.append(printTime());
+			
+			// Life Support System 
+			
+			// Resource Storage
+			
+			// Goal
+			
+			// Resource changes
+			
+			// Water Ration 
+					
+			return responseText.toString();
+		}
+		
 		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
 
 			// responseText.append(System.lineSeparator());
