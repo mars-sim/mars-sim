@@ -55,7 +55,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         this.choiceIndex = -1;
         this.choices = choices;
     }
-
     
     @Override
     public void accept(TextIO textIO, RunnerData runnerData) {    
@@ -69,7 +68,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         addString(textIO, "Last Name", () -> contact.lastName, s -> contact.lastName = s);     
         addGender(textIO, "Gender", () -> contact.gender, s -> contact.gender = s);
         addAge(textIO, "Age", () -> contact.age, s -> contact.age = s);	      
-        addJobTask(textIO, "Job (0-15)", () -> contact.job, s -> contact.job = s);	
+        addJobTask(textIO, "Job (0-16)", () -> contact.job, s -> contact.job = s);	
         addCountryTask(textIO, "Country (0-27)", () -> contact.country, s -> contact.country = s);
           
         setUpCountryKey();
@@ -120,9 +119,11 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
                     tt ->   {   
 			           	tt.print(System.lineSeparator() 
 			           		+ System.lineSeparator() 
-			           		+ "  -------------------- Country Listing --------------------" 
+			           		+ "    ---------------------- Country Listing ----------------------" 
+			           		+ System.lineSeparator() 
 			           		+ System.lineSeparator());
-			        	tt.print(printCountries());   
+			        	List<String> countries = UnitManager.getCountryList();
+			        	tt.print(printList(countries));   
                     }
             );
             return new ReadHandlerData(ReadInterruptionStrategy.Action.RESTART).withRedrawRequired(true);
@@ -141,9 +142,11 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
                     tt ->   {   
 			           	tt.print(System.lineSeparator() 
 			           		+ System.lineSeparator() 
-			           		+ "  -------------------- Job Listing --------------------" 
+			           		+ "    ----------------------- Job Listing -----------------------" 
+			           		+ System.lineSeparator()
 			           		+ System.lineSeparator());
-			        	tt.print(printJobs());   
+			        	List<String> jobs = JobType.getEditedList();
+			        	tt.print(printList(jobs));
                     }
             );
             return new ReadHandlerData(ReadInterruptionStrategy.Action.RESTART).withRedrawRequired(true);
@@ -199,8 +202,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
             return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
         });
     }
-    		
-    
+   
     private void addString(TextIO textIO, String prompt, Supplier<String> defaultValueSupplier, Consumer<String> valueSetter) {
         operations.add(() -> {
         	setChoices();
@@ -250,7 +252,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	valueSetter.accept(textIO.newIntInputReader()
                 .withDefaultValue(4)
                 .withMinVal(0)
-                .withMaxVal(15)//defaultValueSupplier.get())
+                .withMaxVal(16)//defaultValueSupplier.get())
                 .read(prompt));
         	});
     }
@@ -265,7 +267,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
                 .read(prompt));
     		});
     }
-    
+
 //    private void addPhaseTask(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
 //        operations.add(() -> valueSetter.accept(textIO.newIntInputReader()
 //                .withDefaultValue(1)
@@ -276,70 +278,64 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     
     
     /**
-     * Generates and prints a list of jobs
+     * Generates and prints the list that needs to be processed
      * 
      * @return List<String>
      */
-    public List<String> printJobs() {
+    public List<String> printList(List<String> list) {
     	
        	List<String> newList = new ArrayList<>();
-    	List<String> jobs = JobType.getEditedList();
     	StringBuffer s = new StringBuffer();
-        for (int i=0; i< jobs.size(); i++) {  
-        	String c = jobs.get(i).toString();
+    	int SPACES = 18;
+    	//int row = 0;
+        for (int i=0; i< list.size(); i++) {
+        	int column = 0;
+        	
+        	String c = "";
+        	int num = 0;        	
+        	
+        	// Find out what column
+        	if ((i - 1) % 3 == 0)
+        		column = 1;
+        	else if ((i - 2) % 3 == 0)
+        		column = 2;
+
+        	// Look at how many whitespaces needed before printing each column
+			if (column == 0) {
+				c = list.get(i).toString();
+				num = SPACES - c.length();
+	
+			}
+			
+			else if (column == 1 || column == 2) {
+	        	c = list.get(i).toString();
+	        	num = SPACES - list.get(i-1).toString().length();
+
+	        	// Handle the extra space before the parenthesis
+	            for (int j=0; j < num; j++) { 
+	            	s.append(" ");
+	            }    			
+    		}
+
+        	if (i+1 < 10)
+        		s.append(" ");
         	s.append("(");
         	s.append(i+1);
         	s.append("). ");
-        	if (i < 9)
-        		s.append(" ");
-        	s.append(c);
-        	int num = 18 - c.length();
-        	
-            for (int j=0; j < num; j++) { 
-            	s.append(" ");
-            }
-            if ( (i - 2) % 3 == 0) {
+        	s.append(c);        		
+            
+            // if this is the last column
+            if (column == 2 || i == list.size()-1) {
             	//s.append(System.lineSeparator());//"\\R");
                 newList.add(s.toString());
+                //++;
                 s = new StringBuffer();
             }
         }
       
         return newList;    
-
     }
     
-    /**
-     * Generates and prints a list of countries
-     * 
-     * @return List<String>
-     */
-    public List<String> printCountries() {
-    	// Use "\\R" as line break
-    	List<String> newList = new ArrayList<>();
-    	List<String> countries = UnitManager.getCountryList();
-    	StringBuffer s = new StringBuffer();
-        for (int i=0; i< countries.size(); i++) {  
-        	String c = countries.get(i).toString();
-        	s.append("(");
-        	s.append(i+1);
-        	s.append("). ");
-        	if (i < 9)
-        		s.append(" ");
-        	s.append(c);
-        	int num = 18 - c.length();
-            for (int j=0; j < num; j++) { 
-            	s.append(" ");
-            }
-            if ( (i - 2) % 3 == 0) {
-            	//s.append(System.lineSeparator());//"\\R");
-                newList.add(s.toString());
-                s = new StringBuffer();
-            }
-        }
-      
-        return newList;    
-    }
 
     @Override
     public String toString() {
@@ -365,7 +361,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         private int phase;
         private int country;
         
-        
         public String getFullName() {
         	if (firstName == null || lastName == null)
         		return null;
@@ -379,7 +374,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         }
 
         public int getCountry() {
-        	return country;
+        	return country-1;
         }
         
         public int getAge() {
@@ -387,7 +382,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         }
 
         public int getJob() {
-        	return job;
+        	return job-1;
         }
         
         public int getPhase() {
@@ -400,9 +395,9 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
             	   System.lineSeparator() + "   Last Name: " + lastName +
             	   System.lineSeparator() + "   Gender: " + gender +
             	   System.lineSeparator() + "   Age: " + age +
-            	   System.lineSeparator() + "   Job: " + JobType.getEditedJobString(job) +
-            	   System.lineSeparator() + "   Country: " + UnitManager.getCountryByID(country) + 
-            	   System.lineSeparator() + "   Space Agency: " + UnitManager.getSponsorByCountryID(country) + "" 
+            	   System.lineSeparator() + "   Job: " + JobType.getEditedJobString(job-1) +
+            	   System.lineSeparator() + "   Country: " + UnitManager.getCountryByID(country-1) + 
+            	   System.lineSeparator() + "   Space Agency: " + UnitManager.getSponsorByCountryID(country-1) + "" 
 //            	   System.lineSeparator() + "   Settlement Phase: " + phase
             	   ;
             

@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -61,7 +59,8 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	
 	/** Task phases. */
 	private static final TaskPhase TOGGLE_PROCESS = new TaskPhase(Msg.getString("Task.phase.toggleProcess")); //$NON-NLS-1$
-
+	private static final TaskPhase FINISHED = new TaskPhase(Msg.getString("Task.phase.toggleProcess.finished")); //$NON-NLS-1$
+	
 	private static final String OFF = "off";
 	private static final String ON = "on";
 
@@ -89,13 +88,14 @@ public class ToggleResourceProcess extends Task implements Serializable {
         super(NAME_ON, person, true, false, STRESS_MODIFIER, true, 5D + RandomUtil.getRandomInt(5));
 		//super(NAME_ON, person, false, 0D);
 
-        if (person.isInSettlement()) {
-        	  
-			resourceProcessBuilding = getResourceProcessingBuilding(person);
-	
-			if (resourceProcessBuilding != null) {
-				process = getResourceProcess(resourceProcessBuilding);
-				
+        if (person.isInSettlement()) {      	  
+//			resourceProcessBuilding = getResourceProcessingBuilding(person);
+			process = selectResourceProcess(person);
+			
+			if (process != null) {
+//			if (resourceProcessBuilding != null) {
+//				process = getResourceProcess(resourceProcessBuilding);
+							
 				marsClock = Simulation.instance().getMasterClock().getMarsClock();
 				
 				// Compute the time limit
@@ -109,7 +109,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				process.setTimeLimit(sol, millisols);
 				// Copy the current state of this process running 
 				toBeToggledOn = !process.isProcessRunning();
-	
+
 				if (!toBeToggledOn) {
 					setName(NAME_OFF);
 					setDescription(NAME_OFF);
@@ -119,7 +119,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				}
 				
 				// Assume the toggling is NOW handled remotely in the command control center
-	//            needEVA = false;
+//	            needEVA = false;
 				
 				Administration admin = resourceProcessBuilding.getAdministration();
 				if (admin != null && !admin.isFull()) {
@@ -167,31 +167,31 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				
 				// NOTE : no longer require EVA to physically go out there and manually touching
 				// a toggle switch
-	
-	//            needEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
+
+//	            needEVA = !building.hasFunction(FunctionType.LIFE_SUPPORT);
 	//
-	//            // If habitable building, add person to building.
-	//            if (!needEVA) {
-	//                // Walk to building.
-	//                walkToActivitySpotInBuilding(building, false);
-	//            }
-	//            else {
-	//                // Determine location for toggling resource source.
-	//                Point2D toggleLoc = determineToggleLocation();
-	//                setOutsideSiteLocation(toggleLoc.getX(), toggleLoc.getY());
-	//            }
-	
-			}
-	
-			else {
-				endTask();
-			}
-	
-			addPhase(TOGGLE_PROCESS);
-	
-//			if (!needEVA) {
-				setPhase(TOGGLE_PROCESS);
+//	            // If habitable building, add person to building.
+//	            if (!needEVA) {
+//	                // Walk to building.
+//	                walkToActivitySpotInBuilding(building, false);
+//	            }
+//	            else {
+//	                // Determine location for toggling resource source.
+//	                Point2D toggleLoc = determineToggleLocation();
+//	                setOutsideSiteLocation(toggleLoc.getX(), toggleLoc.getY());
+//	            }
+
 //			}
+
+				addPhase(TOGGLE_PROCESS);
+				addPhase(FINISHED);
+				
+	//			if (!needEVA) {
+					setPhase(TOGGLE_PROCESS);
+	//			}
+	        }
+	        else
+	        	endTask();
         }
         else
         	endTask();
@@ -202,26 +202,26 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		return FunctionType.RESOURCE_PROCESSING;
 	}
 
-	/**
-	 * Determine location to toggle resource source.
-	 * 
-	 * @return location.
-	 */
-	private Point2D determineToggleLocation() {
-
-		Point2D.Double newLocation = new Point2D.Double(0D, 0D);
-
-		boolean goodLocation = false;
-		for (int x = 0; (x < 50) && !goodLocation; x++) {
-			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(resourceProcessBuilding, 1D);
-			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
-					resourceProcessBuilding);
-			goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
-					person.getCoordinates());
-		}
-
-		return newLocation;
-	}
+//	/**
+//	 * Determine location to toggle resource source.
+//	 * 
+//	 * @return location.
+//	 */
+//	private Point2D determineToggleLocation() {
+//
+//		Point2D.Double newLocation = new Point2D.Double(0D, 0D);
+//
+//		boolean goodLocation = false;
+//		for (int x = 0; (x < 50) && !goodLocation; x++) {
+//			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(resourceProcessBuilding, 1D);
+//			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
+//					resourceProcessBuilding);
+//			goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+//					person.getCoordinates());
+//		}
+//
+//		return newLocation;
+//	}
 
 	/**
 	 * Gets the building at a person's settlement with the resource process that
@@ -240,8 +240,9 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			Iterator<Building> i = manager.getBuildings(FunctionType.RESOURCE_PROCESSING).iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
+				// In this building, select the best resource to compete
 				ResourceProcess process = getResourceProcess(building);
-				if (process != null) {
+				if (process != null && process.hasPassedTimeLimit()) {
 					double diff = getResourcesValueDiff(settlement, process);
 					if (diff > bestDiff) {
 						bestDiff = diff;
@@ -283,6 +284,39 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Gets the resource process that needs toggling.
+	 * 
+	 * @param person the person.
+	 * @return the resource process to toggle or null if none.
+	 */
+	public ResourceProcess selectResourceProcess(Person person) {
+		ResourceProcess result = null;
+
+		Settlement settlement = person.getSettlement();
+		if (settlement != null) {
+			BuildingManager manager = settlement.getBuildingManager();
+			double bestDiff = 0D;
+			Iterator<Building> i = manager.getBuildings(FunctionType.RESOURCE_PROCESSING).iterator();
+			while (i.hasNext()) {
+				Building building = i.next();
+				// In this building, select the best resource to compete
+				ResourceProcess process = getResourceProcess(building);
+				if (process != null && process.hasPassedTimeLimit()) {
+					double diff = getResourcesValueDiff(settlement, process);
+					if (diff > bestDiff) {
+						bestDiff = diff;
+						result = process;
+						resourceProcessBuilding = building;
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	
 	/**
 	 * Gets the resources value diff between inputs and outputs for a resource
 	 * process.
@@ -336,7 +370,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			i = process.getOutputResources().iterator();
 
 		while (i.hasNext()) {
-			Integer resource = i.next();
+			int resource = i.next();
 			boolean useResource = true;
 			if (input && process.isAmbientInputResource(resource)) {
 				useResource = false;
@@ -377,7 +411,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 		Iterator<Integer> i = process.getInputResources().iterator();
 		while (i.hasNext()) {
-			Integer resource = i.next();
+			int resource = i.next();
 			if (!process.isAmbientInputResource(resource)) {
 				double stored = settlement.getInventory().getAmountResourceStored(resource, false);
 				if (stored == 0D) {
@@ -388,6 +422,100 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 		return result;
 	}
+
+	/**
+	 * Performs the toggle process phase.
+	 * 
+	 * @param time the amount of time (millisols) to perform the phase.
+	 * @return the amount of time (millisols) left over after performing the phase.
+	 */
+	private double toggleProcessPhase(double time) {
+
+//		if (resourceProcessBuilding != null) {
+//			process = getResourceProcess(resourceProcessBuilding);
+
+		// If person is incapacitated, enter airlock.
+		if (person.getPerformanceRating() == 0D) {
+			// reset it to 3% so that he can walk inside
+			person.getPhysicalCondition().setPerformanceFactor(3);
+//			if (needEVA) {
+//				setPhase(WALK_BACK_INSIDE);
+//			} else {
+				endTask();
+//			}
+		}
+
+		if (isDone()) {
+			// if the work has been accomplished (it takes some finite amount of time to
+			// finish the task
+			return time;
+		}
+
+		// Determine effective work time based on "Mechanic" skill.
+		double workTime = time;
+		int mechanicSkill = getEffectiveSkillLevel();
+		if (mechanicSkill == 0) {
+			workTime /= 2;
+		}
+		if (mechanicSkill > 1) {
+			workTime += workTime * (.2D * mechanicSkill);
+		}
+
+		// Add work to the toggle process.
+		process.addToggleWorkTime(workTime);
+
+		// Add experience points
+		addExperience(time);
+
+		// Check for one last time if the process has already been completed by another person.
+		if (process.isProcessRunning() == toBeToggledOn) {
+			System.out.println("go to the finished phase");
+			setPhase(FINISHED);
+//			if (needEVA) {
+//				setPhase(WALK_BACK_INSIDE);
+//			} else {
+//				endTask();
+//			}
+		}
+
+		// Check if an accident happens during toggle process.
+		checkForAccident(time);
+
+		return time * .1;
+	}
+
+	/**
+	 * Performs the finished phase.
+	 * 
+	 * @param time the amount of time (millisols) to perform the phase.
+	 * @return the amount of time (millisols) left over after performing the phase.
+	 */
+	protected double finishedPhase(double time) {
+		System.out.println("At the finished phase");
+		Settlement s = person.getSettlement(); 	
+		
+		String toggle = OFF;
+		if (toBeToggledOn) {
+			toggle = ON;
+		}
+
+		if (destination == resourceProcessBuilding) {
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+					"[" + s.getName() + "] " + person.getName() + " at " + destination.getNickName() 
+					+ " turned the " + process.getProcessName()  + " " + toggle + ".", null);
+		}
+		else {
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+					"[" + s.getName() + "] " + person.getName() + " at " + destination.getNickName() 
+				+ " gained remote access to the " + process.getProcessName() 
+				+ " of " + resourceProcessBuilding.getNickName() + " and turned it " + toggle + ".", null);
+		}	
+
+
+		return 0D;
+	}
+	
+	
 
 	@Override
 	protected void addExperience(double time) {
@@ -450,88 +578,13 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			throw new IllegalArgumentException("Task phase is null");
 		} else if (TOGGLE_PROCESS.equals(getPhase())) {
 			return toggleProcessPhase(time);
+		} else if (FINISHED.equals(getPhase())) {
+			return finishedPhase(time);
 		} else {
 			return time;
 		}
 	}
-
-	/**
-	 * Performs the toggle process phase.
-	 * 
-	 * @param time the amount of time (millisols) to perform the phase.
-	 * @return the amount of time (millisols) left over after performing the phase.
-	 */
-	private double toggleProcessPhase(double time) {
-
-		// If person is incapacitated, enter airlock.
-		if (person.getPerformanceRating() == 0D) {
-			// reset it to 3% so that he can walk inside
-			person.getPhysicalCondition().setPerformanceFactor(3);
-//			if (needEVA) {
-//				setPhase(WALK_BACK_INSIDE);
-//			} else {
-				endTask();
-//			}
-		}
-
-		if (isDone()) {
-			// if the work has been accomplished (it takes some finite amount of time to
-			// finish the task
-			return time;
-		}
-
-		// Determine effective work time based on "Mechanic" skill.
-		double workTime = time;
-		int mechanicSkill = getEffectiveSkillLevel();
-		if (mechanicSkill == 0) {
-			workTime /= 2;
-		}
-		if (mechanicSkill > 1) {
-			workTime += workTime * (.2D * mechanicSkill);
-		}
-
-		// Add work to the toggle process.
-		process.addToggleWorkTime(workTime);
-
-		// Add experience points
-		addExperience(time);
-
-		// Check for one last time if the process has already been completed by another person.
-		if (process.isProcessRunning() == toBeToggledOn) {
-//			if (needEVA) {
-//				setPhase(WALK_BACK_INSIDE);
-//			} else {
-				endTask();
-//			}
-		}
-		else {
 	
-			Settlement s = person.getSettlement(); 	
-			
-			String toggle = OFF;
-			if (toBeToggledOn) {
-				toggle = ON;
-			}
-
-			if (destination == resourceProcessBuilding) {
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-						"[" + s.getName() + "] " + person.getName() + " at " + destination.getNickName() 
-						+ " is working on turning the " + process.getProcessName()  + " " + toggle + ".", null);
-			}
-			else {
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-						"[" + s.getName() + "] " + person.getName() + " at " + destination.getNickName() 
-					+ " gains remote access to the " + process.getProcessName() 
-					+ " of " + resourceProcessBuilding.getNickName() + " and is working on turning it " + toggle + ".", null);
-			}
-		}
-
-		// Check if an accident happens during toggle process.
-		checkForAccident(time);
-
-		return 0D;
-	}
-
 	/**
 	 * Check for accident with entity during toggle resource phase.
 	 * 

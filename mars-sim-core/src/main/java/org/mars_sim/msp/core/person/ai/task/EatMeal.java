@@ -383,7 +383,7 @@ public class EatMeal extends Task implements Serializable {
 		// if one can't find a dessert kitchen, i.e. in a vehicle
 		setPhase(EAT_DESSERT);
 		
-		return time *.9;
+		return time *.8;
 	}
 
 	/**

@@ -64,19 +64,19 @@
     -fx-font-size: 1.0em;
     -fx-background-color: transparent;
     -fx-graphic-text-gap: 2px;
-    -icons-color: #f8c202;
-    -fx-text-fill: #f8c202;
+    -icons-color: #654b00;
+    -fx-text-fill: white;
     -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.4) , 6, 0.0 , 0 , 2 );
 }
  
-.menu-button:pressed:hover{
+#menu-button:pressed:hover{
     -jfx-mask-type: CIRCLE;
     -icons-color: black; 
     -fx-text-fill: black; 
     -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
 }
  
-.menu-button:hover{
+#menu-button:hover{
     -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
 }
 

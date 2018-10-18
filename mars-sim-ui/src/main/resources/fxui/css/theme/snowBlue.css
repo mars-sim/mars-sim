@@ -31,7 +31,7 @@
 
 .button-broadcast{
     -fx-background-color:
-        linear-gradient(#7ebcea, #2f4b8f),
+        linear-gradient(#065185, #2f4b8f),
         linear-gradient(#426ab7, #263e75),
         linear-gradient(#395cab, #223768);
     -fx-background-radius: 10;
@@ -61,19 +61,19 @@
     -fx-font-size: 1.0em;
     -fx-background-color: transparent;
     -fx-graphic-text-gap: 2px;
-    -icons-color: #7ebcea;
-    -fx-text-fill: #7ebcea;
+    -icons-color: #065185;
+    -fx-text-fill: white;
     -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.4) , 6, 0.0 , 0 , 2 );
 }
  
-.menu-button:pressed:hover{
+#menu-button:pressed:hover{
     -jfx-mask-type: CIRCLE;
     -icons-color: black;
     -fx-text-fill: black;
     -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
 }
  
-.menu-button:hover{
+#menu-button:hover{
     -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
 }
 

@@ -30,9 +30,13 @@ public class InteractiveTerm {
     private static final String KEY_STROKE_DOWN = "pressed DOWN";
 
     private String originalInput = "";
-    private int choiceIndex = -1;
     private String[] choices = {};
 
+    private int choiceIndex = -1;
+
+    private boolean keepRunning;
+	
+    
 	private MarsTerminal terminal;
 
 	private static CommanderProfile profile;
@@ -41,7 +45,7 @@ public class InteractiveTerm {
 	
 	private static MasterClock masterClock;
 	
-	private boolean keepRunning;
+	
 	
 	public InteractiveTerm() {
 		
@@ -56,9 +60,12 @@ public class InteractiveTerm {
         setUpArrows();
 	}
 	
+	
     public static void main(String[] args) {	
-    	new InteractiveTerm().startCommanderMode(); 
+    	new InteractiveTerm().startCommanderMode();
+    	
     }
+    
     
 	/**
 	 * Initialize the text-io terminal.
@@ -96,6 +103,7 @@ public class InteractiveTerm {
 		keepRunning = true;
 	}
 	
+	
 	/**
 	 * Loads the terminal menu
 	 */
@@ -124,7 +132,7 @@ public class InteractiveTerm {
 	}
     
 	
-    public static void clearScreen(TextTerminal terminal) {
+    public static void clearScreen(TextTerminal<?> terminal) {
         if (terminal instanceof JLineTextTerminal) {
             terminal.print("\033[H\033[2J");
         } else if (terminal instanceof SwingTextTerminal) {

@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.guide;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -65,6 +66,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 	private WebButton tutorialButton = new WebButton(Msg.getString("GuideWindow.button.tutorial")); //$NON-NLS-1$
 	private WebButton userguideButton = new WebButton(Msg.getString("GuideWindow.button.userguide")); //$NON-NLS-1$
 	private WebButton projectsiteButton = new WebButton(Msg.getString("GuideWindow.button.projectsite")); //$NON-NLS-1$
+	
 	/**
 	 * Private WebButton discussionButton = new
 	 * WebButton(Msg.getString("GuideWindow.button.discussion")); //$NON-NLS-1$
@@ -82,20 +84,15 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 	 */
 	public GuideWindow(MainDesktopPane desktop) {
 		super(NAME, desktop);
-		// logger.info("GuideWindow's constructor is on " +
-		// Thread.currentThread().getName() + " Thread");
 
 		/* [landrus, 27.11.09]: use classloader compliant paths */
 		shortcutsURL = getClass().getResource(Msg.getString("doc.shortcuts")); //$NON-NLS-1$
 		guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
 		aboutURL = getClass().getResource(Msg.getString("doc.about")); //$NON-NLS-1$
 		tutorialURL = getClass().getResource(Msg.getString("doc.tutorial")); //$NON-NLS-1$
-		projectsiteURLstring = Msg.getString("url.projectsite"); //$NON-NLS-1$
+		projectsiteURLstring = Msg.getString("url.projectSite"); //$NON-NLS-1$
 		// discussionURLstring = Msg.getString("url.discussion"); //$NON-NLS-1$
 		wikiURLstring = Msg.getString("url.wiki"); //$NON-NLS-1$
-
-		browser = desktop.getBrowserJFX();
-		browserPanel = browser.getPanel();// .init();
 
 		// Create the main panel
 		WebPanel mainPane = new WebPanel(new BorderLayout());
@@ -125,7 +122,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		wikiButton.addActionListener(this);
 
 		// A toolbar to hold all our buttons
-		WebPanel toolPanel = new WebPanel();
+		WebPanel toolPanel = new WebPanel(new FlowLayout());
 		toolPanel.add(aboutButton);
 		toolPanel.add(tutorialButton);
 		toolPanel.add(userguideButton);
@@ -133,9 +130,11 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		toolPanel.add(projectsiteButton);
 		toolPanel.add(wikiButton);
 		// toolPanel.add(discussionButton);
-
-		mainPane.add(browserPanel, BorderLayout.CENTER);
 		mainPane.add(toolPanel, BorderLayout.NORTH);
+			
+		browser = desktop.getBrowserJFX();
+		browserPanel = browser.getPanel();// .init();
+		mainPane.add(browserPanel, BorderLayout.CENTER);
 
 		setResizable(true);
 		setMaximizable(true);
@@ -228,11 +227,6 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 				browser.checkInputURLType(projectsiteURLstring);
 				browser.showFormattedURL();
 			});
-			/*
-			 * } else if (source == this.discussionButton) { Platform.runLater(()-> {
-			 * browser.setTextInputCache(discussionURLstring);
-			 * browser.inputURLType(discussionURLstring); browser.showURL(); });
-			 */
 		}
 	}
 

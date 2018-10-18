@@ -30,7 +30,7 @@ import javafx.application.Platform;
 import javafx.scene.control.SingleSelectionModel;
 
 import javax.swing.ImageIcon;
-
+import javax.swing.JInternalFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
@@ -152,14 +152,12 @@ public class MainDesktopPane extends WebDesktopPane
 	 * @param mainScene the main scene
 	 */
 	public MainDesktopPane(MainScene mainScene) {
-
 		this.mainScene = mainScene;
 
 		init();
 	}
 
 	public void init() {
-		// logger.info("init() is on " + Thread.currentThread().getName() + " Thread");
 		// Set background color to black
 		setBackground(Color.black);
 
@@ -207,8 +205,6 @@ public class MainDesktopPane extends WebDesktopPane
 
 		if (mainScene == null)
 			prepareAnnouncementWindow();
-
-		// logger.info("MainDesktopPane's init() is done ");
 	}
 
 	/**
@@ -252,19 +248,44 @@ public class MainDesktopPane extends WebDesktopPane
 	@Override
 	public void componentMoved(ComponentEvent e) {
 		logger.info("componentMoved()");
-		updateToolWindow();
+		if (mainScene == null) {
+			SwingUtilities.invokeLater(() -> 
+				updateToolWindow()
+			);
+		}
+		else {
+			SwingUtilities.invokeLater(() -> 
+				updateWebToolWindow()
+			);
+		}
 	}
 
 	@Override
 	public void componentShown(ComponentEvent e) {
-		logger.info("componentShown()");
-		WebInternalFrame[] frames = (WebInternalFrame[]) this.getAllFrames();
-		for (WebInternalFrame f : frames) {
-			// ((ToolWindow)f).update();
-			f.updateUI();
-			// SwingUtilities.updateComponentTreeUI(f);
-			f.validate();
-			f.repaint();
+//		logger.info("componentShown()");
+		if (mainScene == null) {
+			SwingUtilities.invokeLater(() -> {
+				JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
+				for (JInternalFrame f : frames) {
+					// ((ToolWindow)f).update();
+					f.updateUI();
+					// SwingUtilities.updateComponentTreeUI(f);
+					f.validate();
+					f.repaint();
+				}
+			});
+		}
+		else {
+			SwingUtilities.invokeLater(() -> {
+				WebInternalFrame[] frames = (WebInternalFrame[]) this.getAllFrames();
+				for (WebInternalFrame f : frames) {
+					// ((ToolWindow)f).update();
+					f.updateUI();
+					// SwingUtilities.updateComponentTreeUI(f);
+					f.validate();
+					f.repaint();
+				}
+			});
 		}
 	}
 
@@ -273,13 +294,21 @@ public class MainDesktopPane extends WebDesktopPane
 	}
 
 	public void updateToolWindow() {
-		logger.info("updateToolWindow()");
+//		logger.info("updateToolWindow()");
+		JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
+		for (JInternalFrame f : frames) {
+			f.updateUI();
+		}
+	}
+
+	public void updateWebToolWindow() {
+//		logger.info("updateToolWindow()");
 		WebInternalFrame[] frames = (WebInternalFrame[]) this.getAllFrames();
 		for (WebInternalFrame f : frames) {
 			f.updateUI();
 		}
 	}
-
+	
 	@Override
 	public Component add(Component comp) {
 		super.add(comp);

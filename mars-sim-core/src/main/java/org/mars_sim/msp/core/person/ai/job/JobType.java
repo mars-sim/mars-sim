@@ -61,11 +61,11 @@ public enum JobType {
 	
 	private String name;
 	
-	private static Set<JobType> jobSet = new HashSet<JobType>(17);
+	private static Set<JobType> jobSet = new HashSet<JobType>(numJobTypes);
 	
-	private static List<String> jobList = new ArrayList<String>(17);
+	private static List<String> jobList = new ArrayList<String>(numJobTypes);
 
-	private static List<String> editedJobList = new ArrayList<String>(16);
+	private static List<String> editedJobList = new ArrayList<String>(numJobTypes);
 
 	/** hidden constructor. */
 	private JobType(String name) {

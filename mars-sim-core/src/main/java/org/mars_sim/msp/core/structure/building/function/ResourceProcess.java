@@ -31,7 +31,7 @@ public class ResourceProcess implements Serializable {
 	private static Logger logger = Logger.getLogger(ResourceProcess.class.getName());
 
 	/** The work time required to toggle this process on or off. */
-	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 10D;
+	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 20D;
 	
 	private String name;
 	private Map<Integer, Double> maxInputResourceRates;
@@ -151,9 +151,9 @@ public class ResourceProcess implements Serializable {
 			toggleRunningWorkTime = 0D;
 			runningProcess = !runningProcess;
 			if (runningProcess) {
-				logger.fine(name + " turned on.");
+				logger.info(name + " turned on.");
 			} else {
-				logger.fine(name + " turned off.");
+				logger.info(name + " turned off.");
 			}
 		}
 	}

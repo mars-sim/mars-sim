@@ -153,6 +153,7 @@ public class BrowserJFX {
     	if (mainScene == null && ourGuide == null) {
     		ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
 	        Platform.runLater(() -> {
+//	    		createTopButtonBar();
 	        	createGUI();
 	            initJFX();
 	        });
@@ -174,12 +175,12 @@ public class BrowserJFX {
     	String guideURL = getClass().getResource(Msg.getString("doc.guide")).toExternalForm(); //$NON-NLS-1$
     	String aboutURL = getClass().getResource(Msg.getString("doc.about")).toExternalForm(); //$NON-NLS-1$
     	String tutorialURL = getClass().getResource(Msg.getString("doc.tutorial")).toExternalForm(); //$NON-NLS-1$
-    	String projectsiteURL = Msg.getString("url.projectsite"); //$NON-NLS-1$
+    	String projectsiteURL = Msg.getString("url.projectSite"); //$NON-NLS-1$
     	String wikiURL = Msg.getString("url.wiki"); //$NON-NLS-1$
     	String marspediaURL = Msg.getString("url.marspedia"); //$NON-NLS-1$
 		
     	JFXButton b0 = new JFXButton(Msg.getString("GuideWindow.button.about")); //$NON-NLS-1$
-    	b0.setPadding(new Insets(5,15,5,15));
+    	b0.setPadding(new Insets(5,25,5,25));
     	b0.setMinWidth(WIDTH+5);
     	b0.setTooltip(new Tooltip("About mars-sim"));
     	b0.setOnAction(e -> {
@@ -187,7 +188,7 @@ public class BrowserJFX {
         });
 
     	JFXButton b1 = new JFXButton(Msg.getString("GuideWindow.button.tutorial")); //$NON-NLS-1$
-    	b1.setPadding(new Insets(5,15,5,15));
+    	b1.setPadding(new Insets(5,25,5,25));
     	b1.setMinWidth(WIDTH+5);
     	b1.setTooltip(new Tooltip("Tutorial"));
     	b1.setOnAction(e -> {
@@ -195,7 +196,7 @@ public class BrowserJFX {
         });
     	
     	JFXButton b2 = new JFXButton(Msg.getString("GuideWindow.button.userguide")); //$NON-NLS-1$
-    	b2.setPadding(new Insets(5,15,5,15));
+    	b2.setPadding(new Insets(5,25,5,25));
     	b2.setMinWidth(WIDTH+5);
     	b2.setTooltip(new Tooltip("User Guide"));
     	b2.setOnAction(e -> {
@@ -203,7 +204,7 @@ public class BrowserJFX {
         });
     	
     	JFXButton b3 = new JFXButton(Msg.getString("GuideWindow.button.shortcuts")); //$NON-NLS-1$
-    	b3.setPadding(new Insets(5,15,5,15));
+    	b3.setPadding(new Insets(5,25,5,25));
     	b3.setMinWidth(WIDTH+5);
     	b3.setTooltip(new Tooltip("Shortcut Map"));
     	b3.setOnAction(e -> {
@@ -211,7 +212,7 @@ public class BrowserJFX {
         });
     	
     	JFXButton b4 = new JFXButton(Msg.getString("GuideWindow.button.projectsite")); //$NON-NLS-1$
-    	b4.setPadding(new Insets(5,15,5,15));
+    	b4.setPadding(new Insets(5,25,5,25));
     	b4.setMinWidth(WIDTH+5);
     	b4.setTooltip(new Tooltip("Project Site in GitHub"));
     	b4.setOnAction(e -> {
@@ -219,7 +220,7 @@ public class BrowserJFX {
         });
     	
     	JFXButton b5 = new JFXButton(Msg.getString("GuideWindow.button.wiki")); //$NON-NLS-1$
-    	b5.setPadding(new Insets(5,15,5,15));
+    	b5.setPadding(new Insets(5,25,5,25));
     	b5.setMinWidth(WIDTH+5);
     	b5.setTooltip(new Tooltip("mars-sim Wiki"));
     	b5.setOnAction(e -> {
@@ -227,7 +228,7 @@ public class BrowserJFX {
         });
  
     	JFXButton b6 = new JFXButton(Msg.getString("GuideWindow.button.marspedia")); //$NON-NLS-1$
-    	b6.setPadding(new Insets(5,15,5,15));
+    	b6.setPadding(new Insets(5,25,5,25));
     	b6.setMinWidth(WIDTH+5);
     	b6.setTooltip(new Tooltip("A Random Page from Marspedia"));
     	b6.setOnAction(e -> {
@@ -314,10 +315,7 @@ public class BrowserJFX {
 //            }
 //        });
 
-
-
         comboBox.setPromptText("History");
-        //comboBox.setPadding(new Insets(3, 3, 3, 3));
         comboBox.setMaxHeight(WIDTH);
         comboBox.setMinHeight(WIDTH);
         comboBox.setPrefHeight(WIDTH);
@@ -327,8 +325,6 @@ public class BrowserJFX {
         comboBox.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent ev) {
-            	//System.out.println("current index : " + history.getCurrentIndex());
-            	//System.out.println("selected index : " + ssm.getSelectedIndex());
                 int offset = ssm.getSelectedIndex() - history.getCurrentIndex();
                 history.go(offset);//ssm.getSelectedIndex());
                 readURLCombo();
@@ -344,8 +340,6 @@ public class BrowserJFX {
         reloadButton.setTooltip(new Tooltip("Reload this page"));
         reloadButton.setOnAction(e -> {
     		goLoad(tf.getText().trim());
-	    	//System.out.println("textInputCache : " + textInputCache);
-        	//System.out.println();
         });
 
         //backButton.setPadding(new Insets(0, 3, 0, 3));
@@ -373,7 +367,6 @@ public class BrowserJFX {
         //forwardButton.setGraphic(forward);
         forwardButton.setTooltip(new Tooltip("Go forward"));
         forwardButton.setOnAction(e -> {
-        	//System.out.println("forward");
         	//System.out.println("i : " + history.getCurrentIndex());
             engine.executeScript("history.forward()");
             int i = history.getCurrentIndex();
@@ -382,7 +375,6 @@ public class BrowserJFX {
 	    	if (i + 1 < size && size > 1)
 	    		textInputCache = entryList.get(i+1).getUrl();
             showFormattedURL();
-        	//System.out.println("i : " + history.getCurrentIndex());
         });
 
         entryList.addListener((Change<? extends Entry> c) -> {
@@ -520,7 +512,6 @@ public class BrowserJFX {
 		if (input != null && !input.isEmpty()) {
 			// if the address bar is not empty
 			Platform.runLater(() -> {
-            	//System.out.println("fireButtonGo");
             	//System.out.println("i : " + history.getCurrentIndex());
 				checkInputURLType(input);
             	//System.out.println("i : " + history.getCurrentIndex());

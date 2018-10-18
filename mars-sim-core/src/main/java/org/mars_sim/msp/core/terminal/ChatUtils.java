@@ -655,6 +655,8 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append(settlementCache + " : ");
 			responseText.append("See below.");
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
 			
 			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
 //					.sorted(Comparator.reverseOrder())
@@ -683,7 +685,9 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append(settlementCache + " : ");
 			responseText.append("See below.");
-			
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+
 			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
 					.sorted((p1, p2)-> p1.getMind().getJob().getName(p1.getGender()).compareTo(p2.getMind().getJob().getName(p2.getGender())))
 					.collect(Collectors.toList());
