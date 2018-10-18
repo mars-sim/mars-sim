@@ -88,7 +88,7 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
             @Override
             public void changed(ObservableValue ov, Object t, Object t1) {
             	
-                // 2016-06-16 Added checking if (listview != null && t1 != null)
+                // Check if (listview != null && t1 != null)
             	if (listview != null && t1 != null) {
 	                if (listview.getItems().size() > 0 && listview.getItems() != null) {
 	                    showPopup();
@@ -117,10 +117,8 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
                     @Override
                     public void updateItem(Object item, boolean empty) {
                         super.updateItem(item, empty);
-                        //System.out.println("calling updateItem() from under listview.setCellFactory()");
                         if (item != null) {                   	
                         	//if (text.getFilterMode()) {     
-                                //System.out.println("now setText(item.toString())");
                                 setText(item.toString());
                         	//}                           
                         }
@@ -145,7 +143,6 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
                                 //second check...
                                 if (listview.getItems().size() != data.size()) {              	
                                 	//if (text.getFilterMode()) {     
-	                                	//System.out.println("Calling invalidated(). temporaryTxt.length() is <= 0. Calling temporaryTxt = textbox.getText()");
 	                                    temporaryTxt = textbox.getText();
                                 	//}
                                 }
@@ -202,41 +199,42 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
 
     }
 
-    /**
-     * **************************************************************
-     * This is recursive function which gives the sum of X and Y position of all
-     * it's Parent and give the exact position where Popup needs to be visibled.
-     * <p>
-     * @param p javafx.scene.Parent
-     * @param w double
-     * @param h double
-     * @return
-     * <a href="http://download.oracle.com/javafx/2.0/api/javafx/geometry/Dimension2D.html">Dimension2D</a>
-     * ***************************************************************
-     */
-    /* public Dimension2D getDimension(Parent p, double w, double h){
-     * if(getScene().getRoot() == p)
-     * return new Dimension2D(w,h);
-     * else{
-     * return getDimension(p.getParent(),w+p.getLayoutX()+p.getTranslateX(),h+p.getLayoutY()+p.getTranslateY());
-     * }
-     * } */
-    //@Override
-   /* public void invalidated(ObservableValue ov) {
-     * if(ov.getValue().toString().length()<=0){
-     * temporaryTxt = "";
-     * if(autofillTextbox.getFilterMode()){ *
-     * //listview.getItems().clear();
-     * //listview.getItems().addAll(data);
-     * listview.setItems(data);
-     * showPopup();
-     *
-     * }
-     * else{
-     * hidePopup();
-     * }
-     * }
-     * } */
+//    /**
+//     * **************************************************************
+//     * This is recursive function which gives the sum of X and Y position of all
+//     * it's Parent and give the exact position where Popup needs to be visibled.
+//     * <p>
+//     * @param p javafx.scene.Parent
+//     * @param w double
+//     * @param h double
+//     * @return
+//     * <a href="http://download.oracle.com/javafx/2.0/api/javafx/geometry/Dimension2D.html">Dimension2D</a>
+//     * ***************************************************************
+//     */
+//    /* public Dimension2D getDimension(Parent p, double w, double h){
+//     * if(getScene().getRoot() == p)
+//     * return new Dimension2D(w,h);
+//     * else{
+//     * return getDimension(p.getParent(),w+p.getLayoutX()+p.getTranslateX(),h+p.getLayoutY()+p.getTranslateY());
+//     * }
+//     * } */
+//    //@Override
+//   /* public void invalidated(ObservableValue ov) {
+//     * if(ov.getValue().toString().length()<=0){
+//     * temporaryTxt = "";
+//     * if(autofillTextbox.getFilterMode()){ *
+//     * //listview.getItems().clear();
+//     * //listview.getItems().addAll(data);
+//     * listview.setItems(data);
+//     * showPopup();
+//     *
+//     * }
+//     * else{
+//     * hidePopup();
+//     * }
+//     * }
+//     * } */
+	
     /**
      * ********************************************************
      * Selects the current Selected Item from the list and the content of that
@@ -246,7 +244,6 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
     public void selectList() {
         Object i = listview.getSelectionModel().getSelectedItem();
         if (i != null) {
-        	//System.out.println("calling selectList() and setText((listview.getSelectionModel().getSelectedItem().toString())");
             textbox.setText(listview.getSelectionModel().getSelectedItem().toString());
             listview.getItems().clear();
             textbox.requestFocus();
@@ -278,8 +275,7 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
              * -------------------------------- */
             KeyEvent t = (KeyEvent) evt;
             if (t.getSource() == textbox) {         	
-            	 //System.out.println("AutoFillTextBoxSkin's handle() : t.getCode() is " + t.getCode());        
-            	 
+       	 
             	if (t.getCode() == KeyCode.BACK_SPACE && textbox.isFocused()) {
             		//textbox.setText("");
             		textbox.clear();
@@ -292,15 +288,13 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
                     }
                 }
             	
-            	//2016-06-16 Added checking for whitespaces
+            	// Check for whitespaces
             	else if (t.getCode() == KeyCode.ENTER) {
               	                 	
                     String text = textbox.getText();
     	            if (text != "" && text != null && !text.trim().isEmpty()) {
-    	            	//System.out.println("not empty");
     	            }
     	            else {
-    	            	//System.out.println("is empty");
     	            	textbox.clear();
     	            }                   
                 }
@@ -318,7 +312,7 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
             if (t.getSource() == listview) {
                 if (t.getCode() == KeyCode.ENTER) {
                 	  
-                	//2016-06-16 Added checking for whitespaces
+                	// Check for whitespaces
                     String text = textbox.getText();
     	            if (text != "" && text != null && !text.trim().isEmpty()) {
     	            	selectList();
@@ -332,9 +326,7 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
                     if (listview.getSelectionModel().getSelectedIndex() == 0) {
                         textbox.requestFocus();
                     }
-                }/* else if(){
-                 *
-                 * } */
+                }
 
             }
         } else if (evt.getEventType() == MouseEvent.MOUSE_RELEASED) {
@@ -347,13 +339,14 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
         }
     }
 
-    /* protected void layoutChildren() {
-     * double width = this.getWidth();
-     * double height = this.getHeight();
-     * textbox.resize(width, height);
-     * positionInArea(textbox, 0.0, 0.0, width, height, 0.0d, HPos.CENTER, VPos.CENTER);
-     *
-     * } */
+//    /* protected void layoutChildren() {
+//     * double width = this.getWidth();
+//     * double height = this.getHeight();
+//     * textbox.resize(width, height);
+//     * positionInArea(textbox, 0.0, 0.0, width, height, 0.0d, HPos.CENTER, VPos.CENTER);
+//     *
+//     * } */
+    
     /**
      * A Popup containing Listview is trigged from this function This function
      * automatically resize it's height and width according to the width of
@@ -425,7 +418,7 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
                     }
                 }
                 
-                // 2016-06-16 Added checking listview.getItems() != null
+                // Check listview.getItems() != null
                 //if (!listview.getItems().isEmpty()) {// != null) {
 	                if (listview.getItems().containsAll(list)
 	                        && listview.getItems().size() == list.size() 

@@ -26,6 +26,7 @@ root {
 }
 */
 .autofill-input {
+	-fx-font: 11pt 'monospace';
     -fx-text-fill: -fx-text-inner-color;
     -fx-highlight-fill: derive(-fx-control-inner-background,-20%);
     -fx-highlight-text-fill: -fx-text-inner-color;

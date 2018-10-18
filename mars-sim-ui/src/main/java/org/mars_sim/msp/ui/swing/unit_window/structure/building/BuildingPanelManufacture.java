@@ -152,7 +152,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		add(interactionPanel, BorderLayout.SOUTH);
 		// Create new manufacture process selection.
 		processComboBoxCache = getAvailableProcesses();
-		processComboBox = new JComboBoxMW();
+		processComboBox = new JComboBoxMW<>();
 //		processComboBox.addItem(processComboBoxCache);
 		
 		Iterator<ManufactureProcessInfo> k = processComboBoxCache.iterator();

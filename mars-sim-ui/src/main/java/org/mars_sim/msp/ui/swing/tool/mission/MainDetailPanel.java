@@ -976,7 +976,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			}
 		}
 
-		private int getIndex(Collection col, Object obj) {
+		private int getIndex(Collection<?> col, Object obj) {
 			int result = -1;
 			Object array[] = col.toArray();
 			int size = array.length;

@@ -7,8 +7,8 @@
     -fx-background-radius: 3px, 3px, 2px, 1px;
 
     -fx-text-fill: white; 
-    -fx-alignment: center;
-    -fx-content-display: center;
+    -fx-alignment: RIGHT;
+    -fx-content-display: RIGHT;
     -fx-font-weight: bold;
     -fx-font-size: 11px;
     -fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
@@ -32,8 +32,8 @@
 /*    -fx-background-color: -fx-control-inner-background;*/
     -fx-background-insets: 1 0 1 1;
     -fx-background-radius: 2 0 0 2;
-    -fx-alignment: center;
-    -fx-content-display: center;
+    -fx-alignment: RIGHT;
+    -fx-content-display: RIGHT;
     
     -fx-text-fill: white; 
 

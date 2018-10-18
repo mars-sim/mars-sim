@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.ui.javafx.autofill;
 
-
-//import javafx.event.ActionEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -40,7 +38,6 @@ import javafx.scene.control.TextField;
  * @see <a href="http://www.blog.ngopal.com.np"> Blog </a>
  * <p>
  */
-@SuppressWarnings("restriction")
 public class AutoFillTextBox<T> extends Control implements
         AutoFillTextBoxFactory<T> {
 
@@ -82,21 +79,20 @@ public class AutoFillTextBox<T> extends Control implements
         listview = new ListView();
         limit = 5;
         filterMode = false;
-/*
+
         //setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
-        //setMinHeight(24);
-	    clearButton = new Button();
-	    clearButton.setId("button-clear");
-	 	clearButton.setVisible(false);
-	    getChildren().add(clearButton);
-	    clearButton.setOnAction((ActionEvent actionEvent) -> {
-	        textbox.setText("");
-	        textbox.requestFocus();
-	    });
-	    textbox.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-	    	clearButton.setVisible(textbox.getText().length() != 0);
-	    });
-*/  
+//        //setMinHeight(24);
+//	    clearButton = new Button();
+//	    clearButton.setId("button-clear");
+//	 	clearButton.setVisible(false);
+//	    getChildren().add(clearButton);
+//	    clearButton.setOnAction((ActionEvent actionEvent) -> {
+//	        textbox.setText("");
+//	        textbox.requestFocus();
+//	    });
+//	    textbox.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+//	    	clearButton.setVisible(textbox.getText().length() != 0);
+//	    });
         listen();
 
     }

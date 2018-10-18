@@ -143,7 +143,7 @@ public class SettlementTableModel extends AbstractTableModel {
 				info.numOfRobots = s.getNumOfRobots() + "";
 				info.latitude = s.getLatitudeStr();
 				info.longitude = s.getLongitudeStr();
-				info.hasMaxMSD = new Boolean(true); //s.getMaxMSDStr();
+				info.hasMaxMSD = true;//new Boolean(true); //s.getMaxMSDStr();
 				info.maxMSD = "1"; // TODO:
 
 				settlements.add(info);

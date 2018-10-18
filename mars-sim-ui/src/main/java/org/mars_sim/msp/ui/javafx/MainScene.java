@@ -1268,7 +1268,6 @@ public class MainScene implements ClockListener {
 		// speedBtn.getStyleClass().add("menu-button");//"button-raised");
 		speedIcon = new IconNode(FontAwesome.CLOCK_O);
 		speedIcon.setIconSize(20);
-		// speedIcon.setFill(Color.YELLOW);
 		// speedIcon.setStroke(Color.WHITE);
 
 		speedBtn.setMaxSize(20, 20);
@@ -1321,8 +1320,9 @@ public class MainScene implements ClockListener {
 		timeRatioSpinner = new Spinner<Integer>();
 		// timeRatioSpinner.getStyleClass().clear();
 		timeRatioSpinner.getStyleClass().add(getClass().getResource(SPINNER_CSS).toExternalForm());
+		//timeRatioSpinner.setStyle("spinner");
+		timeRatioSpinner.getStyleClass().add("spinner");
 		timeRatioSpinner.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-
 		// Spinner.STYLE_CLASS_ARROWS_ON_RIGHT_HORIZONTAL
 		// Spinner.STYLE_CLASS_ARROWS_ON_LEFT_VERTICAL
 		// Spinner.STYLE_CLASS_ARROWS_ON_LEFT_HORIZONTAL
@@ -2822,11 +2822,11 @@ public class MainScene implements ClockListener {
 					new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.cw_yellow"))))); //$NON-NLS-1$
 			recenterBtn.setGraphic(new ImageView(
 					new Image(this.getClass().getResourceAsStream(Msg.getString("img.recenter_yellow"))))); //$NON-NLS-1$
-			speedIcon.setFill(Color.YELLOW);
+			speedIcon.setFill(Color.WHITE);
 			speedBtn.setGraphic(speedIcon);
-			marsNetIcon.setFill(Color.YELLOW);
+			marsNetIcon.setFill(Color.WHITE);
 			marsNetBtn.setGraphic(marsNetIcon);
-			soundIcon.setFill(Color.YELLOW);
+			soundIcon.setFill(Color.WHITE);
 			soundBtn.setGraphic(soundIcon);
 			tabPane.getStylesheets().add(getClass().getResource(JFX_ORANGE_CSS).toExternalForm());
 			tabPane.getStyleClass().add("jfx-tab-pane");
@@ -3197,39 +3197,6 @@ public class MainScene implements ClockListener {
 	public boolean isMainSceneDone() {
 		return isMainSceneDoneLoading;
 	}
-
-	/**
-	 * Create a new simulation.
-	 * 
-	 * public void newSimulation() { if ((newSimThread == null) ||
-	 * !newSimThread.isAlive()) { newSimThread = new
-	 * Thread(Msg.getString("MainWindow.thread.newSim")) { //$NON-NLS-1$
-	 * 
-	 * @Override public void run() { Platform.runLater(() -> {
-	 *           newSimulationProcess(); }); } }; newSimThread.start(); } else {
-	 *           newSimThread.interrupt(); }
-	 * 
-	 *           }
-	 */
-
-	/**
-	 * Performs the process of creating a new simulation.
-	 * 
-	 * private void newSimulationProcess() { Alert alert = new
-	 * Alert(AlertType.CONFIRMATION); alert.setTitle("Starting new sim");
-	 * alert.setHeaderText(Msg.getString("MainScene.new.header"));
-	 * alert.setContentText(Msg.getString("MainScene.new.content")); ButtonType
-	 * buttonTypeOne = new ButtonType("Save on Exit"); // ButtonType buttonTypeTwo =
-	 * new ButtonType("End Sim"); ButtonType buttonTypeCancel = new ButtonType("Back
-	 * to Sim");// , ButtonData.CANCEL_CLOSE);
-	 * alert.getButtonTypes().setAll(buttonTypeOne, // buttonTypeTwo,
-	 * buttonTypeCancel); Optional<ButtonType> result = alert.showAndWait();
-	 * 
-	 * if (result.get() == buttonTypeOne) { saveOnExit();
-	 * 
-	 * } else if (result.get() == buttonTypeCancel) {// !result.isPresent()) return;
-	 * } }
-	 */
 
 	/**
 	 * Save the current simulation. This displays a FileChooser to select the

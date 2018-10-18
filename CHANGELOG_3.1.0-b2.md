@@ -29,17 +29,18 @@ Copyright (C) 2018 Scott Davis
 
 3. Enable the use of Java 11 SE for running mars-sim.
 
-4. Add commander proposals (experimental).
+4. Add commander's approval on every mission.
 
 5. Track/record settler's sleep time on each sol.
 
-6. Add limited terminal interactivity in headless mode.
+6. Expand chat capability in headless mode.
 
 
 
 ### UI IMPROVEMENT :
 
 1. Limit billboard x & y location to within the main window.
+
 
 
 ### FIXES :
@@ -51,6 +52,9 @@ Copyright (C) 2018 Scott Davis
 3. Fix the path for notifier.css in QNotification.
 
 4. Enable year 0 (orbit 0) in resupply or new arriving settlement mission.
+
+5. Fix gaining mechanical skill in garage.
+
 
 
 -----------------------------------------------------------------------------------------

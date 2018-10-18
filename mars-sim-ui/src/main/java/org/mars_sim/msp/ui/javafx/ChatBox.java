@@ -89,15 +89,15 @@ public class ChatBox extends BorderPane {
 		    @Override
 		    public void changed(ObservableValue<?> observable, Object oldValue,
 		            Object newValue) {
-		    	textArea.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
-		        //use Double.MIN_VALUE to scroll to the top
+		    	textArea.setScrollTop(Double.MAX_VALUE); 
+		    	// Note : this will scroll to the bottom
+		        // while Double.MIN_VALUE to scroll to the top
 		    }
 		});
 		// textArea.setPadding(new Insets(2, 0, 2, 0));
 		// textArea.setPrefWidth(560);
 		textArea.setEditable(false);
 		textArea.setWrapText(true);
-		// textArea.setTooltip(new Tooltip ("Conversations on MarsNet"));
 		mainScene.setQuickToolTip(textArea, "Conversations on MarsNet");
 		// ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be
 		// heading toward the Alpha Base" + System.lineSeparator());

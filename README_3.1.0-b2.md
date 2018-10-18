@@ -78,7 +78,7 @@ following attribute value in simulation.xml :
 
 	<autosave-interval value="15.0" />
 
-D. Headless Jar
+D. Headless Edition
 
 mars-sim is designed with a high level of autonomy. It's capable
 of running the entire simulation on its own. Therefore, one may 

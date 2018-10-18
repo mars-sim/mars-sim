@@ -15,7 +15,6 @@ import javafx.scene.control.TextField;
  * @author Narayan G. Maharjan
  * @see <a href="http://www.blog.ngopal.com.np"> Blog </a>
  */
-@SuppressWarnings("restriction")
 public interface AutoFillTextBoxFactory<T> {
     
     /**

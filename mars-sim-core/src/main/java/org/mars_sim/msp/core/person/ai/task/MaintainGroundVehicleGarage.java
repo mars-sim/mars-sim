@@ -115,9 +115,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 				Settlement settlement = null;
 
 				if (person != null)
-					person.getSettlement();
+					settlement = person.getSettlement();
 				else
-					robot.getSettlement();
+					settlement = robot.getSettlement();
 
 				Iterator<Building> j = settlement.getBuildingManager()
 						.getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE).iterator();
@@ -209,9 +209,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		// Add repair parts if necessary.
 		Inventory inv = null;
 		if (person != null) {
-			person.getTopContainerUnit().getInventory();
+			inv = person.getTopContainerUnit().getInventory();
 		} else {
-			robot.getTopContainerUnit().getInventory();
+			inv = robot.getTopContainerUnit().getInventory();
 		}
 
 		if (Maintenance.hasMaintenanceParts(inv, vehicle)) {
@@ -242,9 +242,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		int mechanicSkill = 0;
 
 		if (person != null) {
-			person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		} else {
-			robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			mechanicSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		}
 
 		if (mechanicSkill == 0) {
@@ -293,12 +293,12 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		double newPoints = time / 100D;
 		int experienceAptitude = 0;
 		if (person != null) {
-			person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+			experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
 			person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
 		} else {
-			robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
+			experienceAptitude = robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
 			robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
@@ -317,9 +317,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		// Mechanic skill modification.
 		int skill = 0;
 		if (person != null) {
-			person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		} else {
-			robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		}
 		if (skill <= 3)
 			chance *= (4 - skill);
@@ -485,9 +485,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		boolean minTime = (effectiveTime >= 1000D);
 		boolean enoughParts = false;
 		if (person != null) {
-			Maintenance.hasMaintenanceParts(person, vehicle);
+			enoughParts = Maintenance.hasMaintenanceParts(person, vehicle);
 		} else {
-			Maintenance.hasMaintenanceParts(robot, vehicle);
+			enoughParts = Maintenance.hasMaintenanceParts(robot, vehicle);
 		}
 		if (!tethered && !hasMalfunction && minTime && enoughParts) {
 			result = effectiveTime;
@@ -499,9 +499,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;
 		if (person != null) {
-			person.getMind().getSkillManager();
+			manager = person.getMind().getSkillManager();
 		} else {
-			robot.getBotMind().getSkillManager();
+			manager = robot.getBotMind().getSkillManager();
 		}
 
 		return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
