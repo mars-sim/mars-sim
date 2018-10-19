@@ -250,7 +250,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
-                .withDefaultValue(4)
+                .withDefaultValue(5)
                 .withMinVal(0)
                 .withMaxVal(16)//defaultValueSupplier.get())
                 .read(prompt));
@@ -261,7 +261,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
-                .withDefaultValue(4)
+                .withDefaultValue(5)
                 .withMinVal(0)
                 .withMaxVal(27)//defaultValueSupplier.get())
                 .read(prompt));

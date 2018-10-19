@@ -1627,12 +1627,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public String getMissionDescription() {
 		Mission m = null;
-		if (getMind().getMission() != null) {
-			m = getMind().getMission();
+		if (mind.getMission() != null) {
+			m = mind.getMission();
 			return m.getDescription();
 		}
 		else {
-			return "";
+			return "None";
 		}
 	}
 	

@@ -681,7 +681,7 @@ public class ChatUtils {
 		
 		else if (text.contains("job")
 				|| text.contains("career")) {
-			questionText = YOU_PROMPT + "What are the jobs ?";
+			questionText = YOU_PROMPT + "What is everybody's job ?";
 			responseText.append(System.lineSeparator());
 			responseText.append(settlementCache + " : ");
 			responseText.append("See below.");
