@@ -21,6 +21,8 @@ import java.util.function.BiConsumer;
  */
 public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	   
+	private boolean leaveSystem = false;
+	
 	private SwingTextTerminal terminal;
 	
     public static void main(String[] args) {
@@ -63,12 +65,12 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	        // Settlement
 	        // Vehicle
 	     
-	        List<String> names = CollectionUtils.createAutoCompleteData();//.createSettlerNames();
+	        List<String> names = CollectionUtils.createAutoCompleteData();
 //	        String[] array = names.toArray(new String[names.size()]);
 	        boolean quit = false;
 	          
 	        while (!quit) {
-	        	String prompt = "MarsNet System >";
+	        	String prompt = "Connected with MarsNet >";
 
 	        	if (ChatUtils.personCache != null)
 	        		prompt = "Connected with " + ChatUtils.personCache.toString() +" >";
@@ -86,18 +88,18 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 				if (ChatUtils.personCache == null && ChatUtils.robotCache == null 
 						&& ChatUtils.settlementCache == null && ChatUtils.vehicleCache == null) {	
 					// Call parse() to obtain a new value of unit
-					parse(Party.party);
+					askSystem(Party.party);
 				} 
 				
 				else {
-					// Call ask() to further engage the conversion
-					ask(Party.party);
-					// Note : if all _Cache are null, then leave
-					// ask() and go back to parse()
+					// Connect to a certain party
+					askParty(Party.party);
+					// Note : if all xxx_Cache are null, then leave
+					// askParty() and go back to askSystem()
 				}
 				
-		        
-				if (ChatUtils.isQuitting(Party.party)) {
+		        // if choosing to quit the chat mode
+				if (leaveSystem && ChatUtils.isQuitting(Party.party)) {
 					quit = true;
 					ChatUtils.setConnectionMode(-1);
 				}				
@@ -110,7 +112,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	 * 
 	 * @param input text
 	 */
-    public void parse(String text) {
+    public void askSystem(String text) {
 
 		String responseText = "";
 		String questionText = "";
@@ -121,7 +123,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 			String[] txt = ChatUtils.farewell(ChatUtils.SYSTEM, false);
 			questionText = txt[0];
 			responseText = txt[1];
-
+			leaveSystem = true;
 			terminal.printf(System.lineSeparator());
 			
 		}
@@ -148,10 +150,11 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	 * 
 	 * @param text
 	 */
-	public void ask(String text) { 
+	public void askParty(String text) { 
 		String questionText = null;
 		String responseText = "";
-				
+		leaveSystem = false;
+		
         //ChatUtils.setConnectionMode(0);
 		String[] ss = ChatUtils.askQuestion(text);
 		
@@ -174,7 +177,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 
     @Override
     public String toString() {
-        return "Chat with a party";
+        return "Enter the Chat Mode";
     }
     
     private static class Party {

@@ -316,10 +316,7 @@ public class Simulation implements ClockListener, Serializable {
 	/**
 	 * Initialize intransient data in the simulation.
 	 */
-	private void initializeIntransientData(int timeRatio) {
-		// logger.info("Simulation's initializeIntransientData() is on " +
-		// Thread.currentThread().getName() + " Thread");
-		
+	private void initializeIntransientData(int timeRatio) {		
 		malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
 		mars = new Mars();
 		missionManager = new MissionManager();
@@ -333,7 +330,6 @@ public class Simulation implements ClockListener, Serializable {
 		scientificStudyManager = new ScientificStudyManager();
 		transportManager = new TransportManager();
 
-		// System.out.println("running Simulation's initializeIntransientData()");
 		// ResourceUtil.getInstance().initializeNewSim();
 		// ResourceUtil.printID();
 		

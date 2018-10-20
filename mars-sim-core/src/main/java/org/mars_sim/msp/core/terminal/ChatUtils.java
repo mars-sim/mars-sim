@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
@@ -549,54 +550,120 @@ public class ChatUtils {
 		else if (text.toLowerCase().contains("mission") || text.toLowerCase().contains("trip")
 				|| text.toLowerCase().contains("excursion")) {
 			questionText = YOU_PROMPT + "What missions are on-going at this moment? ";
-			responseText.append(settlementCache + " : ");
-			responseText.append("Here's the mission roster.");
-			responseText.append(System.lineSeparator());
+//			responseText.append(settlementCache + " : ");
+//			responseText.append("Here's the mission roster.");
+//			responseText.append(System.lineSeparator());
 			
-			Map<String, List<Person>> map =
-					settlementCache.getAllAssociatedPeople().stream()
-					.collect(Collectors.groupingBy(Person::getMissionDescription));
-								
-			for (Entry<String, List<Person>> entry : map.entrySet()) {
-				String mission = entry.getKey();
-				List<Person> plist = entry.getValue();
+			List<Mission> missions = sim.getMissionManager().getMissions();
 			
-				if (mission != null) {
-					responseText.append(System.lineSeparator());
-					responseText.append(" ");			
-					responseText.append(mission);
-					responseText.append(System.lineSeparator());
-					responseText.append(" ");
-					int num = mission.length() + 2;
-					if (num > 0) {
-						for (int i=0; i<num; i++) {
-							responseText.append("-");
-						}
-					}
-					responseText.append(System.lineSeparator());
-									
-				}
-				else {
-					responseText.append(System.lineSeparator());
-					responseText.append(" ");			
-					responseText.append("None");
-					responseText.append(System.lineSeparator());
-					responseText.append(" ");
-					int num = 6;
-					if (num > 0) {
-						for (int i=0; i<num; i++) {
-							responseText.append("-");
-						}
-					}
-					responseText.append(System.lineSeparator());
-				}
-				
-				for (Person p : plist) {
-					responseText.append("  -  ");
-					responseText.append(p.getName());
-					responseText.append(System.lineSeparator());
-				}
+			if (missions.isEmpty()) {
+				responseText.append(settlementCache + " : ");
+				responseText.append("can't find any missions right now.");
+				responseText.append(System.lineSeparator());
+				responseText.append(System.lineSeparator());
+
+//				responseText.append(" ");
+//				int num = 6;
+//				if (num > 0) {
+//					for (int i=0; i<num; i++) {
+//						responseText.append("-");
+//					}
+//				}
+//				responseText.append(System.lineSeparator());
 			}
+			
+			else {
+				responseText.append(settlementCache + " : ");
+				responseText.append("Here's the mission roster.");
+				responseText.append(System.lineSeparator());
+				responseText.append(System.lineSeparator());
+
+				for (Mission mission : missions) {
+					
+					Collection<MissionMember> members = mission.getMembers();
+					//Collections.sort(members);
+					
+					Person startingPerson = mission.getStartingMember();
+					members.remove(startingPerson);
+					
+					List<MissionMember> plist = new ArrayList<>(members);			
+					
+					if (mission != null) {
+						responseText.append(System.lineSeparator());
+						responseText.append(" ");			
+						responseText.append(mission);
+						responseText.append(System.lineSeparator());
+						responseText.append(" ");
+						int num = mission.getName().length() + 2;
+						if (num > 0) {
+							for (int i=0; i<num; i++) {
+								responseText.append("-");
+							}
+						}
+						
+						responseText.append(System.lineSeparator());
+										
+					}
+				
+					responseText.append("  -  ");
+					responseText.append(startingPerson.getName());
+					responseText.append(" (The Lead)");
+					responseText.append(System.lineSeparator());
+					
+					for (MissionMember p : plist) {
+//						if ((Person)p != startingPerson) {
+							responseText.append("  -  ");
+							responseText.append(p.getName());
+							responseText.append(System.lineSeparator());
+//						}
+					}			
+				}		
+			}
+			
+//			Map<String, List<Person>> map =
+//					settlementCache.getAllAssociatedPeople().stream()
+//					.collect(Collectors.groupingBy(Person::getMissionDescription));
+//								
+//			for (Entry<String, List<Person>> entry : map.entrySet()) {
+//				String mission = entry.getKey();
+//				List<Person> plist = entry.getValue();
+			
+//				if (mission != null) {
+//					responseText.append(System.lineSeparator());
+//					responseText.append(" ");			
+//					responseText.append(mission);
+//					responseText.append(System.lineSeparator());
+//					responseText.append(" ");
+//					int num = mission.length() + 2;
+//					if (num > 0) {
+//						for (int i=0; i<num; i++) {
+//							responseText.append("-");
+//						}
+//					}
+//					responseText.append(System.lineSeparator());
+//									
+//				}
+//				else {
+//					responseText.append(System.lineSeparator());
+//					responseText.append(" ");			
+//					responseText.append("None");
+//					responseText.append(System.lineSeparator());
+//					responseText.append(" ");
+//					int num = 6;
+//					if (num > 0) {
+//						for (int i=0; i<num; i++) {
+//							responseText.append("-");
+//						}
+//					}
+//					responseText.append(System.lineSeparator());
+//				}
+//				
+//				for (Person p : plist) {
+//					responseText.append("  -  ");
+//					responseText.append(p.getName());
+//					responseText.append(System.lineSeparator());
+//				}
+//			}
 		}
 		
 		else if (text.toLowerCase().contains("where")
@@ -1570,7 +1637,7 @@ public class ChatUtils {
 	}
 
 	/**
-	 * Processes a question and return an answer regarding an unit
+	 * Processes the question and return the answer regarding an unit
 	 * 
 	 * @param text
 	 * @return an array of String
@@ -1628,6 +1695,7 @@ public class ChatUtils {
 				if (settlementCache != null || vehicleCache != null) {
 					responseText.append(" is disconnected from the line.");
 				}
+				
 				else {
 					int rand1 = RandomUtil.getRandomInt(1);
 	
@@ -1637,7 +1705,6 @@ public class ChatUtils {
 						responseText.append(" just hung up the line.");
 				}
 				
-
 				// set personCache and robotCache to null so as to quit the conversation
 				personCache = null;
 				robotCache = null;
@@ -1670,6 +1737,11 @@ public class ChatUtils {
 		// Case 1: ask about a particular settlement
 		else if (settlementCache != null) {
 
+			personCache = null;
+			robotCache = null;
+			//settlementCache = null;
+			vehicleCache = null;
+			
 			if (isInteger(text, 10)) {
 
 				int num = Integer.parseUnsignedInt(text, 10);
@@ -1683,10 +1755,6 @@ public class ChatUtils {
 			}
 
 			else {
-				personCache = null;
-				robotCache = null;
-				//settlementCache = null;
-				vehicleCache = null;
 				
 				String[] ans = askSettlementStr(text, name);
 
@@ -1976,15 +2044,9 @@ public class ChatUtils {
 			return responseText.toString();
 		}
 
-		else if (len >= 5 && text.substring(0, 5).equalsIgnoreCase("hello")
-				|| len >= 4 && text.substring(0, 4).equalsIgnoreCase("helo")) {
-
+		else if (len >= 5 && text.substring(0, 5).equalsIgnoreCase("hello")) {
 			if (len > 5) {
 				text = text.substring(5, len);
-				text = text.trim();
-				proceed = true;
-			} else if (len > 4) {
-				text = text.substring(4, len);
 				text = text.trim();
 				proceed = true;
 			} else {
