@@ -58,7 +58,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	private static final double STRESS_MODIFIER = .25D;
 	
 	/** Task phases. */
-	private static final TaskPhase TOGGLE_PROCESS = new TaskPhase(Msg.getString("Task.phase.toggleProcess")); //$NON-NLS-1$
+	private static final TaskPhase TOGGLING = new TaskPhase(Msg.getString("Task.phase.toggleProcess")); //$NON-NLS-1$
 	private static final TaskPhase FINISHED = new TaskPhase(Msg.getString("Task.phase.toggleProcess.finished")); //$NON-NLS-1$
 	
 	private static final String OFF = "off";
@@ -67,6 +67,9 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	// Data members
 	/** True if process is to be turned on, false if turned off. */
 	private boolean toBeToggledOn;
+	/** True if the finished phase of the process has been completed. */
+	private boolean finished = false;
+
 	/** True if toggling process is EVA operation. */
 //	private boolean needEVA;
 	
@@ -183,11 +186,11 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 //			}
 
-				addPhase(TOGGLE_PROCESS);
+				addPhase(TOGGLING);
 				addPhase(FINISHED);
 				
 	//			if (!needEVA) {
-					setPhase(TOGGLE_PROCESS);
+					setPhase(TOGGLING);
 	//			}
 	        }
 	        else
@@ -429,7 +432,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
-	private double toggleProcessPhase(double time) {
+	private double togglingPhase(double time) {
 
 //		if (resourceProcessBuilding != null) {
 //			process = getResourceProcess(resourceProcessBuilding);
@@ -467,7 +470,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		// Add experience points
 		addExperience(time);
 
-		// Check for one last time if the process has already been completed by another person.
+		// Check if the process has already been completed by another person.
 		if (process.isProcessRunning() == toBeToggledOn) {
 //			System.out.println("go to the finished phase");
 			setPhase(FINISHED);
@@ -478,10 +481,12 @@ public class ToggleResourceProcess extends Task implements Serializable {
 //			}
 		}
 
-		// Check if an accident happens during toggle process.
-		checkForAccident(time);
-
-		return time * .1;
+		// Check if an accident happens during the manual toggling.
+		if (destination == resourceProcessBuilding) {
+			checkForAccident(time);
+		}
+		
+		return 0;
 	}
 
 	/**
@@ -491,27 +496,30 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	protected double finishedPhase(double time) {
-//		System.out.println("At the finished phase");
-		Settlement s = person.getSettlement(); 	
 		
-		String toggle = OFF;
-		if (toBeToggledOn) {
-			toggle = ON;
+		if (!finished) {
+			Settlement s = person.getSettlement(); 	
+			
+			String toggle = OFF;
+			if (toBeToggledOn) {
+				toggle = ON;
+			}
+	
+			if (destination == resourceProcessBuilding) {
+				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+						"[" + s.getName() + "] " + person.getName() + " at " + destination.getNickName() 
+						+ " manually turned the " + process.getProcessName()  + " " + toggle + ".", null);
+			}
+			else {
+				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+						"[" + s.getName() + "] " + person.getName() + " at " + destination.getNickName() 
+					+ " gained remote access to the " + process.getProcessName() 
+					+ " of " + resourceProcessBuilding.getNickName() + " and turned it " + toggle + ".", null);
+			}
+			// Only need to run the finished phase once and for all
+			finished = true;
 		}
-
-		if (destination == resourceProcessBuilding) {
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					"[" + s.getName() + "] " + person.getName() + " at " + destination.getNickName() 
-					+ " turned the " + process.getProcessName()  + " " + toggle + ".", null);
-		}
-		else {
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					"[" + s.getName() + "] " + person.getName() + " at " + destination.getNickName() 
-				+ " gained remote access to the " + process.getProcessName() 
-				+ " of " + resourceProcessBuilding.getNickName() + " and turned it " + toggle + ".", null);
-		}	
-
-
+		
 		return 0D;
 	}
 	
@@ -535,7 +543,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 //		}
 
 		// If phase is toggle process, add experience to mechanics skill.
-		if (TOGGLE_PROCESS.equals(getPhase())) {
+		if (TOGGLING.equals(getPhase())) {
 			// 1 base experience point per 100 millisols of time spent.
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double mechanicsExperience = time / 100D;
@@ -576,8 +584,8 @@ public class ToggleResourceProcess extends Task implements Serializable {
 //		time = super.performMappedPhase(time);
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("Task phase is null");
-		} else if (TOGGLE_PROCESS.equals(getPhase())) {
-			return toggleProcessPhase(time);
+		} else if (TOGGLING.equals(getPhase())) {
+			return togglingPhase(time);
 		} else if (FINISHED.equals(getPhase())) {
 			return finishedPhase(time);
 		} else {

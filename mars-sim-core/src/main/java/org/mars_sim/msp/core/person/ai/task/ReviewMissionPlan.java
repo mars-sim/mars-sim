@@ -49,8 +49,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	private static final String NAME = Msg.getString("Task.description.reviewMissionPlan"); //$NON-NLS-1$
 
 	/** Task phases. */
-	private static final TaskPhase REVIEWING_MISSION_PLANS = new TaskPhase(
-			Msg.getString("Task.phase.reviewingMissionPlan")); //$NON-NLS-1$
+	private static final TaskPhase REVIEWING = new TaskPhase(
+			Msg.getString("Task.phase.reviewMissionPlan")); //$NON-NLS-1$
 
 	private static final TaskPhase FINISHED = new TaskPhase(Msg.getString("Task.phase.reviewMissionPlan.finished")); //$NON-NLS-1$
 
@@ -61,9 +61,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	// Data members
 	/** The administration building the person is using. */
 	private Administration office;
-
-	// private MarsClock clock;
-
+	/** The role of the person who is reviewing the mission plan. */
 	public RoleType roleType;
 	
 	private static MissionManager missionManager;
@@ -114,10 +112,10 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		}
 
 		// Initialize phase
-		addPhase(REVIEWING_MISSION_PLANS);
+		addPhase(REVIEWING);
 		addPhase(FINISHED);
 		
-		setPhase(REVIEWING_MISSION_PLANS);
+		setPhase(REVIEWING);
 	}
 
 	@Override
@@ -129,7 +127,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("Task phase is null");
-		} else if (REVIEWING_MISSION_PLANS.equals(getPhase())) {
+		} else if (REVIEWING.equals(getPhase())) {
 			return reviewingPhase(time);
 		} else if (FINISHED.equals(getPhase())) {
 			return finishedPhase(time);
@@ -146,10 +144,10 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 */
 	private double reviewingPhase(double time) {
 
-		if (missionManager == null)
+//		if (missionManager == null)
         	missionManager = Simulation.instance().getMissionManager();
 
-		if (relationshipManager == null)
+//		if (relationshipManager == null)
 			relationshipManager = Simulation.instance().getRelationshipManager();
 		
         List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
@@ -230,8 +228,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 */
 	private double finishedPhase(double time) {
 
-		if (missionManager == null)
-        	missionManager = Simulation.instance().getMissionManager();
+//		if (missionManager == null)
+        missionManager = Simulation.instance().getMissionManager();
         
         List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
  		// Iterates through each pending mission 
@@ -270,8 +268,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								"[" + s + "] " + reviewedBy + " just approved " + requester
 								+ "'s " + m.getDescription() + " mission plan.", null);
 					}
-					
-					
+										
 				      // Add experience
 			        addExperience(time);
 		        
@@ -288,17 +285,14 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	@Override
 	protected void addExperience(double time) {
         double newPoints = time / 20D;
-//        if (person != null) {
-            int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-                    NaturalAttributeType.EXPERIENCE_APTITUDE);
-            int leadershipAptitude = person.getNaturalAttributeManager().getAttribute(
-                    NaturalAttributeType.LEADERSHIP);
-            newPoints += newPoints * (experienceAptitude + leadershipAptitude- 100D) / 100D;
-            newPoints *= getTeachingExperienceModifier();
-            person.getMind().getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints);
-//        }
-//        else if (robot != null) {	
-//        }
+        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
+                NaturalAttributeType.EXPERIENCE_APTITUDE);
+        int leadershipAptitude = person.getNaturalAttributeManager().getAttribute(
+                NaturalAttributeType.LEADERSHIP);
+        newPoints += newPoints * (experienceAptitude + leadershipAptitude- 100D) / 100D;
+        newPoints *= getTeachingExperienceModifier();
+        person.getMind().getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints);
+
 	}
 
 	@Override

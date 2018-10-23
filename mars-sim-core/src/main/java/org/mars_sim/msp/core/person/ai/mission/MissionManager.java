@@ -507,7 +507,8 @@ public class MissionManager implements Serializable {
 		if (missions != null) { // for passing maven test
 			while (index < missions.size()) {
 				Mission tempMission = missions.get(index);
-				if ((tempMission == null) || tempMission.isDone()) {
+				if ((tempMission == null) || tempMission.isDone() 
+						|| (tempMission.getPlan() != null && tempMission.getPlan().getStatus() == PlanType.NOT_APPROVED)) {
 					removeMission(tempMission);
 				} else {
 					index++;
@@ -676,7 +677,7 @@ public class MissionManager implements Serializable {
 							mp.setStatus(PlanType.NOT_APPROVED);
 							mp.getMission().setApproval(false);
 							// Remove this mission from the current mission list
-							missions.remove(mp.getMission());
+							removeMission(mp.getMission());
 						}
 					}
 					break;

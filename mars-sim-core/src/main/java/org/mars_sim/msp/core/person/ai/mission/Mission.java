@@ -1203,8 +1203,9 @@ public abstract class Mission implements Serializable {
 	 * @param member the mission member currently performing the mission.
 	 */	
 	protected void requestApprovalPhase(MissionMember member) {	
-		if (!approved && plan == null) {
-			Person p = (Person)member;
+		Person p = (Person)member;
+		
+		if (!approved && plan == null) {			
 //			System.out.println(p.getName()+ "'s" + this.getDescription() + " is going to make a plan.");
 			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());
 			
@@ -1219,7 +1220,11 @@ public abstract class Mission implements Serializable {
 			endMission(MISSION_NOT_APPROVED);
 		}
 		
-		if (approved) {
+		if (approved || plan.getStatus() == PlanType.APPROVED) {
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + p.getSettlement().getName() + "] " 
+					+ p.getName() + " (" + p.getRole().getType() 
+					+ ")'s " + getDescription() + " is preparing to embark.", null);
+
 			setPhaseEnded(true);
 		}
 	}

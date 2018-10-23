@@ -45,8 +45,11 @@ public class ReviewJobReassignment extends Task implements Serializable {
 	private static final String NAME = Msg.getString("Task.description.reviewJobReassignment"); //$NON-NLS-1$
 
 	/** Task phases. */
-	private static final TaskPhase REVIEWING_JOB_ASSIGNMENT = new TaskPhase(
-			Msg.getString("Task.phase.reviewingJobReassignment")); //$NON-NLS-1$
+	private static final TaskPhase REVIEWING = new TaskPhase(
+			Msg.getString("Task.phase.reviewJobReassignment")); //$NON-NLS-1$
+
+	private static final TaskPhase FINISHED = new TaskPhase(
+			Msg.getString("Task.phase.reviewJobReassignment.finished")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -55,7 +58,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 	// Data members
 	/** The administration building the person is using. */
 	private Administration office;
-
+	/** The role of the person who is reviewing the job reassignment. */
 	public RoleType roleType;
 
 	/**
@@ -65,7 +68,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 	 */
 	public ReviewJobReassignment(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 50D + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 20D + RandomUtil.getRandomDouble(5D) - RandomUtil.getRandomDouble(5D));
 
 		roleType = person.getRole().getType();
 		
@@ -108,8 +111,8 @@ public class ReviewJobReassignment extends Task implements Serializable {
 		}
 
 		// Initialize phase
-		addPhase(REVIEWING_JOB_ASSIGNMENT);
-		setPhase(REVIEWING_JOB_ASSIGNMENT);
+		addPhase(REVIEWING);
+		setPhase(REVIEWING);
 	}
 
 	@Override
@@ -121,7 +124,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("Task phase is null");
-		} else if (REVIEWING_JOB_ASSIGNMENT.equals(getPhase())) {
+		} else if (REVIEWING.equals(getPhase())) {
 			return reviewingPhase(time);
 		} else {
 			return time;

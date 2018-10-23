@@ -30,7 +30,7 @@ public class RecordActivity extends Task implements Serializable {
 	private static final String NAME = Msg.getString("Task.description.recordActivity"); //$NON-NLS-1$
 
 	/** Task phases. */
-	private static final TaskPhase RECORDING = new TaskPhase(Msg.getString("Task.phase.recordingActivity")); //$NON-NLS-1$
+	private static final TaskPhase RECORDING = new TaskPhase(Msg.getString("Task.phase.recordActivity")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */

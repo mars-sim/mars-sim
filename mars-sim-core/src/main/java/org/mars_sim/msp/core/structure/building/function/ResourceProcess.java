@@ -151,9 +151,9 @@ public class ResourceProcess implements Serializable {
 			toggleRunningWorkTime = 0D;
 			runningProcess = !runningProcess;
 			if (runningProcess) {
-				logger.info(name + " turned on.");
+				logger.info("Done turning on " + name);
 			} else {
-				logger.info(name + " turned off.");
+				logger.info("Done turning off " + name);
 			}
 		}
 	}
