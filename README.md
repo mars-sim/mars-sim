@@ -18,7 +18,7 @@ mars-sim attempts to incorporate as much mathematical modeling of many systems o
 
 As each settler in mars-sim is a computer agent possessing certain properties, one has prescribed properties and the external characteristics imposed on them, they make weight decisions and interact with one another to produce unexpected results in a sandbox world.
 
-For instance, each settler has a well-defined job, a role, a bunch of technical skills, a set of personality, natural attributes, and task preferences (likes and dislikes). They build relationship as they interact and work with one another. They are there to live, dream, explore, and settle Mars. 
+For instance, each settler has a well-defined job, a role, a bunch of technical [skills](https://github.com/mars-sim/mars-sim/wiki/Skills), a set of personality, natural attributes, and task preferences (likes and dislikes). They build [relationship](https://github.com/mars-sim/mars-sim/wiki/Relationship) as they interact and work with one another. They are there to live, dream, explore, and settle Mars. 
 
 
 ## Operation Modeling

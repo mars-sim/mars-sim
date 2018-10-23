@@ -11,10 +11,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * The JobHistory class stores a person's a list of job types/positions over time
@@ -27,19 +24,15 @@ public class JobHistory implements Serializable  {
     private int solCache;
     
 	private Person person;
-	private MarsClock clock;
-	private MasterClock masterClock;
 	
     /** The person's job history. */
-    //private Map<MarsClock, JobAssignment> jobHistoryMap;
-
     private List<JobAssignment> jobAssignmentList = new CopyOnWriteArrayList<JobAssignment>();
 
     public JobHistory(Person person) {
 		this.person = person;
 
 		jobAssignmentList = new CopyOnWriteArrayList<JobAssignment>();
-		masterClock = Simulation.instance().getMasterClock();
+//		masterClock = Simulation.instance().getMasterClock();
 	}
 
 	public List<JobAssignment> getJobAssignmentList() {
@@ -59,12 +52,8 @@ public class JobHistory implements Serializable  {
      */
     public void savePendingJob(String newJobStr, String initiator, JobAssignmentType status, String approvedBy, boolean addAssignment) {
     	// Note: initiator is "User", status is "Pending", approvedBy is "null", addAssignment is true
-	   	int last = jobAssignmentList.size() - 1;
-
-        if (clock == null)
-        	clock = masterClock.getMarsClock();
-		
-        jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
+	   	int last = jobAssignmentList.size() - 1;	
+        jobAssignmentList.add(new JobAssignment(newJobStr, initiator, status, approvedBy));
         jobAssignmentList.get(last).setSolSubmitted();
 
     }
@@ -73,11 +62,9 @@ public class JobHistory implements Serializable  {
      * Adds the new job to the job assignment list
      */
     public void addJob(String newJobStr, String initiator, JobAssignmentType status, String approvedBy, boolean addNewJobAssignment) {
-    	if (clock == null)
-    		clock = masterClock.getMarsClock();
     	// at the start of sim OR for a pop <= 4 settlement in which approvedBy = "User"
     	if (jobAssignmentList.isEmpty()) {
-     		jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
+     		jobAssignmentList.add(new JobAssignment(newJobStr, initiator, status, approvedBy));
     	}
 
     	else if (approvedBy.equals(JobManager.USER)) {
@@ -85,7 +72,7 @@ public class JobHistory implements Serializable  {
     		int last = jobAssignmentList.size() - 1;
 			// Obtain last entry's lastJobStr
 //    		String lastJobStr = jobAssignmentList.get(last).getJobType();
-     		jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
+     		jobAssignmentList.add(new JobAssignment(newJobStr, initiator, status, approvedBy));
         	jobAssignmentList.get(last).setSolSubmitted();
      	}
     	else {
@@ -93,7 +80,7 @@ public class JobHistory implements Serializable  {
 			// Obtain last entry's lastJobStr
     		//String lastJobStr = jobAssignmentList.get(last).getJobType();
     		if (approvedBy.equals(JobManager.SETTLEMENT)){ // based on the emergent need of the settlement
-         	   	jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
+         	   	jobAssignmentList.add(new JobAssignment(newJobStr, initiator, status, approvedBy));
             	jobAssignmentList.get(last).setSolSubmitted();
     		}
 
@@ -115,8 +102,6 @@ public class JobHistory implements Serializable  {
     
     public void destroy() {
     	person = null;
-    	clock  = null;
-    	masterClock  = null;
         if (jobAssignmentList != null) 
         	jobAssignmentList.clear();
     }

@@ -81,15 +81,13 @@ public class PersonConfig implements Serializable {
 	private static final String PERSONALITY_TYPES = "personality-types";
 	private static final String MBTI = "mbti";
 	private static final String PERSONALITY_TYPE = "personality-type";
-	// Add PERSONALITY_TRAIT_LIST and PERSONALITY_TRAIT
+
 	private static final String PERSONALITY_TRAIT_LIST = "personality-trait-list";
 	private static final String PERSONALITY_TRAIT = "personality-trait";
-	// Change element from "alpha-team" to "person-list" , from alphaTeam to
-	// personList
-	// private static final String ALPHA_TEAM = "alpha-team";
+
 	private static final String PERSON_LIST = "person-list";
 	private static final String PERSON = "person";
-	// Add CREW
+
 	private static final String CREW = "crew";
 	private static final String NAME = "name";
 	private static final String SETTLEMENT = "settlement";
@@ -105,10 +103,10 @@ public class PersonConfig implements Serializable {
 	private static final String RELATIONSHIP = "relationship";
 	private static final String OPINION = "opinion";
 	private static final String PERCENTAGE = "percentage";
-	// Add MAIN_DISH and SIDE_DISH
+
 	private static final String MAIN_DISH = "favorite-main-dish";
 	private static final String SIDE_DISH = "favorite-side-dish";
-	// Add DESSERT
+
 	private static final String DESSERT = "favorite-dessert";
 	private static final String ACTIVITY = "favorite-activity";
 
@@ -1213,8 +1211,8 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonPersonalityType(int index, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getmbti() != null)
-			return roster.get(crew_id).getTeam().get(index).getmbti();// alphaCrewPersonality.get(index) ;
+		if (roster.get(crew_id).getTeam().get(index).getMBTI() != null)
+			return roster.get(crew_id).getTeam().get(index).getMBTI();// alphaCrewPersonality.get(index) ;
 		else
 			return getValueAsString(index, PERSONALITY_TYPE);
 	}
@@ -1300,8 +1298,8 @@ public class PersonConfig implements Serializable {
 	 * @param personality
 	 */
 	public void setPersonPersonality(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getmbti() == null)
-			roster.get(crew_id).getTeam().get(index).setmbti(value);
+		if (roster.get(crew_id).getTeam().get(index).getMBTI() == null)
+			roster.get(crew_id).getTeam().get(index).setMBTI(value);
 
 		// if (alphaCrewPersonality == null)
 		// alphaCrewPersonality = new ArrayList<String>(SIZE_OF_CREW);

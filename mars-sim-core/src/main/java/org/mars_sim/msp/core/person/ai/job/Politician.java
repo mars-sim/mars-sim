@@ -18,12 +18,8 @@ import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.ConnectWithEarth;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
-import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
-import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.MeetTogether;
-import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
-import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class Politician

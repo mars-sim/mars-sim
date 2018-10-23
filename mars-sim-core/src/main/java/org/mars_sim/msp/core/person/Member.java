@@ -9,12 +9,15 @@ package org.mars_sim.msp.core.person;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
+/**
+ * The Member class is for storing the alpha team roster
+ */
 public class Member implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static Logger logger = Logger.getLogger(Member.class.getName());
+//    private static Logger logger = Logger.getLogger(Member.class.getName());
 
 	private String name; 
 	private String gender;
@@ -40,7 +43,7 @@ public class Member implements Serializable {
 		gender = value;
 	}
 	
-	public void setmbti(String value) {
+	public void setMBTI(String value) {
 		mbti = value;
 	}
 	
@@ -85,7 +88,7 @@ public class Member implements Serializable {
 		return gender;
 	}
 	
-	public String getmbti() {
+	public String getMBTI() {
 		return mbti;
 	}
 	

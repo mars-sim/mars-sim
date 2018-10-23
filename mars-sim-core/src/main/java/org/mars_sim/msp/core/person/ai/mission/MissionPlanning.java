@@ -24,6 +24,8 @@ public class MissionPlanning implements Serializable {
 //	
 	
 	private int requestedSol;
+	private double percentComplete = 10; // 0% to 100%
+	private double score = 0; // 0 to 1000 points
 	
 	private String reviewedBy;
 	private String requestedBy;
@@ -33,11 +35,14 @@ public class MissionPlanning implements Serializable {
 	private RoleType requesterRole;
 	private RoleType reviewedRole;
 	private PlanType status = PlanType.PENDING;
+
 	private Mission mission;
 	
+	private static MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+
 	public MissionPlanning(Mission mission, String requestedBy, RoleType role) {
-		this.requestedSol = Simulation.instance().getMasterClock().getMarsClock().getMissionSol();
-		this.requestTimeStamp = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
+		this.requestedSol = clock.getMissionSol();
+		this.requestTimeStamp = clock.getDateTimeStamp();
 		this.mission = mission;
 		this.requestedBy = requestedBy;
 		this.requesterRole = role;
@@ -46,7 +51,7 @@ public class MissionPlanning implements Serializable {
 	public void setReviewedBy(String name) {
 		this.reviewedBy = name;
 		// Note : resetting marsClock is needed after loading from a saved sim 
-		reviewedTimeStamp = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
+		reviewedTimeStamp = clock.getDateTimeStamp();
 	}
 	
 	public void setStatus(PlanType status) {
@@ -56,15 +61,33 @@ public class MissionPlanning implements Serializable {
 	public void setReviewedRole(RoleType roleType) {
 		this.reviewedRole = roleType;
 	}
+
+	public void setScore(double value) {
+		score = value;
+	}
+	
+	public void setPercentComplete(double value) {
+		percentComplete = value;
+	}
+
 	
 	public Mission getMission() {
 		return mission;
 	}
+	
 	public PlanType getStatus() {
 		return status;
 	}
 	
 	public int getMissionSol() {
 		return requestedSol;
+	}
+	
+	public double getPercentComplete() {
+		return percentComplete;
+	}
+	
+	public double getScore() {;
+		return score;
 	}
 }

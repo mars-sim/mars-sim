@@ -20,7 +20,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.NaturalAttributeType;

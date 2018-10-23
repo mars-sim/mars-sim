@@ -469,7 +469,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 		// Check for one last time if the process has already been completed by another person.
 		if (process.isProcessRunning() == toBeToggledOn) {
-			System.out.println("go to the finished phase");
+//			System.out.println("go to the finished phase");
 			setPhase(FINISHED);
 //			if (needEVA) {
 //				setPhase(WALK_BACK_INSIDE);
@@ -491,7 +491,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	protected double finishedPhase(double time) {
-		System.out.println("At the finished phase");
+//		System.out.println("At the finished phase");
 		Settlement s = person.getSettlement(); 	
 		
 		String toggle = OFF;

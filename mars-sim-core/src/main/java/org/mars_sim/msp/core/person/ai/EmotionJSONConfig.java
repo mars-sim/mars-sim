@@ -68,11 +68,10 @@ public class EmotionJSONConfig implements Serializable {
         fis = this.getClass().getResourceAsStream(JSON_FILE);
         jsonReader = Json.createReader(fis);
          
-        /**
-         * We can create JsonReader from Factory also
-        JsonReaderFactory factory = Json.createReaderFactory(null);
-        jsonReader = factory.createReader(fis);
-        */
+        
+//      We can create JsonReader from Factory also
+//      JsonReaderFactory factory = Json.createReaderFactory(null);
+//      jsonReader = factory.createReader(fis);
          
         //get JsonObject from JsonReader
         JsonObject jsonObject = jsonReader.readObject();

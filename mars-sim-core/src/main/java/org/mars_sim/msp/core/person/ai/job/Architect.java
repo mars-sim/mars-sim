@@ -19,12 +19,8 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
-import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
-import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
-import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
-import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -78,8 +74,9 @@ implements Serializable {
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
+		int arts = attributes.getAttribute(NaturalAttributeType.ARTISTRY);
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
+		double averageAptitude = (academicAptitude + experienceAptitude + arts) / 3D;
 		result+= result * ((averageAptitude - 50D) / 100D);
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0;

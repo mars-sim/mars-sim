@@ -42,6 +42,8 @@ public class MissionManager implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
+	private static final double PERCENT_PER_SCORE = 10D;
+	
 	/** Current missions in the simulation. */
 	private List<Mission> missions;
 
@@ -650,13 +652,13 @@ public class MissionManager implements Serializable {
 	}
 	
 	/**
-	 * Reviews a mission plan
+	 * Approves a mission plan
 	 * 
 	 * @param missionPlan
 	 * @param person
 	 * @param status
 	 */
-	public void reviewMissionPlan(MissionPlanning missionPlan, Person person, PlanType status) {
+	public void approveMissionPlan(MissionPlanning missionPlan, Person person, PlanType status) {
 		
 		for (int mSol : historicalMissions.keySet()) {
 			List<MissionPlanning> plans = historicalMissions.get(mSol);
@@ -665,16 +667,47 @@ public class MissionManager implements Serializable {
 					mp.setReviewedBy(person.getName());
 					mp.setReviewedRole(person.getRole().getType());
 					mp.setStatus(status);
-					if (status == PlanType.APPROVED)
-						mp.getMission().setApproval(true);
-//					else if (status == PlanType.NOT_APPROVED)
-//						mp.getMission().setApproval(false);
+					if (mp.getStatus() == PlanType.PENDING) {
+						if (status == PlanType.APPROVED) {
+							mp.setStatus(PlanType.APPROVED);
+							mp.getMission().setApproval(true);
+						}
+						else if (status == PlanType.NOT_APPROVED) {
+							mp.setStatus(PlanType.NOT_APPROVED);
+							mp.getMission().setApproval(false);
+							// Remove this mission from the current mission list
+							missions.remove(mp.getMission());
+						}
+					}
+					break;
 				}
-				break;
 			}
 		}
 	}
-	
+
+	/**
+	 * Score a mission plan
+	 * 
+	 * @param missionPlan
+	 * @param person
+	 * @param status
+	 */
+	public void scoreMissionPlan(MissionPlanning missionPlan, double newScore) {
+		
+		for (int mSol : historicalMissions.keySet()) {
+			List<MissionPlanning> plans = historicalMissions.get(mSol);
+			for (MissionPlanning mp : plans) {
+				if (mp == missionPlan && mp.getStatus() == PlanType.PENDING) {
+					double percent = mp.getPercentComplete();
+					mp.setPercentComplete(percent + PERCENT_PER_SCORE);
+					double score = mp.getScore();
+					mp.setScore(score + newScore);
+					break;
+				}
+			}
+		}
+	}
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
