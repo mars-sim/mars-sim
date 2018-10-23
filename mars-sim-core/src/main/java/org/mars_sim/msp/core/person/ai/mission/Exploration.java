@@ -263,7 +263,7 @@ public class Exploration extends RoverMission implements Serializable {
 		if (APPROVAL.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getSettlement()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
+					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
 		}
 		
 		else if (EMBARKING.equals(getPhase())) {
@@ -271,7 +271,9 @@ public class Exploration extends RoverMission implements Serializable {
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} else if (TRAVELLING.equals(getPhase())) {
+		} 
+		
+		else if (TRAVELLING.equals(getPhase())) {
 			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
 				setPhase(VehicleMission.DISEMBARKING);
 				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
@@ -281,12 +283,16 @@ public class Exploration extends RoverMission implements Serializable {
 				setPhaseDescription(
 						Msg.getString("Mission.phase.exploreSite.description", getCurrentNavpoint().getDescription())); // $NON-NLS-1$
 			}
-		} else if (EXPLORE_SITE.equals(getPhase())) {
+		} 
+		
+		else if (EXPLORE_SITE.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} else if (DISEMBARKING.equals(getPhase()))
+		} 
+		
+		else if (DISEMBARKING.equals(getPhase()))
 			endMission(SUCCESSFULLY_DISEMBARKED);
 	}
 

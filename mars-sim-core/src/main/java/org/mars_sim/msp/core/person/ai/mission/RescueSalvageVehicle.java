@@ -284,7 +284,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		if (APPROVAL.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getSettlement()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
+					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//getSettlement()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
 		}
 		
 		else if (EMBARKING.equals(getPhase())) {
@@ -297,7 +297,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			} else {
 				logger.info(getVehicle().getName() + " has commenced a salvage mission for " + vehicleTarget.getName());
 			}
-		} else if (TRAVELLING.equals(getPhase())) {
+		} 
+		
+		else if (TRAVELLING.equals(getPhase())) {
 			if (null != getCurrentNavpoint() && getCurrentNavpoint().isSettlementAtNavpoint()) {
 				setPhase(VehicleMission.DISEMBARKING);
 				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
@@ -312,12 +314,16 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 							Msg.getString("Mission.phase.rendezvous.descriptionSalvage", vehicleTarget.getName())); // $NON-NLS-1$
 				}
 			}
-		} else if (RENDEZVOUS.equals(getPhase())) {
+		} 
+		
+		else if (RENDEZVOUS.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} else if (DISEMBARKING.equals(getPhase())) {
+		} 
+		
+		else if (DISEMBARKING.equals(getPhase())) {
 			endMission(SUCCESSFULLY_DISEMBARKED);
 		}
 	}

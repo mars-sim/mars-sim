@@ -417,7 +417,7 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 		if (APPROVAL.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getSettlement()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
+					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
 		}
 		
 		else if (EMBARKING.equals(getPhase())) {
@@ -425,7 +425,9 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(Msg.getString("Mission.phase.travelling.description" //$NON-NLS-1$
 					, getNextNavpoint().getDescription()));
-		} else if (TRAVELLING.equals(getPhase())) {
+		} 
+		
+		else if (TRAVELLING.equals(getPhase())) {
 			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
 				setPhase(VehicleMission.DISEMBARKING);
 				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description" //$NON-NLS-1$
@@ -435,12 +437,16 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 				setPhaseDescription(Msg.getString("Mission.phase.researchingFieldSite.description" //$NON-NLS-1$
 						, getCurrentNavpoint().getDescription()));
 			}
-		} else if (RESEARCH_SITE.equals(getPhase())) {
+		} 
+		
+		else if (RESEARCH_SITE.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(Msg.getString("Mission.phase.travelling.description" //$NON-NLS-1$
 					, getNextNavpoint().getDescription()));
-		} else if (DISEMBARKING.equals(getPhase()))
+		} 
+		
+		else if (DISEMBARKING.equals(getPhase()))
 			endMission(SUCCESSFULLY_DISEMBARKED);
 	}
 

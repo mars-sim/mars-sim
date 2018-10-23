@@ -21,15 +21,16 @@ Copyright (C) 2018 Scott Davis
    at the far edge of the main window
 
 
+
 ### CORE ENGINE IMPROVEMENTS :
 
 1. Apply the natural logarithm when computing value of some goods
 
 2. Allow time-ratio switches in full headless mode.
 
-3. Enable the use of Java 11 SE for running mars-sim.
+3. Enable the use of Java 11 SE for running mars-sim (experimental).
 
-4. Add commander's approval on every mission.
+4. Add concept of mission planning and commander's approval on every mission.
 
 5. Track/record settler's sleep time on each sol.
 

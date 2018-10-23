@@ -417,7 +417,7 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 		if (APPROVAL.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getSettlement()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
+					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
 		}
 		
 		else if (EMBARKING.equals(getPhase())) {
@@ -425,7 +425,9 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} else if (TRAVELLING.equals(getPhase())) {
+		} 
+		
+		else if (TRAVELLING.equals(getPhase())) {
 			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
 				setPhase(VehicleMission.DISEMBARKING);
 				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
@@ -435,7 +437,9 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 				setPhaseDescription(Msg.getString("Mission.phase.researchingFieldSite.description",
 						getCurrentNavpoint().getDescription())); // $NON-NLS-1$
 			}
-		} else if (RESEARCH_SITE.equals(getPhase())) {
+		} 
+		
+		else if (RESEARCH_SITE.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(

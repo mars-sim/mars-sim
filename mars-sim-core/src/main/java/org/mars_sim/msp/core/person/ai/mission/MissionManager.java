@@ -627,8 +627,8 @@ public class MissionManager implements Serializable {
 	 * @param {{@link MissionPlanning}
 	 */
 	public void addMissionPlanning(MissionPlanning plan) {
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//		if (marsClock == null)
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		int mSol = marsClock.getMissionSol();
 
 		if (historicalMissions.containsKey(mSol)) {

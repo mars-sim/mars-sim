@@ -273,21 +273,17 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		if (APPROVAL.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getSettlement()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
+					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
 		}
-		
-		else if (APPROVAL.equals(getPhase())) {
-			setPhase(VehicleMission.EMBARKING);
-			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getSettlement()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
-		}
-		
+				
 		else if (EMBARKING.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} else if (TRAVELLING.equals(getPhase())) {
+		} 
+		
+		else if (TRAVELLING.equals(getPhase())) {
 			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
 				if (outbound) {
 					setPhase(SUPPLY_DELIVERY_DISEMBARKING);
@@ -299,24 +295,34 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 							getCurrentNavpoint().getDescription())); // $NON-NLS-1$
 				}
 			}
-		} else if (SUPPLY_DELIVERY_DISEMBARKING.equals(getPhase())) {
+		} 
+		
+		else if (SUPPLY_DELIVERY_DISEMBARKING.equals(getPhase())) {
 			setPhase(SUPPLY_DELIVERY);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.supplyDelivery.description", emergencySettlement.getName())); // $NON-NLS-1$
-		} else if (SUPPLY_DELIVERY.equals(getPhase())) {
+		} 
+		
+		else if (SUPPLY_DELIVERY.equals(getPhase())) {
 			setPhase(LOAD_RETURN_TRIP_SUPPLIES);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.loadReturnTripSupplies.description", emergencySettlement.getName())); // $NON-NLS-1$
-		} else if (LOAD_RETURN_TRIP_SUPPLIES.equals(getPhase())) {
+		} 
+		
+		else if (LOAD_RETURN_TRIP_SUPPLIES.equals(getPhase())) {
 			setPhase(RETURN_TRIP_EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.returnTripEmbarking.description", emergencySettlement.getName())); // $NON-NLS-1$
-		} else if (RETURN_TRIP_EMBARKING.equals(getPhase())) {
+		} 
+		
+		else if (RETURN_TRIP_EMBARKING.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} else if (DISEMBARKING.equals(getPhase())) {
+		} 
+		
+		else if (DISEMBARKING.equals(getPhase())) {
 			endMission(SUCCESSFULLY_DISEMBARKED);
 		}
 	}
