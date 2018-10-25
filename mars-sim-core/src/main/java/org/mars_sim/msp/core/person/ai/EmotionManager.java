@@ -27,7 +27,7 @@ public class EmotionManager implements Serializable {
 		 = {{"restless", "sad", "rejected", "crushed", 			"deceived", "reckless", "terrified", "hated"},
 			{"oppressed", "gloomy", "weary", "insecure", 		"disappointed", "troubled", "disgusted", "upset"},
 			{"fatigued", "bored", "nonchalant", "displeased", 	"disbelieving", "suspicious", "irritated", "defiant"},
-			{"numbing", "sedated", "skeptical", "unstable", 	"placid", "anxious", "startled", "tense"},
+			{"numbing", "sedated", "skeptical", "alert", 	"placid", "anxious", "startled", "tense"},
 	
 			{"detached", "guarded", "nonchalant", "modest", 	"compliant", "discreet", "energetic", "aggressive"},
 			{"restrained", "serene", "firm", "calm", 			"content", "cooperative", "bold", "daring"},
@@ -71,16 +71,19 @@ public class EmotionManager implements Serializable {
 	public EmotionManager(Person person) {
 		this.person= person;
 
-		int numberOfIterations = 2;
-
+//		int numberOfIterations = 2;
 		// Create big five personality traits using random values
-		for (int i=0 ; i < eVector.length ; i++) {
-			int value = 0;
-			for (int y = 0; y < numberOfIterations; y++)
-				value += RandomUtil.getRandomDouble(RANGE);
-			value /= numberOfIterations;
-			eVector[i] = value;
-		}	
+//		for (int i=0 ; i < eVector.length ; i++) {
+//			int value = 0;
+//			for (int y = 0; y < numberOfIterations; y++)
+//				value += RandomUtil.getRandomDouble(RANGE);
+//			value /= numberOfIterations * 1D;
+//			eVector[i] = value;
+//		}	
+		
+		// .4 is the mid-point
+		eVector[0] = .4 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1);
+		eVector[1] = .4 + RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1);
 		
 		wVector = new ArrayList<>();
 //		wVector = new double[states.length][];
@@ -126,52 +129,23 @@ public class EmotionManager implements Serializable {
 			aVector[1] = .8;
 		else if (aVector[1] < 0)
 			aVector[1] = 0;
-		
-//		double stressDelta = stressCache - stress;
-//		stressCache = stress;
-		
-//		double fatigue = pc.getFatigue(); // 0 to ? millisols
-//		double fatigueDelta = fatigueCache - fatigue;
-//		fatigueCache = fatigue;
-		
-//		if (stressDelta > 5) {
-//			aVector[0]+= .01;
-//			if (aVector[0] > 1)
-//				aVector[0] = 1;
-//				
-//			aVector[1]+= .01;
-//			if (aVector[1] > 1)
-//				aVector[1] = 1;
-//
-//		}
-//
-//		else if (stressDelta < -5) {
-//			aVector[0]-= .01;
-//			if (aVector[0] < 0)
-//				aVector[0] = 0;
-//				
-//			aVector[1]-= .01;
-//			if (aVector[1] < 0)
-//				aVector[1] = 0;
-//
-//		}
 
 	}
 	
+	/**
+	 * Returns the description of the emotional state
+	 * @return description string
+	 */
 	public String getDescription() {
 		double e0 = eVector[0];
 		double e1 = eVector[1];
-		return description[(int)(Math.floor(e0*10))][(int)(Math.floor(e1*10))];
-//		if (e0 < .2)
-//			return "sad";
-//		else if (e0 < .4)
-//			return "not happy";
-//		else if (e0 < .6)
-//			return "okay";
-//		else if (e0 < .8)
-//			return "happy";
-//		else
-//			return "not happy";
+//		System.out.print("e0 : " + e0);
+//		System.out.print("   e1 : " + e1);
+		int row = (int)(e0*9D);
+		int col = (int)(e1*9D);
+//		System.out.print("   row : " + row);
+//		System.out.println("   col : " + col);
+		return description[row][col];
 		
 	}
 	

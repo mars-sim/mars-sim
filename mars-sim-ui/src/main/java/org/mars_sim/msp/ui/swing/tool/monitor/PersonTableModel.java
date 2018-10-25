@@ -86,9 +86,11 @@ public class PersonTableModel extends UnitTableModel {
 	private final static int STRESS = 13;
 	/** Performance column. */
 	private final static int PERFORMANCE = 14;
+	/** Emotion column. */
+	private final static int EMOTION = 15;
 
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 15;
+	private final static int COLUMNCOUNT = 16;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
@@ -126,6 +128,8 @@ public class PersonTableModel extends UnitTableModel {
 		columnTypes[STRESS] = String.class;
 		columnNames[PERFORMANCE] = Msg.getString("PersonTableModel.column.performance"); //$NON-NLS-1$
 		columnTypes[PERFORMANCE] = String.class;
+		columnNames[EMOTION] = Msg.getString("PersonTableModel.column.emotion"); //$NON-NLS-1$
+		columnTypes[EMOTION] = String.class;		
 		columnNames[LOCATION] = Msg.getString("PersonTableModel.column.location"); //$NON-NLS-1$
 		columnTypes[LOCATION] = String.class;
 		columnNames[ROLE] = Msg.getString("PersonTableModel.column.role"); //$NON-NLS-1$
@@ -307,6 +311,9 @@ public class PersonTableModel extends UnitTableModel {
 				String performanceString = PhysicalCondition.getPerformanceStatus(performance);
 				performanceItemMap.put(PERFORMANCE, performanceString);
 
+				String emotionString = condition.getPerson().getMind().getEmotion().getDescription();
+				performanceItemMap.put(EMOTION, emotionString);
+
 				performanceValueCache.put(newUnit, performanceItemMap);
 			} catch (Exception e) {
 			}
@@ -473,6 +480,18 @@ public class PersonTableModel extends UnitTableModel {
 			}
 				break;
 
+			case EMOTION: {
+				if (person.getPhysicalCondition().isDead())
+					result = "";
+				else
+					result = person.getMind().getEmotion().getDescription();
+//				String emotionString = condition.getPerson().getMind().getEmotion().getDescription();
+//				performanceItemMap.put(EMOTION, emotionString);
+
+			}
+			
+				break;
+				
 			case HEALTH: {
 				result = person.getPhysicalCondition().getHealthSituation();
 			}
@@ -591,6 +610,7 @@ public class PersonTableModel extends UnitTableModel {
 			m.put(UnitEventType.THIRST_EVENT, ENERGY);
 			m.put(UnitEventType.FATIGUE_EVENT, FATIGUE);
 			m.put(UnitEventType.STRESS_EVENT, STRESS);
+			m.put(UnitEventType.EMOTION_EVENT, EMOTION);
 			m.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
 			m.put(UnitEventType.JOB_EVENT, JOB);
 			m.put(UnitEventType.ROLE_EVENT, ROLE);
@@ -725,13 +745,28 @@ public class PersonTableModel extends UnitTableModel {
 				if ((tableModel.performanceValueCache != null)
 						&& tableModel.performanceValueCache.containsKey(person)) {
 					Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);
-					String oldStressString = performanceItemMap.get(PERFORMANCE);
-					if (performanceString.equals(oldStressString)) {
+					String oldString = performanceItemMap.get(PERFORMANCE);
+					if (performanceString.equals(oldString)) {
 						return;
 					} else {
 						performanceItemMap.put(PERFORMANCE, performanceString);
 					}
 				}
+				
+			} else if (eventType == UnitEventType.EMOTION_EVENT) {
+				Person person = (Person) event.getSource();
+				String emotionString = person.getMind().getEmotion().getDescription();
+				if ((tableModel.performanceValueCache != null)
+						&& tableModel.performanceValueCache.containsKey(person)) {
+					Map<Integer, String> performanceItemMap = tableModel.performanceValueCache.get(person);
+					String oldEmotionString = performanceItemMap.get(EMOTION);
+					if (emotionString.equals(oldEmotionString)) {
+						return;
+					} else {
+						performanceItemMap.put(EMOTION, emotionString);
+					}
+				}
+
 			}
 
 			if (column != null && column > -1) {

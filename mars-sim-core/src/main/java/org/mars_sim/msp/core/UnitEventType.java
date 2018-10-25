@@ -37,6 +37,7 @@ public enum UnitEventType {
 	HUNGER_EVENT					("hunger event"),
 	THIRST_EVENT					("thirst event"),
 	STRESS_EVENT					("stress event"),
+	EMOTION_EVENT					("emotion event"),
 	PERFORMANCE_EVENT				("performance event"),
 	ILLNESS_EVENT					("illness event"),
 	DEATH_EVENT						("death event"),

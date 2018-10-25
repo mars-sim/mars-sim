@@ -59,15 +59,21 @@ public class MathUtils {
     	return result;
   	}
 
+	/**
+	 * Normalize the values of the array
+	 * @param w
+	 * @return
+	 */
 	public static double[] normalize(double[] w) {
 		double[] vector = w;
 		for (int i=0; i<w.length; i++) {
-			if (vector[i] > 0.5)
-				vector[i] -= .001;
-			else if (vector[i] < 0.5)
-				vector[i] += .001;	
+			// .4 is the mid-point
+			if (w[i] > 0.4)
+				vector[i] -= .005;
+			else if (w[i] < 0.4)
+				vector[i] += .005;	
 			else
-				vector[i] = 0.5;
+				vector[i] = 0.4;
 		}
 		return vector;
 	}

@@ -44,6 +44,8 @@ public class Mind implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Mind.class.getName());
+	
+	private static final double FACTOR = .05;
 
 	// Data members
 	/** Is the job locked so another can't be chosen? */
@@ -125,7 +127,7 @@ public class Mind implements Serializable {
 
 			int msol = marsClock.getMillisolInt();
 
-			if (msol % 10 != 0) {
+			if (msol % 3 == 0) {
 //				msolCache = msol;
 
 				// Update stress based on personality.
@@ -483,6 +485,87 @@ public class Mind implements Serializable {
 				+ ", missionWeights: " + missionWeights);
 	}
 
+	/**
+	 * Calls the psi function
+	 * @param av
+	 * @param pv
+	 * @return
+	 */
+	public double[] callPsi(double[] av, double[] pv) {
+		double[] v = new double[2];
+		
+		for (int i=0; i<pv.length; i++) {
+			if (i == 0) { // Openness
+				if (pv[0] > .5) {
+					v[0] = av[0] + pv[0]/2D * FACTOR; // Engagement
+					v[1] = av[1] + pv[0]/2D * FACTOR; // Valence
+				}
+				else if (pv[0] < .5) {
+					v[0] = av[0] - pv[0] * FACTOR; // Engagement
+					v[1] = av[1] - pv[0] * FACTOR; // Valence
+				}
+			}
+			else if (i == 1) { // Conscientiousness
+				if (pv[1] > .5) {
+//					v[0] = av[0] + pv[1]/2D * FACTOR; // Engagement
+					v[1] = av[1] + pv[1]/2D * FACTOR; // Valence
+				}
+				else if (pv[1] < .5) {
+//					v[0] = av[0] - pv[1] * FACTOR; // Engagement
+					v[1] = av[1] - pv[1] * FACTOR; // Valence
+				}
+
+			}
+			else if (i == 2) { // Extraversion
+				if (pv[2] > .5) {
+					v[0] = av[0] + pv[2]/2D * FACTOR;
+//					v[1] = av[1] + pv[2]/2D * FACTOR;
+				}
+				else if (pv[2] < .5) {
+					v[0] = av[0] - pv[2] * FACTOR;
+//					v[1] = av[1] - pv[2] * FACTOR;
+				}
+
+			}
+			else if (i == 3) { // Agreeableness
+				if (pv[3] > .5) {
+//					v[0] = av[0] + pv[3]/2D * FACTOR; // Engagement
+					v[1] = av[1] + pv[3]/2D * FACTOR; // Valence
+				}
+				else if (pv[3] < .5) {
+//					v[0] = av[0] - pv[3] * FACTOR;
+					v[1] = av[1] - pv[3] * FACTOR;
+				}
+			}
+			else if (i == 4) { // Neuroticism
+				if (pv[4] > .5) {
+					v[0] = av[0] - pv[4]/2D * FACTOR;
+					v[1] = av[1] - pv[4]/2D * FACTOR;
+				}
+				else if (pv[4] < .5) {
+					v[0] = av[0] + pv[4] * FACTOR;
+					v[1] = av[1] + pv[4] * FACTOR;
+				}
+			}
+
+			if (v[0] > .8)
+				v[0] = .8;
+			else if (v[0] < 0)
+				v[0] = 0;
+
+			if (v[1] > .8)
+				v[1] = .8;
+			else if (v[1] < 0)
+				v[1] = 0;
+
+		}
+		
+		return v;
+	}
+	
+	/**
+	 * Updates the emotion states
+	 */
 	public void updateEmotion() {
 		// Check for stimulus
 		emotion.checkStimulus();
@@ -490,32 +573,42 @@ public class Mind implements Serializable {
 //		int dim = emotion.getDimension();
 		
 		List<double[]> wVector = emotion.getOmegaVector(); // prior history
-//		double[] pVector = trait.getPersonalityVector(); // personality
+		double[] pVector = trait.getPersonalityVector(); // personality
 		double[] aVector = emotion.getEmotionInfoVector(); // new stimulus
 		double[] eVector = emotion.getEmotionVector();
 
-		// Psi Function - with desire changes aVector
-		double[] psi = aVector;//new double[dim];
+		// Call Psi Function - with desire changes aVector
+		double[] psi = callPsi(aVector, pVector);//new double[dim];
 		
-		// Omega Function - internal changes such as decay of emotional states
+		// Call Omega Function - internal changes such as decay of emotional states
 		// for normalize vectors
 		double[] omega = MathUtils.normalize(wVector.get(wVector.size()-1)); //new double[dim];
 		
 		double[] newE = new double[2];
 		
 		for (int i=0; i<2; i++) {
-			newE[i] = (eVector[i] + psi[i] + omega[i]) / 2D;			
+			newE[i] = (eVector[i] + psi[i] + omega[i]) / 2.05;			
 		}
 		
 		// Find the new emotion vector
+		// java.lang.OutOfMemoryError: Java heap space
 //		double[] e_tt = DoubleStream.concat(Arrays.stream(eVector),
 //				Arrays.stream(psi)).toArray();
 //		double[] e_tt2 = DoubleStream.concat(Arrays.stream(e_tt),
-//				Arrays.stream(omega)).toArray();
-		
-		//java.lang.OutOfMemoryError: Java heap space
+//				Arrays.stream(omega)).toArray();		
+		// java.lang.OutOfMemoryError: Java heap space
 //		double[] e_tt = MathUtils.concatAll(eVector, psi, omega);
 		
+		if (newE[0] > .8)
+			newE[0] = .8;
+		else if (newE[0] < 0)
+			newE[0] = 0;
+
+		if (newE[1] > .8)
+			newE[1] = .8;
+		else if (newE[1] < 0)
+			newE[1] = 0;
+
 		// Update the emotional states
 		emotion.updateEmotion(newE);
 		
