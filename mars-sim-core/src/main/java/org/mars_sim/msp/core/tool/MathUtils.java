@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.core.tool;
 
+import java.util.Arrays;
+
 public class MathUtils {
 
     /**
@@ -27,4 +29,46 @@ public class MathUtils {
 		return (n & (n - 1)) == 0;
 	}
 
+    
+	public static <T> T[] concatAll(T[] first, T[]... rest) {
+    	int totalLength = first.length;
+    	for (T[] array : rest) {
+    		totalLength += array.length;
+    	}
+    	T[] result = Arrays.copyOf(first, totalLength);
+    	int offset = first.length;
+    	for (T[] array : rest) {
+    		System.arraycopy(array, 0, result, offset, array.length);
+    		offset += array.length;
+    	}
+    	return result;
+	}
+
+    
+	public static double[] concatAll(double[] first, double[]... rest) {
+    	int totalLength = first.length;
+    	for (double[] array : rest) {
+    		totalLength += array.length;
+    	}
+    	double[] result = Arrays.copyOf(first, totalLength);
+    	int offset = first.length;
+    	for (double[] array : rest) {
+    		System.arraycopy(array, 0, result, offset, array.length);
+    		offset += array.length;
+    	}
+    	return result;
+  	}
+
+	public static double[] normalize(double[] w) {
+		double[] vector = w;
+		for (int i=0; i<w.length; i++) {
+			if (vector[i] > 0.5)
+				vector[i] -= .001;
+			else if (vector[i] < 0.5)
+				vector[i] += .001;	
+			else
+				vector[i] = 0.5;
+		}
+		return vector;
+	}
 }

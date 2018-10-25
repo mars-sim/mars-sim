@@ -1195,10 +1195,25 @@ public class ChatUtils {
 				}	
 			}
 		}
-		
-		else if (num == 0 || text.toLowerCase().contains("status") || text.toLowerCase().contains("how you doing")
-				|| text.toLowerCase().contains("feeling") || text.toLowerCase().contains("how you been")) {
+
+		else if (text.toLowerCase().contains("feeling") || text.toLowerCase().contains("how you been")) {
 			questionText = YOU_PROMPT + "how have you been ?"; // what is your Location Situation [Expert Mode only] ?";
+
+			if (personCache != null) {
+				responseText.append("I'm ");
+				responseText.append(personCache.getMind().getEmotion().getDescription());
+
+			} else if (robotCache != null) {
+				if (robotCache.getSystemCondition().isInoperable())
+					responseText.append("I'm inoperable.");
+				else 
+					responseText.append("I'm operational.");					
+			}
+
+		}
+
+		else if (num == 0 || text.toLowerCase().contains("status") || text.toLowerCase().contains("how you doing")) {
+			questionText = YOU_PROMPT + "how are you doing ?"; // what is your Location Situation [Expert Mode only] ?";
 
 			if (personCache != null) {
 				responseText.append("I'm ");

@@ -23,6 +23,8 @@ public class PersonalityTraitManager implements Serializable {
 
 	private static final int RANGE = 100;
 
+	private double[] pVector = null;//new double[5];
+	
 	/** List of the person's big five personalities keyed by unique name. */
 	private Hashtable<PersonalityTraitType, Integer> personalityTraits;
 
@@ -50,6 +52,8 @@ public class PersonalityTraitManager implements Serializable {
 			personalityTraits.put(type, value);
 		}
 
+		// Create the personality vector
+		getPersonalityVector();
 	}
 
 	/*
@@ -97,6 +101,34 @@ public class PersonalityTraitManager implements Serializable {
 		return personalityTraits;
 	}
 
+	/**
+	 * Creates the personality vector
+	 * 
+	 * @return double array
+	 */
+	public double[] getPersonalityVector() {
+		if (pVector == null) {
+			pVector = new double[5];
+			for (PersonalityTraitType t : personalityTraits.keySet()) {
+				if (t == PersonalityTraitType.OPENNESS)
+					pVector[0] = personalityTraits.get(t)/100D;
+				else if (t == PersonalityTraitType.CONSCIENTIOUSNESS)
+					pVector[1] = personalityTraits.get(t)/100D;
+				else if (t == PersonalityTraitType.EXTRAVERSION)
+					pVector[2] = personalityTraits.get(t)/100D;
+				else if (t == PersonalityTraitType.AGREEABLENESS)
+					pVector[3] = personalityTraits.get(t)/100D;
+				else if (t == PersonalityTraitType.NEUROTICISM)
+					pVector[4] = personalityTraits.get(t)/100D;
+			}
+			return pVector;
+		}
+		else {
+			return pVector;
+		}
+	}
+
+	
 	/**
 	 * Sets an personality trait's value.
 	 * 

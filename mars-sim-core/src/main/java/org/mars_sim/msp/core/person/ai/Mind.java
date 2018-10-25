@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.MathUtils;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -48,8 +50,10 @@ public class Mind implements Serializable {
 	private boolean jobLock;
 	/** The cache for sol. */
 	private int solCache = 1;
-	/** The cache for msol0. */
-	private double msolCache = -1D;
+	/** The cache for msol. */
+	private int msolCache = -1;
+	/** The cache for msol1. */
+	private double msolCache1 = -1D;
 	/** The person owning this mind. */
 	private Person person = null;
 	/** The person's task manager. */
@@ -60,6 +64,8 @@ public class Mind implements Serializable {
 	private Job job;
 	/** The person's personality. */
 	private PersonalityType mbti;
+	/** The person's emotional states. */	
+	private EmotionManager emotion;
 
 	private PersonalityTraitManager trait;
 	/** The person's skill manager. */
@@ -92,6 +98,8 @@ public class Mind implements Serializable {
 		trait = new PersonalityTraitManager(person);
 		// Construct the MBTI personality type.
 		mbti = new PersonalityType(person);
+		// Construct the emotion states.
+		emotion = new EmotionManager(person);
 		// Construct the task manager
 		taskManager = new TaskManager(this);
 		// Load the mission manager
@@ -112,8 +120,23 @@ public class Mind implements Serializable {
 
 		double msol1 = marsClock.getMillisolOneDecimal();
 
-		if (msolCache != msol1) {
-			msolCache = msol1;
+		if (msolCache1 != msol1) {
+			msolCache1 = msol1;
+
+			int msol = marsClock.getMillisolInt();
+
+			if (msol % 10 != 0) {
+//				msolCache = msol;
+
+				// Update stress based on personality.
+				mbti.updateStress(time);
+	
+				// Update emotion
+				updateEmotion();
+				
+				// Update relationships.
+				sim.getRelationshipManager().timePassing(person, time);
+			}
 
 			// Note : for now a Mayor/Manager cannot switch job
 			if (job instanceof Politician)
@@ -132,12 +155,6 @@ public class Mind implements Serializable {
 				} else
 					checkJob();
 			}
-
-			// Update stress based on personality.
-			mbti.updateStress(time);
-
-			// Update relationships.
-			sim.getRelationshipManager().timePassing(person, time);
 
 			// Take action as necessary.
 			if (taskManager != null)
@@ -466,6 +483,48 @@ public class Mind implements Serializable {
 				+ ", missionWeights: " + missionWeights);
 	}
 
+	public void updateEmotion() {
+		// Check for stimulus
+		emotion.checkStimulus();
+		
+//		int dim = emotion.getDimension();
+		
+		List<double[]> wVector = emotion.getOmegaVector(); // prior history
+//		double[] pVector = trait.getPersonalityVector(); // personality
+		double[] aVector = emotion.getEmotionInfoVector(); // new stimulus
+		double[] eVector = emotion.getEmotionVector();
+
+		// Psi Function - with desire changes aVector
+		double[] psi = aVector;//new double[dim];
+		
+		// Omega Function - internal changes such as decay of emotional states
+		// for normalize vectors
+		double[] omega = MathUtils.normalize(wVector.get(wVector.size()-1)); //new double[dim];
+		
+		double[] newE = new double[2];
+		
+		for (int i=0; i<2; i++) {
+			newE[i] = (eVector[i] + psi[i] + omega[i]) / 2D;			
+		}
+		
+		// Find the new emotion vector
+//		double[] e_tt = DoubleStream.concat(Arrays.stream(eVector),
+//				Arrays.stream(psi)).toArray();
+//		double[] e_tt2 = DoubleStream.concat(Arrays.stream(e_tt),
+//				Arrays.stream(omega)).toArray();
+		
+		//java.lang.OutOfMemoryError: Java heap space
+//		double[] e_tt = MathUtils.concatAll(eVector, psi, omega);
+		
+		// Update the emotional states
+		emotion.updateEmotion(newE);
+		
+	}
+	
+	public EmotionManager getEmotion() {
+		return emotion;
+	}
+	
 	/**
 	 * Gets the person's MBTI (personality type).
 	 * 
