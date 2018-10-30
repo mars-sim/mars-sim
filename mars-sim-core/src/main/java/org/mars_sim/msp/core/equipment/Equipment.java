@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import java.util.Collection;
@@ -242,6 +243,8 @@ implements Indoor, Salvagable {
 	 */
 	public boolean isInSettlement() {
 		if (getContainerUnit() instanceof Settlement)
+			return true;
+		else if (getContainerUnit() instanceof Vehicle && ((Vehicle) getContainerUnit()).getStatus() == StatusType.GARAGED)//getGarage() != null)
 			return true;
 		else
 			return false;

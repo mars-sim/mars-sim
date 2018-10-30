@@ -346,7 +346,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		else if (oldContainer == null && newContainer instanceof Settlement)
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 
-		// Case 2a : boarding a vehicle parked in a garage
+		// Case 2a : boarding a vehicle parked inside a garage
 		else if (oldContainer instanceof Settlement && newContainer instanceof Vehicle)
 			// only if the vehicle is inside a garage can this happen
 			currentStateType = LocationStateType.INSIDE_VEHICLE;

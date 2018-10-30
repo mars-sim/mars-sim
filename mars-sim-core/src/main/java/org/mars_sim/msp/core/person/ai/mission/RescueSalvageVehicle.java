@@ -19,10 +19,8 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Driver;
@@ -70,7 +68,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 	private Vehicle vehicleTarget;
 
-//	private static UnitManager unitManager;
 	private static MissionManager missionManager;
 
 	private static int oxygenID = ResourceUtil.oxygenID;
@@ -666,7 +663,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	}
 
 	/**
-	 * Gets the number of people in the vehicle who need rescuing.
+	 * Gets the number of people in the vehicle who needs to be rescued.
 	 * 
 	 * @param vehicle the vehicle.
 	 * @return number of people.
@@ -679,6 +676,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Gets the number of robots in the vehicle that needs to be rescued.
+	 * 
+	 * @param vehicle
+	 * @return
+	 */
 	public static int getRescueRobotsNum(Vehicle vehicle) {
 		int result = 0;
 
@@ -696,6 +699,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		return getStartingSettlement();
 	}
 
+	/**
+	 * Gets a map of resources needed for the remaining mission.
+	 * 
+	 * @param useBuffer
+	 * @return a map of resources
+	 */
 	@Override
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
 
@@ -731,6 +740,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Gets a map of equipment needed for the remaining mission.
+	 * 
+	 * @param useBuffer
+	 * @return a map of equipment
+	 */
 	@Override
 	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
 		if (equipmentNeededCache != null) {
@@ -742,6 +757,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		}
 	}
 
+	/**
+	 * Gets the mission qualification score
+	 * 
+	 * @param member
+	 * @return the score
+	 */
 	@Override
 	protected double getMissionQualification(MissionMember member) {
 		double result = 0D;
@@ -762,17 +783,23 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Is this member capable of doing the mission 
+	 * 
+	 * @param member
+	 * @return true or false
+	 */
 	@Override
 	protected boolean isCapableOfMission(MissionMember member) {
 		boolean result = super.isCapableOfMission(member);
 
 		if (result) {
 			boolean atStartingSettlement = false;
-			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+//			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 				if (member.getSettlement() == getStartingSettlement()) {
 					atStartingSettlement = true;
 				}
-			}
+//			}
 			result = atStartingSettlement;
 		}
 
@@ -828,14 +855,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		Map<Integer, Number> result = new HashMap<Integer, Number>(4);
 		Inventory inv = getVehicle().getInventory();
 		result.put(getVehicle().getFuelType(), inv.getARCapacity(getVehicle().getFuelType(), false));
-		// AmountResource oxygen =
-		// AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		result.put(oxygenID, inv.getARCapacity(oxygenID, false));
-		// AmountResource water =
-		// AmountResource.findAmountResource(LifeSupportType.WATER);
 		result.put(waterID, inv.getARCapacity(waterID, false));
-		// AmountResource food =
-		// AmountResource.findAmountResource(LifeSupportType.FOOD);
 		result.put(foodID, inv.getARCapacity(foodID, false));
 
 		// Get parts too.

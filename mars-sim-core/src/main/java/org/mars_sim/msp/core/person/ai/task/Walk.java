@@ -720,7 +720,7 @@ public class Walk extends Task implements Serializable {
 		} else if (EXITING_ROVER_GARAGE.equals(getPhase())) {
 			return exitingRoverGaragePhase(time);
 		} else if (ENTERING_ROVER_GARAGE.equals(getPhase())) {
-			return enteringRoverGaragePhase(time);
+			return enteringRoverInsideGaragePhase(time);
 		} else {
 			return time;
 		}
@@ -1212,14 +1212,16 @@ public class Walk extends Task implements Serializable {
 
 		if (person != null) {
 			logger.finer(person + " walking exiting rover garage phase.");
-
+//			System.out.println("exiting rover : " + person + "'s vehicle is " + person.getVehicle().getName());
 			rover.getInventory().retrieveUnit(person);
 			garageBuilding.getSettlementInventory().storeUnit(person);
 			BuildingManager.addPersonOrRobotToBuildingSameLocation(person, garageBuilding);
+//			System.out.println("exiting rover : " + person + "'s Settlement is " + person.getSettlement());
 
-		} else if (robot != null) {
+		} 
+		
+		else if (robot != null) {
 			logger.finer(robot + " walking exiting rover garage phase.");
-
 			rover.getInventory().retrieveUnit(robot);
 			garageBuilding.getSettlementInventory().storeUnit(robot);
 			BuildingManager.addPersonOrRobotToBuildingSameLocation(robot, garageBuilding);
@@ -1243,7 +1245,7 @@ public class Walk extends Task implements Serializable {
 	 * @return the amount of time (millisol) left after performing the walking
 	 *         phase.
 	 */
-	private double enteringRoverGaragePhase(double time) {
+	private double enteringRoverInsideGaragePhase(double time) {
 
 		double timeLeft = time;
 
@@ -1254,16 +1256,19 @@ public class Walk extends Task implements Serializable {
 		if (person != null) {
 //			logger.info(person + " walking entering rover garage phase.");
 //			logger.info(person + " location situation: " + person.getLocationSituation());
-			garageBuilding.getSettlementInventory().retrieveUnit(person);
+//			garageBuilding.getSettlementInventory().retrieveUnit(person);
+//			System.out.println("entering rover : " + person + "'s Settlement is " + person.getSettlement());
+			person.getSettlement().getInventory().retrieveUnit(person);
 			BuildingManager.removePersonOrRobotFromBuilding(person, garageBuilding);
 			rover.getInventory().storeUnit(person);
-
+//			System.out.println("entering rover : " + person + "'s vehicle is " + person.getVehicle().getName());
 		} 
 		
 		else if (robot != null) {
 			logger.finer(robot + " walking entering rover garage phase.");
 			logger.finer(robot + " location situation: " + robot.getLocationSituation());
-			garageBuilding.getSettlementInventory().retrieveUnit(robot);
+//			garageBuilding.getSettlementInventory().retrieveUnit(robot);
+			robot.getSettlement().getInventory().retrieveUnit(person);
 			BuildingManager.removePersonOrRobotFromBuilding(robot, garageBuilding);
 			rover.getInventory().storeUnit(robot);
 

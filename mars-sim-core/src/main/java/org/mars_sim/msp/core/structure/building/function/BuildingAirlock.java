@@ -61,7 +61,7 @@ public class BuildingAirlock extends Airlock {
         
         settlement = building.getBuildingManager().getSettlement();
 
-        inv = building.getSettlementInventory();
+        inv = settlement.getInventory();//building.getSettlementInventory();
         
         //air = building.getSettlement().getCompositionOfAir();
         
@@ -117,7 +117,7 @@ public class BuildingAirlock extends Airlock {
             	// check if the airlock has been depressurized, ready to open the outer door to 
             	// get exposed to the outside air and release the person
             	
-               if (person.isInSettlement()) {
+            	if (person.isInSettlementNotVehicleGarage()) {
                     // Upon depressurization, there is heat loss to the Martian air in Heating class
                 	if (heating == null)
                 		heating = building.getThermalGeneration().getHeating();

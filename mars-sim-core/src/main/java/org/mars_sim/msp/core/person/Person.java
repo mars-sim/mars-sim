@@ -58,6 +58,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Medical;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
@@ -717,6 +718,42 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
+	 * Is the person in a vehicle inside a garage
+	 * 
+	 * @return true if the person is in a vehicle inside a garage
+	 */
+	public boolean isInVehicleInGarage() {
+		if (isBuried)
+			return false;
+		else {
+			Unit c = getContainerUnit();
+			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
+				return true;
+			else
+				return false;
+		}
+	}
+	
+	/**
+	 * Is the person inside a settlement but not in a vehicle inside a garage
+	 * 
+	 * @return true or false
+	 */
+	public boolean isInSettlementNotVehicleGarage() {
+		if (isBuried)
+			return false;
+		else {
+			Unit c = getContainerUnit();
+			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
+				return false;
+			else if (c instanceof Settlement)
+				return true;
+			else
+				return false;
+		}
+	}
+
+	/**
 	 * Is the person inside a settlement
 	 * 
 	 * @return true if the person is inside a settlement
@@ -725,12 +762,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		if (isBuried)
 			return false;
 		else {
-			if (getContainerUnit() instanceof Settlement)
+			Unit c = getContainerUnit();
+			if (c instanceof Settlement)
 				return true;
+//			else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
+//				return true;
 			else
 				return false;
 		}
 	}
+
 
 	/**
 	 * Is the person inside a settlement or a vehicle

@@ -54,6 +54,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -325,6 +326,42 @@ public class Robot
 	}
 
 	/**
+	 * Is the robot in a vehicle inside a garage
+	 * 
+	 * @return true if the robot is in a vehicle inside a garage
+	 */
+	public boolean isInVehicleInGarage() {
+		if (isInoperable)
+			return false;
+		else {
+			Unit c = getContainerUnit();
+			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
+				return true;
+			else
+				return false;
+		}
+	}
+
+	/**
+	 * Is the robot inside a settlement but not in a vehicle inside a garage
+	 * 
+	 * @return true or false
+	 */
+	public boolean isInSettlementNotVehicleGarage() {
+		if (isInoperable)
+			return false;
+		else {
+			Unit c = getContainerUnit();
+			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
+				return false;
+			else if (c instanceof Settlement)
+				return true;
+			else
+				return false;
+		}
+	}
+	
+	/**
 	 * Is the robot inside a settlement
 	 * 
 	 * @return true if the robot is inside a settlement
@@ -335,6 +372,8 @@ public class Robot
 		else {
 			if (getContainerUnit() instanceof Settlement)
 				return true;
+//			else if (getContainerUnit() instanceof Vehicle && ((Vehicle) getContainerUnit()).getStatus() == StatusType.GARAGED)//getGarage() != null)
+//				return true;
 			else
 				return false;
 		}

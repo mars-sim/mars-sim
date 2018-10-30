@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -290,8 +291,9 @@ public abstract class RoverMission extends VehicleMission {
 				throw new IllegalStateException(
 						Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
 
-			// Add the rover to a garage if possible.
+			// If the vehicle is currently not in a garage
 			if (BuildingManager.getBuilding(getVehicle()) == null) {
+				// Add the rover to a garage if possible.
 				BuildingManager.addToRandomBuilding((Rover) getVehicle(), getVehicle().getSettlement());
 			}
 
@@ -432,6 +434,8 @@ public abstract class RoverMission extends VehicleMission {
 			if (v.getSettlement() == null) {
 				disembarkSettlement.getInventory().storeUnit(v);
 				v.determinedSettlementParkedLocationAndFacing();
+				// Add vehicle to a garage if available.
+				BuildingManager.addToRandomBuilding((GroundVehicle) v, disembarkSettlement);
 			}
 
 //			// Test if this rover is towing another vehicle or is being towed

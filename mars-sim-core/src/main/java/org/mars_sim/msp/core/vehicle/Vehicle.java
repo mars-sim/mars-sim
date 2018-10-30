@@ -432,6 +432,16 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
+	 * Sets the status type of a vehicle
+	 * 
+	 * @param type
+	 */
+	public void setStatus(StatusType type) {
+		this.status = type;
+		fireUnitUpdate(UnitEventType.STATUS_EVENT, type);
+	}
+	
+	/**
 	 * Updates the vehicle's status.
 	 */
 	private void updateStatus() {
@@ -717,14 +727,19 @@ public abstract class Vehicle extends Unit
 			return (Settlement) c;
 		else
 			return null;
-		/*
-		 * Unit topUnit = getTopContainerUnit();
-		 * 
-		 * if ((topUnit != null) && (topUnit instanceof Settlement)) return (Settlement)
-		 * topUnit; else return null;
-		 */
+//		
+//		 Unit topUnit = getTopContainerUnit();
+//		 
+//		 if ((topUnit != null) && (topUnit instanceof Settlement)) return (Settlement)
+//		 topUnit; else return null;
+//		 
 	}
 
+	/**
+	 * Get the garage building that the vehicle is at
+	 * 
+	 * @return {@link Vehicle}
+	 */
 	public Building getGarage() {
 		return BuildingManager.getBuilding(this, getSettlement());
 	}

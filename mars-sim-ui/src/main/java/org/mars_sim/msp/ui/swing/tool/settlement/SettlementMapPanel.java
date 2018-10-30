@@ -40,15 +40,12 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.alee.laf.panel.WebPanel;
 
-
 /**
  * A panel for displaying the settlement map.
  */
-public class SettlementMapPanel
-extends WebPanel
-implements ClockListener {
+public class SettlementMapPanel extends WebPanel implements ClockListener {
 
-	// default logger.
+// 	Default logger.
 //	private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
 
 	// Static members.
@@ -64,8 +61,8 @@ implements ClockListener {
 	private double yPos;
 	private double rotation;
 	private double scale;
-	//private int width;
-	//private int height;
+	// private int width;
+	// private int height;
 
 	/** Last X mouse drag position. */
 	private int xLast;
@@ -73,7 +70,7 @@ implements ClockListener {
 	private int yLast;
 
 	private int size;
-	
+
 	private boolean showBuildingLabels;
 	private boolean showConstructionLabels;
 	private boolean showPersonLabels;
@@ -91,15 +88,15 @@ implements ClockListener {
 	private SettlementTransparentPanel settlementTransparentPanel;
 
 	private static MasterClock masterClock = Simulation.instance().getMasterClock();
-	
+
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
 	private Map<Settlement, Robot> selectedRobot;
-	
+
 //	private FXGraphics2D fxg2;
 
-	/** Constructor 1
-	 * 	A panel for displaying a settlement map.
+	/**
+	 * Constructor 1 A panel for displaying a settlement map.
 	 */
 	public SettlementMapPanel(MainDesktopPane desktop, final SettlementWindow settlementWindow) {
 		super();
@@ -113,9 +110,8 @@ implements ClockListener {
 //			fxg2 = new FXGraphics2D(MainScene.getCanvas().getGraphicsContext2D());
 //		}
 
-	
 		settlement = (Settlement) Simulation.instance().getUnitManager().getSettlements().toArray()[0];
-		
+
 		setLayout(new BorderLayout());
 
 		setDoubleBuffered(true);
@@ -130,11 +126,11 @@ implements ClockListener {
 		showPersonLabels = false;
 		showVehicleLabels = false;
 		showRobotLabels = false;
-		showDaylightLayer = false;  // turn off by default
+		showDaylightLayer = false; // turn off by default
 		selectedPerson = new HashMap<Settlement, Person>();
 		selectedRobot = new HashMap<Settlement, Robot>();
 
-		//logger.info("PERIOD_IN_MILLISOLS : " + PERIOD_IN_MILLISOLS);
+		// logger.info("PERIOD_IN_MILLISOLS : " + PERIOD_IN_MILLISOLS);
 		SwingUtilities.invokeLater(() -> {
 			initLayers(desktop);
 		});
@@ -153,11 +149,11 @@ implements ClockListener {
 			requestFocusInWindow();
 		});
 
-		//SwingUtilities.updateComponentTreeUI(this);
+		// SwingUtilities.updateComponentTreeUI(this);
 
-        setVisible(true);
-        
-        //paintDoubleBuffer();
+		setVisible(true);
+
+		// paintDoubleBuffer();
 		repaint();
 	}
 
@@ -166,27 +162,26 @@ implements ClockListener {
 		// Create map layers.
 		mapLayers = new ArrayList<SettlementMapLayer>();
 		mapLayers.add(new BackgroundTileMapLayer(this));
-		mapLayers.add(new DayNightMapLayer(this));		
+		mapLayers.add(new DayNightMapLayer(this));
 		mapLayers.add(new StructureMapLayer(this));
-		mapLayers.add(new VehicleMapLayer(this));	
+		mapLayers.add(new VehicleMapLayer(this));
 		mapLayers.add(new PersonMapLayer(this));
 		mapLayers.add(new RobotMapLayer(this));
 		mapLayers.add(new LabelMapLayer(this));
 
-		
 		size = mapLayers.size();
-		
-		//SwingUtilities.invokeLater(() -> {
-			if (desktop.getMainScene() == null)
-				settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
-		//});
-			
-		//paintDoubleBuffer();
-		repaint();			
+
+		// SwingUtilities.invokeLater(() -> {
+		if (desktop.getMainScene() == null)
+			settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
+		// });
+
+		// paintDoubleBuffer();
+		repaint();
 	}
 
-	/** Constructor 2
-	 *  A panel for initializing the display of a building svg image.
+	/**
+	 * Constructor 2 A panel for initializing the display of a building svg image.
 	 */
 	// Add this constructor for loading an svg image, called by BuildingPanel.java
 	public SettlementMapPanel(Settlement settlement, Building building) {
@@ -204,7 +199,7 @@ implements ClockListener {
 		mapLayers.add(new StructureMapLayer(this));
 
 		size = mapLayers.size();
-		
+
 		// Set preferred size.
 		setPreferredSize(new Dimension(100, 100));
 
@@ -217,56 +212,74 @@ implements ClockListener {
 
 		if (mainScene == null) {
 			// For Classic Java Swing mode
-			
+
 			addMouseListener(new MouseAdapter() {
+
+				@Override
+				public void mouseReleased(MouseEvent evt) {
+					if (evt.getButton() == MouseEvent.BUTTON1) {
+						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					}
+				}
+
 				@Override
 				public void mousePressed(MouseEvent evt) {
-					//setCursor(new Cursor(Cursor.HAND_CURSOR));
+					// setCursor(new Cursor(Cursor.HAND_CURSOR));
 					if (evt.getButton() == MouseEvent.BUTTON1) {
 						// Set initial mouse drag position.
 						xLast = evt.getX();
 						yLast = evt.getY();
 					}
 				}
-	
+
 				@Override
 				public void mouseClicked(MouseEvent evt) {
 					// Select person if clicked on.
-					setCursor(new Cursor(Cursor.HAND_CURSOR));
+//					setCursor(new Cursor(Cursor.HAND_CURSOR));
+					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 //					selectPersonAt(evt.getX(), evt.getY());
 //					selectRobotAt(evt.getX(), evt.getY());
 				}
-	
+
 			});
-	
+
 		}
-		
+
 		else {
 			// For JavaFX mode
-			
+
 			addMouseListener(new MouseAdapter() {
+
+				@Override
+				public void mouseReleased(MouseEvent evt) {
+					if (evt.getButton() == MouseEvent.BUTTON1) {
+						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					}
+				}
+
 				@Override
 				public void mousePressed(MouseEvent evt) {
-					//setCursor(new Cursor(Cursor.HAND_CURSOR));
+					// setCursor(new Cursor(Cursor.HAND_CURSOR));
 					if (evt.getButton() == MouseEvent.BUTTON1) {
 						// Set initial mouse drag position.
 						xLast = evt.getX();
 						yLast = evt.getY();
 					}
 				}
-	
+
 				@Override
 				public void mouseClicked(MouseEvent evt) {
 					// Select person if clicked on.
 					if (evt.getButton() == MouseEvent.BUTTON1) {
-						setCursor(new Cursor(Cursor.HAND_CURSOR));
+						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+//						setCursor(new Cursor(Cursor.HAND_CURSOR));
 //						selectPersonAt(evt.getX(), evt.getY());
 //						selectRobotAt(evt.getX(), evt.getY());
 					}
 				}
-	
+
 			});
-			
+
 			addMouseMotionListener(new MouseMotionAdapter() {
 				@Override
 				public void mouseDragged(MouseEvent evt) {
@@ -275,17 +288,16 @@ implements ClockListener {
 						double yDiff = evt.getY() - yLast;
 						xLast = evt.getX();
 						yLast = evt.getY();
-						//System.out.println("button3");
+						// System.out.println("button3");
 						setCursor(new Cursor(Cursor.MOVE_CURSOR));
 						// Move map center based on mouse drag difference.
 						moveCenter(xDiff, yDiff);
-					}
-					else {
+					} else {
 						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					}
-	
+
 				}
-	
+
 //				@Override
 //				public void mouseMoved(MouseEvent evt) {
 //					//System.out.println("mouseDragged()");
@@ -303,30 +315,28 @@ implements ClockListener {
 //				}
 			});
 		}
-	
+
 		// Add PopClickListener() to detect mouse right click
 		class PopClickListener extends MouseAdapter {
 
-			//@Override
-			public void mouseClicked(MouseEvent evt) {
-				// Select person if clicked on.
+			// @Override
+//			public void mouseClicked(MouseEvent evt) {
+			// Select person if clicked on.
 //				if (evt.getButton() == MouseEvent.BUTTON1) {
 //					setCursor(new Cursor(Cursor.HAND_CURSOR));
 //					selectPersonAt(evt.getX(), evt.getY());
 //					selectRobotAt(evt.getX(), evt.getY());
 //				}
-			}
+//			}
 
-			//@Override
-			public void mouseEntered(MouseEvent evt) {
-				//mouseMoved(evt);
+			// @Override
+//			public void mouseEntered(MouseEvent evt) {
+			// mouseMoved(evt);
+//			}
 
-			}
-
-			public void mouseExited(MouseEvent evt) {
-				//mouseMoved(evt);
-			}
-
+//			public void mouseExited(MouseEvent evt) {
+			// mouseMoved(evt);
+//			}
 
 //			@Override
 //			public void mouseClicked(MouseEvent evt) {
@@ -345,9 +355,8 @@ implements ClockListener {
 //
 //			}
 
-
 			@Override
-		    public void mousePressed(MouseEvent evt){
+			public void mousePressed(MouseEvent evt) {
 				setCursor(new Cursor(Cursor.HAND_CURSOR));
 
 				if (evt.getButton() == MouseEvent.BUTTON3) {
@@ -355,63 +364,61 @@ implements ClockListener {
 					xLast = evt.getX();
 					yLast = evt.getY();
 
-					 if (evt.isPopupTrigger()) {
-						 setCursor(new Cursor(Cursor.HAND_CURSOR));
-						 //repaint();
-						 doPop(evt);
-					 }
+					if (evt.isPopupTrigger()) {
+						setCursor(new Cursor(Cursor.HAND_CURSOR));
+						// repaint();
+						doPop(evt);
+					}
 				}
-		    }
+			}
 
 			@Override
-		    public void mouseReleased(MouseEvent evt){
-		    	//setCursor(new Cursor(Cursor.HAND_CURSOR));
-				//setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-
+			public void mouseReleased(MouseEvent evt) {
+				// setCursor(new Cursor(Cursor.HAND_CURSOR));
+				// setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				if (evt.getButton() == MouseEvent.BUTTON3) {
-					
+
 					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					xLast = 0;//evt.getX();
-					yLast = 0;//evt.getY();
+					xLast = 0;// evt.getX();
+					yLast = 0;// evt.getY();
 
 					if (evt.isPopupTrigger()) {
 						setCursor(new Cursor(Cursor.HAND_CURSOR));
 						doPop(evt);
 					}
 				}
+			}
 
-		    }
+			// Add vehicle detection
+			private void doPop(final MouseEvent evt) {
+				// System.out.println("doPop()");
+				final ConstructionSite site = selectConstructionSiteAt(evt.getX(), evt.getY());
+				final Building building = selectBuildingAt(evt.getX(), evt.getY());
+				final Vehicle vehicle = selectVehicleAt(evt.getX(), evt.getY());
+				final Person person = selectPersonAt(evt.getX(), evt.getY());
+				final Robot robot = selectRobotAt(evt.getX(), evt.getY());
 
-		    // Add vehicle detection
-		    private void doPop(final MouseEvent evt) {
-		    	//System.out.println("doPop()");
-		    	final ConstructionSite site = selectConstructionSiteAt(evt.getX(), evt.getY());
-		    	final Building building = selectBuildingAt(evt.getX(), evt.getY());
-		    	final Vehicle vehicle = selectVehicleAt(evt.getX(), evt.getY());
-		    	final Person person = selectPersonAt(evt.getX(), evt.getY());
-		    	final Robot robot = selectRobotAt(evt.getX(), evt.getY());
+				// if NO building is selected, do NOT call popup menu
+				if (site != null || building != null || vehicle != null || person != null || robot != null) {
 
-		    	// if NO building is selected, do NOT call popup menu
-		    	if (site != null || building != null || vehicle != null || person != null || robot != null) {
+					// Deconflict cases by the virtue of the if-else order below
+					// when one or more are detected
+					if (person != null)
+						menu = new PopUpUnitMenu(settlementWindow, person);
+					else if (robot != null)
+						menu = new PopUpUnitMenu(settlementWindow, robot);
+					else if (vehicle != null)
+						menu = new PopUpUnitMenu(settlementWindow, vehicle);
+					else if (building != null)
+						menu = new PopUpUnitMenu(settlementWindow, building);
+					else if (site != null)
+						menu = new PopUpUnitMenu(settlementWindow, site);
 
-	        		// Deconflict cases by the virtue of the if-else order below
-    	        	// when one or more are detected
-    	        	if (person != null)
-    	        		menu = new PopUpUnitMenu(settlementWindow, person);
-    	        	else if (robot != null)
-    	        		menu = new PopUpUnitMenu(settlementWindow, robot);
-    	        	else if (vehicle != null)
-    	        		menu = new PopUpUnitMenu(settlementWindow, vehicle);
-    	        	else if (building != null)
-    	        		menu = new PopUpUnitMenu(settlementWindow, building);
-    	        	else if (site != null)
-    	        		menu = new PopUpUnitMenu(settlementWindow, site);
-
-    	        	//setComponentPopupMenu(menu);
-    	        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
-		        }
-				//repaint();
-		    }
+					// setComponentPopupMenu(menu);
+					menu.show(evt.getComponent(), evt.getX(), evt.getY());
+				}
+				// repaint();
+			}
 		}// end of class PopClickListener
 
 		addMouseListener(new PopClickListener());
@@ -420,6 +427,7 @@ implements ClockListener {
 
 	/**
 	 * Gets the settlement currently displayed.
+	 * 
 	 * @return settlement or null if none.
 	 */
 	public Settlement getSettlement() {
@@ -428,6 +436,7 @@ implements ClockListener {
 
 	/**
 	 * Gets the SettlementWindow class.
+	 * 
 	 * @return settlementWindow or null if none.
 	 */
 	public SettlementWindow getSettlementWindow() {
@@ -436,22 +445,23 @@ implements ClockListener {
 
 	/**
 	 * Sets the settlement to display.
+	 * 
 	 * @param settlement the settlement.
 	 */
-	// Called by SettlementTransparentPanel to update settlement
 	public synchronized void setSettlement(Settlement newSettlement) {
 		if (newSettlement != settlement) {
 
 			this.settlement = newSettlement;
 //			if (settlementWindow != null && settlementWindow.getMarqueeTicker() != null)
 //				settlementWindow.getMarqueeTicker().updateSettlement(newSettlement);
-			//paintDoubleBuffer();
+			// paintDoubleBuffer();
 			repaint();
 		}
 	}
 
 	/**
 	 * Gets the map scale.
+	 * 
 	 * @return scale (pixels per meter).
 	 */
 	public double getScale() {
@@ -460,17 +470,19 @@ implements ClockListener {
 
 	/**
 	 * Sets the map scale.
+	 * 
 	 * @param scale (pixels per meter).
 	 */
 	public void setScale(double scale) {
 		this.scale = scale;
 
-		//paintDoubleBuffer();
+		// paintDoubleBuffer();
 		repaint();
 	}
 
 	/**
 	 * Gets the map rotation.
+	 * 
 	 * @return rotation (radians).
 	 */
 	public double getRotation() {
@@ -479,18 +491,19 @@ implements ClockListener {
 
 	/**
 	 * Sets the map rotation.
+	 * 
 	 * @param rotation (radians).
 	 */
 	public void setRotation(double rotation) {
 		this.rotation = rotation;
 
-		//paintDoubleBuffer();
+		// paintDoubleBuffer();
 		repaint();
 	}
 
 	/**
-	 * Resets the position, scale and rotation of the map.
-	 * Separate function that only uses one repaint.
+	 * Resets the position, scale and rotation of the map. Separate function that
+	 * only uses one repaint.
 	 */
 	public void reCenter() {
 		xPos = 0D;
@@ -498,12 +511,13 @@ implements ClockListener {
 		setRotation(0D);
 		scale = DEFAULT_SCALE;
 
-		//paintDoubleBuffer();
+		// paintDoubleBuffer();
 		repaint();
 	}
 
 	/**
 	 * Moves the center of the map by a given number of pixels.
+	 * 
 	 * @param xDiff the X axis pixels.
 	 * @param yDiff the Y axis pixels.
 	 */
@@ -518,12 +532,13 @@ implements ClockListener {
 		xPos += realXDiff;
 		yPos += realYDiff;
 
-		//paintDoubleBuffer();
+		// paintDoubleBuffer();
 		repaint();
 	}
 
 	/**
 	 * Selects a person if any person is at the given x and y pixel position.
+	 * 
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selectedPerson;
@@ -548,14 +563,15 @@ implements ClockListener {
 		if (selectedPerson != null) {
 			selectPerson(selectedPerson);
 
-			////paintDoubleBuffer();
-			//repaint();
+			//// paintDoubleBuffer();
+			// repaint();
 		}
 		return selectedPerson;
 	}
 
 	/**
 	 * Selects the robot if any robot is at the given x and y pixel position.
+	 * 
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selectedRobot;
@@ -580,30 +596,30 @@ implements ClockListener {
 		if (selectedRobot != null) {
 			selectRobot(selectedRobot);
 
-			////paintDoubleBuffer();
-			//repaint();
+			//// paintDoubleBuffer();
+			// repaint();
 		}
 		return selectedRobot;
 	}
 
-
 	/**
 	 * Selects a building
+	 * 
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selectedBuilding
 	 */
 	public Building selectBuildingAt(int xPixel, int yPixel) {
-		//System.out.println("selectBuildingAt()");
+		// System.out.println("selectBuildingAt()");
 		Point.Double clickPosition = convertToSettlementLocation(xPixel, yPixel);
 		Building selectedBuilding = null;
 
 		Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			//System.out.println("building : " + building.getNickName());
+			// System.out.println("building : " + building.getNickName());
 			if (!building.getInTransport()) {
-				//System.out.println("building : " + building.getNickName());
+				// System.out.println("building : " + building.getNickName());
 				double width = building.getWidth();
 				double length = building.getLength();
 				int facing = (int) building.getFacing();
@@ -613,45 +629,41 @@ implements ClockListener {
 				double yy = 0;
 
 				if (facing == 0) {
-					xx = width/2D;
-					yy = length/2D;
-				}
-				else if (facing == 90){
-					yy = width/2D;
-					xx = length/2D;
+					xx = width / 2D;
+					yy = length / 2D;
+				} else if (facing == 90) {
+					yy = width / 2D;
+					xx = length / 2D;
 				}
 				// Loading Dock Garage
 				if (facing == 180) {
-					xx = width/2D;
-					yy = length/2D;
-				}
-				else if (facing == 270){
-					yy = width/2D;
-					xx = length/2D;
+					xx = width / 2D;
+					yy = length / 2D;
+				} else if (facing == 270) {
+					yy = width / 2D;
+					xx = length / 2D;
 				}
 
 				// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
 				// Fortunately, they both have the same width and length
-				else if (facing == 45){
-					yy = width/2D;
-					xx = length/2D;
-				}
-				else if (facing == 135){
-					yy = width/2D;
-					xx = length/2D;
+				else if (facing == 45) {
+					yy = width / 2D;
+					xx = length / 2D;
+				} else if (facing == 135) {
+					yy = width / 2D;
+					xx = length / 2D;
 				}
 
 				double c_x = clickPosition.getX();
 				double c_y = clickPosition.getY();
 
-
-				double distanceX = Math.round((c_x - x)*100.0)/100.0; //Math.abs(x - c_x);
-				double distanceY = Math.round((c_y - y)*100.0)/100.0; //Math.abs(y - c_y);
+				double distanceX = Math.round((c_x - x) * 100.0) / 100.0; // Math.abs(x - c_x);
+				double distanceY = Math.round((c_y - y) * 100.0) / 100.0; // Math.abs(y - c_y);
 
 				if (Math.abs(distanceX) <= xx && Math.abs(distanceY) <= yy) {
 					selectedBuilding = building;
 
-					//System.out.println(" x : " + distanceX + "   y : " + distanceY);
+					// System.out.println(" x : " + distanceX + " y : " + distanceY);
 
 					settlementWindow.setXCoor(distanceX);
 					settlementWindow.setYCoor(distanceY);
@@ -663,10 +675,9 @@ implements ClockListener {
 		return selectedBuilding;
 	}
 
-
-
 	/**
 	 * Selects a construction site
+	 * 
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selected construction site
@@ -679,7 +690,7 @@ implements ClockListener {
 		while (j.hasNext()) {
 			ConstructionSite s = j.next();
 
-			if (!LabelMapLayer.getConstructionLabel(s).equals(Msg.getString("LabelMapLayer.noConstruction")))  {
+			if (!LabelMapLayer.getConstructionLabel(s).equals(Msg.getString("LabelMapLayer.noConstruction"))) {
 				double width = s.getWidth();
 				double length = s.getLength();
 				int facing = (int) s.getFacing();
@@ -689,32 +700,29 @@ implements ClockListener {
 				double yy = 0;
 
 				if (facing == 0) {
-					xx = width/2D;
-					yy = length/2D;
-				}
-				else if (facing == 90){
-					yy = width/2D;
-					xx = length/2D;
+					xx = width / 2D;
+					yy = length / 2D;
+				} else if (facing == 90) {
+					yy = width / 2D;
+					xx = length / 2D;
 				}
 				// Loading Dock Garage
 				if (facing == 180) {
-					xx = width/2D;
-					yy = length/2D;
-				}
-				else if (facing == 270){
-					yy = width/2D;
-					xx = length/2D;
+					xx = width / 2D;
+					yy = length / 2D;
+				} else if (facing == 270) {
+					yy = width / 2D;
+					xx = length / 2D;
 				}
 
 				// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
 				// Fortunately, they both have the same width and length
-				else if (facing == 45){
-					yy = width/2D;
-					xx = length/2D;
-				}
-				else if (facing == 135){
-					yy = width/2D;
-					xx = length/2D;
+				else if (facing == 45) {
+					yy = width / 2D;
+					xx = length / 2D;
+				} else if (facing == 135) {
+					yy = width / 2D;
+					xx = length / 2D;
 				}
 
 				double distanceX = Math.abs(x - clickPosition.getX());
@@ -730,36 +738,35 @@ implements ClockListener {
 		return site;
 	}
 
-/*
-	public static List<ConstructionSite> returnConstructionSiteList(Settlement settlement) {
-
-		List<ConstructionSite> result = new ArrayList<ConstructionSite>();
-		if (settlement != null) {
-		    Iterator<ConstructionSite> i = settlement.getBuildingManager().getBuildings().iterator();
-			while (i.hasNext()) {
-				ConstructionSite site = i.next();
-						result.add(site);
-			}
-		}
-		return result;
-	}
-
-	public static List<Building> returnBuildingList(Settlement settlement) {
-
-		List<Building> result = new ArrayList<Building>();
-		if (settlement != null) {
-		    Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
-			while (i.hasNext()) {
-				Building building = i.next();
-						result.add(building);
-			}
-		}
-		return result;
-	}
-*/
+//	public static List<ConstructionSite> returnConstructionSiteList(Settlement settlement) {
+//
+//		List<ConstructionSite> result = new ArrayList<ConstructionSite>();
+//		if (settlement != null) {
+//		    Iterator<ConstructionSite> i = settlement.getBuildingManager().getBuildings().iterator();
+//			while (i.hasNext()) {
+//				ConstructionSite site = i.next();
+//						result.add(site);
+//			}
+//		}
+//		return result;
+//	}
+//
+//	public static List<Building> returnBuildingList(Settlement settlement) {
+//
+//		List<Building> result = new ArrayList<Building>();
+//		if (settlement != null) {
+//		    Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+//			while (i.hasNext()) {
+//				Building building = i.next();
+//						result.add(building);
+//			}
+//		}
+//		return result;
+//	}
 
 	/**
 	 * Selects a vehicle
+	 * 
 	 * @param xPixel the x pixel position on the displayed map.
 	 * @param yPixel the y pixel position on the displayed map.
 	 * @return selectedVehicle
@@ -772,14 +779,15 @@ implements ClockListener {
 		Iterator<Vehicle> j = returnVehicleList(settlement).iterator();
 		while (j.hasNext()) {
 			Vehicle vehicle = j.next();
-			double width =vehicle.getWidth(); // width is on y-axis ?
+			double width = vehicle.getWidth(); // width is on y-axis ?
 			double length = vehicle.getLength(); // length is on x-axis ?
 			double newRange;
 
 			// Select whichever longer
 			if (width > length)
-				newRange =  width/2.0;
-			else newRange = length/2.0;
+				newRange = width / 2.0;
+			else
+				newRange = length / 2.0;
 
 			double x = vehicle.getXLocation();
 			double y = vehicle.getYLocation();
@@ -790,8 +798,8 @@ implements ClockListener {
 			if (distance <= newRange) {
 				selectedVehicle = vehicle;
 
-				////paintDoubleBuffer();
-				//repaint();
+				//// paintDoubleBuffer();
+				// repaint();
 			}
 		}
 		return selectedVehicle;
@@ -799,6 +807,7 @@ implements ClockListener {
 
 	/**
 	 * Selects a vehicle
+	 * 
 	 * @param xLoc the position of the template building on the displayed map.
 	 * @param yLoc the position of the template building on the displayed map.
 	 * @return selectedVehicle
@@ -811,7 +820,7 @@ implements ClockListener {
 		Iterator<Vehicle> j = returnVehicleList(settlement).iterator();
 		while (j.hasNext()) {
 			Vehicle vehicle = j.next();
-			double width =vehicle.getWidth(); // width is on y-axis ?
+			double width = vehicle.getWidth(); // width is on y-axis ?
 			double length = vehicle.getLength(); // length is on x-axis ?
 			double buildingWidth = 10;
 			double buildingLength = 10;
@@ -819,8 +828,9 @@ implements ClockListener {
 
 			// Select whichever longer
 			if (width > length)
-				newRange =  (width + buildingWidth)/2.0;
-			else newRange = (length + buildingLength)/2.0;
+				newRange = (width + buildingWidth) / 2.0;
+			else
+				newRange = (length + buildingLength) / 2.0;
 
 			double x = vehicle.getXLocation();
 			double y = vehicle.getYLocation();
@@ -832,22 +842,21 @@ implements ClockListener {
 			if (distance <= newRange) {
 				selectedVehicle = vehicle;
 
-				////paintDoubleBuffer();
+				//// paintDoubleBuffer();
 				repaint();
 			}
 		}
 		return selectedVehicle;
 	}
 
-
 	public static List<Vehicle> returnVehicleList(Settlement settlement) {
 
 		List<Vehicle> result = new ArrayList<Vehicle>();
 		if (settlement != null) {
-		    Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
-						result.add(vehicle);
+				result.add(vehicle);
 			}
 		}
 		return result;
@@ -855,6 +864,7 @@ implements ClockListener {
 
 	/**
 	 * Selects a person on the map.
+	 * 
 	 * @param person the selected person.
 	 */
 	public void selectPerson(Person person) {
@@ -867,13 +877,14 @@ implements ClockListener {
 			}
 
 			// Repaint to refresh the label display.
-			////paintDoubleBuffer();
-			//repaint();
+			//// paintDoubleBuffer();
+			// repaint();
 		}
 	}
 
 	/**
 	 * Get the selected person for the current settlement.
+	 * 
 	 * @return the selected person.
 	 */
 	public Person getSelectedPerson() {
@@ -886,6 +897,7 @@ implements ClockListener {
 
 	/**
 	 * Selects a robot on the map.
+	 * 
 	 * @param robot the selected robot.
 	 */
 	public void selectRobot(Robot robot) {
@@ -898,13 +910,14 @@ implements ClockListener {
 			}
 
 			// Repaint to refresh the label display.
-			////paintDoubleBuffer();
-			//repaint();
+			//// paintDoubleBuffer();
+			// repaint();
 		}
 	}
 
 	/**
 	 * Get the selected Robot for the current settlement.
+	 * 
 	 * @return the selected Robot.
 	 */
 	public Robot getSelectedRobot() {
@@ -916,7 +929,9 @@ implements ClockListener {
 	}
 
 	/**
-	 * Convert a pixel X,Y position to a X,Y (meter) position local to the settlement in view.
+	 * Convert a pixel X,Y position to a X,Y (meter) position local to the
+	 * settlement in view.
+	 * 
 	 * @param xPixel the pixel X position.
 	 * @param yPixel the pixel Y position.
 	 * @return the X,Y settlement position.
@@ -945,6 +960,7 @@ implements ClockListener {
 
 	/**
 	 * Checks if building labels should be displayed.
+	 * 
 	 * @return true if building labels should be displayed.
 	 */
 	public boolean isShowBuildingLabels() {
@@ -953,18 +969,21 @@ implements ClockListener {
 
 	/**
 	 * Sets if building labels should be displayed.
+	 * 
 	 * @param showLabels true if building labels should be displayed.
 	 */
 	public void setShowBuildingLabels(boolean showLabels) {
 		this.showBuildingLabels = showLabels;
-		//if (showLabels) settlementTransparentPanel.getBuildingLabelMenuItem().setState(true);
-		//else settlementTransparentPanel.getBuildingLabelMenuItem().setState(false);
-		//paintDoubleBuffer();
+		// if (showLabels)
+		// settlementTransparentPanel.getBuildingLabelMenuItem().setState(true);
+		// else settlementTransparentPanel.getBuildingLabelMenuItem().setState(false);
+		// paintDoubleBuffer();
 		repaint();
 	}
 
 	/**
 	 * Checks if construction site labels should be displayed.
+	 * 
 	 * @return true if construction site labels should be displayed.
 	 */
 	public boolean isShowConstructionLabels() {
@@ -973,18 +992,22 @@ implements ClockListener {
 
 	/**
 	 * Sets if construction site labels should be displayed.
+	 * 
 	 * @param showLabels true if construction site labels should be displayed.
 	 */
 	public void setShowConstructionLabels(boolean showLabels) {
 		this.showConstructionLabels = showLabels;
-		//if (showLabels) settlementTransparentPanel.getConstructionLabelMenuItem().setState(true);
-		//else settlementTransparentPanel.getConstructionLabelMenuItem().setState(false);
-		//paintDoubleBuffer();
+		// if (showLabels)
+		// settlementTransparentPanel.getConstructionLabelMenuItem().setState(true);
+		// else
+		// settlementTransparentPanel.getConstructionLabelMenuItem().setState(false);
+		// paintDoubleBuffer();
 		repaint();
 	}
 
 	/**
 	 * Checks if person labels should be displayed.
+	 * 
 	 * @return true if person labels should be displayed.
 	 */
 	public boolean isShowPersonLabels() {
@@ -993,18 +1016,21 @@ implements ClockListener {
 
 	/**
 	 * Sets if person labels should be displayed.
+	 * 
 	 * @param showLabels true if person labels should be displayed.
 	 */
 	public void setShowPersonLabels(boolean showLabels) {
 		this.showPersonLabels = showLabels;
-		//if (showLabels) settlementTransparentPanel.getPersonLabelMenuItem().setState(true);
-		//else settlementTransparentPanel.getPersonLabelMenuItem().setState(false);
-		//paintDoubleBuffer();
+		// if (showLabels)
+		// settlementTransparentPanel.getPersonLabelMenuItem().setState(true);
+		// else settlementTransparentPanel.getPersonLabelMenuItem().setState(false);
+		// paintDoubleBuffer();
 		repaint();
 	}
 
 	/**
 	 * Checks if Robot labels should be displayed.
+	 * 
 	 * @return true if Robot labels should be displayed.
 	 */
 	public boolean isShowRobotLabels() {
@@ -1013,17 +1039,21 @@ implements ClockListener {
 
 	/**
 	 * Sets if Robot labels should be displayed.
+	 * 
 	 * @param showLabels true if Robot labels should be displayed.
 	 */
 	public void setShowRobotLabels(boolean showLabels) {
 		this.showRobotLabels = showLabels;
-		//if (showLabels) settlementTransparentPanel.getRobotLabelMenuItem().setState(true);
-		//else settlementTransparentPanel.getRobotLabelMenuItem().setState(false);
-		//paintDoubleBuffer();
+		// if (showLabels)
+		// settlementTransparentPanel.getRobotLabelMenuItem().setState(true);
+		// else settlementTransparentPanel.getRobotLabelMenuItem().setState(false);
+		// paintDoubleBuffer();
 		repaint();
 	}
+
 	/**
 	 * Checks if vehicle labels should be displayed.
+	 * 
 	 * @return true if vehicle labels should be displayed.
 	 */
 	public boolean isShowVehicleLabels() {
@@ -1032,19 +1062,21 @@ implements ClockListener {
 
 	/**
 	 * Sets if vehicle labels should be displayed.
+	 * 
 	 * @param showLabels true if vehicle labels should be displayed.
 	 */
 	public void setShowVehicleLabels(boolean showLabels) {
 		this.showVehicleLabels = showLabels;
-		//if (showLabels) settlementTransparentPanel.getVehicleLabelMenuItem().setState(true);
-		//else settlementTransparentPanel.getVehicleLabelMenuItem().setState(false);
-		//paintDoubleBuffer();
+		// if (showLabels)
+		// settlementTransparentPanel.getVehicleLabelMenuItem().setState(true);
+		// else settlementTransparentPanel.getVehicleLabelMenuItem().setState(false);
+		// paintDoubleBuffer();
 		repaint();
 	}
 
-
 	/**
 	 * Checks if DaylightLayer should be displayed.
+	 * 
 	 * @return true if DaylightLayer should be displayed.
 	 */
 	public boolean isDaylightTrackingOn() {
@@ -1053,72 +1085,71 @@ implements ClockListener {
 
 	/**
 	 * Sets if DayNightLayershould be displayed.
+	 * 
 	 * @param showDayNightLayer true if DayNightLayer should be displayed.
 	 */
 	public void setShowDayNightLayer(boolean showDayNightLayer) {
 		this.showDaylightLayer = showDayNightLayer;
-		
-		//paintDoubleBuffer();
+
+		// paintDoubleBuffer();
 		repaint();
 	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-/*		
-		if (dbImage != null) {
-			g.drawImage(dbImage,  0, 0, null);
-		}
-	}
-*/
-	/*
-	 * Uses double buffering to draws into its own graphics object dbg before calling paintComponent()
-	 */
-/*		
-	public void paintDoubleBuffer() {
-		if (dbImage == null) {
-			dbImage = createImage(width, height);
-			if (dbImage == null) {
-				//System.out.println("dbImage is null");
-				return;
-			}
-			else
-				dbg = dbImage.getGraphics();
-		}
-		Graphics2D g2d = (Graphics2D) dbg;
-*/
+
+//		if (dbImage != null) {
+//			g.drawImage(dbImage,  0, 0, null);
+//		}
+//	}
+
+//	/*
+//	 * Uses double buffering to draws into its own graphics object dbg before calling paintComponent()
+//	 */
+///		
+//	public void paintDoubleBuffer() {
+//		if (dbImage == null) {
+//			dbImage = createImage(width, height);
+//			if (dbImage == null) {
+//				//System.out.println("dbImage is null");
+//				return;
+//			}
+//			else
+//				dbg = dbImage.getGraphics();
+//		}
+//		Graphics2D g2d = (Graphics2D) dbg;
+
 		Graphics2D g2d = (Graphics2D) g;
-		
-		//		long startTime = System.nanoTime();
-		
+
+		// long startTime = System.nanoTime();
+
 		// Set graphics rendering hints.
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		g2d.setRenderingHint( RenderingHints.  KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-		
-		/*
+		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+
 		// Display all map layers.
-		Iterator<SettlementMapLayer> i = mapLayers.iterator();
-		while (i.hasNext()) {
-			// Add building parameter
-			i.next().displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
-		}
-		*/
-		
+//		Iterator<SettlementMapLayer> i = mapLayers.iterator();
+//		while (i.hasNext()) {
+//			// Add building parameter
+//			i.next().displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
+//		}
+
 		for (int i = 0; i < size; i++) {
-			mapLayers.get(i).displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
+			mapLayers.get(i).displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation,
+					scale);
 		}
 
-		//long endTime = System.nanoTime();
-		//double timeDiff = (endTime - startTime) / 1000000D;
-		//System.out.println("SMT paint time: " + (int) timeDiff + " ms");
+		// long endTime = System.nanoTime();
+		// double timeDiff = (endTime - startTime) / 1000000D;
+		// System.out.println("SMT paint time: " + (int) timeDiff + " ms");
 
-    }
-	
+	}
+
 	public SettlementTransparentPanel getSettlementTransparentPanel() {
 		return settlementTransparentPanel;
 	}
-
 
 	@Override
 	public void clockPulse(double time) {
@@ -1129,32 +1160,32 @@ implements ClockListener {
 	@Override
 	public void uiPulse(double time) {
 		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMapTabOpen() && mainScene.isSettlementMapOn()) {//&& !masterClock.isPaused()) {			
+			if (!mainScene.isMinimized() && mainScene.isMapTabOpen() && mainScene.isSettlementMapOn()) {// &&
+																										// !masterClock.isPaused())
+																										// {
 //				timeCache += time;
 //				if (timeCache > PERIOD_IN_MILLISOLS * time) {
 //					System.out.println(masterClock.getTimeRatio() + " : " + Math.round(PERIOD_IN_MILLISOLS * time*100.0)/100.0);
-					// Repaint map panel
-					repaint();
+				// Repaint map panel
+				repaint();
 //					timeCache = 0;
 //				}	
 			}
-		}
-		else if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
+		} else if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
 //			timeCache += time;
 //			if (timeCache > PERIOD_IN_MILLISOLS * time) {
-				repaint();
+			repaint();
 //				timeCache = 0;
 //			}
 		}
 	}
-	
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	/**
 	 * Cleans up the map panel for disposal.
 	 */
@@ -1167,7 +1198,7 @@ implements ClockListener {
 		selectedPerson = null;
 		building = null;
 		settlementWindow = null;
-		
+
 		// Destroy all map layers.
 		Iterator<SettlementMapLayer> i = mapLayers.iterator();
 		while (i.hasNext()) {

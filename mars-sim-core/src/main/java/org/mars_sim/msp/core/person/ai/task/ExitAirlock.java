@@ -80,9 +80,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 	private Point2D insideAirlockPos = null;
 	private Point2D exteriorAirlockPos = null;
-
-	private static MissionManager missionManager = Simulation.instance().getMissionManager();
-
+	
 	/**
 	 * Constructor.
 	 * 
@@ -95,7 +93,7 @@ public class ExitAirlock extends Task implements Serializable {
 		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
 		this.airlock = airlock;
-
+		
 		init();
 
 		logger.fine(person.getName() + " is starting to exit airlock of " + airlock.getEntityName());
@@ -996,7 +994,8 @@ public class ExitAirlock extends Task implements Serializable {
 		// it's okay even if there's not enough water
 		if (!hasEnoughWater)
 			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-					suit.getContainerUnit() + " won't be able to feed enough water to " + suit.getNickName(), null);
+					"[" + suit.getContainerUnit() + "] "
+					+ " won't have enough water to feed " + suit.getNickName(), null);
 
 		return hasEnoughOxygen;// && hasEnoughWater;
 	}
@@ -1007,8 +1006,6 @@ public class ExitAirlock extends Task implements Serializable {
 	 * @param suit the EVA suit.
 	 */
 	private void loadEVASuit(EVASuit suit) {
-
-		// if (person != null) {
 
 		Inventory suitInv = suit.getInventory();
 		Inventory entityInv = person.getContainerUnit().getInventory();
@@ -1034,7 +1031,6 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		// Fill water in suit from entity's inventory.
-
 		double neededWater = suitInv.getARRemainingCapacity(waterID, true, false);
 		double availableWater = entityInv.getARStored(waterID, false);
 
@@ -1051,13 +1047,10 @@ public class ExitAirlock extends Task implements Serializable {
 
 		} catch (Exception e) {
 			LogConsolidated.log(
-					logger, Level.SEVERE, 10000, sourceName, "[" + person.getLocationTag().getQuickLocation() + "] "
+					logger, Level.SEVERE, 5000, sourceName, "[" + person.getLocationTag().getQuickLocation() + "] "
 							+ person + " does NOT have enough water when preparing " + suit.getName() + e.getMessage(),
 					null);
 		}
-		// }
-		// else if (robot != null) {
-		// }
 
 	}
 

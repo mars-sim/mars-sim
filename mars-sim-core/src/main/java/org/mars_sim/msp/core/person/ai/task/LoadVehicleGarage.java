@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.person.NaturalAttributeType;

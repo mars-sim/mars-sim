@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.structure.building.connection.Hatch;
 import org.mars_sim.msp.core.structure.building.connection.InsideBuildingPath;
 import org.mars_sim.msp.core.structure.building.connection.InsidePathLocation;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A subtask for walking between two interior locations in a settlement. (Ex:
@@ -336,19 +337,21 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			if (person != null) {
 				Building startBuilding = BuildingManager.getBuilding(person);
 				if (startBuilding == null || destBuilding == null) {
+					Vehicle v = person.getVehicle();
 					System.out.println("WalkSettlementInterior : [" + person.getLocationTag().getImmediateLocation()
-							+ "] " + person + " is supposed to be walking inside, leaving " + startBuilding
-							+ " and going to " + destBuilding);
+							+ "] " + person + " - [vehicle : " + v + "] [start : " + startBuilding
+							+ "] [destination :  " + destBuilding + "]");
 					// System.out.println("[" + person.getSettlement() + "] " + person + " is
 					// leaving " + startBuilding + " & going to " + destBuilding);
-				} else {
+				} 
+//				else {
 					// logger.finer(person.getName() + " walked from " + startBuilding.getNickName()
 					// + " to " +
 					// destBuilding.getNickName());
 					InsidePathLocation location = walkingPath.getNextPathLocation();
 					person.setXLocation(location.getXLocation());
 					person.setYLocation(location.getYLocation());
-				}
+//				}
 			} else if (robot != null) {
 				// Building startBuilding = BuildingManager.getBuilding(robot);
 				// logger.finer(robot.getName() + " walked from " + startBuilding.getNickName()

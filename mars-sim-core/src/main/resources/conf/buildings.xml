@@ -1993,7 +1993,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0.0" yloc="0.0" />
 				</activity>
 			</astronomical-observation>
-			<EVA airlock-capacity="1" xloc="0.0" yloc="3.0" interior-xloc="0.0" interior-yloc="2.5"
+			<EVA airlock-capacity="2" xloc="0.0" yloc="3.0" interior-xloc="0.0" interior-yloc="2.5"
 			exterior-xloc="0.0" exterior-yloc="4.5" />
 			<life-support capacity="8" power-required="0.4" />
 
@@ -2024,7 +2024,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 		</functions>
 	</building>
-<!-- end of Astronomy Observatory-->
+	<!-- end of Astronomy Observatory-->
 
 	<!-- A lander hab refitted for storage. -->
 	<building type="Storage Hab" width="9.0" length="9.0" base-level="0"

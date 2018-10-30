@@ -76,6 +76,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import com.google.inject.Guice;
@@ -825,6 +826,7 @@ public class BuildingManager implements Serializable {
 		if (openGarages.size() > 0) {
 			int rand = RandomUtil.getRandomInt(openGarages.size() - 1);
 			openGarages.get(rand).addVehicle(vehicle);
+			vehicle.setStatus(StatusType.GARAGED);
 		}
 		// else {
 		// logger.warning("No available garage space for " + vehicle.getName() + ",
@@ -1369,7 +1371,6 @@ public class BuildingManager implements Serializable {
 				if (unit instanceof Person) {
 					Person person = (Person) unit;
 					LifeSupport lifeSupport = building.getLifeSupport();
-					;
 
 					if (lifeSupport.containsOccupant(person)) {
 						lifeSupport.removePerson(person);

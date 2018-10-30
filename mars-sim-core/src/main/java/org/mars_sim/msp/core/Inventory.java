@@ -1711,7 +1711,9 @@ implements Serializable {
 
         if (retrieved) {
             unit.setContainerUnit(null); // this can cause person.getSettlement() = null
-        } else {
+        } 
+        
+        else {
             throw new IllegalStateException("Unit: " + unit + " could not be retrieved.");
     	    //LogConsolidated.log(logger, Level.WARNING, 5000, sourceName + "::retrieveUnit",
     	    //		"Unit: " + unit + " could not be retrieved.", null);

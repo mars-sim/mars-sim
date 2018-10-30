@@ -86,7 +86,6 @@ public class RescueSalvageVehicleMeta implements MetaMission {
             if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
     	        return 0;
     	    }
-            
 
             // Check for embarking missions.
             else if (VehicleMission.hasEmbarkingMissions(settlement)) {
