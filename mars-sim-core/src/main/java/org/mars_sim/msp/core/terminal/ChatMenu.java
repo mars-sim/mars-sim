@@ -21,6 +21,8 @@ import java.util.function.BiConsumer;
  */
 public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	   
+	private static final String EXPERT_MODE = " [Expert Mode]";
+	
 	private boolean leaveSystem = false;
 	
 	private SwingTextTerminal terminal;
@@ -68,18 +70,25 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	        List<String> names = CollectionUtils.createAutoCompleteData();
 //	        String[] array = names.toArray(new String[names.size()]);
 	        boolean quit = false;
-	          
-	        while (!quit) {
-	        	String prompt = "Connected with MarsNet >";
 
+	        while (!quit) {
+	        	
+		        String expertString = "";
+		        // See if user opts in the expert mode
+	        	if (ChatUtils.isExpertMode()) {
+	        		expertString = EXPERT_MODE;
+	        	}
+	        	
+	        	String prompt = "Connected with MarsNet" + expertString + " >";
+	        	
 	        	if (ChatUtils.personCache != null)
-	        		prompt = "Connected with " + ChatUtils.personCache.toString() +" >";
+	        		prompt = "Connected with " + ChatUtils.personCache.toString() + expertString + " >";
 	        	else if (ChatUtils.robotCache != null) 
-	        		prompt = "Connected with " + ChatUtils.robotCache.toString() +" >";
+	        		prompt = "Connected with " + ChatUtils.robotCache.toString() + expertString + " >";
 	        	else if (ChatUtils.settlementCache != null)
-	        		prompt = "Connected with " + ChatUtils.settlementCache.toString() +" >";	
+	        		prompt = "Connected with " + ChatUtils.settlementCache.toString() + expertString + " >";	
 	        	else if (ChatUtils.vehicleCache != null)
-	        		prompt = "Connected with " + ChatUtils.vehicleCache.toString() +" >";	
+	        		prompt = "Connected with " + ChatUtils.vehicleCache.toString() + expertString + " >";	
 
 		        handler.addStringTask("party", prompt, false).addChoices(names);//.constrainInputToChoices();
 		        handler.executeOneTask();
@@ -102,7 +111,13 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 				if (leaveSystem && ChatUtils.isQuitting(Party.party)) {
 					quit = true;
 					ChatUtils.setConnectionMode(-1);
-				}				
+				}
+				
+		        // See if user is toggling the expert mode
+//				if (ChatUtils.checkExpertMode(Party.party)) {
+//					ChatUtils.toggleExpertMode();
+//					terminal.println("Set Expert Mode to " + ChatUtils.isExpertMode());
+//				}
 	        }
         }
     }
@@ -126,6 +141,11 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 			leaveSystem = true;
 			terminal.printf(System.lineSeparator());
 			
+		}
+		
+		else if (ChatUtils.checkExpertMode(text)) {
+			ChatUtils.toggleExpertMode();
+			responseText = System.lineSeparator() + "Set Expert Mode to " + ChatUtils.isExpertMode();
 		}
 		
 		else {

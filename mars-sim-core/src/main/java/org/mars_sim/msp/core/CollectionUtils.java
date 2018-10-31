@@ -273,39 +273,7 @@ public class CollectionUtils {
 	 */
 	public static List<String> createShortcutHelp() {
 		List<String> list = new ArrayList<>();
-		list.add("key");
-		list.add("keys");
-		list.add("keyword");
-		list.add("keywords");
-		list.add("/k");
-		
-		list.add("help");
-		list.add("/h");
-		list.add("/?");
-		list.add("?");
-		
-		list.add("/p");
-		
-		list.add("/y1");
-		list.add("/y2");
-		list.add("/y3");
-		list.add("/y4");
-
-		list.add("hello");
-		list.add("hi");
-		list.add("hey");
-		
-		list.add("quit");
-		list.add("bye");
-		list.add("exit");
-		
-		list.add("/quit");
-		list.add("/bye");
-		list.add("/exit");
-
-		list.add("/b");
-		list.add("/q");
-		list.add("/x");
+		list.addAll(Arrays.asList(ChatUtils.SPECIAL_KEYS));
 		
 		return list;
 	}

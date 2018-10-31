@@ -49,6 +49,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public class ChatUtils {
 
+	private static boolean expertMode = false;
+
 	private static final double RADIANS_TO_DEGREES = 180D/Math.PI;
 	
 	public final static String SYSTEM = "System";
@@ -60,6 +62,17 @@ public class ChatUtils {
 	public final static String REQUEST_KEYS = YOU_PROMPT
 			+ "I need a list of the keywords. Would you tell me what they are ?";
 
+	public final static String[] SPECIAL_KEYS = { 
+			"key", "keys", "keyword", "keywords", "/k",
+			"help", "/h", "/?", "?",	
+			"/p",
+			"/y1", "/y2", "/y3", "/y4",		
+			"hello", "hi", "hey",			
+			"quit", "bye", "exit", "expert",			
+			"/quit", "/bye", "/exit", 
+			"/b", "/q", "/x", "/e" 
+	};
+	
 	public final static String[] SETTLEMENT_KEYS = new String[] {
 			"weather", 
 			"people", "settler", "persons",
@@ -85,7 +98,7 @@ public class ChatUtils {
 			"where", "location", "located",	
 			"job", "role", "career",
 			"task", "activity", "action", "doing", 
-			"mission", "trip", "excursion",
+			"mission", "trip", "excursion"
 	};
 	
 	public final static String[] SYSTEM_KEYS = new String[] {
@@ -93,34 +106,34 @@ public class ChatUtils {
 			"vehicle", "rover", 
 			"hi", "hello", "hey"
 	};
-	
+
+	public final static String SWITCHES = 
+			  "(5) Type 'bye', '/b', 'exit', 'x', 'quit', '/q' to leave the chat." + System.lineSeparator()
+			+ "(6) Type 'help', '/h', '/?' for this help page." + System.lineSeparator()
+			+ "(7) Type 'expert', '/e' to toggle between the normal and expert Mode." + System.lineSeparator();
+
 	public final static String HELP_TEXT = System.lineSeparator()
 			+ "    ------------------------- H E L P ------------------------- " + System.lineSeparator()
 			+ "(1) Type in the NAME of a person, a bot, or a settlement to connect with." + System.lineSeparator()
 			+ "(2) Use KEYWORDS or type in a number between 0 and 18 (specific QUESTIONS on a person/bot/vehicle/settlement)."
 			+ System.lineSeparator() + "(3) Type '/k' or 'key' to see a list of KEYWORDS." + System.lineSeparator()
 			+ "(4) Type 'settlement' to obtain the NAMES of the established settlements." + System.lineSeparator()
-			+ "(5) Type 'bye', '/b', 'exit', 'x', 'quit', '/q' to leave the chat." + System.lineSeparator()
-			+ "(6) Type '?', 'help', '/?', '/h' for this help page." + System.lineSeparator();
+			+ SWITCHES;
 
-	public final static String HELP_HEIGHT = "(7) Type 'y_' to change the chat box height; '/y1'-> 256 pixels (default) '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
+	public final static String HELP_HEIGHT = "(8) Type 'y_' to change the chat box height; '/y1'-> 256 pixels (default) '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
 			+ System.lineSeparator();
 
 	public final static String KEYWORDS_TEXT = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "(1) For MarsNet : " + convertKeywords(SYSTEM_KEYS) + "or any NAMES of a settlement/vehicle/bot/person"
-			+ System.lineSeparator() + "(2) For Settlement : " + convertKeywords(SETTLEMENT_KEYS)
-			+ System.lineSeparator() + "(3) For Settler : " + convertKeywords(PERSON_KEYS)
-			+ System.lineSeparator() + "(4) For All Parties : " + convertKeywords(ALL_PARTIES_KEYS)
-			+ System.lineSeparator() + "    ------------------------- N U M E R A L ------------------------- "
-			+ System.lineSeparator() + "(5) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement"
-			+ System.lineSeparator() + "    --------------------------  M I S C S -------------------------- "
-			+ System.lineSeparator() + "(6) 'bye', '/b', 'exit', 'x', 'quit', '/q' to leave the chat"
-			+ System.lineSeparator() + "(7) 'help', '/h' for the help page" 
-			+ System.lineSeparator();
+			+ "(1) For MarsNet : " + convertKeywords(SYSTEM_KEYS) + "or any NAMES of a settlement/vehicle/bot/person" + System.lineSeparator() 
+			+ "(2) For Settlement : " + convertKeywords(SETTLEMENT_KEYS) + System.lineSeparator() 
+			+ "(3) For Settler : " + convertKeywords(PERSON_KEYS) + System.lineSeparator() 
+			+ "(4) For All Parties : " + convertKeywords(ALL_PARTIES_KEYS) + System.lineSeparator() + System.lineSeparator() 
+//			+ "(5) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator() 
+			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
+			+ SWITCHES;
 
-	public final static String KEYWORDS_HEIGHT = "(8) '/y1' to reset height to 256 pixels (by default) after closing chat box. '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
-			+ System.lineSeparator();
+	public final static String KEYWORDS_HEIGHT = HELP_HEIGHT; //"(8) '/y1' to reset height to 256 pixels (by default) after closing chat box. '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels" + System.lineSeparator();
 
 	public final static String DASHES = " ----------------------------------------- ";
 
@@ -252,24 +265,30 @@ public class ChatUtils {
 	}
 
 	/*
+	 * Checks if the user is toggling the expert mode
+	 * 
+	 * @param text
+	 */
+	public static boolean checkExpertMode(String text) {
+		if (text.equalsIgnoreCase("expert") || text.equalsIgnoreCase("/e")) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	
+	/*
 	 * Checks if the user wants to quit chatting
 	 * 
 	 * @param text
 	 */
 	public static boolean isQuitting(String text) {
 		if (text.equalsIgnoreCase("quit") || text.equalsIgnoreCase("/quit") || text.equalsIgnoreCase("/q")
-//				|| text.equalsIgnoreCase("\\quit")
-//				|| text.equalsIgnoreCase("\\q") 
-
 				|| text.equalsIgnoreCase("exit") || text.equalsIgnoreCase("/exit") || text.equalsIgnoreCase("/x")
-//				|| text.equalsIgnoreCase("\\exit")
-//				|| text.equalsIgnoreCase("\\x") 
-
-				|| text.equalsIgnoreCase("bye") || text.equalsIgnoreCase("/bye")
-//				|| text.equalsIgnoreCase("\\bye")
-				|| text.equalsIgnoreCase("/b")) {
+				|| text.equalsIgnoreCase("bye") || text.equalsIgnoreCase("/bye") || text.equalsIgnoreCase("/b")) {
 			return true;
-
 		}
 
 		else
@@ -1735,6 +1754,12 @@ public class ChatUtils {
 			}
 
 		}
+		
+		else if (checkExpertMode(text)) {
+			toggleExpertMode();
+			responseText.append("Set Expert Mode to " + ChatUtils.isExpertMode());
+//			responseText.append(System.lineSeparator());
+		}
 
 		// Add proposals
 //		else if (text.equalsIgnoreCase("/p")) {
@@ -2307,7 +2332,19 @@ public class ChatUtils {
 	public static int getConnectionMode() {
 		return connectionMode;
 	}
+	
+	public static boolean isExpertMode() {
+		return expertMode;
+	}
 
+	public static void toggleExpertMode() {
+		expertMode = !expertMode;
+	}
+
+//	public static void setExpertMode(boolean value) {
+//		expertMode = value;
+//	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

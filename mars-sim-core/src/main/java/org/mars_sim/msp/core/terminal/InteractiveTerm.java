@@ -36,7 +36,6 @@ public class InteractiveTerm {
 
     private boolean keepRunning;
 	
-    
 	private MarsTerminal terminal;
 
 	private static CommanderProfile profile;

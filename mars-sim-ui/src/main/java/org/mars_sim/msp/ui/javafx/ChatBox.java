@@ -286,7 +286,7 @@ public class ChatBox extends BorderPane {
 		// System.out.println("A: text is " + text + ". Running parseText()");
 		text = text.trim();
 		int len = text.length();
-
+		
 		if (ChatUtils.isQuitting(text)) {
 			String[] txt = ChatUtils.farewell(ChatUtils.SYSTEM_PROMPT, false);
 			// questionText = txt[0];
@@ -294,6 +294,12 @@ public class ChatBox extends BorderPane {
 			// Close the chat box
 			closeChatBox(true);
 		}
+		
+		else if (ChatUtils.checkExpertMode(text)) {
+			ChatUtils.toggleExpertMode();
+			responseText = "Set Expert Mode to " + ChatUtils.isExpertMode();// + System.lineSeparator();
+		}
+		
 		// Add changing the height of the chat box
 		else if (text.equalsIgnoreCase("/y1")) {
 			responseText = ChatUtils.SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 256 pixels.";
