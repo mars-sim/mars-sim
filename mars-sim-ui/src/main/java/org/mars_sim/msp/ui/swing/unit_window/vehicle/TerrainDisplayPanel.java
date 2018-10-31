@@ -13,20 +13,18 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Polygon;
 
-import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
 
-
-
+import com.alee.laf.panel.WebPanel;
 
 /** 
  * The TerrainDisplayPanel class displays the compass direction
  * a vehicle is currently travelling.
  */
-public class TerrainDisplayPanel extends JPanel {
+public class TerrainDisplayPanel extends WebPanel {
     
     // Data members
     private GroundVehicle vehicle;
@@ -37,7 +35,7 @@ public class TerrainDisplayPanel extends JPanel {
      * @param vehicle the vehicle to track
      */
     public TerrainDisplayPanel(GroundVehicle vehicle) {
-        // Use JPanel constructor
+        // Use WebPanel constructor
         super();
         
         // Initialize data members

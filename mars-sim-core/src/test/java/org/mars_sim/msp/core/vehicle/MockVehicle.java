@@ -1,6 +1,5 @@
 package org.mars_sim.msp.core.vehicle;
 
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -15,7 +14,7 @@ public class MockVehicle extends Vehicle {
 		return false;
 	}
 
-	public Integer getFuelType() {
+	public int getFuelType() {
 		return ResourceUtil.methaneID;
 	}
 

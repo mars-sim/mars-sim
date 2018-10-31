@@ -12,10 +12,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.vehicle.Towing;
@@ -24,16 +20,20 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+
 public class TabPanelTow
 extends TabPanel {
 
 	// Data members
-	private JPanel towingLabelPanel;
-	private JLabel towingTextLabel;
-	private JButton towingButton;
-	private JPanel towedLabelPanel;
-	private JLabel towedTextLabel;
-	private JButton towedButton;
+	private WebPanel towingLabelPanel;
+	private WebLabel towingTextLabel;
+	private WebButton towingButton;
+	private WebPanel towedLabelPanel;
+	private WebLabel towedTextLabel;
+	private WebButton towedButton;
 
 	public TabPanelTow(Unit unit, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
@@ -46,8 +46,8 @@ extends TabPanel {
 		);
 
 		// Create towing label.
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelTow.title"), JLabel.CENTER); //$NON-NLS-1$
+		WebPanel panel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelTow.title"), WebLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		panel.add(titleLabel);
 		topContentPanel.add(panel);
@@ -55,16 +55,16 @@ extends TabPanel {
 		if (unit instanceof Towing) {
 
 			// Create towing label panel.
-			towingLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+			towingLabelPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 			towingLabelPanel.setBorder(new MarsPanelBorder());
 			topContentPanel.add(towingLabelPanel);
 
 			// Create towing label.
-			JLabel towLabel = new JLabel(Msg.getString("TabPanelTow.towing"), JLabel.CENTER); //$NON-NLS-1$
+			WebLabel towLabel = new WebLabel(Msg.getString("TabPanelTow.towing"), WebLabel.CENTER); //$NON-NLS-1$
 			towingLabelPanel.add(towLabel);
 
 			// Create the towing button.
-			towingButton = new JButton();
+			towingButton = new WebButton();
 			towingButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
 					getDesktop().openUnitWindow(((Towing) getUnit()).getTowedVehicle(), false);
@@ -72,7 +72,7 @@ extends TabPanel {
 			});
 
 			// Create the towing text label.
-			towingTextLabel = new JLabel(Msg.getString("TabPanelTow.none"), JLabel.LEFT); //$NON-NLS-1$
+			towingTextLabel = new WebLabel(Msg.getString("TabPanelTow.none"), WebLabel.LEFT); //$NON-NLS-1$
 
 			// Add the towing button or towing text label depending on the situation.
 			Vehicle towedVehicle = ((Towing) unit).getTowedVehicle();
@@ -86,16 +86,16 @@ extends TabPanel {
 		Vehicle vehicle = (Vehicle) unit;
 
 		// Create towed label panel.
-		towedLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		towedLabelPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		towedLabelPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(towedLabelPanel);
 
 		// Create towed label.
-		JLabel towedLabel = new JLabel(Msg.getString("TabPanelTow.towedBy"), JLabel.CENTER); //$NON-NLS-1$
+		WebLabel towedLabel = new WebLabel(Msg.getString("TabPanelTow.towedBy"), WebLabel.CENTER); //$NON-NLS-1$
 		towedLabelPanel.add(towedLabel);
 
 		// Create the towed button.
-		towedButton = new JButton();
+		towedButton = new WebButton();
 		towedButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				getDesktop().openUnitWindow(((Vehicle) getUnit()).getTowingVehicle(), false);
@@ -103,7 +103,7 @@ extends TabPanel {
 		});
 
 		// Create towed text label.
-		towedTextLabel = new JLabel(Msg.getString("TabPanelTow.none"), JLabel.LEFT); //$NON-NLS-1$
+		towedTextLabel = new WebLabel(Msg.getString("TabPanelTow.none"), WebLabel.LEFT); //$NON-NLS-1$
 
 		// Add the towed button or towed text label depending on the situation.
 		if (vehicle.getTowingVehicle() != null) {

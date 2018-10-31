@@ -11,7 +11,6 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -70,7 +69,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
     }
 
     @Override
-    public Integer getFuelType() {
+    public int getFuelType() {
     	return ResourceUtil.methaneID;
     }
 

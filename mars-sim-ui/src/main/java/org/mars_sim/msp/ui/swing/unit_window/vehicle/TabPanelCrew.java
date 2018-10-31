@@ -21,11 +21,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
+
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
@@ -37,6 +34,11 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
+
 /** 
  * The CrewTabPanel is a tab panel for a vehicle's crew information.
  */
@@ -47,8 +49,8 @@ implements MouseListener, ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private JLabel crewNumLabel;
-	private JLabel crewCapLabel;
+	private WebLabel crewNumLabel;
+	private WebLabel crewCapLabel;
 	private DefaultListModel<Person> crewListModel;
 	//private DefaultListModel<Unit> crewListModel;
 	private JList<Person> crewList;
@@ -76,34 +78,34 @@ implements MouseListener, ActionListener {
 		Crewable crewable = (Crewable) vehicle;
 
 		// Prepare title label.
-		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JLabel titleLabel = new JLabel(Msg.getString("TabPanelCrew.title"), JLabel.CENTER); //$NON-NLS-1$
+		WebPanel titlePanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelCrew.title"), WebLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titlePanel.add(titleLabel);
 		topContentPanel.add(titlePanel);
 
 		// Create crew count panel
-		JPanel crewCountPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+		WebPanel crewCountPanel = new WebPanel(new GridLayout(2, 1, 0, 0));
 		crewCountPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(crewCountPanel);
 
 		// Create crew num label
 		crewNumCache = crewable.getCrewNum();
-		crewNumLabel = new JLabel(Msg.getString("TabPanelCrew.crew", crewNumCache), JLabel.CENTER); //$NON-NLS-1$
+		crewNumLabel = new WebLabel(Msg.getString("TabPanelCrew.crew", crewNumCache), WebLabel.CENTER); //$NON-NLS-1$
 		crewCountPanel.add(crewNumLabel);
 
 		// Create crew capacity label
 		crewCapacityCache = crewable.getCrewCapacity();
-		crewCapLabel = new JLabel(Msg.getString("TabPanelCrew.crewCapacity", crewCapacityCache), JLabel.CENTER); //$NON-NLS-1$
+		crewCapLabel = new WebLabel(Msg.getString("TabPanelCrew.crewCapacity", crewCapacityCache), WebLabel.CENTER); //$NON-NLS-1$
 		crewCountPanel.add(crewCapLabel);
 
 		// Create crew display panel
-		JPanel crewDisplayPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		WebPanel crewDisplayPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		crewDisplayPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(crewDisplayPanel);
 
 		// Create scroll panel for crew list.
-		JScrollPane crewScrollPanel = new JScrollPane();
+		WebScrollPane crewScrollPanel = new WebScrollPane();
 		crewScrollPanel.setPreferredSize(new Dimension(175, 100));
 		crewDisplayPanel.add(crewScrollPanel);
 
@@ -123,7 +125,7 @@ implements MouseListener, ActionListener {
 		crewScrollPanel.setViewportView(crewList);
 
 		// Create crew monitor button
-		JButton monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
+		WebButton monitorButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
 		monitorButton.addActionListener(this);
 		monitorButton.setToolTipText(Msg.getString("TabPanelCrew.tooltip.monitor")); //$NON-NLS-1$

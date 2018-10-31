@@ -14,19 +14,20 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 
-import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import com.alee.laf.panel.WebPanel;
+
 
 /** 
  * The DirectionDisplayPanel class displays the compass direction
  * a vehicle is currently travelling.
  */
-public class DirectionDisplayPanel extends JPanel {
+public class DirectionDisplayPanel extends WebPanel {
 
     // Static members
     private final static int CIRCLE_DIAMETER = 44;
@@ -41,7 +42,7 @@ public class DirectionDisplayPanel extends JPanel {
      * @param vehicle the vehicle to track
      */
 	public DirectionDisplayPanel(Vehicle vehicle) {
-        // Use JPanel constructor
+        // Use WebPanel constructor
 		super();
         
         // Initialize data members

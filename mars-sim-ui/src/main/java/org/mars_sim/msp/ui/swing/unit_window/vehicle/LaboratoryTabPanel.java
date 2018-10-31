@@ -10,9 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Lab;
@@ -21,6 +18,9 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+
 /** 
  * The LaboratoryTabPanel is a tab panel for an explorer rover's lab information.
  */
@@ -28,7 +28,7 @@ public class LaboratoryTabPanel extends TabPanel {
 
 	// Data members
 	/** The number of researchers label. */
-	private JLabel researchersLabel;
+	private WebLabel researchersLabel;
 
 	// Data cache
 	/** The number of researchers cache. */
@@ -47,47 +47,47 @@ public class LaboratoryTabPanel extends TabPanel {
 		Lab lab = rover.getLab();
 
 		// Prepare laboratory panel
-		JPanel laboratoryPanel = new JPanel(new BorderLayout());
+		WebPanel laboratoryPanel = new WebPanel(new BorderLayout());
 		topContentPanel.add(laboratoryPanel);
 
 		// Prepare name panel
-		JPanel namePanel = new JPanel();
+		WebPanel namePanel = new WebPanel();
 		laboratoryPanel.add(namePanel, BorderLayout.NORTH);
 
 		// Prepare laboratory label
-		JLabel laboratoryLabel = new JLabel("Laboratory", JLabel.CENTER);
+		WebLabel laboratoryLabel = new WebLabel("Laboratory", WebLabel.CENTER);
 		laboratoryLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		namePanel.add(laboratoryLabel);
 
 		// Prepare label panel
-		JPanel labelPanel = new JPanel(new GridLayout(3, 1));
+		WebPanel labelPanel = new WebPanel(new GridLayout(3, 1));
 		laboratoryPanel.add(labelPanel, BorderLayout.CENTER);
 
 		// Prepare researcher number label
 		researchersCache = lab.getResearcherNum();
-		researchersLabel = new JLabel("Number of Researchers: " + researchersCache, JLabel.CENTER);
+		researchersLabel = new WebLabel("Number of Researchers: " + researchersCache, WebLabel.CENTER);
 		labelPanel.add(researchersLabel);
 
 		// Prepare researcher capacityLabel
-		JLabel researcherCapacityLabel = new JLabel("Researcher Capacity: " + lab.getLaboratorySize(),
-				JLabel.CENTER);
+		WebLabel researcherCapacityLabel = new WebLabel("Researcher Capacity: " + lab.getLaboratorySize(),
+				WebLabel.CENTER);
 		labelPanel.add(researcherCapacityLabel);
 
 		// Prepare specialties label
-		JLabel specialtiesLabel = new JLabel("Specialties: ", JLabel.CENTER);
+		WebLabel specialtiesLabel = new WebLabel("Specialties: ", WebLabel.CENTER);
 		labelPanel.add(specialtiesLabel);
 
 		// Get the research specialties of the building.
 		ScienceType[] specialties = lab.getTechSpecialties();
 
 		// Prepare specialitiesListPanel
-		JPanel specialtiesListPanel = new JPanel(new GridLayout(specialties.length, 1, 0, 0));
+		WebPanel specialtiesListPanel = new WebPanel(new GridLayout(specialties.length, 1, 0, 0));
 		specialtiesListPanel.setBorder(new MarsPanelBorder());
 		laboratoryPanel.add(specialtiesListPanel, BorderLayout.SOUTH);
 
 		// For each specialty, add specialty name panel.
 		for (ScienceType specialty : specialties) {
-			JLabel specialtyLabel = new JLabel(specialty.getName(), JLabel.CENTER);
+			WebLabel specialtyLabel = new WebLabel(specialty.getName(), WebLabel.CENTER);
 			specialtiesListPanel.add(specialtyLabel);
 		}
 	}

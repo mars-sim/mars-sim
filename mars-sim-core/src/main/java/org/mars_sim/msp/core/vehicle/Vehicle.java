@@ -931,7 +931,7 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @return resource type
 	 */
-	public abstract Integer getFuelType();
+	public abstract int getFuelType();
 
 	/**
 	 * Gets the estimated distance traveled in one sol.

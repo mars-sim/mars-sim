@@ -74,7 +74,7 @@ public abstract class RoverMission extends VehicleMission {
 
 	public static AmountResource[] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
-	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+//	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
 	// Data members
 	private Settlement startingSettlement;
@@ -319,6 +319,7 @@ public abstract class RoverMission extends VehicleMission {
 														getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
 									}
 								} else {
+									SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 									// Check if it is day time.
 									if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D)
 											|| surface.inDarkPolarRegion(member.getCoordinates())) {
@@ -434,21 +435,20 @@ public abstract class RoverMission extends VehicleMission {
 			if (v.getSettlement() == null) {
 				disembarkSettlement.getInventory().storeUnit(v);
 				v.determinedSettlementParkedLocationAndFacing();
-				// Add vehicle to a garage if available.
-				BuildingManager.addToRandomBuilding((GroundVehicle) v, disembarkSettlement);
 			}
 
-//			// Test if this rover is towing another vehicle or is being towed
-//	        boolean tethered = v.isBeingTowed() || (v.getTowingVehicle() != null);
-//	        
-//			// Add vehicle to a garage if available.
-//	        if (!tethered)
-//	        	BuildingManager.addToRandomBuilding((GroundVehicle) v, disembarkSettlement);
+			// Test if this rover is towing another vehicle or is being towed
+	        boolean tethered = v.isBeingTowed() || rover.isTowingAVehicle();
+	        
+			// Add vehicle to a garage if available.
+	        if (!tethered)
+	        	BuildingManager.addToRandomBuilding((GroundVehicle) v, disembarkSettlement);
 
 			// Retrieve the person if he/she is dead
 			for (Person p : rover.getCrew()) {
+				v.getInventory().retrieveUnit(p);
+
 				if (p.isDeclaredDead()) {
-					v.getInventory().retrieveUnit(p);
 					p.setBuriedSettlement(disembarkSettlement);
 					p.getPhysicalCondition().getDeathDetails().setBodyRetrieved(true);
 				}
@@ -610,6 +610,7 @@ public abstract class RoverMission extends VehicleMission {
 									assignTask(person, new UnloadVehicleGarage(person, rover));
 								}
 							} else {
+								SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 								// Check if it is day time.
 								if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D)
 										|| surface.inDarkPolarRegion(member.getCoordinates())) {
@@ -700,13 +701,14 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	public static boolean minAvailablePeopleAtSettlement(Settlement settlement, int minNum) {
 		boolean result = false;
-
+		int min = minNum;
 		if (settlement != null) {
 
 			String template = settlement.getTemplate();
+			// Override the mininum num req if the settlement is too small
 			if (template.toLowerCase().contains("phase 1") || template.toLowerCase().contains("mining")
 					|| template.toLowerCase().contains("trading"))
-				minNum = 0;
+				min = 0;
 
 			int numAvailable = 0;
 			Iterator<Person> i = settlement.getIndoorPeople().iterator();
@@ -715,7 +717,7 @@ public abstract class RoverMission extends VehicleMission {
 				if (!inhabitant.getMind().hasActiveMission())
 					numAvailable++;
 			}
-			if (numAvailable >= minNum)
+			if (numAvailable >= min)
 				result = true;
 		}
 
