@@ -433,10 +433,12 @@ public abstract class RoverMission extends VehicleMission {
 		if (v != null) {// && v.getSettlement() == null) {
 
 			if (v.getSettlement() == null) {
-				disembarkSettlement.getInventory().storeUnit(v);
-				v.determinedSettlementParkedLocationAndFacing();
+				disembarkSettlement.getInventory().storeUnit(v);	
 			}
 
+			// Make sure the rover chasis is not overlapping a building structure in the settlement map
+			rover.determinedSettlementParkedLocationAndFacing();
+			
 			// Test if this rover is towing another vehicle or is being towed
 	        boolean tethered = v.isBeingTowed() || rover.isTowingAVehicle();
 	        

@@ -815,6 +815,9 @@ public class BuildingManager implements Serializable {
 	 */
 	public static void addToRandomBuilding(GroundVehicle vehicle, Settlement settlement) {
 
+		if (vehicle.getStatus() == StatusType.GARAGED)
+			return;
+		
 		List<Building> garages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 		List<VehicleMaintenance> openGarages = new ArrayList<VehicleMaintenance>();
 		for (Building garageBuilding : garages) {

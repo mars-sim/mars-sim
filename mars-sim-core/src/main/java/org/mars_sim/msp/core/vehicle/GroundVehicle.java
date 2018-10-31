@@ -187,6 +187,9 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 		setOperator(operator);
 	}
 
+	/**
+	 * Find a new location and facing if a rover overlaps with a building
+	 */
 	@Override
 	public void determinedSettlementParkedLocationAndFacing() {
 
