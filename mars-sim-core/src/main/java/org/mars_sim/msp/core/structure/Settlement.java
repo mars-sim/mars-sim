@@ -1851,6 +1851,21 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 
 	/**
+	 * Gets number of deceased
+	 * 
+	 * @return int
+	 */
+	public int getNumDeceased() {
+		// using java 8 stream
+		Collection<Person> result = Simulation.instance().getUnitManager()
+				.getPeople().stream()
+				.filter(p -> p.getBuriedSettlement() == this)
+				.collect(Collectors.toList());
+
+		return result.size();		
+	}
+	
+	/**
 	 * Updates all people associated with this settlement
 	 * 
 	 * @return collection of associated people.

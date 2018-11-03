@@ -681,12 +681,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public boolean isOutside() {
 		if (isBuried)
 			return true;
-		else {
-			if (getContainerUnit() == null)
+		else if (getContainerUnit() == null)
 				return true;
-			else
-				return false;
-		}
+		return false;
 	}
 
 	/**
@@ -697,8 +694,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public boolean isRightOutsideSettlement() {
 		if (getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
 			return true;
-		else
-			return false;
+		return false;
 	}
 
 	/**
@@ -709,12 +705,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public boolean isInVehicle() {
 		if (isBuried)
 			return false;
-		else {
-			if (getContainerUnit() instanceof Vehicle)
+		else if (getContainerUnit() instanceof Vehicle)
 				return true;
-			else
-				return false;
-		}
+		return false;
 	}
 
 	/**
@@ -729,9 +722,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			Unit c = getContainerUnit();
 			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
 				return true;
-			else
-				return false;
 		}
+		return false;
 	}
 	
 	/**
@@ -748,9 +740,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				return false;
 			else if (c instanceof Settlement)
 				return true;
-			else
-				return false;
 		}
+		return false;
 	}
 
 	/**
@@ -759,17 +750,22 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return true if the person is inside a settlement
 	 */
 	public boolean isInSettlement() {
-		if (isBuried)
-			return false;
-		else {
-			Unit c = getContainerUnit();
-			if (c instanceof Settlement)
-				return true;
+		if (getContainerUnit() instanceof Settlement) {
+			return true;
+
+//		if (isBuried)
+//			return false;
+//		else {
+//			Unit c = getContainerUnit();
+//			if (c instanceof Settlement)
+//				return true;
 //			else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
 //				return true;
-			else
-				return false;
+//			else
+//				return false;
 		}
+		
+		return false;
 	}
 
 
@@ -782,16 +778,15 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		if (isBuried)
 			return false;
 		else {
-			Unit container = getContainerUnit();
-			if (container == null)
+			Unit c = getContainerUnit();
+			if (c == null)
 				return false;
-			else if (container instanceof Settlement)
+			else if (c instanceof Settlement)
 				return true;
-			else if (container instanceof Vehicle)
+			else if (c instanceof Vehicle)
 				return true;
-			else
-				return false;
 		}
+		return false;
 
 	}
 
@@ -861,29 +856,28 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public Settlement getSettlement() {
 
-		Unit container = getContainerUnit();
+		Unit c = getContainerUnit();
 
-		if (container instanceof Settlement) {
-			return (Settlement) container;
+		if (c instanceof Settlement) {
+			return (Settlement) c;
 		}
 
-		else if (container instanceof Vehicle) {
+		else if (c instanceof Vehicle) {
 			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
 			if (b != null)
 				// still inside the garage
 				return b.getSettlement();
-			else
+//			else
 				// either at the vicinity of a settlement or already outside on a mission
 				// TODO: need to differentiate which case in future better granularity
-				return null;
+//				return null;
 		}
 
-		else if (container == null) {
-			return null;
+//		else if (c == null) {
+//			return null;
+//		}
 
-		}
-
-		logger.warning("Error in determining " + getName() + "'s getSettlement() ");
+//		logger.warning("Error in determining " + getName() + "'s getSettlement() ");
 		return null;
 	}
 

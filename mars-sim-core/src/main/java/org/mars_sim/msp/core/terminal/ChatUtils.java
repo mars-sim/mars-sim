@@ -75,7 +75,7 @@ public class ChatUtils {
 	
 	public final static String[] SETTLEMENT_KEYS = new String[] {
 			"weather", 
-			"people", "settler", "persons",
+			"people", "settler", "person",
 			"robot", "bot"
 	};
 	
@@ -273,9 +273,7 @@ public class ChatUtils {
 		if (text.equalsIgnoreCase("expert") || text.equalsIgnoreCase("/e")) {
 			return true;
 		}
-		else {
-			return false;
-		}
+		return false;
 	}
 	
 	
@@ -870,25 +868,38 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 		}
 		
-		else if (text.toLowerCase().contains("people") || text.toLowerCase().contains("settlers") 
-				|| text.toLowerCase().contains("persons")) {
+		else if (text.toLowerCase().contains("people") || text.toLowerCase().contains("settler") 
+				|| text.toLowerCase().contains("person")) {
 			
 			Collection<Person> list = settlementCache.getAllAssociatedPeople();
 			int total = settlementCache.getNumCitizens();
 			int indoor = settlementCache.getIndoorPeopleCount();
-			int outdoor = total - indoor;
+			int dead = settlementCache.getNumDeceased();
+			int outdoor = total - indoor - dead;
 			questionText = YOU_PROMPT + "Who are the settlers ? ";
-			responseText.append(settlementCache + " : We have a total of " 
-					+ total + " settlers "
-					+ "(indoor : " + indoor
-					+ ", outdoor : " + outdoor
-					+ ")");
+			responseText.append(settlementCache + " : According to the registry,"); 
+			responseText.append(System.lineSeparator());
+			responseText.append("  - - - S t a t u s - - -");
+			responseText.append(System.lineSeparator());
+			responseText.append("    Registered : " + total);
+			responseText.append(System.lineSeparator());
+			responseText.append("        Indoor : " + indoor);
+			responseText.append(System.lineSeparator());
+			responseText.append("       Outdoor : " + outdoor);
+			responseText.append(System.lineSeparator());
+			responseText.append("      Deceased : " + dead);
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			responseText.append("  - - - R o s t e r - - -");
 
 			List<Person> namelist = new ArrayList<>(list);
 			Collections.sort(namelist);
 			String s = "";
 			for (int i = 0; i < namelist.size(); i++) {
-				s = s + "(" + (i+1) + "). " + namelist.get(i).toString() + System.lineSeparator();
+				if (namelist.get(i).isDeclaredDead())
+					s = s + "(" + (i+1) + "). " + namelist.get(i).toString() + " (Deceased)"+ System.lineSeparator();
+				else
+					s = s + "(" + (i+1) + "). " + namelist.get(i).toString() + System.lineSeparator();					
 			}
 			//		.replace("[", "").replace("]", "");//.replaceAll(", ", ",\n");
 			//System.out.println("list : " + list);

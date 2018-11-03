@@ -301,12 +301,9 @@ public class Robot
 	public boolean isOutside() {
 		if (isInoperable)
 			return true;
-		else {
-			if (getContainerUnit() == null)
+		else if (getContainerUnit() == null)
 				return true;
-			else
-				return false;
-		}
+		return false;
 	}
 
 	/**
@@ -317,12 +314,9 @@ public class Robot
 	public boolean isInVehicle() {
 		if (isInoperable)
 			return false;
-		else {
-			if (getContainerUnit() instanceof Vehicle)
+		else if (getContainerUnit() instanceof Vehicle)
 				return true;
-			else
-				return false;
-		}
+		return false;
 	}
 
 	/**
@@ -337,9 +331,8 @@ public class Robot
 			Unit c = getContainerUnit();
 			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
 				return true;
-			else
-				return false;
 		}
+		return false;
 	}
 
 	/**
@@ -356,9 +349,8 @@ public class Robot
 				return false;
 			else if (c instanceof Settlement)
 				return true;
-			else
-				return false;
 		}
+		return false;
 	}
 	
 	/**
@@ -367,16 +359,17 @@ public class Robot
 	 * @return true if the robot is inside a settlement
 	 */
 	public boolean isInSettlement() {
-		if (isInoperable)
-			return false;
-		else {
-			if (getContainerUnit() instanceof Settlement)
-				return true;
+		if (getContainerUnit() instanceof Settlement) {
+			return true;
+//		if (isInoperable)
+//			return false;
+//		else {
+//			if (getContainerUnit() instanceof Settlement)
+//				return true;
 //			else if (getContainerUnit() instanceof Vehicle && ((Vehicle) getContainerUnit()).getStatus() == StatusType.GARAGED)//getGarage() != null)
 //				return true;
-			else
-				return false;
 		}
+		return false;
 	}
 
 	/**
@@ -395,9 +388,8 @@ public class Robot
 				return true;
 			else if (container == null)
 				return false;
-			else
-				return false;
 		}
+		return false;
 
 	}
 
@@ -409,8 +401,7 @@ public class Robot
 	public boolean isRightOutsideSettlement() {
 		if (getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
 			return true;
-		else
-			return false;
+		return false;
 	}
 
 	/**
@@ -476,29 +467,28 @@ public class Robot
 	@Override
 	public Settlement getSettlement() {
 
-		Unit container = getContainerUnit();
+		Unit c = getContainerUnit();
 
-		if (container instanceof Settlement) {
-			return (Settlement) container;
+		if (c instanceof Settlement) {
+			return (Settlement) c;
 		}
 
-		else if (container instanceof Vehicle) {
+		else if (c instanceof Vehicle) {
 			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
 			if (b != null)
 				// still inside the garage
 				return b.getSettlement();
-			else
+//			else
 				// either at the vicinity of a settlement or already outside on a mission
 				// TODO: need to differentiate which case in future better granularity
-				return null;
+//				return null;
 		}
 
-		else if (container == null) {
-			return null;
+//		else if (container == null) {
+//			return null;
+//		}
 
-		}
-
-		logger.warning("Error in determining " + getName() + "'s settlement when calling getSettlement().");
+//		logger.warning("Error in determining " + getName() + "'s settlement when calling getSettlement().");
 
 		return null;
 

@@ -631,7 +631,8 @@ public class EnterAirlock extends Task implements Serializable {
 			// suit.setLastOwner(person);
 			entityInv.storeUnit(suit);
 		} else {
-			logger.severe(person.getName() + " doesn't have an EVA suit to put away.");
+			logger.severe("[" + person.getLocationTag().getExtendedLocations() + "]" 
+					+ person.getName() + " doesn't have an EVA suit to put away.");
 		}
 
 //        }

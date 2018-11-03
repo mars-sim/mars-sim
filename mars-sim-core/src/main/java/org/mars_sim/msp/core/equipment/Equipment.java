@@ -173,34 +173,33 @@ implements Indoor, Salvagable {
 	 */
 	public Settlement getSettlement() {
 
-		Unit container = getContainerUnit();
+		Unit c = getContainerUnit();
 
-		if (container instanceof Settlement) {
-			return (Settlement) container;
+		if (c instanceof Settlement) {
+			return (Settlement) c;
 		}
 
-		else if (container instanceof Person) {
-			Unit c = ((Person) container).getContainerUnit();
-			if (c instanceof Settlement) {
-				return (Settlement) container;
+		else if (c instanceof Person) {
+			Unit cc = ((Person) c).getContainerUnit();
+			if (cc instanceof Settlement) {
+				return (Settlement) c;
 			}
 		}
 		
-		else if (container instanceof Vehicle) {
+		else if (c instanceof Vehicle) {
 			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
 			if (b != null)
 				// still inside the garage
 				return b.getSettlement();
-			else
+//			else
 				// either at the vicinity of a settlement or already outside on a mission
 				// TODO: need to differentiate which case in future better granularity
-				return null;
+//				return null;
 		}
 
-		else if (container == null) {
-			return null;
-
-		}
+//		else if (container == null) {
+//			return null;
+//		}
 
 //		logger.warning("Error in determining " + getName() + "'s getSettlement() ");
 		return null;
@@ -215,8 +214,7 @@ implements Indoor, Salvagable {
 		Unit container = getContainerUnit();
 		if (container instanceof Vehicle)
 			return (Vehicle) container;
-		else
-			return null;
+		return null;
 	}
 
 	/**
@@ -242,12 +240,12 @@ implements Indoor, Salvagable {
 	 * @return true if yes
 	 */
 	public boolean isInSettlement() {
-		if (getContainerUnit() instanceof Settlement)
+		Unit c = getContainerUnit();
+		if (c instanceof Settlement)
 			return true;
-		else if (getContainerUnit() instanceof Vehicle && ((Vehicle) getContainerUnit()).getStatus() == StatusType.GARAGED)//getGarage() != null)
+		else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)
 			return true;
-		else
-			return false;
+		return false;
 	}
 	
 	/**
@@ -258,8 +256,7 @@ implements Indoor, Salvagable {
 	public boolean isInPerson() {
 		if (getContainerUnit() instanceof Person)
 			return true;
-		else
-			return false;
+		return false;
 	}
 	
 	/**
@@ -270,8 +267,7 @@ implements Indoor, Salvagable {
 	public boolean isInVehicle() {
 		if (getContainerUnit() instanceof Vehicle)
 			return true;
-		else
-			return false;
+		return false;
 	}
 
 	/**
@@ -282,8 +278,7 @@ implements Indoor, Salvagable {
 	public boolean isOutside() {
 		if (getContainerUnit() == null)
 			return true;
-		else
-			return false;
+		return false;
 	}
 	
 	public void setLastOwner(Unit unit) {
