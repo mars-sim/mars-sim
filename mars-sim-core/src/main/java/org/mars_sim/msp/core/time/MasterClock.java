@@ -914,6 +914,13 @@ public class MasterClock implements Serializable {
 		this.isPaused = isPaused;
 		// Fire pause change to all clock listeners.
 		firePauseChange(showPane);
+		
+		if (isPaused) {
+			logger.info("The simulation is paused.");
+		}
+		else {
+			logger.info("The simulation is unpaused.");
+		}
 	}
 
 	/**

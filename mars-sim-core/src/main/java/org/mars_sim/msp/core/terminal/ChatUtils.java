@@ -65,12 +65,13 @@ public class ChatUtils {
 	public final static String[] SPECIAL_KEYS = { 
 			"key", "keys", "keyword", "keywords", "/k",
 			"help", "/h", "/?", "?",	
-			"/p",
 			"/y1", "/y2", "/y3", "/y4",		
 			"hello", "hi", "hey",			
-			"quit", "bye", "exit", "expert",			
-			"/quit", "/bye", "/exit", 
-			"/b", "/q", "/x", "/e" 
+			"expert", "/e",			
+			"quit", "/q", 
+			"bye", "/b", 
+			"exit", "/x",     
+			"pause", "/p"
 	};
 	
 	public final static String[] SETTLEMENT_KEYS = new String[] {
@@ -108,27 +109,28 @@ public class ChatUtils {
 	};
 
 	public final static String SWITCHES = 
-			  "(5) Type 'bye', '/b', 'exit', 'x', 'quit', '/q' to leave the chat." + System.lineSeparator()
+			  "(5) Type 'bye', '/b', 'exit', '/x', 'quit', '/q' to leave the chat." + System.lineSeparator()
 			+ "(6) Type 'help', '/h', '/?' for this help page." + System.lineSeparator()
-			+ "(7) Type 'expert', '/e' to toggle between the normal and expert Mode." + System.lineSeparator();
+			+ "(7) Type 'expert', '/e' to toggle between normal and expert mode." + System.lineSeparator()
+			+ "(8) Type 'pause', '/p' to pause and unpause the simulation." + System.lineSeparator();
 
 	public final static String HELP_TEXT = System.lineSeparator()
 			+ "    ------------------------- H E L P ------------------------- " + System.lineSeparator()
 			+ "(1) Type in the NAME of a person, a bot, or a settlement to connect with." + System.lineSeparator()
-			+ "(2) Use KEYWORDS or type in a number between 0 and 18 (specific QUESTIONS on a person/bot/vehicle/settlement)."
+			+ "(2) Use KEYWORDS or type in a number between 0 and 18 (specific QUESTIONS on a party)."
 			+ System.lineSeparator() + "(3) Type '/k' or 'key' to see a list of KEYWORDS." + System.lineSeparator()
 			+ "(4) Type 'settlement' to obtain the NAMES of the established settlements." + System.lineSeparator()
 			+ SWITCHES;
 
-	public final static String HELP_HEIGHT = "(8) Type 'y_' to change the chat box height; '/y1'-> 256 pixels (default) '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
+	public final static String HELP_HEIGHT = "(9) Type 'y_' to change the chat box height; '/y1'-> 256 pixels (default) '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
 			+ System.lineSeparator();
 
 	public final static String KEYWORDS_TEXT = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "(1) For MarsNet : " + convertKeywords(SYSTEM_KEYS) + "or any NAMES of a settlement/vehicle/bot/person" + System.lineSeparator() 
-			+ "(2) For Settlement : " + convertKeywords(SETTLEMENT_KEYS) + System.lineSeparator() 
-			+ "(3) For Settler : " + convertKeywords(PERSON_KEYS) + System.lineSeparator() 
-			+ "(4) For All Parties : " + convertKeywords(ALL_PARTIES_KEYS) + System.lineSeparator() + System.lineSeparator() 
+			+ "(1) In MarsNet : " + getKeywordList(SYSTEM_KEYS) + "or any NAMES of a settlement/vehicle/bot/person" + System.lineSeparator() 
+			+ "(2) For a Settlement : " + getKeywordList(SETTLEMENT_KEYS) + System.lineSeparator() 
+			+ "(3) For a Settler : " + getKeywordList(PERSON_KEYS) + System.lineSeparator() 
+			+ "(4) For All Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator() 
 //			+ "(5) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator() 
 			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
 			+ SWITCHES;
@@ -182,10 +184,20 @@ public class ChatUtils {
 		relationshipManager = Simulation.instance().getRelationshipManager();
 	}
 
-	public static String convertKeywords(String[] keywords) {
+	/**
+	 * Returns a list of keywords
+	 * 
+	 * @param keywords
+	 * @return list
+	 */
+	public static String getKeywordList(String[] keywords) {
 		String text = "";
-		for (int i=0 ; i <keywords.length; i++) {
-			text = text + keywords[i] + ", ";
+		int last = keywords.length;
+		for (int i=0 ; i <last; i++) {
+			if (i == last -1)
+				text = text + ", and " + keywords[i] + ".";
+			else
+				text = text + keywords[i] + ", ";
 		}
 		return text;
 	}
@@ -1031,7 +1043,11 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 		}
 		
-		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
+		else if (text.equalsIgnoreCase("key") 
+				|| text.equalsIgnoreCase("keys")  
+				|| text.equalsIgnoreCase("keyword")  
+				|| text.equalsIgnoreCase("keywords")  
+				|| text.equalsIgnoreCase("/k")) {
 
 //			help = true;
 			questionText = REQUEST_KEYS;
@@ -1644,7 +1660,12 @@ public class ChatUtils {
 
 		}
 
-		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
+		else if (text.equalsIgnoreCase("key") 
+				|| text.equalsIgnoreCase("keys")  
+				|| text.equalsIgnoreCase("keyword")  
+				|| text.equalsIgnoreCase("keywords")  
+				|| text.equalsIgnoreCase("/k")) {
+
 			questionText = REQUEST_KEYS;
 			if (connectionMode == 0) {
 				keywordText = KEYWORDS_TEXT;
@@ -1950,7 +1971,11 @@ public class ChatUtils {
 			return responseText.toString();
 		}
 		
-		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")) {
+		else if (text.equalsIgnoreCase("key") 
+				|| text.equalsIgnoreCase("keys")  
+				|| text.equalsIgnoreCase("keyword")  
+				|| text.equalsIgnoreCase("keywords")  
+				|| text.equalsIgnoreCase("/k")) {
 
 			// responseText.append(System.lineSeparator());
 			if (connectionMode == 0) {

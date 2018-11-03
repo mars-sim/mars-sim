@@ -10,8 +10,13 @@ import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.terminal.AppUtil;
 import org.mars_sim.msp.core.terminal.RunnerData;
+import org.mars_sim.msp.core.time.MasterClock;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -26,6 +31,13 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	private boolean leaveSystem = false;
 	
 	private SwingTextTerminal terminal;
+	
+	private static Simulation sim = Simulation.instance();
+	private static MasterClock masterClock;
+
+	public ChatMenu() {
+		masterClock = sim.getMasterClock();
+	}
 	
     public static void main(String[] args) {
         TextIO textIO = TextIoFactory.getTextIO();
@@ -51,11 +63,11 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 
 	       	terminal.println("<< Connection to MarsNet established >>"
 		       	+ System.lineSeparator() + System.lineSeparator() 
-		       	+ "Type '/h' for help,   '/k' for keywords,   '/q' to quit"
+		       	+ "Type '/h' for help,  '/k' for keywords,  '/p' to pause/unpause,  '/q' to quit"
 		       	+ System.lineSeparator() + System.lineSeparator());
 		       		       
 	        terminal.println(" -------------------------------------------------------------- ");
-	        terminal.println("|     Press UP arrow key to autocomplete the keyword.          |");
+	        terminal.println("|     Press UP arrow key to autocomplete with a keyword.       |");
 	        terminal.println("|     Press UP/DOWN arrow keys to scroll through choices.      |");
 	        terminal.println(" -------------------------------------------------------------- "
 	        		+ System.lineSeparator()); 
@@ -111,13 +123,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 				if (leaveSystem && ChatUtils.isQuitting(Party.party)) {
 					quit = true;
 					ChatUtils.setConnectionMode(-1);
-				}
-				
-		        // See if user is toggling the expert mode
-//				if (ChatUtils.checkExpertMode(Party.party)) {
-//					ChatUtils.toggleExpertMode();
-//					terminal.println("Set Expert Mode to " + ChatUtils.isExpertMode());
-//				}
+				}				
 	        }
         }
     }
@@ -134,7 +140,20 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 
 		text = text.trim();
 
-		if (ChatUtils.isQuitting(text)) {
+		if (isPause(Party.party)){
+			if (masterClock.isPaused()) {
+				masterClock.setPaused(false, false);
+				terminal.printf(System.lineSeparator());
+				terminal.printf("The simulation is now unpaused.");
+			}
+			else {
+				masterClock.setPaused(true, false);
+				terminal.printf(System.lineSeparator());
+				terminal.printf("The simulation is now paused.");
+			}
+		}
+
+		else if (ChatUtils.isQuitting(text)) {
 			String[] txt = ChatUtils.farewell(ChatUtils.SYSTEM, false);
 			questionText = txt[0];
 			responseText = txt[1];
@@ -194,7 +213,21 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 		terminal.printf(System.lineSeparator());
 	}
 	
+	/*
+	 * Checks if the user wants to pause the simulation
+	 * 
+	 * @param text
+	 */
+	public static boolean isPause(String text) {
+		if (text.equalsIgnoreCase("pause") || text.equalsIgnoreCase("/p") ) {
+			return true;
+		}
 
+		else
+			return false;
+	}
+
+	
     @Override
     public String toString() {
         return "Enter the Chat Mode";
