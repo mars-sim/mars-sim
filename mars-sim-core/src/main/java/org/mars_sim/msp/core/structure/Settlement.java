@@ -183,7 +183,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private double maxMssionRange = 800;
 
 	/** The flag signifying this settlement as the destination of the user customized commander. */ 
-	private boolean goCommander = false;	
+	private boolean isCommanderMode = false;	
 	/** Override flag for food production. */
 	private boolean foodProductionOverride = false;
 	// private boolean reportSample = true;
@@ -3324,12 +3324,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		maxMssionRange = value;
 	}
 
-	public boolean goCommander() {
-		return goCommander;
+	public boolean isCommanderMode() {
+		return isCommanderMode;
 	}
 	
-	public void setGoCommander(boolean value) {
-		goCommander = value;
+	public void setCommanderMode(boolean value) {
+		isCommanderMode = value;
 	}
 	
 	@Override

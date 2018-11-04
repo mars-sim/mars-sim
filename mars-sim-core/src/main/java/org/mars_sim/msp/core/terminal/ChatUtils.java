@@ -117,8 +117,8 @@ public class ChatUtils {
 	public final static String HELP_TEXT = System.lineSeparator()
 			+ "    ------------------------- H E L P ------------------------- " + System.lineSeparator()
 			+ "(1) Type in the NAME of a person, a bot, or a settlement to connect with." + System.lineSeparator()
-			+ "(2) Use KEYWORDS or type in a number between 0 and 18 (specific QUESTIONS on a party)."
-			+ System.lineSeparator() + "(3) Type '/k' or 'key' to see a list of KEYWORDS." + System.lineSeparator()
+			+ "(2) Use KEYWORDS or type in a number between 0 and 18 (specific QUESTIONS on a party)." + System.lineSeparator() 
+			+ "(3) Type '/k' or 'key' to see a list of KEYWORDS." + System.lineSeparator()
 			+ "(4) Type 'settlement' to obtain the NAMES of the established settlements." + System.lineSeparator()
 			+ SWITCHES;
 
@@ -127,10 +127,10 @@ public class ChatUtils {
 
 	public final static String KEYWORDS_TEXT = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "(1) In MarsNet : " + getKeywordList(SYSTEM_KEYS) + "or any NAMES of a settlement/vehicle/bot/person" + System.lineSeparator() 
+			+ "(1)       In MarsNet : a settlement/bot/person's name OR " + getKeywordList(SYSTEM_KEYS) + System.lineSeparator() 
 			+ "(2) For a Settlement : " + getKeywordList(SETTLEMENT_KEYS) + System.lineSeparator() 
-			+ "(3) For a Settler : " + getKeywordList(PERSON_KEYS) + System.lineSeparator() 
-			+ "(4) For All Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator() 
+			+ "(3)    For a Settler : " + getKeywordList(PERSON_KEYS) + System.lineSeparator() 
+			+ "(4)  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator() 
 //			+ "(5) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator() 
 			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
 			+ SWITCHES;
@@ -195,7 +195,7 @@ public class ChatUtils {
 		int last = keywords.length;
 		for (int i=0 ; i <last; i++) {
 			if (i == last -1)
-				text = text + ", and " + keywords[i] + ".";
+				text = text + "and " + keywords[i] + ".";
 			else
 				text = text + keywords[i] + ", ";
 		}

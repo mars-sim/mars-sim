@@ -29,21 +29,29 @@ public class MenuItem extends Pane {
 
     private Effect shadow = new DropShadow(20, Color.DARKGOLDENROD);//WHITESMOKE);//.ORANGE);//.TRANSPARENT);//.LIGHTGOLDENRODYELLOW);//.ORANGE);//.DARKRED);//.DARKGOLDENROD);//.ANTIQUEWHITE);//.CORAL);
     private Effect blur = new BoxBlur(1, 1, 1);
-/*
-    private LinearGradient gradient = new LinearGradient(0, 0, 1, 0, true, CycleMethod.NO_CYCLE, new Stop[] {
-            new Stop(0, Color.BLACK),
-            new Stop(0.2, Color.DARKGREY)
-    });
-*/    
-    public MenuItem(String name) {
+
+//    private LinearGradient gradient = new LinearGradient(0, 0, 1, 0, true, CycleMethod.NO_CYCLE, new Stop[] {
+//            new Stop(0, Color.BLACK),
+//            new Stop(0.2, Color.DARKGREY)
+//    });
+    
+    public MenuItem(String name, int width) {
     	int n = name.length();
+//        Polygon bg = new Polygon(
+//                0, 0,
+//                220, 0,
+//                245, 25,
+//                220, 50,
+//                0, 50
+//        );
         Polygon bg = new Polygon(
                 0, 0,
-                220, 0,
-                245, 25,
-                220, 50,
+                width - 20 , 0,
+                width, 25,
+                width - 20, 50,
                 0, 50
         );
+
         bg.setStroke(Color.color(1, 1, 1, 0.1));//75));
         //bg.setEffect(new GaussianBlur());
         bg.fillProperty().bind(

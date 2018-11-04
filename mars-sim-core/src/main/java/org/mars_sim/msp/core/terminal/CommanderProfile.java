@@ -12,6 +12,7 @@ import org.beryx.textio.ReadHandlerData;
 import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.swing.SwingTextTerminal;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 
@@ -35,10 +36,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     private int choiceIndex = -1;
     private String[] choices = {};
 
-	private Contact contact = new Contact();
-    
-//	private static TextTerminal<?> terminal;
-	
+	private Commander commander;
+    	
 	private SwingTextTerminal terminal;
 	
 	private static TextIO textIO;
@@ -46,6 +45,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     private final List<Runnable> operations = new ArrayList<>();
 
     public CommanderProfile(InteractiveTerm term) {	
+    	commander = SimulationConfig.instance().getPersonConfiguration().getCommander();
     	terminal = term.getTerminal();
     	textIO = term.getTextIO();
 	}
@@ -64,18 +64,18 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 //        setUpMouseCopyKey();
         setUpArrows();
         
-        addString(textIO, "First Name", () -> contact.firstName, s -> contact.firstName = s);
-        addString(textIO, "Last Name", () -> contact.lastName, s -> contact.lastName = s);     
-        addGender(textIO, "Gender", () -> contact.gender, s -> contact.gender = s);
-        addAge(textIO, "Age", () -> contact.age, s -> contact.age = s);	      
-        addJobTask(textIO, "Job (0-16)", () -> contact.job, s -> contact.job = s);	
-        addCountryTask(textIO, "Country (0-27)", () -> contact.country, s -> contact.country = s);
+        addString(textIO, "First Name", () -> commander.getFirstName(), s -> commander.setFirstName(s));
+        addString(textIO, "Last Name", () -> commander.getLastName(), s -> commander.setLastName(s));     
+        addGender(textIO, "Gender", () -> commander.getGender(), s -> commander.setGender(s));
+        addAge(textIO, "Age", () -> commander.getAge(), s -> commander.setAge(s));	      
+        addJobTask(textIO, "Job (0-16)", () -> commander.getJob(), s -> commander.setJob(s));	
+        addCountryTask(textIO, "Country (0-27)", () -> commander.getCountry(), s -> commander.setCountry(s));
           
         setUpCountryKey();
         setUpJobKey();
         setUpUndoKey();
        
-        terminal.println(System.lineSeparator() + "Commander's Profile: " + contact);
+        terminal.println(System.lineSeparator() + "Commander's Profile: " + commander);
         UnitManager.setCommander(true);
     }
     
@@ -346,61 +346,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     	terminal.dispose(null);
     }
 
-    public Contact getContact() {
-    	return contact;
+    public Commander getCommander() {
+    	return commander;
     }
     
-    
-	public class Contact {
-		
-        private String firstName;
-        private String lastName;
-        private String gender;
-        private int age;
-        private int job;
-        private int phase;
-        private int country;
-        
-        public String getFullName() {
-        	if (firstName == null || lastName == null)
-        		return null;
-        	else {
-        		return firstName + " " + lastName;
-        	}
-        }
-
-        public String getGender() {
-        	return gender;
-        }
-
-        public int getCountry() {
-        	return country-1;
-        }
-        
-        public int getAge() {
-        	return age;
-        }
-
-        public int getJob() {
-        	return job-1;
-        }
-        
-        public int getPhase() {
-        	return phase;
-        }
-        
-        @Override
-        public String toString() {
-            return System.lineSeparator() + "   First Name: " + firstName +
-            	   System.lineSeparator() + "   Last Name: " + lastName +
-            	   System.lineSeparator() + "   Gender: " + gender +
-            	   System.lineSeparator() + "   Age: " + age +
-            	   System.lineSeparator() + "   Job: " + JobType.getEditedJobString(job-1) +
-            	   System.lineSeparator() + "   Country: " + UnitManager.getCountryByID(country-1) + 
-            	   System.lineSeparator() + "   Space Agency: " + UnitManager.getSponsorByCountryID(country-1) + "" 
-//            	   System.lineSeparator() + "   Settlement Phase: " + phase
-            	   ;
-            
-        }
-    }
 }

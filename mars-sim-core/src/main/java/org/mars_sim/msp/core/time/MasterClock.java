@@ -211,7 +211,7 @@ public class MasterClock implements Serializable {
 		logger.info("Time Ratio (TR) : " + (int) adjustedTR + "x");
 		logger.info("Time between Updates (TBU) : " + Math.round(adjustedTBU_ms * 100D) / 100D + " ms");
 		logger.info("Ticks Per Second (TPS) : " + Math.round(adjustedFPS * 100D) / 100D + " Hz");
-		logger.info("*** Welcome to Mars and the beginning of the new adventure for humankind ***");
+//		logger.info(" - - - Welcome to Mars - - -");
 	}
 
 	public void testNewMarsLandingDayTime() {
@@ -899,27 +899,30 @@ public class MasterClock implements Serializable {
 	 * @param isPaused true if simulation is paused.
 	 */
 	public void setPaused(boolean isPaused, boolean showPane) {
-		uptimer.setPaused(isPaused);
-
-		if (isPaused && sim.getAutosaveTimer() != null 
-				&& !sim.getAutosaveTimer().isShutdown()
-				&& !sim.getAutosaveTimer().isTerminated()) {
+		if (this.isPaused != isPaused) {
+			uptimer.setPaused(isPaused);
+	
+			if (isPaused && sim.getAutosaveTimer() != null 
+					&& !sim.getAutosaveTimer().isShutdown()
+					&& !sim.getAutosaveTimer().isTerminated()) {
+				
+				sim.getAutosaveTimer().shutdown(); 
+				// Note: using sim (instead of Simulation.instance()) 
+				// won't work when loading a saved sim.
+			} else {
+				sim.startAutosaveTimer();
+			}
+	
+			this.isPaused = isPaused;
+			// Fire pause change to all clock listeners.
+			firePauseChange(showPane);
 			
-			sim.getAutosaveTimer().shutdown(); 
-			// Note: using sim (instead of Simulation.instance()) 
-			// won't work when loading a saved sim.
-		} else
-			sim.startAutosaveTimer();
-
-		this.isPaused = isPaused;
-		// Fire pause change to all clock listeners.
-		firePauseChange(showPane);
-		
-		if (isPaused) {
-			logger.info("The simulation is paused.");
-		}
-		else {
-			logger.info("The simulation is unpaused.");
+			if (isPaused) {
+				logger.info("The simulation is paused.");
+			}
+			else {
+				logger.info("The simulation is unpaused.");
+			}
 		}
 	}
 

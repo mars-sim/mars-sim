@@ -89,6 +89,7 @@ public class ScenarioConfigEditorFX {
 	private boolean hasError;
 	private boolean hasSettlement;
 	private boolean isCrewEditorOpen = false;
+	private boolean isCommanderMode;
 
 	private String playerName;
 	private String gameMode;
@@ -135,7 +136,7 @@ public class ScenarioConfigEditorFX {
 	 * @param mainMenu
 	 * @param config   the simulation configuration.
 	 */
-	public ScenarioConfigEditorFX(MainMenu mainMenu) { // {
+	public ScenarioConfigEditorFX(MainMenu mainMenu, boolean isCommanderMode) { // {
 		// logger.info("ScenarioConfigEditorFX's constructor is on " +
 		// Thread.currentThread().getName() );
 
@@ -143,6 +144,7 @@ public class ScenarioConfigEditorFX {
 		this.config = SimulationConfig.instance();
 		this.mainMenu = mainMenu;
 		this.mainScene = mainMenu.getMainScene();
+		this.isCommanderMode = isCommanderMode;
 
 		hasError = false;
 
@@ -567,9 +569,13 @@ public class ScenarioConfigEditorFX {
 	public class SimulationTask implements Runnable {
 		public void run() {
 
-			// Start interactive terminal
-			sim.getTerm().startCommanderMode();
-
+			// if commander mode GUI hasn't been used, Start interactive terminal
+//			if (!isCommanderMode) {
+//				// Alert the user to see the interactive terminal 
+//				logger.info("Please proceed to answering the question in the popped-up console.");
+//				sim.getTerm().startCommanderMode();
+//			}
+			
 			Simulation.createNewSimulation(-1);
 
 			sim.start(false);
@@ -1018,7 +1024,6 @@ public class ScenarioConfigEditorFX {
 
 	public void disableStartButton() {
 		startButton.setDisable(true);
-		;
 	}
 
 	public Label getErrorLabel() {

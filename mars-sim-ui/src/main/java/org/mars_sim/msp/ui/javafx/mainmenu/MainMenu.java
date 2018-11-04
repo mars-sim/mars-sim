@@ -22,10 +22,10 @@ import java.util.logging.Logger;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.layout.AnchorPane;
 import javafx.animation.AnimationTimer;
-import javafx.animation.FadeTransition;
 
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -41,6 +41,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.control.Label;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -49,14 +50,19 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Duration;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.terminal.Commander;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.config.controller.MainMenuController;
 import org.mars_sim.msp.ui.javafx.networking.MultiplayerMode;
@@ -70,6 +76,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialog.DialogTransition;
+import com.jfoenix.controls.JFXTextField;
 
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.TileBuilder;
@@ -130,7 +137,9 @@ public class MainMenu {
 	// private Point2D previousLocation;
 
 	private Group root;
-
+	
+	private Scene scene;
+	
 	private AnchorPane menuAPane;
 
 	private StackPane mainMenuSPane;
@@ -160,6 +169,10 @@ public class MainMenu {
 	private transient ThreadPoolExecutor executor;
 
 	private AnimationTimer starsTimer;
+	
+	private EventHandler<MouseEvent> enteredHandler;
+
+	private EventHandler<MouseEvent> exitedHandler;
 
 	private Simulation sim = Simulation.instance();
 	
@@ -327,27 +340,49 @@ public class MainMenu {
 		menuApp.getSpinningGlobe().getGlobe().handleMouse(gameScene.getContentRoot());
 
 		// Makes the menu option box fades in
-		root.setOnMouseEntered(new EventHandler<MouseEvent>() {
-			public void handle(MouseEvent mouseEvent) {
-				menuApp.startAnimation();
-				FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
-				fadeTransition.setFromValue(0.0);
-				fadeTransition.setToValue(1.0);
-				fadeTransition.play();
-			}
-		});
+		enteredHandler = new EventHandler<MouseEvent>(){
+	        public void handle(MouseEvent event){
+	        	menuApp.addLineMenuBox();
+				menuApp.startAnimation(menuApp.getMenuBox());
+				menuApp.startBoxAnimation();
+	        }
+		};
+
+		root.setOnMouseEntered(enteredHandler);
 
 		// Makes the menu option box fades out
-		root.setOnMouseExited(new EventHandler<MouseEvent>() {
-			public void handle(MouseEvent mouseEvent) {
-				menuApp.endAnimation();
-				FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
-				fadeTransition.setFromValue(1.0);
-				fadeTransition.setToValue(0.0);
-				fadeTransition.play();
-				fadeTransition.setOnFinished(e -> menuApp.clearMenuItems());
-			}
-		});
+		exitedHandler = new EventHandler<MouseEvent>(){
+	        public void handle(MouseEvent event){
+				menuApp.endLineAnimation();
+				menuApp.endMenuBoxAnimation();
+	        }
+		};
+
+		root.setOnMouseExited(exitedHandler);
+
+		
+//		// Makes the menu option box fades in
+//		root.setOnMouseEntered(new EventHandler<MouseEvent>() {
+//			public void handle(MouseEvent mouseEvent) {
+//				menuApp.startAnimation();
+//				FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
+//				fadeTransition.setFromValue(0.0);
+//				fadeTransition.setToValue(1.0);
+//				fadeTransition.play();
+//			}
+//		});
+//
+//		// Makes the menu option box fades out
+//		root.setOnMouseExited(new EventHandler<MouseEvent>() {
+//			public void handle(MouseEvent mouseEvent) {
+//				menuApp.endLineAnimation();
+//				FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
+//				fadeTransition.setFromValue(1.0);
+//				fadeTransition.setToValue(0.0);
+//				fadeTransition.play();
+//				fadeTransition.setOnFinished(e -> menuApp.clearMenuBoxItems());
+//			}
+//		});
 
 	}
 
@@ -475,8 +510,8 @@ public class MainMenu {
 		root.getChildren().add(mainMenuSPane);
 		root.getChildren().add(closeApp);
 		root.getChildren().add(globeSPane);
-
-		Scene scene = new Scene(root, sceneWidth, sceneHeight, true, SceneAntialiasing.BALANCED);// Color.rgb(0, 0, 0,
+		
+		scene = new Scene(root, sceneWidth, sceneHeight, true, SceneAntialiasing.BALANCED);// Color.rgb(0, 0, 0,
 																									// 0));
 		// Create a sliver of sun-lit bright orange atmosphere around the Mars globe
 		// when being dragged around
@@ -490,27 +525,25 @@ public class MainMenu {
 		scene.setCursor(Cursor.HAND);
 
 		// Makes the menu option box fades in
-		scene.setOnMouseEntered(new EventHandler<MouseEvent>() {
-			public void handle(MouseEvent mouseEvent) {
-				menuApp.startAnimation();
-				FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
-				fadeTransition.setFromValue(0.0);
-				fadeTransition.setToValue(1.0);
-				fadeTransition.play();
-			}
-		});
+		enteredHandler = new EventHandler<MouseEvent>(){
+	        public void handle(MouseEvent event){
+	        	menuApp.addLineMenuBox();
+				menuApp.startAnimation(menuApp.getMenuBox());
+				menuApp.startBoxAnimation();
+	        }
+		};
+
+		scene.setOnMouseEntered(enteredHandler);
 
 		// Makes the menu option box fades out
-		scene.setOnMouseExited(new EventHandler<MouseEvent>() {
-			public void handle(MouseEvent mouseEvent) {
-				menuApp.endAnimation();
-				FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
-				fadeTransition.setFromValue(1.0);
-				fadeTransition.setToValue(0.0);
-				fadeTransition.play();
-				fadeTransition.setOnFinished(e -> menuApp.clearMenuItems());
-			}
-		});
+		exitedHandler = new EventHandler<MouseEvent>(){
+	        public void handle(MouseEvent event){
+				menuApp.endLineAnimation();
+				menuApp.endMenuBoxAnimation();
+	        }
+		};
+
+		scene.setOnMouseExited(exitedHandler);
 
 		closeApp.translateXProperty().bind(scene.widthProperty().subtract(30));
 
@@ -587,6 +620,49 @@ public class MainMenu {
 
 	}
 
+
+	public void removeEvenHandler() {
+		if (isFXGL ) {
+			root.removeEventHandler(MouseEvent.MOUSE_ENTERED, enteredHandler);
+			root.removeEventHandler(MouseEvent.MOUSE_EXITED, exitedHandler);		
+			root.setOnMouseEntered(null); 
+			root.setOnMouseExited(null); 
+		}
+		else {
+			scene.removeEventHandler(MouseEvent.MOUSE_ENTERED, enteredHandler);
+			scene.removeEventHandler(MouseEvent.MOUSE_EXITED, exitedHandler);		
+			scene.setOnMouseEntered(null); 
+			scene.setOnMouseExited(null);	
+		}
+
+//		// Makes the menu option box fades in
+//		enteredHandler = new EventHandler<MouseEvent>(){
+//	        public void handle(MouseEvent event){
+//				menuApp.startAnimation();
+//				FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
+//				fadeTransition.setFromValue(0.0);
+//				fadeTransition.setToValue(1.0);
+//				fadeTransition.play();
+//	        }
+//		};
+//
+//		scene.setOnMouseEntered(enteredHandler);
+//
+//		// Makes the menu option box fades out
+//		exitedHandler = new EventHandler<MouseEvent>(){
+//	        public void handle(MouseEvent event){
+//				menuApp.endAnimation();
+//				FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), menuApp.getOptionMenu());
+//				fadeTransition.setFromValue(1.0);
+//				fadeTransition.setToValue(0.0);
+//				fadeTransition.play();
+//				fadeTransition.setOnFinished(e -> menuApp.clearMenuBoxItems());
+//	        }
+//		};
+//		
+//		scene.setOnMouseExited(exitedHandler);
+	}
+
 	/**
 	 * Removes unsupported resolutions
 	 * 
@@ -648,18 +724,18 @@ public class MainMenu {
 		return multiplayerMode;
 	}
 
-	public void runNew(boolean isFXGL) {
+	public void runNew(boolean isFXGL, boolean isCommanderMode) {
 		closeStage(isFXGL);
-		createMainScene();
+		createMainScene(isCommanderMode);
 	}
 
-	public void createMainScene() {
+	public void createMainScene(boolean isCommanderMode) {
 		// creates a mainScene instance
 		mainScene = new MainScene(native_width, native_height, gameScene);
 
 		try {
 			// Loads Scenario Config Editor
-			Simulation.instance().getSimExecutor().execute(new ConfigEditorTask());
+			Simulation.instance().getSimExecutor().execute(new ConfigEditorTask(isCommanderMode));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -669,10 +745,16 @@ public class MainMenu {
 	}
 
 	public class ConfigEditorTask implements Runnable {
+		private boolean isCommanderMode;
+		
+		ConfigEditorTask(boolean isCommanderMode) {
+			this.isCommanderMode = isCommanderMode;
+		}
+		
 		public void run() {
 			// logger.info("MarsProjectFX's ConfigEditorTask's run() is on " +
 			// Thread.currentThread().getName() );
-			new ScenarioConfigEditorFX(mainMenu); // marsProjectFX,
+			new ScenarioConfigEditorFX(mainMenu, isCommanderMode); // marsProjectFX,
 		}
 	}
 
@@ -1089,6 +1171,256 @@ public class MainMenu {
 	 * 
 	 * @param pane
 	 */
+	public StackPane createCommanderPane() {
+		if (exitDialog == null || (exitDialog != null && !exitDialog.isVisible())) {
+			
+			JFXButton doneBtn = new JFXButton("Done");
+			doneBtn.setStyle("-fx-background-color: lightgoldenrodyellow;");// lightgrey;");
+			doneBtn.setOnAction(e -> {
+		        UnitManager.setCommander(true);
+		        runNew(isFXGL, true);
+				e.consume();
+			});
+
+			HBox return_hb = new HBox();
+			return_hb.setPadding(new Insets(45, 15, 15, 15));
+			return_hb.getChildren().addAll(doneBtn);
+			return_hb.setAlignment(Pos.CENTER);
+
+//			HBox.setMargin(done_btn, new Insets(10, 10, 10, 10));
+			
+			Label titleLabel = new Label("Commander Mode");
+			titleLabel.setAlignment(Pos.TOP_CENTER);
+			titleLabel.setTextAlignment(TextAlignment.CENTER);
+			titleLabel.setContentDisplay(ContentDisplay.TOP);
+			titleLabel.setPadding(new Insets(10, 10, 10, 10));
+			titleLabel.setStyle("-fx-text-fill: lightgoldenrodyellow;");
+			titleLabel.setFont(Font.loadFont(
+					MenuApp.class.getResource("/fonts/Penumbra-HalfSerif-Std_35114.ttf").toExternalForm(), 20));
+			// titleLabel.setFont(Font.font(null, FontWeight.BOLD, 20));
+
+			Commander commander = SimulationConfig.instance().getPersonConfiguration().getCommander();
+
+			Label fnameLabel = new Label("First Name :   ");
+			fnameLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+			JFXTextField fnameTF = new JFXTextField();
+			fnameTF.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");			
+ 			
+			fnameTF.textProperty().addListener((observable, oldValue, newValue) -> {
+//			    System.out.println("textfield changed from " + oldValue + " to " + newValue);
+//			    boolean goodToGo = false;
+			    String first = newValue;//fnameTF.getText();
+				if (first != null && !Conversion.isBlank(first)) {
+					commander.setFirstName(first);
+					doneBtn.setDisable(false);
+				} 
+				
+				else {
+					Alert alert = new Alert(AlertType.ERROR, "The commander's first name cannot be blank.");
+					alert.initOwner(primaryStage);
+					alert.setTitle("Invalid Input");
+					alert.showAndWait();
+//					goodToGo = false;
+					doneBtn.setDisable(true);
+					// event.consume();
+					fnameTF.requestFocus();
+				}
+			});
+			
+			
+			HBox fnameBox = new HBox();
+			fnameBox.setPadding(new Insets(10, 10, 10, 10));
+			fnameBox.getChildren().addAll(fnameLabel, fnameTF);
+			fnameBox.setAlignment(Pos.CENTER);
+
+			Label lnameLabel = new Label("Last Name :   ");
+			JFXTextField lnameTF = new JFXTextField();
+			lnameTF.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+		
+			lnameTF.textProperty().addListener((observable, oldValue, newValue) -> {
+//			    System.out.println("textfield changed from " + oldValue + " to " + newValue);
+//			    boolean goodToGo = false;
+			    String last = newValue;//lnameTF.getText();
+				if (last != null && !Conversion.isBlank(last)) {
+					commander.setLastName(last);
+					doneBtn.setDisable(false);
+				} 
+				
+				else {
+					Alert alert = new Alert(AlertType.ERROR, "The commander's last name cannot be blank.");
+					alert.initOwner(primaryStage);
+					alert.setTitle("Invalid Input");
+					alert.showAndWait();
+//					goodToGo = false;
+					doneBtn.setDisable(true);
+					// event.consume();
+					lnameTF.requestFocus();
+				}
+			});
+
+			HBox lnameBox = new HBox();
+			lnameBox.setPadding(new Insets(10, 10, 10, 10));
+			lnameLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+			lnameBox.getChildren().addAll(lnameLabel, lnameTF);
+			lnameBox.setAlignment(Pos.CENTER);
+
+			Label ageLabel = new Label("Age :   ");
+			JFXTextField ageTF = new JFXTextField();
+			ageTF.setText("30");
+			ageTF.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+
+			ageTF.textProperty().addListener((observable, oldValue, newValue) -> {
+//			    System.out.println("textfield changed from " + oldValue + " to " + newValue);
+				String ageString = newValue;//ageTF.getText(); 
+				if (ageString != null && !Conversion.isBlank(ageString) && Conversion.isInteger(ageString, 10)) {
+					int age = Integer.parseInt(ageString);
+					if (age >= 18 && age <= 80) {
+						commander.setAge(age);
+						doneBtn.setDisable(false);
+					}
+					else {
+						Alert alert = new Alert(AlertType.ERROR, "The commander's age must be between 18 and 80.");
+						alert.initOwner(primaryStage);
+						alert.setTitle("Invalid Input");
+						alert.showAndWait();
+//						goodToGo = false;
+						doneBtn.setDisable(true);
+						// event.consume();
+						ageTF.requestFocus();
+					}
+				} 
+				
+				else {
+					Alert alert = new Alert(AlertType.ERROR, "The commander's age cannot be blank.");
+					alert.initOwner(primaryStage);
+					alert.setTitle("Invalid Input");
+					alert.showAndWait();
+//					goodToGo = false;
+					doneBtn.setDisable(true);
+					// event.consume();
+					ageTF.requestFocus();
+				}
+			});
+
+			HBox ageBox = new HBox();
+			ageBox.setPadding(new Insets(10, 10, 10, 10));
+			ageLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+			ageBox.getChildren().addAll(ageLabel, ageTF);
+			ageBox.setAlignment(Pos.CENTER);
+
+			
+			Label genderLabel = new Label("Gender :   ");
+			genderLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+
+        	List<String> genders = Arrays.asList("Male", "Female");
+
+			JFXComboBox<String> genderCombo = new JFXComboBox<>();
+			genderCombo.setStyle("-fx-text-fill: lightgoldenrodyellow;");
+			genderCombo.getStyleClass().add("jfx-combo-box");
+			genderCombo.getItems().addAll(genders);	
+			genderCombo.setPromptText("Select here");
+			genderCombo.valueProperty().addListener(new ChangeListener<String>() {
+				@Override
+				public void changed(ObservableValue ov, String t, String t1) {
+//					if (!t.equals(t1)) {
+						genderCombo.setValue(t1);
+						//int id = genders.indexOf(t1);
+						commander.setGender(t1);//getListID(genders, t1) + 1);	
+//					}
+				}
+			});
+
+			HBox genderBox = new HBox();
+			genderBox.setPadding(new Insets(10, 10, 10, 10));
+			genderBox.getChildren().addAll(genderLabel, genderCombo);
+			genderBox.setAlignment(Pos.CENTER);
+
+
+			Label jobLabel = new Label("Job :   ");
+			jobLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+
+        	List<String> jobs = JobType.getEditedList();
+
+			JFXComboBox<String> jobCombo = new JFXComboBox<>();
+			jobCombo.setStyle("-fx-text-fill: lightgoldenrodyellow;");
+			jobCombo.getStyleClass().add("jfx-combo-box");
+			jobCombo.getItems().addAll(jobs);	
+			jobCombo.setPromptText("Select here");
+			jobCombo.valueProperty().addListener(new ChangeListener<String>() {
+				@Override
+				public void changed(ObservableValue ov, String t, String t1) {
+//					if (!t.equals(t1)) {
+						jobCombo.setValue(t1);
+						int id = jobs.indexOf(t1);
+						commander.setJob(id + 1);//getListID(jobs, t1) + 1);	
+//					}
+				}
+			});
+
+			HBox jobBox = new HBox();
+			jobBox.setPadding(new Insets(10, 10, 10, 10));
+			jobBox.getChildren().addAll(jobLabel, jobCombo);
+			jobBox.setAlignment(Pos.CENTER);
+
+			Label countryLabel = new Label("Country :   ");
+			countryLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+
+        	List<String> countries = UnitManager.getCountryList();
+
+			JFXComboBox<String> countryCombo = new JFXComboBox<>();
+			countryCombo.setStyle("-fx-text-fill: lightgoldenrodyellow;");
+			countryCombo.getStyleClass().add("jfx-combo-box");
+			countryCombo.getItems().addAll(countries);	
+			countryCombo.setPromptText("Select here");
+			countryCombo.valueProperty().addListener(new ChangeListener<String>() {
+				@Override
+				public void changed(ObservableValue ov, String t, String t1) {
+//					if (!t.equals(t1)) {
+						countryCombo.setValue(t1);
+						int id = countries.indexOf(t1);
+//						System.out.println("country : " + t1 + "    id : " + id);
+						commander.setCountry(id + 1);//getListID(countries, t1) + 1);	
+//					}
+				}
+			});
+
+			HBox countryBox = new HBox();
+			countryBox.setPadding(new Insets(10, 10, 10, 10));
+			countryBox.getChildren().addAll(countryLabel, countryCombo);
+			countryBox.setAlignment(Pos.CENTER);
+
+		
+			VBox vb = new VBox();
+			vb.setAlignment(Pos.CENTER);
+			vb.setPadding(new Insets(10, 10, 10, 10));
+			vb.getChildren().addAll(titleLabel, fnameBox, lnameBox, genderBox, ageBox, jobBox, countryBox, doneBtn);
+			
+			StackPane sp = new StackPane(vb);
+			sp.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+			StackPane.setMargin(vb, new Insets(10, 10, 10, 10));
+
+			return sp;
+		}
+		
+		return null;	
+	}
+	
+	public int getListID(List<String> list, String s) {
+    	int id = -1;
+    	for (int i = 0; i < list.size(); i++) {
+    		if (list.get(i).equals(s)) {
+    			id = i;
+    			break;
+    		}
+    	}
+    	return id;
+	}
+	
+	/**
+	 * Selects the game screen resolution in this dialog box
+	 * 
+	 * @param pane
+	 */
 	public void selectResolutionDialog(StackPane pane) {
 		if (settingDialog == null && (exitDialog == null || (exitDialog != null && !exitDialog.isVisible()))) {
 
@@ -1373,5 +1705,45 @@ public class MainMenu {
 		}
 	}
 	
-	
+//	public class Commander {
+//		
+//        private String firstName;
+//        private String lastName;
+//        private String gender;
+//        private String job;
+//        private String country;
+//        private int age;
+//
+//        public String getFullName() {
+//        	if (firstName == null || lastName == null)
+//        		return null;
+//        	else {
+//        		return firstName + " " + lastName;
+//        	}
+//        }
+//
+//        public String getGender() {
+//        	return gender;
+//        }
+//
+//        public String getCountry() {
+//        	return country;
+//        }
+//
+//        public void setCountry(String value) {
+//        	country = value;
+//        }
+//
+//        public int getAge() {
+//        	return age;
+//        }
+//
+//        public String getJob() {
+//        	return job;
+//        }
+//
+//        public void setJob(String value) {
+//        	job = value;
+//        }
+//    }
 }

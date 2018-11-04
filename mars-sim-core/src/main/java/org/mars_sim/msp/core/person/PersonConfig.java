@@ -17,6 +17,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.terminal.Commander;
 
 /**
  * Provides configuration information about people units. Uses a JDOM document
@@ -136,6 +137,8 @@ public class PersonConfig implements Serializable {
 	private List<Map<Integer, List<String>>> lastNames;
 	private List<Map<Integer, List<String>>> firstNames;
 
+	private Commander commander;
+
 	/**
 	 * Constructor
 	 * 
@@ -144,6 +147,8 @@ public class PersonConfig implements Serializable {
 	public PersonConfig(Document personDoc) {
 		// logger.info("PersonConfig's constructor is on " +
 		// Thread.currentThread().getName());
+
+		commander = new Commander();
 
 		this.personDoc = personDoc;
 
@@ -1612,6 +1617,7 @@ public class PersonConfig implements Serializable {
 		if (countries == null) {
 			countries = createCountryList();
 		}
+//		System.out.println("id : " + id + "   list : " + countries);
 		return countries.get(id);
 	}
 
@@ -1721,20 +1727,30 @@ public class PersonConfig implements Serializable {
 		return sponsors;
 	}
 
-	/**
-	 * Gets a list of last names by sponsors and by countries
-	 */
+//	/**
+//	 * Gets a list of last names by sponsors and by countries
+//	 */
 //	public List<Map<Integer, List<String>>> getLastNames() {
 //		return lastNames;
 //	}
 
-	/**
-	 * Gets a list of first names by sponsors and by countries
-	 */
+//	/**
+//	 * Gets a list of first names by sponsors and by countries
+//	 */
 //	public List<Map<Integer, List<String>>> getFirstNames() {
 //		return firstNames;
 //	}
 
+	/**
+	 * Get the Commander's profile
+	 * 
+	 * @return profile
+	 */
+	public Commander getCommander() {
+		return commander;
+	}
+
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

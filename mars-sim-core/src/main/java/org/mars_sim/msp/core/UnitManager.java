@@ -87,7 +87,7 @@ public class UnitManager implements Serializable {
 	// Data members
 	private int solCache = 0;
 
-	public static boolean hasProposedCommander = false;	
+	public static boolean isCommanderMode = false;	
 	
 	/** Collection of all units. */
 	private Collection<Unit> units;
@@ -194,7 +194,7 @@ public class UnitManager implements Serializable {
 		// Create pre-configured settlers as stated in people.xml
 		createPreconfiguredPeople();			
 		// Find the settlement match for the user proposed commander's sponsor 
-		if (hasProposedCommander)
+		if (isCommanderMode)
 			matchSettlement();
 		// Create more settlers to fill the settlement(s)
 		createInitialPeople();
@@ -1187,7 +1187,7 @@ public class UnitManager implements Serializable {
 		// individuals
 		
 		// Check if this settlement is the designated one for the user proposed commander
-		if (settlement.goCommander()) {
+		if (settlement.isCommanderMode()) {
 			updateCommander(cc);
 			logger.info(cc + " will be assigned to " + settlement + " as its commander.");
 		}
@@ -1269,14 +1269,14 @@ public class UnitManager implements Serializable {
 			Settlement s = list.get(j);		
 			// If the sponsors are a match
 			if (sponsor.equals(s.getSponsor()) ) {			
-				s.setGoCommander(true);
+				s.setCommanderMode(true);
 				logger.info("'" + country + "' does have a settlement called '" + s + "'.");
 				return;
 			}
 			
 			// If this is the last settlement to examine
 			else if ((j == size - 1)) {			
-				s.setGoCommander(true);
+				s.setCommanderMode(true);
 				logger.info("'" + country + "' doesn't have any settlements.");
 				return;
 			}
@@ -1946,13 +1946,17 @@ public class UnitManager implements Serializable {
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		
 		int solElapsed = marsClock.getMissionSol();
-
+		
 		if (solCache != solElapsed) {
 			solCache = solElapsed;
-			
-			if (solElapsed != 1)
+		
+			if (solElapsed == 1)
 				// Note that when loading from a saved sim...
-				logger.info("The mission sol " + solCache + " has begun.");
+				logger.info(" - - - - - - - - - - - - Sol " + solCache + " - - - - - - - - - - - - ");
+
+			else //if (solElapsed != 1)
+				// Note that when loading from a saved sim...
+				logger.info(" - - - - - - - - - - - - Sol " + solCache + " - - - - - - - - - - - - ");
 			
 			// Compute reliability daily
 			partConfig.computeReliability();
@@ -2286,41 +2290,41 @@ public class UnitManager implements Serializable {
 	 * Resets the commander's name back to null
 	 */
 	public static void setCommander(boolean value) {
-		hasProposedCommander = value;
+		isCommanderMode = value;
 	}
 	
 	/** Gets the commander's fullname */
 	public String getFullname() {
 		// During maven test, CommanderProfile/Contact instance doesn't exist
-		if (Simulation.instance().getProfile() != null)
-			return Simulation.instance().getProfile().getContact().getFullName();
+		if (personConfig != null)
+			return personConfig.getCommander().getFullName();
 		else
 			return null;
 	}
 	
 	/** Gets the commander's gender */
 	public String getGender() {
-		return Simulation.instance().getProfile().getContact().getGender();
+		return personConfig.getCommander().getGender();
 	}
 	
 	/** Gets the commander's age */
 	public int getAge() {
-		return Simulation.instance().getProfile().getContact().getAge();
+		return personConfig.getCommander().getAge();
 	}
 
 	/** Gets the commander's job */
 	public int getJob() {
-		return Simulation.instance().getProfile().getContact().getJob();
+		return personConfig.getCommander().getJob();
 	}
 	
 	/** Gets the commander's country */
 	public int getCountry() {
-		return Simulation.instance().getProfile().getContact().getCountry();
+		return personConfig.getCommander().getCountry();
 	}
 	
 	/** Gets the settlement's phase */
 	public int getPhase() {
-		return Simulation.instance().getProfile().getContact().getPhase();
+		return personConfig.getCommander().getPhase();
 	}
 	
 	/**

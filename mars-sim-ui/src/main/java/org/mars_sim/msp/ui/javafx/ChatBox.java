@@ -29,7 +29,10 @@ import com.jfoenix.controls.JFXPopup.PopupVPosition;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.terminal.ChatUtils;
+import org.mars_sim.msp.core.terminal.ChatMenu;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 
@@ -62,6 +65,8 @@ public class ChatBox extends BorderPane {
 	
 	protected MainScene mainScene;
 	
+	private static Simulation sim = Simulation.instance();
+	private static MasterClock masterClock;
 
 	/**
 	 * Constructor for ChatBox
@@ -70,6 +75,8 @@ public class ChatBox extends BorderPane {
 	 */
 	public ChatBox(MainScene mainScene) {
 		this.mainScene = mainScene;
+
+		masterClock = sim.getMasterClock();
 
 		this.setStyle("-fx-background-color: grey;"// #7ebcea;" //#426ab7;"//
 				+ "-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
@@ -287,7 +294,18 @@ public class ChatBox extends BorderPane {
 		text = text.trim();
 		int len = text.length();
 		
-		if (ChatUtils.isQuitting(text)) {
+		if (ChatMenu.isPause(text)){
+			if (masterClock.isPaused()) {
+				masterClock.setPaused(false, false);
+				responseText = "The simulation is now unpaused.";
+			}
+			else {
+				masterClock.setPaused(true, false);
+				responseText = "The simulation is now paused.";
+			}
+		}
+		
+		else if (ChatUtils.isQuitting(text)) {
 			String[] txt = ChatUtils.farewell(ChatUtils.SYSTEM_PROMPT, false);
 			// questionText = txt[0];
 			responseText = txt[1];
@@ -395,8 +413,6 @@ public class ChatBox extends BorderPane {
 	 * @param keyEvent
 	 */
 	public void keyHandler(final KeyEvent keyEvent) {
-		// System.out.println("ChatBox's keyHandler() : keyEvent.getCode() is " +
-		// keyEvent.getCode());
 		switch (keyEvent.getCode()) {
 		case ENTER:
 			String text = autoFillTextBox.getTextbox().getText();

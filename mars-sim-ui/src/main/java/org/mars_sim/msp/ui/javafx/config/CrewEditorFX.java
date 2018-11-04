@@ -46,11 +46,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.ScrollPane;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.person.GenderType;
 
 import com.jfoenix.controls.JFXButton;
@@ -259,7 +261,7 @@ public class CrewEditorFX {
 			for (int i = 0; i < SIZE_OF_CREW; i++) {
 				String nameStr = nameTF.get(i).getText().trim();
 				// Added isBlank() and checking against invalid names
-				if (!isBlank(nameStr)) {
+				if (!Conversion.isBlank(nameStr)) {
 					// update PersonConfig with the new name
 					personConfig.setPersonName(i, nameStr, ALPHA_CREW);
 					goodToGo = true && goodToGo;
@@ -297,14 +299,14 @@ public class CrewEditorFX {
 				personConfig.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
 				
 				String countryStr = (String) countryList.get(i).getValue();
-				if (!isBlank(countryStr)) {
+				if (!Conversion.isBlank(countryStr)) {
 					personConfig.setPersonCountry(i, countryStr, ALPHA_CREW);
 					goodToGo = true && goodToGo;
 				} else {
 					goodToGo = false;
 				}
 
-				if (!isBlank(destinationStr)) {
+				if (!Conversion.isBlank(destinationStr)) {
 					// update PersonConfig with the new destination
 					personConfig.setPersonDestination(i, destinationStr, ALPHA_CREW);
 
@@ -439,37 +441,6 @@ public class CrewEditorFX {
 	 * Validates and saves the current alpha crew configuration
 	 */
 	// public void validateRecordChange(ActionEvent event) {}
-
-	/**
-	 * <p>
-	 * Checks if a String is whitespace, empty ("") or null.
-	 * </p>
-	 *
-	 * <pre>
-	 * StringUtils.isBlank(null)      = true
-	 * StringUtils.isBlank("")        = true
-	 * StringUtils.isBlank(" ")       = true
-	 * StringUtils.isBlank("bob")     = false
-	 * StringUtils.isBlank("  bob  ") = false
-	 * </pre>
-	 *
-	 * @param str the String to check, may be null
-	 * @return <code>true</code> if the String is null, empty or whitespace
-	 * @since 2.0
-	 * @author commons.apache.org
-	 */
-	public static boolean isBlank(String str) {
-		int strLen;
-		if (str == null || (strLen = str.length()) == 0) {
-			return true;
-		}
-		for (int i = 0; i < strLen; i++) {
-			if ((Character.isWhitespace(str.charAt(i)) == false)) {
-				return false;
-			}
-		}
-		return true;
-	}
 
 	public JFXComboBox<String> setUpCB(int choice, int index) {
 		JFXComboBox<String> m = null;

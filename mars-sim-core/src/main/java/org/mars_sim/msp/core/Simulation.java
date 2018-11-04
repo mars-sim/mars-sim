@@ -408,17 +408,15 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 
-
-
 	/**
-	 * Get the Commander's profile
+	 * Get the interactive terminal instance
 	 * 
-	 * @return profile
+	 * @return {@link InteractiveTerm}
 	 */
-	public CommanderProfile getProfile() {
-		return interactiveTerm.getProfile();
+	public InteractiveTerm getITerm() {
+		return interactiveTerm;
 	}
-			
+	
 	/*
 	 * Obtains the size of the file
 	 * 

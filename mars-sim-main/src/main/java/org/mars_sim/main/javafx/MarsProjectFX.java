@@ -22,9 +22,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
-
 import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 
 /**--------------------------------------------------------------
@@ -420,7 +418,7 @@ public class MarsProjectFX extends Application {
 			if (newSim) {
 				// CASE A //
 				logger.info("Starting a new sim in headless mode in " + Simulation.OS);		
-				// Start interactive terminal 
+				// Start interactive terminal
 				sim.getTerm().startCommanderMode();
 				// Initialize the simulation.
 				Simulation.createNewSimulation(-1);
@@ -528,7 +526,7 @@ public class MarsProjectFX extends Application {
 				mainMenu.initMainMenu(primaryStage);
 
 				// Alert the user to see the interactive terminal 
-				logger.info("Please proceed to answering the question in the popped-up console.");
+				logger.info("Please proceed to the Main Menu and choose a menu option.");
 
 				// Now in the Main Menu, wait for user to pick either options
 				// 1. 'New Sim' - call runOne(), go to ScenarioConfigEditorFX
@@ -661,32 +659,33 @@ public class MarsProjectFX extends Application {
 		}
 	}
 
-	/**
-	 * Create a new simulation instance.
-	 */
-	void handleNewSimulation() {
-		// logger.info("MarsProjectFX's handleNewSimulation() is on
-		// "+Thread.currentThread().getName() );
-		// MarsProjectFX's handleNewSimulation() is in JavaFX Application Thread Thread
-		// isDone = true;
-		logger.info("Creating a new sim in " + Simulation.OS);
-		try {
-			// SimulationConfig.loadConfig(); // located to prepare()
-			sim.getSimExecutor().execute(new ConfigEditorTask());
+//	/**
+//	 * Create a new simulation instance.
+//	 */
+//	void handleNewSimulation() {
+//		// logger.info("MarsProjectFX's handleNewSimulation() is on
+//		// "+Thread.currentThread().getName() );
+//		// MarsProjectFX's handleNewSimulation() is in JavaFX Application Thread Thread
+//		// isDone = true;
+//		logger.info("Creating a new sim in " + Simulation.OS);
+//		try {
+//			// Loads Scenario Config Editor
+//			sim.getSimExecutor().execute(new ConfigEditorTask(isCommanderMode));
+//
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			exitWithError("Error : could not create a new simulation ", e);
+//		}
+//	}
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			exitWithError("Error : could not create a new simulation ", e);
-		}
-	}
-
-	public class ConfigEditorTask implements Runnable {
-		public void run() {
-			// logger.info("MarsProjectFX's ConfigEditorTask's run() is on " +
-			// Thread.currentThread().getName() );
-			new ScenarioConfigEditorFX(mainMenu);
-		}
-	}
+//	public class ConfigEditorTask implements Runnable {
+//		public void run() {
+//			// logger.info("MarsProjectFX's ConfigEditorTask's run() is on " +
+//			// Thread.currentThread().getName() );
+//			new ScenarioConfigEditorFX(mainMenu);
+//		}
+//	}
 
 	/**
 	 * Start the simulation instance.

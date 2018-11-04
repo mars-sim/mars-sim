@@ -363,11 +363,11 @@ public class MarsProjectFXGL extends GameApplication {
 		new File(System.getProperty("user.home"), Simulation.MARS_SIM_DIRECTORY + File.separator + "logs").mkdirs();
 	}
 
-	public class ConfigEditorTask implements Runnable {
-		public void run() {
-			new ScenarioConfigEditorFX(mainMenu);
-		}
-	}
+//	public class ConfigEditorTask implements Runnable {
+//		public void run() {
+//			new ScenarioConfigEditorFX(mainMenu);
+//		}
+//	}
 
 	/**
 	 * Start the simulation instance.
@@ -566,20 +566,20 @@ public class MarsProjectFXGL extends GameApplication {
 		}
 	}
 
-	/**
-	 * Create a new simulation instance.
-	 */
-	void handleNewSimulation() {
-		logger.info("Creating a new sim in " + Simulation.OS);
-		try {
-			// SimulationConfig.loadConfig(); // located to prepare()
-			sim.getSimExecutor().execute(new ConfigEditorTask());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			exitWithError("Error : could not create a new simulation ", e);
-		}
-	}
+//	/**
+//	 * Create a new simulation instance.
+//	 */
+//	void handleNewSimulation() {
+//		logger.info("Creating a new sim in " + Simulation.OS);
+//		try {
+//			// SimulationConfig.loadConfig(); // located to prepare()
+//			sim.getSimExecutor().execute(new ConfigEditorTask());
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			exitWithError("Error : could not create a new simulation ", e);
+//		}
+//	}
 
 	/**
 	 * Loads the simulation from the default save file.

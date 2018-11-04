@@ -1205,9 +1205,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param g the gender String
 	 */
 	public void setGender(String g) {
-		if (g.equals("M") || g.equals("m"))
+		if (g.equalsIgnoreCase("male") || g.equalsIgnoreCase("m"))
 			gender = GenderType.valueOfIgnoreCase("male");
-		else if (g.equals("F") || g.equals("f"))
+		else if (g.equalsIgnoreCase("female") || g.equalsIgnoreCase("f"))
 			gender = GenderType.valueOfIgnoreCase("female");
 		else
 			gender = GenderType.valueOfIgnoreCase("unknown");

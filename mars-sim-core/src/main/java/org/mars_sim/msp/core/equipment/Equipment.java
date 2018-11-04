@@ -243,8 +243,8 @@ implements Indoor, Salvagable {
 		Unit c = getContainerUnit();
 		if (c instanceof Settlement)
 			return true;
-		else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)
-			return true;
+//		else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)
+//			return true;
 		return false;
 	}
 	

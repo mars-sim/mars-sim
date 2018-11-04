@@ -44,7 +44,7 @@ public class InteractiveTerm {
 	
 	private static MasterClock masterClock;
 	
-	
+//	private Commander commander = new Commander();
 	
 	public InteractiveTerm() {
 		
@@ -203,6 +203,7 @@ public class InteractiveTerm {
 		return profile;
 	}
 	
+
     public MarsTerminal getTerminal() {
     	return terminal;
     }

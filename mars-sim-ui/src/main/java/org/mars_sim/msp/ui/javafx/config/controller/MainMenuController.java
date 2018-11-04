@@ -21,7 +21,6 @@ import javafx.fxml.Initializable;
 //import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
-@SuppressWarnings("restriction")
 public class MainMenuController implements Initializable, ControlledScreen {
 
 	@FXML Label rotationRate;
@@ -55,7 +54,7 @@ public class MainMenuController implements Initializable, ControlledScreen {
 
     @FXML
     private void goToOne(ActionEvent event){
-    	switcher.getMainMenu().runNew(false);
+    	switcher.getMainMenu().runNew(false, false);
     }
 
     @FXML
