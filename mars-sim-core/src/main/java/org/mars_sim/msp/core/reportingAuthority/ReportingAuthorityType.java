@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.core.reportingAuthority;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -22,8 +21,8 @@ public enum ReportingAuthorityType {
 	JAXA				(Msg.getString("ReportingAuthorityType.JAXA")), //$NON-NLS-1$
 	NASA				(Msg.getString("ReportingAuthorityType.NASA")), //$NON-NLS-1$
 	RKA					(Msg.getString("ReportingAuthorityType.RKA")), //$NON-NLS-1$
-	MARS_SOCIETY		(Msg.getString("ReportingAuthorityType.MarsSociety")), //$NON-NLS-1$
-	SPACE_X				(Msg.getString("ReportingAuthorityType.SpaceX")), //$NON-NLS-1$
+	MARS_SOCIETY		(Msg.getString("ReportingAuthorityType.MS")), //$NON-NLS-1$
+	SPACEX				(Msg.getString("ReportingAuthorityType.SpaceX")), //$NON-NLS-1$
 	
 	CNSA_L				(Msg.getString("ReportingAuthorityType.long.CNSA")), //$NON-NLS-1$
 	CSA_L				(Msg.getString("ReportingAuthorityType.long.CSA")), //$NON-NLS-1$
@@ -33,7 +32,7 @@ public enum ReportingAuthorityType {
 	NASA_L				(Msg.getString("ReportingAuthorityType.long.NASA")), //$NON-NLS-1$
 	RKA_L				(Msg.getString("ReportingAuthorityType.long.RKA")), //$NON-NLS-1$
 	MARS_SOCIETY_L		(Msg.getString("ReportingAuthorityType.long.MarsSociety")), //$NON-NLS-1$
-	SPACE_X_L			(Msg.getString("ReportingAuthorityType.long.SpaceX")) //$NON-NLS-1$
+	SPACEX_L			(Msg.getString("ReportingAuthorityType.long.SpaceX")) //$NON-NLS-1$
 	
 	;
 
@@ -46,7 +45,7 @@ public enum ReportingAuthorityType {
 			NASA,
 			RKA,
 			MARS_SOCIETY,
-			SPACE_X
+			SPACEX
 			};
 
 	public static ReportingAuthorityType[] SPONSORS_LONG = new ReportingAuthorityType[]{
@@ -58,14 +57,18 @@ public enum ReportingAuthorityType {
 			NASA_L,
 			RKA_L,
 			MARS_SOCIETY_L,
-			SPACE_X_L
+			SPACEX_L
 			};
 	
 	public static int numSponsors = SPONSORS.length;
 	
 	private String name;
 	
-	private static Set<ReportingAuthorityType> sponsorSet;
+//	private static Set<ReportingAuthorityType> sponsorSet;
+	
+	private static List<String> sponsorList;
+	
+	private static List<String> longSponsorList;
 
 	/** hidden constructor. */
 	private ReportingAuthorityType(String name) {
@@ -93,25 +96,43 @@ public enum ReportingAuthorityType {
 		return null;
 	}
 
-	public static Set<ReportingAuthorityType> getSponsorSet() {
-		if (sponsorSet == null) {
-			for (ReportingAuthorityType ra : ReportingAuthorityType.values()) {
-				sponsorSet.add(ra);
+//	public static Set<ReportingAuthorityType> getSponsorSet() {
+//		if (sponsorSet == null) {
+//			for (ReportingAuthorityType ra : ReportingAuthorityType.values()) {
+//				sponsorSet.add(ra);
+//			}
+//		}
+//		return sponsorSet;
+//	}
+
+//	/**
+//	 * Returns a list of ReportingAuthorityType enum.
+//	 */
+//	public static List<ReportingAuthorityType> valuesList() {
+//		return Arrays.asList(ReportingAuthorityType.values());
+//		// Arrays.asList() returns an ArrayList which is a private static class inside Arrays. 
+//		// It is not an java.util.ArrayList class.
+//		// Could possibly reconfigure this method as follows: 
+//		// public ArrayList<ReportingAuthorityType> valuesList() {
+//		// 	return new ArrayList<ReportingAuthorityType>(Arrays.asList(ReportingAuthorityType.values())); }
+//	}
+	
+	public static List<String> getSponsorList() {
+		if (sponsorList == null) {
+			for (ReportingAuthorityType ra : SPONSORS) {
+				sponsorList.add(ra.getName());
 			}
 		}
-		return sponsorSet;
+		return sponsorList;
 	}
 
-	/**
-	 * Returns a list of ReportingAuthorityType enum.
-	 */
-	public static List<ReportingAuthorityType> valuesList() {
-		return Arrays.asList(ReportingAuthorityType.values());
-		// Arrays.asList() returns an ArrayList which is a private static class inside Arrays. 
-		// It is not an java.util.ArrayList class.
-		// Could possibly reconfigure this method as follows: 
-		// public ArrayList<ReportingAuthorityType> valuesList() {
-		// 	return new ArrayList<ReportingAuthorityType>(Arrays.asList(ReportingAuthorityType.values())); }
+	public static List<String> getLongSponsorList() {
+		if (longSponsorList == null) {
+			for (ReportingAuthorityType ra : SPONSORS_LONG) {
+				longSponsorList.add(ra.getName());
+			}
+		}
+		return longSponsorList;
 	}
 	
 //	public static List<String> StringList() {

@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
 
 /**
  * The Member class is for storing the alpha team roster

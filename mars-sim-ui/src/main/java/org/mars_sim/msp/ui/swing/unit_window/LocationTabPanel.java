@@ -52,24 +52,21 @@ import com.alee.laf.panel.WebPanel;
 
 import javafx.application.Platform;
 
-
 /**
  * The LocationTabPanel is a tab panel for location information.
  */
-public class LocationTabPanel
-extends TabPanel
-implements ActionListener {
+public class LocationTabPanel extends TabPanel implements ActionListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
-	 /** default logger.   */
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
-	
+
 	private static final String LOCATOR_ORANGE = "locator48_orange";
-	
+
 	private static final String LOCATOR_BLUE = "locator48_blue";
-			
+
 	private static final String N = "N";
 	private static final String S = "S";
 	private static final String E = "E";
@@ -83,7 +80,7 @@ implements ActionListener {
 //	//private static final String ON_A_MISSION_OUTSIDE = " on a mission outside";
 //	private static final String OUTSIDE_ON_THE_SURFACE_OF_MARS = " outside on the surface of Mars";
 	private static final String ON_MARS = "on Mars";
-	
+
 //	private static final String STEPPED = " Stepped";
 //	private static final String STORED = "Stored";
 //	private static final String OUTSIDE_ON_A_MISSION = " outside on a mission ";
@@ -93,7 +90,7 @@ implements ActionListener {
 //	private static final String BURIED = "Buried";
 //	private static final String USED_BY = "Used by ";
 //	private static final String UNKNOWN = "Unknown";
-	
+
 	private int themeCache;
 
 	private double elevationCache;
@@ -103,7 +100,7 @@ implements ActionListener {
 
 //	private JComboBoxMW<?> combox;
 	private WebComboBox combox;
-	
+
 	private TerrainElevation terrainElevation;
 	private Coordinates locationCache;
 	private MainScene mainScene;
@@ -112,663 +109,646 @@ implements ActionListener {
 	private SettlementMapPanel mapPanel;
 
 	private DisplaySingle lcdLong, lcdLat, lcdText; // lcdElev,
-	private DisplayCircular gauge;//RadialQuarterN gauge;
+	private DisplayCircular gauge;// RadialQuarterN gauge;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param unit    the unit to display.
+	 * @param desktop the main desktop.
+	 */
+	public LocationTabPanel(Unit unit, MainDesktopPane desktop) {
+		// Use the TabPanel constructor
+		super(Msg.getString("LocationTabPanel.title"), null, Msg.getString("LocationTabPanel.tooltip"), unit, desktop);
 
-    /**
-     * Constructor.
-     * @param unit the unit to display.
-     * @param desktop the main desktop.
-     */
-    public LocationTabPanel(Unit unit, MainDesktopPane desktop) {
-        // Use the TabPanel constructor
-        super(Msg.getString("LocationTabPanel.title"),
-        		null,
-        		Msg.getString("LocationTabPanel.tooltip"), unit, desktop);
+		Unit container = unit.getContainerUnit();
+		if (containerCache != container) {
+			containerCache = container;
+		}
 
-        Unit container = unit.getContainerUnit();
-        if (containerCache != container) {
-        	containerCache = container;
-        }
+		Unit topContainer = unit.getTopContainerUnit();
+		if (topContainerCache != topContainer) {
+			topContainerCache = topContainer;
+		}
 
-        Unit topContainer = unit.getTopContainerUnit();
-        if (topContainerCache != topContainer) {
-        	topContainerCache = topContainer;
-        }
-        
-    	if (terrainElevation == null)
+		if (terrainElevation == null)
 			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getTerrainElevation();
 
-    	mainScene = desktop.getMainScene();
-    	mapPanel = desktop.getSettlementWindow().getMapPanel();
-    	
-    	if (mainScene == null)
-    		combox = mapPanel.getSettlementTransparentPanel().getSettlementListBox();
- 
-        // Initialize location header.
+		mainScene = desktop.getMainScene();
+		mapPanel = desktop.getSettlementWindow().getMapPanel();
+
+		if (mainScene == null)
+			combox = mapPanel.getSettlementTransparentPanel().getSettlementListBox();
+
+		// Initialize location header.
 		WebPanel titlePane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
 
 		WebLabel titleLabel = new WebLabel(Msg.getString("LocationTabPanel.title"), WebLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		// titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		titlePane.add(titleLabel);
 
-        // Create location panel
-		WebPanel locationPanel = new WebPanel(new BorderLayout(5, 5));//new GridLayout(2,1,0,0));//new FlowLayout(FlowLayout.CENTER));// new BorderLayout(0,0));
-        locationPanel.setBorder(new MarsPanelBorder());
-        locationPanel.setBorder(new EmptyBorder(1, 1, 1, 1) );
-        topContentPanel.add(locationPanel);
+		// Create location panel
+		WebPanel locationPanel = new WebPanel(new BorderLayout(5, 5));// new GridLayout(2,1,0,0));//new
+																		// FlowLayout(FlowLayout.CENTER));// new
+																		// BorderLayout(0,0));
+		locationPanel.setBorder(new MarsPanelBorder());
+		locationPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
+		topContentPanel.add(locationPanel);
 
-        // Initialize location cache
-        locationCache = new Coordinates(unit.getCoordinates());
-        themeCache = MainScene.getTheme();
+		// Initialize location cache
+		locationCache = new Coordinates(unit.getCoordinates());
+		themeCache = MainScene.getTheme();
 
-        String dir_N_S = null;
-        String dir_E_W = null;
-        if (locationCache.getLatitudeDouble() >= 0)
-        	dir_N_S = Msg.getString("direction.degreeSign")+"N";
-        else
-        	dir_N_S = Msg.getString("direction.degreeSign")+"S";
+		String dir_N_S = null;
+		String dir_E_W = null;
+		if (locationCache.getLatitudeDouble() >= 0)
+			dir_N_S = Msg.getString("direction.degreeSign") + "N";
+		else
+			dir_N_S = Msg.getString("direction.degreeSign") + "S";
 
-        if (locationCache.getLongitudeDouble() >= 0)
-        	dir_E_W = Msg.getString("direction.degreeSign")+"E";
-        else
-        	dir_E_W = Msg.getString("direction.degreeSign")+"W";
+		if (locationCache.getLongitudeDouble() >= 0)
+			dir_E_W = Msg.getString("direction.degreeSign") + "E";
+		else
+			dir_E_W = Msg.getString("direction.degreeSign") + "W";
 
+		WebPanel northPanel = new WebPanel(new FlowLayout());
+		locationPanel.add(northPanel, BorderLayout.NORTH);
 
-        WebPanel northPanel = new WebPanel(new FlowLayout());
-        locationPanel.add(northPanel, BorderLayout.NORTH);
+		lcdLat = new DisplaySingle();
+		lcdLat.setLcdUnitString(dir_N_S);
+		lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
+		lcdLat.setLcdInfoString("Latitude");
+		// lcd1.setLcdColor(LcdColor.BLUELIGHTBLUE_LCD);
+		lcdLat.setLcdColor(LcdColor.BEIGE_LCD);
+		// lcdLat.setBackground(BackgroundColor.NOISY_PLASTIC);
+		lcdLat.setGlowColor(Color.orange);
+		// lcd1.setBorder(new EmptyBorder(5, 5, 5, 5));
+		lcdLat.setDigitalFont(true);
+		lcdLat.setLcdDecimals(2);
+		lcdLat.setSize(new Dimension(150, 45));
+		lcdLat.setMaximumSize(new Dimension(150, 45));
+		lcdLat.setPreferredSize(new Dimension(150, 45));
+		lcdLat.setVisible(true);
+		// locationPanel.add(lcdLat, BorderLayout.WEST);
+		northPanel.add(lcdLat);
 
-        lcdLat = new DisplaySingle();
-        lcdLat.setLcdUnitString(dir_N_S);
-        lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
-        lcdLat.setLcdInfoString("Latitude");
-        //lcd1.setLcdColor(LcdColor.BLUELIGHTBLUE_LCD);
-        lcdLat.setLcdColor(LcdColor.BEIGE_LCD);
-        //lcdLat.setBackground(BackgroundColor.NOISY_PLASTIC);
-        lcdLat.setGlowColor(Color.orange);
-        //lcd1.setBorder(new EmptyBorder(5, 5, 5, 5));
-        lcdLat.setDigitalFont(true);
-        lcdLat.setLcdDecimals(2);
-        lcdLat.setSize(new Dimension(150, 45));
-        lcdLat.setMaximumSize(new Dimension(150, 45));
-        lcdLat.setPreferredSize(new Dimension(150, 45));
-        lcdLat.setVisible(true);
-        //locationPanel.add(lcdLat, BorderLayout.WEST);
-        northPanel.add(lcdLat);
+		elevationCache = Math.round(terrainElevation.getElevation(unit.getCoordinates()) * 10000.0) / 10000.0;
 
-        elevationCache = Math.round(terrainElevation.getElevation(unit.getCoordinates())*10000.0)/10000.0;
- 
-        logger.info(unit.getName() + "'s elevation is "+ elevationCache + " km.");
-        
-        /*
-        
-        lcdElev = new DisplaySingle();
-        lcdElev.setLcdValueFont(new Font("Serif", Font.ITALIC, 12));
-        lcdElev.setLcdUnitString("km");
-        lcdElev.setLcdValueAnimated(elevationCache);
-        lcdElev.setLcdDecimals(3);
-        lcdElev.setLcdInfoString("Elevation");
-        //lcd0.setLcdColor(LcdColor.DARKBLUE_LCD);
-        lcdElev.setLcdColor(LcdColor.YELLOW_LCD);//REDDARKRED_LCD);
-        lcdElev.setDigitalFont(true);
-        //lcd0.setBorder(new EmptyBorder(5, 5, 5, 5));
-        lcdElev.setSize(new Dimension(150, 60));
-        lcdElev.setMaximumSize(new Dimension(150, 60));
-        lcdElev.setPreferredSize(new Dimension(150, 60));
-        lcdElev.setVisible(true);
-        locationPanel.add(lcdElev, BorderLayout.NORTH);
- */
+		logger.info(unit.getName() + "'s elevation is " + elevationCache + " km.");
 
-        // Create center map button
-        locatorButton = new WebButton(ImageLoader.getIcon(LOCATOR_ORANGE));
-        //centerMapButton = new JButton(ImageLoader.getIcon("locator_blue"));
-        locatorButton.setBorder(new EmptyBorder(1, 1, 1, 1) );
-        locatorButton.addActionListener(this);
-        locatorButton.setOpaque(false);
-        locatorButton.setToolTipText("Locate the unit on Mars Navigator");
-        locatorButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));//new Cursor(Cursor.HAND_CURSOR));
+//        lcdElev = new DisplaySingle();
+//        lcdElev.setLcdValueFont(new Font("Serif", Font.ITALIC, 12));
+//        lcdElev.setLcdUnitString("km");
+//        lcdElev.setLcdValueAnimated(elevationCache);
+//        lcdElev.setLcdDecimals(3);
+//        lcdElev.setLcdInfoString("Elevation");
+//        //lcd0.setLcdColor(LcdColor.DARKBLUE_LCD);
+//        lcdElev.setLcdColor(LcdColor.YELLOW_LCD);//REDDARKRED_LCD);
+//        lcdElev.setDigitalFont(true);
+//        //lcd0.setBorder(new EmptyBorder(5, 5, 5, 5));
+//        lcdElev.setSize(new Dimension(150, 60));
+//        lcdElev.setMaximumSize(new Dimension(150, 60));
+//        lcdElev.setPreferredSize(new Dimension(150, 60));
+//        lcdElev.setVisible(true);
+//        locationPanel.add(lcdElev, BorderLayout.NORTH);
+
+		// Create center map button
+		locatorButton = new WebButton(ImageLoader.getIcon(LOCATOR_ORANGE));
+		// centerMapButton = new JButton(ImageLoader.getIcon("locator_blue"));
+		locatorButton.setBorder(new EmptyBorder(1, 1, 1, 1));
+		locatorButton.addActionListener(this);
+		locatorButton.setOpaque(false);
+		locatorButton.setToolTipText("Locate the unit on Mars Navigator");
+		locatorButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));// new Cursor(Cursor.HAND_CURSOR));
 
 		WebPanel locatorPane = new WebPanel(new FlowLayout());
 		locatorPane.add(locatorButton);
-		//locationPanel.add(locatorPane, BorderLayout.NORTH);
-	    northPanel.add(locatorPane);
+		// locationPanel.add(locatorPane, BorderLayout.NORTH);
+		northPanel.add(locatorPane);
 
-        lcdLong = new DisplaySingle();
-        //lcdLong.setCustomLcdForeground(getForeground());
-        lcdLong.setLcdUnitString(dir_E_W);
-        lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
-        lcdLong.setLcdInfoString("Longitude");
-        //lcd2.setLcdColor(LcdColor.BLUELIGHTBLUE_LCD);
-        lcdLong.setLcdColor(LcdColor.BEIGE_LCD);
-        //setBackgroundColor(BackgroundColor.LINEN);
-        lcdLong.setGlowColor(Color.yellow);
-        lcdLong.setDigitalFont(true);
-        lcdLong.setLcdDecimals(2);
-        lcdLong.setSize(new Dimension(150, 45));
-        lcdLong.setMaximumSize(new Dimension(150, 45));
-        lcdLong.setPreferredSize(new Dimension(150,45));
-        lcdLong.setVisible(true);
-       //locationPanel.add(lcdLong, BorderLayout.EAST);
-        northPanel.add(lcdLong);
+		lcdLong = new DisplaySingle();
+		// lcdLong.setCustomLcdForeground(getForeground());
+		lcdLong.setLcdUnitString(dir_E_W);
+		lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
+		lcdLong.setLcdInfoString("Longitude");
+		// lcd2.setLcdColor(LcdColor.BLUELIGHTBLUE_LCD);
+		lcdLong.setLcdColor(LcdColor.BEIGE_LCD);
+		// setBackgroundColor(BackgroundColor.LINEN);
+		lcdLong.setGlowColor(Color.yellow);
+		lcdLong.setDigitalFont(true);
+		lcdLong.setLcdDecimals(2);
+		lcdLong.setSize(new Dimension(150, 45));
+		lcdLong.setMaximumSize(new Dimension(150, 45));
+		lcdLong.setPreferredSize(new Dimension(150, 45));
+		lcdLong.setVisible(true);
+		// locationPanel.add(lcdLong, BorderLayout.EAST);
+		northPanel.add(lcdLong);
 
-        gauge = new DisplayCircular();
-        
-        setGauge(gauge, elevationCache);
-        
-        locationPanel.add(gauge, BorderLayout.CENTER);
+		gauge = new DisplayCircular();
 
-		//centerPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));//GridLayout(2,1,0,0)); // new BorderLayout())
-/*
-		// 2015-12-09 Prepare loc label
-        locLabel = new JLabel();
-        locLabel.setFont(font);
-        //locLabel.setOpaque(false);
-        locLabel.setFont(new Font("Serif", Font.PLAIN, 13));
-        locLabel.setHorizontalAlignment(SwingConstants.CENTER);
- */
+		setGauge(gauge, elevationCache);
 
-        String loc = ON_MARS;
+		locationPanel.add(gauge, BorderLayout.CENTER);
+
+		// centerPanel = new WebPanel(new
+		// FlowLayout(FlowLayout.CENTER));//GridLayout(2,1,0,0)); // new BorderLayout())
+
+		// Prepare loc label
+//        locLabel = new JLabel();
+//        locLabel.setFont(font);
+//        //locLabel.setOpaque(false);
+//        locLabel.setFont(new Font("Serif", Font.PLAIN, 13));
+//        locLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+		String loc = ON_MARS;
 		lcdText = new DisplaySingle();
-        lcdText.setLcdInfoString("Last Known Position");
-        //lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
-        lcdText.setGlowColor(Color.ORANGE);
-        //lcdText.setBackground(Background.SATIN_GRAY);
-        lcdText.setDigitalFont(true);
-        lcdText.setSize(new Dimension(150, 30));
-        lcdText.setMaximumSize(new Dimension(150, 30));
-        lcdText.setPreferredSize(new Dimension(150,30));
-        lcdText.setVisible(true);
-        lcdText.setLcdNumericValues(false);
-        lcdText.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
-        //lcdText.setLcdText(locationText);
-        lcdText.setLcdText(loc);
-        lcdText.setLcdTextScrolling(true);
-        //centerPanel.add(lcdText);
-		//locationPanel.add(centerPanel, BorderLayout.SOUTH);
+		lcdText.setLcdInfoString("Last Known Position");
+		// lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
+		lcdText.setGlowColor(Color.ORANGE);
+		// lcdText.setBackground(Background.SATIN_GRAY);
+		lcdText.setDigitalFont(true);
+		lcdText.setSize(new Dimension(150, 30));
+		lcdText.setMaximumSize(new Dimension(150, 30));
+		lcdText.setPreferredSize(new Dimension(150, 30));
+		lcdText.setVisible(true);
+		lcdText.setLcdNumericValues(false);
+		lcdText.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
+		// lcdText.setLcdText(locationText);
+		lcdText.setLcdText(loc);
+		lcdText.setLcdTextScrolling(true);
+		// centerPanel.add(lcdText);
+		// locationPanel.add(centerPanel, BorderLayout.SOUTH);
 		locationPanel.add(lcdText, BorderLayout.SOUTH);
 
 		updateLocation();
 
 		checkTheme(true);
 
-    }
-
-    public void checkTheme(boolean firstRun) {
-        if (mainScene != null) {
-            int theme = MainScene.getTheme();
-
-            if (themeCache != theme || firstRun) {
-            	themeCache = theme;
-
-	        	if (theme == 7) {
-	                lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
-	                gauge.setFrameDesign(FrameDesign.GOLD);
-	                locatorButton.setIcon(ImageLoader.getIcon(LOCATOR_ORANGE));
-	        	}
-	        	else if (theme == 6 || theme == 0) {
-	        		lcdText.setLcdColor(LcdColor.DARKBLUE_LCD);
-	        		gauge.setFrameDesign(FrameDesign.STEEL);
-	        		locatorButton.setIcon(ImageLoader.getIcon(LOCATOR_BLUE));
-	        	}
-            }
-        }
-    }
-
-    public void setGauge(DisplayCircular gauge, double elevationCache) {
-    	
-        // Note: The peak of Olympus Mons is 21,229 meters (69,649 feet) above the Mars areoid (a reference datum similar to Earth's sea level). The lowest point is within the Hellas Impact Crater (marked by a flag with the letter "L").
-        // The lowest point in the Hellas Impact Crater is 8,200 meters (26,902 feet) below the Mars areoid.
-       
-        int max = -1;
-        int min = 2;
-        
-        if (elevationCache < -8) {
-        	max = -8;
-        	min = -9;
-        }
-        else if (elevationCache < -5) {
-        	max = -5;
-        	min = -9;
-        }
-        else if (elevationCache < -3) {
-        	max = -3;
-        	min = -5;
-        }
-        else if (elevationCache < 0) {
-        	max = 1;
-        	min = -1;
-        }
-        else if (elevationCache < 1) {
-        	max = 2;
-        	min = 0;
-        }
-        else if (elevationCache < 3) {
-        	max = 5;
-        	min = 0;
-        }
-        else if (elevationCache < 10){
-        	max = 10;
-        	min = 5;
-        }
-        else if (elevationCache < 20){
-        	max = 20;
-        	min = 10;
-        }
-        else if (elevationCache < 30){
-        	max = 30;
-        	min = 20;
-        }
- 
-        gauge.setDisplayMulti(false);
-    	gauge.setDigitalFont(true);
-        //gauge.setFrameDesign(FrameDesign.GOLD);
-        //gauge.setOrientation(Orientation.EAST);//.NORTH);//.VERTICAL);
-        //gauge.setPointerType(PointerType.TYPE5);
-        //gauge.setTextureColor(Color.yellow);//, Texture_Color BRUSHED_METAL and PUNCHED_SHEET);
-        gauge.setUnitString("km");
-        gauge.setTitle("Elevation");
-        //gauge.setMinValue(min);
-        //gauge.setMaxValue(max);
-        //gauge.setTicklabelsVisible(true);
-        //gauge.setMaxNoOfMajorTicks(10);
-        //gauge.setMaxNoOfMinorTicks(10);
-        gauge.setBackgroundColor(BackgroundColor.NOISY_PLASTIC);//.BRUSHED_METAL);
-        //alt.setGlowColor(Color.yellow);
-        //gauge.setLcdColor(LcdColor.BEIGE_LCD);//.BLACK_LCD);
-        //gauge.setLcdInfoString("Elevation");
-        //gauge.setLcdUnitString("km");
-        gauge.setLcdValueAnimated(elevationCache);
-        gauge.setValueAnimated(elevationCache);
-        //gauge.setValue(elevationCache);
-        gauge.setLcdDecimals(4);
-
-        //alt.setMajorTickmarkType(TICKMARK_TYPE);
-        //gauge.setSize(new Dimension(250, 250));
-        //gauge.setMaximumSize(new Dimension(250, 250));
-        //gauge.setPreferredSize(new Dimension(250, 250));
-
-        gauge.setSize(new Dimension(250, 250));
-        gauge.setMaximumSize(new Dimension(250, 250));
-        gauge.setPreferredSize(new Dimension(250, 250));
-
-        gauge.setVisible(true);
-
-    }
-/*
-	private String getLatitudeString() {
-		return locationCache.getFormattedLatitudeString();
 	}
 
-	private String getLongitudeString() {
-		return locationCache.getFormattedLongitudeString();
-	}
-*/
+	public void checkTheme(boolean firstRun) {
+		if (mainScene != null) {
+			int theme = MainScene.getTheme();
 
-    /**
-     * Action event occurs.
-     *
-     * @param event the action event
-     */
+			if (themeCache != theme || firstRun) {
+				themeCache = theme;
+
+				if (theme == 7) {
+					lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
+					gauge.setFrameDesign(FrameDesign.GOLD);
+					locatorButton.setIcon(ImageLoader.getIcon(LOCATOR_ORANGE));
+				} else if (theme == 6 || theme == 0) {
+					lcdText.setLcdColor(LcdColor.DARKBLUE_LCD);
+					gauge.setFrameDesign(FrameDesign.STEEL);
+					locatorButton.setIcon(ImageLoader.getIcon(LOCATOR_BLUE));
+				}
+			}
+		}
+	}
+
+	public void setGauge(DisplayCircular gauge, double elevationCache) {
+
+		// Note: The peak of Olympus Mons is 21,229 meters (69,649 feet) above the Mars
+		// areoid (a reference datum similar to Earth's sea level). The lowest point is
+		// within the Hellas Impact Crater (marked by a flag with the letter "L").
+		// The lowest point in the Hellas Impact Crater is 8,200 meters (26,902 feet)
+		// below the Mars areoid.
+
+		int max = -1;
+		int min = 2;
+
+		if (elevationCache < -8) {
+			max = -8;
+			min = -9;
+		} else if (elevationCache < -5) {
+			max = -5;
+			min = -9;
+		} else if (elevationCache < -3) {
+			max = -3;
+			min = -5;
+		} else if (elevationCache < 0) {
+			max = 1;
+			min = -1;
+		} else if (elevationCache < 1) {
+			max = 2;
+			min = 0;
+		} else if (elevationCache < 3) {
+			max = 5;
+			min = 0;
+		} else if (elevationCache < 10) {
+			max = 10;
+			min = 5;
+		} else if (elevationCache < 20) {
+			max = 20;
+			min = 10;
+		} else if (elevationCache < 30) {
+			max = 30;
+			min = 20;
+		}
+
+		gauge.setDisplayMulti(false);
+		gauge.setDigitalFont(true);
+		// gauge.setFrameDesign(FrameDesign.GOLD);
+		// gauge.setOrientation(Orientation.EAST);//.NORTH);//.VERTICAL);
+		// gauge.setPointerType(PointerType.TYPE5);
+		// gauge.setTextureColor(Color.yellow);//, Texture_Color BRUSHED_METAL and
+		// PUNCHED_SHEET);
+		gauge.setUnitString("km");
+		gauge.setTitle("Elevation");
+		// gauge.setMinValue(min);
+		// gauge.setMaxValue(max);
+		// gauge.setTicklabelsVisible(true);
+		// gauge.setMaxNoOfMajorTicks(10);
+		// gauge.setMaxNoOfMinorTicks(10);
+		gauge.setBackgroundColor(BackgroundColor.NOISY_PLASTIC);// .BRUSHED_METAL);
+		// alt.setGlowColor(Color.yellow);
+		// gauge.setLcdColor(LcdColor.BEIGE_LCD);//.BLACK_LCD);
+		// gauge.setLcdInfoString("Elevation");
+		// gauge.setLcdUnitString("km");
+		gauge.setLcdValueAnimated(elevationCache);
+		gauge.setValueAnimated(elevationCache);
+		// gauge.setValue(elevationCache);
+		gauge.setLcdDecimals(4);
+
+		// alt.setMajorTickmarkType(TICKMARK_TYPE);
+		// gauge.setSize(new Dimension(250, 250));
+		// gauge.setMaximumSize(new Dimension(250, 250));
+		// gauge.setPreferredSize(new Dimension(250, 250));
+
+		gauge.setSize(new Dimension(250, 250));
+		gauge.setMaximumSize(new Dimension(250, 250));
+		gauge.setPreferredSize(new Dimension(250, 250));
+
+		gauge.setVisible(true);
+
+	}
+
+//	private String getLatitudeString() {
+//		return locationCache.getFormattedLatitudeString();
+//	}
+//
+//	private String getLongitudeString() {
+//		return locationCache.getFormattedLongitudeString();
+//	}
+
+	/**
+	 * Action event occurs.
+	 *
+	 * @param event the action event
+	 */
 	public void actionPerformed(ActionEvent event) {
-        JComponent source = (JComponent) event.getSource();
+		JComponent source = (JComponent) event.getSource();
 
-        // If the center map button was pressed, update navigator tool.
-        if (source == locatorButton) {
-        	// 2015-12-19 Added codes to open the settlement map tool and center the map to
-        	// show the exact/building location inside a settlement if possible
-        	Person p = null;
-        	Robot r = null;
-        	Vehicle v = null;
-        	Equipment e = null;
+		// If the center map button was pressed, update navigator tool.
+		if (source == locatorButton) {
+			// 2015-12-19 Added codes to open the settlement map tool and center the map to
+			// show the exact/building location inside a settlement if possible
+			Person p = null;
+			Robot r = null;
+			Vehicle v = null;
+			Equipment e = null;
 
-        	if (unit instanceof Settlement) {
-        		update();
-        	}
-        	
-        	else if (unit instanceof Person) {
-        		p = (Person) unit;
-    		    //SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
+			if (unit instanceof Settlement) {
+				update();
+			}
 
-        		if (p.isInSettlement()) {//.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			else if (unit instanceof Person) {
+				p = (Person) unit;
+				// SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
-        			if (mainScene != null) {
-        				mainScene.setSettlement(p.getSettlement());
-        			}
-        			else {
-            			desktop.openToolWindow(SettlementWindow.NAME);
-            			if (mainScene != null)
-            				mainScene.setSettlement(p.getSettlement());
-            			else
-            				combox.setSelectedItem(p.getSettlement());
-        			}
+				if (p.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-        			Building b = p.getBuildingLocation();
-        			double xLoc = b.getXLocation();
-        			double yLoc = b.getYLocation();
-        			double scale = mapPanel.getScale();
-        			mapPanel.reCenter();
-        			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
-        			mapPanel.setShowBuildingLabels(true);
+					if (mainScene != null) {
+						mainScene.setSettlement(p.getSettlement());
+					} else {
+						desktop.openToolWindow(SettlementWindow.NAME);
+						if (mainScene != null)
+							mainScene.setSettlement(p.getSettlement());
+						else
+							combox.setSelectedItem(p.getSettlement());
+					}
 
-        			mapPanel.selectPerson(p);
-            	}
-        		
-        		else if (p.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+					Building b = p.getBuildingLocation();
+					double xLoc = b.getXLocation();
+					double yLoc = b.getYLocation();
+					double scale = mapPanel.getScale();
+					mapPanel.reCenter();
+					mapPanel.moveCenter(xLoc * scale, yLoc * scale);
+					mapPanel.setShowBuildingLabels(true);
 
-        			Vehicle vv = p.getVehicle();
+					mapPanel.selectPerson(p);
+				}
 
-        			if (vv.getSettlement() == null) {
-        				
-        				// out there on a mission
-        				desktop.openToolWindow(NavigatorWindow.NAME);
-        				if (mainScene != null)
-        					Platform.runLater(() -> mainScene.openMinimap());
-    
-        				desktop.centerMapGlobe(p.getCoordinates());
-        			}
-        			else {
-        				// still parked inside a garage or within the premise of a settlement
-	        			desktop.openToolWindow(SettlementWindow.NAME);
-	        			//System.out.println("Just open Settlement Map Tool");
+				else if (p.isInVehicle()) {// .getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
-	        			if (mainScene != null)
-	        				mainScene.setSettlement(vv.getSettlement());
-	        			else
-	        				combox.setSelectedItem(vv.getSettlement());
+					Vehicle vv = p.getVehicle();
 
-	        			double xLoc = vv.getXLocation();
-	        			double yLoc = vv.getYLocation();
-	        			double scale = mapPanel.getScale();
-	        			mapPanel.reCenter();
-	        			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
-	        			mapPanel.setShowVehicleLabels(true);
+					if (vv.getSettlement() == null) {
 
-	        			mapPanel.selectPerson(p);
+						// out there on a mission
+						desktop.openToolWindow(NavigatorWindow.NAME);
+						if (mainScene != null)
+							Platform.runLater(() -> mainScene.openMinimap());
 
-	        		}
-            	}
-        		
-        		else if (p.isOutside()) {//.getLocationSituation() == LocationSituation.OUTSIDE) {
-        			Vehicle vv = p.getVehicle();
+						desktop.centerMapGlobe(p.getCoordinates());
+					} else {
+						// still parked inside a garage or within the premise of a settlement
+						desktop.openToolWindow(SettlementWindow.NAME);
+						// System.out.println("Just open Settlement Map Tool");
 
-        			if (vv == null) {
-               			desktop.openToolWindow(SettlementWindow.NAME);
-               			
-            			//System.out.println("Just open Settlement Map Tool");
+						if (mainScene != null)
+							mainScene.setSettlement(vv.getSettlement());
+						else
+							combox.setSelectedItem(vv.getSettlement());
 
-               			// TODO: Case 1 : person is on a mission on the surface of Mars and just happens to step outside the vehicle temporarily
+						double xLoc = vv.getXLocation();
+						double yLoc = vv.getYLocation();
+						double scale = mapPanel.getScale();
+						mapPanel.reCenter();
+						mapPanel.moveCenter(xLoc * scale, yLoc * scale);
+						mapPanel.setShowVehicleLabels(true);
 
-               			// TODO: Case 2 : person just happens to step outside the settlement at its vicinity temporarily
-/*
-            			if (mainScene != null)
-            				mainScene.setSettlement(p.getSettlement());
-            			else
-            				combox.setSelectedItem(p.getSettlement());
+						mapPanel.selectPerson(p);
 
+					}
+				}
 
-        				double xLoc = p.getXLocation();
-            			double yLoc = p.getYLocation();
-            			double scale = mapPanel.getScale();
-            			mapPanel.reCenter();
-            			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
-            			mapPanel.setShowBuildingLabels(true);
+				else if (p.isOutside()) {// .getLocationSituation() == LocationSituation.OUTSIDE) {
+					Vehicle vv = p.getVehicle();
 
-            			mapPanel.selectPerson(p);
-*/
-        			}
-        			else {
-            			if (vv.getSettlement() == null) {
-            				
-            				// out there on a mission
-            				desktop.openToolWindow(NavigatorWindow.NAME);
-            				if (mainScene != null)
-            					Platform.runLater(() -> mainScene.openMinimap());
-            				// he's stepped outside a vehicle
-            				desktop.centerMapGlobe(p.getCoordinates());
-            			}
-        			}
-        		}
-        	} 
-        	
-        	else if (unit instanceof Robot) {
-        		r = (Robot) unit;
-        		//SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
+					if (vv == null) {
+						desktop.openToolWindow(SettlementWindow.NAME);
 
-        		if (r.isInSettlement()) {//.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-        			desktop.openToolWindow(SettlementWindow.NAME);
-        			//System.out.println("Just open Settlement Map Tool");
-        			if (mainScene != null)
-        				mainScene.setSettlement(r.getSettlement());
-        			else
-        				combox.setSelectedItem(r.getSettlement());
+						// System.out.println("Just open Settlement Map Tool");
 
-        			Building b = r.getBuildingLocation();
-        			double xLoc = b.getXLocation();
-        			double yLoc = b.getYLocation();
-        			double scale = mapPanel.getScale();
-        			mapPanel.reCenter();
-        			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
-        			mapPanel.setShowBuildingLabels(true);
+						// TODO: Case 1 : person is on a mission on the surface of Mars and just happens
+						// to step outside the vehicle temporarily
 
-        			mapPanel.selectRobot(r);
-            	}
-        		
-        		else if (r.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+						// TODO: Case 2 : person just happens to step outside the settlement at its
+						// vicinity temporarily
 
-        			Vehicle vv = r.getVehicle();
-        			if (vv.getSettlement() == null) {
-        				// out there on a mission
-        				desktop.centerMapGlobe(r.getCoordinates());
-        			}
-        			else {
-        				// still parked inside a garage or within the premise of a settlement
-	        			desktop.openToolWindow(SettlementWindow.NAME);
-	        			//System.out.println("Just open Settlement Map Tool");
-	        			if (mainScene != null)
-	        				mainScene.setSettlement(vv.getSettlement());
-	        			else
-	        				combox.setSelectedItem(vv.getSettlement());
+//            			if (mainScene != null)
+//            				mainScene.setSettlement(p.getSettlement());
+//            			else
+//            				combox.setSelectedItem(p.getSettlement());
+//
+//
+//        				double xLoc = p.getXLocation();
+//            			double yLoc = p.getYLocation();
+//            			double scale = mapPanel.getScale();
+//            			mapPanel.reCenter();
+//            			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
+//            			mapPanel.setShowBuildingLabels(true);
+//
+//            			mapPanel.selectPerson(p);
 
-	        			double xLoc = vv.getXLocation();
-	        			double yLoc = vv.getYLocation();
-	        			double scale = mapPanel.getScale();
-	        			mapPanel.reCenter();
-	        			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
-	        			mapPanel.setShowVehicleLabels(true);
+					} else {
+						if (vv.getSettlement() == null) {
 
-	        			mapPanel.selectRobot(r);
+							// out there on a mission
+							desktop.openToolWindow(NavigatorWindow.NAME);
+							if (mainScene != null)
+								Platform.runLater(() -> mainScene.openMinimap());
+							// he's stepped outside a vehicle
+							desktop.centerMapGlobe(p.getCoordinates());
+						}
+					}
+				}
+			}
 
-	        		}
-            	}
-        		
-        		else if (r.isOutside()) {//.getLocationSituation() == LocationSituation.OUTSIDE) {
-        			Vehicle vv = r.getVehicle();
+			else if (unit instanceof Robot) {
+				r = (Robot) unit;
+				// SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
-        			if (vv == null) {
-        				// he's stepped outside the settlement temporally
-               			desktop.openToolWindow(SettlementWindow.NAME);
-            			//System.out.println("Just open Settlement Map Tool");
+				if (r.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+					desktop.openToolWindow(SettlementWindow.NAME);
+					// System.out.println("Just open Settlement Map Tool");
+					if (mainScene != null)
+						mainScene.setSettlement(r.getSettlement());
+					else
+						combox.setSelectedItem(r.getSettlement());
 
-               			// TODO: Case 1 : robot is on a mission on the surface of Mars and just happens to step outside the vehicle temporarily
+					Building b = r.getBuildingLocation();
+					double xLoc = b.getXLocation();
+					double yLoc = b.getYLocation();
+					double scale = mapPanel.getScale();
+					mapPanel.reCenter();
+					mapPanel.moveCenter(xLoc * scale, yLoc * scale);
+					mapPanel.setShowBuildingLabels(true);
 
-               			// TODO: Case 2 : robot just happens to step outside the settlement at its vicinity temporarily
-/*
-        				double xLoc = r.getXLocation();
-            			double yLoc = r.getYLocation();
-            			double scale = mapPanel.getScale();
-            			mapPanel.reCenter();
-            			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
-            			mapPanel.setShowBuildingLabels(true);
+					mapPanel.selectRobot(r);
+				}
 
-            			mapPanel.selectRobot(r);
-*/
-        			}
-        			else
-        				// he's stepped outside a vehicle
-        				desktop.centerMapGlobe(r.getCoordinates());
-        		}
-        	}
-        	
-        	else if (unit instanceof Vehicle) {
-        		v = (Vehicle) unit;
+				else if (r.isInVehicle()) {// .getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
-    		    //SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
+					Vehicle vv = r.getVehicle();
+					if (vv.getSettlement() == null) {
+						// out there on a mission
+						desktop.centerMapGlobe(r.getCoordinates());
+					} else {
+						// still parked inside a garage or within the premise of a settlement
+						desktop.openToolWindow(SettlementWindow.NAME);
+						// System.out.println("Just open Settlement Map Tool");
+						if (mainScene != null)
+							mainScene.setSettlement(vv.getSettlement());
+						else
+							combox.setSelectedItem(vv.getSettlement());
 
-          		if (v.getSettlement() != null) {
-        			desktop.openToolWindow(SettlementWindow.NAME);
-        			//System.out.println("Just open Settlement Map Tool");
-        			if (mainScene != null)
-        				mainScene.setSettlement(v.getSettlement());
-        			else
-        				combox.setSelectedItem(v.getSettlement());
+						double xLoc = vv.getXLocation();
+						double yLoc = vv.getYLocation();
+						double scale = mapPanel.getScale();
+						mapPanel.reCenter();
+						mapPanel.moveCenter(xLoc * scale, yLoc * scale);
+						mapPanel.setShowVehicleLabels(true);
 
-        			double xLoc = v.getXLocation();
-        			double yLoc = v.getYLocation();
-        			double scale = mapPanel.getScale();
-        			mapPanel.reCenter();
-        			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
-        			mapPanel.setShowVehicleLabels(true);
+						mapPanel.selectRobot(r);
 
-        			//mapPanel.selectVehicleAt((int)xLoc, (int)yLoc);
-            	}
-        		else {
-    				// out there on a mission
-    				desktop.openToolWindow(NavigatorWindow.NAME);
-    				if (mainScene != null)
-    					Platform.runLater(() -> mainScene.openMinimap());
-        			desktop.centerMapGlobe(unit.getCoordinates());
-        		}
-	    	} 
-        	
-        	else if (unit instanceof Equipment) {
-	    		e = (Equipment) unit;
-	    		//SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
+					}
+				}
 
-	    		if (e.isInSettlement()) {//.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	    			desktop.openToolWindow(SettlementWindow.NAME);
+				else if (r.isOutside()) {// .getLocationSituation() == LocationSituation.OUTSIDE) {
+					Vehicle vv = r.getVehicle();
 
-	    			if (mainScene != null)
-	    				mainScene.setSettlement(e.getSettlement());
-	    			else
-	    				combox.setSelectedItem(e.getSettlement());
+					if (vv == null) {
+						// he's stepped outside the settlement temporally
+						desktop.openToolWindow(SettlementWindow.NAME);
+						// System.out.println("Just open Settlement Map Tool");
 
-	    			//System.out.println("Just open Settlement Map Tool");
+						// TODO: Case 1 : robot is on a mission on the surface of Mars and just happens
+						// to step outside the vehicle temporarily
 
-/*
-	    			Building b = e.getBuildingLocation();
-	    			double xLoc = b.getXLocation();
-	    			double yLoc = b.getYLocation();
-	    			double scale = mapPanel.getScale();
-	    			mapPanel.reCenter();
-	    			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
-	    			mapPanel.setShowBuildingLabels(true);
+						// TODO: Case 2 : robot just happens to step outside the settlement at its
+						// vicinity temporarily
 
-	    			mapPanel.selectRobot(r);
- */
-	        	}
+//        				double xLoc = r.getXLocation();
+//            			double yLoc = r.getYLocation();
+//            			double scale = mapPanel.getScale();
+//            			mapPanel.reCenter();
+//            			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
+//            			mapPanel.setShowBuildingLabels(true);
+//
+//            			mapPanel.selectRobot(r);
 
-	    		else if (e.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+					} else
+						// he's stepped outside a vehicle
+						desktop.centerMapGlobe(r.getCoordinates());
+				}
+			}
 
-	    			Vehicle vv = e.getVehicle();
-	    			if (vv.getSettlement() == null) {
-	    				// out there on a mission
-	    				desktop.centerMapGlobe(e.getCoordinates());
-	    			}
-	    			else {
-	    				// still parked inside a garage or within the premise of a settlement
-	        			desktop.openToolWindow(SettlementWindow.NAME);
-	        			//System.out.println("Just open Settlement Map Tool");
-	        			if (mainScene != null)
-	        				mainScene.setSettlement(vv.getSettlement());
-	        			else
-	        				combox.setSelectedItem(vv.getSettlement());
+			else if (unit instanceof Vehicle) {
+				v = (Vehicle) unit;
 
-	        			double xLoc = vv.getXLocation();
-	        			double yLoc = vv.getYLocation();
-	        			double scale = mapPanel.getScale();
-	        			mapPanel.reCenter();
-	        			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
-	        			mapPanel.setShowVehicleLabels(true);
+				// SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
-	        			//mapPanel.selectVehicleAt((int)xLoc, (int)yLoc);
+				if (v.getSettlement() != null) {
+					desktop.openToolWindow(SettlementWindow.NAME);
+					// System.out.println("Just open Settlement Map Tool");
+					if (mainScene != null)
+						mainScene.setSettlement(v.getSettlement());
+					else
+						combox.setSelectedItem(v.getSettlement());
 
-	        		}
-	        	}
+					double xLoc = v.getXLocation();
+					double yLoc = v.getYLocation();
+					double scale = mapPanel.getScale();
+					mapPanel.reCenter();
+					mapPanel.moveCenter(xLoc * scale, yLoc * scale);
+					mapPanel.setShowVehicleLabels(true);
 
-	    		else if (e.isOutside()) {//.getLocationSituation() == LocationSituation.OUTSIDE) {
+					// mapPanel.selectVehicleAt((int)xLoc, (int)yLoc);
+				} else {
+					// out there on a mission
+					desktop.openToolWindow(NavigatorWindow.NAME);
+					if (mainScene != null)
+						Platform.runLater(() -> mainScene.openMinimap());
+					desktop.centerMapGlobe(unit.getCoordinates());
+				}
+			}
 
-	    		}
+			else if (unit instanceof Equipment) {
+				e = (Equipment) unit;
+				// SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
-	    		else
-	    			desktop.centerMapGlobe(e.getCoordinates());
+				if (e.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+					desktop.openToolWindow(SettlementWindow.NAME);
 
-	    	}
-        }
+					if (mainScene != null)
+						mainScene.setSettlement(e.getSettlement());
+					else
+						combox.setSelectedItem(e.getSettlement());
 
-        // If the location button was pressed, open the unit window.
-        //if (source == locationButton)
-        //    desktop.openUnitWindow(unit.getContainerUnit(), false);
-    }
+//	    			Building b = e.getBuildingLocation();
+//	    			double xLoc = b.getXLocation();
+//	    			double yLoc = b.getYLocation();
+//	    			double scale = mapPanel.getScale();
+//	    			mapPanel.reCenter();
+//	    			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
+//	    			mapPanel.setShowBuildingLabels(true);
+//
+//	    			mapPanel.selectRobot(r);
+				}
 
-    /**
-     * Updates the info on this panel.
-     */
-    public void update() {
+				else if (e.isInVehicle()) {// .getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
-        // If unit's location has changed, update location display.
-    	// TODO: if a person goes outside the settlement for servicing an equipment
-    	// does the coordinate (down to how many decimal) change?
-    	Coordinates location = unit.getCoordinates();
-        if (!locationCache.equals(location)) {
-            locationCache.setCoords(location);
+					Vehicle vv = e.getVehicle();
+					if (vv.getSettlement() == null) {
+						// out there on a mission
+						desktop.centerMapGlobe(e.getCoordinates());
+					} else {
+						// still parked inside a garage or within the premise of a settlement
+						desktop.openToolWindow(SettlementWindow.NAME);
+						if (mainScene != null)
+							mainScene.setSettlement(vv.getSettlement());
+						else
+							combox.setSelectedItem(vv.getSettlement());
 
-            String dir_N_S = null;
-            String dir_E_W = null;
+						double xLoc = vv.getXLocation();
+						double yLoc = vv.getYLocation();
+						double scale = mapPanel.getScale();
+						mapPanel.reCenter();
+						mapPanel.moveCenter(xLoc * scale, yLoc * scale);
+						mapPanel.setShowVehicleLabels(true);
 
-            if (locationCache.getLatitudeDouble() >= 0)
-            	dir_N_S = Msg.getString("direction.degreeSign") + N;
-            else
-            	dir_N_S = Msg.getString("direction.degreeSign") + S;
+						// mapPanel.selectVehicleAt((int)xLoc, (int)yLoc);
 
-            if (locationCache.getLongitudeDouble() >= 0)
-            	dir_E_W = Msg.getString("direction.degreeSign") + E;
-            else
-            	dir_E_W = Msg.getString("direction.degreeSign") + W;
+					}
+				}
 
-            lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
-            lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
+				else if (e.isOutside()) {// .getLocationSituation() == LocationSituation.OUTSIDE) {
 
-            double elevationCache = Math.round(terrainElevation.getElevation(unit.getCoordinates())*10000.0)/10000.0;
-            
-            setGauge(gauge, elevationCache);
+				}
 
-        }
+				else
+					desktop.centerMapGlobe(e.getCoordinates());
 
-        // Update location button or location text label as necessary.
-        Unit container = unit.getContainerUnit();
-        if (containerCache != container) {
-        	containerCache = container;
-        	updateLocation();
-        }
+			}
+		}
 
-        Unit topContainer = unit.getTopContainerUnit();
-        if (topContainerCache != topContainer) {
-        	topContainerCache = topContainer;
-        	updateLocation();
-        }
+		// If the location button was pressed, open the unit window.
+		// if (source == locationButton)
+		// desktop.openUnitWindow(unit.getContainerUnit(), false);
+	}
 
-        checkTheme(false);
+	/**
+	 * Updates the info on this panel.
+	 */
+	public void update() {
 
-    }
+		// If unit's location has changed, update location display.
+		// TODO: if a person goes outside the settlement for servicing an equipment
+		// does the coordinate (down to how many decimal) change?
+		Coordinates location = unit.getCoordinates();
+		if (!locationCache.equals(location)) {
+			locationCache.setCoords(location);
 
-    /**
-     * Tracks the location of a person
-     */
-    public String updatePerson(Person p) {
-    	return p.getLocationTag().getExtendedLocations();
-    	
+			String dir_N_S = null;
+			String dir_E_W = null;
+
+			if (locationCache.getLatitudeDouble() >= 0)
+				dir_N_S = Msg.getString("direction.degreeSign") + N;
+			else
+				dir_N_S = Msg.getString("direction.degreeSign") + S;
+
+			if (locationCache.getLongitudeDouble() >= 0)
+				dir_E_W = Msg.getString("direction.degreeSign") + E;
+			else
+				dir_E_W = Msg.getString("direction.degreeSign") + W;
+
+			lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
+			lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
+
+			double elevationCache = Math.round(terrainElevation.getElevation(unit.getCoordinates()) * 10000.0)
+					/ 10000.0;
+
+			setGauge(gauge, elevationCache);
+
+		}
+
+		// Update location button or location text label as necessary.
+		Unit container = unit.getContainerUnit();
+		if (containerCache != container) {
+			containerCache = container;
+			updateLocation();
+		}
+
+		Unit topContainer = unit.getTopContainerUnit();
+		if (topContainerCache != topContainer) {
+			topContainerCache = topContainer;
+			updateLocation();
+		}
+
+		checkTheme(false);
+
+	}
+
+	/**
+	 * Tracks the location of a person
+	 */
+	public String updatePerson(Person p) {
+		return p.getLocationTag().getExtendedLocations();
+
 //    	String loc = null;
 //
 //		if (p.isDeclaredDead()) {
@@ -853,15 +833,14 @@ implements ActionListener {
 //
 //    	
 //    	return loc;
-    }
-    
-    
-    /**
-     * Tracks the location of a robot
-     */
-    public String updateRobot(Robot r) {
-    	return r.getLocationTag().getExtendedLocations();
-    	
+	}
+
+	/**
+	 * Tracks the location of a robot
+	 */
+	public String updateRobot(Robot r) {
+		return r.getLocationTag().getExtendedLocations();
+
 //    	String loc = null;
 //    	
 //		Vehicle v = r.getVehicle();
@@ -895,7 +874,7 @@ implements ActionListener {
 //			
 // 			else {
 //     			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
-///*
+//
 //         			// Note: a vehicle's container unit may be null if it's outside a settlement
 //        			Settlement settlement = (Settlement) vehicle.getContainerUnit();
 //
@@ -906,7 +885,7 @@ implements ActionListener {
 //    					// case D
 //    					//loc = " in a vehicle parked within the premise of a settlement";
 //    					loc = IN + containerCache + PARKED + WITHIN_THE_VINCINITY_OF + settlement;
-//*/	        			
+//       			
 //    			
 //    			if (vehicle.getSettlement() != null) {
 //    				Building building = BuildingManager.getBuilding(vehicle);
@@ -976,13 +955,13 @@ implements ActionListener {
 //		}
 //    	
 //    	return loc;
-    }
-    
-    /**
-     * Tracks the location of an equipment
-     */
-    public String updateEquipment(Equipment e) {
-    	return e.getLocationTag().getExtendedLocations();
+	}
+
+	/**
+	 * Tracks the location of an equipment
+	 */
+	public String updateEquipment(Equipment e) {
+		return e.getLocationTag().getExtendedLocations();
 
 //    	String loc = null;
 //    	
@@ -1045,13 +1024,13 @@ implements ActionListener {
 //		}
 //    	
 //    	return loc;
-    }
-    
-    /**
-     * Tracks the location of a vehicle
-     */
-    public String updateVehicle(Vehicle v) {
-    	return v.getLocationTag().getExtendedLocations();
+	}
+
+	/**
+	 * Tracks the location of a vehicle
+	 */
+	public String updateVehicle(Vehicle v) {
+		return v.getLocationTag().getExtendedLocations();
 //    	String loc = null;
 //    	
 //   		Settlement s = v.getSettlement();
@@ -1080,43 +1059,42 @@ implements ActionListener {
 //		}
 //    	
 //    	return loc;	
-    }
-    
-    
-    /**
-     * Tracks the location of a person, bot, vehicle, or equipment
-     */
-    public void updateLocation() {
+	}
 
-    	String loc = null;
+	/**
+	 * Tracks the location of a person, bot, vehicle, or equipment
+	 */
+	public void updateLocation() {
 
-    	if (unit instanceof Settlement) {
-    		update();
-    	}
-    	
-    	else if (unit instanceof Person) {
-    		Person p = (Person) unit;
-    		loc = updatePerson(p);
-    	}
+		String loc = null;
 
-    	else if (unit instanceof Robot) {
-    		Robot r = (Robot) unit;
-    		loc = updateRobot(r);
-       	}
-
-    	else if (unit instanceof Equipment) {
-    		Equipment e = (Equipment) unit;
-    		loc = updateEquipment(e);
-    	}
-
-    	else if (unit instanceof Vehicle) {
-    		Vehicle v = (Vehicle) unit;
-    		loc = updateVehicle(v);
+		if (unit instanceof Settlement) {
+			update();
 		}
 
-        lcdText.setLcdText(loc);
+		else if (unit instanceof Person) {
+			Person p = (Person) unit;
+			loc = updatePerson(p);
+		}
 
-    }
+		else if (unit instanceof Robot) {
+			Robot r = (Robot) unit;
+			loc = updateRobot(r);
+		}
+
+		else if (unit instanceof Equipment) {
+			Equipment e = (Equipment) unit;
+			loc = updateEquipment(e);
+		}
+
+		else if (unit instanceof Vehicle) {
+			Vehicle v = (Vehicle) unit;
+			loc = updateVehicle(v);
+		}
+
+		lcdText.setLcdText(loc);
+
+	}
 
 	/**
 	 * Prepare object for garbage collection.

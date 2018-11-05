@@ -1498,6 +1498,7 @@ implements Serializable {
                 Unit unit = i.next();
                 if (unitClass.isInstance(unit)) {
                     result = unit;
+                    break;
                 }
             }
         }

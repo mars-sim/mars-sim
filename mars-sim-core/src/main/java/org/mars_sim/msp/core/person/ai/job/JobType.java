@@ -113,7 +113,7 @@ public enum JobType {
 
 	public static List<String> getEditedList() {
 		editedJobList = JobType.getList();
-		editedJobList.remove("Politician");
+		editedJobList.remove(POLITICIAN.getName());
 		Collections.sort(editedJobList);
 		return editedJobList;
 	}

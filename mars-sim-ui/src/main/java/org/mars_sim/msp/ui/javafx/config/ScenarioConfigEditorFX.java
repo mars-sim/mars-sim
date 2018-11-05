@@ -115,7 +115,7 @@ public class ScenarioConfigEditorFX {
 	private Parent parent;
 
 	private Stage stage;
-	private Stage cstage;
+//	private Stage cstage;
 
 	private SimulationConfig config;
 	private MainMenu mainMenu;
@@ -160,7 +160,6 @@ public class ScenarioConfigEditorFX {
 			playerName = multiplayerClient.getPlayerName();
 			if (multiplayerClient.getNumSettlement() > 0)
 				hasSettlement = true;
-			// System.out.println("registrySize is " + registrySize);
 			settlementList = multiplayerClient.getSettlementRegistryList();
 			gameMode = "Simulation Mode : Multi-Player";
 		} else {
@@ -1618,7 +1617,7 @@ public class ScenarioConfigEditorFX {
 		borderAll = null;
 		parent = null;
 		stage = null;
-		cstage = null;
+//		cstage = null;
 
 		mainScene = null;
 		tableView = null;

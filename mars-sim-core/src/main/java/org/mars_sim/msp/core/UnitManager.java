@@ -2193,7 +2193,7 @@ public class UnitManager implements Serializable {
 			return "Russia";
 		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY)
 			return "USA";
-		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACE_X)
+		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX)
 			return "USA";
 		else
 			return "USA";

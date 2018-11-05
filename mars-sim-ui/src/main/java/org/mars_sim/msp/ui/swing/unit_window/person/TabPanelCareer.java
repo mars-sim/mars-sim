@@ -74,16 +74,18 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 	/** data cache */
 	private int solCache = 1;
+	private int solRatingSubmitted = -1;
+
+	private boolean firstNotification = true;
+	private boolean printLog;
+	private boolean printLog2;
 
 	private String jobCache = "";
 	private String roleCache;
 	private String dateTimeRatingSubmitted;
+	
 	private JobAssignmentType statusCache = JobAssignmentType.APPROVED;// PENDING;
 
-	private int solRatingSubmitted = -1;
-
-	private boolean firstNotification = true;
-	
 	private WebTable table;
 
 	private WebLabel jobLabel;
@@ -250,10 +252,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			starRater.addStarListener(new StarRater.StarListener() {
 				public void handleSelection(int selection) {
 					if (starRater.isEnabled()) {
-						// System.out.println(selection);
-						// MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+	
 						int sol = marsClock.getMissionSol();
 						dateTimeRatingSubmitted = MarsClock.getDateTimeStamp(marsClock);
+						printLog = true;
 						ratingLabel.setText("Job rating submitted on " + dateTimeRatingSubmitted);
 						logger.info(person + "'s job rating was submitted on " + dateTimeRatingSubmitted);
 						ratingLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -261,7 +263,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 						int size = list.size();
 						// check if a new job reassignment has just been submitted
-						if (list.get(size - 1).getStatus().equals(JobAssignmentType.PENDING)) {
+						if (list.get(size - 1).getStatus() == JobAssignmentType.PENDING) {
 							list.get(size - 2).setJobRating(selection);
 							list.get(size - 2).setSolRatingSubmitted(sol);
 						} else {
@@ -291,8 +293,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			ratingLabel.setForeground(Color.blue);
 			ratingPanel.add(ratingLabel, BorderLayout.SOUTH);
 
-			// Added checking if user already submitted rating or submitted a job
-			// reassignment that's still not being reviewed
+			// Check if user submitted a job rating
 			checkingJobRating(list);
 
 			dead = person.getPhysicalCondition().isDead();
@@ -365,13 +366,15 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	/*
 	 * Checks a job rating is submitted or a job reassignment is submitted and is
 	 * still not being reviewed
+	 * 
+	 * @param list
 	 */
 	public void checkingJobRating(List<JobAssignment> list) {
 		int size = list.size();
 		if (solRatingSubmitted == -1) {
 			// the TabPanelCareer was closed and retrieve the saved value of
 			// solRatingSubmitted from JobAssignment
-			if (list.get(size - 1).getStatus().equals(JobAssignmentType.PENDING)) {
+			if (list.get(size - 1).getStatus() == JobAssignmentType.PENDING) {
 				solRatingSubmitted = list.get(size - 2).getSolRatingSubmitted();
 			} else {
 				solRatingSubmitted = list.get(size - 1).getSolRatingSubmitted();
@@ -385,10 +388,21 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			ratingLabel.setText("");
 		} else {
 			int solElapsed = marsClock.getMissionSol();
+//			if (solCache != solElapsed) {
+//				printLog2 = true; 
+//			} 
 			if (solElapsed > solRatingSubmitted + RATING_DAYS) {
+				// if 7 days have passed since the rating submitted, re-enable the star rater
 				starRater.setEnabled(true);
 				starRater.setSelection(0);
 				ratingLabel.setText("");
+				dateTimeRatingSubmitted = null;
+				solRatingSubmitted = -1;
+				printLog = true;
+				if (printLog2) {
+					logger.info(person + "'s job rating is open for review again.");
+					printLog2 = false;
+				}
 			} else {
 				starRater.setSelection(0);
 				starRater.setEnabled(false);
@@ -396,14 +410,20 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				if (dateTimeRatingSubmitted != null) {
 					s = person + "'s job rating last submitted on " + dateTimeRatingSubmitted;
 					ratingLabel.setText(s);
-					logger.info(s);
+					if (printLog) {
+						logger.info(s);
+						printLog = false;
+						printLog2 = true;
+					}
 				}
 				else {
 					s = person + "'s job rating last submitted on sol " + solRatingSubmitted;
 					ratingLabel.setText(s);
-					logger.info(s);
 				}
 			}
+			if (solCache != solElapsed) {
+				dateTimeRatingSubmitted = null;
+			} 
 		}
 	}
 
@@ -449,7 +469,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
 
-			if (status.equals(JobAssignmentType.PENDING)) {
+			if (status == JobAssignmentType.PENDING) {
 				statusCache = JobAssignmentType.PENDING;
 				// System.out.println("\n< " + person.getName() + " > ");
 				// System.out.println("status still pending");
@@ -463,7 +483,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			}
 
 			// detects a change of status from pending to approved
-			else if (statusCache.equals(JobAssignmentType.PENDING)) {
+			else if (statusCache == JobAssignmentType.PENDING) {
 				if (status.equals(JobAssignmentType.APPROVED)) {
 					statusCache = JobAssignmentType.APPROVED;
 					logger.info(person.getName() + "'s job reassignment had been reviewed and approved.");
@@ -474,7 +494,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 					person.getMind().setJobLock(true);
 
-				} else if (status.equals(JobAssignmentType.NOT_APPROVED)) {
+				} else if (status == JobAssignmentType.NOT_APPROVED) {
 					statusCache = JobAssignmentType.NOT_APPROVED;
 					logger.info(person.getName() + "'s job reassignment had been reviewed and was NOT approved.");
 
@@ -556,8 +576,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 				List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
 
-				// Added checking if user already submitted rating or submitted a job
-				// reassignment that's still not being reviewed
+				// Added checking if user submitted a job rating 
 				checkingJobRating(list);
 
 				// Added checking for the status of Job Reassignment
@@ -567,7 +586,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				int solElapsed = marsClock.getMissionSol();
 
 				// If the rating or job reassignment request is at least one day ago
-				if (solElapsed != solCache) {
+				if (solCache != solElapsed) {
 					solCache = solElapsed;
 					person.getJobHistory().setSolCache(solCache);
 				} // end of if (solElapsed != solCache)

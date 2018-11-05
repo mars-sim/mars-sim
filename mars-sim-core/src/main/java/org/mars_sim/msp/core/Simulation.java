@@ -38,7 +38,6 @@ import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
-import org.mars_sim.msp.core.terminal.CommanderProfile;
 import org.mars_sim.msp.core.terminal.InteractiveTerm;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;

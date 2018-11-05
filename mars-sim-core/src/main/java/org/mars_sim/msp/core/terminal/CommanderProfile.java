@@ -14,9 +14,12 @@ import org.beryx.textio.TextIO;
 import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -42,10 +45,13 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	
 	private static TextIO textIO;
 	
+	private static PersonConfig personConfig;
+	
     private final List<Runnable> operations = new ArrayList<>();
 
     public CommanderProfile(InteractiveTerm term) {	
-    	commander = SimulationConfig.instance().getPersonConfiguration().getCommander();
+    	personConfig = SimulationConfig.instance().getPersonConfiguration();
+    	commander = personConfig.getCommander();
     	terminal = term.getTerminal();
     	textIO = term.getTextIO();
 	}
@@ -68,8 +74,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         addString(textIO, "Last Name", () -> commander.getLastName(), s -> commander.setLastName(s));     
         addGender(textIO, "Gender", () -> commander.getGender(), s -> commander.setGender(s));
         addAge(textIO, "Age", () -> commander.getAge(), s -> commander.setAge(s));	      
-        addJobTask(textIO, "Job (0-16)", () -> commander.getJob(), s -> commander.setJob(s));	
-        addCountryTask(textIO, "Country (0-27)", () -> commander.getCountry(), s -> commander.setCountry(s));
+        addJobTask(textIO, "Job (1-16)", () -> commander.getJob(), s -> commander.setJob(s));	
+        addCountryTask(textIO, "Country (1-28)", () -> commander.getCountry(), s -> commander.setCountry(s));
           
         setUpCountryKey();
         setUpJobKey();
@@ -134,6 +140,9 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         }
     }
 
+  
+    
+    
     public void setUpJobKey() {
         String keyJobs = "ctrl J";
         
@@ -240,8 +249,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	valueSetter.accept(textIO.newIntInputReader()       
                 .withDefaultValue(30)
 //				.withNumberedPossibleValues(age)
-                .withMaxVal(70)
-                .withMinVal(21) //defaultValueSupplier.get())
+                .withMaxVal(80)
+                .withMinVal(18) //defaultValueSupplier.get())
                 .read(prompt));
         	});
     }
@@ -251,7 +260,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
                 .withDefaultValue(5)
-                .withMinVal(0)
+                .withMinVal(1)
                 .withMaxVal(16)//defaultValueSupplier.get())
                 .read(prompt));
         	});
@@ -262,8 +271,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
                 .withDefaultValue(5)
-                .withMinVal(0)
-                .withMaxVal(27)//defaultValueSupplier.get())
+                .withMinVal(1)
+                .withMaxVal(28)//defaultValueSupplier.get())
                 .read(prompt));
     		});
     }

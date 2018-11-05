@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * SettlementBase.java
+ * @version 3.1.0 2018-11-04
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.ui.javafx.config;
 
 import javafx.beans.property.SimpleStringProperty;

@@ -133,7 +133,12 @@ public class PersonConfig implements Serializable {
 
 	private Map<String, Double> personalityDistribution;
 
-	private List<String> personNameList, countries, ESAcountries, sponsors;
+	private List<String> personNameList;
+	private List<String> countries;
+	private List<String> ESAcountries;
+	private List<String> sponsors;
+	private List<String> longSponsors;
+	
 	private List<Map<Integer, List<String>>> lastNames;
 	private List<Map<Integer, List<String>>> firstNames;
 
@@ -264,8 +269,8 @@ public class PersonConfig implements Serializable {
 				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY
 						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY_L)
 					sponsors.get(7).add(name);
-				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACE_X
-						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACE_X_L)
+				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX
+						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX_L)
 					sponsors.get(8).add(name);
 
 				/* CNSA,CSA,ISRO,JAXA,NASA,RKA */
@@ -428,7 +433,8 @@ public class PersonConfig implements Serializable {
 					else if (sponsor.contains("RKA"))// && type[i] == ReportingAuthorityType.RKA)
 						malesBySponsor.get(6).add(name);
 
-					else if (sponsor.contains("Mars Society"))// && type[i] == ReportingAuthorityType.NASA)
+					else if (sponsor.contains("Mars Society")
+							|| sponsor.contains("MS"))// && type[i] == ReportingAuthorityType.NASA)
 						malesBySponsor.get(7).add(name);
 
 					else if (sponsor.contains("SpaceX"))// && type[i] == ReportingAuthorityType.RKA)
@@ -523,7 +529,8 @@ public class PersonConfig implements Serializable {
 					else if (sponsor.contains("RKA"))// && type[i] == ReportingAuthorityType.RKA)
 						femalesBySponsor.get(6).add(name);
 
-					else if (sponsor.contains("Mars Society"))// && type[i] == ReportingAuthorityType.NASA)
+					else if (sponsor.contains("Mars Society")
+							|| sponsor.contains("MS"))// && type[i] == ReportingAuthorityType.NASA)
 						femalesBySponsor.get(7).add(name);
 
 					else if (sponsor.contains("SpaceX"))// && type[i] == ReportingAuthorityType.RKA)
@@ -658,7 +665,7 @@ public class PersonConfig implements Serializable {
 //				else if (sponsor.equals("JAXA"))
 //					type = ReportingAuthorityType.JAXA;
 
-				if (sponsor.contains("Mars Society"))
+				if (sponsor.contains("Mars Society") || sponsor.contains("MS"))
 					type = ReportingAuthorityType.MARS_SOCIETY;
 
 //				else if (sponsor.equals("NASA"))
@@ -1617,7 +1624,6 @@ public class PersonConfig implements Serializable {
 		if (countries == null) {
 			countries = createCountryList();
 		}
-//		System.out.println("id : " + id + "   list : " + countries);
 		return countries.get(id);
 	}
 
@@ -1708,6 +1714,30 @@ public class PersonConfig implements Serializable {
 	 * 
 	 * @return
 	 */
+	public List<String> createLongSponsorList() {
+
+		if (longSponsors == null) {
+			longSponsors = new ArrayList<>();
+
+			longSponsors.add(Msg.getString("ReportingAuthorityType.long.CNSA"));
+			longSponsors.add(Msg.getString("ReportingAuthorityType.long.CSA"));
+			longSponsors.add(Msg.getString("ReportingAuthorityType.long.ISRO"));
+			longSponsors.add(Msg.getString("ReportingAuthorityType.long.JAXA"));
+			longSponsors.add(Msg.getString("ReportingAuthorityType.long.MarsSociety"));
+			longSponsors.add(Msg.getString("ReportingAuthorityType.long.NASA"));
+			longSponsors.add(Msg.getString("ReportingAuthorityType.long.RKA"));
+			longSponsors.add(Msg.getString("ReportingAuthorityType.long.ESA"));
+
+		}
+
+		return longSponsors;
+	}
+	
+	/**
+	 * Create sponsor list
+	 * 
+	 * @return
+	 */
 	public List<String> createSponsorList() {
 
 		if (sponsors == null) {
@@ -1717,7 +1747,7 @@ public class PersonConfig implements Serializable {
 			sponsors.add(Msg.getString("ReportingAuthorityType.CSA"));
 			sponsors.add(Msg.getString("ReportingAuthorityType.ISRO"));
 			sponsors.add(Msg.getString("ReportingAuthorityType.JAXA"));
-			sponsors.add(Msg.getString("ReportingAuthorityType.MarsSociety"));
+			sponsors.add(Msg.getString("ReportingAuthorityType.MS"));
 			sponsors.add(Msg.getString("ReportingAuthorityType.NASA"));
 			sponsors.add(Msg.getString("ReportingAuthorityType.RKA"));
 			sponsors.add(Msg.getString("ReportingAuthorityType.ESA"));

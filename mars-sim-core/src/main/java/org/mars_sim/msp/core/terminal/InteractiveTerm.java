@@ -67,7 +67,7 @@ public class InteractiveTerm {
     
     
 	/**
-	 * Initialize the text-io terminal.
+	 * Asks users what mode to run in a text-io terminal.
 	 */
 	public void startCommanderMode() {
 
@@ -82,12 +82,18 @@ public class InteractiveTerm {
 		terminal.print(System.lineSeparator() 
 				+ " -----------------  M A R S   S I M U L A T I O N   P R O J E C T  -----------------" 
 				+ System.lineSeparator()
-				+ System.lineSeparator());
+				+ System.lineSeparator()
+				+ "1. Commander Mode "
+				+ System.lineSeparator()
+				+ "2. Sandbox Mode "
+				+ System.lineSeparator()
+				+ System.lineSeparator()
+				);
 			
-        handler.addStringTask("input", "Input commander's profile ? [y/n]", false).addChoices("y", "n").constrainInputToChoices();
+        handler.addStringTask("input", "Enter your choice:", false).addChoices("1", "2").constrainInputToChoices();
         handler.executeOneTask();
         
-		if ((CommanderInput.input).equals("y")) {
+		if ((CommanderInput.input).equals("1")) {
 			terminal.print(System.lineSeparator());
 			profile.accept(textIO, null);
 		}

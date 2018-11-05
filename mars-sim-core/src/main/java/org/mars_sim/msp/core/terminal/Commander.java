@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * Commander.java
+ * @version 3.1.0 2018-11-04
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.core.terminal;
 
 import org.mars_sim.msp.core.UnitManager;
@@ -12,10 +19,6 @@ public class Commander {
     private int job;
     private int phase;
     private int country;
-    
-    public Commander() {
-//    	System.out.println("Commander is ready");
-    }
     
     public String getFullName() {
     	if (firstName == null && lastName == null)

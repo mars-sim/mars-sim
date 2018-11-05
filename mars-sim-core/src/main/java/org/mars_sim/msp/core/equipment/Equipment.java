@@ -20,8 +20,6 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -185,12 +183,17 @@ implements Indoor, Salvagable {
 				return (Settlement) c;
 			}
 		}
+		else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED) {
+			Unit cc = ((Vehicle) c).getContainerUnit();
+			if (cc instanceof Settlement) {
+				return (Settlement) c;
+			}
 		
-		else if (c instanceof Vehicle) {
-			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-			if (b != null)
-				// still inside the garage
-				return b.getSettlement();
+//		else if (c instanceof Vehicle) {
+//			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+//			if (b != null)
+//				// still inside the garage
+//				return b.getSettlement();
 //			else
 				// either at the vicinity of a settlement or already outside on a mission
 				// TODO: need to differentiate which case in future better granularity
@@ -240,7 +243,7 @@ implements Indoor, Salvagable {
 	 * @return true if yes
 	 */
 	public boolean isInSettlement() {
-		Unit c = getContainerUnit();
+		Unit c = getTopContainerUnit();
 		if (c instanceof Settlement)
 			return true;
 //		else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)

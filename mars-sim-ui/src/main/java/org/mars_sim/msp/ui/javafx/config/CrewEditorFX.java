@@ -13,21 +13,20 @@ import java.util.List;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.property.*;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.effect.*;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.image.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -38,6 +37,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.effect.BoxBlur;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Effect;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -46,12 +50,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.ScrollPane;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.person.GenderType;
 
@@ -84,11 +88,8 @@ public class CrewEditorFX {
 	public static final int PERSONALITY_ROW = 6;
 	public static final int DESTINATION_ROW = 7;
 
-	private static final double BLUR_AMOUNT = 10;
-
-	private static final String POLITICIAN = "Politician";
-
-	private static final Effect frostEffect = new BoxBlur(BLUR_AMOUNT, BLUR_AMOUNT, 3);
+//	private static final double BLUR_AMOUNT = 10;
+//	private static final Effect frostEffect = new BoxBlur(BLUR_AMOUNT, BLUR_AMOUNT, 3);
 
 	private static final ImageView background = new ImageView();
 
@@ -259,6 +260,8 @@ public class CrewEditorFX {
 			destinationName = destinationStr;
 			
 			for (int i = 0; i < SIZE_OF_CREW; i++) {
+				
+				// Name
 				String nameStr = nameTF.get(i).getText().trim();
 				// Added isBlank() and checking against invalid names
 				if (!Conversion.isBlank(nameStr)) {
@@ -270,14 +273,15 @@ public class CrewEditorFX {
 					alert.initOwner(stage);
 					alert.setTitle("Invalid Input");
 					alert.showAndWait();
+					// it cannot proceed
 					goodToGo = false;
 					scenarioConfigEditorFX.disableStartButton();
 					// event.consume();
 					nameTF.get(i).requestFocus();
-
 					return;
 				}
 
+				// Gender
 				String genderStr = genderList.get(i).getValue();
 				if (genderStr.equals("M"))
 					genderStr = "MALE";
@@ -286,54 +290,88 @@ public class CrewEditorFX {
 				// update PersonConfig with the new gender
 				personConfig.setPersonGender(i, genderStr, ALPHA_CREW);
 
+				// Personality
 				String personalityStr = getPersonality(i);
 				// update PersonConfig with the new personality
 				personConfig.setPersonPersonality(i, personalityStr, ALPHA_CREW);
 
+				// Job
 				String jobStr = (String) jobList.get(i).getValue();
 
-				personConfig.setPersonJob(i, jobStr, ALPHA_CREW);
-
-				String sponsorStr = (String) sponsorList.get(i).getValue();
-
-				personConfig.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
+				if (!Conversion.isBlank(jobStr)) {
+					personConfig.setPersonJob(i, jobStr, ALPHA_CREW);
+					goodToGo = true && goodToGo;
+				} else {
+					goodToGo = false;
+					jobList.get(i).requestFocus();
+				}
 				
+				// Sponsor
+				String sponsorStr = (String) sponsorList.get(i).getValue();
+				System.out.println("commitButton. " + i + " : " + sponsorStr);
+				
+				if (!Conversion.isBlank(sponsorStr)) {
+					personConfig.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
+					goodToGo = true && goodToGo;
+				} else {
+					goodToGo = false;
+					sponsorList.get(i).requestFocus();
+				}
+								
+				// Country
 				String countryStr = (String) countryList.get(i).getValue();
+				System.out.println("commitButton. " + i + " : " + countryStr);
+
 				if (!Conversion.isBlank(countryStr)) {
 					personConfig.setPersonCountry(i, countryStr, ALPHA_CREW);
 					goodToGo = true && goodToGo;
 				} else {
 					goodToGo = false;
+					countryList.get(i).requestFocus();
 				}
 
+				// Destination
 				if (!Conversion.isBlank(destinationStr)) {
 					// update PersonConfig with the new destination
 					personConfig.setPersonDestination(i, destinationStr, ALPHA_CREW);
-
+					goodToGo = true && goodToGo;
 				}
 				else {
 					goodToGo = false;
+					destinationCB.requestFocus();
 				}
 			}
 
 			
-			boolean sameSponsor = false;
+			boolean allHaveSameSponsor = true;
 			String s = "";
 			for (int i = 0; i < SIZE_OF_CREW; i++) {
-				if (i== 0) {
+				if (i == 0) {
 					s = (String) sponsorList.get(i).getValue();
+					if (s == null || s.equals("")) {
+						goodToGo = false;
+						sponsorList.get(i).requestFocus();
+					}
 				}
-				else if (s.equals( (String) sponsorList.get(i).getValue())) {
-					sameSponsor = true;
+				else {
+					String ss = (String) sponsorList.get(i).getValue();
+					if (ss == null || ss.equals("")) { 
+						goodToGo = false;
+						sponsorList.get(i).requestFocus();
+					}
+					else if (s != null && !s.equals(ss)) {
+						allHaveSameSponsor = false;
+						break;
+					}
 				}
 			}
 			
-			if (sameSponsor) {
-				// Bring the changes back to the TableViewCombo?
+			if (allHaveSameSponsor) {
+				// Bring the changes back to the TableViewCombo
 				scenarioConfigEditorFX.getTableViewCombo().setSameSponsor(destinationName, s);
 			}
 			else {
-				// Bring the changes back to the TableViewCombo?
+				// Bring the changes back to the TableViewCombo
 				scenarioConfigEditorFX.getTableViewCombo().setSameSponsor(destinationName, "Varied");				
 			}
 			
@@ -341,6 +379,8 @@ public class CrewEditorFX {
 				scenarioConfigEditorFX.setCrewEditorOpen(false);
 				stage.hide();
 			}
+			else
+				event.consume();
 
 		});
 
@@ -437,11 +477,19 @@ public class CrewEditorFX {
 		});
 	}
 
-	/*
-	 * Validates and saves the current alpha crew configuration
-	 */
+//	/*
+//	 * Validates and saves the current alpha crew configuration
+//	 */
 	// public void validateRecordChange(ActionEvent event) {}
-
+	
+	
+	/**
+	 * Sets up the comboboxes 
+	 * 
+	 * @param choice
+	 * @param index
+	 * @return {@link JFXComboBox}
+	 */
 	public JFXComboBox<String> setUpCB(int choice, int index) {
 		JFXComboBox<String> m = null;
 		if (choice == GENDER_ROW)
@@ -519,6 +567,12 @@ public class CrewEditorFX {
 		}
 	}
 
+	/**
+	 * Sets up the gender combobox 
+	 * 
+	 * @param index
+	 * @return {@link JFXComboBox}
+	 */
 	public JFXComboBox<String> setUpGenderCB(int index) {
 		// List<String> genderList = new ArrayList<String>(2);
 		// genderList.add("M");
@@ -533,8 +587,7 @@ public class CrewEditorFX {
 	}
 	
 	/**
-	 * Set up crew gender
-	 * @param
+	 * Set up the crew gender choice
 	 */
 	public void setUpCrewGender() {
 
@@ -558,7 +611,8 @@ public class CrewEditorFX {
 	}
 
 	/**
-	 * Set up crew personality
+	 * Set up the crew personality choice
+	 * 
 	 * @param col
 	 */
 	public void setUpCrewPersonality(int col) {
@@ -631,7 +685,13 @@ public class CrewEditorFX {
 		gridPane.add(vbox, col, PERSONALITY_ROW); // personality's row = 5
 	}
 
-	// 2015-10-07 Added getPersonality()
+
+	/**
+	 * Set up the crew personality choice
+	 * 
+	 * @param col
+	 * @return type string
+	 */
 	public String getPersonality(int col) {
 		String type = null;
 		boolean value = true;
@@ -669,11 +729,15 @@ public class CrewEditorFX {
 		return type;
 	}
 
+	/**
+	 * Sets up the job combobox 
+	 * 
+	 * @param index
+	 * @return {@link JFXComboBox}
+	 */
 	public JFXComboBox<String> setUpJobCB(int index) {
 				
-		List<String> jobs = JobType.getList();
-
-		jobs.remove(POLITICIAN);
+		List<String> jobs = JobType.getEditedList();
 
 		Collections.sort(jobs);
 
@@ -683,6 +747,10 @@ public class CrewEditorFX {
 		return cb;
 	}
 
+	
+	/**
+	 * Set up the crew job choice
+	 */
 	public void setUpCrewJob() {
 
 		String n[] = new String[SIZE_OF_CREW];
@@ -697,9 +765,15 @@ public class CrewEditorFX {
 		}
 	}
 
+	/**
+	 * Sets up the sponsor combobox 
+	 * 
+	 * @param index
+	 * @return {@link JFXComboBox}
+	 */
 	public JFXComboBox<String> setUpSponsorCB(int index) {
 
-		List<String> sponsors = personConfig.createSponsorList();
+		List<String> sponsors = personConfig.createLongSponsorList();
 		Collections.sort(sponsors);
 
 		ObservableList<String> sponsorOList = FXCollections.observableArrayList(sponsors);
@@ -744,22 +818,31 @@ public class CrewEditorFX {
 					int code = -1;
 					List<String> list = new ArrayList<>();
 
-					if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA)
+					if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA
+							|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA_L)
 						list.add("China");
-					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA)
+					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA
+							|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA_L)
 						list.add("Canada");
-					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO)
+					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO
+							|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO_L)
 						list.add("India"); // 2
-					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA)
+					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA
+							|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA_L)
 						list.add("Japan"); // 3
 					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY
-						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACE_X)
+							|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY_L
+							|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX
+							|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX_L)
 						code = 0;
-					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA)
+					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA
+							|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA_L)
 						list.add("USA"); // 4
-					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA)
+					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA
+							|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA_L)
 						list.add("Russia"); // 5
-					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA)
+					else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA
+							|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA_L)
 						code = 1;
 
 					if (code == 0) {
@@ -780,16 +863,18 @@ public class CrewEditorFX {
 		return cb;
 	}
 
+	/**
+	 * Set up the crew sponsor choice
+	 */
 	public void setUpCrewSponsor() {
-
 //		String n[] = new String[SIZE_OF_CREW];
 
 		for (int i = 0; i < SIZE_OF_CREW; i++) {
 			String sponsor = personConfig.getConfiguredPersonSponsor(i, ALPHA_CREW);
-
-			if (!sponsor.equals(sponsorName)) {
-				sponsor = sponsorName;
-			}
+			System.out.println("setUpCrewSponsor sponsor : " + sponsor);
+//			if (!sponsor.equals(sponsorName)) {
+//				sponsor = sponsorName;
+//			}
 				
 			JFXComboBox<String> g = setUpCB(SPONSOR_ROW, i); // 4 = sponsor
 			// g.setMaximumRowCount(8);
@@ -798,9 +883,14 @@ public class CrewEditorFX {
 			sponsorList.add(i, g);
 			
 		}
-
 	}
 
+	/**
+	 * Sets up the country combobox 
+	 * 
+	 * @param index
+	 * @return {@link JFXComboBox}
+	 */
 	public JFXComboBox<String> setUpCountryCB(int index) {
 
 		List<String> countries = personConfig.createCountryList();
@@ -815,6 +905,10 @@ public class CrewEditorFX {
 
 	}
 
+	
+	/**
+	 * Set up the crew country choice
+	 */
 	public void setUpCrewCountry() {
 
 		String n[] = new String[SIZE_OF_CREW];
@@ -825,11 +919,16 @@ public class CrewEditorFX {
 			// g.setMaximumRowCount(8);
 			gridPane.add(g, i + 1, COUNTRY_ROW); // country's row = 5
 			g.setValue(n[i]);
-
+			System.out.println("setUpCrewCountry country : " + n[i]);
 			countryList.add(i, g);
 		}
 	}
 
+	/**
+	 * Sets up the sponsor combobox 
+	 * 
+	 * @return {@link JFXComboBox}
+	 */
 	public JFXComboBox<String> setUpDestinationCB() {
 
 		retrieveFromTable();
@@ -839,28 +938,41 @@ public class CrewEditorFX {
 		return destinationsOListComboBox;
 	}
 
+	/**
+	 * Gets destination name Set up the crew gender choice
+	 */
 	public void retrieveFromTable() {
-		// TODO: how to properly sense the change and rebuild the combobox
-		// real-time?
-		// settlements =
-		// scenarioConfigEditorFX.getSettlementTableView().getSettlementInfo();
 		settlements = scenarioConfigEditorFX.getTableViewCombo().getSettlementBase();
-
+		
+		// Clear the old names every time the crew editor is loaded.
 		settlementNames.clear();
-
+		sponsorNames.clear();
+		
 		for (int i = 0; i < settlements.size(); i++) {
-			settlementNames.add(settlements.get(i).getName());
-			sponsorNames.add(settlements.get(i).getSponsor());
+			SettlementBase s = settlements.get(i);
+			String name = s.getName();
+			String sponsor = s.getSponsor();
+			settlementNames.add(name);
+			sponsorNames.add(sponsor);
 			
-			if (settlements.get(i).getTemplate().equals("Mars Direct Base (Phase 1)")
-					&& settlements.get(i).getName().equals("Schiaparelli Point")) {
-				sponsorName = settlements.get(i).getSponsor();
+			// Gets the sponsor name from the lowest possible phase
+			if (s.getTemplate().equals("Mars Direct Base (Phase 1)")) {
+				if (name.equals("Schiaparelli Point")) {
+					sponsorName = s.getSponsor();			 
+				}
+				else
+					sponsorName = s.getSponsor();
 			}
-			else if (settlements.get(i).getTemplate().equals("Mars Direct Base (Phase 1)")) {
-				sponsorName = settlements.get(i).getSponsor();
+			else if (s.getTemplate().equals("Mars Direct Base (Phase 2)")) {
+				sponsorName = s.getSponsor();
+			}
+			else if (s.getTemplate().equals("Mars Direct Base (Phase 3)")) {
+				sponsorName = s.getSponsor();
+			}
+			else if (s.getTemplate().equals("Alpha Base (Phase 4)")) {
+				sponsorName = s.getSponsor();
 			}
 			
-			// TODO: what to do if the template "Mars Direct Base (Phase 1)" is NOT selected ?
 		}
 
 		destinationsOList = FXCollections.observableArrayList(settlementNames);
@@ -901,7 +1013,12 @@ public class CrewEditorFX {
 	}
 
 
-	// Makes a stage draggable using a given node.
+	/**
+	 * Makes a stage draggable using a given node.
+	 * 
+	 * @param stage
+	 * @param byNode
+	 */
 	public void makeDraggable(final Stage stage, final Node byNode) {
 		final Delta dragDelta = new Delta();
 		byNode.setOnMousePressed(mouseEvent -> {

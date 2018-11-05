@@ -56,7 +56,7 @@ public class SettlementTableView {
 	
     //private SpreadsheetView spreadSheetView;
 	
-	private final ReportingAuthorityType[] SPONSORS = ReportingAuthorityType.SPONSORS;
+	private final ReportingAuthorityType[] SPONSORS = ReportingAuthorityType.SPONSORS_LONG;
 	
 	private String[] headers = new String[]{"Settlement","Template","Settlers",
 	                                      "Bots","Sponsor","Latitude","Longitude"};

@@ -43,6 +43,7 @@ import javafx.scene.SceneAntialiasing;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -56,7 +57,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -94,13 +94,21 @@ public class MainMenu {
 
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 
+	private static boolean isExit = false;
+	private static boolean isSoundDisabled = false;
+	
+	private static boolean[] goodToGo = {false, false, false, false, false, false};
+	
 	public static final int WIDTH = 1366;
 	public static final int HEIGHT = 768;
+	
+	private static final int STAR_COUNT = 100;// 00;
+	private static final int TIME = 20_000_000;// 2_000_000_000;
 
 	// public static final int MUSIC_VOLUME = 0;
 	// public static final int SOUND_EFFECT_VOLUME = 1;
 
-	// Data members
+
 	public static String screen1ID = "main";
 	public static String screen1File = "/fxui/fxml/MainMenu.fxml";
 	public static String screen2ID = "configuration";
@@ -108,17 +116,9 @@ public class MainMenu {
 	public static String screen3ID = "credits";
 	public static String screen3File = "/fxui/fxml/Credits.fxml";
 
-	private static final int STAR_COUNT = 100;// 00;
-	private static final int TIME = 20_000_000;// 2_000_000_000;
-
-	private Rectangle[] nodes = new Rectangle[STAR_COUNT];
-	private final double[] angles = new double[STAR_COUNT];
-	private final long[] start = new long[STAR_COUNT];
-
-	private final Random random = new Random();
-
-	private static boolean isExit = false;
-
+	// Data members
+	public boolean isFXGL = false;
+	
 	public int mainscene_width = 1366; // 1920;//
 	public int mainscene_height = 768; // 1080;//
 
@@ -131,11 +131,16 @@ public class MainMenu {
 	public float music_v = 50f;
 	public float sound_effect_v = 50f;
 
-	private static boolean isSoundDisabled = false;
-	public boolean isFXGL = false;
 	// private Point2D anchorPt;
 	// private Point2D previousLocation;
 
+	private Rectangle[] nodes = new Rectangle[STAR_COUNT];
+	
+	private final double[] angles = new double[STAR_COUNT];
+	private final long[] start = new long[STAR_COUNT];
+
+	private final Random random = new Random();
+	
 	private Group root;
 	
 	private Scene scene;
@@ -160,10 +165,6 @@ public class MainMenu {
 
 	private MenuApp menuApp;
 
-	private static JFXDialog settingDialog;
-
-	private static JFXDialog exitDialog;
-
 	private List<Resolution> resList;
 
 	private transient ThreadPoolExecutor executor;
@@ -174,7 +175,9 @@ public class MainMenu {
 
 	private EventHandler<MouseEvent> exitedHandler;
 
-	private Simulation sim = Simulation.instance();
+	private static JFXDialog settingDialog;
+	private static JFXDialog exitDialog;
+	private static Simulation sim = Simulation.instance();
 	
 	public MainMenu() {
 		// logger.info("MainMenu's constructor is on " +
@@ -1167,6 +1170,35 @@ public class MainMenu {
 	}
 
 	/**
+	 * Swaps the mouse cursor type between DEFAULT and HAND
+	 *
+	 * @param node
+	 */
+	public void setMouseCursor(Node node) {
+		node.addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
+			node.setCursor(Cursor.DEFAULT);
+		});
+
+		node.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+			node.setCursor(Cursor.HAND);
+		});
+	}
+	
+	/**
+	 * Checks if all of the commander's info are good to go
+	 * 
+	 * @return true or false
+	 */
+	public boolean areAllGoodToGo() {
+		for (boolean ans : goodToGo) {
+			if (!ans) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
 	 * Selects the game screen resolution in this dialog box
 	 * 
 	 * @param pane
@@ -1174,18 +1206,27 @@ public class MainMenu {
 	public StackPane createCommanderPane() {
 		if (exitDialog == null || (exitDialog != null && !exitDialog.isVisible())) {
 			
-			JFXButton doneBtn = new JFXButton("Done");
+			JFXButton doneBtn = new JFXButton("Commit");
+			setMouseCursor(doneBtn);
+			doneBtn.setGraphic(
+					new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_32.png"))));
+			doneBtn.getStyleClass().add("button-mid");
+			doneBtn.setId("commitButton");
+			doneBtn.setAlignment(Pos.CENTER);
+			doneBtn.setDisable(true);
 			doneBtn.setStyle("-fx-background-color: lightgoldenrodyellow;");// lightgrey;");
 			doneBtn.setOnAction(e -> {
-		        UnitManager.setCommander(true);
-		        runNew(isFXGL, true);
+				if (areAllGoodToGo()) {
+					UnitManager.setCommander(true);
+					runNew(isFXGL, true);
+				}
 				e.consume();
 			});
 
-			HBox return_hb = new HBox();
-			return_hb.setPadding(new Insets(45, 15, 15, 15));
-			return_hb.getChildren().addAll(doneBtn);
-			return_hb.setAlignment(Pos.CENTER);
+			HBox doneHB = new HBox();
+			doneHB.setPadding(new Insets(20, 15, 15, 25));
+			doneHB.getChildren().add(doneBtn);
+			doneHB.setAlignment(Pos.CENTER);
 
 //			HBox.setMargin(done_btn, new Insets(10, 10, 10, 10));
 			
@@ -1196,23 +1237,26 @@ public class MainMenu {
 			titleLabel.setPadding(new Insets(10, 10, 10, 10));
 			titleLabel.setStyle("-fx-text-fill: lightgoldenrodyellow;");
 			titleLabel.setFont(Font.loadFont(
-					MenuApp.class.getResource("/fonts/Penumbra-HalfSerif-Std_35114.ttf").toExternalForm(), 20));
+					MenuApp.class.getResource("/fonts/Penumbra-HalfSerif-Std_35114.ttf").toExternalForm(), 15));
 			// titleLabel.setFont(Font.font(null, FontWeight.BOLD, 20));
 
 			Commander commander = SimulationConfig.instance().getPersonConfiguration().getCommander();
 
+			// First Name
 			Label fnameLabel = new Label("First Name :   ");
 			fnameLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 			JFXTextField fnameTF = new JFXTextField();
 			fnameTF.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");			
  			
 			fnameTF.textProperty().addListener((observable, oldValue, newValue) -> {
-//			    System.out.println("textfield changed from " + oldValue + " to " + newValue);
-//			    boolean goodToGo = false;
-			    String first = newValue;//fnameTF.getText();
-				if (first != null && !Conversion.isBlank(first)) {
+			    String first = newValue;
+				if (first != null 
+						&& !first.trim().isEmpty()
+						&& !Conversion.isBlank(first)) {
 					commander.setFirstName(first);
-					doneBtn.setDisable(false);
+					goodToGo[0] = true;
+					if (areAllGoodToGo()) 
+						doneBtn.setDisable(false);
 				} 
 				
 				else {
@@ -1220,30 +1264,31 @@ public class MainMenu {
 					alert.initOwner(primaryStage);
 					alert.setTitle("Invalid Input");
 					alert.showAndWait();
-//					goodToGo = false;
+					goodToGo[0] = false;
 					doneBtn.setDisable(true);
-					// event.consume();
 					fnameTF.requestFocus();
 				}
 			});
-			
-			
+					
 			HBox fnameBox = new HBox();
 			fnameBox.setPadding(new Insets(10, 10, 10, 10));
 			fnameBox.getChildren().addAll(fnameLabel, fnameTF);
 			fnameBox.setAlignment(Pos.CENTER);
 
+			// Last Name
 			Label lnameLabel = new Label("Last Name :   ");
 			JFXTextField lnameTF = new JFXTextField();
 			lnameTF.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 		
 			lnameTF.textProperty().addListener((observable, oldValue, newValue) -> {
-//			    System.out.println("textfield changed from " + oldValue + " to " + newValue);
-//			    boolean goodToGo = false;
-			    String last = newValue;//lnameTF.getText();
-				if (last != null && !Conversion.isBlank(last)) {
+			    String last = newValue;
+				if (last != null 
+						&& !last.trim().isEmpty()
+						&& !Conversion.isBlank(last)) {
 					commander.setLastName(last);
-					doneBtn.setDisable(false);
+					goodToGo[1] = true;
+					if (areAllGoodToGo()) 
+						doneBtn.setDisable(false);
 				} 
 				
 				else {
@@ -1251,9 +1296,8 @@ public class MainMenu {
 					alert.initOwner(primaryStage);
 					alert.setTitle("Invalid Input");
 					alert.showAndWait();
-//					goodToGo = false;
+					goodToGo[1] = false;
 					doneBtn.setDisable(true);
-					// event.consume();
 					lnameTF.requestFocus();
 				}
 			});
@@ -1263,29 +1307,71 @@ public class MainMenu {
 			lnameLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 			lnameBox.getChildren().addAll(lnameLabel, lnameTF);
 			lnameBox.setAlignment(Pos.CENTER);
+		
+			// Gender
+			Label genderLabel = new Label("Gender :   ");
+			genderLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 
+        	List<String> genders = Arrays.asList("Male", "Female");
+
+			JFXComboBox<String> genderCombo = new JFXComboBox<>();
+			genderCombo.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+			genderCombo.getStyleClass().add("jfx-combo-box");
+			genderCombo.getItems().addAll(genders);	
+			genderCombo.setPromptText("Select here");
+			genderCombo.valueProperty().addListener(new ChangeListener<String>() {
+				@Override
+				public void changed(ObservableValue ov, String t, String t1) {
+					if (t1.equals("") || t1 == null) {
+						doneBtn.setDisable(true);
+						goodToGo[2] = false;
+						genderCombo.requestFocus();
+					}
+					else {
+//					if (!t.equals(t1)) {
+						genderCombo.setValue(t1);
+						commander.setGender(t1);
+						goodToGo[2] = true;
+						if (areAllGoodToGo()) 
+							doneBtn.setDisable(false);
+					}
+				}
+			});
+
+			HBox genderBox = new HBox();
+			genderBox.setPadding(new Insets(10, 10, 10, 10));
+			genderBox.getChildren().addAll(genderLabel, genderCombo);
+			genderBox.setAlignment(Pos.CENTER);
+
+			// Age
 			Label ageLabel = new Label("Age :   ");
 			JFXTextField ageTF = new JFXTextField();
+			ageTF.setPrefColumnCount(5);
 			ageTF.setText("30");
+			commander.setAge(30);
+			goodToGo[3] = true;
 			ageTF.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 
 			ageTF.textProperty().addListener((observable, oldValue, newValue) -> {
-//			    System.out.println("textfield changed from " + oldValue + " to " + newValue);
-				String ageString = newValue;//ageTF.getText(); 
-				if (ageString != null && !Conversion.isBlank(ageString) && Conversion.isInteger(ageString, 10)) {
+				String ageString = newValue;
+				if (ageString != null 
+						&& !ageString.trim().isEmpty()
+						&& !Conversion.isBlank(ageString) 
+						&& Conversion.isInteger(ageString, 10)) {
 					int age = Integer.parseInt(ageString);
 					if (age >= 18 && age <= 80) {
 						commander.setAge(age);
-						doneBtn.setDisable(false);
+						goodToGo[3] = true;
+						if (areAllGoodToGo()) 
+							doneBtn.setDisable(false);
 					}
 					else {
 						Alert alert = new Alert(AlertType.ERROR, "The commander's age must be between 18 and 80.");
 						alert.initOwner(primaryStage);
 						alert.setTitle("Invalid Input");
 						alert.showAndWait();
-//						goodToGo = false;
+						goodToGo[3] = false;
 						doneBtn.setDisable(true);
-						// event.consume();
 						ageTF.requestFocus();
 					}
 				} 
@@ -1295,9 +1381,8 @@ public class MainMenu {
 					alert.initOwner(primaryStage);
 					alert.setTitle("Invalid Input");
 					alert.showAndWait();
-//					goodToGo = false;
+					goodToGo[3] = false;
 					doneBtn.setDisable(true);
-					// event.consume();
 					ageTF.requestFocus();
 				}
 			});
@@ -1308,52 +1393,34 @@ public class MainMenu {
 			ageBox.getChildren().addAll(ageLabel, ageTF);
 			ageBox.setAlignment(Pos.CENTER);
 
-			
-			Label genderLabel = new Label("Gender :   ");
-			genderLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
-
-        	List<String> genders = Arrays.asList("Male", "Female");
-
-			JFXComboBox<String> genderCombo = new JFXComboBox<>();
-			genderCombo.setStyle("-fx-text-fill: lightgoldenrodyellow;");
-			genderCombo.getStyleClass().add("jfx-combo-box");
-			genderCombo.getItems().addAll(genders);	
-			genderCombo.setPromptText("Select here");
-			genderCombo.valueProperty().addListener(new ChangeListener<String>() {
-				@Override
-				public void changed(ObservableValue ov, String t, String t1) {
-//					if (!t.equals(t1)) {
-						genderCombo.setValue(t1);
-						//int id = genders.indexOf(t1);
-						commander.setGender(t1);//getListID(genders, t1) + 1);	
-//					}
-				}
-			});
-
-			HBox genderBox = new HBox();
-			genderBox.setPadding(new Insets(10, 10, 10, 10));
-			genderBox.getChildren().addAll(genderLabel, genderCombo);
-			genderBox.setAlignment(Pos.CENTER);
-
-
+			// Job
 			Label jobLabel = new Label("Job :   ");
 			jobLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 
         	List<String> jobs = JobType.getEditedList();
 
 			JFXComboBox<String> jobCombo = new JFXComboBox<>();
-			jobCombo.setStyle("-fx-text-fill: lightgoldenrodyellow;");
+			jobCombo.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 			jobCombo.getStyleClass().add("jfx-combo-box");
 			jobCombo.getItems().addAll(jobs);	
 			jobCombo.setPromptText("Select here");
 			jobCombo.valueProperty().addListener(new ChangeListener<String>() {
 				@Override
 				public void changed(ObservableValue ov, String t, String t1) {
+					if (t1.equals("") || t1 == null) {
+						doneBtn.setDisable(true);
+						goodToGo[4] = false;
+						jobCombo.requestFocus();
+					}
+					else {
 //					if (!t.equals(t1)) {
 						jobCombo.setValue(t1);
 						int id = jobs.indexOf(t1);
-						commander.setJob(id + 1);//getListID(jobs, t1) + 1);	
-//					}
+						commander.setJob(id + 1);
+						goodToGo[4] = true;
+						if (areAllGoodToGo()) 
+							doneBtn.setDisable(false);
+					}
 				}
 			});
 
@@ -1362,25 +1429,34 @@ public class MainMenu {
 			jobBox.getChildren().addAll(jobLabel, jobCombo);
 			jobBox.setAlignment(Pos.CENTER);
 
+			// Country
 			Label countryLabel = new Label("Country :   ");
 			countryLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 
         	List<String> countries = UnitManager.getCountryList();
 
 			JFXComboBox<String> countryCombo = new JFXComboBox<>();
-			countryCombo.setStyle("-fx-text-fill: lightgoldenrodyellow;");
+			countryCombo.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 			countryCombo.getStyleClass().add("jfx-combo-box");
 			countryCombo.getItems().addAll(countries);	
 			countryCombo.setPromptText("Select here");
 			countryCombo.valueProperty().addListener(new ChangeListener<String>() {
 				@Override
 				public void changed(ObservableValue ov, String t, String t1) {
+					if (t1.equals("") || t1 == null) {
+						doneBtn.setDisable(true);
+						goodToGo[5] = false;
+						countryCombo.requestFocus();
+					}
+					else {
 //					if (!t.equals(t1)) {
 						countryCombo.setValue(t1);
 						int id = countries.indexOf(t1);
-//						System.out.println("country : " + t1 + "    id : " + id);
-						commander.setCountry(id + 1);//getListID(countries, t1) + 1);	
-//					}
+						commander.setCountry(id + 1);
+						goodToGo[5] = true;
+						if (areAllGoodToGo()) 
+							doneBtn.setDisable(false);
+					}
 				}
 			});
 
@@ -1389,14 +1465,13 @@ public class MainMenu {
 			countryBox.getChildren().addAll(countryLabel, countryCombo);
 			countryBox.setAlignment(Pos.CENTER);
 
-		
 			VBox vb = new VBox();
 			vb.setAlignment(Pos.CENTER);
 			vb.setPadding(new Insets(10, 10, 10, 10));
-			vb.getChildren().addAll(titleLabel, fnameBox, lnameBox, genderBox, ageBox, jobBox, countryBox, doneBtn);
+			vb.getChildren().addAll(titleLabel, fnameBox, lnameBox, genderBox, ageBox, jobBox, countryBox, doneHB);
 			
 			StackPane sp = new StackPane(vb);
-			sp.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+			//sp.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 			StackPane.setMargin(vb, new Insets(10, 10, 10, 10));
 
 			return sp;
@@ -1704,46 +1779,4 @@ public class MainMenu {
 			return width + " x " + height;
 		}
 	}
-	
-//	public class Commander {
-//		
-//        private String firstName;
-//        private String lastName;
-//        private String gender;
-//        private String job;
-//        private String country;
-//        private int age;
-//
-//        public String getFullName() {
-//        	if (firstName == null || lastName == null)
-//        		return null;
-//        	else {
-//        		return firstName + " " + lastName;
-//        	}
-//        }
-//
-//        public String getGender() {
-//        	return gender;
-//        }
-//
-//        public String getCountry() {
-//        	return country;
-//        }
-//
-//        public void setCountry(String value) {
-//        	country = value;
-//        }
-//
-//        public int getAge() {
-//        	return age;
-//        }
-//
-//        public String getJob() {
-//        	return job;
-//        }
-//
-//        public void setJob(String value) {
-//        	job = value;
-//        }
-//    }
 }

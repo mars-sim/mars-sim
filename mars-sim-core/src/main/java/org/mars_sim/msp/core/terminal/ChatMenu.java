@@ -11,9 +11,6 @@ import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.Mars;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.terminal.AppUtil;
 import org.mars_sim.msp.core.terminal.RunnerData;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -61,16 +58,18 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 			// Set to headless mode
 			ChatUtils.setConnectionMode(0);
 
-	       	terminal.println("<< Connection to MarsNet established >>"
-		       	+ System.lineSeparator() + System.lineSeparator() 
-		       	+ "Type '/h' for help,  '/k' for keywords,  '/p' to pause/unpause,  '/q' to quit"
-		       	+ System.lineSeparator() + System.lineSeparator());
+	       	terminal.println("            << Connection to MarsNet established >>"
+		       	+ System.lineSeparator() 		       	
+	       	);
 		       		       
 	        terminal.println(" -------------------------------------------------------------- ");
 	        terminal.println("|     Press UP arrow key to autocomplete with a keyword.       |");
 	        terminal.println("|     Press UP/DOWN arrow keys to scroll through choices.      |");
 	        terminal.println(" -------------------------------------------------------------- "
-	        		+ System.lineSeparator()); 
+	        	+ System.lineSeparator() + System.lineSeparator() 	       	
+			    + "'/h' : help,  '/k' : keywords,  '/p' : pause/unpause,  '/q' : quit"
+			    + System.lineSeparator()		
+	        ); 
      	
 //	        setUpArrows();
 	        
