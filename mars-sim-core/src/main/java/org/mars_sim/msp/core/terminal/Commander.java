@@ -7,11 +7,20 @@
 
 package org.mars_sim.msp.core.terminal;
 
+import java.io.Serializable;
+
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 
-public class Commander {
+public class Commander implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 	
+    private static final String ONE_SPACE = " ";
+    
+	private boolean isMarsSocietyAffiliated;
     private String firstName;
     private String lastName;
     private String gender;
@@ -80,15 +89,53 @@ public class Commander {
     	return phase;
     }
     
+    public void setMarsSocietyAffiliated(String value) {
+    	if (value.equalsIgnoreCase("y"))
+    		isMarsSocietyAffiliated = true;
+    	else
+        	isMarsSocietyAffiliated = false;    		
+    }
+    
+//    public boolean isMarsSocietyAffiliated() {
+//    	return isMarsSocietyAffiliated;
+//    }
+
+    public String isMarsSocietyAffiliated() {
+    	if (isMarsSocietyAffiliated)
+    		return "y";
+   		return "n";
+    }
+
+    public String getSponsor() {
+    	String s = null;	
+    	if (isMarsSocietyAffiliated) {
+    		s = Msg.getString("ReportingAuthorityType.long.MarsSociety");
+    	}
+    	else {
+    		s = UnitManager.getSponsorByCountryID(country-1);
+    	}
+    	return s;
+    }
+    
+    public String getFieldName(String field) {
+    	StringBuilder s = new StringBuilder();
+    	int size = 27 - field.length();
+    	for (int i = 0; i < size; i++) {
+    		s.append(ONE_SPACE);
+    	}
+    	s.append(field);
+    	return s.toString();
+    }
+    
     @Override
     public String toString() {
-        return System.lineSeparator() + "   First Name: " + firstName +
-        	   System.lineSeparator() + "   Last Name: " + lastName +
-        	   System.lineSeparator() + "   Gender: " + gender +
-        	   System.lineSeparator() + "   Age: " + age +
-        	   System.lineSeparator() + "   Job: " + JobType.getEditedJobString(job-1) +
-        	   System.lineSeparator() + "   Country: " + UnitManager.getCountryByID(country-1) + 
-        	   System.lineSeparator() + "   Space Agency: " + UnitManager.getSponsorByCountryID(country-1) + "" 
+        return System.lineSeparator() + getFieldName("First Name: ") + firstName +
+        	   System.lineSeparator() + getFieldName("Last Name: ") + lastName +
+        	   System.lineSeparator() + getFieldName("   Gender: ") + gender +
+        	   System.lineSeparator() + getFieldName("   Age: ") + age +
+        	   System.lineSeparator() + getFieldName("   Job: ") + JobType.getEditedJobString(job-1) +
+        	   System.lineSeparator() + getFieldName("   Country: ") + UnitManager.getCountryByID(country-1) + 
+        	   System.lineSeparator() + getFieldName("   Sponsor: ") + getSponsor() 
 //        	   System.lineSeparator() + "   Settlement Phase: " + phase
         	   ;
         

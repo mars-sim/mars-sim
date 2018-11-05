@@ -1237,7 +1237,7 @@ public class UnitManager implements Serializable {
 	 */
 	public void updateCommander(Person cc) {
 		String newCountry = personConfig.getCountry(getCountry()); 
-		String newSponsor = personConfig.getSponsorFromCountry(newCountry);
+		String newSponsor = getSponsor();//personConfig.getSponsorFromCountry(newCountry);
 //		String oldName = cc.getName();
 //		GenderType oldGender = cc.getGender();			
 		String newName = getFullname();
@@ -1261,7 +1261,7 @@ public class UnitManager implements Serializable {
 	public void matchSettlement() {
 		
 		String country = personConfig.getCountry(getCountry()); 
-		String sponsor = personConfig.getSponsorFromCountry(country);
+		String sponsor = getSponsor();//personConfig.getSponsorFromCountry(country);
 		
 		List<Settlement> list = new ArrayList<>(getSettlements());
 		int size = getSettlements().size();
@@ -2209,19 +2209,19 @@ public class UnitManager implements Serializable {
 	public static String getSponsorByCountryID(int id) {
 		
 		if (id == 0)
-			return ReportingAuthorityType.CNSA.getName();
+			return ReportingAuthorityType.CNSA_L.getName();
 		else if (id == 1)
-			return ReportingAuthorityType.CSA.getName();
+			return ReportingAuthorityType.CSA_L.getName();
 		else if (id == 2)
-			return ReportingAuthorityType.ISRO.getName();
+			return ReportingAuthorityType.ISRO_L.getName();
 		else if (id == 3)
-			return ReportingAuthorityType.JAXA.getName();
+			return ReportingAuthorityType.JAXA_L.getName();
 		else if (id == 4)
-			return ReportingAuthorityType.NASA.getName(); // MS or SpaceX
+			return ReportingAuthorityType.NASA_L.getName(); // MS or SpaceX
 		else if (id == 5)			
-			return ReportingAuthorityType.RKA.getName();	
+			return ReportingAuthorityType.RKA_L.getName();	
 		else
-			return ReportingAuthorityType.ESA.getName();
+			return ReportingAuthorityType.ESA_L.getName();
 		
 	}
 	
@@ -2320,6 +2320,11 @@ public class UnitManager implements Serializable {
 	/** Gets the commander's country */
 	public int getCountry() {
 		return personConfig.getCommander().getCountry();
+	}
+
+	/** Gets the commander's sponsor */
+	public String getSponsor() {
+		return personConfig.getCommander().getSponsor();
 	}
 	
 	/** Gets the settlement's phase */

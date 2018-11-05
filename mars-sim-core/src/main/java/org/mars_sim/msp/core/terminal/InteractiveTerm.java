@@ -80,7 +80,7 @@ public class InteractiveTerm {
         SwingHandler handler = new SwingHandler(textIO, ci);
         
 		terminal.print(System.lineSeparator() 
-				+ " -----------------  M A R S   S I M U L A T I O N   P R O J E C T  -----------------" 
+				+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------" 
 				+ System.lineSeparator()
 				+ System.lineSeparator()
 				+ "1. Commander Mode "

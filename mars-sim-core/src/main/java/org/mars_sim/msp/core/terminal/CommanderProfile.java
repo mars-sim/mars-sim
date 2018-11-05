@@ -16,10 +16,8 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -35,10 +33,23 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     private static final String KEY_STROKE_UP = "pressed UP";
     private static final String KEY_STROKE_DOWN = "pressed DOWN";
 
-    private String originalInput = "";
+    private static final String ONE_SPACE = " ";
+    
     private int choiceIndex = -1;
-    private String[] choices = {};
+    
+    private String originalInput = "";
 
+    private String[] choices = {};
+    
+	private String[] fields = {
+			"First Name",
+			"Last Name",
+			"Gender (M, F)",
+			"Age (18-80)",
+			"Job (1-16)",
+			"Mars Society Affiliated",
+			"Country (1-28)"};
+	
 	private Commander commander;
     	
 	private SwingTextTerminal terminal;
@@ -47,6 +58,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	
 	private static PersonConfig personConfig;
 	
+
     private final List<Runnable> operations = new ArrayList<>();
 
     public CommanderProfile(InteractiveTerm term) {	
@@ -54,12 +66,23 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     	commander = personConfig.getCommander();
     	terminal = term.getTerminal();
     	textIO = term.getTextIO();
+    	
 	}
 
     public void setChoices(String... choices) {
         this.originalInput = "";
         this.choiceIndex = -1;
         this.choices = choices;
+    }
+    
+    public String getFieldName(String field) {
+    	StringBuilder s = new StringBuilder();
+    	int size = 27 - field.length();
+    	for (int i = 0; i < size; i++) {
+    		s.append(ONE_SPACE);
+    	}
+    	s.append(field);
+    	return s.toString();
     }
     
     @Override
@@ -70,18 +93,24 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 //        setUpMouseCopyKey();
         setUpArrows();
         
-        addString(textIO, "First Name", () -> commander.getFirstName(), s -> commander.setFirstName(s));
-        addString(textIO, "Last Name", () -> commander.getLastName(), s -> commander.setLastName(s));     
-        addGender(textIO, "Gender", () -> commander.getGender(), s -> commander.setGender(s));
-        addAge(textIO, "Age", () -> commander.getAge(), s -> commander.setAge(s));	      
-        addJobTask(textIO, "Job (1-16)", () -> commander.getJob(), s -> commander.setJob(s));	
-        addCountryTask(textIO, "Country (1-28)", () -> commander.getCountry(), s -> commander.setCountry(s));
+        
+        addString(textIO, getFieldName(fields[0]), () -> commander.getFirstName(), s -> commander.setFirstName(s));
+        addString(textIO, getFieldName(fields[1]), () -> commander.getLastName(), s -> commander.setLastName(s));     
+        addGender(textIO, getFieldName(fields[2]), () -> commander.getGender(), s -> commander.setGender(s));
+        addAge(textIO, getFieldName(fields[3]), () -> commander.getAge(), s -> commander.setAge(s));	      
+        addJobTask(textIO, getFieldName(fields[4]), () -> commander.getJob(), s -> commander.setJob(s));	
+        addAffiliation(textIO, getFieldName(fields[5]), () -> commander.isMarsSocietyAffiliated(), s -> commander.setMarsSocietyAffiliated(s));
+        addCountryTask(textIO, getFieldName(fields[6]), () -> commander.getCountry(), s -> commander.setCountry(s));
           
         setUpCountryKey();
         setUpJobKey();
         setUpUndoKey();
        
-        terminal.println(System.lineSeparator() + "Commander's Profile: " + commander);
+        terminal.println(System.lineSeparator() 
+        		+ "                * * *  COMMANDER'S PROFILE * * *" 
+        		+ System.lineSeparator()
+        		+ commander
+        		+ System.lineSeparator());
         UnitManager.setCommander(true);
     }
     
@@ -226,7 +255,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	String[] sex = {"M", "F"};
         	setChoices(sex);
         	valueSetter.accept(textIO.newStringInputReader()
-                    .withInlinePossibleValues(sex)
+//                    .withInlinePossibleValues(sex)
                     .withIgnoreCase()
 //                    .withPromptAdjustments(false)
 //				.withInlinePossibleValues("m", "f", "M", "F")
@@ -247,10 +276,12 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()       
-                .withDefaultValue(30)
+                .withDefaultValue(30) //
+//        		.withDefaultValue(defaultValueSupplier.get())
+//                .withPromptAdjustments(false)
 //				.withNumberedPossibleValues(age)
                 .withMaxVal(80)
-                .withMinVal(18) //defaultValueSupplier.get())
+                .withMinVal(18) 
                 .read(prompt));
         	});
     }
@@ -259,9 +290,26 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
-                .withDefaultValue(5)
+       			.withDefaultValue(5)
+//                .withDefaultValue(defaultValueSupplier.get())
                 .withMinVal(1)
-                .withMaxVal(16)//defaultValueSupplier.get())
+                .withMaxVal(16)
+                .read(prompt));
+        	});
+    }
+    
+    private void addAffiliation(TextIO textIO, String prompt, Supplier<String> defaultValueSupplier, Consumer<String> valueSetter) {
+        operations.add(() -> {
+        	String[] ans = {"y", "n"};
+        	setChoices(ans);
+        	valueSetter.accept(textIO.newStringInputReader()
+//                  .withPromptAdjustments(false)
+//                  .withInlinePossibleValues(ans)
+                    .withIgnoreCase()
+//                    .withPromptAdjustments(false)
+//				.withInlinePossibleValues("m", "f", "M", "F")
+//                .withDefaultValue(defaultValueSupplier.get())
+              .withDefaultValue("y")
                 .read(prompt));
         	});
     }

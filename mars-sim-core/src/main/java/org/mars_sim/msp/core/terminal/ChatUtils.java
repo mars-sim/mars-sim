@@ -222,8 +222,8 @@ public class ChatUtils {
 			responseText = prompt + " : I beg your pardon?   [/h for help]";
 		else
 			responseText = prompt + " : Can you be more specific?   [/h for help]";
-
-		return new String[] { questionText, responseText };
+	
+		return new String[] { questionText, responseText + System.lineSeparator()};
 	}
 
 	/**
@@ -1246,7 +1246,7 @@ public class ChatUtils {
 			questionText = YOU_PROMPT + "how have you been ?"; // what is your Location Situation [Expert Mode only] ?";
 
 			if (personCache != null) {
-				responseText.append("I'm ");
+				responseText.append("I'm feeling ");
 				responseText.append(personCache.getMind().getEmotion().getDescription());
 
 			} else if (robotCache != null) {
@@ -2161,13 +2161,13 @@ public class ChatUtils {
 			return responseText.toString();
 		}
 
-		else if (len >= 2) {
+		else if (len >= 1) {
 			proceed = true;
 		}
 
 		// Part 2 //
 
-		if (len == 0 || text == null || text.length() == 1) {
+		if (len == 0 || text == null) {// || text.length() == ) {
 			responseText.append(clarify(SYSTEM)[1]);
 
 		}

@@ -1689,25 +1689,25 @@ public class PersonConfig implements Serializable {
 //
 //	}
 
-	public String getSponsorFromCountry(String c) {
-
-		if (c.equalsIgnoreCase("China")) {
-			return Msg.getString("ReportingAuthorityType.CNSA");
-		} else if (c.equalsIgnoreCase("Canada")) {
-			return Msg.getString("ReportingAuthorityType.CSA");
-		} else if (c.equalsIgnoreCase("India")) {
-			return Msg.getString("ReportingAuthorityType.ISRO");
-		} else if (c.equalsIgnoreCase("Japan")) {
-			return Msg.getString("ReportingAuthorityType.JAXA");
-		} else if (c.equalsIgnoreCase("USA")) {
-			return Msg.getString("ReportingAuthorityType.NASA");
-		} else if (c.equalsIgnoreCase("Russia")) {
-			return Msg.getString("ReportingAuthorityType.RKA");
-		} else {
-			return Msg.getString("ReportingAuthorityType.ESA");
-		}
-
-	}
+//	public String getSponsorFromCountry(String c) {
+//
+//		if (c.equalsIgnoreCase("China")) {
+//			return Msg.getString("ReportingAuthorityType.CNSA");
+//		} else if (c.equalsIgnoreCase("Canada")) {
+//			return Msg.getString("ReportingAuthorityType.CSA");
+//		} else if (c.equalsIgnoreCase("India")) {
+//			return Msg.getString("ReportingAuthorityType.ISRO");
+//		} else if (c.equalsIgnoreCase("Japan")) {
+//			return Msg.getString("ReportingAuthorityType.JAXA");
+//		} else if (c.equalsIgnoreCase("USA")) {
+//			return Msg.getString("ReportingAuthorityType.NASA");
+//		} else if (c.equalsIgnoreCase("Russia")) {
+//			return Msg.getString("ReportingAuthorityType.RKA");
+//		} else {
+//			return Msg.getString("ReportingAuthorityType.ESA");
+//		}
+//
+//	}
 
 	/**
 	 * Create sponsor list
