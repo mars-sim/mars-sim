@@ -368,12 +368,19 @@ public class UnitManager implements Serializable {
 
 		} else if (unitType == UnitType.VEHICLE) {
 			if (baseName != null) {
+				String tagID = "";
 				int number = 1;
 				if (vehicleNumberMap.containsKey(baseName)) {
 					number += vehicleNumberMap.get(baseName);
 				}
+				if (number < 10)
+					tagID = "00" + number;
+				else if (number < 100)
+					tagID = "0" + number;
+				else
+					tagID = "" + number;
 				vehicleNumberMap.put(baseName, number);
-				return baseName + " " + number;
+				return baseName + " " + tagID;
 
 			} else {
 				initialNameList = vehicleNames;
@@ -411,12 +418,19 @@ public class UnitManager implements Serializable {
 
 		} else if (unitType == UnitType.EQUIPMENT) {
 			if (baseName != null) {
+				String tagID = "";
 				int number = 1;
 				if (equipmentNumberMap.containsKey(baseName)) {
 					number += equipmentNumberMap.get(baseName);
 				}
+				if (number < 10)
+					tagID = "00" + number;
+				else if (number < 100)
+					tagID = "0" + number;
+				else
+					tagID = "" + number;
 				equipmentNumberMap.put(baseName, number);
-				return baseName + " " + number;
+				return baseName + " " + tagID;
 			}
 
 		} else {
@@ -436,15 +450,15 @@ public class UnitManager implements Serializable {
 		if (remainingNames.size() > 0) {
 			result = remainingNames.get(RandomUtil.getRandomInt(remainingNames.size() - 1));
 		} else {
-			int num = usedNames.size() + 1;
-			String numStr = "";
-			if (num < 10)
-				numStr = "00" + num;
-			else if (num < 100)
-				numStr = "0" + num;
-			else if (num < 1000)
-				numStr = "" + num;
-			result = unitName + " " + numStr;
+			int number = usedNames.size() + 1;
+			String tagID = "";
+			if (number < 10)
+				tagID = "00" + number;
+			else if (number < 100)
+				tagID = "0" + number;
+			else
+				tagID = "" + number;
+			result = unitName + " " + tagID;
 
 		}
 

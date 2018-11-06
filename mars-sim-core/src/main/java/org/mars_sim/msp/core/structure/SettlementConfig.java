@@ -946,12 +946,12 @@ public class SettlementConfig implements Serializable {
 			throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
 
-	/**
-	 * Gets the maximum number of Mars Society delegates for an initial settlement.
-	 * 
-	 * @param index the index of the initial settlement.
-	 * @return number of delegates.
-	 */
+//	/**
+//	 * Gets the maximum number of Mars Society delegates for an initial settlement.
+//	 * 
+//	 * @param index the index of the initial settlement.
+//	 * @return number of delegates.
+//	 */
 //	public int getInitialSettlementMaxMSD(int index) {
 //		if ((index >= 0) && (index < initialSettlements.size())) {
 //			InitialSettlement settlement = initialSettlements.get(index);

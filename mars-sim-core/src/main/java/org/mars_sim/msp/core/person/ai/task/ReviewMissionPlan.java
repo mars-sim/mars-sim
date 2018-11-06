@@ -32,8 +32,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * The ReviewMissionPlan class is a task for reviewing job reassignment
- * submission in an office space
+ * This class is a task for reviewing mission plans
  */
 public class ReviewMissionPlan extends Task implements Serializable {
 
@@ -259,14 +258,14 @@ public class ReviewMissionPlan extends Task implements Serializable {
 					
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
 								"[" + s + "] " + reviewedBy + " did NOT approve " + requester
-								+ "'s " + m.getDescription() + " mission plan. Try again when the performance rating is higher.", null);
+								+ "'s " + m.getDescription() + " mission plan. The final score was " + score + " and the minimum passing score is 500.", null);
 					} else {
 						// Updates the mission plan status
 						missionManager.approveMissionPlan(mp, p, PlanType.APPROVED);
 							
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 								"[" + s + "] " + reviewedBy + " just approved " + requester
-								+ "'s " + m.getDescription() + " mission plan.", null);
+								+ "'s " + m.getDescription() + " mission plan. The final score was " + score + ".", null);
 					}
 										
 				      // Add experience

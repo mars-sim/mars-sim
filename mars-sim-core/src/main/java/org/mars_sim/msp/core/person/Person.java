@@ -716,33 +716,39 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return true if the person is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
-		if (isBuried)
-			return false;
-		else {
-			Unit c = getContainerUnit();
-			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
-				return true;
-		}
+//		if (isBuried)
+//			return false;
+//		else {
+//			Unit c = getContainerUnit();
+//			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
+//				return true;
+			if (getContainerUnit() instanceof Vehicle) {
+				Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+				if (b != null)
+					// still inside the garage
+					return true;
+			}
+//		}
 		return false;
 	}
 	
-	/**
-	 * Is the person inside a settlement but not in a vehicle inside a garage
-	 * 
-	 * @return true or false
-	 */
-	public boolean isInSettlementNotVehicleGarage() {
-		if (isBuried)
-			return false;
-		else {
-			Unit c = getContainerUnit();
-			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
-				return false;
-			else if (c instanceof Settlement)
-				return true;
-		}
-		return false;
-	}
+//	/**
+//	 * Is the person inside a settlement but not in a vehicle inside a garage
+//	 * 
+//	 * @return true or false
+//	 */
+//	public boolean isInSettlementNotVehicleGarage() {
+////		if (isBuried)
+////			return false;
+////		else {
+//			Unit c = getContainerUnit();
+////			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
+////				return false;
+//		if (c instanceof Settlement)
+//			return true;
+////		}
+//		return false;
+//	}
 
 	/**
 	 * Is the person inside a settlement
@@ -752,7 +758,15 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public boolean isInSettlement() {
 		if (getContainerUnit() instanceof Settlement) {
 			return true;
+		}
 
+//		else if (getContainerUnit() instanceof Vehicle) {
+//			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+//			if (b != null)
+//				// still inside the garage
+//				return true;
+//		}
+		
 //		if (isBuried)
 //			return false;
 //		else {
@@ -763,7 +777,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //				return true;
 //			else
 //				return false;
-		}
+//		}
 		
 		return false;
 	}

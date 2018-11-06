@@ -961,7 +961,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 	 * Tracks the location of an equipment
 	 */
 	public String updateEquipment(Equipment e) {
-		return e.getLocationTag().getExtendedLocations();
+		return "in" + e.getLocationTag().getExtendedLocations();
 
 //    	String loc = null;
 //    	

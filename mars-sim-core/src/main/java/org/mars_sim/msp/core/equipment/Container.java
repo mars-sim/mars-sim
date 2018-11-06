@@ -15,12 +15,14 @@ public interface Container {
 
 	/**
 	 * Gets the phase of resources this container can hold.
+	 * 
 	 * @return resource phase.
 	 */
 	public PhaseType getContainingResourcePhase();
 
 	/**
 	 * Gets the total capacity of resource that this container can hold.
+	 * 
 	 * @return total capacity (kg).
 	 */
 	public double getTotalCapacity();

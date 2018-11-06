@@ -1256,9 +1256,9 @@ public class Walk extends Task implements Serializable {
 		if (person != null) {
 //			logger.info(person + " walking entering rover garage phase.");
 //			logger.info(person + " location situation: " + person.getLocationSituation());
-//			garageBuilding.getSettlementInventory().retrieveUnit(person);
+			garageBuilding.getSettlementInventory().retrieveUnit(person);
 //			System.out.println("entering rover : " + person + "'s Settlement is " + person.getSettlement());
-			person.getSettlement().getInventory().retrieveUnit(person);
+//			person.getSettlement().getInventory().retrieveUnit(person);
 			BuildingManager.removePersonOrRobotFromBuilding(person, garageBuilding);
 			rover.getInventory().storeUnit(person);
 //			System.out.println("entering rover : " + person + "'s vehicle is " + person.getVehicle().getName());
@@ -1267,8 +1267,8 @@ public class Walk extends Task implements Serializable {
 		else if (robot != null) {
 			logger.finer(robot + " walking entering rover garage phase.");
 			logger.finer(robot + " location situation: " + robot.getLocationSituation());
-//			garageBuilding.getSettlementInventory().retrieveUnit(robot);
-			robot.getSettlement().getInventory().retrieveUnit(person);
+			garageBuilding.getSettlementInventory().retrieveUnit(robot);
+//			robot.getSettlement().getInventory().retrieveUnit(person);
 			BuildingManager.removePersonOrRobotFromBuilding(robot, garageBuilding);
 			rover.getInventory().storeUnit(robot);
 

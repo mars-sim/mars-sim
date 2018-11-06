@@ -25,8 +25,6 @@ public enum EquipmentType {
 	SPECIMEN_CONTAINER	("Specimen Box");
 	// should 3D printer be an equipment or an itemResource ?
 	
-//	private static final int STARTING_ID = 2000;
-	
 	private String name;	
 
 	private static Set<EquipmentType> equipmentSet;

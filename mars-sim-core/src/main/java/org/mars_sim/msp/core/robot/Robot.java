@@ -325,33 +325,38 @@ public class Robot
 	 * @return true if the robot is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
-		if (isInoperable)
-			return false;
-		else {
-			Unit c = getContainerUnit();
-			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
-				return true;
+//		if (isInoperable)
+//			return false;
+//		else {
+//			Unit c = getContainerUnit();
+//			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
+//				return true;
+		if (getContainerUnit() instanceof Vehicle) {
+				Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+				if (b != null)
+					// still inside the garage
+					return true;
 		}
 		return false;
 	}
 
-	/**
-	 * Is the robot inside a settlement but not in a vehicle inside a garage
-	 * 
-	 * @return true or false
-	 */
-	public boolean isInSettlementNotVehicleGarage() {
-		if (isInoperable)
-			return false;
-		else {
-			Unit c = getContainerUnit();
-			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
-				return false;
-			else if (c instanceof Settlement)
-				return true;
-		}
-		return false;
-	}
+//	/**
+//	 * Is the robot inside a settlement but not in a vehicle inside a garage
+//	 * 
+//	 * @return true or false
+//	 */
+//	public boolean isInSettlementNotVehicleGarage() {
+////		if (isInoperable)
+////			return false;
+////		else {
+////			Unit c = getContainerUnit();
+////			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
+////				return false;	
+//		if (getContainerUnit() instanceof Settlement) {
+//			return true;
+//		}
+//		return false;
+//	}
 	
 	/**
 	 * Is the robot inside a settlement
@@ -361,14 +366,20 @@ public class Robot
 	public boolean isInSettlement() {
 		if (getContainerUnit() instanceof Settlement) {
 			return true;
+		}
+//		else if (getContainerUnit() instanceof Vehicle) {
+//		Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+//		if (b != null)
+//			// still inside the garage
+//			return true;
+//		}		
+		
 //		if (isInoperable)
 //			return false;
-//		else {
 //			if (getContainerUnit() instanceof Settlement)
 //				return true;
 //			else if (getContainerUnit() instanceof Vehicle && ((Vehicle) getContainerUnit()).getStatus() == StatusType.GARAGED)//getGarage() != null)
 //				return true;
-		}
 		return false;
 	}
 
@@ -378,17 +389,17 @@ public class Robot
 	 * @return true if the robot is inside a settlement or a vehicle
 	 */
 	public boolean isInside() {
-		if (isInoperable)
-			return false;
-		else {
+//		if (isInoperable)
+//			return false;
+//		else {
 			Unit container = getContainerUnit();
 			if (container instanceof Settlement)
 				return true;
 			else if (container instanceof Vehicle)
 				return true;
-			else if (container == null)
-				return false;
-		}
+//			else if (container == null)
+//				return false;
+//		}
 		return false;
 
 	}

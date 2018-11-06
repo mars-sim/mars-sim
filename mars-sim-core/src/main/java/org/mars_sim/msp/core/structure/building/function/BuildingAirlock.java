@@ -61,15 +61,15 @@ public class BuildingAirlock extends Airlock {
         
         settlement = building.getBuildingManager().getSettlement();
 
-        inv = settlement.getInventory();//building.getSettlementInventory();
+        inv = settlement.getInventory();
         
-        //air = building.getSettlement().getCompositionOfAir();
+//        air = building.getSettlement().getCompositionOfAir();
         
-        //heating = building.getThermalGeneration().getHeating();
+//        heating = building.getThermalGeneration().getHeating();
         
-        //if (building == null) {
-        //    throw new IllegalArgumentException("building is null.");
-        //}
+//        if (building == null) {
+//            throw new IllegalArgumentException("building is null.");
+//        }
 
         // Determine airlock interior position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc, interiorYLoc, building);
@@ -97,11 +97,10 @@ public class BuildingAirlock extends Airlock {
                 		air = building.getSettlement().getCompositionOfAir();
                     air.releaseOrRecaptureAir(building.getInhabitableID(), true, building);
 
-                	//logger.fine(
-                	//LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
-                	//		+ " has got inside the airlock at " + building + " in " 
-                	//		+ building.getBuildingManager().getSettlement()
-                	//		+ ". The airlock has been pressurized and is ready to open the inner door to release the person. ", null);
+//                	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
+//                			+ " has got inside the airlock at " + building + " in " 
+//                			+ building.getBuildingManager().getSettlement()
+//                			+ ". The airlock has been pressurized and is ready to open the inner door to release the person. ", null);
                 	inv.storeUnit(person);
                     BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
 
@@ -117,7 +116,7 @@ public class BuildingAirlock extends Airlock {
             	// check if the airlock has been depressurized, ready to open the outer door to 
             	// get exposed to the outside air and release the person
             	
-            	if (person.isInSettlementNotVehicleGarage()) {
+            	if (person.isInSettlement()) {
                     // Upon depressurization, there is heat loss to the Martian air in Heating class
                 	if (heating == null)
                 		heating = building.getThermalGeneration().getHeating();
@@ -128,11 +127,10 @@ public class BuildingAirlock extends Airlock {
                 		air = building.getSettlement().getCompositionOfAir();
                     air.releaseOrRecaptureAir(building.getInhabitableID(), false, building);
                     
-                   	//logger.fine(
-                	//LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
-                	//		+ " has got inside the airlock at " + building + " in " 
-                	//		+ building.getBuildingManager().getSettlement()
-                	//		+ ". The airlock has been depressurized and is ready to open the outer door to release the person. ", null);
+//                	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
+//                			+ " has got inside the airlock at " + building + " in " 
+//                			+ building.getBuildingManager().getSettlement()
+//                			+ ". The airlock has been depressurized and is ready to open the outer door to release the person. ", null);
                     inv.retrieveUnit(person);
                     BuildingManager.removePersonOrRobotFromBuilding(person, building);
 
@@ -152,11 +150,7 @@ public class BuildingAirlock extends Airlock {
         }
     }
 
-//    protected void exitAirlock(Robot robot) {
-//
-//    }
-    
-    
+ 
     @Override
     public String getEntityName() {
         return building.getNickName() + " in " + settlement.getName();
@@ -165,7 +159,7 @@ public class BuildingAirlock extends Airlock {
 
     @Override
     public Inventory getEntityInventory() {
-        return inv;//building.getSettlementInventory();
+        return inv;
     }
 
     @Override
@@ -206,11 +200,7 @@ public class BuildingAirlock extends Airlock {
 //        }
 //	}
 
-//	@Override
-//	protected void exitAirlock(Person person) {
-//         exitAirlock(person);
-//	}
-	
+
 	public void destroy() {
 		settlement = null;
 	    building = null;

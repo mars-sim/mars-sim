@@ -11,24 +11,25 @@ package org.mars_sim.msp.core.resource;
 /**
  * An exception related to resources.
  */
-public class ResourceException
-extends Exception {
+public class ResourceException extends Exception {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor
+	 * 
 	 * @param message exception message.
 	 */
 	public ResourceException(String message) {
 		super(message);
 	}
-	
+
 	/**
 	 * Constructor
+	 * 
 	 * @param message exception message
-	 * @param arg cause
+	 * @param arg     cause
 	 */
 	public ResourceException(String message, Throwable arg) {
 		super(message, arg);
@@ -36,6 +37,7 @@ extends Exception {
 
 	/**
 	 * Constructor
+	 * 
 	 * @param arg cause
 	 */
 	public ResourceException(Throwable arg) {

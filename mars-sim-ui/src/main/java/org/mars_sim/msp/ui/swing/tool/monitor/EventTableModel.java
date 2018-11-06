@@ -523,7 +523,7 @@ public class EventTableModel extends AbstractTableModel
 					if (eventType == EventType.MISSION_RESCUE_PERSON
 							|| eventType == EventType.MISSION_SALVAGE_VEHICLE
 							|| eventType == EventType.MISSION_RENDEZVOUS) {
-						message = who + " is attempting to " + Conversion.setFirstWordLowercase(during) 
+						message = who + " is " + during
 							+ " from " + location0 + " at " + location1;
 						willNotify = true;
 					}

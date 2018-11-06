@@ -5,7 +5,7 @@ Copyright (C) 2018 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-beta2 (build 44__) - 2018-09-__
+## v3.1.0-beta2 (build 45__) - 2018-11-__
 
 ### KNOWN LIMITATIONS :
 
@@ -35,6 +35,10 @@ Copyright (C) 2018 Scott Davis
 5. Track/record settler's sleep time on each sol.
 
 6. Expand chat capability in headless mode.
+
+7. Implement basic emotion using two dimenional array.
+
+8. Add Commander Mode vs. Sandbox Mode.
 
 
 

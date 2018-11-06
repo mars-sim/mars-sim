@@ -20,43 +20,46 @@ import java.io.Serializable;
 public class LargeBag extends Equipment implements Container, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-	// Static data members
-    public static final String TYPE = "Large Bag";
-    public static final double CAPACITY = 200D;
-    public static final double EMPTY_MASS = .4D;
 
-    /**
-     * Constructor
-     * @param location the location of the large bag.
-     * @throws Exception if error creating large bag.
-     */
-    public LargeBag(Coordinates location) {
-        // Use Equipment constructor
-        super(TYPE, location);
-        
-        // Sets the base mass of the bag.
-        setBaseMass(EMPTY_MASS);
-        
-        // Set the solid capacity.
-        getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, CAPACITY);
-    }
-    
-    /**
-     * Gets the phase of resources this container can hold.
-     * @return resource phase.
-     */
-    public PhaseType getContainingResourcePhase() {
-        return PhaseType.SOLID;
-    }
-    
-    /**
-     * Gets the total capacity of resource that this container can hold.
-     * @return total capacity (kg).
-     */
-    public double getTotalCapacity() {
-        return CAPACITY;
-    }
+	// Static data members
+	public static final String TYPE = "Large Bag";
+	public static final double CAPACITY = 200D;
+	public static final double EMPTY_MASS = .4D;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param location the location of the large bag.
+	 * @throws Exception if error creating large bag.
+	 */
+	public LargeBag(Coordinates location) {
+		// Use Equipment constructor
+		super(TYPE, location);
+
+		// Sets the base mass of the bag.
+		setBaseMass(EMPTY_MASS);
+
+		// Set the solid capacity.
+		getInventory().addAmountResourcePhaseCapacity(PhaseType.SOLID, CAPACITY);
+	}
+
+	/**
+	 * Gets the phase of resources this container can hold.
+	 * 
+	 * @return resource phase.
+	 */
+	public PhaseType getContainingResourcePhase() {
+		return PhaseType.SOLID;
+	}
+
+	/**
+	 * Gets the total capacity of resource that this container can hold.
+	 * 
+	 * @return total capacity (kg).
+	 */
+	public double getTotalCapacity() {
+		return CAPACITY;
+	}
 
 	@Override
 	public Building getBuildingLocation() {

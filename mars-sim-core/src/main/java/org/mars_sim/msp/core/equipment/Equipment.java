@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
@@ -20,6 +21,8 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -29,43 +32,43 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * The Equipment class is an abstract class that represents
- * a useful piece of equipment, such as a EVA suit or a
- * medpack.
+ * The Equipment class is an abstract class that represents a useful piece of
+ * equipment, such as a EVA suit or a medpack.
  */
-public abstract class Equipment 
-extends Unit
-implements Indoor, Salvagable {
+public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	// Data members.
 	private boolean isSalvaged;
-	
+
 	private SalvageInfo salvageInfo;
 
 	private Unit lastOwner;
 
 	private static UnitManager unitManager;
-	
-	/** Constructs an Equipment object
-	 *  @param name the name of the unit
-	 *  @param location the unit's location
+
+	/**
+	 * Constructs an Equipment object
+	 * 
+	 * @param name     the name of the unit
+	 * @param location the unit's location
 	 */
 	protected Equipment(String name, Coordinates location) {
 		super(name, location);
 
-		//this.name = name;
+		// this.name = name;
 		// Initialize data members.
 		isSalvaged = false;
 		salvageInfo = null;
-		
+
 		unitManager = Simulation.instance().getUnitManager();
 	}
-	
+
 	/**
 	 * Gets a collection of people affected by this entity.
+	 * 
 	 * @return person collection
 	 */
 	public Collection<Person> getAffectedPeople() {
@@ -80,13 +83,13 @@ implements Indoor, Salvagable {
 		// Check all people.
 		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext()) {
-			Person person = i.next();			
+			Person person = i.next();
 			Task task = person.getMind().getTaskManager().getTask();
 
 			// Add all people maintaining this equipment.
 			if (task instanceof Maintenance) {
 				if (((Maintenance) task).getEntity() == this) {
-					if (!people.contains(person)) 
+					if (!people.contains(person))
 						people.add(person);
 				}
 			}
@@ -94,7 +97,7 @@ implements Indoor, Salvagable {
 			// Add all people repairing this equipment.
 			if (task instanceof Repair) {
 				if (((Repair) task).getEntity() == this) {
-					if (!people.contains(person)) 
+					if (!people.contains(person))
 						people.add(person);
 				}
 			}
@@ -105,18 +108,21 @@ implements Indoor, Salvagable {
 
 	/**
 	 * Checks if the item is salvaged.
+	 * 
 	 * @return true if salvaged.
 	 */
 	public boolean isSalvaged() {
 		return isSalvaged;
 	}
 
-	//public String getName() {
-	//	return name;
-	//}
+	// public String getName() {
+	// return name;
+	// }
+
 	/**
 	 * Indicate the start of a salvage process on the item.
-	 * @param info the salvage process info.
+	 * 
+	 * @param info       the salvage process info.
 	 * @param settlement the settlement where the salvage is taking place.
 	 */
 	public void startSalvage(SalvageProcessInfo info, Settlement settlement) {
@@ -126,6 +132,7 @@ implements Indoor, Salvagable {
 
 	/**
 	 * Gets the salvage info.
+	 * 
 	 * @return salvage info or null if item not salvaged.
 	 */
 	public SalvageInfo getSalvageInfo() {
@@ -138,8 +145,8 @@ implements Indoor, Salvagable {
 //	 * @return the equipment's settlement
 //	 */
 //    @Override
-//	public Settlement getSettlement() {
-//    	LocationSituation ls = getLocationSituation();
+//	  public Settlement getSettlement() {
+//		LocationSituation ls = getLocationSituation();
 //		if (LocationSituation.IN_SETTLEMENT == ls) {
 //			return (Settlement) getContainerUnit();
 //		}
@@ -182,21 +189,20 @@ implements Indoor, Salvagable {
 			if (cc instanceof Settlement) {
 				return (Settlement) c;
 			}
+//		} else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED) {
+//			Unit cc = ((Vehicle) c).getContainerUnit();
+//			if (cc instanceof Settlement) {
+//				return (Settlement) c;
+//			}
 		}
-		else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED) {
-			Unit cc = ((Vehicle) c).getContainerUnit();
-			if (cc instanceof Settlement) {
-				return (Settlement) c;
-			}
-		
-//		else if (c instanceof Vehicle) {
-//			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-//			if (b != null)
-//				// still inside the garage
-//				return b.getSettlement();
+		else if (c instanceof Vehicle) {
+			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+			if (b != null)
+				// still inside the garage
+				return b.getSettlement();
 //			else
-				// either at the vicinity of a settlement or already outside on a mission
-				// TODO: need to differentiate which case in future better granularity
+			// either at the vicinity of a settlement or already outside on a mission
+			// TODO: need to differentiate which case in future better granularity
 //				return null;
 		}
 
@@ -207,7 +213,7 @@ implements Indoor, Salvagable {
 //		logger.warning("Error in determining " + getName() + "'s getSettlement() ");
 		return null;
 	}
-	
+
 	/**
 	 * Get vehicle the equipment is in, null if not in vehicle
 	 *
@@ -221,7 +227,19 @@ implements Indoor, Salvagable {
 	}
 
 	/**
+	 * Is the equipment's outside of a settlement but within its vicinity
+	 * 
+	 * @return true if the equipment's is just right outside of a settlement
+	 */
+	public boolean isRightOutsideSettlement() {
+		if (getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
+			return true;
+		return false;
+	}
+	
+	/**
 	 * Get the equipment's location
+	 * 
 	 * @deprecated use other more efficient methods
 	 * @return {@link LocationSituation} the person's location
 	 */
@@ -233,7 +251,7 @@ implements Indoor, Salvagable {
 			return LocationSituation.IN_VEHICLE;
 		else if (container == null)
 			return LocationSituation.OUTSIDE;
-		else 
+		else
 			return LocationSituation.UNKNOWN;
 	}
 
@@ -250,7 +268,7 @@ implements Indoor, Salvagable {
 //			return true;
 		return false;
 	}
-	
+
 	/**
 	 * Is the equipment's immediate container a person ?
 	 * 
@@ -261,7 +279,7 @@ implements Indoor, Salvagable {
 			return true;
 		return false;
 	}
-	
+
 	/**
 	 * Is the equipment's immediate container a vehicle ?
 	 * 
@@ -283,19 +301,20 @@ implements Indoor, Salvagable {
 			return true;
 		return false;
 	}
-	
+
 	public void setLastOwner(Unit unit) {
 		lastOwner = unit;
 	}
-	
+
 	public Unit getLastOwner() {
 		return lastOwner;
 	}
-	
+
 	@Override
 	public void destroy() {
 		super.destroy();
-		if (salvageInfo != null) salvageInfo.destroy();
+		if (salvageInfo != null)
+			salvageInfo.destroy();
 		salvageInfo = null;
 	}
 }

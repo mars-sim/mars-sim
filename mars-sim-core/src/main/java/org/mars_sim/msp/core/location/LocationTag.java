@@ -297,7 +297,7 @@ public class LocationTag implements LocationState, Serializable {
 				return e.getContainerUnit().getName();
 //			else if (e.getTopContainerUnit() != null)
 //				return e.getTopContainerUnit().getName();
-			else if (p.isRightOutsideSettlement())
+			else if (e.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
 			else
 				return OUTSIDE_ON_MARS;

@@ -179,7 +179,7 @@ public class ExitAirlock extends Task implements Serializable {
 					} catch (Exception e) {
 						LogConsolidated.log(
 								logger, Level.INFO, 3000, sourceName, "[" + person.getLocationTag().getQuickLocation()
-										+ "] " + person.getName() + " could not take this EVA suit." + e.getMessage(),
+										+ "] " + person.getName() + " could not take " + suit.toString() + e.getMessage(),
 								null);
 
 					}

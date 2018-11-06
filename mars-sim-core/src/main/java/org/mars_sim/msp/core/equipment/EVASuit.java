@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
@@ -74,10 +73,10 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	private static final double WEAR_LIFETIME = 334000D;
 	/** 100 millisols. */
 	private static final double MAINTENANCE_TIME = 20D;
+	private static double minimum_air_pressure;
 
 	// Data members
 
-	private double minimum_air_pressure;
 
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
@@ -108,8 +107,8 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		getInventory().addARTypeCapacity(ResourceUtil.waterID, WATER_CAPACITY);
 		getInventory().addARTypeCapacity(ResourceUtil.co2ID, CO2_CAPACITY);
 
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-		minimum_air_pressure = personConfig.getMinAirPressure();
+//		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+		minimum_air_pressure = SimulationConfig.instance().getPersonConfiguration().getMinAirPressure();
 
 	}
 

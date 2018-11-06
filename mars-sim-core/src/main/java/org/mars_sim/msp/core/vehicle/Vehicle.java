@@ -64,12 +64,12 @@ public abstract class Vehicle extends Unit
 			logger.getName().length());
 
 	// Vehicle Status Strings
-	// public final static String PARKED = "Parked";
-	// public final static String GARAGED = "Garaged";
-	// public final static String MOVING = "Moving";
-	// public final static String MALFUNCTION = "Malfunction";
-	// public final static String MAINTENANCE = "Periodic Maintenance";
-	// public final static String TOWED = "Towed";
+//	 public final static String PARKED = "Parked";
+//	 public final static String GARAGED = "Garaged";
+//	 public final static String MOVING = "Moving";
+//	 public final static String MALFUNCTION = "Malfunction";
+//	 public final static String MAINTENANCE = "Periodic Maintenance";
+//	 public final static String TOWED = "Towed";
 
 	// The error margin for determining vehicle range. (actual distance / safe
 	// distance)
@@ -141,10 +141,10 @@ public abstract class Vehicle extends Unit
 		super(name, settlement.getCoordinates());
 		this.vehicleType = vehicleType;
 
-		// life_support_range_error_margin =
-		// SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
-		// fuel_range_error_margin =
-		// SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
+//		 life_support_range_error_margin =
+//		 SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
+//		 fuel_range_error_margin =
+//		 SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
 		associatedSettlement = settlement;
 		containerUnit = settlement;
@@ -450,6 +450,7 @@ public abstract class Vehicle extends Unit
 		StatusType newStatus = StatusType.PARKED;
 		if (getGarage() != null)
 			newStatus = StatusType.GARAGED;
+		
 		if (reservedForMaintenance)
 			newStatus = StatusType.MAINTENANCE;
 		else if (towingVehicle != null)
@@ -721,7 +722,7 @@ public abstract class Vehicle extends Unit
 	 * @return the settlement the vehicle is parked at
 	 */
 	public Settlement getSettlement() {
-		Unit c = containerUnit;
+		Unit c = getTopContainerUnit();
 
 		if ((c != null) && (c instanceof Settlement))
 			return (Settlement) c;
@@ -862,9 +863,9 @@ public abstract class Vehicle extends Unit
 
 			// Add all people ready for switching to having conversation as task in this
 			// vehicle.
-			// if (task instanceof Relax)
-			// if (!people.contains(person))
-			// people.add(person);
+//			 if (task instanceof Relax)
+//			 if (!people.contains(person))
+//			 people.add(person);
 		}
 
 		return people;

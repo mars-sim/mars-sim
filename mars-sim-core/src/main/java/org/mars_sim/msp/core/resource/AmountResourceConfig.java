@@ -16,7 +16,8 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 /**
- * Provides configuration information about amount resources. Uses a DOM document to get the information.
+ * Provides configuration information about amount resources. Uses a DOM
+ * document to get the information.
  */
 public class AmountResourceConfig implements Serializable {
 
@@ -45,6 +46,7 @@ public class AmountResourceConfig implements Serializable {
 
 	/**
 	 * Constructor
+	 * 
 	 * @param amountResourceDoc the amount resource XML document.
 	 * @throws Exception if error reading XML document
 	 */
@@ -56,6 +58,7 @@ public class AmountResourceConfig implements Serializable {
 
 	/**
 	 * Loads amount resources from the resources.xml config document.
+	 * 
 	 * @param amountResourceDoc the configuration XML document.
 	 * @throws Exception if error loading amount resources.
 	 */
@@ -65,30 +68,29 @@ public class AmountResourceConfig implements Serializable {
 		List<Element> resourceNodes = root.getChildren(RESOURCE);
 		for (Element resourceElement : resourceNodes) {
 			nextID++;
-			// 2015-02-24 Added toLowerCase() just in case
 			String name = resourceElement.getAttributeValue(NAME).toLowerCase();
-			// 2016-06-28 Added type
+
 			String type = resourceElement.getAttributeValue(TYPE);
 
 			String description = resourceElement.getText();
 			// Get phase.
 			String phaseString = resourceElement.getAttributeValue(PHASE).toLowerCase();
 
-			//PhaseType phase = PhaseType.valueOf(phaseString);
+			// PhaseType phase = PhaseType.valueOf(phaseString);
 			PhaseType phaseType = PhaseType.fromString(phaseString);
 
 			// Get life support
 			Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
-			// 2014-11-25 Added edible
+
 			Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
-			// 2014-11-25 Added edible
-			
+
 			resourceSet.add(new AmountResource(nextID, name, type, description, phaseType, lifeSupport, edible));
 
 			if (type != null && type.toLowerCase().equals(CROP)) {
 				nextID++;
 				// Create the tissue culture for each crop.
-				AmountResource tissue = new AmountResource(nextID, name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phaseType, lifeSupport, false);
+				AmountResource tissue = new AmountResource(nextID, name + " " + TISSUE_CULTURE, TISSUE_CULTURE,
+						description, phaseType, lifeSupport, false);
 				tissueCultureSet.add(tissue);
 				resourceSet.add(tissue);
 				// TODO: may set edible to true
@@ -99,6 +101,7 @@ public class AmountResourceConfig implements Serializable {
 
 	/**
 	 * Gets a set of all amount resources.
+	 * 
 	 * @return set of resources.
 	 */
 	public Set<AmountResource> getAmountResources() {
@@ -112,7 +115,7 @@ public class AmountResourceConfig implements Serializable {
 	public int getNextID() {
 		return nextID;
 	}
-	
+
 	public void destroy() {
 		resourceSet = null;
 	}

@@ -21,9 +21,7 @@ import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
-public class BuildingKit
-extends Equipment
-implements Serializable, Malfunctionable, Salvagable {
+public class BuildingKit extends Equipment implements Serializable, Malfunctionable, Salvagable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -45,27 +43,25 @@ implements Serializable, Malfunctionable, Salvagable {
 	/** The equipment's malfunction manager. */
 	protected MalfunctionManager malfunctionManager;
 
-
 	/**
 	 * The BuildingKit class represents a building kit in a building.
 	 */
 	public BuildingKit(Coordinates location) {
 		super(TYPE, location);
 
-		//this.kitName = kitName;
 		// Initialize data members.
 		isSalvaged = false;
 		salvageInfo = null;
 
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
-		//malfunctionManager.addScopeString(TYPE);
-		//malfunctionManager.addScopeString("Life Support");
+//		malfunctionManager.addScopeString(TYPE);
+//		malfunctionManager.addScopeString("Life Support");
 	}
-
 
 	/**
 	 * Checks if the item is salvaged.
+	 * 
 	 * @return true if salvaged.
 	 */
 	public boolean isSalvaged() {
@@ -78,7 +74,8 @@ implements Serializable, Malfunctionable, Salvagable {
 
 	/**
 	 * Indicate the start of a salvage process on the item.
-	 * @param info the salvage process info.
+	 * 
+	 * @param info       the salvage process info.
 	 * @param settlement the settlement where the salvage is taking place.
 	 */
 	public void startSalvage(SalvageProcessInfo info, Settlement settlement) {
@@ -88,6 +85,7 @@ implements Serializable, Malfunctionable, Salvagable {
 
 	/**
 	 * Gets the salvage info.
+	 * 
 	 * @return salvage info or null if item not salvaged.
 	 */
 	public SalvageInfo getSalvageInfo() {
@@ -96,6 +94,7 @@ implements Serializable, Malfunctionable, Salvagable {
 
 	/**
 	 * Gets the unit's malfunction manager.
+	 * 
 	 * @return malfunction manager
 	 */
 	public MalfunctionManager getMalfunctionManager() {
@@ -104,22 +103,22 @@ implements Serializable, Malfunctionable, Salvagable {
 
 	/**
 	 * Time passing for the Building Kit.
+	 * 
 	 * @param time the amount of time passing (millisols)
 	 * @throws Exception if error during time.
 	 */
 	public void timePassing(double time) {
 
-		Unit container = getContainerUnit();
-		if (container instanceof Building) {
-			Building building = (Building) container;
-			//if (!person.getPhysicalCondition().isDead()) {
-			//	malfunctionManager.activeTimePassing(time);
-			//}
-		}
+//		Unit container = getContainerUnit();
+//		if (container instanceof Building) {
+//			Building building = (Building) container;
+//			 if (!person.getPhysicalCondition().isDead()) {
+//			 malfunctionManager.activeTimePassing(time);
+//			 }
+//		}
 		malfunctionManager.timePassing(time);
 	}
 
-	
 //	/**
 //	 * Obtains the immediate location (either building, vehicle, a settlement's vicinity or outside on Mars)
 //	 * @return the name string of the location the unit is at
@@ -135,18 +134,18 @@ implements Serializable, Malfunctionable, Salvagable {
 //				return OUTSIDE_ON_MARS;
 //
 //	}
-	
+
 	public Settlement findSettlementVicinity() {
 
-		Collection<Settlement> ss =	Simulation.instance().getUnitManager().getSettlements();
+		Collection<Settlement> ss = Simulation.instance().getUnitManager().getSettlements();
 		for (Settlement s : ss) {
 			if (s.getCoordinates().equals(getCoordinates()))
 				return s;
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public String getNickName() {
 		return getName();
@@ -161,14 +160,14 @@ implements Serializable, Malfunctionable, Salvagable {
 	public String getLocale() {
 		return getLocationTag().getLocale();
 	}
-	
+
 	@Override
 	public void destroy() {
 		super.destroy();
-		if (salvageInfo != null) salvageInfo.destroy();
+		if (salvageInfo != null)
+			salvageInfo.destroy();
 		salvageInfo = null;
 	}
-
 
 	@Override
 	public Building getBuildingLocation() {
@@ -176,12 +175,10 @@ implements Serializable, Malfunctionable, Salvagable {
 		return null;
 	}
 
-
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return this.getAssociatedSettlement();
 	}
-
 
 	@Override
 	public Settlement getBuriedSettlement() {

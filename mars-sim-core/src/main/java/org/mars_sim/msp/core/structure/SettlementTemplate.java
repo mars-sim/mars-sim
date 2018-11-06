@@ -22,15 +22,15 @@ import org.mars_sim.msp.core.resource.Part;
  */
 // TODO: delete count if not useful
 //Called by ConstructionConfig.java and ResupplyConfig.java 
-public class SettlementTemplate
-implements Serializable {
+public class SettlementTemplate implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	 
-	//* default logger.
-	//private static Logger logger = Logger.getLogger(SettlementTemplate.class.getName());
-	 
+
+	// * default logger.
+	// private static Logger logger =
+	// Logger.getLogger(SettlementTemplate.class.getName());
+
 	// Data members.
 	private String name;
 	private int defaultPopulation;
@@ -42,16 +42,13 @@ implements Serializable {
 	private Map<Part, Integer> parts;
 	private List<ResupplyMissionTemplate> resupplies;
 
-    // 2014-10-28 Added settlement scenarioID
 	private int scenarioID;
-	//private static int count;
 
 	/**
 	 * Constructor 1.
 	 */
-	// 2014-10-28 Added count++
 	// TODO: pending for deletion (use constructor 2 instead)
-  	public SettlementTemplate(String name, int defaultPopulation, int defaultNumOfRobots ) {
+	public SettlementTemplate(String name, int defaultPopulation, int defaultNumOfRobots) {
 		this.name = name;
 		this.defaultPopulation = defaultPopulation;
 		this.defaultNumOfRobots = defaultNumOfRobots;
@@ -61,32 +58,29 @@ implements Serializable {
 		resources = new HashMap<AmountResource, Double>();
 		parts = new HashMap<Part, Integer>();
 		resupplies = new ArrayList<ResupplyMissionTemplate>();
-		//count++;
-        //logger.info("constructor 1 : scenarioID is " + scenarioID + "; count is "+ count);
 	}
+
 	/**
 	 * Constructor 2.
 	 */
-    // 2014-10-28 Added constructor 2, added id, added count++
-  	// Called by SettlementConfig.java
+	// Called by SettlementConfig.java
 	public SettlementTemplate(String name, int scenarioID, int defaultPopulation, int defaultNumOfRobots) {
 		this.name = name;
 		this.scenarioID = scenarioID;
 		this.defaultPopulation = defaultPopulation;
 		this.defaultNumOfRobots = defaultNumOfRobots;
-		
+
 		buildings = new ArrayList<BuildingTemplate>();
 		vehicles = new HashMap<String, Integer>();
 		equipment = new HashMap<String, Integer>();
 		resources = new HashMap<AmountResource, Double>();
 		parts = new HashMap<Part, Integer>();
 		resupplies = new ArrayList<ResupplyMissionTemplate>();
-		//count++;
-        //logger.info("constructor 2 : id is " + scenarioID + "; count is "+ count);
 	}
 
 	/**
 	 * Gets the name of the template.
+	 * 
 	 * @return name.
 	 */
 	public String getTemplateName() {
@@ -95,20 +89,21 @@ implements Serializable {
 
 	/**
 	 * Gets the template's unique ID.
+	 * 
 	 * @return ID number.
 	 */
-    // 2014-10-27 Added settlement id
 	public int getID() {
 //		if (scenarioID == count) return scenarioID;
 //		else {
 //			logger.info("SettlementTemplate.java : getID() : warning: scenarioID is not assigned correctly");
 //			scenarioID = count;
-			return scenarioID;
+		return scenarioID;
 //		}
 	}
-	
+
 	/**
 	 * Gets the default robot capacity of the template.
+	 * 
 	 * @return robot capacity.
 	 */
 	public int getDefaultNumOfRobots() {
@@ -117,6 +112,7 @@ implements Serializable {
 
 	/**
 	 * Gets the default population capacity of the template.
+	 * 
 	 * @return population capacity.
 	 */
 	public int getDefaultPopulation() {
@@ -125,6 +121,7 @@ implements Serializable {
 
 	/**
 	 * Adds a building template.
+	 * 
 	 * @param buildingTemplate the building template.
 	 */
 	public void addBuildingTemplate(BuildingTemplate buildingTemplate) {
@@ -133,6 +130,7 @@ implements Serializable {
 
 	/**
 	 * Gets the list of building templates.
+	 * 
 	 * @return list of building templates.
 	 */
 	public List<BuildingTemplate> getBuildingTemplates() {
@@ -141,18 +139,20 @@ implements Serializable {
 
 	/**
 	 * Adds a number of vehicles of a given type.
+	 * 
 	 * @param vehicleType the vehicle type.
-	 * @param number the number of vehicles to add.
+	 * @param number      the number of vehicles to add.
 	 */
 	public void addVehicles(String vehicleType, int number) {
 		if (vehicles.containsKey(vehicleType)) {
 			number += vehicles.get(vehicleType);
-		} 
+		}
 		vehicles.put(vehicleType, number);
 	}
 
 	/**
 	 * Gets a map of vehicle types and number.
+	 * 
 	 * @return map.
 	 */
 	public Map<String, Integer> getVehicles() {
@@ -161,18 +161,20 @@ implements Serializable {
 
 	/**
 	 * Adds a number of equipment of a given type.
+	 * 
 	 * @param equipmentType the equipment type.
-	 * @param number the number of equipment to add.
+	 * @param number        the number of equipment to add.
 	 */
 	public void addEquipment(String equipmentType, int number) {
 		if (equipment.containsKey(equipmentType)) {
 			number += equipment.get(equipmentType);
-		} 
+		}
 		equipment.put(equipmentType, number);
 	}
 
 	/**
 	 * Gets a map of equipment types and number.
+	 * 
 	 * @return map.
 	 */
 	public Map<String, Integer> getEquipment() {
@@ -181,8 +183,9 @@ implements Serializable {
 
 	/**
 	 * Adds an amount of a type of resource.
+	 * 
 	 * @param resource the resource.
-	 * @param amount the amount (kg).
+	 * @param amount   the amount (kg).
 	 */
 	public void addAmountResource(AmountResource resource, double amount) {
 		if (resources.containsKey(resource)) {
@@ -193,6 +196,7 @@ implements Serializable {
 
 	/**
 	 * Gets a map of resources and amounts.
+	 * 
 	 * @return map.
 	 */
 	public Map<AmountResource, Double> getResources() {
@@ -201,7 +205,8 @@ implements Serializable {
 
 	/**
 	 * Adds a number of a type of part.
-	 * @param part the part.
+	 * 
+	 * @param part   the part.
 	 * @param number the number of parts.
 	 */
 	public void addPart(Part part, int number) {
@@ -213,6 +218,7 @@ implements Serializable {
 
 	/**
 	 * Gets a map of parts and numbers.
+	 * 
 	 * @return map.
 	 */
 	public Map<Part, Integer> getParts() {
@@ -221,6 +227,7 @@ implements Serializable {
 
 	/**
 	 * Adds a resupply mission template.
+	 * 
 	 * @param resupplyMissionTemplate the resupply mission template.
 	 */
 	public void addResupplyMissionTemplate(ResupplyMissionTemplate resupplyMissionTemplate) {
@@ -229,6 +236,7 @@ implements Serializable {
 
 	/**
 	 * Gets the list of resupply mission templates.
+	 * 
 	 * @return list of resupply mission templates.
 	 */
 	public List<ResupplyMissionTemplate> getResupplyMissionTemplates() {

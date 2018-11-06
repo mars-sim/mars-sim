@@ -13,13 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.Logger;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -32,7 +30,7 @@ public final class PartConfig implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
-	private static Logger logger = Logger.getLogger(PartConfig.class.getName());
+//	private static Logger logger = Logger.getLogger(PartConfig.class.getName());
 
 //    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
@@ -140,9 +138,9 @@ public final class PartConfig implements Serializable {
 
 		double percent_reliability = Math.exp(-numSols / new_mtbf) * 100;
 
-		// LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-		// "The 3-year reliability rating of " + p.getName() + " is now "
-		// + Math.round(percent_reliability*100.0)/100.0 + " %", null);
+//		 LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//		 "The 3-year reliability rating of " + p.getName() + " is now "
+//		 + Math.round(percent_reliability*100.0)/100.0 + " %", null);
 
 		if (percent_reliability >= 100)
 			percent_reliability = 99.999;
@@ -241,11 +239,12 @@ public final class PartConfig implements Serializable {
 	public Set<Part> getPartSet() {
 		return partSet;
 	}
-	/**
-	 * gives back an alphabetically ordered map of all item resources.
-	 * 
-	 * @return {@link TreeMap}<{@link String},{@link ItemResource}>
-	 */
+	
+//	/**
+//	 * gives back an alphabetically ordered map of all item resources.
+//	 * 
+//	 * @return {@link TreeMap}<{@link String},{@link ItemResource}>
+//	 */
 	// public Map<String, ItemResource> getItemResourcesMap() {
 	// return itemResourceMap;
 	// }
