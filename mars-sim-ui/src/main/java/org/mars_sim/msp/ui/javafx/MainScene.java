@@ -4121,21 +4121,20 @@ public class MainScene implements ClockListener {
 	}
 
 	public void unpause() {
-//		System.out.println("calling MainScene's unpause()");
 		// Remove Dialog
 		isShowingDialog = false;
 		// Revert the sound setting
-		musicMuteBox.setSelected(lastMusicMuteBoxSetting);
-		soundEffectMuteBox.setSelected(lastSoundEffectMuteBoxSetting);
+//		musicMuteBox.setSelected(lastMusicMuteBoxSetting);
+//		soundEffectMuteBox.setSelected(lastSoundEffectMuteBoxSetting);
 		// Note : sound player doesn't necessarily know the current music/sound volume in main scene.
-		if (!musicMuteBox.isSelected())
-			soundPlayer.setSoundVolume(convertSlider2Volume(musicSlider.getValue()));
-		if (!soundEffectMuteBox.isSelected())
-			soundPlayer.setMusicVolume(convertSlider2Volume(soundEffectSlider.getValue()));
-		// Play music track
-		if (!soundPlayer.isSoundDisabled() && !musicMuteBox.isSelected()
-			&& musicSlider.getValue() > 0)
-				soundPlayer.resumeMusic();//playRandomMusicTrack();
+//		if (!musicMuteBox.isSelected())
+//			soundPlayer.setSoundVolume(convertSlider2Volume(musicSlider.getValue()));
+//		if (!soundEffectMuteBox.isSelected())
+//			soundPlayer.setMusicVolume(convertSlider2Volume(soundEffectSlider.getValue()));
+//		// Play music track
+//		if (!soundPlayer.isSoundDisabled() && !musicMuteBox.isSelected()
+//			&& musicSlider.getValue() > 0)
+//				soundPlayer.resumeMusic();//playRandomMusicTrack();
 		// Play time label timer
 		timeLabeltimer.play();
 		// Play billboard timer
@@ -4147,19 +4146,18 @@ public class MainScene implements ClockListener {
 	}
 	
 	public void pause(boolean music, boolean sound) {
-//		System.out.println("calling MainScene's pause()");
 		// Show Dialog
 		isShowingDialog = true;
 		// Save the mute boxes setting
-		if (music)
-			lastMusicMuteBoxSetting = musicMuteBox.isSelected();
-		if (sound)
-			lastSoundEffectMuteBoxSetting = soundEffectMuteBox.isSelected();
-		// Check the mute boxes
-		if (music)		
-			musicMuteBox.setSelected(true);
-		if (sound)
-			soundEffectMuteBox.setSelected(true);
+//		if (music)
+//			lastMusicMuteBoxSetting = musicMuteBox.isSelected();
+//		if (sound)
+//			lastSoundEffectMuteBoxSetting = soundEffectMuteBox.isSelected();
+//		// Check the mute boxes
+//		if (music)		
+//			musicMuteBox.setSelected(true);
+//		if (sound)
+//			soundEffectMuteBox.setSelected(true);
 		// Pause time label timer
 		timeLabeltimer.pause();
 		// Stop billboard timer
@@ -4188,10 +4186,11 @@ public class MainScene implements ClockListener {
 		if (isPaused) {
 			if (!masterClock.isSavingSimulation()) {
 				if (exitDialog == null || !exitDialog.isVisible()) {
-					if (!soundPlayer.isMusicMute())
-						pause(true, false);
-					if (!soundPlayer.isSoundMute())
-						pause(false, true);
+					pause(true, true);
+//					if (!soundPlayer.isMusicMute())
+//						pause(true, false);
+//					if (!soundPlayer.isSoundMute())
+//						pause(false, true);
 				}
 			}
 

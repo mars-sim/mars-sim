@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
@@ -28,14 +29,18 @@ public class Administration extends Function implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static Logger logger = Logger.getLogger(Administration.class.getName());
+
 	private static final FunctionType FUNCTION = FunctionType.ADMINISTRATION;
 	private static BuildingConfig buildingConfig;
 
 	// Data members
 	private int populationSupport;
-	private int staff, staffCapacity;
+	private int staff;
+	private int staffCapacity;
 
 	private String buildingType;
+	private Building building;
 
 	/**
 	 * Constructor.
@@ -45,6 +50,7 @@ public class Administration extends Function implements Serializable {
 	public Administration(Building building) {
 		// Use Function constructor.
 		super(FUNCTION, building);
+		this.building = building;
 
 		buildingType = building.getBuildingType();
 		// Populate data members.
@@ -167,7 +173,7 @@ public class Administration extends Function implements Serializable {
 		staff++;
 		if (staff > staffCapacity) {
 			staff = staffCapacity;
-			throw new IllegalStateException("The office space is full.");
+			logger.info("[" + building.getSettlement() + "] The office space in " + building.getNickName() + " is full.");
 		}
 	}
 
@@ -180,7 +186,7 @@ public class Administration extends Function implements Serializable {
 		staff--;
 		if (staff < 0) {
 			staff = 0;
-			throw new IllegalStateException("The office space is empty.");
+			logger.severe("[" + building.getSettlement() + "] Miscalculating the office space occupancy in " + building.getNickName() + ".");
 		}
 	}
 
