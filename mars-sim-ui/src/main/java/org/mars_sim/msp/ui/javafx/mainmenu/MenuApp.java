@@ -127,8 +127,8 @@ public class MenuApp {
         int y = Y_OFFSET - 25;
 
     	modeChoice = Arrays.asList(
+            new Pair<String, Runnable>("Commander Mode", () -> selectMode()),	
             new Pair<String, Runnable>("Sandbox Mode", () -> mainMenu.runNew(isFXGL, false)),
-            new Pair<String, Runnable>("Commander Mode", () -> selectMode()),
             new Pair<String, Runnable>("Exit", () -> {
             	//Platform::exit
             	if (isFXGL) {

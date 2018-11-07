@@ -335,8 +335,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 				setPhaseEnded(true);
 				super.endMission(reason);
-
-
+				
 //				 if (EMBARKING.equals(getPhase())) { 
 //					 setPhaseEnded(true); 
 //				 }
@@ -349,9 +348,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //					 logger.info("Can't be aborted. This mission is at the very last phase of the mission. "
 //							 + "Members are unloading resources and being disembarked. Please be patient!");
 //				 }
-				 //else { // setPhaseEnded(true); // super.endMission(reason); //}
-				 
-				 
+				 //else { // setPhaseEnded(true); // super.endMission(reason); //} 
 			}
 
 			else if (reason.equals(Mission.NOT_ENOUGH_RESOURCES) || reason.equals(Mission.UNREPAIRABLE_MALFUNCTION)
@@ -385,15 +382,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //								logger.warning("[" + startingMember.getLocationTag().getShortLocationName() + "] " 
 //										+ startingMember + " turned on " + vehicle + "'s emergency beacon and request for towing. Reason : "
 //										+ reason);
-//								//don't end the mission yet
+//								// Note : don't end the mission yet
 //							}
 						}
 
 						else {
-							// is being towed, wait till the journey is over
+							// Note: the vehicle is being towed, wait till the journey is over
 							// don't end the mission yet
-							// logger.info(vehicle + " is currently being towed by " +
-							// vehicle.getTowingVehicle());
+//							 logger.info(vehicle + " is currently being towed by " +
+//							 vehicle.getTowingVehicle());
 							LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
 									"[" + vehicle + "] Currently being towed by " + vehicle.getTowingVehicle(), null);
 //									+ " Remaining distance : " + getClosestDistance() + " km.", null);
@@ -401,10 +398,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					}
 
 					else {
-						// if the emergency beacon is on,
-						// don't end the mission yet
-						// logger.info(vehicle + "'s emergency beacon is on. awaiting the response for
-						// rescue right now.");
+						// Note : if the emergency beacon is on, don't end the mission yet
+//						 logger.info(vehicle + "'s emergency beacon is on. awaiting the response for
+//						 rescue right now.");
 					}
 				}
 

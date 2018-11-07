@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
@@ -52,7 +51,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(CollectResourcesMission.class.getName());
+//	private static Logger logger = Logger.getLogger(CollectResourcesMission.class.getName());
 
 	/** Mission phase. */
 	public final static MissionPhase COLLECT_RESOURCES = new MissionPhase(
@@ -292,8 +291,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				return 0;
 
 			// Check if settlement has enough basic resources for a rover mission.
-			// if (!RoverMission.hasEnoughBasicResources(settlement))
-			// return 0;
+//			 if (!RoverMission.hasEnoughBasicResources(settlement))
+//			 return 0;
 
 			// Check if starting settlement has minimum amount of methane fuel.
 			if (settlement.getInventory().getARStored(methaneID, false) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE)

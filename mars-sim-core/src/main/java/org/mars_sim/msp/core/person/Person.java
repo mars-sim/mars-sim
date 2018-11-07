@@ -58,7 +58,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Medical;
-import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
@@ -199,7 +198,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private Map<Integer, Gene> paternal_chromosome;
 	/** The person's maternal chromosome. */
 	private Map<Integer, Gene> maternal_chromosome;
-
+	/** The person's mission experiences */
+	private Map<Integer, List<Double>> missionExperiences;
 	// private Simulation sim = Simulation.instance();
 	private MarsClock marsClock;
 
@@ -244,32 +244,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		System.out.println("first name : " + firstName);
 //		System.out.println("last name : " + lastName);
 	}
-
-	/**
-	 * Constructor 2 Creates a Person object at a given settlement.
-	 *
-	 * @param name       the person's name
-	 * @param gender     {@link GenderType} the person's gender
-	 * @param country    the person's country of origin
-	 * @param settlement {@link Settlement} the settlement the person is at
-	 * @param sponsor    the person's sponsoring agency
-	 * @throws Exception if no inhabitable building available at settlement.
-	 * 
-	 *                   Person(String name, PersonGender gender, String country,
-	 *                   Settlement settlement, String sponsor) { //
-	 *                   logger.info("Person's constructor is in " + //
-	 *                   Thread.currentThread().getName() + " Thread"); // Use Unit
-	 *                   constructor super(name, settlement.getCoordinates());
-	 *                   super.setDescription(settlement.getName());
-	 * 
-	 *                   // Initialize data members this.name = name; this.country =
-	 *                   country; if (country != null) birthplace = "Earth"; else
-	 *                   birthplace = "Mars"; this.xLoc = 0D; this.yLoc = 0D;
-	 *                   this.gender = gender; this.associatedSettlement =
-	 *                   settlement; this.sponsor = sponsor;
-	 * 
-	 *                   }
-	 */
 
 	/*
 	 * Uses static factory method to create an instance of PersonBuilder
@@ -329,6 +303,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		BuildingManager.addToRandomBuilding(this, associatedSettlement); // why failed ?
 		// testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
 		support = getLifeSupportType();
+			
+		// Create the mission experiences map
+		missionExperiences = new HashMap<>();
 	}
 
 	/**
@@ -1685,6 +1662,53 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 	}
 	
+	
+	/**
+	 * Adds the mission experience score
+	 * 
+	 * @param id
+	 * @param score
+	 */
+	public void addMissionExperience(int id, double score) {
+		if (missionExperiences.containsKey(id)) {
+//			List<Double> scores = missionExperiences.get(id);
+//			scores.add(score);
+			missionExperiences.get(id).add(score);
+		}
+		else {
+			List<Double> scores = new ArrayList<>();
+			scores.add(score);
+			missionExperiences.put(id, scores);
+		}
+	}
+	
+//	/**
+//	 * Adds the mission experience score
+//	 * 
+//	 * @param id
+//	 * @param score
+//	 */
+//	public double getMissionExperience(int id) {
+//		if (missionExperiences.containsKey(id)) {
+//			List<Double> scores = missionExperiences.get(id);
+//			return scores.size() + //			scores.add(score);
+//			missionExperiences.get(id).add(score);
+//		}
+//		else {
+//			List<Double> scores = new ArrayList<>();
+//			scores.add(score);
+//			missionExperiences.put(id, scores);
+//		}
+//	}
+	
+	/**
+	 * Gets the mission experiences map
+	 * 
+	 * @return
+	 */
+	public Map<Integer, List<Double>> getMissionExperiences() {
+		return missionExperiences;
+	}
 	
 	@Override
 	public void destroy() {

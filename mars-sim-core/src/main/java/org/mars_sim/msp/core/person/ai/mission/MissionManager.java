@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,7 +20,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -39,10 +39,10 @@ public class MissionManager implements Serializable {
 	/** default logger. */
 	private static transient Logger logger = Logger.getLogger(MissionManager.class.getName());
 
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+//			logger.getName().length());
 
-	private static final double PERCENT_PER_SCORE = 10D;
+	private static final double PERCENT_PER_SCORE = 20D;
 	
 	/** Current missions in the simulation. */
 	private List<Mission> missions;
@@ -62,6 +62,8 @@ public class MissionManager implements Serializable {
 	private transient Map<MetaMission, Double> robotMissionProbCache;
 	
 	private transient MarsClock marsClock;
+	
+	private static List<String> missionNames;
 
 	/**
 	 * Constructor.
@@ -73,6 +75,7 @@ public class MissionManager implements Serializable {
 		totalProbCache = 0D;
 		//marsClock = Simulation.instance().getMasterClock().getMarsClock(); // null at the start of the sim
 		
+		createMissionArray();
 		// Initialize data members
 		missions = new ArrayList<Mission>(0);
 		historicalMissions = new HashMap<>();
@@ -81,6 +84,24 @@ public class MissionManager implements Serializable {
 		robotMissionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getRobotMetaMissions().size());
 	}
 
+	private void createMissionArray() {
+		missionNames = Arrays.asList(
+				AreologyStudyFieldMission.DEFAULT_DESCRIPTION,
+				BiologyStudyFieldMission.DEFAULT_DESCRIPTION,
+				BuildingConstructionMission.DEFAULT_DESCRIPTION, 
+				BuildingSalvageMission.DEFAULT_DESCRIPTION,
+				CollectIce.DEFAULT_DESCRIPTION,
+				CollectRegolith.DEFAULT_DESCRIPTION,
+				EmergencySupplyMission.DEFAULT_DESCRIPTION,
+				Exploration.DEFAULT_DESCRIPTION,
+				Mining.DEFAULT_DESCRIPTION,
+				RescueSalvageVehicle.DEFAULT_DESCRIPTION,
+				Trade.DEFAULT_DESCRIPTION,
+				TravelToSettlement.DEFAULT_DESCRIPTION
+		);
+	}
+	
+	
 	/**
 	 * Add a listener.
 	 * 
@@ -276,13 +297,13 @@ public class MissionManager implements Serializable {
 		return totalProbCache;
 	}
 
-	public double getTotalMissionProbability(Robot robot) {
-		// If cache is not current, calculate the probabilities.
-		if (!useCache(robot)) {
-			calculateProbability(robot);
-		}
-		return totalProbCache;
-	}
+//	public double getTotalMissionProbability(Robot robot) {
+//		// If cache is not current, calculate the probabilities.
+//		if (!useCache(robot)) {
+//			calculateProbability(robot);
+//		}
+//		return totalProbCache;
+//	}
 
 	/**
 	 * Gets a new mission for a person based on potential missions available.
@@ -376,6 +397,29 @@ public class MissionManager implements Serializable {
 //		return result;
 //	}
 
+	/**
+	 * Gets the number of particular missions that are active
+	 * 
+	 * @param mission
+	 * @param settlement
+	 * @return number
+	 */
+	public int numParticularMissions(String mName, Settlement settlement) {
+		int num = 0;
+		List<Mission> m1 = getMissions();
+		if (!m1.isEmpty()) {		
+			Iterator<Mission> i = m1.iterator();
+			while (i.hasNext()) {
+				Mission m = i.next();
+				if (!m.isDone() && m.getName().equals(mName)
+						&& settlement == m.getAssociatedSettlement()) {
+					num++;
+				}
+			}
+		}
+		return num;
+	}
+	
 	/**
 	 * Gets all the active missions associated with a given settlement.
 	 * 
@@ -549,38 +593,38 @@ public class MissionManager implements Serializable {
 		personTimeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 	}
 
-	/**
-	 * Calculates and caches the probabilities.
-	 * 
-	 * @param robot the robot to check for.
-	 */
-	private void calculateProbability(Robot robot) {
-		if (robotMissionProbCache == null) {
-			robotMissionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getRobotMetaMissions().size());
-		}
-
-		// Clear total probabilities.
-		totalProbCache = 0D;
-
-		// Determine probabilities.
-		Iterator<MetaMission> i = MetaMissionUtil.getRobotMetaMissions().iterator();
-		while (i.hasNext()) {
-			MetaMission metaMission = i.next();
-			double probability = metaMission.getProbability(robot);
-			if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
-				robotMissionProbCache.put(metaMission, probability);
-				totalProbCache += probability;
-			} else {
-				robotMissionProbCache.put(metaMission, 0D);
-				logger.severe(robot.getName() + " bad mission probability: " + metaMission.getName() + " probability: "
-						+ probability);
-			}
-		}
-
-		// Set the time cache to the current time.
-		robotTimeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-
-	}
+//	/**
+//	 * Calculates and caches the probabilities.
+//	 * 
+//	 * @param robot the robot to check for.
+//	 */
+//	private void calculateProbability(Robot robot) {
+//		if (robotMissionProbCache == null) {
+//			robotMissionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getRobotMetaMissions().size());
+//		}
+//
+//		// Clear total probabilities.
+//		totalProbCache = 0D;
+//
+//		// Determine probabilities.
+//		Iterator<MetaMission> i = MetaMissionUtil.getRobotMetaMissions().iterator();
+//		while (i.hasNext()) {
+//			MetaMission metaMission = i.next();
+//			double probability = metaMission.getProbability(robot);
+//			if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
+//				robotMissionProbCache.put(metaMission, probability);
+//				totalProbCache += probability;
+//			} else {
+//				robotMissionProbCache.put(metaMission, 0D);
+//				logger.severe(robot.getName() + " bad mission probability: " + metaMission.getName() + " probability: "
+//						+ probability);
+//			}
+//		}
+//
+//		// Set the time cache to the current time.
+//		robotTimeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+//
+//	}
 
 	/**
 	 * Checks if task probability cache should be used.
@@ -594,17 +638,17 @@ public class MissionManager implements Serializable {
 		return currentTime.equals(personTimeCache);// && (person == personCache);
 	}
 
-	/**
-	 * Checks if task probability cache should be used.
-	 * 
-	 * @param the robot to check for.
-	 * @return true if cache should be used.
-	 */
-	private boolean useCache(Robot robot) {
-		// if (currentTime == null)
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		return currentTime.equals(robotTimeCache);// && (robot == robotCache);
-	}
+//	/**
+//	 * Checks if task probability cache should be used.
+//	 * 
+//	 * @param the robot to check for.
+//	 * @return true if cache should be used.
+//	 */
+//	private boolean useCache(Robot robot) {
+//		// if (currentTime == null)
+//		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+//		return currentTime.equals(robotTimeCache);// && (robot == robotCache);
+//	}
 
 	/**
 	 * Updates mission based on passing time.
@@ -709,6 +753,14 @@ public class MissionManager implements Serializable {
 		}
 	}
 
+	public static int matchMissionID(String name) {
+		int id = -1;
+		if (missionNames.contains(name)) {
+			id = missionNames.indexOf(name);
+		}
+		return id;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

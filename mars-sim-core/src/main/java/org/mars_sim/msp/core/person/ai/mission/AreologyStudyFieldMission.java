@@ -363,7 +363,7 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 	}
 
 	@Override
-	protected double getMissionQualification(MissionMember member) {
+	public double getMissionQualification(MissionMember member) {
 		double result = super.getMissionQualification(member);
 
 		if ((result > 0D) && (member instanceof Person)) {

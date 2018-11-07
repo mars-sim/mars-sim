@@ -199,11 +199,13 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         destinationTextLabel = new WebLabel("", WebLabel.LEFT);
 
         boolean hasDestination = false;
+
         Mission mission = missionManager.getMissionForVehicle(vehicle);
         if ((mission != null) && (mission instanceof VehicleMission)) {
 
             VehicleMission vehicleMission = (VehicleMission) mission;
-            if (vehicleMission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+            if (vehicleMission != null
+            		&& vehicleMission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
                 hasDestination = true;
                 destinationLocationCache = vehicleMission.getNextNavpoint().getLocation();
                 NavPoint destinationPoint = vehicleMission.getNextNavpoint();

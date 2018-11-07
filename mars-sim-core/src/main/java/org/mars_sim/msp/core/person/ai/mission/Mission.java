@@ -52,11 +52,8 @@ public abstract class Mission implements Serializable {
 
 	protected static final int MAX_AMOUNT_RESOURCE = ResourceUtil.FIRST_ITEM_RESOURCE;
 
-	// Global mission identifier
-	private static int missionIdentifer = 0;
-
-	public static final String SUCCESSFULLY_ENDED_CONSTRUCTION = "Mission accomplished and all members successfully ended construction";
-	public static final String SUCCESSFULLY_DISEMBARKED = "Mission accomplished and all members successfully disembarked";
+	public static final String SUCCESSFULLY_ENDED_CONSTRUCTION = "All members successfully ended construction";
+	public static final String SUCCESSFULLY_DISEMBARKED = "All members successfully disembarked";
 	public static final String USER_ABORTED_MISSION = "Mission aborted by user";
 	public static final String UNREPAIRABLE_MALFUNCTION = "Unrepairable malfunction";
 	public static final String NO_RESERVABLE_VEHICLES = "No reservable vehicles";
@@ -101,7 +98,12 @@ public abstract class Mission implements Serializable {
 	 */
 	public final static double DESSERT_MARGIN = 1.5;
 
+	// Global mission identifier
+	private static int missionIdentifer = 0;
+
 	// Data members
+	/** mission type id */
+	private int missionID;
 	/** Unique identifier */
 	private int identifier;
 	/** The minimum number of members for mission. */
@@ -155,6 +157,9 @@ public abstract class Mission implements Serializable {
 		this.identifier = getNextIdentifier();
 		this.missionName = missionName;
 		this.startingMember = startingMember;
+		
+		missionID = MissionManager.matchMissionID(missionName);
+		
 		members = new ConcurrentLinkedQueue<MissionMember>();
 		done = false;
 		phase = null;
@@ -697,28 +702,56 @@ public abstract class Mission implements Serializable {
 	}
 
 	/**
+	 * Computes the mission experience score
+	 * 
+	 * @param reason
+	 */
+	public void addMissionScore(String reason) {
+		if (reason.equals(SUCCESSFULLY_DISEMBARKED)) {
+			for (MissionMember member : members) {
+				if (member instanceof Person) {
+					Person person = (Person) member;
+					
+					if (!person.isDeclaredDead()) {
+						if (!person.getPhysicalCondition().hasSeriousMedicalProblems()) {
+							person.addMissionExperience(missionID, 5);
+						}
+						else
+							// Note : there is a minor penalty for those who are sick 
+							// and thus unable to fully function during the mission
+							person.addMissionExperience(missionID, 2.5);
+						
+						if (person.equals(startingMember)) {
+							person.addMissionExperience(missionID, 2.5);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Finalizes the mission. String reason Reason for ending mission. Mission can
 	 * override this to perform necessary finalizing operations.
 	 */
 	public void endMission(String reason) {
-		// logger.info("Mission's endMission() is in " +
-		// Thread.currentThread().getName() + " Thread");
+//		 if (!(this instanceof RescueSalvageVehicle)) {
+//		 returnHome();
+//		 goToNearestSettlement();
+//		 }
 
-		// if (!(this instanceof RescueSalvageVehicle)) {
-		// returnHome();
-		// goToNearestSettlement();
-		// }
+		// Add mission experience score
+		addMissionScore(reason);
+		
+		// Note: !done is very important to keep !
+		if (!done) {
+			// !reason.equals(USER_ABORTED_MISSION)
+			// reason.equals(SUCCESSFULLY_ENDED_CONSTRUCTION) 
+			// reason.equals(SUCCESSFULLY_DISEMBARKED)
+			// reason.equals(USER_ABORTED_MISSION)
 
-		if (!done) {// && !reason.equals(USER_ABORTED_MISSION) ) {
-			// & reason.equals(SUCCESSFULLY_ENDED_CONSTRUCTION) // Note: !done is very
-			// important to keep !
-			// || reason.equals(SUCCESSFULLY_DISEMBARKED)
-			// || reason.equals(USER_ABORTED_MISSION)) {
-
-			// Note : there can be custom reason such as "Equipment EVA Suit 12 cannot be
+			// TODO : there can be custom reason such as "Equipment EVA Suit 12 cannot be
 			// loaded in rover Rahu" with mission name 'Trade With Camp Bradbury'
-
-			// logger.info("Calling endMission(). Mission ended. Reason : " + reason);
 
 			LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
 					"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()
@@ -743,8 +776,6 @@ public abstract class Mission implements Serializable {
 				}
 			}
 
-			// logger.info(description + " ending at the " + phase + " phase due to " +
-			// reason);
 		} else
 			LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
 					"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()
@@ -1021,6 +1052,22 @@ public abstract class Mission implements Serializable {
 		return result;
 	}
 
+	public double[] computeAverage(List<Double> list) {
+		double ave = 0;
+		double total = 0;
+		int size = list.size();
+		if (!list.isEmpty()) {
+			for (double i : list) {
+				total += i;
+			}
+			ave = total/size;
+		}
+		else {
+			ave = 0;
+		}
+		return new double[] {size, ave};
+	}
+	
 	/**
 	 * Gets the mission qualification value for the member. Member is qualified in
 	 * joining the mission if the value is larger than 0. The larger the
@@ -1030,7 +1077,7 @@ public abstract class Mission implements Serializable {
 	 * @param member the member to check.
 	 * @return mission qualification value.
 	 */
-	protected double getMissionQualification(MissionMember member) {
+	public double getMissionQualification(MissionMember member) {
 
 		double result = 0D;
 
@@ -1038,12 +1085,29 @@ public abstract class Mission implements Serializable {
 
 		if (member instanceof Person) {
 			Person person = (Person) member;
-
+			
+			// Compute the mission experience score
+			if (person.getMissionExperiences().containsKey(missionID)) {
+				double[] score = new double[2];
+				
+				List<Double> list = person.getMissionExperiences().get(missionID);
+	
+				if (!list.isEmpty()) {
+					score = computeAverage(list);
+					result = score[0] * score[1] /2.0;
+				}
+				else
+					result = 5;
+			}
+			else
+				result = 5;
+			
 			// Get base result for job modifier.
 			Job job = person.getMind().getJob();
 			if (job != null) {
-				result = job.getJoinMissionProbabilityModifier(this.getClass());
+				result *= 5 * job.getJoinMissionProbabilityModifier(this.getClass());
 			}
+			
 		} else if (member instanceof Robot) {
 			Robot robot = (Robot) member;
 

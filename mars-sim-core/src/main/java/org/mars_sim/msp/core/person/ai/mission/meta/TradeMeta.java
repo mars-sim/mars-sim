@@ -61,11 +61,10 @@ public class TradeMeta implements MetaMission {
 
 			if (person.getMind().getJob() instanceof Trader) {
 
-				// 2016-10-04 checkMission() gives rise to a NULLPOINTEREXCEPTION that points to
-				// Inventory
-				// It happens only when this sim is a loaded saved sim.
 				try {
-
+					// TODO: checkMission() gives rise to a NULLPOINTEREXCEPTION that points to
+					// Inventory
+					// It happens only when this sim is a loaded saved sim.
 					missionProbability = checkMission(settlement);
 
 				} catch (Exception e) {
@@ -79,11 +78,6 @@ public class TradeMeta implements MetaMission {
 			} else {
 				missionProbability = 0;
 			}
-
-			/*
-			 * // Job modifier. Job job = person.getMind().getJob(); if (job != null) {
-			 * missionProbability *= job.getStartMissionProbabilityModifier(Trade.class); }
-			 */
 		}
 
 		return missionProbability;
@@ -96,19 +90,7 @@ public class TradeMeta implements MetaMission {
 
 	@Override
 	public double getProbability(Robot robot) {
-
-		double missionProbability = 0D;
-		/*
-		 * if (robot.getBotMind().getRobotJob() instanceof Deliverybot) // Check if
-		 * robot is in a settlement. if (robot.getLocationSituation() ==
-		 * LocationSituation.IN_SETTLEMENT) {
-		 * 
-		 * // Check if mission is possible for robot based on their circumstance.
-		 * Settlement settlement = robot.getSettlement();
-		 * 
-		 * missionProbability = checkMission(settlement); }
-		 */
-		return missionProbability;
+		return 0;
 	}
 
 	public double checkMission(Settlement settlement) {
@@ -179,9 +161,9 @@ public class TradeMeta implements MetaMission {
 				}
 
 				if (!useCache) {
-					double startTime = System.currentTimeMillis();
+//					double startTime = System.currentTimeMillis();
 					tradeProfit = TradeUtil.getBestTradeProfit(settlement, rover);
-					double endTime = System.currentTimeMillis();
+//					double endTime = System.currentTimeMillis();
 //					logger.info("[" + settlement.getName() + "] " // getBestTradeProfit: " + (endTime - startTime)
 //					// + " milliseconds "
 //							+ " Profit: " + (int) tradeProfit + " VP");

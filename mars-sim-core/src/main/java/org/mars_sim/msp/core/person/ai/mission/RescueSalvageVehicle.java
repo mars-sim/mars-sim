@@ -764,7 +764,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 * @return the score
 	 */
 	@Override
-	protected double getMissionQualification(MissionMember member) {
+	public double getMissionQualification(MissionMember member) {
 		double result = 0D;
 
 //        if (isCapableOfMission(member)) {

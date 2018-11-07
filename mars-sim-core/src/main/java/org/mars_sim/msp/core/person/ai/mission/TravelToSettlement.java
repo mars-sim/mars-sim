@@ -500,7 +500,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	}
 
 	@Override
-	protected double getMissionQualification(MissionMember member) {
+	public double getMissionQualification(MissionMember member) {
 		double result = 0D;
 
 //        if (isCapableOfMission(member)) {

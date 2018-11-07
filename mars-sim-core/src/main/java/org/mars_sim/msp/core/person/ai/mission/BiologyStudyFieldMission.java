@@ -362,7 +362,7 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 	}
 
 	@Override
-	protected double getMissionQualification(MissionMember member) {
+	public double getMissionQualification(MissionMember member) {
 		double result = super.getMissionQualification(member);
 
 		if ((result > 0D) && (member instanceof Person)) {

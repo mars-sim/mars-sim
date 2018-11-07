@@ -219,11 +219,11 @@ public class MainMenu {
 
 		logger.info("Current Screen Resolution is " + native_width + " x " + native_height);
 
-		// Test
-		// logger.info("Earth's surface gravity : " +
-		// Math.round(PlanetType.EARTH.getSurfaceGravity()*100.0)/100.0 + " m/s^2");
-		// logger.info("Mars's surface gravity : " +
-		// Math.round(PlanetType.MARS.getSurfaceGravity()*100.0)/100.0 + " m/s^2");
+		// Note : Testing only
+//		 logger.info("Earth's surface gravity : " +
+//		 Math.round(PlanetType.EARTH.getSurfaceGravity()*100.0)/100.0 + " m/s^2");
+//		 logger.info("Mars's surface gravity : " +
+//		 Math.round(PlanetType.MARS.getSurfaceGravity()*100.0)/100.0 + " m/s^2");
 	}
 
 	/*

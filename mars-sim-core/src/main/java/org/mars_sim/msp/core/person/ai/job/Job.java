@@ -32,11 +32,11 @@ public abstract class Job implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** Probability penalty for starting a non-job-related task. */
-	private static final double NON_JOB_TASK_PENALTY = .01D;
+	private static final double NON_JOB_TASK_PENALTY = .025D;
 	/** Probability penalty for starting a non-job-related mission. */
-	private static final double NON_JOB_MISSION_START_PENALTY = .01D;
+	private static final double NON_JOB_MISSION_START_PENALTY = .25D;
 	/** Probability penalty for joining a non-job-related mission. */
-	private static final double NON_JOB_MISSION_JOIN_PENALTY = .01D;
+	private static final double NON_JOB_MISSION_JOIN_PENALTY = .5D;
 
 	private static final String JOB_STR = "job.";
 	private static final String MALE_STR = "male.";

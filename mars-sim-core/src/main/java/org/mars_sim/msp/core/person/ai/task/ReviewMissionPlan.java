@@ -21,11 +21,16 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
+import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -83,7 +88,15 @@ public class ReviewMissionPlan extends Task implements Serializable {
 
 			if (roleType == RoleType.PRESIDENT || roleType == RoleType.MAYOR
 					|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER
-					|| (roleType == RoleType.MISSION_SPECIALIST && person.getAssociatedSettlement().getNumCitizens() <= 8)) {
+					|| roleType == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
+					|| roleType == RoleType.CHIEF_OF_MISSION_PLANNING
+					|| roleType == RoleType.CHIEF_OF_ENGINEERING
+					|| roleType == RoleType.CHIEF_OF_SAFETY_N_HEALTH
+					|| roleType == RoleType.CHIEF_OF_SCIENCE
+					|| roleType == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
+					|| roleType == RoleType.CHIEF_OF_AGRICULTURE			
+					|| (roleType == RoleType.MISSION_SPECIALIST && person.getAssociatedSettlement().getNumCitizens() <= 8)
+					|| person.getAssociatedSettlement().getNumCitizens() <= 4) {
 
 				// If person is in a settlement, try to find an office building.
 				Building officeBuilding = Administration.getAvailableOffice(person);
@@ -150,7 +163,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 			relationshipManager = Simulation.instance().getRelationshipManager();
 		
         List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
- //       System.out.println("# missions : " + missions.size());
+        
 		// Iterates through each pending mission 
 		Iterator<Mission> i = missions.iterator();
 		while (i.hasNext()) {
@@ -168,49 +181,85 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		            }
 		            
 		            else {
-		            			            
+		            	
 						String reviewedBy = person.getName();
 						
 						Person p = m.getStartingMember();
-						String requester = p.getName();
+						String requestedBy = p.getName();
 		
-						List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
-						int last = list.size() - 1;
-						
-						// 1. Reviews requester's cumulative job rating
-						double rating = list.get(last).getJobRating();
-						double cumulative_rating = 0;
-						int size = list.size();
-						for (int j = 0; j < size; j++) {
-							cumulative_rating += list.get(j).getJobRating();
-						}
-						cumulative_rating = cumulative_rating / size;
-		
-						// TODO: Add more depth to this process
-						// 2. Weigh in his mission score
-						// 3. May go to him/her to have a chat
-						// 4. modified by the affinity between them
-						// 5. Approve/disapprove the job change
-						
+		            	double score = 0;
+            			
 						String s = person.getAssociatedSettlement().getName();
 						
-						int score = (int)(relationshipManager.getOpinionOfPerson(person, p));
-						//Math.round(100D * relationshipManager.getOpinionOfPerson(person, p))/100D;
-						
-						score = (int)((rating + cumulative_rating) / 5D * score + RandomUtil.getRandomInt(10) - RandomUtil.getRandomInt(5));
-								
-						// Updates the mission plan status
-						missionManager.scoreMissionPlan(mp, score);
-						
-						LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-								"[" + s + "] " + reviewedBy + " has given " + requester
-								+ "'s " + m.getDescription() + " mission plan a score of " + score + ".", null);
-						
-					      // Add experience
-				        addExperience(time);
-			        
-						// Do only one review each time
-						break;
+						if (!reviewedBy.equals(requestedBy)) {
+							
+							List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
+							int last = list.size() - 1;
+							
+							// 1. Reviews requester's cumulative job rating
+							double rating = list.get(last).getJobRating();
+							double cumulative_rating = 0;
+							int size = list.size();
+							for (int j = 0; j < size; j++) {
+								cumulative_rating += list.get(j).getJobRating();
+							}
+							cumulative_rating = cumulative_rating / size;
+			
+							rating = (rating + cumulative_rating) * 2.5D;
+									
+							// 2. Relationship Score 
+							int relation = (int)(relationshipManager.getOpinionOfPerson(person, p)/5D);
+							//Math.round(100D * relationshipManager.getOpinionOfPerson(person, p))/100D;
+												
+							
+							// 3. Mission Qualification Score
+							double qual = 0;
+							
+							if (m instanceof AreologyStudyFieldMission) {
+	//							AreologyStudyFieldMission aM = (AreologyStudyFieldMission)m;
+	//							qual = (int)m.getMissionQualification(person);
+								qual = ((AreologyStudyFieldMission)m).getMissionQualification(person);
+							}
+							else if (m instanceof BiologyStudyFieldMission) {
+								qual = ((BiologyStudyFieldMission)m).getMissionQualification(person);
+							}
+							else if (m instanceof RescueSalvageVehicle) {
+								qual = ((RescueSalvageVehicle)m).getMissionQualification(person);
+							}
+							else if (m instanceof TravelToSettlement) {
+								qual = ((TravelToSettlement)m).getMissionQualification(person);
+							}
+							else
+								qual = m.getMissionQualification(person);											
+							
+							// TODO: Go to him/her to have a chat
+				
+							// 4. randomness
+							int rand = RandomUtil.getRandomInt(-10, 10);
+							
+							score = rating + relation + qual + rand;
+							
+							// Updates the mission plan status
+							missionManager.scoreMissionPlan(mp, score);
+							
+							// Modify the sign for the random number
+							String sign = "+";
+							if (rand < 0) {
+								rand = -rand;
+								sign = "-";
+							}
+							
+							LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
+									"[" + s + "] " + reviewedBy + " has given " + requestedBy
+									+ "'s " + m.getDescription() + " mission plan a score of " + score 
+									+ " (" + rating + " + " + relation + " + " + qual + sign + rand + ")", null);
+							
+						      // Add experience
+					        addExperience(time);
+				        
+							// Do only one review each time
+					        endTask();
+						}
 		            }
 				}
 			}
@@ -247,32 +296,37 @@ public class ReviewMissionPlan extends Task implements Serializable {
 					Person p = m.getStartingMember();
 					String requester = p.getName();
 				
-					String s = person.getAssociatedSettlement().getName();
+					Settlement settlement = person.getAssociatedSettlement();
+					String s = settlement.getName();
 					
 					double score = mp.getScore();
 					
-					if (score < 500) {
-						// not approved
-						// Updates the mission plan status
-						missionManager.approveMissionPlan(mp, p, PlanType.NOT_APPROVED);
-					
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-								"[" + s + "] " + reviewedBy + " did NOT approve " + requester
-								+ "'s " + m.getDescription() + " mission plan. The final score was " + score + " and the minimum passing score is 500.", null);
-					} else {
+					if (settlement.passMissionScore(score)) {
+						// Approved
 						// Updates the mission plan status
 						missionManager.approveMissionPlan(mp, p, PlanType.APPROVED);
 							
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 								"[" + s + "] " + reviewedBy + " just approved " + requester
-								+ "'s " + m.getDescription() + " mission plan. The final score was " + score + ".", null);
+								+ "'s " + m.getDescription() + " mission plan. Final score : " + score + ".", null);
+					} else {
+						// Not Approved
+						// Updates the mission plan status
+						missionManager.approveMissionPlan(mp, p, PlanType.NOT_APPROVED);
+					
+						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+								"[" + s + "] " + reviewedBy + " did NOT approve " + requester
+								+ "'s " + m.getDescription() + " mission plan. Final score : " + score 
+								+ " (Current min: " + settlement.getMinimumPassingScore() + ").", null);
 					}
 										
+					settlement.saveMissionScore(score);
+					
 				      // Add experience
 			        addExperience(time);
 		        
 					// Do only one review each time
-					break;
+			        endTask();
 				}
 			}
 		} // end of while

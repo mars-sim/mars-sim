@@ -125,6 +125,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public static double water_consumption;
 
 	public static double minimum_air_pressure;
+	
+	/** The trending score for curving the minimum score for mission approval. */
+	private static double trendingScore = 30D;
 
 	/** Amount of time (millisols) required for periodic maintenance. */
 	// private static final double MAINTENANCE_TIME = 1000D;
@@ -242,6 +245,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/** The settlement's location. */
 	private Coordinates location;
 
+	/** The last 20 mission scores */
+	private List<Double> missionScores;	
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
 	/** The settlement's resource statistics. */
@@ -252,6 +257,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
 	/** The settlement's map of adjacent buildings. */
 	private Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
+
 	/** The settlement's last dust storm. */
 	private DustStorm storm;
 
@@ -383,6 +389,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 //				"[" + this + "] Set development objective to " + objectiveType.toString() 
 //				+ " (based upon the '" + template + "' Template).", null);
 
+		// initialize the missionScores list
+		missionScores = new ArrayList<>();
+		missionScores.add(200D);
 	}
 
 	/**
@@ -3288,6 +3297,57 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		return result;
 	}
 
+	/**
+	 * Checks if the last 20 mission scores are above the threshold
+	 * 
+	 * @param score
+	 * @return true/false
+	 */
+	public boolean passMissionScore(double score) {
+		double total = 0;
+		for (double s : missionScores) {
+			total += s;
+		}
+		double ave = total/ missionScores.size();
+		
+		if (score > ave + trendingScore) {
+			trendingScore = (score - ave + 2D * trendingScore) / 3D;
+			return true;
+		}
+		else {
+			trendingScore = (ave - score + 2D * trendingScore) / 3D;
+			return false;
+		}
+	}
+
+	/**
+	 * Calculates the current minimum passing score
+	 * 
+	 * @return
+	 */
+	public double getMinimumPassingScore() {
+		double total = 0;
+		for (double s : missionScores) {
+			total += s;
+		}
+		double ave = total/ missionScores.size();
+		
+		return Math.round((ave + trendingScore) * 10D) * 10D;
+	}
+	
+	/**
+	 * Saves the mission score
+	 * 
+	 * @param score
+	 */
+	public void saveMissionScore(double score) {
+		missionScores.add(score);
+		
+		if (missionScores.size() > 20)
+			missionScores.remove(0);
+	}
+	
+	
 	public double getIceProbabilityValue() {
 		return iceProbabilityValue;
 	}
