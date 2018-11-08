@@ -3332,7 +3332,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		}
 		double ave = total/ missionScores.size();
 		
-		return Math.round((ave + trendingScore) * 10D) * 10D;
+		return Math.round((ave + trendingScore) * 10D) / 10D;
 	}
 	
 	/**

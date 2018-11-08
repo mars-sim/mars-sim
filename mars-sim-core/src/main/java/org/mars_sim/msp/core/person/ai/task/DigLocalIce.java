@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -61,6 +60,9 @@ implements Serializable {
 	private static final double COLLECTION_RATE = 20D;
 
 	// Domain members
+	/** Total ice collected in kg. */
+	private double totalCollected;
+	
 	/** Airlock to be used for EVA. */
 	private Airlock airlock;
 	/** Bag for collecting ice. */
@@ -254,7 +256,6 @@ implements Serializable {
             if (collectedAmount < settlementCap) {
                 bag.getInventory().retrieveAmountResource(iceID, collectedAmount);
                 settlement.getInventory().storeAmountResource(iceID, collectedAmount, false);
-           		// 2015-01-15 Add addSupplyAmount()
                 settlement.getInventory().addAmountSupplyAmount(iceID, collectedAmount);
             }
 
@@ -264,7 +265,7 @@ implements Serializable {
 
             // Recalculate settlement good value for output item.
             GoodsManager goodsManager = settlement.getGoodsManager();
-            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(ResourceUtil.iceAR), false);
+            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(iceID), false);
         }
 
         super.endTask();
@@ -280,7 +281,7 @@ implements Serializable {
         // Check for an accident during the EVA operation.
         checkForAccident(time);
 
-        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        // Check for radiation exposure during the EVA operation.
         if (isRadiationDetected(time)){
             setPhase(WALK_BACK_INSIDE);
             return time;
@@ -294,26 +295,33 @@ implements Serializable {
 
         //AmountResource ice = AmountResource.findAmountResource("ice");
         double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
-        		ResourceUtil.iceAR, true, false);
+        		iceID, true, false);
 
-        double iceCollected = time * COLLECTION_RATE;
+        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
+        int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
+        int eva = person.getMind().getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
+        
+        double iceCollected = RandomUtil.getRandomDouble(.5) * time * COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1)/ 3D ;
+        totalCollected += iceCollected;
+        
         boolean finishedCollecting = false;
         if (iceCollected >= remainingPersonCapacity) {
             iceCollected = remainingPersonCapacity;
             finishedCollecting = true;
         }
 
-        person.getInventory().storeAmountResource(ResourceUtil.iceAR, iceCollected, true);
+        person.getInventory().storeAmountResource(iceID, iceCollected, true);
 
         if (finishedCollecting) {
             setPhase(WALK_BACK_INSIDE);
-        }
 
-	    LogConsolidated.log(logger, Level.INFO, 10000, sourceName, 
+            LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
 	    		"[" + person.getLocationTag().getQuickLocation() +  "] " +
-	    		person.getName() + " collected " + Math.round(iceCollected*100D)/100D 
+	    		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
 	    		+ " kg of ice outside " + person.getAssociatedSettlement(), null);
  
+        }
         // Add experience points
         addExperience(time);
 

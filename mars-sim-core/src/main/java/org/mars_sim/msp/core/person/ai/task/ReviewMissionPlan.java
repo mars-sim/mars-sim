@@ -178,6 +178,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		            if (mp.getPercentComplete() >= 100D) {
 		            	// Go to the finished phase and finalize the approval
 		            	setPhase(FINISHED);
+		                return time; // return time is needed
 		            }
 		            
 		            else {
@@ -243,16 +244,16 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							missionManager.scoreMissionPlan(mp, score);
 							
 							// Modify the sign for the random number
-							String sign = "+";
+							String sign = " + ";
 							if (rand < 0) {
 								rand = -rand;
-								sign = "-";
+								sign = " - ";
 							}
 							
 							LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
 									"[" + s + "] " + reviewedBy + " has given " + requestedBy
 									+ "'s " + m.getDescription() + " mission plan a score of " + score 
-									+ " (" + rating + " + " + relation + " + " + qual + sign + rand + ")", null);
+									+ " (" + rating + " + " + relation + " + " + qual + sign + rand + ").", null);
 							
 						      // Add experience
 					        addExperience(time);
@@ -289,12 +290,13 @@ public class ReviewMissionPlan extends Task implements Serializable {
 			if (mp != null) {
 	            PlanType status = mp.getStatus();
 	
-	            if (status != null && status == PlanType.PENDING) {
+	            if (status != null && status == PlanType.PENDING
+	            		&& mp.getPercentComplete() >= 100D) {
 	            	
 					String reviewedBy = person.getName();
 					
 					Person p = m.getStartingMember();
-					String requester = p.getName();
+					String requestedBy = p.getName();
 				
 					Settlement settlement = person.getAssociatedSettlement();
 					String s = settlement.getName();
@@ -307,17 +309,18 @@ public class ReviewMissionPlan extends Task implements Serializable {
 						missionManager.approveMissionPlan(mp, p, PlanType.APPROVED);
 							
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-								"[" + s + "] " + reviewedBy + " just approved " + requester
-								+ "'s " + m.getDescription() + " mission plan. Final score : " + score + ".", null);
+								"[" + s + "] " + reviewedBy + " just approved " + requestedBy
+								+ "'s " + m.getDescription() + " mission plan. Final score: " + score 
+								+ " (Min: " + settlement.getMinimumPassingScore() + ").", null);
 					} else {
 						// Not Approved
 						// Updates the mission plan status
 						missionManager.approveMissionPlan(mp, p, PlanType.NOT_APPROVED);
 					
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-								"[" + s + "] " + reviewedBy + " did NOT approve " + requester
-								+ "'s " + m.getDescription() + " mission plan. Final score : " + score 
-								+ " (Current min: " + settlement.getMinimumPassingScore() + ").", null);
+								"[" + s + "] " + reviewedBy + " did NOT approve " + requestedBy
+								+ "'s " + m.getDescription() + " mission plan. Final score: " + score 
+								+ " (Min: " + settlement.getMinimumPassingScore() + ").", null);
 					}
 										
 					settlement.saveMissionScore(score);

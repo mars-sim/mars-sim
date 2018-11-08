@@ -81,8 +81,8 @@ public final class RandomUtil {
 	 * Returns a random int number from a given base number to (and including) the
 	 * ceiling number given.
 	 * 
-	 * @param base    the minimum number result
-	 * @param ceiling the maximum number result
+	 * @param base    the minimum number result (can be +ve or -ve)
+	 * @param ceiling the maximum number result (can be +ve or -ve)
 	 * @return the random number
 	 */
 	public static int getRandomInt(int base, int ceiling) {
