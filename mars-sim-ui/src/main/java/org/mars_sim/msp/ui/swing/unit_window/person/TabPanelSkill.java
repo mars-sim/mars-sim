@@ -148,7 +148,7 @@ extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private SkillManager manager;
+		private SkillManager skillManager;
 		private Map<String, Integer> skills;
 		private List<String> skillNames;
 
@@ -158,24 +158,26 @@ extends TabPanel {
 
 	        if (unit instanceof Person) {
 	         	person = (Person) unit;
-				manager = person.getMind().getSkillManager();
+	         	skillManager = person.getMind().getSkillManager();
 	        }
 	        else if (unit instanceof Robot) {
 	        	robot = (Robot) unit;
-				manager = robot.getBotMind().getSkillManager();
+	        	skillManager = robot.getBotMind().getSkillManager();
 	        }
 
-
-			SkillType[] keys = manager.getKeys();
-			skills = new HashMap<String, Integer>();
-			skillNames = new ArrayList<String>();
-			for (SkillType skill : keys) {
-				int level = manager.getSkillLevel(skill);
-				if (level > 0) {
-					skillNames.add(skill.getName());
-					skills.put(skill.getName(), level);
-				}
-			}
+			skills = skillManager.getSkillsMap();
+			skillNames = skillManager.getSkillNames();
+			
+//			SkillType[] keys = manager.getKeys();
+//			skills = new HashMap<String, Integer>();
+//			skillNames = new ArrayList<String>();
+//			for (SkillType skill : keys) {
+//				int level = manager.getSkillLevel(skill);
+//				if (level > 0) {
+//					skillNames.add(skill.getName());
+//					skills.put(skill.getName(), level);
+//				}
+//			}
 		}
 
 		public int getRowCount() {
@@ -206,11 +208,11 @@ extends TabPanel {
 		}
 
 		public void update() {
-			SkillType[] keys = manager.getKeys();
+			SkillType[] keys = skillManager.getKeys();
 			List<String> newSkillNames = new ArrayList<String>();
 			Map<String, Integer> newSkills = new HashMap<String, Integer>();
 			for (SkillType skill : keys) {
-				int level = manager.getSkillLevel(skill);
+				int level = skillManager.getSkillLevel(skill);
 				if (level > 0) {
 					newSkillNames.add(skill.getName());
 					newSkills.put(skill.getName(), level);

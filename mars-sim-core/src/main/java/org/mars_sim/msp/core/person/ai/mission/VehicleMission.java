@@ -927,9 +927,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		}
 
-		double oldDistance = getCurrentMissionLocation()
-				.getDistance(((Person) member).getAssociatedSettlement().getCoordinates());
 
+		Settlement oldHome = ((Person) member).getAssociatedSettlement();
+		
+		double oldDistance = getCurrentMissionLocation().getDistance(oldHome.getCoordinates());
+
+		
 		// Determine closest settlement.
 		Settlement newDestination = findClosestSettlement();
 		if (newDestination != null) {
@@ -963,7 +966,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				if (!sameDestination) {
 
 					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-							"[" + vehicle.getName() + "]  Home Settlement (" + nextNav.getSettlement().getName() + ") : " 
+							"[" + vehicle.getName() + "]  Home Settlement (" + oldHome.getName() + ") : " 
 							+ Math.round(oldDistance * 100D) / 100D
 							+ " km    Nearest Settlement (" + newDestination.getName() + ") : " 
 							+ Math.round(newDistance * 100D) / 100D
@@ -1020,7 +1023,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
 							"[" + vehicle.getName() 
-							+ "]  Home Settlement (" + nextNav.getSettlement().getName() + ") : " 
+							+ "]  Home Settlement (" + oldHome.getName() + ") : " 
 							+ Math.round(oldDistance * 100D) / 100D
 							+ " km    Next Routing Stop : " + Math.round(newDistance * 2 / 3 * 100D) / 100D
 							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols",

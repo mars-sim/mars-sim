@@ -10,10 +10,15 @@ package org.mars_sim.msp.core.person.ai;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The SkillManager class manages skills for a given person. Each person has one
@@ -30,6 +35,9 @@ public class SkillManager implements Serializable {
 	/** A list of the person's skills keyed by name. */
 	private Hashtable<SkillType, Skill> skills;
 
+	private Map<String, Integer> skillsMap;
+	private List<String> skillNames;
+	
 	/** Constructor. */
 	public SkillManager(Unit unit) {
 		Person person = null;
@@ -45,14 +53,69 @@ public class SkillManager implements Serializable {
 
 		skills = new Hashtable<SkillType, Skill>();
 
-		// Add starting skills randomly for person.
-		for (SkillType startingSkill : SkillType.values()) {
-			int skillLevel = getInitialSkillLevel(0, 50);
-			// int skillLevel = 1;
-			Skill newSkill = new Skill(startingSkill);
-			newSkill.setLevel(skillLevel);
-			addNewSkill(newSkill);
+		if (person != null) {
+			// Add starting skills randomly for a person.
+			for (SkillType startingSkill : SkillType.values()) {
+				int skillLevel = getInitialSkillLevel(0, 50);
+				// int skillLevel = 1;
+				Skill newSkill = new Skill(startingSkill);
+				newSkill.setLevel(skillLevel);
+				addNewSkill(newSkill);
+			}
 		}
+		else {		
+			// Add starting skills randomly for a bot.
+			List<SkillType> skills = new ArrayList<>();
+			
+			if (robot.getRobotType() == RobotType.MAKERBOT) {
+				skills.add(SkillType.MATERIALS_SCIENCE);
+				skills.add(SkillType.PHYSICS);
+			}
+			else if (robot.getRobotType() == RobotType.GARDENBOT) {
+				skills.add(SkillType.BOTANY);
+				skills.add(SkillType.BIOLOGY);
+			}
+			else if (robot.getRobotType() == RobotType.REPAIRBOT) {
+				skills.add(SkillType.MATERIALS_SCIENCE);
+				skills.add(SkillType.MECHANICS);
+			}
+			else if (robot.getRobotType() == RobotType.CHEFBOT) {
+				skills.add(SkillType.CHEMISTRY);
+				skills.add(SkillType.COOKING);
+			}
+			else if (robot.getRobotType() == RobotType.MEDICBOT) {
+				skills.add(SkillType.CHEMISTRY);
+				skills.add(SkillType.MEDICINE);
+			}
+			else if (robot.getRobotType() == RobotType.DELIVERYBOT) {
+				skills.add(SkillType.DRIVING);
+				skills.add(SkillType.TRADING);
+			}
+			else if (robot.getRobotType() == RobotType.CONSTRUCTIONBOT) {
+				skills.add(SkillType.AREOLOGY);
+				skills.add(SkillType.CONSTRUCTION);
+			}
+			
+			for (SkillType startingSkill : skills) {
+				int skillLevel = 1;
+				Skill newSkill = new Skill(startingSkill);
+				newSkill.setLevel(skillLevel);
+				addNewSkill(newSkill);
+			}
+		}
+		
+		// Create map and list
+		SkillType[] keys = getKeys();
+		skillsMap = new HashMap<String, Integer>();
+		skillNames = new ArrayList<String>();
+		for (SkillType skill : keys) {
+			int level = getSkillLevel(skill);
+			if (level > 0) {
+				skillNames.add(skill.getName());
+				skillsMap.put(skill.getName(), level);
+			}
+		}
+		
 	}
 
 	/**
@@ -171,6 +234,14 @@ public class SkillManager implements Serializable {
 		// skillName + " skill to " + finalSkill);
 	}
 
+	public Map<String, Integer> getSkillsMap() {
+		return skillsMap;
+	}
+	
+	public List<String> getSkillNames() {
+		return skillNames;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,8 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -81,7 +84,7 @@ public class ChatUtils {
 	};
 	
 	public final static String[] PERSON_KEYS = new String[] {
-			"feeling", "status",
+			"feeling", "status", "skill",
 			"birth", "age", "how old", "born",
 			"friend",
 			"relationship", "social", "relation",
@@ -168,6 +171,7 @@ public class ChatUtils {
 	private static MarsClock marsClock;
 	private static OrbitInfo orbitInfo;
 	private static RelationshipManager relationshipManager;
+	private static SkillManager skillManager;
 	
 	private static DecimalFormat fmt = new DecimalFormat("##0");
 	private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
@@ -883,7 +887,7 @@ public class ChatUtils {
 		else if (text.toLowerCase().contains("people") || text.toLowerCase().contains("settler") 
 				|| text.toLowerCase().contains("person")) {
 			
-			Collection<Person> list = settlementCache.getAllAssociatedPeople();
+//			Collection<Person> list = settlementCache.getAllAssociatedPeople();
 			int total = settlementCache.getNumCitizens();
 //			int indoor = settlementCache.getIndoorPeopleCount();
 //			int dead = settlementCache.getNumDeceased();
@@ -930,7 +934,7 @@ public class ChatUtils {
 						
 			// Indoor
 			responseText.append(System.lineSeparator());
-			responseText.append("   A. Indoor ");
+			responseText.append("  A. Indoor ");
 			responseText.append(System.lineSeparator());
 			responseText.append("  -----------");
 			responseText.append(System.lineSeparator());
@@ -939,7 +943,7 @@ public class ChatUtils {
 			
 			// Outdoor
 			responseText.append(System.lineSeparator());
-			responseText.append("   B. Outdoor ");
+			responseText.append("  B. Outdoor ");
 			responseText.append(System.lineSeparator());
 			responseText.append("  ------------");
 			responseText.append(System.lineSeparator());
@@ -948,7 +952,7 @@ public class ChatUtils {
 			
 			// Deceased
 			responseText.append(System.lineSeparator());
-			responseText.append("   C. Deceased ");
+			responseText.append("  C. Deceased ");
 			responseText.append(System.lineSeparator());
 			responseText.append("  -------------");
 			responseText.append(System.lineSeparator());
@@ -1141,7 +1145,51 @@ public class ChatUtils {
 		responseText.append(name);
 		responseText.append(": ");
 
-		if (text.toLowerCase().contains("time")) {
+		if (text.toLowerCase().contains("skill")) {
+			questionText = YOU_PROMPT + "What are your skills ?"; 
+			
+			if (personCache != null) {
+				skillManager = personCache.getMind().getSkillManager();	
+			}
+			
+			else if (robotCache != null) {
+				skillManager = robotCache.getBotMind().getSkillManager();			
+			}			
+			
+			responseText.append("here's a list of my skills with level : ");
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			responseText.append("       Type of Skill | Level");
+			responseText.append(System.lineSeparator());
+			responseText.append("     ------------------------");	
+			responseText.append(System.lineSeparator());
+			
+			Map<String, Integer> skills = skillManager.getSkillsMap();
+			List<String> skillNames = skillManager.getSkillNames();
+			Collections.sort(skillNames);
+//			SkillType[] keys = skillManager.getKeys();
+			
+			int max = 20;
+//			String space = "";		
+			for (int i=0; i< skillNames.size(); i++) {
+				String n = skillNames.get(i);
+				int size = n.length();
+//				if (i+1 <= 9)
+//					space = " ";
+				for (int j=0; j< (max-size); j++) {
+					responseText.append(" ");
+				}
+//				responseText.append(space + "(" + (i+1) + ") ");
+				responseText.append(n);
+				responseText.append(" : ");
+				responseText.append(skills.get(n));
+				responseText.append(System.lineSeparator());			
+			}
+			
+		}
+		
+
+		else if (text.toLowerCase().contains("time")) {
 			questionText = YOU_PROMPT + "What time is it ?"; 
 			
 //			responseText.append(personCache.getName() + " : ");
