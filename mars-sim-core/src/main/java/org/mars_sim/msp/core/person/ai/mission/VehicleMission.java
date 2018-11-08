@@ -934,18 +934,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Settlement newDestination = findClosestSettlement();
 		if (newDestination != null) {
 
-			double distance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
+			double newDistance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
 
 			// Check if enough resources to get to settlement.
-			if (distance > 0 && hasEnoughResources(getResourcesNeededForTrip(false, distance))) {
+			if (newDistance > 0 && hasEnoughResources(getResourcesNeededForTrip(false, newDistance))) {
 
-				double newTripTime = getEstimatedTripTime(false, distance);
-
-//				LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
-//						"The estimated trip time for re-routing to the new destination '" 
-//					+ newDestination.getName() + "' is " + Math.round(newTripTime * 100.0/1000.0)/100.0 + " sols", null);
-//				
-				// && !hasEmergencyAllCrew()) {
+				double newTripTime = getEstimatedTripTime(false, newDistance);
+				
+				// Check !hasEmergencyAllCrew() ? 
 
 				// Check if closest settlement is already the next navpoint.
 				boolean sameDestination = false;
@@ -955,24 +951,23 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					sameDestination = true;
 
 					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-							"[" + vehicle.getName() + "]  Home Settlement : " + Math.round(distance * 100D) / 100D
-									+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols",
+							"[" + vehicle.getName() + "]  Home Settlement (" + newDestination.getName() + ") : " 
+							+ Math.round(newDistance * 100D) / 100D
+							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols",
 							null);
+					
 					returnHome();
 
 				}
 
 				if (!sameDestination) {
-//					LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,					
-//						vehicle.getName() + " at " 
-//							+ Math.round(distance*100D)/100D 
-//							+ " km away from its departing settlement is heading toward to the new destination '"
-//							+ newDestination.getName() + "'.", null);
 
 					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-							"[" + vehicle.getName() + "]  Home Settlement : " + Math.round(oldDistance * 100D) / 100D
-									+ " km    Nearest Settlement : " + Math.round(distance * 100D) / 100D
-									+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols",
+							"[" + vehicle.getName() + "]  Home Settlement (" + nextNav.getSettlement().getName() + ") : " 
+							+ Math.round(oldDistance * 100D) / 100D
+							+ " km    Nearest Settlement (" + newDestination.getName() + ") : " 
+							+ Math.round(newDistance * 100D) / 100D
+							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols",
 							null);
 
 					// Creating emergency destination mission event.
@@ -994,12 +989,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					endCollectionPhase();
 				}
 
-			} else if (distance > 0 && !hasEnoughResources(getResourcesNeededForTrip(false, distance * 2 / 3))
-					&& hasEnoughResources(getResourcesNeededForTrip(false, distance * 1 / 3))) {
+			} else if (newDistance > 0 && !hasEnoughResources(getResourcesNeededForTrip(false, newDistance * 2 / 3))
+					&& hasEnoughResources(getResourcesNeededForTrip(false, newDistance * 1 / 3))) {
 
 				// if it has enough resources to traverse between 2/3 and 1/3 of the distance
 				// toward the new destination
-				double newTripTime = getEstimatedTripTime(false, distance * 2 / 3);
+				double newTripTime = getEstimatedTripTime(false, newDistance * 2 / 3);
 
 				// && !hasEmergencyAllCrew()) {
 
@@ -1011,25 +1006,24 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					sameDestination = true;
 
 					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-							"[" + vehicle.getName() + "]  Home Settlement : "
-									+ Math.round(distance * 2 / 3 * 100D) / 100D + " km    Duration : "
-									+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols",
+							"[" + vehicle.getName() 
+							+ "]  Home Settlement (" + newDestination.getName() + ") : " 
+							+ Math.round(newDistance * 2 / 3 * 100D) / 100D 
+							+ " km    Duration : "
+							+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols",
 							null);
 
 					returnHome();
 				}
 
 				if (!sameDestination) {
-//					LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,					
-//						"Due to an emergency situation, " + vehicle.getName() + ", currently at " 
-//							+ Math.round(distance*100D)/100D 
-//							+ " km away from its origin, is heading toward to the closet settlement "
-//							+ newDestination.getName(), null);
 
 					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-							"[" + vehicle.getName() + "]  Home Settlement : " + Math.round(oldDistance * 100D) / 100D
-									+ " km    Next Routing Stop : " + Math.round(distance * 2 / 3 * 100D) / 100D
-									+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols",
+							"[" + vehicle.getName() 
+							+ "]  Home Settlement (" + nextNav.getSettlement().getName() + ") : " 
+							+ Math.round(oldDistance * 100D) / 100D
+							+ " km    Next Routing Stop : " + Math.round(newDistance * 2 / 3 * 100D) / 100D
+							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols",
 							null);
 
 					// Creating emergency destination mission event.

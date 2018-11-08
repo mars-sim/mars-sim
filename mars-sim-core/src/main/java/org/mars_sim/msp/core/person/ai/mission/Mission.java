@@ -52,24 +52,25 @@ public abstract class Mission implements Serializable {
 
 	protected static final int MAX_AMOUNT_RESOURCE = ResourceUtil.FIRST_ITEM_RESOURCE;
 
-	public static final String SUCCESSFULLY_ENDED_CONSTRUCTION = "All members successfully ended construction";
-	public static final String SUCCESSFULLY_DISEMBARKED = "All members successfully disembarked";
-	public static final String USER_ABORTED_MISSION = "Mission aborted by user";
-	public static final String UNREPAIRABLE_MALFUNCTION = "Unrepairable malfunction";
-	public static final String NO_RESERVABLE_VEHICLES = "No reservable vehicles";
-	public static final String NO_AVAILABLE_VEHICLES = "No available vehicles";
-	public static final String NOT_ENOUGH_RESOURCES = "Not enough resources";
-	public static final String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found";
-	public static final String MEDICAL_EMERGENCY = "A member has a medical emergency";
-	public static final String NO_TRADING_SETTLEMENT = "No trading settlement";
-	public static final String NO_GOOD_EVA_SUIT = "No good EVA suit";
-	public static final String REQUEST_RESCUE = "Requesting rescue";
-	public static final String NO_ONGOING_SCIENTIFIC_STUDY = "No on-going Scientific study in this subject";
-	public static final String VEHICLE_NOT_LOADABLE = "Cannot load resources into the rover";
-	public static final String NO_EXPLORATION_SITES = "Exploration sites could not be determined";
-	public static final String NOT_ENOUGH_MEMBERS = "Not enough members";
-	public static final String NO_MEMBERS_ON_MISSION = "No members on mission";
-	public static final String MISSION_NOT_APPROVED = "Mission not approved";
+	public static final String SUCCESSFULLY_ENDED_CONSTRUCTION = "Construction ended.";
+	public static final String SUCCESSFULLY_DISEMBARKED = "All members disembarked.";
+	public static final String USER_ABORTED_MISSION = "Mission aborted by user.";
+	public static final String UNREPAIRABLE_MALFUNCTION = "Unrepairable malfunction.";
+	public static final String NO_RESERVABLE_VEHICLES = "No reservable vehicles.";
+	public static final String NO_AVAILABLE_VEHICLES = "No available vehicles.";
+	public static final String NOT_ENOUGH_RESOURCES = "Not enough resources.";
+	public static final String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found.";
+	public static final String MEDICAL_EMERGENCY = "A member has a medical emergency.";
+	public static final String NO_TRADING_SETTLEMENT = "No trading settlement found.";
+	public static final String NO_GOOD_EVA_SUIT = "No good EVA suit.";
+	public static final String REQUEST_RESCUE = "Requesting rescue.";
+	public static final String NO_ONGOING_SCIENTIFIC_STUDY = "No on-going scientific study being conducted in this subject.";
+	public static final String VEHICLE_NOT_LOADABLE = "Cannot load resources into the rover.";
+	public static final String NO_EXPLORATION_SITES = "Exploration sites could not be determined.";
+	public static final String NOT_ENOUGH_MEMBERS = "Not enough members recruited.";
+	public static final String NO_MEMBERS_ON_MISSION = "No members available for mission.";
+	public static final String MISSION_NOT_APPROVED = "Mission not approved.";
+	public static final String TARGET_VEHICLE_NOT_FOUND = "Target vehicle not found.";
 	
 
 	public static final String MISSION = " mission";
@@ -777,9 +778,9 @@ public abstract class Mission implements Serializable {
 			}
 
 		} else
-			LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 					"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()
-							+ " is calling endMission() to end the " + missionName + ". Reason : '" + reason + "'",
+							+ " is ending the " + missionName + ". Reason : '" + reason + "'",
 					null);
 		
 		// Proactively call removeMission to update the list in MissionManager right away
