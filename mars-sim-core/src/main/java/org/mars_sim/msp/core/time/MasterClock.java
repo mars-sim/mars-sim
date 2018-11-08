@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.time;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.tool.AutosaveScheduler;
 
 //import javafx.animation.Timeline;
 
@@ -708,9 +709,9 @@ public class MasterClock implements Serializable {
 
 					// Exit program if exitProgram flag is true.
 					if (exitProgram) {
-						if (sim.getAutosaveTimer() != null)
-							sim.getAutosaveTimer().shutdownNow();// .stop();
-
+//						if (sim.getAutosaveTimer() != null)
+//							sim.getAutosaveTimer().shutdownNow();// .stop();
+						AutosaveScheduler.cancel();
 						System.exit(0);
 					}
 
@@ -902,15 +903,18 @@ public class MasterClock implements Serializable {
 		if (this.isPaused != isPaused) {
 			uptimer.setPaused(isPaused);
 	
-			if (isPaused && sim.getAutosaveTimer() != null 
-					&& !sim.getAutosaveTimer().isShutdown()
-					&& !sim.getAutosaveTimer().isTerminated()) {
+			if (isPaused) {
+//				&& sim.getAutosaveTimer() != null 
+//					&& !sim.getAutosaveTimer().isShutdown()
+//					&& !sim.getAutosaveTimer().isTerminated()) {
 				
-				sim.getAutosaveTimer().shutdown(); 
+				AutosaveScheduler.cancel();
+//				sim.getAutosaveTimer().shutdown(); 
 				// Note: using sim (instead of Simulation.instance()) 
 				// won't work when loading a saved sim.
 			} else {
-				sim.startAutosaveTimer();
+				AutosaveScheduler.start();
+//				sim.startAutosaveTimer();
 			}
 	
 			this.isPaused = isPaused;
@@ -1064,8 +1068,9 @@ public class MasterClock implements Serializable {
 
 			// Exit program if exitProgram flag is true.
 			if (exitProgram) {
-				if (sim.getAutosaveTimer() != null)
-					sim.getAutosaveTimer().shutdownNow();
+//				if (sim.getAutosaveTimer() != null)
+//					sim.getAutosaveTimer().shutdownNow();
+				AutosaveScheduler.cancel();
 				System.exit(0);
 			}
 

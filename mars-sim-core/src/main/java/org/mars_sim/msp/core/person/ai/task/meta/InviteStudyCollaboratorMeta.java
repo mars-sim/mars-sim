@@ -93,7 +93,7 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
                             result *= 2D;
                         }
 
-                        // 2015-06-07 Added Preference modifier
+                        // Add Preference modifier
                         if (result > 0)
                         	result += person.getPreference().getPreferenceScore(this);
                         if (result < 0) result = 0;

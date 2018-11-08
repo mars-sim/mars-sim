@@ -136,7 +136,8 @@ public class ExplorationMeta implements MetaMission {
 			if (job != null)
 				// It this town has a tourist objective, add bonus
 				result *= job.getStartMissionProbabilityModifier(Exploration.class)
-						* settlement.getGoodsManager().getTourismFactor();
+				* (settlement.getGoodsManager().getTourismFactor()
+               		 + settlement.getGoodsManager().getResearchFactor())/1.5;
 		}
 
 		return result;

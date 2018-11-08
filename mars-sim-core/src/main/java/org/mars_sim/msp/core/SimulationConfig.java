@@ -451,6 +451,15 @@ public class SimulationConfig implements Serializable {
 	}
 
 	/**
+	 * Manually sets the autosave interval.
+	 * 
+	 * @param value
+	 */
+	public void setAutosaveInterval(int value) {
+		data[2] = value;
+	}
+	
+	/**
 	 * Gets the autosave interval when the simulation starts.
 	 * 
 	 * @return number of minutes.

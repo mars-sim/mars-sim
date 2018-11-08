@@ -126,7 +126,9 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
             Job job = person.getMind().getJob();
             if (job != null) {
             	// If this town has a tourist objective, add bonus
-                result *= job.getStartMissionProbabilityModifier(BiologyStudyFieldMission.class) * settlement.getGoodsManager().getTourismFactor();
+                result *= job.getStartMissionProbabilityModifier(BiologyStudyFieldMission.class) 
+                		* (settlement.getGoodsManager().getTourismFactor()
+                		 + settlement.getGoodsManager().getResearchFactor())/1.5;
             }
         }
 

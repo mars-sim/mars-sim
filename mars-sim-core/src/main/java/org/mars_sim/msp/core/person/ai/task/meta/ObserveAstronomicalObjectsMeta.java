@@ -139,7 +139,9 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
                 // Job modifier.
                 Job job = person.getMind().getJob();
                 if (job != null) {
-                    result *= job.getStartTaskProbabilityModifier(ObserveAstronomicalObjects.class);
+                    result *= job.getStartTaskProbabilityModifier(ObserveAstronomicalObjects.class)
+                    		* (person.getAssociatedSettlement().getGoodsManager().getTourismFactor()
+    	               		 + person.getAssociatedSettlement().getGoodsManager().getResearchFactor())/1.5;
                 }
 
                 // Modify if research is the person's favorite activity.

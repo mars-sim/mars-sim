@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ScientificStudyUtil.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2018-11-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.science;

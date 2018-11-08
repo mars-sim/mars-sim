@@ -35,9 +35,7 @@ implements Serializable {
     /**
      * Constructor.
      */
-    public ScientificStudyManager() { //}   
-	// 2015-02-04 Added run()
-	//public void run() {
+    public ScientificStudyManager() {
         studies = new ArrayList<ScientificStudy>();
 	}
     

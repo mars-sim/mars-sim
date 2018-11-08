@@ -94,8 +94,7 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
                     result *= 1.5D;
                 }
 
-    	        // 2015-06-07 Added Preference modifier
-                // 2015-06-07 Added Preference modifier
+    	        // Add Preference modifier
                 if (result > 0D) {
                     result = result + result * person.getPreference().getPreferenceScore(this)/5D;
                 }

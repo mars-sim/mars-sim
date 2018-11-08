@@ -91,7 +91,7 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
 	                    result *= RandomUtil.getRandomDouble(3);
 	            	}
 	            	else {
-		            	// 2016-01-10 Added checking if a person has a designated bed
+		            	// Check if a person has a designated bed
 		                Building quarters = person.getQuarters();    
 		                if (quarters == null) {
 		                	quarters = Sleep.getBestAvailableQuarters(person, true);
@@ -117,10 +117,13 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
                 result*= WORK_SHIFT_MODIFIER;
             }
 
-            // 2015-06-07 Added Preference modifier
+            result *= person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
+
+            // Add Preference modifier
             if (result > 0)
             	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
 
+            		
             if (result < 0) result = 0;
 
         }

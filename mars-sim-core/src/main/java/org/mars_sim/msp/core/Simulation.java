@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -43,7 +44,7 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
-
+import org.mars_sim.msp.core.tool.AutosaveScheduler;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
@@ -147,10 +148,10 @@ public class Simulation implements ClockListener, Serializable {
 	// Note: Transient data members aren't stored in save file
 	// Added transient to avoid serialization error
 //	private transient Timer autosaveTimer;
-	// private transient Timeline timer;
-	private transient ScheduledExecutorService autosaveService;// = Executors.newSingleThreadScheduledExecutor();
+//	private transient Timeline timer;
+//	private transient ScheduledExecutorService autosaveService;// = Executors.newSingleThreadScheduledExecutor();
 
-	// private transient ThreadPoolExecutor clockScheduler;
+//	private transient ThreadPoolExecutor clockScheduler;
 	private transient ExecutorService clockExecutor;
 
 	private transient ExecutorService simExecutor;
@@ -185,7 +186,6 @@ public class Simulation implements ClockListener, Serializable {
 	
 	private static InteractiveTerm interactiveTerm = new InteractiveTerm();
 	
-
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
 	 * from other classes.
@@ -401,8 +401,8 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		this.autosaveDefault = autosaveDefault;
-		startAutosaveTimer();
-
+//		startAutosaveTimer();
+		AutosaveScheduler.start();
 		ut = masterClock.getUpTimer();
 	}
 
@@ -865,7 +865,7 @@ public class Simulation implements ClockListener, Serializable {
 //			boolean now = masterClock.isPaused();
 //			if (!previous) {
 //				if (now) {
-					masterClock.setPaused(false, false);
+//					masterClock.setPaused(false, false);
 //				}
 //			} else {
 //				if (!now) {
@@ -911,8 +911,9 @@ public class Simulation implements ClockListener, Serializable {
 			masterClock.stop();
 			masterClock.setPaused(true, false);
 			masterClock.removeClockListener(this);
-			if (autosaveService != null && !autosaveService.isShutdown() && !autosaveService.isTerminated())
-				autosaveService.shutdown();
+			AutosaveScheduler.cancel();
+//			if (autosaveService != null && !autosaveService.isShutdown() && !autosaveService.isTerminated())
+//				autosaveService.shutdown();
 		}
 	}
 
@@ -924,7 +925,8 @@ public class Simulation implements ClockListener, Serializable {
 			masterClock.addClockListener(this);
 			masterClock.setPaused(false, false);
 			masterClock.restart();
-			startAutosaveTimer();
+			AutosaveScheduler.start();
+//			startAutosaveTimer();
 		}
 	}
 
@@ -955,75 +957,104 @@ public class Simulation implements ClockListener, Serializable {
 		}
 	}
 
+//	public class AutosaveService {
+//
+//		private ExecutorService autosaveService = Executors.newSingleThreadScheduledExecutor();
+//		
+//		public  Future<Integer> start(Integer input) { 
+//			
+//			autosaveService.scheduleAtFixedRate(start(0), SimulationConfig.instance().getAutosaveInterval(),
+//					SimulationConfig.instance().getAutosaveInterval(), TimeUnit.MINUTES);
+//			
+//			if (autosaveDefault) {
+//		        return autosaveService.submit(() -> {
+//					masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null);
+//		            return 0;
+//		        });
+//			}
+//			else {
+//		        return autosaveService.submit(() -> {			
+//					masterClock.setAutosave(true);
+//		            return 0;
+//		        });
+//			}
+//		}
+//	}
+		
 	/*
 	 * Set up a timer for periodically saving the sim
 	 */
-	public void startAutosaveTimer() {
-		// autosave_minute = SimulationConfig.instance().getAutosaveInterval();
-		// Note: should call masterClock's saveSimulation() to first properly interrupt
-		// the masterClock,
-		// instead of directly call saveSimulation() here in Simulation
-
-		if (autosaveService != null) {
-			autosaveService.shutdown();
-			autosaveService = null;
-		}
-
-		autosaveService = Executors.newSingleThreadScheduledExecutor();
+//	public void startAutosaveTimer() {
 		
-		if (autosaveDefault) {
-			// For headless
-//			autosaveTimer = new Timeline(
-//				new KeyFrame(Duration.seconds(60 * autosave_minute),
-//						ae -> masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null)));
-//			autosaveTimer = FxTimer.runLater(
-//    				java.time.Duration.ofMinutes(60 * autosave_minute),
-//    		        () -> masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null));
-//			EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
-//	        .subscribe(tick -> masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null));
-			setAutosaveDefault();
-			
-		} else {
-			// for GUI
-//			autosaveTimer = new Timeline(
-//				new KeyFrame(Duration.seconds(60 * autosave_minute),
-//						ae -> masterClock.setAutosave(true)));
-//			autosaveTimer = FxTimer.runLater(
-//    				java.time.Duration.ofMinutes(60 * autosave_minute),
-//    		        () -> masterClock.setAutosave(true));
-//			EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
-//	        .subscribe(tick -> masterClock.setAutosave(true));
-			setAutosave();
-			// Note1: Infinite Timeline might result in a memory leak if not stopped
-			// properly.
-			// Note2: All the objects with animated properties would NOT be garbage
-			// collected.
+//		autosaveScheduler = new AutosaveScheduler();
+//		AutosaveScheduler.start();
+		
+//		// autosave_minute = SimulationConfig.instance().getAutosaveInterval();
+//		// Note: should call masterClock's saveSimulation() to first properly interrupt
+//		// the masterClock,
+//		// instead of directly call saveSimulation() here in Simulation
+//
+//		if (autosaveService != null) {
+//			// boolean java.util.concurrent.Future.cancel(boolean mayInterruptIfRunning)
+//			autosaveService.shutdown();
+//			autosaveService = null;
+//		}
+//
+//		autosaveService = Executors.newSingleThreadScheduledExecutor();
+//		
+//		if (autosaveDefault) {
+//			// For headless
+////			autosaveTimer = new Timeline(
+////				new KeyFrame(Duration.seconds(60 * autosave_minute),
+////						ae -> masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null)));
+////			autosaveTimer = FxTimer.runLater(
+////    				java.time.Duration.ofMinutes(60 * autosave_minute),
+////    		        () -> masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null));
+////			EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
+////	        .subscribe(tick -> masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null));
+//			setAutosaveDefault();
+//			
+//		} else {
+//			// for GUI
+////			autosaveTimer = new Timeline(
+////				new KeyFrame(Duration.seconds(60 * autosave_minute),
+////						ae -> masterClock.setAutosave(true)));
+////			autosaveTimer = FxTimer.runLater(
+////    				java.time.Duration.ofMinutes(60 * autosave_minute),
+////    		        () -> masterClock.setAutosave(true));
+////			EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
+////	        .subscribe(tick -> masterClock.setAutosave(true));
+//			setAutosave();
+//			// Note1: Infinite Timeline might result in a memory leak if not stopped
+//			// properly.
+//			// Note2: All the objects with animated properties would NOT be garbage
+//			// collected.
+//
+////		autosaveTimer.setCycleCount(javafx.animation.Animation.INDEFINITE);
+////		autosaveTimer.play();
+//		}
+//	}
 
-//		autosaveTimer.setCycleCount(javafx.animation.Animation.INDEFINITE);
-//		autosaveTimer.play();
-		}
-	}
-
-	public void setAutosaveDefault() {
-		Runnable autosaveRunnable = new Runnable() {
-			public void run() {
-				masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null);
-			}
-		};
-		autosaveService.scheduleAtFixedRate(autosaveRunnable, SimulationConfig.instance().getAutosaveInterval(),
-				SimulationConfig.instance().getAutosaveInterval(), TimeUnit.MINUTES);
-
-	}
-
-	public void setAutosave() {
-		Runnable autosaveRunnable = new Runnable() {
-			public void run() {
-				masterClock.setAutosave(true);
-			}
-		};
-		autosaveService.scheduleAtFixedRate(autosaveRunnable, SimulationConfig.instance().getAutosaveInterval(),
-				SimulationConfig.instance().getAutosaveInterval(), TimeUnit.MINUTES);
-	}
+//	public void setAutosaveDefault() {
+//		Runnable autosaveRunnable = new Runnable() {
+//			public void run() {
+//				masterClock.setSaveSim(AUTOSAVE_AS_DEFAULT, null);
+//			}
+//		};
+//		autosaveService.scheduleAtFixedRate(autosaveRunnable, SimulationConfig.instance().getAutosaveInterval(),
+//				SimulationConfig.instance().getAutosaveInterval(), TimeUnit.MINUTES);
+//
+//	}
+//
+//	public void setAutosave() {
+//		Runnable autosaveRunnable = new Runnable() {
+//			public void run() {
+//				masterClock.setAutosave(true);
+//			}
+//		};
+//		autosaveService.scheduleAtFixedRate(autosaveRunnable, SimulationConfig.instance().getAutosaveInterval(),
+//				SimulationConfig.instance().getAutosaveInterval(), TimeUnit.MINUTES);
+//	}
 
 	// Add testConsole() for outputting text messages to mars-simmers
 //    public void testConsole() {
@@ -1049,14 +1080,14 @@ public class Simulation implements ClockListener, Serializable {
 //    	return jc;
 //    }
 
-	/**
-	 * Gets the Timer instance of the autosave timer.
-	 * 
-	 * @return autosaveTimeline
-	 */
-	public ScheduledExecutorService getAutosaveTimer() {
-		return autosaveService;
-	}
+//	/**
+//	 * Gets the Timer instance of the autosave timer.
+//	 * 
+//	 * @return autosaveTimeline
+//	 */
+//	public ScheduledExecutorService getAutosaveTimer() {
+//		return autosaveService;
+//	}
 
 	/**
 	 * Get the planet Mars.
@@ -1272,6 +1303,10 @@ public class Simulation implements ClockListener, Serializable {
 		}
 	}
 
+	public boolean getAutosaveDefault() {
+		return autosaveDefault;
+	}
+	
 	@Override
 	public void uiPulse(double time) {
 		// TODO Auto-generated method stub
@@ -1290,7 +1325,8 @@ public class Simulation implements ClockListener, Serializable {
 	public void destroyOldSimulation() {
 		// logger.info("starting Simulation's destroyOldSimulation()");
 
-		autosaveService = null;
+//		autosaveService = null;
+		AutosaveScheduler.cancel();
 
 		if (malfunctionFactory != null) {
 			malfunctionFactory.destroy();

@@ -113,6 +113,8 @@ public class RecordActivityMeta implements MetaTask, Serializable {
         if (result > 0)
          	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
+        result *= person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
+        
         if (result < 0) result = 0;
 		        
         //System.out.println("result : " + result);

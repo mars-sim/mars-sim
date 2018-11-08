@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ScientificStudyEvent.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2018-11-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.science;
@@ -16,7 +15,8 @@ import org.mars_sim.msp.core.person.Person;
  */
 public class ScientificStudyEvent extends EventObject {
 
-    // Scientific study event types.
+	private static final long serialVersionUID = 1L;
+	// Scientific study event types.
     public static final String STUDY_COMPLETION_EVENT = "study completion event";
     public static final String PHASE_CHANGE_EVENT = "study phase change event";
     public static final String PROPOSAL_WORK_EVENT = "study proposal work event";

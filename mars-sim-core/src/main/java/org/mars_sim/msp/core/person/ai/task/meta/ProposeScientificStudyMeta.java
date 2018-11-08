@@ -95,7 +95,7 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 	        }
 
 	        // Crowding modifier
-	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	        if (person.isInSettlement()) {
 	            Building adminBuilding = ProposeScientificStudy.getAvailableAdministrationBuilding(person);
 	            if (adminBuilding != null) {
 
@@ -108,7 +108,7 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 	        Job job = person.getMind().getJob();
 	        if (job != null) {
 	            result *= job.getStartTaskProbabilityModifier(ProposeScientificStudy.class)
-	            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
+	            		* 1.5D * person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 	        }
 
 	        // Modify if research is the person's favorite activity.

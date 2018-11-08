@@ -54,7 +54,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                 Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(person);
                 if (farmingBuilding != null) {
                     result += 10D;
-                    // 2016-10-28 Added getCropsNeedingTendingCache()
+
                     int needyCropsNum = person.getSettlement().getCropsNeedingTending();
                     result += needyCropsNum * 15D;
 
@@ -70,15 +70,16 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                     Job job = person.getMind().getJob();
                     if (job != null) {
                         result *= job.getStartTaskProbabilityModifier(TendGreenhouse.class)
-                        		* person.getSettlement().getGoodsManager().getCropFarmFactor();
+                        		* (person.getSettlement().getGoodsManager().getCropFarmFactor()
+                        				+ .5 * person.getAssociatedSettlement().getGoodsManager().getTourismFactor());
                     }
 
                     // Modify if tending plants is the person's favorite activity.
                     if (person.getFavorite().getFavoriteActivity() == FavoriteType.TENDING_PLANTS) {
                         result *= 2D;
                     }
-
-        	        // 2015-06-07 Added Preference modifier
+                
+        	        // Add Preference modifier
         	        if (result > 0)
          	         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
@@ -112,19 +113,12 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                 Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(robot);
                 if (farmingBuilding != null) {
                     result += 10D;
-                    // 2016-10-28 Added getCropsNeedingTendingCache()
+ 
                     int needyCropsNum = robot.getSettlement().getCropsNeedingTending();
-                    //System.out.println("needyCropsNum is "+needyCropsNum);
+
                     result += needyCropsNum * 100D;
-
-                    // Crowding modifier.
-                    //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, farmingBuilding);
-                    //result *= TaskProbabilityUtil.getRelationshipModifier(robot, farmingBuilding);
-
     	            // Effort-driven task modifier.
     	            result *= robot.getPerformanceRating();
-    	            //System.out.println("probability is " + result);
-
                 }
             }
             catch (Exception e) {
