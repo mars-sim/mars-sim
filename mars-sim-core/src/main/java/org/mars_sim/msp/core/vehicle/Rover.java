@@ -178,7 +178,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		if (this == towedVehicle)
 			throw new IllegalArgumentException("Rover cannot tow itself.");
 		this.towedVehicle = towedVehicle;
-		updatedTowedVehicleSettlementLocation();
+		//updatedTowedVehicleSettlementLocation();
 	}
 
 	/**
@@ -526,17 +526,11 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		double maxRange = super.getSettlement().getMaxMssionRange();
 		double distancePerSol = getEstimatedTravelDistancePerSol();
 
-//    	System.out.println("----------" + getName() + "----------");
-//       	System.out.println("max range : " + maxRange);
-//    	System.out.println("d/sol : " + distancePerSol);
-//    	System.out.println("fuel : " + fuelRange);
-
 		// Check food capacity as range limit.
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
 		double foodCapacity = getInventory().getARCapacity(ResourceUtil.foodID, false);
 		double foodSols = foodCapacity / (foodConsumptionRate * crewCapacity);
 		double foodRange = distancePerSol * foodSols / Vehicle.getLifeSupportRangeErrorMargin();
-//    	System.out.println("food : " + foodRange);
 
 		// Check water capacity as range limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
@@ -544,7 +538,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		double waterSols = waterCapacity / (waterConsumptionRate * crewCapacity);
 		double waterRange = distancePerSol * waterSols / Vehicle.getLifeSupportRangeErrorMargin();
 //    	if (waterRange < fuelRange) fuelRange = waterRange;
-//    	System.out.println("water : " + waterRange);
 
 		// Check oxygen capacity as range limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
@@ -552,8 +545,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
 		double oxygenRange = distancePerSol * oxygenSols / Vehicle.getLifeSupportRangeErrorMargin();
 //    	if (oxygenRange < fuelRange) fuelRange = oxygenRange;
-//    	System.out.println("oxygen : " + oxygenRange);
-//    	System.out.println("--------------------");
 
 		return Math.min(oxygenRange, Math.min(foodRange, Math.min(waterRange, Math.min(maxRange, fuelRange))));
 

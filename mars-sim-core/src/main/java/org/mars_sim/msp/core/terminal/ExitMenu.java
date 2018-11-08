@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.terminal;
 
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
-import org.beryx.textio.TextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.terminal.AppUtil;
@@ -36,10 +35,8 @@ public class ExitMenu implements BiConsumer<TextIO, RunnerData> {
         String initData = (runnerData == null) ? null : runnerData.getInitData();
         AppUtil.printGsonMessage(terminal, initData);
 
-        boolean toSave = textIO.newBooleanInputReader()//.withDefaultValue(true)
+        boolean toSave = textIO.newBooleanInputReader()
                 .read("Exit now");
-
-        terminal.printf(System.lineSeparator());
         
         if (toSave) {
             terminal.printf("Exiting the Simulation..." + System.lineSeparator());
@@ -53,14 +50,9 @@ public class ExitMenu implements BiConsumer<TextIO, RunnerData> {
             terminal.printf("You don't want to exit the Simulation." + System.lineSeparator());
         	
     }
-
-    
     
     @Override
     public String toString() {
         return "Exit the Simulation" + System.lineSeparator();
-//        		getClass().getSimpleName() + ": reading personal data.\n" +
-//                "(Properties are initialized at start-up.\n" +
-//                "Properties file: " + getClass().getSimpleName() + ".properties.)";
     }
 }

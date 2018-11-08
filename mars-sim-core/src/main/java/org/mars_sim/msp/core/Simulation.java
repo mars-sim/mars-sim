@@ -576,13 +576,11 @@ public class Simulation implements ClockListener, Serializable {
 			// Compute the size of the saved sim
 			fileSize = (file.length() / 1000D);
 			String fileStr = "";
-			// System.out.println("file size is " + fileSize);
+
 			if (fileSize < 1000)
 				fileStr = Math.round(fileSize * 10.0) / 10.0 + " KB";
 			else
-				fileStr = Math.round(fileSize) / 10.0 + " MB";
-
-			// logger.info("The saved sim has a size of "+ fileStr);
+				fileStr = Math.round(fileSize * 10.0) / 10000.0 + " MB";
 
 			loadBuild = SimulationConfig.instance().build;
 			if (loadBuild == null)
