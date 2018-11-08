@@ -565,6 +565,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 //        .filter(u -> u instanceof Person)
 //        .collect(Collectors.toList()).size();
 
+		// TODO: need to factor in those inside a vehicle parked inside a garage 
+		
 		int n = 0;
 		Iterator<Unit> i = getInventory().getAllContainedUnits().iterator();
 		while (i.hasNext()) {
@@ -1860,18 +1862,25 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 
 	/**
-	 * Gets number of deceased
+	 * Gets the number of deceased people
 	 * 
 	 * @return int
 	 */
 	public int getNumDeceased() {
+		return getDeceasedPeople().size();		
+	}
+	
+	/**
+	 * Returns a collection of deceased people buried outside this settlement
+	 * 
+	 * @return {@link Collection<Person>}
+	 */
+	public Collection<Person> getDeceasedPeople() {
 		// using java 8 stream
-		Collection<Person> result = Simulation.instance().getUnitManager()
+		return Simulation.instance().getUnitManager()
 				.getPeople().stream()
 				.filter(p -> p.getBuriedSettlement() == this)
 				.collect(Collectors.toList());
-
-		return result.size();		
 	}
 	
 	/**

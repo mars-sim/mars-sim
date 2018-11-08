@@ -201,7 +201,7 @@ public abstract class Mission implements Serializable {
 			if(Conversion.isVowel(missionName))
 				article = "an ";
 
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getSettlement() + "] "
+			LogConsolidated.log(logger, Level.INFO, 500, sourceName, "[" + person.getSettlement() + "] "
 					+ startingMember.getName() + " is organizing " + article + missionName + " mission" + str, null);
 
 			// Add starting member to mission.

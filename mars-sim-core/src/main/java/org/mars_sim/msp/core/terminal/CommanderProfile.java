@@ -54,7 +54,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     	
 	private SwingTextTerminal terminal;
 	
-	private static TextIO textIO;
+//	private static TextIO textIO;
 	
 	private static PersonConfig personConfig;
 	
@@ -65,7 +65,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     	personConfig = SimulationConfig.instance().getPersonConfiguration();
     	commander = personConfig.getCommander();
     	terminal = term.getTerminal();
-    	textIO = term.getTextIO();
+ //   	textIO = term.getTextIO();
     	
 	}
 
@@ -339,7 +339,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
      * 
      * @return List<String>
      */
-    public List<String> printList(List<String> list) {
+    public static List<String> printList(List<String> list) {
     	
        	List<String> newList = new ArrayList<>();
     	StringBuffer s = new StringBuffer();

@@ -885,13 +885,31 @@ public class ChatUtils {
 			
 			Collection<Person> list = settlementCache.getAllAssociatedPeople();
 			int total = settlementCache.getNumCitizens();
-			int indoor = settlementCache.getIndoorPeopleCount();
-			int dead = settlementCache.getNumDeceased();
-			int outdoor = total - indoor - dead;
+//			int indoor = settlementCache.getIndoorPeopleCount();
+//			int dead = settlementCache.getNumDeceased();
+//			int outdoor = settlementCache.getNumOutsideEVAPeople(); //total - indoor - dead;
+			
+			List<Person> outdoorP = new ArrayList<>(settlementCache.getOutsideEVAPeople());
+			List<Person> indoorP = new ArrayList<>(settlementCache.getIndoorPeople());
+			List<Person> deceasedP = new ArrayList<>(settlementCache.getDeceasedPeople());
+			
+			Collections.sort(outdoorP);
+			Collections.sort(indoorP);
+			Collections.sort(deceasedP);
+			
+			int indoor = indoorP.size();//settlementCache.getIndoorPeopleCount();
+			int dead = deceasedP.size();//settlementCache.getNumDeceased();
+			int outdoor = outdoorP.size();//settlementCache.getNumOutsideEVAPeople(); //total - indoor - dead;
+	
 			questionText = YOU_PROMPT + "Who are the settlers ? ";
-			responseText.append(settlementCache + " : According to the registry,"); 
+			responseText.append(settlementCache + " : According to the Mars Registry,"); 
 			responseText.append(System.lineSeparator());
-			responseText.append("  - - - S t a t u s - - -");
+			responseText.append(System.lineSeparator());
+			responseText.append("  -----------------------");
+			responseText.append(System.lineSeparator());
+			responseText.append("          Status");
+			responseText.append(System.lineSeparator());
+			responseText.append("  -----------------------");
 			responseText.append(System.lineSeparator());
 			responseText.append("    Registered : " + total);
 			responseText.append(System.lineSeparator());
@@ -902,22 +920,41 @@ public class ChatUtils {
 			responseText.append("      Deceased : " + dead);
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			responseText.append("  - - - R o s t e r - - -");
-
-			List<Person> namelist = new ArrayList<>(list);
-			Collections.sort(namelist);
-			String s = "";
-			for (int i = 0; i < namelist.size(); i++) {
-				if (namelist.get(i).isDeclaredDead())
-					s = s + "(" + (i+1) + "). " + namelist.get(i).toString() + " (Deceased)"+ System.lineSeparator();
-				else
-					s = s + "(" + (i+1) + "). " + namelist.get(i).toString() + System.lineSeparator();					
-			}
-			//		.replace("[", "").replace("]", "");//.replaceAll(", ", ",\n");
-			//System.out.println("list : " + list);
+			
+			responseText.append("  -----------------------");
 			responseText.append(System.lineSeparator());
-			responseText.append(s);
+			responseText.append("          Roster");
 			responseText.append(System.lineSeparator());
+			responseText.append("  -----------------------");
+			responseText.append(System.lineSeparator());
+						
+			// Indoor
+			responseText.append(System.lineSeparator());
+			responseText.append("   A. Indoor ");
+			responseText.append(System.lineSeparator());
+			responseText.append("  -----------");
+			responseText.append(System.lineSeparator());
+			
+			responseText.append(printList(indoorP));
+			
+			// Outdoor
+			responseText.append(System.lineSeparator());
+			responseText.append("   B. Outdoor ");
+			responseText.append(System.lineSeparator());
+			responseText.append("  ------------");
+			responseText.append(System.lineSeparator());
+			
+			responseText.append(printList(outdoorP));
+			
+			// Deceased
+			responseText.append(System.lineSeparator());
+			responseText.append("   C. Deceased ");
+			responseText.append(System.lineSeparator());
+			responseText.append("  -------------");
+			responseText.append(System.lineSeparator());
+			
+			responseText.append(printList(deceasedP));
+		
 		}
 		
 		else if (text.toLowerCase().contains("bed") || text.toLowerCase().contains("sleep") 
@@ -2361,6 +2398,76 @@ public class ChatUtils {
 		return responseText.toString();
 	}
 
+	/**
+     * Generates and prints the list that needs to be processed
+     * 
+     * @param indoorP
+     * @return String
+     */
+    public static StringBuilder printList(List<?> indoorP) {
+      	StringBuilder sb = new StringBuilder();
+      	
+    	if (indoorP.isEmpty()) {
+    		sb.append("    None");
+    		sb.append(System.lineSeparator());
+    		return sb;
+    	}
+    		
+      	List<String> list = new ArrayList<>();
+      	for (Object o : indoorP) {
+      		list.add(o.toString());
+      	}
+      	
+    	StringBuffer s = new StringBuffer();
+    	int SPACES = 22;
+    	//int row = 0;
+        for (int i=0; i< list.size(); i++) {
+        	int column = 0;
+        	
+        	String c = "";
+        	int num = 0;        	
+        	
+        	// Find out what column
+        	if ((i - 1) % 3 == 0)
+        		column = 1;
+        	else if ((i - 2) % 3 == 0)
+        		column = 2;
+
+        	// Look at how many whitespaces needed before printing each column
+			if (column == 0) {
+				c = list.get(i).toString();
+				num = SPACES - c.length();
+	
+			}
+			
+			else if (column == 1 || column == 2) {
+	        	c = list.get(i).toString();
+	        	num = SPACES - list.get(i-1).toString().length();
+
+	        	// Handle the extra space before the parenthesis
+	            for (int j=0; j < num; j++) { 
+	            	s.append(" ");
+	            }    			
+    		}
+
+        	if (i+1 < 10)
+        		s.append(" ");
+        	s.append("(");
+        	s.append(i+1);
+        	s.append("). ");
+        	s.append(c);        		
+            
+            // if this is the last column
+            if (column == 2 || i == list.size()-1) {
+                sb.append(s);
+                sb.append(System.lineSeparator());
+                s = new StringBuffer();
+            }
+        }
+      
+        return sb;    
+    }
+    
 	public static void setConnectionMode(int value) {
 		connectionMode = value;
 	}

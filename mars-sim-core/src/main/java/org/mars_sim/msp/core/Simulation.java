@@ -1220,7 +1220,7 @@ public class Simulation implements ClockListener, Serializable {
 			masterClock.onUpdate(tpf);
 	}
 
-	public InteractiveTerm getTerm(){
+	public InteractiveTerm getTerm() {
 		return interactiveTerm;
 	}
 	

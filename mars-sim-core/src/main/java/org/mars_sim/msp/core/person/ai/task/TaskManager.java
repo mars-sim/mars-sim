@@ -370,9 +370,9 @@ public class TaskManager implements Serializable {
 				time *= efficiency;
 			}
 
-			// if (person.isInside()) {
-			// checkForEmergency();
-			// }
+//			 if (person.isInside()) {
+//			 checkForEmergency();
+//			 }
 
 			remainingTime = currentTask.performTask(time);
 

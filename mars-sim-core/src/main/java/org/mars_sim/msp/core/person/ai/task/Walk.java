@@ -889,7 +889,7 @@ public class Walk extends Task implements Serializable {
 					addSubTask(new WalkRoverInterior(person, step.rover, x, y));
 				}
 
-				else {// if (person.isOutside()) {
+				else if (person.isOutside()) {
 					LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName,
 							person + " is outside but is in walkingRoverInteriorPhase() and NOT in rover.", null);// ("
 																													// +
