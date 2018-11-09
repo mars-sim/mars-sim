@@ -8,8 +8,15 @@
 package org.mars_sim.msp.core.robot;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -24,24 +31,29 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** List of the person's natural attributes keyed by unique name. */
-	private Hashtable<RoboticAttributeType, Integer> attributeList;
-
+	private Hashtable<RoboticAttributeType, Integer> attributeTable;
+	private List<Map<String, RoboticAttributeType>> r_attributes;
+	
+	private List<String> attributeList;
 	/**
 	 * Constructor.
 	 * @param robot the robot with the attributes.
 	 */
 	public RoboticAttributeManager(Robot robot) {
 
-		attributeList = new Hashtable<RoboticAttributeType, Integer>();
+		attributeTable = new Hashtable<RoboticAttributeType, Integer>();
 
+		attributeList = new ArrayList<>();
+		
 		// Create natural attributes using random values (averaged for bell curve around 50%).
 		// Note: this may change later.
-		for (RoboticAttributeType attributeKey : RoboticAttributeType.values()) {
+		for (RoboticAttributeType type : RoboticAttributeType.values()) {
 			int attributeValue = 0;
 			int numberOfIterations = 3;
 			for (int y = 0; y < numberOfIterations; y++) attributeValue += RandomUtil.getRandomInt(100);
 			attributeValue /= numberOfIterations;
-			attributeList.put(attributeKey, attributeValue);
+			attributeList.add(type.getName());
+			attributeTable.put(type, attributeValue);
 		}
 
 		// TODO: need to overhaul and define the use of attributes for robots.
@@ -52,6 +64,21 @@ implements Serializable {
 		addAttributeModifier(RoboticAttributeType.EXPERIENCE_APTITUDE, 50);
 		addAttributeModifier(RoboticAttributeType.CONVERSATION, 5);
 
+ 		r_attributes = new ArrayList<Map<String, RoboticAttributeType>>();
+			for (RoboticAttributeType value : RoboticAttributeType.values()) {
+				Map<String, RoboticAttributeType> map = new TreeMap<String, RoboticAttributeType>();
+				map.put(value.getName(),value);
+				r_attributes.add(map);
+			}
+			Collections.sort(
+				r_attributes,
+				new Comparator<Map<String,RoboticAttributeType>>() {
+					@Override
+					public int compare(Map<String,RoboticAttributeType> o1,Map<String,RoboticAttributeType> o2) {
+						return o1.keySet().iterator().next().compareTo(o2.keySet().iterator().next());
+					}
+				}
+			);
 	}
 
 	/**
@@ -70,7 +97,7 @@ implements Serializable {
 	 * @return the number of natural attributes
 	 */
 	public int getAttributeNum() {
-		return attributeList.size();
+		return attributeTable.size();
 	}
 
 	/**
@@ -81,7 +108,7 @@ implements Serializable {
 	 */
 	public int getAttribute(RoboticAttributeType attribute) {
 		int result = 0;
-		if (attributeList.containsKey(attribute)) result = attributeList.get(attribute);
+		if (attributeTable.containsKey(attribute)) result = attributeTable.get(attribute);
 		return result;
 	}
 
@@ -93,14 +120,26 @@ implements Serializable {
 	public void setAttribute(RoboticAttributeType attrib, int level) {
 		if (level > 100) level = 100;
 		if (level < 0) level = 0;
-		attributeList.put(attrib, level);
+		attributeTable.put(attrib, level);
 	}
 
+	public List<Map<String, RoboticAttributeType>> getAttributes() {
+		return r_attributes;
+	}
+	
+	public Hashtable<RoboticAttributeType, Integer> getAttributeTable() {
+		return attributeTable;
+	}
+	
+	public List<String> getAttributeList() {
+		return attributeList;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		attributeList.clear();
-		attributeList = null;
+		attributeTable.clear();
+		attributeTable = null;
 	}
 }

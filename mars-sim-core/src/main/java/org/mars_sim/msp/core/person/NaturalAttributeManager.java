@@ -8,8 +8,16 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -22,8 +30,12 @@ public class NaturalAttributeManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** List of the person's natural attributes keyed by unique name. */
-	private Hashtable<NaturalAttributeType, Integer> attributeList;
+	private Hashtable<NaturalAttributeType, Integer> attributeTable;
+	private List<Map<String, NaturalAttributeType>> n_attributes;
 
+//	private Map<String, Integer> attributeMap;
+	private List<String> attributeList;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -31,8 +43,11 @@ public class NaturalAttributeManager implements Serializable {
 	 */
 	NaturalAttributeManager(Person person) {
 
-		attributeList = new Hashtable<NaturalAttributeType, Integer>();
+		attributeTable = new Hashtable<NaturalAttributeType, Integer>();
 
+		attributeList = new ArrayList<>();
+//		attributeMap = new HashMap<>();
+		
 		// Create natural attributes using random values (averaged for bell curve around
 		// 50%).
 		// Note: this may change later.
@@ -42,7 +57,7 @@ public class NaturalAttributeManager implements Serializable {
 			for (int y = 0; y < numberOfIterations; y++)
 				attributeValue += RandomUtil.getRandomInt(100);
 			attributeValue /= numberOfIterations;
-			attributeList.put(attributeKey, attributeValue);
+			attributeTable.put(attributeKey, attributeValue);
 		}
 
 		// Modify the attributes reflective of Martian settlers.
@@ -68,6 +83,24 @@ public class NaturalAttributeManager implements Serializable {
 			addAttributeModifier(NaturalAttributeType.STRENGTH, -20);
 			addAttributeModifier(NaturalAttributeType.ENDURANCE, 20);
 		}
+		
+		n_attributes = new ArrayList<Map<String, NaturalAttributeType>>();
+		for (NaturalAttributeType type : NaturalAttributeType.values()) {
+			Map<String,NaturalAttributeType> map = new TreeMap<String,NaturalAttributeType>();
+			map.put(type.getName(),type);
+			attributeList.add(type.getName());
+//			attributeMap.put(value.getName(), getAttribute(value));
+			n_attributes.add(map);
+		}
+		Collections.sort(
+			n_attributes,
+			new Comparator<Map<String, NaturalAttributeType>>() {
+				@Override
+				public int compare(Map<String, NaturalAttributeType> o1,Map<String, NaturalAttributeType> o2) {
+					return o1.keySet().iterator().next().compareTo(o2.keySet().iterator().next());
+				}
+			}
+		);
 	}
 
 
@@ -90,7 +123,7 @@ public class NaturalAttributeManager implements Serializable {
 	 * @return the number of natural attributes
 	 */
 	public int getAttributeNum() {
-		return attributeList.size();
+		return attributeTable.size();
 	}
 
 	/**
@@ -102,8 +135,8 @@ public class NaturalAttributeManager implements Serializable {
 	 */
 	public int getAttribute(NaturalAttributeType attribute) {
 		int result = 0;
-		if (attributeList.containsKey(attribute))
-			result = attributeList.get(attribute);
+		if (attributeTable.containsKey(attribute))
+			result = attributeTable.get(attribute);
 		return result;
 	}
 
@@ -118,14 +151,26 @@ public class NaturalAttributeManager implements Serializable {
 			level = 100;
 		if (level < 0)
 			level = 0;
-		attributeList.put(attrib, level);
+		attributeTable.put(attrib, level);
 	}
 
+	public List<Map<String, NaturalAttributeType>> getAttributes() {
+		return n_attributes;
+	}
+	
+	public Hashtable<NaturalAttributeType, Integer> getAttributeTable() {
+		return attributeTable;
+	}
+	
+	public List<String> getAttributeList() {
+		return attributeList;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		attributeList.clear();
-		attributeList = null;
+		attributeTable.clear();
+		attributeTable = null;
 	}
 }

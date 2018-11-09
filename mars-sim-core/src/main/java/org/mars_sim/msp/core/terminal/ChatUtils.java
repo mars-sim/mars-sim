@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,8 @@ import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.GenderType;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -41,6 +44,8 @@ import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RoboticAttributeManager;
+import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -84,7 +89,7 @@ public class ChatUtils {
 	};
 	
 	public final static String[] PERSON_KEYS = new String[] {
-			"feeling", "status", "skill",
+			"feeling", "status", "skill", "attribute",
 			"birth", "age", "how old", "born",
 			"friend",
 			"relationship", "social", "relation",
@@ -172,7 +177,7 @@ public class ChatUtils {
 	private static OrbitInfo orbitInfo;
 	private static RelationshipManager relationshipManager;
 	private static SkillManager skillManager;
-	
+
 	private static DecimalFormat fmt = new DecimalFormat("##0");
 	private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
 	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
@@ -1145,7 +1150,66 @@ public class ChatUtils {
 		responseText.append(name);
 		responseText.append(": ");
 
-		if (text.toLowerCase().contains("skill")) {
+		if (text.toLowerCase().contains("attribute")) {
+			questionText = YOU_PROMPT + "What are your natural attributes ?"; 
+			
+	        
+			responseText.append("here's a list of my natural attributes with scores ");
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			responseText.append("          Attributes | Score");
+			responseText.append(System.lineSeparator());
+			responseText.append(" --------------------------");	
+			responseText.append(System.lineSeparator());
+			
+			if (personCache != null) {
+				NaturalAttributeManager n_manager = personCache.getNaturalAttributeManager();		
+				Hashtable<NaturalAttributeType, Integer> n_attributes = n_manager.getAttributeTable();
+				List<String> attributeList = n_manager.getAttributeList();
+				int max = 20;
+//				String space = "";		
+				for (int i=0; i< attributeList.size(); i++) {
+					String n = attributeList.get(i);
+					int size = n.length();
+//					if (i+1 <= 9)
+//						space = " ";
+					for (int j=0; j< (max-size); j++) {
+						responseText.append(" ");
+					}
+//					responseText.append(space + "(" + (i+1) + ") ");
+					responseText.append(n);
+					responseText.append(" : ");
+					responseText.append(n_attributes.get(NaturalAttributeType.valueOfIgnoreCase(n)));
+					responseText.append(System.lineSeparator());			
+				}
+				
+			}
+			else if (robotCache != null) {
+				RoboticAttributeManager r_manager = robotCache.getRoboticAttributeManager();	
+				Hashtable<RoboticAttributeType, Integer> r_attributes = r_manager.getAttributeTable();
+				List<String> attributeList = r_manager.getAttributeList();
+				int max = 20;
+//				String space = "";		
+				for (int i=0; i< attributeList.size(); i++) {
+					String n = attributeList.get(i);
+					int size = n.length();
+//					if (i+1 <= 9)
+//						space = " ";
+					for (int j=0; j< (max-size); j++) {
+						responseText.append(" ");
+					}
+//					responseText.append(space + "(" + (i+1) + ") ");
+					responseText.append(n);
+					responseText.append(" : ");
+					responseText.append(r_attributes.get(RoboticAttributeType.valueOfIgnoreCase(n)));
+					responseText.append(System.lineSeparator());			
+				}
+				
+			}			
+	
+		}
+		
+		else if (text.toLowerCase().contains("skill")) {
 			questionText = YOU_PROMPT + "What are your skills ?"; 
 			
 			if (personCache != null) {
