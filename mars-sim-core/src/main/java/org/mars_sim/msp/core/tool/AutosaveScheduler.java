@@ -15,6 +15,10 @@ import java.util.concurrent.TimeUnit;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 
+
+// See https://stackoverflow.com/questions/14889143/how-to-stop-a-task-in-scheduledthreadpoolexecutor-once-i-think-its-completed
+// regarding the issue of calling cancel()
+
 public class AutosaveScheduler {
     static ScheduledExecutorService autosaveService = Executors.newSingleThreadScheduledExecutor();
     static ScheduledFuture<?> t;

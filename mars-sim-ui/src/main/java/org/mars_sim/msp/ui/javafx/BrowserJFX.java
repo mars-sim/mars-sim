@@ -620,7 +620,7 @@ public class BrowserJFX {
     		}
     		
     		else if (input.contains(DOCS_HELP_DIR)) { //"file:/")) {
-    			System.out.println("checkInputURLType : " + input);
+//    			System.out.println("checkInputURLType : " + input);
     			parseInput(input, LOCAL_HTML);
     		}
 

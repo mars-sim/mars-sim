@@ -232,6 +232,7 @@ public class Mind implements Serializable {
 				mission.performMission(person);
 			}
 
+			// A person has no active task
 			if (!taskManager.hasActiveTask()) {
 				try {
 					getNewAction(true, (!hasActiveMission && !overrideMission));
@@ -241,12 +242,12 @@ public class Mind implements Serializable {
 				}
 			}
 
-			// if (hasActiveTask || hasActiveMission) {
-			// takeAction(time);
-			// Recursive calling causing Exception in thread "pool-4-thread-217"
-			// java.lang.StackOverflowError
-			// org.mars_sim.msp.core.person.ai.Mind.takeAction(Mind.java:242)
-			// }
+//			 if (hasActiveTask || hasActiveMission) {
+//				 takeAction(time);
+//			 Recursive calling causing Exception in thread "pool-4-thread-217"
+//			 java.lang.StackOverflowError
+//			 org.mars_sim.msp.core.person.ai.Mind.takeAction(Mind.java:242)
+//			 }
 		}
 	}
 
@@ -466,7 +467,7 @@ public class Mind implements Serializable {
 		if (missions) {
 			if (rand < missionWeights) {
 				Mission newMission = null;
-				logger.fine(person.getName() + " starting a new mission.");
+				logger.info(person.getName() + " is looking at what mission to take on.");
 				newMission = missionManager.getNewMission(person);
 
 				if (newMission != null) {

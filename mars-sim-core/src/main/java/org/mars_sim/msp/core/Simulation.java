@@ -138,19 +138,18 @@ public class Simulation implements ClockListener, Serializable {
 
 	private double fileSize;
 	
-	/** The time stamp of the last saved sim */	
-	private String lastSaveTimeStamp;
+	/** The modified time stamp of the last saved sim */	
+	private String lastSaveTimeStampMod;
+	/** The time stamp of the last saved sim. */
+	private String lastSaveTimeStamp = null;
 	/** The build version of the SimulationConfig of the loading .sim */
 	private String loadBuild;// = "unknown";
-
-	private String lastSaveStr = null;
 	
 	// Note: Transient data members aren't stored in save file
 	// Added transient to avoid serialization error
 //	private transient Timer autosaveTimer;
 //	private transient Timeline timer;
 //	private transient ScheduledExecutorService autosaveService;// = Executors.newSingleThreadScheduledExecutor();
-
 //	private transient ThreadPoolExecutor clockScheduler;
 	private transient ExecutorService clockExecutor;
 
@@ -647,7 +646,7 @@ public class Simulation implements ClockListener, Serializable {
 		Simulation sim = instance();
 		sim.halt();
 
-		lastSaveStr = new SystemDateTime().getDateTimeStr();
+		lastSaveTimeStamp = new SystemDateTime().getDateTimeStr();
 		changed = true;
 
 		File backupFile = new File(DEFAULT_DIR, "previous" + DEFAULT_EXTENSION);
@@ -668,7 +667,7 @@ public class Simulation implements ClockListener, Serializable {
 				Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
 			}
 
-			logger.info("Saving as " + DEFAULT_FILE + DEFAULT_EXTENSION + "...");
+			logger.info("Saving as " + DEFAULT_FILE + DEFAULT_EXTENSION + ".");
 
 		}
 
@@ -695,12 +694,12 @@ public class Simulation implements ClockListener, Serializable {
 				Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
 			}
 
-			logger.info("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION + "...");
+			logger.info("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION + ".");
 
 		}
 
 		else if (type == AUTOSAVE) {
-			String autosaveFilename = lastSaveStr + "_Sol" + masterClock.getMarsClock().getMissionSol() + "_r" + BUILD
+			String autosaveFilename = lastSaveTimeStamp + "_Sol" + masterClock.getMarsClock().getMissionSol() + "_r" + BUILD
 					+ DEFAULT_EXTENSION;
 			file = new File(AUTOSAVE_DIR, autosaveFilename);
 			logger.info("Autosaving as " + autosaveFilename + "...");
@@ -934,14 +933,14 @@ public class Simulation implements ClockListener, Serializable {
 	 * Returns the time string of the last saving or autosaving action
 	 */
 	public String getLastSaveTimeStamp() {
-		if (lastSaveStr == null || lastSaveStr.equals(""))
+		if (lastSaveTimeStamp == null || lastSaveTimeStamp.equals(""))
 			return "Never     ";
 		else if (!changed) {
-			return lastSaveTimeStamp;
+			return lastSaveTimeStampMod;
 		} else {
 			changed = false;
 			StringBuilder sb = new StringBuilder();
-			int l = lastSaveStr.length();
+			int l = lastSaveTimeStamp.length();
 
 			// Past : e.g. 03-22-2017_022018PM
 			// String s = lastSave.substring(l-8, l);
@@ -950,10 +949,10 @@ public class Simulation implements ClockListener, Serializable {
 
 			// Now e.g. 2007-12-03T10.15.30
 			// String id = ZonedDateTime.now().getZone().toString();
-			String s = lastSaveStr.substring(lastSaveStr.indexOf("T") + 1, l).replace(".", ":");
+			String s = lastSaveTimeStamp.substring(lastSaveTimeStamp.indexOf("T") + 1, l).replace(".", ":");
 			sb.append(s).append(WHITESPACES).append(LOCAL_TIME);
-			lastSaveTimeStamp = sb.toString();
-			return lastSaveTimeStamp;
+			lastSaveTimeStampMod = sb.toString();
+			return lastSaveTimeStampMod;
 		}
 	}
 

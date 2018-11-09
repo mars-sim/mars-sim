@@ -349,8 +349,8 @@ public abstract class Mission implements Serializable {
 					}
 
 				// Creating missing finishing event.
-				// HistoricalEvent newEvent = new MissionHistoricalEvent(member, this,
-				// EventType.MISSION_FINISH);
+//				 HistoricalEvent newEvent = new MissionHistoricalEvent(member, this,
+//				 EventType.MISSION_FINISH);
 
 				String loc0 = null;
 				String loc1 = null;
