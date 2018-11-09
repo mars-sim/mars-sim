@@ -298,9 +298,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		if (APPROVAL.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
-					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));// getSettlement()));//startingMember.getSettlement().toString()));
-																													// //
-																													// $NON-NLS-1$
+					Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getDescription())); // $NON-NLS-1$
 		}
 
 		else if (EMBARKING.equals(getPhase())) {

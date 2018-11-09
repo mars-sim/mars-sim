@@ -125,10 +125,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public static double water_consumption;
 
 	public static double minimum_air_pressure;
-	
-	/** The trending score for curving the minimum score for mission approval. */
-	private static double trendingScore = 30D;
-
+		
 	/** Amount of time (millisols) required for periodic maintenance. */
 	// private static final double MAINTENANCE_TIME = 1000D;
 
@@ -159,7 +156,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private int numCitizens;
 	/**  Numbers of associated bots in this settlement. */
 	private int numBots;
-		
+	
+	/** The currently minimum passing score for mission approval. */
+	private double minimumPassingScore = 0;
+	/** The trending score for curving the minimum score for mission approval. */
+	private double trendingScore = 30D;
+	/** The recently computed average score of the missions. */
+	private double currentAverageScore = 0;
 	/** Goods manager update time. */
 	private double goodsManagerUpdateTime = 0D;
 	/** The settlement's current indoor temperature. */
@@ -3317,14 +3320,16 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		for (double s : missionScores) {
 			total += s;
 		}
-		double ave = total/ missionScores.size();
+		currentAverageScore = total/ missionScores.size();
 		
-		if (score > ave + trendingScore) {
-			trendingScore = (score - ave + 2D * trendingScore) / 3D;
+		minimumPassingScore = Math.round((currentAverageScore + trendingScore) * 10D) / 10D;
+		
+		if (score > currentAverageScore + trendingScore) {
+			trendingScore = (score - currentAverageScore + 2D * trendingScore) / 3D;
 			return true;
 		}
 		else {
-			trendingScore = (ave - score + 2D * trendingScore) / 3D;
+			trendingScore = (currentAverageScore - score + 2D * trendingScore) / 3D;
 			return false;
 		}
 	}
@@ -3335,13 +3340,15 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return
 	 */
 	public double getMinimumPassingScore() {
-		double total = 0;
-		for (double s : missionScores) {
-			total += s;
-		}
-		double ave = total/ missionScores.size();
+//		double total = 0;
+//		for (double s : missionScores) {
+//			total += s;
+//		}
+//		double ave = total/ missionScores.size();
+//		
+//		return Math.round((currentAverageScore + trendingScore) * 10D) / 10D;
 		
-		return Math.round((ave + trendingScore) * 10D) / 10D;
+		return minimumPassingScore;
 	}
 	
 	/**
