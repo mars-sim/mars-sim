@@ -41,6 +41,8 @@ Copyright (C) 2018 Scott Davis
 
 8. Add Commander Mode vs. Sandbox Mode.
 
+9. Compare settlement achievement using metrics (e.g. overall social score of 
+   a settlement)
 
 
 ### UI IMPROVEMENT :

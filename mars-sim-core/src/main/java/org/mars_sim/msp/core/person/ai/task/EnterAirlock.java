@@ -594,7 +594,11 @@ public class EnterAirlock extends Task implements Serializable {
 		if (suit != null) {
 			Inventory suitInv = suit.getInventory();
 			Inventory personInv = person.getInventory();
-			Inventory entityInv = person.getContainerUnit().getInventory();
+			if (person.getContainerUnit() == null)
+				System.err.println("storingEVASuitPhase: person.getContainerUnit() == null : " 
+									+ person + " is at " 
+									+ person.getLocationStateType());
+			Inventory entityInv = person.getContainerUnit().getInventory(); // why NullPointerException ?
 
 			// Unload oxygen from suit.
 			double oxygenAmount = suitInv.getARStored(oxygenID, false);

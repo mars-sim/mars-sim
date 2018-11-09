@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.terminal;
 import java.awt.geom.Point2D;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,10 +18,12 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -36,7 +39,6 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -92,7 +94,6 @@ public class ChatUtils {
 			"feeling", "status", "skill", "attribute",
 			"birth", "age", "how old", "born",
 			"friend",
-			"relationship", "social", "relation",
 			"country", "nationality", 
 			"space agency", "sponsor", 
 			"specialty",
@@ -103,6 +104,7 @@ public class ChatUtils {
 	};
 	
 	public final static String[] ALL_PARTIES_KEYS = new String[] {
+			"relationship", "social", "relation",
 			"bed", "sleep", "lodging", "quarters", "time",
 			"where", "location", "located",	
 			"job", "role", "career",
@@ -458,6 +460,39 @@ public class ChatUtils {
 	}
 	
 	/**
+	 * Computes the overall relationship score of a settlement
+	 * 
+	 * @param s Settlement
+	 * @return the score
+	 */
+	public static double getRelationshipScore(Settlement s) {
+		double score = 0;
+		if (relationshipManager == null)
+			relationshipManager = Simulation.instance().getRelationshipManager();
+		
+		Collection<Person> col = s.getAllAssociatedPeople();
+
+		List<Person> list0 = new ArrayList<>(col);
+
+		int count = 0;
+		for (Person pp : list0) {
+			Map<Person, Double> friends = relationshipManager.getFriends(pp);
+			if (!friends.isEmpty()) {
+				List<Person> list = new ArrayList<>(friends.keySet());
+				for (int i = 0; i < list.size(); i++) {
+					Person p = list.get(i);
+					score += friends.get(p);
+					count++;
+				}
+			}
+		}
+		
+		score = Math.round(score/count *100.0)/100.0;
+		
+		return score;
+	}
+	
+	/**
 	 * Asks the settlement when the input is a string
 	 * 
 	 * @param text the input string
@@ -469,7 +504,20 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuilder responseText = new StringBuilder();
 		
-		if (text.toLowerCase().contains("time")) {
+		if (text.toLowerCase().contains("relationship")
+				|| text.toLowerCase().contains("relation")
+				|| text.toLowerCase().contains("social")) {
+			questionText = YOU_PROMPT + "How is the overall social score in this settlement ?"; 
+
+			double score = getRelationshipScore(settlementCache);
+		
+			responseText.append(System.lineSeparator())	;		
+			responseText.append(settlementCache.getName() + "'s current overall social score is " + fmt1.format(score) + ".");
+			responseText.append(System.lineSeparator());
+		
+		}
+		
+		else if (text.toLowerCase().contains("time")) {
 			questionText = YOU_PROMPT + "What time is it ?"; 
 			responseText.append(settlementCache.getName() + " : ");
 			responseText.append("Here's the latest time info.");
@@ -2069,6 +2117,16 @@ public class ChatUtils {
 
 	}
 
+//	public static <T extends Comparable<? super T>> void customSort(List<T> list) {
+//		Object[] a = list.toArray();
+//	    Arrays.sort(a);
+//	    ListIterator<T> i = list.listIterator();
+//	    for (int j=0; j<a.length; j++) {
+//	    	i.next();
+//	        i.set((T)a[j]);
+//	    }
+//	}
+	
 	/*
 	 * Asks the system a question
 	 * 
@@ -2099,6 +2157,66 @@ public class ChatUtils {
 			proceed = true;
 		}
 
+		else if (text.toLowerCase().contains("relationship")
+				|| text.toLowerCase().contains("relation")
+				|| text.toLowerCase().contains("social")) {
+
+			double ave = 0;
+			Map<Double, String> map = new HashMap<>();
+//			List<String> list = new ArrayList<>();
+			List<Double> scores = new ArrayList<>();
+			Collection<Settlement> col = sim.getUnitManager().getSettlements();
+			for (Settlement s : col) {
+				double score = getRelationshipScore(s);
+				ave += score;
+//				list.add(s.getName());
+				scores.add(score);
+				map.put(score, s.getName());
+			}	
+			int size = scores.size();
+			ave = ave / size;
+			
+			responseText.append("Current overall social score for all " + size + " settlements : " + fmt1.format(ave));
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			
+			responseText.append("   Rank | Score | Settlement");
+			responseText.append(System.lineSeparator());
+			responseText.append(" -----------------------------------");
+			responseText.append(System.lineSeparator());
+			
+			scores.sort((Double d1, Double d2) -> -d1.compareTo(d2)); 
+			
+			for (int i=0; i<size; i++) {
+				double score = scores.get(i);
+				String space = "";
+				String scoreStr = score + "";
+				int num = scoreStr.length();
+				if (num == 2)
+					space = "   ";
+				else if (num == 3)
+					space = "  ";
+				else if (num == 4)
+					space = " ";
+				else if (num == 5)
+					space = "";
+				
+				String name = map.get(scores.get(i));			
+				responseText.append("    #" + (i+1) + "    " + space + fmt1.format(score) + "    " + name );
+				// Note : remove the pair will prevent the case when when 2 or more settlements have the exact same score from reappearing
+				map.remove(score, name);
+				responseText.append(System.lineSeparator());
+			}
+			
+//			responseText.append(System.lineSeparator());
+			
+//			map.entrySet().stream()
+//			   .sorted(Map.Entry.comparingByValue())
+//			   .forEach(System.out::println);
+			
+			return responseText.toString();
+		}
+		
 		else if (text.toLowerCase().contains("time")) {
 			
 			responseText.append(SYSTEM_PROMPT);
