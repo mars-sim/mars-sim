@@ -50,7 +50,9 @@ import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.core.tool.AutosaveScheduler;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
+import org.tukaani.xz.FilterOptions;
 import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.X86Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
 
@@ -811,9 +813,28 @@ public class Simulation implements ClockListener, Serializable {
 			
 			// STEP 2: convert the uncompressed file into a fis
 			fis = new FileInputStream(uncompressed);
-			LZMA2Options options = new LZMA2Options();
+			
+			// Using the default settings and the default integrity check type (CRC64)
+			// If set to level 9, at start of the sim, 406 KB
+			// If set to level 8, at start of the sim, 407 KB
+			// If set to level 7, at start of the sim, 405 KB
+			// If set to level 6, at start of the sim, 415 KB
+			LZMA2Options lzma2 = new LZMA2Options(9);
 			// Set to 6. For mid sized archives (>8mb), 7 works better.
-			options.setPreset(6);
+			//lzma2.setPreset(8);
+			FilterOptions[] options = {lzma2};
+			
+			// Using the x86 BCJ filter // 424KB
+//			X86Options x86 = new X86Options();
+//			LZMA2Options lzma2 = new LZMA2Options();
+//			FilterOptions[] options = { x86, lzma2 };
+			System.out.println("Encoder memory usage: "
+			                    + FilterOptions.getEncoderMemoryUsage(options)
+			                    + " KiB");
+			System.out.println("Decoder memory usage: "
+			                    + FilterOptions.getDecoderMemoryUsage(options)
+			                    + " KiB");
+			 
 			xzout = new XZOutputStream(fos, options);
 
 			// STEP 3: set up buffer and create outxz and save as a .sim file
