@@ -656,10 +656,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return true if the person is outside
 	 */
 	public boolean isOutside() {
-		if (isBuried)
+		if (getContainerUnit() == null)
 			return true;
-		else if (getContainerUnit() == null)
-				return true;
+		else if (isBuried)
+			return true;
 		return false;
 	}
 

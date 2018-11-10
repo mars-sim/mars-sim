@@ -138,6 +138,13 @@ implements Serializable {
     private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
     private static MarsClock marsClock;
 
+//	private static int oxygenID = ResourceUtil.oxygenID;
+//	private static int waterID = ResourceUtil.waterID;
+//	private static int co2ID = ResourceUtil.co2ID;
+	private static int foodID = ResourceUtil.foodID;
+//	private static int blackWaterID = ResourceUtil.blackWaterID;
+//	private static int greyWaterID = ResourceUtil. greyWaterID;
+	
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -883,7 +890,7 @@ implements Serializable {
 	    retrieveAnIngredientFromMap(usage, ResourceUtil.waterAR, true);
 		double wasteWaterAmount = usage * .75;
 		if (wasteWaterAmount > 0)
-			Storage.storeAnResource(wasteWaterAmount, ResourceUtil.greyWaterAR, inv, sourceName + "::consumeWater");
+			Storage.storeAnResource(wasteWaterAmount, ResourceUtil.greyWaterID, inv, sourceName + "::consumeWater");
     }
 
 
@@ -1069,7 +1076,7 @@ implements Serializable {
 	public void preserveFood() {
 		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.tableSaltAR, true); //TABLE_SALT, true);//
 		if (dryMassPerServing > 0)
-			Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodAR, inv, sourceName + "::preserveFood");
+			Storage.storeAnResource(dryMassPerServing, foodID, inv, sourceName + "::preserveFood");
  	}
 
     /**

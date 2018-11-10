@@ -143,7 +143,7 @@ public class EnterAirlock extends Task implements Serializable {
 		logger.finer(person + " waiting to enter airlock from outside.");
 
 		// If person is already inside, change to exit airlock phase.
-		if (!person.isOutside()) {
+		if (person.isInside()) {
 			setPhase(EXITING_AIRLOCK);
 			return remainingTime;
 		}
@@ -257,7 +257,7 @@ public class EnterAirlock extends Task implements Serializable {
 		if (airlock.inAirlock(person)) {
 			logger.finer(person + " is entering airlock, but is already in airlock.");
 			setPhase(WAITING_INSIDE_AIRLOCK);
-		} else if (!person.isOutside()) {
+		} else if (person.isInside()) {//!person.isOutside()) {
 			logger.finer(person + " is entering airlock, but is already inside.");
 			endTask();
 		} else if (LocalAreaUtil.areLocationsClose(personLocation, insideAirlockPos)) {
@@ -635,7 +635,7 @@ public class EnterAirlock extends Task implements Serializable {
 //			 suit.setLastOwner(person);
 			entityInv.storeUnit(suit);
 		} else {
-			logger.severe("[" + person.getLocationTag().getExtendedLocations() + "] " 
+			logger.severe("[" + person.getLocationTag().getLocale() + "] " 
 					+ person.getName() + " doesn't have an EVA suit to put away.");
 		}
 

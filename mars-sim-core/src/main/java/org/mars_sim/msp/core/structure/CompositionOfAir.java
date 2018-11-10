@@ -73,7 +73,7 @@ public class CompositionOfAir implements Serializable {
 	 * The % of air composition used by US Skylab Hab Modules. 5 psi or 340 mb is
 	 * the overall pressure rating.
 	 */
-	private static final double[] SKYLAB_AIR_COMPOSITION_IN_MB = new double[] { 0.5, 0.1, 120, 200, 19.4 };
+	private static final double[] SKYLAB_AIR_COMPOSITION_IN_MB = new double[] { 0.5, 0.1, 120, 200, 19.4 }; // {CO2, Ar, N2, O2, H2O
 	// see http://www.collectspace.com/ubb/Forum29/HTML/001309.html
 
 	public static final double SKYLAB_TOTAL_AIR_PRESSURE_IN_ATM = 340D;

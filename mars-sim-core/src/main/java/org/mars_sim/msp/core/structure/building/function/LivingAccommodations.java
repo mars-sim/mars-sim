@@ -68,7 +68,14 @@ public class LivingAccommodations extends Function implements Serializable {
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
 	private static MarsClock marsClock;
-
+	
+//	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+//	private static int co2ID = ResourceUtil.co2ID;
+//	private static int foodID = ResourceUtil.foodID;
+	private static int blackWaterID = ResourceUtil.blackWaterID;
+	private static int greyWaterID = ResourceUtil. greyWaterID;
+	
 	/**
 	 * Constructor
 	 * 
@@ -300,7 +307,7 @@ public class LivingAccommodations extends Function implements Serializable {
 		// Remove wash water from settlement.
 		if (inv == null)
 			inv = settlement.getInventory();
-		Storage.retrieveAnResource(waterUsed * random_factor, ResourceUtil.waterAR, inv, true);
+		Storage.retrieveAnResource(waterUsed * random_factor, waterID, inv, true);
 
 		// Grey water is produced by wash water.
 		double greyWaterProduced = wasteWaterProduced * greyWaterFraction;
@@ -308,9 +315,9 @@ public class LivingAccommodations extends Function implements Serializable {
 		double blackWaterProduced = wasteWaterProduced * (1 - greyWaterFraction);
 
 		if (greyWaterProduced > 0)
-			Storage.storeAnResource(greyWaterProduced, ResourceUtil.greyWaterAR, inv, sourceName + "::generateWaste");
+			Storage.storeAnResource(greyWaterProduced, greyWaterID, inv, sourceName + "::generateWaste");
 		if (blackWaterProduced > 0)
-			Storage.storeAnResource(blackWaterProduced, ResourceUtil.blackWaterAR, inv, sourceName + "::generateWaste");
+			Storage.storeAnResource(blackWaterProduced, blackWaterID, inv, sourceName + "::generateWaste");
 
 		// Use toilet paper and generate toxic waste (used toilet paper).
 		double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000D;

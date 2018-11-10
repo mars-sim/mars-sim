@@ -226,6 +226,8 @@ public class PhysicalCondition implements Serializable {
 
 	/** List of all available medical complaints. */
 	private static List<Complaint> allMedicalComplaints;
+	
+	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 
 	/**
 	 * Constructor 1.
@@ -380,9 +382,31 @@ public class PhysicalCondition implements Serializable {
 
 			String loc = person.getLocationTag().getQuickLocation();
 
+			// Check if a person is performing low aerobic tasks 
+			if (person.getTaskDescription().toLowerCase().contains("eat")
+						|| person.getTaskDescription().toLowerCase().contains("drink")
+//					person.getTaskDescription().toLowerCase().contains("assist")
+//					|| person.getTaskDescription().toLowerCase().contains("compil")
+						|| person.getTaskDescription().toLowerCase().contains("meet")
+//					|| person.getTaskDescription().toLowerCase().contains("peer")
+						|| person.getTaskDescription().toLowerCase().contains("relax")
+						|| person.getTaskDescription().toLowerCase().contains("rest")
+						|| person.getTaskDescription().toLowerCase().contains("sleep")
+//					|| person.getTaskDescription().toLowerCase().contains("teach")
+//					|| person.getTaskDescription().toLowerCase().contains("walk")		
+//					|| person.getTaskDescription().toLowerCase().contains("yoga")	
+				) {
+					restingTask = true;
+				} else
+					restingTask = false;
+			
+			if (restingTask)
+				o2_consumption = personConfig.getLowO2ConsumptionRate();
+			else
+				o2_consumption = personConfig.getNominalO2ConsumptionRate();
+				
 			// Check life support system
 			try {
-
 				if (consumeOxygen(support, o2_consumption * (time / 1000D)))
 					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 							"[" + loc + "] " + name + " has insufficient oxygen.", null);
@@ -406,23 +430,6 @@ public class PhysicalCondition implements Serializable {
 			// Update radiation counter
 			radiation.timePassing(time);
 
-			if (
-//				person.getTaskDescription().toLowerCase().contains("assist")
-			person.getTaskDescription().toLowerCase().contains("eat")
-					|| person.getTaskDescription().toLowerCase().contains("drink")
-//				|| person.getTaskDescription().toLowerCase().contains("compil")
-					|| person.getTaskDescription().toLowerCase().contains("meet")
-//				|| person.getTaskDescription().toLowerCase().contains("peer")
-					|| person.getTaskDescription().toLowerCase().contains("relax")
-					|| person.getTaskDescription().toLowerCase().contains("rest")
-					|| person.getTaskDescription().toLowerCase().contains("sleep")
-//				|| person.getTaskDescription().toLowerCase().contains("teach")
-//				|| person.getTaskDescription().toLowerCase().contains("walk")		
-//				|| person.getTaskDescription().toLowerCase().contains("yoga")	
-			) {
-				restingTask = true;
-			} else
-				restingTask = false;
 
 			// Update the existing health problems
 			if (!problems.isEmpty()) {
@@ -1183,7 +1190,7 @@ public class PhysicalCondition implements Serializable {
 			healthHistory.put(type, clocks);
 
 			String n = type.getName().toLowerCase();
-			String prefix = "[" + person.getLocationTag().getQuickLocation() + "] ";
+			String prefix = "[" + person.getLocationTag().getLocale() + "] ";
 			String phrase = "";
 			String suffix = ".";
 

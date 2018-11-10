@@ -964,6 +964,7 @@ public class MalfunctionManager implements Serializable {
 		}
 
 		if (hasMal) {
+            logger.info(actor.getName() + " has an accident during EVA.");
 			if (type == 1)
 				handleStringTypeOne(s, actor);
 			else if (type == 2)

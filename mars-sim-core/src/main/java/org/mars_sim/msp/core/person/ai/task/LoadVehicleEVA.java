@@ -95,8 +95,8 @@ implements Serializable {
     
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
-	private static int foodID = ResourceUtil.foodID;
-	private static int methaneID = ResourceUtil.methaneID;
+//	private static int foodID = ResourceUtil.foodID;
+//	private static int methaneID = ResourceUtil.methaneID;
 	
     
     /**
@@ -326,7 +326,7 @@ implements Serializable {
                         int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
                         if ((peopleOnboard > 0)) {
                             int numSuits = roverInv.findNumUnitsOfClass(EVASuit.class);
-                            double water = roverInv.getAmountResourceStored(ResourceUtil.waterAR, false);
+                            double water = roverInv.getAmountResourceStored(ResourceUtil.waterID, false);
                             double oxygen = roverInv.getARStored(ResourceUtil.oxygenID, false);
                             if ((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED)) {
                                 result.add(rover);

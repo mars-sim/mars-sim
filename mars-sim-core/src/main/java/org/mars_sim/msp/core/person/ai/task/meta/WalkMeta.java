@@ -56,13 +56,13 @@ public class WalkMeta implements MetaTask, Serializable {
 		// location.
 		if (person.isOutside()) {
 			result = 500D;
+		} else if (person.isInVehicle()) {
+			// If person is inside a rover, may walk to random location within rover.
+			result = .05D;
 		} else if (person.isInSettlement()) {
 			// If person is inside a settlement building, may walk to a random location
 			// within settlement.
 			result = .5D;
-		} else if (person.isInVehicle()) {
-			// If person is inside a rover, may walk to random location within rover.
-			result = .05D;
 		}
 
 		if (result < 0)

@@ -368,7 +368,7 @@ implements Serializable {
     protected boolean shouldEndEVAOperation() {
 
         boolean result = false;
-    	if (person != null) {
+//    	if (person != null) {
 
             // Check end EVA flag.
             if (endEVA) {
@@ -379,10 +379,10 @@ implements Serializable {
             else if (checkEVAProblem(person)) {
                 result = true;
             }
-    	}
-    	else if (robot != null) {
-
-    	}
+//    	}
+//    	else if (robot != null) {
+//
+//    	}
 
 
         return result;
@@ -393,19 +393,23 @@ implements Serializable {
      * @param person the person.
      * @return true if an EVA problem.
      */
-    public boolean checkEVAProblem(Person person) {
+    public static boolean checkEVAProblem(Person person) {
 
         // Check if it is night time.
         Mars mars = Simulation.instance().getMars();
         if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
-            logger.fine(person.getName() + " should end EVA: night time.");
+        	LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " 
+							+ person.getName() + " is ending EVA prematurely : Too dark at night.", null);
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
                 return false;
         }
 
         EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
         if (suit == null) {
-            logger.fine(person.getName() + " should end EVA: No EVA suit found.");
+        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " 
+							+ person.getName() + " is ending EVA prematurely : No EVA suit found.", null);
             return false;
         }
 
@@ -416,7 +420,9 @@ implements Serializable {
             double oxygenCap = suitInv.getAmountResourceCapacity(ResourceUtil.oxygenID, false);
             double oxygen = suitInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
             if (oxygen <= (oxygenCap * .15D)) {
-                logger.fine(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");
+            	LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " 
+								+ person.getName() + " is ending EVA prematurely : " + suit.getName() + "'s oxygen level less than 15%.", null);
                 return false;
             }
 
@@ -424,13 +430,17 @@ implements Serializable {
             double waterCap = suitInv.getARCapacity(ResourceUtil.waterID, false);
             double water = suitInv.getARStored(ResourceUtil.waterID, false);
             if (water <= (waterCap * .15D)) {
-                logger.fine(person.getName() + " should end EVA: EVA suit water level less than 15%");
+            	LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " 
+								+ person.getName() + " is ending EVA prematurely : " + suit.getName() + "'s water level less than 15%.", null);
                 return false;
             }
 
             // Check if life support system in suit is working properly.
             if (!suit.lifeSupportCheck()) {
-                logger.fine(person.getName() + " should end EVA: EVA suit failed life support check.");
+            	LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " 
+								+ person.getName() + " is ending EVA prematurely : " + suit.getName() + " failed life support check.", null);
                 return false;
             }
         }
@@ -440,13 +450,19 @@ implements Serializable {
 
         // Check if suit has any malfunctions.
         if (suit.getMalfunctionManager().hasMalfunction()) {
-            logger.fine(person.getName() + " should end EVA: EVA suit has malfunction.");
+        	LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " 
+							+ person.getName() + " is ending EVA prematurely : EVA suit has malfunction.", null);
             return false;
         }
 
         // Check if person's medical condition is sufficient to continue phase.
         if (person.getPerformanceRating() == 0D) {
-            logger.fine(person.getName() + " should end EVA: medical problems.");
+        	// Add back to 3% so that the person can walk
+        	person.getPhysicalCondition().setPerformanceFactor(3);
+            LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " 
+							+ person.getName() + " is ending EVA prematurely : medical problems.", null);
             return false;
         }
 

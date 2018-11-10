@@ -76,7 +76,7 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	private static double minimum_air_pressure;
 
 	// Data members
-
+	private Person person;
 
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
@@ -132,36 +132,42 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		// boolean result = true;
 		try {
 			if (getInventory().getARStored(ResourceUtil.oxygenID, false) <= 0D) {
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-						this.getName() + " ran out of oxygen in EVASuit", null);
+				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+						"[" + this.getLocationTag().getLocale() + "] " 
+								+ person.getName() + "'s " + this.getName() + " ran out of oxygen.", null);
 				return false;
 			}
 			if (getInventory().getARStored(ResourceUtil.waterID, false) <= 0D) {
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-						this.getName() + " ran out of water in EVASuit.", null);
+				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+						"[" + this.getLocationTag().getLocale() + "] " 
+								+ person.getName() + "'s " + this.getName() + " ran out of water.", null);
 				return false;
 			}
 			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-						this.getName() + "'s oxygen flow sensor detected malfunction.", null);
+				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+						"[" + this.getLocationTag().getLocale() + "] " 
+								+ person.getName() + "'s " + this.getName() + "'s oxygen flow sensor detected malfunction.", null);
 				return false;
 			}
 			if (malfunctionManager.getWaterFlowModifier() < 100D) {
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-						this.getName() + "'s water flow sensor detected malfunction.", null);
+				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+						"[" + this.getLocationTag().getLocale() + "] " 
+								+ person.getName() + "'s " + this.getName() + "'s water flow sensor detected malfunction.", null);
 				return false;
 			}
 
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= minimum_air_pressure) {
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-						this.getName() + " detected improper air pressure at " + Math.round(p * 10D) / 10D, null);
+				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+						"[" + this.getLocationTag().getLocale() + "] " 
+								+ person.getName() + "'s " + this.getName() + " detected improper air pressure at " + Math.round(p * 10D) / 10D, null);
 				return false;
 			}
 			double t = getTemperature();
 			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 20) {
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-						this.getName() + " detected improper temperature at " + Math.round(t * 10D) / 10D, null);
+				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+						"[" + this.getLocationTag().getLocale() + "] " 
+								+ person.getName() + "'s " + this.getName() + " detected improper temperature at " + Math.round(t * 10D) / 10D, null);
 				return false;
 			}
 		} catch (Exception e) {
@@ -196,6 +202,13 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		double oxygenTaken = amountRequested;
 		try {
 			double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
+//			if (oxygenTaken * 100 > oxygenLeft) {
+//				// O2 is running out soon
+//				// Walk back to the building or vehicle
+//				person.getMind().getTaskManager().clearTask();//
+//				person.getMind().getTaskManager().addTask(new Relax(person));
+//			}
+			
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
 			getInventory().retrieveAmountResource(ResourceUtil.oxygenID, oxygenTaken);
@@ -322,10 +335,14 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		if (container instanceof Person) {
 			Person person = (Person) container;
 			if (!person.getPhysicalCondition().isDead()) {
-				malfunctionManager.activeTimePassing(time);
+				this.person = person;
+				malfunctionManager.activeTimePassing(time);	
 			}
+			
+			malfunctionManager.timePassing(time);
 		}
-		malfunctionManager.timePassing(time);
+		else
+			this.person = null;
 	}
 
 	@Override

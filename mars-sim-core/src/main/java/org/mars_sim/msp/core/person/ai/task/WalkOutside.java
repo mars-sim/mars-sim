@@ -85,10 +85,9 @@ implements Serializable {
     private double[] obstacleSearchLimits;
     private boolean ignoreEndEVA;
 
-	// 2017-03-22 WARNING: cannot use oxygenAR and waterAR in AmountResource or resulting in null.
-	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;//.findAmountResource(LifeSupportType.OXYGEN);
-	private static AmountResource waterAR = ResourceUtil.waterAR;//.findAmountResource(LifeSupportType.WATER);
-
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+	
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -691,7 +690,7 @@ implements Serializable {
 
 		if (person != null) {
 
-		    // 2015-05-29 Check for radiation exposure during the EVA operation.
+		    // Check for radiation exposure during the EVA operation.
 	        //checkForRadiation(time);
 	        // If there are any EVA problems, end walking outside task.
 	        if (!ignoreEndEVA && checkEVAProblem(person)) {
@@ -805,66 +804,8 @@ implements Serializable {
      * @param person the person.
      * @return true if an EVA problem.
      */
-    // 2017-04-08 Add checkEVAProblem()-- a replica of the one in EVAOperation
-    public boolean checkEVAProblem(Person person) {
-
-        // Check if it is night time.
-        Mars mars = Simulation.instance().getMars();
-        if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
-            logger.fine(person.getName() + " should end EVA: night time.");
-            if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
-                return false;
-        }
-
-        EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
-        if (suit == null) {
-            logger.fine(person.getName() + " should end EVA: No EVA suit found.");
-            return false;
-        }
-        Inventory suitInv = suit.getInventory();
-
-        try {
-            // Check if EVA suit is at 15% of its oxygen capacity.
-            //AmountResource oxygenAR = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
-            double oxygenCap = suitInv.getAmountResourceCapacity(oxygenAR, false);
-            double oxygen = suitInv.getAmountResourceStored(oxygenAR, false);
-            if (oxygen <= (oxygenCap * .15D)) {
-                logger.fine(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");
-                return false;
-            }
-
-            // Check if EVA suit is at 15% of its water capacity.
-            //AmountResource waterAR = ResourceUtil.findAmountResource(LifeSupportType.WATER);
-            double waterCap = suitInv.getAmountResourceCapacity(waterAR, false);
-            double water = suitInv.getAmountResourceStored(waterAR, false);
-            if (water <= (waterCap * .15D)) {
-                logger.fine(person.getName() + " should end EVA: EVA suit water level less than 15%");
-                return false;
-            }
-
-            // Check if life support system in suit is working properly.
-            if (!suit.lifeSupportCheck()) {
-                logger.fine(person.getName() + " should end EVA: EVA suit failed life support check.");
-                return false;
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace(System.err);
-        }
-
-        // Check if suit has any malfunctions.
-        if (suit.getMalfunctionManager().hasMalfunction()) {
-            logger.fine(person.getName() + " should end EVA: EVA suit has malfunction.");
-            return false;
-        }
-
-        // Check if person's medical condition is sufficient to continue phase.
-        if (person.getPerformanceRating() == 0D) {
-            logger.fine(person.getName() + " should end EVA: medical problems.");
-            return false;
-        }
-
-        return true;
+    public boolean checkEVAProblem(Person person) {	
+    	return EVAOperation.checkEVAProblem(person);
     }
 
 
@@ -1007,48 +948,46 @@ implements Serializable {
      */
     private void checkForAccident(double time) {
 
-		if (person != null) {
-		       EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
-		        if (suit != null) {
+//		if (person != null) {
+    	EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+        if (suit != null) {
 
-		            double chance = BASE_ACCIDENT_CHANCE;
+            double chance = BASE_ACCIDENT_CHANCE;
 
-		            // EVA operations skill modification.
-		            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		            if (skill <= 3) chance *= (4 - skill);
-		            else chance /= (skill - 2);
+            // EVA operations skill modification.
+            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+            if (skill <= 3) chance *= (4 - skill);
+            else chance /= (skill - 2);
 
-		            // Modify based on the suit's wear condition.
-		            chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
+            // Modify based on the suit's wear condition.
+            chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
 
-		            if (RandomUtil.lessThanRandPercent(chance * time)) {
-		                logger.info(person.getName() + " has an accident during an EVA.");
-		                suit.getMalfunctionManager().createASeriesOfMalfunctions("EVA", person);
-		            }
-		        }
-		}
-		else if (robot != null) {
-/*			
-		       EVASuit suit = (EVASuit) robot.getInventory().findUnitOfClass(EVASuit.class);
-		        if (suit != null) {
-
-		            double chance = BASE_ACCIDENT_CHANCE;
-
-		            // EVA operations skill modification.
-		            int skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		            if (skill <= 3) chance *= (4 - skill);
-		            else chance /= (skill - 2);
-
-		            // Modify based on the suit's wear condition.
-		            chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
-
-		            if (RandomUtil.lessThanRandPercent(chance * time)) {
-		                logger.fine(robot.getName() + " has accident during EVA walking.");
-		                suit.getMalfunctionManager().createASeriesOfMalfunctions(robot);
-		            }
-		        }
-*/       
-		}
+            if (RandomUtil.lessThanRandPercent(chance * time)) {
+//                logger.info(person.getName() + " has an accident during EVA.");
+                suit.getMalfunctionManager().createASeriesOfMalfunctions("EVA", person);
+            }
+        }
+//		}
+//		else if (robot != null) {		
+//		       EVASuit suit = (EVASuit) robot.getInventory().findUnitOfClass(EVASuit.class);
+//		        if (suit != null) {
+//
+//		            double chance = BASE_ACCIDENT_CHANCE;
+//
+//		            // EVA operations skill modification.
+//		            int skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+//		            if (skill <= 3) chance *= (4 - skill);
+//		            else chance /= (skill - 2);
+//
+//		            // Modify based on the suit's wear condition.
+//		            chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
+//
+//		            if (RandomUtil.lessThanRandPercent(chance * time)) {
+//		                logger.fine(robot.getName() + " has accident during EVA walking.");
+//		                suit.getMalfunctionManager().createASeriesOfMalfunctions(robot);
+//		            }
+//		        } 
+//		}
     }
 
     @Override

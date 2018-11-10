@@ -351,8 +351,9 @@ public class ResourceUtil implements Serializable {
 
 	public void savedARs() {
 
-		ARs = new AmountResource[] { foodAR, waterAR, oxygenAR, carbonDioxideAR, argonAR,
-				nitrogenAR, coAR, hydrogenAR, methaneAR, iceAR,
+		ARs = new AmountResource[] { 
+				foodAR, waterAR, oxygenAR, carbonDioxideAR, 
+				argonAR, nitrogenAR, coAR, hydrogenAR, methaneAR, iceAR,
 				cropWasteAR, foodWasteAR, solidWasteAR, eWasteAR, foodWasteAR,
 				solidWasteAR, toxicWasteAR, compostAR, greyWaterAR, blackWaterAR,
 				soilAR, regolithAR, rockSamplesAR, sandAR,

@@ -575,19 +575,17 @@ public class Simulation implements ClockListener, Serializable {
 
 			
 			logger.info("    Martian Date/Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
-
 			logger.info(" --------------------------------------------------------------------");			
 			if (Simulation.BUILD.equals(loadBuild)) {
 				logger.info(" Note : Both Builds are matched.");
 			} else {
 				logger.info(" Note : The Builds are NOT matched.");
 				logger.warning("Attempting to load the saved sim made in build " + loadBuild
-						+ " while running mars-sim build " + Simulation.BUILD);
-			}
-			
-			logger.info("  - - - - - - - - - Sol " + masterClock.getMarsClock().getMissionSol() + " (Cont') - - - - - - - - - - - ");
-
-			
+					+ " while running mars-sim build " + Simulation.BUILD);
+			}		
+			logger.info("  - - - - - - - - - Sol " + masterClock.getMarsClock().getMissionSol() 
+					+ " (Cont') - - - - - - - - - - - ");
+	
 			if (ois != null) {
 				ois.close();
 			}

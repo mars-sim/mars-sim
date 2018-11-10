@@ -273,6 +273,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static Weather weather;
 	private static MarsClock marsClock;
 
+//	private static int oxygenID = ResourceUtil.oxygenID;
+//	private static int waterID = ResourceUtil.waterID;
+	private static int co2ID = ResourceUtil.co2ID;
+//	private static int foodID = ResourceUtil.foodID;
+	
 	/** 
 	 * Constructor 1 called by ConstructionStageTest 
 	 */
@@ -826,7 +831,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 			double carbonDioxideProvided = oxygenTaken;
 			double carbonDioxideCapacity = getInventory()
-					.getAmountResourceRemainingCapacity(ResourceUtil.carbonDioxideAR, true, false);
+					.getAmountResourceRemainingCapacity(co2ID, true, false);
 			if (carbonDioxideProvided > carbonDioxideCapacity)
 				carbonDioxideProvided = carbonDioxideCapacity;
 			// Note: do NOT store CO2 here since calculateGasExchange() in CompositionOfAir
