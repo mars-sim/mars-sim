@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
@@ -322,7 +323,8 @@ public class MissionManager implements Serializable {
 		double totalProbability = getTotalMissionProbability(person);
 
 		if (totalProbability == 0D) {
-			throw new IllegalStateException(person + " has zero total mission probability weight.");
+			//throw new IllegalStateException(person + " has zero total mission probability weight.");
+			logger.log(Level.WARNING, person + " has zero total mission probability weight.");
 		}
 
 		// Get a random number from 0 to the total probability weight.

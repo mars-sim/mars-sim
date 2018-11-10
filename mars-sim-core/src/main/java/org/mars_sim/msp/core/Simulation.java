@@ -565,13 +565,25 @@ public class Simulation implements ClockListener, Serializable {
 			if (ois != null) {
 				ois.close();
 			}
+			
 			// Close FileInputStream (directly or indirectly via XZInputStream, it doesn't
 			// matter).
-			in.close();
-			xzin.close();
-			fos.close();
-			uncompressed.delete();
+			
+			if (in != null) {
+				in.close();
+			}
 
+			if (xzin != null) {
+				xzin.close();
+			}
+
+			if (fos != null) {
+				fos.close();
+			}
+
+			uncompressed.delete();
+			uncompressed = null;
+			
 			// Compute the size of the saved sim
 			fileSize = (file.length() / 1000D);
 			String fileStr = "";
@@ -728,6 +740,9 @@ public class Simulation implements ClockListener, Serializable {
 			// "default"
 			uncompressed = new File(DEFAULT_DIR, TEMP_FILE);
 
+			// Delete temp file when program exits.
+			//uncompressed.deleteOnExit();
+		    
 			// if the default save directory does not exist, create one now
 			if (!uncompressed.getParentFile().exists()) {
 				uncompressed.getParentFile().mkdirs();
@@ -801,7 +816,22 @@ public class Simulation implements ClockListener, Serializable {
 				xzout.write(buf, 0, size);
 
 			xzout.finish();
+			
+			if (oos != null)
+				oos.close();
 
+			if (fos != null)
+				fos.close();
+			
+			if (fis != null)
+				fis.close();
+			
+			if (xzout != null)
+				xzout.close();
+	
+			uncompressed.delete();
+			//uncompressed = null;
+			
 			logger.info("Done saving. The simulation resumes.");
 
 		} catch (NullPointerException e0) {
@@ -845,17 +875,28 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		finally {
-			uncompressed = null;
-			// uncompressed.delete(); // cannot be deleted;
-
 			// fis.close(); // fis closed automatically
 			// fos.close(); // fos closed automatically
+			
+			if (xzout != null) {
+				xzout.close();
+				xzout.finish();
+			}
+			
 			if (oos != null)
 				oos.close();
 
+			if (fos != null)
+				fos.close();
+			
+			if (fis != null)
+				fis.close();
+			
 			if (xzout != null)
 				xzout.close();
-
+	
+			uncompressed.delete();
+			
 			sim.proceed();
 
 			justSaved = true;
