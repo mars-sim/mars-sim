@@ -1394,45 +1394,111 @@ public class ChatUtils {
 			if (friends.isEmpty()) {
 				responseText.append("I don't have any friends yet.");
 			}
-			else { 
+			else {
+				responseText.append(" See the table below ");
+				responseText.append(System.lineSeparator());	
+				responseText.append(System.lineSeparator());
 				List<Person> list = new ArrayList<>(friends.keySet());
 				int size = list.size();
+				
+				responseText.append("                   Friend | Score | Attitude "
+						+ System.lineSeparator());
+				responseText.append("      -----------------------------------------"
+						+ System.lineSeparator());		
+				
+				int max = 25;
+				int max1 = 16;
+				int max2 = 7;
+				String SPACE = " ";
 				
 				if (size == 1) {
 					Person p = list.get(0);
 					double score = friends.get(p);
-					String pronoun = "him";
 					String relation = RelationshipManager.describeRelationship(score);
-					if (!relation.equals("trusting") && !relation.equals("hating"))
-						relation = relation + " to ";
-					else
-						relation = relation + " ";
-					if (p.getGender() == GenderType.FEMALE)
-						pronoun = "her";
-					responseText.append("My relationship is simple with " + p + ". ");
-					responseText.append("I'm " + relation + pronoun + " (");
-					responseText.append("score : " + fmt1.format(score) + ").");
+					int size0 = max - p.getName().length();
+					for (int i=0; i<size0; i++) {
+						responseText.append(SPACE);
+					}
+					responseText.append(p);
+					
+					int size2 = max2 - fmt1.format(score).length();
+					for (int i=0; i<size2; i++) {
+						responseText.append(SPACE);
+					}
+					responseText.append(fmt1.format(score));
+					
+					int size1 = max1 - relation.length();
+					for (int i=0; i<size1; i++) {
+						responseText.append(SPACE);
+					}
+					responseText.append(relation);
+					
+					responseText.append(System.lineSeparator());	
 				}
 				else if (size >= 2) {
-					responseText.append("My relationship with those I know are : ");
-					responseText.append(System.lineSeparator());	
-					for (int i = 0; i < size; i++) {
-						Person p = list.get(i);
+//					responseText.append(System.lineSeparator());	
+					for (int x = 0; x < size; x++) {
+						Person p = list.get(x);
 						double score = friends.get(p);
-						String pronoun = "him";
 						String relation = RelationshipManager.describeRelationship(score);
-						if (!relation.equals("trusting") && !relation.equals("hating"))
-							relation = relation + " to ";
-						else
-							relation = relation + " ";
-						if (p.getGender() == GenderType.FEMALE)
-							pronoun = "her";					
-						responseText.append("(" + (i+1) + "). " + p + " -- ");
-						responseText.append("I'm " + relation + pronoun + " (");
-						responseText.append("score : " + fmt1.format(score) + ").");
-						responseText.append(System.lineSeparator());
+						int size0 = max - p.getName().length();
+						for (int i=0; i<size0; i++) {
+							responseText.append(SPACE);
+						}
+						responseText.append(p);
+						
+						int size2 = max2 - fmt1.format(score).length();
+						for (int i=0; i<size2; i++) {
+							responseText.append(SPACE);
+						}
+						responseText.append(fmt1.format(score));
+						
+//						int size1 = max1 - relation.length();
+//						for (int i=0; i<size1; i++) {
+//							responseText.append(SPACE);
+//						}
+						responseText.append("    ");
+						responseText.append(relation);
+					
+						responseText.append(System.lineSeparator());	
 					}
 				}	
+				
+//				if (size == 1) {
+//					Person p = list.get(0);
+//					double score = friends.get(p);
+//					String pronoun = "him";
+//					String relation = RelationshipManager.describeRelationship(score);
+//					if (!relation.equals("trusting") && !relation.equals("hating"))
+//						relation = relation + " to ";
+//					else
+//						relation = relation + " ";
+//					if (p.getGender() == GenderType.FEMALE)
+//						pronoun = "her";
+//					responseText.append("My relationship is simple with " + p + ". ");
+//					responseText.append("I'm " + relation + pronoun + " (");
+//					responseText.append("score : " + fmt1.format(score) + ").");
+//				}
+//				else if (size >= 2) {
+//					responseText.append("My relationship with those I know are : ");
+//					responseText.append(System.lineSeparator());	
+//					for (int i = 0; i < size; i++) {
+//						Person p = list.get(i);
+//						double score = friends.get(p);
+//						String pronoun = "him";
+//						String relation = RelationshipManager.describeRelationship(score);
+//						if (!relation.equals("trusting") && !relation.equals("hating"))
+//							relation = relation + " to ";
+//						else
+//							relation = relation + " ";
+//						if (p.getGender() == GenderType.FEMALE)
+//							pronoun = "her";					
+//						responseText.append("(" + (i+1) + "). " + p + " -- ");
+//						responseText.append("I'm " + relation + pronoun + " (");
+//						responseText.append("score : " + fmt1.format(score) + ").");
+//						responseText.append(System.lineSeparator());
+//					}
+//				}	
 			}
 		}
 

@@ -973,6 +973,7 @@ public class Simulation implements ClockListener, Serializable {
 				+ System.lineSeparator());		
 		int max = 25;
 		int max1 = 10;
+		String SPACE = " ";
 		
 		double sumSize = 0;
 		String unit = "";
@@ -981,25 +982,25 @@ public class Simulation implements ClockListener, Serializable {
 			String name = o.getClass().getSimpleName();
 			int size0 = max - name.length();
 			for (int i=0; i<size0; i++) {
-				sb.append(" ");
+				sb.append(SPACE);
 			}
 			sb.append(name);
-			sb.append(" : ");
+			sb.append(SPACE + ":" + SPACE);
 
 			// Get size
 			double size = CheckSerializedSize.getSerializedSize(o);
 			sumSize += size;
 			
 			if (size < 1_000D) {
-				unit = " B ";
+				unit = SPACE + "B" + SPACE;
 			}
 			else if (size < 1_000_000D) {
 				size = size/1_000D;
-				unit = " KB";
+				unit = SPACE + "KB";
 			}
 			else if (size < 1_000_000_000) {
 				size = size/1_000_000D;
-				unit = " MB";
+				unit = SPACE + "MB";
 			}
 			
 			size = Math.round(size*10.0)/10.0;
@@ -1007,7 +1008,7 @@ public class Simulation implements ClockListener, Serializable {
 			String sizeStr = size + unit;
 			int size1 = max1 - sizeStr.length();
 			for (int i=0; i<size1; i++) {
-				sb.append(" ");
+				sb.append(SPACE);
 			}
 			
 			sb.append(size + unit
@@ -1016,15 +1017,15 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Get the total size
 		if (sumSize < 1_000D) {
-			unit = " B ";
+			unit = SPACE + "B" + SPACE;
 		}
 		else if (sumSize < 1_000_000D) {
 			sumSize = sumSize/1_000D;
-			unit = " KB";
+			unit = SPACE + "KB";
 		}
 		else if (sumSize < 1_000_000_000) {
 			sumSize = sumSize/1_000_000D;
-			unit = " MB";
+			unit = SPACE + "MB";
 		}
 		
 		sumSize = Math.round(sumSize*10.0)/10.0;
@@ -1036,15 +1037,15 @@ public class Simulation implements ClockListener, Serializable {
 		String name = "Total";
 		int size0 = max - name.length();
 		for (int i=0; i<size0; i++) {
-			sb.append(" ");
+			sb.append(SPACE);
 		}
 		sb.append(name);
-		sb.append(" : ");
+		sb.append(SPACE + ":" + SPACE);
 
 		String sizeStr = sumSize + unit;
 		int size2 = max1 - sizeStr.length();
 		for (int i=0; i<size2; i++) {
-			sb.append(" ");
+			sb.append(SPACE);
 		}
 		
 		sb.append(sumSize + unit
