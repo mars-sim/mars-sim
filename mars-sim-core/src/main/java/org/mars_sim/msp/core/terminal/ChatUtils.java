@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.terminal;
 import java.awt.geom.Point2D;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,12 +17,10 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -113,7 +110,7 @@ public class ChatUtils {
 	};
 	
 	public final static String[] SYSTEM_KEYS = new String[] {
-			"settlement",
+			"settlement", "check size",
 			"vehicle", "rover", 
 			"hi", "hello", "hey"
 	};
@@ -2157,6 +2154,13 @@ public class ChatUtils {
 			proceed = true;
 		}
 
+		else if (text.equalsIgnoreCase("check size")) {			
+			responseText.append(System.lineSeparator());
+			responseText.append(Simulation.instance().printObjectSize());
+			
+			return responseText.toString();
+		}
+		
 		else if (text.toLowerCase().contains("relationship")
 				|| text.toLowerCase().contains("relation")
 				|| text.toLowerCase().contains("social")) {

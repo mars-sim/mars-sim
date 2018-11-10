@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core;
 
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,6 +22,9 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -45,6 +49,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.core.tool.AutosaveScheduler;
+import org.mars_sim.msp.core.tool.CheckSerializedSize;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
@@ -508,11 +513,9 @@ public class Simulation implements ClockListener, Serializable {
 			// in = new BufferedInputStream(in);
 			// Limit memory usage to 256 MB
 			XZInputStream xzin = new XZInputStream(in, 256 * 1024);
-
 			// Define a temporary uncompressed file
 			File uncompressed = new File(DEFAULT_DIR, TEMP_FILE);
 			// Decompress a xz compressed file
-			// FileOutputStream fos = new FileOutputStream(uncompressed);
 			FileOutputStream fos = new FileOutputStream(uncompressed);
 
 			int size;
@@ -591,7 +594,7 @@ public class Simulation implements ClockListener, Serializable {
 			if (fileSize < 1000)
 				fileStr = Math.round(fileSize * 10.0) / 10.0 + " KB";
 			else
-				fileStr = Math.round(fileSize * 10.0) / 10000.0 + " MB";
+				fileStr = Math.round(fileSize * 10.0) / 10_000.0 + " MB";
 
 			loadBuild = SimulationConfig.instance().build;
 			if (loadBuild == null)
@@ -599,7 +602,7 @@ public class Simulation implements ClockListener, Serializable {
 
 			logger.info("This sim file was made in build " + loadBuild + " (size : " + fileStr + ")");
 
-			if (instance().BUILD.equals(loadBuild)) {
+			if (Simulation.BUILD.equals(loadBuild)) {
 				logger.info("Proceed to loading the saved sim.");
 				logger.info("Last Saved Martian Date/Time : " + masterClock.getMarsClock().getDateTimeStamp());
 			} else
@@ -639,6 +642,7 @@ public class Simulation implements ClockListener, Serializable {
 		ResourceUtil.getInstance().prep4ResourcesSavedSim();
 	}
 
+	
 	/**
 	 * Saves a simulation instance to a save file.
 	 * 
@@ -802,6 +806,9 @@ public class Simulation implements ClockListener, Serializable {
 			oos.flush();
 			// oos.close();
 
+			// Print the size of each serializable object
+			printObjectSize();
+			
 			// STEP 2: convert the uncompressed file into a fis
 			fis = new FileInputStream(uncompressed);
 			LZMA2Options options = new LZMA2Options();
@@ -915,6 +922,117 @@ public class Simulation implements ClockListener, Serializable {
 		}
 	}
 
+	/**
+	 * Prints the object and its size
+	 */
+	public StringBuilder printObjectSize() {
+      	StringBuilder sb = new StringBuilder();
+		
+		List<Serializable> list = Arrays.asList( 
+				SimulationConfig.instance(),
+				ResourceUtil.getInstance(),
+				malfunctionFactory,
+				mars,
+				missionManager,
+				medicalManager,
+				scientificStudyManager,
+				transportManager,
+				creditManager,
+				eventManager,
+				relationshipManager,
+				unitManager,
+				masterClock
+		);
+			
+		list.sort((Serializable d1, Serializable d2) -> d1.getClass().getSimpleName().compareTo(d2.getClass().getSimpleName())); 
+		
+		sb.append("      Serializable object :     Size  (before compression)"
+				+ System.lineSeparator());
+		sb.append(" ---------------------------------------------------------"
+				+ System.lineSeparator());		
+		int max = 25;
+		int max1 = 10;
+		
+		double sumSize = 0;
+		String unit = "";
+		
+		for (Serializable o : list) {
+			String name = o.getClass().getSimpleName();
+			int size0 = max - name.length();
+			for (int i=0; i<size0; i++) {
+				sb.append(" ");
+			}
+			sb.append(name);
+			sb.append(" : ");
+
+			// Get size
+			double size = CheckSerializedSize.getSerializedSize(o);
+			sumSize += size;
+			
+			if (size < 1_000D) {
+				unit = " B ";
+			}
+			else if (size < 1_000_000D) {
+				size = size/1_000D;
+				unit = " KB";
+			}
+			else if (size < 1_000_000_000) {
+				size = size/1_000_000D;
+				unit = " MB";
+			}
+			
+			size = Math.round(size*10.0)/10.0;
+			
+			String sizeStr = size + unit;
+			int size1 = max1 - sizeStr.length();
+			for (int i=0; i<size1; i++) {
+				sb.append(" ");
+			}
+			
+			sb.append(size + unit
+					+ System.lineSeparator());
+		}
+		
+		// Get the total size
+		if (sumSize < 1_000D) {
+			unit = " B ";
+		}
+		else if (sumSize < 1_000_000D) {
+			sumSize = sumSize/1_000D;
+			unit = " KB";
+		}
+		else if (sumSize < 1_000_000_000) {
+			sumSize = sumSize/1_000_000D;
+			unit = " MB";
+		}
+		
+		sumSize = Math.round(sumSize*10.0)/10.0;
+		
+		
+		sb.append(" ---------------------------------------------------------"
+				+ System.lineSeparator());	
+		
+		String name = "Total";
+		int size0 = max - name.length();
+		for (int i=0; i<size0; i++) {
+			sb.append(" ");
+		}
+		sb.append(name);
+		sb.append(" : ");
+
+		String sizeStr = sumSize + unit;
+		int size2 = max1 - sizeStr.length();
+		for (int i=0; i<size2; i++) {
+			sb.append(" ");
+		}
+		
+		sb.append(sumSize + unit
+				+ System.lineSeparator());
+		
+		return sb;
+	}
+	
+	
 	/**
 	 * Ends the current simulation
 	 */

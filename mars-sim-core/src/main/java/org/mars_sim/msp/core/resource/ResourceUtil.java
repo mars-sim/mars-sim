@@ -220,10 +220,8 @@ public class ResourceUtil implements Serializable {
 		for (AmountResource r : resources) {
 			for (AmountResource ar : ARs) {
 				if (r.getName().equals(ar.getName())) {
-					// restore the AmountResource reference
-					// System.out.println("resource : " + r.hashCode() + " ar : " + ar.hashCode());
+					// Restore the AmountResource reference
 					r = ar;
-					// System.out.println("resource : " + r.hashCode() + " ar : " + ar.hashCode());
 					break;
 				}
 			}
@@ -354,21 +352,13 @@ public class ResourceUtil implements Serializable {
 	public void savedARs() {
 
 		ARs = new AmountResource[] { foodAR, waterAR, oxygenAR, carbonDioxideAR, argonAR,
-
 				nitrogenAR, coAR, hydrogenAR, methaneAR, iceAR,
-
 				cropWasteAR, foodWasteAR, solidWasteAR, eWasteAR, foodWasteAR,
-
 				solidWasteAR, toxicWasteAR, compostAR, greyWaterAR, blackWaterAR,
-
 				soilAR, regolithAR, rockSamplesAR, sandAR,
-
 				tableSaltAR, NaClOAR, napkinAR,
-
 				toiletTissueAR, fertilizerAR,
-
 				soybeanOilAR, garlicOilAR, peanutOilAR, sesameOilAR };
-
 //        for (int i=0; i< 33; i++) {
 //        	//System.out.println(ARs[i].getName());
 //        	//for (AmountResource ar : ARs) {
@@ -376,7 +366,6 @@ public class ResourceUtil implements Serializable {
 //        	ARs_int[i] = n;
 //        	System.out.println(ARs[i] + " : " + ARs_int[i]);
 //        }
-
 	}
 
 	/**
@@ -387,38 +376,8 @@ public class ResourceUtil implements Serializable {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static AmountResource findAmountResource(int id) {
-		// count++;
-		// if (count%50_000 == 0) System.out.println("# of calls on findAmountResource()
-		// : " + count);
-		// AmountResource result = null;
-		// Map<Integer, AmountResource> map = getAmountResourcesIDMap();
-		// result = getAmountResourcesIDMap().get(id);
-		// if (result != null) return result;
-		// else throw new IllegalStateException("Resource: " + id + " could not be
-		// found.");
 		return amountResourceIDMap.get(id);
 	}
-
-//	/**
-//	 * Finds an amount resource by name.
-//	 * @param name the name of the resource.
-//	 * @return resource
-//	 * @throws ResourceException if resource could not be found.
-//
-//	public static AmountResource findAmountResource(String name) {
-//		count++;
-//		if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);
-//		//AmountResource result = null;
-//		Iterator<AmountResource> i = getAmountResources().iterator();
-//		while (i.hasNext()) {
-//			AmountResource resource = i.next();
-//			if (resource.getName().equals(name.toLowerCase())) //result = resource;
-//				return resource;
-//		}
-//		return null;
-//		//if (result != null) return result;
-//		//else throw new IllegalStateException("Resource: " + name + " could not be found.");
-//	}
 
 	/**
 	 * Finds an amount resource by name.
@@ -428,39 +387,6 @@ public class ResourceUtil implements Serializable {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static AmountResource findAmountResource(String name) {
-		// count++;
-		// if (count%50_000 == 0) System.out.println("# of calls on findAmountResource()
-		// : " + count);
-
-//		AmountResource result = null;
-//		Iterator<AmountResource> i = getAmountResources().iterator();
-//		while (i.hasNext()) {
-//			AmountResource resource = i.next();
-//			if (resource.getName().equals(name.toLowerCase())) result = resource;
-//		}
-//		if (result != null) return result;
-//		else throw new IllegalStateException("Resource: " + name + " could not be found.");
-//
-//		//getAmountResources().forEach(r -> {
-//		//	if (r.getName().equals(name.toLowerCase()))
-//		//		return r;
-//		//});
-//
-//		// Use Java 8 stream
-//		return getAmountResources()
-//				.stream()
-//				//.parallelStream()
-//				.filter(item -> item.getName().equals(name.toLowerCase()))
-//				.findFirst().orElse(null);//.get();
-//
-//
-//		AmountResource ar = amountResourceMap.get(name.toLowerCase());
-//		if (name.equalsIgnoreCase("oxygen")) {
-//	       	System.out.println("ResourceUtil : findAmountResource()");
-//			System.out.println("oxygen : " + ar.hashCode());
-//		}
-//		return ar;
-
 		if (amountResourceMap == null)
 			createMaps();
 		return amountResourceMap.get(name.toLowerCase());
@@ -475,15 +401,6 @@ public class ResourceUtil implements Serializable {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static int findIDbyAmountResourceName(String name) {
-		// count++;
-		// if (count%50_000 == 0) System.out.println("# of calls on findAmountResource()
-		// : " + count);
-		// Map<Integer, String> map = getIDNameMap();
-		// Object result = null;
-		// result = getKeyByValue(getIDNameMap(), name.toLowerCase());
-		// if (result != null) return (int) result;
-		// else throw new IllegalStateException("Resource: " + name + " could not be
-		// found.");
 		return getKeyByValue(arIDNameMap, name.toLowerCase());
 	}
 
@@ -522,10 +439,6 @@ public class ResourceUtil implements Serializable {
 	 * @return set of amount resources.
 	 */
 	public Set<AmountResource> getAmountResources() {
-		// if (set == null)
-		// set = Collections.unmodifiableSet(resources);
-		// return set;
-		// createResourceSet();
 		return resources;
 	}
 
@@ -535,10 +448,6 @@ public class ResourceUtil implements Serializable {
 	 * @return set of amount resources.
 	 */
 	public Set<Integer> getARIDs() {
-		// if (set == null)
-		// set = Collections.unmodifiableSet(resources);
-		// return set;
-		// createResourceSet();
 		return amountResourceIDMap.keySet();
 	}
 
