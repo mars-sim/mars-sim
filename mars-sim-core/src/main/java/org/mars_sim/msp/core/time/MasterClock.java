@@ -157,13 +157,15 @@ public class MasterClock implements Serializable {
 		if (!isFXGL)
 			clockThreadTask = new ClockThreadTask();
 
+		logger.info("-------------------------------------------");
+		
 		// Setting the initial time ratio.
 		double tr = 0;
 		if (userTimeRatio == -1)
 			tr = config.getTimeRatio();
 		else {
 			tr = userTimeRatio;
-			logger.info("User-Defined Time Ratio is " + (int) tr + "x");
+			logger.info("     User-Defined Time Ratio : " + (int) tr + "x");
 		}
 		double tbu = config.getTimeBetweenUpdates();
 
@@ -208,10 +210,11 @@ public class MasterClock implements Serializable {
 		setNoDelaysPerYield(config.getNoDelaysPerYield());
 		setMaxFrameSkips(config.getMaxFrameSkips());
 
-		logger.info("Based on # CPU cores/threads, the following parameters have been re-adjusted as follows :");
-		logger.info("Time Ratio (TR) : " + (int) adjustedTR + "x");
-		logger.info("Time between Updates (TBU) : " + Math.round(adjustedTBU_ms * 100D) / 100D + " ms");
-		logger.info("Ticks Per Second (TPS) : " + Math.round(adjustedFPS * 100D) / 100D + " Hz");
+//		logger.info("Based on # CPU cores/threads, the following parameters have been re-adjusted as follows :");
+		logger.info("    Adjusted Time Ratio (TR) : " + (int) adjustedTR + "x");
+		logger.info("  Time between Updates (TBU) : " + Math.round(adjustedTBU_ms * 100D) / 100D + " ms");
+		logger.info("      Ticks Per Second (TPS) : " + Math.round(adjustedFPS * 100D) / 100D + " Hz");
+		logger.info("-------------------------------------------");
 //		logger.info(" - - - Welcome to Mars - - -");
 	}
 

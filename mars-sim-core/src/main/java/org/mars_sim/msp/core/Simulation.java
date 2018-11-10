@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core;
 
-import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,13 +22,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,7 +47,6 @@ import org.mars_sim.msp.core.tool.AutosaveScheduler;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
 import org.tukaani.xz.FilterOptions;
 import org.tukaani.xz.LZMA2Options;
-import org.tukaani.xz.X86Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
 
@@ -86,10 +80,7 @@ public class Simulation implements ClockListener, Serializable {
 	public final static String BUILD = Msg.getString("Simulation.build"); //$NON-NLS-1$
 	/** Java version string. */
 	private final static String JAVA_TAG = System.getProperty("java.version");// VersionInfo.getRuntimeVersion(); //e.g.
-																				// "8.0.121-b13 (abcdefg)";
-																				// com.sun.javafx.runtime.VersionInfo.getRuntimeVersion();
-																				// //
-																				// System.getProperty("java.version");/
+																				// "8.0.121-b13 (abcdefg)";																			// System.getProperty("java.version");/
 	/** Java version string. */
 	public final static String JAVA_VERSION = (JAVA_TAG.contains("(") ? JAVA_TAG.substring(0, JAVA_TAG.indexOf("(") - 1)
 			: JAVA_TAG);
@@ -153,11 +144,6 @@ public class Simulation implements ClockListener, Serializable {
 	private String loadBuild;// = "unknown";
 	
 	// Note: Transient data members aren't stored in save file
-	// Added transient to avoid serialization error
-//	private transient Timer autosaveTimer;
-//	private transient Timeline timer;
-//	private transient ScheduledExecutorService autosaveService;// = Executors.newSingleThreadScheduledExecutor();
-//	private transient ThreadPoolExecutor clockScheduler;
 	private transient ExecutorService clockExecutor;
 
 	private transient ExecutorService simExecutor;
@@ -197,10 +183,6 @@ public class Simulation implements ClockListener, Serializable {
 	 * from other classes.
 	 */
 	private Simulation() {
-		// simulationConfig = SimulationConfig.instance();
-		// logger.info("Simulation's constructor is on " +
-		// Thread.currentThread().getName() + " Thread");
-		
 		// INFO Simulation's constructor is on both JavaFX-Launcher Thread
 //        initializeTransientData();
 	}
@@ -250,8 +232,6 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	public void startSimExecutor() {
-		// logger.info("Simulation's startSimExecutor() is on " +
-		// Thread.currentThread().getName() + " Thread");
 		// INFO: Simulation's startSimExecutor() is on JavaFX-Launcher Thread
 		simExecutor = Executors.newSingleThreadExecutor();
 	}
@@ -274,9 +254,6 @@ public class Simulation implements ClockListener, Serializable {
 	 * Creates a new simulation instance.
 	 */
 	public static void createNewSimulation(int timeRatio) {
-		// logger.info("Simulation's createNewSimulation() is on " +
-		// Thread.currentThread().getName() + " Thread");
-
 		isUpdating = true;
 
 		logger.config(Msg.getString("Simulation.log.createNewSim")); //$NON-NLS-1$
@@ -458,7 +435,8 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		if (f.exists() && f.canRead()) {
-			logger.info(Msg.getString("Simulation.log.loadSimFrom", f)); //$NON-NLS-1$
+//			logger.info(" - - - - - - - - - - - - - -");
+//			logger.info(Msg.getString("Simulation.log.loadSimFrom", f)); //$NON-NLS-1$
 
 			try {
 
@@ -500,6 +478,8 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	private synchronized void readFromFile(File file) throws ClassNotFoundException, IOException {
 		// logger.info("Simulation : running readFromFile()");
+		logger.info("Loading and processing the saved sim. Please wait...");
+		
 		byte[] buf = new byte[8192];
 		ObjectInputStream ois = null;
 		FileInputStream in = null;
@@ -554,6 +534,32 @@ public class Simulation implements ClockListener, Serializable {
 			SimulationConfig.setInstance((SimulationConfig) ois.readObject());
 			ResourceUtil.setInstance((ResourceUtil) ois.readObject());
 
+			// Compute the size of the saved sim
+			fileSize = (file.length() / 1000D);
+			String fileStr = "";
+
+			if (fileSize < 1000)
+				fileStr = Math.round(fileSize / 10.0) * 10.0 + " KB";
+			else
+				fileStr = Math.round(fileSize / 10_000.0 ) * 10.0  + " MB";
+
+			loadBuild = SimulationConfig.instance().build;
+			if (loadBuild == null)
+				loadBuild = "unknown";
+			
+//			logger.info("Proceed to loading the saved sim.");
+			String filename = file.getName();
+			String path = file.getPath().replace(filename, "");
+			logger.info(" --------------------------------------------------------------------");
+			logger.info("                      Saved Simulation                               ");
+			logger.info(" --------------------------------------------------------------------");
+			logger.info("                   Filename : " + filename);
+			logger.info("                       Path : " + path);
+			logger.info("                       Size : " + fileStr);
+			logger.info("              Made in Build : " + loadBuild);
+			logger.info("  Current Core Engine Build : " + Simulation.BUILD);
+			
+			// Load remaining serialized objects
 			malfunctionFactory = (MalfunctionFactory) ois.readObject();
 			mars = (Mars) ois.readObject();
 			mars.initializeTransientData();
@@ -567,6 +573,21 @@ public class Simulation implements ClockListener, Serializable {
 			unitManager = (UnitManager) ois.readObject();
 			masterClock = (MasterClock) ois.readObject();
 
+			
+			logger.info("    Martian Date/Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
+
+			logger.info(" --------------------------------------------------------------------");			
+			if (Simulation.BUILD.equals(loadBuild)) {
+				logger.info(" Note : Both Builds are matched.");
+			} else {
+				logger.info(" Note : The Builds are NOT matched.");
+				logger.warning("Attempting to load the saved sim made in build " + loadBuild
+						+ " while running mars-sim build " + Simulation.BUILD);
+			}
+			
+			logger.info("  - - - - - - - - - Sol " + masterClock.getMarsClock().getMissionSol() + " (Cont') - - - - - - - - - - - ");
+
+			
 			if (ois != null) {
 				ois.close();
 			}
@@ -589,28 +610,6 @@ public class Simulation implements ClockListener, Serializable {
 			uncompressed.delete();
 			uncompressed = null;
 			
-			// Compute the size of the saved sim
-			fileSize = (file.length() / 1000D);
-			String fileStr = "";
-
-			if (fileSize < 1000)
-				fileStr = Math.round(fileSize * 10.0) / 10.0 + " KB";
-			else
-				fileStr = Math.round(fileSize * 10.0) / 10_000.0 + " MB";
-
-			loadBuild = SimulationConfig.instance().build;
-			if (loadBuild == null)
-				loadBuild = "unknown";
-
-			logger.info("This sim file was made in build " + loadBuild + " (size : " + fileStr + ")");
-
-			if (Simulation.BUILD.equals(loadBuild)) {
-				logger.info("Proceed to loading the saved sim.");
-				logger.info("Last Saved Martian Date/Time : " + masterClock.getMarsClock().getDateTimeStamp());
-			} else
-				logger.warning("Attempting to load the saved sim made in build " + loadBuild
-						+ " while running mars-sim in build " + Simulation.BUILD);
-
 		} catch (FileNotFoundException e) {
 			logger.log(Level.SEVERE, "Quitting mars-sim since " + file + " cannot be found : ", e.getMessage());
 			System.exit(1);
@@ -672,6 +671,8 @@ public class Simulation implements ClockListener, Serializable {
 		Path destPath = null;
 		Path srcPath = null;
 
+		int missionSol = masterClock.getMarsClock().getMissionSol();
+		
 		// Use type to differentiate in what name/dir it is saved
 		if (type == SAVE_DEFAULT) {
 
@@ -717,7 +718,7 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		else if (type == AUTOSAVE) {
-			String autosaveFilename = lastSaveTimeStamp + "_Sol" + masterClock.getMarsClock().getMissionSol() + "_r" + BUILD
+			String autosaveFilename = lastSaveTimeStamp + "_Sol" + missionSol + "_r" + BUILD
 					+ DEFAULT_EXTENSION;
 			file = new File(AUTOSAVE_DIR, autosaveFilename);
 			logger.info("Autosaving as " + autosaveFilename + "...");
@@ -819,7 +820,7 @@ public class Simulation implements ClockListener, Serializable {
 			// If set to level 8, at start of the sim, 407 KB
 			// If set to level 7, at start of the sim, 405 KB
 			// If set to level 6, at start of the sim, 415 KB
-			LZMA2Options lzma2 = new LZMA2Options(9);
+			LZMA2Options lzma2 = new LZMA2Options(7);
 			// Set to 6. For mid sized archives (>8mb), 7 works better.
 			//lzma2.setPreset(8);
 			FilterOptions[] options = {lzma2};

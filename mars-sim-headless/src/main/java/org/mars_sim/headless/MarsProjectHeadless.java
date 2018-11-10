@@ -57,8 +57,6 @@ public class MarsProjectHeadless {
 			// new Simulation(); // NOTE: NOT supposed to start another instance of the
 			// singleton Simulation
 			logger.info("Starting " + Simulation.title);
-			// Alert the user to see the interactive terminal 
-			logger.info("Please proceed to answering the question in the popped-up console.");
 			// Initialize the simulation.
 			initializeSimulation(args);
 
@@ -103,6 +101,8 @@ public class MarsProjectHeadless {
 			// If new argument, create new simulation.
 			handleNewSimulation(userTimeRatio); // if this fails we always exit, continuing is useless
 			result = true;
+			// Alert the user to see the interactive terminal 
+			logger.info("Please proceed to selecting the Game Mode in the popped-up console.");
 			// Load the menu choice
 			sim.getTerm().loadTerminalMenu();
 		} 
@@ -124,6 +124,8 @@ public class MarsProjectHeadless {
 				showError("Could not load the desired simulation. Staring a new Simulation instead. ", e);
 				handleNewSimulation(userTimeRatio);
 				result = true;
+				// Alert the user to see the interactive terminal 
+				logger.info("Please proceed to selecting the Game Mode in the popped-up console.");
 				// Load the menu choice
 				sim.getTerm().loadTerminalMenu();
 			}
@@ -136,6 +138,8 @@ public class MarsProjectHeadless {
 //                showError("Could not load the default simulation, trying to create a new Simulation...", e);
 			handleNewSimulation(userTimeRatio);
 			result = true;
+			// Alert the user to see the interactive terminal 
+			logger.info("Please proceed to selecting the Game Mode in the popped-up console.");
 			// Load the menu choice
 			sim.getTerm().loadTerminalMenu();
 		}
@@ -174,9 +178,6 @@ public class MarsProjectHeadless {
 	 * @throws Exception if error loading the default saved simulation.
 	 */
 	private void handleLoadDefaultSimulation() throws Exception {
-		// logger.info("handleLoadDefaultSimulation() is on
-		// "+Thread.currentThread().getName() + " Thread");
-
 		try {
 			// Load the default simulation
 			sim.loadSimulation(null);
@@ -195,9 +196,6 @@ public class MarsProjectHeadless {
 	 * Create a new simulation instance.
 	 */
 	private void handleNewSimulation(int userTimeRatio) {
-		// logger.info("MarsProject's handleNewSimulation() is on
-		// "+Thread.currentThread().getName() + " Thread");
-
 		try {
 			SimulationConfig.loadConfig();
 
@@ -220,9 +218,6 @@ public class MarsProjectHeadless {
 	 * Start the simulation instance.
 	 */
 	public void startSimulation(boolean useDefaultName) {
-		// logger.info("MarsProject's startSimulation() is on
-		// "+Thread.currentThread().getName() + " Thread");
-
 		// Start the simulation.
 		sim.start(useDefaultName);
 	}
@@ -266,7 +261,8 @@ public class MarsProjectHeadless {
 
 
 		// starting the simulation
-		MarsProjectHeadless mp = new MarsProjectHeadless(args);
+//		MarsProjectHeadless mp = 
+		new MarsProjectHeadless(args);
 
 	}
 }
