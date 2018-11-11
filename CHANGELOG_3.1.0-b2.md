@@ -44,6 +44,9 @@ Copyright (C) 2018 Scott Davis
 9. Compare settlement achievement using metrics (e.g. overall social score of 
    a settlement)
 
+10. Add customizing desired logging level.
+
+
 
 ### UI IMPROVEMENT :
 
@@ -63,6 +66,7 @@ Copyright (C) 2018 Scott Davis
 
 5. Fix gaining mechanical skill in garage.
 
+6. Fix numerous mission bugs.
 
 
 -----------------------------------------------------------------------------------------

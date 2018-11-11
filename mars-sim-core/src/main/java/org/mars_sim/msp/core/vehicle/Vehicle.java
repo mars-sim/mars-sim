@@ -781,14 +781,14 @@ public abstract class Vehicle extends Unit
 			// Set reserved for mission to false if the vehicle is not associated with a
 			// mission.
 			if (missionManager.getMissionForVehicle(this) == null) {
-				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
 						getName() + " was found reserved for an non-existing mission. Untagging it...",
 						null);
 				setReservedForMission(false);
 			}
 		} else {
 			if (missionManager.getMissionForVehicle(this) != null) {
-				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName, getName()
+				LogConsolidated.log(logger, Level.WARNING, 1000, sourceName, getName()
 						+ " is on a mission but is not mission reserved. Correcting it...", null);
 			}
 		}

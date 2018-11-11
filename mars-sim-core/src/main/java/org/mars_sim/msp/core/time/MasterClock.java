@@ -130,7 +130,7 @@ public class MasterClock implements Serializable {
 	 */
 	public MasterClock(boolean isFXGL, int userTimeRatio) {
 		this.isFXGL = isFXGL;
-		// logger.info("MasterClock's constructor is on " +
+		// logger.config("MasterClock's constructor is on " +
 		// Thread.currentThread().getName() + " Thread");
 
 		sim = Simulation.instance();
@@ -157,7 +157,7 @@ public class MasterClock implements Serializable {
 		if (!isFXGL)
 			clockThreadTask = new ClockThreadTask();
 
-		logger.info("-------------------------------------------");
+		logger.config("-------------------------------------------");
 		
 		// Setting the initial time ratio.
 		double tr = 0;
@@ -165,7 +165,7 @@ public class MasterClock implements Serializable {
 			tr = config.getTimeRatio();
 		else {
 			tr = userTimeRatio;
-			logger.info("     User-Defined Time Ratio : " + (int) tr + "x");
+			logger.config("     User-Defined Time Ratio : " + (int) tr + "x");
 		}
 		double tbu = config.getTimeBetweenUpdates();
 
@@ -210,12 +210,12 @@ public class MasterClock implements Serializable {
 		setNoDelaysPerYield(config.getNoDelaysPerYield());
 		setMaxFrameSkips(config.getMaxFrameSkips());
 
-//		logger.info("Based on # CPU cores/threads, the following parameters have been re-adjusted as follows :");
-		logger.info("    Adjusted Time Ratio (TR) : " + (int) adjustedTR + "x");
-		logger.info("  Time between Updates (TBU) : " + Math.round(adjustedTBU_ms * 100D) / 100D + " ms");
-		logger.info("      Ticks Per Second (TPS) : " + Math.round(adjustedFPS * 100D) / 100D + " Hz");
-		logger.info("-------------------------------------------");
-//		logger.info(" - - - Welcome to Mars - - -");
+//		logger.config("Based on # CPU cores/threads, the following parameters have been re-adjusted as follows :");
+		logger.config("    Adjusted Time Ratio (TR) : " + (int) adjustedTR + "x");
+		logger.config("  Time between Updates (TBU) : " + Math.round(adjustedTBU_ms * 100D) / 100D + " ms");
+		logger.config("      Ticks Per Second (TPS) : " + Math.round(adjustedFPS * 100D) / 100D + " Hz");
+		logger.config("-------------------------------------------");
+//		logger.config(" - - - Welcome to Mars - - -");
 	}
 
 	public void testNewMarsLandingDayTime() {
@@ -239,62 +239,62 @@ public class MasterClock implements Serializable {
 //		ClockUtils.getFirstLandingDateTime();
 
 		double millis = EarthClock.getMillis(c);
-		logger.info("millis is " + millis);
+		logger.config("millis is " + millis);
 		double jdut = ClockUtils.getJulianDateUT(c);
-		logger.info("jdut is " + jdut);
+		logger.config("jdut is " + jdut);
 		double T = ClockUtils.getT(c);
-		logger.info("T is " + T);
+		logger.config("T is " + T);
 		double TT2UTC = ClockUtils.getDeltaUTC_TT(c);
-		logger.info("TT2UTC is " + TT2UTC);
+		logger.config("TT2UTC is " + TT2UTC);
 		double jdtt = ClockUtils.getJulianDateTT(c);
-		logger.info("jdtt is " + jdtt);
+		logger.config("jdtt is " + jdtt);
 		double j2k = ClockUtils.getDaysSinceJ2kEpoch(c);
-		logger.info("j2k is " + j2k);
+		logger.config("j2k is " + j2k);
 		double M = ClockUtils.getMarsMeanAnomaly(c) % 360;
-		logger.info("M is " + M);
+		logger.config("M is " + M);
 		double alpha = ClockUtils.getAlphaFMS(c) % 360;
-		logger.info("alpha is " + alpha);
+		logger.config("alpha is " + alpha);
 		double PBS = ClockUtils.getPBS(c) % 360;
-		logger.info("PBS is " + PBS);
+		logger.config("PBS is " + PBS);
 		double EOC = ClockUtils.getEOC(c) % 360;
-		logger.info("EOC is " + EOC);
+		logger.config("EOC is " + EOC);
 		double v = ClockUtils.getTrueAnomaly0(c) % 360;
-		logger.info("v is " + v);
+		logger.config("v is " + v);
 		double L_s = ClockUtils.getLs(c) % 360;
-		logger.info("L_s is " + L_s);
+		logger.config("L_s is " + L_s);
 
 		double EOT = ClockUtils.getEOTDegree(c);
-		logger.info("EOTDegree is " + EOT);
+		logger.config("EOTDegree is " + EOT);
 		double EOT_hr = ClockUtils.getEOTHour(c);
-		logger.info("EOTHour is " + EOT_hr);
+		logger.config("EOTHour is " + EOT_hr);
 		String EOT_Str = ClockUtils.getFormattedTimeString(EOT_hr);
-		logger.info("EOT_Str is " + EOT_Str);
+		logger.config("EOT_Str is " + EOT_Str);
 
 		double MTC0 = ClockUtils.getMTC0(c);
-		logger.info("MTC0 is " + MTC0);
+		logger.config("MTC0 is " + MTC0);
 		double MTC1 = ClockUtils.getMTC1(c);
-		logger.info("MTC1 is " + MTC1);
+		logger.config("MTC1 is " + MTC1);
 		String MTCStr = ClockUtils.getFormattedTimeString(MTC1);
-		logger.info("MTC_Str is " + MTCStr);
+		logger.config("MTC_Str is " + MTCStr);
 
 		String millisols = ClockUtils.getFormattedMillisolString(MTC1);
-		logger.info("millisols is " + millisols);
+		logger.config("millisols is " + millisols);
 		
 		double LMST = ClockUtils.getLMST(c, 0);// 184.702);
-		logger.info("LMST is " + LMST);
+		logger.config("LMST is " + LMST);
 		String LMST_Str = ClockUtils.getFormattedTimeString(LMST);
-		logger.info("LMST_Str is " + LMST_Str);
+		logger.config("LMST_Str is " + LMST_Str);
 
 		double LTST = ClockUtils.getLTST(c, 0);// 184.702);
-		logger.info("LTST is " + LTST);
+		logger.config("LTST is " + LTST);
 		String LTST_Str = ClockUtils.getFormattedTimeString(LTST);
-		logger.info("LTST_Str is " + LTST_Str);
+		logger.config("LTST_Str is " + LTST_Str);
 
 		double sl = ClockUtils.getSubsolarLongitude(c);
-		logger.info("sl is " + sl);
+		logger.config("sl is " + sl);
 
 		double r = ClockUtils.getHeliocentricDistance(c);
-		logger.info("r is " + r);
+		logger.config("r is " + r);
 	}
 
 	/**
@@ -518,7 +518,7 @@ public class MasterClock implements Serializable {
 			else
 				currentTBU_ns = (long) (currentTBU_ns * .9975); // decrement by .5%
 
-			logger.info("Time-ratio : " + (int)currentTR + "x ==> " + (int)ratio + "x");
+			logger.config("Time-ratio : " + (int)currentTR + "x ==> " + (int)ratio + "x");
 			
 			adjustedTBU_s = currentTBU_ns / 1_000_000_000D;
 			currentTR = ratio;
@@ -645,7 +645,7 @@ public class MasterClock implements Serializable {
 //	 		        	diffCache = (diff * count + diffCache)/(count + 1);
 //	 		        }
 
-					// if (count == 0) logger.info("Benchmarking this machine : " + diff + " per
+					// if (count == 0) logger.config("Benchmarking this machine : " + diff + " per
 					// 1000 frames");
 
 					// dt = t2 - t1;
@@ -688,7 +688,7 @@ public class MasterClock implements Serializable {
 						skips++;
 
 						if (skips >= maxFrameSkips) {
-							logger.info(
+							logger.config(
 									"# of skips has reached the maximum # of frame skips. Resetting total pulse and slowing down (TBU).");
 							resetTotalPulses();
 							if (currentTBU_ns > (long) (adjustedTBU_ns * 1.25))
@@ -925,10 +925,10 @@ public class MasterClock implements Serializable {
 			firePauseChange(showPane);
 			
 			if (isPaused) {
-				logger.info("The simulation is paused.");
+				logger.config("The simulation is paused.");
 			}
 			else {
-				logger.info("The simulation is unpaused.");
+				logger.config("The simulation is unpaused.");
 			}
 		}
 	}

@@ -192,13 +192,17 @@ public class Walk extends Task implements Serializable {
 //        }
 
 		if (walkingSteps == null) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(),
-					"Walking steps could not be determined for " + person.getName(), null);
+			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] "
+      						+ person + " is in " + person.getLocationTag().getImmediateLocation()
+      						+ " but walking steps could not be determined.", null);
 			endTask();
 			person.getMind().getNewAction(true, false);
 		} else if (!canWalkAllSteps(person, walkingSteps)) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(),
-					"Valid Walking steps could not be determined for " + person.getName(), null);
+			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] "
+      						+ person + " is in " + person.getLocationTag().getImmediateLocation()
+					+ " but Valid Walking steps could not be determined.", null);
 			endTask();
 			person.getMind().getNewAction(true, false);
 		}
@@ -365,8 +369,10 @@ public class Walk extends Task implements Serializable {
 
 		// End task if all steps cannot be walked.
 		if (!canWalkAllSteps(person, walkingSteps)) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(),
-					person.getName() + " could not find valid walking steps to " + interiorObject, null);
+			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] "
+      						+ person + " is in " + person.getLocationTag().getImmediateLocation()
+					+ " and could not find valid walking steps to " + interiorObject, null);
 			endTask();
 		}
 
@@ -395,8 +401,10 @@ public class Walk extends Task implements Serializable {
 
 		// End task if all steps cannot be walked.
 		if (!canWalkAllSteps(robot, walkingSteps)) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(),
-					robot.getName() + " could not find valid walking steps to " + interiorObject, null);
+			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+					"[" + robot.getLocationTag().getLocale() + "] "
+      						+ robot + " is in " + robot.getLocationTag().getImmediateLocation()
+      						+ " and could not find valid walking steps to " + interiorObject, null);
 			endTask();
 		}
 
@@ -669,8 +677,10 @@ public class Walk extends Task implements Serializable {
 					Airlock airlock = step.airlock;
 					if (!ExitAirlock.canExitAirlock(person, airlock)) {
 						result = false;
-						// LogConsolidated.log(logger, Level.WARNING, 5000, logger.getName(),
-						// person + " cannot exit airlock at " + airlock.getEntityName(), null);
+						 LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
+								 "[" + person.getLocationTag().getLocale() + "] "
+				      					+ person + " is in " + person.getLocationTag().getImmediateLocation()
+				      					+ " and cannot exit airlock at " + airlock.getEntityName(), null);
 					}
 				}
 			}
@@ -692,7 +702,7 @@ public class Walk extends Task implements Serializable {
 //                    Airlock airlock = step.airlock;
 //                    if (!ExitAirlock.canExitAirlock(robot, airlock)) {
 //                        result = false;
-//                       	LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(),
+//                       	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 //                       			robot + " cannot exit airlock at " + airlock.getEntityName(), null);
 //                    }
 //                }
@@ -878,8 +888,9 @@ public class Walk extends Task implements Serializable {
 				// logger.info(person + " is " + location.getName());
 				if (person.isInSettlement()) {
 					LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName,
-							person + " is in " + person.getSettlement() + " but is in walkingRoverInteriorPhase() "
-									+ "and NOT in a rover.",
+		      				"[" + person.getLocationTag().getLocale() + "] "
+							+ person + " is in " + person.getLocationTag().getImmediateLocation()
+							+ " but is in walkingRoverInteriorPhase() and NOT in a rover.",
 							null);
 					person.getMind().getTaskManager().clearTask();
 					person.getMind().getTaskManager().getNewTask();// .clearTask();
@@ -891,12 +902,9 @@ public class Walk extends Task implements Serializable {
 
 				else if (person.isOutside()) {
 					LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName,
-							person + " is outside but is in walkingRoverInteriorPhase() and NOT in rover.", null);// ("
-																													// +
-																													// rover.getName()
-																													// +
-																													// ").",
-																													// null);
+							"[" + person.getLocationTag().getLocale() + "] "
+							+ person +  " is in " + person.getLocationTag().getImmediateLocation()
+							+ " and is outside but is in walkingRoverInteriorPhase() and NOT in rover.", null);
 					person.getMind().getTaskManager().clearTask();
 					person.getMind().getTaskManager().getNewTask();// clearTask();
 				}
@@ -1069,7 +1077,9 @@ public class Walk extends Task implements Serializable {
 					addSubTask(new ExitAirlock(person, airlock));
 				} else {
 					LogConsolidated.log(
-							logger, Level.SEVERE, 1000, logger.getName(), person.getName()
+							logger, Level.SEVERE, 1000, sourceName, 
+		      				"[" + person.getLocationTag().getLocale() + "] "
+		      						+ person + " is in " + person.getLocationTag().getImmediateLocation()
 									+ " is unable to physically exit the airlock of " + airlock.getEntityName() + ".",
 							null);
 
@@ -1141,7 +1151,9 @@ public class Walk extends Task implements Serializable {
 			} else {
 				endTask();
 				LogConsolidated.log(
-						logger, Level.SEVERE, 1000, logger.getName(), person.getName()
+						logger, Level.SEVERE, 1000, sourceName, 
+	      				"[" + person.getLocationTag().getLocale() + "] "
+	      						+ person + " is in " + person.getLocationTag().getImmediateLocation()
 								+ " is OUTSIDE, unable to physically enter the airlock of " + airlock.getEntityName(),
 						null);
 			}
@@ -1172,7 +1184,7 @@ public class Walk extends Task implements Serializable {
 //                }
 //                else {
 //                    endTask();
-//                    LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), 
+//                    LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName, 
 //                    		robot.getName() + " is still OUTSIDE, unable to physically enter the airlock of " +
 //                            airlock.getEntityName(), null);
 //                }

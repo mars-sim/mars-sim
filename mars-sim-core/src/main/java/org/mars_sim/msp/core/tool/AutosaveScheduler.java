@@ -36,12 +36,15 @@ public class AutosaveScheduler {
     }
 
     public static void cancel() {
-    	if (t != null)
-    		t.cancel(false);
+    	if (t != null) {
+    		t.cancel(true);
+    		t = null;
+    	}
     }
     
     public static void start() {
-        t = autosaveService.scheduleAtFixedRate(new MyTask(), SimulationConfig.instance().getAutosaveInterval(),
+    	if (t == null)
+    		t = autosaveService.scheduleAtFixedRate(new MyTask(), SimulationConfig.instance().getAutosaveInterval(),
 				SimulationConfig.instance().getAutosaveInterval(), TimeUnit.MINUTES);
     }
 }

@@ -161,7 +161,7 @@ public class MarsClock implements Serializable {
 	 * @throws Exception if dateString is invalid.
 	 */
 	public MarsClock(String dateString) {
-		// logger.info("MarsClock's constructor is on " +
+		// logger.config("MarsClock's constructor is on " +
 		// Thread.currentThread().getName() + " Thread");
 
 		sim = Simulation.instance();
@@ -391,7 +391,7 @@ public class MarsClock implements Serializable {
 	 * @param missionSol current missionSol
 	 */
 	public MarsClock(int orbit, int month, int sol, double millisol, int missionSol) {
-		// logger.info("MarsClock's constructor is on " +
+		// logger.config("MarsClock's constructor is on " +
 		// Thread.currentThread().getName() + " Thread");
 
 		// Set date/time to given parameters.

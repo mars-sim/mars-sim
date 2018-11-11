@@ -36,6 +36,8 @@ public class MarsProject {
 	/** initialized logger for this class. */
 	private static Logger logger = Logger.getLogger(MarsProject.class.getName());
 
+	private static final String LOGGING_PROPERTIES = "/logging.properties";
+	
 	static String[] args;
 
 	/** true if displaying graphic user interface. */
@@ -52,7 +54,7 @@ public class MarsProject {
 	 * @param args command line arguments.
 	 */
 	public MarsProject(String args[]) {
-		// logger.info("MarsProject's constructor is on
+		// logger.config("MarsProject's constructor is on
 		// "+Thread.currentThread().getName() + " Thread");
 		sim.startSimExecutor();
 		sim.getSimExecutor().submit(new SimulationTask());
@@ -67,7 +69,7 @@ public class MarsProject {
 		public void run() {
 			// new Simulation(); // NOTE: NOT supposed to start another instance of the
 			// singleton Simulation
-			logger.info("Starting " + Simulation.title);
+			logger.config("Starting " + Simulation.title);
 
 			List<String> argList = Arrays.asList(args);
 			useGUI = !argList.contains("-headless");
@@ -194,7 +196,7 @@ public class MarsProject {
 	 * @throws Exception if error loading the default saved simulation.
 	 */
 	private void handleLoadDefaultSimulation() throws Exception {
-		logger.info(
+		logger.config(
 				"MarsProject's handleLoadDefaultSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
 		try {
@@ -230,7 +232,7 @@ public class MarsProject {
 	 * @throws Exception if error loading the saved simulation.
 	 */
 	private void handleLoadSimulation(List<String> argList) throws Exception {
-		logger.info("MarsProject's handleLoadSimulation() is on " + Thread.currentThread().getName() + " Thread");
+		logger.config("MarsProject's handleLoadSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
 		try {
 			int index = argList.indexOf("-load");
@@ -259,7 +261,7 @@ public class MarsProject {
 	 * Create a new simulation instance.
 	 */
 	private void handleNewSimulation() {
-		// logger.info("MarsProject's handleNewSimulation() is on
+		// logger.config("MarsProject's handleNewSimulation() is on
 		// "+Thread.currentThread().getName() + " Thread");
 
 		try {
@@ -279,7 +281,7 @@ public class MarsProject {
 	 * Start the simulation instance.
 	 */
 	public void startSimulation(boolean useDefaultName) {
-		// logger.info("MarsProject's startSimulation() is on
+		// logger.config("MarsProject's startSimulation() is on
 		// "+Thread.currentThread().getName() + " Thread");
 
 		// Start the simulation.
@@ -296,7 +298,7 @@ public class MarsProject {
 		Logger.getLogger("").setLevel(Level.FINE);
 
 		MarsProject.args = args;
-		// logger.info("MarsProject's main() is on "+Thread.currentThread().getName() +
+		// logger.config("MarsProject's main() is on "+Thread.currentThread().getName() +
 		// " Thread");
 
 		/*
@@ -306,7 +308,7 @@ public class MarsProject {
 		new File(System.getProperty("user.home"), ".mars-sim" + File.separator + "logs").mkdirs();
 
 		try {
-			LogManager.getLogManager().readConfiguration(MarsProject.class.getResourceAsStream("/logging.properties"));
+			LogManager.getLogManager().readConfiguration(MarsProject.class.getResourceAsStream(LOGGING_PROPERTIES));
 		} catch (IOException e) {
 			logger.log(Level.WARNING, "Could not load logging properties", e);
 			try {

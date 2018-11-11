@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class MarsProjectHeadlessStarter {
 
-	private final static String ERROR_PREFIX = "? ";
+//	private final static String ERROR_PREFIX = "? ";
 
 	public static void main(String[] args) {
 

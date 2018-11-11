@@ -32,6 +32,8 @@ public class MarsProjectFXGL extends GameApplication {
 	/** initialized logger for this class. */
 	private static Logger logger = Logger.getLogger(MarsProjectFXGL.class.getName());
 
+	private static final String LOGGING_PROPERTIES = "/logging.properties";
+	
 	static String[] args;
 
 	private static final String manpage = "\n> java -jar mars-sim-main-[$VERSION].jar\n"
@@ -264,17 +266,17 @@ public class MarsProjectFXGL extends GameApplication {
 	protected void initUI() {
 
 		if (!headless) {
-			// logger.info("start() : in GUI mode, loading the Main Menu");
+			// logger.config("start() : in GUI mode, loading the Main Menu");
 
 			mainMenu = new MainMenu();// this);
 
 			if (newSim) {
 				// CASE D1 and D2//
-				logger.info("Starting a new sim in GUI mode in " + Simulation.OS);
+				logger.config("Starting a new sim in GUI mode in " + Simulation.OS);
 				mainMenu.initMainMenu(getGameScene());
 
 				// Alert the user to see the interactive terminal 
-				logger.info("Please proceed to answering the question in the popped-up console.");
+				logger.config("Please proceed to answering the question in the popped-up console.");
 
 				// Now in the Main Menu, wait for user to pick either options
 				// 1. 'New Sim' - call runOne(), go to ScenarioConfigEditorFX
@@ -286,7 +288,7 @@ public class MarsProjectFXGL extends GameApplication {
 
 				if (savedSim) {
 
-					logger.info("Loading user's saved sim in GUI mode in " + Simulation.OS);
+					logger.config("Loading user's saved sim in GUI mode in " + Simulation.OS);
 
 					File loadFile = new File(loadFileString);
 
@@ -303,7 +305,7 @@ public class MarsProjectFXGL extends GameApplication {
 
 				else {
 					// if user wants to load the default saved sim
-					logger.info("Loading a saved sim with FileChooser in GUI mode in " + Simulation.OS);
+					logger.config("Loading a saved sim with FileChooser in GUI mode in " + Simulation.OS);
 
 					try {
 						// load FileChooser instead
@@ -321,13 +323,13 @@ public class MarsProjectFXGL extends GameApplication {
 		}
 
 		if (noaudio) {
-			logger.info("noaudio argument detected. Turn off sound.");
+			logger.config("noaudio argument detected. Turn off sound.");
 			// Use MainMenu to save the sound state
 			MainMenu.disableSound();
 		}
 
 //		else {
-//		   	logger.info("Entering headless mode and skip loading the Main Menu");
+//		   	logger.config("Entering headless mode and skip loading the Main Menu");
 //		   	if (newSim) {
 //		   	// CASE A //
 //	   		}
@@ -347,7 +349,7 @@ public class MarsProjectFXGL extends GameApplication {
 	public void setLogging() {
 		try {
 			LogManager.getLogManager()
-					.readConfiguration(MarsProjectFX.class.getResourceAsStream("/logging.properties"));
+					.readConfiguration(MarsProjectFX.class.getResourceAsStream(LOGGING_PROPERTIES));
 		} catch (IOException e) {
 			logger.log(Level.WARNING, "Could not load logging properties", e);
 			try {
@@ -449,7 +451,7 @@ public class MarsProjectFXGL extends GameApplication {
 			// Using -headless (GUI-less mode)
 			if (newSim) {
 				// CASE A //
-				logger.info("Starting a new sim in headless mode in " + Simulation.OS);
+				logger.config("Starting a new sim in headless mode in " + Simulation.OS);
 				// Start interactive terminal 
 				sim.getTerm().startCommanderMode();
 				// Initialize the simulation.
@@ -496,7 +498,7 @@ public class MarsProjectFXGL extends GameApplication {
 			// Generate html files for in-game help
 			else if (generateHTML) {
 				// CASE C //
-				logger.info("Generating help files in headless mode in " + Simulation.OS);
+				logger.config("Generating help files in headless mode in " + Simulation.OS);
 
 				try {
 					SimulationConfig.loadConfig();
@@ -504,7 +506,7 @@ public class MarsProjectFXGL extends GameApplication {
 					// Relocate the following to handleNewSimulation() right before calling
 					// ScenarioConfigEditorFX.
 					HelpGenerator.generateHtmlHelpFiles();
-					logger.info("Done creating help files.");
+					logger.config("Done creating help files.");
 					Platform.exit();
 					System.exit(1);
 
@@ -514,7 +516,7 @@ public class MarsProjectFXGL extends GameApplication {
 				}
 			} else if (helpPage) {
 				// CASE D //
-				// logger.info("Displaying help instructions in headless mode in " +
+				// logger.config("Displaying help instructions in headless mode in " +
 				// Simulation.OS);
 				System.out.println(manpage);
 				Platform.exit();
@@ -542,7 +544,7 @@ public class MarsProjectFXGL extends GameApplication {
 	 * @throws Exception if error loading the saved simulation.
 	 */
 	void handleLoadSimulation(File loadFile) throws Exception {
-		logger.info("Loading user's saved sim in headless mode in " + Simulation.OS);
+		logger.config("Loading user's saved sim in headless mode in " + Simulation.OS);
 		try {
 
 			if (loadFile.exists() && loadFile.canRead()) {
@@ -569,7 +571,7 @@ public class MarsProjectFXGL extends GameApplication {
 //	 * Create a new simulation instance.
 //	 */
 //	void handleNewSimulation() {
-//		logger.info("Creating a new sim in " + Simulation.OS);
+//		logger.config("Creating a new sim in " + Simulation.OS);
 //		try {
 //			// SimulationConfig.loadConfig(); // located to prepare()
 //			sim.getSimExecutor().execute(new ConfigEditorTask());
@@ -586,7 +588,7 @@ public class MarsProjectFXGL extends GameApplication {
 	 * @throws Exception if error loading the default saved simulation.
 	 */
 	private void handleLoadDefaultSimulation() {
-		logger.info("Loading the default saved sim in headless mode in " + Simulation.OS);
+		logger.config("Loading the default saved sim in headless mode in " + Simulation.OS);
 
 		try {
 			// Load the default saved file "default.sim"

@@ -99,8 +99,10 @@ public class RestingMedicalRecovery extends Task implements Serializable {
         }
         else {
             //logger.severe(person + " can't find any medical aid.");
-      		LogConsolidated.log(logger, Level.SEVERE, 5000, logger.getName(), 
-      				person + " can't find any medical aid in " + person.getLocationTag().getExtendedLocations(), null);
+      		LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, 
+      				"[" + person.getLocationTag().getLocale() + "] "
+      				+ person + " can't find any medical aid.", null);
+      		
             endTask();
         }
 

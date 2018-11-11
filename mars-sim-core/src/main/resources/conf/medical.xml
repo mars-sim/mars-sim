@@ -91,7 +91,7 @@
 			<seriousness value="10" />
 			<recovery-time value="12.0" />
 			<probability value="5.0" />
-			<performance-percent value="80.0" />
+			<performance-percent value="90.0" />
 			<bed-rest-recovery value="false" />
 		</medical-complaint>
 
@@ -100,8 +100,8 @@
 			<seriousness value="20" />
 			<recovery-time value="3.0" />
 			<probability value="5.0" />
-			<performance-percent value="30.0" />
-			<bed-rest-recovery value="true" />
+			<performance-percent value="80.0" />
+			<bed-rest-recovery value="false" />
 		</medical-complaint>
 
 		<!-- A fever doesn't last long but reduces a person's performance quite a bit.  -->
@@ -110,7 +110,7 @@
 			<degrade-time value="3.0" />
 			<recovery-time value="1.0" />
 			<probability value="5.0" />
-			<performance-percent value="20.0" />
+			<performance-percent value="70.0" />
 			<bed-rest-recovery value="true" />
 		</medical-complaint>
 
@@ -178,7 +178,7 @@
 			<degrade-time value="10.0" />
 			<recovery-time value="40.0" />
 			<probability value="0.0" />
-			<performance-percent value="0.0" />
+			<performance-percent value="10.0" />
 			<bed-rest-recovery value="true" />
 			<treatment-type value="Skin Graft" />
 		</medical-complaint>
@@ -201,7 +201,7 @@
 			<degrade-time value="10.0" />
 			<recovery-time value="10.0" />
 			<probability value="0.0" />
-			<performance-percent value="40.0" />
+			<performance-percent value="60.0" />
 			<bed-rest-recovery value="true" />
 			<treatment-type value="Dressing" />
 			<degrade-complaint value="Gangrene" />
@@ -216,7 +216,7 @@
 			<degrade-time value="3.0" />
 			<recovery-time value="1.0" />
 			<probability value="0.0" />
-			<performance-percent value="40.0" />
+			<performance-percent value="60.0" />
 			<bed-rest-recovery value="false" />
 			<treatment-type value="Anxiety Medication" />
 		</medical-complaint>
@@ -243,7 +243,7 @@
 			<degrade-time value="3.0" />
 			<recovery-time value="3.0" />
 			<probability value="0.0" />
-			<performance-percent value="10.0" />
+			<performance-percent value="20.0" />
 			<bed-rest-recovery value="true" />
 			<treatment-type value="Hospitalization" />
 		</medical-complaint>
@@ -268,7 +268,7 @@
 			<degrade-time value="3.0" />
 			<recovery-time value="0.5" />
 			<probability value="5.0" />
-			<performance-percent value="80.0" />
+			<performance-percent value="90.0" />
 			<bed-rest-recovery value="false" />
 		</medical-complaint>
 
@@ -303,10 +303,7 @@
 		</medical-complaint>
 
 <!-- Future:
-	1. Medium cut ?
-	2.
-	3.
-	4.
+	1. Medium cut
 -->
 
 

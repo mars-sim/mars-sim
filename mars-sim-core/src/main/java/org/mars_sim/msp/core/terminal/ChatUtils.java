@@ -19,6 +19,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -110,7 +115,8 @@ public class ChatUtils {
 	};
 	
 	public final static String[] SYSTEM_KEYS = new String[] {
-			"settlement", "check size",
+			"settlement", "check size", 
+			"log all", "log fine", "log info", "log severe", "log finer", "log finest", "log warning", "log config",
 			"vehicle", "rover", 
 			"hi", "hello", "hey"
 	};
@@ -2190,6 +2196,19 @@ public class ChatUtils {
 //	    }
 //	}
 	
+	public static void setDebugLevel(Level newLvl) {
+		// Java 8 stream
+//		Arrays.stream(LogManager.getLogManager().getLogger("").getHandlers()).forEach(h -> h.setLevel(newLvl));
+		
+	    Logger rootLogger = LogManager.getLogManager().getLogger("");
+	    Handler[] handlers = rootLogger.getHandlers();
+	    rootLogger.setLevel(newLvl);
+	    for (Handler h : handlers) {
+	        if (h instanceof ConsoleHandler)
+	            h.setLevel(newLvl);
+	    }
+	}
+	
 	/*
 	 * Asks the system a question
 	 * 
@@ -2220,6 +2239,152 @@ public class ChatUtils {
 			proceed = true;
 		}
 
+		else if (text.toLowerCase().contains("log")) {			
+			
+			if (text.equalsIgnoreCase("log")) {		
+				
+				Level level = LogManager.getLogManager().getLogger("").getLevel();
+				
+				responseText.append("Current logging level is : " + level);
+				responseText.append(System.lineSeparator());
+				responseText.append(System.lineSeparator());
+
+//				SEVERE (highest value)
+//				WARNING
+//				INFO
+//				CONFIG
+//				FINE
+//				FINER
+//				FINEST (lowest value)
+				
+//				responseText.append(System.lineSeparator());
+				responseText.append("Please specify the Logging Level as follows : ");
+				responseText.append(System.lineSeparator());
+				responseText.append(" 1. log off");
+				responseText.append(System.lineSeparator());
+				responseText.append(" 2. log severe");
+				responseText.append(System.lineSeparator());
+				responseText.append(" 3. log warning");
+				responseText.append(System.lineSeparator());
+				responseText.append(" 4. log info");
+				responseText.append(System.lineSeparator());
+				responseText.append(" 5. log config");
+				responseText.append(System.lineSeparator());
+				responseText.append(" 6. log fine");
+				responseText.append(System.lineSeparator());
+				responseText.append(" 7. log finer");
+				responseText.append(System.lineSeparator());
+				responseText.append(" 8. log finest");
+				responseText.append(System.lineSeparator());
+				responseText.append(" 9. log all");
+				
+				responseText.append(System.lineSeparator());				
+				responseText.append(System.lineSeparator());
+				responseText.append("See https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html");
+				
+					
+				responseText.append(System.lineSeparator());
+				responseText.append(System.lineSeparator());
+				responseText.append("e.g. Type 'log info' at the prompt to set it to the INFO level");
+//				responseText.append(System.lineSeparator());
+				
+				return responseText.toString();						
+			}
+			
+			if (text.equalsIgnoreCase("log off")) {			
+				
+				setDebugLevel(Level.OFF);
+				
+//				responseText.append(System.lineSeparator());
+				responseText.append("Logging is set to OFF");	
+				
+				return responseText.toString();						
+			}
+			
+			
+			else if (text.equalsIgnoreCase("log config")) {			
+				
+				setDebugLevel(Level.CONFIG);
+				
+//				responseText.append(System.lineSeparator());
+				responseText.append("Logging is set to CONFIG");	
+				
+				return responseText.toString();						
+			}
+
+
+			
+			else if (text.equalsIgnoreCase("log warning")) {			
+				
+				setDebugLevel(Level.WARNING);
+				
+//				responseText.append(System.lineSeparator());
+				responseText.append("Logging is set to WARNING");	
+				
+				return responseText.toString();						
+			}
+			
+			else if (text.equalsIgnoreCase("log fine")) {			
+				
+				setDebugLevel(Level.FINE);
+				
+//				responseText.append(System.lineSeparator());
+				responseText.append("Logging is set to FINE");	
+				
+				return responseText.toString();						
+			}
+			
+			else if (text.equalsIgnoreCase("log finer")) {			
+				
+				setDebugLevel(Level.FINER);
+				
+//				responseText.append(System.lineSeparator());
+				responseText.append("Logging is set to FINER");	
+				
+				return responseText.toString();						
+			}
+			
+			else if (text.equalsIgnoreCase("log finest")) {			
+				
+				setDebugLevel(Level.FINEST);
+				
+//				responseText.append(System.lineSeparator());
+				responseText.append("Logging is set to FINEST");	
+				
+				return responseText.toString();						
+			}
+			
+			else if (text.equalsIgnoreCase("log severe")) {			
+				
+				setDebugLevel(Level.SEVERE);
+				
+//				responseText.append(System.lineSeparator());
+				responseText.append("Logging is set to SEVERE");	
+				
+				return responseText.toString();
+			}
+			
+			else if (text.equalsIgnoreCase("log info")) {			
+				
+				setDebugLevel(Level.INFO);
+						
+//				responseText.append(System.lineSeparator());
+				responseText.append("Logging is set to INFO");
+				
+				return responseText.toString();
+			}
+					
+			else if (text.equalsIgnoreCase("log all")) {			
+				
+				setDebugLevel(Level.ALL);
+				
+//				responseText.append(System.lineSeparator());
+				responseText.append("Logging is set to ALL");	
+				
+				return responseText.toString();						
+			}
+		}
+		
 		else if (text.equalsIgnoreCase("check size")) {			
 			responseText.append(System.lineSeparator());
 			responseText.append(Simulation.instance().printObjectSize());

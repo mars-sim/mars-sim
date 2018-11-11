@@ -419,6 +419,9 @@ public class EventTableModel extends AbstractTableModel
 
 					during = during.toLowerCase();
 					
+					if (during.equals("n/a"))
+						during = "";
+					
 					header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
 
 					// Only display notification window when malfunction has occurred, not when

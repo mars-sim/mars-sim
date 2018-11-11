@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -88,7 +87,7 @@ implements Serializable {
             
             // If person is in a settlement, try to find an administration building.
             boolean adminWalk = false;
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {         
+            if (person.isInSettlement()) {     
                 Building adminBuilding = getAvailableAdministrationBuilding(person);
                 if (adminBuilding != null) {
                     // Walk to administration building.
@@ -99,7 +98,7 @@ implements Serializable {
             
             if (!adminWalk) {
                 
-                if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                if (person.isInVehicle()) {
                     // If person is in rover, walk to passenger activity spot.
                     if (person.getVehicle() instanceof Rover) {
                         walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
@@ -129,7 +128,7 @@ implements Serializable {
 
         Building result = null;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {    
             BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> administrationBuildings = manager.getBuildings(FunctionType.ADMINISTRATION);
             administrationBuildings = BuildingManager.getNonMalfunctioningBuildings(administrationBuildings);

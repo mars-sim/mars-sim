@@ -215,7 +215,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @return Simulation instance
 	 */
 	public static Simulation instance() {
-		// logger.info("Simulation's instance() is on " +
+		// logger.config("Simulation's instance() is on " +
 		// Thread.currentThread().getName() + " Thread");
 		// NOTE: Simulation.instance() is accessible on any threads or by any threads
 		return SingletonHelper.INSTANCE;
@@ -291,7 +291,7 @@ public class Simulation implements ClockListener, Serializable {
 //	 * Initialize transient data in the simulation.
 //	 */
 //    private void initializeTransientData() {
-//       //logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
+//       //logger.config("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
 //       eventManager = new HistoricalEventManager();
 //    }
 
@@ -329,7 +329,7 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		public void run() {
-			// logger.info("SimConfigTask's run() is on " +
+			// logger.config("SimConfigTask's run() is on " +
 			// Thread.currentThread().getName());
 			SimulationConfig.loadConfig();
 		}
@@ -347,7 +347,7 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		public void run() {
-			// logger.info("StartTask's run() is on " + Thread.currentThread().getName());
+			// logger.config("StartTask's run() is on " + Thread.currentThread().getName());
 			start(autosaveDefault);
 		}
 	}
@@ -414,7 +414,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param file the file to be loaded from.
 	 */
 	public void loadSimulation(final File file) {
-		// logger.info("Simulation's loadSimulation() is on " +
+		// logger.config("Simulation's loadSimulation() is on " +
 		// Thread.currentThread().getName());
 		isUpdating = true;
 
@@ -425,18 +425,18 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Use default file path if file is null.
 		if (f == null) {
-			// logger.info("Yes file is null");
+			// logger.config("Yes file is null");
 			// [landrus, 27.11.09]: use the home dir instead of unknown relative paths.
 			f = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
-			// logger.info("file is " + f);
+			// logger.config("file is " + f);
 			sim.defaultLoad = true;
 		} else {
 			sim.defaultLoad = false;
 		}
 
 		if (f.exists() && f.canRead()) {
-//			logger.info(" - - - - - - - - - - - - - -");
-//			logger.info(Msg.getString("Simulation.log.loadSimFrom", f)); //$NON-NLS-1$
+//			logger.config(" - - - - - - - - - - - - - -");
+//			logger.config(Msg.getString("Simulation.log.loadSimFrom", f)); //$NON-NLS-1$
 
 			try {
 
@@ -477,8 +477,8 @@ public class Simulation implements ClockListener, Serializable {
 	 * @throws IOException            if error reading from file.
 	 */
 	private synchronized void readFromFile(File file) throws ClassNotFoundException, IOException {
-		// logger.info("Simulation : running readFromFile()");
-		logger.info("Loading and processing the saved sim. Please wait...");
+		// logger.config("Simulation : running readFromFile()");
+		logger.config("Loading and processing the saved sim. Please wait...");
 		
 		byte[] buf = new byte[8192];
 		ObjectInputStream ois = null;
@@ -547,17 +547,17 @@ public class Simulation implements ClockListener, Serializable {
 			if (loadBuild == null)
 				loadBuild = "unknown";
 			
-//			logger.info("Proceed to loading the saved sim.");
+//			logger.config("Proceed to loading the saved sim.");
 			String filename = file.getName();
 			String path = file.getPath().replace(filename, "");
-			logger.info(" --------------------------------------------------------------------");
-			logger.info("                      Saved Simulation                               ");
-			logger.info(" --------------------------------------------------------------------");
-			logger.info("                   Filename : " + filename);
-			logger.info("                       Path : " + path);
-			logger.info("                       Size : " + fileStr);
-			logger.info("              Made in Build : " + loadBuild);
-			logger.info("  Current Core Engine Build : " + Simulation.BUILD);
+			logger.config(" --------------------------------------------------------------------");
+			logger.config("                      Saved Simulation                               ");
+			logger.config(" --------------------------------------------------------------------");
+			logger.config("                   Filename : " + filename);
+			logger.config("                       Path : " + path);
+			logger.config("                       Size : " + fileStr);
+			logger.config("              Made in Build : " + loadBuild);
+			logger.config("  Current Core Engine Build : " + Simulation.BUILD);
 			
 			// Load remaining serialized objects
 			malfunctionFactory = (MalfunctionFactory) ois.readObject();
@@ -574,16 +574,16 @@ public class Simulation implements ClockListener, Serializable {
 			masterClock = (MasterClock) ois.readObject();
 
 			
-			logger.info("    Martian Date/Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
-			logger.info(" --------------------------------------------------------------------");			
+			logger.config("    Martian Date/Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
+			logger.config(" --------------------------------------------------------------------");			
 			if (Simulation.BUILD.equals(loadBuild)) {
-				logger.info(" Note : Both Builds are matched.");
+				logger.config(" Note : Both Builds are matched.");
 			} else {
-				logger.info(" Note : The Builds are NOT matched.");
+				logger.config(" Note : The Builds are NOT matched.");
 				logger.warning("Attempting to load the saved sim made in build " + loadBuild
 					+ " while running mars-sim build " + Simulation.BUILD);
 			}		
-			logger.info("  - - - - - - - - - Sol " + masterClock.getMarsClock().getMissionSol() 
+			logger.config("  - - - - - - - - - Sol " + masterClock.getMarsClock().getMissionSol() 
 					+ " (Cont') - - - - - - - - - - - ");
 	
 			if (ois != null) {
@@ -648,7 +648,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param file the file to be saved to.
 	 */
 	public synchronized void saveSimulation(int type, File file) throws IOException {
-//        logger.info("Simulation's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
+//        logger.config("Simulation's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
 		logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
 
 		// Check if it was previously on pause
@@ -684,7 +684,7 @@ public class Simulation implements ClockListener, Serializable {
 				Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
 			}
 
-			logger.info("Saving as " + DEFAULT_FILE + DEFAULT_EXTENSION + ".");
+			logger.config("Saving as " + DEFAULT_FILE + DEFAULT_EXTENSION + ".");
 
 		}
 
@@ -693,13 +693,13 @@ public class Simulation implements ClockListener, Serializable {
 			String dir = file.getParentFile().getAbsolutePath();
 			if (!f.contains(".sim"))
 				file = new File(dir, f + DEFAULT_EXTENSION);
-			logger.info("Saving as " + file + "...");
+			logger.config("Saving as " + file + "...");
 		}
 
 		else if (type == AUTOSAVE_AS_DEFAULT) {
 
 //            file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
-//            logger.info("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
+//            logger.config("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
 
 			file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
 
@@ -711,7 +711,7 @@ public class Simulation implements ClockListener, Serializable {
 				Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
 			}
 
-			logger.info("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION + ".");
+			logger.config("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION + ".");
 
 		}
 
@@ -719,7 +719,7 @@ public class Simulation implements ClockListener, Serializable {
 			String autosaveFilename = lastSaveTimeStamp + "_Sol" + missionSol + "_r" + BUILD
 					+ DEFAULT_EXTENSION;
 			file = new File(AUTOSAVE_DIR, autosaveFilename);
-			logger.info("Autosaving as " + autosaveFilename + "...");
+			logger.config("Autosaving as " + autosaveFilename + "...");
 
 		}
 
@@ -859,7 +859,7 @@ public class Simulation implements ClockListener, Serializable {
 			uncompressed.delete();
 			//uncompressed = null;
 			
-			logger.info("Done saving. The simulation resumes.");
+			logger.config("Done saving. The simulation resumes.");
 
 		} catch (NullPointerException e0) {
 			logger.log(Level.SEVERE, Msg.getString("Simulation.log.saveError"), e0); //$NON-NLS-1$
@@ -1502,7 +1502,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * simulation.
 	 */
 	public void destroyOldSimulation() {
-		// logger.info("starting Simulation's destroyOldSimulation()");
+		// logger.config("starting Simulation's destroyOldSimulation()");
 
 //		autosaveService = null;
 		AutosaveScheduler.cancel();
@@ -1562,7 +1562,7 @@ public class Simulation implements ClockListener, Serializable {
 //            managerExecutor = null;
 //        }
 
-		// logger.info("Simulation's destroyOldSimulation() is done");
+		// logger.config("Simulation's destroyOldSimulation() is done");
 	}
 
 }
