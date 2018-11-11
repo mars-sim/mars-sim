@@ -51,7 +51,6 @@ import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 //import com.alee.managers.UIManagers;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.UIManagers;
-import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
@@ -495,7 +494,7 @@ public class MainWindow extends JComponent {
 	 * Performs the process of creating a new simulation.
 	 */
 	void newSimulationProcess() {
-		logger.info("newSimulationProces() is on " + Thread.currentThread().getName());
+		logger.config("newSimulationProces() is on " + Thread.currentThread().getName());
 
 		if (JOptionPane.showConfirmDialog(desktop, Msg.getString("MainWindow.abandonRunningSim"), //$NON-NLS-1$
 				UIManager.getString("OptionPane.titleText"), //$NON-NLS-1$
@@ -802,7 +801,7 @@ public class MainWindow extends JComponent {
 	}
 
 	public void openConstructionWizard(BuildingConstructionMission mission) {
-		logger.info("MainWindow's openConstructionWizard() is in " + Thread.currentThread().getName() + " Thread");
+		logger.config("MainWindow's openConstructionWizard() is in " + Thread.currentThread().getName() + " Thread");
 		constructionWizard.selectSite(mission);
 	}
 

@@ -48,7 +48,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * The MalfunctionManager class manages the current malfunctions in each of the
  * 6 types of units (namely, Building, BuildingKit, EVASuit, Robot,
- * MockBuilding, or Vehicle)
+ * MockBuilding, or Vehicle). Each building has its own MalfunctionManager
  */
 // TODO: have one single MalfunctionUtility class to handle static methods that are common to all 6 types of units
 public class MalfunctionManager implements Serializable {
@@ -86,18 +86,20 @@ public class MalfunctionManager implements Serializable {
 	/** The number of times the entity has been maintained so far. */
 	private int numberMaintenances;
 	/** The number of orbits. */
-	private int orbitCache = 0; 
+	private int orbitCache = 0;
 	/** Time passing (in millisols) since last maintenance on entity. */
 	private double timeSinceLastMaintenance;
-	/** Time (millisols) that entity has been actively used since last maintenance. */
+	/**
+	 * Time (millisols) that entity has been actively used since last maintenance.
+	 */
 	private double effectiveTimeSinceLastMaintenance;
 	/** The required work time for maintenance on entity. */
 	private double maintenanceWorkTime;
 	/** The completed. */
 	private double maintenanceTimeCompleted;
 	/**
-	 * The percentage representing the malfunctionable's condition from wear & tear.
-	 * 0% = worn out -> 100% = new condition.
+	 * The percentage representing the malfunctionable's condition from wear and
+	 * tear. 0% = worn out -> 100% = new condition.
 	 */
 	private double wearCondition;
 	/**
@@ -122,7 +124,7 @@ public class MalfunctionManager implements Serializable {
 	/** The parts currently needed to maintain this entity. */
 	private Map<Integer, Integer> partsNeededForMaintenance;
 
-	
+	// The static instances
 	private static MasterClock masterClock;
 	private static MarsClock startTime;
 	private static MarsClock currentTime;
@@ -204,9 +206,7 @@ public class MalfunctionManager implements Serializable {
 		boolean result = false;
 
 		if (hasMalfunction()) {
-			// Iterator<Malfunction> i = malfunctions.iterator();
-			// while (i.hasNext()) {
-			for (Malfunction malfunction : malfunctions) {// = i.next();
+			for (Malfunction malfunction : malfunctions) {
 				if ((malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime()) > 0D)
 					result = true;
 			}
@@ -224,9 +224,7 @@ public class MalfunctionManager implements Serializable {
 		boolean result = false;
 
 		if (hasMalfunction()) {
-			// Iterator<Malfunction> i = malfunctions.iterator();
-			// while (i.hasNext()) {
-			for (Malfunction malfunction : malfunctions) {// = i.next();
+			for (Malfunction malfunction : malfunctions) {
 				if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D)
 					result = true;
 			}
@@ -244,9 +242,7 @@ public class MalfunctionManager implements Serializable {
 		boolean result = false;
 
 		if (hasMalfunction()) {
-			// Iterator<Malfunction> i = malfunctions.iterator();
-			// while (i.hasNext()) {
-			for (Malfunction malfunction : malfunctions) {// = i.next();
+			for (Malfunction malfunction : malfunctions) {
 				if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D)
 					result = true;
 			}
@@ -298,11 +294,10 @@ public class MalfunctionManager implements Serializable {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if ((malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime()) > 0D) {
-					if (malfunction.getSeverity() > highestSeverity) {
-						highestSeverity = malfunction.getSeverity();
-						result = malfunction;
-					}
+				if ((malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime()) > 0D
+						&& malfunction.getSeverity() > highestSeverity) {
+					highestSeverity = malfunction.getSeverity();
+					result = malfunction;
 				}
 			}
 		}
@@ -322,11 +317,10 @@ public class MalfunctionManager implements Serializable {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D) {
-					if (malfunction.getSeverity() > highestSeverity) {
-						highestSeverity = malfunction.getSeverity();
-						result = malfunction;
-					}
+				if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D
+						&& malfunction.getSeverity() > highestSeverity) {
+					highestSeverity = malfunction.getSeverity();
+					result = malfunction;
 				}
 			}
 		}
@@ -361,11 +355,10 @@ public class MalfunctionManager implements Serializable {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D) {
-					if (malfunction.getSeverity() > highestSeverity) {
-						highestSeverity = malfunction.getSeverity();
-						result = malfunction;
-					}
+				if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D
+						&& malfunction.getSeverity() > highestSeverity) {
+					highestSeverity = malfunction.getSeverity();
+					result = malfunction;
 				}
 			}
 		}
@@ -390,6 +383,8 @@ public class MalfunctionManager implements Serializable {
 
 	/**
 	 * Select a malfunction randomly to the unit (if possible).
+	 * 
+	 * @param actor
 	 */
 	private boolean selectMalfunction(Unit actor) {
 		boolean result = false;
@@ -406,23 +401,24 @@ public class MalfunctionManager implements Serializable {
 	/**
 	 * Adds a malfunction to the unit.
 	 * 
-	 * @param malfunction the malfunction to add.
+	 * @param malfunction   the malfunction to add.
+	 * @param registerEvent
+	 * @param actor
 	 */
 	public void addMalfunction(Malfunction malfunction, boolean registerEvent, Unit actor) {
 		Person person = null;
 		Robot robot = null;
-		
+
 		String offender = PARTS_FAILURE;
 		String task = "N/A";
-		
+
 		malfunctions.add(malfunction);
-		
+
 		if (actor != null) {
 			if (actor instanceof Person) {
 				person = (Person) actor;
 				task = person.getTaskDescription();
-			}
-			else if (actor instanceof Robot) {
+			} else if (actor instanceof Robot) {
 				robot = (Robot) actor;
 				task = robot.getTaskDescription();
 			}
@@ -430,7 +426,7 @@ public class MalfunctionManager implements Serializable {
 //				;
 //			}
 		}
-		
+
 		if (actor != null)
 			offender = actor.getName();
 
@@ -449,7 +445,7 @@ public class MalfunctionManager implements Serializable {
 
 				String loc0 = null;
 				String loc1 = null;
-				
+
 				// TODO: determine what happens to each entity
 //				entity instanceof EVASuit	
 //				entity instanceof Building
@@ -466,16 +462,16 @@ public class MalfunctionManager implements Serializable {
 				else if (object.toLowerCase().contains("eva")) {
 //						Unit unit = entity.getUnit();
 //						EVASuit suit = (EVASuit)entity.getUnit();
-					// TODO: for a eva suit malfunction, 
-					loc0 = ((EVASuit) entity).getImmediateLocation(); //entity.getImmediateLocation();// 
-					loc1 = ((EVASuit) entity).getLastOwner().getLocationTag().getLocale();// .getSettlement().getName();
+					// TODO: for a eva suit malfunction,
+					loc0 = ((EVASuit) entity).getImmediateLocation();
+					loc1 = ((EVASuit) entity).getLastOwner().getLocationTag().getLocale();
 				}
 
 				else if (object.toLowerCase().contains("bot")) {
 					loc0 = ((EVASuit) entity).getImmediateLocation();
 					loc1 = ((EVASuit) entity).getLocale();
 				}
-				
+
 				else {
 					loc0 = entity.getImmediateLocation();
 					loc1 = entity.getLocale();
@@ -484,60 +480,49 @@ public class MalfunctionManager implements Serializable {
 				if (object.equals(loc0)) {
 					if (actor == null) {
 						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
-								malfunction, malfunctionName, "N/A", "None",
-								loc0, loc1);
+								malfunction, malfunctionName, "N/A", "None", loc0, loc1);
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-								malfunction.getName() + " detected due to Parts Fatigue in " + loc1,
-								null);
+						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+								malfunction.getName() + " detected due to Parts Fatigue in " + loc1, null);
 					} else {
 						if (person != null) {
 							HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
 									malfunction, malfunctionName, task, offender, loc0, loc1);
 							Simulation.instance().getEventManager().registerNewEvent(newEvent);
-							LogConsolidated.log(
-									logger, Level.INFO, 0, sourceName, offender + " may have to do with "
-											+ malfunction.getName() + " due to Human Factors in " + loc1,
-									null);
-						}
-						else if (robot != null) {
+							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, offender + " may have to do with "
+									+ malfunction.getName() + " due to Human Factors in " + loc1, null);
+						} else if (robot != null) {
 							HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
 									malfunction, malfunctionName, task, offender, loc0, loc1);
 							Simulation.instance().getEventManager().registerNewEvent(newEvent);
-							LogConsolidated.log(
-									logger, Level.INFO, 0, sourceName, offender + " may have to do with "
-											+ malfunction.getName() + " due to poor software quality control in " + loc1,
-									null);
+							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, offender + " may have to do with "
+									+ malfunction.getName() + " due to poor software quality control in " + loc1, null);
 						}
 					}
-					
+
 				} else {
 					if (actor == null) {
 						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
-								malfunction, malfunctionName + " on " + object, "N/A", "None",
-								loc0, loc1);
+								malfunction, malfunctionName + " on " + object, "N/A", "None", loc0, loc1);
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-								malfunction.getName() + " detected due to Parts Fatigue in " + loc1,
-								null);
+						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+								malfunction.getName() + " detected due to Parts Fatigue in " + loc1, null);
 					} else {
 						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
 								malfunction, malfunctionName + " on " + object, task, offender, loc0, loc1);
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
-						LogConsolidated.log(
-								logger, Level.INFO, 0, sourceName, offender + " may have to do with "
-										+ malfunction.getName() + " due to Human Factors in " + loc1,
-								null);
+						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, offender + " may have to do with "
+								+ malfunction.getName() + " due to Human Factors in " + loc1, null);
 					}
 				}
 
 			}
-			
+
 			else {
-				// due to meteorite impact 
+				// due to meteorite impact
 				// actor is null
 				numberMalfunctions++;
-				
+
 				String loc0 = null;
 				String loc1 = null;
 
@@ -557,28 +542,28 @@ public class MalfunctionManager implements Serializable {
 				else if (object.toLowerCase().contains("eva")) {
 //						Unit unit = entity.getUnit();
 //						EVASuit suit = (EVASuit)entity.getUnit();
-					// TODO: for a eva suit malfunction, 
-					loc0 = ((EVASuit) entity).getImmediateLocation(); //entity.getImmediateLocation();// 
-					loc1 = ((EVASuit) entity).getLastOwner().getLocationTag().getLocale();// .getSettlement().getName();
+					// TODO: for a eva suit malfunction,
+					loc0 = ((EVASuit) entity).getImmediateLocation();
+					loc1 = ((EVASuit) entity).getLastOwner().getLocationTag().getLocale();
 				}
 
 				else if (object.toLowerCase().contains("bot")) {
 					loc0 = ((EVASuit) entity).getImmediateLocation();
 					loc1 = ((EVASuit) entity).getLocale();
 				}
-				
+
 				else {
 					loc0 = entity.getImmediateLocation();
 					loc1 = entity.getLocale();
 				}
-				
+
 				String name = malfunction.getTraumatized();
 
 				// if it is a meteorite impact
 				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_ACT_OF_GOD, malfunction,
 						malfunctionName, task, name, loc0, loc1);
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 						malfunction.getName() + " damage detected in " + loc1, null);
 			}
 		} else
@@ -590,11 +575,9 @@ public class MalfunctionManager implements Serializable {
 
 		for (Integer p : partSet) {
 			int num = parts.get(p);
-//			 }
 
 			// Compute the new reliability and failure rate for this malfunction
-//			 for (Part p : partSet) {
-			int id = p;// .getID();
+			int id = p;
 			Part part = ItemResourceUtil.findItemResource(p);
 			String part_name = part.getName();
 
@@ -621,24 +604,24 @@ public class MalfunctionManager implements Serializable {
 			double new_prob = malfunctionConfig.getRepairPartProbability(malfunction.getName(), part_name);
 			double new_rate = (100 - new_rel) * new_prob / 100D;
 			double new_mal_prob_failure = 0;
-			logger.info("Updating field reliability data for the part '" + part_name + "' as follows :");
-			logger.info("(1). Reliability: " + Math.round(old_rel * 1000.0) / 1000.0 + " % --> "
+			logger.warning("Updating field reliability data for the part '" + part_name + "' as follows :");
+			logger.warning("(1). Reliability: " + Math.round(old_rel * 1000.0) / 1000.0 + " % --> "
 					+ Math.round(new_rel * 1000.0) / 1000.0 + " %");
-//				 logger.info("(2). Part Needed Probability: " + Math.round(old_prob*1000.0)/1000.0 + " % --> "
+//				 logger.warning("(2). Part Needed Probability: " + Math.round(old_prob*1000.0)/1000.0 + " % --> "
 //						 + Math.round(new_prob*1000.0)/1000.0 + " %");
-			logger.info("(2). Failure Rate: " + Math.round(old_weight * 1000.0) / 1000.0 + " % --> "
+			logger.warning("(2). Failure Rate: " + Math.round(old_weight * 1000.0) / 1000.0 + " % --> "
 					+ Math.round(new_rate * 1000.0) / 1000.0 + " %");
 			new_mal_prob_failure = (old_mal_probl_failure + new_rate) / 2.0;
 
-			logger.info("Updating field reliability data for the malfunction '" + malfunctionName + "' as follows :");
-			logger.info("(1). Probability of Failure : " + Math.round(old_mal_probl_failure * 10000.0) / 10000.0
+			logger.warning("Updating field reliability data for the malfunction '" + malfunctionName + "' as follows :");
+			logger.warning("(1). Probability of Failure : " + Math.round(old_mal_probl_failure * 10000.0) / 10000.0
 					+ " % --> " + Math.round(new_mal_prob_failure * 10000.0) / 10000.0 + " %");
 			malfunction.setProbability(new_mal_prob_failure);
 
 		}
 
 		issueMedicalComplaints(malfunction);
-//		}
+
 	}
 
 //	 public void consumeFireExtingusher(int type) {
@@ -673,7 +656,6 @@ public class MalfunctionManager implements Serializable {
 //		 }
 //	 }
 
-
 	/**
 	 * Time passing while the unit is being actively used.
 	 * 
@@ -695,7 +677,7 @@ public class MalfunctionManager implements Serializable {
 		// Check for malfunction due to lack of maintenance and wear condition.
 		if (RandomUtil.lessThanRandPercent(chance)) {
 			int solsLastMaint = (int) (effectiveTimeSinceLastMaintenance / 1000D);
-			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
 					"[" + entity.getImmediateLocation() + "] " + entity.getNickName() + " is behind on maintenance.  "
 							+ "Time since last check-up: " + solsLastMaint + " sols.  Condition: " + wearCondition
 							+ " %.",
@@ -736,10 +718,11 @@ public class MalfunctionManager implements Serializable {
 				String chiefRepairer = malfunction.getChiefRepairer();
 
 				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, malfunction,
-						malfunction.getName(), "Repairing", chiefRepairer, entity.getImmediateLocation(), entity.getLocale());
+						malfunction.getName(), "Repairing", chiefRepairer, entity.getImmediateLocation(),
+						entity.getLocale());
 
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 						"The malfunction '" + malfunction.getName() + "' has been fixed", null);
 			}
 		}
@@ -787,25 +770,42 @@ public class MalfunctionManager implements Serializable {
 			}
 		}
 
-		if (tempOxygenFlowModifier < 0D)
+		if (tempOxygenFlowModifier < 0D) {
 			oxygenFlowModifier += tempOxygenFlowModifier * time;
-		else
+			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
+					"[" + getUnit().getLocationTag().getImmediateLocation() + "] oxygen flow restricted to "
+							+ Math.round(oxygenFlowModifier*10.0)/10.0 + "%.",
+					null);
+		} else
 			oxygenFlowModifier = 100D;
 
-		if (tempWaterFlowModifier < 0D)
+		if (tempWaterFlowModifier < 0D) {
 			waterFlowModifier += tempWaterFlowModifier * time;
-		else
+			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
+					"[" + getUnit().getLocationTag().getImmediateLocation() + "] water flow restricted to "
+							+ Math.round(waterFlowModifier*10.0)/10.0 + "%.",
+					null);
+		} else
 			waterFlowModifier = 100D;
 
-		if (tempAirPressureModifier < 0D)
+		if (tempAirPressureModifier < 0D) {
 			airPressureModifier += tempAirPressureModifier * time;
-		else
+			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
+					"[" + getUnit().getLocationTag().getImmediateLocation() + "] air pressure regulator functioning at "
+							+ Math.round(airPressureModifier*10.0)/10.0 + "%.",
+					null);
+		} else
 			airPressureModifier = 100D;
 
-		if (tempTemperatureModifier != 0D)
+		if (tempTemperatureModifier != 0D) {
 			temperatureModifier += tempTemperatureModifier * time;
-		else
+			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
+					"[" + getUnit().getLocationTag().getImmediateLocation() + "] temperature regulator functioning at "
+							+ Math.round(temperatureModifier*10.0)/10.0 + "%.",
+					null);
+		} else
 			temperatureModifier = 100D;
+
 	}
 
 	/**
@@ -869,7 +869,7 @@ public class MalfunctionManager implements Serializable {
 	 * 
 	 * @param s the place of accident
 	 * @param u the person/robot who triggers the malfunction
-	 */	
+	 */
 	public void handleStringTypeOne(String s, Unit u) {
 		StringBuilder sb = new StringBuilder(Conversion.capitalize(s));
 
@@ -882,10 +882,10 @@ public class MalfunctionManager implements Serializable {
 			sb.insert(0, "in ");
 		}
 
-		 if (s.contains("EVA")) { 
-			 sb.insert(0, "with "); 
+		if (s.contains("EVA")) {
+			sb.insert(0, "with ");
 		}
-		  
+
 //		 else { // if it's a vehicle, no need of a/an sb.insert(0, "in ");
 //		 
 //			 if (s.startsWith("A") || s.startsWith("E") || s.startsWith("I") ||
@@ -893,7 +893,7 @@ public class MalfunctionManager implements Serializable {
 //				 sb.insert(0, "in an "); else sb.insert(0, "in a "); 
 //		 }
 
-		LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
+		LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
 				"[" + u.getLocationTag().getImmediateLocation() + "] A Type-I accident occurs " + sb.toString() + ".",
 				null);
 
@@ -922,12 +922,17 @@ public class MalfunctionManager implements Serializable {
 
 	public void handleStringTypeTwo() {
 		String n = entity.getNickName();
-		/*
-		 * StringBuilder sb = new StringBuilder();//Conversion.capitalize(n)); if
-		 * (n.contains("EVA")) { sb.insert(0, "with "); }
-		 * 
-		 * else { sb.insert(0, "in "); }
-		 */
+		
+//		 StringBuilder sb = new StringBuilder();
+//		Conversion.capitalize(n)); 
+//		if (n.contains("EVA")) { 
+//			sb.insert(0, "with "); 
+//		}
+//		  
+//		 else { 
+//			sb.insert(0, "in "); 
+//		}
+		 
 
 //		String sName = null;
 //		if (entity.getImmediateLocation() != null) {
@@ -935,7 +940,7 @@ public class MalfunctionManager implements Serializable {
 //					.replace(" in ", "");
 //		}
 
-		LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
+		LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
 				// "[" + locationName + "] An accident occurs " + sb.toString() + ".", null);
 				"[" + Conversion.capitalize(n) + "] A Type-II accident occurs in " + entity.getLocale(), null);
 	}
@@ -943,8 +948,8 @@ public class MalfunctionManager implements Serializable {
 	/**
 	 * Determines the numbers of malfunctions.
 	 * 
-	 * @param type the type of malfunction
-	 * @param s the place of accident
+	 * @param type  the type of malfunction
+	 * @param s     the place of accident
 	 * @param actor the person/robot who triggers the malfunction
 	 */
 	public void determineNumOfMalfunctions(int type, String s, int score, Unit actor) {
@@ -964,7 +969,7 @@ public class MalfunctionManager implements Serializable {
 		}
 
 		if (hasMal) {
-            logger.info(actor.getName() + " has an accident during EVA.");
+			logger.warning(actor.getName() + " has an accident during EVA.");
 			if (type == 1)
 				handleStringTypeOne(s, actor);
 			else if (type == 2)
@@ -982,8 +987,8 @@ public class MalfunctionManager implements Serializable {
 	/**
 	 * Determines the numbers of malfunctions.
 	 * 
-	 * @param type the type of malfunction
-	 * @param s the place of accident
+	 * @param type  the type of malfunction
+	 * @param s     the place of accident
 	 * @param actor the person/robot who triggers the malfunction
 	 */
 	public void determineNumOfMalfunctions(int type, String s, Unit actor) {
@@ -1262,7 +1267,7 @@ public class MalfunctionManager implements Serializable {
 			} else {
 				avgMalfunctionsPerOrbit = numberMalfunctions / totalTimeOrbits;
 			}
-			
+
 			int orbit = currentTime.getOrbit();
 			if (orbitCache != orbit) {
 				orbitCache = orbit;

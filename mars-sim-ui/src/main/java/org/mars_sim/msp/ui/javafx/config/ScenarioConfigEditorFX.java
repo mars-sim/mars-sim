@@ -137,7 +137,7 @@ public class ScenarioConfigEditorFX {
 	 * @param config   the simulation configuration.
 	 */
 	public ScenarioConfigEditorFX(MainMenu mainMenu, boolean isCommanderMode) { // {
-		// logger.info("ScenarioConfigEditorFX's constructor is on " +
+		// logger.config("ScenarioConfigEditorFX's constructor is on " +
 		// Thread.currentThread().getName() );
 
 		// Initialize data members.
@@ -571,7 +571,7 @@ public class ScenarioConfigEditorFX {
 			// if commander mode GUI hasn't been used, Start interactive terminal
 //			if (!isCommanderMode) {
 //				// Alert the user to see the interactive terminal 
-//				logger.info("Please proceed to answering the question in the popped-up console.");
+//				logger.config("Please proceed to answering the question in the popped-up console.");
 //				sim.getTerm().startCommanderMode();
 //			}
 			

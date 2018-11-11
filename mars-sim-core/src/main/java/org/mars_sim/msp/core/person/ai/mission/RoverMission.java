@@ -435,17 +435,21 @@ public abstract class RoverMission extends VehicleMission {
 			if (v.getSettlement() == null) {
 				disembarkSettlement.getInventory().storeUnit(v);	
 			}
-
-			// Make sure the rover chasis is not overlapping a building structure in the settlement map
-			rover.determinedSettlementParkedLocationAndFacing();
+			
+			boolean garaged = false;
 			
 			// Test if this rover is towing another vehicle or is being towed
 	        boolean tethered = v.isBeingTowed() || rover.isTowingAVehicle();
 	        
 			// Add vehicle to a garage if available.
-	        if (!tethered)
-	        	BuildingManager.addToRandomBuilding((GroundVehicle) v, disembarkSettlement);
+	        if (!tethered) {
+	        	garaged = BuildingManager.addToRandomBuilding((GroundVehicle) v, disembarkSettlement);
+	        }
 
+			// Make sure the rover chasis is not overlapping a building structure in the settlement map
+	        if (!garaged)
+	        	rover.determinedSettlementParkedLocationAndFacing();
+	        
 			// Retrieve the person if he/she is dead
 			for (Person p : rover.getCrew()) {
 				v.getInventory().retrieveUnit(p);
@@ -455,108 +459,66 @@ public abstract class RoverMission extends VehicleMission {
 					p.getPhysicalCondition().getDeathDetails().setBodyRetrieved(true);
 				}
 			}
+			
+			// Reset the vehicle reservation
+			v.correctVehicleReservation();
 		}
 
+		Person person = null;
+		
+		if (member instanceof Person) {
+			person = (Person) member;
+		}
+		
 		// Have member exit rover if necessary.
-		if (!member.isInSettlement()) {
+		if (person.isOutside()) {
 			// member should be in a vehicle
 
 			// Get closest airlock building at settlement.
-			Building destinationBuilding = null;
-			// TODO Refactor.
-			if (member instanceof Person) {
-				destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock((Person) member)
+			Building destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock(person)
 						.getEntity();
-			} else if (member instanceof Robot) {
-				destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock((Robot) member)
-						.getEntity();
-			}
 
 			if (destinationBuilding != null) {
 				Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
 				Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
 						destinationLoc.getY(), destinationBuilding);
 
-				// TODO Refactor.
-				if (member instanceof Person) {
-					Person person = (Person) member;
-					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
-						assignTask(person,
-								new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
-					}
+			if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+				assignTask(person,
+						new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+			}
 
-					else {
+			else {
+				// a person cannot walk and needs to be rescued
 
-						if (person.isInVehicle()) {// .getLocationSituation() == LocationSituation.IN_VEHICLE) {
-							Vehicle v1 = person.getVehicle();
-							v1.getInventory().retrieveUnit(person);
+				// TODO : see https://github.com/mars-sim/mars-sim/issues/22
+				
+				// TODO : How to simulate the sequence of events of a strapped personnel inside a broken
+				// vehicle to be retrieved and moved to a settlement in emergency?
 
-							// TODO : see https://github.com/mars-sim/mars-sim/issues/22
-							// Question: How reasonable is it for a strapped personnel inside a broken
-							// vehicle to be
-							// retrieved and moved to a settlement in emergency?
-							logger.severe("[" + disembarkSettlement.getName() + "] "
-									+ Msg.getString("RoverMission.log.requestRescue", person.getName(), v1.getName(),
-											destinationBuilding.getNickName())); // $NON-NLS-1$
-						} else {
+				if (person.isInVehicle()) {
+					Vehicle v1 = person.getVehicle();
+					v1.getInventory().retrieveUnit(person);
+					
+					logger.warning("[" + disembarkSettlement.getName() + "] "
+							+ Msg.getString("RoverMission.log.requestRescue", person.getName(), v1.getName(),
+									destinationBuilding.getNickName())); // $NON-NLS-1$
+				} else {
 
-							disembarkSettlement.getInventory().storeUnit(person);
-							BuildingManager.addPersonOrRobotToBuilding(person, destinationBuilding, adjustedLoc.getX(),
-									adjustedLoc.getY());
+					// TODO: how to simulated the sequence of events of a person collapsed outside and is being rescued
+					disembarkSettlement.getInventory().storeUnit(person);
+					BuildingManager.addPersonOrRobotToBuilding(person, destinationBuilding, adjustedLoc.getX(),
+							adjustedLoc.getY());
 
-							logger.severe("[" + disembarkSettlement.getName() + "] "
-									+ Msg.getString("RoverMission.log.emergencyEnterBuilding", person.getName(),
-											destinationBuilding.getNickName())); // $NON-NLS-1$
+					logger.warning("[" + disembarkSettlement.getName() + "] "
+							+ Msg.getString("RoverMission.log.emergencyEnterBuilding", person.getName(),
+									destinationBuilding.getNickName())); // $NON-NLS-1$
 
-							person.getMind().getTaskManager().clearTask();
-							person.getMind().getTaskManager().getNewTask();
-						}
-					}
+					person.getMind().getTaskManager().clearTask();
+					person.getMind().getTaskManager().getNewTask();
 				}
+			}
 
-//				else if (member instanceof Robot) {
-//                    Robot robot = (Robot) member;
-//                    if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
-//                        assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
-//                    }
-//                    else {
-//
-//				        if (robot.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-
-//				        	Vehicle v2 = robot.getVehicle();
-//				            v2.getInventory().retrieveUnit(robot);
-//					        logger.severe(Msg.getString("RoverMission.log.requestRescue",robot.getName(), 
-//					        		v2.getName(), destinationBuilding.getNickName())); //$NON-NLS-1$
-
-//			}
-//				        else {
-//				        	
-//				        	Building b = robot.getBuildingLocation();
-//				        	if (b != null)
-//				        		logger.severe(Msg.getString("RoverMission.log.requestRescue",robot.getName(), 
-//				        				b.getNickName(), destinationBuilding.getNickName())); //$NON-NLS-1$
-//				        	else {
-//				        		Settlement s = robot.getSettlement();
-//				        		if (s == null) {
-//				        			s = robot.getAssociatedSettlement();
-//				        			String ss = "the vincity of " + s.getName();
-//					        		logger.severe(Msg.getString("RoverMission.log.requestRescue",robot.getName(), 
-//					        				ss, destinationBuilding.getNickName())); //$NON-NLS-1$
-//				        		}
-//				        	}
-//				        	
-//					        disembarkSettlement.getInventory().storeUnit(robot);
-//					        BuildingManager.addPersonOrRobotToBuilding(robot, destinationBuilding, adjustedLoc.getX(), 
-//					        		adjustedLoc.getY());
-//
-//					        // See https://github.com/mars-sim/mars-sim/issues/22
-//					        // Question: How reasonable is it for a strapped personnel inside a broken vehicle to be 
-//					        // retrieved and moved back to the settlement in emergency?
-//					        logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding", robot.getName(), 
-//					        		destinationBuilding.getNickName())); //$NON-NLS-1$
-//				        }
-//                    }
-//                }
 			} else {
 				logger.severe(Msg.getString("RoverMission.log.noHabitat", destinationBuilding)); //$NON-NLS-1$
 				endMission(Msg.getString("RoverMission.log.noHabitat", destinationBuilding)); //$NON-NLS-1$
@@ -565,20 +527,24 @@ public abstract class RoverMission extends VehicleMission {
 
 		if (rover != null) {
 
-			// If any people are aboard the rover who aren't mission members, carry them
-			// into the settlement.
-			if (isNoOneInRover() && (rover.getCrewNum() > 0)) {
+			// Check if any people still aboard the rover who aren't mission members
+			// and direct them into the settlement.
+			
+			if (!isNoOneInRover() || (rover.getCrewNum() > 0)) {
+				
 				Iterator<Person> i = rover.getCrew().iterator();
 				while (i.hasNext()) {
-					Person crewmember = i.next();
-					// TODO : see https://github.com/mars-sim/mars-sim/issues/22
-					// Question: How reasonable is it for a strapped personnel inside a broken
-					// vehicle to be
-					// retrieved and moved back to the settlement in emergency?
-					logger.severe("[" + disembarkSettlement.getName() + "] "
-							+ Msg.getString("RoverMission.log.emergencyEnterSettlement", crewmember.getName())); //$NON-NLS-1$
+					Person crewmember = i.next(); 
 					rover.getInventory().retrieveUnit(crewmember);
 					disembarkSettlement.getInventory().storeUnit(crewmember);
+					
+					// TODO : How to simulate the sequence of events of a strapped personnel inside a broken
+					// vehicle to be retrieved and moved to a settlement in emergency?
+					
+					logger.warning("[" + disembarkSettlement.getName() + "] "
+							+ Msg.getString("RoverMission.log.emergencyEnterSettlement", crewmember.getName())); //$NON-NLS-1$
+
+					
 					Building destinationBuilding = null;
 					// TODO Refactor
 					if (member instanceof Person) {
@@ -606,21 +572,15 @@ public abstract class RoverMission extends VehicleMission {
 						// sometimes)
 						if (RandomUtil.lessThanRandPercent(50)) {
 							if (BuildingManager.getBuilding(rover) != null) {
-								// TODO Refactor.
-								if (member instanceof Person) {
-									Person person = (Person) member;
-									assignTask(person, new UnloadVehicleGarage(person, rover));
-								}
-							} else {
+								assignTask(person, new UnloadVehicleGarage(person, rover));
+							} 
+							
+							else {
 								SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 								// Check if it is day time.
 								if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D)
 										|| surface.inDarkPolarRegion(member.getCoordinates())) {
-									// TODO Refactor.
-									if (member instanceof Person) {
-										Person person = (Person) member;
-										assignTask(person, new UnloadVehicleEVA(person, rover));
-									}
+									assignTask(person, new UnloadVehicleEVA(person, rover));
 								}
 							}
 

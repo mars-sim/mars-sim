@@ -804,7 +804,7 @@ public class EventTableModel extends AbstractTableModel
 //		    		.onAction(new EventHandler<ActionEvent>() {
 //		    			@Override
 //		    			public void handle(ActionEvent event){
-//		    				logger.info("A notification box titled " + "header" + " with " + message + "' has just been clicked.");
+//		    				logger.config("A notification box titled " + "header" + " with " + message + "' has just been clicked.");
 //		    			}
 //		    		})
 						.graphic(new ImageView(appIconSet.get(type)))
@@ -816,7 +816,7 @@ public class EventTableModel extends AbstractTableModel
 //		    		.onAction(new EventHandler<ActionEvent>() {
 //		    			@Override
 //		    			public void handle(ActionEvent event){
-//		    				logger.info("A notification box titled " + "header" + " with " + message + "' has just been clicked.");
+//		    				logger.config("A notification box titled " + "header" + " with " + message + "' has just been clicked.");
 //		    			}
 //		    		})
 						.graphic(new ImageView(appIconSet.get(type)))

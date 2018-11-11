@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -198,43 +199,88 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 			//throw new IllegalStateException("Vehicle not parked at a settlement");
 			logger.severe(this.getName() + " no longer parks at a settlement.");
 		}
+		
 		else {
 			double centerXLoc = 0D;
 			double centerYLoc = 0D;
-	
-			// If settlement has garages, place vehicle near a random garage.
-			// Otherwise place vehicle near settlement center.
-			List<Building> garageList = settlement.getBuildingManager()
-					.getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
-			if (garageList.size() >= 1) {
-				Collections.shuffle(garageList);
-				Building garage = garageList.get(0);
-				centerXLoc = garage.getXLocation();
-				centerYLoc = garage.getYLocation();
-			}
-	
-			double newXLoc = 0D;
-			double newYLoc = 0D;
-			double newFacing = 0D;
-			boolean foundGoodLocation = false;
-	
-			// Try iteratively outward from 10m to 500m distance range.
-			for (int x = 15; (x < 500) && !foundGoodLocation; x += 10) {
-				// Try ten random locations at each distance range.
-				for (int y = 0; (y < 10) && !foundGoodLocation; y++) {
-					double distance = RandomUtil.getRandomDouble(10D) + x;
-					double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-					newXLoc = centerXLoc - (distance * Math.sin(radianDirection));
-					newYLoc = centerYLoc + (distance * Math.cos(radianDirection));
-					newFacing = RandomUtil.getRandomDouble(360D);
-	
-					// Check if new vehicle location collides with anything.
-					foundGoodLocation = LocalAreaUtil.checkBoundedObjectNewLocationCollision(this, newXLoc, newYLoc,
-							newFacing, getCoordinates());
+			
+//			boolean isTowing = false;
+//			if (!(this instanceof LightUtilityVehicle))
+//				isTowing = ((Rover)this).isTowingAVehicle();
+//			
+//			// Test if this rover is towing another vehicle or is being towed
+//	        boolean tethered = ((Vehicle)this).isBeingTowed() || isTowing;
+//	        boolean garaged = false;
+//	        
+//	        // If a vehicle is not tethered to another vehicle
+//	        // then it can be put into a garage
+//	        if (!tethered && !(this instanceof LightUtilityVehicle) && bypassMaintenance) {	
+//				// If settlement has garages, place vehicle near a random garage.
+//	        	BuildingManager.addToRandomBuilding((GroundVehicle) (Vehicle)this, settlement);
+//	        	
+////				List<Building> garageList = settlement.getBuildingManager()
+////						.getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+////				int size = garageList.size();
+////				if (size > 0) {
+////					Collections.shuffle(garageList);
+////					Building garage = garageList.get(RandomUtil.getRandomInt(size-1));
+////					centerXLoc = garage.getXLocation();
+////					centerYLoc = garage.getYLocation();
+//					garaged = true;
+////				}		
+//	        }
+			
+//	        if (!garaged) {
+	        	
+				// Place the vehicle starting from the settlement center (0,0).
+	        	
+				double newXLoc = 0D;
+				double newYLoc = 0D;
+				double newFacing = 0D;
+				boolean foundGoodLocation = false;
+		
+				// Try iteratively outward from 10m to 500m distance range.
+				for (int x = 15; (x < 500) && !foundGoodLocation; x += 10) {
+					// Try ten random locations at each distance range.
+					for (int y = 0; (y < 10) && !foundGoodLocation; y++) {
+						double distance = RandomUtil.getRandomDouble(10D) + x;
+						double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
+						newXLoc = centerXLoc - (distance * Math.sin(radianDirection));
+						newYLoc = centerYLoc + (distance * Math.cos(radianDirection));
+						newFacing = RandomUtil.getRandomDouble(360D);
+		
+						// Check if new vehicle location collides with anything.
+						foundGoodLocation = LocalAreaUtil.isGoodLocation(this, newXLoc, newYLoc,
+								newFacing, getCoordinates());
+					}
 				}
-			}
-	
-			setParkedLocation(newXLoc, newYLoc, newFacing);
+				
+				setParkedLocation(newXLoc, newYLoc, newFacing);
+//	        }
 		}
 	}
+	
+//	public boolean isGoodLocation(double centerXLoc, double centerYLoc) {
+//		double newXLoc = 0D;
+//		double newYLoc = 0D;
+//		double newFacing = 0D;
+//		boolean foundGoodLocation = false;
+//		// Try iteratively outward from 10m to 500m distance range.
+//		for (int x = 15; (x < 500) && !foundGoodLocation; x += 10) {
+//			// Try ten random locations at each distance range.
+//			for (int y = 0; (y < 10) && !foundGoodLocation; y++) {
+//				double distance = RandomUtil.getRandomDouble(10D) + x;
+//				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
+//				newXLoc = centerXLoc - (distance * Math.sin(radianDirection));
+//				newYLoc = centerYLoc + (distance * Math.cos(radianDirection));
+//				newFacing = RandomUtil.getRandomDouble(360D);
+//
+//				// Check if new vehicle location collides with anything.
+//				foundGoodLocation = LocalAreaUtil.checkBoundedObjectNewLocationCollision(this, newXLoc, newYLoc,
+//						newFacing, getCoordinates());
+//			}
+//		}
+//		return foundGoodLocation;
+//	}
+	
 }

@@ -37,9 +37,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.Alert.AlertType;
@@ -55,7 +53,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.person.GenderType;
 

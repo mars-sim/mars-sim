@@ -24,7 +24,7 @@ public class LocationTag implements LocationState, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String OUTSIDE_ON_MARS = "Outside on Mars";
+	public static final String OUTSIDE_ON_MARS = "outside on Mars";
 
 	public static final String VICINITY = " vicinity";
 

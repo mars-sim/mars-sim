@@ -54,9 +54,9 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
 
 
         // Determine if settlement has a garage.
-       	if (person.isInSettlement()) {
+       	if (person.isInSettlement() || person.isRightOutsideSettlement()) {
        		
-        	Settlement settlement = person.getSettlement();
+        	Settlement settlement = person.getAssociatedSettlement();
         	
        		if (settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE).size() > 0) {
 	

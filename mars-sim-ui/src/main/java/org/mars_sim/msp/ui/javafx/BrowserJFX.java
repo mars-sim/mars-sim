@@ -248,13 +248,13 @@ public class BrowserJFX {
     }
     
     public void createGUI() {
-
+//    	logger.config("Web Engine supported : " + engine.getUserAgent());
         view = new WebView();
         engine = view.getEngine();
         history = engine.getHistory();
         entryList = history.getEntries();
         ssm = comboBox.getSelectionModel();
-    	logger.info("Web Engine supported : " + engine.getUserAgent());
+   
     	// For JDK 8u131, it prints the following :
     	// Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/602.1 (KHTML, like Gecko) JavaFX/8.0 Safari/602.1
     	// For JDK 10.0.2
@@ -965,7 +965,7 @@ public class BrowserJFX {
      * Parses the url text and show it in both the status bar and the address textfield
      */
     public void showFormattedURL() {
-    	//logger.info("BrowserJFX's showURL() is on " + Thread.currentThread().getName() );
+    	//logger.config("BrowserJFX's showURL() is on " + Thread.currentThread().getName() );
     	String content = textInputCache;
         //System.out.println("urlTF is " + urlTF.getText());
         //System.out.println("textInputCache is " + textInputCache);
@@ -1006,7 +1006,7 @@ public class BrowserJFX {
     }
 
     public void addCSS() {
-    	//logger.info("BrowserJFX's addCSS() is on " + Thread.currentThread().getName() );
+    	//logger.config("BrowserJFX's addCSS() is on " + Thread.currentThread().getName() );
     	if (isLocalHtml) {// && go_flag && !isInternal) {
 		   	//System.out.println("adding css");
 

@@ -777,21 +777,7 @@ public abstract class Vehicle extends Unit
 
 		addToTrail(getCoordinates());
 
-		if (isReservedMission) {
-			// Set reserved for mission to false if the vehicle is not associated with a
-			// mission.
-			if (missionManager.getMissionForVehicle(this) == null) {
-				LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
-						getName() + " was found reserved for an non-existing mission. Untagging it...",
-						null);
-				setReservedForMission(false);
-			}
-		} else {
-			if (missionManager.getMissionForVehicle(this) != null) {
-				LogConsolidated.log(logger, Level.WARNING, 1000, sourceName, getName()
-						+ " is on a mission but is not mission reserved. Correcting it...", null);
-			}
-		}
+		correctVehicleReservation();
 
 		// If operator is dead, remove operator and stop vehicle.
 		VehicleOperator operator = vehicleOperator;
@@ -807,6 +793,29 @@ public abstract class Vehicle extends Unit
 
 	}
 
+	/**
+	 * Resets the vehicle reservation status
+	 */
+	public void correctVehicleReservation() {
+		if (isReservedMission) {
+			// Set reserved for mission to false if the vehicle is not associated with a
+			// mission.
+			if (missionManager.getMissionForVehicle(this) == null) {
+				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+						"[" + getLocationTag().getLocale() + "] " + getName() 
+						+ " was found reserved for an non-existing mission. Untagging it.",
+						null);
+				setReservedForMission(false);
+			}
+		} else {
+			if (missionManager.getMissionForVehicle(this) != null) {
+				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+						"[" + getLocationTag().getLocale() + "] " + getName()
+						+ " is on a mission but is not registered as mission reserved. Correcting it.", null);
+			}
+		}
+	}
+	
 	/**
 	 * Gets a collection of people affected by this entity.
 	 * 

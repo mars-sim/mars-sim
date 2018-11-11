@@ -56,7 +56,7 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 
 		double result = 0D;
 
-		if (person.isInSettlement()) {
+		if (person.isInSettlement() || person.isRightOutsideSettlement()) {
 
 			try {
 				// Get all vehicles requiring maintenance.
@@ -84,7 +84,7 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 			boolean garageSpace = false;
 			boolean needyVehicleInGarage = false;
 
-			Settlement settlement = person.getSettlement();
+			Settlement settlement = person.getAssociatedSettlement();
 			Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE)
 					.iterator();
 			while (j.hasNext() && !garageSpace) {
@@ -116,7 +116,7 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 			Job job = person.getMind().getJob();
 			if (job != null) {
 				result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleGarage.class)
-						* person.getSettlement().getGoodsManager().getTransportationFactor();
+						* settlement.getGoodsManager().getTransportationFactor();
 			}
 
 			// Modify if tinkering is the person's favorite activity.

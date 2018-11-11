@@ -251,7 +251,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							}
 							
 							LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-									"[" + s + "] " + reviewedBy + " has given " + requestedBy
+									"[" + s + "] " + reviewedBy + " gave " + requestedBy
 									+ "'s " + m.getDescription() + " mission plan a score of " + score 
 									+ " (" + rating + " + " + relation + " + " + qual + sign + rand + ").", null);
 							

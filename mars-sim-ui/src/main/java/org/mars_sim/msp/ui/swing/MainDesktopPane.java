@@ -247,7 +247,7 @@ public class MainDesktopPane extends WebDesktopPane
 	// Additional Component Listener methods implemented but not used.
 	@Override
 	public void componentMoved(ComponentEvent e) {
-		logger.info("componentMoved()");
+		logger.config("componentMoved()");
 		if (mainScene == null) {
 			SwingUtilities.invokeLater(() -> 
 				updateToolWindow()
@@ -262,7 +262,7 @@ public class MainDesktopPane extends WebDesktopPane
 
 	@Override
 	public void componentShown(ComponentEvent e) {
-//		logger.info("componentShown()");
+//		logger.config("componentShown()");
 		if (mainScene == null) {
 			SwingUtilities.invokeLater(() -> {
 				JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
@@ -294,7 +294,7 @@ public class MainDesktopPane extends WebDesktopPane
 	}
 
 	public void updateToolWindow() {
-//		logger.info("updateToolWindow()");
+//		logger.config("updateToolWindow()");
 		JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
 		for (JInternalFrame f : frames) {
 			f.updateUI();
@@ -302,7 +302,7 @@ public class MainDesktopPane extends WebDesktopPane
 	}
 
 	public void updateWebToolWindow() {
-//		logger.info("updateToolWindow()");
+//		logger.config("updateToolWindow()");
 		WebInternalFrame[] frames = (WebInternalFrame[]) this.getAllFrames();
 		for (WebInternalFrame f : frames) {
 			f.updateUI();
@@ -374,7 +374,7 @@ public class MainDesktopPane extends WebDesktopPane
 	 * Sets up this class with two listeners
 	 */
 	public void prepareListeners() {
-		// logger.info("MainDesktopPane's prepareListeners() is on " +
+		// logger.config("MainDesktopPane's prepareListeners() is on " +
 		// Thread.currentThread().getName() + " Thread");
 
 		// Add addUnitManagerListener()
@@ -393,7 +393,7 @@ public class MainDesktopPane extends WebDesktopPane
 			i.next().addUnitListener(this);
 		}
 
-		// logger.info("MainDesktopPane's prepareListeners() is done");
+		// logger.config("MainDesktopPane's prepareListeners() is done");
 	}
 
 	/**
@@ -418,7 +418,7 @@ public class MainDesktopPane extends WebDesktopPane
 	 * Creates tool windows
 	 */
 	private void prepareToolWindows() {
-		// logger.info("MainDesktopPane's prepareToolWindows() is on " +
+		// logger.config("MainDesktopPane's prepareToolWindows() is on " +
 		// Thread.currentThread().getName() + " Thread");
 
 		if (toolWindows != null)
@@ -432,7 +432,7 @@ public class MainDesktopPane extends WebDesktopPane
 		}
 		toolWindows.add(navWindow);
 
-		// logger.info("toolWindows.add(navWindow)");
+		// logger.config("toolWindows.add(navWindow)");
 
 		// Prepare search tool window
 		SearchWindow searchWindow = new SearchWindow(this);
@@ -442,7 +442,7 @@ public class MainDesktopPane extends WebDesktopPane
 		}
 		toolWindows.add(searchWindow);
 
-		// logger.info("toolWindows.add(searchWindow)");
+		// logger.config("toolWindows.add(searchWindow)");
 
 		// Prepare time tool window
 		timeWindow = new TimeWindow(this);
@@ -507,7 +507,7 @@ public class MainDesktopPane extends WebDesktopPane
 	 * * Creates announcement windows & transportWizard
 	 */
 	private void prepareAnnouncementWindow() {
-		// logger.info("MainDesktopPane's prepareWindows() is on " +
+		// logger.config("MainDesktopPane's prepareWindows() is on " +
 		// Thread.currentThread().getName() + " Thread");
 		// Prepare announcementWindow.
 		announcementWindow = new AnnouncementWindow(this);
@@ -582,7 +582,7 @@ public class MainDesktopPane extends WebDesktopPane
 	 * @param toolName the name of the tool window
 	 */
 	public void openToolWindow(String toolName) {
-		// logger.info("openToolWindow() is on " + Thread.currentThread().getName());
+		// logger.config("openToolWindow() is on " + Thread.currentThread().getName());
 		// either on JavaFX Application Thread or on AWT-EventQueue-0 Thread
 		ToolWindow window = getToolWindow(toolName);
 		if (window != null) {
@@ -991,14 +991,14 @@ public class MainDesktopPane extends WebDesktopPane
 
 	public void clearDesktop() {
 
-		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
+		logger.config(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
 
 		if (!toolWindowExecutor.isShutdown())
 			toolWindowExecutor.shutdown();
 		if (unitWindowExecutor != null)
 			if (!unitWindowExecutor.isShutdown())
 				unitWindowExecutor.shutdown();
-		// logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown"));
+		// logger.config(Msg.getString("MainDesktopPane.desktop.thread.shutdown"));
 		// //$NON-NLS-1$
 		toolWindowTaskList.clear();
 
@@ -1035,7 +1035,7 @@ public class MainDesktopPane extends WebDesktopPane
 		// Restart update threads.
 		setupToolWindowTasks();
 		// updateThread.setRun(true);
-		logger.info(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
+		logger.config(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
 
 	}
 

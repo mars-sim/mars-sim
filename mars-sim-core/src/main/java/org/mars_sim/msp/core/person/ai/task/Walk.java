@@ -886,7 +886,7 @@ public class Walk extends Task implements Serializable {
 			} else { // this is a high traffic case when a person is in a vehicle
 
 				// logger.info(person + " is " + location.getName());
-				if (person.isInSettlement()) {
+				if (person.isInSettlement() || person.isInVehicleInGarage()) {
 					LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName,
 		      				"[" + person.getLocationTag().getLocale() + "] "
 							+ person + " is in " + person.getLocationTag().getImmediateLocation()
@@ -896,7 +896,7 @@ public class Walk extends Task implements Serializable {
 					person.getMind().getTaskManager().getNewTask();// .clearTask();
 				}
 
-				else if (person.isInVehicle()) {
+				else if (person.isInVehicle() || person.isInVehicleInGarage()) {
 					addSubTask(new WalkRoverInterior(person, step.rover, x, y));
 				}
 

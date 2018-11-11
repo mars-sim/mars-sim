@@ -812,11 +812,13 @@ public class BuildingManager implements Serializable {
 	 * @param vehicle    the ground vehicle to add.
 	 * @param settlement the settlement to find a building.
 	 * @throws BuildingException if vehicle cannot be added to any building.
+	 * 
+	 * @return true if it has been added to a garage 
 	 */
-	public static void addToRandomBuilding(GroundVehicle vehicle, Settlement settlement) {
+	public static boolean addToRandomBuilding(GroundVehicle vehicle, Settlement settlement) {
 
 		if (vehicle.getStatus() == StatusType.GARAGED)
-			return;
+			return true;
 		
 		List<Building> garages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 		List<VehicleMaintenance> openGarages = new ArrayList<VehicleMaintenance>();
@@ -830,11 +832,14 @@ public class BuildingManager implements Serializable {
 			int rand = RandomUtil.getRandomInt(openGarages.size() - 1);
 			openGarages.get(rand).addVehicle(vehicle);
 			vehicle.setStatus(StatusType.GARAGED);
+			return true;
 		}
 		// else {
 		// logger.warning("No available garage space for " + vehicle.getName() + ",
 		// didn't add vehicle");
 		// }
+		else 
+			return false;
 	}
 
 	/**

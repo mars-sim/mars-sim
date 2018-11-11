@@ -66,9 +66,9 @@ public class SpinningGlobe extends Application {
    public Parent createDraggingGlobe() {
 	   boolean support = Platform.isSupported(ConditionalFeature.SCENE3D);
 	   if (support)
-		   logger.info("JavaFX 3D features supported");
+		   logger.config("JavaFX 3D features supported");
 	   else
-		   logger.info("JavaFX 3D features NOT supported");
+		   logger.config("JavaFX 3D features NOT supported");
 
        globe = new Globe();
        rotateGlobe();
@@ -88,9 +88,9 @@ public class SpinningGlobe extends Application {
   public Parent createFixedGlobe() {
 	   boolean support = Platform.isSupported(ConditionalFeature.SCENE3D);
 	   if (support)
-		   logger.info("JavaFX 3D features supported");
+		   logger.config("JavaFX 3D features supported");
 	   else
-		   logger.info("JavaFX 3D features NOT supported");
+		   logger.config("JavaFX 3D features NOT supported");
 
       globe = new Globe();
       rotateGlobe();

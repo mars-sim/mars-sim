@@ -180,7 +180,7 @@ public class MainMenu {
 	private static Simulation sim = Simulation.instance();
 	
 	public MainMenu() {
-		// logger.info("MainMenu's constructor is on " +
+		// logger.config("MainMenu's constructor is on " +
 		// Thread.currentThread().getName());
 		mainMenu = this;
 
@@ -197,8 +197,8 @@ public class MainMenu {
 //		// DPI scale factor.
 //		double dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
 //		
-//		logger.info("horizontal lines : " + trueHorizontalLines);
-//		logger.info("DPI Scale Factor is " + dpiScaleFactor);
+//		logger.config("horizontal lines : " + trueHorizontalLines);
+//		logger.config("DPI Scale Factor is " + dpiScaleFactor);
 
 		Screen screen = Screen.getPrimary();
 		Rectangle2D bounds = screen.getVisualBounds(); // getBounds();//
@@ -217,12 +217,12 @@ public class MainMenu {
 
 		setupResolutions();
 
-		logger.info("Current Screen Resolution is " + native_width + " x " + native_height);
+		logger.config("Current Screen Resolution is " + native_width + " x " + native_height);
 
 		// Note : Testing only
-//		 logger.info("Earth's surface gravity : " +
+//		 logger.config("Earth's surface gravity : " +
 //		 Math.round(PlanetType.EARTH.getSurfaceGravity()*100.0)/100.0 + " m/s^2");
-//		 logger.info("Mars's surface gravity : " +
+//		 logger.config("Mars's surface gravity : " +
 //		 Math.round(PlanetType.MARS.getSurfaceGravity()*100.0)/100.0 + " m/s^2");
 	}
 
@@ -422,7 +422,7 @@ public class MainMenu {
 	 */
 	public void initMainMenu(Stage stage) {
 		System.setProperty("sampler.mode", "true");
-		// logger.info("MainMenu's initAndShowGUI() is on " +
+		// logger.config("MainMenu's initAndShowGUI() is on " +
 		// Thread.currentThread().getName());
 		this.primaryStage = stage;
 
@@ -755,7 +755,7 @@ public class MainMenu {
 		}
 		
 		public void run() {
-			// logger.info("MarsProjectFX's ConfigEditorTask's run() is on " +
+			// logger.config("MarsProjectFX's ConfigEditorTask's run() is on " +
 			// Thread.currentThread().getName() );
 			new ScenarioConfigEditorFX(mainMenu, isCommanderMode); // marsProjectFX,
 		}
@@ -858,7 +858,7 @@ public class MainMenu {
 		}
 
 		else {
-			logger.info("No file was selected. Loading is cancelled");
+			logger.config("No file was selected. Loading is cancelled");
 			Platform.exit();
 			System.exit(1);
 		}
@@ -885,7 +885,7 @@ public class MainMenu {
 		}
 
 		public void run() {
-			// logger.info("LoadSimulationTask is on " + Thread.currentThread().getName() +
+			// logger.config("LoadSimulationTask is on " + Thread.currentThread().getName() +
 			// " Thread");
 
 			// Initialize the simulation.
@@ -919,7 +919,7 @@ public class MainMenu {
 	}
 
 	public void runMultiplayer() {
-		// logger.info("MainMenu's runThree() is on " + Thread.currentThread().getName()
+		// logger.config("MainMenu's runThree() is on " + Thread.currentThread().getName()
 		// + " Thread");
 		Simulation.instance().getSimExecutor().submit(new MultiplayerTask());
 		primaryStage.setIconified(true);// hide();

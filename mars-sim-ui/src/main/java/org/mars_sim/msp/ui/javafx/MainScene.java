@@ -600,7 +600,7 @@ public class MainScene implements ClockListener {
 	 * Prepares the scene in the main scene
 	 */
 	public void prepareScene() {
-		// logger.info("MainMenu's prepareScene() is on " +
+		// logger.config("MainMenu's prepareScene() is on " +
 		// Thread.currentThread().getName());
 		// TODO: Need to revamp the use of UIConfig
 		UIConfig.INSTANCE.useUIDefault();
@@ -667,7 +667,7 @@ public class MainScene implements ClockListener {
 	 */
 	public class MainSceneTask implements Runnable {
 		public void run() {
-			logger.info("MainScene's MainSceneTask is in " + Thread.currentThread().getName() + " Thread");
+			logger.config("MainScene's MainSceneTask is in " + Thread.currentThread().getName() + " Thread");
 			// Set look and feel of UI.
 			UIConfig.INSTANCE.useUIDefault();
 		}
@@ -678,7 +678,7 @@ public class MainScene implements ClockListener {
 	 * timer
 	 */
 	public void prepareOthers() {
-		// logger.info("MainScene's prepareOthers() is on " +
+		// logger.config("MainScene's prepareOthers() is on " +
 		// Thread.currentThread().getName() + " Thread");
 		uptimer = masterClock.getUpTimer();
 		startEarthTimer();
@@ -697,7 +697,7 @@ public class MainScene implements ClockListener {
 	 * @param buildingManager
 	 */
 	public synchronized void openTransportWizard(BuildingManager buildingManager) {
-		// logger.info("MainScene's openTransportWizard() is on " +
+		// logger.config("MainScene's openTransportWizard() is on " +
 		// Thread.currentThread().getName() + " Thread");
 		// normally on pool-4-thread-3 Thread
 		// Note: make sure pauseSimulation() doesn't interfere with
@@ -1706,7 +1706,7 @@ public class MainScene implements ClockListener {
 
 
 //	 public void createFarmPopup() {
-//		 //logger.info("MainScene's createFarmPopup() is on " +
+//		 //logger.config("MainScene's createFarmPopup() is on " +
 //		 Thread.currentThread().getName());
 //		  
 //		 farmBtn = new JFXButton();
@@ -2581,7 +2581,7 @@ public class MainScene implements ClockListener {
 	 * Sets the theme skin after calling stage.show() at the start of the sim
 	 */
 	public void initializeTheme() {
-		// logger.info("MainScene's initializeTheme()");
+		// logger.config("MainScene's initializeTheme()");
 		setTheme(defaultThemeColor);
 	}
 
@@ -2656,7 +2656,7 @@ public class MainScene implements ClockListener {
 	 * @param choice
 	 */
 	public void setLookAndFeel(ThemeType choice) {
-		// logger.info("MainScene's setLookAndFeel() is on " +
+		// logger.config("MainScene's setLookAndFeel() is on " +
 		// Thread.currentThread().getName() + " Thread");
 		boolean changed = false;
 		if (choice == ThemeType.Weblaf) {
@@ -3237,7 +3237,7 @@ public class MainScene implements ClockListener {
 	 * Performs the process of saving a simulation.
 	 */
 	private void saveSimulationProcess(int type) {
-		// logger.info("MainScene's saveSimulationProcess() is on " +
+		// logger.config("MainScene's saveSimulationProcess() is on " +
 		// Thread.currentThread().getName() + " Thread");
 		fileLocn = null;
 		dir = null;
@@ -3472,7 +3472,7 @@ public class MainScene implements ClockListener {
 	 * Exits the current simulation and the main menu.
 	 */
 	public void exitSimulation() {
-		logger.info("Exiting the simulation. Bye!");
+		logger.config("Exiting the simulation. Bye!");
 		// Save the UI configuration.
 		UIConfig.INSTANCE.saveFile(this);
 		masterClock.exitProgram();
@@ -3785,7 +3785,7 @@ public class MainScene implements ClockListener {
 		}
 
 		public void run() {
-			// logger.info("LoadWaitStageTask is on " + Thread.currentThread().getName());
+			// logger.config("LoadWaitStageTask is on " + Thread.currentThread().getName());
 			Platform.runLater(() -> {
 				// FXUtilities.runAndWait(() -> {}) does NOT work
 				if (type == AUTOSAVING || type == SAVING) {

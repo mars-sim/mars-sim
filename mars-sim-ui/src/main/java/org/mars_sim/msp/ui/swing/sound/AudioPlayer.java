@@ -71,7 +71,7 @@ public class AudioPlayer implements ClockListener {
 	private static MasterClock masterClock;
 
 	public AudioPlayer(MainDesktopPane desktop) {
-		// logger.info("constructor is on " + Thread.currentThread().getName());
+		// logger.config("constructor is on " + Thread.currentThread().getName());
 		this.desktop = desktop;
 		mainScene = desktop.getMainScene();
 
@@ -196,7 +196,7 @@ public class AudioPlayer implements ClockListener {
 	 * @param filepath the file path to the music track.
 	 */
 	public void playMusic(String filepath) {
-		// logger.info("play() is on " + Thread.currentThread().getName());
+		// logger.config("play() is on " + Thread.currentThread().getName());
 		if (!isMusicMute()) {
 			if (mainScene != null)
 //			if (desktop.getMainScene() != null)
@@ -294,7 +294,7 @@ public class AudioPlayer implements ClockListener {
 	 * @param volume (0.0 quiet, .5 medium, 1.0 loud) (0.0 to 1.0 valid range)
 	 */
 	public void setMusicVolume(double volume) {
-		// logger.info("setVolume() is on " + Thread.currentThread().getName());
+		// logger.config("setVolume() is on " + Thread.currentThread().getName());
 		if (volume < 0F)
 			volume = 0;
 		if (volume > 1F)
@@ -321,7 +321,7 @@ public class AudioPlayer implements ClockListener {
 	 * @param volume (0.0 quiet, .5 medium, 1.0 loud) (0.0 to 1.0 valid range)
 	 */
 	public void setSoundVolume(double volume) {
-		// logger.info("setVolume() is on " + Thread.currentThread().getName());
+		// logger.config("setVolume() is on " + Thread.currentThread().getName());
 		if (volume < 0F)
 			volume = 0;
 		if (volume > 1F)
@@ -458,7 +458,7 @@ public class AudioPlayer implements ClockListener {
 
 				String name = soundTracks.get(rand);
 				playMusic(name);
-				logger.info("Playing background music track #" + (rand + 1) + " '" + name + "'");
+				logger.config("Playing background music track #" + (rand + 1) + " '" + name + "'");
 				// Add the new track
 				played_tracks.add((rand));
 				// Remove the earliest track
