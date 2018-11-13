@@ -213,8 +213,10 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 			int numHab = settlement.getBuildingManager().getBuildingsOfSameType("Lander Hab").size();
 			int numHub = settlement.getBuildingManager().getBuildingsOfSameType("Outpost Hub").size();
 			int numGarages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE).size();
-			
-			int rand = RandomUtil.getRandomInt(numHab + numHub + numGarages * weight - 1);
+			int total = numHab + numHub + numGarages * weight - 1;
+			if (total < 0)
+				total = 0;
+			int rand = RandomUtil.getRandomInt(total);
 			
 			if (rand != 0) {
 			
