@@ -406,7 +406,7 @@
 			<building id="16" type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
 			<building id="17" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
 			<building id="18" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
-			<building id="19" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />		
+			<building id="19" type="ERV Base" x-location="80.0" y-location="15.0" facing="135.0" />		
 			
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Transport Rover" number="1" />
@@ -707,8 +707,8 @@
 			<building id="33" type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
 			<building id="34" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
 			<building id="35" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
-			<building id="36" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />		
-			<building id="37" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />			
+			<building id="36" type="ERV Base" x-location="80.0" y-location="15.0" facing="135.0" />		
+			<building id="37" type="ERV Base" x-location="80.0" y-location="-15.0" facing="45.0" />			
 			
 			<building id="38" type="Astronomy Observatory" x-location="-55.0" y-location="-20.0" facing="90.0" />
 			<building id="39" type="Atmospheric Processor" x-location="0.0" y-location="-20.0" facing="90.0" />

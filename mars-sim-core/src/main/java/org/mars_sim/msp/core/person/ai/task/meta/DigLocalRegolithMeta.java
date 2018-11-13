@@ -62,8 +62,9 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	     
 	    	// Check if an airlock is available
 	        if (EVAOperation.getWalkableAvailableAirlock(person) == null)
-	    		return 0;        
-	        //2016-10-04 Checked for radiation events
+	    		return 0;   
+	        
+	        //Checked for radiation events
 	    	boolean[]exposed = settlement.getExposed();
 	
 	

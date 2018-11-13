@@ -132,6 +132,33 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
+	 * Returns true if malfunction is fixed.
+	 * 
+	 * @return true if malfunction is fixed
+	 */
+	public double getPercentageFixed() {
+		double result = 0;
+		int count = 0;
+
+		if (workTime > 0) {
+			result += workTimeCompleted/workTime;
+			count++;
+		}
+		if (emergencyWorkTime > 0) {
+			result += emergencyWorkTimeCompleted/emergencyWorkTime;
+			count++;
+		}
+		if (EVAWorkTime > 0) {
+			result += EVAWorkTimeCompleted/EVAWorkTime;
+			count++;
+		}
+		
+		result = result/count;
+
+		return result;
+	}
+	
+	/**
 	 * Returns the severity level of the malfunction.
 	 * 
 	 * @return severity of malfunction (1 - 100)
@@ -226,7 +253,7 @@ public class Malfunction implements Serializable {
 
 			String id_string = INCIDENT_NUM + incidentNum;
 
-			LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 					name + id_string + " - emergency repair worked by " + repairer + ".", null);
 
 			if (repairersWorkTime.containsKey(repairer)) {
@@ -356,8 +383,8 @@ public class Malfunction implements Serializable {
 		String id_string = INCIDENT_NUM + id;
 
 		if (emergencyWorkTime > 0D)
-			LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
-					name + id_string + " - emergency repair alert triggered.", null);
+			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+					name + id_string + " - Emergency Repair alert triggered.", null);
 
 		return clone;
 	}
@@ -377,24 +404,12 @@ public class Malfunction implements Serializable {
 				// Part part = (Part) ItemResource.findItemResource(partName);
 				repairParts.put(ItemResourceUtil.findIDbyItemResourceName(partName), number);
 				String id_string = INCIDENT_NUM + incidentNum;
-				LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 						name + id_string + " - the repair requires " + partName + " (quantity: " + number + ").", null);
 			}
 		}
 	}
-	/*
-	 * public void produceSolidWaste(double amount, String name, Inventory inv) {
-	 * 
-	 * try { AmountResource ar = AmountResource.findAmountResource(name); double
-	 * remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
-	 * 
-	 * if (remainingCapacity < amount) { // if the remaining capacity is smaller
-	 * than the harvested amount, set remaining capacity to full amount =
-	 * remainingCapacity; //logger.info(" storage is full!"); } // TODO: consider
-	 * the case when it is full inv.storeAmountResource(ar, amount, true);
-	 * inv.addAmountSupplyAmount(ar, amount); } catch (Exception e) {
-	 * logger.log(Level.SEVERE,e.getMessage()); } }
-	 */
+
 
 	/**
 	 * Gets the parts required to repair this malfunction.
@@ -423,7 +438,7 @@ public class Malfunction implements Serializable {
 			else {
 				numberNeeded -= number;
 
-				// 2015-02-26 Added produceSolidWaste()
+				//  Add produceSolidWaste()
 				if (part.getMassPerItem() > 0)
 					Storage.storeAnResource(part.getMassPerItem(), ResourceUtil.solidWasteAR, inv,
 							sourceName + "::repairWithParts");

@@ -54,7 +54,7 @@ public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
 	        // TODO: need to consider if a person is out there on Mars somewhere, out of the settlement
 	        // and if he has to do a EVA to repair a broken vehicle.
 	
-	        //2016-10-04 Checked for radiation events
+	        // Check for radiation events
 	    	boolean[]exposed = settlement.getExposed();
 	
 	

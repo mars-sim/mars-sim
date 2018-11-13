@@ -455,7 +455,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			//disembarkSettlement.getInventory().storeUnit(rover);
 
 			// Add towed vehicle to a garage if available.
-	        boolean	garaged = BuildingManager.addToRandomBuilding((GroundVehicle) towedVehicle, disembarkSettlement);
+	        boolean	garaged = false;
+	        if (towedVehicle.getGarage() == null) 
+	        	garaged = BuildingManager.addToGarage((GroundVehicle) towedVehicle, disembarkSettlement);
 
 			// Make sure the rover chasis is not overlapping a building structure in the settlement map
 	        if (!garaged)

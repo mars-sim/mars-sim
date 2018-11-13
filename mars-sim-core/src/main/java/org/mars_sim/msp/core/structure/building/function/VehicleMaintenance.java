@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -137,7 +138,10 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 			if (parkedLoc != null) {
 				parkedLoc.clearParking();
 			}
+			
 
+			vehicle.setStatus(StatusType.PARKED);
+			
 			vehicle.determinedSettlementParkedLocationAndFacing();
 
 			logger.fine("Removing " + vehicle.getName());

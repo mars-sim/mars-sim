@@ -324,7 +324,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
 
         // Update status label
-        if (!statusCache.equals(vehicle.getStatus())) {
+        if (statusCache != vehicle.getStatus()) {
             statusCache = vehicle.getStatus();
             statusLabel.setText("Status: " + statusCache);
         }

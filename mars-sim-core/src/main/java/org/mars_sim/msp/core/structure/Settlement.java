@@ -208,7 +208,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/** The Flag showing if the settlement has been exposed to the last radiation event. */
 	private boolean[] exposed = { false, false, false };
 	/** The settlement life support requirements. */
-	private double[][] life_support_value = new double[2][7];
+	public static double[][] life_support_value = new double[2][7];
 	/** The settlement sponsor. */
 	private String sponsor;
 	/** The settlement template name. */
@@ -273,8 +273,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static Weather weather;
 	private static MarsClock marsClock;
 
-//	private static int oxygenID = ResourceUtil.oxygenID;
-//	private static int waterID = ResourceUtil.waterID;
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
 	private static int co2ID = ResourceUtil.co2ID;
 //	private static int foodID = ResourceUtil.foodID;
 	
@@ -776,7 +776,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			// System.out.println("life_support_req[1][0] is " + life_support_req[1][0]);
 			// if (p < life_support_value[0][0] - SAFETY_PRESSURE || p >
 			// life_support_value[1][0] + SAFETY_PRESSURE) {
-			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= minimum_air_pressure) {
+			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimum_air_pressure) {
 				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 						this.getName() + " detected improper air pressure at " + Math.round(p * 10D) / 10D + " kPa",
 						null);
@@ -818,16 +818,16 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public double provideOxygen(double amountRequested) {
 		double oxygenTaken = amountRequested;
 		try {
-			double oxygenLeft = getInventory().getARStored(ResourceUtil.oxygenID, false);
+			double oxygenLeft = getInventory().getARStored(oxygenID, false);
 			// System.out.println("oxygenLeft : " + oxygenLeft);
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
 			// Note: do NOT retrieve O2 here since calculateGasExchange() in
 			// CompositionOfAir
 			// is doing it for all inhabitants once per frame.
-			// getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
-			// getInventory().addAmountDemandTotalRequest(oxygenAR);
-			// getInventory().addAmountDemand(oxygenAR, oxygenTaken);
+			 getInventory().retrieveAmountResource(oxygenID, oxygenTaken);
+			 getInventory().addAmountDemandTotalRequest(oxygenID);
+			 getInventory().addAmountDemand(oxygenID, oxygenTaken);
 
 			double carbonDioxideProvided = oxygenTaken;
 			double carbonDioxideCapacity = getInventory()
@@ -836,15 +836,16 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				carbonDioxideProvided = carbonDioxideCapacity;
 			// Note: do NOT store CO2 here since calculateGasExchange() in CompositionOfAir
 			// is doing it for all inhabitants once per frame.
-			// getInventory().storeAmountResource(carbonDioxideAR, carbonDioxideProvided,
-			// true);
-			// getInventory().addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
+			 getInventory().storeAmountResource(co2ID, carbonDioxideProvided, true);
+			 getInventory().addAmountSupplyAmount(co2ID, carbonDioxideProvided);
+			 
 		} catch (Exception e) {
 			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 					name + " - Error in providing O2/removing CO2: " + e.getMessage(), null);
 		}
 
 		return oxygenTaken;
+		//return oxygenTaken * (malfunctionManager.geOxygenFlowModifier() / 100D);
 	}
 
 	/**
@@ -857,20 +858,21 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public double provideWater(double amountRequested) {
 		double waterTaken = amountRequested;
 		try {
-			double waterLeft = getInventory().getARStored(ResourceUtil.waterID, false);
+			double waterLeft = getInventory().getARStored(waterID, false);
 			if (waterTaken > waterLeft)
 				waterTaken = waterLeft;
 			// Storage.retrieveAnResource(waterTaken, waterAR, getInventory(), true);//,
 			// sourceName + "::provideWater");
-			// getInventory().retrieveAmountResource(waterAR, waterTaken);
-			// getInventory().addAmountDemandTotalRequest(waterAR);
-			// getInventory().addAmountDemand(waterAR, waterTaken);
+			 getInventory().retrieveAmountResource(waterID, waterTaken);
+			 getInventory().addAmountDemandTotalRequest(waterID);
+			 getInventory().addAmountDemand(waterID, waterTaken);
 		} catch (Exception e) {
 			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 					name + " - Error in providing H2O needs: " + e.getMessage(), null);
 		}
 
 		return waterTaken;
+//		return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}
 
 	/**

@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -185,12 +186,13 @@ implements Serializable {
             	return false;
         }
 
-        Mars mars = Simulation.instance().getMars();
-        if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
-            logger.fine(person.getName() + " end salvaging building : night time");
-            if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
-                return false;
-        }
+		// Check if it is night time.
+		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+		if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
+			if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+				return false;
+			}
+		}
 
         // Check if person's medical condition will not allow task.
         if (person.getPerformanceRating() < .5D)

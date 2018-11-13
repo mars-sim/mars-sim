@@ -292,9 +292,9 @@ public abstract class RoverMission extends VehicleMission {
 						Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
 
 			// If the vehicle is currently not in a garage
-			if (BuildingManager.getBuilding(getVehicle()) == null) {
+			if (getVehicle().getGarage() == null) { //BuildingManager.getBuilding(getVehicle()) == null) {
 				// Add the rover to a garage if possible.
-				BuildingManager.addToRandomBuilding((Rover) getVehicle(), getVehicle().getSettlement());
+				BuildingManager.addToGarage((Rover) getVehicle(), getVehicle().getSettlement());
 			}
 
 			// Load vehicle if not fully loaded.
@@ -436,14 +436,13 @@ public abstract class RoverMission extends VehicleMission {
 				disembarkSettlement.getInventory().storeUnit(v);	
 			}
 			
-			boolean garaged = false;
-			
 			// Test if this rover is towing another vehicle or is being towed
 	        boolean tethered = v.isBeingTowed() || rover.isTowingAVehicle();
 	        
 			// Add vehicle to a garage if available.
-	        if (!tethered) {
-	        	garaged = BuildingManager.addToRandomBuilding((GroundVehicle) v, disembarkSettlement);
+			boolean garaged = false;
+	        if (!tethered && v.getGarage() == null) {
+	        	garaged = BuildingManager.addToGarage((GroundVehicle) v, disembarkSettlement);
 	        }
 
 			// Make sure the rover chasis is not overlapping a building structure in the settlement map

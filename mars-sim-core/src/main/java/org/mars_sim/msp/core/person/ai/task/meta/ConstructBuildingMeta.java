@@ -62,8 +62,7 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
         }
 
         // Check if it is night time.
-        if (surface == null)
-            surface = Simulation.instance().getMars().getSurfaceFeatures();
+        surface = Simulation.instance().getMars().getSurfaceFeatures();
 
         if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
             if (!surface.inDarkPolarRegion(person.getCoordinates())) {

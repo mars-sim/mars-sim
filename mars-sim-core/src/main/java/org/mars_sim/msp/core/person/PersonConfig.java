@@ -916,7 +916,7 @@ public class PersonConfig implements Serializable {
 	/**
 	 * Gets the required air pressure.
 	 * 
-	 * @return air pressure in Pa.
+	 * @return air pressure in kPa.
 	 * @throws Exception if air pressure could not be found.
 	 */
 	public double getMinAirPressure() {
@@ -927,7 +927,7 @@ public class PersonConfig implements Serializable {
 			return pressure;
 		}
 	}
-
+			
 	/**
 	 * Gets the max decompression time a person can survive.
 	 * 

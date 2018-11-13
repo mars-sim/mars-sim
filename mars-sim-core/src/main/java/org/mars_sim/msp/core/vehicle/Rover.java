@@ -12,18 +12,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -41,12 +45,17 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	private static Logger logger = Logger.getLogger(Rover.class.getName());
+
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
 
 	/** The amount of work time to perform maintenance (millisols) */
 	public static final double MAINTENANCE_WORK_TIME = 500D;
 
-	/** Normal air pressure (Pa). */
-	private double NORMAL_AIR_PRESSURE = 101325D;
+	/** Normal air pressure (kPa). */
+	private double NORMAL_AIR_PRESSURE = 34.7D; // 101325D;
 	/** Normal temperature (celsius). */
 	private double NORMAL_TEMP = 22.5D;
 
@@ -113,15 +122,13 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		inv.addGeneralCapacity(vehicleConfig.getTotalCapacity(description));
 
 		// Set inventory resource capacities.
-		inv.addAmountResourceTypeCapacity(ResourceUtil.methaneID,
-				vehicleConfig.getCargoCapacity(description, ResourceUtil.METHANE));
-		inv.addARTypeCapacity(ResourceUtil.oxygenID,
-				vehicleConfig.getCargoCapacity(description, LifeSupportType.OXYGEN));
+		inv.addARTypeCapacity(ResourceUtil.methaneID, vehicleConfig.getCargoCapacity(description, ResourceUtil.METHANE));
+		inv.addARTypeCapacity(ResourceUtil.oxygenID, vehicleConfig.getCargoCapacity(description, LifeSupportType.OXYGEN));
 		inv.addARTypeCapacity(ResourceUtil.waterID, vehicleConfig.getCargoCapacity(description, LifeSupportType.WATER));
 		inv.addARTypeCapacity(ResourceUtil.foodID, vehicleConfig.getCargoCapacity(description, LifeSupportType.FOOD));
-		inv.addAmountResourceTypeCapacity(ResourceUtil.rockSamplesID,
-				vehicleConfig.getCargoCapacity(description, ResourceUtil.ROCK_SAMLES));
+		inv.addARTypeCapacity(ResourceUtil.rockSamplesID, vehicleConfig.getCargoCapacity(description, ResourceUtil.ROCK_SAMLES));
 		inv.addARTypeCapacity(ResourceUtil.iceID, vehicleConfig.getCargoCapacity(description, ResourceUtil.ICE));
+		
 		inv.addAmountResourceTypeCapacity(ResourceUtil.foodWasteAR,
 				vehicleConfig.getCargoCapacity(description, ResourceUtil.FOOD_WASTE));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.solidWasteAR,
@@ -264,10 +271,21 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	 */
 	public boolean lifeSupportCheck() {
 		boolean result = true;
+		
+		Inventory inv = null;
 
-		if (getInventory().getARStored(ResourceUtil.oxygenID, false) <= 0D)
+		// Assuming that a hose is connected between the vehicle and the settlement to supply resources
+		if (getStatus() == StatusType.GARAGED) {// || getStatus() == StatusType.PARKED) {
+			if (getSettlement() == null)
+				System.out.println("garage : " + getGarage().getNickName());
+			inv = getSettlement().getInventory();
+		}
+		else
+			inv = getInventory();
+		
+		if (inv.getARStored(ResourceUtil.oxygenID, false) <= 0D)
 			result = false;
-		if (getInventory().getARStored(ResourceUtil.waterID, false) <= 0D)
+		if (inv.getARStored(ResourceUtil.waterID, false) <= 0D)
 			result = false;
 
 		if (malfunctionManager.getOxygenFlowModifier() < 100D)
@@ -275,10 +293,26 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		if (malfunctionManager.getWaterFlowModifier() < 100D)
 			result = false;
 
-		if (getAirPressure() != NORMAL_AIR_PRESSURE)
-			result = false;
-		if (getTemperature() != NORMAL_TEMP)
-			result = false;
+		double p = getAirPressure();
+//		if (p > NORMAL_AIR_PRESSURE * 1.1 && p > NORMAL_AIR_PRESSURE * .9)
+//			result = false;
+		if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimum_air_pressure) {
+			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+					this.getName() + " detected improper air pressure at " + Math.round(p * 10D) / 10D + " kPa",
+					null);
+			return false;
+		}
+		
+		double t = getTemperature();
+//		if (getTemperature() != NORMAL_TEMP)
+//			result = false;
+		if (t < Settlement.life_support_value[0][4] - Settlement.SAFETY_TEMPERATURE
+				|| t > Settlement.life_support_value[1][4] + Settlement.SAFETY_TEMPERATURE) {
+			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+					this.getName() + " detected out-of-range temperature at " + Math.round(p * 10D) / 10D + " C",
+					null);
+			return false;
+		}
 
 		return result;
 	}
@@ -300,8 +334,16 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	 * @throws Exception if error providing oxygen.
 	 */
 	public double provideOxygen(double amountRequested) {
+		Inventory inv = null;
+		
+		// Assuming that a hose is connected between the vehicle and the settlement to supply resources
+		if (getStatus() == StatusType.GARAGED)// || getStatus() == StatusType.PARKED)
+			inv = getSettlement().getInventory();
+		else
+			inv = getInventory();
+		
 		double oxygenTaken = amountRequested;
-		double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
+		double oxygenLeft = inv.getAmountResourceStored(ResourceUtil.oxygenID, false);
 
 		if (oxygenTaken > oxygenLeft)
 			oxygenTaken = oxygenLeft;
@@ -321,8 +363,16 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	 * @throws Exception if error providing water.
 	 */
 	public double provideWater(double amountRequested) {
+		Inventory inv = null;
+
+		// Assuming that a hose is connected between the vehicle and the settlement to supply resources
+		if (getStatus() == StatusType.GARAGED)// || getStatus() == StatusType.PARKED)
+			inv = getSettlement().getInventory();
+		else
+			inv = getInventory();
+		
 		double waterTaken = amountRequested;
-		double waterLeft = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
+		double waterLeft = inv.getAmountResourceStored(ResourceUtil.waterID, false);
 
 		if (waterTaken > waterLeft)
 			waterTaken = waterLeft;
@@ -340,12 +390,19 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	 * @return air pressure (Pa)
 	 */
 	public double getAirPressure() {
-		double result = NORMAL_AIR_PRESSURE * (malfunctionManager.getAirPressureModifier() / 100D);
-		double ambient = weather.getAirPressure(getCoordinates());
-		if (result < ambient)
-			return ambient;
+		double result = 0;
+		
+		// Assuming that a hose is connected between the vehicle and the settlement to supply resources
+		if (getStatus() == StatusType.GARAGED)// || getStatus() == StatusType.PARKED)	
+			result = getSettlement().getAirPressure();
 		else
-			return result;
+			result = NORMAL_AIR_PRESSURE * (malfunctionManager.getAirPressureModifier() / 100D);
+		
+//		double ambient = weather.getAirPressure(getCoordinates());
+//		if (result < ambient)
+//			return ambient;
+//		else
+		return result;
 	}
 
 	/**
@@ -354,12 +411,19 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	 * @return temperature (degrees C)
 	 */
 	public double getTemperature() {
-		double result = NORMAL_TEMP * (malfunctionManager.getTemperatureModifier() / 100D);
-		double ambient = weather.getTemperature(getCoordinates());
-		if (result < ambient)
-			return ambient;
+	double result = 0;
+		
+	// Assuming that a hose is connected between the vehicle and the settlement to supply resources
+		if (getStatus() == StatusType.GARAGED)// || getStatus() == StatusType.PARKED)
+			result = getSettlement().getTemperature();
 		else
-			return result;
+			result = NORMAL_TEMP * (malfunctionManager.getTemperatureModifier() / 100D);
+		
+//		double ambient = weather.getTemperature(getCoordinates());
+//		if (result < ambient)
+//			return ambient;
+//		else
+		return result;
 	}
 
 	/**

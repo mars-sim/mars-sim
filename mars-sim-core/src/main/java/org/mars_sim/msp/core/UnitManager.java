@@ -717,7 +717,7 @@ public class UnitManager implements Serializable {
 						isUnique = false;						
 					}
 					else {
-						logger.info("'" + name + "' has been selected to replace '" + oldName + "' found in alpha crew list or in people.xml. ");
+						logger.config("'" + name + "' has been selected to replace '" + oldName + "' found in alpha crew list or in people.xml. ");
 						isUnique = true;
 					}
 
@@ -1004,7 +1004,7 @@ public class UnitManager implements Serializable {
 
 							if (n.equals(fullname)) {
 								isUniqueName = false;
-								logger.info(fullname + " is a duplicate name. Choose another one.");
+								logger.config(fullname + " is a duplicate name. Choose another one.");
 								// break;
 							}
 						}
@@ -1213,7 +1213,7 @@ public class UnitManager implements Serializable {
 		// Check if this settlement is the designated one for the user proposed commander
 		if (settlement.isCommanderMode()) {
 			updateCommander(cc);
-			logger.info(cc + " will be assigned to " + settlement + " as its commander.");
+			logger.config(cc + " will be assigned to " + settlement + " as its commander.");
 		}
 		
 		else {
@@ -1294,14 +1294,14 @@ public class UnitManager implements Serializable {
 			// If the sponsors are a match
 			if (sponsor.equals(s.getSponsor()) ) {			
 				s.setCommanderMode(true);
-				logger.info("'" + country + "' does have a settlement called '" + s + "'.");
+				logger.config("'" + country + "' does have a settlement called '" + s + "'.");
 				return;
 			}
 			
 			// If this is the last settlement to examine
 			else if ((j == size - 1)) {			
 				s.setCommanderMode(true);
-				logger.info("'" + country + "' doesn't have any settlements.");
+				logger.config("'" + country + "' doesn't have any settlements.");
 				return;
 			}
 		}			

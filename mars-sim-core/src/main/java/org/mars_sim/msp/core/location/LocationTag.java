@@ -28,7 +28,7 @@ public class LocationTag implements LocationState, Serializable {
 
 	public static final String VICINITY = " vicinity";
 
-	private static final String UNKNOWN = "Unknown";
+	private static final String UNKNOWN = "unknown";
 
 	private static final String IN = " in ";
 
@@ -274,9 +274,9 @@ public class LocationTag implements LocationState, Serializable {
 				if (p.getBuildingLocation() != null) {
 					return p.getBuildingLocation().getNickName();
 				}
-//				else {
-//					return ...;
-//				}
+				else {
+					return p.getLocationStateType().getName();
+				}
 			} else if (p.getVehicle() != null) {
 				Vehicle v = p.getVehicle();
 				if (v.getBuildingLocation() == null) {

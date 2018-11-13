@@ -420,26 +420,29 @@ public class EventTableModel extends AbstractTableModel
 					during = during.toLowerCase();
 					
 					if (during.equals("n/a"))
-						during = "";
+						during = "while ";
+					else
+						during = "while " + during;
 					
 					header = Msg.getString("EventTableModel.message.malfunction"); //$NON-NLS-1$
 
 					// Only display notification window when malfunction has occurred, not when
 					// fixed.
 					if (eventType == EventType.MALFUNCTION_HUMAN_FACTORS) {
+						during.replace("do ", "doing ");
 						message = cause + " in " + location0 + " at " + location1 + ". " + who
-								+ " reported the malfunction while " + during + ".";
+								+ " reported the malfunction " + during + ".";
 						willNotify = true;
 					}
 
 					else if (eventType == EventType.MALFUNCTION_PROGRAMMING_ERROR) {
 						message = cause + " in " + location0 + " at " + location1 + ". " + who
-								+ " may have caused the malfunction due to software quality control issues while " + during + ".";
+								+ " may have caused the malfunction due to software quality control issues " + during + ".";
 						willNotify = true;
 					}
 					
 					else if (eventType == EventType.MALFUNCTION_PARTS_FAILURE) {
-						message = who + " reported " + cause + " in " + location0 + " at " + location1+ ".";
+						message = who + " reported " + cause + " in " + location0 + " at " + location1 + ".";
 						willNotify = true;
 					}
 
@@ -448,7 +451,7 @@ public class EventTableModel extends AbstractTableModel
 							message = "No one witnessed " + cause + " in " + location0 + " at "
 									+ location1+ ".";
 						else
-							message = who + " got traumatized by " + cause + " while " + during 
+							message = who + " got traumatized by " + cause + during 
 								+ " in " + location0 + " at " + location1+ ".";
 						willNotify = true;
 					}

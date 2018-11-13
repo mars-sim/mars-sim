@@ -46,7 +46,7 @@
 			<!-- Resource effects have a change rate for a given resource in inventory. -->
 			<!-- Values: Change rate of resource in inventory. (kg/millisol) -->
 			<!-- See resources.txt -->
-			<effect type="resource" name="Oxygen" change-rate="-.1" />
+			<effect type="resource" name="Oxygen" change-rate="-.01" />
 
 			<!-- Life support effects have a change rate in life support provided. -->
 			<!-- Values: Change rate of life support. (kg/millisol) -->
@@ -611,7 +611,7 @@
 			<system name="vehicle" />
 			<system name="EVA suit" />
 			<system name="power generation" />
-			<system name="building" />
+			<system name="Building" />
 		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="10.0" />
@@ -935,18 +935,19 @@
 
 	<!-- Meteorite Impact -->
 	<malfunction name="Meteorite Impact Damage">
-		<severity value="100" />
+		<severity value="90" />
 		<probability value="0.0002547" /> <!-- 0.0002547 or = 0.7% per year per sq m (assuming a 50 m^2 roof)  -->
-		<repair-time value="80.0" />
-		<emergency-repair-time value="40.0" />
-		<eva-repair-time value="40.0" />
+		<repair-time value="500.0" />
+		<emergency-repair-time value="100.0" />
+		<eva-repair-time value="100.0" />
 		<system-list>
-			<system name="building" />
-			<system name="vehicle" />
+			<system name="Building" />
+			<system name="Vehicle" />
 			<system name="EVA suit" />			
 		</system-list>
 		<effect-list>
 			<effect type="life-support" name="Oxygen" change-rate="-.02" />
+			<effect type="resource" name="Oxygen" change-rate="-.02" />
 			<effect type="life-support" name="Air Pressure" change-rate="-.02" />
 		</effect-list>
 		<medical-complaint-list>

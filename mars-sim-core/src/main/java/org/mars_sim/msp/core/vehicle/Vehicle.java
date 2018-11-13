@@ -447,9 +447,10 @@ public abstract class Vehicle extends Unit
 	private void updateStatus() {
 
 		// Update status based on current situation.
-		StatusType newStatus = StatusType.PARKED;
-		if (getGarage() != null)
+		StatusType newStatus = null;//StatusType.PARKED;
+		if (getGarage() != null) {
 			newStatus = StatusType.GARAGED;
+		}
 		
 		if (reservedForMaintenance)
 			newStatus = StatusType.MAINTENANCE;
@@ -459,7 +460,9 @@ public abstract class Vehicle extends Unit
 			newStatus = StatusType.MALFUNCTION;
 		else if (speed > 0D)
 			newStatus = StatusType.MOVING;
-
+		else
+			newStatus = StatusType.PARKED;
+		
 		if (status != newStatus) {
 			status = newStatus;
 			fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
@@ -763,7 +766,7 @@ public abstract class Vehicle extends Unit
 	public void timePassing(double time) {
 
 		// Update status if necessary.
-		updateStatus();
+		//updateStatus();
 
 		if (status == StatusType.MOVING)
 			malfunctionManager.activeTimePassing(time);

@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartConfig;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -483,20 +484,22 @@ public class MalfunctionManager implements Serializable {
 								malfunction, malfunctionName, "N/A", "None", loc0, loc1);
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-								malfunction.getName() + " detected due to Parts Fatigue in " + loc1, null);
+								"[" + loc1 + "] '" + malfunction.getName() + "' in " + loc0 + ". Cause : Parts Fatigue.", null);
 					} else {
 						if (person != null) {
 							HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
 									malfunction, malfunctionName, task, offender, loc0, loc1);
 							Simulation.instance().getEventManager().registerNewEvent(newEvent);
-							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, offender + " may have to do with "
-									+ malfunction.getName() + " due to Human Factors in " + loc1, null);
+							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+									"[" + loc1 + "] " + offender + " may have to do with '"
+									+ malfunction.getName() + "' in " + loc0 + ". Cause : Human Factors.", null);
 						} else if (robot != null) {
 							HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
 									malfunction, malfunctionName, task, offender, loc0, loc1);
 							Simulation.instance().getEventManager().registerNewEvent(newEvent);
-							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, offender + " may have to do with "
-									+ malfunction.getName() + " due to poor software quality control in " + loc1, null);
+							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+									"[" + loc1 + "] " + offender + " may have to do with '"
+									+ malfunction.getName() + "' in " + loc0  + ". Cause : Software Quality Control.", null);
 						}
 					}
 
@@ -506,13 +509,14 @@ public class MalfunctionManager implements Serializable {
 								malfunction, malfunctionName + " on " + object, "N/A", "None", loc0, loc1);
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
 						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-								malfunction.getName() + " detected due to Parts Fatigue in " + loc1, null);
+								"[" + loc1 + "] '" + malfunction.getName() + "' detected in " + loc0 + ". Cause : Parts Fatigue.", null);
 					} else {
 						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
 								malfunction, malfunctionName + " on " + object, task, offender, loc0, loc1);
 						Simulation.instance().getEventManager().registerNewEvent(newEvent);
-						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, offender + " may have to do with "
-								+ malfunction.getName() + " due to Human Factors in " + loc1, null);
+						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+								"[" + loc1 + "] " + offender + " may have to do with '"
+								+ malfunction.getName() + "' in " + loc0 + ". Cause : Human Factors.", null);
 					}
 				}
 
@@ -520,6 +524,7 @@ public class MalfunctionManager implements Serializable {
 
 			else {
 				// due to meteorite impact
+				
 				// actor is null
 				numberMalfunctions++;
 
@@ -564,8 +569,9 @@ public class MalfunctionManager implements Serializable {
 						malfunctionName, task, name, loc0, loc1);
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
 				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						malfunction.getName() + " damage detected in " + loc1, null);
+						"[" + loc1 + "] " +  malfunction.getName() + " damage detected in " + loc0, null);
 			}
+			
 		} else
 			return;
 
@@ -695,20 +701,84 @@ public class MalfunctionManager implements Serializable {
 	 */
 	public void timePassing(double time) {
 
+		// Check if life support modifiers are still in effect.
+		setLifeSupportModifiers(time);
+
+		// Check if resources is still draining
+		try {
+			depleteResources(time);
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		
+		checkFixedMalfunction(time);
+
+		// Add time passing.
+		timeSinceLastMaintenance += time;
+	}
+
+	public void resetModifiers(int type) {
+		// compare from previous modifier
+		
+		if (type == 0) {
+			oxygenFlowModifier = 100D;
+			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+					"[" + entity.getLocale() + "] The oxygen flow retrictor has been fixed in "
+					+ entity.getImmediateLocation(), null);
+		}
+		
+		else if (type == 1) {
+			waterFlowModifier = 100D;
+			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+					"[" + entity.getLocale() + "] The water flow retrictor has been fixed in "
+					+ entity.getImmediateLocation(), null);
+		}
+		
+		else if (type == 2) {
+			airPressureModifier = 100D;
+			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+				"[" + entity.getLocale() + "] The air pressure regulator has been fixed in "
+				+ entity.getImmediateLocation(), null);
+		}
+		
+		else if (type == 3) {
+			temperatureModifier = 100D;
+			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+					"[" + entity.getLocale() + "] The temperature regulator has been fixed in "
+					+ entity.getImmediateLocation(), null);
+			
+		}
+	}
+	
+	public void checkFixedMalfunction(double time) { 
 		Collection<Malfunction> fixedMalfunctions = new ArrayList<Malfunction>();
 
 		// Check if any malfunctions are fixed.
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (malfunction.isFixed())
+				if (malfunction.isFixed()) {
+					System.out.println(malfunction.getName() + " is fixed.");
 					fixedMalfunctions.add(malfunction);
+				}
 			}
 		}
 
-		if (fixedMalfunctions.size() > 0) {
+		int size = fixedMalfunctions.size();
+		
+		if (size > 0) {
 			for (Malfunction malfunction : fixedMalfunctions) {
-				malfunctions.remove(malfunction);
 
+				// Reset the modifiers
+				Map<String, Double> effects = malfunction.getLifeSupportEffects();
+				if (effects.get(OXYGEN) != null)
+					resetModifiers(0);
+				if (effects.get(WATER) != null)
+					resetModifiers(1);
+				if (effects.get(PRESSURE) != null)
+					resetModifiers(2);
+				if (effects.get(TEMPERATURE) != null)
+					resetModifiers(3);
+				
 				try {
 					getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
 				} catch (Exception e) {
@@ -722,25 +792,16 @@ public class MalfunctionManager implements Serializable {
 						entity.getLocale());
 
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
-				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						"The malfunction '" + malfunction.getName() + "' has been fixed", null);
+				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+						"[" + entity.getLocale() + "] The malfunction '" + malfunction.getName() + "' has been fixed in "
+						+ entity.getImmediateLocation(), null);
+			
+				// Remove the malfunction
+				malfunctions.remove(malfunction);				
 			}
 		}
-
-		// Determine life support modifiers.
-		setLifeSupportModifiers(time);
-
-		// Deplete resources.
-		try {
-			depleteResources(time);
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-		}
-
-		// Add time passing.
-		timeSinceLastMaintenance += time;
 	}
-
+	
 	/**
 	 * Determine life support modifiers for given time.
 	 * 
@@ -756,55 +817,67 @@ public class MalfunctionManager implements Serializable {
 		// Make any life support modifications.
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
+//				System.out.print(malfunction);
+				if (!malfunction.isFixed()) {// && malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
+//					System.out.print(" not fixed");
 					Map<String, Double> effects = malfunction.getLifeSupportEffects();
 					if (effects.get(OXYGEN) != null)
-						tempOxygenFlowModifier += effects.get(OXYGEN);
+						tempOxygenFlowModifier += effects.get(OXYGEN) * (100D - malfunction.getPercentageFixed());
 					if (effects.get(WATER) != null)
-						tempWaterFlowModifier += effects.get(WATER);
+						tempWaterFlowModifier += effects.get(WATER) * (100D - malfunction.getPercentageFixed());
 					if (effects.get(PRESSURE) != null)
-						tempAirPressureModifier += effects.get(PRESSURE);
+						tempAirPressureModifier += effects.get(PRESSURE) * (100D - malfunction.getPercentageFixed());
 					if (effects.get(TEMPERATURE) != null)
-						tempTemperatureModifier += effects.get(TEMPERATURE);
+						tempTemperatureModifier += effects.get(TEMPERATURE) * (100D - malfunction.getPercentageFixed());
 				}
+//				System.out.println();
 			}
+
+			if (tempOxygenFlowModifier < 0D) {
+				oxygenFlowModifier += tempOxygenFlowModifier * time ;
+				if (oxygenFlowModifier < 0)
+					oxygenFlowModifier = 0;
+				LogConsolidated.log(logger, Level.WARNING, 15_000, sourceName,
+						"[" + getUnit().getLocationTag().getLocale() + "] Oxygen flow restricted to "
+								+ Math.round(oxygenFlowModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation()+ ".", null);
+			} 
+//			else
+//				oxygenFlowModifier = 100D;
+	
+			if (tempWaterFlowModifier < 0D) {
+				waterFlowModifier += tempWaterFlowModifier * time;
+				if (waterFlowModifier < 0)
+					waterFlowModifier = 0;
+				LogConsolidated.log(logger, Level.WARNING, 15_000, sourceName,
+						"[" + getUnit().getLocationTag().getLocale() + "] Water flow restricted to "
+								+ Math.round(waterFlowModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
+			} 
+//			else
+//				waterFlowModifier = 100D;
+	
+			if (tempAirPressureModifier < 0D) {
+				airPressureModifier += tempAirPressureModifier * time;
+				if (airPressureModifier < 0)
+					airPressureModifier = 0;
+				LogConsolidated.log(logger, Level.WARNING, 15_000, sourceName,
+						"[" + getUnit().getLocationTag().getLocale() + "] Air pressure regulator malfunctioned at "
+								+ Math.round(airPressureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
+			} 
+//			else
+//				airPressureModifier = 100D;
+	
+			// temp mod can be above 0 or below zero
+			if (tempTemperatureModifier != 0D) {
+				temperatureModifier += tempTemperatureModifier * time;
+				if (temperatureModifier < 0)
+					temperatureModifier = 0;
+				LogConsolidated.log(logger, Level.WARNING, 15_000, sourceName,
+						"[" + getUnit().getLocationTag().getLocale() + "] Temperature regulator malfunctioned at "
+								+ Math.round(temperatureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
+			} 
+//			else
+//				temperatureModifier = 100D;
 		}
-
-		if (tempOxygenFlowModifier < 0D) {
-			oxygenFlowModifier += tempOxygenFlowModifier * time;
-			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-					"[" + getUnit().getLocationTag().getImmediateLocation() + "] oxygen flow restricted to "
-							+ Math.round(oxygenFlowModifier*10.0)/10.0 + "%.",
-					null);
-		} else
-			oxygenFlowModifier = 100D;
-
-		if (tempWaterFlowModifier < 0D) {
-			waterFlowModifier += tempWaterFlowModifier * time;
-			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-					"[" + getUnit().getLocationTag().getImmediateLocation() + "] water flow restricted to "
-							+ Math.round(waterFlowModifier*10.0)/10.0 + "%.",
-					null);
-		} else
-			waterFlowModifier = 100D;
-
-		if (tempAirPressureModifier < 0D) {
-			airPressureModifier += tempAirPressureModifier * time;
-			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-					"[" + getUnit().getLocationTag().getImmediateLocation() + "] air pressure regulator functioning at "
-							+ Math.round(airPressureModifier*10.0)/10.0 + "%.",
-					null);
-		} else
-			airPressureModifier = 100D;
-
-		if (tempTemperatureModifier != 0D) {
-			temperatureModifier += tempTemperatureModifier * time;
-			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-					"[" + getUnit().getLocationTag().getImmediateLocation() + "] temperature regulator functioning at "
-							+ Math.round(temperatureModifier*10.0)/10.0 + "%.",
-					null);
-		} else
-			temperatureModifier = 100D;
 
 	}
 
@@ -818,7 +891,7 @@ public class MalfunctionManager implements Serializable {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
+				if (!malfunction.isFixed() && malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
 					Map<Integer, Double> effects = malfunction.getResourceEffects();
 					Iterator<Integer> i2 = effects.keySet().iterator();
 					while (i2.hasNext()) {
@@ -833,7 +906,10 @@ public class MalfunctionManager implements Serializable {
 						}
 						if (amountDepleted >= 0) {
 							inv.retrieveAmountResource(resource, amountDepleted);
-
+							LogConsolidated.log(logger, Level.WARNING, 15_000, sourceName,
+									"[" + getUnit().getLocationTag().getLocale() + "] Leaking "
+											+ Math.round(amountDepleted*100.0)/100.0 + " of  " + ResourceUtil.findAmountResource(resource) 
+											+ " in " + getUnit().getLocationTag().getImmediateLocation()+ ".", null);
 						}
 					}
 				}
@@ -894,7 +970,8 @@ public class MalfunctionManager implements Serializable {
 //		 }
 
 		LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
-				"[" + u.getLocationTag().getImmediateLocation() + "] A Type-I accident occurs " + sb.toString() + ".",
+				"[" + u.getLocationTag().getLocale() + "] A Type-I accident occurred " 
+				+ sb.toString() + " in " + u.getLocationTag().getImmediateLocation() + ".",
 				null);
 
 	}
@@ -942,7 +1019,8 @@ public class MalfunctionManager implements Serializable {
 
 		LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
 				// "[" + locationName + "] An accident occurs " + sb.toString() + ".", null);
-				"[" + Conversion.capitalize(n) + "] A Type-II accident occurs in " + entity.getLocale(), null);
+				"[" + entity.getLocale() + "] A Type-II accident occurred in " 
+						+ Conversion.capitalize(n) + ".", null);
 	}
 
 	/**
@@ -969,7 +1047,7 @@ public class MalfunctionManager implements Serializable {
 		}
 
 		if (hasMal) {
-			logger.warning(actor.getName() + " has an accident during EVA.");
+			logger.warning("[" + entity.getLocale() + "] " + actor.getName() + " had an accident.");
 			if (type == 1)
 				handleStringTypeOne(s, actor);
 			else if (type == 2)

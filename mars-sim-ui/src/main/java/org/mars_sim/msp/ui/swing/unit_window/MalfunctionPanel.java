@@ -15,20 +15,21 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.BoundedRangeModel;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.progressbar.WebProgressBar;
+
 /**
  * The MalfunctionPanel class displays info about a malfunction.
  */
 public class MalfunctionPanel
-extends JPanel {
+extends WebPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -37,11 +38,11 @@ extends JPanel {
 	/** The malfunction. */
 	private Malfunction malfunction;
 	/** The name label. */
-	private JLabel nameLabel;
+	private WebLabel nameLabel;
 	/** The repair bar model. */
 	private BoundedRangeModel repairBarModel;
 	/** The repair parts label. */
-	private JLabel partsLabel;
+	private WebLabel partsLabel;
 
 	/**
 	 * Constructs a MalfunctionPanel object with a name prefix.
@@ -64,7 +65,7 @@ extends JPanel {
 		setBackground(new Color(0,0,0,128));
 
 		// Prepare name label.
-		nameLabel = new JLabel(malfunction.getName(), JLabel.CENTER);
+		nameLabel = new WebLabel(malfunction.getName(), WebLabel.CENTER);
 		if (malfunction.getCompletedEmergencyWorkTime() < malfunction.getEmergencyWorkTime()) {
 			nameLabel.setText(malfunction.getName() + " - Emergency");
 			nameLabel.setForeground(Color.red);
@@ -72,11 +73,11 @@ extends JPanel {
 		add(nameLabel);
 
 		// Prepare repair pane.
-		JPanel repairPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		WebPanel repairPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		add(repairPane);
 
 		// Prepare repair progress bar.
-		JProgressBar repairBar = new JProgressBar();
+		WebProgressBar repairBar = new WebProgressBar();
 		repairBarModel = repairBar.getModel();
 		repairBar.setStringPainted(true);
 		repairPane.add(repairBar);
@@ -91,7 +92,7 @@ extends JPanel {
 		repairBarModel.setValue(percentComplete);
 
 		// Prepare repair parts label.
-		partsLabel = new JLabel(getPartsString(), JLabel.CENTER);
+		partsLabel = new WebLabel(getPartsString(), WebLabel.CENTER);
 		partsLabel.setPreferredSize(new Dimension(-1, -1));
 		add(partsLabel);
 
@@ -105,8 +106,26 @@ extends JPanel {
 	public void update() {
 
 		// Update name label.
+		int eva = 0;
+		int emer = 0;
 		if (malfunction.getCompletedEmergencyWorkTime() < malfunction.getEmergencyWorkTime()) {
-			nameLabel.setText(malfunction.getName() + " - Emergency");
+			emer = 1;		
+		}
+		
+		if (malfunction.getCompletedEVAWorkTime() < malfunction.getEVAWorkTime()) {
+			eva = 1;
+		}
+		
+		if (eva == 1 && emer == 1) {
+			nameLabel.setText(malfunction.getName() + "- Emergency & EVA");
+			nameLabel.setForeground(Color.red);
+		}
+		else if (eva == 1) {
+			nameLabel.setText(malfunction.getName() + "- EVA");
+			nameLabel.setForeground(Color.blue);
+		}		
+		else if (emer == 1) {
+			nameLabel.setText(malfunction.getName() + "- Emergency");	
 			nameLabel.setForeground(Color.red);
 		}
 		else {
@@ -120,7 +139,13 @@ extends JPanel {
 		double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() +
 				malfunction.getCompletedWorkTime() + malfunction.getCompletedEVAWorkTime();
 		int percentComplete = 0;
-		if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
+		
+		if (totalRequiredWork > 0D) 
+			percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
+		
+		if (percentComplete > 100)
+			percentComplete = 100;
+		
 		repairBarModel.setValue(percentComplete);
 
 		// Update parts label.

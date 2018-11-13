@@ -225,6 +225,8 @@ public class SettlementTableModel extends UnitTableModel {
 					}
 					if (malfunction != null)
 						result = malfunction.getName();
+					else 
+						result = "";
 				}
 					break;
 

@@ -100,7 +100,7 @@ public class PhysicalCondition implements Serializable {
 	 * The maximum air pressure a person can live without harm in kPa. (somewhat
 	 * arbitrary)
 	 */
-	public static final double MAXIMUM_AIR_PRESSURE = 680D; // Assume 10,000 psi or 680 kPa time dependent
+	public static final double MAXIMUM_AIR_PRESSURE = 68D; // Assume 68 kPa time dependent
 	/** Period of time (millisols) over which random ailments may happen. */
 	private static double RANDOM_AILMENT_PROBABILITY_TIME = 100_000D;
 

@@ -68,7 +68,7 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
 	        if (EVAOperation.getWalkableAvailableAirlock(person) == null)
 	    		return 0;
 	
-	        //2016-10-04 Checked for radiation events
+	        // Checked for radiation events
 	    	boolean[] exposed = settlement.getExposed();
 	
 	

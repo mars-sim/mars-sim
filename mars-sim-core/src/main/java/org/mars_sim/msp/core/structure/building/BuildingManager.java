@@ -815,10 +815,15 @@ public class BuildingManager implements Serializable {
 	 * 
 	 * @return true if it has been added to a garage 
 	 */
-	public static boolean addToRandomBuilding(GroundVehicle vehicle, Settlement settlement) {
+	public static boolean addToGarage(GroundVehicle vehicle, Settlement settlement) {
 
-		if (vehicle.getStatus() == StatusType.GARAGED)
+		if (vehicle.getStatus() == StatusType.GARAGED) {
+			if (vehicle.getSettlement() == null)
+				settlement.getInventory().storeUnit(vehicle);
+			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+					"[" + settlement.getName() + "] " + vehicle.getName() + " already garaged in " + getBuilding(vehicle, settlement), null);
 			return true;
+		}
 		
 		List<Building> garages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 		List<VehicleMaintenance> openGarages = new ArrayList<VehicleMaintenance>();
@@ -831,15 +836,20 @@ public class BuildingManager implements Serializable {
 		if (openGarages.size() > 0) {
 			int rand = RandomUtil.getRandomInt(openGarages.size() - 1);
 			openGarages.get(rand).addVehicle(vehicle);
+			if (vehicle.getSettlement() == null)
+				settlement.getInventory().storeUnit(vehicle);
+			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+				"[" + settlement.getName() + "] " +  vehicle.getName() + " has just been stowed inside " + getBuilding(vehicle, settlement), null);
 			vehicle.setStatus(StatusType.GARAGED);
 			return true;
 		}
-		// else {
-		// logger.warning("No available garage space for " + vehicle.getName() + ",
-		// didn't add vehicle");
-		// }
-		else 
-			return false;
+//		else {
+//			logger.info("[" + settlement.getName() + "] No available garage space found for " + vehicle.getName() + ".");
+//			return false;
+//		}
+		
+		return false;
+
 	}
 
 	/**
@@ -892,6 +902,32 @@ public class BuildingManager implements Serializable {
 		return null;
 	}
 
+	/**
+	 * Gets an available vehicle maintenance building for resource hookup.
+	 * 
+	 * @param settlement
+	 * @return building or null if none.
+	 */
+	public static Building getAGarage(Settlement settlement) {
+		if (settlement != null) {
+			List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+			int size = list.size();
+			int rand = RandomUtil.getRandomInt(size-1);
+			return list.get(rand);
+//			for (Building garageBuilding : list) {
+//				try {
+//					VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+//					if (garage != null) {
+//						return garageBuilding;
+//					}
+//				} catch (Exception e) {
+//					logger.log(Level.SEVERE, "Calling getAGarage(settlement) : " + e.getMessage());
+//				}
+//			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Gets the building a person or robot is in.
 	 * 

@@ -70,9 +70,9 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	public RepairEmergencyMalfunctionEVA(Person person) {
 		super(NAME, person, false, 5D);
 
-		// 2016-09-24 Factored in a person's preference for the new stress modifier
+		// Factor in a person's preference for the new stress modifier
 		int score = person.getPreference().getPreferenceScore(new RepairEVAMalfunctionMeta());
-		// 2016-09-24 Overrode the stress modifier of EVAOperation since it's a very
+		// Override the stress modifier of EVAOperation since it's a very
 		// serious EVA op
 		super.setStressModifier(score / 10D + STRESS_MODIFIER);
 
@@ -89,21 +89,6 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 
 		logger.fine(person.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
 	}
-
-//    public RepairEmergencyMalfunctionEVA(Robot robot) {
-//        super(NAME, robot, false, 0D);
-//        init();
-//
-//        // Create starting task event if needed.
-//        if (getCreateEvents() && !isDone()) {
-//            TaskEvent startingEvent = new TaskEvent(robot, this, EventType.TASK_START, "");
-//            Simulation.instance().getEventManager().registerNewEvent(startingEvent);
-//        }
-//
-//        init2();
-//
-//        logger.fine(robot.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
-//    }
 
 	public void init() {
 
@@ -171,10 +156,6 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		return result;
 	}
 
-//    public static boolean requiresEVARepair(Robot robot) {
-//        return false;
-//    }
-
 	/**
 	 * Checks if a person can perform an EVA for the emergency repair.
 	 * 
@@ -196,8 +177,8 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 			}
 		}
 
-		// Check if person is outside.
-		if (person.isInSettlement()) {
+		// Check if person is inside
+		if (person.isInSettlement() || person.isInVehicleInGarage()) {
 
 			// Check if an airlock is available
 			Airlock airlock = EVAOperation.getWalkableAvailableAirlock(person);
@@ -214,17 +195,12 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		return true;
 	}
 
-//    public static boolean canPerformEVA(Robot robot) {
-//        return false;
-//    }
-
 	/**
 	 * Gets a local emergency malfunction.
 	 */
 	private void claimMalfunction() {
 		malfunction = null;
 
-//        if (person != null) {
 		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
 		while (i.hasNext() && (malfunction == null)) {
 			Malfunctionable e = i.next();
@@ -236,23 +212,6 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 						malfunction.getName(), entity.getNickName())); // $NON-NLS-1$
 			}
 		}
-//        }
-//        else if (robot != null) {
-//
-//            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-//            while (i.hasNext() && (malfunction == null)) {
-//                Malfunctionable e = i.next();
-//                MalfunctionManager manager = e.getMalfunctionManager();
-//                if (manager.hasEmergencyMalfunction()) {
-//                    malfunction = manager.getMostSeriousEmergencyMalfunction();
-//                    entity = e;
-//                    setDescription(Msg.getString("Task.description.repairEmergencyMalfunctionEVA.detail",
-//                            malfunction.getName(), entity.getName())); //$NON-NLS-1$
-//                }
-//            }
-//
-//        }
-
 	}
 
 	/**
@@ -330,12 +289,12 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 
 		double workTime = 0;
 
-		if (person != null) {
+//		if (person != null) {
 			workTime = time;
-		} else if (robot != null) {
-			// A robot moves slower than a person and incurs penalty on workTime
-			workTime = time / 2;
-		}
+//		} else if (robot != null) {
+//			// A robot moves slower than a person and incurs penalty on workTime
+//			workTime = time / 2;
+//		}
 
 		// Determine effective work time based on "Mechanic" skill.
 		int mechanicSkill = 0;
@@ -374,10 +333,10 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	public int getEffectiveSkillLevel() {
 
 		SkillManager manager = null;
-		if (person != null)
+//		if (person != null)
 			manager = person.getMind().getSkillManager();
-		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
+//		else if (robot != null)
+//			manager = robot.getBotMind().getSkillManager();
 
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);

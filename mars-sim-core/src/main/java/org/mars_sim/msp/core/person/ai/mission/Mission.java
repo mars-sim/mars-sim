@@ -755,7 +755,7 @@ public abstract class Mission implements Serializable {
 
 			LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
 					"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()
-							+ " ended the " + missionName + " mission. Reason : " + reason,
+							+ " ended the " + missionName + " mission. Reason : " + reason + ".",
 					null);
 
 			done = true; // Note: done = true is very important to keep !
@@ -1282,7 +1282,7 @@ public abstract class Mission implements Serializable {
 			
 			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + p.getSettlement().getName() + "] " 
 					+ p.getName() + " (" + p.getRole().getType() 
-					+ ") is requesting approval for " + getDescription(), null);
+					+ ") is requesting approval for " + getDescription() + ".", null);
 
 			 Simulation.instance().getMissionManager().requestMissionApproval(plan);
 		}

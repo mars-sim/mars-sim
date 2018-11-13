@@ -66,9 +66,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 				return 0;
 
 			// Check if it is night time.
-//	        if (surface == null)
 			SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-
 			if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
 				if (!surface.inDarkPolarRegion(person.getCoordinates()))
 					return 0;

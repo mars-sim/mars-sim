@@ -18,54 +18,61 @@ import java.util.Collection;
  */
 public interface Malfunctionable {
 
-    /**
-     * Gets the entity's object.
-     * @return object
-     */
-    public Unit getUnit();
-	
-	
-    /**
-     * Gets the entity's malfunction manager.
-     * @return malfunction manager
-     */
-    public MalfunctionManager getMalfunctionManager();
+	/**
+	 * Gets the entity's object.
+	 * 
+	 * @return object
+	 */
+	public Unit getUnit();
 
-    /**
-     * Gets the name of the malfunctionable entity.
-     * @return name the entity name
+	/**
+	 * Gets the entity's malfunction manager.
+	 * 
+	 * @return malfunction manager
+	 */
+	public MalfunctionManager getMalfunctionManager();
 
-    public String getName();
-     */
-    
-    /**
-     * Gets the unique/nickname of the malfunctionable entity if it's a building.
-     * @return nickname
-     */
-    public String getNickName();
-    
-    /**
-     * Gets a collection of people affected by this entity.
-     * @return person collection
-     */
-    public Collection<Person> getAffectedPeople();
+	/**
+	 * Gets the name of the malfunctionable entity.
+	 * 
+	 * @return name the entity name
+	 * 
+	 *         public String getName();
+	 */
 
-    /**
-     * Gets the inventory associated with this entity.
-     * @return inventory
-     */
-    public Inventory getInventory();
+	/**
+	 * Gets the unique/nickname of the malfunctionable entity if it's a building.
+	 * 
+	 * @return nickname
+	 */
+	public String getNickName();
 
-    /**
-     * Gets the short location name associated with this entity.
-     * @return location
-     */
-    public String getImmediateLocation();
+	/**
+	 * Gets a collection of people affected by this entity.
+	 * 
+	 * @return person collection
+	 */
+	public Collection<Person> getAffectedPeople();
 
-    /**
-     * Gets the long location name associated with this entity.
-     * @return location
-     */
-    public String getLocale();
+	/**
+	 * Gets the inventory associated with this entity.
+	 * 
+	 * @return inventory
+	 */
+	public Inventory getInventory();
+
+	/**
+	 * Gets the short location name associated with this entity.
+	 * 
+	 * @return location
+	 */
+	public String getImmediateLocation();
+
+	/**
+	 * Gets the long location name associated with this entity.
+	 * 
+	 * @return location
+	 */
+	public String getLocale();
 
 }

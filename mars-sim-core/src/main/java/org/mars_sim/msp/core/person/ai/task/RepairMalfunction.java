@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -183,9 +182,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			if (outsideVehicle && robotNotInVehicle) {
 				result = true;
 			}
-		} else
-
-		if (entity instanceof Building) {
+		} 
+		
+		else if (entity instanceof Building) {
 			// Requires EVA repair on uninhabitable buildings.
 			Building building = (Building) entity;
 			if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {

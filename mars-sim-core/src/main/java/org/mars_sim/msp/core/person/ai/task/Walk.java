@@ -96,11 +96,11 @@ public class Walk extends Task implements Serializable {
 		// Initialize data members.
 		walkingStepIndex = 0;
 
-		if (person.isInSettlement()) {
+		if (person.isInSettlement()) {// || person.isInVehicleInGarage()) {
 
 			// Walk to random inhabitable building at settlement.
-			Building currentBuilding = BuildingManager.getBuilding(person);
-			List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
+			//Building currentBuilding = BuildingManager.getBuilding(person);
+			List<Building> buildingList = person.getSettlement().getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT);
 			if (buildingList.size() > 0) {
 				int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
 				Building destinationBuilding = buildingList.get(buildingIndex);
@@ -232,7 +232,7 @@ public class Walk extends Task implements Serializable {
 		// Initialize data members.
 		walkingStepIndex = 0;
 
-		if (robot.isInSettlement()) {
+		if (robot.isInSettlement() || robot.isInVehicleInGarage()) {
 
 			// Walk to random building at settlement.
 			Building currentBuilding = BuildingManager.getBuilding(robot);
@@ -885,23 +885,22 @@ public class Walk extends Task implements Serializable {
 				}
 			} else { // this is a high traffic case when a person is in a vehicle
 
-				// logger.info(person + " is " + location.getName());
-				if (person.isInSettlement() || person.isInVehicleInGarage()) {
-					LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName,
-		      				"[" + person.getLocationTag().getLocale() + "] "
-							+ person + " is in " + person.getLocationTag().getImmediateLocation()
-							+ " but is in walkingRoverInteriorPhase() and NOT in a rover.",
-							null);
-					person.getMind().getTaskManager().clearTask();
-					person.getMind().getTaskManager().getNewTask();// .clearTask();
-				}
+//				if (person.isInSettlement() || person.isInVehicleInGarage()) {
+//					LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
+//		      				"[" + person.getLocationTag().getLocale() + "] "
+//							+ person + " is in " + person.getLocationTag().getImmediateLocation()
+//							+ " but is in walkingRoverInteriorPhase() and NOT in a rover.",
+//							null);
+//					person.getMind().getTaskManager().clearTask();
+//					person.getMind().getTaskManager().getNewTask();// .clearTask();
+//				}
 
-				else if (person.isInVehicle() || person.isInVehicleInGarage()) {
+				if (person.isInVehicle() || person.isInVehicleInGarage()) {
 					addSubTask(new WalkRoverInterior(person, step.rover, x, y));
 				}
 
 				else if (person.isOutside()) {
-					LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName,
+					LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] "
 							+ person +  " is in " + person.getLocationTag().getImmediateLocation()
 							+ " and is outside but is in walkingRoverInteriorPhase() and NOT in rover.", null);

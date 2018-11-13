@@ -386,10 +386,13 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
 
 			emergencySettlement.getInventory().storeUnit(getVehicle());
+			// Add vehicle to a garage if available.
+			if (getVehicle().getGarage() == null) {
+				BuildingManager.addToGarage((GroundVehicle) getVehicle(), emergencySettlement);
+			}
+				
 			getVehicle().determinedSettlementParkedLocationAndFacing();
 
-			// Add vehicle to a garage if available.
-			BuildingManager.addToRandomBuilding((GroundVehicle) getVehicle(), emergencySettlement);
 		}
 
 		// Have member exit rover if necessary.

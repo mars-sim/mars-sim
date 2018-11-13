@@ -213,15 +213,14 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	public void update() {
 
 		// Update processes and salvage processes if necessary.
-		List<ManufactureProcess> processes = workshop.getProcesses();
-		List<SalvageProcess> salvages = workshop.getSalvageProcesses();
+		List<ManufactureProcess> processes =  new ArrayList<>(workshop.getProcesses());
+		List<SalvageProcess> salvages = new ArrayList<>(workshop.getSalvageProcesses());
 		if (!processCache.equals(processes) || !salvageCache.equals(salvages)) {
 
 			// Add process panels for new processes.
 			Iterator<ManufactureProcess> i = processes.iterator();
 			while (i.hasNext()) {
-				ManufactureProcess process = i.next(); // Exception in thread "pool-53-thread-1"
-														// java.util.ConcurrentModificationException
+				ManufactureProcess process = i.next(); // java.util.ConcurrentModificationException
 				if (!processCache.contains(process))
 					processListPane.add(new ManufacturePanel(process, false, processStringWidth));
 			}

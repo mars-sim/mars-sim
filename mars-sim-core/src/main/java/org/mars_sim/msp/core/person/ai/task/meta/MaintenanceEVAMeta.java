@@ -65,7 +65,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
         	
         	Settlement settlement = person.getSettlement();
     	
-        	//2016-10-04 Checked for radiation events
+        	// Check for radiation events
         	boolean[] exposed = settlement.getExposed();
 
     		if (exposed[2]) {// SEP can give lethal dose of radiation
@@ -77,9 +77,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
 	    		return 0;
 
             // Check if it is night time.
-            if (surface == null)
-                surface = Simulation.instance().getMars().getSurfaceFeatures();
-
+            surface = Simulation.instance().getMars().getSurfaceFeatures();
             if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
                 if (!surface.inDarkPolarRegion(person.getCoordinates()))
                     return 0;

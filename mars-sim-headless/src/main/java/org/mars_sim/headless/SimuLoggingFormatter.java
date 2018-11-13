@@ -21,6 +21,7 @@ public class SimuLoggingFormatter extends Formatter {
     public final static String C_PAREN = ") ";
     public final static String BRAC_X1 = "[x1] ";
     public final static String C_BRAC = "] ";
+    public final static String O_BRAC_X = "[x";
     public final static String O_BRAC = "[x";
     public final static String PERIOD = ".";
     public final static String COLON = " : ";
@@ -57,6 +58,10 @@ public class SimuLoggingFormatter extends Formatter {
 			
 			if (msg.contains(BRAC_X1)) {
 				msg = msg.substring(msg.indexOf(C_BRAC) + 2, msg.length());
+				sb.append(msg);
+			}
+			
+			else if (msg.contains(O_BRAC_X) && msg.contains(C_BRAC)) {
 				sb.append(msg);
 			}
 			

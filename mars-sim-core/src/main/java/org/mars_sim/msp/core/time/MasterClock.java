@@ -157,7 +157,7 @@ public class MasterClock implements Serializable {
 		if (!isFXGL)
 			clockThreadTask = new ClockThreadTask();
 
-		logger.config("-------------------------------------------");
+		logger.config("   -------------------------------------------");
 		
 		// Setting the initial time ratio.
 		double tr = 0;
@@ -211,10 +211,10 @@ public class MasterClock implements Serializable {
 		setMaxFrameSkips(config.getMaxFrameSkips());
 
 //		logger.config("Based on # CPU cores/threads, the following parameters have been re-adjusted as follows :");
-		logger.config("    Adjusted Time Ratio (TR) : " + (int) adjustedTR + "x");
-		logger.config("  Time between Updates (TBU) : " + Math.round(adjustedTBU_ms * 100D) / 100D + " ms");
-		logger.config("      Ticks Per Second (TPS) : " + Math.round(adjustedFPS * 100D) / 100D + " Hz");
-		logger.config("-------------------------------------------");
+		logger.config("       Adjusted Time Ratio (TR) : " + (int) adjustedTR + "x");
+		logger.config("     Time between Updates (TBU) : " + Math.round(adjustedTBU_ms * 100D) / 100D + " ms");
+		logger.config("         Ticks Per Second (TPS) : " + Math.round(adjustedFPS * 100D) / 100D + " Hz");
+		logger.config("   -------------------------------------------");
 //		logger.config(" - - - Welcome to Mars - - -");
 	}
 
