@@ -11,9 +11,9 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
 
-
-/** The Landmark class represents a surface landmark on virtual Mars.
- *  It contains information related to the landmark.
+/**
+ * The Landmark class represents a surface landmark on virtual Mars. It contains
+ * information related to the landmark.
  */
 public class Landmark implements Serializable {
 
@@ -32,100 +32,109 @@ public class Landmark implements Serializable {
 	/** Type of feature, e.g. Mons (MO). */
 	private String landmarkType;
 
-	
-	
-	
-    /** Constructs a landmark object with the given name at the given location.
-     *  @param name name of the landmark
-     *  @param location location of the landmark
-     */
-    public Landmark(String name, Coordinates location, int diameter, String origin, String type) {
+	/**
+	 * Constructs a landmark object with the given name at the given location.
+	 * 
+	 * @param name     name of the landmark
+	 * @param location location of the landmark
+	 */
+	public Landmark(String name, Coordinates location, int diameter, String origin, String type) {
 
-        this.landmarkName = name;
-        this.landmarkLocation = location;
-        this.landmarkDiameter = diameter;
-        this.landmarkOrigin = origin;
-        this.landmarkType = type;
+		this.landmarkName = name;
+		this.landmarkLocation = location;
+		this.landmarkDiameter = diameter;
+		this.landmarkOrigin = origin;
+		this.landmarkType = type;
 
-    }
+	}
 
-    /**
-     *  Sets the landmark name.
-     *  @param landmarkName name of the landmark
-     */
-    public void setLandmarkName(String landmarkName) {
-        this.landmarkName = landmarkName;
-    }
+	/**
+	 * Sets the landmark name.
+	 * 
+	 * @param landmarkName name of the landmark
+	 */
+	public void setLandmarkName(String landmarkName) {
+		this.landmarkName = landmarkName;
+	}
 
-    /**
-     *  Sets the landmark location.
-     *  @param landmarkLocation location of the landmark
-     */
-    public void setLandmarkLocation(Coordinates landmarkLocation) {
-        this.landmarkLocation = landmarkLocation;
-    }
+	/**
+	 * Sets the landmark location.
+	 * 
+	 * @param landmarkLocation location of the landmark
+	 */
+	public void setLandmarkLocation(Coordinates landmarkLocation) {
+		this.landmarkLocation = landmarkLocation;
+	}
 
-    /**
-     *  Sets the landmark diameter.
-     *  @param landmarkLocation diameter of the landmark
-     */
-    public void setLandmarkDiameter(int diameter) {
-        this.landmarkDiameter = diameter;
-    }
-    
-    /**
-     *  Sets the origin.
-     *  @param origin origin of feature name
-     */
-    public void setLandmarkDiameter(String origin) {
-        this.landmarkOrigin = origin;
-    }
-    
-    /**
-     *  Sets the type.
-     *  @param type type of feature 
-     */
-    public void setLandmarkType(String type) {
-        this.landmarkType = type;
-    }
-       
-    /**
-     *  Gets the landmark name.
-     *  @return name of the landmark
-     */
-    public String getLandmarkName() {
-        return landmarkName;
-    }
+	/**
+	 * Sets the landmark diameter.
+	 * 
+	 * @param landmarkLocation diameter of the landmark
+	 */
+	public void setLandmarkDiameter(int diameter) {
+		this.landmarkDiameter = diameter;
+	}
 
-    /**
-     *  Gets the landmark location.
-     *  @return location of the landmark
-     */
-    public Coordinates getLandmarkLocation() {
-        return landmarkLocation;
-    }
+	/**
+	 * Sets the origin.
+	 * 
+	 * @param origin origin of feature name
+	 */
+	public void setLandmarkDiameter(String origin) {
+		this.landmarkOrigin = origin;
+	}
 
-    /**
-     *  Gets the landmark diameter.
-     *  @return location of the landmark
-     */
-    public int getLandmarkDiameter() {
-        return landmarkDiameter;
-    }
-    
-    /**
-     *  Gets the origin.
-     *  @return origin of the landmark name
-     */
-    public String getLandmarkOrigin() {
-        return landmarkOrigin;
-    }
-    
-    /**
-     *  Gets the type.
-     *  @return type of the landmark
-     */
-    public String getLandmarkType() {
-        return landmarkType;
-    }
+	/**
+	 * Sets the type.
+	 * 
+	 * @param type type of feature
+	 */
+	public void setLandmarkType(String type) {
+		this.landmarkType = type;
+	}
+
+	/**
+	 * Gets the landmark name.
+	 * 
+	 * @return name of the landmark
+	 */
+	public String getLandmarkName() {
+		return landmarkName;
+	}
+
+	/**
+	 * Gets the landmark location.
+	 * 
+	 * @return location of the landmark
+	 */
+	public Coordinates getLandmarkLocation() {
+		return landmarkLocation;
+	}
+
+	/**
+	 * Gets the landmark diameter.
+	 * 
+	 * @return location of the landmark
+	 */
+	public int getLandmarkDiameter() {
+		return landmarkDiameter;
+	}
+
+	/**
+	 * Gets the origin.
+	 * 
+	 * @return origin of the landmark name
+	 */
+	public String getLandmarkOrigin() {
+		return landmarkOrigin;
+	}
+
+	/**
+	 * Gets the type.
+	 * 
+	 * @return type of the landmark
+	 */
+	public String getLandmarkType() {
+		return landmarkType;
+	}
 }

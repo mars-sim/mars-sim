@@ -12,9 +12,8 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import com.google.inject.ImplementedBy;
 
 @ImplementedBy(MeteoriteImpactImpl.class)
-public interface MeteoriteImpact  {
+public interface MeteoriteImpact {
 
 	void calculateMeteoriteProbability(BuildingManager buildingManager);
 
 }
-

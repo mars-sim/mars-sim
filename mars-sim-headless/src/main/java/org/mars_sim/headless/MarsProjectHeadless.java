@@ -59,12 +59,19 @@ public class MarsProjectHeadless {
 			// new Simulation(); // NOTE: NOT supposed to start another instance of the
 			// singleton Simulation
 			logger.config("Starting " + Simulation.title);
+			
+			// Decompress map dat files
+			//decompressMaps();
+			
 			// Initialize the simulation.
 			initializeSimulation(args);
 
 		}
 	}
 
+//	public void decompressMaps() {		
+//	}
+	
 	/**
 	 * 	Initialize interactive terminal and load menu
 	 */

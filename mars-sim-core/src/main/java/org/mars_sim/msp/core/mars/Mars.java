@@ -11,8 +11,7 @@ import java.io.Serializable;
 /**
  * Mars represents the planet Mars in the simulation.
  */
-public class Mars
-implements Serializable {
+public class Mars implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -32,10 +31,12 @@ implements Serializable {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @throws Exception if Mars could not be constructed.
 	 */
 	public Mars() {
-		//logger.info("Mars' constructor is in "+Thread.currentThread().getName() + " Thread");
+		// logger.info("Mars' constructor is in "+Thread.currentThread().getName() + "
+		// Thread");
 		// Initialize surface features
 		surfaceFeatures = new SurfaceFeatures();
 		// Initialize orbit info
@@ -44,11 +45,9 @@ implements Serializable {
 		weather = new Weather();
 	}
 
-	// 2015-02-04 Added run()
-	//public void run() {}
-
 	/**
 	 * Initialize transient data in the simulation.
+	 * 
 	 * @throws Exception if transient data could not be constructed.
 	 */
 	public void initializeTransientData() {
@@ -58,6 +57,7 @@ implements Serializable {
 
 	/**
 	 * Returns the orbital information
+	 * 
 	 * @return orbital information
 	 */
 	public OrbitInfo getOrbitInfo() {
@@ -66,6 +66,7 @@ implements Serializable {
 
 	/**
 	 * Returns surface features
+	 * 
 	 * @return surfaces features
 	 */
 	public SurfaceFeatures getSurfaceFeatures() {
@@ -74,6 +75,7 @@ implements Serializable {
 
 	/**
 	 * Returns Martian weather
+	 * 
 	 * @return weather
 	 */
 	public Weather getWeather() {
@@ -82,6 +84,7 @@ implements Serializable {
 
 	/**
 	 * Time passing in the simulation.
+	 * 
 	 * @param time time in millisols
 	 * @throws Exception if error during time.
 	 */
@@ -95,8 +98,8 @@ implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		surfaceFeatures = null;//.destroy();
-		orbitInfo = null;//.destroy();
-		weather = null;//.destroy();
+		surfaceFeatures = null;// .destroy();
+		orbitInfo = null;// .destroy();
+		weather = null;// .destroy();
 	}
 }

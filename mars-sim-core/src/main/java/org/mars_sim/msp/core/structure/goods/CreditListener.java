@@ -15,6 +15,7 @@ public interface CreditListener {
 
 	/**
 	 * Catch credit update event.
+	 * 
 	 * @param event the credit event.
 	 */
 	public void creditUpdate(CreditEvent event);

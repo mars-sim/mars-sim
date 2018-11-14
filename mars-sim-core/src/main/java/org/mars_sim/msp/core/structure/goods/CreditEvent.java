@@ -39,9 +39,10 @@ public class CreditEvent extends EventObject implements Serializable {
 		this.settlement2 = settlement2;
 		this.credit = credit;
 	}
-	
+
 	/**
 	 * Gets the first settlement.
+	 * 
 	 * @return settlement.
 	 */
 	public Settlement getSettlement1() {

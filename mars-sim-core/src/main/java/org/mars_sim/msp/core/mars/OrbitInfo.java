@@ -147,7 +147,7 @@ public class OrbitInfo implements Serializable {
 		// Compute the initial L_s and initial r based on the earth start date/time in
 		// simulation.xml
 		EarthClock c = new EarthClock(SimulationConfig.instance().getEarthStartDateTime());
-		
+
 		instantaneousSunMarsDistance = ClockUtils.getHeliocentricDistance(c);
 		// instantaneousSunMarsDistance = SUN_MARS_DIST_AT_START;
 		L_s = ClockUtils.getLs(c) % 360;
@@ -352,14 +352,14 @@ public class OrbitInfo implements Serializable {
 		return theta;
 	}
 
-	/**
-	 * Returns the radius of Mars's orbit in A.U.
-	 * 
-	 * @return the radius of Mars's orbit
-	 */
-	// public double getRadius() {
-	// return instantaneousSunMarsDistance;
-	// }
+//	/**
+//	 * Returns the radius of Mars's orbit in A.U.
+//	 * 
+//	 * @return the radius of Mars's orbit
+//	 */
+//	 public double getRadius() {
+//	 return instantaneousSunMarsDistance;
+//	 }
 
 	/**
 	 * Gets the current distance to the Sun.

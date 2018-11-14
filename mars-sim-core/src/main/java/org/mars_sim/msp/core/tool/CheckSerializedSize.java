@@ -19,7 +19,7 @@ public class CheckSerializedSize extends OutputStream {
             return counter.getNBytes();
         } catch (Exception e) {
             // Serialization failed
-            return -1;
+            return 0;
         }
     }
 

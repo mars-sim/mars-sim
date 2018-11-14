@@ -15,8 +15,8 @@ import com.google.inject.Inject;
 
 public class Meteorite implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	private final MeteoriteImpact meteoriteImpact;
 

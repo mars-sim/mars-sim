@@ -2386,6 +2386,21 @@ public class ChatUtils {
 		}
 		
 		else if (text.equalsIgnoreCase("check size")) {			
+
+			int missionSol = marsClock.getMissionSol();
+			String marsTime = marsClock.getDecimalTimeString();
+//			int num = 20 - s0.length();
+//			for (int i=0; i<num; i++) {
+//				responseText.append(" ");
+//			}
+			responseText.append("  Core Engine : r" + Simulation.BUILD);
+			responseText.append(System.lineSeparator());
+			responseText.append("   # Settlers : " + sim.getUnitManager().getTotalNumPeople());
+			responseText.append(System.lineSeparator());
+			responseText.append("  Mission Sol : " + missionSol);
+			responseText.append(System.lineSeparator());
+			responseText.append(" Martian Time : " + marsTime) ;
+			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			responseText.append(Simulation.instance().printObjectSize());
 			

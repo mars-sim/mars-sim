@@ -27,8 +27,7 @@ import org.mars_sim.msp.core.Coordinates;
 /**
  * A map of areothermal power generation potential on the Martian surface.
  */
-public class AreothermalMap
-implements Serializable {
+public class AreothermalMap implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -65,7 +64,7 @@ implements Serializable {
 		try {
 			grabber.grabPixels();
 		} catch (InterruptedException e) {
-			logger.log(Level.SEVERE,"grabber error" + e);
+			logger.log(Level.SEVERE, "grabber error" + e);
 		}
 		if ((grabber.status() & ImageObserver.ABORT) != 0)
 			logger.info("grabber error");
@@ -78,7 +77,8 @@ implements Serializable {
 					double pixel_offset = (Math.PI / 150D) / 2D;
 					double phi = (((double) x / 150D) * Math.PI) + pixel_offset;
 					double theta = (((double) y / 150D) * Math.PI) + Math.PI + pixel_offset;
-					if (theta > (2D * Math.PI)) theta -= (2D * Math.PI);
+					if (theta > (2D * Math.PI))
+						theta -= (2D * Math.PI);
 					hotspots.add(new Coordinates(phi, theta));
 				}
 			}
@@ -87,6 +87,7 @@ implements Serializable {
 
 	/**
 	 * Gets the areothermal heat potential for a given location.
+	 * 
 	 * @param location the coordinate location.
 	 * @return areothermal heat potential as percentage (0% - low, 100% - high).
 	 */
@@ -94,17 +95,17 @@ implements Serializable {
 		double result = 0D;
 
 		// Load hotspots if not loaded already.
-		if (hotspots == null) loadHotspots();
+		if (hotspots == null)
+			loadHotspots();
 
 		// Initialize areothermal potential cache.
-		if (areothermalPotentialCache == null) 
+		if (areothermalPotentialCache == null)
 			areothermalPotentialCache = new HashMap<Coordinates, Double>();
 
 		// Check if location's areothermal potential has been cached.
 		if (areothermalPotentialCache.containsKey(location)) {
 			result = areothermalPotentialCache.get(location);
-		}
-		else {
+		} else {
 			// Add heat contribution from each hot spot.
 			Iterator<Coordinates> i = hotspots.iterator();
 			while (i.hasNext()) {
@@ -117,13 +118,16 @@ implements Serializable {
 				double T = pixelRadius; // max distance - mid distance.
 				double expo = (distance - pixelRadius) / T;
 				double heat = 100D - (a * Math.pow(b, expo));
-				if (heat < 0D) heat = 0D;
+				if (heat < 0D)
+					heat = 0D;
 				result += heat;
 			}
 
 			// Maximum areothermal potential should be 100%.
-			if (result > 100D) result = 100D;
-			if (result < 0D) result = 0D;
+			if (result > 100D)
+				result = 100D;
+			if (result < 0D)
+				result = 0D;
 
 			// Add location's areothermal potential to cache.
 			areothermalPotentialCache.put(new Coordinates(location), result);
@@ -138,7 +142,7 @@ implements Serializable {
 	public void destroy() {
 		hotspots.clear();
 		hotspots = null;
-		if(areothermalPotentialCache != null){
+		if (areothermalPotentialCache != null) {
 
 			areothermalPotentialCache.clear();
 			areothermalPotentialCache = null;

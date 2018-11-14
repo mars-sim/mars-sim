@@ -2057,7 +2057,7 @@ public class UnitManager implements Serializable {
 	 *
 	 * @return the number of people
 	 */
-	public int getPeopleNum() {
+	public int getTotalNumPeople() {
 		return CollectionUtils.getPerson(units).size();
 	}
 

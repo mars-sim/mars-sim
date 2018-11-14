@@ -970,7 +970,7 @@ public class Simulation implements ClockListener, Serializable {
 				+ System.lineSeparator());
 		sb.append(" ---------------------------------------------------------"
 				+ System.lineSeparator());		
-		int max = 25;
+		int max0 = 25;
 		int max1 = 10;
 		String SPACE = " ";
 		
@@ -979,7 +979,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		for (Serializable o : list) {
 			String name = o.getClass().getSimpleName();
-			int size0 = max - name.length();
+			int size0 = max0 - name.length();
 			for (int i=0; i<size0; i++) {
 				sb.append(SPACE);
 			}
@@ -1034,7 +1034,7 @@ public class Simulation implements ClockListener, Serializable {
 				+ System.lineSeparator());	
 		
 		String name = "Total";
-		int size0 = max - name.length();
+		int size0 = max0 - name.length();
 		for (int i=0; i<size0; i++) {
 			sb.append(SPACE);
 		}

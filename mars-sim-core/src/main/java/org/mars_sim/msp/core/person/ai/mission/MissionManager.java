@@ -43,6 +43,7 @@ public class MissionManager implements Serializable {
 //	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 //			logger.getName().length());
 
+	private static final int MAX_SOLS = 10;
 	private static final double PERCENT_PER_SCORE = 20D;
 	
 	/** Current missions in the simulation. */
@@ -685,6 +686,11 @@ public class MissionManager implements Serializable {
 			List<MissionPlanning> plans = new ArrayList<>();
 			plans.add(plan);
 			historicalMissions.put(mSol, plans);
+			
+			// Keep only the last x # of sols of mission plans
+			if (mSol > MAX_SOLS && historicalMissions.size() > MAX_SOLS) {
+				historicalMissions.get(mSol-MAX_SOLS);
+			}
 		}
 	}
 	
