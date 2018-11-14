@@ -747,7 +747,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 
 	/**
-	 * Gets a collection of vehicles parked at the settlement.
+	 * Gets a collection of vehicles parked or garaged at the settlement.
 	 *
 	 * @return Collection of parked vehicles
 	 */
@@ -756,7 +756,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 
 	/**
-	 * Gets the number of vehicles parked at the settlement.
+	 * Gets the number of vehicles parked or garaged at the settlement.
 	 * 
 	 * @return parked vehicles number
 	 */

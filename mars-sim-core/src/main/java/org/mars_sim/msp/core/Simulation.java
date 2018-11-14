@@ -649,7 +649,7 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public synchronized void saveSimulation(int type, File file) throws IOException {
 //        logger.config("Simulation's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
-		logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
+//		logger.config(Msg.getString("Simulation.log.saveSimTo") + " " + file); //$NON-NLS-1$
 
 		// Check if it was previously on pause
 //		boolean previous = masterClock.isPaused();
@@ -684,7 +684,7 @@ public class Simulation implements ClockListener, Serializable {
 				Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
 			}
 
-			logger.config("Saving as " + DEFAULT_FILE + DEFAULT_EXTENSION + ".");
+			logger.config("Saving the simulation as " + DEFAULT_FILE + DEFAULT_EXTENSION + ".");
 
 		}
 
@@ -693,7 +693,7 @@ public class Simulation implements ClockListener, Serializable {
 			String dir = file.getParentFile().getAbsolutePath();
 			if (!f.contains(".sim"))
 				file = new File(dir, f + DEFAULT_EXTENSION);
-			logger.config("Saving as " + file + "...");
+			logger.config("Saving the simulation as " + file + "...");
 		}
 
 		else if (type == AUTOSAVE_AS_DEFAULT) {
@@ -711,7 +711,7 @@ public class Simulation implements ClockListener, Serializable {
 				Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
 			}
 
-			logger.config("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION + ".");
+			logger.config("Autosaving the simulation as " + DEFAULT_FILE + DEFAULT_EXTENSION + ".");
 
 		}
 
@@ -719,7 +719,7 @@ public class Simulation implements ClockListener, Serializable {
 			String autosaveFilename = lastSaveTimeStamp + "_Sol" + missionSol + "_r" + BUILD
 					+ DEFAULT_EXTENSION;
 			file = new File(AUTOSAVE_DIR, autosaveFilename);
-			logger.config("Autosaving as " + autosaveFilename + "...");
+			logger.config("Autosaving the simulation as " + autosaveFilename + "...");
 
 		}
 

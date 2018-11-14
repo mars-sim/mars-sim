@@ -117,7 +117,7 @@ public class ChatUtils {
 	
 	public final static String[] SYSTEM_KEYS = new String[] {
 			"settlement", "check size", 
-			"log all", "log fine", "log info", "log severe", "log finer", "log finest", "log warning", "log config",
+			"log", "log all", "log fine", "log info", "log severe", "log finer", "log finest", "log warning", "log config",
 			"vehicle", "rover", 
 			"hi", "hello", "hey"
 	};
@@ -151,9 +151,10 @@ public class ChatUtils {
 
 	public final static String KEYWORDS_HEIGHT = HELP_HEIGHT; //"(8) '/y1' to reset height to 256 pixels (by default) after closing chat box. '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels" + System.lineSeparator();
 
+	public final static String DASHES_0 = " ----------------------------------------------------";
 	public final static String DASHES = " ----------------------------------------- ";
-
 	public final static String DASHES_1 = "----------";
+	public final static String ONE_SPACE = " ";
 
 	public static String helpText;
 
@@ -1109,81 +1110,170 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			
 			Collection<Vehicle> list = settlementCache.getAllAssociatedVehicles();
-			
-			responseText.append(DASHES);
-			responseText.append(System.lineSeparator());
-			int num = (DASHES.length() - settlementCache.getName().length())/2;
-			if (num > 0) {
-				for (int i=0; i<num; i++) {
-					responseText.append(" ");
-				}
-			}
-			
-			responseText.append(settlementCache.getName());
-			responseText.append(System.lineSeparator());
-			responseText.append(DASHES);
-			responseText.append(System.lineSeparator());
-				
-			responseText.append("(1).  Grand Total : ");
-			responseText.append(settlementCache.getAllAssociatedVehicles().size());
-			responseText.append(System.lineSeparator());
-			responseText.append("(2).  # on Mission : ");
-			responseText.append(settlementCache.getMissionVehicles().size());
-			responseText.append(System.lineSeparator());
-			responseText.append("(2a). # of Cargo Rovers on Mission : ");
-			responseText.append(settlementCache.getCargoRovers(2).size());
-			responseText.append(System.lineSeparator());
-			responseText.append("(2b). # of Transport Rovers on Mission : ");
-			responseText.append(settlementCache.getTransportRovers(2).size());
-			responseText.append(System.lineSeparator());
-			responseText.append("(2c). # of Explorer Rovers on Mission : ");
-			responseText.append(settlementCache.getExplorerRovers(2).size());
-			responseText.append(System.lineSeparator());
-			responseText.append("(2d). # of Light Utility Vehicles (LUVs) on Mission : ");
-			responseText.append(settlementCache.getLUVs(2).size());
-			responseText.append(System.lineSeparator());
-			
-			responseText.append("(3).  # NOT on mission : ");
-			responseText.append(settlementCache.getParkedVehicleNum());
-			responseText.append(System.lineSeparator());
-			responseText.append("(3a). # of Parked Cargo Rovers : ");
-			responseText.append(settlementCache.getCargoRovers(1).size());
-			responseText.append(System.lineSeparator());
-			responseText.append("(3b). # of Parked Transport Rovers : ");
-			responseText.append(settlementCache.getTransportRovers(1).size());
-			responseText.append(System.lineSeparator());
-			responseText.append("(3c). # of Parked Explorer Rovers : ");
-			responseText.append(settlementCache.getExplorerRovers(1).size());
-			responseText.append(System.lineSeparator());
-			responseText.append("(3d). # of Parked Light Utility Vehicles (LUVs) : ");
-			responseText.append(settlementCache.getLUVs(1).size());
-			responseText.append(System.lineSeparator());
-			
-			responseText.append(System.lineSeparator());
-			responseText.append("      ----------------------------");
-			responseText.append(System.lineSeparator());
-			responseText.append("           I n v e n t o r y");
-			responseText.append(System.lineSeparator());
-			responseText.append("      ----------------------------");
-			responseText.append(System.lineSeparator());
-			
+					
+			// Sort the vehicle list according to the type
 			List<Vehicle> vlist = list.stream()
 					.sorted((p1, p2)-> p1.getVehicleType().compareTo(p2.getVehicleType()))
 					.collect(Collectors.toList());
 			
+			int SPACING = 20;
+			// Print the heading of each column
+			String nameStr = "   < Name >";
+			responseText.append(nameStr);
+			// Add spaces
+			int num0 = SPACING - nameStr.length() - 2;
+			for (int i=0; i<num0; i++) {
+				responseText.append(ONE_SPACE);
+			}
+			
+			String typeStr = "   < Type >";
+			responseText.append(typeStr);
+			// Add spaces
+			int num00 = SPACING - typeStr.length();
+			for (int i=0; i<num00; i++) {
+				responseText.append(ONE_SPACE);
+			}
+			
+			String missionStr = "   < Mission >";
+			responseText.append(missionStr);
+			// Add spaces
+			int num000 = SPACING - missionStr.length() + 2;
+			for (int i=0; i<num000; i++) {
+				responseText.append(ONE_SPACE);
+			}
+			
+			String personStr = "   < Lead >";
+			responseText.append(personStr);
+			
+			
+			responseText.append(System.lineSeparator());
+			responseText.append("  ------------------------------------------------------------------------");
+			responseText.append(System.lineSeparator());
+			
 			for (Vehicle v : vlist) {
-				responseText.append(v.getName());
-				int num2 = 25 - v.getName().length();
+				// Print vehicle name
+				responseText.append("  " + v.getName());
+				int num2 = SPACING - v.getName().length() - 2;
 				if (num2 > 0) {
 					for (int i=0; i<num2; i++) {
-						responseText.append(" ");
+						responseText.append(ONE_SPACE);
 					}
 				}
-				responseText.append(v.getVehicleType());
+				
+				String vTypeStr = v.getVehicleType();
+				if (vTypeStr.equalsIgnoreCase("Light Utility Vehicle"))
+					vTypeStr = "LUV";
+				
+				responseText.append(vTypeStr);
+				
+				// Print vehicle type
+				int num3 = SPACING - vTypeStr.length();
+				if (num3 > 0) {
+					for (int i=0; i<num3; i++) {
+						responseText.append(ONE_SPACE);
+					}
+				}
+				
+				// Print mission name
+				String missionName = " ";
+				Mission mission = null;
+				List<Mission> missions = Simulation.instance().getMissionManager().getMissions();
+				for (Mission m : missions) {
+					if (m instanceof VehicleMission) {
+						Vehicle vv = ((VehicleMission)m).getVehicle(); 
+						if (vv.getName().equals(v.getName())) {
+							mission = m;
+							missionName = m.getDescription();
+						}
+					}
+				}
+				responseText.append(missionName);
+					
+				// Print the starting member
+				int num4 = SPACING - missionName.length() + 2;
+				if (num4 > 0) {
+					for (int i=0; i<num4; i++) {
+						responseText.append(ONE_SPACE);
+					}
+				}
+				
+				String personName = " ";
+				
+				if (!missionName.equalsIgnoreCase(" "))
+					personName = mission.getStartingMember().getName();
+			
+				responseText.append(personName);
+				
 				responseText.append(System.lineSeparator());
 			}
-		
+			
+			
+//			responseText.append(DASHES_0);
 			responseText.append(System.lineSeparator());
+			// Center the name of the settlement
+//			int num = (DASHES_0.length() - settlementCache.getName().length())/2;
+//			if (num > 0) {
+//				for (int i=0; i<num; i++) {
+//					responseText.append(" ");
+//				}
+//			}
+			
+//			responseText.append(settlementCache.getName());
+//			responseText.append(System.lineSeparator());
+			responseText.append(DASHES_0);	
+			responseText.append(System.lineSeparator());
+			responseText.append("                             Total # of Rovers : ");
+			responseText.append(settlementCache.getAllAssociatedVehicles().size());
+			responseText.append(System.lineSeparator());			
+			responseText.append(DASHES_0);
+			responseText.append(System.lineSeparator());
+			responseText.append("                  # of Cargo Rovers on Mission : ");
+			responseText.append(settlementCache.getCargoRovers(2).size());
+			responseText.append(System.lineSeparator());
+			responseText.append("              # of Transport Rovers on Mission : ");
+			responseText.append(settlementCache.getTransportRovers(2).size());
+			responseText.append(System.lineSeparator());
+			responseText.append("               # of Explorer Rovers on Mission : ");
+			responseText.append(settlementCache.getExplorerRovers(2).size());
+			responseText.append(System.lineSeparator());
+			responseText.append(" # of Light Utility Vehicles (LUVs) on Mission : ");
+			responseText.append(settlementCache.getLUVs(2).size());
+			responseText.append(System.lineSeparator());
+			responseText.append(DASHES_0);
+			responseText.append(System.lineSeparator());
+			responseText.append("                        # of Rovers on Mission : ");
+			responseText.append(settlementCache.getMissionVehicles().size());
+			responseText.append(System.lineSeparator());
+			responseText.append(DASHES_0);
+			responseText.append(System.lineSeparator());
+
+			responseText.append("              # of Parked/Garaged Cargo Rovers : ");
+			responseText.append(settlementCache.getCargoRovers(1).size());
+			responseText.append(System.lineSeparator());
+			responseText.append("          # of Parked/Garaged Transport Rovers : ");
+			responseText.append(settlementCache.getTransportRovers(1).size());
+			responseText.append(System.lineSeparator());
+			responseText.append("           # of Parked/Garaged Explorer Rovers : ");
+			responseText.append(settlementCache.getExplorerRovers(1).size());
+			responseText.append(System.lineSeparator());
+			responseText.append("                      # of Parked/Garaged LUVs : ");
+			responseText.append(settlementCache.getLUVs(1).size());
+			responseText.append(System.lineSeparator());
+			responseText.append(DASHES_0);
+			responseText.append(System.lineSeparator());
+			responseText.append("                    # of Rovers NOT on mission : ");
+			responseText.append(settlementCache.getParkedVehicleNum());
+			responseText.append(System.lineSeparator());
+			
+			responseText.append(System.lineSeparator());
+//			responseText.append("      ----------------------------");
+			responseText.append(System.lineSeparator());
+//			responseText.append("  Inventory");
+//			responseText.append(System.lineSeparator());
+//			responseText.append("  ------------------------------------");
+			responseText.append(System.lineSeparator());
+		
+//			responseText.append(System.lineSeparator());
 		}
 
 		else if (text.equalsIgnoreCase("bot") || text.equalsIgnoreCase("bots") 

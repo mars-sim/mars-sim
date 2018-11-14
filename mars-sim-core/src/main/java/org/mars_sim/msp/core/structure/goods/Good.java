@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.structure.goods;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.equipment.Equipment;
-
 /**
  * A meta class describing an economic good in the simulation.
  */
