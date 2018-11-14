@@ -447,7 +447,7 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 		} 
 		
 		else if (DISEMBARKING.equals(getPhase()))
-			endMission(SUCCESSFULLY_DISEMBARKED);
+			endMission(ALL_DISEMBARKED);
 	}
 
 	@Override

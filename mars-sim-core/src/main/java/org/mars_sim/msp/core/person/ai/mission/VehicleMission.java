@@ -425,7 +425,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			}
 		}
 
-		else if (reason.equals(Mission.SUCCESSFULLY_DISEMBARKED)) {
+		else if (reason.equals(Mission.ALL_DISEMBARKED)) {
 			// logger.info("Returning the control of " + vehicle + " to the settlement");
 			setPhaseEnded(true);
 			// leaveVehicle();
@@ -544,7 +544,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		} 
 		
 		else if (DISEMBARKING.equals(getPhase())) {
-			endMission(SUCCESSFULLY_DISEMBARKED);
+			endMission(ALL_DISEMBARKED);
 		}
 	}
 
@@ -1134,6 +1134,19 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 	}
 
+	/**
+	 * Gets the starting travelled distance.
+	 * 
+	 * @return distance (km)
+	 */
+	public final double getStartingTravelledDistance() {
+		if (vehicle != null) {
+			return startingTravelledDistance;
+		} else {
+			return 0D;
+		}
+	}
+	
 	/**
 	 * Time passing for mission.
 	 * 

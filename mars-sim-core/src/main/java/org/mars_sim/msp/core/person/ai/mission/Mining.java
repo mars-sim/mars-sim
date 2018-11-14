@@ -324,7 +324,7 @@ public class Mining extends RoverMission {
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
 		} else if (DISEMBARKING.equals(getPhase())) {
-			endMission(SUCCESSFULLY_DISEMBARKED);
+			endMission(ALL_DISEMBARKED);
 		}
 	}
 

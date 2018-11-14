@@ -706,7 +706,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			setPhaseDescription(Msg.getString("Mission.phase.construction.description" //$NON-NLS-1$
 					, stage.getInfo().getName()));
 		} else if (CONSTRUCTION_PHASE.equals(getPhase())) {
-			endMission(SUCCESSFULLY_ENDED_CONSTRUCTION);
+			endMission(CONSTRUCTION_ENDED);
 		}
 	}
 

@@ -614,6 +614,25 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 
 	/**
+	 * Gets a collection of people who are doing EVA outside the settlement.
+	 * 
+	 * @return Collection of people
+	 */
+	public Collection<Person> getOnMissionPeople() {
+			
+		return allAssociatedPeople.stream()
+				.filter(p -> p.getMind().getMission() != null
+					&& !p.getMind().getMission().getPhase().equals(VehicleMission.APPROVAL)
+//					&& p.isInVehicle() && !p.isInVehicleInGarage()
+//					&& p.getAssociatedVehicle() != null 	
+//				p.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY
+//						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS
+						)
+				.collect(Collectors.toList());
+
+	}
+	
+	/**
 	 * Gets the number of people currently doing EVA outside the settlement
 	 * 
 	 * @return the available population capacity

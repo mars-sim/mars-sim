@@ -360,7 +360,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		}
 
 		else if (DISEMBARKING.equals(getPhase()))
-			endMission(SUCCESSFULLY_DISEMBARKED);
+			endMission(ALL_DISEMBARKED);
 	}
 
 	@Override

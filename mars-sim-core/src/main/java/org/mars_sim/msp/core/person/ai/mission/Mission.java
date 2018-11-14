@@ -52,8 +52,8 @@ public abstract class Mission implements Serializable {
 
 	protected static final int MAX_AMOUNT_RESOURCE = ResourceUtil.FIRST_ITEM_RESOURCE;
 
-	public static final String SUCCESSFULLY_ENDED_CONSTRUCTION = "Construction ended.";
-	public static final String SUCCESSFULLY_DISEMBARKED = "All members disembarked.";
+	public static final String CONSTRUCTION_ENDED = "Construction ended.";
+	public static final String ALL_DISEMBARKED = "All members disembarked.";
 	public static final String USER_ABORTED_MISSION = "Mission aborted by user.";
 	public static final String UNREPAIRABLE_MALFUNCTION = "Unrepairable malfunction.";
 	public static final String NO_RESERVABLE_VEHICLES = "No reservable vehicles.";
@@ -707,7 +707,7 @@ public abstract class Mission implements Serializable {
 	 * @param reason
 	 */
 	public void addMissionScore(String reason) {
-		if (reason.equals(SUCCESSFULLY_DISEMBARKED)) {
+		if (reason.equals(ALL_DISEMBARKED)) {
 			for (MissionMember member : members) {
 				if (member instanceof Person) {
 					Person person = (Person) member;

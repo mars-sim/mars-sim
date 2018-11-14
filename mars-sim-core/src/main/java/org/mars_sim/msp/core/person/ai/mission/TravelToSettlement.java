@@ -199,7 +199,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		} 
 		
 		else if (DISEMBARKING.equals(getPhase()))
-			endMission(SUCCESSFULLY_DISEMBARKED);
+			endMission(ALL_DISEMBARKED);
 	}
 
 	/**

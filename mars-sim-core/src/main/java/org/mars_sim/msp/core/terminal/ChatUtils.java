@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
@@ -638,7 +639,7 @@ public class ChatUtils {
 
 		else if (text.toLowerCase().contains("mission") || text.toLowerCase().contains("trip")
 				|| text.toLowerCase().contains("excursion")) {
-			questionText = YOU_PROMPT + "What missions are on-going at this moment? ";
+			questionText = YOU_PROMPT + "Are there any on-going missions at this moment? ";
 //			responseText.append(settlementCache + " : ");
 //			responseText.append("Here's the mission roster.");
 //			responseText.append(System.lineSeparator());
@@ -647,27 +648,18 @@ public class ChatUtils {
 			
 			if (missions.isEmpty()) {
 				responseText.append(settlementCache + " : ");
-				responseText.append("can't find any missions right now.");
-				responseText.append(System.lineSeparator());
-				responseText.append(System.lineSeparator());
-
-//				responseText.append(" ");
-//				int num = 6;
-//				if (num > 0) {
-//					for (int i=0; i<num; i++) {
-//						responseText.append("-");
-//					}
-//				}
-//				responseText.append(System.lineSeparator());
+				responseText.append("no on-going missions right now.");
 			}
 			
 			else {
 				responseText.append(settlementCache + " : ");
-				responseText.append("Here's the mission roster.");
+				responseText.append("here's the mission roster.");
 				responseText.append(System.lineSeparator());
-				responseText.append(System.lineSeparator());
+//				responseText.append(System.lineSeparator());
 
-				for (Mission mission : missions) {
+				for (int i=0; i<missions.size(); i++) {
+					Mission mission = missions.get(i);
+					int num = mission.getName().length() + 17;
 					
 					Collection<MissionMember> members = mission.getMembers();
 					//Collections.sort(members);
@@ -675,17 +667,55 @@ public class ChatUtils {
 					Person startingPerson = mission.getStartingMember();
 					members.remove(startingPerson);
 					
+					
 					List<MissionMember> plist = new ArrayList<>(members);			
 					
+					double dist = 0;
+					double trav = 0;
+					Vehicle v = null;
+					
+					if (mission instanceof VehicleMission) {
+						v = ((VehicleMission) mission).getVehicle();
+						dist = Math.round(((VehicleMission)mission).getTotalDistance()*10.0)/10.0;//.getStartingTravelledDistance(); // getTotalDistance();//.
+						trav = Math.round(((VehicleMission)mission).getTotalDistanceTravelled()*10.0)/10.0;
+					}
+									
 					if (mission != null) {
+//						responseText.append(System.lineSeparator());
+//						responseText.append(" ");
+//						if (num > 0) {
+//							for (int j=0; j<num; j++) {
+//								responseText.append("-");
+//							}
+//						}
 						responseText.append(System.lineSeparator());
-						responseText.append(" ");			
-						responseText.append(mission);
+						responseText.append(" (" + (i+1) + "). " + mission.getName());
+//						responseText.append("      Mission : " + mission.getName());
 						responseText.append(System.lineSeparator());
 						responseText.append(" ");
-						int num = mission.getName().length() + 2;
 						if (num > 0) {
-							for (int i=0; i<num; i++) {
+							for (int j=0; j<num; j++) {
+								responseText.append("-");
+							}
+						}
+						responseText.append(System.lineSeparator());
+						
+						if (v != null) {
+						responseText.append("     Vehicle : " + v.getName());
+						responseText.append(System.lineSeparator());
+						responseText.append("        Type : " + v.getVehicleType());
+						responseText.append(System.lineSeparator());
+						responseText.append("  Est. Dist. : " + dist + " km");
+						responseText.append(System.lineSeparator());
+						responseText.append("   Travelled : " + trav + " km");
+						responseText.append(System.lineSeparator());
+						}
+						responseText.append("       Phase : " + mission.getPhaseDescription());
+						responseText.append(System.lineSeparator());
+						
+						responseText.append(" ");
+						if (num > 0) {
+							for (int j=0; j<num; j++) {
 								responseText.append("-");
 							}
 						}
@@ -704,8 +734,18 @@ public class ChatUtils {
 							responseText.append("  -  ");
 							responseText.append(p.getName());
 							responseText.append(System.lineSeparator());
+							responseText.append(System.lineSeparator());
 //						}
-					}			
+					}		
+					
+//					responseText.append(" ");
+//					if (num > 0) {
+//						for (int j=0; j<num; j++) {
+//							responseText.append("-");
+//						}
+//					}
+//					
+//					responseText.append(System.lineSeparator());
 				}		
 			}
 			
@@ -943,74 +983,99 @@ public class ChatUtils {
 		else if (text.toLowerCase().contains("people") || text.toLowerCase().contains("settler") 
 				|| text.toLowerCase().contains("person")) {
 			
-//			Collection<Person> list = settlementCache.getAllAssociatedPeople();
-			int total = settlementCache.getNumCitizens();
+			List<Person> all = new ArrayList<>(settlementCache.getAllAssociatedPeople());
+//			int total = settlementCache.getNumCitizens();
 //			int indoor = settlementCache.getIndoorPeopleCount();
 //			int dead = settlementCache.getNumDeceased();
 //			int outdoor = settlementCache.getNumOutsideEVAPeople(); //total - indoor - dead;
 			
-			List<Person> outdoorP = new ArrayList<>(settlementCache.getOutsideEVAPeople());
+			List<Person> eva = new ArrayList<>(settlementCache.getOutsideEVAPeople());
 			List<Person> indoorP = new ArrayList<>(settlementCache.getIndoorPeople());
 			List<Person> deceasedP = new ArrayList<>(settlementCache.getDeceasedPeople());
+			List<Person> onMission = new ArrayList<>(settlementCache.getOnMissionPeople());
 			
-			Collections.sort(outdoorP);
+			Collections.sort(all);
+			Collections.sort(eva);
 			Collections.sort(indoorP);
 			Collections.sort(deceasedP);
+			Collections.sort(onMission);
 			
-			int indoor = indoorP.size();//settlementCache.getIndoorPeopleCount();
-			int dead = deceasedP.size();//settlementCache.getNumDeceased();
-			int outdoor = outdoorP.size();//settlementCache.getNumOutsideEVAPeople(); //total - indoor - dead;
-	
+			int numAll = all.size(); 
+			int numIndoor = indoorP.size();//settlementCache.getIndoorPeopleCount();
+			int numDead = deceasedP.size();//settlementCache.getNumDeceased();
+			int numEva = eva.size();//settlementCache.getNumOutsideEVAPeople(); //total - indoor - dead;
+			int numMission = onMission.size();
+			
 			questionText = YOU_PROMPT + "Who are the settlers ? ";
-			responseText.append(settlementCache + " : According to the Mars Registry,"); 
-			responseText.append(System.lineSeparator());
-			responseText.append(System.lineSeparator());
-			responseText.append("  -----------------------");
-			responseText.append(System.lineSeparator());
-			responseText.append("          Status");
+			responseText.append(settlementCache + " : below is the brief summary of the settlers :"); 
+//			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			responseText.append("  -----------------------");
 			responseText.append(System.lineSeparator());
-			responseText.append("    Registered : " + total);
+			responseText.append("         Summary");
 			responseText.append(System.lineSeparator());
-			responseText.append("        Indoor : " + indoor);
+			responseText.append("  -----------------------");
 			responseText.append(System.lineSeparator());
-			responseText.append("       Outdoor : " + outdoor);
+			responseText.append("      Registered : " + numAll);
 			responseText.append(System.lineSeparator());
-			responseText.append("      Deceased : " + dead);
+			responseText.append("          Inside : " + numIndoor);
 			responseText.append(System.lineSeparator());
+			responseText.append("    On a Mission : " + numMission);
+			responseText.append(System.lineSeparator());
+			responseText.append("   EVA Operation : " + numEva);
+			responseText.append(System.lineSeparator());
+			responseText.append("        Deceased : " + numDead);
+//			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			
-			responseText.append("  -----------------------");
-			responseText.append(System.lineSeparator());
-			responseText.append("          Roster");
-			responseText.append(System.lineSeparator());
-			responseText.append("  -----------------------");
-			responseText.append(System.lineSeparator());
+//			responseText.append("  -----------------------");
+//			responseText.append(System.lineSeparator());
+//			responseText.append("          Roster");
+//			responseText.append(System.lineSeparator());
+//			responseText.append("  -----------------------");
+//			responseText.append(System.lineSeparator());
 						
 			// Indoor
 			responseText.append(System.lineSeparator());
-			responseText.append("  A. Indoor ");
+			responseText.append("  A. Registered");
 			responseText.append(System.lineSeparator());
-			responseText.append("  -----------");
+			responseText.append("  -------------");
+			responseText.append(System.lineSeparator());
+			
+			responseText.append(printList(all));
+			
+			// Indoor
+			responseText.append(System.lineSeparator());
+			responseText.append("  B. Inside");
+			responseText.append(System.lineSeparator());
+			responseText.append("  ---------");
 			responseText.append(System.lineSeparator());
 			
 			responseText.append(printList(indoorP));
 			
 			// Outdoor
 			responseText.append(System.lineSeparator());
-			responseText.append("  B. Outdoor ");
+			responseText.append("  C. EVA Operation");
 			responseText.append(System.lineSeparator());
-			responseText.append("  ------------");
+			responseText.append("  ----------------");
 			responseText.append(System.lineSeparator());
 			
-			responseText.append(printList(outdoorP));
+			responseText.append(printList(eva));
+			
+			// on a mission
+			responseText.append(System.lineSeparator());
+			responseText.append("  D. On a Mission");
+			responseText.append(System.lineSeparator());
+			responseText.append("  ---------------");
+			responseText.append(System.lineSeparator());
+			
+			responseText.append(printList(onMission));
 			
 			// Deceased
 			responseText.append(System.lineSeparator());
-			responseText.append("  C. Deceased ");
+			responseText.append("  E. Deceased");
 			responseText.append(System.lineSeparator());
-			responseText.append("  -------------");
+			responseText.append("  -----------");
 			responseText.append(System.lineSeparator());
 			
 			responseText.append(printList(deceasedP));

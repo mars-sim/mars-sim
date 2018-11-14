@@ -165,7 +165,7 @@ public class MasterClock implements Serializable {
 			tr = config.getTimeRatio();
 		else {
 			tr = userTimeRatio;
-			logger.config("     User-Defined Time Ratio : " + (int) tr + "x");
+		logger.config("   User-Defined Time Ratio (TR) : " + (int) tr + "x");
 		}
 		double tbu = config.getTimeBetweenUpdates();
 
