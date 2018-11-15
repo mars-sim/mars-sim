@@ -62,6 +62,10 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public class ChatUtils {
 
+    /** default logger. */
+  private static Logger logger = Logger.getLogger(ChatUtils.class.getName());
+//  private static String sourceName = logger.getName();
+
 	private static boolean expertMode = false;
 
 	private static final double RADIANS_TO_DEGREES = 180D/Math.PI;
@@ -2364,6 +2368,8 @@ public class ChatUtils {
 	        if (h instanceof ConsoleHandler)
 	            h.setLevel(newLvl);
 	    }
+	    
+	    logger.config("Logging is set to newLvl.");
 	}
 	
 	/*

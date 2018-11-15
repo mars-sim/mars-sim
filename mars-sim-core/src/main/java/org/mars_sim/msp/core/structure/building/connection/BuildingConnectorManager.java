@@ -15,9 +15,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -35,6 +37,9 @@ public class BuildingConnectorManager implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static Logger logger = Logger.getLogger(BuildingConnectorManager.class.getName());
+
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
 
     /** Comparison to indicate a small but non-zero amount. */
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
@@ -329,9 +334,10 @@ public class BuildingConnectorManager implements Serializable {
         if (validPath != null) {
             result = true;
         }
-        else {
-            logger.fine("Unable to find valid interior walking path between " + building1 +
-                    " and " + building2);
+        else if (logger.isLoggable(Level.FINEST)) {
+	    		LogConsolidated.log(logger, Level.FINEST, 10000, sourceName,
+	    				"Unable to find valid interior walking path between " + building1 +
+	                    " and " + building2, null);
         }
 
         return result;

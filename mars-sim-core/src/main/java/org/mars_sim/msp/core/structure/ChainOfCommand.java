@@ -389,23 +389,24 @@ public class ChainOfCommand implements Serializable {
 
 	/**
 	 * Checks if all the roleTypes in a settlement have been filled
+	 * 
+	 * @param minimum
 	 */
-	public boolean areAllFilled(int value) {
+	public boolean areAllFilled(int minimum) {
 		boolean result = false;
 		if (has3Divisions) {
-			if (getNumFilled(RoleType.SAFETY_SPECIALIST) >= value
-					&& getNumFilled(RoleType.ENGINEERING_SPECIALIST) >= value
-					&& getNumFilled(RoleType.RESOURCE_SPECIALIST) >= value)
+			if (getNumFilled(RoleType.SAFETY_SPECIALIST) >= minimum
+					&& getNumFilled(RoleType.ENGINEERING_SPECIALIST) >= minimum
+					&& getNumFilled(RoleType.RESOURCE_SPECIALIST) >= minimum)
 				result = true;
-			// System.out.println("result of 3 : "+ result);
 		} else if (has7Divisions) {
-			if (getNumFilled(RoleType.SAFETY_SPECIALIST) >= value
-					&& getNumFilled(RoleType.ENGINEERING_SPECIALIST) >= value
-					&& getNumFilled(RoleType.RESOURCE_SPECIALIST) >= value
-					&& getNumFilled(RoleType.MISSION_SPECIALIST) >= value
-					&& getNumFilled(RoleType.AGRICULTURE_SPECIALIST) >= value
-					&& getNumFilled(RoleType.SCIENCE_SPECIALIST) >= value
-					&& getNumFilled(RoleType.LOGISTIC_SPECIALIST) >= value)
+			if (getNumFilled(RoleType.SAFETY_SPECIALIST) >= minimum
+					&& getNumFilled(RoleType.ENGINEERING_SPECIALIST) >= minimum
+					&& getNumFilled(RoleType.RESOURCE_SPECIALIST) >= minimum
+					&& getNumFilled(RoleType.MISSION_SPECIALIST) >= minimum
+					&& getNumFilled(RoleType.AGRICULTURE_SPECIALIST) >= minimum
+					&& getNumFilled(RoleType.SCIENCE_SPECIALIST) >= minimum
+					&& getNumFilled(RoleType.LOGISTIC_SPECIALIST) >= minimum)
 				result = true;
 		}
 		return result;

@@ -12,10 +12,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -32,385 +34,389 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
- * The CollectResources class is a task for collecting resources at a site with an EVA from a rover.
+ * The CollectResources class is a task for collecting resources at a site with
+ * an EVA from a rover.
  */
-public class CollectResources
-extends EVAOperation
-implements Serializable {
+public class CollectResources extends EVAOperation implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    private static Logger logger = Logger.getLogger(CollectResources.class.getName());
+	private static Logger logger = Logger.getLogger(CollectResources.class.getName());
+	
+    private static String sourceName = logger.getName();
+    
+	/** Task phases. */
+	private static final TaskPhase COLLECT_RESOURCES = new TaskPhase(Msg.getString("Task.phase.collectResources")); //$NON-NLS-1$
 
-    /** Task phases. */
-    private static final TaskPhase COLLECT_RESOURCES = new TaskPhase(Msg.getString(
-            "Task.phase.collectResources")); //$NON-NLS-1$
+	// Data members
+	/** Rover used. */
+	protected Rover rover;
+	/** Collection rate for resource (kg/millisol). */
+	protected double collectionRate;
+	/** Targeted amount of resource to collect at site. (kg) */
+	protected double targettedAmount;
+	/** Amount of resource already in rover cargo at start of task. (kg) */
+	protected double startingCargo;
+	/** The resource type. */
+	protected Integer resourceType;
+	/** The container type to use to collect resource. */
+	protected Integer containerType;
 
-    // Data members
-    /** Rover used. */
-    protected Rover rover;
-    /** Collection rate for resource (kg/millisol). */
-    protected double collectionRate;
-    /** Targeted amount of resource to collect at site. (kg) */
-    protected double targettedAmount;
-    /** Amount of resource already in rover cargo at start of task. (kg) */
-    protected double startingCargo;
-    /** The resource type. */
-    protected Integer resourceType;
-    /** The container type to use to collect resource. */
-    protected Integer containerType;
+	/**
+	 * Constructor.
+	 * 
+	 * @param taskName        The name of the task.
+	 * @param person          The person performing the task.
+	 * @param rover           The rover used in the task.
+	 * @param resourceType    The resource type to collect.
+	 * @param collectionRate  The rate (kg/millisol) of collection.
+	 * @param targettedAmount The amount (kg) desired to collect.
+	 * @param startingCargo   The starting amount (kg) of resource in the rover
+	 *                        cargo.
+	 * @param containerType   the type of container to use to collect resource.
+	 */
+	public CollectResources(String taskName, Person person, Rover rover, Integer resourceType, double collectionRate,
+			double targettedAmount, double startingCargo, Integer containerType) {
 
-    /**
-     * Constructor.
-     * @param taskName The name of the task.
-     * @param person The person performing the task.
-     * @param rover The rover used in the task.
-     * @param resourceType The resource type to collect.
-     * @param collectionRate The rate (kg/millisol) of collection.
-     * @param targettedAmount The amount (kg) desired to collect.
-     * @param startingCargo The starting amount (kg) of resource in the rover cargo.
-     * @param containerType the type of container to use to collect resource.
-     */
-    public CollectResources(String taskName, Person person, Rover rover, Integer resourceType,
-            double collectionRate, double targettedAmount, double startingCargo, Integer containerType) {
+		// Use EVAOperation parent constructor.
+		super(taskName, person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-        // Use EVAOperation parent constructor.
-        super(taskName, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+		// Initialize data members.
+		this.rover = rover;
+		this.collectionRate = collectionRate;
+		this.targettedAmount = targettedAmount;
+		this.startingCargo = startingCargo;
+		this.resourceType = resourceType;
+		this.containerType = containerType;
 
-        // Initialize data members.
-        this.rover = rover;
-        this.collectionRate = collectionRate;
-        this.targettedAmount = targettedAmount;
-        this.startingCargo = startingCargo;
-        this.resourceType = resourceType;
-        this.containerType = containerType;
+		// Determine location for collection site.
+		Point2D collectionSiteLoc = determineCollectionSiteLocation();
+		setOutsideSiteLocation(collectionSiteLoc.getX(), collectionSiteLoc.getY());
 
-        // Determine location for collection site.
-        Point2D collectionSiteLoc = determineCollectionSiteLocation();
-        setOutsideSiteLocation(collectionSiteLoc.getX(), collectionSiteLoc.getY());
+		// Take container for collecting resource.
+		if (!hasContainers()) {
+			takeContainer();
 
-        // Take container for collecting resource.
-        if (!hasContainers()) {
-            takeContainer();
+			// If container is not available, end task.
+			if (!hasContainers()) {        
+				LogConsolidated.log(logger, Level.FINE, 5000, sourceName, 
+	        		"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " was not able to find containers to collect resources.", null);
+				endTask();
+			}
+		}
 
-            // If container is not available, end task.
-            if (!hasContainers()) {
-                logger.fine(person.getName() + " not able to find container to collect resources.");
-                endTask();
-            }
-        }
+		// Add task phases
+		addPhase(COLLECT_RESOURCES);
+	}
 
-        // Add task phases
-        addPhase(COLLECT_RESOURCES);
-    }
+	/**
+	 * Determine location for the collection site.
+	 * 
+	 * @return site X and Y location outside rover.
+	 */
+	private Point2D determineCollectionSiteLocation() {
 
-    /**
-     * Determine location for the collection site.
-     * @return site X and Y location outside rover.
-     */
-    private Point2D determineCollectionSiteLocation() {
+		Point2D newLocation = null;
+		boolean goodLocation = false;
+		for (int x = 0; (x < 5) && !goodLocation; x++) {
+			for (int y = 0; (y < 10) && !goodLocation; y++) {
 
-        Point2D newLocation = null;
-        boolean goodLocation = false;
-        for (int x = 0; (x < 5) && !goodLocation; x++) {
-            for (int y = 0; (y < 10) && !goodLocation; y++) {
+				double distance = RandomUtil.getRandomDouble(50D) + (x * 100D) + 50D;
+				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
+				double newXLoc = rover.getXLocation() - (distance * Math.sin(radianDirection));
+				double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
+				Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
 
-                double distance = RandomUtil.getRandomDouble(50D) + (x * 100D) + 50D;
-                double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-                double newXLoc = rover.getXLocation() - (distance * Math.sin(radianDirection));
-                double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
-                Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
+				newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
+						rover);
+				goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+						person.getCoordinates());
+			}
+		}
 
-                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
-                        boundedLocalPoint.getY(), rover);
-                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
-                        person.getCoordinates());
-            }
-        }
+		return newLocation;
+	}
 
-        return newLocation;
-    }
+	@Override
+	protected TaskPhase getOutsideSitePhase() {
+		return COLLECT_RESOURCES;
+	}
 
-    @Override
-    protected TaskPhase getOutsideSitePhase() {
-        return COLLECT_RESOURCES;
-    }
+	/**
+	 * Performs the method mapped to the task's current phase.
+	 * 
+	 * @param time the amount of time the phase is to be performed.
+	 * @return the remaining time after the phase has been performed.
+	 */
+	protected double performMappedPhase(double time) {
 
-    /**
-     * Performs the method mapped to the task's current phase.
-     * @param time the amount of time the phase is to be performed.
-     * @return the remaining time after the phase has been performed.
-     */
-    protected double performMappedPhase(double time) {
+		time = super.performMappedPhase(time);
 
-        time = super.performMappedPhase(time);
+		if (getPhase() == null) {
+			throw new IllegalArgumentException("Task phase is null");
+		} else if (COLLECT_RESOURCES.equals(getPhase())) {
+			return collectResources(time);
+		} else {
+			return time;
+		}
+	}
 
-        if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
-        }
-        else if (COLLECT_RESOURCES.equals(getPhase())) {
-            return collectResources(time);
-        }
-        else {
-            return time;
-        }
-    }
+	/**
+	 * Adds experience to the person's skills used in this task.
+	 * 
+	 * @param time the amount of time (ms) the person performed this task.
+	 */
+	protected void addExperience(double time) {
 
-    /**
-     * Adds experience to the person's skills used in this task.
-     * @param time the amount of time (ms) the person performed this task.
-     */
-    protected void addExperience(double time) {
+		// Add experience to "EVA Operations" skill.
+		// (1 base experience point per 100 millisols of time spent)
+		double evaExperience = time / 100D;
 
-        // Add experience to "EVA Operations" skill.
-        // (1 base experience point per 100 millisols of time spent)
-        double evaExperience = time / 100D;
+		// Experience points adjusted by person's "Experience Aptitude" attribute.
+		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+		int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+		evaExperience += evaExperience * experienceAptitudeModifier;
+		evaExperience *= getTeachingExperienceModifier();
+		person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-        double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-        evaExperience += evaExperience * experienceAptitudeModifier;
-        evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+		// If phase is collect resource, add experience to areology skill.
+		if (COLLECT_RESOURCES.equals(getPhase())) {
+			// 1 base experience point per 10 millisols of collection time spent.
+			// Experience points adjusted by person's "Experience Aptitude" attribute.
+			double areologyExperience = time / 10D;
+			areologyExperience += areologyExperience * experienceAptitudeModifier;
+			person.getMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience);
+		}
+	}
 
-        // If phase is collect resource, add experience to areology skill.
-        if (COLLECT_RESOURCES.equals(getPhase())) {
-            // 1 base experience point per 10 millisols of collection time spent.
-            // Experience points adjusted by person's "Experience Aptitude" attribute.
-            double areologyExperience = time / 10D;
-            areologyExperience += areologyExperience * experienceAptitudeModifier;
-            person.getMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience);
-        }
-    }
+	/**
+	 * Checks if the person is carrying any containers.
+	 * 
+	 * @return true if carrying containers.
+	 */
+	private boolean hasContainers() {
+		return person.getInventory().containsUnitClass(containerType);
+	}
 
-    /**
-     * Checks if the person is carrying any containers.
-     * @return true if carrying containers.
-     */
-    private boolean hasContainers() {
-        return person.getInventory().containsUnitClass(containerType);
-    }
+	/**
+	 * Takes the least full container from the rover.
+	 * 
+	 * @throws Exception if error taking container.
+	 */
+	private void takeContainer() {
+		Unit container = findLeastFullContainer(rover.getInventory(), containerType, resourceType);
+		if (container != null) {
+			if (person.getInventory().canStoreUnit(container, false)) {
+				rover.getInventory().retrieveUnit(container);
+				person.getInventory().storeUnit(container);
+			}
+		}
+	}
 
-    /**
-     * Takes the least full container from the rover.
-     * @throws Exception if error taking container.
-     */
-    private void takeContainer() {
-        Unit container = findLeastFullContainer(rover.getInventory(), containerType, resourceType);
-        if (container != null) {
-            if (person.getInventory().canStoreUnit(container, false)) {
-                rover.getInventory().retrieveUnit(container);
-                person.getInventory().storeUnit(container);
-            }
-        }
-    }
+	/**
+	 * Gets the least full container in the rover.
+	 * 
+	 * @param inv           the inventory to look in.
+	 * @param containerType the container class to look for.
+	 * @param resourceType  the resource for capacity.
+	 * @return container.
+	 */
+	private static Unit findLeastFullContainer(Inventory inv, Integer containerType, Integer resource) {
+		Unit result = null;
+		double mostCapacity = 0D;
 
-    /**
-     * Gets the least full container in the rover.
-     * @param inv the inventory to look in.
-     * @param containerType the container class to look for.
-     * @param resourceType the resource for capacity.
-     * @return container.
-     */
-    private static Unit findLeastFullContainer(Inventory inv, Integer containerType,
-    		Integer resource) {
-        Unit result = null;
-        double mostCapacity = 0D;
+		Iterator<Unit> i = inv.findAllUnitsOfClass(containerType).iterator();
+		while (i.hasNext()) {
+			Unit container = i.next();
+			double remainingCapacity = container.getInventory().getARRemainingCapacity(resource, true, false);
+			if (remainingCapacity > mostCapacity) {
+				result = container;
+				mostCapacity = remainingCapacity;
+			}
+		}
 
-        Iterator<Unit> i = inv.findAllUnitsOfClass(containerType).iterator();
-        while (i.hasNext()) {
-        	Unit container = i.next();
-            double remainingCapacity = container.getInventory().getARRemainingCapacity(
-                    resource, true, false);
-            if (remainingCapacity > mostCapacity) {
-                result = container;
-                mostCapacity = remainingCapacity;
-            }
-        }
+		return result;
+	}
 
-        return result;
-    }
+	/**
+	 * Perform the collect resources phase of the task.
+	 * 
+	 * @param time the time to perform this phase (in millisols)
+	 * @return the time remaining after performing this phase (in millisols)
+	 * @throws Exception if error collecting resources.
+	 */
+	private double collectResources(double time) {
 
-    /**
-     * Perform the collect resources phase of the task.
-     * @param time the time to perform this phase (in millisols)
-     * @return the time remaining after performing this phase (in millisols)
-     * @throws Exception if error collecting resources.
-     */
-    private double collectResources(double time) {
+		// Check for an accident during the EVA operation.
+		checkForAccident(time);
 
-        // Check for an accident during the EVA operation.
-        checkForAccident(time);
+		// Check for radiation exposure during the EVA operation.
+		if (isRadiationDetected(time)) {
+			setPhase(WALK_BACK_INSIDE);
+			return time;
+		}
 
-        // 2015-05-29 Check for radiation exposure during the EVA operation.
-        if (isRadiationDetected(time)){
-            setPhase(WALK_BACK_INSIDE);
-            return time;
-        }
+		// Check if site duration has ended or there is reason to cut the collect
+		// resources phase short and return to the rover.
+		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+			setPhase(WALK_BACK_INSIDE);
+			return time;
+		}
 
-        // Check if site duration has ended or there is reason to cut the collect
-        // resources phase short and return to the rover.
-        if (shouldEndEVAOperation() || addTimeOnSite(time)) {
-            setPhase(WALK_BACK_INSIDE);
-            return time;
-        }
+		double remainingPersonCapacity = person.getInventory().getARRemainingCapacity(resourceType, true, false);
+		double currentSamplesCollected = rover.getInventory().getARStored(resourceType, false) - startingCargo;
+		double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
+		double sampleLimit = remainingPersonCapacity;
+		if (remainingSamplesNeeded < remainingPersonCapacity) {
+			sampleLimit = remainingSamplesNeeded;
+		}
 
-        double remainingPersonCapacity = person.getInventory().getARRemainingCapacity(
-                resourceType, true, false);
-        double currentSamplesCollected = rover.getInventory().getARStored(
-                resourceType, false) - startingCargo;
-        double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
-        double sampleLimit = remainingPersonCapacity;
-        if (remainingSamplesNeeded < remainingPersonCapacity) {
-            sampleLimit = remainingSamplesNeeded;
-        }
+		double samplesCollected = time * collectionRate;
 
-        double samplesCollected = time * collectionRate;
+		// Modify collection rate by "Areology" skill.
+		int areologySkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+		if (areologySkill == 0) {
+			samplesCollected /= 2D;
+		}
+		if (areologySkill > 1) {
+			samplesCollected += samplesCollected * (.2D * areologySkill);
+		}
 
-        // Modify collection rate by "Areology" skill.
-        int areologySkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-        if (areologySkill == 0) {
-            samplesCollected /= 2D;
-        }
-        if (areologySkill > 1) {
-            samplesCollected += samplesCollected * (.2D * areologySkill);
-        }
+		// Modify collection rate by polar region if ice collecting.
+		if (resourceType == ResourceUtil.iceID) {
+			if (Simulation.instance().getMars().getSurfaceFeatures().inPolarRegion(person.getCoordinates())) {
+				samplesCollected *= 3D;
+			}
+		}
 
-        // Modify collection rate by polar region if ice collecting.
-        if (resourceType == ResourceUtil.iceID) {
-            if (Simulation.instance().getMars().getSurfaceFeatures().inPolarRegion(person.getCoordinates())) {
-                samplesCollected *= 3D;
-            }
-        }
+		// Add experience points
+		addExperience(time);
 
-        // Add experience points
-        addExperience(time);
+		// Collect resources.
+		if (samplesCollected <= sampleLimit) {
+			person.getInventory().storeAR(resourceType, samplesCollected, true);
+			return 0D;
+		} else {
+			if (sampleLimit >= 0D) {
+				person.getInventory().storeAR(resourceType, sampleLimit, true);
+				person.getInventory().addAmountSupplyAmount(resourceType, sampleLimit);
+			}
+			setPhase(WALK_BACK_INSIDE);
+			return time - (sampleLimit / collectionRate);
+		}
 
-        // Collect resources.
-        if (samplesCollected <= sampleLimit) {
-            person.getInventory().storeAR(resourceType, samplesCollected, true);
-    		// 2015-01-15 Add addSupplyAmount()
-            // person.getSettlementInventory().addSupplyAmount(resourceType, samplesCollected);
-            return 0D;
-        }
-        else {
-            if (sampleLimit >= 0D) {
-                person.getInventory().storeAR(resourceType, sampleLimit, true);
-        		// 2015-01-15 Add addSupplyAmount()
-                person.getInventory().addAmountSupplyAmount(resourceType, sampleLimit);
-            }
-            setPhase(WALK_BACK_INSIDE);
-            return time - (sampleLimit / collectionRate);
-        }
+	}
 
-    }
+	@Override
+	public void endTask() {
 
-    @Override
-    public void endTask() {
+		// Unload containers to rover's inventory.
+		Inventory pInv = person.getInventory();
+		if (pInv.containsUnitClass(containerType)) {
+			// Load containers in rover.
+			Iterator<Unit> i = pInv.findAllUnitsOfClass(containerType).iterator();
+			while (i.hasNext()) {
+				Unit container = i.next();
+				pInv.retrieveUnit(container);
+				rover.getInventory().storeUnit(container);
+			}
+		}
 
-        // Unload containers to rover's inventory.
-        Inventory pInv = person.getInventory();
-        if (pInv.containsUnitClass(containerType)) {
-            // Load containers in rover.
-            Iterator<Unit> i = pInv.findAllUnitsOfClass(containerType).iterator();
-            while (i.hasNext()) {
-                Unit container = i.next();
-                pInv.retrieveUnit(container);
-                rover.getInventory().storeUnit(container);
-            }
-        }
+		super.endTask();
+	}
 
-        super.endTask();
-    }
+	/**
+	 * Checks if a person can perform an CollectResources task.
+	 * 
+	 * @param member        the member to perform the task
+	 * @param rover         the rover the person will EVA from
+	 * @param containerType the container class to collect resources in.
+	 * @param resourceType  the resource to collect.
+	 * @return true if person can perform the task.
+	 */
+	public static boolean canCollectResources(MissionMember member, Rover rover, Integer containerType,
+			Integer resourceType) {
 
-    /**
-     * Checks if a person can perform an CollectResources task.
-     * @param member the member to perform the task
-     * @param rover the rover the person will EVA from
-     * @param containerType the container class to collect resources in.
-     * @param resourceType the resource to collect.
-     * @return true if person can perform the task.
-     */
-    public static boolean canCollectResources(MissionMember member, Rover rover, Integer containerType,
-            Integer resourceType) {
+		boolean result = false;
 
-        boolean result = false;
+		if (member instanceof Person) {
+			Person person = (Person) member;
 
-        if (member instanceof Person) {
-            Person person = (Person) member;
+			// Check if person can exit the rover.
+			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
+				return false;
 
-            // Check if person can exit the rover.
-            if(!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
-            	return false;
+			Mars mars = Simulation.instance().getMars();
+			if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
+				LogConsolidated.log(logger, Level.FINE, 5000, sourceName, 
+		        		"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+		        			+ " ended collecting resources: night time",   null);
+				if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+					return false;
+			}
 
-            Mars mars = Simulation.instance().getMars();
-            if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
-                logger.fine(person.getName() + " end collectin resources: night time");
-                if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
-                    return false;
-            }
+			// Check if person's medical condition will not allow task.
+			if (person.getPerformanceRating() < .5D)
+				return false;
 
-            // Check if person's medical condition will not allow task.
-            if (person.getPerformanceRating() < .5D)
-            	return false;
+			// Checks if available container with remaining capacity for resource.
+			Unit container = findLeastFullContainer(rover.getInventory(), containerType, resourceType);
+			boolean containerAvailable = (container != null);
 
-            // Checks if available container with remaining capacity for resource.
-            Unit container = findLeastFullContainer(rover.getInventory(), containerType, resourceType);
-            boolean containerAvailable = (container != null);
+			// Check if container and full EVA suit can be carried by person or is too
+			// heavy.
+			double carryMass = 0D;
+			if (container != null) {
+				carryMass += container.getMass();
+			}
+			EVASuit suit = (EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
+			if (suit != null) {
+				carryMass += suit.getMass();
+				carryMass += suit.getInventory().getARRemainingCapacity(ResourceUtil.oxygenID, false, false);
+				carryMass += suit.getInventory().getARRemainingCapacity(ResourceUtil.waterID, false, false);
+			}
+			double carryCapacity = person.getInventory().getGeneralCapacity();
+			boolean canCarryEquipment = (carryCapacity >= carryMass);
 
-            // Check if container and full EVA suit can be carried by person or is too heavy.
-            double carryMass = 0D;
-            if (container != null) {
-                carryMass += container.getMass();
-            }
-            EVASuit suit = (EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
-            if (suit != null) {
-                carryMass += suit.getMass();
-                //AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-                carryMass += suit.getInventory().getARRemainingCapacity(ResourceUtil.oxygenID, false, false);
-                //AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-                carryMass += suit.getInventory().getARRemainingCapacity(ResourceUtil.waterID, false, false);
-            }
-            double carryCapacity = person.getInventory().getGeneralCapacity();
-            boolean canCarryEquipment = (carryCapacity >= carryMass);
+			result = (containerAvailable && canCarryEquipment);
+		}
 
-            result = (containerAvailable && canCarryEquipment);
-        }
+		return result;
+	}
 
-        return result;
-    }
+	/**
+	 * Gets the effective skill level a person has at this task.
+	 * 
+	 * @return effective skill level
+	 */
+	public int getEffectiveSkillLevel() {
+		SkillManager manager = person.getMind().getSkillManager();
+		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+		int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
+		return (int) Math.round((double) (EVAOperationsSkill + areologySkill) / 2D);
+	}
 
-    /**
-     * Gets the effective skill level a person has at this task.
-     * @return effective skill level
-     */
-    public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-        int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
-        return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D);
-    }
+	/**
+	 * Gets a list of the skills associated with this task. May be empty list if no
+	 * associated skills.
+	 * 
+	 * @return list of skills
+	 */
+	public List<SkillType> getAssociatedSkills() {
+		List<SkillType> results = new ArrayList<SkillType>(2);
+		results.add(SkillType.EVA_OPERATIONS);
+		results.add(SkillType.AREOLOGY);
+		return results;
+	}
 
-    /**
-     * Gets a list of the skills associated with this task.
-     * May be empty list if no associated skills.
-     * @return list of skills
-     */
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> results = new ArrayList<SkillType>(2);
-        results.add(SkillType.EVA_OPERATIONS);
-        results.add(SkillType.AREOLOGY);
-        return results;
-    }
+	@Override
+	public void destroy() {
+		super.destroy();
 
-    @Override
-    public void destroy() {
-        super.destroy();
-
-        rover = null;
-        resourceType = null;
-        containerType = null;
-    }
+		rover = null;
+		resourceType = null;
+		containerType = null;
+	}
 }

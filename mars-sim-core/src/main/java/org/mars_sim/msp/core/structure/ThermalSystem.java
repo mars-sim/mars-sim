@@ -128,8 +128,8 @@ implements Serializable {
 	 */
 	public void timePassing(double time) {
 
-		if(logger.isLoggable(Level.FINE)) {
-			logger.fine(
+		if(logger.isLoggable(Level.FINEST)) {
+			logger.finest(
 				Msg.getString(
 					"ThermalSystem.log.settlementHeatSituation",
 					settlement.getName()
@@ -166,8 +166,8 @@ implements Serializable {
 		}
 		setGeneratedHeat(heat);
 
-		if(logger.isLoggable(Level.FINE)) {
-			logger.fine(
+		if(logger.isLoggable(Level.FINEST)) {
+			logger.finest(
 				Msg.getString(
 					"ThermalSystem.log.totalHeatGenerated", //$NON-NLS-1$
 					Double.toString(heat)
@@ -199,8 +199,8 @@ implements Serializable {
 		setGeneratedPower(power);
 		//System.out.println("total power : " + power);
 
-		if(logger.isLoggable(Level.FINE)) {
-			logger.fine(
+		if(logger.isLoggable(Level.FINEST)) {
+			logger.finest(
 				Msg.getString(
 					"ThermalSystem.log.totalPowerGenerated", //$NON-NLS-1$
 					Double.toString(power)

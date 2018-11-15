@@ -184,8 +184,8 @@ implements Serializable {
 	 */
 	public void timePassing(double time) {
 
-		if(logger.isLoggable(Level.FINE)) {
-			logger.fine(
+		if(logger.isLoggable(Level.FINEST)) {
+			logger.finest(
 				Msg.getString(
 					"PowerGrid.log.settlementPowerSituation",
 					settlement.getName()
@@ -329,8 +329,8 @@ implements Serializable {
 		}
 		setGeneratedPower(power);
 
-		if(logger.isLoggable(Level.FINE)) {
-			logger.fine(
+		if(logger.isLoggable(Level.FINEST)) {
+			logger.finest(
 				Msg.getString(
 					"PowerGrid.log.totalPowerGenerated", //$NON-NLS-1$
 					Double.toString(powerGenerated)
@@ -354,8 +354,8 @@ implements Serializable {
 		}
 		setStoredEnergy(store);
 
-		if(logger.isLoggable(Level.FINE)) {
-			logger.fine(
+		if(logger.isLoggable(Level.FINEST)) {
+			logger.finest(
 				Msg.getString(
 					"PowerGrid.log.totalPowerStored", //$NON-NLS-1$
 					Double.toString(totalEnergyStored)
@@ -379,8 +379,8 @@ implements Serializable {
 			if (powerUp) {
 				building.setPowerMode(PowerMode.FULL_POWER);
 				power += building.getFullPowerRequired();
-				if(logger.isLoggable(Level.FINE)) {
-					logger.fine(
+				if(logger.isLoggable(Level.FINEST)) {
+					logger.finest(
 						Msg.getString(
 							"PowerGrid.log.buildingFullPowerUsed", //$NON-NLS-1$
 							building.getNickName(),
@@ -394,8 +394,8 @@ implements Serializable {
 				//building.setPowerMode(PowerMode.POWER_DOWN);
 				power += building.getPoweredDownPowerRequired();
 
-				if(logger.isLoggable(Level.FINE)) {
-					logger.fine(
+				if(logger.isLoggable(Level.FINEST)) {
+					logger.finest(
 						Msg.getString(
 							"PowerGrid.log.buildingPowerDownPowerUsed", //$NON-NLS-1$
 							building.getNickName(),
@@ -409,8 +409,8 @@ implements Serializable {
 		
 		setRequiredPower(power);
 
-		if(logger.isLoggable(Level.FINE)) {
-			logger.fine(
+		if(logger.isLoggable(Level.FINEST)) {
+			logger.finest(
 				Msg.getString(
 					"PowerGrid.log.totalPowerRequired", //$NON-NLS-1$
 					Double.toString(powerRequired)
@@ -435,8 +435,8 @@ implements Serializable {
 		
 		setStoredPowerCapacity(store);
 
-		if(logger.isLoggable(Level.FINE)) {
-			logger.fine(
+		if(logger.isLoggable(Level.FINEST)) {
+			logger.finest(
 				Msg.getString(
 					"PowerGrid.log.totalPowerStorageCapacity", //$NON-NLS-1$
 					Double.toString(energyStorageCapacity)

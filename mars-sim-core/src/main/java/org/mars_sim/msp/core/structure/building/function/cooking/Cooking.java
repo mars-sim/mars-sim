@@ -815,7 +815,10 @@ implements Serializable {
 	    // Reduce a tiny bit of kitchen's cleanliness upon every meal made
 		cleanliness = cleanliness - .0075;
 
-	    return nameOfMeal;
+        LogConsolidated.log(logger, Level.FINEST, 5000, sourceName, 
+        		"[" + settlement + "] " + producerName + " just cooked '" + nameOfMeal + "' in " + building + ".", null);
+        
+	    return nameOfMeal; 
     }
 
 
@@ -909,9 +912,13 @@ implements Serializable {
 	    	retrieveAnIngredientFromMap(oilRequired, oil, true);
 	    	return true;
 	    }
-	    else
-		    // oil is not available
-	    	return false;
+	    // oil is not available
+	    else if (logger.isLoggable(Level.FINEST)) {
+	        LogConsolidated.log(logger, Level.FINEST, 10000, sourceName, 
+	        		"[" + settlement + "] No oil is available.", null);
+	    }
+	    
+	    return false;
     }
 
     //public void setChef(String name) {
