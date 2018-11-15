@@ -11,8 +11,10 @@ import org.jdom.Element;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTemplate;
 
 import java.io.Serializable;
@@ -377,7 +379,7 @@ public class SettlementConfig implements Serializable {
 			List<Element> resourceNodes = templateElement.getChildren(RESOURCE);
 			for (Element resourceElement : resourceNodes) {
 				String resourceType = resourceElement.getAttributeValue(TYPE);
-				AmountResource resource = AmountResource.findAmountResource(resourceType);
+				AmountResource resource = ResourceUtil.findAmountResource(resourceType);
 				if (resource == null)
 					logger.severe(resourceType + " shows up in settlements.xml but doesn't exist in resources.xml.");
 				else {
@@ -391,7 +393,7 @@ public class SettlementConfig implements Serializable {
 			List<Element> partNodes = templateElement.getChildren(PART);
 			for (Element partElement : partNodes) {
 				String partType = partElement.getAttributeValue(TYPE);
-				Part part = (Part) Part.findItemResource(partType);
+				Part part = (Part) ItemResourceUtil.findItemResource(partType);
 				if (part == null)
 					logger.severe(partType + " shows up in settlements.xml but doesn't exist in parts.xml.");
 				else {

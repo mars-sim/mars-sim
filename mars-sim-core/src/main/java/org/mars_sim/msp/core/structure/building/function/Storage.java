@@ -504,7 +504,7 @@ public class Storage extends Function implements Serializable {
 	public static boolean retrieveAnResource(double requestedAmount, String name, Inventory inv, boolean isRetrieving) {
 		boolean result = false;
 		try {
-			AmountResource nameAR = AmountResource.findAmountResource(name);
+			AmountResource nameAR = ResourceUtil.findAmountResource(name);
 			double amountStored = inv.getAmountResourceStored(nameAR, false);
 			inv.addAmountDemandTotalRequest(nameAR);
 

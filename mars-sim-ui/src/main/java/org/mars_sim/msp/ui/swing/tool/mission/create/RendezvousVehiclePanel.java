@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -215,19 +216,19 @@ class RendezvousVehiclePanel extends WizardPanel {
             		else if (column == 2) 
             			result = vehicle.getCrewNum();
             		else if (column == 3) {
-            			AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+            			AmountResource oxygen = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
             			result = (int) inv.getAmountResourceStored(oxygen, false);
             		}
                 	else if (column == 4) {
-                		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+                		AmountResource water = ResourceUtil.findAmountResource(LifeSupportType.WATER);
                 		result = (int) inv.getAmountResourceStored(water, false);
                 	}
                 	else if (column == 5) { 
-                		AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+                		AmountResource food = ResourceUtil.findAmountResource(LifeSupportType.FOOD);
                 		result = (int) inv.getAmountResourceStored(food, false);
                 	}
                 	else if (column == 6) { 
-                		AmountResource dessert = AmountResource.findAmountResource("Soymilk");
+                		AmountResource dessert = ResourceUtil.findAmountResource("Soymilk");
                 		result = (int) inv.getAmountResourceStored(dessert, false);
                 	}
                 	else if (column == 7) {

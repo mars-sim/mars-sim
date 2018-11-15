@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.foodProduction.Food;
 import org.mars_sim.msp.core.foodProduction.FoodUtil;
-import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
@@ -156,36 +156,37 @@ public class FoodInventoryTableModel extends AbstractTableModel
 			Object result = foodList.get(rowIndex).getName();
 			return Conversion.capitalize(result.toString());
 		}
-		/*
-		 * else if (columnIndex == 1) { // Capitalize Category Names Object result =
-		 * getFoodCategoryName(foodList.get(rowIndex)); return
-		 * Conversion.capitalize(result.toString()); }
-		 */
+//		/*
+//		 * else if (columnIndex == 1) { // Capitalize Category Names Object result =
+//		 * getFoodCategoryName(foodList.get(rowIndex)); return
+//		 * Conversion.capitalize(result.toString()); }
+//		 */
 		else {
 			try {
 				// Settlement settlement = settlements.get(columnIndex - 1);
 				// Food food = foodList.get(rowIndex);
 				// Inventory inv = settlement.getInventory();
 				// String foodName = food.getName();
-				// AmountResource ar = AmountResource.findAmountResource(foodName);
+				// AmountResource ar = ResourceUtil.findAmountResource(foodName);
 				// double foodAvailable = inv.getAmountResourceStored(ar, false);
 				return settlements.get(columnIndex - 1).getInventory().getAmountResourceStored(
-						AmountResource.findAmountResource(foodList.get(rowIndex).getName()), false);
+						ResourceUtil.findAmountResource(foodList.get(rowIndex).getName()), false);
 			} catch (Exception e) {
 				return null;
 			}
 		}
 	}
 
-	/**
-	 * gives back the internationalized name of a food's category.
-	 * 
-	 * public String getFoodCategoryName(Food food) { String key =
-	 * food.getCategory().getMsgKey(); //if (food.getCategory() ==
-	 * FoodType.EQUIPMENT) { // if
-	 * (Container.class.isAssignableFrom(food.getClassType())) key =
-	 * "FoodType.container"; //$NON-NLS-1$ //} return Msg.getString(key); }
-	 */
+//	/**
+//	 * gives back the internationalized name of a food's category.
+//	 * 
+//	 * public String getFoodCategoryName(Food food) { String key =
+//	 * food.getCategory().getMsgKey(); //if (food.getCategory() ==
+//	 * FoodType.EQUIPMENT) { // if
+//	 * (Container.class.isAssignableFrom(food.getClassType())) key =
+//	 * "FoodType.container"; //$NON-NLS-1$ //} return Msg.getString(key); }
+//	 */
+	
 	/**
 	 * Inner class for updating food table.
 	 */

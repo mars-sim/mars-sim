@@ -25,7 +25,9 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -436,12 +438,12 @@ implements Serializable {
         while (!result && i.hasNext()) {
             ManufactureProcessItem item = i.next();
             if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-                AmountResource resource = AmountResource.findAmountResource(item.getName());
+                AmountResource resource = ResourceUtil.findAmountResource(item.getName());
                 if (constructionResources.contains(resource)) {
                     result = true;
                 }
             } else if (ItemType.PART.equals(item.getType())) {
-                Part part = (Part) ItemResource.findItemResource(item.getName());
+                Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
                 if (constructionParts.contains(part)) {
                     result = true;
                 }

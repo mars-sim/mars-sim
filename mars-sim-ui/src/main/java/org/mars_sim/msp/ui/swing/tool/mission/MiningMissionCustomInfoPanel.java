@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -350,7 +351,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 			String[] mineralNames = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap()
 					.getMineralTypeNames();
 			for (String mineralName : mineralNames) {
-				AmountResource mineral = AmountResource.findAmountResource(mineralName);
+				AmountResource mineral = ResourceUtil.findAmountResource(mineralName);
 				double amount = mission.getTotalMineralExcavatedAmount(mineral);
 				if (amount > 0D)
 					excavationMap.put(mineral, amount);

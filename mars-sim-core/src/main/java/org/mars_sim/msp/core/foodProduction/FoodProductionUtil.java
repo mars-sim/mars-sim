@@ -189,7 +189,7 @@ public final class FoodProductionUtil {
         GoodsManager manager = settlement.getGoodsManager();
 
         if (item.getType().equals(ItemType.AMOUNT_RESOURCE)) {
-            AmountResource resource = AmountResource.findAmountResource(item.getName());
+            AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 //            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
             double amount = item.getAmount();
             if (isOutput) {
@@ -203,7 +203,7 @@ public final class FoodProductionUtil {
             result = manager.getGoodValuePerItem(good) * amount;
         }
         else if (item.getType().equals(ItemType.PART)) {
-            ItemResource resource = ItemResource.findItemResource(item.getName());
+            ItemResource resource = ItemResourceUtil.findItemResource(item.getName());
 //            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
             Good good = GoodsUtil.getResourceGood(resource);
             result = manager.getGoodValuePerItem(good) * item.getAmount();
@@ -265,13 +265,13 @@ public final class FoodProductionUtil {
         while (result && i.hasNext()) {
             FoodProductionProcessItem item = i.next();
             if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-                AmountResource resource = AmountResource.findAmountResource(item.getName());
+                AmountResource resource = ResourceUtil.findAmountResource(item.getName());
                 result = (inv.getAmountResourceStored(resource, false) >= item.getAmount());
             	// 2015-01-09 Added addDemandTotalRequest()
                 inv.addAmountDemandTotalRequest(resource);
             }
             else if (ItemType.PART.equals(item.getType())) {
-                Part part = (Part) ItemResource.findItemResource(item.getName());
+                Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
                 result = (inv.getItemResourceNum(part) >= (int) item.getAmount());
             } else throw new IllegalStateException(
                     "FoodProduction process input: " +
@@ -299,7 +299,7 @@ public final class FoodProductionUtil {
 		while (j.hasNext()) {
 			FoodProductionProcessItem item = j.next();
 			if (FoodProductionProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
-				AmountResource resource = AmountResource.findAmountResource(item.getName());
+				AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 				double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
 				if (item.getAmount() > capacity) result = false; 
 			}
@@ -371,12 +371,12 @@ public final class FoodProductionUtil {
     public static Good getGood(FoodProductionProcessItem item) {
         Good result = null;
         if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-            AmountResource resource = AmountResource.findAmountResource(item.getName());
+            AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 //            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
             result = GoodsUtil.getResourceGood(resource);
         }
         else if (ItemType.PART.equals(item.getType())) {
-            Part part = (Part) ItemResource.findItemResource(item.getName());
+            Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 //            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
             result = GoodsUtil.getResourceGood(part);
         }
@@ -404,7 +404,7 @@ public final class FoodProductionUtil {
             mass = item.getAmount();
         }
         else if (ItemType.PART.equals(item.getType())) {
-            Part part = (Part) ItemResource.findItemResource(item.getName());
+            Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
             mass = item.getAmount() * part.getMassPerItem();
         }
         else if (ItemType.EQUIPMENT.equals(item.getType())) {

@@ -175,7 +175,6 @@ public class GoodsManager implements Serializable {
 	private Inventory inv;
 
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-
 //	private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
 	private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
 	private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
@@ -359,8 +358,9 @@ public class GoodsManager implements Serializable {
 		// needed for loading a saved sim
 		int solElapsed = Simulation.instance().getMasterClock().getMarsClock().getMissionSol();
 		// System.out.println("GoodManager : solElapsed : "+ solElapsed);
+		
 		// Compact and/or clear supply and demand maps every 5 days
-		solElapsed = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
+		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
 		// supply++;
 		// Use MIMIMUM_STORED_SUPPLY instead of supply++ to avoid divide by zero when
@@ -436,7 +436,7 @@ public class GoodsManager implements Serializable {
 			// this out for now. - Scott
 			// projectedDemand = projectedDemand / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 
-			totalDemand = .33 * (previousDemand + projectedDemand + getNewDemandAmount(resource, solElapsed));
+			totalDemand = .33 * (previousDemand + projectedDemand + getNewDemandAmount(resource, numSol));
 
 			adjustVPInflation();
 
@@ -2339,7 +2339,7 @@ public class GoodsManager implements Serializable {
 		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
 		while (j.hasNext()) {
 			Person person = j.next();
-			if (person.getLocationSituation() == LocationSituation.OUTSIDE)
+			if (person.isOutside())
 				number += person.getInventory().findNumEmptyUnitsOfClass(equipmentClass, false);
 		}
 

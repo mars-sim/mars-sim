@@ -36,7 +36,7 @@ public class ConstructionStageInfoTest extends TestCase {
         super.setUp();
         
         Map<Integer, Integer> parts = new HashMap<Integer, Integer>(1);
-        Part p = ItemResource.createBrandNewItemResource("test part", 1, "test resource description", 1D, 1);  		
+        Part p = ItemResourceUtil.createBrandNewItemResource("test part", 1, "test resource description", 1D, 1);  		
         parts.put(p.getID(), 1);
         
         Map<Integer, Double> resources = new HashMap<Integer, Double>(1);
@@ -48,7 +48,7 @@ public class ConstructionStageInfoTest extends TestCase {
             new ArrayList<ConstructionVehicleType>(1);
         List<Integer> attachments = new ArrayList<Integer>(1);
       
-        Part atth = ItemResource.createBrandNewItemResource("attachment part", 2, "test resource description", 1D, 1);  		    
+        Part atth = ItemResourceUtil.createBrandNewItemResource("attachment part", 2, "test resource description", 1D, 1);  		    
         attachments.add(atth.getID());
         
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class, 

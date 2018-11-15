@@ -272,7 +272,7 @@ public final class ManufactureUtil {
                 PartSalvage partSalvage = i.next();
 //                Part part = (Part) ItemResource.findItemResource(partSalvage.getName());
 //                int id = ItemResourceUtil.findIDbyItemResourceName(partSalvage.getName());
-                Good partGood = GoodsUtil.getResourceGood(ItemResource.findItemResource(partSalvage.getName()));
+                Good partGood = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(partSalvage.getName()));
                 double partValue = goodsManager.getGoodValuePerItem(partGood) * partSalvage.getNumber();
                 totalPartsGoodValue += partValue;
             }
@@ -304,23 +304,23 @@ public final class ManufactureUtil {
         GoodsManager manager = settlement.getGoodsManager();
 
         if (item.getType().equals(ItemType.AMOUNT_RESOURCE)) {
-            //AmountResource resource = AmountResource.findAmountResource(item.getName());
+            //AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 //            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
             double amount = item.getAmount();
             if (isOutput) {
                 double remainingCapacity = settlement.getInventory().getAmountResourceRemainingCapacity(
-                		AmountResource.findAmountResource(item.getName()), true, false);
+                		ResourceUtil.findAmountResource(item.getName()), true, false);
                 if (amount > remainingCapacity) {
                     amount = remainingCapacity;
                 }
             }
-            Good good = GoodsUtil.getResourceGood(AmountResource.findAmountResource(item.getName()));
+            Good good = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(item.getName()));
             result = manager.getGoodValuePerItem(good) * amount;
         }
         else if (item.getType().equals(ItemType.PART)) {
 //            ItemResource resource = ItemResource.findItemResource(item.getName());
 //            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-            Good good = GoodsUtil.getResourceGood(ItemResource.findItemResource(item.getName()));
+            Good good = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
             result = manager.getGoodValuePerItem(good) * item.getAmount();
         }
         else if (item.getType().equals(ItemType.EQUIPMENT)) {
@@ -457,13 +457,13 @@ public final class ManufactureUtil {
         while (result && i.hasNext()) {
             ManufactureProcessItem item = i.next();
             if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-                AmountResource resource = AmountResource.findAmountResource(item.getName());
+                AmountResource resource = ResourceUtil.findAmountResource(item.getName());
                 result = (inv.getAmountResourceStored(resource, false) >= item.getAmount());
             	// 2015-01-09 Added addDemandTotalRequest()
                 inv.addAmountDemandTotalRequest(resource);
             }
             else if (ItemType.PART.equals(item.getType())) {
-                Part part = (Part) ItemResource.findItemResource(item.getName());
+                Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
                 result = (inv.getItemResourceNum(part) >= (int) item.getAmount());
             } else throw new IllegalStateException(
                     "Manufacture process input: " +
@@ -491,7 +491,7 @@ public final class ManufactureUtil {
 		while (j.hasNext()) {
 			ManufactureProcessItem item = j.next();
 			if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
-				AmountResource resource = AmountResource.findAmountResource(item.getName());
+				AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 				double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
 				if (item.getAmount() > capacity) result = false;
 			}
@@ -563,14 +563,10 @@ public final class ManufactureUtil {
     public static Good getGood(ManufactureProcessItem item) {
         Good result = null;
         if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-//            AmountResource resource = AmountResource.findAmountResource(item.getName());
-//            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-            result = GoodsUtil.getResourceGood(AmountResource.findAmountResource(item.getName()));
+            result = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(item.getName()));
         }
         else if (ItemType.PART.equals(item.getType())) {
-//            Part part = (Part) ItemResource.findItemResource(item.getName());
-//            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-            result = GoodsUtil.getResourceGood(ItemResource.findItemResource(item.getName()));
+            result = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
         }
         else if (ItemType.EQUIPMENT.equals(item.getType())) {
             Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
@@ -596,7 +592,7 @@ public final class ManufactureUtil {
             mass = item.getAmount();
         }
         else if (ItemType.PART.equals(item.getType())) {
-            Part part = (Part) ItemResource.findItemResource(item.getName());
+            Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
             mass = item.getAmount() * part.getMassPerItem();
         }
         else if (ItemType.EQUIPMENT.equals(item.getType())) {

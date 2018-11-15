@@ -9,6 +9,8 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 
 public class TestGoods extends TestCase {
 
@@ -21,7 +23,7 @@ public class TestGoods extends TestCase {
 
     protected void setUp() throws Exception {
         SimulationConfig.loadConfig();
-        hammer = ItemResource.createBrandNewItemResource("hammer", 1, "a tool", 1.4D, 1);
+        hammer = ItemResourceUtil.createBrandNewItemResource("hammer", 1, "a tool", 1.4D, 1);
         goodsList = GoodsUtil.getGoodsList();
     }
 
@@ -34,7 +36,7 @@ public class TestGoods extends TestCase {
 	}
 	
 	public void testGoodsListContainsWater() throws Exception {
-		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+		AmountResource water = ResourceUtil.findAmountResource(LifeSupportType.WATER);
 		Good waterGood = GoodsUtil.getResourceGood(water);
 		assertTrue( GoodsUtil.containsGood(waterGood));
 	}

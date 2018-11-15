@@ -16,6 +16,8 @@ import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -37,16 +39,16 @@ extends TestCase {
 
     public void testUnloadingPhase() throws Exception {
 
-		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-		AmountResource methane = AmountResource.findAmountResource("methane");
+		AmountResource oxygen = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
+		AmountResource food = ResourceUtil.findAmountResource(LifeSupportType.FOOD);
+		AmountResource water = ResourceUtil.findAmountResource(LifeSupportType.WATER);
+		AmountResource methane = ResourceUtil.findAmountResource("methane");
 
         String resourceName = "hammer";
         String description = "a tool";
         int id = 1;
         double massPerItem = 1.4D;
-        ItemResource hammer = ItemResource.createBrandNewItemResource(resourceName,id,description,massPerItem, 1);
+        ItemResource hammer = ItemResourceUtil.createBrandNewItemResource(resourceName,id,description,massPerItem, 1);
 		Settlement settlement = new MockSettlement();
 		Inventory settlementInv = settlement.getInventory();
 		settlementInv.addAmountResourceTypeCapacity(oxygen, 100D);

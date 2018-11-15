@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -316,7 +317,7 @@ implements Serializable {
             amountExcavated *= mineralConcentration / 100D;
             amountExcavated *= getEffectiveSkillLevel();
 
-            AmountResource mineralResource = AmountResource.findAmountResource(mineralName);
+            AmountResource mineralResource = ResourceUtil.findAmountResource(mineralName);
             Mining mission = null;
             if (person != null)
                 mission = (Mining) person.getMind().getMission();

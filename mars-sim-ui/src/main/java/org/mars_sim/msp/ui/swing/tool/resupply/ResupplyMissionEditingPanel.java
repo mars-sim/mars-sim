@@ -58,7 +58,9 @@ import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -834,7 +836,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			SupplyItem item = l.next();
 			if (SupplyTableModel.RESOURCE.equals(item.category.trim())) {
 				String type = item.type.trim();
-				AmountResource resource = AmountResource.findAmountResource(type);
+				AmountResource resource = ResourceUtil.findAmountResource(type);
 				double amount = item.number.doubleValue();
 				if (newResources.containsKey(resource)) {
 					amount += newResources.get(resource);
@@ -851,7 +853,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 			SupplyItem item = m.next();
 			if (SupplyTableModel.PART.equals(item.category.trim())) {
 				String type = item.type.trim();
-				Part part = (Part) Part.findItemResource(type);
+				Part part = (Part) ItemResourceUtil.findItemResource(type);
 				int num = item.number.intValue();
 				if (newParts.containsKey(part)) {
 					num += newParts.get(part);

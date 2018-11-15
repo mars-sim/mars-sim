@@ -70,11 +70,15 @@ public class ItemResourceUtil implements Serializable {
 
 	public ItemResourceUtil() {
 		partSet = getItemResources();
+		
 		createMaps();
 
 		createIDs();
 	}
 
+	/**
+	 * Prepares the id's of a few item resources
+	 */
 	public void createIDs() {
 		pneumaticDrillID = findIDbyItemResourceName(PNEUMATIC_DRILL);
 		backhoeID = findIDbyItemResourceName(BACKHOE);
@@ -88,6 +92,9 @@ public class ItemResourceUtil implements Serializable {
 		printerID = findIDbyItemResourceName(Manufacture.LASER_SINTERING_3D_PRINTER);
 	}
 
+	/**
+	 * Prepares maps for storing all item resources
+	 */
 	public static void createMaps() {
 		itemResourceMap = new HashMap<>();
 		sortedParts = new ArrayList<>(partSet);
@@ -110,10 +117,9 @@ public class ItemResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Register the brand new part in all 3 item resource maps
+	 * Register a new part in all 3 item resource maps
 	 * 
 	 * @param p {@link Part}
-	 * 
 	 */
 	public static void registerBrandNewPart(Part p) {
 		itemResourceMap.put(p.getName(), p);
@@ -284,4 +290,11 @@ public class ItemResourceUtil implements Serializable {
 		return resourceNames;
 	}
 
+	public static Part createBrandNewItemResource(String resourceName, int id, String description, double massPerItem,
+			int solsUsed) {
+		Part p = new Part(resourceName, id, description, massPerItem, solsUsed);
+		ItemResourceUtil.registerBrandNewPart(p);
+		return p;
+	}
+	
 }

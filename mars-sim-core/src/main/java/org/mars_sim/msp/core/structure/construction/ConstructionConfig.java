@@ -205,7 +205,7 @@ public class ConstructionConfig implements Serializable {
                 for (Element partElement : partList) {
                     String partName = partElement.getAttributeValue(NAME);
                     int partNum = Integer.parseInt(partElement.getAttributeValue(NUMBER));
-                    Part part = (Part) ItemResource.findItemResource(partName);
+                    Part part = (Part) ItemResourceUtil.findItemResource(partName);
                     
     				if (part == null)
     					logger.severe(partName + " shows up in constructions.xml but doesn't exist in parts.xml.");
@@ -220,7 +220,7 @@ public class ConstructionConfig implements Serializable {
                 for (Element resourceElement : resourceList) {
                     String resourceName = resourceElement.getAttributeValue(NAME);
                     double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
-                    AmountResource resource = AmountResource.findAmountResource(resourceName);
+                    AmountResource resource = ResourceUtil.findAmountResource(resourceName);
        				if (resource == null)
     					logger.severe(resourceName + " shows up in constructions.xml but doesn't exist in resources.xml.");
     				else

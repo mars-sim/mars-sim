@@ -28,7 +28,9 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -246,12 +248,12 @@ public class FoodProduction extends Function implements Serializable {
 		Inventory inv = getBuilding().getSettlementInventory();
 		for (FoodProductionProcessItem item : process.getInfo().getInputList()) {
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-				AmountResource resource = AmountResource.findAmountResource(item.getName());
+				AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 				inv.retrieveAmountResource(resource, item.getAmount());
 				inv.addAmountDemandTotalRequest(resource);
 				inv.addAmountDemand(resource, item.getAmount());
 			} else if (ItemType.PART.equals(item.getType())) {
-				Part part = (Part) ItemResource.findItemResource(item.getName());
+				Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 				inv.retrieveItemResources(part, (int) item.getAmount());
 			} else
 				throw new IllegalStateException(
@@ -359,7 +361,7 @@ public class FoodProduction extends Function implements Serializable {
 				if (FoodProductionUtil.getFoodProductionProcessItemValue(item, settlement, true) > 0D) {
 					if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 						// Produce amount resources.
-						AmountResource resource = AmountResource.findAmountResource(item.getName());
+						AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 						double amount = item.getAmount();
 						double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
 						if (item.getAmount() > capacity) {
@@ -373,7 +375,7 @@ public class FoodProduction extends Function implements Serializable {
 						inv.addAmountSupplyAmount(resource, amount);
 					} else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
-						Part part = (Part) ItemResource.findItemResource(item.getName());
+						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 						double mass = item.getAmount() * part.getMassPerItem();
 						double capacity = inv.getGeneralCapacity();
 						if (mass <= capacity) {
@@ -428,7 +430,7 @@ public class FoodProduction extends Function implements Serializable {
 				if (FoodProductionUtil.getFoodProductionProcessItemValue(item, settlement, false) > 0D) {
 					if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 						// Produce amount resources.
-						AmountResource resource = AmountResource.findAmountResource(item.getName());
+						AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 						double amount = item.getAmount();
 						double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
 						if (item.getAmount() > capacity) {
@@ -441,7 +443,7 @@ public class FoodProduction extends Function implements Serializable {
 						inv.addAmountSupplyAmount(resource, amount);
 					} else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
-						Part part = (Part) ItemResource.findItemResource(item.getName());
+						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 						double mass = item.getAmount() * part.getMassPerItem();
 						double capacity = inv.getGeneralCapacity();
 						if (mass <= capacity) {

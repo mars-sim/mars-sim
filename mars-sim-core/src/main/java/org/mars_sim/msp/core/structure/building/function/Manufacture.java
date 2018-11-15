@@ -36,7 +36,9 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -109,7 +111,7 @@ public class Manufacture extends Function implements Serializable {
 
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-		printerItem = ItemResource.findItemResource(LASER_SINTERING_3D_PRINTER);
+		printerItem = ItemResourceUtil.findItemResource(LASER_SINTERING_3D_PRINTER);
 
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -283,11 +285,11 @@ public class Manufacture extends Function implements Serializable {
 		// Consume inputs.
 		for (ManufactureProcessItem item : process.getInfo().getInputList()) {
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-				AmountResource resource = AmountResource.findAmountResource(item.getName());
+				AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 				inv.retrieveAmountResource(resource, item.getAmount());
 				inv.addAmountDemand(resource, item.getAmount());
 			} else if (ItemType.PART.equals(item.getType())) {
-				Part part = (Part) ItemResource.findItemResource(item.getName());
+				Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 				inv.retrieveItemResources(part, (int) item.getAmount());
 			} else
 				throw new IllegalStateException("Manufacture process input: " + item.getType() + " not a valid type.");
@@ -494,7 +496,7 @@ public class Manufacture extends Function implements Serializable {
 				if (ManufactureUtil.getManufactureProcessItemValue(item, settlement, true) > 0D) {
 					if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 						// Produce amount resources.
-						AmountResource resource = AmountResource.findAmountResource(item.getName());
+						AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 						double amount = item.getAmount();
 						double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
 						if (item.getAmount() > capacity) {
@@ -507,7 +509,7 @@ public class Manufacture extends Function implements Serializable {
 						inv.addAmountSupplyAmount(resource, amount);
 					} else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
-						Part part = (Part) ItemResource.findItemResource(item.getName());
+						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 						double mass = item.getAmount() * part.getMassPerItem();
 						double capacity = inv.getGeneralCapacity();
 						if (mass <= capacity) {
@@ -560,7 +562,7 @@ public class Manufacture extends Function implements Serializable {
 				if (ManufactureUtil.getManufactureProcessItemValue(item, settlement, false) > 0D) {
 					if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 						// Produce amount resources.
-						AmountResource resource = AmountResource.findAmountResource(item.getName());
+						AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 						double amount = item.getAmount();
 						double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
 						if (item.getAmount() > capacity) {
@@ -572,7 +574,7 @@ public class Manufacture extends Function implements Serializable {
 						inv.storeAmountResource(resource, amount, true);
 					} else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
-						Part part = (Part) ItemResource.findItemResource(item.getName());
+						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 						double mass = item.getAmount() * part.getMassPerItem();
 						double capacity = inv.getGeneralCapacity();
 						if (mass <= capacity) {
@@ -656,7 +658,7 @@ public class Manufacture extends Function implements Serializable {
 			Iterator<PartSalvage> i = partsToSalvage.iterator();
 			while (i.hasNext()) {
 				PartSalvage partSalvage = i.next();
-				Part part = (Part) ItemResource.findItemResource(partSalvage.getName());
+				Part part = (Part) ItemResourceUtil.findItemResource(partSalvage.getName());
 				int id = part.getID();
 
 				int totalNumber = 0;

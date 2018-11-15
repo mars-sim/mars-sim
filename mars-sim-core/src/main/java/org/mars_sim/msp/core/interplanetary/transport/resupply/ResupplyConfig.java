@@ -17,6 +17,7 @@ import java.util.Map;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -158,7 +159,7 @@ public class ResupplyConfig implements Serializable {
             for (Element resourceElement : resourceNodes) {
                 String resourceName = resourceElement.getAttributeValue(NAME);
                 //System.out.println("resourceName is " + resourceName);
-                AmountResource resource = AmountResource.findAmountResource(resourceName);
+                AmountResource resource = ResourceUtil.findAmountResource(resourceName);
                 double resourceAmount = Double.parseDouble(resourceElement
                         .getAttributeValue(AMOUNT));
                 if (template.resources.containsKey(resource))
@@ -170,7 +171,7 @@ public class ResupplyConfig implements Serializable {
             List<Element> partNodes = resupplyElement.getChildren(PART);
             for (Element partElement : partNodes) {
                 String partType = partElement.getAttributeValue(TYPE);
-                Part part = (Part) Part.findItemResource(partType);
+                Part part = (Part) (ItemResourceUtil.findItemResource(partType));
                 int partNumber = Integer.parseInt(partElement
                         .getAttributeValue(NUMBER));
                 if (template.parts.containsKey(part))

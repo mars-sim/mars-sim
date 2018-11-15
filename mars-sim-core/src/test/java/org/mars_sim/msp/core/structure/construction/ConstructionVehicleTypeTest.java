@@ -31,7 +31,7 @@ public class ConstructionVehicleTypeTest extends TestCase {
         
         List<Integer> attachments = new ArrayList<Integer>(1);
         
-        Part p = ItemResource.createBrandNewItemResource("attachment part", 1, "test resource description", 1D, 1);  		    
+        Part p = ItemResourceUtil.createBrandNewItemResource("attachment part", 1, "test resource description", 1D, 1);  		    
         attachments.add(p.getID());
         
         vehicleType = new ConstructionVehicleType("Light Utility Vehicle", 

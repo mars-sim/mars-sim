@@ -844,7 +844,7 @@ public class Mining extends RoverMission {
 //            AmountResource mineralResource = AmountResource
 //                    .findAmountResource(mineralType);
 //          int mineralResource = ResourceUtil.findIDbyAmountResourceName(mineralType);
-			Good mineralGood = GoodsUtil.getResourceGood(AmountResource.findAmountResource(mineralType));
+			Good mineralGood = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(mineralType));
 			double mineralValue = settlement.getGoodsManager().getGoodValuePerItem(mineralGood);
 			double concentration = concentrations.get(mineralType);
 			double mineralAmount = (concentration / 100D) * MINERAL_BASE_AMOUNT;
@@ -871,7 +871,7 @@ public class Mining extends RoverMission {
 
 		// Check food capacity as time limit.
 		// AmountResource food =
-		// AmountResource.findAmountResource(LifeSupportType.FOOD);
+		// ResourceUtil.findAmountResource(LifeSupportType.FOOD);
 		double foodConsumptionRate = config.getFoodConsumptionRate() * Mission.FOOD_MARGIN;
 		double foodCapacity = vInv.getARCapacity(foodID, false);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
@@ -880,7 +880,7 @@ public class Mining extends RoverMission {
 		}
 
 		// Check dessert1 capacity as time limit.
-//        AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
+//        AmountResource dessert1 = ResourceUtil.findAmountResource("Soymilk");
 //        double dessert1ConsumptionRate = config.getFoodConsumptionRate() / 6D;
 //        double dessert1Capacity = vInv.getAmountResourceCapacity(dessert1, false);
 //        double dessert1TimeLimit = dessert1Capacity / (dessert1ConsumptionRate * memberNum);
@@ -889,7 +889,7 @@ public class Mining extends RoverMission {
 
 		// Check water capacity as time limit.
 		// AmountResource water =
-		// AmountResource.findAmountResource(LifeSupportType.WATER);
+		// ResourceUtil.findAmountResource(LifeSupportType.WATER);
 		double waterConsumptionRate = config.getWaterConsumptionRate() * Mission.WATER_MARGIN;
 		double waterCapacity = vInv.getARCapacity(waterID, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
@@ -899,7 +899,7 @@ public class Mining extends RoverMission {
 
 		// Check oxygen capacity as time limit.
 		// AmountResource oxygen =
-		// AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		// ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenConsumptionRate = config.getHighO2ConsumptionRate() * Mission.OXYGEN_MARGIN;
 		double oxygenCapacity = vInv.getARCapacity(oxygenID, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
@@ -997,7 +997,7 @@ public class Mining extends RoverMission {
 
 		// Determine life support supplies needed for trip.
 		// AmountResource oxygen =
-		// AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		// ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
 		if (result.containsKey(oxygenID)) {
 			oxygenAmount += (Double) result.get(oxygenID);
@@ -1005,7 +1005,7 @@ public class Mining extends RoverMission {
 		result.put(oxygenID, oxygenAmount);
 
 		// AmountResource water =
-		// AmountResource.findAmountResource(LifeSupportType.WATER);
+		// ResourceUtil.findAmountResource(LifeSupportType.WATER);
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
 		if (result.containsKey(waterID)) {
 			waterAmount += (Double) result.get(waterID);
@@ -1013,19 +1013,21 @@ public class Mining extends RoverMission {
 		result.put(waterID, waterAmount);
 
 		// AmountResource food =
-		// AmountResource.findAmountResource(LifeSupportType.FOOD);
+		// ResourceUtil.findAmountResource(LifeSupportType.FOOD);
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
 		if (result.containsKey(foodID)) {
 			foodAmount += (Double) result.get(foodID);
 		}
 		result.put(foodID, foodAmount);
-		/*
-		 * // 2015-01-04 Added Soymilk AmountResource dessert1 =
-		 * AmountResource.findAmountResource("Soymilk"); double dessert1Amount =
-		 * PhysicalCondition.getFoodConsumptionRate() / 6D timeSols * crewNum; if
-		 * (result.containsKey(dessert1)) dessert1Amount += (Double)
-		 * result.get(dessert1); result.put(dessert1, dessert1Amount);
-		 */
+
+		// Add Soymilk AmountResource dessert1 =
+//		ResourceUtil.findAmountResource("Soymilk"); 
+//		double dessert1Amount = PhysicalCondition.getFoodConsumptionRate() / 6D timeSols * crewNum; 
+//		if (result.containsKey(dessert1)) 
+//			dessert1Amount += (Double)
+//		result.get(dessert1); 
+//		result.put(dessert1, dessert1Amount);
+		
 		return result;
 	}
 

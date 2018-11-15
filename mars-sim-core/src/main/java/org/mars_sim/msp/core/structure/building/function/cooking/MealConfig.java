@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MealConfig.java
- * @version 3.07 2015-02-27
+ * @version 3.1.0 2018-11-14
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.structure.building.function.cooking;
@@ -18,6 +18,7 @@ import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
  * Provides configuration information about meal.
@@ -50,8 +51,8 @@ implements Serializable {
 	private Document mealDoc;
 	private List<HotMeal> mealList;
 
-	private List<HotMeal> mainDishes;
-	private List<HotMeal> sideDishes;
+//	private List<HotMeal> mainDishes;
+//	private List<HotMeal> sideDishes;
 
 	// water consumption rate, cleaning agent per sol
 	private double[] values = new double[] {0,0};
@@ -70,7 +71,7 @@ implements Serializable {
 	 * @return water rate (kg/meal)
 	 * @throws Exception if consumption rate could not be found.
 	 */
-	// 2016-05-31 Added getWaterConsumptionRate()
+
 	public double getWaterConsumptionRate() {
 		if (values[0] != 0)
 			return values[0];
@@ -86,7 +87,6 @@ implements Serializable {
 	 * @return rate (kg/sol)
 	 * @throws Exception if rate could not be found.
 	 */
-	// 2016-05-31 Added getCleaningAgentPerSol()
 	public double getCleaningAgentPerSol() {
 		if (values[1] != 0)
 			return values[1];
@@ -103,7 +103,6 @@ implements Serializable {
 	 * @param an element
 	 * @return a double
 	 */
-	// 2016-05-31 Added getValueAsDouble()
 	private double getValueAsDouble(String child) {
 		Element root = mealDoc.getRootElement();
 		Element element = root.getChild(child);
@@ -118,7 +117,6 @@ implements Serializable {
 	 * @throws Exception when meal could not be parsed.
 	 */
 	public List<HotMeal> getMealList() {
-		//System.out.println("calling getMealList()");
 		if (mealList == null) {
 			mealList = new ArrayList<HotMeal>();
 
@@ -151,42 +149,33 @@ implements Serializable {
 				// Create meal
 
 				HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory); //, isItAvailable);
-	    		//System.out.println("MealConfig.java : aMeal is " + aMeal);
 
-				//2014-12-11 Modified to ingredients = meal.getChildren(INGREDIENT);
+				//  Modify to ingredients = meal.getChildren(INGREDIENT);
 				List<Element> ingredients = mainDish.getChildren(INGREDIENT);
-	    		//System.out.println("MealConfig.java : ingredients is " + ingredients);
 
 				for (Element ingredient : ingredients) {
 
 					// Get id.
 					String ingredientIdStr = ingredient.getAttributeValue(INGREDIENT_ID);
 					int ingredientId = Integer.parseInt(ingredientIdStr);
-					//System.out.println(" ingredientId is " + ingredientId);
 
 					// Get name.
 					String ingredientName = "";
 					ingredientName = ingredient.getAttributeValue(INGREDIENT_NAME).toLowerCase();
-					AmountResource ingredientAR = AmountResource.findAmountResource(ingredientName);
+					AmountResource ingredientAR = ResourceUtil.findAmountResource(ingredientName);
 					// Get proportion
 					String proportionStr = ingredient.getAttributeValue(PROPORTION);
 					double proportion = Double.parseDouble(proportionStr);
 
-					//2014-12-11 Added isItAvailable
 					aMeal.addIngredient(ingredientId, ingredientAR, proportion);//, isItAvailable);
-
-					//System.out.println("proportion is "+ proportion);
-		    		//System.out.println("MealConfig.java : aMeal.getIngredientList() is " + aMeal.getIngredientList());
 
 				}
 
-				//System.out.println("meal name is " + aMeal.getMealName());
 				mealList.add(aMeal);
 			}
 
 		}
-		//logger.info("");
-		//System.out.println("mealList size : " + mealList.size());
+
 		return mealList;
 	}
 

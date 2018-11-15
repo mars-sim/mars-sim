@@ -71,7 +71,7 @@ public class PartPackageConfig implements Serializable {
 			List<Element> partNodes = partPackageElement.getChildren(PART);
 			for (Element partElement : partNodes) {
 				String partType = partElement.getAttributeValue(TYPE);
-				Part part = (Part) ItemResource.findItemResource(partType);
+				Part part = (Part) ItemResourceUtil.findItemResource(partType);
 				if (part == null)
 					logger.severe(partType + " shows up in part_packages.xml but doesn't exist in parts.xml.");
 				else {

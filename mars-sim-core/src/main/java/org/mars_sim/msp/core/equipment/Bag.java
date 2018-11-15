@@ -16,9 +16,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * A bag container for holding solid amount resources.
  */
-public class Bag
-extends Equipment
-implements Container, Serializable {
+public class Bag extends Equipment implements Container, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -30,6 +28,7 @@ implements Container, Serializable {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param location the location of the bag.
 	 * @throws Exception if error creating bag.
 	 */
@@ -46,6 +45,7 @@ implements Container, Serializable {
 
 	/**
 	 * Gets the phase of resources this container can hold.
+	 * 
 	 * @return resource phase.
 	 */
 	public PhaseType getContainingResourcePhase() {
@@ -54,6 +54,7 @@ implements Container, Serializable {
 
 	/**
 	 * Gets the total capacity of resource that this container can hold.
+	 * 
 	 * @return total capacity (kg).
 	 */
 	public double getTotalCapacity() {
@@ -62,7 +63,8 @@ implements Container, Serializable {
 
 	@Override
 	public Building getBuildingLocation() {
-		// TODO : how to determine which building this equipment be stored inside a settlement ?
+		// TODO : how to determine which building this equipment be stored inside a
+		// settlement ?
 		return null;
 	}
 

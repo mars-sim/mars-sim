@@ -161,9 +161,9 @@ implements Serializable {
 		return hashcode;
 	}
 
-	public static AmountResource findAmountResource(String resourceName) {
-		return ResourceUtil.findAmountResource(resourceName);
-	}
+//	public static AmountResource findAmountResource(String resourceName) {
+//		return ResourceUtil.findAmountResource(resourceName);
+//	}
 
 	public static AmountResource createBrandNewAR(
 			int id,
@@ -183,20 +183,19 @@ implements Serializable {
 
 	public void destroy() {
 
-		/*
-		amountResourceConfig = null;
-		phase = null;
-		foodAR = null;
-		oxygenAR = null;
-		waterAR = null;
-		carbonDioxideAR = null;
-	    tableSaltAR = null;
-	    NaClOAR = null;
-	    greyWaterAR = null;
-	    foodWasteAR = null;
-	    solidWasteAR = null;
-	    napkinAR = null;
-*/
+//		amountResourceConfig = null;
+//		phase = null;
+//		foodAR = null;
+//		oxygenAR = null;
+//		waterAR = null;
+//		carbonDioxideAR = null;
+//	    tableSaltAR = null;
+//	    NaClOAR = null;
+//	    greyWaterAR = null;
+//	    foodWasteAR = null;
+//	    solidWasteAR = null;
+//	    napkinAR = null;
+
 	}
 
 

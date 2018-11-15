@@ -19,7 +19,7 @@
                <left>   
             		<HBox fx:id="toolbarHBox" minWidth="1366.0" prefWidth="1366.0" style="-fx-background-color: #2A3F54;" BorderPane.alignment="CENTER">
             		    <children>  
-      					<Label fx:id="timerLabel" minHeight="15.0" minWidth="60.0" prefHeight="25.0" prefWidth="60.0" style="-fx-alignment: center-left;" text="0000" textFill="#a1aec4">
+      					<Label fx:id="timerLabel" minHeight="15.0" minWidth="60.0" prefHeight="25.0" prefWidth="60.0" style="-fx-alignment: center-left;" text="" textFill="#a1aec4">
       					<font>
       						<Font name="Roboto Bold" size="14.0" />
       					</font>
@@ -30,16 +30,16 @@
                               <Insets left="5.0" right="1.0" />
                            </padding>
       					</Label>
-                        <Label fx:id="secondTextLabel" minHeight="15.0" minWidth="100.0" prefHeight="25.0" prefWidth="110.0" style="-fx-alignment: center-left;" text="seconds ago" textFill="#a1aec4">
+                        <Label fx:id="secondTextLabel" minHeight="15.0" minWidth="150.0" prefHeight="25.0" prefWidth="150.0" style="-fx-alignment: center-left;" text="" textFill="#a1aec4">
 	                        <font>
 	      						<Font name="Roboto Bold" size="14.0" />
 	      					</font>
                            <padding>
-                              <Insets left="1.0" right="15.0" />
+                              <Insets left="5.0" right="15.0" />
                            </padding>
                         </Label>
       			      			         
-                  		<Label fx:id="insertLabel" minHeight="15.0" minWidth="1366.0" prefHeight="25.0" prefWidth="800.0" style="-fx-alignment: center-left;" textFill="#a1aec4">
+                  		<Label fx:id="insertLabel" minHeight="15.0" minWidth="1024.0" prefHeight="25.0" prefWidth="1024.0" style="-fx-alignment: center-left;" textFill="#a1aec4">
 	      					<font>
 	      						<Font name="Roboto Bold" size="14.0" />
 	      					</font>

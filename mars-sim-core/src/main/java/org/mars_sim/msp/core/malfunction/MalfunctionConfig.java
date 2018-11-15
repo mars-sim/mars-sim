@@ -18,8 +18,10 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.HeatSourceType;
 import org.mars_sim.msp.core.structure.building.function.PowerSourceType;
@@ -198,7 +200,7 @@ public class MalfunctionConfig implements Serializable {
 
 								lifeSupportEffects.put(resourceName, changeRate);
 							} else if (type.equals(ItemType.AMOUNT_RESOURCE.getName())) {
-								AmountResource resource = AmountResource.findAmountResource(resourceName);
+								AmountResource resource = ResourceUtil.findAmountResource(resourceName);
 								if (resource == null)
 									logger.warning(resourceName
 											+ " shows up in malfunctions.xml but doesn't exist in resources.xml.");
@@ -249,7 +251,7 @@ public class MalfunctionConfig implements Serializable {
 
 						for (Element partElement : partNodes) {
 							String partName = partElement.getAttributeValue(NAME);
-							Part part = (Part) Part.findItemResource(partName);
+							Part part = (Part) (ItemResourceUtil.findItemResource(partName));
 							if (part == null)
 								logger.severe(
 										partName + " shows up in malfunctions.xml but doesn't exist in parts.xml.");

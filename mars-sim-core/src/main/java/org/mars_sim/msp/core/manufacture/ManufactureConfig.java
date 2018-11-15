@@ -19,7 +19,9 @@ import org.jdom.Element;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 
 public class ManufactureConfig implements Serializable {
@@ -151,7 +153,7 @@ public class ManufactureConfig implements Serializable {
             ManufactureProcessItem resourceItem = new ManufactureProcessItem();
             resourceItem.setType(ItemType.AMOUNT_RESOURCE);
             String resourceName = resourceElement.getAttributeValue(NAME).toLowerCase();
-            AmountResource resource = AmountResource.findAmountResource(resourceName);
+            AmountResource resource = ResourceUtil.findAmountResource(resourceName);
 			if (resource == null)
 				logger.severe(resourceName + " shows up in manufacturing.xml but doesn't exist in resources.xml.");
 			else {			
@@ -176,7 +178,7 @@ public class ManufactureConfig implements Serializable {
             partItem.setType(ItemType.PART);
             
             String partName = partElement.getAttributeValue(NAME);
-            Part part = (Part) ItemResource.findItemResource(partName);
+            Part part = (Part) ItemResourceUtil.findItemResource(partName);
             
 			if (part == null)
 				logger.severe(partName + " shows up in manufacturing.xml but doesn't exist in parts.xml.");

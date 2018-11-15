@@ -21,6 +21,7 @@ import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 
 /**
@@ -131,7 +132,7 @@ implements Serializable {
 						}
 						
 						else {
-							AmountResource ar = AmountResource.findAmountResource(resource);
+							AmountResource ar = ResourceUtil.findAmountResource(resource);
 							if (ar == null)
 								logger.severe(resource + " shows up in vehicles.xml but doesn't exist in resources.xml.");
 							else		
@@ -185,7 +186,7 @@ implements Serializable {
 					v.attachmentSlots = Integer.parseInt(attachmentElement.getAttributeValue(NUMBER_SLOTS));
 					for (Object part : attachmentElement.getChildren(PART)) {
 						v.attachableParts.add(
-							(Part) Part.findItemResource(
+							(Part) ItemResourceUtil.findItemResource(
 								(((Element) part).getAttributeValue(NAME)).toLowerCase()
 							)
 						);
