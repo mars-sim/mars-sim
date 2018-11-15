@@ -86,7 +86,16 @@ public class ChainOfCommand implements Serializable {
 			person.getRole().setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
 		} else if (resource == num - 1) {
 			person.getRole().setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-
+		}
+		else {
+			int rand = RandomUtil.getRandomInt(2);
+			if (rand == 0) {
+				person.getRole().setNewRoleType(RoleType.SAFETY_SPECIALIST);
+			} else if (rand == 1) {
+				person.getRole().setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
+			} else  {
+				person.getRole().setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+			}
 		}
 	}
 
@@ -335,7 +344,7 @@ public class ChainOfCommand implements Serializable {
 
 	/**
 	 * Elects a new person for leadership in a settlement if a mayor,
-	 * commander,sub-commander, or chiefs vacates his/her position.
+	 * commander, sub-commander, or chiefs vacates his/her position.
 	 * 
 	 * @param key {@link RoleType}
 	 */
