@@ -108,7 +108,7 @@ public class ChatUtils {
 	
 	public final static String[] ALL_PARTIES_KEYS = new String[] {
 			"relationship", "social", "relation",
-			"bed", "sleep", "lodging", "quarters", "time",
+			"bed", "sleep", "lodging", "quarters", "time", "date",
 			"where", "location", "located",	
 			"job", "role", "career",
 			"task", "activity", "action", "doing", 
@@ -522,10 +522,11 @@ public class ChatUtils {
 		
 		}
 		
-		else if (text.toLowerCase().contains("time")) {
-			questionText = YOU_PROMPT + "What time is it ?"; 
+		else if (text.toLowerCase().contains("time")
+				|| text.toLowerCase().contains("date")) {
+			questionText = YOU_PROMPT + "What day or time is it ?"; 
 			responseText.append(settlementCache.getName() + " : ");
-			responseText.append("Here's the latest time info.");
+			responseText.append("see below");
 			responseText.append(System.lineSeparator());
 			
 			responseText.append(printTime());
@@ -1459,11 +1460,12 @@ public class ChatUtils {
 		}
 		
 
-		else if (text.toLowerCase().contains("time")) {
-			questionText = YOU_PROMPT + "What time is it ?"; 
+		else if (text.toLowerCase().contains("time")
+				|| text.toLowerCase().contains("date")) {
+			questionText = YOU_PROMPT + "What day/time is it ?"; 
 			
 //			responseText.append(personCache.getName() + " : ");
-			responseText.append("According to Marsnet, here's the latest time info.");
+			responseText.append("See below");
 			responseText.append(System.lineSeparator());
 			
 			responseText.append(printTime());
@@ -2622,10 +2624,11 @@ public class ChatUtils {
 			return responseText.toString();
 		}
 		
-		else if (text.toLowerCase().contains("time")) {
-			
+		else if (text.toLowerCase().contains("time")
+				|| text.toLowerCase().contains("date")) {
+	
 			responseText.append(SYSTEM_PROMPT);
-			responseText.append("Here's the latest time info.");
+			responseText.append("see below");
 			responseText.append(System.lineSeparator());
 			
 			responseText.append(printTime());
