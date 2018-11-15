@@ -1,0 +1,90 @@
+/**
+ * Mars Simulation Project
+ * AutosaveMenu.java
+ * @version 3.1.0 2018-11-15
+ * @author Manny Kung
+ */
+package org.mars_sim.msp.core.terminal;
+
+import org.beryx.textio.TextIO;
+import org.beryx.textio.TextIoFactory;
+import org.beryx.textio.swing.SwingTextTerminal;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.terminal.AppUtil;
+import org.mars_sim.msp.core.terminal.RunnerData;
+import org.mars_sim.msp.core.time.AutosaveScheduler;
+
+import java.util.function.BiConsumer;
+import java.util.logging.Logger;
+
+/**
+ * A menu for choosing the autosave time interval in TextIO.
+ */
+public class AutosaveMenu implements BiConsumer<TextIO, RunnerData> {
+	  
+	private static final Logger logger = Logger.getLogger(AutosaveMenu.class.getName());
+
+	private SwingTextTerminal terminal;
+	
+    public static void main(String[] args) {
+        TextIO textIO = TextIoFactory.getTextIO();
+        new AutosaveMenu().accept(textIO, null);
+    }
+
+    @Override
+    public void accept(TextIO textIO, RunnerData runnerData) {
+    	terminal = (SwingTextTerminal)textIO.getTextTerminal();
+        String initData = (runnerData == null) ? null : runnerData.getInitData();
+        AppUtil.printGsonMessage(terminal, initData);
+        
+        Interval interval = new Interval();
+        SwingHandler handler = new SwingHandler(textIO, interval);
+
+        printCurrentMin();
+        
+        handler.addIntTask("interval", "Enter the new time interval [in mins]", false)
+    	.withInputReaderConfigurator(r -> r.withMinVal(2).withMaxVal(360));
+//    	.addChoices(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+    
+	    handler.executeOneTask();
+	
+	    int m = Interval.interval;
+	    
+		if (m >= 2 && m <= 360) {
+			AutosaveScheduler.cancel();
+			AutosaveScheduler.start(m);   
+			String s = "The new autosave time interval is now once every " + m + " minutes.";
+
+	        terminal.printf(System.lineSeparator() + s + System.lineSeparator());
+	        logger.config(s);
+	        
+		}
+	    else
+	        terminal.printf(
+	        		"Invalid value." 
+	        		+ System.lineSeparator() 
+	        		+  "Please choose a number between 2 and 360." 
+	            		+ System.lineSeparator());
+            
+    }
+
+    public void printCurrentMin() {
+    	int m =  SimulationConfig.instance().getAutosaveInterval();
+        terminal.println("The current autosave time interval is once every " + m + " minutes."
+        		+ System.lineSeparator());
+    }
+    
+    @Override
+    public String toString() {
+        return "Change Autosave Timer";
+    }
+    
+    private static class Interval {
+        public static int interval;
+
+        @Override
+        public String toString() {
+            return "\n\tThe new Autosave time interval is once every " + interval + " minutes.";
+        }
+    }
+}

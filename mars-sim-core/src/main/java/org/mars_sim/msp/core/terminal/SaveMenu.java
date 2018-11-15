@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * TimeRatioMenu.java
+ * SaveMenu.java
  * @version 3.1.0 2018-09-27
  * @author Manny Kung
  */

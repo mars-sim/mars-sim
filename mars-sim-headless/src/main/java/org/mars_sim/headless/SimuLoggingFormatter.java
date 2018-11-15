@@ -36,12 +36,13 @@ public class SimuLoggingFormatter extends Formatter {
 		String msg = formatMessage(record);
 
 		sb.delete(0,sb.length());
+		
 		//date.setTime(record.getMillis());
-
 		//String dateTimeStamp = df.format(date);//.replaceAll("AM", "").replaceAll("PM", "");
 		
 		String dt = LocalDateTime.now().toString();
 		
+		// Show only one decimal place in seconds
 		dt = dt.substring(0, dt.lastIndexOf(".")+2);
 		
 		sb.append(dt);//(df.format(date).replace(",", "")));

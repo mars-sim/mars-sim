@@ -736,7 +736,7 @@ public class ChatUtils {
 							responseText.append("  -  ");
 							responseText.append(p.getName());
 							responseText.append(System.lineSeparator());
-							responseText.append(System.lineSeparator());
+//							responseText.append(System.lineSeparator());
 //						}
 					}		
 					
@@ -747,7 +747,7 @@ public class ChatUtils {
 //						}
 //					}
 //					
-//					responseText.append(System.lineSeparator());
+					responseText.append(System.lineSeparator());
 				}		
 			}
 			

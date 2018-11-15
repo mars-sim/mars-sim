@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.time;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.tool.AutosaveScheduler;
 
 //import javafx.animation.Timeline;
 

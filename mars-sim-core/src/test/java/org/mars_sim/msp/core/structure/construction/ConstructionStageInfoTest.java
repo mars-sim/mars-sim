@@ -41,7 +41,7 @@ public class ConstructionStageInfoTest extends TestCase {
         
         Map<Integer, Double> resources = new HashMap<Integer, Double>(1);
         
-        AmountResource ar = AmountResource.createBrandNewAR(1, "test resource", "test type", "test resource description", PhaseType.SOLID, false, false);
+        AmountResource ar = AmountResource.createAmountResource(1, "test resource", "test type", "test resource description", PhaseType.SOLID, false, false);
         resources.put(ar.getID(), 1D);
            
         List<ConstructionVehicleType> vehicles = 

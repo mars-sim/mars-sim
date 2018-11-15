@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.tool;
+package org.mars_sim.msp.core.time;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -22,6 +22,8 @@ import org.mars_sim.msp.core.SimulationConfig;
 public class AutosaveScheduler {
     static ScheduledExecutorService autosaveService = Executors.newSingleThreadScheduledExecutor();
     static ScheduledFuture<?> t;
+    
+    static SimulationConfig simulationConfig = SimulationConfig.instance();
 
     static class MyTask implements Runnable {
 
@@ -35,6 +37,9 @@ public class AutosaveScheduler {
         }
     }
 
+    /**
+     * Cancel the autosave service
+     */
     public static void cancel() {
     	if (t != null) {
     		t.cancel(true);
@@ -42,9 +47,27 @@ public class AutosaveScheduler {
     	}
     }
     
+    /**
+     * Starts the autosave service
+     */
     public static void start() {
-    	if (t == null)
-    		t = autosaveService.scheduleAtFixedRate(new MyTask(), SimulationConfig.instance().getAutosaveInterval(),
-				SimulationConfig.instance().getAutosaveInterval(), TimeUnit.MINUTES);
+    	if (t == null) {
+    		int m = simulationConfig.getAutosaveInterval();
+    		t = autosaveService.scheduleAtFixedRate(new MyTask(), m,
+    				m, TimeUnit.MINUTES);
+    	}
+    }
+    
+    /**
+     * Starts the autosave service with a designated interval in minutes
+     * 
+     * @param minutes
+     */
+    public static void start(int minutes) {
+    	if (t == null) {	
+    		simulationConfig.setAutosaveInterval(minutes);
+    		t = autosaveService.scheduleAtFixedRate(new MyTask(), minutes,
+    				minutes, TimeUnit.MINUTES);
+    	}
     }
 }

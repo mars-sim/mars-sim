@@ -156,8 +156,9 @@ public class InteractiveTerm {
     private static BiConsumer<TextIO, RunnerData> chooseMenu(TextIO textIO) {
         List<BiConsumer<TextIO, RunnerData>> apps = Arrays.asList(
         		new ChatMenu(),
-                new TimeRatioMenu(),
+                new AutosaveMenu(),
                 new SaveMenu(),
+                new TimeRatioMenu(),
                 new ExitMenu()
         );
 

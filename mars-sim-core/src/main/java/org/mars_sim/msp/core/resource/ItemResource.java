@@ -8,11 +8,10 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
-import java.util.Map;
 
 /**
- * The ItemResource class represents a type of resource that is measured in
- * units, such as simple tools and parts.
+ * The ItemResource class represents a type of resource measured in countable
+ * units of quantity. It's for simple tools and parts. 
  */
 public class ItemResource extends ResourceAbstract implements Serializable {
 
@@ -27,9 +26,6 @@ public class ItemResource extends ResourceAbstract implements Serializable {
 	private int startSol;
 
 //	private static PartConfig partConfig;
-
-	// public static Part pneumaticDrill, backhoe, smallHammer, socketWrench,
-	// pipeWrench;
 
 	public ItemResource() {
 //		partConfig = SimulationConfig.instance().getPartConfiguration();
@@ -80,11 +76,21 @@ public class ItemResource extends ResourceAbstract implements Serializable {
 		return name;
 	}
 
+	/**
+	 * Gets the description of the resource
+	 * 
+	 * @return description
+	 */
 	@Override
 	public String getDescription() {
 		return description;
 	}
 
+	/**
+	 * Gets the starting sol of the resource
+	 * 
+	 * @return the starting sol
+	 */
 	public int getStartSol() {
 		return startSol;
 	}
@@ -125,22 +131,8 @@ public class ItemResource extends ResourceAbstract implements Serializable {
 		return hash;
 	}
 
-//	/**
-//	 * Finds an item resource by name.
-//	 * 
-//	 * @param name the name of the resource.
-//	 * @return resource
-//	 * @throws ResourceException if resource could not be found.
-//	 */
-//	public static ItemResource findItemResource(String name) {
-//		return ItemResourceUtil.findItemResource(name);
-//	}
-
-//	public static Map<String, Part> getItemResourcesMap() {
-//		return ItemResourceUtil.getItemResourcesMap();
-//	}
-
-//	public static Part createBrandNewItemResource(String resourceName, int id, String description, double massPerItem,
+	
+//	public static Part createItemResource(String resourceName, int id, String description, double massPerItem,
 //			int solsUsed) {
 //		Part p = new Part(resourceName, id, description, massPerItem, solsUsed);
 //		ItemResourceUtil.registerBrandNewPart(p);
