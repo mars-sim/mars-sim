@@ -52,10 +52,6 @@ public class SurfaceFeatures implements Serializable {
 	private double opticalDepthStartingValue = 0.2342;
 	private double factor;
 
-	private transient Mars mars;
-	private transient OrbitInfo orbitInfo;
-	private transient TerrainElevation terrainElevation;
-
 	private MineralMap mineralMap;
 	private AreothermalMap areothermalMap;
 	private Coordinates sunDirection;
@@ -66,11 +62,16 @@ public class SurfaceFeatures implements Serializable {
 	private Map<Coordinates, Double> opticalDepthMap = new ConcurrentHashMap<>();
 	private Map<Coordinates, Double> solarIrradianceMapCache;
 
+	private transient Mars mars;
+	private transient OrbitInfo orbitInfo;
+	private transient TerrainElevation terrainElevation;
+	
+	private static Weather weather;
+	private static MarsClock solarIrradianceMapCacheTime;
+	
 	private static Simulation sim;
 	private static SimulationConfig simulationConfig;
 	private static MissionManager missionManager;
-	private static Weather weather;
-	private static MarsClock solarIrradianceMapCacheTime;
 
 
 	// private DecimalFormat fmt3 = new DecimalFormat("#0.000");

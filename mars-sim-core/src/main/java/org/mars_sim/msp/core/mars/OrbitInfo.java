@@ -131,9 +131,9 @@ public class OrbitInfo implements Serializable {
 	 */
 	private Coordinates sunDirection;
 
-	private Simulation sim = Simulation.instance();
-	private MarsClock marsClock;
-	private EarthClock earthClock;// = sim.getMasterClock().getEarthClock();
+	private static Simulation sim = Simulation.instance();
+	private static MarsClock marsClock;
+	private static EarthClock earthClock;// = sim.getMasterClock().getEarthClock();
 
 	/** Constructs an {@link OrbitInfo} object */
 	public OrbitInfo() {

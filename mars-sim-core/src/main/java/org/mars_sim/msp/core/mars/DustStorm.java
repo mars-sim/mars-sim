@@ -79,18 +79,17 @@ public class DustStorm implements Serializable {
 	private DustStormType type;
 
 	private Weather weather;
-	private MarsClock marsClock;
-	private SurfaceFeatures surface;
+//	private static MarsClock marsClock;
+//	private static SurfaceFeatures surface;
 
 	private List<Settlement> settlements;
 
 	public DustStorm(String name, DustStormType type, int id, MarsClock marsClock, Weather weather,
 			List<Settlement> settlements) {
-		this.marsClock = marsClock;
+//		this.marsClock = marsClock;
 		this.name = name;
 		this.type = type;
 		this.id = id;
-		this.marsClock = marsClock;
 		this.settlements = settlements;
 
 		if (weather == null)

@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationTag;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Indoor;

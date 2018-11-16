@@ -41,7 +41,6 @@ import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.Architect;
@@ -152,6 +151,7 @@ public class GoodsManager implements Serializable {
 	public static double METHANE_VALUE_MODIFIER = 2D;
 
 	// Data members
+	private boolean initialized = false;
 	// Add modifiers due to Settlement Development Objectives
 	private double cropFarm_factor = 1;
 	private double manufacturing_factor = 1;
@@ -169,7 +169,6 @@ public class GoodsManager implements Serializable {
 	private Map<String, Double> vehicleBuyValueCache;
 	private Map<String, Double> vehicleSellValueCache;
 	private Map<Integer, Double> partsDemandCache;
-	private boolean initialized = false;
 
 	private Settlement settlement;
 	private Inventory inv;

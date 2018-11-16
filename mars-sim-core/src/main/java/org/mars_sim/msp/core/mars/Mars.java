@@ -22,12 +22,13 @@ public class Mars implements Serializable {
 	public static final double MARS_CIRCUMFERENCE = MARS_RADIUS_KM * 2D * Math.PI;
 
 	// Data members
+	/** Martian weather. */
+	private Weather weather;
 	/** Surface features. */
 	private static SurfaceFeatures surfaceFeatures;
 	/** Orbital information. */
-	private static OrbitInfo orbitInfo;
-	/** Martian weather. */
-	private static Weather weather;
+	private OrbitInfo orbitInfo;
+
 
 	/**
 	 * Constructor.
