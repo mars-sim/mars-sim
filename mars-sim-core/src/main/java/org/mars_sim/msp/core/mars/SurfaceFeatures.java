@@ -64,15 +64,14 @@ public class SurfaceFeatures implements Serializable {
 	private List<ExploredLocation> exploredLocations;
 
 	private Map<Coordinates, Double> opticalDepthMap = new ConcurrentHashMap<>();
-	// private Map<Coordinates, Double> totalSolarIrradianceMap = new
-	// ConcurrentHashMap<>();
 	private Map<Coordinates, Double> solarIrradianceMapCache;
 
+	private static Simulation sim;
+	private static SimulationConfig simulationConfig;
 	private static MissionManager missionManager;
 	private static Weather weather;
 	private static MarsClock solarIrradianceMapCacheTime;
-	private static Simulation sim;
-	private static SimulationConfig simulationConfig;
+
 
 	// private DecimalFormat fmt3 = new DecimalFormat("#0.000");
 
@@ -88,7 +87,7 @@ public class SurfaceFeatures implements Serializable {
 
 		terrainElevation = new TerrainElevation();
 		mineralMap = new RandomMineralMap();
-		exploredLocations = new CopyOnWriteArrayList<>();
+		exploredLocations = new CopyOnWriteArrayList<>(); // will need to make sure explored locations are serialized
 		areothermalMap = new AreothermalMap();
 
 		// weather = sim.getMars().getWeather();

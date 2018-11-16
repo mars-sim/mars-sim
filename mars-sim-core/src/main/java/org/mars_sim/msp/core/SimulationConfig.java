@@ -104,29 +104,29 @@ public class SimulationConfig implements Serializable {
 	 */
 
 	/** DOM documents. */
-	private Document simulationDoc;
+	private static Document simulationDoc;
 
 	// Subset configuration classes
-	private PartConfig partConfig;
-	private PartPackageConfig partPackageConfig;
-	private AmountResourceConfig resourceConfig;
-	private PersonConfig personConfig;
-	private MedicalConfig medicalConfig;
-	private LandmarkConfig landmarkConfig;
-	private MineralMapConfig mineralMapConfig;
-	private MalfunctionConfig malfunctionConfig;
-	private CropConfig cropConfig;
-	private VehicleConfig vehicleConfig;
-	private BuildingConfig buildingConfig;
-	private SettlementConfig settlementConfig;
-	private ManufactureConfig manufactureConfig;
-	private ResupplyConfig resupplyConfig;
-	private ConstructionConfig constructionConfig;
+	private static PartConfig partConfig;
+	private static PartPackageConfig partPackageConfig;
+	private static AmountResourceConfig resourceConfig;
+	private static PersonConfig personConfig;
+	private static MedicalConfig medicalConfig;
+	private static LandmarkConfig landmarkConfig;
+	private static MineralMapConfig mineralMapConfig;
+	private static MalfunctionConfig malfunctionConfig;
+	private static CropConfig cropConfig;
+	private static VehicleConfig vehicleConfig;
+	private static BuildingConfig buildingConfig;
+	private static SettlementConfig settlementConfig;
+	private static ManufactureConfig manufactureConfig;
+	private static ResupplyConfig resupplyConfig;
+	private static ConstructionConfig constructionConfig;
 
-	private FoodProductionConfig foodProductionConfig;
-	private MealConfig mealConfig;
-	private RobotConfig robotConfig;
-	private QuotationConfig quotationConfig;
+	private static FoodProductionConfig foodProductionConfig;
+	private static MealConfig mealConfig;
+	private static RobotConfig robotConfig;
+	private static QuotationConfig quotationConfig;
 
 	/*
 	 * -----------------------------------------------------------------------------
@@ -204,6 +204,7 @@ public class SimulationConfig implements Serializable {
 	 */
 	public static void setInstance(SimulationConfig instance) {
 		SimulationConfig.instance = instance;
+//		loadDefaultConfiguration();
 	}
 
 	// public String getBuildVersion() {
@@ -264,7 +265,7 @@ public class SimulationConfig implements Serializable {
 						throw new IllegalStateException("time_ratio must be between 64.0 and 1024.0");
 
 				} catch (NumberFormatException nfe) {
-					System.out.println("NumberFormatException found in time_ratio : " + nfe.getMessage());
+					System.out.println("SimulationConfig : NumberFormatException found in time_ratio : " + nfe.getMessage());
 				}
 			}
 			// if (ratio < 0D) throw new IllegalStateException("Simulation time ratio must
@@ -306,7 +307,7 @@ public class SimulationConfig implements Serializable {
 						throw new IllegalStateException("time-between-updates must be between 40 and 250");
 
 				} catch (NumberFormatException nfe) {
-					System.out.println("NumberFormatException found in time-between-updates : " + nfe.getMessage());
+					System.out.println("SimulationConfig : NumberFormatException found in time-between-updates : " + nfe.getMessage());
 				}
 			}
 
@@ -351,7 +352,7 @@ public class SimulationConfig implements Serializable {
 						throw new IllegalStateException("no-delays-per-yield must be between 1 and 200.");
 
 				} catch (NumberFormatException nfe) {
-					System.out.println("NumberFormatException found in time-between-updates : " + nfe.getMessage());
+					System.out.println("SimulationConfig : NumberFormatException found in time-between-updates : " + nfe.getMessage());
 				}
 			}
 
@@ -397,7 +398,7 @@ public class SimulationConfig implements Serializable {
 						throw new IllegalStateException("max-frame-skips must be between 1 and 200.");
 
 				} catch (NumberFormatException nfe) {
-					System.out.println("NumberFormatException found in max-frame-skips : " + nfe.getMessage());
+					System.out.println("SimulationConfig : NumberFormatException found in max-frame-skips : " + nfe.getMessage());
 				}
 			}
 
@@ -489,7 +490,7 @@ public class SimulationConfig implements Serializable {
 						throw new IllegalStateException("autosave_interval must be between 1 and 1440.");
 
 				} catch (NumberFormatException nfe) {
-					System.out.println("NumberFormatException found in autosave_interval : " + nfe.getMessage());
+					System.out.println("SimulationConfig : NumberFormatException found in autosave_interval : " + nfe.getMessage());
 				}
 
 			}
@@ -530,7 +531,7 @@ public class SimulationConfig implements Serializable {
 						throw new IllegalStateException("average-transit-time must be between 0 and 430.");
 
 				} catch (NumberFormatException nfe) {
-					System.out.println("NumberFormatException found in average-transit-time : " + nfe.getMessage());
+					System.out.println("SimulationConfig : NumberFormatException found in average-transit-time : " + nfe.getMessage());
 				}
 
 			}
@@ -772,9 +773,8 @@ public class SimulationConfig implements Serializable {
 	 * -----------------------------------------------------------------------------
 	 */
 
-	private void loadDefaultConfiguration() {
+	private static void loadDefaultConfiguration() {
 		try {
-			// System.out.println("Setting SimulationConfig.build to Build " + build);
 			// Load simulation document
 			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 			// Load subset configuration classes.
@@ -790,19 +790,14 @@ public class SimulationConfig implements Serializable {
 			vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE, true));
 			buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, true));
 			resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
-			settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true),
-					partPackageConfig);
+			settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true), partPackageConfig);
 			manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE, true));
 			constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
-			// 2014-11-23 Added Food Production
 			foodProductionConfig = new FoodProductionConfig(parseXMLFileAsJDOMDocument(FOODPRODUCTION_FILE, true));
-			// 2014-12-06 Added mealConfig
 			mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
-			// 2015-01-21 Added robotConfig
 			robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
-			// 2016-06-08 Added quotationConfig
 			quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
-			// logger.info("Done loading all xml files");
+			logger.config("Done loading all xml files.");
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error reading config file(s) below : " + e.getMessage());
 			e.printStackTrace();

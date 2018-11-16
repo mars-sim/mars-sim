@@ -2565,7 +2565,7 @@ public class ChatUtils {
 			responseText.append(" Martian Time : " + marsTime) ;
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			responseText.append(Simulation.instance().printObjectSize());
+			responseText.append(sim.printObjectSize());
 			
 			return responseText.toString();
 		}
