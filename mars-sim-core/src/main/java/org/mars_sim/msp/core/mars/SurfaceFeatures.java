@@ -16,6 +16,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
@@ -47,16 +49,14 @@ public class SurfaceFeatures implements Serializable {
 
 	private static final double HALF_PI = Math.PI / 2d;
 
+	private static double factor = MEAN_SOLAR_IRRADIANCE * OrbitInfo.SEMI_MAJOR_AXIS * OrbitInfo.SEMI_MAJOR_AXIS;
+
+	private static double opticalDepthStartingValue = 0.2342;
+
 	// Data members
-
-	private double opticalDepthStartingValue = 0.2342;
-	private double factor;
-
 	private MineralMap mineralMap;
 	private AreothermalMap areothermalMap;
-	private Coordinates sunDirection;
 
-	private List<Landmark> landmarks;
 	private List<ExploredLocation> exploredLocations;
 
 	private Map<Coordinates, Double> opticalDepthMap = new ConcurrentHashMap<>();
@@ -68,10 +68,14 @@ public class SurfaceFeatures implements Serializable {
 	
 	private static Weather weather;
 	private static MarsClock solarIrradianceMapCacheTime;
+	private static Coordinates sunDirection;
 	
-	private static Simulation sim;
-	private static SimulationConfig simulationConfig;
+	private static Simulation sim = Simulation.instance();
+	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static MissionManager missionManager;
+	
+	@JsonIgnore // Need to have both @JsonIgnore and transient for Jackson to ignore converting this list
+	private transient List<Landmark> landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
 
 
 	// private DecimalFormat fmt3 = new DecimalFormat("#0.000");
@@ -83,8 +87,8 @@ public class SurfaceFeatures implements Serializable {
 	 */
 	public SurfaceFeatures() {
 
-		sim = Simulation.instance();
-		simulationConfig = SimulationConfig.instance();
+//		sim = Simulation.instance();
+//		simulationConfig = SimulationConfig.instance();
 
 		terrainElevation = new TerrainElevation();
 		mineralMap = new RandomMineralMap();
@@ -96,18 +100,18 @@ public class SurfaceFeatures implements Serializable {
 		// orbitInfo = mars.getOrbitInfo();
 		// missionManager = sim.getMissionManager();
 
-		try {
-			landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
-		} catch (Exception e) {
-			throw new IllegalStateException("Landmarks could not be loaded: " + e.getMessage(), e);
-		}
+//		try {
+//			landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
+//		} catch (Exception e) {
+//			throw new IllegalStateException("Landmarks could not be loaded: " + e.getMessage(), e);
+//		}
 
 		if (solarIrradianceMapCache == null) {
 			solarIrradianceMapCache = new ConcurrentHashMap<Coordinates, Double>();
 		}
 
-		double a = OrbitInfo.SEMI_MAJOR_AXIS;
-		factor = MEAN_SOLAR_IRRADIANCE * a * a;
+//		double a = OrbitInfo.SEMI_MAJOR_AXIS;
+//		factor = MEAN_SOLAR_IRRADIANCE * a * a;
 	}
 
 	/**

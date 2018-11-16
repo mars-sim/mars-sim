@@ -13,6 +13,9 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.mars.MineralMapConfig.MineralType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.ImageObserver;
@@ -27,13 +30,14 @@ import java.util.logging.Logger;
 /**
  * A randomly generated mineral map of Mars.
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = As.PROPERTY, property = "@class")
 public class RandomMineralMap implements Serializable, MineralMap {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static String CLASS_NAME = "org.mars_sim.msp.simulation.mars.RandomMineralMap";
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+//	private static String CLASS_NAME = "org.mars_sim.msp.core.mars.RandomMineralMap";
+	private static Logger logger = Logger.getLogger(RandomMineralMap.class.getName());
 
 	// Topographical Region Strings
 	private static final String CRATER_REGION = "crater";
@@ -147,7 +151,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 */
 	private Set<Coordinates> getTopoRegionSet(String imageMapName) {
 		Set<Coordinates> result = new HashSet<Coordinates>(3000);
-		/* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
+//		[landrus, 26.11.09]: don't use the system classloader in a webstart env.
 		URL imageMapURL = getClass().getResource("/images/" + imageMapName);
 		ImageIcon mapIcon = new ImageIcon(imageMapURL);
 		Image mapImage = mapIcon.getImage();
@@ -268,9 +272,9 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 */
 	public String[] getMineralTypeNames() {
 		String[] result = new String[0];
-		MineralMapConfig config = SimulationConfig.instance().getMineralMapConfiguration();
+//		MineralMapConfig config = SimulationConfig.instance().getMineralMapConfiguration();
 		try {
-			List<MineralType> mineralTypes = config.getMineralTypes();
+			List<MineralType> mineralTypes = SimulationConfig.instance().getMineralMapConfiguration().getMineralTypes();
 			result = new String[mineralTypes.size()];
 			for (int x = 0; x < mineralTypes.size(); x++)
 				result[x] = mineralTypes.get(x).name;
@@ -327,6 +331,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	/**
 	 * Internal class representing a mineral concentration.
 	 */
+	@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = As.PROPERTY, property = "@class")
 	private static class MineralConcentration implements Serializable {
 		private Coordinates location;
 		private double concentration;

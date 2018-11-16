@@ -16,10 +16,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +51,12 @@ import org.tukaani.xz.FilterOptions;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 //import mikera.gui.Frames;
 //import mikera.gui.JConsole;
@@ -94,7 +102,9 @@ public class Simulation implements ClockListener, Serializable {
 	private final static String TEMP_FILE = Msg.getString("Simulation.tempFile"); //$NON-NLS-1$
 	/** Default save filename extension. */
 	private final static String DEFAULT_EXTENSION = Msg.getString("Simulation.defaultFile.extension"); //$NON-NLS-1$
-
+	/** JSON save filename extension. */
+	private final static String JSON_EXTENSION = Msg.getString("Simulation.jsonFile.extension"); //$NON-NLS-1$
+	
 	private final static String LOCAL_TIME = Msg.getString("Simulation.localTime"); //$NON-NLS-1$ " (Local Time) ";
 
 	private final static String WHITESPACES = "  ";
@@ -176,7 +186,9 @@ public class Simulation implements ClockListener, Serializable {
 
 	private UpTimer ut;
 	
-	private static InteractiveTerm interactiveTerm = new InteractiveTerm();
+	private static ObjectMapper objectMapper;
+	
+	private static InteractiveTerm interactiveTerm;
 	
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
@@ -184,7 +196,11 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	private Simulation() {
 		// INFO Simulation's constructor is on both JavaFX-Launcher Thread
-//        initializeTransientData();
+//      initializeTransientData();
+		// Create Interactive Terminal instance
+		interactiveTerm = new InteractiveTerm();
+		// Create ObjectMapper instance
+		objectMapper = new ObjectMapper();
 	}
 
 	/** (NOT USED) Eager Initialization Singleton instance. */
@@ -441,6 +457,8 @@ public class Simulation implements ClockListener, Serializable {
 			try {
 
 				sim.readFromFile(f);
+				
+				sim.readJSON();
 
 			} catch (ClassNotFoundException e2) {
 				logger.log(Level.SEVERE,
@@ -469,6 +487,53 @@ public class Simulation implements ClockListener, Serializable {
 		}
 	}
 
+	private synchronized void readJSON() throws JsonParseException, JsonMappingException, IOException {
+		
+		// Use Java JSON to read
+//      InputStream is;
+//
+//      try {
+//          File simConfig = new File(DEFAULT_DIR, "simulationConfig.json");
+//          is = new FileInputStream(simConfig);
+//          //String sconfig = fileSimConfig.to"c:\\simulationConfig.json"; // some JSON content
+//          SimulationConfig.setInstance((SimulationConfig) JsonReader.jsonToJava(is, null));//.jsonToJava(is, true));
+////          is.close(); 
+//      } catch (FileNotFoundException e) {
+//          // TODO Auto-generated catch block
+//          e.printStackTrace();
+//      } catch (IOException e) {
+//          // TODO Auto-generated catch block
+//          e.printStackTrace();
+//      }
+
+//      String simConfig = "c:\\simulationConfig.json";
+//      SimulationConfig.setInstance((SimulationConfig) JsonReader.jsonToJava(simConfig));
+//      
+//      String resourceUtil = "c:\\resourceUtil.json"; // some JSON content
+//      ResourceUtil.setInstance((ResourceUtil) JsonReader.jsonToJava(resourceUtil));
+//      
+//      String malfunction = "c:\\malfunction.json"; // some JSON content
+//      malfunctionFactory = (MalfunctionFactory) JsonReader.jsonToJava(malfunction);
+				
+//      File fileSimConfig = new File(DEFAULT_DIR, "simulationConfig.json");
+//      String sconfig = fileSimConfig.getPath();
+
+		String name = mars.getClass().getSimpleName();
+		File file = new File(DEFAULT_DIR, name + JSON_EXTENSION);
+		
+		// Use Jackson json to read json file data to String
+		byte[] jsonData = Files.readAllBytes(file.toPath());//Paths.get("Mars.json"));
+		System.out.println(new String(jsonData));
+		
+//        mars = objectMapper.readValue(FileUtils.readFileToByteArray(file, Mars.class);
+//        System.out.println(mars);
+        
+		// Use Jackson json to read
+//		mars = objectMapper.readValue(file, Mars.class);
+//		System.out.println(mars);
+	
+	}
+	
 	/**
 	 * Reads a serialized simulation from a file.
 	 * 
@@ -505,30 +570,6 @@ public class Simulation implements ClockListener, Serializable {
 				fos.write(buf, 0, size);
 
 			ois = new ObjectInputStream(new FileInputStream(uncompressed));
-//            InputStream is;
-//
-//            try {
-//                File simConfig = new File(DEFAULT_DIR, "simulationConfig.json");
-//                is = new FileInputStream(simConfig);
-//                //String sconfig = fileSimConfig.to"c:\\simulationConfig.json"; // some JSON content
-//                SimulationConfig.setInstance((SimulationConfig) JsonReader.jsonToJava(is, null));//.jsonToJava(is, true));
-////                is.close(); 
-//            } catch (FileNotFoundException e) {
-//                // TODO Auto-generated catch block
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                // TODO Auto-generated catch block
-//                e.printStackTrace();
-//            }
-
-//            String simConfig = "c:\\simulationConfig.json";
-//            SimulationConfig.setInstance((SimulationConfig) JsonReader.jsonToJava(simConfig));
-//            
-//            String resourceUtil = "c:\\resourceUtil.json"; // some JSON content
-//            ResourceUtil.setInstance((ResourceUtil) JsonReader.jsonToJava(resourceUtil));
-//            
-//            String malfunction = "c:\\malfunction.json"; // some JSON content
-//            malfunctionFactory = (MalfunctionFactory) JsonReader.jsonToJava(malfunction);
 
 			// Load intransient objects.
 			SimulationConfig.setInstance((SimulationConfig) ois.readObject());			
@@ -644,6 +685,31 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	
+	public void writeJSON() throws JsonGenerationException, JsonMappingException, IOException {	
+		// Configure Object mapper for pretty print
+		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+		// to allow serialization of "empty" POJOs (no properties to serialize)
+		// (without this setting, an exception is thrown in those cases)
+		objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+		
+		// Write to console, can write to any output stream such as file
+		StringWriter stringEmp = new StringWriter();
+		
+//		Simulation sim = instance();
+//		SurfaceFeatures surface = sim.getMars().getSurfaceFeatures();
+//		String name = surface.getClass().getSimpleName();	
+//		objectMapper.writeValue(stringEmp, surface);
+//		System.out.println(name + " JSON representation :\n" + stringEmp);	
+//		// Write to the file
+//		objectMapper.writeValue(new File(name + "." + JSON_EXTENSION), surface);
+		
+		String name = mars.getClass().getSimpleName();
+		objectMapper.writeValue(stringEmp, mars);
+		System.out.println("JSON representation of the Class '" + name + "' :\n" + stringEmp);
+		// Write to the file
+		objectMapper.writeValue(new File(DEFAULT_DIR, name + JSON_EXTENSION), mars);
+	}
+	
 	/**
 	 * Saves a simulation instance to a save file.
 	 * 
@@ -659,10 +725,13 @@ public class Simulation implements ClockListener, Serializable {
 //		if (!previous) {
 //			masterClock.setPaused(true, false);
 //		}
-
+	
 		Simulation sim = instance();
 		sim.halt();
 
+		// Experiment with saving in JSON format
+		writeJSON();
+		
 		lastSaveTimeStamp = new SystemDateTime().getDateTimeStr();
 		changed = true;
 
@@ -756,41 +825,7 @@ public class Simulation implements ClockListener, Serializable {
 			}
 
 			oos = new ObjectOutputStream(new FileOutputStream(uncompressed));
-
-//            File fileSimConfig = new File(DEFAULT_DIR, "simulationConfig.json");
-//            String sconfig = fileSimConfig.getPath();
-
-			// String simConfig = "c:\\simulationConfig.json";
-			// SimulationConfig.setInstance((SimulationConfig)
-			// JsonReader.jsonToJava(simConfig));
-
-//            String simConfig = JsonWriter.objectToJson(SimulationConfig.instance()); 
-
-//        	String malString = JsonWriter.objectToJson(malfunctionFactory);
-//            
-//            OutputStream os0 = new ObjectStream(new FileStream(uncompressed));
-//            JsonWriter jw = new JsonWriter(os0);       // optional 2nd 'options' argument (see below)
-//            jw.write(emp);
-//            jw.close();
-//            
-//        	String marsString = JsonWriter.objectToJson(mars);
-//            
-//        	String masterClockString = JsonWriter.objectToJson(masterClock);
-//            
-//            try{
-//                FileWriter file = new FileWriter("c:\\simulationConfig.json", false);
-//                file.close();
-//            }
-//            catch(Exception e){
-//                e.getMessage();
-//            }
-
-//            String resourceUtil = "c:\\resourceUtil.json"; // some JSON content
-//            ResourceUtil.setInstance((ResourceUtil) JsonReader.jsonToJava(resourceUtil));
-//
-//            String malfunction = "c:\\malfunction.json"; // some JSON content
-//            malfunctionFactory = (MalfunctionFactory) JsonReader.jsonToJava(malfunction);
-
+			
 			// Store the in-transient objects.
 			oos.writeObject(SimulationConfig.instance());
 			oos.writeObject(ResourceUtil.getInstance());
@@ -1359,6 +1394,14 @@ public class Simulation implements ClockListener, Serializable {
 		return autosaveDefault;
 	}
 	
+	/**
+	 * Returns the ObjectMapper instance
+	 * @return {@link ObjectMapper}
+	 */
+	public ObjectMapper getObjectMapper() {
+		return objectMapper; 
+	}
+
 	@Override
 	public void uiPulse(double time) {
 		// TODO Auto-generated method stub

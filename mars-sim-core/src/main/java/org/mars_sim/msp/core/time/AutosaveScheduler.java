@@ -23,16 +23,18 @@ public class AutosaveScheduler {
     static ScheduledExecutorService autosaveService = Executors.newSingleThreadScheduledExecutor();
     static ScheduledFuture<?> t;
     
+    static Simulation sim = Simulation.instance() ;
     static SimulationConfig simulationConfig = SimulationConfig.instance();
+    static MasterClock masterClock = sim.getMasterClock();
 
     static class MyTask implements Runnable {
 
         public void run() {
-        	if (Simulation.instance().getAutosaveDefault()) {
-        		Simulation.instance().getMasterClock().setSaveSim(Simulation.AUTOSAVE_AS_DEFAULT, null);
+        	if (sim.getAutosaveDefault()) {
+        		masterClock.setSaveSim(Simulation.AUTOSAVE_AS_DEFAULT, null);
         	}
         	else {
-        		Simulation.instance().getMasterClock().setAutosave(true);
+        		masterClock.setAutosave(true);
         	}
         }
     }

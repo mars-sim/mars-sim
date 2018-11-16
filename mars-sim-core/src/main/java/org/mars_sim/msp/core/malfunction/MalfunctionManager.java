@@ -792,7 +792,7 @@ public class MalfunctionManager implements Serializable {
 						entity.getLocale());
 
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 						"[" + entity.getLocale() + "] The malfunction '" + malfunction.getName() + "' has been fixed in "
 						+ entity.getImmediateLocation(), null);
 			
@@ -817,9 +817,7 @@ public class MalfunctionManager implements Serializable {
 		// Make any life support modifications.
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-//				System.out.print(malfunction);
-				if (!malfunction.isFixed()) {// && malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
-//					System.out.print(" not fixed");
+				if (!malfunction.isFixed()) {
 					Map<String, Double> effects = malfunction.getLifeSupportEffects();
 					if (effects.get(OXYGEN) != null)
 						tempOxygenFlowModifier += effects.get(OXYGEN) * (100D - malfunction.getPercentageFixed());
@@ -830,7 +828,6 @@ public class MalfunctionManager implements Serializable {
 					if (effects.get(TEMPERATURE) != null)
 						tempTemperatureModifier += effects.get(TEMPERATURE) * (100D - malfunction.getPercentageFixed());
 				}
-//				System.out.println();
 			}
 
 			if (tempOxygenFlowModifier < 0D) {
@@ -841,9 +838,7 @@ public class MalfunctionManager implements Serializable {
 						"[" + getUnit().getLocationTag().getLocale() + "] Oxygen flow restricted to "
 								+ Math.round(oxygenFlowModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation()+ ".", null);
 			} 
-//			else
-//				oxygenFlowModifier = 100D;
-	
+
 			if (tempWaterFlowModifier < 0D) {
 				waterFlowModifier += tempWaterFlowModifier * time;
 				if (waterFlowModifier < 0)
@@ -852,9 +847,7 @@ public class MalfunctionManager implements Serializable {
 						"[" + getUnit().getLocationTag().getLocale() + "] Water flow restricted to "
 								+ Math.round(waterFlowModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
 			} 
-//			else
-//				waterFlowModifier = 100D;
-	
+
 			if (tempAirPressureModifier < 0D) {
 				airPressureModifier += tempAirPressureModifier * time;
 				if (airPressureModifier < 0)
@@ -863,9 +856,7 @@ public class MalfunctionManager implements Serializable {
 						"[" + getUnit().getLocationTag().getLocale() + "] Air pressure regulator malfunctioned at "
 								+ Math.round(airPressureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
 			} 
-//			else
-//				airPressureModifier = 100D;
-	
+
 			// temp mod can be above 0 or below zero
 			if (tempTemperatureModifier != 0D) {
 				temperatureModifier += tempTemperatureModifier * time;
@@ -874,9 +865,7 @@ public class MalfunctionManager implements Serializable {
 				LogConsolidated.log(logger, Level.WARNING, 15_000, sourceName,
 						"[" + getUnit().getLocationTag().getLocale() + "] Temperature regulator malfunctioned at "
 								+ Math.round(temperatureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
-			} 
-//			else
-//				temperatureModifier = 100D;
+			}
 		}
 
 	}

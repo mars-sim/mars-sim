@@ -157,7 +157,7 @@ public class ResourceUtil implements Serializable {
 	public static AmountResource peanutOilAR;
 	public static AmountResource sesameOilAR;
 
-	private AmountResource[] ARs = new AmountResource[33];
+	private static AmountResource[] ARs = new AmountResource[33];
 
 	// private static int[] ARs_int = new int[33];
 

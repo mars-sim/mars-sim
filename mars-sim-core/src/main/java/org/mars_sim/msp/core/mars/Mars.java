@@ -25,7 +25,7 @@ public class Mars implements Serializable {
 	/** Martian weather. */
 	private Weather weather;
 	/** Surface features. */
-	private static SurfaceFeatures surfaceFeatures;
+	private SurfaceFeatures surfaceFeatures;
 	/** Orbital information. */
 	private OrbitInfo orbitInfo;
 

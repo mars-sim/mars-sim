@@ -54,7 +54,7 @@ public class OrbitInfo implements Serializable {
 	 * obtain the most accurate value of L_AT_START numerically by running
 	 * ClockUtils.getLs()
 	 */
-	private static final double L_AT_START = 12.72010790886634; // 252.5849107170493;
+//	private static final double L_AT_START = 12.72010790886634; // 252.5849107170493;
 	// Note : An areocentric orbit is an orbit around the planet Mars.
 
 	/**
@@ -62,7 +62,7 @@ public class OrbitInfo implements Serializable {
 	 * Note: may obtain the most accurate value numerically by running
 	 * ClockUtils.getHeliocentricDistance()
 	 */
-	private static final double SUN_MARS_DIST_AT_START = 1.587624202793963;// 1.5876367428334057;//1.3817913894302327;
+//	private static final double SUN_MARS_DIST_AT_START = 1.587624202793963;// 1.5876367428334057;//1.3817913894302327;
 																			// //1.665732D; //
 
 	// Data members

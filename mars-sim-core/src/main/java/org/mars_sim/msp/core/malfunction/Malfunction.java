@@ -315,10 +315,10 @@ public class Malfunction implements Serializable {
 	public String getChiefRepairer() {
 		Map.Entry<String, Double> maxEntry = repairersWorkTime.entrySet().stream().max(Map.Entry.comparingByValue())
 				.get(); // may get null ?
-//    	if (maxEntry.getKey() != null)
-		return maxEntry.getKey();
-//    	else
-//    		return 
+    	if (maxEntry.getKey() != null)
+    		return maxEntry.getKey();
+    	else
+    		return null;
 	}
 
 	/**
