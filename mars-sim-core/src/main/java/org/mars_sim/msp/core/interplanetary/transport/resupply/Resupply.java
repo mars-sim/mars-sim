@@ -542,20 +542,10 @@ public class Resupply implements Serializable, Transportable {
 		// immigrants.
 		if (immigrants.size() > 0) {
 
-			int popSize = settlement.getNumCitizens();
-
 			// Reset specialist positions at settlement.
-			ChainOfCommand cc = settlement.getChainOfCommand();
 			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 			while (i.hasNext()) {
-				Person person = i.next();
-				if (popSize >= UnitManager.POPULATION_WITH_MAYOR) {
-					cc.set7Divisions(true);
-					cc.assignSpecialiststo7Divisions(person);
-				} else {
-					cc.set3Divisions(true);
-					cc.assignSpecialiststo3Divisions(person);
-				}
+				i.next().getRole().obtainRole(settlement);
 			}
 
 			settlement.updateAllAssociatedPeople();

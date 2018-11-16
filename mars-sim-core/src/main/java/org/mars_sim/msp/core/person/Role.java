@@ -12,6 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.structure.ChainOfCommand;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
 public class Role implements Serializable {
@@ -98,6 +101,25 @@ public class Role implements Serializable {
 
 	}
 
+	/**
+	 * Obtains a role 
+	 * 
+	 * @param s
+	 */
+	public void obtainRole(Settlement s) {
+		ChainOfCommand cc = s.getChainOfCommand();
+
+		// Assign a role associate with
+		if (s.getNumCitizens() >= UnitManager.POPULATION_WITH_MAYOR) {
+			cc.set7Divisions(true);
+			cc.assignSpecialiststo7Divisions(person);
+		}
+		else {
+			cc.set3Divisions(true);
+			cc.assignSpecialiststo3Divisions(person);
+		}
+	}
+	
 	/**
 	 * Override {@link Object#toString()} method.
 	 */

@@ -47,8 +47,7 @@ public class MarsProjectHeadless {
 	 * @param args command line arguments.
 	 */
 	public MarsProjectHeadless(String args[]) {
-		// logger.config("MarsProject's constructor is on
-		// "+Thread.currentThread().getName() + " Thread");
+		logger.config("Starting " + Simulation.title);
 		sim.startSimExecutor();
 		sim.getSimExecutor().submit(new SimulationTask());
 	}
@@ -58,7 +57,6 @@ public class MarsProjectHeadless {
 		public void run() {
 			// new Simulation(); // NOTE: NOT supposed to start another instance of the
 			// singleton Simulation
-			logger.config("Starting " + Simulation.title);
 			
 			// Decompress map dat files
 			//decompressMaps();
@@ -110,8 +108,6 @@ public class MarsProjectHeadless {
 			// If new argument, create new simulation.
 			handleNewSimulation(userTimeRatio); // if this fails we always exit, continuing is useless
 			result = true;
-			// Alert the user to see the interactive terminal 
-			logger.config("Please proceed to selecting the Game Mode in the popped-up console.");
 			// Load the menu choice
 			sim.getTerm().loadTerminalMenu();
 		} 
@@ -133,8 +129,6 @@ public class MarsProjectHeadless {
 				showError("Could not load the desired simulation. Staring a new Simulation instead. ", e);
 				handleNewSimulation(userTimeRatio);
 				result = true;
-				// Alert the user to see the interactive terminal 
-				logger.config("Please proceed to selecting the Game Mode in the popped-up console.");
 				// Load the menu choice
 				sim.getTerm().loadTerminalMenu();
 			}
@@ -147,8 +141,6 @@ public class MarsProjectHeadless {
 //                showError("Could not load the default simulation, trying to create a new Simulation...", e);
 			handleNewSimulation(userTimeRatio);
 			result = true;
-			// Alert the user to see the interactive terminal 
-			logger.config("Please proceed to selecting the Game Mode in the popped-up console.");
 			// Load the menu choice
 			sim.getTerm().loadTerminalMenu();
 		}
@@ -206,8 +198,10 @@ public class MarsProjectHeadless {
 	 */
 	private void handleNewSimulation(int userTimeRatio) {
 		try {
+			// Load xml files
 			SimulationConfig.loadConfig();
-
+			// Alert the user to see the interactive terminal 
+			logger.config("Please proceed to selecting the Game Mode in the popped-up console.");
 			// Start interactive terminal 
 			sim.getTerm().startCommanderMode(); 
 			

@@ -204,7 +204,6 @@ public class SimulationConfig implements Serializable {
 	 */
 	public static void setInstance(SimulationConfig instance) {
 		SimulationConfig.instance = instance;
-//		loadDefaultConfiguration();
 	}
 
 	// public String getBuildVersion() {
@@ -775,6 +774,7 @@ public class SimulationConfig implements Serializable {
 
 	private static void loadDefaultConfiguration() {
 		try {
+			logger.config("Loading xml files...");
 			// Load simulation document
 			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 			// Load subset configuration classes.
@@ -797,7 +797,7 @@ public class SimulationConfig implements Serializable {
 			mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
 			robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
 			quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
-			logger.config("Done loading all xml files.");
+//			logger.config("Done loading all xml files.");
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error reading config file(s) below : " + e.getMessage());
 			e.printStackTrace();

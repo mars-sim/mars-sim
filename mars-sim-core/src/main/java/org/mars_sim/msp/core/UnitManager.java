@@ -1052,16 +1052,8 @@ public class UnitManager implements Serializable {
 					// Add sponsor
 					person.assignReportingAuthority();
 
-					ChainOfCommand cc = settlement.getChainOfCommand();
-
-					// Assign a role to everyone
-					if (initPop >= POPULATION_WITH_MAYOR) {
-						cc.set7Divisions(true);
-						cc.assignSpecialiststo7Divisions(person);
-					} else {
-						cc.set3Divisions(true);
-						cc.assignSpecialiststo3Divisions(person);
-					}
+					// Get a role
+					person.getRole().obtainRole(settlement);
 
 				}
 

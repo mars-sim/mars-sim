@@ -327,25 +327,17 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		// immigrants.
 		if (immigrants.size() > 0) {
 
-			int popSize = newSettlement.getNumCitizens();
-
 			// Reset specialist positions at settlement.
-			ChainOfCommand cc = newSettlement.getChainOfCommand();
 			Iterator<Person> i = newSettlement.getAllAssociatedPeople().iterator();
 			while (i.hasNext()) {
-				Person person = i.next();
-				if (popSize >= UnitManager.POPULATION_WITH_MAYOR) {
-					cc.set7Divisions(true);
-					cc.assignSpecialiststo7Divisions(person);
-				} else {
-					cc.set3Divisions(true);
-					cc.assignSpecialiststo3Divisions(person);
-				}
+				i.next().getRole().obtainRole(newSettlement);
 			}
 
 			// Call updateAllAssociatedPeople(), not getAllAssociatedPeople()()
 			newSettlement.updateAllAssociatedPeople();
 			newSettlement.updateAllAssociatedRobots();
+
+			int popSize = newSettlement.getNumCitizens();
 
 			// Reset work shift schedules at settlement.
 			unitManager.setupShift(newSettlement, popSize);

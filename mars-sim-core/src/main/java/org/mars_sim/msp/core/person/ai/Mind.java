@@ -338,24 +338,14 @@ public class Mind implements Serializable {
 				// Assign a new role type to the person and others in a settlement
 				// immediately after the change of one's job type
 				if (s != null) {
-					ChainOfCommand cc = s.getChainOfCommand();
-
-					// Assign a role associate with
-					if (s.getNumCitizens() >= UnitManager.POPULATION_WITH_MAYOR) {
-						cc.set7Divisions(true);
-						cc.assignSpecialiststo7Divisions(person);
-					}
-					else {
-						cc.set3Divisions(true);
-						cc.assignSpecialiststo3Divisions(person);
-					}
+					person.getRole().obtainRole(s);
 				}
 				// the new job will be Locked in until the beginning of the next day
 				jobLock = true;
 			}
 		}
 	}
-
+		
 	/**
 	 * Returns true if person has an active mission.
 	 * 
