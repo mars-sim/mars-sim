@@ -755,7 +755,7 @@ public abstract class Mission implements Serializable {
 
 			LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
 					"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()
-							+ " ended the " + missionName + " mission. Reason : " + reason + ".",
+							+ " ended the " + missionName + " mission. Reason : " + reason,
 					null);
 
 			done = true; // Note: done = true is very important to keep !
@@ -1280,7 +1280,7 @@ public abstract class Mission implements Serializable {
 //			System.out.println(p.getName()+ "'s" + this.getDescription() + " is going to make a plan.");
 			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());
 			
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + p.getSettlement().getName() + "] " 
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
 					+ p.getName() + " (" + p.getRole().getType() 
 					+ ") is requesting approval for " + getDescription() + ".", null);
 
@@ -1292,7 +1292,7 @@ public abstract class Mission implements Serializable {
 		}
 		
 		if (approved || plan.getStatus() == PlanType.APPROVED) {
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + p.getSettlement().getName() + "] " 
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
 					+ p.getName() + " (" + p.getRole().getType() 
 					+ ")'s " + getDescription() + " is preparing to embark.", null);
 

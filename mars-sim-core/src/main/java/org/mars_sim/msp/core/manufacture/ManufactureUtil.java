@@ -149,8 +149,9 @@ public final class ManufactureUtil {
             int techLevel, int skillLevel) {
         List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
 
-        ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
-        Iterator<ManufactureProcessInfo> i = config.getManufactureProcessList().iterator();
+//        ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
+        Iterator<ManufactureProcessInfo> i = SimulationConfig.instance().getManufactureConfiguration()
+        		.getManufactureProcessList().iterator();
         while (i.hasNext()) {
             ManufactureProcessInfo process = i.next();
             if ((process.getTechLevelRequired() <= techLevel) &&
@@ -171,8 +172,8 @@ public final class ManufactureUtil {
             int techLevel, int skillLevel) {
         List<SalvageProcessInfo> result = new ArrayList<SalvageProcessInfo>();
 
-        ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
-        Iterator<SalvageProcessInfo> i = config.getSalvageList().iterator();
+//        ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
+        Iterator<SalvageProcessInfo> i = SimulationConfig.instance().getManufactureConfiguration().getSalvageList().iterator();
         while (i.hasNext()) {
             SalvageProcessInfo process = i.next();
             if ((process.getTechLevelRequired() <= techLevel) &&
@@ -192,8 +193,8 @@ public final class ManufactureUtil {
     {
         List<SalvageProcessInfo> result = new ArrayList<SalvageProcessInfo>();
 
-        ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
-        Iterator<SalvageProcessInfo> i = config.getSalvageList().iterator();
+//        ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
+        Iterator<SalvageProcessInfo> i = SimulationConfig.instance().getManufactureConfiguration().getSalvageList().iterator();
         while (i.hasNext()) {
             SalvageProcessInfo process = i.next();
             if (process.getTechLevelRequired() <= techLevel) result.add(process);

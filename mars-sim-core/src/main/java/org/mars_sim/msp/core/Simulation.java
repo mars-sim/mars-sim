@@ -979,7 +979,8 @@ public class Simulation implements ClockListener, Serializable {
 		double sumSize = 0;
 		String unit = "";
 		
-		halt();
+//		halt();
+		masterClock.setPaused(true, false);
 		
 		for (Serializable o : list) {
 			String name = o.getClass().getSimpleName();
@@ -1054,7 +1055,8 @@ public class Simulation implements ClockListener, Serializable {
 		sb.append(sumSize + unit
 				+ System.lineSeparator());
 		
-		proceed();
+//		proceed();
+		masterClock.setPaused(false, false);
 		
 		return sb;
 	}

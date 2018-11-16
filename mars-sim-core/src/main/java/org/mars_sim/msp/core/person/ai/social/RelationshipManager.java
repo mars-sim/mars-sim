@@ -75,14 +75,16 @@ public class RelationshipManager implements Serializable {
 
 	/** The relationship graph. */
 	private Graph relationshipGraph;
-	private int count = 0;
+	
+//	private static List<Relationship> allRelationshipList;
 
 	/**
 	 * Constructor
 	 */
 	public RelationshipManager() {
 		// Create new graph for relationships.
-		relationshipGraph = new DefaultGraph();
+		if (relationshipGraph == null)
+			relationshipGraph = new DefaultGraph();
 	}
 
 	/**
@@ -117,7 +119,7 @@ public class RelationshipManager implements Serializable {
 	private void addPerson(Person person, Collection<Person> initialGroup) {
 		if ((person == null) || (initialGroup == null))
 			throw new IllegalArgumentException("RelationshipManager.addPerson(): null parameter.");
-
+	
 		if (!relationshipGraph.containsNode(person)) {
 			relationshipGraph.addNode(person);
 
@@ -128,8 +130,7 @@ public class RelationshipManager implements Serializable {
 					addRelationship(person, person2, Relationship.EXISTING_RELATIONSHIP);
 
 					if (logger.isLoggable(Level.FINEST)) {
-						logger.finest(person.getName() + " and " + person2.getName() + " have existing relationship.  "
-								+ count);
+						logger.finest(person.getName() + " and " + person2.getName() + " have existing relationship.");
 					}
 				}
 			}
@@ -147,8 +148,13 @@ public class RelationshipManager implements Serializable {
 	public void addRelationship(Person person1, Person person2, String relationshipType) {
 		try {
 			Relationship relationship = new Relationship(person1, person2, relationshipType);
+//			if (relationshipType.equals(Relationship.EXISTING_RELATIONSHIP))
+//				;
+//			else if (relationshipType.equals(Relationship.COMMUNICATION_MEETING))
+//				;
+//			else if (relationshipType.equals(Relationship.FIRST_IMPRESSION))
+//				;
 			relationshipGraph.addEdge(relationship, person1, person2, false);
-			count++;
 		} catch (NoSuchNodeException e) {
 		}
 	}
@@ -190,14 +196,16 @@ public class RelationshipManager implements Serializable {
 	 * @return a list of the person's Relationship objects.
 	 */
 	public List<Relationship> getAllRelationships(Person person) {
-		List<Relationship> result = new ArrayList<Relationship>();
-		Traverser traverser = relationshipGraph.traverser(person, GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
-		while (traverser.hasNext()) {
-			traverser.next();
-			Relationship relationship = (Relationship) traverser.getEdge().getUserObject();
-			result.add(relationship);
-		}
-		return result;
+//		if (allRelationshipList == null) {
+		 List<Relationship> allRelationshipList = new ArrayList<Relationship>();
+			Traverser traverser = relationshipGraph.traverser(person, GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
+			while (traverser.hasNext()) {
+				traverser.next();
+				Relationship relationship = (Relationship) traverser.getEdge().getUserObject();
+				allRelationshipList.add(relationship);
+			}
+//		}
+		return allRelationshipList;
 	}
 
 	/**
@@ -394,7 +402,7 @@ public class RelationshipManager implements Serializable {
 
 				if (logger.isLoggable(Level.FINEST)) {
 					logger.finest(
-							person.getName() + " and " + localPerson.getName() + " meet for the first time.  " + count);
+							person.getName() + " and " + localPerson.getName() + " meet for the first time.");
 				}
 			}
 

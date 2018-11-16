@@ -16,11 +16,9 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * The Relationship class represents a social relationship between
- * two people.
+ * The Relationship class represents a social relationship between two people.
  */
-public class Relationship
-implements Serializable {
+public class Relationship implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -33,7 +31,10 @@ implements Serializable {
 	/** Communication meeting is for meeting a new person remotely (email, etc). */
 	public static final String COMMUNICATION_MEETING = "Communication Meeting";
 
-	/** Relationship modifier for settlers since they are trained to get along with each other. */
+	/**
+	 * Relationship modifier for settlers since they are trained to get along with
+	 * each other.
+	 */
 	private static final double SETTLER_MODIFIER = 20D;
 
 	// Data members
@@ -44,9 +45,12 @@ implements Serializable {
 
 	/**
 	 * Constructor.
-	 * @param person1 the first person in the relationship (order really isn't important)
-	 * @param person2 the second person in the relationship
-	 * @param startingRelationship the type of starting relationship (see static strings above)
+	 * 
+	 * @param person1              the first person in the relationship (order
+	 *                             really isn't important)
+	 * @param person2              the second person in the relationship
+	 * @param startingRelationship the type of starting relationship (see static
+	 *                             strings above)
 	 * @throws IllegalArgumentException if invalid parameters
 	 */
 	Relationship(Person person1, Person person2, String startingRelationship) throws IllegalArgumentException {
@@ -58,20 +62,19 @@ implements Serializable {
 		if (FIRST_IMPRESSION.equals(startingRelationship)) {
 			setPerson1Opinion(getFirstImpression(person1, person2));
 			setPerson2Opinion(getFirstImpression(person2, person1));
-		}
-		else if (EXISTING_RELATIONSHIP.equals(startingRelationship)) {
+		} else if (EXISTING_RELATIONSHIP.equals(startingRelationship)) {
 			setPerson1Opinion(getExistingRelationship(person1, person2));
 			setPerson2Opinion(getExistingRelationship(person2, person1));
-		}
-		else if (COMMUNICATION_MEETING.equals(startingRelationship)) {
+		} else if (COMMUNICATION_MEETING.equals(startingRelationship)) {
 			setPerson1Opinion(getCommunicationMeeting(person1, person2));
 			setPerson2Opinion(getCommunicationMeeting(person2, person1));
-		}
-		else throw new IllegalArgumentException("Invalid starting relationship type: " + startingRelationship);
+		} else
+			throw new IllegalArgumentException("Invalid starting relationship type: " + startingRelationship);
 	}
 
 	/**
 	 * Gets the two people in relationship.
+	 * 
 	 * @return array of two people
 	 */
 	public Person[] getPeople() {
@@ -81,62 +84,83 @@ implements Serializable {
 
 	/**
 	 * Checks if a given person is in this relationship.
+	 * 
 	 * @param person the person to check
 	 * @return true if person is in this relationship
 	 */
 	public boolean hasPerson(Person person) {
 		boolean result = false;
-		if (person1 == person) result = true;
-		else if (person2 == person) result = true;
+		if (person1 == person)
+			result = true;
+		else if (person2 == person)
+			result = true;
 		return result;
 	}
 
 	/**
 	 * Sets person 1's opinion of person 2
+	 * 
 	 * @param opinion person 1's opinion as a value from 0 to 100.
 	 */
 	private void setPerson1Opinion(double opinion) {
 		person1Opinion = opinion;
-		if (person1Opinion < 0D) person1Opinion = 0D;
-		if (person1Opinion > 100D) person1Opinion = 100D;
+		if (person1Opinion < 0D)
+			person1Opinion = 0D;
+		if (person1Opinion > 100D)
+			person1Opinion = 100D;
 	}
 
 	/**
 	 * Sets person 2's opinion of person 1
+	 * 
 	 * @param opinion person 2's opinion as a value from 0 to 100.
 	 */
 	private void setPerson2Opinion(double opinion) {
 		person2Opinion = opinion;
-		if (person2Opinion < 0D) person2Opinion = 0D;
-		if (person2Opinion > 100D) person2Opinion = 100D;
+		if (person2Opinion < 0D)
+			person2Opinion = 0D;
+		if (person2Opinion > 100D)
+			person2Opinion = 100D;
 	}
 
 	/**
 	 * Gets one of the two people's opinion of the other.
+	 * 
 	 * @param person the person to get an opinion from.
 	 * @return the person's opinion of the other person as a value from 0 to 100.
-	 * @throws IllegalArgumentException if person is not one of the two people in the relationship.
+	 * @throws IllegalArgumentException if person is not one of the two people in
+	 *                                  the relationship.
 	 */
 	public double getPersonOpinion(Person person) throws IllegalArgumentException {
-		if (person == person1) return person1Opinion;
-		else if (person == person2) return person2Opinion;
-		else throw new IllegalArgumentException("Invalid person: " + person);
+		if (person == person1)
+			return person1Opinion;
+		else if (person == person2)
+			return person2Opinion;
+		else
+			throw new IllegalArgumentException("Invalid person: " + person);
 	}
 
 	/**
 	 * Sets one of the two people's opinion of the other.
-	 * @param person the person to set the opinion for.
-	 * @param opinion the person's opinion of the other person as a value from 0 to 100.
-	 * @throws IllegalArgumentException if person is not one of the two people in the relationship.
+	 * 
+	 * @param person  the person to set the opinion for.
+	 * @param opinion the person's opinion of the other person as a value from 0 to
+	 *                100.
+	 * @throws IllegalArgumentException if person is not one of the two people in
+	 *                                  the relationship.
 	 */
 	public void setPersonOpinion(Person person, double opinion) throws IllegalArgumentException {
-		if (person == person1) setPerson1Opinion(opinion);
-		else if (person == person2) setPerson2Opinion(opinion);
-		else throw new IllegalArgumentException("Invalid person: " + person); 
+		if (person == person1)
+			setPerson1Opinion(opinion);
+		else if (person == person2)
+			setPerson2Opinion(opinion);
+		else
+			throw new IllegalArgumentException("Invalid person: " + person);
 	}
 
 	/**
 	 * Gets the first impression a person has of another person.
+	 * 
 	 * @param impressioner the person getting the impression.
 	 * @param impressionee the person who's the object of the impression.
 	 * @return the opinion of the impressioner as a value from 0 to 100.
@@ -146,36 +170,43 @@ implements Serializable {
 
 		// Random with bell curve around 50.
 		int numberOfIterations = 3;
-		for (int x = 0; x < numberOfIterations; x++) result+= RandomUtil.getRandomDouble(100D);
+		for (int x = 0; x < numberOfIterations; x++)
+			result += RandomUtil.getRandomDouble(100D);
 		result /= numberOfIterations;
 
 		NaturalAttributeManager attributes = impressionee.getNaturalAttributeManager();
 
 		// Modify based on conversation attribute.
 		double conversationModifier = (double) attributes.getAttribute(NaturalAttributeType.CONVERSATION) - 50D;
-		result+= RandomUtil.getRandomDouble(conversationModifier);
+		result += RandomUtil.getRandomDouble(conversationModifier);
 
 		// Modify based on attractiveness attribute if people are of opposite genders.
-		// Note: We may add sexual orientation later that will add further complexity to this.
+		// Note: We may add sexual orientation later that will add further complexity to
+		// this.
 		double attractivenessModifier = (double) attributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) - 50D;
 		boolean oppositeGenders = (!impressioner.getGender().equals(impressionee.getGender()));
-		if (oppositeGenders) result+= RandomUtil.getRandomDouble(attractivenessModifier);
+		if (oppositeGenders)
+			result += RandomUtil.getRandomDouble(attractivenessModifier);
 
 		// Modify based on total scientific achievement.
 		result += impressionee.getTotalScientificAchievement() / 10D;
 
-		// If impressioner is a scientist, modify based on impressionee's achievement in scientific field.
+		// If impressioner is a scientist, modify based on impressionee's achievement in
+		// scientific field.
 		ScienceType science = ScienceType.getJobScience(impressioner.getMind().getJob());
 		result += impressionee.getScientificAchievement(science);
 
 		// Modify as settlers are trained to try to get along with each other.
-		if (result < 50D) result+= RandomUtil.getRandomDouble(SETTLER_MODIFIER);
+		if (result < 50D)
+			result += RandomUtil.getRandomDouble(SETTLER_MODIFIER);
 
 		return result;
 	}
 
 	/**
-	 * Gets an existing relationship between two people who have spent time together.
+	 * Gets an existing relationship between two people who have spent time
+	 * together.
+	 * 
 	 * @param person the person who has a relationship with the target person.
 	 * @param target the person who is the target of the relationship.
 	 * @return the person's opinion of the target as a value from 0 to 100.
@@ -185,42 +216,50 @@ implements Serializable {
 
 		// Random with bell curve around 50.
 		int numberOfIterations = 3;
-		for (int x = 0; x < numberOfIterations; x++) result+= RandomUtil.getRandomDouble(100D);
+		for (int x = 0; x < numberOfIterations; x++)
+			result += RandomUtil.getRandomDouble(100D);
 		result /= numberOfIterations;
 
 		NaturalAttributeManager attributes = target.getNaturalAttributeManager();
 
 		// Modify based on conversation attribute.
 		double conversationModifier = (double) attributes.getAttribute(NaturalAttributeType.CONVERSATION) - 50D;
-		result+= RandomUtil.getRandomDouble(conversationModifier);
+		result += RandomUtil.getRandomDouble(conversationModifier);
 
 		// Modify based on attractiveness attribute if people are of opposite genders.
-		// Note: We may add sexual orientation later that will add further complexity to this.
+		// Note: We may add sexual orientation later that will add further complexity to
+		// this.
 		double attractivenessModifier = (double) attributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS) - 50D;
 		boolean oppositeGenders = (!person.getGender().equals(target.getGender()));
-		if (oppositeGenders) result+= RandomUtil.getRandomDouble(attractivenessModifier);
+		if (oppositeGenders)
+			result += RandomUtil.getRandomDouble(attractivenessModifier);
 
 		// Personality diff modifier
 		PersonalityType personType = person.getMind().getMBTI();
 		PersonalityType targetType = target.getMind().getMBTI();
-		double personalityDiffModifier = (2D - (double) personType.getPersonalityDifference(targetType.getTypeString())) * 50D;
-		result+= RandomUtil.getRandomDouble(personalityDiffModifier);
+		double personalityDiffModifier = (2D - (double) personType.getPersonalityDifference(targetType.getTypeString()))
+				* 50D;
+		result += RandomUtil.getRandomDouble(personalityDiffModifier);
 
 		// Modify based on total scientific achievement.
 		result += target.getTotalScientificAchievement() / 10D;
 
-		// If impressioner is a scientist, modify based on target's achievement in scientific field.
+		// If impressioner is a scientist, modify based on target's achievement in
+		// scientific field.
 		ScienceType science = ScienceType.getJobScience(target.getMind().getJob());
 		result += target.getScientificAchievement(science);
 
 		// Modify as settlers are trained to try to get along with each other.
-		if (result < 50D) result+= RandomUtil.getRandomDouble(SETTLER_MODIFIER);
+		if (result < 50D)
+			result += RandomUtil.getRandomDouble(SETTLER_MODIFIER);
 
 		return result;
 	}
 
 	/**
-	 * Gets an new relationship between two people who meet via remote communication.
+	 * Gets an new relationship between two people who meet via remote
+	 * communication.
+	 * 
 	 * @param person the person who has a relationship with the target person.
 	 * @param target the person who is the target of the relationship.
 	 * @return the person's opinion of the target as a value from 0 to 100.
@@ -234,7 +273,8 @@ implements Serializable {
 		// Modify based on total scientific achievement.
 		result += target.getTotalScientificAchievement() / 10D;
 
-		// If impressioner is a scientist, modify based on target's achievement in scientific field.
+		// If impressioner is a scientist, modify based on target's achievement in
+		// scientific field.
 		ScienceType science = ScienceType.getJobScience(target.getMind().getJob());
 		result += target.getScientificAchievement(science);
 
