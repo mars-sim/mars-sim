@@ -225,12 +225,12 @@ public class RelationshipManager implements Serializable {
 	}
 
 	/**
-	 * Gets a map of friends
+	 * Gets a map of my opinions over them
 	 * 
 	 * @param person
-	 * @return {@link Person} array
+	 * @return {@link Person} map
 	 */
-	public Map<Person, Double> getFriends(Person person) {
+	public Map<Person, Double> getMyOpinionsOfThem(Person person) {
 		Map<Person, Double> friends = new HashMap<>();
 		Collection<Person> list = getAllKnownPeople(person);
 //		System.out.println("list : " + list);
@@ -239,6 +239,30 @@ public class RelationshipManager implements Serializable {
 		if (!list.isEmpty()) {
 			for (Person pp : list) {
 				double score = getOpinionOfPerson(person, pp);
+				if (highestScore <= score)
+					highestScore = score;
+					friends.put(pp, score);
+			}
+		}
+
+		return sortByValue(friends);
+	}
+	
+	/**
+	 * Gets a map of their opinions over me
+	 * 
+	 * @param person
+	 * @return {@link Person} map
+	 */
+	public Map<Person, Double> getTheirOpinionsOfMe(Person person) {
+		Map<Person, Double> friends = new HashMap<>();
+		Collection<Person> list = getAllKnownPeople(person);
+//		System.out.println("list : " + list);
+		double highestScore = 0;
+//		double nextScore = 0;	
+		if (!list.isEmpty()) {
+			for (Person pp : list) {
+				double score = getOpinionOfPerson(pp, person);
 				if (highestScore <= score)
 					highestScore = score;
 					friends.put(pp, score);
@@ -279,7 +303,7 @@ public class RelationshipManager implements Serializable {
 	 * @return {@link Person} array
 	 */
 	public Map<Person, Double> getBestFriends(Person person) {
-		Map<Person, Double> bestFriends = getFriends(person);
+		Map<Person, Double> bestFriends = getMyOpinionsOfThem(person);
 		int size = bestFriends.size();
 		if (size == 1) {
 			return bestFriends;

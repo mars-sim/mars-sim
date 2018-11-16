@@ -485,7 +485,7 @@ public class ChatUtils {
 
 		int count = 0;
 		for (Person pp : list0) {
-			Map<Person, Double> friends = relationshipManager.getFriends(pp);
+			Map<Person, Double> friends = relationshipManager.getMyOpinionsOfThem(pp);
 			if (!friends.isEmpty()) {
 				List<Person> list = new ArrayList<>(friends.keySet());
 				for (int i = 0; i < list.size(); i++) {
@@ -521,8 +521,8 @@ public class ChatUtils {
 			double score = getRelationshipScore(settlementCache);
 		
 			responseText.append(System.lineSeparator())	;		
-			responseText.append(settlementCache.getName() + "'s current overall social score is " + fmt1.format(score) + ".");
-			responseText.append(System.lineSeparator());
+			responseText.append(settlementCache.getName() + "'s social score : " + fmt1.format(score));
+//			responseText.append(System.lineSeparator());
 		
 		}
 		
@@ -1556,7 +1556,8 @@ public class ChatUtils {
 			if (relationshipManager == null)
 				relationshipManager = Simulation.instance().getRelationshipManager();
 			
-			Map<Person, Double> friends = relationshipManager.getFriends(personCache);
+			// My opinions of them
+			Map<Person, Double> friends = relationshipManager.getMyOpinionsOfThem(personCache);
 //			System.out.println("friends in ChatUtils : " + friends);
 			if (friends.isEmpty()) {
 				responseText.append("I don't have any friends yet.");
@@ -1567,106 +1568,110 @@ public class ChatUtils {
 				responseText.append(System.lineSeparator());
 				List<Person> list = new ArrayList<>(friends.keySet());
 				int size = list.size();
-				
-				responseText.append("                   Friend | Score | Attitude "
+	
+//				responseText.append("                   Friend | Score | Attitude "				
+				responseText.append("       Toward this Person | Score | My Attitude"
 						+ System.lineSeparator());
 				responseText.append("      -----------------------------------------"
 						+ System.lineSeparator());		
 				
-				int max = 25;
-				int max1 = 16;
-				int max2 = 7;
+				int max0 = 25;
+				int max1 = 7;
+				int max2 = 16;
+				int count = 0;
+				int sum = 0;
 				String SPACE = " ";
-				
-				if (size == 1) {
-					Person p = list.get(0);
+					
+				for (int x = 0; x < size; x++) {
+					Person p = list.get(x);
 					double score = friends.get(p);
+					sum += score;
+					count++;
 					String relation = RelationshipManager.describeRelationship(score);
-					int size0 = max - p.getName().length();
+					int size0 = max0 - p.getName().length();
+					for (int i=0; i<size0; i++) {
+						responseText.append(SPACE);
+					}
+					responseText.append(p);
+					String scoreStr = Math.round(score*10.0)/10.0 + "";
+					int size2 = max1 - scoreStr.length();
+					for (int i=0; i<size2; i++) {
+						responseText.append(SPACE);
+					}
+					responseText.append(scoreStr);
+					
+//						int size1 = max1 - relation.length();
+//						for (int i=0; i<size1; i++) {
+//							responseText.append(SPACE);
+//						}
+					responseText.append("    ");
+					responseText.append(relation);
+				
+					responseText.append(System.lineSeparator());	
+
+				}
+					
+				responseText.append("      -----------------------------------------");
+				responseText.append(System.lineSeparator());
+				responseText.append("       My Opinion of Them : ");
+				responseText.append(fmt1.format(sum/count));
+				
+				responseText.append(System.lineSeparator());	
+				responseText.append(System.lineSeparator());
+//				responseText.append(System.lineSeparator());	
+				
+				// Their opinions of me
+				friends = relationshipManager.getTheirOpinionsOfMe(personCache);
+				
+				list = new ArrayList<>(friends.keySet());
+				size = list.size();
+	
+//				responseText.append("                   Friend | Score | Attitude "				
+				responseText.append("    This Person Toward Me | Score | Attitude Toward Me"
+						+ System.lineSeparator());
+				responseText.append("      -----------------------------------------"
+						+ System.lineSeparator());		
+				
+				count = 0;
+				sum = 0;
+				
+				for (int x = 0; x < size; x++) {
+					Person p = list.get(x);
+					double score = friends.get(p);
+					sum += score;
+					count++;
+					String relation = RelationshipManager.describeRelationship(score);
+					int size0 = max0 - p.getName().length();
 					for (int i=0; i<size0; i++) {
 						responseText.append(SPACE);
 					}
 					responseText.append(p);
 					
-					int size2 = max2 - fmt1.format(score).length();
+					String scoreStr = Math.round(score*10.0)/10.0 + "";
+					int size2 = max1 - scoreStr.length();
 					for (int i=0; i<size2; i++) {
 						responseText.append(SPACE);
 					}
-					responseText.append(fmt1.format(score));
+					responseText.append(scoreStr);
 					
-					int size1 = max1 - relation.length();
-					for (int i=0; i<size1; i++) {
-						responseText.append(SPACE);
-					}
-					responseText.append(relation);
-					
-					responseText.append(System.lineSeparator());	
-				}
-				else if (size >= 2) {
-//					responseText.append(System.lineSeparator());	
-					for (int x = 0; x < size; x++) {
-						Person p = list.get(x);
-						double score = friends.get(p);
-						String relation = RelationshipManager.describeRelationship(score);
-						int size0 = max - p.getName().length();
-						for (int i=0; i<size0; i++) {
-							responseText.append(SPACE);
-						}
-						responseText.append(p);
-						
-						int size2 = max2 - fmt1.format(score).length();
-						for (int i=0; i<size2; i++) {
-							responseText.append(SPACE);
-						}
-						responseText.append(fmt1.format(score));
-						
 //						int size1 = max1 - relation.length();
 //						for (int i=0; i<size1; i++) {
 //							responseText.append(SPACE);
 //						}
-						responseText.append("    ");
-						responseText.append(relation);
-					
-						responseText.append(System.lineSeparator());	
-					}
-				}	
+					responseText.append("    ");
+					responseText.append(relation);
 				
-//				if (size == 1) {
-//					Person p = list.get(0);
-//					double score = friends.get(p);
-//					String pronoun = "him";
-//					String relation = RelationshipManager.describeRelationship(score);
-//					if (!relation.equals("trusting") && !relation.equals("hating"))
-//						relation = relation + " to ";
-//					else
-//						relation = relation + " ";
-//					if (p.getGender() == GenderType.FEMALE)
-//						pronoun = "her";
-//					responseText.append("My relationship is simple with " + p + ". ");
-//					responseText.append("I'm " + relation + pronoun + " (");
-//					responseText.append("score : " + fmt1.format(score) + ").");
-//				}
-//				else if (size >= 2) {
-//					responseText.append("My relationship with those I know are : ");
-//					responseText.append(System.lineSeparator());	
-//					for (int i = 0; i < size; i++) {
-//						Person p = list.get(i);
-//						double score = friends.get(p);
-//						String pronoun = "him";
-//						String relation = RelationshipManager.describeRelationship(score);
-//						if (!relation.equals("trusting") && !relation.equals("hating"))
-//							relation = relation + " to ";
-//						else
-//							relation = relation + " ";
-//						if (p.getGender() == GenderType.FEMALE)
-//							pronoun = "her";					
-//						responseText.append("(" + (i+1) + "). " + p + " -- ");
-//						responseText.append("I'm " + relation + pronoun + " (");
-//						responseText.append("score : " + fmt1.format(score) + ").");
-//						responseText.append(System.lineSeparator());
-//					}
-//				}	
+					responseText.append(System.lineSeparator());	
+
+				}
+				
+				responseText.append("      -----------------------------------------");
+				responseText.append(System.lineSeparator());
+				responseText.append("      Their Opinion of Me : ");
+				responseText.append(Math.round(sum/count*10.0)/10.0);
+			
 			}
+			
 		}
 
 		else if (text.toLowerCase().contains("feeling") || text.toLowerCase().contains("how you been")) {
@@ -2592,8 +2597,6 @@ public class ChatUtils {
 			int size = scores.size();
 			ave = ave / size;
 			
-			responseText.append("Current overall social score for all " + size + " settlements : " + fmt1.format(ave));
-			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			
 			responseText.append("   Rank | Score | Settlement");
@@ -2606,7 +2609,8 @@ public class ChatUtils {
 			for (int i=0; i<size; i++) {
 				double score = scores.get(i);
 				String space = "";
-				String scoreStr = score + "";
+				
+				String scoreStr = Math.round(score*10.0)/10.0 + "";
 				int num = scoreStr.length();
 				if (num == 2)
 					space = "   ";
@@ -2615,14 +2619,21 @@ public class ChatUtils {
 				else if (num == 4)
 					space = " ";
 				else if (num == 5)
-					space = "";
+					space = "";				
 				
-				String name = map.get(scores.get(i));			
-				responseText.append("    #" + (i+1) + "    " + space + fmt1.format(score) + "    " + name );
+				String name = map.get(scores.get(i));		
+				responseText.append("    #" + (i+1) + "    " + space + Math.round(score*10.0)/10.0 + "    " + name );
 				// Note : remove the pair will prevent the case when when 2 or more settlements have the exact same score from reappearing
 				map.remove(score, name);
 				responseText.append(System.lineSeparator());
 			}
+			
+//			responseText.append("  Overall : " + fmt1.format(ave)); 
+//			responseText.append(System.lineSeparator());
+			responseText.append(" -----------------------------------");
+			responseText.append(System.lineSeparator());
+			responseText.append(" Overall : " + Math.round(ave*10.0)/10.0);			
+			responseText.append(System.lineSeparator());
 			
 //			responseText.append(System.lineSeparator());
 			
