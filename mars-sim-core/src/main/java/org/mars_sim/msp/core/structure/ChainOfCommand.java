@@ -52,7 +52,7 @@ public class ChainOfCommand implements Serializable {
 
 	private Settlement settlement;
 
-	private UnitManager unitManager;
+	private static UnitManager unitManager;
 
 	/**
 	 * This class creates a chain of command structure for a settlement. A
@@ -184,8 +184,7 @@ public class ChainOfCommand implements Serializable {
 		}
 
 		else {
-			logger.config("[" + person.getLocationTag().getLocale() + "] Selecting a role for " + person.getName()
-					+ " based on his " + job.getClass().getSimpleName() + " job.");
+
 			if (job.equals(JobManager.getJob(Architect.class.getSimpleName()))) {
 				if (RandomUtil.getRandomInt(1, 2) == 1) {
 					role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
@@ -239,6 +238,9 @@ public class ChainOfCommand implements Serializable {
 				else
 					role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
 			}
+			if (Simulation.instance().getMasterClock().getMarsClock().getMissionSol() > 1)
+				logger.config("[" + person.getLocationTag().getLocale() + "] Selecting " + person.getName()
+				+ " the " + job.getClass().getSimpleName() + " to be " + person.getRole() + ".");
 		}
 	}
 
@@ -291,7 +293,9 @@ public class ChainOfCommand implements Serializable {
 			assignRole(job, person, 4);
 		} else if (!allSlotsFilledPenta) {
 			assignRole(job, person, 5);
-		} else {
+		} 
+		
+		else {
 
 			if (job.equals(JobManager.getJob(Architect.class.getSimpleName()))) {
 				role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
@@ -359,6 +363,9 @@ public class ChainOfCommand implements Serializable {
 					role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
 				}
 			}
+			if (Simulation.instance().getMasterClock().getMarsClock().getMissionSol() > 1)
+				logger.config("[" + person.getLocationTag().getLocale() + "] Selecting " + person.getName()
+					+ " the " + job.getClass().getSimpleName() + " to be " + person.getRole() + ".");
 		}
 	}
 
@@ -392,11 +399,16 @@ public class ChainOfCommand implements Serializable {
 	 * @param key {@link RoleType}
 	 */
 	public void reelect(RoleType key) {
-
-		if (key == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES || key == RoleType.CHIEF_OF_ENGINEERING
-				|| key == RoleType.CHIEF_OF_SAFETY_N_HEALTH) {
+		if (key == RoleType.CHIEF_OF_AGRICULTURE
+				|| key == RoleType.CHIEF_OF_ENGINEERING
+				|| key == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
+				|| key == RoleType.CHIEF_OF_MISSION_PLANNING
+				|| key == RoleType.CHIEF_OF_SAFETY_N_HEALTH
+				|| key == RoleType.CHIEF_OF_SCIENCE
+				|| key == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
 			unitManager.electChief(settlement, key);
-		} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
+		} else if (key == RoleType.COMMANDER 
+				|| key == RoleType.SUB_COMMANDER) {
 			int pop = settlement.getNumCitizens();
 			unitManager.electCommanders(settlement, pop);
 		} else if (key == RoleType.MAYOR) {

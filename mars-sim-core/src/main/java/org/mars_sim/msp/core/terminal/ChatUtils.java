@@ -2274,7 +2274,7 @@ public class ChatUtils {
 				num = Integer.parseUnsignedInt(text, 10);
 
 			// Add command "die"
-			if (text.equalsIgnoreCase("die")) {
+			if (text.equalsIgnoreCase("die") && expertMode) {
 
 				if (personCache != null) {
 					questionText = YOU_PROMPT + "I hereby pronounce you dead.";
@@ -2312,8 +2312,11 @@ public class ChatUtils {
 					else
 						lastWord = "They tried to get me——I got them first!";
 
-					responseText.append(lastWord);
+					responseText.append(personCache.getName() + " : " + lastWord);
 
+					responseText.append(System.lineSeparator() + System.lineSeparator() 
+						+ personCache.getName() + " committed suicide as instructed.");
+				
 					personCache.setLastWord(lastWord);
 
 					personCache.getPhysicalCondition()
