@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -512,20 +514,22 @@ public class Simulation implements ClockListener, Serializable {
 	
 	}
 	
-	/**
-	 * Reads a serialized simulation from a file.
-	 * 
-	 * @param file the saved serialized simulation.
-	 * @throws ClassNotFoundException if error reading serialized classes.
-	 * @throws IOException            if error reading from file.
-	 */
-	private synchronized void readFromFile(File file) throws ClassNotFoundException, IOException {
-		// logger.config("Simulation : running readFromFile()");
-		logger.config("Loading and processing the saved sim. Please wait...");
+    /**
+     * Deserialize to Object from given file.
+     */
+    public void deserialize(File file) throws IOException,
+            ClassNotFoundException {
+//        FileInputStream fis = new FileInputStream(fileName);
+//        BufferedInputStream bis = new BufferedInputStream(fis);
+//        ObjectInputStream ois = new ObjectInputStream(bis);
+//        Object obj = ois.readObject();
+//        ois.close();
+
 		
 		byte[] buf = new byte[8192];
 		ObjectInputStream ois = null;
 		FileInputStream in = null;
+		
 		try {
 			// in = new FileInputStream(file);
 			in = new FileInputStream(file);
@@ -537,7 +541,7 @@ public class Simulation implements ClockListener, Serializable {
 			// needed here to improve performance.
 			// in = new BufferedInputStream(in);
 			// Limit memory usage to 256 MB
-			XZInputStream xzin = new XZInputStream(in, 256 * 1024);
+			XZInputStream xzin = new XZInputStream(new BufferedInputStream(in), 256 * 1024);
 			// Define a temporary uncompressed file
 			File uncompressed = new File(DEFAULT_DIR, TEMP_FILE);
 			// Decompress a xz compressed file
@@ -547,39 +551,12 @@ public class Simulation implements ClockListener, Serializable {
 			while ((size = xzin.read(buf)) != -1)
 				fos.write(buf, 0, size);
 
-			ois = new ObjectInputStream(new FileInputStream(uncompressed));
+			ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(uncompressed)));
 
 			// Load intransient objects.
-			SimulationConfig.setInstance((SimulationConfig) ois.readObject());			
-//			runLoadConfigTask();
-			
+			SimulationConfig.setInstance((SimulationConfig) ois.readObject());		
 			ResourceUtil.setInstance((ResourceUtil) ois.readObject());
 
-			// Compute the size of the saved sim
-			fileSize = (file.length() / 1000D);
-			String fileStr = "";
-
-			if (fileSize < 1000)
-				fileStr = Math.round(fileSize / 10.0) * 10.0 + " KB";
-			else
-				fileStr = Math.round(fileSize / 10_000.0 ) * 10.0  + " MB";
-
-			loadBuild = SimulationConfig.instance().build;
-			if (loadBuild == null)
-				loadBuild = "unknown";
-			
-//			logger.config("Proceed to loading the saved sim.");
-			String filename = file.getName();
-			String path = file.getPath().replace(filename, "");
-			logger.config(" --------------------------------------------------------------------");
-			logger.config("                      Saved Simulation                               ");
-			logger.config(" --------------------------------------------------------------------");
-			logger.config("                   Filename : " + filename);
-			logger.config("                       Path : " + path);
-			logger.config("                       Size : " + fileStr);
-			logger.config("              Made in Build : " + loadBuild);
-			logger.config("  Current Core Engine Build : " + Simulation.BUILD);
-			
 			// Load remaining serialized objects
 			malfunctionFactory = (MalfunctionFactory) ois.readObject();
 			mars = (Mars) ois.readObject();
@@ -653,6 +630,48 @@ public class Simulation implements ClockListener, Serializable {
 			System.exit(1);
 		}
 
+    }
+    
+ 
+	/**
+	 * Reads a serialized simulation from a file.
+	 * 
+	 * @param file the saved serialized simulation.
+	 * @throws ClassNotFoundException if error reading serialized classes.
+	 * @throws IOException            if error reading from file.
+	 */
+	private synchronized void readFromFile(File file) throws ClassNotFoundException, IOException {
+		// logger.config("Simulation : running readFromFile()");
+		logger.config("Loading and processing the saved sim. Please wait...");
+		
+		// Compute the size of the saved sim
+		fileSize = (file.length() / 1000D);
+		String fileStr = "";
+
+		if (fileSize < 1000)
+			fileStr = Math.round(fileSize / 10.0) * 10.0 + " KB";
+		else
+			fileStr = Math.round(fileSize / 10_000.0 ) * 10.0  + " MB";
+
+		loadBuild = SimulationConfig.instance().build;
+		if (loadBuild == null)
+			loadBuild = "unknown";
+		
+//		logger.config("Proceed to loading the saved sim.");
+		String filename = file.getName();
+		String path = file.getPath().replace(filename, "");
+		logger.config(" --------------------------------------------------------------------");
+		logger.config("                      Saved Simulation                               ");
+		logger.config(" --------------------------------------------------------------------");
+		logger.config("                   Filename : " + filename);
+		logger.config("                       Path : " + path);
+		logger.config("                       Size : " + fileStr);
+		logger.config("              Made in Build : " + loadBuild);
+		logger.config("  Current Core Engine Build : " + Simulation.BUILD);
+		
+		// Deserialize the file
+		deserialize(file);
+
 		// Initialize transient data.
 //	        instance().initializeTransientData();
 		instance().initialSimulationCreated = true;
@@ -665,7 +684,7 @@ public class Simulation implements ClockListener, Serializable {
 	
 	public void writeJSON() throws JsonGenerationException, JsonMappingException, IOException {	
 		// Write to console, can write to any output stream such as file
-		StringWriter stringEmp = new StringWriter();
+//		StringWriter stringEmp = new StringWriter();
 		
 //		Simulation sim = instance();
 //		SurfaceFeatures surface = sim.getMars().getSurfaceFeatures();
@@ -693,6 +712,7 @@ public class Simulation implements ClockListener, Serializable {
 		System.out.println("JSON representation of the Class '" + name + "' :\n" + json);
 		
 	}
+	
 	
 	/**
 	 * Saves a simulation instance to a save file.
@@ -783,32 +803,48 @@ public class Simulation implements ClockListener, Serializable {
 			file.getParentFile().mkdirs();
 		}
 
-		ObjectOutputStream oos = null;
-		FileInputStream fis = null;
-		FileOutputStream fos = new FileOutputStream(file);
+		// Serialize the file
+		serialize(type, file, srcPath, destPath);
+		
+		sim.proceed();
+
+	}
+
+    /**
+     * Serialize the given object and save it to a given file.
+     */
+    public void serialize(int type, File file, Path srcPath, Path destPath)
+            throws IOException {
+
+		// Replace gzip with xz compression (based on LZMA2)
+		// See (1)
+		// http://stackoverflow.com/questions/5481487/how-to-use-lzma-sdk-to-compress-decompress-in-java
+		// (2) http://tukaani.org/xz/xz-javadoc/
+
+		// STEP 1: combine all objects into one single uncompressed file, namely
+		// "default"
+		
+//		ObjectOutputStream oos = null;
+//		FileOutputStream fos = new FileOutputStream(file);
+
+		File uncompressed = new File(DEFAULT_DIR, TEMP_FILE);
+		
+		// if the default save directory does not exist, create one now
+		if (!uncompressed.getParentFile().exists()) {
+			uncompressed.getParentFile().mkdirs();
+		}
+		
+//        FileOutputStream fos = new FileOutputStream(uncompressed);
+//        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(uncompressed));
+        ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(uncompressed)));
+        
+		FileInputStream fis = new FileInputStream(uncompressed);
+//		FileOutputStream fos = new FileOutputStream(file);
 		XZOutputStream xzout = null;
-		File uncompressed = null;
-
+		
 		try {
-
-			// Replace gzip with xz compression (based on LZMA2)
-			// See (1)
-			// http://stackoverflow.com/questions/5481487/how-to-use-lzma-sdk-to-compress-decompress-in-java
-			// (2) http://tukaani.org/xz/xz-javadoc/
-
-			// STEP 1: combine all objects into one single uncompressed file, namely
-			// "default"
-			uncompressed = new File(DEFAULT_DIR, TEMP_FILE);
-
-			// Delete temp file when program exits.
-			//uncompressed.deleteOnExit();
-		    
-			// if the default save directory does not exist, create one now
-			if (!uncompressed.getParentFile().exists()) {
-				uncompressed.getParentFile().mkdirs();
-			}
-
-			oos = new ObjectOutputStream(new FileOutputStream(uncompressed));
+	    
+			//oos = new ObjectOutputStream(new FileOutputStream(uncompressed));
 			
 			// Store the in-transient objects.
 			oos.writeObject(SimulationConfig.instance());
@@ -826,13 +862,12 @@ public class Simulation implements ClockListener, Serializable {
 			oos.writeObject(masterClock);
 
 			oos.flush();
-			// oos.close();
+			oos.close();
 
 			// Print the size of each serializable object
 			printObjectSize();
 			
 			// STEP 2: convert the uncompressed file into a fis
-			fis = new FileInputStream(uncompressed);
 			
 			// Using the default settings and the default integrity check type (CRC64)
 			// If set to level 9, at start of the sim, 406 KB
@@ -848,14 +883,13 @@ public class Simulation implements ClockListener, Serializable {
 //			X86Options x86 = new X86Options();
 //			LZMA2Options lzma2 = new LZMA2Options();
 //			FilterOptions[] options = { x86, lzma2 };
-			System.out.println("Encoder memory usage: "
-			                    + FilterOptions.getEncoderMemoryUsage(options)
-			                    + " KiB");
-			System.out.println("Decoder memory usage: "
-			                    + FilterOptions.getDecoderMemoryUsage(options)
-			                    + " KiB");
+			logger.config("Encoder memory usage: "
+			              + FilterOptions.getEncoderMemoryUsage(options) + " KiB");
+			logger.config("Decoder memory usage: "
+			              + FilterOptions.getDecoderMemoryUsage(options) + " KiB");
 			 
-			xzout = new XZOutputStream(fos, options);
+//			fos = new FileOutputStream(uncompressed);
+			xzout = new XZOutputStream(new BufferedOutputStream(new FileOutputStream(file)), options);
 
 			// STEP 3: set up buffer and create outxz and save as a .sim file
 			byte[] buf = new byte[8192];
@@ -865,31 +899,11 @@ public class Simulation implements ClockListener, Serializable {
 
 			xzout.finish();
 			
-			if (oos != null)
-				oos.close();
-
-			if (fos != null)
-				fos.close();
-			
-			if (fis != null)
-				fis.close();
-			
-			if (xzout != null)
-				xzout.close();
-	
-			uncompressed.delete();
-			//uncompressed = null;
-			
 			logger.config("Done saving. The simulation resumes.");
 
 		} catch (NullPointerException e0) {
 			logger.log(Level.SEVERE, Msg.getString("Simulation.log.saveError"), e0); //$NON-NLS-1$
 			e0.printStackTrace();
-
-			if (fos != null)
-				fos.close();
-			if (xzout != null)
-				xzout.close();
 
 			if (type == AUTOSAVE_AS_DEFAULT || type == SAVE_DEFAULT) {
 //	            backupFile = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
@@ -905,11 +919,6 @@ public class Simulation implements ClockListener, Serializable {
 			logger.log(Level.SEVERE, Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
 			e.printStackTrace();
 
-			if (fos != null)
-				fos.close();
-			if (xzout != null)
-				xzout.close();
-
 			if (type == AUTOSAVE_AS_DEFAULT || type == SAVE_DEFAULT) {
 //	            backupFile = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
 //	            backupFile.renameTo(file);
@@ -923,9 +932,7 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		finally {
-			// fis.close(); // fis closed automatically
-			// fos.close(); // fos closed automatically
-			
+		
 			if (xzout != null) {
 				xzout.close();
 				xzout.finish();
@@ -934,35 +941,21 @@ public class Simulation implements ClockListener, Serializable {
 			if (oos != null)
 				oos.close();
 
-			if (fos != null)
-				fos.close();
-			
 			if (fis != null)
 				fis.close();
-			
-			if (xzout != null)
-				xzout.close();
-	
-			uncompressed.delete();
-			
-			sim.proceed();
+
+			if (uncompressed != null) {
+				// Delete temp file when program exits.
+				uncompressed.deleteOnExit();
+				uncompressed.delete();
+				uncompressed = null;
+			}
 
 			justSaved = true;
 
-			// Check if it was previously on pause
-//			boolean now = masterClock.isPaused();
-//			if (!previous) {
-//				if (now) {
-//					masterClock.setPaused(false, false);
-//				}
-//			} else {
-//				if (!now) {
-//					masterClock.setPaused(false, false);
-//				}
-//			}
-		}
-	}
-
+		} 
+    }
+    
 	/**
 	 * Prints the object and its size
 	 */
