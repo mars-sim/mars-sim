@@ -445,6 +445,19 @@ public class Simulation implements ClockListener, Serializable {
 		Simulation sim = instance();
 		sim.stop();
 
+		try {
+			sim.readJSON();
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		// Use default file path if file is null.
 		if (f == null) {
 			// logger.config("Yes file is null");
@@ -461,10 +474,7 @@ public class Simulation implements ClockListener, Serializable {
 //			logger.config(Msg.getString("Simulation.log.loadSimFrom", f)); //$NON-NLS-1$
 
 			try {
-
 				sim.readFromFile(f);
-				
-				sim.readJSON();
 
 			} catch (ClassNotFoundException e2) {
 				logger.log(Level.SEVERE,
@@ -494,22 +504,22 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	private synchronized void readJSON() throws JsonParseException, JsonMappingException, IOException {
-		
+
 		String name = mars.getClass().getSimpleName();
-//		String name = mars.getClass().getSimpleName();
 		File file = new File(DEFAULT_DIR, name + JSON_EXTENSION);
-		
-		// Use Jackson json to read json file data to String
-		byte[] jsonData = Files.readAllBytes(file.toPath());//Paths.get("Mars.json"));
-		System.out.println(new String(jsonData));
-		
-//        mars = objectMapper.readValue(FileUtils.readFileToByteArray(file, Mars.class);
-//        System.out.println(mars);
-        
-		// Use Jackson json to read
-//		mars = objectMapper.readValue(file, Mars.class);
-//		System.out.println(mars);
-	
+			
+		if (file.exists() && file.canRead()) {
+			// Use Jackson json to read json file data to String
+			byte[] jsonData = Files.readAllBytes(file.toPath());//Paths.get("Mars.json"));
+			System.out.println(new String(jsonData));
+			
+//	        mars = objectMapper.readValue(FileUtils.readFileToByteArray(file, Mars.class);
+//	        System.out.println(mars);
+	        
+			// Use Jackson json to read
+//			mars = objectMapper.readValue(file, Mars.class);
+//			System.out.println(mars);
+		}
 	}
 	
     /**
@@ -704,7 +714,7 @@ public class Simulation implements ClockListener, Serializable {
 //		objectMapper.writeValue(stringEmp, o);
 //		System.out.println("JSON representation of the Class '" + name + "' :\n" + stringEmp);
 //		// Write to the file
-//		objectMapper.writeValue(new File(DEFAULT_DIR, name + JSON_EXTENSION), o);
+		objectMapper.writeValue(new File(DEFAULT_DIR, name + JSON_EXTENSION), o);
 		
 		String json = objectMapper.writeValueAsString(o) ; 
 		System.out.println("JSON representation of the Class '" + name + "' :\n" + json);
@@ -718,16 +728,6 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param file the file to be saved to.
 	 */
 	public synchronized void saveSimulation(int type, File file) throws IOException {
-//        logger.config("Simulation's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
-//		logger.config(Msg.getString("Simulation.log.saveSimTo") + " " + file); //$NON-NLS-1$
-
-		// Check if it was previously on pause
-//		boolean previous = masterClock.isPaused();
-		// Pause simulation.
-//		if (!previous) {
-//			masterClock.setPaused(true, false);
-//		}
-	
 		Simulation sim = instance();
 		sim.halt();
 
