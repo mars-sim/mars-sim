@@ -860,11 +860,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				if (resource < MAX_AMOUNT_RESOURCE) {
 
 					double amount = (Double) neededResources.get(resource);
-					double amountStored = inv.getARStored(resource, false);
+					double amountStored = inv.getAmountResourceStored(resource, false);
 
 					if (amountStored < amount) {
 						String newLog = vehicle.getName() + " does not have enough " 
-								+ ResourceUtil.findAmountResource(resource).getName() + " to continue with "
+								+ ResourceUtil.findAmountResourceName(resource) + " to continue with "
 								+ getName() + " (Required: " + Math.round(amount * 100D) / 100D + " kg  Stored: "
 								+ Math.round(amountStored * 100D) / 100D + " kg).";
 						LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, newLog, null);

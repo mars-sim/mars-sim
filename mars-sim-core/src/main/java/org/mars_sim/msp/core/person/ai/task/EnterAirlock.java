@@ -613,13 +613,13 @@ public class EnterAirlock extends Task implements Serializable {
 				Inventory entityInv = person.getContainerUnit().getInventory(); // why NullPointerException ?
 	
 				// Unload oxygen from suit.
-				double oxygenAmount = suitInv.getARStored(oxygenID, false);
-				double oxygenCapacity = entityInv.getARRemainingCapacity(oxygenID, true, false);
+				double oxygenAmount = suitInv.getAmountResourceStored(oxygenID, false);
+				double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
 				if (oxygenAmount > oxygenCapacity)
 					oxygenAmount = oxygenCapacity;
 				try {
 					suitInv.retrieveAmountResource(oxygenID, oxygenAmount);
-					entityInv.storeAR(oxygenID, oxygenAmount, true);
+					entityInv.storeAmountResource(oxygenID, oxygenAmount, true);
 					entityInv.addAmountSupplyAmount(oxygenID, oxygenAmount);
 	
 				} catch (Exception e) {
@@ -627,13 +627,13 @@ public class EnterAirlock extends Task implements Serializable {
 				}
 	
 				// Unload water from suit.
-				double waterAmount = suitInv.getARStored(waterID, false);
-				double waterCapacity = entityInv.getARRemainingCapacity(waterID, true, false);
+				double waterAmount = suitInv.getAmountResourceStored(waterID, false);
+				double waterCapacity = entityInv.getAmountResourceRemainingCapacity(waterID, true, false);
 				if (waterAmount > waterCapacity)
 					waterAmount = waterCapacity;
 				try {
 					suitInv.retrieveAmountResource(waterID, waterAmount);
-					entityInv.storeAR(waterID, waterAmount, true);
+					entityInv.storeAmountResource(waterID, waterAmount, true);
 					entityInv.addAmountSupplyAmount(waterID, waterAmount);
 	
 				} catch (Exception e) {

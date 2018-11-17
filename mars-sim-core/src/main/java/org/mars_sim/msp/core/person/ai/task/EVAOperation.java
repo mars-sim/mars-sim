@@ -377,8 +377,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 			}
 
 			// Check if EVA suit is at 15% of its water capacity.
-			double waterCap = suitInv.getARCapacity(ResourceUtil.waterID, false);
-			double water = suitInv.getARStored(ResourceUtil.waterID, false);
+			double waterCap = suitInv.getAmountResourceCapacity(ResourceUtil.waterID, false);
+			double water = suitInv.getAmountResourceStored(ResourceUtil.waterID, false);
 			if (water <= (waterCap * .15D)) {
 				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "

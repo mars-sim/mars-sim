@@ -131,13 +131,13 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	public boolean lifeSupportCheck() {
 		// boolean result = true;
 		try {
-			if (getInventory().getARStored(ResourceUtil.oxygenID, false) <= 0D) {
+			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= 0D) {
 				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ person.getName() + "'s " + this.getName() + " ran out of oxygen.", null);
 				return false;
 			}
-			if (getInventory().getARStored(ResourceUtil.waterID, false) <= 0D) {
+			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {
 				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ person.getName() + "'s " + this.getName() + " ran out of water.", null);

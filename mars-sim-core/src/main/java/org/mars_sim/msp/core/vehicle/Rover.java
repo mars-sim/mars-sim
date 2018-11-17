@@ -283,9 +283,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		else
 			inv = getInventory();
 		
-		if (inv.getARStored(ResourceUtil.oxygenID, false) <= 0D)
+		if (inv.getAmountResourceStored(ResourceUtil.oxygenID, false) <= 0D)
 			result = false;
-		if (inv.getARStored(ResourceUtil.waterID, false) <= 0D)
+		if (inv.getAmountResourceStored(ResourceUtil.waterID, false) <= 0D)
 			result = false;
 
 		if (malfunctionManager.getOxygenFlowModifier() < 100D)

@@ -977,15 +977,15 @@ public class ExitAirlock extends Task implements Serializable {
 		int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
 
 		// Check if enough oxygen.
-		double neededOxygen = suitInv.getARRemainingCapacity(oxygenID, true, false);
-		double availableOxygen = entityInv.getARStored(oxygenID, false);
+		double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
+		double availableOxygen = entityInv.getAmountResourceStored(oxygenID, false);
 		// Make sure there is enough extra oxygen for everyone else.
 		availableOxygen -= (neededOxygen * otherPeopleNum);
 		boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
 
 		// Check if enough water.
-		double neededWater = suitInv.getARRemainingCapacity(waterID, true, false);
-		double availableWater = entityInv.getARStored(waterID, false);
+		double neededWater = suitInv.getAmountResourceRemainingCapacity(waterID, true, false);
+		double availableWater = entityInv.getAmountResourceStored(waterID, false);
 		// Make sure there is enough extra water for everyone else.
 		availableWater -= (neededWater * otherPeopleNum);
 		boolean hasEnoughWater = (availableWater >= neededWater);
@@ -1010,8 +1010,8 @@ public class ExitAirlock extends Task implements Serializable {
 		Inventory entityInv = person.getContainerUnit().getInventory();
 
 		// Fill oxygen in suit from entity's inventory.
-		double neededOxygen = suitInv.getARRemainingCapacity(oxygenID, true, false);
-		double availableOxygen = entityInv.getARStored(oxygenID, false);
+		double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
+		double availableOxygen = entityInv.getAmountResourceStored(oxygenID, false);
 
 		entityInv.addAmountDemandTotalRequest(oxygenID);
 
@@ -1021,7 +1021,7 @@ public class ExitAirlock extends Task implements Serializable {
 		try {
 			entityInv.retrieveAmountResource(oxygenID, takenOxygen);
 			entityInv.addAmountDemand(oxygenID, takenOxygen);
-			suitInv.storeAR(oxygenID, takenOxygen, true);
+			suitInv.storeAmountResource(oxygenID, takenOxygen, true);
 		} catch (Exception e) {
 			LogConsolidated.log(
 					logger, Level.SEVERE, 10000, sourceName, "[" + person.getLocationTag().getQuickLocation() + "] "
@@ -1030,8 +1030,8 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		// Fill water in suit from entity's inventory.
-		double neededWater = suitInv.getARRemainingCapacity(waterID, true, false);
-		double availableWater = entityInv.getARStored(waterID, false);
+		double neededWater = suitInv.getAmountResourceRemainingCapacity(waterID, true, false);
+		double availableWater = entityInv.getAmountResourceStored(waterID, false);
 
 		entityInv.addAmountDemandTotalRequest(waterID);
 
@@ -1042,7 +1042,7 @@ public class ExitAirlock extends Task implements Serializable {
 			entityInv.retrieveAmountResource(waterID, takenWater);
 
 			entityInv.addAmountDemand(waterID, takenWater);
-			suitInv.storeAR(waterID, takenWater, true);
+			suitInv.storeAmountResource(waterID, takenWater, true);
 
 		} catch (Exception e) {
 			LogConsolidated.log(

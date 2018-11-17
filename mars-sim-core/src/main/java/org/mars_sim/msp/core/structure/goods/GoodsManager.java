@@ -629,13 +629,13 @@ public class GoodsManager implements Serializable {
 	 */
 	private double getWasteDisposalSinkCost(AmountResource resource, double demand) {
 		if (resource.equals(ResourceUtil.greyWaterAR)) {
-			return 0;// computeWaste(resource)*.00000001D;
+			return demand * .1;// computeWaste(resource)*.00000001D;
 		} else if (resource.equals(ResourceUtil.blackWaterAR)) {
-			return 0;// computeWaste(resource)*.000000001D;
+			return demand * .05;// computeWaste(resource)*.000000001D;
 		} else if (resource.equals(ResourceUtil.toxicWasteAR)) {
-			return 0;// computeWaste(resource)*.00001D;
+			return demand * .01;// computeWaste(resource)*.00001D;
 		} else if (resource.equals(ResourceUtil.coAR)) {
-			return 0;// computeWaste(resource)*.000001D;
+			return demand * 0.5;// computeWaste(resource)*.000001D;
 		} else if (resource.equals(ResourceUtil.foodWasteAR)) {
 			return demand * 0.001;// computeWaste(resource);
 		} else if (resource.equals(ResourceUtil.cropWasteAR)) {
@@ -664,7 +664,6 @@ public class GoodsManager implements Serializable {
 	 * @return demand (kg)
 	 */
 	private double getPotableWaterUsageDemand(AmountResource resource) {
-
 		if (resource.equals(ResourceUtil.waterAR)) {
 			// Add the awareness of the water ration level in adjusting the water demand
 			double waterRationLevel = settlement.computeWaterRation();
@@ -683,8 +682,6 @@ public class GoodsManager implements Serializable {
 	 * @return demand (kg)
 	 */
 	private double getToiletryUsageDemand(AmountResource resource) {
-		// AmountResource toiletTissue = AmountResource.findAmountResource("toilet
-		// tissue");
 		if (resource.equals(ResourceUtil.toiletTissueAR)) {
 			double amountNeededSol = LivingAccommodations.TOILET_WASTE_PERSON_SOL;
 			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
@@ -842,14 +839,14 @@ public class GoodsManager implements Serializable {
 			demand = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * totalCropArea * averageGrowingCyclesPerOrbit;
 			// Estimate fertilizer needed when grey water not available.
 			demand += Crop.FERTILIZER_NEEDED_WATERING * totalCropArea * 1000D * solsInOrbit;
+		} else if (resource.equals(ResourceUtil.greyWaterAR)) {
+			// TODO: how to properly get rid of grey water? it should NOT be considered an
+			// economically vital resource
+			// Average grey water consumption rate of crops per orbit using total growing
+			// area.
+			// demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
+			demand = demand * 1D;
 		}
-		// Need to properly get rid of grey water. it should NOT be considered an
-		// economically vital resource
-		// else if (resource.equals(ResourceUtil.greyWaterAR)) {
-		// Average grey water consumption rate of crops per orbit using total growing
-		// area.
-		// demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
-		// }
 		else if (Farming.TISSUE_CULTURE.equalsIgnoreCase(resource.getType())) {
 			// Average use of tissue culture at greenhouse each orbit.
 			// CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();

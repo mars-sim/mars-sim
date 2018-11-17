@@ -403,9 +403,9 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		}
 
 		// Unload amount resources.
-		Iterator<AmountResource> i = vehicleInv.getAllAmountResourcesStored(false).iterator();
+		Iterator<Integer> i = vehicleInv.getAllARStored(false).iterator();
 		while (i.hasNext() && (amountUnloading > 0D)) {
-			AmountResource resource = i.next();
+			Integer resource = i.next();
 			double amount = vehicleInv.getAmountResourceStored(resource, false);
 			if (amount > amountUnloading)
 				amount = amountUnloading;
@@ -417,8 +417,6 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			try {
 				vehicleInv.retrieveAmountResource(resource, amount);
 				settlementInv.storeAmountResource(resource, amount, true);
-				// 2015-01-15 Add addSupplyAmount()
-				// settlementInv.addAmountSupplyAmount(resource, amount);
 			} catch (Exception e) {
 			}
 			amountUnloading -= amount;
@@ -490,9 +488,9 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		// Unload amount resources.
 		// Note: only unloading amount resources at the moment.
-		Iterator<AmountResource> i = eInv.getAllAmountResourcesStored(false).iterator();
+		Iterator<Integer> i = eInv.getAllARStored(false).iterator();
 		while (i.hasNext()) {
-			AmountResource resource = i.next();
+			Integer resource = i.next();
 			double amount = eInv.getAmountResourceStored(resource, false);
 			double capacity = sInv.getAmountResourceRemainingCapacity(resource, true, false);
 			if (amount < capacity)

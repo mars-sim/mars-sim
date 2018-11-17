@@ -327,7 +327,7 @@ implements Serializable {
                         if ((peopleOnboard > 0)) {
                             int numSuits = roverInv.findNumUnitsOfClass(EVASuit.class);
                             double water = roverInv.getAmountResourceStored(ResourceUtil.waterID, false);
-                            double oxygen = roverInv.getARStored(ResourceUtil.oxygenID, false);
+                            double oxygen = roverInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
                             if ((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED)) {
                                 result.add(rover);
                             }

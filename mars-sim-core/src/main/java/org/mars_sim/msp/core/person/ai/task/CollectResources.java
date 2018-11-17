@@ -230,7 +230,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		Iterator<Unit> i = inv.findAllUnitsOfClass(containerType).iterator();
 		while (i.hasNext()) {
 			Unit container = i.next();
-			double remainingCapacity = container.getInventory().getARRemainingCapacity(resource, true, false);
+			double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(resource, true, false);
 			if (remainingCapacity > mostCapacity) {
 				result = container;
 				mostCapacity = remainingCapacity;
@@ -265,8 +265,8 @@ public class CollectResources extends EVAOperation implements Serializable {
 			return time;
 		}
 
-		double remainingPersonCapacity = person.getInventory().getARRemainingCapacity(resourceType, true, false);
-		double currentSamplesCollected = rover.getInventory().getARStored(resourceType, false) - startingCargo;
+		double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(resourceType, true, false);
+		double currentSamplesCollected = rover.getInventory().getAmountResourceStored(resourceType, false) - startingCargo;
 		double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
 		double sampleLimit = remainingPersonCapacity;
 		if (remainingSamplesNeeded < remainingPersonCapacity) {
@@ -296,11 +296,11 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 		// Collect resources.
 		if (samplesCollected <= sampleLimit) {
-			person.getInventory().storeAR(resourceType, samplesCollected, true);
+			person.getInventory().storeAmountResource(resourceType, samplesCollected, true);
 			return 0D;
 		} else {
 			if (sampleLimit >= 0D) {
-				person.getInventory().storeAR(resourceType, sampleLimit, true);
+				person.getInventory().storeAmountResource(resourceType, sampleLimit, true);
 				person.getInventory().addAmountSupplyAmount(resourceType, sampleLimit);
 			}
 			setPhase(WALK_BACK_INSIDE);
@@ -374,8 +374,8 @@ public class CollectResources extends EVAOperation implements Serializable {
 			EVASuit suit = (EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
 			if (suit != null) {
 				carryMass += suit.getMass();
-				carryMass += suit.getInventory().getARRemainingCapacity(ResourceUtil.oxygenID, false, false);
-				carryMass += suit.getInventory().getARRemainingCapacity(ResourceUtil.waterID, false, false);
+				carryMass += suit.getInventory().getAmountResourceRemainingCapacity(ResourceUtil.oxygenID, false, false);
+				carryMass += suit.getInventory().getAmountResourceRemainingCapacity(ResourceUtil.waterID, false, false);
 			}
 			double carryCapacity = person.getInventory().getGeneralCapacity();
 			boolean canCarryEquipment = (carryCapacity >= carryMass);

@@ -144,7 +144,7 @@ implements Serializable {
     public static boolean consolidate(Inventory inv) {   	
         boolean result = false;
         
-        Set<AmountResource> partialResources = new HashSet<AmountResource>();
+        Set<Integer> partialResources = new HashSet<Integer>();
         
         Iterator<Unit> i = inv.getContainedUnits().iterator();
         while (i.hasNext() && !result) {
@@ -153,8 +153,8 @@ implements Serializable {
                 Inventory contInv = unit.getInventory();
                 if (!contInv.isEmpty(false)) {
                     // Only check one type of amount resource for container.
-                    AmountResource resource = null;
-                    Iterator<AmountResource> j = contInv.getAllAmountResourcesStored(false).iterator();
+                    Integer resource = null;
+                    Iterator<Integer> j = contInv.getAllARStored(false).iterator();
                     while (j.hasNext()) {
                         resource = j.next();
                     }
@@ -227,8 +227,8 @@ implements Serializable {
                 Inventory contInv = unit.getInventory();
                 if (!contInv.isEmpty(false)) {
                     // Only check one type of amount resource for container.
-                    AmountResource resource = null;
-                    Iterator<AmountResource> j = contInv.getAllAmountResourcesStored(false).iterator();
+                	Integer resource = null;
+                    Iterator<Integer> j = contInv.getAllARStored(false).iterator();
                     while (j.hasNext()) {
                         resource = j.next();
                     }

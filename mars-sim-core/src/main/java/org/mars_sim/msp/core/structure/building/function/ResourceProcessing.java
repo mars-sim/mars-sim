@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -75,7 +76,7 @@ public class ResourceProcessing extends Function implements Serializable {
 		List<ResourceProcess> processes = config.getResourceProcesses(buildingName);
 		for (ResourceProcess process : processes) {
 			double processValue = 0D;
-			for (Integer resource : process.getOutputResources()) {
+			for (int resource : process.getOutputResources()) {
 				if (!process.isWasteOutputResource(resource)) {
 					Good resourceGood = GoodsUtil.getResourceGood(resource);
 					double rate = process.getMaxOutputResourceRate(resource);// * 1000D;
@@ -84,9 +85,11 @@ public class ResourceProcessing extends Function implements Serializable {
 			}
 
 			double inputInventoryLimit = 1D;
-			for (Integer resource : process.getInputResources()) {
+			for (int resource : process.getInputResources()) {
 				if (!process.isAmbientInputResource(resource)) {
 					Good resourceGood = GoodsUtil.getResourceGood(resource);
+					if (resource == ResourceUtil.greyWaterID)
+						; // 
 					double rate = process.getMaxInputResourceRate(resource);// * 1000D;
 					processValue -= settlement.getGoodsManager().getGoodValuePerItem(resourceGood) * rate;
 

@@ -1185,6 +1185,14 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
 	<process name="reduce gypsum to calcium carbonate with carbon (large batch)" tech="1" skill="3" work-time="500"
 			process-time="1000" power-required=".5">
+		<description>
+			Wrapping two processes:
+			CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O (gypsum) + 2C -> CaS + 2CO&lt;sub&gt;2&lt;/sub&gt; + 2H&lt;sub&gt;2&lt;/sub&gt;O
+			CaS + H&lt;sub&gt;2&lt;/sub&gt;O + CO&lt;sub&gt;2&lt;/sub&gt; -> CaCO&lt;sub&gt;3&lt;/sub&gt; (calcium carbonate) + H&lt;sub&gt;2&lt;/sub&gt;S
+			Note: ignoring hydrogen sulfide as waste for now.
+			
+			Gypsum has up to 8.6 % water
+		</description>			
 		<inputs>
 			<resource name="gypsum" amount="500.0" />
 			<resource name="carbon" amount="70.0" />

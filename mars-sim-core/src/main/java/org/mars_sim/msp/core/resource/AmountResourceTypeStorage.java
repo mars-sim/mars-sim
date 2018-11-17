@@ -48,24 +48,7 @@ class AmountResourceTypeStorage implements Serializable {
 	 * @param capacity the extra capacity amount (kg).
 	 */
 	void addAmountResourceTypeCapacity(AmountResource resource, double capacity) {
-		addTypeCapacity(resource.getID(), capacity);
-
-//        if (capacity < 0D) {
-//            throw new IllegalStateException("Cannot add negative type capacity: " + capacity);
-//        }
-//
-//        if (amountResourceTypeCapacities == null) {
-//            amountResourceTypeCapacities = new HashMap<AmountResource, ResourceAmount>();
-//        }
-//
-//        if (hasAmountResourceTypeCapacity(resource)) {
-//            ResourceAmount existingCapacity = amountResourceTypeCapacities.get(resource);
-//            existingCapacity.setAmount(existingCapacity.getAmount() + capacity);
-//        }
-//        else {
-//            amountResourceTypeCapacities.put(resource, new ResourceAmount(capacity));
-//        }
-
+		addAmountResourceTypeCapacity(resource.getID(), capacity);
 	}
 
 	/**
@@ -74,7 +57,7 @@ class AmountResourceTypeStorage implements Serializable {
 	 * @param resource the resource.
 	 * @param capacity the extra capacity amount (kg).
 	 */
-	void addTypeCapacity(int resource, double capacity) {
+	void addAmountResourceTypeCapacity(int resource, double capacity) {
 
 		if (capacity < 0D) {
 			throw new IllegalStateException("Cannot add negative type capacity: " + capacity);
@@ -100,34 +83,6 @@ class AmountResourceTypeStorage implements Serializable {
 	 */
 	void removeAmountResourceTypeCapacity(AmountResource resource, double capacity) {
 		removeTypeCapacity(resource.getID(), capacity);
-
-//        if (capacity < 0D) {
-//            throw new IllegalStateException("Cannot remove negative type capacity: " + capacity);
-//        }
-//        
-//        if (amountResourceTypeCapacities == null) {
-//            amountResourceTypeCapacities = new HashMap<AmountResource, ResourceAmount>();
-//        }
-//        
-//        double existingCapacity = getAmountResourceTypeCapacity(resource);
-//        double newCapacity = existingCapacity - capacity;
-//        if (newCapacity > 0D) {
-//            if (hasAmountResourceTypeCapacity(resource)) {
-//                ResourceAmount existingCapacityAmount = amountResourceTypeCapacities.get(resource);
-//                existingCapacityAmount.setAmount(newCapacity);
-//            }
-//            else {
-//                amountResourceTypeCapacities.put(resource, new ResourceAmount(newCapacity));
-//            }
-//        }
-//        else if (newCapacity == 0D) {
-//            amountResourceTypeCapacities.remove(resource);
-//        }
-//        else {
-//            throw new IllegalStateException("Insufficient existing resource type capacity to remove - existing: " + 
-//                    existingCapacity + ", removed: " + capacity);
-//        }
-
 	}
 
 	/**
@@ -146,7 +101,7 @@ class AmountResourceTypeStorage implements Serializable {
 			typeCapacities = new HashMap<Integer, ResourceAmount>();
 		}
 
-		double existingCapacity = getARTypeCapacity(resource);
+		double existingCapacity = getAmountResourceTypeCapacity(resource);
 		double newCapacity = existingCapacity - capacity;
 		if (newCapacity > 0D) {
 			if (hasARTypeCapacity(resource)) {
@@ -170,18 +125,7 @@ class AmountResourceTypeStorage implements Serializable {
 	 * @return true if storage capacity.
 	 */
 	boolean hasAmountResourceTypeCapacity(AmountResource resource) {
-
-		boolean result = false;
-
-//        if (amountResourceTypeCapacities != null) {
-//            result = amountResourceTypeCapacities.containsKey(resource);
-//        }
-
-		if (typeCapacities != null) {
-			result = typeCapacities.containsKey(resource.getID());
-		}
-
-		return result;
+		return hasARTypeCapacity(resource.getID());
 	}
 
 	/**
@@ -194,6 +138,9 @@ class AmountResourceTypeStorage implements Serializable {
 
 		boolean result = false;
 
+//      if (amountResourceTypeCapacities != null) {
+//   	   result = amountResourceTypeCapacities.containsKey(resource);
+//  	}
 		if (typeCapacities != null) {
 			result = typeCapacities.containsKey(resource);
 		}
@@ -208,18 +155,7 @@ class AmountResourceTypeStorage implements Serializable {
 	 * @return capacity amount (kg).
 	 */
 	double getAmountResourceTypeCapacity(AmountResource resource) {
-
-		double result = 0D;
-
-//        if (hasAmountResourceTypeCapacity(resource)) {
-//            result = (amountResourceTypeCapacities.get(resource)).getAmount();
-//        }
-
-		if (hasARTypeCapacity(resource.getID())) {
-			result = (typeCapacities.get(resource.getID())).getAmount();
-		}
-
-		return result;
+		return getAmountResourceTypeCapacity(resource.getID());
 	}
 
 	/**
@@ -228,7 +164,7 @@ class AmountResourceTypeStorage implements Serializable {
 	 * @param resource the resource.
 	 * @return capacity amount (kg).
 	 */
-	double getARTypeCapacity(int resource) {
+	double getAmountResourceTypeCapacity(int resource) {
 
 		double result = 0D;
 
@@ -263,7 +199,7 @@ class AmountResourceTypeStorage implements Serializable {
 	 * @param resource the resource.
 	 * @return stored amount (kg).
 	 */
-	double getARTypeStored(int resource) {
+	double getAmountResourceTypeStored(int resource) {
 
 		double result = 0D;
 
@@ -435,7 +371,7 @@ class AmountResourceTypeStorage implements Serializable {
 			Iterator<Integer> i = typeStored.keySet().iterator();
 			while (i.hasNext()) {
 				Integer resource = i.next();
-				if (getARTypeStored(resource) > 0D) {
+				if (getAmountResourceTypeStored(resource) > 0D) {
 					result.add(resource);
 				}
 			}
@@ -474,7 +410,7 @@ class AmountResourceTypeStorage implements Serializable {
 		double result = 0D;
 
 		if (hasARTypeCapacity(resource)) {
-			result = getARTypeCapacity(resource) - getARTypeStored(resource);
+			result = getAmountResourceTypeCapacity(resource) - getAmountResourceTypeStored(resource);
 		}
 
 		return result;
@@ -488,32 +424,6 @@ class AmountResourceTypeStorage implements Serializable {
 	 */
 	void storeAmountResourceType(AmountResource resource, double amount) {
 		storeARType(resource.getID(), amount);
-
-//        if (amount < 0D) {
-//            throw new IllegalStateException("Cannot store negative amount of type: " + amount);
-//        }
-//
-//        if (amount > 0D) {
-//            if (getAmountResourceTypeRemainingCapacity(resource) >= amount) {
-//
-//                // Set total amount cache to dirty since value is changing.
-//                totalAmountCacheDirty = true;
-//
-//                if (amountResourceTypeStored == null) {
-//                    amountResourceTypeStored = new HashMap<AmountResource, ResourceAmount>();
-//                }
-//
-//                ResourceAmount stored = getAmountResourceTypeStoredObject(resource);
-//                if (stored != null) {
-//                    stored.setAmount(stored.getAmount() + amount);
-//                }
-//                else {
-//                    amountResourceTypeStored.put(resource, new ResourceAmount(amount));
-//                }
-//            }
-//            else throw new IllegalStateException("Amount resource could not be added in type storage.");
-//        }
-
 	}
 
 	/**
@@ -582,14 +492,14 @@ class AmountResourceTypeStorage implements Serializable {
 	 * @param resource the resource.
 	 * @param amount   the amount (kg).
 	 */
-	void retrieveARType(int resource, double amount) {
+	void retrieveAmountResourceType(int resource, double amount) {
 
 		if (amount < 0D) {
 			throw new IllegalStateException("Cannot retrieve negative amount of type: " + amount);
 		}
 
 		if (amount > 0D) {
-			if (getARTypeStored(resource) >= amount) {
+			if (getAmountResourceTypeStored(resource) >= amount) {
 
 				// Set total amount cache to dirty since value is changing.
 				totalAmountCacheDirty = true;

@@ -889,16 +889,16 @@ public abstract class RoverMission extends VehicleMission {
 
 		Inventory inv = settlement.getInventory();
 		try {
-			if (inv.getARStored(methaneID, false) < 100D) {
+			if (inv.getAmountResourceStored(methaneID, false) < 100D) {
 				return false;
 			}
-			if (unmasked && inv.getARStored(oxygenID, false) < 100D) {
+			if (unmasked && inv.getAmountResourceStored(oxygenID, false) < 100D) {
 				return false;
 			}
-			if (unmasked && inv.getARStored(waterID, false) < 100D) {
+			if (unmasked && inv.getAmountResourceStored(waterID, false) < 100D) {
 				return false;
 			}
-			if (inv.getARStored(foodID, false) < 100D) {
+			if (inv.getAmountResourceStored(foodID, false) < 100D) {
 				return false;
 			}
 		} catch (Exception e) {

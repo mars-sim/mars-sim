@@ -910,8 +910,8 @@ implements Serializable {
                 for (AmountResource dessert : availableDesserts) {
                 	if (ResourceUtil.findAmountResource(resource).getName().equals(dessert.getName())) {
     	        		// 2015-03-15 Added the amount of all six desserts together
-    	        		amountDessertLoaded += vInv.getARStored(resource, false);
-    	        		totalAmountDessertStored += inv.getARStored(resource, false);
+    	        		amountDessertLoaded += vInv.getAmountResourceStored(resource, false);
+    	        		totalAmountDessertStored += inv.getAmountResourceStored(resource, false);
     	        		settlementDessertNeed += getSettlementNeed(settlement, vehicleCrewNum,
     	        		        resource, tripTime);
     	        		isDessert = true;
@@ -934,10 +934,10 @@ implements Serializable {
         		else  { // this resource is not a dessert
 	        		double amountNeeded = (Double) resources.get(resource);
 	        		double settlementNeed = getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
-	        		double amountLoaded = vInv.getARStored(resource, false);
+	        		double amountLoaded = vInv.getAmountResourceStored(resource, false);
 	        		double totalNeeded = amountNeeded + settlementNeed - amountLoaded;
-	        		if (inv.getARStored(resource, false) < totalNeeded) {
-	        			double stored = inv.getARStored(resource, false);
+	        		if (inv.getAmountResourceStored(resource, false) < totalNeeded) {
+	        			double stored = inv.getAmountResourceStored(resource, false);
 	        			if (logger.isLoggable(Level.INFO))
 	        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, ResourceUtil.findAmountResource(resource).getName() 
 	        						+ " needed: " + Math.round(totalNeeded*10.0)/10.0 
@@ -1104,7 +1104,7 @@ implements Serializable {
     			
     			if (resource < FIRST_ITEM_RESOURCE) {
     				double amount = (Double) (resources.get(resource));
-    				inv.storeAR(resource, amount, true);
+    				inv.storeAmountResource(resource, amount, true);
     			}
     			else {
     				int num = (Integer) (resources.get(resource));
@@ -1174,7 +1174,7 @@ implements Serializable {
         	Integer resource = iR.next();
         	if (resource < FIRST_ITEM_RESOURCE) {
         		double amount = (double) requiredResources.get(resource);
-        		double storedAmount = vInv.getARStored(resource, false);
+        		double storedAmount = vInv.getAmountResourceStored(resource, false);
         		if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
         		    sufficientSupplies = false;
         		}
@@ -1202,14 +1202,14 @@ implements Serializable {
                     amount += (Double) requiredResources.get(resource);
                 }
 
-                double storedAmount = vInv.getARStored(resource, false);
+                double storedAmount = vInv.getAmountResourceStored(resource, false);
                 if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
                     // Check if enough capacity in vehicle.
-                    double vehicleCapacity = vInv.getARRemainingCapacity(resource, true, false);
+                    double vehicleCapacity = vInv.getAmountResourceRemainingCapacity(resource, true, false);
                     boolean hasVehicleCapacity = (vehicleCapacity >= (amount - storedAmount));
 
                     // Check if enough stored in settlement.
-                    double storedSettlement = sInv.getARStored(resource, false);
+                    double storedSettlement = sInv.getAmountResourceStored(resource, false);
                     if (settlement.getParkedVehicles().contains(vehicle)) {
                         storedSettlement -= storedAmount;
                     }

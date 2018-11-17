@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -282,15 +283,15 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 		}
 
 		// Unload all amount resources.
-		Iterator<AmountResource> k = luvInv.getAllAmountResourcesStored(false).iterator();
+		Iterator<Integer> k = luvInv.getAllARStored(false).iterator();
 		while (k.hasNext()) {
-			AmountResource resource = k.next();
+			Integer resource = k.next();
 			double amount = luvInv.getAmountResourceStored(resource, false);
 			if (rcInv.hasAmountResourceCapacity(resource, amount, false)) {
 				luvInv.retrieveAmountResource(resource, amount);
 				rcInv.storeAmountResource(resource, amount, true);
 			} else {
-				logger.severe(resource.getName() + " of amount " + amount + " kg. cannot be stored in "
+				logger.severe(ResourceUtil.findAmountResourceName(resource) + " of amount " + amount + " kg. cannot be stored in "
 						+ returnContainer.getName());
 			}
 		}

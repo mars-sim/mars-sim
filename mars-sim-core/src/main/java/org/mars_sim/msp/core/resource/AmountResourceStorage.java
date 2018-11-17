@@ -50,7 +50,7 @@ public class AmountResourceStorage implements Serializable {
 			typeStorage = new AmountResourceTypeStorage();
 		}
 
-		typeStorage.addTypeCapacity(resource.getID(), capacity);
+		typeStorage.addAmountResourceTypeCapacity(resource.getID(), capacity);
 		// typeStorage.addAmountResourceTypeCapacity(resource, capacity);
 	}
 
@@ -60,13 +60,13 @@ public class AmountResourceStorage implements Serializable {
 	 * @param resource the resource.
 	 * @param capacity the extra capacity amount (kg).
 	 */
-	public void addARTypeCapacity(int resource, double capacity) {
+	public void addAmountResourceTypeCapacity(int resource, double capacity) {
 
 		if (typeStorage == null) {
 			typeStorage = new AmountResourceTypeStorage();
 		}
 
-		typeStorage.addTypeCapacity(resource, capacity);
+		typeStorage.addAmountResourceTypeCapacity(resource, capacity);
 	}
 
 	/**
@@ -76,13 +76,7 @@ public class AmountResourceStorage implements Serializable {
 	 * @param capacity capacity the capacity amount (kg).
 	 */
 	public void removeAmountResourceTypeCapacity(AmountResource resource, double capacity) {
-
-		if (typeStorage == null) {
-			typeStorage = new AmountResourceTypeStorage();
-		}
-
-		typeStorage.removeTypeCapacity(resource.getID(), capacity);
-		// typeStorage.removeAmountResourceTypeCapacity(resource, capacity);
+		removeAmountResourceTypeCapacity(resource, capacity);
 	}
 
 	/**
@@ -228,13 +222,13 @@ public class AmountResourceStorage implements Serializable {
 	 * @param resource the resource.
 	 * @return capacity amount (kg).
 	 */
-	public double getARCapacity(int resource) {
+	public double getAmountResourceCapacity(int resource) {
 		AmountResource ar = ResourceUtil.findAmountResource(resource);
 		PhaseType pt = ar.getPhase();
 		double result = 0D;
 
 		if ((typeStorage != null) && typeStorage.hasARTypeCapacity(resource)) {
-			result = typeStorage.getARTypeCapacity(resource);
+			result = typeStorage.getAmountResourceTypeCapacity(resource);
 		}
 		if ((phaseStorage != null) && phaseStorage.hasAmountResourcePhaseCapacity(pt)) {
 			if ((phaseStorage.getAmountResourcePhaseType(pt) == null)
@@ -273,14 +267,14 @@ public class AmountResourceStorage implements Serializable {
 	 * @param resource the resource.
 	 * @return stored amount (kg).
 	 */
-	public double getARStored(int resource) {
+	public double getAmountResourceStored(int resource) {
 		AmountResource ar = ResourceUtil.findAmountResource(resource);
 		PhaseType pt = ar.getPhase();
 
 		double result = 0D;
 
 		if (typeStorage != null) {
-			result = typeStorage.getARTypeStored(resource);
+			result = typeStorage.getAmountResourceTypeStored(resource);
 		}
 
 		if (phaseStorage != null && ar.equals(phaseStorage.getAmountResourcePhaseType(pt))) {
@@ -435,7 +429,7 @@ public class AmountResourceStorage implements Serializable {
 		double result = 0D;
 
 		if (hasARCapacity(resource)) {
-			result = getARCapacity(resource) - getARStored(resource);
+			result = getAmountResourceCapacity(resource) - getAmountResourceStored(resource);
 		}
 
 		return result;
@@ -652,7 +646,7 @@ public class AmountResourceStorage implements Serializable {
 	 * @param amount   the amount (kg).
 	 * @throws ResourceException if error retrieving resource.
 	 */
-	public void retrieveAR(int resource, double amount) {
+	public void retrieveAmountResource(int resource, double amount) {
 		AmountResource ar = ResourceUtil.findAmountResource(resource);
 		PhaseType pt = ar.getPhase();
 
@@ -661,7 +655,7 @@ public class AmountResourceStorage implements Serializable {
 		}
 
 		boolean retrievable = false;
-		double amountStored = getARStored(resource);
+		double amountStored = getAmountResourceStored(resource);
 
 		if (amountStored >= amount) {
 
@@ -687,9 +681,9 @@ public class AmountResourceStorage implements Serializable {
 
 			// Retrieve resource from type storage.
 			if ((typeStorage != null) && (remainingAmount > 0D)) {
-				double remainingTypeStored = typeStorage.getARTypeStored(resource);
+				double remainingTypeStored = typeStorage.getAmountResourceTypeStored(resource);
 				if (remainingTypeStored >= remainingAmount) {
-					typeStorage.retrieveARType(resource, remainingAmount);
+					typeStorage.retrieveAmountResourceType(resource, remainingAmount);
 					remainingAmount = 0D;
 				}
 			}

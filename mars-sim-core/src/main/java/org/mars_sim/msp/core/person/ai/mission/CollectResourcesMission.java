@@ -295,7 +295,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 //			 return 0;
 
 			// Check if starting settlement has minimum amount of methane fuel.
-			if (settlement.getInventory().getARStored(methaneID, false) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE)
+			if (settlement.getInventory().getAmountResourceStored(methaneID, false) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE)
 				return 0;
 
 		}
@@ -396,8 +396,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 */
 	private void collectingPhase(MissionMember member) {
 		Inventory inv = getRover().getInventory();
-		double resourcesCollected = inv.getARStored(resourceType, false);
-		double resourcesCapacity = inv.getARCapacity(resourceType, false);
+		double resourcesCollected = inv.getAmountResourceStored(resourceType, false);
+		double resourcesCapacity = inv.getAmountResourceCapacity(resourceType, false);
 
 		// Set total collected resources.
 		totalResourceCollected = resourcesCollected;
@@ -466,7 +466,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 					if (CollectResources.canCollectResources(person, getRover(), containerType, resourceType)) {
 						CollectResources collectResources = new CollectResources("Collecting Resources", person,
 								getRover(), resourceType, resourceCollectionRate,
-								siteResourceGoal - siteCollectedResources, inv.getARStored(resourceType, false),
+								siteResourceGoal - siteCollectedResources, inv.getAmountResourceStored(resourceType, false),
 								containerType);
 						assignTask(person, collectResources);
 					}

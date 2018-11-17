@@ -370,6 +370,17 @@ public class ResourceUtil implements Serializable {
 	}
 
 	/**
+	 * Finds an amount resource name by id.
+	 * 
+	 * @param id the resource's id.
+	 * @return resource name
+	 * @throws ResourceException if resource could not be found.
+	 */
+	public static String findAmountResourceName(int id) {
+		return arIDNameMap.get(id);
+	}
+	
+	/**
 	 * Finds an amount resource by id.
 	 * 
 	 * @param id the resource's id.

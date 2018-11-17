@@ -266,7 +266,7 @@ public class ResourceProcess implements Serializable {
 				double maxRate = maxInputResourceRates.get(resource);
 				double resourceRate = maxRate * level;
 				double resourceAmount = resourceRate * time;
-				double remainingAmount = inventory.getARStored(resource, false);
+				double remainingAmount = inventory.getAmountResourceStored(resource, false);
 
 				if (resourceAmount > remainingAmount)
 					resourceAmount = remainingAmount;

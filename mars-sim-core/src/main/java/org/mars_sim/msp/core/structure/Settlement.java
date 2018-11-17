@@ -158,7 +158,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private int numCitizens;
 	/**  Numbers of associated bots in this settlement. */
 	private int numBots;
-	
+	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
+	public double greyWaterFilteringRate = .005;
 	/** The currently minimum passing score for mission approval. */
 	private double minimumPassingScore = 0;
 	/** The trending score for curving the minimum score for mission approval. */
@@ -787,16 +788,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		try {
 			// if (AmountResource.oxygenAR == null)
 			// Restructure for avoiding NullPointerException during maven test
-			// oxygenAR = LifeSupportType.oxygenAR;
-			// if (oxygenAR == null) System.out.println("o2");
-			if (getInventory().getARStored(ResourceUtil.oxygenID, false) <= 0D)
+			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= 0D)
 				return false;
 
 			// if (AmountResource.waterAR == null)
 			// Restructure for avoiding NullPointerException during maven test
-			// waterAR = LifeSupportType.waterAR;
-			// if (waterAR == null) System.out.println("h2o");
-			if (getInventory().getARStored(ResourceUtil.waterID, false) <= 0D)
+			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D)
 				return false;
 
 			// TODO: check against indoor air pressure
@@ -848,7 +845,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public double provideOxygen(double amountRequested) {
 		double oxygenTaken = amountRequested;
 		try {
-			double oxygenLeft = getInventory().getARStored(oxygenID, false);
+			double oxygenLeft = getInventory().getAmountResourceStored(oxygenID, false);
 			// System.out.println("oxygenLeft : " + oxygenLeft);
 			if (oxygenTaken > oxygenLeft)
 				oxygenTaken = oxygenLeft;
@@ -888,7 +885,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public double provideWater(double amountRequested) {
 		double waterTaken = amountRequested;
 		try {
-			double waterLeft = getInventory().getARStored(waterID, false);
+			double waterLeft = getInventory().getAmountResourceStored(waterID, false);
 			if (waterTaken > waterLeft)
 				waterTaken = waterLeft;
 			// Storage.retrieveAnResource(waterTaken, waterAR, getInventory(), true);//,
@@ -3066,7 +3063,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public int computeWaterRation() {
 		int result = 0;
 
-		double storedWater = getInventory().getARStored(ResourceUtil.waterID, false);
+		double storedWater = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
 		double requiredDrinkingWaterOrbit = water_consumption * getNumCitizens() //getIndoorPeopleCount()
 				* MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
@@ -3317,8 +3314,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 //    		oxygen_value = 1;
 
 		// Compare the available amount of water and ice reserve
-		double ice_available = getInventory().getARStored(ResourceUtil.iceID, false);
-		double water_available = getInventory().getARStored(ResourceUtil.waterID, false);
+		double ice_available = getInventory().getAmountResourceStored(ResourceUtil.iceID, false);
+		double water_available = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
 		// double oxygen_available =
 		// getInventory().getAmountResourceStored(ResourceUtil.oxygenAR, false);
 
@@ -3443,6 +3440,22 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	
 	public void setCommanderMode(boolean value) {
 		isCommanderMode = value;
+	}
+	
+	public void increaseGreyWaterFilteringRate() {
+		if (greyWaterFilteringRate < 100) {
+			greyWaterFilteringRate = 1.1 * greyWaterFilteringRate; 
+		}
+	}
+	
+	public void decreaseGreyWaterFilteringRate() {
+		if (greyWaterFilteringRate > .01) {
+			greyWaterFilteringRate = 0.9 * greyWaterFilteringRate;
+		}
+	}
+	
+	public double getGreyWaterFilteringRate() {
+		return greyWaterFilteringRate; 
 	}
 	
 	@Override

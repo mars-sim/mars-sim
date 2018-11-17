@@ -134,7 +134,7 @@ public class LivingAccommodations extends Function implements Serializable {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				LivingAccommodations livingFunction = (LivingAccommodations) building.getFunction(FUNCTION);
+				LivingAccommodations livingFunction = building.getLivingAccommodations();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += livingFunction.maxBeds * wearModifier;
 			}
