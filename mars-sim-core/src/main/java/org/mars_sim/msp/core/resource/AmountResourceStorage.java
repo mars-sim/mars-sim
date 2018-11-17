@@ -45,13 +45,7 @@ public class AmountResourceStorage implements Serializable {
 	 * @param capacity the extra capacity amount (kg).
 	 */
 	public void addAmountResourceTypeCapacity(AmountResource resource, double capacity) {
-
-		if (typeStorage == null) {
-			typeStorage = new AmountResourceTypeStorage();
-		}
-
-		typeStorage.addAmountResourceTypeCapacity(resource.getID(), capacity);
-		// typeStorage.addAmountResourceTypeCapacity(resource, capacity);
+		addAmountResourceTypeCapacity(resource.getID(), capacity);
 	}
 
 	/**
@@ -76,7 +70,7 @@ public class AmountResourceStorage implements Serializable {
 	 * @param capacity capacity the capacity amount (kg).
 	 */
 	public void removeAmountResourceTypeCapacity(AmountResource resource, double capacity) {
-		removeAmountResourceTypeCapacity(resource, capacity);
+		removeAmountResourceTypeCapacity(resource.getID(), capacity);
 	}
 
 	/**
@@ -99,14 +93,14 @@ public class AmountResourceStorage implements Serializable {
 	 * 
 	 * @return map of all amount resources that have type capacity.
 	 */
-	public Map<AmountResource, Double> getAmountResourceTypeCapacities() {
+	public Map<Integer, Double> getAmountResourceTypeCapacities() {
 
-		Map<AmountResource, Double> typeCapacities = new HashMap<AmountResource, Double>();
+		Map<Integer, Double> typeCapacities = new HashMap<Integer, Double>();
 
 		if (typeStorage != null) {
-			Iterator<AmountResource> i = ResourceUtil.getInstance().getAmountResources().iterator();
+			Iterator<Integer> i = ResourceUtil.getInstance().getARIDs().iterator();
 			while (i.hasNext()) {
-				AmountResource resource = i.next();
+				Integer resource = i.next();
 				double capacity = typeStorage.getAmountResourceTypeCapacity(resource);
 				if (capacity > 0D) {
 					typeCapacities.put(resource, capacity);

@@ -316,7 +316,7 @@ public class Storage extends Function implements Serializable {
 			try {
 				double remainingCapacity = inv.getAmountResourceRemainingCapacity(id, true, false);
 				// double stored = inv.getAmountResourceStored(ar, false);
-				if (Math.round(remainingCapacity * 100000.0) / 100000.0 < 0.00001) {
+				if (remainingCapacity < 0.00001) {
 					result = false;
 					// TODO: increase VP of barrel/bag/gas canister for storage to prompt for
 					// manufacturing them
@@ -324,10 +324,10 @@ public class Storage extends Function implements Serializable {
 					// Vent or drain 1% of resource
 					double ventAmount = 0.01 * inv.getAmountResourceCapacity(id, false);
 					inv.retrieveAmountResource(id, ventAmount);
-					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName + "::" + method, 
-							"[" + inv.getOwner()
-				    		+ "] No more room to store " + Math.round(amount*100.0)/100.0 + " kg of "
-				    		+ ResourceUtil.findAmountResourceName(id) + ". Venting ", null);
+//					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName + "::" + method, 
+//							"[" + inv.getOwner()
+//				    		+ "] No more room to store " + Math.round(amount*100.0)/100.0 + " kg of "
+//				    		+ ResourceUtil.findAmountResourceName(id) + ". Venting ", null);
 					
 					// Adjust the grey water filtering rate
 					if (id == ResourceUtil.greyWaterID && inv.getOwner() instanceof Settlement) {

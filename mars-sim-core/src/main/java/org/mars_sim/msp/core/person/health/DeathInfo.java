@@ -62,11 +62,11 @@ implements Serializable {
     private HealthProblem problem;
     /** Container unit at time of death. */
     private Unit containerUnit;
-
+    /** Coordinate at time of death. */
     private Coordinates locationOfDeath;
     /** the person's job at time of death. */
     private Job job;
-    
+    /** the robot's job at time of disassembly. */
     private RobotJob robotJob;
     /** Name of mission at time of death. */
     private String mission;
@@ -197,27 +197,11 @@ implements Serializable {
 
         // Initialize data members
         timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
-/*
-        Complaint serious = person.getPhysicalCondition().getMostSerious();
-        if (serious != null) illness = serious.getName();
 
-        if (person.getLocationSituation() == LocationSituation.OUTSIDE) placeOfDeath = "Outside";
-        else {
-            containerUnit = person.getContainerUnit();
-            placeOfDeath = containerUnit.getName();
-        }
-
-        locationOfDeath = person.getCoordinates();
-*/
         BotMind botMind = robot.getBotMind();
 
         robotJob = botMind.getRobotJob();
-/*
-        if (mind.getMission() != null) {
-            mission = mind.getMission().getName();
-            missionPhase = mind.getMission().getPhaseDescription();
-        }
-*/
+
         BotTaskManager taskMgr = botMind.getBotTaskManager();
         if (taskMgr.hasTask()) {
 
@@ -275,7 +259,6 @@ implements Serializable {
         }
 
         if (mostSerious != null) malfunction = mostSerious.getName();
-
 
         this.robotType = robot.getRobotType();
 

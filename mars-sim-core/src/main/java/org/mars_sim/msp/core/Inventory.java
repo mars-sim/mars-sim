@@ -2448,7 +2448,7 @@ implements Serializable {
         result.addGeneralCapacity(generalCapacity);
 
         if (resourceStorage != null) {
-            for (Entry<AmountResource,Double> entry : resourceStorage.getAmountResourceTypeCapacities().entrySet()) {
+            for (Entry<Integer,Double> entry : resourceStorage.getAmountResourceTypeCapacities().entrySet()) {
                 result.addAmountResourceTypeCapacity(
                         entry.getKey(),
                         entry.getValue()
