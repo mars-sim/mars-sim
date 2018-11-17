@@ -109,11 +109,14 @@ public class BuildingManager implements Serializable {
 	private Resupply resupply;
 	private Meteorite meteorite;
 
+	private static Simulation sim = Simulation.instance();
+	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static HistoricalEventManager eventManager;
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 	private static BuildingConfig buildingConfig;
 	private static RelationshipManager relationshipManager;
+	
 
 	private List<Building> buildings, farmsNeedingWorkCache, buildingsNickNames;
 	private Map<String, Double> buildingValuesNewCache;
@@ -129,7 +132,7 @@ public class BuildingManager implements Serializable {
 	 * @throws Exception if buildings cannot be constructed.
 	 */
 	public BuildingManager(Settlement settlement) {
-		this(settlement, SimulationConfig.instance().getSettlementConfiguration()
+		this(settlement, simulationConfig.getSettlementConfiguration()
 				.getSettlementTemplate(settlement.getTemplate()).getBuildingTemplates());
 
 	}
@@ -145,12 +148,12 @@ public class BuildingManager implements Serializable {
 	public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
 		this.settlement = settlement;
 
-		masterClock = Simulation.instance().getMasterClock();
+		masterClock = sim.getMasterClock();
 		marsClock = masterClock.getMarsClock();
 
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-		eventManager = Simulation.instance().getEventManager();
-		relationshipManager = Simulation.instance().getRelationshipManager();
+		buildingConfig = simulationConfig.getBuildingConfiguration();
+		eventManager = sim.getEventManager();
+		relationshipManager = sim.getRelationshipManager();
 
 		// Construct all buildings in the settlement.
 		buildings = new ArrayList<Building>();
@@ -197,8 +200,8 @@ public class BuildingManager implements Serializable {
 			logger.info("Loading BuildingManager's constructor 2 for " + settlement.getName() + " on "
 					+ Thread.currentThread().getName());
 
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-		relationshipManager = Simulation.instance().getRelationshipManager();
+		buildingConfig = simulationConfig.getBuildingConfiguration();
+		relationshipManager = sim.getRelationshipManager();
 
 		// Construct all buildings in the settlement.
 		buildings = new ArrayList<Building>();

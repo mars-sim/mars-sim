@@ -57,23 +57,21 @@ implements Serializable {
     /** Map of item resources. */
     private Map<ItemResource, Integer> containedItemResources = null;
     /** Map of item resources. */
-    private Map<Integer, Integer> containedItemIDs = null;
+//    private Map<Integer, Integer> containedItemIDs = null;
     /** General mass capacity of inventory. */
     private double generalCapacity = 0D;
     /** Resource storage. */
     private AmountResourceStorage resourceStorage = new AmountResourceStorage();
 
     // Cache capacity variables.
-/*    
-    private transient Map<AmountResource, Double> amountResourceCapacityCache = null;
-    private transient Map<AmountResource, Boolean> amountResourceCapacityCacheDirty = null;
-    private transient Map<AmountResource, Double> amountResourceContainersCapacityCache = null;
-    private transient Map<AmountResource, Boolean> amountResourceContainersCapacityCacheDirty = null;
-    private transient Map<AmountResource, Double> amountResourceStoredCache = null;
-    private transient Map<AmountResource, Boolean> amountResourceStoredCacheDirty = null;
-    private transient Map<AmountResource, Double> amountResourceContainersStoredCache = null;
-    private transient Map<AmountResource, Boolean> amountResourceContainersStoredCacheDirty = null;
-*/    
+//    private transient Map<AmountResource, Double> amountResourceCapacityCache = null;
+//    private transient Map<AmountResource, Boolean> amountResourceCapacityCacheDirty = null;
+//    private transient Map<AmountResource, Double> amountResourceContainersCapacityCache = null;
+//    private transient Map<AmountResource, Boolean> amountResourceContainersCapacityCacheDirty = null;
+//    private transient Map<AmountResource, Double> amountResourceStoredCache = null;
+//    private transient Map<AmountResource, Boolean> amountResourceStoredCacheDirty = null;
+//    private transient Map<AmountResource, Double> amountResourceContainersStoredCache = null;
+//    private transient Map<AmountResource, Boolean> amountResourceContainersStoredCacheDirty = null;    
     //private transient Set<AmountResource> allStoredAmountResourcesCache = null;
     
     private transient Map<Integer, Double> capacityCache = null;
@@ -1071,85 +1069,85 @@ implements Serializable {
     }
     
 
-    /**
-     * Retrieves an amount of a resource from storage.
-     * @param resource the resource.
-     * @param amount the amount (kg).
-     */
-    public void retrieveAR(int resource, double amount) {
-
-        if (amount < 0D) {
-            throw new IllegalStateException("Cannot retrieve negative amount of resource: " + amount);
-        }
-
-        
-        if (amount > 0D ) {
-
-            AmountResource ar = ResourceUtil.findAmountResource(resource);
-            
-            if (amount <= getARStored(resource, false)) {
-
-                // Set modified cache values as dirty.
-                setAmountResourceCapacityCacheAllDirty(false);
-                setAmountResourceStoredCacheAllDirty(false);
-                setAllStoredAmountResourcesCacheDirty();
-                setTotalAmountResourcesStoredCacheDirty();
-
-                double remainingAmount = amount;
-
-                // Retrieve from local resource storage.
-                double resourceStored = 0D;
-                if (resourceStorage != null) {
-                    resourceStored += resourceStorage.getARStored(resource);
-                }
-                double retrieveAmount = remainingAmount;
-                if (retrieveAmount > resourceStored) {
-                    retrieveAmount = resourceStored;
-                }
-                if ((retrieveAmount > 0D) && (resourceStorage != null)) {
-                    resourceStorage.retrieveAR(resource, retrieveAmount);
-                    remainingAmount -= retrieveAmount;
-                }
-
-                // Retrieve remaining resource from contained units.
-                if ((remainingAmount > 0D) && (containedUnits != null)) {
-                    for (Unit unit : containedUnits) {
-                        if (unit instanceof Container) {
-                            Inventory unitInventory = unit.getInventory();
-                            double unitResourceStored = unitInventory.getARStored(resource,
-                                    false);
-                            double unitRetrieveAmount = remainingAmount;
-                            if (unitRetrieveAmount > unitResourceStored) {
-                                unitRetrieveAmount = unitResourceStored;
-                            }
-                            if (unitRetrieveAmount > 0D) {
-                                unitInventory.retrieveAR(resource, unitRetrieveAmount);
-                                remainingAmount -= unitRetrieveAmount;
-                            }
-                        }
-                    }
-                }
-   
-                if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
-                    throw new IllegalStateException(ar.getName()
-                            + " could not be totally retrieved. Remaining: " + remainingAmount);
-                }
-
-                // Update caches.
-                updateAmountResourceCapacityCache(ar);
-                updateAmountResourceStoredCache(ar);
-
-                // Fire inventory event.
-                if (owner != null) {
-                    owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, ar);
-                }
-            } else {
-                throw new IllegalStateException("Insufficient stored amount to retrieve " +
-                        ar.getName() + ". Storage Amount : " + getARStored(resource, false) +
-                        " kg. Attempted Amount : " + amount + " kg");
-            }
-        }
-    }
+//    /**
+//     * Retrieves an amount of a resource from storage.
+//     * @param resource the resource.
+//     * @param amount the amount (kg).
+//     */
+//    public void retrieveAR(int resource, double amount) {
+//
+//        if (amount < 0D) {
+//            throw new IllegalStateException("Cannot retrieve negative amount of resource: " + amount);
+//        }
+//
+//        
+//        if (amount > 0D ) {
+//
+//            AmountResource ar = ResourceUtil.findAmountResource(resource);
+//            
+//            if (amount <= getARStored(resource, false)) {
+//
+//                // Set modified cache values as dirty.
+//                setAmountResourceCapacityCacheAllDirty(false);
+//                setAmountResourceStoredCacheAllDirty(false);
+//                setAllStoredAmountResourcesCacheDirty();
+//                setTotalAmountResourcesStoredCacheDirty();
+//
+//                double remainingAmount = amount;
+//
+//                // Retrieve from local resource storage.
+//                double resourceStored = 0D;
+//                if (resourceStorage != null) {
+//                    resourceStored += resourceStorage.getARStored(resource);
+//                }
+//                double retrieveAmount = remainingAmount;
+//                if (retrieveAmount > resourceStored) {
+//                    retrieveAmount = resourceStored;
+//                }
+//                if ((retrieveAmount > 0D) && (resourceStorage != null)) {
+//                    resourceStorage.retrieveAR(resource, retrieveAmount);
+//                    remainingAmount -= retrieveAmount;
+//                }
+//
+//                // Retrieve remaining resource from contained units.
+//                if ((remainingAmount > 0D) && (containedUnits != null)) {
+//                    for (Unit unit : containedUnits) {
+//                        if (unit instanceof Container) {
+//                            Inventory unitInventory = unit.getInventory();
+//                            double unitResourceStored = unitInventory.getARStored(resource,
+//                                    false);
+//                            double unitRetrieveAmount = remainingAmount;
+//                            if (unitRetrieveAmount > unitResourceStored) {
+//                                unitRetrieveAmount = unitResourceStored;
+//                            }
+//                            if (unitRetrieveAmount > 0D) {
+//                                unitInventory.retrieveAR(resource, unitRetrieveAmount);
+//                                remainingAmount -= unitRetrieveAmount;
+//                            }
+//                        }
+//                    }
+//                }
+//   
+//                if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
+//                    throw new IllegalStateException(ar.getName()
+//                            + " could not be totally retrieved. Remaining: " + remainingAmount);
+//                }
+//
+//                // Update caches.
+//                updateAmountResourceCapacityCache(ar);
+//                updateAmountResourceStoredCache(ar);
+//
+//                // Fire inventory event.
+//                if (owner != null) {
+//                    owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, ar);
+//                }
+//            } else {
+//                throw new IllegalStateException("Insufficient stored amount to retrieve " +
+//                        ar.getName() + ". Storage Amount : " + getARStored(resource, false) +
+//                        " kg. Attempted Amount : " + amount + " kg");
+//            }
+//        }
+//    }
 
     /**
      * Adds a capacity to general capacity.
@@ -2229,8 +2227,8 @@ implements Serializable {
      */
     private synchronized void initializeAllStoredAmountResourcesCache() {
     	initializeAllStoredARCache();
-        //allStoredAmountResourcesCache = new HashSet<AmountResource>();
-        //allStoredAmountResourcesCacheDirty = true;
+//        allStoredAmountResourcesCache = new HashSet<AmountResource>();
+//        allStoredAmountResourcesCacheDirty = true;
     }
 
     /**
@@ -2562,23 +2560,23 @@ implements Serializable {
     public void destroy() {
 
         owner = null;
-        //if (containedUnits != null) containedUnits.clear();
+//        if (containedUnits != null) containedUnits.clear();
         containedUnits = null;
-        //if (containedItemResources != null) containedItemResources.clear();
+//        if (containedItemResources != null) containedItemResources.clear();
         containedItemResources = null;
         
         if (resourceStorage != null) resourceStorage.destroy();
         resourceStorage = null;
-        //if (amountResourceCapacityCache != null) amountResourceCapacityCache.clear();
-        //amountResourceCapacityCache = null;
-        //if (amountResourceCapacityCacheDirty != null) amountResourceCapacityCacheDirty.clear();
-        //amountResourceCapacityCacheDirty = null;
-        //if (amountResourceStoredCache != null) amountResourceStoredCache.clear();
-        //amountResourceStoredCache = null;
-        //if (amountResourceStoredCacheDirty != null) amountResourceStoredCacheDirty.clear();
-        //amountResourceStoredCacheDirty = null;
-        //if (allStoredAmountResourcesCache != null) allStoredAmountResourcesCache.clear();
-        //allStoredAmountResourcesCache = null;
+//        if (amountResourceCapacityCache != null) amountResourceCapacityCache.clear();
+//        amountResourceCapacityCache = null;
+//        if (amountResourceCapacityCacheDirty != null) amountResourceCapacityCacheDirty.clear();
+//        amountResourceCapacityCacheDirty = null;
+//        if (amountResourceStoredCache != null) amountResourceStoredCache.clear();
+//        amountResourceStoredCache = null;
+//        if (amountResourceStoredCacheDirty != null) amountResourceStoredCacheDirty.clear();
+//        amountResourceStoredCacheDirty = null;
+//        if (allStoredAmountResourcesCache != null) allStoredAmountResourcesCache.clear();
+//        allStoredAmountResourcesCache = null;
         capacityCache = null;
         capacityCacheDirty = null;
         storedCacheDirty = null;

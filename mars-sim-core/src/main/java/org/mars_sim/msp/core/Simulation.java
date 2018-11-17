@@ -201,6 +201,12 @@ public class Simulation implements ClockListener, Serializable {
 		interactiveTerm = new InteractiveTerm();
 		// Create ObjectMapper instance
 		objectMapper = new ObjectMapper();
+		// Configure Object mapper for pretty print
+		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+		// to allow serialization of "empty" POJOs (no properties to serialize)
+		// (without this setting, an exception is thrown in those cases)
+		objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+		
 	}
 
 	/** (NOT USED) Eager Initialization Singleton instance. */
@@ -489,36 +495,8 @@ public class Simulation implements ClockListener, Serializable {
 
 	private synchronized void readJSON() throws JsonParseException, JsonMappingException, IOException {
 		
-		// Use Java JSON to read
-//      InputStream is;
-//
-//      try {
-//          File simConfig = new File(DEFAULT_DIR, "simulationConfig.json");
-//          is = new FileInputStream(simConfig);
-//          //String sconfig = fileSimConfig.to"c:\\simulationConfig.json"; // some JSON content
-//          SimulationConfig.setInstance((SimulationConfig) JsonReader.jsonToJava(is, null));//.jsonToJava(is, true));
-////          is.close(); 
-//      } catch (FileNotFoundException e) {
-//          // TODO Auto-generated catch block
-//          e.printStackTrace();
-//      } catch (IOException e) {
-//          // TODO Auto-generated catch block
-//          e.printStackTrace();
-//      }
-
-//      String simConfig = "c:\\simulationConfig.json";
-//      SimulationConfig.setInstance((SimulationConfig) JsonReader.jsonToJava(simConfig));
-//      
-//      String resourceUtil = "c:\\resourceUtil.json"; // some JSON content
-//      ResourceUtil.setInstance((ResourceUtil) JsonReader.jsonToJava(resourceUtil));
-//      
-//      String malfunction = "c:\\malfunction.json"; // some JSON content
-//      malfunctionFactory = (MalfunctionFactory) JsonReader.jsonToJava(malfunction);
-				
-//      File fileSimConfig = new File(DEFAULT_DIR, "simulationConfig.json");
-//      String sconfig = fileSimConfig.getPath();
-
 		String name = mars.getClass().getSimpleName();
+//		String name = mars.getClass().getSimpleName();
 		File file = new File(DEFAULT_DIR, name + JSON_EXTENSION);
 		
 		// Use Jackson json to read json file data to String
@@ -686,12 +664,6 @@ public class Simulation implements ClockListener, Serializable {
 
 	
 	public void writeJSON() throws JsonGenerationException, JsonMappingException, IOException {	
-		// Configure Object mapper for pretty print
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-		// to allow serialization of "empty" POJOs (no properties to serialize)
-		// (without this setting, an exception is thrown in those cases)
-		objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-		
 		// Write to console, can write to any output stream such as file
 		StringWriter stringEmp = new StringWriter();
 		
@@ -703,11 +675,23 @@ public class Simulation implements ClockListener, Serializable {
 //		// Write to the file
 //		objectMapper.writeValue(new File(name + "." + JSON_EXTENSION), surface);
 		
-		String name = mars.getClass().getSimpleName();
-		objectMapper.writeValue(stringEmp, mars);
-		System.out.println("JSON representation of the Class '" + name + "' :\n" + stringEmp);
-		// Write to the file
-		objectMapper.writeValue(new File(DEFAULT_DIR, name + JSON_EXTENSION), mars);
+//		String name = mars.getClass().getSimpleName();
+//		objectMapper.writeValue(stringEmp, mars);
+//		System.out.println("JSON representation of the Class '" + name + "' :\n" + stringEmp);
+//		// Write to the file
+//		objectMapper.writeValue(new File(DEFAULT_DIR, name + JSON_EXTENSION), mars);
+		
+		Object o = mars;
+		String name = o.getClass().getSimpleName();
+		
+//		objectMapper.writeValue(stringEmp, o);
+//		System.out.println("JSON representation of the Class '" + name + "' :\n" + stringEmp);
+//		// Write to the file
+//		objectMapper.writeValue(new File(DEFAULT_DIR, name + JSON_EXTENSION), o);
+		
+		String json = objectMapper.writeValueAsString(o) ; 
+		System.out.println("JSON representation of the Class '" + name + "' :\n" + json);
+		
 	}
 	
 	/**

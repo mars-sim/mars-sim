@@ -20,14 +20,26 @@ import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 
 /**
  * The Unit class is the abstract parent class to all units in the Simulation.
  * Units include people, vehicles and settlements. This class provides data
  * members and methods common to all units.
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
+@JsonSubTypes({ @Type(value = Person.class, name = "person"), 
+				@Type(value = Structure.class, name = "structure"),
+				@Type(value = Vehicle.class, name = "vehicle"),
+				@Type(value = Equipment.class, name = "equipment"),})
 public abstract class Unit implements Serializable, Comparable<Unit> {
 
 	/** default serial id. */
@@ -56,6 +68,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	/** The unit's location tag. */
 	private LocationTag tag;
 	/** The unit's inventory. */
+	@JsonIgnore
 	private Inventory inventory;
 	/** The unit containing this unit. */
 	protected Unit containerUnit;

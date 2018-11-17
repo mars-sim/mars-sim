@@ -618,7 +618,7 @@ public class EnterAirlock extends Task implements Serializable {
 				if (oxygenAmount > oxygenCapacity)
 					oxygenAmount = oxygenCapacity;
 				try {
-					suitInv.retrieveAR(oxygenID, oxygenAmount);
+					suitInv.retrieveAmountResource(oxygenID, oxygenAmount);
 					entityInv.storeAR(oxygenID, oxygenAmount, true);
 					entityInv.addAmountSupplyAmount(oxygenID, oxygenAmount);
 	
@@ -632,7 +632,7 @@ public class EnterAirlock extends Task implements Serializable {
 				if (waterAmount > waterCapacity)
 					waterAmount = waterCapacity;
 				try {
-					suitInv.retrieveAR(waterID, waterAmount);
+					suitInv.retrieveAmountResource(waterID, waterAmount);
 					entityInv.storeAR(waterID, waterAmount, true);
 					entityInv.addAmountSupplyAmount(waterID, waterAmount);
 	

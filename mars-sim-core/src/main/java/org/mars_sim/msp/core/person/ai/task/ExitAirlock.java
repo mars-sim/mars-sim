@@ -1019,7 +1019,7 @@ public class ExitAirlock extends Task implements Serializable {
 		if (takenOxygen > availableOxygen)
 			takenOxygen = availableOxygen;
 		try {
-			entityInv.retrieveAR(oxygenID, takenOxygen);
+			entityInv.retrieveAmountResource(oxygenID, takenOxygen);
 			entityInv.addAmountDemand(oxygenID, takenOxygen);
 			suitInv.storeAR(oxygenID, takenOxygen, true);
 		} catch (Exception e) {
@@ -1039,7 +1039,7 @@ public class ExitAirlock extends Task implements Serializable {
 		if (takenWater > availableWater)
 			takenWater = availableWater;
 		try {
-			entityInv.retrieveAR(waterID, takenWater);
+			entityInv.retrieveAmountResource(waterID, takenWater);
 
 			entityInv.addAmountDemand(waterID, takenWater);
 			suitInv.storeAR(waterID, takenWater, true);

@@ -194,39 +194,41 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/** A list of functions of this building. */
 	protected List<Function> functions;
 	// private List<BuildingKit> buildingKit;
-	private Map<Integer, ItemResource> itemMap = new HashMap<Integer, ItemResource>();
+//	private Map<Integer, ItemResource> itemMap = new HashMap<Integer, ItemResource>();
 
 	/** Unit location coordinates. */
 	private Coordinates location;
+	
 	protected BuildingManager manager;
 	protected MalfunctionManager malfunctionManager;
 
 	private Inventory inv;
 	private Settlement settlement;
-	private ThermalGeneration furnace;
-	private PowerGeneration powerGen;
-	private PowerStorage powerStorage;
-	private LifeSupport lifeSupport;
-	private RoboticStation roboticStation;
-	private Heating heating;
-	private EVA eva;
-	private Farming farm;
-	private LivingAccommodations livingAccommodations;
-	private PreparingDessert preparingDessert;
-	private Cooking cooking;
-	private MedicalCare medical;
-	private WasteDisposal waste;
-	private VehicleMaintenance garage;
-	private FoodProduction foodFactory;
-	private ResourceProcessing processing;
-	private Research lab;
-	private Manufacture workshop;
-	private Administration admin;
-	private Recreation rec;
-	private Dining dine;
-	private GroundVehicleMaintenance maint;
-	private AstronomicalObservation astro;
-	private Exercise gym;
+	
+	private transient ThermalGeneration furnace;
+	private transient PowerGeneration powerGen;
+	private transient PowerStorage powerStorage;
+	private transient LifeSupport lifeSupport;
+	private transient RoboticStation roboticStation;
+	private transient Heating heating;
+	private transient EVA eva;
+	private transient Farming farm;
+	private transient LivingAccommodations livingAccommodations;
+	private transient PreparingDessert preparingDessert;
+	private transient Cooking cooking;
+	private transient MedicalCare medical;
+	private transient WasteDisposal waste;
+	private transient VehicleMaintenance garage;
+	private transient FoodProduction foodFactory;
+	private transient ResourceProcessing processing;
+	private transient Research lab;
+	private transient Manufacture workshop;
+	private transient Administration admin;
+	private transient Recreation rec;
+	private transient Dining dine;
+	private transient GroundVehicleMaintenance maint;
+	private transient AstronomicalObservation astro;
+	private transient Exercise gym;
 
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -261,6 +263,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		inv = settlement.getInventory();
 
 		// Set the instance of life support
+		// NOTE: needed for setting inhabitable id
 		if (hasFunction(FunctionType.LIFE_SUPPORT)) {
 			if (lifeSupport == null) {
 				lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
@@ -270,41 +273,41 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			}
 		}
 
-		// Set the instance of thermal generation function.
-		if (hasFunction(FunctionType.POWER_GENERATION))
-			if (powerGen == null)
-				powerGen = (PowerGeneration) getFunction(FunctionType.POWER_GENERATION);
-
-		// Set the instance of thermal generation function.
-		if (hasFunction(FunctionType.THERMAL_GENERATION))
-			if (furnace == null)
-				furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
-		// if (heating == null)
-		// heating = furnace.getHeating();
-
-		// Set the instance of power storage function.
-		if (hasFunction(FunctionType.POWER_STORAGE))
-			if (powerStorage == null)
-				powerStorage = (PowerStorage) getFunction(FunctionType.POWER_STORAGE);
-
-		// Set the instance of robotic station function.
-		if (hasFunction(FunctionType.ROBOTIC_STATION))
-			if (roboticStation == null)
-				roboticStation = (RoboticStation) getFunction(FunctionType.ROBOTIC_STATION);
-
-		// Set the instance of eva function.
-		if (hasFunction(FunctionType.EVA))
-			if (eva == null)
-				eva = (EVA) getFunction(FunctionType.EVA);
-
-		// Set the instance of farming function.
-		if (hasFunction(FunctionType.FARMING))
-			if (farm == null)
-				farm = (Farming) getFunction(FunctionType.FARMING);
-
-		if (hasFunction(FunctionType.LIVING_ACCOMODATIONS))
-			if (livingAccommodations == null)
-				livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMODATIONS);
+//		// Set the instance of thermal generation function.
+//		if (hasFunction(FunctionType.POWER_GENERATION))
+//			if (powerGen == null)
+//				powerGen = (PowerGeneration) getFunction(FunctionType.POWER_GENERATION);
+//
+//		// Set the instance of thermal generation function.
+//		if (hasFunction(FunctionType.THERMAL_GENERATION))
+//			if (furnace == null)
+//				furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
+//		// if (heating == null)
+//		// heating = furnace.getHeating();
+//
+//		// Set the instance of power storage function.
+//		if (hasFunction(FunctionType.POWER_STORAGE))
+//			if (powerStorage == null)
+//				powerStorage = (PowerStorage) getFunction(FunctionType.POWER_STORAGE);
+//
+//		// Set the instance of robotic station function.
+//		if (hasFunction(FunctionType.ROBOTIC_STATION))
+//			if (roboticStation == null)
+//				roboticStation = (RoboticStation) getFunction(FunctionType.ROBOTIC_STATION);
+//
+//		// Set the instance of eva function.
+//		if (hasFunction(FunctionType.EVA))
+//			if (eva == null)
+//				eva = (EVA) getFunction(FunctionType.EVA);
+//
+//		// Set the instance of farming function.
+//		if (hasFunction(FunctionType.FARMING))
+//			if (farm == null)
+//				farm = (Farming) getFunction(FunctionType.FARMING);
+//
+//		if (hasFunction(FunctionType.LIVING_ACCOMODATIONS))
+//			if (livingAccommodations == null)
+//				livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMODATIONS);
 
 	}
 
@@ -1367,9 +1370,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return functions;
 	}
 
-	public Map<Integer, ItemResource> getItemMap() {
-		return itemMap;
-	}
+//	public Map<Integer, ItemResource> getItemMap() {
+//		return itemMap;
+//	}
 
 	/*
 	 * Checks for possible meteorite impact for this building
@@ -1562,7 +1565,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public void destroy() {
 
 		functions = null;
-		itemMap = null;
+//		itemMap = null;
 		location = null;
 		manager = null;
 		settlement = null;

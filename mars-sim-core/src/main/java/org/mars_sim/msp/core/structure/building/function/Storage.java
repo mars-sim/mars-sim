@@ -613,7 +613,7 @@ public class Storage extends Function implements Serializable {
 				result = false;
 			} else {
 				if (isRetrieving) {
-					inv.retrieveAR(ar, amount);
+					inv.retrieveAmountResource(ar, amount);
 					inv.addAmountDemand(ar, amount);
 				}
 				result = true;

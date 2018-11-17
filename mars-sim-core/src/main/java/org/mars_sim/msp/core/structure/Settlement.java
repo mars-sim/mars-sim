@@ -73,6 +73,8 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * The Settlement class represents a settlement unit on virtual Mars. It
  * contains information related to the state of the settlement.
@@ -229,23 +231,32 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			ObjectiveType.TRADE_TOWN, ObjectiveType.TOURISM };
 
 	/** The settlement's building manager. */
+	@JsonIgnore
 	protected BuildingManager buildingManager;
 	/** The settlement's building connector manager. */
+	@JsonIgnore
 	protected BuildingConnectorManager buildingConnectorManager;
 	/** The settlement's goods manager. */
+	@JsonIgnore
 	protected GoodsManager goodsManager;
 	/** The settlement's construction manager. */
+	@JsonIgnore
 	protected ConstructionManager constructionManager;
 	/** The settlement's building power grid. */
+	@JsonIgnore
 	protected PowerGrid powerGrid;
 	// Added heating system
 	/** The settlement's heating system. */
+	@JsonIgnore
 	protected ThermalSystem thermalSystem;
 	/** The settlement's chain of command. */
+	@JsonIgnore
 	private ChainOfCommand chainOfCommand;
 	/** The settlement's composition of air. */
+	@JsonIgnore
 	private CompositionOfAir compositionOfAir;
 	/** The settlement's location. */
+	@JsonIgnore
 	private Coordinates location;
 
 	/** The last 20 mission scores */

@@ -50,7 +50,6 @@ import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
-import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
