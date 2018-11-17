@@ -18,12 +18,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.io.StringWriter;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
@@ -865,7 +863,7 @@ public class Simulation implements ClockListener, Serializable {
 			oos.close();
 
 			// Print the size of each serializable object
-			printObjectSize();
+			System.out.println(printObjectSize(0).toString());
 			
 			// STEP 2: convert the uncompressed file into a fis
 			
@@ -958,8 +956,9 @@ public class Simulation implements ClockListener, Serializable {
     
 	/**
 	 * Prints the object and its size
+	 * @throws IOException 
 	 */
-	public StringBuilder printObjectSize() {
+	public StringBuilder printObjectSize(int type) {
       	StringBuilder sb = new StringBuilder();
 		
 		List<Serializable> list = Arrays.asList( 
@@ -1004,7 +1003,13 @@ public class Simulation implements ClockListener, Serializable {
 			sb.append(SPACE + ":" + SPACE);
 
 			// Get size
-			double size = CheckSerializedSize.getSerializedSize(o);
+			double size = 0;
+			
+			if (type == 0)
+				size = CheckSerializedSize.getSerializedSize(o);
+			else if (type == 1)
+				size = CheckSerializedSize.getSerializedSizeByteArray(o);
+
 			sumSize += size;
 			
 			if (size < 1_000D) {

@@ -63,8 +63,10 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class ChatUtils {
 
     /** default logger. */
-  private static Logger logger = Logger.getLogger(ChatUtils.class.getName());
-//  private static String sourceName = logger.getName();
+  
+	private static Logger logger = Logger.getLogger(ChatUtils.class.getName());
+//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+//			logger.getName().length());
 
 	private static boolean expertMode = false;
 
@@ -2377,7 +2379,7 @@ public class ChatUtils {
 	            h.setLevel(newLvl);
 	    }
 	    
-	    logger.config("Logging is set to newLvl.");
+	    logger.config("Logging is set to " + newLvl);
 	}
 	
 	/*
@@ -2388,21 +2390,15 @@ public class ChatUtils {
 	public static String askSystem(String text) {
 		StringBuilder responseText = new StringBuilder();
 
-		// String SYSTEM_PROMPT = "System : ";
 		boolean available = true;
 		int nameCase = 0;
 		boolean proceed = false;
 
-//		Unit unit = null;
 		Person person = null;
 		Robot robot = null;
 
-		// System.out.println("A: text is " + text + ". Running parseText()");
 		text = text.trim();
 		int len = text.length();
-
-//		List<Person> personList = new ArrayList<>();
-//		List<Robot> robotList = new ArrayList<>();
 
 		// Detect "\" backslash and the name that follows
 		if (len >= 3 && text.substring(0, 1).equalsIgnoreCase("\\")) {
@@ -2452,8 +2448,7 @@ public class ChatUtils {
 				responseText.append(System.lineSeparator());				
 				responseText.append(System.lineSeparator());
 				responseText.append("See https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html");
-				
-					
+									
 				responseText.append(System.lineSeparator());
 				responseText.append(System.lineSeparator());
 				responseText.append("e.g. Type 'log info' at the prompt to set it to the INFO level");
@@ -2462,73 +2457,56 @@ public class ChatUtils {
 				return responseText.toString();						
 			}
 			
-			if (text.equalsIgnoreCase("log off")) {			
-				
-				setDebugLevel(Level.OFF);
-				
+			if (text.equalsIgnoreCase("log off")) {
+				setDebugLevel(Level.OFF);				
 //				responseText.append(System.lineSeparator());
 				responseText.append("Logging is set to OFF");	
 				
 				return responseText.toString();						
 			}
 			
-			
 			else if (text.equalsIgnoreCase("log config")) {			
-				
 				setDebugLevel(Level.CONFIG);
-				
 //				responseText.append(System.lineSeparator());
 				responseText.append("Logging is set to CONFIG");	
 				
 				return responseText.toString();						
 			}
-
-
-			
+	
 			else if (text.equalsIgnoreCase("log warning")) {			
-				
-				setDebugLevel(Level.WARNING);
-				
+				setDebugLevel(Level.WARNING);		
 //				responseText.append(System.lineSeparator());
 				responseText.append("Logging is set to WARNING");	
 				
 				return responseText.toString();						
 			}
 			
-			else if (text.equalsIgnoreCase("log fine")) {			
-				
-				setDebugLevel(Level.FINE);
-				
+			else if (text.equalsIgnoreCase("log fine")) {						
+				setDebugLevel(Level.FINE);			
 //				responseText.append(System.lineSeparator());
 				responseText.append("Logging is set to FINE");	
 				
 				return responseText.toString();						
 			}
 			
-			else if (text.equalsIgnoreCase("log finer")) {			
-				
+			else if (text.equalsIgnoreCase("log finer")) {							
 				setDebugLevel(Level.FINER);
-				
 //				responseText.append(System.lineSeparator());
 				responseText.append("Logging is set to FINER");	
 				
 				return responseText.toString();						
 			}
 			
-			else if (text.equalsIgnoreCase("log finest")) {			
-				
+			else if (text.equalsIgnoreCase("log finest")) {							
 				setDebugLevel(Level.FINEST);
-				
 //				responseText.append(System.lineSeparator());
 				responseText.append("Logging is set to FINEST");	
 				
 				return responseText.toString();						
 			}
 			
-			else if (text.equalsIgnoreCase("log severe")) {			
-				
+			else if (text.equalsIgnoreCase("log severe")) {					
 				setDebugLevel(Level.SEVERE);
-				
 //				responseText.append(System.lineSeparator());
 				responseText.append("Logging is set to SEVERE");	
 				
@@ -2536,19 +2514,15 @@ public class ChatUtils {
 			}
 			
 			else if (text.equalsIgnoreCase("log info")) {			
-				
 				setDebugLevel(Level.INFO);
-						
 //				responseText.append(System.lineSeparator());
 				responseText.append("Logging is set to INFO");
 				
 				return responseText.toString();
 			}
 					
-			else if (text.equalsIgnoreCase("log all")) {			
-				
+			else if (text.equalsIgnoreCase("log all")) {
 				setDebugLevel(Level.ALL);
-				
 //				responseText.append(System.lineSeparator());
 				responseText.append("Logging is set to ALL");	
 				
@@ -2573,7 +2547,11 @@ public class ChatUtils {
 			responseText.append(" Martian Time : " + marsTime) ;
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			responseText.append(sim.printObjectSize());
+			responseText.append(sim.printObjectSize(0));
+	
+//			responseText.append(System.lineSeparator());
+//			responseText.append(System.lineSeparator());
+//			responseText.append(sim.printObjectSize(1));
 			
 			return responseText.toString();
 		}
