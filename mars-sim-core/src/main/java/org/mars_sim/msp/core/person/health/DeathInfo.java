@@ -339,16 +339,20 @@ public class DeathInfo implements Serializable {
 		else
 			return "";
 	}
-//
-//	/**
-//	 * Gets the container unit at the time of death. Returns null if none.
-//	 * 
-//	 * @return container unit
-//	 */
-//	public Unit getContainerUnit() {
-//		return containerUnit;
-//	}
 
+	/**
+	 * Gets the container unit at the time of death. Returns null if none.
+	 * 
+	 * @return container unit
+	 */
+	public Unit getContainerUnit() {
+		return containerUnit;
+	}
+
+	public void setContainerUnit(Unit c) {
+		containerUnit = c;
+	}
+	
 	/**
 	 * Get the type of the illness that caused the death.
 	 * 

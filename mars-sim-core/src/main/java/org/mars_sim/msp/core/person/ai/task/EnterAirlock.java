@@ -389,8 +389,12 @@ public class EnterAirlock extends Task implements Serializable {
 		double remainingTime = time;
 
 //        if (person != null) {
-		logger.finer(person + " waiting inside airlock.");
-
+//		logger.finer(person + " waiting inside airlock.");
+		LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+				"[" + person.getLocationTag().getLocale() + "] "
+  						+ person + " was in " + person.getLocationTag().getImmediateLocation()
+				+ " and waiting inside airlock.", null);
+		
 		if (airlock.inAirlock(person)) {
 
 			// Check if person is the airlock operator.

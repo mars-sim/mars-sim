@@ -217,7 +217,7 @@ implements ActionListener {
 		// Prepare longitude label
 		JTextArea lastWordTA = new JTextArea(5, 25);
 		//lastWordTA.setSize(300, 150);
-		lastWordTA.append(person.getLastWord());
+		lastWordTA.append(death.getLastWord());
 		lastWordTA.setEditable(false);
 		lastWordTA.setWrapStyleWord(true);
 		lastWordTA.setLineWrap(true);

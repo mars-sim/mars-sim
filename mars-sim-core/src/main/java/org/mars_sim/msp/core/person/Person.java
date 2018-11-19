@@ -898,6 +898,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		// Bury the body
 		isBuried = true;
+		// Back up the last container unit
+		condition.getDeathDetails().setContainerUnit(containerUnit);
 		// Remove the person from the settlement
 		setContainerUnit(null);
 		// Set his/her buried settlement
