@@ -400,6 +400,20 @@ public class MalfunctionManager implements Serializable {
 	}
 
 	/**
+	 * Activates the malfunction (used by Meteorite Damage)
+	 * 
+	 * @param {@link Malfunction}
+	 * @param value
+	 */
+	public void activateMalfunction(Malfunction m, boolean registerEvent) {
+		Malfunction malfunction = factory.determineRepairParts(m);
+		if (malfunction != null) {
+			addMalfunction(malfunction, registerEvent, null);
+			numberMalfunctions++;
+		}
+	}
+	
+	/**
 	 * Adds a malfunction to the unit.
 	 * 
 	 * @param malfunction   the malfunction to add.
@@ -525,9 +539,7 @@ public class MalfunctionManager implements Serializable {
 			else {
 				// due to meteorite impact
 				
-				// actor is null
-				numberMalfunctions++;
-
+				// Note : Unit actor is null
 				String loc0 = null;
 				String loc1 = null;
 
@@ -572,8 +584,9 @@ public class MalfunctionManager implements Serializable {
 						"[" + loc1 + "] " +  malfunction.getName() + " damage detected in " + loc0, null);
 			}
 			
-		} else
-			return;
+		} 
+//		else
+//			return;
 
 		// Register the failure of the Parts involved
 		Map<Integer, Integer> parts = malfunction.getRepairParts();
@@ -717,6 +730,11 @@ public class MalfunctionManager implements Serializable {
 		timeSinceLastMaintenance += time;
 	}
 
+	/**
+	 * Resets one or more flow modifier
+	 * 
+	 * @param type
+	 */
 	public void resetModifiers(int type) {
 		// compare from previous modifier
 		
@@ -750,6 +768,11 @@ public class MalfunctionManager implements Serializable {
 		}
 	}
 	
+	/**
+	 * Checks if any malfunctions have been fixed
+	 * 
+	 * @param time
+	 */
 	public void checkFixedMalfunction(double time) { 
 		Collection<Malfunction> fixedMalfunctions = new ArrayList<Malfunction>();
 
@@ -770,15 +793,16 @@ public class MalfunctionManager implements Serializable {
 
 				// Reset the modifiers
 				Map<String, Double> effects = malfunction.getLifeSupportEffects();
-				if (effects.get(OXYGEN) != null)
-					resetModifiers(0);
-				if (effects.get(WATER) != null)
-					resetModifiers(1);
-				if (effects.get(PRESSURE) != null)
-					resetModifiers(2);
-				if (effects.get(TEMPERATURE) != null)
-					resetModifiers(3);
-				
+				if (!effects.isEmpty()) {
+					if (effects.containsKey(OXYGEN))
+						resetModifiers(0);
+					if (effects.containsKey(WATER))
+						resetModifiers(1);
+					if (effects.containsKey(PRESSURE))
+						resetModifiers(2);
+					if (effects.containsKey(TEMPERATURE))
+						resetModifiers(3);
+				}
 				try {
 					getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
 				} catch (Exception e) {
@@ -820,13 +844,13 @@ public class MalfunctionManager implements Serializable {
 				if (!malfunction.isFixed()) {
 					Map<String, Double> effects = malfunction.getLifeSupportEffects();
 					if (effects.get(OXYGEN) != null)
-						tempOxygenFlowModifier += effects.get(OXYGEN) * (100D - malfunction.getPercentageFixed());
+						tempOxygenFlowModifier += effects.get(OXYGEN) * (100D - malfunction.getPercentageFixed())/100D;
 					if (effects.get(WATER) != null)
-						tempWaterFlowModifier += effects.get(WATER) * (100D - malfunction.getPercentageFixed());
+						tempWaterFlowModifier += effects.get(WATER) * (100D - malfunction.getPercentageFixed())/100D;
 					if (effects.get(PRESSURE) != null)
-						tempAirPressureModifier += effects.get(PRESSURE) * (100D - malfunction.getPercentageFixed());
+						tempAirPressureModifier += effects.get(PRESSURE) * (100D - malfunction.getPercentageFixed())/100D;
 					if (effects.get(TEMPERATURE) != null)
-						tempTemperatureModifier += effects.get(TEMPERATURE) * (100D - malfunction.getPercentageFixed());
+						tempTemperatureModifier += effects.get(TEMPERATURE) * (100D - malfunction.getPercentageFixed())/100D;
 				}
 			}
 
@@ -834,7 +858,7 @@ public class MalfunctionManager implements Serializable {
 				oxygenFlowModifier += tempOxygenFlowModifier * time ;
 				if (oxygenFlowModifier < 0)
 					oxygenFlowModifier = 0;
-				LogConsolidated.log(logger, Level.WARNING, 15_000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 						"[" + getUnit().getLocationTag().getLocale() + "] Oxygen flow restricted to "
 								+ Math.round(oxygenFlowModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation()+ ".", null);
 			} 
@@ -843,7 +867,7 @@ public class MalfunctionManager implements Serializable {
 				waterFlowModifier += tempWaterFlowModifier * time;
 				if (waterFlowModifier < 0)
 					waterFlowModifier = 0;
-				LogConsolidated.log(logger, Level.WARNING, 15_000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 						"[" + getUnit().getLocationTag().getLocale() + "] Water flow restricted to "
 								+ Math.round(waterFlowModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
 			} 
@@ -852,7 +876,7 @@ public class MalfunctionManager implements Serializable {
 				airPressureModifier += tempAirPressureModifier * time;
 				if (airPressureModifier < 0)
 					airPressureModifier = 0;
-				LogConsolidated.log(logger, Level.WARNING, 15_000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 						"[" + getUnit().getLocationTag().getLocale() + "] Air pressure regulator malfunctioned at "
 								+ Math.round(airPressureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
 			} 
@@ -862,7 +886,7 @@ public class MalfunctionManager implements Serializable {
 				temperatureModifier += tempTemperatureModifier * time;
 				if (temperatureModifier < 0)
 					temperatureModifier = 0;
-				LogConsolidated.log(logger, Level.WARNING, 15_000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 						"[" + getUnit().getLocationTag().getLocale() + "] Temperature regulator malfunctioned at "
 								+ Math.round(temperatureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
 			}
@@ -1162,7 +1186,7 @@ public class MalfunctionManager implements Serializable {
 			ComplaintType type = i1.next();
 			double probability = malfunction.getMedicalComplaints().get(type);
 			MedicalManager medic = Simulation.instance().getMedicalManager();
-			// 2016-06-15 Replaced the use of String name with ComplaintType
+			// Replace the use of String name with ComplaintType
 			Complaint complaint = medic.getComplaintByName(type);
 			if (complaint != null) {
 				// Get people who can be affected by this malfunction.

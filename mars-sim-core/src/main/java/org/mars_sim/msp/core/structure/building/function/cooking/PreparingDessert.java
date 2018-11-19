@@ -53,7 +53,9 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
     /** default logger. */
     private static Logger logger = Logger.getLogger(PreparingDessert.class.getName());
-
+	/** The minimal amount of resource to be retrieved. */
+	private static final double MIN = 0.00001;
+	
     private static String sourceName = logger.getName();
     
     private static final FunctionType FUNCTION = FunctionType.PREPARING_DESSERT;
@@ -99,10 +101,10 @@ implements Serializable {
 
     private static int NUM_DESSERTS = availableDesserts.length;
 
-	private static AmountResource waterAR = ResourceUtil.waterAR;
-    private static AmountResource greyWaterAR = ResourceUtil.greyWaterAR;
-    private static AmountResource foodWasteAR = ResourceUtil.foodWasteAR;
-    public static AmountResource NaClOAR = ResourceUtil.NaClOAR;
+	private static int waterID = ResourceUtil.waterID;
+    private static int greyWaterID = ResourceUtil.greyWaterID;
+    private static int foodWasteID = ResourceUtil.foodWasteID;
+    public static int NaClOID = ResourceUtil.NaClOID;
 
     public static AmountResource [] availableDessertsAR =
     	{
@@ -480,10 +482,13 @@ implements Serializable {
 	/**
 	 * Cleans up the kitchen with cleaning agent and water.
 	 */
-	// 2015-02-27 Added cleanUpKitchen()
 	public void cleanUpKitchen() {
-		boolean cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol*.1, NaClOAR, inv, true); //SODIUM_HYPOCHLORITE, inv, true);//AmountResource.
-		boolean cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol, waterAR, inv, true);//org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
+		boolean cleaning0 = false;
+		if (cleaningAgentPerSol*.1 > MIN)
+			cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol*.1, NaClOID, inv, true); 
+		boolean cleaning1 = false;
+		if (cleaningAgentPerSol > MIN)
+			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol, waterID, inv, true);
 
 		if (cleaning0)
 			cleanliness = cleanliness + .05;
@@ -524,10 +529,12 @@ implements Serializable {
         for (int i=0; i< NUM_DESSERTS; i++) {
         	double amount = dryMass[i];
             ///System.out.println("PreparingDessert : it's " + availableDesserts[i]);
-        	boolean isAvailable = Storage.retrieveAnResource(amount, availableDessertsAR[i], inv, false);
+        	boolean isAvailable = false;
+        	if (amount > MIN)
+        		isAvailable = Storage.retrieveAnResource(amount, availableDessertsAR[i], inv, false);
         	boolean isWater_av = false;
-        	if (dessertMassPerServing > amount)
-        		isWater_av = Storage.retrieveAnResource(dessertMassPerServing-amount, waterAR, inv, false);
+        	if (dessertMassPerServing - amount > MIN)
+        		isWater_av = Storage.retrieveAnResource(dessertMassPerServing-amount, waterID, inv, false);
         	
         	if (isAvailable && isWater_av) {
             	//System.out.println("n is available");
@@ -635,9 +642,10 @@ implements Serializable {
         }
 
         else {
-	        Storage.retrieveAnResource(dryMass, selectedDessert, inv, true);
-	        if (dessertMassPerServing > dryMass)
-	        	Storage.retrieveAnResource(dessertMassPerServing-dryMass, waterAR, inv, true);
+        	if (dryMass > MIN)
+        		Storage.retrieveAnResource(dryMass, selectedDessert, inv, true);
+	        if (dessertMassPerServing - dryMass > MIN)
+	        	Storage.retrieveAnResource(dessertMassPerServing-dryMass, waterID, inv, true);
 	        
 	        double dessertQuality = 0;
 	        // TODO: quality also dependent upon the hygiene of a person
@@ -679,7 +687,6 @@ implements Serializable {
     /**
      * Consumes a certain amount of water for each dessert
      */
-    // 2015-01-28 Added consumeWater()
     public void consumeWater() {
     	int sign = RandomUtil.getRandomInt(0, 1);
     	double rand = RandomUtil.getRandomDouble(0.2);
@@ -689,10 +696,11 @@ implements Serializable {
     		usage = 1 + rand;
     	else
     		usage = 1 - rand;
-    	Storage.retrieveAnResource(usage, waterAR, inv, true);
+    	if (usage > MIN)
+    		Storage.retrieveAnResource(usage, waterID, inv, true);
 		double wasteWaterAmount = usage * .5;
-		if (wasteWaterAmount > 0)
-			Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv, sourceName + "::consumeWater");
+		if (wasteWaterAmount > MIN)
+			Storage.storeAnResource(wasteWaterAmount, greyWaterID, inv, sourceName + "::consumeWater");
     }
 
 
@@ -730,8 +738,9 @@ implements Serializable {
 	        				
 	                        if (num < 1) {
 	                            // Throw out bad dessert as food waste.
-	                            if (getDryMass(dessert.getName()) > 0)
-	                            		Storage.storeAnResource(getDryMass(dessert.getName()), foodWasteAR, inv, "::timePassing");
+	                        	double m = getDryMass(dessert.getName());
+	                            if (m > MIN)
+	                            	Storage.storeAnResource(m, foodWasteID, inv, "::timePassing");
 	                            
 	            				log.append("[").append(settlement.getName()).append("] ")
 	                            		.append(getDryMass(dessert.getName()))
@@ -896,10 +905,6 @@ implements Serializable {
         settlement = null;
         //servingsOfDessertList.clear();
         servingsOfDessert = null;
-        waterAR = null;
-        greyWaterAR = null;
-        foodWasteAR = null;
-        NaClOAR = null;
         availableDessertsAR = null;
     }
 }

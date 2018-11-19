@@ -168,7 +168,7 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * Returns the probability of this malfunction occuring.
+	 * Returns the probability of this malfunction occurring.
 	 * 
 	 * @return probability
 	 */

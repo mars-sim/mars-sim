@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
@@ -367,6 +368,21 @@ public final class JobManager implements Serializable {
 		return bestProspect;
 	}
 
+	/**
+	 * Counts the number of people having a particular job
+	 * 
+	 * @param job
+	 * @return number
+	 */
+	public static int numJobs(Class<?> job, Settlement s) {
+		int num = 0;
+		for (Person p: s.getAllAssociatedPeople()) {
+			if (p.getMind().getJob().getClass().equals(job))
+				num++;
+		}
+		return num;
+	}
+	
 //	public static double getBestRobotJobProspect(Robot robot, Settlement settlement, boolean isHomeSettlement) {
 //		double bestProspect = Double.MIN_VALUE;
 //		Iterator<RobotJob> i = getRobotJobs().iterator();

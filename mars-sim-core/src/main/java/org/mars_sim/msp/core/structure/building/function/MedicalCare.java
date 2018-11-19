@@ -119,7 +119,19 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	public int getPatientNum() {
 		return medicalStation.getPatientNum();
 	}
-
+	
+	/**
+	 * Checks if there are any empty beds for new patients
+	 * 
+	 * @return true or false
+	 */
+	public boolean hasEmptyBeds() {
+		if (getPatientNum() >= getSickBedNum())
+			return false;
+		else
+			return true;
+	}
+	
 	/**
 	 * Gets the patients at this medical station.
 	 * 

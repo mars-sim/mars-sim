@@ -429,7 +429,19 @@ public class Storage extends Function implements Serializable {
 				double amountStored = inv.getAmountResourceStored(id, false);
 				inv.addAmountDemandTotalRequest(id);
 
-				if (amountStored < amount) {
+				if (amountStored < 0.00001) {
+					result = false;
+					if (id == ResourceUtil.greyWaterID && inv.getOwner() instanceof Settlement) {
+						Settlement s = (Settlement)(inv.getOwner());
+						// Adjust the grey water filtering rate
+						s.decreaseGreyWaterFilteringRate();
+						double r = s.getGreyWaterFilteringRate();
+						LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, 
+								"[" + s
+					    		+ "] New grey water filtering rate : " + Math.round(r*100.0)/100.0 + ".", null);
+					}
+				
+				} else if (amountStored < amount) {
 					amount = amountStored;
 					if (isRetrieving) {
 						inv.retrieveAmountResource(id, amount);
@@ -441,17 +453,7 @@ public class Storage extends Function implements Serializable {
 							+ ResourceUtil.findAmountResourceName(id) + ".",
 							null);
 					result = false;
-				} else if (amountStored < 0.00001) {
-					result = false;
-					if (id == ResourceUtil.greyWaterID && inv.getOwner() instanceof Settlement) {
-						Settlement s = (Settlement)(inv.getOwner());
-						// Adjust the grey water filtering rate
-						s.decreaseGreyWaterFilteringRate();
-						double r = s.getGreyWaterFilteringRate();
-						LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, 
-								"[" + s
-					    		+ "] New grey water filtering rate : " + Math.round(r*100.0)/100.0 + ".", null);
-					}
+				
 				} else {
 					if (isRetrieving) {
 						inv.retrieveAmountResource(id, amount);

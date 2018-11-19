@@ -106,6 +106,8 @@ public class Crop implements Serializable {
 	public static final double LOSS_FACTOR_HPS = NON_VISIBLE_RADIATION_HPS * .75 + CONDUCTION_CONVECTION_HPS / 2D;
 	/** The average temperature tolerance of a crop [in C]. */
 	private static final double T_TOLERANCE = 3D;
+	/** The minimal amount of resource to be retrieved. */
+	private static final double MIN = 0.00001;
 	/** The string reference variable of the tissue culture */
 	public static final String TISSUE_CULTURE = "tissue culture";
 
@@ -386,7 +388,8 @@ public class Crop implements Serializable {
 				inv.addItemDemand(mushroomBoxAR, 2);
 			}
 			// Require some dead matter for fungi to decompose
-			Storage.retrieveAnResource(growingArea * .5, cropWasteID, inv, true);
+			if (growingArea * .5 > MIN)
+				Storage.retrieveAnResource(growingArea * .5, cropWasteID, inv, true);
 		}
 	}
 
@@ -1014,8 +1017,8 @@ public class Crop implements Serializable {
 		double waterRequired = fractionalGrowingTimeCompleted * needFactor * (averageWaterNeeded * time / 1000)
 				* growingArea;
 		// Determine the amount of grey water available.
-		double greyWaterAvailable = Math.min(settlement.getGreyWaterFilteringRate() * time,
-				inv.getAmountResourceStored(greywaterID, false));
+		double gw = inv.getAmountResourceStored(greywaterID, false);
+		double greyWaterAvailable = Math.min(gw * settlement.getGreyWaterFilteringRate() * time, gw);
 		double waterUsed = 0;
 		double greyWaterUsed = 0;
 		double totalWaterUsed = 0;
@@ -1027,25 +1030,29 @@ public class Crop implements Serializable {
 		if (greyWaterAvailable >= waterRequired) {
 			greyWaterUsed = waterRequired;
 			totalWaterUsed = greyWaterUsed;
-			Storage.retrieveAnResource(greyWaterUsed, greywaterID, inv, true);
+			if (greyWaterUsed > MIN)
+				Storage.retrieveAnResource(greyWaterUsed, greywaterID, inv, true);
 			waterModifier = 1D;
 		}
 
 		else if (greyWaterAvailable < waterRequired) {
 			// If not enough grey water, use water
 			greyWaterUsed = greyWaterAvailable;
-			Storage.retrieveAnResource(greyWaterUsed, greywaterID, inv, true);
+			if (greyWaterUsed > MIN)
+				Storage.retrieveAnResource(greyWaterUsed, greywaterID, inv, true);
 			waterRequired = waterRequired - greyWaterUsed;
 			double waterAvailable = inv.getAmountResourceStored(waterID, false);
 			
 			if (waterAvailable >= waterRequired) {
 				waterUsed = waterRequired;
-				Storage.retrieveAnResource(waterUsed, waterID, inv, true);
+				if (waterUsed > MIN)
+					Storage.retrieveAnResource(waterUsed, waterID, inv, true);
 			}
 			else {
 				// not enough water
 				waterUsed = waterAvailable;
-				Storage.retrieveAnResource(waterUsed, waterID, inv, true);
+				if (waterUsed > MIN)
+					Storage.retrieveAnResource(waterUsed, waterID, inv, true);
 				// Incur penalty if water is NOT available
 				waterModifier = (greyWaterAvailable + waterUsed) / waterRequired;
 			}
@@ -1063,7 +1070,7 @@ public class Crop implements Serializable {
 				fertilizerModifier = 1D;
 			}
 
-			if (fertilizerUsed > 0D) {
+			if (fertilizerUsed > MIN) {
 				Storage.retrieveAnResource(fertilizerUsed, fertilizerID, inv, true);
 			}
 
@@ -1124,7 +1131,7 @@ public class Crop implements Serializable {
 
 			if (o2Used > o2Available)
 				o2Used = o2Available;
-			if (o2Used > 0) {
+			if (o2Used >  MIN) {
 				Storage.retrieveAnResource(o2Used, oxygenID, inv, true);
 				// farm.addO2Cache(-o2Used);
 				cumulative_o2 = cumulative_o2 - o2Used;
@@ -1138,7 +1145,7 @@ public class Crop implements Serializable {
 
 			// Determine the amount of co2 generated via gas exchange.
 			double cO2Gen = o2Used * CO2_TO_O2_RATIO;
-			if (cO2Gen > 0) {
+			if (cO2Gen > MIN) {
 				Storage.storeAnResource(cO2Gen, carbonDioxideID, inv, sourceName + "::computeGases");
 				// farm.addCO2Cache(cO2Gen);
 				cumulative_co2 = cumulative_co2 + cO2Gen;
@@ -1166,7 +1173,7 @@ public class Crop implements Serializable {
 
 			if (cO2Used > cO2Available)
 				cO2Used = cO2Available;
-			if (cO2Used > 0) {
+			if (cO2Used > MIN) {
 				Storage.retrieveAnResource(cO2Used, carbonDioxideID, inv, true);
 				// farm.addCO2Cache(-cO2Used);
 				cumulative_co2 = cumulative_co2 - cO2Used;

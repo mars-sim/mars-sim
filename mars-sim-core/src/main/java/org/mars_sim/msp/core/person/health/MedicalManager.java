@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.health;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.structure.Settlement;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class provides a Factory for the {@link Complaint} class. Some of the Medical Complaints are pre-defined. Instances are
@@ -40,6 +42,14 @@ public class MedicalManager implements Serializable {
 	/** Treatments to Facilities. */
 	private HashMap<Integer, List<Treatment>> supported = new HashMap<Integer, List<Treatment>>();
 
+	/** Settlement's Postmortem Exam waiting list. */
+	private Map<Settlement, List<DeathInfo>> awaitingPostmortemExam;// = new HashMap<Integer, List<Treatment>>();
+	/** Settlement's Death Registry. */
+	private Map<Settlement, List<DeathInfo>> deathRegistry;// = new HashMap<Integer, List<Treatment>>();
+	
+//	private List<DeathInfo> awaitingPostmortemExam;
+//	private List<DeathInfo> deathRegistry;
+	
 	/** Pre-defined complaint. */
 	private Complaint starvation;
 	/** Pre-defined complaint. */
@@ -99,6 +109,8 @@ public class MedicalManager implements Serializable {
 		while (j.hasNext())
 			addComplaint(j.next());
 
+		awaitingPostmortemExam = new HashMap<>();
+		deathRegistry = new HashMap<>();
 	}
 
 	/***
@@ -371,6 +383,48 @@ public class MedicalManager implements Serializable {
 		return result;
 	}
 
+	public void addDeathRegistry(Settlement s, DeathInfo death) {
+		awaitingPostmortemExam.get(s).remove(death);
+		if (deathRegistry.containsKey(s)) {
+			deathRegistry.get(s).add(death);
+		}
+		else {
+			List<DeathInfo> list = new ArrayList<>();
+			list.add(death);
+			deathRegistry.put(s, list);
+		}
+	}
+	
+	public List<DeathInfo> getDeathRegistry(Settlement s) {
+		if (deathRegistry.containsKey(s)) {
+			return deathRegistry.get(s);
+		}
+		else {
+			return null;
+		}
+	}
+	
+	public void addPostmortemExams(Settlement s, DeathInfo death) {
+		if (awaitingPostmortemExam.containsKey(s)) {
+			awaitingPostmortemExam.get(s).add(death);
+		}
+		else {
+			List<DeathInfo> list = new ArrayList<>();
+			list.add(death);
+			awaitingPostmortemExam.put(s, list);
+		}
+	}
+
+	public List<DeathInfo> getPostmortemExams(Settlement s) {
+		if (awaitingPostmortemExam.containsKey(s)) {
+			return awaitingPostmortemExam.get(s);
+		}
+		else {
+			List<DeathInfo> list = new ArrayList<>();
+			return list;
+		}
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

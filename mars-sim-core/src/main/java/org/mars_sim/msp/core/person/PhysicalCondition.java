@@ -1372,62 +1372,32 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void setDead(HealthProblem problem, Boolean causedByUser) {
 		alive = false;
-
+		String cause = "";
 		setFatigue(0D);
 		setHunger(0D);
 		setPerformanceFactor(0D);
 		setStress(0D);
-
-		deathDetails = new DeathInfo(person, problem);
-
+		
 		if (causedByUser) {
-			person.setDeclaredDead();
-
-			problem.setState(HealthProblem.DEAD);
-			this.serious = problem;
-			logger.severe(person + " committed suicide as instructed.");
+			cause = "Suicide";
+			logger.warning(person + " committed suicide as instructed.");
 		}
+		
+		deathDetails = new DeathInfo(person, problem, cause);
 
+		person.setDeclaredDead();
+
+		problem.setState(HealthProblem.DEAD);
+		this.serious = problem;
+		
 		person.getMind().setInactive();
+		
+		medicalManager.addPostmortemExams(person.getAssociatedSettlement(), deathDetails);
 
-		if (person.getVehicle() != null) {
-			handleBody();
-		}
+		// Wait for postmortem exam to be done by doctor
 	}
 
-	/**
-	 * Handles the body of a dead person.
-	 * 
-	 * @param problem
-	 */
-	public void handleBody() {
-		deathDetails.getBodyRetrieved();
-		examBody(getDeathDetails().getProblem());
-		person.buryBody();
-	}
 
-	/**
-	 * Retrieves the body.
-	 * 
-	 * @param problem
-	 */
-	public void retrieveBody() {
-		deathDetails.setBodyRetrieved(true);
-	}
-
-	/**
-	 * Exams the body and creates the medical event.
-	 * 
-	 * @param problem
-	 */
-	public void examBody(HealthProblem problem) {
-		logger.log(Level.SEVERE,
-				"[" + person.getLocationTag().getQuickLocation() + "] A post-mortem examination was ordered on "
-						+ person + ". Cause of death : " + problem.toString().toLowerCase());
-		// Create medical event for death.
-		MedicalEvent event = new MedicalEvent(person, problem, EventType.MEDICAL_DEATH);
-		Simulation.instance().getEventManager().registerNewEvent(event);
-	}
 
 	/**
 	 * Define the hunger setting for this person

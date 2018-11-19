@@ -418,9 +418,6 @@ public class MainDesktopPane extends WebDesktopPane
 	 * Creates tool windows
 	 */
 	private void prepareToolWindows() {
-		// logger.config("MainDesktopPane's prepareToolWindows() is on " +
-		// Thread.currentThread().getName() + " Thread");
-
 		if (toolWindows != null)
 			toolWindows.clear();
 
@@ -507,8 +504,6 @@ public class MainDesktopPane extends WebDesktopPane
 	 * * Creates announcement windows & transportWizard
 	 */
 	private void prepareAnnouncementWindow() {
-		// logger.config("MainDesktopPane's prepareWindows() is on " +
-		// Thread.currentThread().getName() + " Thread");
 		// Prepare announcementWindow.
 		announcementWindow = new AnnouncementWindow(this);
 		try {

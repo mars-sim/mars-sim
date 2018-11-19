@@ -113,6 +113,8 @@ public class ResourceUtil implements Serializable {
 	public static int greyWaterID;
 	public static int cropWasteID;
 	public static int fertilizerID;
+	public static int foodWasteID;
+	public static int NaClOID;
 
 	public static AmountResource foodAR;
 	public static AmountResource oxygenAR;
@@ -300,6 +302,8 @@ public class ResourceUtil implements Serializable {
 
 		soymilkID = findAmountResource(SOYMILK).getID();
 
+		foodWasteID = findAmountResource(FOOD_WASTE).getID();
+		NaClOID = findAmountResource(SODIUM_HYPOCHLORITE).getID();
 		
 		// in AmountResource
 		

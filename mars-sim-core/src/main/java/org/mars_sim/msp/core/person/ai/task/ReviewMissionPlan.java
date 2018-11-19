@@ -80,7 +80,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 */
 	public ReviewMissionPlan(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 20D);// + RandomUtil.getRandomDouble(100D));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 20D + RandomUtil.getRandomInt(0, 5));
 
 		roleType = person.getRole().getType();
 		

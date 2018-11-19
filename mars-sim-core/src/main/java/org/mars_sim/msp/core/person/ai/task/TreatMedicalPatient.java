@@ -68,7 +68,7 @@ public class TreatMedicalPatient extends Task implements Serializable {
      * @param person the person to perform the task
      */
     public TreatMedicalPatient(Person person) {
-        super(NAME, person, true, true, STRESS_MODIFIER, false, 0D);
+        super(NAME, person, true, true, STRESS_MODIFIER, false, 50D);
 
         treatmentTime = 0D;
 
@@ -170,7 +170,7 @@ public class TreatMedicalPatient extends Task implements Serializable {
             if (!malfunction) {
 
                 // Check if there are any treatable medical problems at building.
-                MedicalCare medicalCare = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
+                MedicalCare medicalCare = building.getMedical();
                 if (hasTreatableHealthProblems(medicalCare)) {
                     goodMedicalAids.add(medicalCare);
                 }

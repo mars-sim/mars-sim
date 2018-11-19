@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
+import org.mars_sim.msp.core.person.ai.task.ExamineBody;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
 import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
@@ -56,7 +57,8 @@ implements Serializable {
 		// Add doctor-related tasks.
 		jobTasks.add(PrescribeMedication.class);
 		jobTasks.add(TreatMedicalPatient.class);
-
+		jobTasks.add(ExamineBody.class);
+		
 		// Research related tasks
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);

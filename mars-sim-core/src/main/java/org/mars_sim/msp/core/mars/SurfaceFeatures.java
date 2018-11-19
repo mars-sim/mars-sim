@@ -14,11 +14,13 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -59,20 +61,26 @@ public class SurfaceFeatures implements Serializable {
 
 	private List<ExploredLocation> exploredLocations;
 
-	private Map<Coordinates, Double> opticalDepthMap = new ConcurrentHashMap<>();
-	private Map<Coordinates, Double> solarIrradianceMapCache;
+	private Map<Coordinates, Double> opticalDepthMap;// = new ConcurrentHashMap<>();
+	private Map<Coordinates, List<Double>> solarIrradianceCaches;
+	private Map<Coordinates, Double> solarIrradiance;
 
-	private transient Mars mars;
-	private transient OrbitInfo orbitInfo;
-	private transient TerrainElevation terrainElevation;
-	
-	private static Weather weather;
-	private static MarsClock solarIrradianceMapCacheTime;
-	private static Coordinates sunDirection;
 	
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static MissionManager missionManager;
+	
+	private static MarsClock solarIrradianceMapCacheTime;
+	private static MasterClock masterClock;
+	
+	private transient Mars mars;
+	private transient Weather weather;
+	private transient OrbitInfo orbitInfo;
+	private transient TerrainElevation terrainElevation;
+	
+	private transient Coordinates sunDirection;
+	
+
 	
 	@JsonIgnore // Need to have both @JsonIgnore and transient for Jackson to ignore converting this list
 	private transient List<Landmark> landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
@@ -106,10 +114,14 @@ public class SurfaceFeatures implements Serializable {
 //			throw new IllegalStateException("Landmarks could not be loaded: " + e.getMessage(), e);
 //		}
 
-		if (solarIrradianceMapCache == null) {
-			solarIrradianceMapCache = new ConcurrentHashMap<Coordinates, Double>();
-		}
+		if (solarIrradianceCaches == null)
+			solarIrradianceCaches = new ConcurrentHashMap<>();
 
+		solarIrradiance = new ConcurrentHashMap<>();
+		
+		if (opticalDepthMap == null)
+			opticalDepthMap = new ConcurrentHashMap<>();
+		
 //		double a = OrbitInfo.SEMI_MAJOR_AXIS;
 //		factor = MEAN_SOLAR_IRRADIANCE * a * a;
 	}
@@ -271,6 +283,52 @@ public class SurfaceFeatures implements Serializable {
 		return tau;
 	}
 
+	
+	/**
+	 * Gets the trend (positive if increasing, negative if decreasing)
+	 * 
+	 * @param location
+	 * @return a number
+	 */
+	public int getTrend(Coordinates location) {
+		int trend = 0;
+		
+		if (solarIrradianceCaches.containsKey(location)) {
+			List<Double> sequence = solarIrradianceCaches.get(location);
+//			double avg = sequence.get(0); 
+			int size = sequence.size();
+//			for (int i=0; i < size - 1; ++i) {
+//				if (i > 0) { 
+//					avg = (avg + sequence.get(0)) / 2; 
+//				}
+//				
+//				if ((sequence.get(i+1) - avg) > 0)
+//					++trend;
+//				else
+//					--trend;   
+//			}
+			
+			double diff = 0;
+			for (int i=0; i < size - 1; ++i)
+			{
+			    diff = sequence.get(i+1) - sequence.get(i);
+			    if (diff > 0)
+			    {
+			       trend++;
+			    }
+			    else if (diff < 0)
+			    {
+			       trend--;
+			    }
+			}
+			
+//			trend = (int)(trend/2D);
+			
+		}
+		
+		return trend;
+	}
+	
 	/**
 	 * Calculate the solar irradiance at a particular location on Mars
 	 * 
@@ -278,20 +336,73 @@ public class SurfaceFeatures implements Serializable {
 	 * @return solar irradiance (W/m2)
 	 */
 	public double getSolarIrradiance(Coordinates location) {
-
-		MarsClock currentTime = sim.getMasterClock().getMarsClock();
+		if (masterClock == null)
+			masterClock = sim.getMasterClock();
+		MarsClock currentTime = masterClock.getMarsClock();
 		if (!currentTime.equals(solarIrradianceMapCacheTime)) {
-			solarIrradianceMapCache.clear();
+			// Call here once per frame because getSolarIrradiance()
+			// is called many times in 
+//			double G_h = 0;
+//			if (solarIrradiance.containsKey(location))
+//					G_h = Math.round(solarIrradiance.get(location)*10.0)/10.0;
+//			System.out.println("At " + currentTime.getMillisolInt() 
+//				+ "   Light : " + G_h
+//				+ "   Trend : " + getTrend(location));
+			solarIrradiance.clear();
 			solarIrradianceMapCacheTime = (MarsClock) currentTime.clone();
 		}
-
-		// If location is not in cache, calculate solar irradiance.
-		if (!solarIrradianceMapCache.containsKey(location)) {
-			if (mars == null) {
-				mars = sim.getMars();
+//		else {
+//			// It's mostly this case
+//		}
+		
+		List<Double> list = null;
+//		int size = 0;
+		double G_h = 0;
+		
+		if (!solarIrradiance.containsKey(location)) {
+			
+			// If location is not in cache, calculate solar irradiance.
+			if (solarIrradianceCaches.containsKey(location)) {
+				list = solarIrradianceCaches.get(location);
+				
+				G_h = calculateSolarIrradiance(location);
+				list.add(G_h);
+				
+				if (list.size() > 20)
+					list.remove(0);
+				
+//				size = solarIrradianceMapCache.get(location).size();
+				solarIrradianceCaches.put(location, list);
 			}
+			
+			else {
+				list = new ArrayList<>();
+				
+				G_h = calculateSolarIrradiance(location);
+				list.add(G_h);
+	
+//				size = 1;
+				solarIrradianceCaches.put(location, list);
+			}
+			
+			solarIrradiance.put(location, G_h);
+		}
+		
+		else {
+			G_h = solarIrradiance.get(location);
+		}	
+		
+		return G_h;
+	}
 
-// Approach 1
+	/**
+	 * Calculates the solar irradiance
+	 * 
+	 * @param location
+	 * @return
+	 */
+	public double calculateSolarIrradiance(Coordinates location) {
+		// Approach 1
 //		double s1 = 0;
 //        double L_s = mars.getOrbitInfo().getL_s();
 //        double e = OrbitInfo.ECCENTRICITY;
@@ -311,7 +422,7 @@ public class SurfaceFeatures implements Serializable {
 			// G_h: global irradiance on a horizontal surface
 			// G_bh: direct beam irradiance on a horizontal surface
 			// G_dh: diffuse irradiance on a horizontal surface
-
+			
 			if (mars == null)
 				mars = sim.getMars();
 			if (orbitInfo == null)
@@ -474,15 +585,10 @@ public class SurfaceFeatures implements Serializable {
 
 			if (G_h < 0)
 				G_h = 0;
-
-			solarIrradianceMapCache.put(location, G_h);
-
+			
 			return G_h;
-		}
-
-		return solarIrradianceMapCache.get(location);
 	}
-
+	
 	/**
 	 * Returns true if location is in a dark polar region. A dark polar region is
 	 * where the sun doesn't rise in the current sol.

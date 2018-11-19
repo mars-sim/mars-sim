@@ -477,8 +477,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				if (p.isDeclaredDead()) {
 					logger.info("Retrieving the dead body of " + p + " from " + vehicle.getName()
 							+ " parked in the vicinity of " + settlement);
-					PhysicalCondition pc = p.getPhysicalCondition();
-					pc.handleBody();
+//					PhysicalCondition pc = p.getPhysicalCondition();
+//					pc.handleBody();
 					// pc.retrieveBody();
 					// pc.examBody(pc.getDeathDetails().getProblem());
 					// p.buryBody();

@@ -186,6 +186,7 @@ public class MetaTaskUtil {
 			tasks.add(new CookMealMeta());
 			tasks.add(new DigLocalIceMeta());
 			tasks.add(new DigLocalRegolithMeta());
+			tasks.add(new ExamineBodyMeta());
 			tasks.add(new InviteStudyCollaboratorMeta());
 			// tasks.add(new LoadVehicleEVAMeta());
 			// tasks.add(new LoadVehicleGarageMeta());

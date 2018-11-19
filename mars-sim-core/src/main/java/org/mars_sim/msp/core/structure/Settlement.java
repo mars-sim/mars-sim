@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.job.Astronomer;
+import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -62,6 +63,7 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorMana
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
+import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
@@ -93,7 +95,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	/** Normal air pressure [in kPa] */
 	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA;
-
+	/** The minimal amount of resource to be retrieved. */
+	private static final double MIN = 0.00001;
 	/** Normal temperature (celsius) */
 	// private static final double NORMAL_TEMP = 22.5D;
 	// maximum & minimal acceptable temperature for living space (arbitrary)
@@ -159,7 +162,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/**  Numbers of associated bots in this settlement. */
 	private int numBots;
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
-	public double greyWaterFilteringRate = .005;
+	public double greyWaterFilteringRate = 1;
 	/** The currently minimum passing score for mission approval. */
 	private double minimumPassingScore = 0;
 	/** The trending score for curving the minimum score for mission approval. */
@@ -888,11 +891,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			double waterLeft = getInventory().getAmountResourceStored(waterID, false);
 			if (waterTaken > waterLeft)
 				waterTaken = waterLeft;
-			// Storage.retrieveAnResource(waterTaken, waterAR, getInventory(), true);//,
-			// sourceName + "::provideWater");
-			 getInventory().retrieveAmountResource(waterID, waterTaken);
-			 getInventory().addAmountDemandTotalRequest(waterID);
-			 getInventory().addAmountDemand(waterID, waterTaken);
+			if (waterTaken > MIN) {
+				Storage.retrieveAnResource(waterTaken, waterID, getInventory(), true);
+//			 	getInventory().retrieveAmountResource(waterID, waterTaken);
+				getInventory().addAmountDemandTotalRequest(waterID);
+				getInventory().addAmountDemand(waterID, waterTaken);
+			}
 		} catch (Exception e) {
 			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
 					name + " - Error in providing H2O needs: " + e.getMessage(), null);
@@ -2016,7 +2020,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		}
 
 		Collection<Person> list = getAllAssociatedPeople();
-
+		
+		// Add those who are deceased
+		list.addAll(getDeceasedPeople());
+		
 		Iterator<Person> i = list.iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
@@ -2191,6 +2198,19 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			return false;
 	}
 
+//	/**
+//	 * Returns a collection of deceased people buried outside this settlement
+//	 * 
+//	 * @return {@link Collection<Person>}
+//	 */
+//	public Collection<Person> getDecomissionedRobots() {
+//		// using java 8 stream
+//		return Simulation.instance().getUnitManager()
+//				.getRobots().stream()
+//				.filter(r -> r.getDecommissionedSettlement() == this)
+//				.collect(Collectors.toList());
+//	}
+	
 	/**
 	 * Gets all Robots associated with this settlement, even if they are out on
 	 * missions.
@@ -3396,7 +3416,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		if (missionScores.size() > 20)
 			missionScores.remove(0);
 	}
-	
 	
 	public double getIceProbabilityValue() {
 		return iceProbabilityValue;

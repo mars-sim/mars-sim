@@ -50,7 +50,10 @@ public class EatMeal extends Task implements Serializable {
 	private static Logger logger = Logger.getLogger(EatMeal.class.getName());
 
 	private static String sourceName = logger.getName();
-
+	
+	/** The minimal amount of resource to be retrieved. */
+	private static final double MIN = 0.00001;
+	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.eatMeal"); //$NON-NLS-1$
 
@@ -169,8 +172,10 @@ public class EatMeal extends Task implements Serializable {
 				Unit container = person.getTopContainerUnit();
 				if (container != null) {
 					Inventory inv = container.getInventory();
-					if (inv != null)
-						hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, ResourceUtil.napkinAR, inv, false);
+					if (inv != null) {
+						if (NAPKIN_MASS > MIN)
+							hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, ResourceUtil.napkinAR, inv, false);
+					}
 				}
 			}
 		}
@@ -439,7 +444,10 @@ public class EatMeal extends Task implements Serializable {
 			Inventory inv = container.getInventory();
 
 			// Take preserved food from inventory if it is available.
-			if (Storage.retrieveAnResource(foodAmount, ResourceUtil.foodID, inv, true)) {
+			boolean haveFood = false;
+			if (foodAmount > MIN)
+				haveFood = Storage.retrieveAnResource(foodAmount, ResourceUtil.foodID, inv, true);
+			if (haveFood) {
 
 				// Consume preserved food.
 
@@ -627,7 +635,9 @@ public class EatMeal extends Task implements Serializable {
 
 				double new_thirst = (currentThirst - waterFinal) / 10;
 				// Test to see if there's enough water
-				boolean haswater = Storage.retrieveAnResource(waterFinal / 1000D, ResourceUtil.waterID, inv, false);
+				boolean haswater = false;
+				if (waterFinal / 1000D > MIN)
+					haswater = Storage.retrieveAnResource(waterFinal / 1000D, ResourceUtil.waterID, inv, false);
 
 				if (haswater) {
 					condition.setThirsty(false);
@@ -650,7 +660,8 @@ public class EatMeal extends Task implements Serializable {
 					if (!haswater)
 						person.setWaterRation(true);
 					// Test to see if there's just half of the amount of water
-					haswater = Storage.retrieveAnResource(waterFinal / 1000D * RATION_FACTOR, ResourceUtil.waterID, inv,
+					if (waterFinal / 1000D  * RATION_FACTOR > MIN)
+						haswater = Storage.retrieveAnResource(waterFinal / 1000D * RATION_FACTOR, ResourceUtil.waterID, inv,
 							false);
 					if (haswater) {
 						condition.setThirsty(false);
@@ -664,16 +675,19 @@ public class EatMeal extends Task implements Serializable {
 										+ " is on ration when drinking " + Math.round(amount * 1000.0) / 1000.0
 										+ " kg of water",
 								null);
-						inv.retrieveAmountResource(ResourceUtil.waterID, amount);
-						inv.addAmountDemand(ResourceUtil.waterID, amount);
+						if (amount > MIN) {
+							Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
+						}
 					}
 				}
 
 				if (!haswater) {
 					person.setWaterRation(true);
 					// Test to see if there's just a quarter of the amount of water
-					haswater = Storage.retrieveAnResource(waterFinal / 2000D * RATION_FACTOR, ResourceUtil.waterID, inv,
+					if (waterFinal / 2000D * RATION_FACTOR > MIN) {
+						haswater = Storage.retrieveAnResource(waterFinal / 2000D * RATION_FACTOR, ResourceUtil.waterID, inv,
 							false);
+					}
 					if (haswater) {
 						condition.setThirsty(false);
 						new_thirst = new_thirst * (1 - RATION_FACTOR) / 1.5;
@@ -686,8 +700,9 @@ public class EatMeal extends Task implements Serializable {
 										+ " is on ration when drinking " + Math.round(amount * 1000.0) / 1000.0
 										+ " kg of water",
 								null);
-						inv.retrieveAmountResource(ResourceUtil.waterID, amount);
-						inv.addAmountDemand(ResourceUtil.waterID, amount);
+						if (amount > MIN) {
+							Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
+						}
 					}
 				}
 			}
@@ -739,7 +754,11 @@ public class EatMeal extends Task implements Serializable {
 			if (containerUnit != null) {
 				Inventory inv = containerUnit.getInventory();
 				// Take dessert resource from inventory if it is available.
-				if (Storage.retrieveAnResource(dessertAmount, unpreparedDessertAR, inv, true)) {
+				boolean hasDessert = false;
+				if (dessertAmount > MIN) {
+					hasDessert = Storage.retrieveAnResource(dessertAmount, unpreparedDessertAR, inv, true);
+				}
+				if (hasDessert) {
 					// Consume unpreserved dessert.
 
 					// Add caloric energy from dessert.
@@ -793,7 +812,12 @@ public class EatMeal extends Task implements Serializable {
 			for (AmountResource ar : ARs) {
 				if (isThirsty)
 					option = ar.getName().contains("juice") || ar.getName().contains("milk");
-				if (option && Storage.retrieveAnResource(amountNeeded, ar, inv, false)) {
+				
+				boolean hasAR = false;
+				if (amountNeeded > MIN) {
+					hasAR = Storage.retrieveAnResource(amountNeeded, ar, inv, false);
+				}
+				if (option && hasAR) {
 					result.add(ar);
 				}
 			}
@@ -905,7 +929,9 @@ public class EatMeal extends Task implements Serializable {
 		if (containerUnit != null) {
 			// try {
 			Inventory inv = containerUnit.getInventory();
-			result = Storage.retrieveAnResource(foodConsumptionRate, ResourceUtil.foodID, inv, false);
+
+			if (foodConsumptionRate > MIN)
+				result = Storage.retrieveAnResource(foodConsumptionRate, ResourceUtil.foodID, inv, false);
 			// }
 			// catch (Exception e) {
 			// e.printStackTrace(System.err);

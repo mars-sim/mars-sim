@@ -321,7 +321,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * Initialize intransient data in the simulation.
 	 */
 	private void initializeIntransientData(int timeRatio) {		
-		malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
+		malfunctionFactory = new MalfunctionFactory();
 		mars = new Mars();
 		missionManager = new MissionManager();
 		relationshipManager = new RelationshipManager();

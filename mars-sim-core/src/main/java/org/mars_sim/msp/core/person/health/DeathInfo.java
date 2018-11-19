@@ -34,341 +34,398 @@ import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 
 /**
  * This class represents the status of a Person when death occurs. It records
- * the Complaint that caused the death to occur, the time of death and
- * the Location.<br/>
+ * the Complaint that caused the death to occur, the time of death and the
+ * Location.<br/>
  * The Location is recorded as a dead body may be moved from the place of death.
  * This class is immutable since once Death occurs it is final.
  */
-public class DeathInfo
-implements Serializable {
+public class DeathInfo implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    private static Logger logger = Logger.getLogger(DeathInfo.class.getName());
+	private static Logger logger = Logger.getLogger(DeathInfo.class.getName());
 
-    private static final String IN = " in ";
+//	private static final String IN = " in ";
 
-    // Data members
-    private boolean bodyRetrieved = false;
+	// Data members
+	/** Has the body been retrieved for exam */	
+	private boolean bodyRetrieved = false;	
+	/** Is the postmortem exam done ? */	
+	private boolean examDone = false;	
+	/** Amount of time performed so far in postmortem exam [in Millisols]. */	
+	private double timeExam;
+	/** Estimated time the postmortem exam should take [in Millisols]. */	
+	private double estTimeExam;
+	/** Percent of illness*/	
+	private double healthCondition;	
+	/** Cause of death. */	
+	private String causeOfDeath;
+	/** Time of death. */
+	private String timeOfDeath;
+	/** Place of death. */
+	private String placeOfDeath;
+	/** Name of the doctor who did the postmortem. */	
+	private String doctorName = "(Postmortem Exam not done yet)";
+	/** Name of mission at time of death. */
+	private String mission;
+	/** Phase of mission at time of death. */
+	private String missionPhase;
+	/** Name of task at time of death. */
+	private String task;
+	/** Phase of task at time of death. */
+	private String taskPhase;
+	/** Name of the most serious local emergency malfunction. */
+	private String malfunction;
+	
 
-    private String timeOfDeath;
+	/** the robot's job at time of being decomissioned. */
+	private RobotJob robotJob;
+	/** Medical problem contributing to the death. */
+	private HealthProblem problem;
+	/** Container unit at time of death. */
+	private Unit containerUnit;
+	/** Coordinate at time of death. */
+	private Coordinates locationOfDeath;
+	/** The person's job at time of death. */
+	private Job job;
+	/** The person. */
+	private Person person;
+	/** The robot. */
+	private Robot robot;
+	
+	/** Medical cause of death. */
+	private ComplaintType illness;
+	/** Person's Gender. */
+	private GenderType gender;
+	/** Bot's RoboType. */
+	private RobotType robotType;
 
-    private String placeOfDeath;
-    
-    /** Medical cause of death. */
-    private ComplaintType illness;
-    /** Medical problem contributing to the death. */  
-    private HealthProblem problem;
-    /** Container unit at time of death. */
-    private Unit containerUnit;
-    /** Coordinate at time of death. */
-    private Coordinates locationOfDeath;
-    /** the person's job at time of death. */
-    private Job job;
-    /** the robot's job at time of disassembly. */
-    private RobotJob robotJob;
-    /** Name of mission at time of death. */
-    private String mission;
-    /** Phase of mission at time of death. */
-    private String missionPhase;
-    /** Name of task at time of death. */
-    private String task;
-    /** Phase of task at time of death. */
-    private String taskPhase;
-    /** Name of the most serious local emergency malfunction. */
-    private String malfunction;
-    /** gender at time of death. */
-    private GenderType gender;
+	/**
+	 * The construct creates an instance of a DeathInfo class.
+	 * 
+	 * @param person the dead person
+	 */
+	public DeathInfo(Person person, HealthProblem problem, String cause) {
+		this.person = person;
+		this.problem = problem;
+		this.causeOfDeath = cause;
+		this.gender = person.getGender();
 
-    private RobotType robotType;
+		// Initialize data members
+		timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
+				
+		if (problem == null) {
+			Complaint serious = person.getPhysicalCondition().getMostSerious();
+			if (serious != null) {
+				this.illness = serious.getType();
+				healthCondition = 0;
+				cause = "Non-Illness Related";
+			}
+		} else {
+			this.illness = problem.getIllness().getType();
+			healthCondition = problem.getHealthRating();
+		}
 
-    /**
-     * The construct creates an instance of a DeathInfo class.
-     * @param person the dead person
-     */
-    public DeathInfo(Person person, HealthProblem problem) {
-    	this.problem = problem;
-        this.gender = person.getGender();
+		if (person.isInVehicle()) {
+			// such as died inside a vehicle
+			containerUnit = person.getContainerUnit();
+			placeOfDeath = containerUnit.getName();
+		}
 
-        // Initialize data members
-        timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
+		else if (person.isOutside()) {
+			placeOfDeath = person.getCoordinates().toString();// "An known location on Mars";
+		}
 
-        if (problem == null) {
-	        Complaint serious = person.getPhysicalCondition().getMostSerious();
-	        if (serious != null) {
-	        	this.illness = serious.getType();
-		     }
-        }
-        else
-        	this.illness = problem.getIllness().getType();
+		else if (person.isInSettlement()) {
+			placeOfDeath = person.getSettlement().getName();
+			// It's eligible for retrieval
+			bodyRetrieved = true;
+		}
 
-        if (person.isInVehicle()) {
-        	// such as died inside a vehicle
-            containerUnit = person.getContainerUnit();
-            placeOfDeath = containerUnit.getName();
-        }
+		else if (person.isBuried()) {
+			placeOfDeath = person.getBuriedSettlement().getName();
+		}
 
-        else if (person.isOutside()) {
-        	placeOfDeath = person.getCoordinates().toString();//"An known location on Mars";
-        }
+		else {
+			placeOfDeath = "an unspecified Location";
+		}
 
-        else if (person.isInSettlement()) {
-        	placeOfDeath = person.getSettlement().getName();
-        	// It's eligible for retrieval
-        	bodyRetrieved = true;
-        }
+		locationOfDeath = person.getCoordinates();
 
-        else if (person.isBuried()) {
-        	placeOfDeath = person.getBuriedSettlement().getName();
-        }
+		logger.log(Level.WARNING, person + " passed away in " + placeOfDeath);
 
-        else {
-        	placeOfDeath = "an unspecified Location";
-        }
+		Mind mind = person.getMind();
+		
+		job = mind.getJob();
 
-        locationOfDeath = person.getCoordinates();
+		TaskManager taskMgr = mind.getTaskManager();
 
-        logger.log(Level.SEVERE, person + " passed away in " + placeOfDeath);
+		task = taskMgr.getTaskName();
+		if (task == null || task.equals(""))
+			task = taskMgr.getLastTaskName();
 
-        Mind mind = person.getMind();
+		taskPhase = taskMgr.getTaskDescription(false);
+		if (taskPhase.equals(""))
+			taskPhase = taskMgr.getLastTaskDescription();
 
-        TaskManager taskMgr = mind.getTaskManager();
+		Mission mm = mind.getMission();
+		if (mm != null) {
+			mission = mm.getDescription();
+			missionPhase = mm.getPhaseDescription();
+		}
 
-        task = taskMgr.getTaskName();
-        if (task == null || task.equals(""))
-        	task = taskMgr.getLastTaskName();
+		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+		Malfunction mostSerious = null;
+		int severity = 0;
+		while (i.hasNext()) {
+			Malfunctionable entity = i.next();
+			MalfunctionManager malfunctionMgr = entity.getMalfunctionManager();
+			if (malfunctionMgr.hasEmergencyMalfunction()) {
+				Malfunction m = malfunctionMgr.getMostSeriousEmergencyMalfunction();
+				if (m.getSeverity() > severity) {
+					mostSerious = m;
+					severity = m.getSeverity();
+				}
+			}
 
-        taskPhase = taskMgr.getTaskDescription(false);
-        if (taskPhase.equals(""))
-            taskPhase = taskMgr.getLastTaskDescription();
+			else if (malfunctionMgr.hasEVAMalfunction()) {
+				Malfunction m = malfunctionMgr.getMostSeriousEVAMalfunction();
+				if (m.getSeverity() > severity) {
+					mostSerious = m;
+					severity = m.getSeverity();
+				}
+			}
 
+			else if (malfunctionMgr.hasNormalMalfunction()) {
+				Malfunction m = malfunctionMgr.getMostSeriousNormalMalfunction();
+				if (m.getSeverity() > severity) {
+					mostSerious = m;
+					severity = m.getSeverity();
+				}
+			}
 
-        Mission mm = mind.getMission();
-        if (mm != null) {
-            mission = mm.getDescription();
-            missionPhase = mm.getPhaseDescription();
-        }
+			else if (malfunctionMgr.hasMalfunction()) {
+				Malfunction m = malfunctionMgr.getMostSeriousMalfunction();
+				if (m.getSeverity() > severity) {
+					mostSerious = m;
+					severity = m.getSeverity();
+				}
+			}
+		}
 
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
-        Malfunction mostSerious = null;
-        int severity = 0;
-        while (i.hasNext()) {
-            Malfunctionable entity = i.next();
-            MalfunctionManager malfunctionMgr = entity.getMalfunctionManager();
-            if (malfunctionMgr.hasEmergencyMalfunction()) {
-                Malfunction m = malfunctionMgr.getMostSeriousEmergencyMalfunction();
-                if (m.getSeverity() > severity) {
-                    mostSerious = m;
-                    severity = m.getSeverity();
-                }
-            }
+		if (mostSerious != null)
+			malfunction = mostSerious.getName();
 
-            else if (malfunctionMgr.hasEVAMalfunction()) {
-            	Malfunction m = malfunctionMgr.getMostSeriousEVAMalfunction();
-                if (m.getSeverity() > severity) {
-                    mostSerious = m;
-                    severity = m.getSeverity();
-                }
-            }
+	}
 
-            else if (malfunctionMgr.hasNormalMalfunction()) {
-            	Malfunction m = malfunctionMgr.getMostSeriousNormalMalfunction();
-                if (m.getSeverity() > severity) {
-                    mostSerious = m;
-                    severity = m.getSeverity();
-                }
-            }
+	public DeathInfo(Robot robot) {
+		// Initialize data members
+		this.robot = robot;
+		
+		timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
 
-            else if (malfunctionMgr.hasMalfunction()) {
-            	Malfunction m = malfunctionMgr.getMostSeriousMalfunction();
-                if (m.getSeverity() > severity) {
-                    mostSerious = m;
-                    severity = m.getSeverity();
-                }
-            }
-        }
+		BotMind botMind = robot.getBotMind();
 
-        if (mostSerious != null) malfunction = mostSerious.getName();
+		robotJob = botMind.getRobotJob();
 
-    }
+		BotTaskManager taskMgr = botMind.getBotTaskManager();
+		if (taskMgr.hasTask()) {
 
-    public DeathInfo(Robot robot) {
+			if (task == null)
+				task = taskMgr.getTaskName();
 
-        // Initialize data members
-        timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
+			if (taskPhase == null) {
+				TaskPhase phase = taskMgr.getPhase();
+				if (phase != null) {
+					taskPhase = phase.getName();
+				}
+				// else {
+				// taskPhase = "";
+				// }
+			}
+		}
 
-        BotMind botMind = robot.getBotMind();
+		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+		Malfunction mostSerious = null;
+		int severity = 0;
+		while (i.hasNext()) {
+			Malfunctionable entity = i.next();
+			MalfunctionManager malfunctionMgr = entity.getMalfunctionManager();
+			if (malfunctionMgr.hasEmergencyMalfunction()) {
+				Malfunction m = malfunctionMgr.getMostSeriousEmergencyMalfunction();
+				if (m.getSeverity() > severity) {
+					mostSerious = m;
+					severity = m.getSeverity();
+				}
+			}
 
-        robotJob = botMind.getRobotJob();
+			else if (malfunctionMgr.hasEVAMalfunction()) {
+				Malfunction m = malfunctionMgr.getMostSeriousEVAMalfunction();
+				if (m.getSeverity() > severity) {
+					mostSerious = m;
+					severity = m.getSeverity();
+				}
+			}
 
-        BotTaskManager taskMgr = botMind.getBotTaskManager();
-        if (taskMgr.hasTask()) {
+			else if (malfunctionMgr.hasNormalMalfunction()) {
+				Malfunction m = malfunctionMgr.getMostSeriousNormalMalfunction();
+				if (m.getSeverity() > severity) {
+					mostSerious = m;
+					severity = m.getSeverity();
+				}
+			}
 
-        	if (task == null)
-        		task = taskMgr.getTaskName();
+			else if (malfunctionMgr.hasMalfunction()) {
+				Malfunction m = malfunctionMgr.getMostSeriousMalfunction();
+				if (m.getSeverity() > severity) {
+					mostSerious = m;
+					severity = m.getSeverity();
+				}
+			}
+		}
 
-        	if (taskPhase == null) {
-	            TaskPhase phase = taskMgr.getPhase();
-	            if (phase != null) {
-	                taskPhase = phase.getName();
-	            }
-	            //else {
-	            //    taskPhase = "";
-	            //}
-        	}
-        }
+		if (mostSerious != null)
+			malfunction = mostSerious.getName();
 
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-        Malfunction mostSerious = null;
-        int severity = 0;
-        while (i.hasNext()) {
-            Malfunctionable entity = i.next();
-            MalfunctionManager malfunctionMgr = entity.getMalfunctionManager();
-            if (malfunctionMgr.hasEmergencyMalfunction()) {
-                Malfunction m = malfunctionMgr.getMostSeriousEmergencyMalfunction();
-                if (m.getSeverity() > severity) {
-                    mostSerious = m;
-                    severity = m.getSeverity();
-                }
-            }
+		this.robotType = robot.getRobotType();
 
-            else if (malfunctionMgr.hasEVAMalfunction()) {
-            	Malfunction m = malfunctionMgr.getMostSeriousEVAMalfunction();
-                if (m.getSeverity() > severity) {
-                    mostSerious = m;
-                    severity = m.getSeverity();
-                }
-            }
+	}
 
-            else if (malfunctionMgr.hasNormalMalfunction()) {
-            	Malfunction m = malfunctionMgr.getMostSeriousNormalMalfunction();
-                if (m.getSeverity() > severity) {
-                    mostSerious = m;
-                    severity = m.getSeverity();
-                }
-            }
+	/**
+	 * Get the time death happened.
+	 * 
+	 * @return formatted time.
+	 */
+	public String getTimeOfDeath() {
+		if (timeOfDeath != null)
+			return timeOfDeath;
+		else
+			return "";
+	}
 
-            else if (malfunctionMgr.hasMalfunction()) {
-            	Malfunction m = malfunctionMgr.getMostSeriousMalfunction();
-                if (m.getSeverity() > severity) {
-                    mostSerious = m;
-                    severity = m.getSeverity();
-                }
-            }
-        }
+	/**
+	 * Gets the place the death happened. Either the name of the unit the person was
+	 * in, or 'outside' if the person died on an EVA.
+	 * 
+	 * @return place of death.
+	 */
+	public String getPlaceOfDeath() {
+		if (placeOfDeath != null)
+			return placeOfDeath;
+		else
+			return "";
+	}
 
-        if (mostSerious != null) malfunction = mostSerious.getName();
+	/**
+	 * Gets the container unit at the time of death. Returns null if none.
+	 * 
+	 * @return container unit
+	 */
+	public Unit getContainerUnit() {
+		return containerUnit;
+	}
 
-        this.robotType = robot.getRobotType();
+	/**
+	 * Get the type of the illness that caused the death.
+	 * 
+	 * @return type of the illness.
+	 */
+	public ComplaintType getIllness() {
+		if (illness != null)
+			return illness;
+		else
+			return null;// "";
+	}
 
-    }
+	/**
+	 * Gets the location of death.
+	 * 
+	 * @return coordinates
+	 */
+	public Coordinates getLocationOfDeath() {
+		return locationOfDeath;
+	}
 
-    /**
-     * Get the time death happened.
-     * @return formatted time.
-     */
-    public String getTimeOfDeath() {
-        if (timeOfDeath != null) return timeOfDeath;
-        else return "";
-    }
+	/**
+	 * Gets the person's job at the time of death.
+	 * 
+	 * @return job
+	 */
+	public String getJob() {
+		if (job != null)
+			return job.getName(gender);
+		else
+			return "";
+	}
 
-    /**
-     * Gets the place the death happened.
-     * Either the name of the unit the person was in, or 'outside' if
-     * the person died on an EVA.
-     * @return place of death.
-     */
-    public String getPlaceOfDeath() {
-        if (placeOfDeath != null) return placeOfDeath;
-        else return "";
-    }
+	public String getRobotJob() {
+		if (robotJob != null)
+			return robotJob.getName(robotType);
+		else
+			return "";
+	}
 
-    /**
-     * Gets the container unit at the time of death.
-     * Returns null if none.
-     * @return container unit
-     */
-    public Unit getContainerUnit() {
-        return containerUnit;
-    }
+	/**
+	 * Gets the mission the person was on at time of death.
+	 * 
+	 * @return mission name
+	 */
+	public String getMission() {
+		if (mission != null)
+			return mission;
+		else
+			return "";
+	}
 
-    /**
-     * Get the type of the illness that caused the death.
-     * @return type of the illness.
-     */
-    public ComplaintType getIllness() {
-        if (illness != null) return illness;
-        else return null;//"";
-    }
+	/**
+	 * Gets the mission phase at time of death.
+	 * 
+	 * @return mission phase
+	 */
+	public String getMissionPhase() {
+		if (missionPhase != null)
+			return missionPhase;
+		else
+			return "";
+	}
 
-    /**
-     * Gets the location of death.
-     * @return coordinates
-     */
-    public Coordinates getLocationOfDeath() {
-        return locationOfDeath;
-    }
+	/**
+	 * Gets the task the person was doing at time of death.
+	 * 
+	 * @return task name
+	 */
+	public String getTask() {
+		if (task != null)
+			return task;
+		else
+			return "";
+	}
 
-    /**
-     * Gets the person's job at the time of death.
-     * @return job
-     */
-    public String getJob() {
-        if (job != null) return job.getName(gender);
-        else return "";
-    }
+	/**
+	 * Gets the task phase at time of death.
+	 * 
+	 * @return task phase
+	 */
+	public String getTaskPhase() {
+		if (taskPhase != null)
+			return taskPhase;
+		else
+			return "";
+	}
 
-    public String getRobotJob() {
-        if (robotJob != null) return robotJob.getName(robotType);
-        else return "";
-    }
-
-    /**
-     * Gets the mission the person was on at time of death.
-     * @return mission name
-     */
-    public String getMission() {
-        if (mission != null) return mission;
-        else return "";
-    }
-
-    /**
-     * Gets the mission phase at time of death.
-     * @return mission phase
-     */
-    public String getMissionPhase() {
-        if (missionPhase != null) return missionPhase;
-        else return "";
-    }
-
-    /**
-     * Gets the task the person was doing at time of death.
-     * @return task name
-     */
-    public String getTask() {
-        if (task != null) return task;
-        else return "";
-    }
-
-    /**
-     * Gets the task phase at time of death.
-     * @return task phase
-     */
-    public String getTaskPhase() {
-        if (taskPhase != null) return taskPhase;
-        else return "";
-    }
-
-    /**
-     * Gets the most serious emergency malfunction
-     * local to the person at time of death.
-     * @return malfunction name
-     */
-    public String getMalfunction() {
-        if (malfunction != null) return malfunction;
-        else return "";
-    }
+	/**
+	 * Gets the most serious emergency malfunction local to the person at time of
+	 * death.
+	 * 
+	 * @return malfunction name
+	 */
+	public String getMalfunction() {
+		if (malfunction != null)
+			return malfunction;
+		else
+			return "";
+	}
 
 	public void setBodyRetrieved(boolean b) {
 		bodyRetrieved = b;
@@ -377,9 +434,77 @@ implements Serializable {
 	public boolean getBodyRetrieved() {
 		return bodyRetrieved;
 	}
+
+	public void setExamDone(boolean value) {
+		examDone = value;
+	}
+	
+	public boolean getExamDone() {
+		return examDone;
+	}
 	
 	public HealthProblem getProblem() {
 		return problem;
 	}
+	
+	/**
+	 * Gets the cause of death.
+	 * 
+	 * @return
+	 */
+	public String getCause() {
+		return causeOfDeath;
+	}
+	
+	/**
+	 * Gets the cause of death.
+	 * 
+	 * @return
+	 */
+	public void setCause(String cause) {
+		causeOfDeath = cause;
+	}
+	
+	/**
+	 * Gets the doctor's name.
+	 * 
+	 * @return
+	 */
+	public String getDoctor() {
+		return doctorName;
+	}
+	
+	/**
+	 * Gets the person. 
+	 */
+	public Person getPerson() {
+		return person;
+	}
+	
+	/**
+	 * Gets the robot. 
+	 */
+	public Robot getRobot() {
+		return robot;
+	}
+	
+	public double getTimeExam() {
+		return timeExam;
+	}
 
+	public void addTimeExam(double time) {
+		timeExam += time;
+	}
+	
+	public double getEstTimeExam() {
+		return estTimeExam;
+	}
+	
+	public void setEstTimeExam(double time) {
+		estTimeExam = time;
+	}
+	
+	public double getHealth() {
+		return healthCondition;
+	}
 }

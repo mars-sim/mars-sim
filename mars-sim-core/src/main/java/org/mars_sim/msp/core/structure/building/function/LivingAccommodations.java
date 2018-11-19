@@ -41,11 +41,12 @@ public class LivingAccommodations extends Function implements Serializable {
 
 	private static String sourceName = logger.getName();
 
-	public final static double TOILET_WASTE_PERSON_SOL = .02D;
-	public final static double WASH_AND_WASTE_WATER_RATIO = .85D;
-
+	public static final double TOILET_WASTE_PERSON_SOL = .02D;
+	public static final double WASH_AND_WASTE_WATER_RATIO = .85D;
+	/** The minimal amount of resource to be retrieved. */
+	private static final double MIN = 0.00001;
 	/** 1/5 of chance of going to a restroom per frame */
-	public final static int TOILET_CHANCE = 5;
+	public static final int TOILET_CHANCE = 5;
 
 	private static final FunctionType FUNCTION = FunctionType.LIVING_ACCOMODATIONS;
 
@@ -307,16 +308,17 @@ public class LivingAccommodations extends Function implements Serializable {
 		// Remove wash water from settlement.
 		if (inv == null)
 			inv = settlement.getInventory();
-		Storage.retrieveAnResource(waterUsed * random_factor, waterID, inv, true);
+		if (waterUsed * random_factor > MIN)
+			Storage.retrieveAnResource(waterUsed * random_factor, waterID, inv, true);
 
 		// Grey water is produced by wash water.
 		double greyWaterProduced = wasteWaterProduced * greyWaterFraction;
 		// Black water is only produced by waste water.
 		double blackWaterProduced = wasteWaterProduced * (1 - greyWaterFraction);
 
-		if (greyWaterProduced > 0)
+		if (greyWaterProduced > MIN)
 			Storage.storeAnResource(greyWaterProduced, greyWaterID, inv, sourceName + "::generateWaste");
-		if (blackWaterProduced > 0)
+		if (blackWaterProduced > MIN)
 			Storage.storeAnResource(blackWaterProduced, blackWaterID, inv, sourceName + "::generateWaste");
 
 		// Use toilet paper and generate toxic waste (used toilet paper).
@@ -325,10 +327,10 @@ public class LivingAccommodations extends Function implements Serializable {
 		double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time * numBed * random_factor;// toiletPaperUsageSettlement
 																										// *
 																										// buildingProportionCap;
+		if (toiletPaperUsageBuilding > MIN)
+			Storage.retrieveAnResource(toiletPaperUsageBuilding, ResourceUtil.toiletTissueAR, inv, true);
 
-		Storage.retrieveAnResource(toiletPaperUsageBuilding, ResourceUtil.toiletTissueAR, inv, true);
-
-		if (toiletPaperUsageBuilding > 0)
+		if (toiletPaperUsageBuilding > MIN)
 			Storage.storeAnResource(toiletPaperUsageBuilding, ResourceUtil.toxicWasteAR, inv,
 					sourceName + "::generateWaste");
 	}

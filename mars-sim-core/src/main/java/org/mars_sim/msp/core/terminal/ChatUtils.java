@@ -45,8 +45,10 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
+import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
@@ -487,7 +489,7 @@ public class ChatUtils {
 
 		int count = 0;
 		for (Person pp : list0) {
-			Map<Person, Double> friends = relationshipManager.getMyOpinionsOfThem(pp);
+			Map<Person, Double> friends = relationshipManager.getTheirOpinionsOfMe(pp);//.getMyOpinionsOfThem(pp);
 			if (!friends.isEmpty()) {
 				List<Person> list = new ArrayList<>(friends.keySet());
 				for (int i = 0; i < list.size(); i++) {
@@ -2298,16 +2300,16 @@ public class ChatUtils {
 					else if (rand == 2)
 						lastWord = "So I leave this world, where the heart must either break or turn to lead.";
 					else if (rand == 3)
-						lastWord = "Let's have no sadness——furrowed brow. There's nothing new in dying now. Though living is no newer.";
+						lastWord = "Let's have no sadness —— furrowed brow. There's nothing new in dying now. Though living is no newer.";
 					else if (rand == 4)
-						lastWord = "I myself——in order to escape the disgrace of deposition or capitulation——choose death.";
+						lastWord = "I myself —— in order to escape the disgrace of deposition or capitulation —— choose death.";
 					else if (rand == 5)
 						lastWord = "When all usefulness is over, when one is assured of an unavoidable and imminent death, "
 								+ "it is the simplest of human rights to choose a quick and easy death in place of a slow and horrible one. ";
 					else if (rand == 6)
 						lastWord = "I am going to put myself to sleep now for a bit longer than usual. Call it Eternity.";
 					else if (rand == 7)
-						lastWord = "All fled——all done, so lift me on the pyre; the feast is over, and the lamps expire.";
+						lastWord = "All fled —— all done, so lift me on the pyre; the feast is over, and the lamps expire.";
 					else if (rand == 8)
 						lastWord = "No more pain. Wake no more. Nobody owns.";
 					else if (rand == 9)
@@ -2889,81 +2891,144 @@ public class ChatUtils {
 				
 			// Case 2: there is one person
 			} else if (nameCase == 1) {
-
+				String taskStr = "";
+				if ((!personList.isEmpty())) {
+					taskStr = personList.get(0).getMind().getTaskManager().getTaskName();
+					if (taskStr.toLowerCase().contains("sleep")) {
+						available = false;
+					}
+				}
+				
 				if (!available) {
-					// TODO: check if the person is available or not (e.g. if on a mission and comm
+					// TODO: check if the person is available or not (e.g. sleeping or if on a mission and out of comm range
 					// broke down)
 					responseText.append(SYSTEM_PROMPT);
 					responseText.append("I'm sorry. ");
 					responseText.append(text);
-					responseText.append(" is unavailable at this moment");
+					responseText.append(" is unavailable (" + taskStr + ") at this moment.");
 					return responseText.toString();
-
-				} else {
-//					System.out.println("personList's size : " + personList.size());
-//					System.out.println("personList : " + personList);
-					if (!personList.isEmpty()) {
-						person = personList.get(0);
-						if (person.getPhysicalCondition().isDead()) {
-							// Case 4: passed away
-							int rand = RandomUtil.getRandomInt(1);
-							if (rand == 0) {
-								responseText.append(SYSTEM_PROMPT);
-								responseText.append("I'm sorry. ");
-								responseText.append(text);
-								responseText.append(" has passed away and is buried at ");
-								responseText.append(person.getBuriedSettlement().getName());
-							} else {
-								responseText.append(SYSTEM_PROMPT);
-								responseText.append("Perhaps you don't know that ");
-								responseText.append(text);
-								responseText.append(" is dead and is buried at ");
-								responseText.append(person.getBuriedSettlement().getName());
-							}
-							return responseText.toString();
-						}
-						else {
-							personCache = person;
-//							unitCache = person;
-						}
-					}
-
-					if (!robotList.isEmpty()) {
-						robot = robotList.get(0);
-						if (robot.getSystemCondition().isInoperable()) {
-							// Case 4: decomissioned
+				}
+				
+				else if (!personList.isEmpty()) {
+					person = personList.get(0);
+					if (person.isDeclaredDead()) {
+						// Case 4: passed away
+						String buried = "";
+						if (person.getBuriedSettlement() != null)
+							buried = person.getBuriedSettlement().getName();
+						int rand = RandomUtil.getRandomInt(1);
+						if (rand == 0) {
 							responseText.append(SYSTEM_PROMPT);
 							responseText.append("I'm sorry. ");
 							responseText.append(text);
-							responseText.append(" has been decomissioned.");
-							return responseText.toString();
+							responseText.append(" has passed away");
 						} else {
-							robotCache = robot;
-//							unitCache = robot;
+							responseText.append(SYSTEM_PROMPT);
+							responseText.append("Perhaps you haven't heard. ");
+							responseText.append(text);
+							responseText.append(" is dead");
 						}
+						if (!buried.equals("")) {
+							responseText.append(" and is buried at ");
+							responseText.append(buried);
+							responseText.append("." + System.lineSeparator());
+						}
+						else {
+							responseText.append("." + System.lineSeparator());
+						}
+												
+						DeathInfo info = person.getPhysicalCondition().getDeathDetails();
+						String cause = info.getCause();
+						String doctor = info.getDoctor();
+						boolean examDone = info.getExamDone();
+						String time = info.getTimeOfDeath();
+						String coord = info.getLocationOfDeath().getFormattedString();
+						String place = info.getPlaceOfDeath();
+						String missionPhase = info.getMissionPhase();
+						String mission = info.getMission();
+						String task = info.getTask();
+						String taskPhase = info.getTaskPhase();
+						String problem = info.getProblem().getSituation();
+						String mal = info.getMalfunction();
+						String job = info.getJob();
+						String ill = info.getIllness().toString();
+						String health = info.getHealth() + "";
+						
+						responseText.append(System.lineSeparator());
+						responseText.append(System.lineSeparator());
+						responseText.append("      Time of Death : " + time);
+						responseText.append(System.lineSeparator());
+						responseText.append("     Place of Death : " + place);
+						responseText.append(System.lineSeparator());
+						if (examDone) {
+						responseText.append(" Postmortem Exam by : " + doctor);
+							responseText.append(System.lineSeparator());							
+						}
+						responseText.append("     Cause of Death : " + cause);
+						responseText.append(System.lineSeparator());
+						responseText.append("        Coordinates : " + coord);
+						responseText.append(System.lineSeparator());
+						responseText.append("                Job : " + job);
+						responseText.append(System.lineSeparator());
+						responseText.append("               Task : " + task);
+						responseText.append(System.lineSeparator());
+						responseText.append("         Task Phase : " + taskPhase);
+						responseText.append(System.lineSeparator());
+						responseText.append("            Mission : " + mission);
+						responseText.append(System.lineSeparator());
+						responseText.append("      Mission Phase : " + missionPhase);
+						responseText.append(System.lineSeparator());
+						responseText.append("        Malfunction : " + mal);							
+						responseText.append(System.lineSeparator());
+						responseText.append("            Illness : " + problem);	
+						responseText.append(System.lineSeparator());
+						responseText.append("          Complaint : " + ill);	
+						responseText.append(System.lineSeparator());
+						responseText.append("     General Health : " + health);							
+						responseText.append(System.lineSeparator());
+						
+						return responseText.toString();
 					}
+					else {
+						personCache = person;
+//							unitCache = person;
+					}
+				}
 
-					if (robotCache != null) {
-						responseText.append(robotCache.getName());
-						responseText.append(" : This is ");
+				if (!robotList.isEmpty()) {
+					robot = robotList.get(0);
+					if (robot.getSystemCondition().isInoperable()) {
+						// Case 4: decomissioned
+						responseText.append(SYSTEM_PROMPT);
+						responseText.append("I'm sorry. ");
 						responseText.append(text);
-						responseText.append(". ");
+						responseText.append(" has been decomissioned.");
 						return responseText.toString();
-
+					} else {
+						robotCache = robot;
+//							unitCache = robot;
 					}
+				}
 
-					else if (personCache != null) {
-						responseText.append(personCache.getName());
-						responseText.append(" : This is ");
-						responseText.append(text);					
-						responseText.append(". ");
-						return responseText.toString();
-					}
+				if (robotCache != null) {
+					responseText.append(robotCache.getName());
+					responseText.append(" : This is ");
+					responseText.append(text);
+					responseText.append(". ");
+					return responseText.toString();
+
+				}
+
+				else if (personCache != null) {
+					responseText.append(personCache.getName());
+					responseText.append(" : This is ");
+					responseText.append(text);					
+					responseText.append(". ");
+					return responseText.toString();
 				}
 
 				// Case 3: doesn't exist, check settlement's name
 			} else if (nameCase == 0) {
-
 				// System.out.println("nameCase is 0");
 				// Match a settlement's name
 				if (text.length() > 1) {

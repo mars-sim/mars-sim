@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -18,7 +19,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -69,6 +69,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	private LocalBoundedObject interiorObject;
 	private Point2D returnInsideLoc;
+	
+	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
 	/**
 	 * Constructor.
@@ -334,16 +336,32 @@ public abstract class EVAOperation extends Task implements Serializable {
 	}
 
 	/**
-	 * Checks if there is an EVA problem for a person.
+	 * Checks if the sky is dimming and is at dusk
 	 * 
-	 * @param person the person.
-	 * @return true if an EVA problem.
+	 * @param person
+	 * @return
 	 */
-	public static boolean checkEVAProblem(Person person) {
+	public static boolean isGettingDark(Person person) {
+	
+		if (surface.getTrend(person.getCoordinates()) <= 0
+				&& hasLittleSunlight(person)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	/**
+	 * Checks if there is any sunlight
+	 * 
+	 * @param person
+	 * @return
+	 */
+	public static boolean hasLittleSunlight(Person person) {
 
 		// Check if it is night time.
-		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
+		if (surface.getSolarIrradiance(person.getCoordinates()) < 10D) {
 			LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
 							+ person.getTaskDescription() + " : Too dark at night to perform EVA.",
@@ -351,6 +369,20 @@ public abstract class EVAOperation extends Task implements Serializable {
 			if (!surface.inDarkPolarRegion(person.getCoordinates()))
 				return false;
 		}
+		
+		return true;
+	}
+	
+	/**
+	 * Checks if there is an EVA problem for a person.
+	 * 
+	 * @param person the person.
+	 * @return true if an EVA problem.
+	 */
+	public static boolean checkEVAProblem(Person person) {
+		
+		if (isGettingDark(person))
+			return false;
 
 		EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 		if (suit == null) {

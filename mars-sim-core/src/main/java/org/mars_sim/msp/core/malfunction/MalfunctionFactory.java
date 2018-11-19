@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -58,8 +59,8 @@ public final class MalfunctionFactory implements Serializable {
 	 * @param config malfunction configuration DOM document.
 	 * @throws Exception when malfunction list could not be found.
 	 */
-	public MalfunctionFactory(MalfunctionConfig config) {
-		this.config = config;
+	public MalfunctionFactory() {//MalfunctionConfig config) {
+		config = SimulationConfig.instance().getMalfunctionConfiguration();
 		malfunctions = config.getMalfunctionList();
 //		 numMal = malfunctions.size(); // = 39 in total
 
@@ -73,36 +74,25 @@ public final class MalfunctionFactory implements Serializable {
 	 * @return a randomly-picked malfunction or null if there are none available.
 	 */
 	public Malfunction pickAMalfunction(Collection<String> scopes) {
-
 		Malfunction mal = null;
 
-		// int num = 0;
 		double totalProbability = 0D;
 		if (malfunctions.size() > 0) {
 			for (Malfunction m : malfunctions) {
-				if (m.isMatched(scopes)) {// && !m.getName().equals(METEORITE_IMPACT_DAMAGE)) {
-					// num++;
+				if (m.isMatched(scopes)) {
 					totalProbability += m.getProbability();
-					// System.out.println(m.getName() + " : " + m.getProbability());
 				}
 			}
 		}
-
-		// double maxProb = totalProbability/num;
-		// System.out.print(" totalProbability : " + totalProbability);
-		// System.out.print(" num : " + num);
-		// System.out.println(" maxProb : " + maxProb);
 
 		double r = RandomUtil.getRandomDouble(totalProbability);
 		for (Malfunction m : malfunctions) {
 			double probability = m.getProbability();
 			// will only pick one malfunction at a time (if mal == null, quit)
-			if (m.isMatched(scopes) && (mal == null)) {// && !m.getName().equals(METEORITE_IMPACT_DAMAGE)) {
+			if (m.isMatched(scopes) && (mal == null)) {
 				if (r < probability) {
 					try {
 						mal = m;
-						// mal = m.getClone();
-						// mal.determineRepairParts();
 					} catch (Exception e) {
 						e.printStackTrace(System.err);
 					}
@@ -114,18 +104,28 @@ public final class MalfunctionFactory implements Serializable {
 		double failure_rate = mal.getProbability();
 		// Note : the composite probability of a malfunction is dynamically updated as
 		// the field reliability data trickles in
-//		System.out.println("failure_rate : " + failure_rate);
-
 		if (RandomUtil.lessThanRandPercent(failure_rate)) {
-//			System.out.println("mal is : " + mal);
-			mal = mal.getClone();
-			mal.determineRepairParts();
-			return mal;
-		} else
+			mal = determineRepairParts(mal);
+		}
+		else
 			return null;
+	
+		return mal;
 
 	}
 
+	/**
+	 * Determines the repair parts
+	 * 
+	 * @param mal
+	 * @return {@link Malfunction}
+	 */
+	public Malfunction determineRepairParts(Malfunction mal) {
+		mal = mal.getClone();
+		mal.determineRepairParts();
+		return mal;
+	}
+	
 	/**
 	 * Gets a collection of malfunctionable entities local to the given person.
 	 * 

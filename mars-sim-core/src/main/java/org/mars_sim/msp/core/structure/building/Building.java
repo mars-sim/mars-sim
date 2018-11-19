@@ -97,7 +97,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
-
+	
+	public static String TYPE = SystemType.BUILDING.getName();
+	
 	public static final int TISSUE_CAPACITY = 20;
 	/** The height of an airlock in meters */
 	// Assume an uniform height of 2.5 meters in all buildings
@@ -444,17 +446,21 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 		// Set up malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, wearLifeTime, totalMaintenanceTime);
-		malfunctionManager.addScopeString(SystemType.BUILDING.getName());
+		// Add scope to malfunction manager.
+		malfunctionManager.addScopeString(TYPE);
 
 		// Add each function to the malfunction scope.
+		// e.g. malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) {
 			Function function = i.next();
-			for (int x = 0; x < function.getMalfunctionScopeStrings().length; x++) {
+			int size = function.getMalfunctionScopeStrings().length;
+			for (int x = 0; x < size; x++) {
 				malfunctionManager.addScopeString(function.getMalfunctionScopeStrings()[x]);
 			}
 			// malfunctionManager.addScopeString(function.getFunctionType().getName());
 		}
+		
 		
 //		for (Function f : functions)
 //			for (String s : f.getMalfunctionScopeStrings())
@@ -1384,27 +1390,15 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 		if (solCache != solElapsed) {
 			solCache = solElapsed;
-
-			double probability = floorArea * manager.getProbabilityOfImpactPerSQMPerSol();
-
-			// assume a degree of randomness centered at the probability can be 5 times as
-			// much
-			// probability = probability * ( 1 + RandomUtil.getRandomDouble(4) -
-			// RandomUtil.getRandomDouble(4));
-
-			// assume a gauissan profile
-			probability = probability * (1 + RandomUtil.getGaussianDouble());
-
-			if (probability < 0)
-				probability = 0;
-
-			// if (probability > 0) logger.info("Sensors just picked up the new probability
-			// of a meteorite impact for " + nickName
-			// + " in " + settlement + " to be " + Math.round(probability*100D)/100D + "
-			// %.");
-
+			// Assume a gauissan profile
+			double probability = floorArea * manager.getProbabilityOfImpactPerSQMPerSol() * (.5 + RandomUtil.getGaussianDouble());
+//			System.out.println("Meteorite : " + probability);
 			// probability is in percentage unit between 0% and 100%
-			if (RandomUtil.getRandomDouble(100D) <= probability) {
+			if (probability > 0 && RandomUtil.getRandomDouble(100D) <= probability) {
+				// 		logger.info("Sensors just picked up the new probability
+				// 		of a meteorite impact for " + nickName
+				// 		+ " in " + settlement + " to be " + Math.round(probability*100D)/100D + " %.");
+
 				isImpactImminent = true;
 				// set a time for the impact to happen any time between 0 and 1000 milisols
 				moment_of_impact = RandomUtil.getRandomInt(1000);
@@ -1417,7 +1411,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
 			int delta = (int) Math.sqrt(Math.sqrt(masterClock.getTimeRatio()));
 			if (now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 						"[" + settlement + "] A meteorite impact over " + nickName + " is imminent.", null);
 				// reset the boolean immmediately. This is for keeping track of whether the
 				// impact has occurred at msols
@@ -1436,14 +1430,14 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 				if (penetrated_length >= wallThickness) {
 					// Yes it's breached !
-					if (malfunctionMeteoriteImpact == null)
-						malfunctionMeteoriteImpact = MalfunctionFactory
-								.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
+//					if (malfunctionMeteoriteImpact == null)
+//						malfunctionMeteoriteImpact = MalfunctionFactory
+//								.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 					// Simulate the meteorite impact as a malfunction event for now
 					try {
-						malfunctionManager.addMalfunction(malfunctionMeteoriteImpact, true, null);
-						// malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT,
-						// malfunction_meteor);
+						malfunctionManager.activateMalfunction(MalfunctionFactory
+								.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE),
+								true);
 					} catch (Exception e) {
 						e.printStackTrace(System.err);
 					}
@@ -1474,7 +1468,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 							task = person.getTaskDescription();
 							malfunctionMeteoriteImpact.setTraumatized(victimName);
 
-							logger.info(victimName + " was traumatized by the meteorite impact in " + this + " at "
+							logger.warning(victimName + " was traumatized by the meteorite impact in " + this + " at "
 									+ settlement);
 						}
 						// else {

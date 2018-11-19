@@ -178,7 +178,7 @@ public class ExitAirlock extends Task implements Serializable {
 						// logger.info(person + " grabbed an EVA suit.");
 					} catch (Exception e) {
 						LogConsolidated.log(
-								logger, Level.INFO, 3000, sourceName, "[" + person.getLocationTag().getQuickLocation()
+								logger, Level.WARNING, 3000, sourceName, "[" + person.getLocationTag().getQuickLocation()
 										+ "] " + person.getName() + " could not take " + suit.toString() + e.getMessage(),
 								null);
 
@@ -188,7 +188,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 			// If person still doesn't have an EVA suit, end task.
 			if (!hasSuit) {
-				LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
 						"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName()
 								+ " cannot find a working EVA suit.",
 						null);
@@ -257,7 +257,7 @@ public class ExitAirlock extends Task implements Serializable {
 				}
 				boolean activationSuccessful = airlock.addCycleTime(activationTime);
 				if (!activationSuccessful) {
-					LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName, "[" + person.getSettlement() + "] "
+					LogConsolidated.log(logger, Level.WARNING, 3000, sourceName, "[" + person.getSettlement() + "] "
 							+ person.getName() + " has problems with airlock activation.", null);
 				}
 			} else {
@@ -774,17 +774,16 @@ public class ExitAirlock extends Task implements Serializable {
 //	    		// TODO: should at least wait for a period of time for the EVA suit to be fixed before calling for rescue
 //	    		if (m != null) {	
 				airlock.addCheckEVASuit();
-//    				person.getMind().getTaskManager().clearTask();
-				// Calling getNewAction(true, false) so as not to get "stuck" inside the
-				// airlock.
-//                	person.getMind().getNewAction(true, false);
 				LogConsolidated.log(
-						logger, Level.INFO, 2000, sourceName, "[" + person.getLocationTag().getQuickLocation() + "] "
+						logger, Level.WARNING, 3000, sourceName, "[" + person.getLocationTag().getQuickLocation() + "] "
 								+ person + " has tried to exit the airlock " + airlock.getCheckEVASuit() + " times.",
 						null);
 
+				person.getMind().getTaskManager().clearTask();
+				// Call getNewAction(true, false) so as not to get "stuck" inside the airlock.
+            	person.getMind().getNewAction(true, false);
 				// Repair this EVASuit by himself/herself
-				person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
+//				person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
 				
 //				if (airlock.getCheckEVASuit() > 21) {
 //					// Repair this EVASuit by himself/herself
@@ -811,7 +810,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 				// TODO: how to have someone deliver him a working EVASuit
 				LogConsolidated.log(
-						logger, Level.INFO, 2000, sourceName, "[" + person.getLocationTag().getQuickLocation() + "] "
+						logger, Level.WARNING, 2000, sourceName, "[" + person.getLocationTag().getQuickLocation() + "] "
 								+ person + " can't find a working EVA suit and is awaiting the response for rescue.",
 						null);
 
@@ -992,7 +991,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		// it's okay even if there's not enough water
 		if (!hasEnoughWater)
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 					"[" + suit.getContainerUnit() + "] "
 					+ " won't have enough water to feed " + suit.getNickName(), null);
 
@@ -1024,7 +1023,7 @@ public class ExitAirlock extends Task implements Serializable {
 			suitInv.storeAmountResource(oxygenID, takenOxygen, true);
 		} catch (Exception e) {
 			LogConsolidated.log(
-					logger, Level.SEVERE, 10000, sourceName, "[" + person.getLocationTag().getQuickLocation() + "] "
+					logger, Level.WARNING, 10_000, sourceName, "[" + person.getLocationTag().getQuickLocation() + "] "
 							+ person + " does NOT have enough oxygen when preparing " + suit.getName() + e.getMessage(),
 					null);
 		}
@@ -1046,7 +1045,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		} catch (Exception e) {
 			LogConsolidated.log(
-					logger, Level.SEVERE, 5000, sourceName, "[" + person.getLocationTag().getQuickLocation() + "] "
+					logger, Level.WARNING, 10_000, sourceName, "[" + person.getLocationTag().getQuickLocation() + "] "
 							+ person + " does NOT have enough water when preparing " + suit.getName() + e.getMessage(),
 					null);
 		}
@@ -1060,7 +1059,7 @@ public class ExitAirlock extends Task implements Serializable {
 //        if (person != null) {
 		// Clear the person as the airlock operator if task ended prematurely.
 		if ((airlock != null) && person.equals(airlock.getOperator())) {
-			LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 5_000, sourceName,
 					person + " is ending the task of exiting airlock task prematurely and is no longer being the airlock operator for "
 							+ airlock.getEntityName(),
 					null);

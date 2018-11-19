@@ -79,8 +79,12 @@ implements Serializable {
     public static final double AMOUNT_OF_OIL_PER_MEAL = 0.01D;
     /** The base amount of work time (cooking skill 0) to produce one single cooked meal. */
     public static final double COOKED_MEAL_WORK_REQUIRED = 8D; // 10 milli-sols is 15 mins
+	/** The minimal amount of resource to be retrieved. */
+	private static final double MIN = 0.00001;
+	
     public static double UP = 0.01;
     public static double DOWN = 0.007;
+    
 
     public static final String SOYBEAN_OIL = "soybean oil";
     public static final String GARLIC_OIL = "garlic oil";
@@ -139,11 +143,12 @@ implements Serializable {
     private static MarsClock marsClock;
 
 //	private static int oxygenID = ResourceUtil.oxygenID;
-//	private static int waterID = ResourceUtil.waterID;
 //	private static int co2ID = ResourceUtil.co2ID;
 	private static int foodID = ResourceUtil.foodID;
 //	private static int blackWaterID = ResourceUtil.blackWaterID;
 //	private static int greyWaterID = ResourceUtil. greyWaterID;
+	private static int waterID = ResourceUtil.waterID;
+    public static int NaClOID = ResourceUtil.NaClOID;
 	
     /**
      * Constructor.
@@ -855,7 +860,9 @@ implements Serializable {
         //if (cacheAmount < amount)
         // 2b. if not, retrieve whatever amount from inv
         // Note: retrieve twice the amount to REDUCE frequent calling of retrieveAnResource()
-        boolean hasFive = Storage.retrieveAnResource(amount * 5, resource, inv, isRetrieving);
+        boolean hasFive = false;
+        if (amount * 5 > MIN)
+        	hasFive = Storage.retrieveAnResource(amount * 5, resource, inv, isRetrieving);
         // 2b1. if inv has it, save it to local map cache
         if (hasFive) {
             // take 5 out, put 4 into resourceMap, use 1 right now
@@ -863,10 +870,10 @@ implements Serializable {
             //result = true && result; // not needed since there is no change to the value of result
         }
         else { // 2b2.
-            boolean hasOne = Storage.retrieveAnResource(amount, resource, inv, isRetrieving);
-            if (hasOne)
-                ; // no change to resourceMap since resourceMap.put(name, cacheAmount);
-            else
+            boolean hasOne = false;
+            if (amount > MIN)
+            	hasOne = Storage.retrieveAnResource(amount, resource, inv, isRetrieving);
+            if (!hasOne)
                 result = false;
         }
         return result;
@@ -1056,18 +1063,22 @@ implements Serializable {
 	 * Cleans up the kitchen with cleaning agent and water.
 	 */
 	public void cleanUpKitchen() {
-		boolean hasAgent = Storage.retrieveAnResource(cleaningAgentPerSol, ResourceUtil.NaClOAR, inv, true); //SODIUM_HYPOCHLORITE, inv, true);//AmountResource.
-		boolean hasH2O = Storage.retrieveAnResource(cleaningAgentPerSol*10D, ResourceUtil.waterID, inv, true);//org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
+		boolean cleaning0 = false;
+		if (cleaningAgentPerSol*.1 > MIN)
+			cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol*.1, NaClOID, inv, true); 
+		boolean cleaning1 = false;
+		if (cleaningAgentPerSol > MIN)
+			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol, waterID, inv, true);
 
-		if (hasAgent)
+		if (cleaning0)
 			cleanliness = cleanliness + .05;
 		else
 			cleanliness = cleanliness - .025;
 
-		if (hasH2O)
-			cleanliness = cleanliness + .05;
+		if (cleaning1)
+			cleanliness = cleanliness + .075;
 		else
-			cleanliness = cleanliness - .025;
+			cleanliness = cleanliness - .05;
 
 		if (cleanliness > 1)
 			cleanliness = 1;
