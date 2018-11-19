@@ -382,7 +382,7 @@ public class HealthProblem implements Serializable {
 					if (nextPhase == null) {
 						logger.info(sufferer + " is suffering from " + illness);
 						setState(DEAD);
-						condition.setDead(this, false);
+						condition.setDead(this, false, "");
 					} else {
 						logger.info(sufferer + " is suffering from " + illness + ". Degrading to " + nextPhase);
 						result = nextPhase;

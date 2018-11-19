@@ -1370,31 +1370,37 @@ public class PhysicalCondition implements Serializable {
 	 * @param problem      The health problem that contributes to his death.
 	 * @param causedByUser True if it's caused by users
 	 */
-	public void setDead(HealthProblem problem, Boolean causedByUser) {
+	public void setDead(HealthProblem problem, Boolean causedByUser, String lastWord) {
 		alive = false;
 		String cause = "";
 		setFatigue(0D);
 		setHunger(0D);
 		setPerformanceFactor(0D);
 		setStress(0D);
-		
 		if (causedByUser) {
 			cause = "Suicide";
 			logger.warning(person + " committed suicide as instructed.");
 		}
+		else {
+			this.serious = problem;
+		}
 		
-		deathDetails = new DeathInfo(person, problem, cause);
+		deathDetails = new DeathInfo(person, problem, cause, lastWord);
 
 		person.setDeclaredDead();
 
-		problem.setState(HealthProblem.DEAD);
-		this.serious = problem;
+		// Set work shift to OFF
+		person.setShiftType(ShiftType.OFF);
+		// Relinquish his role
+		person.getRole().relinquishOldRoleType();
+		
+		problem.setState(HealthProblem.DEAD);	
 		
 		person.getMind().setInactive();
 		
 		medicalManager.addPostmortemExams(person.getAssociatedSettlement(), deathDetails);
 
-		// Wait for postmortem exam to be done by doctor
+		// Then Wait for postmortem exam to be done by doctor
 	}
 
 

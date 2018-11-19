@@ -152,7 +152,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private int numY;
 	/**  number of people with work shift Z */
 	private int numZ; 
+	/**  number of people with work shift "On Call" */
 	private int numOnCall;
+	/**  number of people with work shift "Off" */
+	private int numOff;
+	
 	private int sumOfCurrentManuProcesses = 0;
 	private int cropsNeedingTendingCache = 5;
 	private int millisolCache = -5;
@@ -1314,8 +1318,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @param sol
 	 */
 	public void printWorkShift(String sol) {
-		logger.info(sol + " " + getName() + "'s Work Shift " + "-- A:" + numA + " B:" + numB + ", X:" + numX + " Y:"
-				+ numY + " Z:" + numZ + ", OnCall:" + numOnCall);// + " Off:" + off);
+		logger.info(sol + " " + getName() + "'s Work Shift " + "-- [A:" + numA + " B:" + numB + "], [X:" + numX + " Y:"
+				+ numY + " Z:" + numZ + "], OnCall:" + numOnCall + ", Off:" + numOff);
 	}
 
 	/*
@@ -2624,9 +2628,16 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		else if (shiftType.equals(ShiftType.Z)) {
 			numZ--;
-		} else if (shiftType.equals(ShiftType.ON_CALL)) {
+		} 
+		
+		else if (shiftType.equals(ShiftType.ON_CALL)) {
 			numOnCall--;
 		}
+		
+		else if (shiftType.equals(ShiftType.OFF)) {
+			numOff--;
+		}
+		
 	}
 
 	/**
@@ -2658,6 +2669,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		else if (shiftType.equals(ShiftType.ON_CALL)) {
 			numOnCall++;
+		}
+		
+		else if (shiftType.equals(ShiftType.OFF)) {
+			numOff++;
 		}
 	}
 
@@ -2973,6 +2988,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				numZ++;
 			else if (shiftType.equals(ShiftType.ON_CALL))
 				numOnCall++;
+			else if (shiftType.equals(ShiftType.OFF))
+				numOff++;
 		}
 	}
 
@@ -2995,6 +3012,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				numZ--;
 			else if (shiftType.equals(ShiftType.ON_CALL))
 				numOnCall--;
+			else if (shiftType.equals(ShiftType.OFF))
+				numOff--;
 		}
 	}
 

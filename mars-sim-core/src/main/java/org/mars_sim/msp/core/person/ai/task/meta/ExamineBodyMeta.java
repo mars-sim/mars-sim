@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.ExamineBody;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalAid;
+import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.Treatment;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -41,6 +42,8 @@ public class ExamineBodyMeta implements MetaTask, Serializable {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.examineBody"); //$NON-NLS-1$
 
+	private static MedicalManager medicalManager = Simulation.instance().getMedicalManager();
+	
 	@Override
 	public String getName() {
 		return NAME;
@@ -57,29 +60,33 @@ public class ExamineBodyMeta implements MetaTask, Serializable {
 		double result = 0D;
 
 		if (person.isInSettlement()) {
-			int num = Simulation.instance().getMedicalManager().getPostmortemExams(person.getSettlement()).size();
+			int num = medicalManager.getPostmortemExams(person.getSettlement()).size();
+//			System.out.print(" num : " + num);
 			// Get the local medical aids to use.
-			if (hasNeedyMedicalAids(person)
-				&& num > 0) {
-				result += 500D + 300 * num;
+			if (num > 0 && hasNeedyMedicalAids(person)) {
+				result = 500 + 300 * num;
 			}
-
+//			System.out.print("   result : " + result);
 			// Effort-driven task modifier.
 			result *= person.getPerformanceRating();
-
+//			System.out.print("   result : " + result);
+			int numDoctor = JobManager.numJobs(Doctor.class, person.getSettlement());
+//			System.out.print("   # Doctors : " + num);
 			// Job modifier.
-			if (JobManager.numJobs(Doctor.class, person.getSettlement()) > 0) {
+			if (numDoctor > 0) {
 				Job job = person.getMind().getJob();
 				if (job != null) {
 					result *= job.getStartTaskProbabilityModifier(ExamineBody.class);
 				}
 			}
-			else {
-				double skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-				if (skill == 0)
-					skill = .5;
-				result *= skill;
-			}
+//			System.out.print("   result : " + result);
+			
+			double skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+//			System.out.print("   skill : " + skill);
+			if (skill == 0)
+				skill = .5;
+			result *= skill;
+//			System.out.print("   result : " + result);
 
 			result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
 
@@ -87,7 +94,7 @@ public class ExamineBodyMeta implements MetaTask, Serializable {
 				result = 0;
 
 		}
-//		System.out.println(person + " : " + Math.round(result*10.0)/10.0);
+//		System.out.println("    " + person + " : " + Math.round(result*10.0)/10.0);
 		return result;
 	}
 
@@ -103,7 +110,7 @@ public class ExamineBodyMeta implements MetaTask, Serializable {
 		boolean result = false;
 
 		if (person.isInSettlement()) {
-			result = hasNeedyMedicalAidsAtSettlement(person, person.getSettlement());
+			result = hasNeedyMedicalAidsAtSettlement(person);
 		} else if (person.isInVehicle()) {
 			result = hasNeedyMedicalAidsInVehicle(person, person.getVehicle());
 		}
@@ -119,28 +126,20 @@ public class ExamineBodyMeta implements MetaTask, Serializable {
 	 * @param settlement the settlement.
 	 * @return true if needy medical aids.
 	 */
-	private boolean hasNeedyMedicalAidsAtSettlement(Person person, Settlement settlement) {
-
-		boolean result = false;
+	private boolean hasNeedyMedicalAidsAtSettlement(Person person) {
 
 		// Check all medical care buildings.
 		Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE)
 				.iterator();
-		while (i.hasNext() && !result) {
-			Building building = i.next();
-			// Check if building currently has a malfunction.
-			boolean malfunction = building.getMalfunctionManager().hasMalfunction();
-
-			if (!malfunction) {
-				// Check if there are any sick beds at building.
-				MedicalCare medicalCare = building.getMedical();
-				if (medicalCare.hasEmptyBeds()) {
-					return result;	
-				}
+		while (i.hasNext()) {
+			// Check if there are any sick beds at building.
+			MedicalCare medicalCare = i.next().getMedical();
+			if (medicalCare.hasEmptyBeds()) {
+				return true;	
 			}
 		}
 
-		return result;
+		return false;
 	}
 
 	/**
@@ -152,9 +151,6 @@ public class ExamineBodyMeta implements MetaTask, Serializable {
 	 * @return true if needy medical aids.
 	 */
 	private boolean hasNeedyMedicalAidsInVehicle(Person person, Vehicle vehicle) {
-
-		boolean result = false;
-
 		if (person.getVehicle() instanceof Rover) {
 			Rover rover = (Rover) person.getVehicle();
 			if (rover.hasSickBay()) {
@@ -165,7 +161,7 @@ public class ExamineBodyMeta implements MetaTask, Serializable {
 			}
 		}
 
-		return result;
+		return false;
 	}
 
 	/**

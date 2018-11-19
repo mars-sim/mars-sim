@@ -93,6 +93,7 @@ public class ExamineBody extends Task implements Serializable {
 							if (list.get(i).getBodyRetrieved()) {
 								// Work on the body already retrieved
 								deathInfo = list.get(i);
+								done = true;
 							}
 						}
 						
@@ -107,14 +108,16 @@ public class ExamineBody extends Task implements Serializable {
 					patient = deathInfo.getPerson();
 	
 					// Get the person's medical skill.
-					int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+					double skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+					if (skill == 0)
+						skill = .5;
 					// Get the person's emotion stability
 					int stab = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
 					// Get the person's stress resilience						
 					int resilient = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
 					
 					// TODO: how to determine how long it takes ? Cause of death ?
-					duration = 100 + STRESS_MODIFIER * (200-stab-resilient) / 5D / skill + 2 * RandomUtil.getRandomInt(num+5);
+					duration = 150 + STRESS_MODIFIER * (200 - stab - resilient) / 5D / skill + 2 * RandomUtil.getRandomInt(num+5);
 					
 					deathInfo.setEstTimeExam(duration);
 	
@@ -186,18 +189,10 @@ public class ExamineBody extends Task implements Serializable {
 		Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE)
 				.iterator();
 		while (i.hasNext()) {
-			Building building = i.next();
-
-			// Check if building currently has a malfunction.
-			boolean malfunction = building.getMalfunctionManager().hasMalfunction();
-
-			if (!malfunction) {
-
-				// Check if there are any treatable medical problems at building.
-				MedicalCare medicalCare = building.getMedical();
-				if (medicalCare.hasEmptyBeds()) {
-					goodMedicalAids.add(medicalCare);
-				}
+			// Check if there are any treatable medical problems at building.
+			MedicalCare medicalCare = i.next().getMedical();
+			if (medicalCare.hasEmptyBeds()) {
+				goodMedicalAids.add(medicalCare);
 			}
 		}
 
@@ -272,21 +267,23 @@ public class ExamineBody extends Task implements Serializable {
 			deathInfo.getBodyRetrieved();
 		
 		if (timeExam < 10) {
-			LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+			LogConsolidated.log(logger, Level.WARNING, 1000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " began performing a postmortem exam on " 
 						+ patient.getName() + ".", null);
 		}
 		
-		if (timeExam > duration) {
+		if (timeExam > (deathInfo.getEstTimeExam() + duration)/2D) {
 			deathInfo.setExamDone(true);
 			setPhase(FINISHED);
-			return time;
+			return timeLeft;
 		}
 
 		else {
-		
+//			System.out.println("timeExam : " + timeExam);
 			// Get the person's medical skill.
-			int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+			double skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+			if (skill == 0)
+				skill = .5;
 			// Get the person's emotion stability
 			int stab = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY);
 					
@@ -296,13 +293,6 @@ public class ExamineBody extends Task implements Serializable {
 		
 			setStressModifier(stress);
 		
-			// Create starting task event if needed.
-//			if (getCreateEvents()) {
-//				TaskEvent startingEvent = new TaskEvent(person, this, healthProblem.getSufferer(), EventType.TASK_START,
-//						person.getAssociatedSettlement().getName(), "Treating Medical Patient");
-//				Simulation.instance().getEventManager().registerNewEvent(startingEvent);
-//			}
-
 			// Check for accident in medical aid.
 			checkForAccident(time);
 	
@@ -323,30 +313,32 @@ public class ExamineBody extends Task implements Serializable {
 
 		double timeLeft = 0D;
 
-		// If medical aid has malfunction, end task.
-		if (getMalfunctionable().getMalfunctionManager().hasMalfunction()) {
+		int num = Simulation.instance().getMedicalManager().getPostmortemExams(person.getSettlement()).size();
+		
+		if (num > 0) {
+			// If medical aid has malfunction, end task.
+			if (getMalfunctionable().getMalfunctionManager().hasMalfunction()) {
+				endTask();
+			}
+	
+			// Record the cause
+			recordCause(deathInfo.getProblem());
+			
+			// Bury the body
+			patient.buryBody();
+			
+			Simulation.instance().getMedicalManager().addDeathRegistry(person.getSettlement(), deathInfo);
+					
+			// Check for accident in medical aid.
+			checkForAccident(time);
+	
+			// Add experience.
+			addExperience(time);
+	
 			endTask();
+		
 		}
-
-		// Record the cause
-		recordCause(deathInfo.getProblem());
 		
-		// Bury the body
-		patient.buryBody();
-		
-		Simulation.instance().getMedicalManager().addDeathRegistry(person.getSettlement(), deathInfo);
-		
-		LogConsolidated.log(logger, Level.INFO, 100, sourceName, 
-					"[" + person.getLocationTag().getLocale() + "] " + person + " had finished the postmortem exam on " 
-						+ patient.getName() + ".", null);
-
-		
-		// Check for accident in medical aid.
-		checkForAccident(time);
-
-		// Add experience.
-		addExperience(time);
-
 		return timeLeft;
 	}
 
@@ -370,9 +362,13 @@ public class ExamineBody extends Task implements Serializable {
 			cause = problem.toString().toLowerCase();
 			deathInfo.setCause(cause);
 		}
-		logger.log(Level.SEVERE,
-				"[" + person.getLocationTag().getQuickLocation() + "] A post-mortem examination had been completed on "
-						+ person + ". Cause of death : " + cause);
+//		logger.log(Level.WARNING,
+//				"[" + person.getLocationTag().getQuickLocation() + "] A post-mortem examination had been completed on "
+//						+ person + ". Cause of death : " + cause);
+		LogConsolidated.log(logger, Level.WARNING, 1000, sourceName, 
+				"[" + person.getLocationTag().getLocale() + "] " + person + " completed the postmortem exam on " 
+					+ patient.getName() + ". Cause of death : " + cause + ".", null);
+
 		// Create medical event for death.
 		MedicalEvent event = new MedicalEvent(person, problem, EventType.MEDICAL_DEATH);
 		Simulation.instance().getEventManager().registerNewEvent(event);

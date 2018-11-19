@@ -135,8 +135,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private String country;
 	/** The person's blood type. */
 	private String bloodType;
-	/** The person's last word before departing. */
-	private String lastWord;
 	/** The person's status. */
 	private String status;
 	
@@ -906,14 +904,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		setBuriedSettlement(associatedSettlement);
 		// Remove the person from being a member of the associated settlement
 		setAssociatedSettlement(null);
-		// Set work shift to OFF
-		setShiftType(ShiftType.OFF);
 		// Set unit description to "Dead"
 		super.setDescription("Dead");
-		// Relinquish his role
-		role.relinquishOldRoleType(role.getType());
-		// Re-elect his role
-		buriedSettlement.getChainOfCommand().reelect(role.getType());
 		// Throw unit event.
 		fireUnitUpdate(UnitEventType.BURIAL_EVENT);
 	}
@@ -1491,14 +1483,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	public boolean isBuried() {
 		return isBuried;
-	}
-
-	public void setLastWord(String s) {
-		lastWord = s;
-	}
-
-	public String getLastWord() {
-		return lastWord;
 	}
 
 	// @Override

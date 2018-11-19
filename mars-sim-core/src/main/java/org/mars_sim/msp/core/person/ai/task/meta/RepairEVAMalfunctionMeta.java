@@ -50,9 +50,9 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 	public double getProbability(Person person) {
 		double result = 0D;
 
-		if (person.isInSettlement()) {
+//		if (person.isInSettlement()) {
 
-			Settlement settlement = person.getSettlement();
+			Settlement settlement = person.getAssociatedSettlement();//.getSettlement();
 
 			// Check for radiation events
 			boolean[] exposed = settlement.getExposed();
@@ -66,10 +66,10 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 				return 0;
 
 			// Check if it is night time.
-			SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-			if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
-				if (!surface.inDarkPolarRegion(person.getCoordinates()))
-					return 0;
+//			SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+//			if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
+//				if (!surface.inDarkPolarRegion(person.getCoordinates()))
+//					return 0;
 
 			// Add probability for all malfunctionable entities in person's local.
 			Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
@@ -138,7 +138,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 				result = 0;
 			}
 
-		}
+//		}
 
 		return result;
 	}

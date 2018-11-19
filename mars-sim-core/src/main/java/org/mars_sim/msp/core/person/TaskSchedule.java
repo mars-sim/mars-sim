@@ -421,9 +421,9 @@ public class TaskSchedule implements Serializable {
 	 * 
 	 * @param shiftType
 	 */
-	public void setShiftType(ShiftType shiftType) {
+	public void setShiftType(ShiftType newShift) {
 
-		if (shiftType != null) {
+		if (newShift != null) {
 
 			// Decrement the desire to tak on-call work shift
 			if (shiftTypeCache == ShiftType.ON_CALL) {
@@ -433,29 +433,41 @@ public class TaskSchedule implements Serializable {
 				}
 			}
 
-			// back up the previous shift type
+			// Back up the previous shift type
 			shiftTypeCache = this.shiftType;
 
-			this.shiftType = shiftType;
+			// Update the new shift type
+			this.shiftType = newShift;
 
 			if (person != null) {
 
 				Settlement s = null;
 
-				if (person.isBuried()) {// || person.isDeclaredDead()) {
+				if (person.isBuried()) {
 					s = person.getBuriedSettlement();
 
 					if (shiftTypeCache != null)
 						s.decrementAShift(shiftTypeCache);
 
-					s.incrementAShift(shiftType);
-				} else {
+					s.incrementAShift(newShift);
+				} 
+				
+				else if (person.isDeclaredDead()) {
 					s = person.getAssociatedSettlement();
 
 					if (shiftTypeCache != null)
 						s.decrementAShift(shiftTypeCache);
 
-					s.incrementAShift(shiftType);
+					s.incrementAShift(newShift);
+				}
+				
+				else {
+					s = person.getAssociatedSettlement();
+
+					if (shiftTypeCache != null)
+						s.decrementAShift(shiftTypeCache);
+
+					s.incrementAShift(newShift);
 
 					if (marsClock == null)
 						marsClock = Simulation.instance().getMasterClock().getMarsClock();

@@ -49,7 +49,7 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.isInSettlement()) { 
+        if (person.isInSettlement() || person.isInVehicle() || person.isInVehicleInGarage()) { 
         	    
 	        // Add probability for all malfunctionable entities in person's local.
 	        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
@@ -86,7 +86,6 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 	            result *= 1.5D;
 	        }
 	
-	        // 2015-06-07 Added Preference modifier
 	        if (result > 0D) {
 	            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 	        }

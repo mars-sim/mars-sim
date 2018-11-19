@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * This class represents the status of a Person when death occurs. It records
@@ -45,8 +46,6 @@ public class DeathInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(DeathInfo.class.getName());
-
-//	private static final String IN = " in ";
 
 	// Data members
 	/** Has the body been retrieved for exam */	
@@ -77,7 +76,8 @@ public class DeathInfo implements Serializable {
 	private String taskPhase;
 	/** Name of the most serious local emergency malfunction. */
 	private String malfunction;
-	
+	/** The person's last word before departing. */
+	private String lastWord;
 
 	/** the robot's job at time of being decomissioned. */
 	private RobotJob robotJob;
@@ -106,13 +106,36 @@ public class DeathInfo implements Serializable {
 	 * 
 	 * @param person the dead person
 	 */
-	public DeathInfo(Person person, HealthProblem problem, String cause) {
+	public DeathInfo(Person person, HealthProblem problem, String cause, String lastWord) {
 		this.person = person;
 		this.problem = problem;
 		this.causeOfDeath = cause;
+		this.lastWord = lastWord;
 		this.gender = person.getGender();
 
 		// Initialize data members
+		if (lastWord.equals("")) {
+			int rand = RandomUtil.getRandomInt(7);
+			// Quotes from http://www.phrases.org.uk/quotes/last-words/suicide-notes.html
+			// https://www.goodreads.com/quotes/tag/suicide-note
+			if (rand == 0)
+				lastWord = "Take care of my family.";
+			else if (rand == 1)
+				lastWord = "One day, send my ashes back to Earth and give it to my family.";
+			else if (rand == 2)
+				lastWord = "Send my ashes to orbit around Mars one day.";
+			else if (rand == 3)
+				lastWord = "I have to move on. Farewell.";
+			else if (rand == 4)
+				lastWord = "I want to be buried outside the settlement.";
+			else if (rand == 5)
+				lastWord = "Take care my friend.";
+			else if (rand == 6)
+				lastWord = "I will be the patron saint for the future Mars generations.";
+			else 
+				lastWord = "I'm leaving this world. No more sorrow to bear. See ya.";
+		}
+		
 		timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
 				
 		if (problem == null) {
@@ -130,7 +153,7 @@ public class DeathInfo implements Serializable {
 		if (person.isInVehicle()) {
 			// such as died inside a vehicle
 			containerUnit = person.getContainerUnit();
-			placeOfDeath = containerUnit.getName();
+			placeOfDeath = person.getVehicle().getName();
 		}
 
 		else if (person.isOutside()) {
@@ -148,7 +171,7 @@ public class DeathInfo implements Serializable {
 		}
 
 		else {
-			placeOfDeath = "an unspecified Location";
+			placeOfDeath = "Unspecified Location";
 		}
 
 		locationOfDeath = person.getCoordinates();
@@ -316,15 +339,15 @@ public class DeathInfo implements Serializable {
 		else
 			return "";
 	}
-
-	/**
-	 * Gets the container unit at the time of death. Returns null if none.
-	 * 
-	 * @return container unit
-	 */
-	public Unit getContainerUnit() {
-		return containerUnit;
-	}
+//
+//	/**
+//	 * Gets the container unit at the time of death. Returns null if none.
+//	 * 
+//	 * @return container unit
+//	 */
+//	public Unit getContainerUnit() {
+//		return containerUnit;
+//	}
 
 	/**
 	 * Get the type of the illness that caused the death.
@@ -506,5 +529,13 @@ public class DeathInfo implements Serializable {
 	
 	public double getHealth() {
 		return healthCondition;
+	}
+	
+	public void setLastWord(String s) {
+		lastWord = s;
+	}
+
+	public String getLastWord() {
+		return lastWord;
 	}
 }

@@ -1364,7 +1364,7 @@ public class ChatUtils {
 
 		responseText.append(name);
 		responseText.append(": ");
-
+	
 		if (text.toLowerCase().contains("attribute")) {
 			questionText = YOU_PROMPT + "What are your natural attributes ?"; 
 			
@@ -2279,66 +2279,71 @@ public class ChatUtils {
 			// incorporate help and other commands
 			int num = -1;
 
-			if (isInteger(text, 10))
+			if (isInteger(text, 10)) {
 				num = Integer.parseUnsignedInt(text, 10);
-
+			}
+				
 			// Add command "die"
-			if (text.equalsIgnoreCase("die") && expertMode) {
+			if (expertMode && text.equalsIgnoreCase("die")) {
 
 				if (personCache != null) {
-					questionText = YOU_PROMPT + "I hereby pronounce you dead.";
+					questionText = YOU_PROMPT + " I hereby pronounce you dead.";
 
-					String lastWord = null;
-
-					int rand = RandomUtil.getRandomInt(12);
-					// Quotes from http://www.phrases.org.uk/quotes/last-words/suicide-notes.html
-					// https://www.goodreads.com/quotes/tag/suicide-note
-					if (rand == 0)
-						lastWord = "This is all too heartbreaking for me. Farewell, my friend.";
-					else if (rand == 1)
-						lastWord = "Things just seem to have gone too wrong too many times...";
-					else if (rand == 2)
-						lastWord = "So I leave this world, where the heart must either break or turn to lead.";
-					else if (rand == 3)
-						lastWord = "Let's have no sadness —— furrowed brow. There's nothing new in dying now. Though living is no newer.";
-					else if (rand == 4)
-						lastWord = "I myself —— in order to escape the disgrace of deposition or capitulation —— choose death.";
-					else if (rand == 5)
-						lastWord = "When all usefulness is over, when one is assured of an unavoidable and imminent death, "
-								+ "it is the simplest of human rights to choose a quick and easy death in place of a slow and horrible one. ";
-					else if (rand == 6)
-						lastWord = "I am going to put myself to sleep now for a bit longer than usual. Call it Eternity.";
-					else if (rand == 7)
-						lastWord = "All fled —— all done, so lift me on the pyre; the feast is over, and the lamps expire.";
-					else if (rand == 8)
-						lastWord = "No more pain. Wake no more. Nobody owns.";
-					else if (rand == 9)
-						lastWord = "Dear World, I am leaving because I feel I have lived long enough. I am leaving you with your worries in this sweet cesspool. Good luck.";
-					else if (rand == 10)
-						lastWord = "This is what I want so don't be sad.";
-					else if (rand == 11)
-						lastWord = "I don't want to hurt you or anybody so please forget about me. Just try. Find yourself a better friend.";
-					else
-						lastWord = "They tried to get me——I got them first!";
-
-					responseText.append(personCache.getName() + " : " + lastWord);
-
-					responseText.append(System.lineSeparator() + System.lineSeparator() 
-						+ personCache.getName() + " committed suicide as instructed.");
-				
-					personCache.setLastWord(lastWord);
-
-					personCache.getPhysicalCondition()
-							.setDead(new HealthProblem(new Complaint(ComplaintType.SUICIDE), personCache), true);
-
-					personCache = null;
-					robotCache = null;
-					settlementCache = null;
-					vehicleCache = null;
+					if (personCache.isOutside()) {
+						responseText.append("Can you tell me why? Let's wait till I'm done with my task and/or mission.");
+					}
+					else {
+						String lastWord = null;
+		
+						int rand = RandomUtil.getRandomInt(12);
+						// Quotes from http://www.phrases.org.uk/quotes/last-words/suicide-notes.html
+						// https://www.goodreads.com/quotes/tag/suicide-note
+						if (rand == 0)
+							lastWord = "This is all too heartbreaking for me. Farewell, my friend.";
+						else if (rand == 1)
+							lastWord = "Things just seem to have gone too wrong too many times...";
+						else if (rand == 2)
+							lastWord = "So I leave this world, where the heart must either break or turn to lead.";
+						else if (rand == 3)
+							lastWord = "Let's have no sadness —— furrowed brow. There's nothing new in dying now. Though living is no newer.";
+						else if (rand == 4)
+							lastWord = "I myself —— in order to escape the disgrace of deposition or capitulation —— choose death.";
+						else if (rand == 5)
+							lastWord = "When all usefulness is over, when one is assured of an unavoidable and imminent death, "
+									+ "it is the simplest of human rights to choose a quick and easy death in place of a slow and horrible one. ";
+						else if (rand == 6)
+							lastWord = "I am going to put myself to sleep now for a bit longer than usual. Call it Eternity.";
+						else if (rand == 7)
+							lastWord = "All fled —— all done, so lift me on the pyre; the feast is over, and the lamps expire.";
+						else if (rand == 8)
+							lastWord = "No more pain. Wake no more. Nobody owns.";
+						else if (rand == 9)
+							lastWord = "Dear World, I am leaving because I feel I have lived long enough. I am leaving you with your worries in this sweet cesspool. Good luck.";
+						else if (rand == 10)
+							lastWord = "This is what I want so don't be sad.";
+						else if (rand == 11)
+							lastWord = "I don't want to hurt you or anybody so please forget about me. Just try. Find yourself a better friend.";
+						else
+							lastWord = "They tried to get me —— I got them first!";
+		
+						responseText.append(personCache.getName() + " : " + lastWord);
+		
+						responseText.append(System.lineSeparator() + System.lineSeparator() 
+							+ personCache.getName() + " committed suicide as instructed.");
+					
+						personCache.getPhysicalCondition()
+								.setDead(new HealthProblem(new Complaint(ComplaintType.SUICIDE), personCache), true, lastWord);
+		
+						personCache = null;
+						robotCache = null;
+						settlementCache = null;
+						vehicleCache = null;
+					}
 				}
 			}
-
+			
 			else {
+				// if not using expert mode
 				
 				String[] ans = askPersonRobot(text, num, name, u);
 				
@@ -2408,7 +2413,7 @@ public class ChatUtils {
 			proceed = true;
 		}
 
-		else if (text.toLowerCase().contains("log")) {			
+		else if (text.toLowerCase().contains("log")) {	
 			
 			if (text.equalsIgnoreCase("log")) {		
 				
@@ -2953,6 +2958,7 @@ public class ChatUtils {
 						String job = info.getJob();
 						String ill = info.getIllness().toString();
 						String health = info.getHealth() + "";
+						String lastWord = info.getLastWord();
 						
 						responseText.append(System.lineSeparator());
 						responseText.append(System.lineSeparator());
@@ -2985,6 +2991,8 @@ public class ChatUtils {
 						responseText.append("          Complaint : " + ill);	
 						responseText.append(System.lineSeparator());
 						responseText.append("     General Health : " + health);							
+						responseText.append(System.lineSeparator());
+						responseText.append("         Last Words : '" + lastWord +"'");							
 						responseText.append(System.lineSeparator());
 						
 						return responseText.toString();

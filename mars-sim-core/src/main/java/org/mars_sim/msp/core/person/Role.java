@@ -54,13 +54,13 @@ public class Role implements Serializable {
 	 * 
 	 * @param role type
 	 */
-	public void relinquishOldRoleType(RoleType oldType) {
+	public void relinquishOldRoleType() {
 
-		if (oldType != null) {
+		if (roleType != null) {
 			if (person.getAssociatedSettlement() != null)		
-				person.getAssociatedSettlement().getChainOfCommand().releaseRoleTypeMap(oldType);
+				person.getAssociatedSettlement().getChainOfCommand().releaseRoleTypeMap(roleType);
 			else 
-				person.getBuriedSettlement().getChainOfCommand().releaseRoleTypeMap(oldType);
+				person.getBuriedSettlement().getChainOfCommand().releaseRoleTypeMap(roleType);
 		}
 	}
 
@@ -70,13 +70,13 @@ public class Role implements Serializable {
 	 * @param role type
 	 */
 	public void setNewRoleType(RoleType newType) {
-		RoleType oldType = roleType;// getType();
+		RoleType oldType = roleType;
 
 		if (newType != oldType) {
 			this.roleType = newType;
 			person.getAssociatedSettlement().getChainOfCommand().addRoleTypeMap(newType);
 			person.fireUnitUpdate(UnitEventType.ROLE_EVENT, newType);
-			relinquishOldRoleType(oldType);
+			relinquishOldRoleType();
 
 			// Add saving roleHistory
 			if (clock == null)
