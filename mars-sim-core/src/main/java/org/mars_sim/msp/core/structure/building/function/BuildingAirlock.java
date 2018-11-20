@@ -8,10 +8,12 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.awt.geom.Point2D;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
@@ -29,7 +31,7 @@ public class BuildingAirlock extends Airlock {
 
     private static Logger logger = Logger.getLogger(BuildingAirlock.class.getName());
 	
-    //private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	public static final double HEIGHT = 2; // assume an uniform height of 2 meters in all airlocks
 	
@@ -97,10 +99,10 @@ public class BuildingAirlock extends Airlock {
                 		air = building.getSettlement().getCompositionOfAir();
                     air.releaseOrRecaptureAir(building.getInhabitableID(), true, building);
 
-//                	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
-//                			+ " has got inside the airlock at " + building + " in " 
-//                			+ building.getBuildingManager().getSettlement()
-//                			+ ". The airlock has been pressurized and is ready to open the inner door to release the person. ", null);
+                	LogConsolidated.log(logger, Level.FINER, 5000, sourceName, person 
+                			+ " has got inside the airlock at " + building + " in " 
+                			+ building.getBuildingManager().getSettlement()
+                			+ ". The airlock has been pressurized and is ready to open the inner door to release the person. ", null);
                 	inv.storeUnit(person);
                     BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
 
@@ -127,10 +129,10 @@ public class BuildingAirlock extends Airlock {
                 		air = building.getSettlement().getCompositionOfAir();
                     air.releaseOrRecaptureAir(building.getInhabitableID(), false, building);
                     
-//                	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, person 
-//                			+ " has got inside the airlock at " + building + " in " 
-//                			+ building.getBuildingManager().getSettlement()
-//                			+ ". The airlock has been depressurized and is ready to open the outer door to release the person. ", null);
+                	LogConsolidated.log(logger, Level.FINER, 5000, sourceName, person 
+                			+ " has got inside the airlock at " + building + " in " 
+                			+ building.getBuildingManager().getSettlement()
+                			+ ". The airlock has been depressurized and is ready to open the outer door to release the person. ", null);
                     inv.retrieveUnit(person);
                     BuildingManager.removePersonOrRobotFromBuilding(person, building);
 

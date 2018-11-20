@@ -41,10 +41,31 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
+import org.mars_sim.msp.core.person.ai.mission.Exploration;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.Trade;
+import org.mars_sim.msp.core.person.ai.mission.TravelMission;
+import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
+import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
+import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
+import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.WalkOutside;
+import org.mars_sim.msp.core.person.ai.task.WalkRoverInterior;
+import org.mars_sim.msp.core.person.ai.task.WalkSettlementInterior;
+import org.mars_sim.msp.core.person.ai.task.WalkingSteps;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.DeathInfo;
@@ -53,14 +74,19 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleAirlock;
+
+import com.sun.jdi.ClassType;
 
 public class ChatUtils {
 
@@ -2382,6 +2408,408 @@ public class ChatUtils {
 //				       .findFirst().get();
 	}
 	
+	public static StringBuilder processLogChange(String text, StringBuilder responseText) {
+//		StringBuilder responseText = new StringBuilder();
+		
+		String[] cmds = text.split("\\s+");
+//		System.out.println(cmds[0].toString());
+//		System.out.println(cmds[1].toString());
+//		System.out.println(cmds[2].toString());			
+	
+		
+		if (text.equalsIgnoreCase("log")) {
+			
+			Level level = LogManager.getLogManager().getLogger("").getLevel();
+			
+			responseText.append("Current logging level is : " + level);
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+
+//				OFF
+//				SEVERE (highest value)
+//				WARNING
+//				INFO
+//				CONFIG
+//				FINE
+//				FINER
+//				FINEST (lowest value)
+//				ALL			
+			
+//				responseText.append(System.lineSeparator());
+			responseText.append("Please specify the Logging Level as follows : ");
+			responseText.append(System.lineSeparator());
+			responseText.append(" 1. log off     : turn off logging.");
+			responseText.append(System.lineSeparator());
+			responseText.append(" 2. log severe  : show serious failure.");
+			responseText.append(System.lineSeparator());
+			responseText.append(" 3. log warning : show potential problem.");
+			responseText.append(System.lineSeparator());
+			responseText.append(" 4. log info    : show informational messages.");
+			responseText.append(System.lineSeparator());
+			responseText.append(" 5. log config  : show static configuration messages.");
+			responseText.append(System.lineSeparator());
+			responseText.append(" 6. log fine    : show tracing information.");
+			responseText.append(System.lineSeparator());
+			responseText.append(" 7. log finer   : show fairly detailed tracing information.");
+			responseText.append(System.lineSeparator());
+			responseText.append(" 8. log finest  : show highly detailed tracing information.");
+			responseText.append(System.lineSeparator());
+			responseText.append(" 9. log all     : show all messages.");
+			
+			responseText.append(System.lineSeparator());				
+			responseText.append(System.lineSeparator());
+			responseText.append("See https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html");
+								
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			responseText.append("e.g. Type 'log info' to set all loggers to INFO level");
+			responseText.append(System.lineSeparator());
+			responseText.append("e.g. Type 'log [Class Name] [level]' to set the logger of a class to a certain log level");
+			responseText.append(System.lineSeparator());
+			responseText.append("e.g. Type 'log all airlock off' to set ALL airlock-related class to OFF level");
+			responseText.append(System.lineSeparator());
+			responseText.append("e.g. Type 'log all walk off' to set ALL walk-related class to OFF level");
+//				responseText.append(System.lineSeparator());	
+			
+			return responseText;
+		}
+		
+		else if (text.equalsIgnoreCase("log off")) {
+			setDebugLevel(Level.OFF);				
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to OFF");				
+		}
+		
+		else if (text.equalsIgnoreCase("log config")) {			
+			setDebugLevel(Level.CONFIG);
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to CONFIG");						
+		}
+
+		else if (text.equalsIgnoreCase("log warning")) {			
+			setDebugLevel(Level.WARNING);		
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to WARNING");						
+		}
+		
+		else if (text.equalsIgnoreCase("log fine")) {						
+			setDebugLevel(Level.FINE);			
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to FINE");						
+		}
+		
+		else if (text.equalsIgnoreCase("log finer")) {							
+			setDebugLevel(Level.FINER);
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to FINER");						
+		}
+		
+		else if (text.equalsIgnoreCase("log finest")) {							
+			setDebugLevel(Level.FINEST);
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to FINEST");						
+		}
+		
+		else if (text.equalsIgnoreCase("log severe")) {					
+			setDebugLevel(Level.SEVERE);
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to SEVERE");	
+		}
+		
+		else if (text.equalsIgnoreCase("log info")) {			
+			setDebugLevel(Level.INFO);
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to INFO");
+		}
+				
+		else if (text.equalsIgnoreCase("log all")) {
+			setDebugLevel(Level.ALL);
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to ALL");						
+		}
+		
+		else if (text.contains("log all walk")) {
+			Level lvl = Level.OFF;
+			if (text.contains("log all walk off")) {
+				lvl = Level.OFF;		
+			}
+			
+			else if (text.contains("log all walk finest")) {
+				lvl = Level.FINEST;			
+			}				
+
+			else if (text.contains("log all walk finer")) {
+				lvl = Level.FINER;
+			}
+			
+			else if (text.contains("log all walk fine")) {
+				lvl = Level.FINE;	
+			}
+			
+			else if (text.contains("log all walk config")) {
+				lvl = Level.CONFIG;	
+			}
+			
+			else if (text.contains("log all walk info")) {
+				lvl = Level.INFO;	
+			}
+			
+			else if (text.contains("log all walk warning")) {
+				lvl = Level.WARNING;	
+			}
+			
+			else if (text.contains("log all walk severe")) {
+				lvl = Level.SEVERE;	
+			}
+			
+			else if (text.contains("log all walk off")) {
+				lvl = Level.OFF;	
+			}
+			
+			LogManager.getLogManager().getLogger(Walk.class.getName()).setLevel(lvl);
+			LogManager.getLogManager().getLogger(WalkOutside.class.getName()).setLevel(lvl);	
+			LogManager.getLogManager().getLogger(WalkingSteps.class.getName()).setLevel(lvl);	
+			LogManager.getLogManager().getLogger(WalkRoverInterior.class.getName()).setLevel(lvl);	
+			LogManager.getLogManager().getLogger(WalkSettlementInterior.class.getName()).setLevel(lvl);		
+			responseText.append("Walk-related Loggers are set to " + lvl);
+			logger.config("Walk-related Loggers are set to " + lvl);
+		}
+		
+		else if (text.contains("log all airlock")) {
+			Level lvl = Level.OFF;
+			if (text.contains("log all airlock off")) {
+				lvl = Level.OFF;		
+			}
+			
+			else if (text.contains("log all airlock finest")) {
+				lvl = Level.FINEST;			
+			}				
+
+			else if (text.contains("log all airlock finer")) {
+				lvl = Level.FINER;
+			}
+			
+			else if (text.contains("log all airlock fine")) {
+				lvl = Level.FINE;	
+			}
+			
+			else if (text.contains("log all airlock config")) {
+				lvl = Level.CONFIG;	
+			}
+			
+			else if (text.contains("log all airlock info")) {
+				lvl = Level.INFO;	
+			}
+			
+			else if (text.contains("log all airlock warning")) {
+				lvl = Level.WARNING;
+			}
+			
+			else if (text.contains("log all airlock severe")) {
+				lvl = Level.SEVERE;	
+			}
+			
+			else if (text.contains("log all airlock off")) {
+				lvl = Level.OFF;	
+			}
+
+			LogManager.getLogManager().getLogger(EnterAirlock.class.getName()).setLevel(lvl);
+			LogManager.getLogManager().getLogger(ExitAirlock.class.getName()).setLevel(lvl);	
+			LogManager.getLogManager().getLogger(Airlock.class.getName()).setLevel(lvl);
+			LogManager.getLogManager().getLogger(BuildingAirlock.class.getName()).setLevel(lvl);
+			LogManager.getLogManager().getLogger(VehicleAirlock.class.getName()).setLevel(lvl);
+			responseText.append("Airlock-related Loggers are set to " + lvl);
+		    logger.config("Airlock-related Loggers are set to " + lvl);
+		}
+		
+		else if (text.contains("log all eva")) {
+			Level lvl = Level.OFF;
+			if (text.contains("log all eva off")) {
+				lvl = Level.OFF;		
+			}
+			
+			else if (text.contains("log all eva finest")) {
+				lvl = Level.FINEST;			
+			}				
+
+			else if (text.contains("log all eva finer")) {
+				lvl = Level.FINER;
+			}
+			
+			else if (text.contains("log all eva fine")) {
+				lvl = Level.FINE;	
+			}
+			
+			else if (text.contains("log all eva config")) {
+				lvl = Level.CONFIG;	
+			}
+			
+			else if (text.contains("log all eva info")) {
+				lvl = Level.INFO;	
+			}
+			
+			else if (text.contains("log all eva warning")) {
+				lvl = Level.WARNING;	
+			}
+			
+			else if (text.contains("log all eva severe")) {
+				lvl = Level.SEVERE;	
+			}
+			
+			else if (text.contains("log all eva off")) {
+				lvl = Level.OFF;	
+			}
+			
+			LogManager.getLogManager().getLogger(EVAOperation.class.getName()).setLevel(lvl);	
+			responseText.append("EVAOperation Logger is set to " + lvl);
+		    logger.config("EVAOperation Logger is set to " + lvl);
+		}
+		
+		else if (text.contains("log all mission")) {
+			Level lvl = Level.OFF;
+			if (text.contains("log all mission off")) {
+				lvl = Level.OFF;		
+			}
+			
+			else if (text.contains("log all mission finest")) {
+				lvl = Level.FINEST;			
+			}				
+
+			else if (text.contains("log all mission finer")) {
+				lvl = Level.FINER;
+			}
+			
+			else if (text.contains("log all mission fine")) {
+				lvl = Level.FINE;	
+			}
+			
+			else if (text.contains("log all mission config")) {
+				lvl = Level.CONFIG;	
+			}
+			
+			else if (text.contains("log all mission info")) {
+				lvl = Level.INFO;	
+			}
+			
+			else if (text.contains("log all mission warning")) {
+				lvl = Level.WARNING;	
+			}
+			
+			else if (text.contains("log all mission severe")) {
+				lvl = Level.SEVERE;	
+			}
+			
+			else if (text.contains("log all mission off")) {
+				lvl = Level.OFF;	
+			}
+			
+			LogManager.getLogManager().getLogger(Mission.class.getName()).setLevel(lvl);	
+			LogManager.getLogManager().getLogger(VehicleMission.class.getName()).setLevel(lvl);
+			LogManager.getLogManager().getLogger(RoverMission.class.getName()).setLevel(lvl);
+			LogManager.getLogManager().getLogger(MissionManager.class.getName()).setLevel(lvl);	
+			LogManager.getLogManager().getLogger(RescueSalvageVehicle.class.getName()).setLevel(lvl);
+			LogManager.getLogManager().getLogger(CollectResourcesMission.class.getName()).setLevel(lvl);
+			
+			LogManager.getLogManager().getLogger(Exploration.class.getName()).setLevel(lvl);
+			LogManager.getLogManager().getLogger(Mining.class.getName()).setLevel(lvl);	
+			LogManager.getLogManager().getLogger(BuildingConstructionMission.class.getName()).setLevel(lvl);
+			LogManager.getLogManager().getLogger(EmergencySupplyMission.class.getName()).setLevel(lvl);
+			
+			LogManager.getLogManager().getLogger(Trade.class.getName()).setLevel(lvl);
+			LogManager.getLogManager().getLogger(TravelMission.class.getName()).setLevel(lvl);	
+			LogManager.getLogManager().getLogger(TravelToSettlement.class.getName()).setLevel(lvl);
+			LogManager.getLogManager().getLogger(AreologyStudyFieldMission.class.getName()).setLevel(lvl);
+			LogManager.getLogManager().getLogger(BiologyStudyFieldMission.class.getName()).setLevel(lvl);
+			
+			responseText.append("Mission-related loggers are set to " + lvl);
+			logger.config("Mission-related loggers are set to " + lvl);
+		}
+		
+		else {
+			responseText.append("Invalid log usage. Please double check.");
+			logger.config("Invalid log usage. Please double check.");
+//			responseText.append(System.lineSeparator());
+		}
+//		
+//		else if (cmds[0].equals("log")) {// && !cmds[1].equals("all") && cmds[2] != null) {
+//			boolean isGood = false;
+//			
+//			Level lvl = Level.OFF;
+//			
+//			if (cmds[2].equalsIgnoreCase("all")) {
+//				lvl = Level.ALL;
+//			}	
+//			
+//			else if (cmds[2].equalsIgnoreCase("finest")) {
+//				lvl = Level.FINEST;			
+//			}				
+//
+//			else if (cmds[2].equalsIgnoreCase("finer")) {
+//				lvl = Level.FINER;
+//			}
+//			
+//			else if (cmds[2].equalsIgnoreCase("fine")) {
+//				lvl = Level.FINE;	
+//			}
+//			
+//			else if (cmds[2].equalsIgnoreCase("config")) {
+//				lvl = Level.CONFIG;	
+//			}
+//			
+//			else if (cmds[2].equalsIgnoreCase("info")) {
+//				lvl = Level.INFO;	
+//			}
+//			
+//			else if (cmds[2].equalsIgnoreCase("warning")) {
+//				lvl = Level.WARNING;	
+//			}
+//			
+//			else if (cmds[2].equalsIgnoreCase("severe")) {
+//				lvl = Level.SEVERE;	
+//			}
+//			
+//			else if (cmds[2].equalsIgnoreCase("off")) {
+//				lvl = Level.OFF;		
+//			}
+//			
+//			else {
+//				responseText.append("No such log level. Please double check.");
+//				logger.config("No such log level. Please double check.");
+//				responseText.append(System.lineSeparator());
+//				isGood = false;
+//			}
+//			
+//			if (isGood) {
+//				try {
+//					Class<?> classType = Class.forName(cmds[1]);
+////						ClassLoader cl = null;
+////						Class<?> classType = cl.loadClass(cmds[1]);
+////						isGood = true;
+//					if (LogManager.getLogManager().getLogger(classType.getName()) == null) {
+//						responseText.append("No such class exists. Please use exact upper/lowercase letters in class name.");
+//						logger.config("No such class exists. Please use exact upper/lowercase letters in class name.");
+//						responseText.append(System.lineSeparator());
+//					}
+//					else {
+//						LogManager.getLogManager().getLogger(classType.getName()).setLevel(lvl);		
+//						responseText.append(cmds[1] + " logger is set to " + lvl);
+//						logger.config(cmds[1] + " logger is set to " + lvl);
+////							isGood = true;
+//					}
+//				} catch (ClassNotFoundException e) {
+//					responseText.append("No such class exists. Please use exact upper/lowercase letters in class name.");
+//					logger.config("No such class exists. Please use exact upper/lowercase letters in class name.");
+//					responseText.append(System.lineSeparator());
+////						isGood = false;
+//					//e.printStackTrace();
+//				}
+//			}
+//		}
+		
+		return responseText;
+	}
+	
+	
 	/*
 	 * Asks the system a question
 	 * 
@@ -2406,6 +2834,10 @@ public class ChatUtils {
 			proceed = true;
 		}
 
+		if (text.toLowerCase().contains("log")) {
+			return processLogChange(text, responseText).toString();
+		}
+		
 		else if (text.toLowerCase().contains("score")) {
 			
 //			double aveSocial = 0;
@@ -2529,116 +2961,9 @@ public class ChatUtils {
 //			   .forEach(System.out::println);
 			
 			return responseText.toString();
-			
-			
+	
 		}
 		
-		else if (text.toLowerCase().contains("log")) {	
-			
-			if (text.equalsIgnoreCase("log")) {		
-				
-				Level level = LogManager.getLogManager().getLogger("").getLevel();
-				
-				responseText.append("Current logging level is : " + level);
-				responseText.append(System.lineSeparator());
-				responseText.append(System.lineSeparator());
-
-//				SEVERE (highest value)
-//				WARNING
-//				INFO
-//				CONFIG
-//				FINE
-//				FINER
-//				FINEST (lowest value)
-				
-//				responseText.append(System.lineSeparator());
-				responseText.append("Please specify the Logging Level as follows : ");
-				responseText.append(System.lineSeparator());
-				responseText.append(" 1. log off: for turning off logging.");
-				responseText.append(System.lineSeparator());
-				responseText.append(" 2. log severe : for indicating a serious failure.");
-				responseText.append(System.lineSeparator());
-				responseText.append(" 3. log warning : for indicating a potential problem.");
-				responseText.append(System.lineSeparator());
-				responseText.append(" 4. log info : for informational messages.");
-				responseText.append(System.lineSeparator());
-				responseText.append(" 5. log config : for static configuration messages.");
-				responseText.append(System.lineSeparator());
-				responseText.append(" 6. log fine : for providing tracing information.");
-				responseText.append(System.lineSeparator());
-				responseText.append(" 7. log finer : for providing fairly detailed tracing information.");
-				responseText.append(System.lineSeparator());
-				responseText.append(" 8. log finest : for providing highly detailed tracing information.");
-				responseText.append(System.lineSeparator());
-				responseText.append(" 9. log all : for indicating that all messages be logged.");
-				
-				responseText.append(System.lineSeparator());				
-				responseText.append(System.lineSeparator());
-				responseText.append("See https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html");
-									
-				responseText.append(System.lineSeparator());
-				responseText.append(System.lineSeparator());
-				responseText.append("e.g. Type 'log info' at the prompt to set it to the INFO level");
-//				responseText.append(System.lineSeparator());									
-			}
-			
-			if (text.equalsIgnoreCase("log off")) {
-				setDebugLevel(Level.OFF);				
-//				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to OFF");	
-					
-			}
-			
-			else if (text.equalsIgnoreCase("log config")) {			
-				setDebugLevel(Level.CONFIG);
-//				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to CONFIG");						
-			}
-	
-			else if (text.equalsIgnoreCase("log warning")) {			
-				setDebugLevel(Level.WARNING);		
-//				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to WARNING");						
-			}
-			
-			else if (text.equalsIgnoreCase("log fine")) {						
-				setDebugLevel(Level.FINE);			
-//				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to FINE");						
-			}
-			
-			else if (text.equalsIgnoreCase("log finer")) {							
-				setDebugLevel(Level.FINER);
-//				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to FINER");						
-			}
-			
-			else if (text.equalsIgnoreCase("log finest")) {							
-				setDebugLevel(Level.FINEST);
-//				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to FINEST");						
-			}
-			
-			else if (text.equalsIgnoreCase("log severe")) {					
-				setDebugLevel(Level.SEVERE);
-//				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to SEVERE");	
-			}
-			
-			else if (text.equalsIgnoreCase("log info")) {			
-				setDebugLevel(Level.INFO);
-//				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to INFO");
-			}
-					
-			else if (text.equalsIgnoreCase("log all")) {
-				setDebugLevel(Level.ALL);
-//				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to ALL");						
-			}
-			
-			return responseText.toString();
-		}
 		
 		else if (text.equalsIgnoreCase("check size")) {			
 
