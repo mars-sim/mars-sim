@@ -533,7 +533,7 @@ public class Simulation implements ClockListener, Serializable {
     public void deserialize(File file) throws IOException,
             ClassNotFoundException {
 
-		byte[] buf = new byte[8192];
+//		byte[] buf = new byte[8192];
 		FileInputStream in = null;
 	    XZInputStream xzin = null;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -30,6 +30,10 @@ public class AutosaveScheduler {
     static class MyTask implements Runnable {
 
         public void run() {
+        	if (sim == null)
+        		sim = Simulation.instance();
+        	if (masterClock == null)
+        		masterClock = sim.getMasterClock();
         	if (sim.getAutosaveDefault()) {
         		masterClock.setSaveSim(Simulation.AUTOSAVE_AS_DEFAULT, null);
         	}
@@ -44,7 +48,7 @@ public class AutosaveScheduler {
      */
     public static void cancel() {
     	if (t != null) {
-    		t.cancel(true);
+    		t.cancel(false);
     		t = null;
     	}
     }
@@ -54,6 +58,8 @@ public class AutosaveScheduler {
      */
     public static void start() {
     	if (t == null) {
+    		if (simulationConfig == null)
+    			simulationConfig = SimulationConfig.instance();
     		int m = simulationConfig.getAutosaveInterval();
     		t = autosaveService.scheduleAtFixedRate(new MyTask(), m,
     				m, TimeUnit.MINUTES);
@@ -67,6 +73,8 @@ public class AutosaveScheduler {
      */
     public static void start(int minutes) {
     	if (t == null) {	
+    		if (simulationConfig == null)
+    			simulationConfig = SimulationConfig.instance();
     		simulationConfig.setAutosaveInterval(minutes);
     		t = autosaveService.scheduleAtFixedRate(new MyTask(), minutes,
     				minutes, TimeUnit.MINUTES);
