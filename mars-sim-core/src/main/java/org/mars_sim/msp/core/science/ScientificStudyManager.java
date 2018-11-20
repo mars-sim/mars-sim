@@ -8,8 +8,10 @@ package org.mars_sim.msp.core.science;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
@@ -185,6 +187,27 @@ implements Serializable {
     }
     
     /**
+     * Gets all ongoing scientific studies where researcher was a collaborative researcher in a particular settlement.
+     * @param settlement
+     * @return list of studies.
+     */
+    public List<ScientificStudy> getOngoingCollaborativeStudies(Settlement settlement) {
+        List<ScientificStudy> result = new ArrayList<ScientificStudy>();
+        
+		List<Person> pList = new ArrayList<>(settlement.getAllAssociatedPeople());
+
+		for (Person p : pList) {
+	        Iterator<ScientificStudy> i = studies.iterator();
+	        while (i.hasNext()) {
+	            ScientificStudy study = i.next();
+	            if (!study.isCompleted() && (study.getCollaborativeResearchers().containsKey(p)))
+	                result.add(study);
+	        }
+		}
+        return result;
+    }
+    
+    /**
      * Gets all completed scientific studies where researcher was a collaborative researcher.
      * @param researcher the collaborative researcher.
      * @return list of studies.
@@ -199,6 +222,28 @@ implements Serializable {
         }
         return result;
     }
+    
+    /**
+     * Gets all completed scientific studies where researcher was a collaborative researcher in a particular settlement.
+     * @param settlement
+     * @return list of studies.
+     */
+    public List<ScientificStudy> getCompletedCollaborativeStudies(Settlement settlement) {
+        List<ScientificStudy> result = new ArrayList<ScientificStudy>();
+        
+		List<Person> pList = new ArrayList<>(settlement.getAllAssociatedPeople());
+
+		for (Person p : pList) {
+	        Iterator<ScientificStudy> i = studies.iterator();
+	        while (i.hasNext()) {
+	            ScientificStudy study = i.next();
+	            if (study.isCompleted() && (study.getCollaborativeResearchers().containsKey(p)))
+	                result.add(study);
+	        }
+		}
+        return result;
+    }
+    
     
     /**
      * Gets all ongoing scientific studies at a primary research settlement.
@@ -227,6 +272,24 @@ implements Serializable {
         while (i.hasNext()) {
             ScientificStudy study = i.next();
             if (study.isCompleted() && settlement.equals(study.getPrimarySettlement()))
+                result.add(study);
+        }
+        return result;
+    }
+    
+    /**
+     * Gets all failed scientific studies at a primary research settlement.
+     * @param settlement the primary research settlement.
+     * @return list of studies.
+     */
+    public List<ScientificStudy> getAllFailedStudies(Settlement settlement) {
+        List<ScientificStudy> result = new ArrayList<ScientificStudy>();
+        Iterator<ScientificStudy> i = studies.iterator();
+        while (i.hasNext()) {
+            ScientificStudy study = i.next();
+            if (study.isCompleted() 
+            		&& study.getCompletionState().equals(ScientificStudy.FAILED_COMPLETION) 
+            		&& settlement.equals(study.getPrimarySettlement()))
                 result.add(study);
         }
         return result;
@@ -441,6 +504,75 @@ implements Serializable {
         return primaryResearcher.getPhysicalCondition().isDead();
     }
     
+	/**
+	 * Computes the overall relationship score of a settlement
+	 * 
+	 * @param s Settlement
+	 * @return the score
+	 */
+	public double getScienceScore(Settlement s, ScienceType type) {
+		boolean allSubject = false;
+		if (type == null)
+			allSubject = true;
+		
+		double score = 0;
+		double completed = 10;
+		double ongoing = 7.5;
+		double failed = 2.5;
+
+		List<ScientificStudy> list0 = getCompletedPrimaryStudies(s);
+		if (!list0.isEmpty()) {
+			for (ScientificStudy ss : list0) {
+				if (allSubject || type == ss.getScience()) {
+					score += completed;
+				}
+			}
+		}
+		
+
+		List<ScientificStudy> list1 = getOngoingPrimaryStudies(s);
+		if (!list1.isEmpty()) {
+			for (ScientificStudy ss : list1) {
+				if (allSubject || type == ss.getScience()) {
+					score += ongoing;
+				}
+			}
+		}
+		
+
+		List<ScientificStudy> list2 = getAllFailedStudies(s);
+		if (!list2.isEmpty()) {
+			for (ScientificStudy ss : list2) {
+				if (allSubject || type == ss.getScience()) {
+					score += failed;
+				}
+			}
+		}
+		
+		
+		List<ScientificStudy> list3 = getCompletedCollaborativeStudies(s);
+		if (!list1.isEmpty()) {
+			for (ScientificStudy ss : list3) {
+				if (allSubject || type == ss.getScience()) {
+					score += ongoing;
+				}
+			}
+		}
+
+		List<ScientificStudy> list4 = getOngoingCollaborativeStudies(s);
+		if (!list1.isEmpty()) {
+			for (ScientificStudy ss : list4) {
+				if (allSubject || type == ss.getScience()) {
+					score += ongoing;
+				}
+			}
+		}
+		
+		score = Math.round(score *100.0)/100.0;
+		
+		return score;
+	}
+	
     /**
      * Prepare object for garbage collection.
      */

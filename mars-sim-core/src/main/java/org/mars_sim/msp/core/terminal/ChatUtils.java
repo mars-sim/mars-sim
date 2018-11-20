@@ -45,7 +45,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.DeathInfo;
@@ -53,6 +52,7 @@ import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
+import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -124,7 +124,7 @@ public class ChatUtils {
 	};
 	
 	public final static String[] SYSTEM_KEYS = new String[] {
-			"settlement", "check size", 
+			"score", "settlement", "check size", 
 			"log", "log all", "log fine", "log info", "log severe", "log finer", "log finest", "log warning", "log config",
 			"vehicle", "rover", 
 			"hi", "hello", "hey"
@@ -191,6 +191,7 @@ public class ChatUtils {
 	private static MarsClock marsClock;
 	private static OrbitInfo orbitInfo;
 	private static RelationshipManager relationshipManager;
+	private static ScientificStudyManager scientificManager;
 	private static SkillManager skillManager;
 
 	private static DecimalFormat fmt = new DecimalFormat("##0");
@@ -205,7 +206,8 @@ public class ChatUtils {
 		surfaceFeatures = mars.getSurfaceFeatures();
 		orbitInfo = mars.getOrbitInfo();
 		
-		relationshipManager = Simulation.instance().getRelationshipManager();
+		relationshipManager = sim.getRelationshipManager();
+		scientificManager = sim.getScientificStudyManager();
 	}
 
 	/**
@@ -472,39 +474,7 @@ public class ChatUtils {
 		return responseText;
 	}
 	
-	/**
-	 * Computes the overall relationship score of a settlement
-	 * 
-	 * @param s Settlement
-	 * @return the score
-	 */
-	public static double getRelationshipScore(Settlement s) {
-		double score = 0;
-		if (relationshipManager == null)
-			relationshipManager = Simulation.instance().getRelationshipManager();
-		
-		Collection<Person> col = s.getAllAssociatedPeople();
 
-		List<Person> list0 = new ArrayList<>(col);
-
-		int count = 0;
-		for (Person pp : list0) {
-			Map<Person, Double> friends = relationshipManager.getTheirOpinionsOfMe(pp);//.getMyOpinionsOfThem(pp);
-			if (!friends.isEmpty()) {
-				List<Person> list = new ArrayList<>(friends.keySet());
-				for (int i = 0; i < list.size(); i++) {
-					Person p = list.get(i);
-					score += friends.get(p);
-					count++;
-				}
-			}
-		}
-		
-		score = Math.round(score/count *100.0)/100.0;
-		
-		return score;
-	}
-	
 	/**
 	 * Asks the settlement when the input is a string
 	 * 
@@ -522,7 +492,7 @@ public class ChatUtils {
 				|| text.toLowerCase().contains("social")) {
 			questionText = YOU_PROMPT + "How is the overall social score in this settlement ?"; 
 
-			double score = getRelationshipScore(settlementCache);
+			double score = relationshipManager.getRelationshipScore(settlementCache);
 		
 			responseText.append(System.lineSeparator())	;		
 			responseText.append(settlementCache.getName() + "'s social score : " + fmt1.format(score));
@@ -2389,6 +2359,29 @@ public class ChatUtils {
 	    logger.config("Logging is set to " + newLvl);
 	}
 	
+	public static StringBuffer computeWhiteSpaces(String name, int max) {
+		int size = name.length();
+		StringBuffer sb = new StringBuffer();
+		for (int i=0; i< max-size; i++)
+			sb.append(ONE_SPACE);
+		
+		return sb;
+	}
+	
+	public static <K, V> K getKey(Map<K, V> map, V value) {
+		for (K key : map.keySet()) {
+			if (value.equals(map.get(key))) {
+				return key;
+			}
+		}
+		return null;
+//		return map.entrySet()
+//				       .stream()
+//				       .filter(entry -> value.equals(entry.getValue()))
+//				       .map(Map.Entry::getKey)
+//				       .findFirst().get();
+	}
+	
 	/*
 	 * Asks the system a question
 	 * 
@@ -2413,6 +2406,133 @@ public class ChatUtils {
 			proceed = true;
 		}
 
+		else if (text.toLowerCase().contains("score")) {
+			
+//			double aveSocial = 0;
+//			double aveSci = 0;
+			double totalSciScore = 0;
+
+			Map<Double, String> totalScores = new HashMap<>();
+			Map<Double, String> scienceMap = new HashMap<>();
+			Map<Double, String> socialMap = new HashMap<>();
+			List<Double> totalList = new ArrayList<>();
+//			List<Double> sciList = new ArrayList<>();
+//			List<Double> socialList = new ArrayList<>();
+			Collection<Settlement> col = sim.getUnitManager().getSettlements();
+			for (Settlement s : col) {
+				double social = relationshipManager.getRelationshipScore(s);
+				double science = scientificManager.getScienceScore(s, null);
+//				aveSocial += social;
+				totalSciScore += science;
+				
+//				socialList.add(social);
+//				sciList.add(science);
+				totalList.add(science + social);
+				
+				socialMap.put(social, s.getName());
+				scienceMap.put(science, s.getName());
+				totalScores.put(science + social, s.getName());
+			}	
+			
+//			System.out.println("done with for loop.");
+			int size = col.size();
+//			aveSocial = aveSocial / size;
+//			aveSci = totalSciScore / size;
+			
+			// Compute and save the new science score
+			if (totalSciScore > 0) {
+				for (Settlement s : col) {
+					double oldScore = 0;
+					if (getKey(scienceMap, s.getName()) != null)
+						oldScore = getKey(scienceMap, s.getName());
+					double newScore = Math.round(oldScore/totalSciScore * 100.0 * 10.0)/10.0;
+					scienceMap.remove(oldScore, s.getName());
+					scienceMap.put(newScore, s.getName());
+				}		
+			}
+			
+			// Sort the total scores
+			totalList.sort((Double d1, Double d2) -> -d1.compareTo(d2)); 
+			
+			responseText.append(System.lineSeparator());
+			
+			StringBuffer space00 = computeWhiteSpaces("Settlement", 20);
+			
+			responseText.append(" Rank | Settlement");
+			responseText.append(space00);
+			responseText.append("| Total | Social | Science ");
+			responseText.append(System.lineSeparator());
+			responseText.append(" ----------------------------------------------------------------------");
+			responseText.append(System.lineSeparator());
+			
+//			System.out.println("beginning next for loop.");
+			for (int i=0; i<size; i++) {				
+				StringBuffer space000 = computeWhiteSpaces("  #" + (i+1), 8);
+				
+				// total score
+//				System.out.println("0.");
+				double totalScore = totalList.get(i);
+				String totalStr = Math.round(totalScore*10.0)/10.0 + "";
+				String name = totalScores.get(totalScore);
+				if (name.length() > 21)
+					name = name.substring(0, 21);
+				StringBuffer spaces = computeWhiteSpaces(name + totalStr, 26);
+				totalScores.remove(totalScore, name);
+				
+				// social score
+//				System.out.println("1.");
+				double socialScore = 0;
+				if (getKey(socialMap, name) != null)
+					socialScore = getKey(socialMap, name);
+				String socialStr = Math.round(socialScore*10.0)/10.0 + "";
+//				System.out.println("1.1");
+				StringBuffer space0 = computeWhiteSpaces(socialStr, 8);
+//				System.out.println("1.2");
+				socialMap.remove(socialScore, name);
+				
+				// science score
+//				System.out.println("2.");
+				double scienceScore = 0;
+				if (getKey(scienceMap, name) != null)
+					scienceScore = getKey(scienceMap, name);
+//				System.out.println("2.1");
+				String scienceStr = Math.round(scienceScore*10.0)/10.0 + "";
+				StringBuffer space1 = computeWhiteSpaces(scienceStr, 8);	
+//				System.out.println("2.2");
+				scienceMap.remove(scienceScore, name);
+				
+//				System.out.println("3.");
+				// sub totals
+				responseText.append("  #" + (i+1) + space000 
+						+ name + spaces 
+						+ totalStr + space0 
+						+ socialStr + space1
+						+ scienceStr);
+				// Note : remove the pair will prevent the case when when 2 or more settlements have the exact same score from reappearing
+
+//				System.out.println("4.");
+				responseText.append(System.lineSeparator());
+			}
+			
+//			responseText.append("  Overall : " + fmt1.format(ave)); 
+//			responseText.append(System.lineSeparator());
+			
+//			responseText.append(" -----------------------------------");
+//			responseText.append(System.lineSeparator());
+//			responseText.append(" Overall : " + Math.round(aveSocial*10.0)/10.0 + "  " + Math.round(aveSci*10.0)/10.0);			
+//			responseText.append(System.lineSeparator());
+			
+//			responseText.append(System.lineSeparator());
+			
+//			map.entrySet().stream()
+//			   .sorted(Map.Entry.comparingByValue())
+//			   .forEach(System.out::println);
+			
+			return responseText.toString();
+			
+			
+		}
+		
 		else if (text.toLowerCase().contains("log")) {	
 			
 			if (text.equalsIgnoreCase("log")) {		
@@ -2459,82 +2579,65 @@ public class ChatUtils {
 				responseText.append(System.lineSeparator());
 				responseText.append(System.lineSeparator());
 				responseText.append("e.g. Type 'log info' at the prompt to set it to the INFO level");
-//				responseText.append(System.lineSeparator());
-				
-				return responseText.toString();						
+//				responseText.append(System.lineSeparator());									
 			}
 			
 			if (text.equalsIgnoreCase("log off")) {
 				setDebugLevel(Level.OFF);				
 //				responseText.append(System.lineSeparator());
 				responseText.append("Logging is set to OFF");	
-				
-				return responseText.toString();						
+					
 			}
 			
 			else if (text.equalsIgnoreCase("log config")) {			
 				setDebugLevel(Level.CONFIG);
 //				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to CONFIG");	
-				
-				return responseText.toString();						
+				responseText.append("Logging is set to CONFIG");						
 			}
 	
 			else if (text.equalsIgnoreCase("log warning")) {			
 				setDebugLevel(Level.WARNING);		
 //				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to WARNING");	
-				
-				return responseText.toString();						
+				responseText.append("Logging is set to WARNING");						
 			}
 			
 			else if (text.equalsIgnoreCase("log fine")) {						
 				setDebugLevel(Level.FINE);			
 //				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to FINE");	
-				
-				return responseText.toString();						
+				responseText.append("Logging is set to FINE");						
 			}
 			
 			else if (text.equalsIgnoreCase("log finer")) {							
 				setDebugLevel(Level.FINER);
 //				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to FINER");	
-				
-				return responseText.toString();						
+				responseText.append("Logging is set to FINER");						
 			}
 			
 			else if (text.equalsIgnoreCase("log finest")) {							
 				setDebugLevel(Level.FINEST);
 //				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to FINEST");	
-				
-				return responseText.toString();						
+				responseText.append("Logging is set to FINEST");						
 			}
 			
 			else if (text.equalsIgnoreCase("log severe")) {					
 				setDebugLevel(Level.SEVERE);
 //				responseText.append(System.lineSeparator());
 				responseText.append("Logging is set to SEVERE");	
-				
-				return responseText.toString();
 			}
 			
 			else if (text.equalsIgnoreCase("log info")) {			
 				setDebugLevel(Level.INFO);
 //				responseText.append(System.lineSeparator());
 				responseText.append("Logging is set to INFO");
-				
-				return responseText.toString();
 			}
 					
 			else if (text.equalsIgnoreCase("log all")) {
 				setDebugLevel(Level.ALL);
 //				responseText.append(System.lineSeparator());
-				responseText.append("Logging is set to ALL");	
-				
-				return responseText.toString();						
+				responseText.append("Logging is set to ALL");						
 			}
+			
+			return responseText.toString();
 		}
 		
 		else if (text.equalsIgnoreCase("check size")) {			
@@ -2573,7 +2676,7 @@ public class ChatUtils {
 			List<Double> scores = new ArrayList<>();
 			Collection<Settlement> col = sim.getUnitManager().getSettlements();
 			for (Settlement s : col) {
-				double score = getRelationshipScore(s);
+				double score = relationshipManager.getRelationshipScore(s);
 				ave += score;
 //				list.add(s.getName());
 				scores.add(score);

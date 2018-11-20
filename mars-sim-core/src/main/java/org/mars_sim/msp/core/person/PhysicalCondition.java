@@ -1386,18 +1386,19 @@ public class PhysicalCondition implements Serializable {
 		}
 		
 		deathDetails = new DeathInfo(person, problem, cause, lastWord);
-
+		// Declare the person dead
 		person.setDeclaredDead();
-
+		// Set unit description to "Dead"
+		person.setDescription("Dead");
 		// Set work shift to OFF
 		person.setShiftType(ShiftType.OFF);
 		// Relinquish his role
 		person.getRole().relinquishOldRoleType();
-		
+		// Set the state of the health problem to DEAD
 		problem.setState(HealthProblem.DEAD);	
-		
+		// Set the mind of the person to inactive
 		person.getMind().setInactive();
-		
+		// Add the person's death info to the postmorten exam waiting list
 		medicalManager.addPostmortemExams(person.getAssociatedSettlement(), deathDetails);
 
 		// Then Wait for postmortem exam to be done by doctor

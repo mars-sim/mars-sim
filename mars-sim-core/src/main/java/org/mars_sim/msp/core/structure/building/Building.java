@@ -1431,8 +1431,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				if (penetrated_length >= wallThickness) {
 					// Yes it's breached !
 //					if (malfunctionMeteoriteImpact == null)
-//						malfunctionMeteoriteImpact = MalfunctionFactory
-//								.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
+					malfunctionMeteoriteImpact = MalfunctionFactory
+								.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 					// Simulate the meteorite impact as a malfunction event for now
 					try {
 						malfunctionManager.activateMalfunction(MalfunctionFactory

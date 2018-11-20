@@ -247,7 +247,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * 
 	 * @param description new description.
 	 */
-	protected final void setDescription(String description) {
+	protected void setDescription(String description) {
 		this.description = description;
 		fireUnitUpdate(UnitEventType.DESCRIPTION_EVENT, description);
 	}

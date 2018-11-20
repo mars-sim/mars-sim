@@ -906,12 +906,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		setBuriedSettlement(associatedSettlement);
 		// Remove the person from being a member of the associated settlement
 		setAssociatedSettlement(null);
-		// Set unit description to "Dead"
-		super.setDescription("Dead");
 		// Throw unit event.
 		fireUnitUpdate(UnitEventType.BURIAL_EVENT);
 	}
 
+	protected void setDescription(String s) {
+		super.setDescription(s);
+	}
+	
 	/**
 	 * Declares the person dead and removes the designated quarter 
 	 */

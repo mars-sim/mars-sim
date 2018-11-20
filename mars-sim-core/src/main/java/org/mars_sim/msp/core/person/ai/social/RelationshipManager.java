@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -535,6 +536,35 @@ public class RelationshipManager implements Serializable {
 		else if (opinion < 95) result = Msg.getString("TabPanelSocial.opinion.7"); //$NON-NLS-1$
 		else result = Msg.getString("TabPanelSocial.opinion.8"); //$NON-NLS-1$	
 		return result.toLowerCase();
+	}
+	
+	/**
+	 * Computes the overall relationship score of a settlement
+	 * 
+	 * @param s Settlement
+	 * @return the score
+	 */
+	public double getRelationshipScore(Settlement s) {
+		double score = 0;
+
+		List<Person> list0 = new ArrayList<>(s.getAllAssociatedPeople());
+
+		int count = 0;
+		for (Person pp : list0) {
+			Map<Person, Double> friends = getTheirOpinionsOfMe(pp);//.getMyOpinionsOfThem(pp);
+			if (!friends.isEmpty()) {
+				List<Person> list = new ArrayList<>(friends.keySet());
+				for (int i = 0; i < list.size(); i++) {
+					Person p = list.get(i);
+					score += friends.get(p);
+					count++;
+				}
+			}
+		}
+		
+		score = Math.round(score/count *100.0)/100.0;
+		
+		return score;
 	}
 	
 	/**
