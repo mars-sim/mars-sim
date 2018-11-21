@@ -196,7 +196,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 	public void initCase1Step1(int skill) {
 		// a settler initiates this mission
-		logger.info("Calling initCase1Step1()");
+		logger.fine("Calling initCase1Step1()");
 		ConstructionManager manager = settlement.getConstructionManager();
 		ConstructionValues values = manager.getConstructionValues();
 		values.clearCache();
@@ -222,7 +222,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		else if (newSiteProfit > 0D) {
 
 			if (Simulation.getUseGUI()) {
-				logger.info(
+				logger.fine(
 						"Case 1 : Construction initiated by a starting member. Building picked by settlement. Site to be 'automatically' picked.");
 				// if GUI is in use
 				site = new ConstructionSite(settlement);
@@ -259,7 +259,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 					logger.log(Level.INFO, "New construction site added at " + settlement.getName());
 				} else
-					System.out.println("New construction stage could not be determined.");
+					logger.log(Level.WARNING, "New construction stage could not be determined.");
 				// endMission("New construction stage could not be determined.");
 
 				initCase1Step2(site, info, skill, values);
@@ -274,7 +274,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	public void initCase1Step2(ConstructionSite m_site, ConstructionStageInfo stageInfo, int constructionSkill,
 			ConstructionValues values) {
 		this.site = m_site;
-		logger.info("Calling initCase1Step2()");
+		logger.fine("Calling initCase1Step2()");
 
 		// System.out.println("constructionSite is " + constructionSite.getDescription()
 		//// + " x is " + constructionSite.getXLocation()
@@ -286,7 +286,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			// Determine new stage to work on.
 			if (site.hasUnfinishedStage()) {
 				stage = site.getCurrentConstructionStage();
-				logger.log(Level.INFO, "Continuing work on existing site at " + settlement.getName());
+				logger.log(Level.FINE, "Continuing work on existing site at " + settlement.getName());
 			} else {
 
 				if (stageInfo == null) {
@@ -297,7 +297,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 					stage = new ConstructionStage(stageInfo, site);
 					site.addNewStage(stage);
 					values.clearCache();
-					logger.log(Level.INFO, "Starting new construction stage: " + stage);
+					logger.log(Level.FINE, "Starting new construction stage: " + stage);
 				} else {
 					endMission("New construction stage could not be determined.");
 				}
@@ -387,8 +387,8 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			// site already selected
 			if (Simulation.getUseGUI()) {
 				// if GUI is in use
-				logger.info("Case 2 : the site has been picked and the construction is started by users");
-				logger.log(Level.INFO, "New construction site added at " + settlement.getName());
+				logger.fine("Case 2 : the site has been picked and the construction is started by users");
+				logger.log(Level.FINE, "New construction site added at " + settlement.getName());
 				site.setSkill(bestConstructionSkill);
 				site.setSitePicked(true);
 				site.setStageInfo(stageInfo);
@@ -401,9 +401,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				// this);
 
 				if (stageInfo != null) {
-					logger.info("Case 2. stageInfo is " + stageInfo.getName());
+					logger.fine("Case 2. stageInfo is " + stageInfo.getName());
 				} else {
-					logger.info("Case 2. new construction stageInfo could not be determined.");
+					logger.fine("Case 2. new construction stageInfo could not be determined.");
 				}
 
 				initialize(site, stageInfo);
@@ -420,7 +420,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 		else {
 			// site has NOT been selected
-			logger.info("Case 3 : site has NOT been picked yet and the construction is manually started by users");
+			logger.fine("Case 3 : site has NOT been picked yet and the construction is manually started by users");
 
 			// boolean check = false;
 			// if (check) {
@@ -490,7 +490,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 	public void initialize(ConstructionSite modSite, ConstructionStageInfo info) {
 		this.site = modSite;
-		logger.info("stageInfo is " + info.toString());
+		logger.fine("stageInfo is " + info.toString());
 		// ConstructionStageInfo stageInfo = info;
 		// System.out.println("x is " + constructionSite.getXLocation()
 		// + " y is " + constructionSite.getYLocation()
@@ -500,10 +500,10 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 		if (site.hasUnfinishedStage()) {
 			stage = site.getCurrentConstructionStage();
-			logger.log(Level.INFO, "Using existing construction stage: " + stage);
+			logger.log(Level.FINE, "Using existing construction stage: " + stage);
 		} else {
 			stage = new ConstructionStage(info, site);
-			logger.log(Level.INFO, "Starting new construction stage: " + stage);
+			logger.log(Level.FINE, "Starting new construction stage: " + stage);
 			try {
 				site.addNewStage(stage);
 			} catch (Exception e) {
@@ -527,7 +527,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			if (settlement.getInventory().containsUnit(vehicle)) {
 				settlement.getInventory().retrieveUnit(vehicle);
 			} else {
-				logger.severe("Unable to retrieve " + vehicle.getName() + " cannot be retrieved from "
+				logger.warning("Unable to retrieve " + vehicle.getName() + " cannot be retrieved from "
 						+ settlement.getName() + " inventory.");
 				endMission("Construction vehicle " + vehicle.getName()
 						+ " could not be retrieved from settlement inventory.");
@@ -568,7 +568,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	 * Reserve construction vehicles for the mission.
 	 */
 	public void reserveConstructionVehicles() {
-		logger.info("calling reserveConstructionVehicles()");
+		logger.fine("calling reserveConstructionVehicles()");
 		if (stage != null) {
 			constructionVehicles = new ArrayList<GroundVehicle>();
 			Iterator<ConstructionVehicleType> j = stage.getInfo().getVehicles().iterator();
@@ -593,7 +593,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	 * Retrieve LUV attachment parts from the settlement.
 	 */
 	public void retrieveConstructionLUVParts() {
-		logger.info("calling retrieveConstructionLUVParts()");
+		logger.fine("calling retrieveConstructionLUVParts()");
 		if (stage != null) {
 			luvAttachmentParts = new ArrayList<>();
 			int vehicleIndex = 0;
@@ -884,7 +884,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				Building building = site.createBuilding(settlement.getBuildingManager());
 				settlement.getConstructionManager().removeConstructionSite(site);
 				settlement.fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, building);
-				logger.log(Level.INFO,
+				logger.log(Level.FINE,
 						"New " + site.getBuildingName() + " building constructed at " + settlement.getName());
 
 				// setDone(true);
@@ -1098,7 +1098,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		List<Building> sameBuildings = site.getSettlement().getBuildingManager().getBuildingsOfSameType(buildingType);
 		Collections.shuffle(sameBuildings);
 		for (Building b : sameBuildings) {
-			logger.info("Positioning next to " + b.getNickName());
+			logger.fine("Positioning next to " + b.getNickName());
 			goodPosition = positionNextToBuilding(site, b, dist, false);
 			if (goodPosition) {
 				break;
@@ -1173,7 +1173,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			// buildingType = determinePreferredConstructedBuildingType(foundationStageInfo,
 			// constructionSkill);
 
-			logger.info("buildingType : " + buildingType);
+			logger.fine("buildingType : " + buildingType);
 			// Try to put building next to another inhabitable building.
 			List<Building> inhabitableBuildings = s.getBuildingManager().getBuildings();// FunctionType.LIFE_SUPPORT);
 			Collections.shuffle(inhabitableBuildings);

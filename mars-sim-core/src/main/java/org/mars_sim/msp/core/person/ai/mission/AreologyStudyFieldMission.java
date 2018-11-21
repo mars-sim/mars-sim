@@ -461,7 +461,7 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 	 * Ends the research at a field site.
 	 */
 	public void endResearchAtFieldSite() {
-		logger.info("Research field site phase ended due to external trigger.");
+		logger.warning("Research field site phase ended due to external trigger.");
 		endFieldSite = true;
 
 		// End each member's areology field work task.

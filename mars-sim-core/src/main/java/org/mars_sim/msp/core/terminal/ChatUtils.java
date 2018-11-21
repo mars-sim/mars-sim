@@ -219,7 +219,8 @@ public class ChatUtils {
 	private static RelationshipManager relationshipManager;
 	private static ScientificStudyManager scientificManager;
 	private static SkillManager skillManager;
-
+	private static LogManager logManager;
+	
 	private static DecimalFormat fmt = new DecimalFormat("##0");
 	private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
 	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
@@ -234,6 +235,7 @@ public class ChatUtils {
 		
 		relationshipManager = sim.getRelationshipManager();
 		scientificManager = sim.getScientificStudyManager();
+		logManager = LogManager.getLogManager();
 	}
 
 	/**
@@ -2408,10 +2410,20 @@ public class ChatUtils {
 //				       .findFirst().get();
 	}
 	
+	/**
+	 * Changes the class logger logging level 
+	 * 
+	 * @param clazz
+	 * @param lvl
+	 */
+	public static void changeLogLevel(Class<?> clazz, Level lvl) {
+		if (logManager.getLogger(clazz.getName()) != null)
+			logManager.getLogger(clazz.getName()).setLevel(lvl);
+	}
+	
 	public static StringBuilder processLogChange(String text, StringBuilder responseText) {
-//		StringBuilder responseText = new StringBuilder();
-		
-		String[] cmds = text.split("\\s+");
+	
+//		String[] cmds = text.split("\\s+");
 //		System.out.println(cmds[0].toString());
 //		System.out.println(cmds[1].toString());
 //		System.out.println(cmds[2].toString());			
@@ -2566,11 +2578,12 @@ public class ChatUtils {
 				lvl = Level.OFF;	
 			}
 			
-			LogManager.getLogManager().getLogger(Walk.class.getName()).setLevel(lvl);
-			LogManager.getLogManager().getLogger(WalkOutside.class.getName()).setLevel(lvl);	
-			LogManager.getLogManager().getLogger(WalkingSteps.class.getName()).setLevel(lvl);	
-			LogManager.getLogManager().getLogger(WalkRoverInterior.class.getName()).setLevel(lvl);	
-			LogManager.getLogManager().getLogger(WalkSettlementInterior.class.getName()).setLevel(lvl);		
+			changeLogLevel(Walk.class, lvl);
+			changeLogLevel(WalkOutside.class, lvl);	
+			changeLogLevel(WalkingSteps.class, lvl);	
+			changeLogLevel(WalkRoverInterior.class, lvl);	
+			changeLogLevel(WalkSettlementInterior.class, lvl);	
+			
 			responseText.append("Walk-related Loggers are set to " + lvl);
 			logger.config("Walk-related Loggers are set to " + lvl);
 		}
@@ -2613,11 +2626,12 @@ public class ChatUtils {
 				lvl = Level.OFF;	
 			}
 
-			LogManager.getLogManager().getLogger(EnterAirlock.class.getName()).setLevel(lvl);
-			LogManager.getLogManager().getLogger(ExitAirlock.class.getName()).setLevel(lvl);	
-			LogManager.getLogManager().getLogger(Airlock.class.getName()).setLevel(lvl);
-			LogManager.getLogManager().getLogger(BuildingAirlock.class.getName()).setLevel(lvl);
-			LogManager.getLogManager().getLogger(VehicleAirlock.class.getName()).setLevel(lvl);
+			changeLogLevel(EnterAirlock.class, lvl);
+			changeLogLevel(ExitAirlock.class, lvl);	
+			changeLogLevel(Airlock.class, lvl);
+			changeLogLevel(BuildingAirlock.class, lvl);
+			changeLogLevel(VehicleAirlock.class, lvl);
+			
 			responseText.append("Airlock-related Loggers are set to " + lvl);
 		    logger.config("Airlock-related Loggers are set to " + lvl);
 		}
@@ -2660,7 +2674,8 @@ public class ChatUtils {
 				lvl = Level.OFF;	
 			}
 			
-			LogManager.getLogManager().getLogger(EVAOperation.class.getName()).setLevel(lvl);	
+			changeLogLevel(EVAOperation.class, lvl);	
+			
 			responseText.append("EVAOperation Logger is set to " + lvl);
 		    logger.config("EVAOperation Logger is set to " + lvl);
 		}
@@ -2703,23 +2718,23 @@ public class ChatUtils {
 				lvl = Level.OFF;	
 			}
 			
-			LogManager.getLogManager().getLogger(Mission.class.getName()).setLevel(lvl);	
-			LogManager.getLogManager().getLogger(VehicleMission.class.getName()).setLevel(lvl);
-			LogManager.getLogManager().getLogger(RoverMission.class.getName()).setLevel(lvl);
-			LogManager.getLogManager().getLogger(MissionManager.class.getName()).setLevel(lvl);	
-			LogManager.getLogManager().getLogger(RescueSalvageVehicle.class.getName()).setLevel(lvl);
-			LogManager.getLogManager().getLogger(CollectResourcesMission.class.getName()).setLevel(lvl);
+			changeLogLevel(Mission.class, lvl);	
+			changeLogLevel(VehicleMission.class, lvl);
+			changeLogLevel(RoverMission.class, lvl);
+			changeLogLevel(MissionManager.class, lvl);	
+			changeLogLevel(RescueSalvageVehicle.class, lvl);
+			changeLogLevel(CollectResourcesMission.class, lvl);
 			
-			LogManager.getLogManager().getLogger(Exploration.class.getName()).setLevel(lvl);
-			LogManager.getLogManager().getLogger(Mining.class.getName()).setLevel(lvl);	
-			LogManager.getLogManager().getLogger(BuildingConstructionMission.class.getName()).setLevel(lvl);
-			LogManager.getLogManager().getLogger(EmergencySupplyMission.class.getName()).setLevel(lvl);
+			changeLogLevel(Exploration.class, lvl);
+			changeLogLevel(Mining.class, lvl);	
+			changeLogLevel(BuildingConstructionMission.class, lvl);
+			changeLogLevel(EmergencySupplyMission.class, lvl);
 			
-			LogManager.getLogManager().getLogger(Trade.class.getName()).setLevel(lvl);
-			LogManager.getLogManager().getLogger(TravelMission.class.getName()).setLevel(lvl);	
-			LogManager.getLogManager().getLogger(TravelToSettlement.class.getName()).setLevel(lvl);
-			LogManager.getLogManager().getLogger(AreologyStudyFieldMission.class.getName()).setLevel(lvl);
-			LogManager.getLogManager().getLogger(BiologyStudyFieldMission.class.getName()).setLevel(lvl);
+			changeLogLevel(Trade.class, lvl);
+			changeLogLevel(TravelMission.class, lvl);	
+			changeLogLevel(TravelToSettlement.class, lvl);
+			changeLogLevel(AreologyStudyFieldMission.class, lvl);
+			changeLogLevel(BiologyStudyFieldMission.class, lvl);
 			
 			responseText.append("Mission-related loggers are set to " + lvl);
 			logger.config("Mission-related loggers are set to " + lvl);

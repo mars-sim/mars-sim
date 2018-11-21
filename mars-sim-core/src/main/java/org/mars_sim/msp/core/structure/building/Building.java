@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -333,7 +334,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		super(nickName, manager.getSettlement().getCoordinates());
 		// logger.info("Building's constructor 2 is on " +
 		// Thread.currentThread().getName() + " Thread");
-
+		
+		// Place it within a settlement
+		enter(LocationCodeType.SETTLEMENT);
+		
 		this.templateID = id;
 		this.buildingType = buildingType;
 		this.nickName = nickName;
@@ -483,16 +487,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/** Constructor 3 (for use by Mock Building in Unit testing) */
 	protected Building(BuildingManager manager) {
 		super("Mock Building", new Coordinates(0D, 0D));
-		// settlement = manager.getSettlement();
-		// inv = settlement.getInventory();
+		// Place it in a settlement
+		enter(LocationCodeType.SETTLEMENT);
 	}
-
-	/**
-	 * Gets the building inventory of this building.
-	 * 
-	 * @return inventory
-	 */         
-//	 public Inventory getBuildingInventory() { return inv;//b_inv; }
 
 	/**
 	 * Gets the settlement inventory of this building.
@@ -500,7 +497,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return inventory
 	 */
 	public Inventory getSettlementInventory() {
-		return inv;// manager.getSettlement().getInventory();//s_inv;
+		return inv;
 	}
 
 	/**
@@ -509,7 +506,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return inventory
 	 */
 	public Inventory getInventory() {
-		return inv;// manager.getSettlement().getInventory();
+		return inv;
 	}
 
 	/**
@@ -1592,12 +1589,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return this.getAssociatedSettlement();
-	}
-
-	@Override
-	public Settlement getBuriedSettlement() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

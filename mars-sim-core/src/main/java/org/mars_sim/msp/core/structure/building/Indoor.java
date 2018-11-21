@@ -20,7 +20,7 @@ public interface Indoor {
 
 	public Settlement getAssociatedSettlement();
 
-	public Settlement getBuriedSettlement();
+//	public Settlement getBuriedSettlement();
 	
 }
 

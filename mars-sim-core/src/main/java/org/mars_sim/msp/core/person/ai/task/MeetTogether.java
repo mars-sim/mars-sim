@@ -149,16 +149,27 @@ implements Serializable {
     }
 
     
-    public MeetTogether(Person person, Person inviter) {
+    public MeetTogether(Person candidate, Person inviter) {
         // Use Task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 5D + RandomUtil.getRandomDouble(10));
+        super(NAME, candidate, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 5D + RandomUtil.getRandomDouble(10));
         
         this.inviter = inviter;
         
-        settlement = person.getSettlement();
+        settlement = candidate.getSettlement();
         
         if (settlement != null) {
-        	
+            // Check if existing relationship between primary researcher and invitee.
+            if (relationshipManager == null)
+            	relationshipManager = Simulation.instance().getRelationshipManager();
+            	
+            if (!relationshipManager.hasRelationship(candidate, inviter)) {
+                // Add new communication meeting relationship.
+                relationshipManager.addRelationship(candidate, inviter, Relationship.COMMUNICATION_MEETING);
+            }
+
+            Relationship relationship = relationshipManager.getRelationship(candidate, inviter);
+            double currentOpinion = relationship.getPersonOpinion(inviter);
+            relationship.setPersonOpinion(inviter, currentOpinion + RandomUtil.getRandomDouble(1));
         }
     }
     

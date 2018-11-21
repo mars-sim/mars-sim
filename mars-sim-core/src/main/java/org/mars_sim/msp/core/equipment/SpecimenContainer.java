@@ -67,10 +67,4 @@ implements Container, Serializable {
 	public Settlement getAssociatedSettlement() {
 		return this.getAssociatedSettlement();
 	}
-
-	@Override
-	public Settlement getBuriedSettlement() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

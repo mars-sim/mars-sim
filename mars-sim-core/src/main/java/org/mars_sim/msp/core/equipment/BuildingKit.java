@@ -181,12 +181,6 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 	}
 
 	@Override
-	public Settlement getBuriedSettlement() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Unit getUnit() {
 		return this;
 	}

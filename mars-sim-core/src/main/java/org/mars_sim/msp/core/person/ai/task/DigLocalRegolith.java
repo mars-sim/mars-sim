@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -260,6 +261,8 @@ implements Serializable {
 
             // Store bag.
             person.getInventory().retrieveUnit(bag);
+			// Place this equipment within a settlement
+            bag.enter(LocationCodeType.MOBILE_UNIT_4);
             settlement.getInventory().storeUnit(bag);
 
             // Recalculate settlement good value for output item.

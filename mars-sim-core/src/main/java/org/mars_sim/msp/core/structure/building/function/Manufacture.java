@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
@@ -523,6 +524,8 @@ public class Manufacture extends Function implements Serializable {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
 									settlement.getCoordinates(), false);
 							equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
+							// Place this equipment within a settlement
+							equipment.enter(LocationCodeType.SETTLEMENT);
 							inv.storeUnit(equipment);
 						}
 					} else if (ItemType.VEHICLE.equals(item.getType())) {
@@ -588,6 +591,8 @@ public class Manufacture extends Function implements Serializable {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
 									settlement.getCoordinates(), false);
 							equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
+							// Place this equipment within a settlement
+							equipment.enter(LocationCodeType.SETTLEMENT);
 							inv.storeUnit(equipment);
 						}
 					} else if (ItemType.VEHICLE.equals(item.getType())) {

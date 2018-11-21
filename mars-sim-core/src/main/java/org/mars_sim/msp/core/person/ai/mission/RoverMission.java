@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
@@ -456,9 +457,14 @@ public abstract class RoverMission extends VehicleMission {
 				v.getInventory().retrieveUnit(p);
 
 				if (p.isDeclaredDead()) {
-					p.setBuriedSettlement(disembarkSettlement);
-					p.getPhysicalCondition().getDeathDetails().setBodyRetrieved(true);
+					logger.info("[" + disembarkSettlement + "] " + p.getName() + "'s body had been retrieved from rover " + v.getName() + ".");
+				} else {
+					logger.info("[" + disembarkSettlement + "] " + p.getName() + " came home safety on rover "+ v.getName() + ".");
 				}
+				
+				// Place this person within a settlement
+				p.enter(LocationCodeType.SETTLEMENT);
+				disembarkSettlement.getInventory().storeUnit(p);
 			}
 			
 			// Reset the vehicle reservation

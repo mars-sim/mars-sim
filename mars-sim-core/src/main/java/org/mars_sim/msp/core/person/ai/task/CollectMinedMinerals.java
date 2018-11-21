@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -305,6 +306,8 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			while (i.hasNext()) {
 				Bag bag = (Bag) i.next();
 				pInv.retrieveUnit(bag);
+				// Place this equipment within a rover outside on Mars
+				bag.enter(LocationCodeType.MOBILE_UNIT_4);
 				rover.getInventory().storeUnit(bag);
 			}
 		}

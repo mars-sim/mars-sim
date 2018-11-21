@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
@@ -1264,28 +1265,45 @@ public class Walk extends Task implements Serializable {
 		Building garageBuilding = step.building;
 
 		if (person != null) {
-//			logger.finer(person + " walking exiting rover garage phase.");
+
 			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
-					+ person + " was in " + person.getLocationTag().getImmediateLocation()
-					+ " and in exitingRoverGaragePhase().", null);
-//			System.out.println("exiting rover : " + person + "'s vehicle is " + person.getVehicle().getName());
+					+ person + " was about to exit the rover " + rover.getName() + " (or in " + person.getLocationTag().getImmediateLocation()
+					+ ") [exitingRoverGaragePhase()].", null);
+
+			
+			// Exit a rover inside a garage
+			person.exit(LocationCodeType.MOBILE_UNIT_3);
+			
 			rover.getInventory().retrieveUnit(person);
 			garageBuilding.getSettlementInventory().storeUnit(person);
 			BuildingManager.addPersonOrRobotToBuildingSameLocation(person, garageBuilding);
-//			System.out.println("exiting rover : " + person + "'s Settlement is " + person.getSettlement());
 
+			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+	  				"[" + person.getLocationTag().getLocale() + "] "
+					+ person + " had just exit the rover " + rover.getName() + " and now at " + person.getLocationTag().getImmediateLocation()
+					+ " [exitingRoverGaragePhase()].", null);
+			
 		} 
 		
 		else if (robot != null) {
 //			logger.finer(robot + " walking exiting rover garage phase.");
 			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
 	  				"[" + robot.getLocationTag().getLocale() + "] "
-					+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
-					+ " and in exitingRoverGaragePhase().", null);
+					+ robot + " was about to exit rover " + rover.getName() + " (or in " + robot.getLocationTag().getImmediateLocation()
+					+ ") [exitingRoverGaragePhase()].", null);
+			
+			// Exit a rover inside a garage
+			robot.exit(LocationCodeType.MOBILE_UNIT_3);
+			
 			rover.getInventory().retrieveUnit(robot);
 			garageBuilding.getSettlementInventory().storeUnit(robot);
 			BuildingManager.addPersonOrRobotToBuildingSameLocation(robot, garageBuilding);
+			
+			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+	  				"[" + robot.getLocationTag().getLocale() + "] "
+					+ robot + " had just exited rover " + rover.getName() + " and now in " + robot.getLocationTag().getImmediateLocation()
+					+ " [exitingRoverGaragePhase()].", null);
 
 		}
 
@@ -1315,32 +1333,41 @@ public class Walk extends Task implements Serializable {
 		Building garageBuilding = step.building;
 
 		if (person != null) {
-//			logger.info(person + " walking entering rover garage phase.");
-//			logger.info(person + " location situation: " + person.getLocationSituation());
 			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " was in " + person.getLocationTag().getImmediateLocation()
 					+ " and in enteringRoverInsideGaragePhase().", null);
+			
+			// Place this person within a vehicle inside a garage in a settlement
+			person.enter(LocationCodeType.MOBILE_UNIT_3);
+			
 			garageBuilding.getSettlementInventory().retrieveUnit(person);
-//			System.out.println("entering rover : " + person + "'s Settlement is " + person.getSettlement());
-//			person.getSettlement().getInventory().retrieveUnit(person);
-			BuildingManager.removePersonOrRobotFromBuilding(person, garageBuilding);
+			BuildingManager.removePersonOrRobotFromBuilding(person, garageBuilding);		
 			rover.getInventory().storeUnit(person);
-//			System.out.println("entering rover : " + person + "'s vehicle is " + person.getVehicle().getName());
+			
+			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+	  				"[" + person.getLocationTag().getLocale() + "] "
+					+ person + " had just entered " + person.getLocationTag().getImmediateLocation()
+					+ " and in enteringRoverInsideGaragePhase().", null);
 		} 
 		
 		else if (robot != null) {
-//			logger.finer(robot + " walking entering rover garage phase.");
-//			logger.finer(robot + " location situation: " + robot.getLocationSituation());
 			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
 	  				"[" + robot.getLocationTag().getLocale() + "] "
 					+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
 					+ " and in enteringRoverInsideGaragePhase().", null);
+			
+			// Place this robot within a vehicle inside a garage in a settlement
+			robot.enter(LocationCodeType.MOBILE_UNIT_3);
+			
 			garageBuilding.getSettlementInventory().retrieveUnit(robot);
-//			robot.getSettlement().getInventory().retrieveUnit(person);
 			BuildingManager.removePersonOrRobotFromBuilding(robot, garageBuilding);
 			rover.getInventory().storeUnit(robot);
-
+			
+			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+	  				"[" + robot.getLocationTag().getLocale() + "] "
+					+ robot + " had just entered " + robot.getLocationTag().getImmediateLocation()
+					+ " and in enteringRoverInsideGaragePhase().", null);
 		}
 
 		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {

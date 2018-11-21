@@ -155,14 +155,14 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 				if (constructionSite.hasUnfinishedStage()) {
 					constructionStage = constructionSite.getCurrentConstructionStage();
 					finishingExistingStage = true;
-					logger.log(Level.INFO, Msg.getString("BuildingSalvageMission.log.continueAt" //$NON-NLS-1$
+					logger.log(Level.FINE, Msg.getString("BuildingSalvageMission.log.continueAt" //$NON-NLS-1$
 							, settlement.getName()));
 				} else {
 					constructionStage = constructionSite.getCurrentConstructionStage();
 					if (constructionStage != null) {
 						constructionStage.setCompletedWorkTime(0D);
 						constructionStage.setSalvaging(true);
-						logger.log(Level.INFO, Msg.getString("BuildingSalvageMission.log.startStage" //$NON-NLS-1$
+						logger.log(Level.FINE, Msg.getString("BuildingSalvageMission.log.startStage" //$NON-NLS-1$
 								, constructionStage.toString()));
 					} else {
 						endMission(Msg.getString("BuildingSalvageMission.log.stageNotFound")); //$NON-NLS-1$
@@ -322,8 +322,8 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		} else if (site != null) {
 			constructionSite = site;
 		} else {
-			logger.log(Level.SEVERE, Msg.getString("BuildingSalvageMission.log.noSite")); //$NON-NLS-1$
-			throw new IllegalStateException(PREPARE_SITE_PHASE + Msg.getString("BuildingSalvageMission.log.noSite")); //$NON-NLS-1$
+			logger.log(Level.WARNING, Msg.getString("BuildingSalvageMission.log.noSite")); //$NON-NLS-1$
+//			throw new IllegalStateException(PREPARE_SITE_PHASE + Msg.getString("BuildingSalvageMission.log.noSite")); //$NON-NLS-1$
 		}
 
 		// Prepare salvage construction site.
@@ -333,14 +333,14 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			if (constructionSite.hasUnfinishedStage()) {
 				constructionStage = constructionSite.getCurrentConstructionStage();
 				finishingExistingStage = true;
-				logger.log(Level.INFO, Msg.getString("BuildingSalvageMission.log.continueAt" //$NON-NLS-1$
+				logger.log(Level.FINE, Msg.getString("BuildingSalvageMission.log.continueAt" //$NON-NLS-1$
 						, settlement.getName()));
 			} else {
 				constructionStage = constructionSite.getCurrentConstructionStage();
 				if (constructionStage != null) {
 					constructionStage.setCompletedWorkTime(0D);
 					constructionStage.setSalvaging(true);
-					logger.log(Level.INFO, Msg.getString("BuildingSalvageMission.log.startStage" //$NON-NLS-1$
+					logger.log(Level.FINE, Msg.getString("BuildingSalvageMission.log.startStage" //$NON-NLS-1$
 							, constructionStage.toString()));
 				} else
 					endMission(Msg.getString("BuildingSalvageMission.log.stageNotFound")); //$NON-NLS-1$
@@ -582,7 +582,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			if (constructionStage.getInfo().getType().equals(ConstructionStageInfo.FOUNDATION)) {
 				settlement.getConstructionManager().removeConstructionSite(constructionSite);
 				settlement.fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_SALVAGE_EVENT, constructionSite);
-				logger.log(Level.INFO, Msg.getString("BuildingSalvageMission.salvagedAt" //$NON-NLS-1$
+				logger.log(Level.FINE, Msg.getString("BuildingSalvageMission.salvagedAt" //$NON-NLS-1$
 						, settlement.getName()));
 			}
 		}

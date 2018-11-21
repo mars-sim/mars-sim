@@ -33,10 +33,4 @@ public class MockVehicle extends Vehicle {
 		return getLocationTag().getSettlementName();
 	}
 
-	@Override
-	public Settlement getBuriedSettlement() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

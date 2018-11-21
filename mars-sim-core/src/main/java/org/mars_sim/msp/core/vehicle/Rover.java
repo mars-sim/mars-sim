@@ -690,10 +690,4 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		sickbay = null;
 	}
 
-	@Override
-	public Settlement getBuriedSettlement() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

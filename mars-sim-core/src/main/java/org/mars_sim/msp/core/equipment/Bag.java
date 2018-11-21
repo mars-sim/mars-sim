@@ -74,9 +74,4 @@ public class Bag extends Equipment implements Container, Serializable {
 		return null;
 	}
 
-	@Override
-	public Settlement getBuriedSettlement() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

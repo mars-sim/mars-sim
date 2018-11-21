@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 
@@ -82,14 +83,19 @@ extends Airlock {
 	 * @throws Exception if person is not in the airlock.
 	 */
 	protected void exitAirlock(Person person) {
-
+		// TODO: how to detect and bypass going through the airlock if a vehicle is inside a garage in a settlement
+		// see exitingRoverGaragePhase() in Walk
+		
 		if (inAirlock(person)) {
 			if (PRESSURIZED.equals(getState())) {
 				if (person.isOutside()) {
+					
+					// Enter the vehicle from the surface of Mars
+					person.enter(LocationCodeType.MOBILE_UNIT_4);
 					// Exit person to inside vehicle.
 					vehicle.getInventory().storeUnit(person);
 				}
-				else if (person.isInSettlement()) {//if (LocationSituation.BURIED != person.getLocationSituation()) {
+				else if (person.isInSettlement()) {
 					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
 							Msg.getString("VehicleAirlock.error.notOutside", person.getName(), getEntityName())
 							, null);
@@ -98,10 +104,20 @@ extends Airlock {
 			}
 			else if (DEPRESSURIZED.equals(getState())) {
 				if (person.isInVehicle()) {
+					
+					if (vehicle.getSettlement() == null) {
+						// Exit the vehicle and land on the surface of Mars
+						person.exit(LocationCodeType.MOBILE_UNIT_4);
+					}
+					else {
+						// Exit the vehicle and enter the settlement vicinity
+						person.exit(LocationCodeType.MOBILE_UNIT_3);
+					}
+
 					// Exit person outside vehicle.
 					vehicle.getInventory().retrieveUnit(person);
 				}
-				else if (person.isOutside()) {//if (LocationSituation.BURIED != person.getLocationSituation()) {
+				else if (person.isOutside()) {
 					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
 							Msg.getString("VehicleAirlock.error.notInside", person.getName(), getEntityName())
 							, null);

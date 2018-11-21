@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
 import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -390,6 +391,8 @@ public class FoodProduction extends Function implements Serializable {
 									settlement.getCoordinates(), false);
 							equipment.setName(Simulation.instance().getUnitManager().getNewName(UnitType.EQUIPMENT,
 									equipmentType, null, null));
+							// Place this equipment within a settlement
+							equipment.enter(LocationCodeType.SETTLEMENT);
 							inv.storeUnit(equipment);
 						}
 					}
@@ -458,6 +461,8 @@ public class FoodProduction extends Function implements Serializable {
 									settlement.getCoordinates(), false);
 							equipment.setName(Simulation.instance().getUnitManager().getNewName(UnitType.EQUIPMENT,
 									equipmentType, null, null));
+							// Place this equipment within a settlement
+							equipment.enter(LocationCodeType.SETTLEMENT);
 							inv.storeUnit(equipment);
 						}
 					}

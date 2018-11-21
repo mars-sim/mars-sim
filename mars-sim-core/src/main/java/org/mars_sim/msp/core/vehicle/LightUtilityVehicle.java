@@ -186,11 +186,5 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 			return (Vehicle) getContainerUnit();
 		return null;
 	}
-
-	@Override
-	public Settlement getBuriedSettlement() {
-		// TODO Auto-generated method stub
-		return null;
-	}
     
 }

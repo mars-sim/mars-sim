@@ -388,12 +388,6 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	}
 
 	@Override
-	public Settlement getBuriedSettlement() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Unit getUnit() {
 		return this;
 	}

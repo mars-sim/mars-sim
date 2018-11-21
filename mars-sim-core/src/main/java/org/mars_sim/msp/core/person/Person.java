@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -232,7 +233,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		super.setDescription(settlement.getName());
 
 		this.pid = getNextCount();
-
+		// Place this person within a settlement
+		enter(LocationCodeType.SETTLEMENT);
+		// Place this person within a building
+		enter(LocationCodeType.BUILDING);
+		
 		// Initialize data members
 		this.name = name;
 		firstName = name.substring(0, name.indexOf(" "));

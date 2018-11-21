@@ -72,9 +72,4 @@ public class LargeBag extends Equipment implements Container, Serializable {
 		return this.getAssociatedSettlement();
 	}
 
-	@Override
-	public Settlement getBuriedSettlement() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

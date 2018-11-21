@@ -462,7 +462,7 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 	 * Ends the research at a field site.
 	 */
 	public void endResearchAtFieldSite() {
-		logger.info("Research field site phase ended due to external trigger.");
+		logger.warning("Research field site phase ended due to external trigger.");
 		endFieldSite = true;
 
 		// End each member's biology field work task.

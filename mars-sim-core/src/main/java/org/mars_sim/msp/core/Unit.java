@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
@@ -57,9 +58,12 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	// Data members
 	// Unique identifier
 	private int identifier;
+	// The unit's location code
+	private int locationCode = 110_000;
+	
 	/** The mass of the unit without inventory. */
 	private double baseMass;
-
+	
 	/** TODO Unit name needs to be internationalized. */
 	private String name;
 	/** TODO Unit description needs to be internationalized. */
@@ -678,6 +682,23 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 			return null;
 	}
 
+	public int getLocationCode() {
+		return locationCode;
+	}
+
+	public void setLocationCode(int code) {
+		locationCode = code;
+	}
+	
+	public void enter(LocationCodeType type) {
+		locationCode = locationCode + type.getCode();
+	}
+
+	public void exit(LocationCodeType type) {
+		locationCode = locationCode - type.getCode();
+	}
+
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

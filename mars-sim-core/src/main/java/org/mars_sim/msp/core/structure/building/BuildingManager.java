@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.mars.Meteorite;
 import org.mars_sim.msp.core.mars.MeteoriteModule;
 import org.mars_sim.msp.core.person.Person;
@@ -697,7 +698,7 @@ public class BuildingManager implements Serializable {
 			} else {
 				// throw new IllegalStateException("No inhabitable buildings available for " +
 				// person.getName());
-				LogConsolidated.log(logger, Level.INFO, 2000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
 						"[" + person.getLocationTag().getQuickLocation() + "] No inhabitable buildings available for "
 								+ person.getName(),
 						null);
@@ -821,10 +822,15 @@ public class BuildingManager implements Serializable {
 	public static boolean addToGarage(GroundVehicle vehicle, Settlement settlement) {
 
 		if (vehicle.getStatus() == StatusType.GARAGED) {
-			if (vehicle.getSettlement() == null)
+			if (vehicle.getSettlement() == null) {
+				// Place this vehicle inside a building
+				vehicle.enter(LocationCodeType.BUILDING);
 				settlement.getInventory().storeUnit(vehicle);
-			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+			}
+			else { 
+				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 					"[" + settlement.getName() + "] " + vehicle.getName() + " already garaged in " + getBuilding(vehicle, settlement), null);
+			}
 			return true;
 		}
 		
@@ -839,11 +845,14 @@ public class BuildingManager implements Serializable {
 		if (openGarages.size() > 0) {
 			int rand = RandomUtil.getRandomInt(openGarages.size() - 1);
 			openGarages.get(rand).addVehicle(vehicle);
-			if (vehicle.getSettlement() == null)
+			if (vehicle.getSettlement() == null) {
+				// Place this vehicle inside a building
+				vehicle.enter(LocationCodeType.BUILDING);
 				settlement.getInventory().storeUnit(vehicle);
-			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-				"[" + settlement.getName() + "] " +  vehicle.getName() + " has just been stowed inside " + getBuilding(vehicle, settlement), null);
-			vehicle.setStatus(StatusType.GARAGED);
+				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+						"[" + settlement.getName() + "] " +  vehicle.getName() + " has just been stowed inside " + getBuilding(vehicle, settlement), null);
+				vehicle.setStatus(StatusType.GARAGED);
+			}
 			return true;
 		}
 //		else {
@@ -1377,7 +1386,8 @@ public class BuildingManager implements Serializable {
 					LifeSupport lifeSupport = building.getLifeSupport();
 
 					if (!lifeSupport.containsOccupant(person)) {
-						// System.out.println("!lifeSupport.containsRobotOccupant(person) is true");
+						// Place this person within a building
+						person.enter(LocationCodeType.BUILDING);
 						lifeSupport.addPerson(person);
 					}
 					person.setXLocation(settlementLoc.getX());
@@ -1390,6 +1400,8 @@ public class BuildingManager implements Serializable {
 					RoboticStation roboticStation = building.getRoboticStation();
 
 					if (!roboticStation.containsRobotOccupant(robot)) {
+						// Place this robot within a building
+						robot.enter(LocationCodeType.BUILDING);
 						roboticStation.addRobot(robot);
 					}
 					robot.setXLocation(settlementLoc.getX());

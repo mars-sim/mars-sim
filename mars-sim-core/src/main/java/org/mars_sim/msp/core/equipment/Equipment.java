@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -57,6 +58,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	protected Equipment(String name, Coordinates location) {
 		super(name, location);
 
+		// Place this person within a settlement
+		enter(LocationCodeType.SETTLEMENT);
+		// Place this person within a building
+		enter(LocationCodeType.BUILDING);
 		// this.name = name;
 		// Initialize data members.
 		isSalvaged = false;

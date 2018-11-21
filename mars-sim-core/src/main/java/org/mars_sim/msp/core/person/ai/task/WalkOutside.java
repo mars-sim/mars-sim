@@ -17,12 +17,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -54,6 +56,9 @@ implements Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(WalkOutside.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+	
     /** Task phases. */
     private static final TaskPhase WALKING = new TaskPhase(Msg.getString(
             "Task.phase.walking")); //$NON-NLS-1$
@@ -780,13 +785,17 @@ implements Serializable {
         if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
 
 			if (person != null) {
-	            logger.fine(person.getName() + " finished walking to new location outside.");
+				LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " 
+								+ person.getName() + " finished walking to new location outside.", null);
 	            Point2D finalLocation = walkingPath.get(walkingPath.size() - 1);
 	            person.setXLocation(finalLocation.getX());
 	            person.setYLocation(finalLocation.getY());
 			}
 			else if (robot != null) {
-	            logger.fine(robot.getName() + " finished walking to new location outside.");
+				LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+						"[" + robot.getLocationTag().getLocale() + "] " 
+								+ robot.getName() + " finished walking to new location outside.", null);
 	            Point2D finalLocation = walkingPath.get(walkingPath.size() - 1);
 	            robot.setXLocation(finalLocation.getX());
 	            robot.setYLocation(finalLocation.getY());

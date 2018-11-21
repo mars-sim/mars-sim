@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.Person;
@@ -399,6 +400,8 @@ public class ArrivingSettlement implements Transportable, Serializable {
 						false);
 				equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
 				unitManager.addUnit(equipment);
+				// Place this equipment within a settlement
+				equipment.enter(LocationCodeType.SETTLEMENT);
 				newSettlement.getInventory().storeUnit(equipment);
 			}
 		}

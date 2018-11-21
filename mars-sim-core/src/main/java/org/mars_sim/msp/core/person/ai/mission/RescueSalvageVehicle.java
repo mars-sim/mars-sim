@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -450,6 +451,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			towedVehicle.setTowingVehicle(null);
 			logger.info(rover + " is being unhooked from " + towedVehicle + " at " + disembarkSettlement);
 
+			// Place this vehicle near settlement vicinity
+			towedVehicle.enter(LocationCodeType.SETTLEMENT_VICINITY);
 			// Store towing and towed vehicle in settlement.
 			disembarkSettlement.getInventory().storeUnit(towedVehicle);		
 			//disembarkSettlement.getInventory().storeUnit(rover);
@@ -493,14 +496,15 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					towedVehicle.getInventory().retrieveUnit(p);
 
 					if (p.isDeclaredDead()) {
-						p.setBuriedSettlement(disembarkSettlement);
-						p.getPhysicalCondition().getDeathDetails().setBodyRetrieved(true);
-						logger.info(p.getName() + "'s body has been retrieved during the rescue operation.");
+						logger.info("[" + disembarkSettlement + "] " + p.getName() + "'s body had been retrieved from the towed rover " + towedVehicle.getName() + " during the rescue operation.");
 					} else {
-						disembarkSettlement.getInventory().storeUnit(p);
-						logger.info(p.getName() + " has been rescued.");
+						logger.info("[" + disembarkSettlement + "] " + p.getName() + " finally came home safety on the towed rover "+ towedVehicle.getName() + ".");
 					}
-
+					
+					// Place this person within a settlement
+					p.enter(LocationCodeType.SETTLEMENT);
+					disembarkSettlement.getInventory().storeUnit(p);
+					
 					BuildingManager.addToRandomBuilding(p, disembarkSettlement);
 					p.setAssociatedSettlement(disembarkSettlement);
 					p.getMind().getTaskManager().clearTask();
@@ -517,12 +521,14 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				rover.getInventory().retrieveUnit(p);
 
 				if (p.isDeclaredDead()) {
-					p.setBuriedSettlement(disembarkSettlement);
-					p.getPhysicalCondition().getDeathDetails().setBodyRetrieved(true);
-					logger.info(p.getName() + "'s body has been retrieved during the rescue operation.");
+					logger.info("[" + disembarkSettlement + "] " + p.getName() + "'s body had been retrieved from the towed rover " + towedVehicle.getName() + " during the rescue operation.");
 				} else {
-					disembarkSettlement.getInventory().storeUnit(p);
+					logger.info("[" + disembarkSettlement + "] " + p.getName() + " finally came home safety on the towed rover "+ towedVehicle.getName() + ".");
 				}
+				
+				// Place this person within a settlement
+				p.enter(LocationCodeType.SETTLEMENT);
+				disembarkSettlement.getInventory().storeUnit(p);
 
 				BuildingManager.addToRandomBuilding(p, disembarkSettlement);
 				p.setAssociatedSettlement(disembarkSettlement);

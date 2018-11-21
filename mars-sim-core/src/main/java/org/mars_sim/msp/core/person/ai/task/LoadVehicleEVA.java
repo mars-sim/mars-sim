@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -878,6 +879,8 @@ implements Serializable {
                     if (isEmpty) {
                         if (vInv.canStoreUnit(eq, false)) {
                             sInv.retrieveUnit(eq);
+                            // Put this equipment into a vehicle 
+                            eq.enter(LocationCodeType.MOBILE_UNIT_4);
                             vInv.storeUnit(eq);
                             amountLoading -= eq.getMass();
                             if (amountLoading < 0D) {
@@ -903,7 +906,13 @@ implements Serializable {
 
                 for (int x = 0; x < numToRemove; x++) {
                     Equipment eq = (Equipment) array[x];
+                    // Take this equipment from a vehicle 
+                    eq.exit(LocationCodeType.MOBILE_UNIT_4);
+
                     vInv.retrieveUnit(eq);
+                    // Put this equipment into a settlement 
+                    eq.enter(LocationCodeType.SETTLEMENT);
+
                     sInv.storeUnit(eq);
                 }
 
@@ -1081,7 +1090,7 @@ implements Serializable {
                 int num = (Integer) equipment.get(equipmentType);
                 Coordinates defaultLoc = new Coordinates(0D, 0D);
                 for (int x = 0; x < num; x++) {
-                    inv.storeUnit(EquipmentFactory.createEquipment(equipmentType, defaultLoc, false));
+                    inv.storeUnit(EquipmentFactory.createEquipment(equipmentType, defaultLoc, true));
                 }
             }
 
@@ -1092,8 +1101,6 @@ implements Serializable {
                 if (resource < FIRST_ITEM_RESOURCE) {
                     double amount = (Double) (resources.get(resource));
                     inv.storeAmountResource(resource, amount, true);
-       			 	// 2015-01-15 Add addSupplyAmount()
-                    //inv.addSupplyAmount((AmountResource) resource, amount);
                 }
                 else {
                     int num = (Integer) (resources.get(resource));

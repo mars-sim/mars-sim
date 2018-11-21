@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -136,9 +137,12 @@ public abstract class Vehicle extends Unit
 	 * @param maintenanceWorkTime the work time required for maintenance (millisols)
 	 */
 	Vehicle(String name, String vehicleType, Settlement settlement, double maintenanceWorkTime) {
-
 		// Use Unit constructor
 		super(name, settlement.getCoordinates());
+		
+		// Place this person within a settlement
+		enter(LocationCodeType.SETTLEMENT);
+
 		this.vehicleType = vehicleType;
 
 //		 life_support_range_error_margin =
@@ -208,6 +212,10 @@ public abstract class Vehicle extends Unit
 
 		// Use Unit constructor
 		super(name, settlement.getCoordinates());
+		
+		// Place this person within a settlement
+		enter(LocationCodeType.SETTLEMENT);
+		
 		this.vehicleType = vehicleType;
 
 		missionManager = Simulation.instance().getMissionManager();

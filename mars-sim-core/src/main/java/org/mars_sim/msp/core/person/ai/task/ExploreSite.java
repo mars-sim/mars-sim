@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MineralMap;
@@ -369,6 +370,8 @@ implements Serializable {
         if (pInv.containsUnitClass(SpecimenContainer.class)) {
             Unit container = pInv.findUnitOfClass(SpecimenContainer.class);
             pInv.retrieveUnit(container);
+         // Place this equipment within a rover outside on Mars
+            container.enter(LocationCodeType.MOBILE_UNIT_4);
             rover.getInventory().storeUnit(container);
         }
 

@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -320,6 +321,8 @@ public class CollectResources extends EVAOperation implements Serializable {
 			while (i.hasNext()) {
 				Unit container = i.next();
 				pInv.retrieveUnit(container);
+				// Place this equipment within a rover outside on Mars
+				container.enter(LocationCodeType.MOBILE_UNIT_4);
 				rover.getInventory().storeUnit(container);
 			}
 		}

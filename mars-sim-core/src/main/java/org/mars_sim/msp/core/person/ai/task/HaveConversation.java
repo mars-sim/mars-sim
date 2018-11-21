@@ -75,11 +75,11 @@ implements Serializable {
      * Constructor. This is an effort-driven task.
      * @param person the person performing the task.
      */
-    // 2016-03-01 Added 8 situations for having a conversation
     public HaveConversation(Person person) {
         // Use Task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 5D + RandomUtil.getRandomDouble(10));
-
+        
+    	// List 8 situations for having a conversation
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             Set<Person> pool = new HashSet<Person>();
@@ -88,6 +88,7 @@ implements Serializable {
             Collection<Person> p_same_bldg_talking = s.getChattingPeople(person, false, true, false);        	          
             pool.addAll(p_same_bldg_talking);
         	invitee_location = Location.Same_Building;
+        	
         	
             if (pool.size() == 0) {
             	// Go to a chatty chow hall
@@ -101,37 +102,37 @@ implements Serializable {
                 }
                 // TODO: should try going to another chow hall that have people chatting if not found and not just the one that he is going to
             }
- /*           
-            if (pool.size() == 0) {
-                Collection<Person> p_same_bldg_idle = s.getChattingPeople(person, true, true, false);                       
-            	pool.addAll(p_same_bldg_idle);
-            	invitee_location = Location.Same_Building;
-            }           
-*/            
+           
+//            if (pool.size() == 0) {
+//                Collection<Person> p_same_bldg_idle = s.getChattingPeople(person, true, true, false);                       
+//            	pool.addAll(p_same_bldg_idle);
+//            	invitee_location = Location.Same_Building;
+//            }           
+          
             if (pool.size() == 0) {
                 Collection<Person> p_diff_bldg_talking = s.getChattingPeople(person, false, false, false);                 
             	pool.addAll(p_diff_bldg_talking);
             	invitee_location = Location.Another_Building;
             }
-/*            
-            if (pool.size() == 0) {
-                Collection<Person> p_diff_bldg_idle = s.getChattingPeople(person, true, false, false);               
-            	pool.addAll(p_diff_bldg_idle);
-            	invitee_location = Location.Another_Building;
-            }
-*/            
+           
+//            if (pool.size() == 0) {
+//                Collection<Person> p_diff_bldg_idle = s.getChattingPeople(person, true, false, false);               
+//            	pool.addAll(p_diff_bldg_idle);
+//            	invitee_location = Location.Another_Building;
+//            }
+            
             if (pool.size() == 0) {
                 Collection<Person> p_talking_all = s.getChattingPeople(person, false, false, true);         
             	pool.addAll(p_talking_all);
             	invitee_location = Location.All_Settlements;
             }
-/*            
-            if (pool.size() == 0) {
-                Collection<Person> p_idle_all = s.getChattingPeople(person, true, false, true);         
-            	pool.addAll(p_idle_all);
-            	invitee_location = Location.All_Settlements;
-            }           
-*/            
+            
+//            if (pool.size() == 0) {
+//                Collection<Person> p_idle_all = s.getChattingPeople(person, true, false, true);         
+//            	pool.addAll(p_idle_all);
+//            	invitee_location = Location.All_Settlements;
+//            }           
+           
             if (pool.size() == 0) {
             	invitee_location = Location.None;
              }
@@ -228,7 +229,7 @@ implements Serializable {
         setPhase(HAVING_CONVERSATION);
     }
 
-    // 2016-03-01 Added conditional checking to append " via radio" in two cases
+    // Add conditional checking to append " via radio" in two cases
     public void talkTo(Person invitee) {
     	String detail = invitee.getName();
     	if (invitee_location == Location.Another_Building | invitee_location == Location.All_Settlements)

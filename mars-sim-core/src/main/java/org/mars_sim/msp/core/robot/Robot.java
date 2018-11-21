@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -143,7 +144,11 @@ public class Robot
 		super(name, settlement.getCoordinates()); // if extending equipment
 		// super(name, settlement.getCoordinates()); // if extending Unit
 		// super(name, null, birthplace, settlement); // if extending Person
-
+		
+		// Place this person within a settlement
+		enter(LocationCodeType.SETTLEMENT);
+		// Place this person within a building
+		enter(LocationCodeType.BUILDING);
 		// Initialize data members.
 		this.name = name;
 		this.associatedSettlement = settlement;
@@ -1016,10 +1021,9 @@ public class Robot
 		this.walk = walk;
 	}
 
-	@Override
-	public Settlement getBuriedSettlement() {
-		return this.getAssociatedSettlement();
-	}
+//	public Settlement getBuriedSettlement() {
+//		return this.getAssociatedSettlement();
+//	}
 
 	@Override
 	public Unit getUnit() {

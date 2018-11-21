@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
@@ -85,7 +86,6 @@ public class BuildingAirlock extends Airlock {
     
     @Override
     protected void exitAirlock(Person person) {
-        //Inventory inv = building.getSettlementInventory();
 
         if (inAirlock(person)) {
 
@@ -94,17 +94,29 @@ public class BuildingAirlock extends Airlock {
             	// open the inner door to release the person into the settlement
             	
                 if (person.isOutside()) {
+                	
+        			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+        	  				"[" + person.getLocationTag().getLocale() + "] "
+        					+ person + " was about to get inside the airlock at " + building + " in " 
+                			+ building.getBuildingManager().getSettlement()
+                			+ ". The airlock has been pressurized and is ready to open the inner door to release the person. ", null);
+        			
                     // Pump air into the airlock to make it breathable
                 	if (air == null)
                 		air = building.getSettlement().getCompositionOfAir();
                     air.releaseOrRecaptureAir(building.getInhabitableID(), true, building);
 
-                	LogConsolidated.log(logger, Level.FINER, 5000, sourceName, person 
-                			+ " has got inside the airlock at " + building + " in " 
-                			+ building.getBuildingManager().getSettlement()
-                			+ ". The airlock has been pressurized and is ready to open the inner door to release the person. ", null);
+                    // Enter a settlement
+                    person.enter(LocationCodeType.SETTLEMENT);               
+                    // Put the person into the settlement
                 	inv.storeUnit(person);
                     BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
+                    
+           			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+        	  				"[" + person.getLocationTag().getLocale() + "] "
+        					+ person + " has just got inside the airlock at " + building + " in " 
+                			+ building.getBuildingManager().getSettlement()
+                			+ ". The airlock has been pressurized and is ready to open the inner door to release the person. ", null);
 
                 }
                 else {
@@ -119,6 +131,14 @@ public class BuildingAirlock extends Airlock {
             	// get exposed to the outside air and release the person
             	
             	if (person.isInSettlement()) {
+          			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+        	  				"[" + person.getLocationTag().getLocale() + "] "
+        					+ person
+                			+ " was about to get inside the airlock at " + building + " in " 
+                			+ building.getBuildingManager().getSettlement()
+                			+ ". The airlock has been depressurized and is ready to open the outer door to release the person. ", null);
+          			
+          			
                     // Upon depressurization, there is heat loss to the Martian air in Heating class
                 	if (heating == null)
                 		heating = building.getThermalGeneration().getHeating();
@@ -129,13 +149,20 @@ public class BuildingAirlock extends Airlock {
                 		air = building.getSettlement().getCompositionOfAir();
                     air.releaseOrRecaptureAir(building.getInhabitableID(), false, building);
                     
-                	LogConsolidated.log(logger, Level.FINER, 5000, sourceName, person 
-                			+ " has got inside the airlock at " + building + " in " 
-                			+ building.getBuildingManager().getSettlement()
-                			+ ". The airlock has been depressurized and is ready to open the outer door to release the person. ", null);
+                    // Exit the settlement into its vicinity
+                    person.exit(LocationCodeType.SETTLEMENT);
+                    // Take the person out of the settlement
                     inv.retrieveUnit(person);
                     BuildingManager.removePersonOrRobotFromBuilding(person, building);
-
+                    
+                    
+          			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+        	  				"[" + person.getLocationTag().getLocale() + "] "
+        					+ person
+                			+ " was about to leave the airlock at " + building + " in " 
+                			+ building.getBuildingManager().getSettlement()
+                			+ ". The airlock has been depressurized and is ready to open the outer door to release the person. ", null);
+          			
                 }
                 else {
                 	//if (LocationSituation.BURIED != person.getLocationSituation()) {
