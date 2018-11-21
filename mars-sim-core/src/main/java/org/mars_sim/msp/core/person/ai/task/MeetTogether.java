@@ -12,7 +12,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
@@ -36,8 +39,11 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-//    private static Logger logger = Logger.getLogger(MeetTogether.class.getName());
+    private static Logger logger = Logger.getLogger(MeetTogether.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.meetTogether"); //$NON-NLS-1$
@@ -149,6 +155,7 @@ implements Serializable {
     }
 
     
+    // TODO: how to use this version of MeetTogether
     public MeetTogether(Person candidate, Person inviter) {
         // Use Task constructor.
         super(NAME, candidate, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 5D + RandomUtil.getRandomDouble(10));
@@ -200,6 +207,8 @@ implements Serializable {
     	
     	if (inviter == null) {
     		// The person is setting up and inviting the candidate
+    		// e.g. Joe is meeting with Mary
+    		
        		Building building = settlement.getBuildingManager()
         					.getBuildings(FunctionType.COMMUNICATION)
 							.stream()
@@ -211,6 +220,9 @@ implements Serializable {
 
 				setDescription(Msg.getString("Task.description.meetTogether.detail", candidate.getName())); //$NON-NLS-1$
 			
+				LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " +  Msg.getString("Task.description.meetTogether.detail", candidate.getName()), null);
+	
 		        //if (isDone()) {
 		        //    return time;
 		        //}
@@ -235,14 +247,19 @@ implements Serializable {
 		    }
     	}
     	
-    	else {
+    	else if (inviter != null) {
     		// The person is invited to a meeting setup by the inviter
+    		// e.g. Joe is invited to meet with Mary
     		
     		Building building = inviter.getBuildingLocation();
   			    		
 			walkToActivitySpotInBuilding(building, FunctionType.COMMUNICATION, false);
 
-			setDescription(Msg.getString("Task.description.meetTogether.detail.invited", person.getName())); //$NON-NLS-1$
+			setDescription(Msg.getString("Task.description.meetTogether.detail.invited", inviter.getName())); //$NON-NLS-1$
+			
+			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+					"[" + inviter.getLocationTag().getLocale() + "] " +  Msg.getString("Task.description.meetTogether.detail.invited", inviter.getName()), null);
+
 
     	}
 	    	

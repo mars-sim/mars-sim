@@ -754,7 +754,7 @@ public abstract class Mission implements Serializable {
 			// loaded in rover Rahu" with mission name 'Trade With Camp Bradbury'
 
 			LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
-					"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()
+					"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
 							+ " ended the " + missionName + " mission. Reason : " + reason,
 					null);
 
@@ -769,7 +769,7 @@ public abstract class Mission implements Serializable {
 			if (members != null) {
 				if (!members.isEmpty()) {
 					LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
-							"[" + startingMember.getLocationTag().getQuickLocation()
+							"[" + startingMember.getLocationTag().getLocale()
 									+ "] Disbanding mission member(s) : " + members,
 							null);
 					Iterator<MissionMember> i = members.iterator();
@@ -784,7 +784,7 @@ public abstract class Mission implements Serializable {
 
 		} else
 			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()
+					"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
 							+ " is ending the " + missionName + ". Reason : '" + reason + "'",
 					null);
 		

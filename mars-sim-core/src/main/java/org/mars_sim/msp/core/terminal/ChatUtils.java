@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -86,8 +87,6 @@ import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleAirlock;
 
-import com.sun.jdi.ClassType;
-
 public class ChatUtils {
 
     /** default logger. */
@@ -151,7 +150,7 @@ public class ChatUtils {
 	
 	public final static String[] SYSTEM_KEYS = new String[] {
 			"score", "settlement", "check size", 
-			"log", "log all", "log fine", "log info", "log severe", "log finer", "log finest", "log warning", "log config",
+			"log", "log reset", "log help", "log all", "log fine", "log info", "log severe", "log finer", "log finest", "log warning", "log config",
 			"log all walk off", "log all eva off", "log all mission off", "log all airlock off",
 			"vehicle", "rover", 
 			"hi", "hello", "hey"
@@ -225,6 +224,8 @@ public class ChatUtils {
 	private static DecimalFormat fmt = new DecimalFormat("##0");
 	private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
 	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
+	
+	private static Map<String, Level> logLevels = new ConcurrentHashMap<>();
 	
 	public ChatUtils() {
 		masterClock = sim.getMasterClock();
@@ -392,7 +393,7 @@ public class ChatUtils {
 	public static String[] askSettlementNum(int num) {
 //		System.out.println("askSettlementNum() in ChatUtils");
 		String questionText = "";
-		StringBuilder responseText = new StringBuilder();
+		StringBuffer responseText = new StringBuffer();
 
 		if (num == 1) {
 			questionText = YOU_PROMPT + "how many beds are there in total ? ";
@@ -514,7 +515,7 @@ public class ChatUtils {
 	public static String[] askSettlementStr(String text, String name) {
 //		System.out.println("askSettlementStr() in ChatUtils");
 		String questionText = "";
-		StringBuilder responseText = new StringBuilder();
+		StringBuffer responseText = new StringBuffer();
 		
 		if (text.toLowerCase().contains("relationship")
 				|| text.toLowerCase().contains("relation")
@@ -1359,7 +1360,7 @@ public class ChatUtils {
 	public static String[] askPersonRobot(String text, int num, String name, Unit u) {
 //		System.out.println("askPersonRobot() in ChatUtils");
 		String questionText = "";
-		StringBuilder responseText = new StringBuilder();
+		StringBuffer responseText = new StringBuffer();
 
 		responseText.append(name);
 		responseText.append(": ");
@@ -2147,7 +2148,7 @@ public class ChatUtils {
 //		System.out.println("askQuestion() in ChatUtils");
 
 		String questionText = "";
-		StringBuilder responseText = new StringBuilder();
+		StringBuffer responseText = new StringBuffer();
 		String name = SYSTEM;
 		int cacheType = -1;
 		
@@ -2373,7 +2374,32 @@ public class ChatUtils {
 //	    }
 //	}
 	
-	public static void setDebugLevel(Level newLvl) {
+	/**
+	 * Saves the log levels
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public static void saveLogLevel(String key, Level value) {
+		if (logLevels.isEmpty()) {
+			logLevels.put(key, value);
+		}
+		else {
+			if (logLevels.containsKey(key)) {
+				logLevels.replace(key, value);
+			}
+			else {
+				logLevels.put(key, value);
+			}
+		}
+	}
+
+	/**
+	 * Sets the root logger's level
+	 * 
+	 * @param newLvl
+	 */
+	public static void setRootLogLevel(Level newLvl) {
 		// Java 8 stream
 //		Arrays.stream(LogManager.getLogManager().getLogger("").getHandlers()).forEach(h -> h.setLevel(newLvl));
 		
@@ -2385,9 +2411,16 @@ public class ChatUtils {
 	            h.setLevel(newLvl);
 	    }
 	    
-	    logger.config("Logging is set to " + newLvl);
+	    logger.config("Global logging is set to " + newLvl);
 	}
 	
+	/**
+	 * Computes the # of whitespaces
+	 * 
+	 * @param name
+	 * @param max
+	 * @return
+	 */
 	public static StringBuffer computeWhiteSpaces(String name, int max) {
 		int size = name.length();
 		StringBuffer sb = new StringBuffer();
@@ -2397,6 +2430,13 @@ public class ChatUtils {
 		return sb;
 	}
 	
+	/**
+	 * Gets the first available key of a map given its value 
+	 * 
+	 * @param map
+	 * @param value
+	 * @return
+	 */
 	public static <K, V> K getKey(Map<K, V> map, V value) {
 		for (K key : map.keySet()) {
 			if (value.equals(map.get(key))) {
@@ -2422,33 +2462,28 @@ public class ChatUtils {
 			logManager.getLogger(clazz.getName()).setLevel(lvl);
 	}
 	
-	public static StringBuilder processLogChange(String text, StringBuilder responseText) {
+	/**
+	 * Processes the log level configurations
+	 * 
+	 * @param text
+	 * @param responseText
+	 * @return
+	 */
+	public static StringBuffer processLogChange(String text, StringBuffer responseText) {
 	
 //		String[] cmds = text.split("\\s+");
 //		System.out.println(cmds[0].toString());
 //		System.out.println(cmds[1].toString());
 //		System.out.println(cmds[2].toString());			
-	
+		if (text.equalsIgnoreCase("log reset")) {
+			LogManager.getLogManager().reset();
+			logLevels.clear();
+			responseText.append("All logging levels have been reset back to the default.");
+			responseText.append(System.lineSeparator());
+		}
 		
-		if (text.equalsIgnoreCase("log")) {
+		else if (text.equalsIgnoreCase("log help")) {
 			
-			Level level = LogManager.getLogManager().getLogger("").getLevel();
-			
-			responseText.append("Current logging level is : " + level);
-			responseText.append(System.lineSeparator());
-			responseText.append(System.lineSeparator());
-
-//				OFF
-//				SEVERE (highest value)
-//				WARNING
-//				INFO
-//				CONFIG
-//				FINE
-//				FINER
-//				FINEST (lowest value)
-//				ALL			
-			
-//				responseText.append(System.lineSeparator());
 			responseText.append("Please specify the Logging Level as follows : ");
 			responseText.append(System.lineSeparator());
 			responseText.append(" 1. log off     : turn off logging.");
@@ -2469,59 +2504,94 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append(" 9. log all     : show all messages.");
 			
-			responseText.append(System.lineSeparator());				
-			responseText.append(System.lineSeparator());
-			responseText.append("See https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html");
+//			responseText.append(System.lineSeparator());				
+//			responseText.append(System.lineSeparator());
+//			responseText.append("See https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html");
 								
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			responseText.append("e.g. Type 'log info' to set all loggers to INFO level");
 			responseText.append(System.lineSeparator());
-			responseText.append("e.g. Type 'log [Class Name] [level]' to set the logger of a class to a certain log level");
+			responseText.append("e.g. Type 'log <Class Name> <lvl>' to set the logger of a class to a level");
 			responseText.append(System.lineSeparator());
 			responseText.append("e.g. Type 'log all airlock off' to set ALL airlock-related class to OFF level");
 			responseText.append(System.lineSeparator());
-			responseText.append("e.g. Type 'log all walk off' to set ALL walk-related class to OFF level");
-//				responseText.append(System.lineSeparator());	
+			responseText.append("e.g. Type 'log all walk off' to set ALL walk-related class to OFF level");	
+		
+			return responseText;
+		}
+			
+		else if (text.equalsIgnoreCase("log")) {
+			
+			Level level = LogManager.getLogManager().getLogger("").getLevel();
+			
+			responseText.append("Global logging level : " + level);
+			responseText.append(System.lineSeparator());
+			if (!logLevels.isEmpty()) {
+				for (String s : logLevels.keySet()) {
+					responseText.append("" + Conversion.capitalize(s) + "-related logging level : " + logLevels.get(s));
+					responseText.append(System.lineSeparator());
+				}
+			}
+			
+
+			responseText.append(System.lineSeparator());
+			responseText.append("For instructions, type 'log help'");
+			responseText.append(System.lineSeparator());
+			
+
+//				OFF
+//				SEVERE (highest value)
+//				WARNING
+//				INFO
+//				CONFIG
+//				FINE
+//				FINER
+//				FINEST (lowest value)
+//				ALL			
+			
+//				responseText.append(System.lineSeparator());
+			
+//			responseText.append(System.lineSeparator());	
 			
 			return responseText;
 		}
 		
 		else if (text.contains("log all walk")) {
 			Level lvl = Level.OFF;
-			if (text.contains("log all walk off")) {
+			if (text.equalsIgnoreCase("log all walk off")) {
 				lvl = Level.OFF;		
 			}
 			
-			else if (text.contains("log all walk finest")) {
+			else if (text.equalsIgnoreCase("log all walk finest")) {
 				lvl = Level.FINEST;			
 			}				
 
-			else if (text.contains("log all walk finer")) {
+			else if (text.equalsIgnoreCase("log all walk finer")) {
 				lvl = Level.FINER;
 			}
 			
-			else if (text.contains("log all walk fine")) {
+			else if (text.equalsIgnoreCase("log all walk fine")) {
 				lvl = Level.FINE;	
 			}
 			
-			else if (text.contains("log all walk config")) {
+			else if (text.equalsIgnoreCase("log all walk config")) {
 				lvl = Level.CONFIG;	
 			}
 			
-			else if (text.contains("log all walk info")) {
+			else if (text.equalsIgnoreCase("log all walk info")) {
 				lvl = Level.INFO;	
 			}
 			
-			else if (text.contains("log all walk warning")) {
+			else if (text.equalsIgnoreCase("log all walk warning")) {
 				lvl = Level.WARNING;	
 			}
 			
-			else if (text.contains("log all walk severe")) {
+			else if (text.equalsIgnoreCase("log all walk severe")) {
 				lvl = Level.SEVERE;	
 			}
 			
-			else if (text.contains("log all walk off")) {
+			else if (text.equalsIgnoreCase("log all walk off")) {
 				lvl = Level.OFF;	
 			}
 			
@@ -2531,45 +2601,47 @@ public class ChatUtils {
 			changeLogLevel(WalkRoverInterior.class, lvl);	
 			changeLogLevel(WalkSettlementInterior.class, lvl);	
 			
+			saveLogLevel("all walk", lvl);
+			
 			responseText.append("Walk-related Loggers are set to " + lvl);
 			logger.config("Walk-related Loggers are set to " + lvl);
 		}
 		
 		else if (text.contains("log all airlock")) {
 			Level lvl = Level.OFF;
-			if (text.contains("log all airlock off")) {
+			if (text.equalsIgnoreCase("log all airlock off")) {
 				lvl = Level.OFF;		
 			}
 			
-			else if (text.contains("log all airlock finest")) {
+			else if (text.equalsIgnoreCase("log all airlock finest")) {
 				lvl = Level.FINEST;			
 			}				
 
-			else if (text.contains("log all airlock finer")) {
+			else if (text.equalsIgnoreCase("log all airlock finer")) {
 				lvl = Level.FINER;
 			}
 			
-			else if (text.contains("log all airlock fine")) {
+			else if (text.equalsIgnoreCase("log all airlock fine")) {
 				lvl = Level.FINE;	
 			}
 			
-			else if (text.contains("log all airlock config")) {
+			else if (text.equalsIgnoreCase("log all airlock config")) {
 				lvl = Level.CONFIG;	
 			}
 			
-			else if (text.contains("log all airlock info")) {
+			else if (text.equalsIgnoreCase("log all airlock info")) {
 				lvl = Level.INFO;	
 			}
 			
-			else if (text.contains("log all airlock warning")) {
+			else if (text.equalsIgnoreCase("log all airlock warning")) {
 				lvl = Level.WARNING;
 			}
 			
-			else if (text.contains("log all airlock severe")) {
+			else if (text.equalsIgnoreCase("log all airlock severe")) {
 				lvl = Level.SEVERE;	
 			}
 			
-			else if (text.contains("log all airlock off")) {
+			else if (text.equalsIgnoreCase("log all airlock off")) {
 				lvl = Level.OFF;	
 			}
 
@@ -2579,49 +2651,53 @@ public class ChatUtils {
 			changeLogLevel(BuildingAirlock.class, lvl);
 			changeLogLevel(VehicleAirlock.class, lvl);
 			
+			saveLogLevel("all airlock", lvl);
+			
 			responseText.append("Airlock-related Loggers are set to " + lvl);
 		    logger.config("Airlock-related Loggers are set to " + lvl);
 		}
 		
 		else if (text.contains("log all eva")) {
 			Level lvl = Level.OFF;
-			if (text.contains("log all eva off")) {
+			if (text.equalsIgnoreCase("log all eva off")) {
 				lvl = Level.OFF;		
 			}
 			
-			else if (text.contains("log all eva finest")) {
+			else if (text.equalsIgnoreCase("log all eva finest")) {
 				lvl = Level.FINEST;			
 			}				
 
-			else if (text.contains("log all eva finer")) {
+			else if (text.equalsIgnoreCase("log all eva finer")) {
 				lvl = Level.FINER;
 			}
 			
-			else if (text.contains("log all eva fine")) {
+			else if (text.equalsIgnoreCase("log all eva fine")) {
 				lvl = Level.FINE;	
 			}
 			
-			else if (text.contains("log all eva config")) {
+			else if (text.equalsIgnoreCase("log all eva config")) {
 				lvl = Level.CONFIG;	
 			}
 			
-			else if (text.contains("log all eva info")) {
+			else if (text.equalsIgnoreCase("log all eva info")) {
 				lvl = Level.INFO;	
 			}
 			
-			else if (text.contains("log all eva warning")) {
+			else if (text.equalsIgnoreCase("log all eva warning")) {
 				lvl = Level.WARNING;	
 			}
 			
-			else if (text.contains("log all eva severe")) {
+			else if (text.equalsIgnoreCase("log all eva severe")) {
 				lvl = Level.SEVERE;	
 			}
 			
-			else if (text.contains("log all eva off")) {
+			else if (text.equalsIgnoreCase("log all eva off")) {
 				lvl = Level.OFF;	
 			}
 			
 			changeLogLevel(EVAOperation.class, lvl);	
+			
+			saveLogLevel("all eva", lvl);
 			
 			responseText.append("EVAOperation Logger is set to " + lvl);
 		    logger.config("EVAOperation Logger is set to " + lvl);
@@ -2629,39 +2705,39 @@ public class ChatUtils {
 		
 		else if (text.contains("log all mission")) {
 			Level lvl = Level.OFF;
-			if (text.contains("log all mission off")) {
+			if (text.equalsIgnoreCase("log all mission off")) {
 				lvl = Level.OFF;		
 			}
 			
-			else if (text.contains("log all mission finest")) {
+			else if (text.equalsIgnoreCase("log all mission finest")) {
 				lvl = Level.FINEST;			
 			}				
 
-			else if (text.contains("log all mission finer")) {
+			else if (text.equalsIgnoreCase("log all mission finer")) {
 				lvl = Level.FINER;
 			}
 			
-			else if (text.contains("log all mission fine")) {
+			else if (text.equalsIgnoreCase("log all mission fine")) {
 				lvl = Level.FINE;	
 			}
 			
-			else if (text.contains("log all mission config")) {
+			else if (text.equalsIgnoreCase("log all mission config")) {
 				lvl = Level.CONFIG;	
 			}
 			
-			else if (text.contains("log all mission info")) {
+			else if (text.equalsIgnoreCase("log all mission info")) {
 				lvl = Level.INFO;	
 			}
 			
-			else if (text.contains("log all mission warning")) {
+			else if (text.equalsIgnoreCase("log all mission warning")) {
 				lvl = Level.WARNING;	
 			}
 			
-			else if (text.contains("log all mission severe")) {
+			else if (text.equalsIgnoreCase("log all mission severe")) {
 				lvl = Level.SEVERE;	
 			}
 			
-			else if (text.contains("log all mission off")) {
+			else if (text.equalsIgnoreCase("log all mission off")) {
 				lvl = Level.OFF;	
 			}
 			
@@ -2683,60 +2759,62 @@ public class ChatUtils {
 			changeLogLevel(AreologyStudyFieldMission.class, lvl);
 			changeLogLevel(BiologyStudyFieldMission.class, lvl);
 			
+			saveLogLevel("all mission", lvl);
+			
 			responseText.append("Mission-related loggers are set to " + lvl);
 			logger.config("Mission-related loggers are set to " + lvl);
 		}
 		
 		else if (text.equalsIgnoreCase("log off")) {
-			setDebugLevel(Level.OFF);				
+			setRootLogLevel(Level.OFF);				
 //				responseText.append(System.lineSeparator());
 			responseText.append("Logging is set to OFF");				
 		}
 		
 		else if (text.equalsIgnoreCase("log config")) {			
-			setDebugLevel(Level.CONFIG);
+			setRootLogLevel(Level.CONFIG);
 //				responseText.append(System.lineSeparator());
 			responseText.append("Logging is set to CONFIG");						
 		}
 
 		else if (text.equalsIgnoreCase("log warning")) {			
-			setDebugLevel(Level.WARNING);		
+			setRootLogLevel(Level.WARNING);		
 //				responseText.append(System.lineSeparator());
 			responseText.append("Logging is set to WARNING");						
 		}
 		
 		else if (text.equalsIgnoreCase("log fine")) {						
-			setDebugLevel(Level.FINE);			
+			setRootLogLevel(Level.FINE);			
 //				responseText.append(System.lineSeparator());
 			responseText.append("Logging is set to FINE");						
 		}
 		
 		else if (text.equalsIgnoreCase("log finer")) {							
-			setDebugLevel(Level.FINER);
+			setRootLogLevel(Level.FINER);
 //				responseText.append(System.lineSeparator());
 			responseText.append("Logging is set to FINER");						
 		}
 		
 		else if (text.equalsIgnoreCase("log finest")) {							
-			setDebugLevel(Level.FINEST);
+			setRootLogLevel(Level.FINEST);
 //				responseText.append(System.lineSeparator());
 			responseText.append("Logging is set to FINEST");						
 		}
 		
 		else if (text.equalsIgnoreCase("log severe")) {					
-			setDebugLevel(Level.SEVERE);
+			setRootLogLevel(Level.SEVERE);
 //				responseText.append(System.lineSeparator());
 			responseText.append("Logging is set to SEVERE");	
 		}
 		
 		else if (text.equalsIgnoreCase("log info")) {			
-			setDebugLevel(Level.INFO);
+			setRootLogLevel(Level.INFO);
 //				responseText.append(System.lineSeparator());
 			responseText.append("Logging is set to INFO");
 		}
 				
 		else if (text.equalsIgnoreCase("log all")) {
-			setDebugLevel(Level.ALL);
+			setRootLogLevel(Level.ALL);
 //				responseText.append(System.lineSeparator());
 			responseText.append("Logging is set to ALL");						
 		}
@@ -2832,7 +2910,7 @@ public class ChatUtils {
 	 * @param input text
 	 */
 	public static String askSystem(String text) {
-		StringBuilder responseText = new StringBuilder();
+		StringBuffer responseText = new StringBuffer();
 
 		boolean available = true;
 		int nameCase = 0;
@@ -3557,8 +3635,8 @@ public class ChatUtils {
      * @param indoorP
      * @return String
      */
-    public static StringBuilder printList(List<?> indoorP) {
-      	StringBuilder sb = new StringBuilder();
+    public static StringBuffer printList(List<?> indoorP) {
+      	StringBuffer sb = new StringBuffer();
       	
     	if (indoorP.isEmpty()) {
     		sb.append("    None");

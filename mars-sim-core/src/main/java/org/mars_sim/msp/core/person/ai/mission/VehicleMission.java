@@ -363,7 +363,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						// if the emergency beacon is off
 						// Question: could the emergency beacon itself be broken ?
 						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-								"[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember
+								"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
 										+ " turned on " + vehicle
 										+ "'s emergency beacon and request for towing. Reason : " + reason,
 								null);
@@ -392,7 +392,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //							 logger.info(vehicle + " is currently being towed by " +
 //							 vehicle.getTowingVehicle());
 							LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
-									"[" + vehicle + "] Currently being towed by " + vehicle.getTowingVehicle(), null);
+									"[" + vehicle.getLocationTag().getLocale() + "] "
+									+  vehicle.getName() + " is currently being towed by " + vehicle.getTowingVehicle(), null);
 //									+ " Remaining distance : " + getClosestDistance() + " km.", null);
 						}
 					}
@@ -405,8 +406,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				}
 
 				else { // e.g. unrepairable malfunction
-					logger.info(vehicle.getName() + " is currently at " + vehicle.getSettlement()
-							+ " and its mission ended. Reason : " + reason);
+					LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, 
+							"[" + vehicle.getLocationTag().getLocale() + "] "
+							+ vehicle.getName() + " is currently at " + vehicle.getSettlement()
+							+ " and its mission ended. Reason : " + reason, null);
 					// if the vehicle is still somewhere inside the settlement when it got broken
 					// down
 					// TODO: wait till the repair is done and the mission may resume ?!?
@@ -1079,10 +1082,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					member.getLocationTag().getLocale());
 
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
-			logger.info("[" + vehicle.getLocationTag().getQuickLocation() + "] " + member
+			logger.info("[" + vehicle.getLocationTag().getLocale() + "] " + member
 					+ " activated emergency beacon on " + vehicle.getName() + ".");
 		} else {
-			logger.info("[" + vehicle.getLocationTag().getQuickLocation() + "] " + member
+			logger.info("[" + vehicle.getLocationTag().getLocale() + "] " + member
 					+ " deactivated emergency beacon on " + vehicle.getName() + ".");
 		}
 

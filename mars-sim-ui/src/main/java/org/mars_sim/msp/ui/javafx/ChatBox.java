@@ -163,7 +163,7 @@ public class ChatBox extends BorderPane {
 	 */
 	public void checkConnection() {
 		if (ChatUtils.getConnectionMode() == 0) {
-			textArea.appendText(System.lineSeparator() + "Cannot establish more than one line of connections. Please disactivate the console chat first." + System.lineSeparator());			
+			textArea.appendText(System.lineSeparator() + "Cannot establish more than one line of connections. Please type 'exit' to leave the chat terminal first." + System.lineSeparator());			
 		}
 		
 		else if (ChatUtils.getConnectionMode() == -1) {

@@ -51,7 +51,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
         SwingHandler handler = new SwingHandler(textIO, party);
       
         if (ChatUtils.getConnectionMode() == 1) {
-        	terminal.println("Cannot establish more than one line of connections. Please disactivate the graphic chat box first." + System.lineSeparator());			
+        	terminal.println("Cannot establish more than one line of connections. Please type 'exit' to leave the graphic chat box first." + System.lineSeparator());			
 		}
         
 		else if (ChatUtils.getConnectionMode() == -1) {
@@ -229,7 +229,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	
     @Override
     public String toString() {
-        return "Enter the Chat Mode";
+        return "Connect with MarsNet";
     }
     
     private static class Party {

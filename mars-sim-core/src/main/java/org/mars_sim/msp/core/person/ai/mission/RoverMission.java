@@ -359,8 +359,10 @@ public abstract class RoverMission extends VehicleMission {
 						if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
 							assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
 						} else {
-							logger.severe(Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
-									getVehicle().getName()));
+							LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+									"[" + person.getLocationTag().getLocale() + "] " 
+										+  Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
+									getVehicle().getName()), null);
 							endMission(Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
 									getVehicle().getName()));
 						}
@@ -369,8 +371,10 @@ public abstract class RoverMission extends VehicleMission {
 						if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
 							assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
 						} else {
-							logger.severe(Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
-									getVehicle().getName()));
+							LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+									"[" + robot.getLocationTag().getLocale() + "] " 
+										+  Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
+									getVehicle().getName()), null);
 							endMission(Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
 									getVehicle().getName()));
 						}

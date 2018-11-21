@@ -11,22 +11,23 @@ import java.util.ArrayList;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
@@ -51,6 +52,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(UnloadVehicleGarage.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+	
+	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleGarage"); //$NON-NLS-1$
 
@@ -182,7 +187,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		addPhase(UNLOADING);
 		setPhase(UNLOADING);
 
-		logger.fine(person.getName() + " is unloading " + vehicle.getName());
+//		logger.fine(person.getName() + " is unloading " + vehicle.getName());
 	}
 
 	public UnloadVehicleGarage(Robot robot, Vehicle vehicle) {
@@ -205,7 +210,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		addPhase(UNLOADING);
 		setPhase(UNLOADING);
 
-		logger.fine(robot.getName() + " is unloading " + vehicle.getName());
+//		logger.fine(robot.getName() + " is unloading " + vehicle.getName());
 	}
 
 	@Override
@@ -459,8 +464,16 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			Crewable crewable = (Crewable) this;
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
-					logger.info("Retrieving the dead body of " + p + " from " + vehicle.getName() + " parked inside "
-							+ settlement);
+					LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+							"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
+							+ " was retrieving the dead body of " + p + " from " + vehicle.getName() + " parked inside "
+							+ settlement, null);
+					
+					// Place this person within a settlement
+					p.enter(LocationCodeType.SETTLEMENT);
+					settlementInv.storeUnit(p);
+					BuildingManager.addToRandomBuilding(p, settlement);
+					
 //					PhysicalCondition pc = p.getPhysicalCondition();
 //					pc.handleBody();
 					// pc.retrieveBody();

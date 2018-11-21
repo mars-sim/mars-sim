@@ -12,8 +12,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.location.LocationSituation;
@@ -41,6 +43,9 @@ implements Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(HaveConversation.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.haveConversation"); //$NON-NLS-1$
@@ -239,6 +244,8 @@ implements Serializable {
         	setDescription(Msg.getString("Task.description.havingConversation.detail", 
                 detail)); //$NON-NLS-1$
         	//logger.info(person.getName() + " is chatting with " + detail);
+			LogConsolidated.log(logger, Level.FINE, 5000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " was chatting with " + detail + ".", null);
         }	
     }
     
