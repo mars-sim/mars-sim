@@ -96,7 +96,7 @@ extends Airlock {
 					vehicle.getInventory().storeUnit(person);
 				}
 				else if (person.isInSettlement()) {
-					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+					LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, 
 							Msg.getString("VehicleAirlock.error.notOutside", person.getName(), getEntityName())
 							, null);
 					//throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notOutside",person.getName(),getEntityName())); //$NON-NLS-1$
@@ -118,7 +118,7 @@ extends Airlock {
 					vehicle.getInventory().retrieveUnit(person);
 				}
 				else if (person.isOutside()) {
-					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+					LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, 
 							Msg.getString("VehicleAirlock.error.notInside", person.getName(), getEntityName())
 							, null);
 					//throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInside",person.getName(),getEntityName())); //$NON-NLS-1$

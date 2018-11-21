@@ -260,11 +260,16 @@ implements Serializable {
                 settlement.getInventory().addAmountSupplyAmount(iceID, collectedAmount);
             }
 
-            // Store bag.
-            person.getInventory().retrieveUnit(bag);
-			// Place this equipment within a settlement
-            bag.enter(LocationCodeType.MOBILE_UNIT_4);
-            settlement.getInventory().storeUnit(bag);
+            if (person.getInventory() != null) {
+            	// TODO: java.lang.IllegalStateException: Unit: Bag 104 could not be retrieved
+            	// ExitAirlock : [Alpha Base] Cheryl Halvorson had tried to exit the airlock 1 times
+	            
+            	// Store bag.
+	            person.getInventory().retrieveUnit(bag);
+				// Place this equipment within a settlement
+	            bag.enter(LocationCodeType.MOBILE_UNIT_4);
+	            settlement.getInventory().storeUnit(bag);	            
+            }
 
             // Recalculate settlement good value for output item.
             GoodsManager goodsManager = settlement.getGoodsManager();

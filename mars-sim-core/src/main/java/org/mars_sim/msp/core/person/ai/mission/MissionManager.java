@@ -254,7 +254,7 @@ public class MissionManager implements Serializable {
 
 			// recordMission(newMission);
 
-			logger.finer("MissionManager: Added new mission - " + newMission.getName());
+			logger.finest("Added new mission : " + newMission.getName());
 		}
 	}
 
@@ -280,7 +280,7 @@ public class MissionManager implements Serializable {
 				}
 			}
 
-			logger.finer("MissionManager: Removed old mission - " + oldMission.getName());
+			logger.finest("Removed old mission : " + oldMission.getName());
 		}
 	}
 
@@ -325,7 +325,7 @@ public class MissionManager implements Serializable {
 
 		if (totalProbability == 0D) {
 			//throw new IllegalStateException(person + " has zero total mission probability weight.");
-			logger.log(Level.WARNING, person + " has zero total mission probability weight.");
+			logger.log(Level.FINEST, person + " has zero total mission probability weight.");
 		}
 
 		// Get a random number from 0 to the total probability weight.
@@ -587,7 +587,7 @@ public class MissionManager implements Serializable {
 				totalProbCache += probability;
 			} else {
 				missionProbCache.put(metaMission, 0D);
-				logger.severe(person.getName() + " bad mission probability: " + metaMission.getName() + " probability: "
+				logger.severe(person.getName() + " bad mission probability on " + metaMission.getName() + " probability: "
 						+ probability);
 			}
 		}

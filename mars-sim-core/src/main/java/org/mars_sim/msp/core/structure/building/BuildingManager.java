@@ -699,7 +699,7 @@ public class BuildingManager implements Serializable {
 				// throw new IllegalStateException("No inhabitable buildings available for " +
 				// person.getName());
 				LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
-						"[" + person.getLocationTag().getQuickLocation() + "] No inhabitable buildings available for "
+						"[" + person.getLocationTag().getLocale() + "] No inhabitable buildings available for "
 								+ person.getName(),
 						null);
 			}

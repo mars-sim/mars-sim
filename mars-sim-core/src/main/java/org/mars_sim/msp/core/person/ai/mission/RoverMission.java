@@ -291,7 +291,7 @@ public abstract class RoverMission extends VehicleMission {
 			Settlement settlement = getVehicle().getSettlement();
 			if (settlement == null) {
 				//throw new IllegalStateException(
-				LogConsolidated.log(logger, Level.WARNING, 1000, sourceName, 
+				LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
 						Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName()), null); //$NON-NLS-1$
 				endMission(Mission.NO_AVAILABLE_VEHICLES);
 			}
@@ -359,7 +359,7 @@ public abstract class RoverMission extends VehicleMission {
 						if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
 							assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
 						} else {
-							LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+							LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,
 									"[" + person.getLocationTag().getLocale() + "] " 
 										+  Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
 									getVehicle().getName()), null);
@@ -371,7 +371,7 @@ public abstract class RoverMission extends VehicleMission {
 						if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
 							assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
 						} else {
-							LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+							LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,
 									"[" + robot.getLocationTag().getLocale() + "] " 
 										+  Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
 									getVehicle().getName()), null);
@@ -463,10 +463,10 @@ public abstract class RoverMission extends VehicleMission {
 				v.getInventory().retrieveUnit(p);
 
 				if (p.isDeclaredDead()) {
-					LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + "'s body had been retrieved from rover " + v.getName() + ".", null);
 				} else {
-					LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " came home safety on rover "+ v.getName() + ".", null);
 				}
 				

@@ -175,11 +175,15 @@ public class LivingAccommodations extends Function implements Serializable {
 	 */
 	public void registerSleeper(Person person, boolean isAGuest) {
 		if (sleepers > maxBeds) {
-			// LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, person
-			// + " is going to his/her quarter in " + building.getNickName() + " in " +
-			// settlement, null);
-			// logger.info("[" + settlement.getName() + "] # sleepers : " + sleepers + " #
-			// beds : " + maxBeds);
+//			 LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, person
+//			 + " is going to his/her quarter in " + building.getNickName() + " in " +
+//			 settlement, null);
+			 
+			 LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
+					 "[" + settlement.getName() + "] Too many sleepers and not enough beds. "
+					 		+ "# sleepers : " + sleepers 
+					 + " # beds : " + maxBeds, null);
+			 
 		} else if (!assignedBeds.containsKey(person)) {
 			if (isAGuest) {
 				sleepers++;
@@ -199,8 +203,8 @@ public class LivingAccommodations extends Function implements Serializable {
 				if (bed != null) {
 					sleepers++;
 				} else {
-					LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
-							"[" + settlement.getName() + "] " + person + " does not have a bed yet.", null);
+					LogConsolidated.log(logger, Level.FINE, 2000, sourceName,
+							"[" + settlement.getName() + "] " + person + " did not have a bed assigned yet.", null);
 				}
 			}
 		} else // as an old inhabitant
@@ -227,8 +231,9 @@ public class LivingAccommodations extends Function implements Serializable {
 					assignedBeds.put(person, bed);
 					person.setBed(bed);
 					person.setQuarters(building);
-					// logger.info(person + " has been designated a bed at (" + bed.getX() + ", " +
-					// bed.getY() + ") in " + person.getQuarters());
+					LogConsolidated.log(logger, Level.FINE, 2000, sourceName,
+							person + " was designated a bed at (" + bed.getX() + ", " +
+							bed.getY() + ") in " + person.getQuarters(), null);
 					break;
 				}
 			}

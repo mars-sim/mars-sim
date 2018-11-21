@@ -95,7 +95,7 @@ public class BuildingAirlock extends Airlock {
             	
                 if (person.isOutside()) {
                 	
-        			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+        			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
         	  				"[" + person.getLocationTag().getLocale() + "] "
         					+ person + " was about to get inside the airlock at " + building + " in " 
                 			+ building.getBuildingManager().getSettlement()
@@ -112,7 +112,7 @@ public class BuildingAirlock extends Airlock {
                 	inv.storeUnit(person);
                     BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
                     
-           			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+           			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
         	  				"[" + person.getLocationTag().getLocale() + "] "
         					+ person + " has just got inside the airlock at " + building + " in " 
                 			+ building.getBuildingManager().getSettlement()
@@ -131,7 +131,7 @@ public class BuildingAirlock extends Airlock {
             	// get exposed to the outside air and release the person
             	
             	if (person.isInSettlement()) {
-          			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+          			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
         	  				"[" + person.getLocationTag().getLocale() + "] "
         					+ person
                 			+ " was about to get inside the airlock at " + building + " in " 
@@ -156,7 +156,7 @@ public class BuildingAirlock extends Airlock {
                     BuildingManager.removePersonOrRobotFromBuilding(person, building);
                     
                     
-          			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+          			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
         	  				"[" + person.getLocationTag().getLocale() + "] "
         					+ person
                 			+ " was about to leave the airlock at " + building + " in " 
