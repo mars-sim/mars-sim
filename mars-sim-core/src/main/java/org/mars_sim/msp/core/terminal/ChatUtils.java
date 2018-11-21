@@ -152,6 +152,7 @@ public class ChatUtils {
 	public final static String[] SYSTEM_KEYS = new String[] {
 			"score", "settlement", "check size", 
 			"log", "log all", "log fine", "log info", "log severe", "log finer", "log finest", "log warning", "log config",
+			"log all walk off", "log all eva off", "log all mission off", "log all airlock off",
 			"vehicle", "rover", 
 			"hi", "hello", "hey"
 	};
@@ -2486,60 +2487,6 @@ public class ChatUtils {
 			return responseText;
 		}
 		
-		else if (text.equalsIgnoreCase("log off")) {
-			setDebugLevel(Level.OFF);				
-//				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to OFF");				
-		}
-		
-		else if (text.equalsIgnoreCase("log config")) {			
-			setDebugLevel(Level.CONFIG);
-//				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to CONFIG");						
-		}
-
-		else if (text.equalsIgnoreCase("log warning")) {			
-			setDebugLevel(Level.WARNING);		
-//				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to WARNING");						
-		}
-		
-		else if (text.equalsIgnoreCase("log fine")) {						
-			setDebugLevel(Level.FINE);			
-//				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to FINE");						
-		}
-		
-		else if (text.equalsIgnoreCase("log finer")) {							
-			setDebugLevel(Level.FINER);
-//				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to FINER");						
-		}
-		
-		else if (text.equalsIgnoreCase("log finest")) {							
-			setDebugLevel(Level.FINEST);
-//				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to FINEST");						
-		}
-		
-		else if (text.equalsIgnoreCase("log severe")) {					
-			setDebugLevel(Level.SEVERE);
-//				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to SEVERE");	
-		}
-		
-		else if (text.equalsIgnoreCase("log info")) {			
-			setDebugLevel(Level.INFO);
-//				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to INFO");
-		}
-				
-		else if (text.equalsIgnoreCase("log all")) {
-			setDebugLevel(Level.ALL);
-//				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to ALL");						
-		}
-		
 		else if (text.contains("log all walk")) {
 			Level lvl = Level.OFF;
 			if (text.contains("log all walk off")) {
@@ -2738,6 +2685,60 @@ public class ChatUtils {
 			
 			responseText.append("Mission-related loggers are set to " + lvl);
 			logger.config("Mission-related loggers are set to " + lvl);
+		}
+		
+		else if (text.equalsIgnoreCase("log off")) {
+			setDebugLevel(Level.OFF);				
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to OFF");				
+		}
+		
+		else if (text.equalsIgnoreCase("log config")) {			
+			setDebugLevel(Level.CONFIG);
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to CONFIG");						
+		}
+
+		else if (text.equalsIgnoreCase("log warning")) {			
+			setDebugLevel(Level.WARNING);		
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to WARNING");						
+		}
+		
+		else if (text.equalsIgnoreCase("log fine")) {						
+			setDebugLevel(Level.FINE);			
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to FINE");						
+		}
+		
+		else if (text.equalsIgnoreCase("log finer")) {							
+			setDebugLevel(Level.FINER);
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to FINER");						
+		}
+		
+		else if (text.equalsIgnoreCase("log finest")) {							
+			setDebugLevel(Level.FINEST);
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to FINEST");						
+		}
+		
+		else if (text.equalsIgnoreCase("log severe")) {					
+			setDebugLevel(Level.SEVERE);
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to SEVERE");	
+		}
+		
+		else if (text.equalsIgnoreCase("log info")) {			
+			setDebugLevel(Level.INFO);
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to INFO");
+		}
+				
+		else if (text.equalsIgnoreCase("log all")) {
+			setDebugLevel(Level.ALL);
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to ALL");						
 		}
 		
 		else {

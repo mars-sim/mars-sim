@@ -46,6 +46,9 @@ Copyright (C) 2018 Scott Davis
 
 10. Add customizing desired logging level.
 
+11. Speed up saving and loading.
+
+12. Reduce the size of the saved simulation file.
 
 
 ### UI IMPROVEMENT :

@@ -7,6 +7,9 @@
 
 package org.mars_sim.msp.core.location;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum LocationCodeType {
 
 	SPACE 				(100_000),
@@ -44,6 +47,14 @@ public enum LocationCodeType {
 	;
 
 	private int code;
+	
+    private static Map<Integer, LocationCodeType> map = new HashMap<>();
+
+	static {
+		for (LocationCodeType type : LocationCodeType.values()) {
+			map.put(type.code, type);
+		}
+	}
 
 	/** hidden constructor. */
 	private LocationCodeType(int code) {
@@ -54,6 +65,11 @@ public enum LocationCodeType {
 		return code;
 	}
 
+  
+    public static LocationCodeType valueOf(int type) {
+        return (LocationCodeType) map.get(type);
+    }
+    
 //	@Override
 //	public final String toString() {
 //		return getName();
