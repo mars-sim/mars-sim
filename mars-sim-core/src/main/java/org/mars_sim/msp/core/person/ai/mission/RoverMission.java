@@ -465,6 +465,8 @@ public abstract class RoverMission extends VehicleMission {
 				// Place this person within a settlement
 				p.enter(LocationCodeType.SETTLEMENT);
 				disembarkSettlement.getInventory().storeUnit(p);
+				
+				BuildingManager.addToRandomBuilding(p, disembarkSettlement);
 			}
 			
 			// Reset the vehicle reservation

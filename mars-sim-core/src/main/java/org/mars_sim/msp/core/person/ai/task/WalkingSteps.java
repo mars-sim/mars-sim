@@ -1464,7 +1464,7 @@ implements Serializable {
 
             // Cannot walk to destination building.
             canWalkAllSteps = false;
-            logger.severe("Cannot find walkable airlock from outside to building interior.");
+//            logger.severe("Cannot find walkable airlock from outside to building interior.");
             
             if (person != null)
             	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,

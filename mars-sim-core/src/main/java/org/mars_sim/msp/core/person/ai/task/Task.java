@@ -12,11 +12,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -54,6 +56,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Task.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+	
 	private static final double JOB_STRESS_MODIFIER = .5D;
 	// if that task is an a.i. task within a person's job, then the stress effect is
 	// 1/2
@@ -1205,10 +1210,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					Building building = buildingList.get(buildingIndex);
 
 					if (building.getNickName().toLowerCase().contains("astronomy")) {
-
 						if (robot.getSettlement().getBuildingConnectors(building).size() > 0) {
-
-							logger.info(robot.getNickName() + " is walking toward " + building.getNickName());
+							LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+									"[" + robot.getLocationTag().getLocale() + "] " 
+											+ robot.getName() + " is walking toward " + building.getNickName(), null);
 							walkToActivitySpotInBuilding(building, fct, allowFail);
 						}
 					} else {
@@ -1235,8 +1240,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				// Add subtask for walking to destination.
 				addSubTask(new Walk(person, settlementPos.getX(), settlementPos.getY(), interiorObject));
 			} else {
-				logger.fine(person.getName() + " unable to walk to " + interiorObject);
-
+//				logger.fine(person.getName() + " unable to walk to " + interiorObject);
+				LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " 
+								+ person.getName() + " was unable to walk to " + interiorObject, null);
 				if (!allowFail) {
 					endTask();
 				}
@@ -1246,8 +1253,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				// Add subtask for walking to destination.
 				addSubTask(new Walk(robot, settlementPos.getX(), settlementPos.getY(), interiorObject));
 			} else {
-				logger.fine(robot.getName() + " unable to walk to " + interiorObject);
-
+//				logger.fine(robot.getName() + " unable to walk to " + interiorObject);
+				LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+						"[" + robot.getLocationTag().getLocale() + "] " 
+								+ robot.getName() + " was unable to walk to " + interiorObject, null);
 				if (!allowFail) {
 					endTask();
 				}
