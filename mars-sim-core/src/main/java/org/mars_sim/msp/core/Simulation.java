@@ -450,18 +450,18 @@ public class Simulation implements ClockListener, Serializable {
 		Simulation sim = instance();
 		sim.stop();
 
-		try {
-			sim.readJSON();
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			sim.readJSON();
+//		} catch (JsonParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (JsonMappingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		// Use default file path if file is null.
 		if (f == null) {
@@ -734,7 +734,7 @@ public class Simulation implements ClockListener, Serializable {
 		sim.halt();
 
 		// Experiment with saving in JSON format
-		writeJSON();
+//		writeJSON();
 		
 		lastSaveTimeStamp = new SystemDateTime().getDateTimeStr();
 		changed = true;
@@ -852,7 +852,7 @@ public class Simulation implements ClockListener, Serializable {
 		    is = new ByteArrayInputStream(baos.toByteArray());
 		    
 			// Print the size of each serializable object
-			System.out.println(printObjectSize(0).toString());
+//			System.out.println(printObjectSize(0).toString());
 			
 			// Using the default settings and the default integrity check type (CRC64)
 			LZMA2Options lzma2 = new LZMA2Options(7);

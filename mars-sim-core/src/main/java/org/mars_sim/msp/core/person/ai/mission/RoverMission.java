@@ -59,8 +59,10 @@ public abstract class RoverMission extends VehicleMission {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(RoverMission.class.getName());
+	
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
+	
 	// Static members
 	public static final int MIN_STAYING_MEMBERS = 1;
 	public static final int MIN_GOING_MEMBERS = 2;
@@ -457,9 +459,11 @@ public abstract class RoverMission extends VehicleMission {
 				v.getInventory().retrieveUnit(p);
 
 				if (p.isDeclaredDead()) {
-					logger.info("[" + disembarkSettlement + "] " + p.getName() + "'s body had been retrieved from rover " + v.getName() + ".");
+					LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + "'s body had been retrieved from rover " + v.getName() + ".", null);
 				} else {
-					logger.info("[" + disembarkSettlement + "] " + p.getName() + " came home safety on rover "+ v.getName() + ".");
+					LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " came home safety on rover "+ v.getName() + ".", null);
 				}
 				
 				// Place this person within a settlement
