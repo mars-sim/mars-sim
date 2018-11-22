@@ -338,11 +338,12 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				Building startBuilding = BuildingManager.getBuilding(person);
 				if (startBuilding == null || destBuilding == null) {
 					Vehicle v = person.getVehicle();
-					System.out.println("WalkSettlementInterior : [" + person.getLocationTag().getImmediateLocation()
-							+ "] " + person + " - [vehicle : " + v + "] [start : " + startBuilding
+					System.out.println("WalkSettlementInterior : [" + person.getLocationTag().getLocale()
+							+ "] " + person + " in " + person.getLocationTag().getImmediateLocation() 
+							+ " [vehicle : " + v + "] [start : " + startBuilding
 							+ "] [destination :  " + destBuilding + "]");
-					// System.out.println("[" + person.getSettlement() + "] " + person + " is
-					// leaving " + startBuilding + " & going to " + destBuilding);
+					// e.g. WalkSettlementInterior : [Alpha Base vicinity] Jason Slack - [vehicle : null] [start : null] [destination :  Garage 1]
+					// (Warning) ExitAirlock : [0.0° N 0.0° W] Jason Slack was about to enter the airlock within the settlement, but was already outside. End task.
 				} 
 //				else {
 					// logger.finer(person.getName() + " walked from " + startBuilding.getNickName()

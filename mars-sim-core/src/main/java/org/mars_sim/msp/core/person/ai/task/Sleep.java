@@ -121,7 +121,7 @@ public class Sleep extends Task implements Serializable {
 			Settlement s0 = person.getAssociatedSettlement();
 
 			// check to see if a person is a trader or on a trading mission
-			if (!s1.equals(s0)) {// || s1 != s0) {
+			if (!s1.equals(s0) || s1 != s0) {
 				// yes he is a trader/guest (Case 1-3)
 				// logger.info(person + " is a guest of a trade mission and will use an
 				// unoccupied bed randomly.");
@@ -240,15 +240,13 @@ public class Sleep extends Task implements Serializable {
 							// Case 7: the settlement has only empty, designated (ED) bed(s) available
 							// Question : will the owner of this bed be coming back soon from duty ?
 							// TODO : will split into Case 2a and Case 2b.
-							/*
-							 * accommodations = (LivingAccommodations)
-							 * q7.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
-							 * walkToActivitySpotInBuilding(q7, BuildingFunction.LIVING_ACCOMODATIONS,
-							 * false); Building startBuilding = BuildingManager.getBuilding(person);
-							 * logger.info("Case 7a: " + person + " is walking from " + startBuilding +
-							 * " to use someone else's quarters at " + q7);
-							 * accommodations.addSleeper(person, false);
-							 */
+							
+//							accommodations = q7.getLivingAccommodations();
+//							walkToActivitySpotInBuilding(q7, BuildingFunction.LIVING_ACCOMODATIONS, false); 
+//							Building startBuilding = BuildingManager.getBuilding(person);
+//							logger.info("Case 7a: " + person + " is walking from " + startBuilding + " to use someone else's quarters at " + q7);
+//							accommodations.addSleeper(person, false);
+							
 							// logger.info("Case 7b: " + person + " will look for a spot to fall asleep.");
 
 							// Walk to random location.
@@ -548,17 +546,25 @@ public class Sleep extends Task implements Serializable {
 			LivingAccommodations quarters = building.getLivingAccommodations();
 			boolean notFull = quarters.getSleepers() < quarters.getBeds();
 			// Check if an unmarked bed is wanted
-			if (unmarked && notFull && quarters.hasAnUnmarkedBed()) {
-				result.add(building);
-			} else if (notFull) {
+			if (unmarked) {
+				if (quarters.hasAnUnmarkedBed() && notFull ) {
+					result.add(building);
+				}
+			}
+			else if (notFull) {
 				result.add(building);
 			}
-
 		}
 
 		return result;
 	}
 
+	/***
+	 * Gets a list of robotic stations with empty spots
+	 * 
+	 * @param buildingList
+	 * @return
+	 */
 	private static List<Building> getRoboticStationsWithEmptySlots(List<Building> buildingList) {
 		List<Building> result = new ArrayList<Building>();
 

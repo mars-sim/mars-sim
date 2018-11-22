@@ -610,7 +610,7 @@ public class MalfunctionManager implements Serializable {
 
 			double old_rel = partConfig.getReliability(id);
 			double old_prob = malfunctionConfig.getRepairPartProbability(malfunction.getName(), part_name);
-			double old_weight = (100 - old_rel) * old_prob / 100D;
+			double old_failure = (100 - old_rel) * old_prob / 100D;
 			double old_mal_probl_failure = malfunction.getProbability();
 
 			// Increment the number of failure for this Part
@@ -621,19 +621,19 @@ public class MalfunctionManager implements Serializable {
 			// String name = p.getName();
 			double new_rel = partConfig.getReliability(id);
 			double new_prob = malfunctionConfig.getRepairPartProbability(malfunction.getName(), part_name);
-			double new_rate = (100 - new_rel) * new_prob / 100D;
+			double new_failure = (100 - new_rel) * new_prob / 100D;
 			double new_mal_prob_failure = 0;
 			logger.warning("Updating field reliability data for the part '" + part_name + "' as follows :");
-			logger.warning("(1). Reliability: " + Math.round(old_rel * 1000.0) / 1000.0 + " % --> "
+			logger.warning("   (1).  Reliability : " + Math.round(old_rel * 1000.0) / 1000.0 + " % --> "
 					+ Math.round(new_rel * 1000.0) / 1000.0 + " %");
 //				 logger.warning("(2). Part Needed Probability: " + Math.round(old_prob*1000.0)/1000.0 + " % --> "
 //						 + Math.round(new_prob*1000.0)/1000.0 + " %");
-			logger.warning("(2). Failure Rate: " + Math.round(old_weight * 1000.0) / 1000.0 + " % --> "
-					+ Math.round(new_rate * 1000.0) / 1000.0 + " %");
-			new_mal_prob_failure = (old_mal_probl_failure + new_rate) / 2.0;
+			logger.warning("   (2). Failure Rate : " + Math.round(old_failure * 1000.0) / 1000.0 + " % --> "
+					+ Math.round(new_failure * 1000.0) / 1000.0 + " %");
+			new_mal_prob_failure = (old_mal_probl_failure + new_failure) / 2.0;
 
 			logger.warning("Updating field reliability data for the malfunction '" + malfunctionName + "' as follows :");
-			logger.warning("(1). Probability of Failure : " + Math.round(old_mal_probl_failure * 10000.0) / 10000.0
+			logger.warning("   (3).  Probability : " + Math.round(old_mal_probl_failure * 10000.0) / 10000.0
 					+ " % --> " + Math.round(new_mal_prob_failure * 10000.0) / 10000.0 + " %");
 			malfunction.setProbability(new_mal_prob_failure);
 

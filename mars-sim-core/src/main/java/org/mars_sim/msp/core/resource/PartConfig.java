@@ -44,30 +44,26 @@ public final class PartConfig implements Serializable {
 	public static final String PROBABILITY = "probability";
 	public static final String MAX_NUMBER = "max-number";
 
+	/** The assumed # of years for calculating MTBF. */
 	public static final int NUM_YEARS = 3;
-
+	/** The maximum possible mean time between failure rate on Mars (Note that Mars has 669 sols in a year). */
 	public static final double MAX_MTBF = 669 * NUM_YEARS;
-
+	/** The maximum possible reliability percentage. */
+	public static final double MAX_RELIABILITY = 99.999;
+	/** The next global part ID. */
 	private static int nextID;
+
+	private static Set<Part> partSet = new TreeSet<Part>();
+	private static Map<String, Part> namePartMap;
+	private static Map<Integer, Double> MTBF_map;
+	private static Map<Integer, Double> reliability_map;
+	private static Map<Integer, Integer> failure_map;
 
 	private static MarsClock marsClock;
 
 //	private static UnitManager unitManager;
 
-	// Data members.
-	// private Set<ItemResource> itemResources = new HashSet<ItemResource>();
-	private static Set<Part> partSet = new TreeSet<Part>();
-
-	private static Map<String, Part> namePartMap;
-
-	private static Map<Integer, Double> MTBF_map;
-
-	// private Map<Integer, Double> usage_map;
-
-	private static Map<Integer, Double> reliability_map;
-
-	private static Map<Integer, Integer> failure_map;
-
+	
 	/**
 	 * Constructor
 	 * 
@@ -76,8 +72,7 @@ public final class PartConfig implements Serializable {
 	 */
 	public PartConfig(Document itemResourceDoc) {
 		// Pick up from the last resource id
-		nextID = ResourceUtil.FIRST_ITEM_RESOURCE;// SimulationConfig.instance().getResourceConfiguration().getNextID()
-													// + 1;
+		nextID = ResourceUtil.FIRST_ITEM_RESOURCE;
 
 //		unitManager = Simulation.instance().getUnitManager();
 
@@ -93,6 +88,10 @@ public final class PartConfig implements Serializable {
 
 	}
 
+	/**
+	 * Sets up the reliability, MTBF and failure map
+	 * 
+	 */
 	public void setupReliability() {
 		MTBF_map = new HashMap<Integer, Double>();
 		reliability_map = new HashMap<Integer, Double>();
@@ -110,6 +109,11 @@ public final class PartConfig implements Serializable {
 		return MTBF_map;
 	}
 
+	/**
+	 * Computes reliability for a given part 
+	 * 
+	 * @param p
+	 */
 	public void computeReliability(Part p) {
 
 		int id = p.getID();
@@ -143,12 +147,20 @@ public final class PartConfig implements Serializable {
 //		 + Math.round(percent_reliability*100.0)/100.0 + " %", null);
 
 		if (percent_reliability >= 100)
-			percent_reliability = 99.999;
+			percent_reliability = MAX_RELIABILITY;
 
 		reliability_map.put(id, percent_reliability);
 
 	}
 
+	/**
+	 * Computes the MTBF 
+	 * 
+	 * @param numSols
+	 * @param numFailures
+	 * @param p
+	 * @return
+	 */
 	public double computeMTBF(double numSols, int numFailures, Part p) {
 		int numItem = 0;
 		// obtain the total # of this part in used from all settlements
@@ -179,6 +191,12 @@ public final class PartConfig implements Serializable {
 		return reliability_map.get(id);
 	}
 
+	/**
+	 * Sets the failure rate for a given part
+	 * 
+	 * @param p
+	 * @param num
+	 */
 	public void setFailure(Integer p, int num) {
 		int old_failures = failure_map.get(p);// .getID());
 		failure_map.put(p, old_failures + num);
