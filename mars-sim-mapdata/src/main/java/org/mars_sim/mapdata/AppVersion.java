@@ -7,13 +7,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+
 import java.util.Properties;
 
-import org.tukaani.xz.BasicArrayCache;
-import org.tukaani.xz.SeekableFileInputStream;
-import org.tukaani.xz.SeekableInputStream;
-import org.tukaani.xz.SeekableXZInputStream;
 import org.tukaani.xz.XZInputStream;
 
 
@@ -54,7 +50,7 @@ public class AppVersion {
     
 	/**
 	 * Gets the app.version property value from
-	 * the ./main.properties file of the base folder
+	 * the ./map.properties file of the base folder
 	 *
 	 * @return app.version string
 	 * @throws IOException

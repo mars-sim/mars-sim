@@ -1627,6 +1627,18 @@ public class PersonConfig implements Serializable {
 		return countries.get(id);
 	}
 
+	public int getCountryNum(String c) {
+		if (countries == null) {
+			countries = createCountryList();
+		}
+		for (int i=0; i<countries.size(); i++) {
+			if (countries.get(i).equalsIgnoreCase(c))
+				return i;
+		}
+		
+		return -1;
+	}
+	
 	/**
 	 * Create ESA country list
 	 * 

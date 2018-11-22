@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.terminal;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 
@@ -24,10 +25,12 @@ public class Commander implements Serializable {
     private String firstName;
     private String lastName;
     private String gender;
-    private int age;
-    private int job;
+    private String jobStr = "";
+    private String countryStr = "";
+    private int age = -1;
+    private int jobInt = -1;
     private int phase;
-    private int country;
+    private int countryInt = -1;
     
     public String getFullName() {
     	if (firstName == null && lastName == null)
@@ -62,11 +65,23 @@ public class Commander implements Serializable {
     }
 
     public int getCountry() {
-    	return country-1;
+    	if (countryInt == -1)
+    		countryInt = SimulationConfig.instance().getPersonConfiguration().getCountryNum(countryStr) + 1;
+    	return countryInt - 1;
     }
     
     public void setCountry(int c) {
-    	country = c;
+    	countryInt = c;
+    }
+    
+    public void setCountryStr(String c) {
+    	countryStr = c;
+    }
+    
+    public String getCountryStr() {
+    	if (countryStr.equals(""))
+    		countryStr = UnitManager.getCountryByID(countryInt-1);
+    	return countryStr;
     }
     
     public int getAge() {
@@ -78,13 +93,25 @@ public class Commander implements Serializable {
     }
 
     public int getJob() {
-    	return job-1;
+    	if (jobInt == -1)
+    		jobInt = JobType.getJobNum(jobStr) + 1;
+    	return jobInt - 1;
     }
     
     public void setJob(int j) {
-    	job = j;
+    	jobInt = j;
     }
 
+    public void setJobStr(String j) {
+    	jobStr = j;
+    }
+
+    public String getJobStr() {
+    	if (jobStr.equals(""))
+    		jobStr = JobType.getEditedJobString(jobInt-1);
+    	return jobStr;
+    }
+    
     public int getPhase() {
     	return phase;
     }
@@ -112,7 +139,7 @@ public class Commander implements Serializable {
     		s = Msg.getString("ReportingAuthorityType.long.MarsSociety");
     	}
     	else {
-    		s = UnitManager.getSponsorByCountryID(country-1);
+    		s = UnitManager.getSponsorByCountryID(countryInt-1);
     	}
     	return s;
     }
@@ -129,13 +156,14 @@ public class Commander implements Serializable {
     
     @Override
     public String toString() {
-        return System.lineSeparator() + getFieldName("First Name: ") + firstName +
-        	   System.lineSeparator() + getFieldName("Last Name: ") + lastName +
-        	   System.lineSeparator() + getFieldName("   Gender: ") + gender +
-        	   System.lineSeparator() + getFieldName("   Age: ") + age +
-        	   System.lineSeparator() + getFieldName("   Job: ") + JobType.getEditedJobString(job-1) +
-        	   System.lineSeparator() + getFieldName("   Country: ") + UnitManager.getCountryByID(country-1) + 
-        	   System.lineSeparator() + getFieldName("   Sponsor: ") + getSponsor() 
+        return System.lineSeparator() + getFieldName("    First Name : ") + firstName +
+        	   System.lineSeparator() + getFieldName("     Last Name : ") + lastName +
+        	   System.lineSeparator() + getFieldName("        Gender : ") + gender +
+        	   System.lineSeparator() + getFieldName("           Age : ") + age +
+        	   System.lineSeparator() + getFieldName("           Job : ") + getJobStr() +
+        	   System.lineSeparator() + getFieldName("       Country : ") + getCountryStr() + 
+        	   System.lineSeparator() + getFieldName("       Sponsor : ") + getSponsor() +
+        	   System.lineSeparator() + getFieldName(" MS Affiliated : ") + isMarsSocietyAffiliated() 
 //        	   System.lineSeparator() + "   Settlement Phase: " + phase
         	   ;
         

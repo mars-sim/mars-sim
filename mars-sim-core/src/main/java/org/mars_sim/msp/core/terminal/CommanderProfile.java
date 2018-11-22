@@ -12,16 +12,23 @@ import org.beryx.textio.ReadHandlerData;
 import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.swing.SwingTextTerminal;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
 
@@ -30,11 +37,19 @@ import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
  */
 public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 
+	private static Logger logger = Logger.getLogger(CommanderProfile.class.getName());
+
     private static final String KEY_STROKE_UP = "pressed UP";
     private static final String KEY_STROKE_DOWN = "pressed DOWN";
 
     private static final String ONE_SPACE = " ";
     
+//	private static ClassLoader loader = InteractiveTerm.class.getClassLoader();
+//	private static final String path = loader.getSystemClassLoader().getResource(".").getPath() + "/commander.properties";
+    private static final String FILENAME = "/commander.profile";
+	private static final String DIR = Simulation.DEFAULT_DIR;
+	private static final String PATH = DIR + FILENAME;
+	
     private int choiceIndex = -1;
     
     private String originalInput = "";
@@ -92,8 +107,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         
 //        setUpMouseCopyKey();
         setUpArrows();
-        
-        
+            
         addString(textIO, getFieldName(fields[0]), () -> commander.getFirstName(), s -> commander.setFirstName(s));
         addString(textIO, getFieldName(fields[1]), () -> commander.getLastName(), s -> commander.setLastName(s));     
         addGender(textIO, getFieldName(fields[2]), () -> commander.getGender(), s -> commander.setGender(s));
@@ -109,9 +123,23 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         terminal.println(System.lineSeparator() 
         		+ "                * * *  COMMANDER'S PROFILE * * *" 
         		+ System.lineSeparator()
-        		+ commander
+        		+ commander.toString()
         		+ System.lineSeparator());
         UnitManager.setCommander(true);
+        
+        boolean toSave = textIO.newBooleanInputReader().withDefaultValue(true).read("Save this profile");
+        
+    	if (toSave) {
+			terminal.print(System.lineSeparator());
+	        try {
+				saveProfile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	
+
     }
     
     public void setUpAbortKey() {
@@ -394,6 +422,51 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     }
     
 
+	public void saveProfile() throws IOException {
+	   	Properties p = new Properties();
+		p.setProperty("commander.lastname", commander.getLastName());
+		p.setProperty("commander.firstname", commander.getFirstName());
+		p.setProperty("commander.gender", commander.getGender());
+		p.setProperty("commander.age", commander.getAge() + "");
+		p.setProperty("commander.job", commander.getJobStr());
+		p.setProperty("commander.country", commander.getCountryStr());
+		p.setProperty("commander.isMarsSocietyAffiliated", commander.isMarsSocietyAffiliated());
+	    saveProperties(p);
+
+	}
+	
+	public void saveProperties(Properties p) throws IOException {
+        FileOutputStream fr = new FileOutputStream(PATH);
+        p.store(fr, "Commander's Profile");
+        fr.close();
+        logger.config("Commander's profile saved: " + p);
+    }
+
+    public boolean loadProperties() throws IOException {
+    	
+		File f = new File(DIR, FILENAME);
+
+		if (f.exists() && f.canRead()) {
+	    	
+	    	Properties p = new Properties();
+	        FileInputStream fi = new FileInputStream(PATH);
+	        p.load(fi);
+	        fi.close();
+	        System.out.println("Commander's profile loaded: " + p);
+	        commander.setLastName(p.getProperty("commander.lastname"));
+	        commander.setFirstName(p.getProperty("commander.firstname"));
+	        commander.setGender(p.getProperty("commander.gender"));
+	        commander.setAge(Integer.parseInt(p.getProperty("commander.age")));
+	        commander.setJobStr(p.getProperty("commander.job"));
+	        commander.setCountryStr(p.getProperty("commander.country"));  
+	        return true;
+		}
+		else {
+	        logger.config("Can't find the 'commander.profile' file.");
+	        return false;
+		}
+    }
+    
     @Override
     public String toString() {
         return "Commander's Profile";

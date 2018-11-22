@@ -124,6 +124,16 @@ public enum JobType {
 		return editedJobList.get(num);
 	}
 	
+	public static int getJobNum(String s) {
+		if (editedJobList.isEmpty())
+			getEditedList();
+		for (int i=0; i<editedJobList.size(); i++) {
+			if (editedJobList.get(i).equalsIgnoreCase(s))
+				return i;
+		}
+		return -1;
+	}
+	
 	/**
 	 * gives back a list of all valid values for the JobType enum.
 	 */

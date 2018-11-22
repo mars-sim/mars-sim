@@ -2292,6 +2292,8 @@ public class UnitManager implements Serializable {
 //	}
 
 	public static int getCountryID(String country) {
+		if (countries == null)
+			countries = SimulationConfig.instance().getPersonConfiguration().createCountryList();
 		return countries.indexOf(country);
 	}
 
