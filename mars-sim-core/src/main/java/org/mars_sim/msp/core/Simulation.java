@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -642,6 +641,24 @@ public class Simulation implements ClockListener, Serializable {
 
     }
     
+    /**
+     * Computes the size of the file
+     * 
+     * @param file
+     * @return the file size with unit in a string
+     */
+    private String computeFileSize(File file) {
+		// Compute the size of the saved sim
+		fileSize = file.length() / 1000D;
+		String fileStr = "";
+
+		if (fileSize < 1000)
+			fileStr = Math.round(fileSize / 10.0) * 10.0 + " KB";
+		else
+			fileStr = Math.round(fileSize / 10_000.0 ) * 10.0  + " MB";
+		
+		return fileStr;
+    }
  
 	/**
 	 * Reads a serialized simulation from a file.
@@ -655,13 +672,7 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("Loading and processing the saved sim. Please wait...");
 		
 		// Compute the size of the saved sim
-		fileSize = (file.length() / 1000D);
-		String fileStr = "";
-
-		if (fileSize < 1000)
-			fileStr = Math.round(fileSize / 10.0) * 10.0 + " KB";
-		else
-			fileStr = Math.round(fileSize / 10_000.0 ) * 10.0  + " MB";
+		String fileStr = computeFileSize(file);
 
 		loadBuild = SimulationConfig.instance().build;
 		if (loadBuild == null)
@@ -864,9 +875,9 @@ public class Simulation implements ClockListener, Serializable {
 //			X86Options x86 = new X86Options();
 //			LZMA2Options lzma2 = new LZMA2Options();
 //			FilterOptions[] options = { x86, lzma2 };
-			logger.config("Encoder memory usage: "
+			logger.config("Encoder memory usage : "
 			              + FilterOptions.getEncoderMemoryUsage(options) + " KiB");
-			logger.config("Decoder memory usage: "
+			logger.config("Decoder memory usage : "
 			              + FilterOptions.getDecoderMemoryUsage(options) + " KiB");
 					
 			xzout = new XZOutputStream(new BufferedOutputStream(new FileOutputStream(file)), options);
@@ -874,6 +885,9 @@ public class Simulation implements ClockListener, Serializable {
 			ByteStreams.copy(is, xzout);
 			
 			xzout.finish();
+			
+			// Print the size of the saved sim
+			logger.config("           File size : " + computeFileSize(file));
 			
 			logger.config("Done saving. The simulation resumes.");
 
@@ -916,23 +930,13 @@ public class Simulation implements ClockListener, Serializable {
 			
 			if (oos != null)
 				oos.close();
-
-//			if (fis != null)
-//				fis.close();
 			
 			if (is != null)
 				is.close();
 			
 			if (baos != null)
 				baos.close();
-
-//			if (uncompressed != null) {
-//				// Delete temp file when program exits.
-//				uncompressed.deleteOnExit();
-//				uncompressed.delete();
-//				uncompressed = null;
-//			}
-
+			
 			justSaved = true;
 
 		} 

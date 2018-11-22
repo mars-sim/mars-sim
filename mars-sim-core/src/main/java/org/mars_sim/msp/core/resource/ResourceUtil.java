@@ -53,6 +53,8 @@ public class ResourceUtil implements Serializable {
 	public static final String FOOD_WASTE = "food waste";
 	public static final String SOLID_WASTE = "solid waste";
 	public static final String TOXIC_WASTE = "toxic waste";
+	
+//	public static final String TOILET_WASTE = "toilet waste";
 
 	public static final String GREY_WATER = "grey water";
 	public static final String BLACK_WATER = "black water";
@@ -111,9 +113,14 @@ public class ResourceUtil implements Serializable {
 
 	public static int blackWaterID;
 	public static int greyWaterID;
+	
 	public static int cropWasteID;
-	public static int fertilizerID;
 	public static int foodWasteID;
+	public static int toxicWasteID;
+	
+	public static int toiletTissueID;
+	
+	public static int fertilizerID;
 	public static int NaClOID;
 
 	public static AmountResource foodAR;
@@ -295,14 +302,18 @@ public class ResourceUtil implements Serializable {
 
 		greyWaterID = findAmountResource(GREY_WATER).getID(); // 20
 		cropWasteID = findAmountResource(CROP_WASTE).getID(); // 15
+		foodWasteID = findAmountResource(FOOD_WASTE).getID();
+		toxicWasteID = findAmountResource(TOXIC_WASTE).getID();
+		
+		toiletTissueID = findAmountResource(TOILET_TISSUE).getID();
+		
 		fertilizerID = findAmountResource(FERTILIZER).getID(); // 139
 
 		regolithID = findAmountResource(REGOLITH).getID(); // 156
 		sandID = findAmountResource(SAND).getID();
 
 		soymilkID = findAmountResource(SOYMILK).getID();
-
-		foodWasteID = findAmountResource(FOOD_WASTE).getID();
+	
 		NaClOID = findAmountResource(SODIUM_HYPOCHLORITE).getID();
 		
 		// in AmountResource

@@ -27,14 +27,19 @@ import java.util.stream.Stream;
 public class SwingHandler {
     private static final String KEY_STROKE_UP = "pressed UP";
     private static final String KEY_STROKE_DOWN = "pressed DOWN";
-
+    private static final String KEY_STROKE_LEFT = "pressed LEFT";
+    private static final String KEY_STROKE_RIGHT = "pressed RIGHT";
+    
     private final SwingTextTerminal terminal;
 
     private String originalInput = "";
     private int choiceIndex = -1;
     private String[] choices = {};
 
-
+    private String historyInput = "";
+    private int historyIndex = -1;
+    private String[] history = {};
+    
     public SwingHandler(SwingTextTerminal terminal) {
         this.terminal = terminal;
         terminal.registerHandler(KEY_STROKE_UP, t -> {
@@ -52,6 +57,15 @@ public class SwingHandler {
             if(choiceIndex >= 0) {
                 choiceIndex--;
                 String text = (choiceIndex < 0) ? originalInput : choices[choiceIndex];
+                t.replaceInput(text, false);
+            }
+            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
+        });
+        
+        terminal.registerHandler(KEY_STROKE_LEFT, t -> {
+            if (historyIndex >= 0) {
+                historyIndex--;
+                String text = (historyIndex < 0) ? historyInput : choices[historyIndex];
                 t.replaceInput(text, false);
             }
             return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);

@@ -26,12 +26,15 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	private static final String EXPERT_MODE = " [Expert Mode]";
 	
 	private boolean leaveSystem = false;
+	private boolean quit = false;
+	private String prompt;
 	
 	private SwingTextTerminal terminal;
+	private SwingHandler handler;
 	
 	private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock;
-
+	
 	public ChatMenu() {
 		masterClock = sim.getMasterClock();
 	}
@@ -48,7 +51,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
         AppUtil.printGsonMessage(terminal, initData);
 
         Party party = new Party();
-        SwingHandler handler = new SwingHandler(textIO, party);
+        handler = new SwingHandler(textIO, party);
       
         if (ChatUtils.getConnectionMode() == 1) {
         	terminal.println("Cannot establish more than one line of connections. Please type 'exit' to leave the graphic chat box first." + System.lineSeparator());			
@@ -80,8 +83,8 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	     
 	        List<String> names = CollectionUtils.createAutoCompleteData();
 //	        String[] array = names.toArray(new String[names.size()]);
-	        boolean quit = false;
-
+	        quit = false;
+ 
 	        while (!quit) {
 	        	
 		        String expertString = "";
@@ -90,7 +93,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	        		expertString = EXPERT_MODE;
 	        	}
 	        	
-	        	String prompt = "Connected with MarsNet" + expertString + " >";
+	        	prompt = "Connected with MarsNet" + expertString + " >";
 	        	
 	        	if (ChatUtils.personCache != null)
 	        		prompt = "Connected with " + ChatUtils.personCache.toString() + expertString + " >";
@@ -226,6 +229,20 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 			return false;
 	}
 
+	public void executeQuit() {
+		quit = true;
+		leaveSystem = true;
+		ChatUtils.setConnectionMode(-1);
+//		prompt = "/q";
+		ChatUtils.personCache = null;
+		ChatUtils.robotCache = null;
+		ChatUtils.settlementCache = null;
+		ChatUtils.vehicleCache = null;
+//		return;
+//		prompt = "Enter your choice:";
+//		terminal.println();
+//		handler.executeOneTask();
+	}
 	
     @Override
     public String toString() {

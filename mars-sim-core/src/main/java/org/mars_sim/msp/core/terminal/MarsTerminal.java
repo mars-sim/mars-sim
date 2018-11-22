@@ -1,5 +1,7 @@
 package org.mars_sim.msp.core.terminal;
 
+import org.beryx.textio.TextTerminal;
+import org.beryx.textio.jline.JLineTextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
 
 import javax.swing.*;
@@ -43,6 +45,14 @@ public class MarsTerminal extends SwingTextTerminal {
         textPane.addMouseListener(popupListener);
     }
 
+    public static void clearScreen(TextTerminal<?> terminal) {
+        if (terminal instanceof JLineTextTerminal) {
+            terminal.print("\033[H\033[2J");
+        } else if (terminal instanceof SwingTextTerminal) {
+            ((SwingTextTerminal) terminal).resetToOffset(0);
+        }
+    }
+    
     private void configureMainMenu() {
         JFrame frame = getFrame();
         frame.setTitle("Mars Simulation Project");
@@ -50,6 +60,10 @@ public class MarsTerminal extends SwingTextTerminal {
         JMenu menu = new JMenu("Help");
         menu.setMnemonic(KeyEvent.VK_H);
 
+        JMenuItem clearItem = new JMenuItem("Clear Screen", KeyEvent.VK_A);
+        clearItem.addActionListener(e -> clearScreen(this));
+        menu.add(clearItem);
+        
         JMenuItem menuItem = new JMenuItem("About", KeyEvent.VK_A);
         menuItem.addActionListener(e -> JOptionPane.showMessageDialog(frame, 
         		  "      Mars Simulation Project\n"

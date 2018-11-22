@@ -19,6 +19,7 @@ import org.beryx.textio.PropertiesConstants;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.TextTerminal;
+import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.terminal.AppUtil;
 import org.mars_sim.msp.core.terminal.RunnerData;
 
@@ -33,6 +34,8 @@ public class Weather implements BiConsumer<TextIO, RunnerData> {
     private boolean useKmh;
     private boolean useMbar;
 
+	private SwingTextTerminal terminal;
+	
     public static void main(String[] args) {
         TextIO textIO = TextIoFactory.getTextIO();
         new Weather().accept(textIO, null);
@@ -40,10 +43,10 @@ public class Weather implements BiConsumer<TextIO, RunnerData> {
 
     @Override
     public void accept(TextIO textIO, RunnerData runnerData) {
-        TextTerminal<?> terminal = textIO.getTextTerminal();
+//        TextTerminal<?> terminal = textIO.getTextTerminal();
+    	terminal = (SwingTextTerminal)textIO.getTextTerminal();
         String initData = (runnerData == null) ? null : runnerData.getInitData();
         AppUtil.printGsonMessage(terminal, initData);
-
 
         terminal.setBookmark("COUNTDOWN");
         terminal.println("Seconds to start:");
@@ -61,7 +64,7 @@ public class Weather implements BiConsumer<TextIO, RunnerData> {
         terminal.println();
 
         terminal.setBookmark("MAIN");
-        while(true) {
+        while (true) {
             useCelsius = textIO.newBooleanInputReader().withDefaultValue(true).read("Display temperature in Celsius (Press 'N' for Fahrenheit)");
             useKmh = textIO.newBooleanInputReader().withDefaultValue(true).read("Display wind speed in km/h (Press 'N' for mph)");
             useMbar = textIO.newBooleanInputReader().withDefaultValue(true).read("Display atmospheric pressure in mbar (Press 'N' for kPa)");
@@ -76,14 +79,16 @@ public class Weather implements BiConsumer<TextIO, RunnerData> {
                     t.moveToLineStart();
                     delay(80);
                     t.print(getData());
+                    t.println("-------------------------------------------------------");
+                    t.println("  Temperature      Wind speed      Atmospheric pressure");
+                    t.println("-------------------------------------------------------");
                     delay(400);
                 }
             });
             terminal.println();terminal.println();terminal.println();
 
-            if(!textIO.newBooleanInputReader()
-                    .withPropertiesPrefix("exit")
-                    .withDefaultValue(true).read("Run again?")) break;
+            if (!textIO.newBooleanInputReader().withPropertiesPrefix("exit").withDefaultValue(true).read("Run again?")) 
+            	break;
             terminal.resetToBookmark("MAIN");
         }
 

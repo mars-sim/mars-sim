@@ -37,6 +37,8 @@ public class InteractiveTerm {
     private boolean keepRunning;
 	
 	private MarsTerminal terminal;
+	
+	private static ChatMenu chatMenu;
 
 	private static CommanderProfile profile;
 	
@@ -79,6 +81,9 @@ public class InteractiveTerm {
 		
         SwingHandler handler = new SwingHandler(textIO, ci);
         
+		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
+		terminal.registerUserInterruptHandler(term -> {}, false);
+		
 		terminal.print(System.lineSeparator() 
 				+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------" 
 				+ System.lineSeparator()
@@ -114,26 +119,40 @@ public class InteractiveTerm {
 	 */
 	public void loadTerminalMenu() {
 		keepRunning = true;
-		
-		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
-		terminal.registerUserInterruptHandler(term -> {}, false);
-        
 		// Call ChatUils' default constructor to initialize instances
 		new ChatUtils();
+		chatMenu = new ChatMenu();
 		
+		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
+		terminal.registerUserInterruptHandler(term -> {
+				chatMenu.executeQuit();
+				terminal.resetToBookmark("MENU");
+			}, false);
+            
+	    // Set the bookmark here
+        terminal.setBookmark("MENU");
+        
 		while (keepRunning) {
+			     
 		    BiConsumer<TextIO, RunnerData> menu = chooseMenu(textIO);
 		    //TextIO textIO = chooseTextIO();
 		    terminal.printf(System.lineSeparator());
+		    
 //			setChoices();//"1", "2", "3", "4");
+		       
+		    // Set up the prompt for the menu
 		    menu.accept(textIO, null);
+	        
 	    	if (masterClock == null)
 	    		masterClock = Simulation.instance().getMasterClock();
+	    	
 		    // if the sim is being saved, enter this while loop
 			while (masterClock.isSavingSimulation()) {
 		    	delay(500L);
 		    }
 		}
+		
+//        terminal.resetToBookmark("MENU");
 	}
     
 	
@@ -155,13 +174,14 @@ public class InteractiveTerm {
     
     private static BiConsumer<TextIO, RunnerData> chooseMenu(TextIO textIO) {
         List<BiConsumer<TextIO, RunnerData>> apps = Arrays.asList(
-        		new ChatMenu(),
+        		chatMenu,
                 new AutosaveMenu(),
                 new SaveMenu(),
                 new TimeRatioMenu(),
+//                new Weather(),
                 new ExitMenu()
         );
-
+       
         BiConsumer<TextIO, RunnerData> app = textIO.<BiConsumer<TextIO, RunnerData>>newGenericInputReader(null)
             .withNumberedPossibleValues(apps)
             .read(System.lineSeparator() 

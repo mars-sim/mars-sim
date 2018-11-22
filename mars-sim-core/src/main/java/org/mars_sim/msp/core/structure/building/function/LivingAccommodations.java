@@ -271,17 +271,17 @@ public class LivingAccommodations extends Function implements Serializable {
 		if (solCache != solElapsed) {
 			solCache = solElapsed;
 			// Designate a bed for each inhabitant
-			if (settlement == null)
-				settlement = building.getBuildingManager().getSettlement();
-			for (Person p : settlement.getIndoorPeople()) {
-				if (p.getBed() == null && (sleepers < maxNumBeds)) {
-					registerSleeper(p, false);
+			if (sleepers < maxNumBeds) {
+				if (settlement == null)
+					settlement = building.getBuildingManager().getSettlement();
+				for (Person p : settlement.getIndoorPeople()) {
+					if (p.getBed() == null) {
+						registerSleeper(p, false);
+					}
 				}
 			}
 		}
 
-		// inv = building.getSettlementInventory();
-		// inv = building.getBuildingManager().getSettlement().getInventory();
 		int rand = RandomUtil.getRandomInt(TOILET_CHANCE);
 		if (rand == 0) {
 			// Inventory inv = settlement.getInventory();
@@ -296,7 +296,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	 */
 	public void generateWaste(double time) {
 		double random_factor = 1 + RandomUtil.getRandomDouble(0.25) - RandomUtil.getRandomDouble(0.25);
-		int numBed = assignedBeds.size();
+		int numBed = this.getNumAssignedBeds();
 		// int pop = settlement.getNumCurrentPopulation();
 		// Total average wash water used at the settlement over this time period.
 		// This includes showering, washing hands, washing dishes, etc.
@@ -336,10 +336,10 @@ public class LivingAccommodations extends Function implements Serializable {
 																										// *
 																										// buildingProportionCap;
 		if (toiletPaperUsageBuilding > MIN)
-			Storage.retrieveAnResource(toiletPaperUsageBuilding, ResourceUtil.toiletTissueAR, inv, true);
+			Storage.retrieveAnResource(toiletPaperUsageBuilding, ResourceUtil.toiletTissueID, inv, true);
 
 		if (toiletPaperUsageBuilding > MIN)
-			Storage.storeAnResource(toiletPaperUsageBuilding, ResourceUtil.toxicWasteAR, inv,
+			Storage.storeAnResource(toiletPaperUsageBuilding, ResourceUtil.toxicWasteID, inv,
 					sourceName + "::generateWaste");
 	}
 
