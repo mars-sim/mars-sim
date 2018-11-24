@@ -441,7 +441,8 @@ public class EnterAirlock extends Task implements Serializable {
 					} catch (Exception e) {
 						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-								+ " was in storingEVASuitPhase() but something wrong with retrieving/storing oxygen : " + e.getMessage(), null);
+								+ " in " + person.getLocationTag().getImmediateLocation() 
+								+ " but was unable to retrieve/store oxygen : " + e.getMessage(), null);
 						endTask();
 					}
 		
@@ -459,7 +460,8 @@ public class EnterAirlock extends Task implements Serializable {
 					} catch (Exception e) {
 						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-								+ " was in storingEVASuitPhase() but something wrong with retrieving/storing water : " + e.getMessage(), null);
+								+ " in " + person.getLocationTag().getImmediateLocation() 
+								+ " but was unable to retrieve/store water : " + e.getMessage(), null);
 						endTask();
 					}
 		

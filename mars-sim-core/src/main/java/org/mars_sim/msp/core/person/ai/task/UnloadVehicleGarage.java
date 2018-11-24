@@ -119,6 +119,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			// Initialize task phase
 			addPhase(UNLOADING);
 			setPhase(UNLOADING);
+			
+			LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+					+ " in " + person.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName() + ".", null);
 		} else
 			endTask();
 	}
@@ -157,6 +161,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			// Initialize task phase
 			addPhase(UNLOADING);
 			setPhase(UNLOADING);
+			
+			LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
+					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
+					+ " in " + robot.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName() + ".", null);
 		} else
 			endTask();
 	}
@@ -187,6 +195,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		addPhase(UNLOADING);
 		setPhase(UNLOADING);
 
+		LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
+				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+				+ " in " + person.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName() + ".", null);
+		
 //		logger.fine(person.getName() + " is unloading " + vehicle.getName());
 	}
 
@@ -210,6 +222,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		addPhase(UNLOADING);
 		setPhase(UNLOADING);
 
+		LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
+				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
+				+ " in " + robot.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName() + ".", null);
+		
 //		logger.fine(robot.getName() + " is unloading " + vehicle.getName());
 	}
 
