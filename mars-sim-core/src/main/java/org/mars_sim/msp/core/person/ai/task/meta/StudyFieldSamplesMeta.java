@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -74,7 +75,7 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 	        // Check that there are available field samples to study.
 	        try {
 	            Unit container = person.getContainerUnit();
-	            if (container != null) {
+				if (!(container instanceof MarsSurface)) {
 	                Inventory inv = container.getInventory();
 	                //AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
 	                if (inv.getAmountResourceStored(ResourceUtil.rockSamplesAR, false) < StudyFieldSamples.SAMPLE_MASS) {

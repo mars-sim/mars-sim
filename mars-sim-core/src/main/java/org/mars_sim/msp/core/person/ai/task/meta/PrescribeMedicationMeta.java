@@ -12,7 +12,7 @@ import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.location.LocationSituation;
+//import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Doctor;
@@ -105,12 +105,12 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
 
     public boolean hasADoctor(Person patient) {
     	Collection<Person> list = null;
-        LocationSituation loc = patient.getLocationSituation();
-        if (LocationSituation.IN_SETTLEMENT == loc) {
+//        LocationSituation loc = patient.getLocationSituation();
+        if (patient.isInSettlement()) {//LocationSituation.IN_SETTLEMENT == loc) {
             list = patient.getSettlement().getIndoorPeople();
 
         }
-        else if (LocationSituation.IN_VEHICLE == loc) {
+        else if (patient.isInVehicle()) {//LocationSituation.IN_VEHICLE == loc) {
         	Rover rover = (Rover)patient.getContainerUnit();
         	list = rover.getCrew();
         	
@@ -169,10 +169,10 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
         Collection<Person> patientList = null;
         
         if (p != null) {
-	        if (LocationSituation.IN_SETTLEMENT == p.getLocationSituation()) {
+	        if (p.isInSettlement()) {//LocationSituation.IN_SETTLEMENT == p.getLocationSituation()) {
 	            patientList = p.getSettlement().getIndoorPeople();
 	        }
-	        else if (LocationSituation.IN_VEHICLE == p.getLocationSituation()) {
+	        else if (p.isInVehicle()) {//LocationSituation.IN_VEHICLE == p.getLocationSituation()) {
 	            Vehicle vehicle = p.getVehicle();
 	            if (vehicle instanceof Crewable) {
 	                Crewable crewVehicle = (Crewable) vehicle;
@@ -182,10 +182,10 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
         }
         
         else if (r != null) {
-	        if (LocationSituation.IN_SETTLEMENT == r.getLocationSituation()) {
+	        if (r.isInSettlement()) {//LocationSituation.IN_SETTLEMENT == r.getLocationSituation()) {
 	            patientList = r.getSettlement().getIndoorPeople();
 	        }
-	        else if (LocationSituation.IN_VEHICLE == r.getLocationSituation()) {
+	        else if (r.isInVehicle()) {//LocationSituation.IN_VEHICLE == r.getLocationSituation()) {
 	            Vehicle vehicle = r.getVehicle();
 	            if (vehicle instanceof Crewable) {
 	                Crewable crewVehicle = (Crewable) vehicle;

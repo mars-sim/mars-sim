@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -77,7 +78,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	/** The unit containing this unit. */
 	protected Unit containerUnit;
 	/** The cache of containerUnit. */
-	protected Unit containerUnitCache;
+//	protected Unit containerUnitCache;
 	/** Unit location coordinates. */
 	private Coordinates location;
 
@@ -86,6 +87,8 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	/** Unit listeners. */
 	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());
 
+	private static MarsSurface marsSurface;
+	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
 	 * threads.
@@ -106,16 +109,14 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
 
 		this.identifier = getNextIdentifier();
-
 		tag = new LocationTag(this);
 
 		// Initialize data members from parameters
 		this.name = name;
 		this.description = name;
-		this.baseMass = Double.MAX_VALUE;
+		this.baseMass = 0;//Double.MAX_VALUE;
 
 		this.inventory = new Inventory(this);
-
 		this.location = new Coordinates(0D, 0D);
 
 		if (location != null) {
@@ -123,6 +124,11 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 			this.inventory.setCoordinates(location);
 		}
 
+//		if (marsSurface == null)		
+////			marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
+//			marsSurface = Simulation.instance().getMars().getMarsSurface();
+//		this.containerUnit = marsSurface;
+		
 		// Define the default LocationStateType of an unit at the start of the sim
 		if (this instanceof Robot)
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
@@ -285,6 +291,13 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * @throws Exception if error during time passing.
 	 */
 	public void timePassing(double time) {
+//		System.out.println("unit.timePassing()");
+		if (marsSurface == null) {
+////			marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
+			marsSurface = Simulation.instance().getMars().getMarsSurface();
+//			if (containerUnit == null)
+//				this.containerUnit = marsSurface;
+		}
 	}
 
 	/**
@@ -306,15 +319,15 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	}
 
 	/**
-	 * Gets the topmost container unit that owns this unit. Returns null if unit has
-	 * no container unit (meaning that the unit is outside)
+	 * Gets the topmost container unit that owns this unit (Settlement, Vehicle, Person or Robot) 
+	 * If it's on the surface of Mars, then the topmost container is MarsSurface. 
 	 * 
 	 * @return the unit's topmost container unit
 	 */
 	public Unit getTopContainerUnit() {
 		Unit topUnit = containerUnit;
-		if (topUnit != null) {
-			while (topUnit.containerUnit != null) {
+		if (!(topUnit instanceof MarsSurface)) {
+			while (topUnit.containerUnit != null && !(topUnit.containerUnit instanceof MarsSurface)) {
 				topUnit = topUnit.containerUnit;
 			}
 		}
@@ -322,12 +335,16 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		return topUnit;
 	}
 
+	
 	/**
 	 * Sets the unit's container unit.
 	 * 
 	 * @param newContainer the unit to contain this unit.
 	 */
-	public void setContainerUnit(Unit newContainer) {
+	public void setContainerUnit(Unit newContainer) {	
+		if (newContainer == null)
+			newContainer = marsSurface;
+			
 		if (this instanceof Person || this instanceof Robot)
 			updatePersonRobotState(newContainer);
 		else if (this instanceof Equipment)
@@ -338,10 +355,10 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 		else if (this instanceof Settlement)
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
-
-		if (containerUnit != null)
-			containerUnitCache = containerUnit;
-
+		
+//		if (containerUnit != null)
+//			containerUnitCache = containerUnit;
+		
 		this.containerUnit = newContainer;
 
 		fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
@@ -355,12 +372,15 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	public void updatePersonRobotState(Unit newContainer) {
 		Unit oldContainer = this.containerUnit;
 
+		if (newContainer == null)
+			System.out.println("updatePersonRobotState(): " + getName() + " has an null newContainer");
+		
 		// Case 1a : exiting a settlement
-		if (oldContainer instanceof Settlement && newContainer == null)
+		if (oldContainer instanceof Settlement && newContainer instanceof MarsSurface)
 			currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
 
 		// Case 1b (reverse of Case 1a)
-		else if (oldContainer == null && newContainer instanceof Settlement)
+		else if (oldContainer instanceof MarsSurface && newContainer instanceof Settlement)
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 
 		// Case 2a : boarding a vehicle parked inside a garage
@@ -374,11 +394,11 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 
 		// Case 3a : to board a vehicle from outside
-		else if (oldContainer == null && newContainer instanceof Vehicle)
+		else if (oldContainer instanceof MarsSurface && newContainer instanceof Vehicle)
 			currentStateType = LocationStateType.INSIDE_VEHICLE;
 
 		// Case 3b and 3c
-		else if (oldContainer instanceof Vehicle && newContainer == null) {
+		else if (oldContainer instanceof Vehicle && newContainer instanceof MarsSurface) {
 			if (((Vehicle) oldContainer).getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
 				// Case 3b : a person exits a vehicle that is within the settlement vicinity
 				currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
@@ -399,7 +419,8 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 */
 	public void updateEquipmentState(Unit newContainer) {
 		Unit oldContainer = this.containerUnit;
-
+		if (newContainer == null)
+			System.out.println("updateEquipmentState(): " + getName() + " has an null newContainer");
 		// Note : a person or a robot must be the carrier of an equipment
 
 		// Case 1a
@@ -419,11 +440,11 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 			currentStateType = LocationStateType.ON_A_PERSON;
 
 		// Case 3a
-		else if (oldContainer == null && newContainer instanceof Person)
+		else if (oldContainer instanceof MarsSurface && newContainer instanceof Person)
 			currentStateType = LocationStateType.ON_A_PERSON;
 
 		// Case 3b and 3c
-		else if (oldContainer instanceof Person && newContainer == null) {
+		else if (oldContainer instanceof Person && newContainer instanceof MarsSurface) {
 			// Case 3b (reverse of Case 3a)
 			if (((Person) oldContainer).getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
 				// this equipment can be placed in the settlement vicinity (Note : a new field
@@ -444,11 +465,12 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 */
 	public void updateVehicleState(Unit newContainer) {
 //		Unit oldContainer = this.containerUnit;
-
+		if (newContainer == null)
+			System.out.println("updateVehicleState(): " + getName() + " has an null newContainer");
 		// Note : "within a settlement vicinity" is the intermediate state between being
 		// "in a settlement" and being "outside on Mars"
 		// Case 1
-		if (newContainer != null) {
+		if (newContainer instanceof MarsSurface) {
 			if (newContainer instanceof Vehicle)
 				// in case of luv
 				currentStateType = LocationStateType.INSIDE_VEHICLE;
@@ -627,14 +649,18 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 
 		else if (this instanceof Vehicle) {
 			return ((Vehicle) this).getSettlement();
-		} else
+		} 
+		
+		else
 			return null;
 	}
 
 	public Building getBuildingLocation() {
 		if (this instanceof Equipment) {
 			return ((Equipment) this).getBuildingLocation();
-		} else if (this instanceof Person) {
+		} 
+		
+		else if (this instanceof Person) {
 			return ((Person) this).getBuildingLocation();
 		}
 
@@ -644,14 +670,18 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 
 		else if (this instanceof Vehicle) {
 			return ((Vehicle) this).getBuildingLocation();
-		} else
+		} 
+		
+		else
 			return null;
 	}
 
 	public Settlement getAssociatedSettlement() {
 		if (this instanceof Equipment) {
 			return ((Equipment) this).getAssociatedSettlement();
-		} else if (this instanceof Person) {
+		} 
+		
+		else if (this instanceof Person) {
 			return ((Person) this).getAssociatedSettlement();
 		}
 
@@ -661,14 +691,18 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 
 		else if (this instanceof Vehicle) {
 			return ((Vehicle) this).getAssociatedSettlement();
-		} else
+		} 
+		
+		else
 			return null;
 	}
 
 	public Vehicle getVehicle() {
 		if (this instanceof Equipment) {
 			return ((Equipment) this).getVehicle();
-		} else if (this instanceof Person) {
+		} 
+		
+		else if (this instanceof Person) {
 			return ((Person) this).getVehicle();
 		}
 
@@ -678,7 +712,9 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 
 		else if (this instanceof Vehicle) {
 			return ((Vehicle) this).getVehicle();
-		} else
+		} 
+		
+		else
 			return null;
 	}
 

@@ -40,7 +40,6 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.job.Astronomer;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -373,8 +372,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		updateAllAssociatedPeople();
 		updateAllAssociatedRobots();
 
+		// Set the container unit of the settlement to the MarsSurface
+		setContainerUnit(Simulation.instance().getMars().getMarsSurface());
 		// Set inventory total mass capacity.
-		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//
+		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);// 
 
 		double max = 500;
 		// Initialize inventory of this building for resource storage

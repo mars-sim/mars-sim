@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -248,7 +249,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		boolean result = false;
 		Unit containerUnit = person.getTopContainerUnit();
 
-		if (containerUnit != null) {
+		if (!(containerUnit instanceof MarsSurface)) {
 			result = true;
 			Inventory inv = containerUnit.getInventory();
 
@@ -277,7 +278,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		boolean result = false;
 		Unit containerUnit = robot.getTopContainerUnit();
 
-		if (containerUnit != null) {
+		if (!(containerUnit instanceof MarsSurface)) {
 			result = true;
 			Inventory inv = containerUnit.getInventory();
 
@@ -378,28 +379,38 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		if (person != null) {
 			// Add repair parts if necessary.
 			if (hasRepairPartsForMalfunction(person, malfunction)) {
-				Inventory inv = person.getTopContainerUnit().getInventory();
-				Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
-				Iterator<Integer> j = parts.keySet().iterator();
-				while (j.hasNext()) {
-					Integer id = j.next();
-					int number = parts.get(id);
-					inv.retrieveItemResources(id, number);
-					malfunction.repairWithParts(id, number, inv);
+				
+				Unit containerUnit = person.getTopContainerUnit();
+				if (!(containerUnit instanceof MarsSurface)) {
+					Inventory inv = containerUnit.getInventory();
+
+					Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
+					Iterator<Integer> j = parts.keySet().iterator();
+					while (j.hasNext()) {
+						Integer id = j.next();
+						int number = parts.get(id);
+						inv.retrieveItemResources(id, number);
+						malfunction.repairWithParts(id, number, inv);
+					}
 				}
 			}
 
 		} else if (robot != null) {
 			// Add repair parts if necessary.
 			if (hasRepairPartsForMalfunction(robot, malfunction)) {
-				Inventory inv = robot.getTopContainerUnit().getInventory();
-				Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
-				Iterator<Integer> j = parts.keySet().iterator();
-				while (j.hasNext()) {
-					Integer id = j.next();
-					int number = parts.get(id);
-					inv.retrieveItemResources(id, number);
-					malfunction.repairWithParts(id, number, inv);
+				
+				Unit containerUnit = robot.getTopContainerUnit();
+				if (!(containerUnit instanceof MarsSurface)) {
+					Inventory inv = containerUnit.getInventory();
+					
+					Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
+					Iterator<Integer> j = parts.keySet().iterator();
+					while (j.hasNext()) {
+						Integer id = j.next();
+						int number = parts.get(id);
+						inv.retrieveItemResources(id, number);
+						malfunction.repairWithParts(id, number, inv);
+					}
 				}
 			}
 		}

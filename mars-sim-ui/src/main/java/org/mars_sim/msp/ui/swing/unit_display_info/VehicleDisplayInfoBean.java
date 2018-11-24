@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.unit_display_info;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -46,7 +47,8 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
         boolean result = true;
         
         Unit container = unit.getContainerUnit();
-        if (container != null) result = false;
+		if (!(container instanceof MarsSurface))
+        	result = false;
         
         Vehicle vehicle = (Vehicle) unit;
         if (vehicle.isSalvaged()) result = false;
@@ -127,10 +129,12 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
         boolean result = true;
         
         Unit container = unit.getContainerUnit();
-        if (container != null) result = false;
+		if (!(container instanceof MarsSurface))
+        	result = false;
         
         Vehicle vehicle = (Vehicle) unit;
-        if (vehicle.isSalvaged()) result = false;
+        if (vehicle.isSalvaged()) 
+        	result = false;
         
         return result;
     }

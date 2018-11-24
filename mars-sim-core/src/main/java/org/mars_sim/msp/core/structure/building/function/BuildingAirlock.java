@@ -99,7 +99,7 @@ public class BuildingAirlock extends Airlock {
         	  				"[" + person.getLocationTag().getLocale() + "] "
         					+ person + " was about to get inside the airlock at " + building + " in " 
                 			+ building.getBuildingManager().getSettlement()
-                			+ ". The airlock has been pressurized and is ready to open the inner door to release the person. ", null);
+                			+ ". The airlock had been pressurized and is ready to open the inner door to release the person. ", null);
         			
                     // Pump air into the airlock to make it breathable
                 	if (air == null)
@@ -114,15 +114,15 @@ public class BuildingAirlock extends Airlock {
                     
            			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
         	  				"[" + person.getLocationTag().getLocale() + "] "
-        					+ person + " has just got inside the airlock at " + building + " in " 
+        					+ person + " had just got inside the airlock at " + building + " in " 
                 			+ building.getBuildingManager().getSettlement()
-                			+ ". The airlock has been pressurized and is ready to open the inner door to release the person. ", null);
+                			+ ". The airlock had been pressurized and is ready to open the inner door to release the person. ", null);
 
                 }
                 else {
                 	//if (LocationSituation.BURIED != person.getLocationSituation()) {
-                    throw new IllegalStateException(person + " is entering " + getEntityName() +
-                            " from an airlock but is not from outside.");
+                    throw new IllegalStateException(person + " was in " + person.getLocationTag().getImmediateLocation() + " and entering " + getEntityName() +
+                            " from an airlock but not from outside.");
                 }
             }
             
@@ -136,7 +136,7 @@ public class BuildingAirlock extends Airlock {
         					+ person
                 			+ " was about to get inside the airlock at " + building + " in " 
                 			+ building.getBuildingManager().getSettlement()
-                			+ ". The airlock has been depressurized and is ready to open the outer door to release the person. ", null);
+                			+ ". The airlock had been depressurized and is ready to open the outer door to release the person. ", null);
           			
           			
                     // Upon depressurization, there is heat loss to the Martian air in Heating class
@@ -161,13 +161,13 @@ public class BuildingAirlock extends Airlock {
         					+ person
                 			+ " was about to leave the airlock at " + building + " in " 
                 			+ building.getBuildingManager().getSettlement()
-                			+ ". The airlock has been depressurized and is ready to open the outer door to release the person. ", null);
+                			+ ". The airlock had been depressurized and is ready to open the outer door to release the person. ", null);
           			
                 }
                 else {
                 	//if (LocationSituation.BURIED != person.getLocationSituation()) {
-                    throw new IllegalStateException(person + " is exiting " + getEntityName() +
-                            " from an airlock but is not from inside.");
+                    throw new IllegalStateException(person +  " was in " + person.getLocationTag().getImmediateLocation() + " and exiting " + getEntityName() +
+                            " from an airlock but not from inside.");
                 }
             }
             else {

@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -404,7 +405,7 @@ implements Serializable {
 		else if (robot != null)
 			containerUnit = robot.getContainerUnit();
 
-        if (containerUnit != null) {
+		if (!(containerUnit instanceof MarsSurface)) {
             Inventory inv = containerUnit.getInventory();
             Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, ResourceUtil.toxicWasteAR, inv, 
             		sourceName + "::produceMedicalWaste");

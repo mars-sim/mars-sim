@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
@@ -48,6 +49,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	private Unit lastOwner;
 
 	private static UnitManager unitManager;
+	
+	private static MarsSurface marsSurface;
 
 	/**
 	 * Constructs an Equipment object
@@ -57,17 +60,23 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 */
 	protected Equipment(String name, Coordinates location) {
 		super(name, location);
+		// Initialize data members.
+		isSalvaged = false;
+		salvageInfo = null;
+		// this.name = name;
 
+		unitManager = Simulation.instance().getUnitManager();
+		marsSurface = Simulation.instance().getMars().getMarsSurface();
+		
+		// Initially set container unit to the mars surface
+		setContainerUnit(marsSurface);
+		
 		// Place this person within a settlement
 		enter(LocationCodeType.SETTLEMENT);
 		// Place this person within a building
 		enter(LocationCodeType.BUILDING);
-		// this.name = name;
-		// Initialize data members.
-		isSalvaged = false;
-		salvageInfo = null;
 
-		unitManager = Simulation.instance().getUnitManager();
+		
 	}
 
 	/**
@@ -210,11 +219,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 //				return null;
 		}
 
-//		else if (container == null) {
-//			return null;
-//		}
-
-//		logger.warning("Error in determining " + getName() + "'s getSettlement() ");
 		return null;
 	}
 
@@ -253,7 +257,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			return LocationSituation.IN_SETTLEMENT;
 		else if (container instanceof Vehicle)
 			return LocationSituation.IN_VEHICLE;
-		else if (container == null)
+		else if (container instanceof MarsSurface)
 			return LocationSituation.OUTSIDE;
 		else
 			return LocationSituation.UNKNOWN;
@@ -301,7 +305,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return true if the equipment is outside
 	 */
 	public boolean isOutside() {
-		if (getContainerUnit() == null)
+		if (getContainerUnit() instanceof MarsSurface)
 			return true;
 		return false;
 	}

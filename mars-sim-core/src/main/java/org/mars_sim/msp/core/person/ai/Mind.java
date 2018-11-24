@@ -292,6 +292,7 @@ public class Mind implements Serializable {
 		// (2) checkJob() in Mind.java
 		// (3) getInitialJob() in Mind.java
 		// TODO : if jobLock is true, will it allow the job to be changed?
+//		System.out.println("Mind's setJob(). newJob is " + newJob);
 		String newJobStr = newJob.getName(person.getGender());
 		assignJob(newJob, newJobStr, bypassingJobLock, assignedBy, status, approvedBy);
 	}

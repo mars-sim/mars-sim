@@ -8,6 +8,8 @@ package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.Inventory;
+
 /**
  * Mars represents the planet Mars in the simulation.
  */
@@ -28,8 +30,8 @@ public class Mars implements Serializable {
 	private SurfaceFeatures surfaceFeatures;
 	/** Orbital information. */
 	private OrbitInfo orbitInfo;
-
-
+	
+	private static MarsSurface marsSurface;
 	/**
 	 * Constructor.
 	 * 
@@ -44,7 +46,11 @@ public class Mars implements Serializable {
 		orbitInfo = new OrbitInfo();
 		// Initialize weather
 		weather = new Weather();
+		
+		// Initialize mars surface		
+		marsSurface = new MarsSurface();
 	}
+
 
 	/**
 	 * Initialize transient data in the simulation.
@@ -59,7 +65,7 @@ public class Mars implements Serializable {
 	/**
 	 * Returns the orbital information
 	 * 
-	 * @return orbital information
+	 * @return {@Link OrbitInfo}
 	 */
 	public OrbitInfo getOrbitInfo() {
 		return orbitInfo;
@@ -68,7 +74,7 @@ public class Mars implements Serializable {
 	/**
 	 * Returns surface features
 	 * 
-	 * @return surfaces features
+	 * @return {@Link SurfacesFeatures}
 	 */
 	public SurfaceFeatures getSurfaceFeatures() {
 		return surfaceFeatures;
@@ -77,7 +83,7 @@ public class Mars implements Serializable {
 	/**
 	 * Returns Martian weather
 	 * 
-	 * @return weather
+	 * @return {@Link Weather}
 	 */
 	public Weather getWeather() {
 		return weather;
@@ -95,6 +101,15 @@ public class Mars implements Serializable {
 		weather.timePassing(time);
 	}
 
+	/**
+	 * Returns Mars surface instance
+	 * 
+	 * @return {@Link MarsSurface}
+	 */
+	public MarsSurface getMarsSurface() {
+		return marsSurface;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

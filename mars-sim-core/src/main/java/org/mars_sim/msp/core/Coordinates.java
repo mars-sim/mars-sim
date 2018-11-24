@@ -213,11 +213,13 @@ public class Coordinates implements Serializable {
 	public void setCoords(Coordinates newCoordinates) {
 		changed = true;
 		// Update coordinates
-		setPhi(newCoordinates.phi);
-		setTheta(newCoordinates.theta);
-
-		// Update trigonometric functions
-		setTrigFunctions();
+			if (newCoordinates != null) {
+			setPhi(newCoordinates.phi);
+			setTheta(newCoordinates.theta);
+	
+			// Update trigonometric functions
+			setTrigFunctions();
+		}
 	}
 
 	/**

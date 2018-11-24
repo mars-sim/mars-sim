@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -37,6 +38,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparedDessert
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The EatMeal class is a task for eating a meal. The duration of the task is 40
@@ -169,13 +171,10 @@ public class EatMeal extends Task implements Serializable {
 				walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
 				
 				// Take napkin from inventory if available.
-				Unit container = person.getTopContainerUnit();
-				if (container != null) {
-					Inventory inv = container.getInventory();
-					if (inv != null) {
-						if (NAPKIN_MASS > MIN)
-							hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, ResourceUtil.napkinAR, inv, false);
-					}
+				Inventory inv = person.getSettlement().getInventory();
+				if (inv != null) {
+					if (NAPKIN_MASS > MIN)
+						hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, ResourceUtil.napkinAR, inv, false);
 				}
 			}
 		}
@@ -439,16 +438,17 @@ public class EatMeal extends Task implements Serializable {
 
 		// Food amount eaten over this period of time.
 		double foodAmount = foodConsumptionRate * mealProportion;
-		Unit container = person.getTopContainerUnit();
-		if (container != null) {
+		
+		Unit container = person.getContainerUnit();
+		if (!(container instanceof MarsSurface)) {
 			Inventory inv = container.getInventory();
 
 			// Take preserved food from inventory if it is available.
 			boolean haveFood = false;
 			if (foodAmount > MIN)
 				haveFood = Storage.retrieveAnResource(foodAmount, ResourceUtil.foodID, inv, true);
+			
 			if (haveFood) {
-
 				// Consume preserved food.
 
 				// Note : Reduce person's hunger by proportion of meal eaten.
@@ -461,29 +461,6 @@ public class EatMeal extends Task implements Serializable {
 
 				// Add caloric energy from meal.
 				condition.addEnergy(foodAmount);
-
-				// Check if preserved food has gone bad.
-//                if (RandomUtil.lessThanRandPercent(PRESERVED_FOOD_BAD_CHANCE)) {
-//                    //if (inv == null) 
-//                    	//logger.info("preserved food gone bad, turn into food waste");
-//                    // Throw food out.
-//                	if (foodAmount > 0)
-//                		Storage.storeAnResource(foodAmount, ResourceUtil.foodWasteAR, inv, sourceName + "::eatPreservedFood");
-//                }
-//                else {
-//                    // Consume preserved food.
-//
-//                    // Reduce person's hunger by proportion of meal eaten.
-//                    // Entire meal will reduce person's hunger to 0.
-//                    currentHunger -= (startingHunger * mealProportion);
-//                    if (currentHunger < 0D) {
-//                        currentHunger = 0D;
-//                    }
-//                    condition.setHunger(currentHunger);
-//
-//                    // Add caloric energy from meal.
-//                    condition.addEnergy(foodAmount);
-//                }
 
 			} else {
 				// Not enough food available to eat.
@@ -793,18 +770,9 @@ public class EatMeal extends Task implements Serializable {
 
 		List<AmountResource> result = new ArrayList<AmountResource>();
 
-		Unit containerUnit = person.getTopContainerUnit();
-		if (containerUnit != null) {
+		Unit containerUnit = person.getContainerUnit();
+		if (!(containerUnit instanceof MarsSurface)) {
 			Inventory inv = containerUnit.getInventory();
-
-//            int size = ARs.length;
-//            for (int x = 0; x < size; x++) {
-//            	AmountResource dessertAR = ARs[x];
-//                boolean available = Storage.retrieveAnResource(amountNeeded, dessertAR, inv, false);
-//                if (available) {
-//                    result.add(dessertAR);
-//                }
-//            }
 
 			boolean option = true;
 
@@ -957,8 +925,8 @@ public class EatMeal extends Task implements Serializable {
 
 		// Throw away napkin waste if one was used.
 		if (hasNapkin) {
-			Unit containerUnit = person.getTopContainerUnit();
-			if (containerUnit != null) {
+			Unit containerUnit = person.getContainerUnit();
+			if (!(containerUnit instanceof MarsSurface)) {
 				Inventory inv = containerUnit.getInventory();
 				if (NAPKIN_MASS > 0)
 					Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteAR, inv, sourceName + "::endTask");

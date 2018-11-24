@@ -322,7 +322,7 @@ public abstract class Airlock implements Serializable {
 					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " 
 						+ person.getName()
-						+ " reported that the airlock " + " in " + getEntity() +"  had been " + getState() 
+						+ " reported that the airlock " + " in " + getEntity() + " had been " + getState() 
 							+ ".", null);
 				}
 
@@ -433,7 +433,7 @@ public abstract class Airlock implements Serializable {
 	public void addAwaitingAirlockOuterDoor(Person p) {
 		if (!awaitingOuterDoor.contains(p)) {
 			LogConsolidated.log(logger, Level.FINER, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
-					+ p.getName() + " was awaiting the outer door of the airlock in " + getEntityName() + " to open.", null);
+					+ p.getName() + " was in " + p.getLocationTag().getImmediateLocation() + " and waiting the outer door of the airlock in " + getEntityName() + " to open.", null);
 			awaitingOuterDoor.add(p);
 		}
 	}

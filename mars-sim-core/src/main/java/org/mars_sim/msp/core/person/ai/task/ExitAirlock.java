@@ -20,10 +20,10 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -211,7 +211,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = time;
 
 		LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
-				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " was waiting to enter airlock. ", null);
+				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in " + person.getLocationTag().getImmediateLocation() + " was waiting to enter airlock. ", null);
 
 		// If person is already outside, change to exit airlock phase.
 		if (person.isOutside()) {
@@ -275,7 +275,7 @@ public class ExitAirlock extends Task implements Serializable {
 		if (person != null) {
 			LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
-					"  was about to enter airlock.", null);
+					" was about to enter airlock.", null);
 			
 			Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
 	
@@ -765,50 +765,56 @@ public class ExitAirlock extends Task implements Serializable {
 	private void loadEVASuit(EVASuit suit) {
 
 		Inventory suitInv = suit.getInventory();
-		Inventory entityInv = person.getContainerUnit().getInventory();
+		
+		
+		if (!(person.getContainerUnit() instanceof MarsSurface)) { 
+			Inventory entityInv = person.getContainerUnit().getInventory();
+			// Warning : if person.getContainerUnit().getInventory() is null, the simulation hang up
+			// person.getContainerUnit() instanceof MarsSurface may alleviate this situation
+			
+			// Fill oxygen in suit from entity's inventory.
+			double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
+			double availableOxygen = entityInv.getAmountResourceStored(oxygenID, false);
+	
+			entityInv.addAmountDemandTotalRequest(oxygenID);
+	
+			double takenOxygen = neededOxygen;
+			if (takenOxygen > availableOxygen)
+				takenOxygen = availableOxygen;
+			try {
+				entityInv.retrieveAmountResource(oxygenID, takenOxygen);
+				entityInv.addAmountDemand(oxygenID, takenOxygen);
+				suitInv.storeAmountResource(oxygenID, takenOxygen, true);
+			} catch (Exception e) {
+				LogConsolidated.log(
+						logger, Level.SEVERE, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+								+ person + " ran into issues providing oxygen to " + suit.getName() + e.getMessage(),
+						null);
+			}
+	
+			// Fill water in suit from entity's inventory.
+			double neededWater = suitInv.getAmountResourceRemainingCapacity(waterID, true, false);
+			double availableWater = entityInv.getAmountResourceStored(waterID, false);
+	
+			entityInv.addAmountDemandTotalRequest(waterID);
+	
+			double takenWater = neededWater;
+			if (takenWater > availableWater)
+				takenWater = availableWater;
+			try {
+				entityInv.retrieveAmountResource(waterID, takenWater);
+	
+				entityInv.addAmountDemand(waterID, takenWater);
+				suitInv.storeAmountResource(waterID, takenWater, true);
+	
+			} catch (Exception e) {
+				LogConsolidated.log(
+						logger, Level.SEVERE, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+								+ person + " ran into issues providing water to " + suit.getName() + e.getMessage(),
+						null);
+			}
 
-		// Fill oxygen in suit from entity's inventory.
-		double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
-		double availableOxygen = entityInv.getAmountResourceStored(oxygenID, false);
-
-		entityInv.addAmountDemandTotalRequest(oxygenID);
-
-		double takenOxygen = neededOxygen;
-		if (takenOxygen > availableOxygen)
-			takenOxygen = availableOxygen;
-		try {
-			entityInv.retrieveAmountResource(oxygenID, takenOxygen);
-			entityInv.addAmountDemand(oxygenID, takenOxygen);
-			suitInv.storeAmountResource(oxygenID, takenOxygen, true);
-		} catch (Exception e) {
-			LogConsolidated.log(
-					logger, Level.SEVERE, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-							+ person + " ran into issues providing oxygen to " + suit.getName() + e.getMessage(),
-					null);
 		}
-
-		// Fill water in suit from entity's inventory.
-		double neededWater = suitInv.getAmountResourceRemainingCapacity(waterID, true, false);
-		double availableWater = entityInv.getAmountResourceStored(waterID, false);
-
-		entityInv.addAmountDemandTotalRequest(waterID);
-
-		double takenWater = neededWater;
-		if (takenWater > availableWater)
-			takenWater = availableWater;
-		try {
-			entityInv.retrieveAmountResource(waterID, takenWater);
-
-			entityInv.addAmountDemand(waterID, takenWater);
-			suitInv.storeAmountResource(waterID, takenWater, true);
-
-		} catch (Exception e) {
-			LogConsolidated.log(
-					logger, Level.SEVERE, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-							+ person + " ran into issues providing water to " + suit.getName() + e.getMessage(),
-					null);
-		}
-
 	}
 
 	@Override

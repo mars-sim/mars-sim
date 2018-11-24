@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
@@ -200,13 +201,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private Map<Integer, Gene> maternal_chromosome;
 	/** The person's mission experiences */
 	private Map<Integer, List<Double>> missionExperiences;
+	
 	// private Simulation sim = Simulation.instance();
-	private MarsClock marsClock;
-
-	private EarthClock earthClock;
-
-	private MasterClock masterClock;
-
+	private static MarsClock marsClock;
+	private static EarthClock earthClock;
+	private static MasterClock masterClock;
+//	private static MarsSurface marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
+	private static MarsSurface marsSurface = Simulation.instance().getMars().getMarsSurface();
 	
 	// private PersonConfig config;
 
@@ -271,18 +272,23 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			// in date
 			birthTimeStamp = new EarthClock(createBirthTimeString());
 		}
+		
 
 		isBuried = false;
 
-		// config = SimulationConfig.instance().getPersonConfiguration();
+		// Put person in proper building.
+		associatedSettlement.getInventory().storeUnit(this);
+		// Note: setAssociatedSettlement(settlement) will cause suffocation when  reloading from a saved sim
+		BuildingManager.addToRandomBuilding(this, associatedSettlement); // why failed ?
+		// testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
 
 		attributes = new NaturalAttributeManager(this);
-
+		// Set up genetic make-up. Notes it requires attributes.
+		setupChromosomeMap();
+		
 		jobHistory = new JobHistory(this);
 
 		mind = new Mind(this);
-
-		setupChromosomeMap();
 
 		circadian = new CircadianClock(this);
 
@@ -300,16 +306,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		assignReportingAuthority();
 
-		// Put person in proper building.
-		associatedSettlement.getInventory().storeUnit(this);
-		// Note: setAssociatedSettlement(settlement) will cause suffocation when
-		// reloading from a saved sim
-		BuildingManager.addToRandomBuilding(this, associatedSettlement); // why failed ?
-		// testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
 		support = getLifeSupportType();
 			
 		// Create the mission experiences map
 		missionExperiences = new HashMap<>();
+
 	}
 
 	/**
@@ -344,8 +345,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		int ID = 40;
 		boolean dominant = false;
 
-		// Set inventory total mass capacity based on the person's strength.
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
+		// Set inventory total mass capacity based on the person's strength.
 		getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
 
 		int rand = RandomUtil.getRandomInt(100);
@@ -660,7 +661,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return true if the person is outside
 	 */
 	public boolean isOutside() {
-		if (getContainerUnit() == null)
+		if (getContainerUnit() instanceof MarsSurface)
 			return true;
 		else if (isBuried)
 			return true;
@@ -697,39 +698,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return true if the person is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
-//		if (isBuried)
-//			return false;
-//		else {
-//			Unit c = getContainerUnit();
-//			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
-//				return true;
-			if (getContainerUnit() instanceof Vehicle) {
-				Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-				if (b != null)
-					// still inside the garage
-					return true;
-			}
-//		}
+		if (isBuried)
+			return false;
+		else if (getContainerUnit() instanceof Vehicle) {
+			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+			if (b != null)
+				// still inside the garage
+				return true;
+		}
 		return false;
 	}
 	
-//	/**
-//	 * Is the person inside a settlement but not in a vehicle inside a garage
-//	 * 
-//	 * @return true or false
-//	 */
-//	public boolean isInSettlementNotVehicleGarage() {
-////		if (isBuried)
-////			return false;
-////		else {
-//			Unit c = getContainerUnit();
-////			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
-////				return false;
-//		if (c instanceof Settlement)
-//			return true;
-////		}
-//		return false;
-//	}
 
 	/**
 	 * Is the person inside a settlement
@@ -740,25 +719,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		if (getContainerUnit() instanceof Settlement) {
 			return true;
 		}
-
-//		else if (getContainerUnit() instanceof Vehicle) {
-//			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-//			if (b != null)
-//				// still inside the garage
-//				return true;
-//		}
-		
-//		if (isBuried)
-//			return false;
-//		else {
-//			Unit c = getContainerUnit();
-//			if (c instanceof Settlement)
-//				return true;
-//			else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
-//				return true;
-//			else
-//				return false;
-//		}
 		
 		return false;
 	}
@@ -774,9 +734,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			return false;
 		else {
 			Unit c = getContainerUnit();
-			if (c == null)
-				return false;
-			else if (c instanceof Settlement)
+			if (c instanceof Settlement)
 				return true;
 			else if (c instanceof Vehicle)
 				return true;
@@ -800,7 +758,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				return LocationSituation.IN_SETTLEMENT;
 			else if (container instanceof Vehicle)
 				return LocationSituation.IN_VEHICLE;
-			else if (container == null)
+			else if (container instanceof MarsSurface)
 				return LocationSituation.OUTSIDE;
 			else
 				return LocationSituation.UNKNOWN;
@@ -862,17 +820,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			if (b != null)
 				// still inside the garage
 				return b.getSettlement();
-//			else
-				// either at the vicinity of a settlement or already outside on a mission
-				// TODO: need to differentiate which case in future better granularity
-//				return null;
 		}
-
-//		else if (c == null) {
-//			return null;
-//		}
-
-//		logger.warning("Error in determining " + getName() + "'s getSettlement() ");
 		return null;
 	}
 
@@ -882,10 +830,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param containerUnit the unit to contain this unit.
 	 */
 	public void setContainerUnit(Unit containerUnit) {
+		super.setContainerUnit(containerUnit);
 		if (containerUnit instanceof Vehicle) {
 			vehicle = (Vehicle) containerUnit;
 		}
-		super.setContainerUnit(containerUnit);
 	}
 
 	/**
@@ -894,19 +842,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * fixed at the last location of the containing unit.
 	 */
 	public void buryBody() {
-		Unit containerUnit = getContainerUnit();
-		if (containerUnit != null) {
-			// Note: if a person is dead inside a vehicle that's outside on Mars,
-			// should NOT be retrieved until the body arrives at a settlement
-			containerUnit.getInventory().retrieveUnit(this);
-		}
-
+		// Remove the person from the settlement
+//		getContainerUnit().getInventory().retrieveUnit(this);
+		// set container unit to null if not done so
+		setContainerUnit(null);
 		// Bury the body
 		isBuried = true;
 		// Back up the last container unit
-		condition.getDeathDetails().setContainerUnit(containerUnit);
-		// Remove the person from the settlement
-		setContainerUnit(null);
+		condition.getDeathDetails().backupContainerUnit(containerUnit);
 		// Set his/her buried settlement
 		setBuriedSettlement(associatedSettlement);
 		// Remove the person from being a member of the associated settlement
@@ -943,6 +886,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param time amount of time passing (in millisols).
 	 */
 	public void timePassing(double time) {
+//		System.out.println("person.timePassing()");
+//		super.timePassing(time); // is not needed. 
+		// Note : will automatically call uni.timePassing(time) first before calling person.timePassing();
+		if (marsSurface == null)
+			marsSurface = Simulation.instance().getMars().getMarsSurface();
+		if (containerUnit == null)
+			this.containerUnit = marsSurface;
 
 		if (marsClock == null) {
 			masterClock = Simulation.instance().getMasterClock();
@@ -1010,7 +960,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 					mind.setInactive();
 				}
 
-				buryBody();
+//				buryBody();
 			}
 		}
 

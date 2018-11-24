@@ -14,7 +14,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
@@ -213,14 +212,15 @@ public final class JobManager implements Serializable {
 
 		Job originalJob = person.getMind().getJob();
 		// Determine person's associated settlement.
-		Settlement settlement = null;
-		if (person.isInSettlement())
-			settlement = person.getSettlement();
-		else if (person.getMind().hasActiveMission())
-			settlement = person.getMind().getMission().getAssociatedSettlement();
+		Settlement settlement = person.getAssociatedSettlement();
+//		if (person.isInSettlement())
+//			settlement = person.getSettlement();
+//		else if (person.getMind().hasActiveMission())
+//			settlement = person.getMind().getMission().getAssociatedSettlement();
 
 		// Find new job for person.
 		double newJobProspect = Integer.MIN_VALUE;
+//		System.out.println("JobManager's getNewJob : settlement is " + settlement);
 		if (settlement != null) {
 			Iterator<Job> i = getJobs().iterator();
 			while (i.hasNext()) {
@@ -235,11 +235,11 @@ public final class JobManager implements Serializable {
 				}
 			}
 
-			if (logger.isLoggable(Level.FINEST)) {
+			if (logger.isLoggable(Level.FINE)) {
 				if ((newJob != null) && (newJob != originalJob))
-					logger.finest(person.getName() + " changed jobs to " + newJob.getName(person.getGender()));
-				else
-					logger.finest(person.getName() + " keeping old job of " + originalJob.getName(person.getGender()));
+					logger.fine(person.getName() + " had changed the job to " + newJob.getName(person.getGender()));
+//				else
+//					logger.fine(person.getName() + " keeping old job of " + originalJob.getName(person.getGender()));
 
 			}
 		} else
@@ -280,7 +280,7 @@ public final class JobManager implements Serializable {
 //				}
 //			}
 //
-//			if (logger.isLoggable(Level.FINEST)) {
+//			if (logger.isLoggable(Level.FINE)) {
 //				if ((newJob != null) && (newJob != originalJob))
 //					logger.info(
 //							"Notes: " + robot.getName() + " changed jobs to " + newJob.getName(robot.getRobotType())); // logger.finest(

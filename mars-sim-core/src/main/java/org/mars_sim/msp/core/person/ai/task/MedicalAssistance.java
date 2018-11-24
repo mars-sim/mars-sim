@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
@@ -448,7 +449,7 @@ implements Serializable {
 
 	public void produceMedicalWaste() {
         Unit containerUnit = person.getContainerUnit();
-        if (containerUnit != null) {
+		if (!(containerUnit instanceof MarsSurface)) {
             Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, toxicWasteAR, containerUnit.getInventory(), sourceName + "::produceMedicalWaste");
 	     }
 	}

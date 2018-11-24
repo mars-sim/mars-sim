@@ -140,6 +140,7 @@ public class UnitManager implements Serializable {
 	private static PartConfig partConfig;
 
 	private static MarsClock marsClock;
+//	private static MarsSurface marsSurface;
 
 	/**
 	 * Constructor.
@@ -161,6 +162,10 @@ public class UnitManager implements Serializable {
 		settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 		relationshipManager = Simulation.instance().getRelationshipManager();
+		
+
+		// Initialize mars surface		
+//		marsSurface = new MarsSurface();
 	}
 
 	/**
@@ -178,7 +183,7 @@ public class UnitManager implements Serializable {
 		initializePersonNames();
 		initializeLastNames();
 		initializeFirstNames();
-
+		
 		// Initialize settlement and vehicle name lists
 		initializeSettlementNames();
 		initializeVehicleNames();
@@ -324,6 +329,7 @@ public class UnitManager implements Serializable {
 	public void addUnit(Unit unit) {
 		if (!units.contains(unit)) {
 			units.add(unit);
+//			marsSurface.getInventory().storeUnit(unit);
 			Iterator<Unit> i = unit.getInventory().getContainedUnits().iterator();
 			while (i.hasNext()) {
 				addUnit(i.next());
@@ -341,6 +347,7 @@ public class UnitManager implements Serializable {
 	public void removeUnit(Unit unit) {
 		if (units.contains(unit)) {
 			units.remove(unit);
+//			marsSurface.getInventory().retrieveUnit(unit);
 			// Fire unit manager event.
 			fireUnitManagerUpdate(UnitManagerEventType.REMOVE_UNIT, unit);
 		}
@@ -1045,6 +1052,7 @@ public class UnitManager implements Serializable {
 					// Set up preference
 					person.getPreference().initializePreference();
 
+//					System.out.println("UnitManager's createInitialPeople : settlement is " + settlement);
 					// Assign a job 
 					m.getInitialJob(JobManager.MISSION_CONTROL);
 
@@ -2348,6 +2356,16 @@ public class UnitManager implements Serializable {
 	public int getPhase() {
 		return personConfig.getCommander().getPhase();
 	}
+	
+//	/**
+//	 * Returns Mars surface instance
+//	 * 
+//	 * @return {@Link MarsSurface}
+//	 */
+//	public MarsSurface getMarsSurface() {
+//		return marsSurface;
+//	}
+	
 	
 	/**
 	 * Prepare object for garbage collection.

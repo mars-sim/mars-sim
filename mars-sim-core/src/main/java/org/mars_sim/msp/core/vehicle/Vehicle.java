@@ -733,9 +733,9 @@ public abstract class Vehicle extends Unit
 	 * @return the settlement the vehicle is parked at
 	 */
 	public Settlement getSettlement() {
-		Unit c = getTopContainerUnit();
+		Unit c = getContainerUnit();
 
-		if ((c != null) && (c instanceof Settlement))
+		if (c instanceof Settlement)
 			return (Settlement) c;
 		else
 			return null;

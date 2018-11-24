@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -74,27 +75,31 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
 		containerUnit = person.getTopContainerUnit();
-
-		// Get the malfunctioning entity.
-		entity = getEVAMalfunctionEntity(person);
-		if (entity != null) {
-			malfunction = getMalfunction(person, entity);
-			isEVAMalfunction = canRepairEVA(malfunction);
-
-			setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", malfunction.getName(),
-					entity.getNickName())); // $NON-NLS-1$
-
-			// Determine location for repairing malfunction.
-			Point2D malfunctionLoc = determineMalfunctionLocation();
-			setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
-		} else {
-			endTask();
+		
+		if (!(containerUnit instanceof MarsSurface)) {
+			// Get the malfunctioning entity.
+			entity = getEVAMalfunctionEntity(person);
+			if (entity != null) {
+				malfunction = getMalfunction(person, entity);
+				isEVAMalfunction = canRepairEVA(malfunction);
+	
+				setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", malfunction.getName(),
+						entity.getNickName())); // $NON-NLS-1$
+	
+				// Determine location for repairing malfunction.
+				Point2D malfunctionLoc = determineMalfunctionLocation();
+				setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
+			} else {
+				endTask();
+			}
+	
+			// Initialize phase
+			addPhase(REPAIRING);
+	
+			logger.fine(person.getName() + " has started the RepairEVAMalfunction task.");
 		}
-
-		// Initialize phase
-		addPhase(REPAIRING);
-
-		logger.fine(person.getName() + " has started the RepairEVAMalfunction task.");
+		else 
+			endTask();
 	}
 
 

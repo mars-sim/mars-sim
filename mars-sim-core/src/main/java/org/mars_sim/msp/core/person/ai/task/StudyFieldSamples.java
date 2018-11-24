@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.ExploredLocation;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.mars.MineralMap;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
@@ -126,7 +127,7 @@ implements ResearchScientificStudy, Serializable {
         // Take field samples from inventory.
         if (!isDone()) {
             Unit container = person.getContainerUnit();
-            if (container != null) {
+    		if (!(container instanceof MarsSurface)) {
                 //AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
                 Inventory inv = container.getInventory();
                 double totalRockSampleMass = inv.getAmountResourceStored(ResourceUtil.rockSamplesAR, false);

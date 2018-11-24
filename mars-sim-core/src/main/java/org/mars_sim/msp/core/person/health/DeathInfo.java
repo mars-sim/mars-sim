@@ -349,7 +349,7 @@ public class DeathInfo implements Serializable {
 		return containerUnit;
 	}
 
-	public void setContainerUnit(Unit c) {
+	public void backupContainerUnit(Unit c) {
 		containerUnit = c;
 	}
 	

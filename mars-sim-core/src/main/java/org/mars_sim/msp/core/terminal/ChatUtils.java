@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
@@ -1802,12 +1803,12 @@ public class ChatUtils {
 				|| text.toLowerCase().contains("container")) {
 			questionText = YOU_PROMPT + "Are you inside or outside?";
 			Unit c = u.getContainerUnit();// getTopContainerUnit();
-			if (c != null) {
+			if (c instanceof MarsSurface) {
+				responseText.append("I'm outside");
+			}
+			else {
 				responseText.append("I'm inside ").append(c.getName()).append(".");
 			}
-
-			else
-				responseText.append("I'm outside");// don't have a Top Container unit.";
 
 		}
 
@@ -1971,13 +1972,14 @@ public class ChatUtils {
 			Vehicle v = personCache.getVehicle();
 			if (v != null) {
 				Unit c = v.getContainerUnit();
-				if (c != null) {
+				if (c instanceof MarsSurface) {
+					responseText.append("My vehicle is not inside");
+				}
+				else {
 					responseText.append("My vehicle is at ");
 					responseText.append(c.getName());
 				}
 
-				else
-					responseText.append("My vehicle is not inside");// doesn't have a container unit.";
 
 			} else
 				responseText.append("I'm not in a vehicle.");
@@ -1989,12 +1991,12 @@ public class ChatUtils {
 			questionText = YOU_PROMPT + "What is your vehicle located?";// 's top container unit ?";
 			Vehicle v = u.getVehicle();
 			if (v != null) {
-				Unit tc = v.getTopContainerUnit();
-				if (tc != null) {
+//				Unit tc = v.getContainerUnit();
+//				if (tc != null) {
 					responseText.append("My vehicle is at ");
-					responseText.append(tc.getName());
-				} else
-					responseText.append("My vehicle is not inside");// doesn't have a top container unit.";
+					responseText.append(v.getLocationTag().getImmediateLocation());//tc.getName());
+//				} else
+//					responseText.append("My vehicle is not inside");// doesn't have a top container unit.";
 			} else
 				responseText.append("I'm not in a vehicle.");
 		}

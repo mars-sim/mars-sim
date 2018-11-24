@@ -18,10 +18,10 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
@@ -405,7 +405,8 @@ public class EnterAirlock extends Task implements Serializable {
 			
 			Inventory suitInv = suit.getInventory();
 			Inventory personInv = person.getInventory();
-			if (person.getContainerUnit() == null) {
+			
+			if (person.getContainerUnit() instanceof MarsSurface) {
 				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] "  
 									+ person + " had no container. Location state type : " 
@@ -419,53 +420,57 @@ public class EnterAirlock extends Task implements Serializable {
 	
 				Inventory entityInv = null;
 				
-				try {
-					if (person.getContainerUnit() == null) 
-						System.out.println("person.getContainerUnit() == null");
-					if (person.getContainerUnit().getInventory() == null) 
-						System.out.println("person.getContainerUnit().getInventory() == null");
-					 entityInv = person.getContainerUnit().getInventory(); // why NullPointerException ?
+				if (!(person.getContainerUnit() instanceof MarsSurface)) {
+	
+					try {
+						entityInv = person.getContainerUnit().getInventory();
+						// Warning : if person.getContainerUnit().getInventory() is null, the simulation hang up
+						// person.getContainerUnit() instanceof MarsSurface may alleviate this situation
+						
+						// Unload oxygen from suit.
+						double oxygenAmount = suitInv.getAmountResourceStored(oxygenID, false);
+						double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
+						if (oxygenAmount > oxygenCapacity)
+							oxygenAmount = oxygenCapacity;
+						
+						suitInv.retrieveAmountResource(oxygenID, oxygenAmount);
+						entityInv.storeAmountResource(oxygenID, oxygenAmount, true);
+						entityInv.addAmountSupplyAmount(oxygenID, oxygenAmount);
+		
+					} catch (Exception e) {
+						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+								"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+								+ " was in storingEVASuitPhase() but something wrong with retrieving/storing oxygen : " + e.getMessage(), null);
+					}
+		
+					// Unload water from suit.
+					double waterAmount = suitInv.getAmountResourceStored(waterID, false);
+					double waterCapacity = entityInv.getAmountResourceRemainingCapacity(waterID, true, false);
+					if (waterAmount > waterCapacity)
+						waterAmount = waterCapacity;
 					
-					// Unload oxygen from suit.
-					double oxygenAmount = suitInv.getAmountResourceStored(oxygenID, false);
-					double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
-					if (oxygenAmount > oxygenCapacity)
-						oxygenAmount = oxygenCapacity;
-					
-					suitInv.retrieveAmountResource(oxygenID, oxygenAmount);
-					entityInv.storeAmountResource(oxygenID, oxygenAmount, true);
-					entityInv.addAmountSupplyAmount(oxygenID, oxygenAmount);
-	
-				} catch (Exception e) {
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-							+ " was in storingEVASuitPhase() but something wrong with retrieving/storing oxygen : " + e.getMessage(), null);
+					try {
+						suitInv.retrieveAmountResource(waterID, waterAmount);
+						entityInv.storeAmountResource(waterID, waterAmount, true);
+						entityInv.addAmountSupplyAmount(waterID, waterAmount);
+		
+					} catch (Exception e) {
+						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+								"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+								+ " was in storingEVASuitPhase() but something wrong with retrieving/storing water : " + e.getMessage(), null);
+					}
+		
+					// Return suit to entity's inventory.
+		//			 logger.finer(person.getName() + " putting away EVA suit into " +
+		//			 entity.getName());
+					personInv.retrieveUnit(suit);
+		//			 suit.setLastOwner(person);
+					entityInv.storeUnit(suit);
 				}
-	
-				// Unload water from suit.
-				double waterAmount = suitInv.getAmountResourceStored(waterID, false);
-				double waterCapacity = entityInv.getAmountResourceRemainingCapacity(waterID, true, false);
-				if (waterAmount > waterCapacity)
-					waterAmount = waterCapacity;
-				try {
-					suitInv.retrieveAmountResource(waterID, waterAmount);
-					entityInv.storeAmountResource(waterID, waterAmount, true);
-					entityInv.addAmountSupplyAmount(waterID, waterAmount);
-	
-				} catch (Exception e) {
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-							+ " was in storingEVASuitPhase() but something wrong with retrieving/storing water : " + e.getMessage(), null);
-				}
-	
-				// Return suit to entity's inventory.
-	//			 logger.finer(person.getName() + " putting away EVA suit into " +
-	//			 entity.getName());
-				personInv.retrieveUnit(suit);
-	//			 suit.setLastOwner(person);
-				entityInv.storeUnit(suit);
 			}
-		} else {
+		}
+		
+		else {
 			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " 
 					+ person.getName() + " doesn't have an EVA suit to put away in "

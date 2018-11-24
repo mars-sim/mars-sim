@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -366,7 +367,7 @@ public class NotificationWindow extends JDialog implements ClockListener {
 			    // Loop through the hierarchy of container units for this source unit.
 			    Unit tempUnit = unit;
 			    Unit containerUnit = unit.getContainerUnit();
-			    while (containerUnit != null) {
+			    while (!(containerUnit instanceof MarsSurface)) {
 			        
 			        if (containerUnit instanceof Person) {
 			            locationBuff.append(" carried by " + containerUnit.getName());
@@ -399,7 +400,7 @@ public class NotificationWindow extends JDialog implements ClockListener {
 			    
 			    // If top container unit is a person, add that he/she is outside.
 			    Unit topContainerUnit = unit.getTopContainerUnit();
-			    if (((topContainerUnit == null) && (unit instanceof Person)) || (topContainerUnit instanceof Person)) {
+			    if (topContainerUnit instanceof MarsSurface && unit instanceof Person) {
 			        locationBuff.append(" outside");
 			    }
 			    

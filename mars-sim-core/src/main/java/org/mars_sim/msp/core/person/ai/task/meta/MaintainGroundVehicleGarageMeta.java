@@ -56,7 +56,7 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 
 		double result = 0D;
 
-		if (person.isInSettlement() || person.isRightOutsideSettlement()) {
+		if (person.isInSettlement()) {
 
 			try {
 				// Get all vehicles requiring maintenance.

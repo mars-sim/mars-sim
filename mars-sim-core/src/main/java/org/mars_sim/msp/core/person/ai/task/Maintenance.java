@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -185,16 +186,16 @@ public class Maintenance extends Task implements Serializable {
 
 		// Add repair parts if necessary.
 		boolean repairParts = false;
-		Unit container = null;
+		Unit containerUnit = null;
 
 		if (person != null)
-			container = person.getTopContainerUnit();
+			containerUnit = person.getTopContainerUnit();
 
 		else if (robot != null)
-			container = robot.getTopContainerUnit();
+			containerUnit = robot.getTopContainerUnit();
 
-		if (container != null) {
-			Inventory inv = container.getInventory();
+		if (!(containerUnit instanceof MarsSurface)) {
+			Inventory inv = containerUnit.getInventory();
 			if (Maintenance.hasMaintenanceParts(inv, entity)) {
 				repairParts = true;
 				Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
@@ -421,7 +422,7 @@ public class Maintenance extends Task implements Serializable {
 	 */
 	public static boolean hasMaintenanceParts(Person person, Malfunctionable malfunctionable) {
 		Inventory inv = null;
-		if (person.getTopContainerUnit() != null)
+		if (!(person.getTopContainerUnit() instanceof MarsSurface))
 			inv = person.getTopContainerUnit().getInventory();
 		else
 			inv = person.getInventory();
@@ -430,7 +431,7 @@ public class Maintenance extends Task implements Serializable {
 
 	public static boolean hasMaintenanceParts(Robot robot, Malfunctionable malfunctionable) {
 		Inventory inv = null;
-		if (robot.getTopContainerUnit() != null)
+		if (!(robot.getTopContainerUnit() instanceof MarsSurface))
 			inv = robot.getTopContainerUnit().getInventory();
 		else
 			inv = robot.getInventory();

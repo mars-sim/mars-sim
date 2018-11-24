@@ -18,14 +18,16 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Container;
-
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /** 
  * A task for consolidating the resources stored in local containers.
@@ -69,26 +71,25 @@ implements Serializable {
         // Use Task constructor
         super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
                 
-        if (person.getTopContainerUnit() == null) {
+        if (person.isOutside()) {//.getTopContainerUnit() == null) {
         	endTask();
         	return;
         }
         
-        topInventory = person.getTopContainerUnit().getInventory();
-
-        if (topInventory != null) {
-            
-            if (person.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-                // If person is in rover, walk to passenger activity spot.
-                if (person.getVehicle() instanceof Rover) {
-                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-                }
-            }
-            else {
-                // Walk to location to consolidate containers.
-                walkToRandomLocation(true);
+        else if (person.isInVehicle()) {
+        	topInventory = person.getTopContainerUnit().getInventory();
+            // If person is in rover, walk to passenger activity spot.
+            if (person.getVehicle() instanceof Rover) {
+                walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
             }
         }
+        
+        else if (person.isInSettlement()) {
+        	topInventory = person.getTopContainerUnit().getInventory();
+            // Walk to location to consolidate containers.
+            walkToRandomLocation(true);
+        }
+        
         else {
             logger.severe("A top inventory could not be determined for consolidating containers for " + 
                     person.getName());
@@ -99,24 +100,24 @@ implements Serializable {
         addPhase(CONSOLIDATING);
         setPhase(CONSOLIDATING);
     }
+    
     public ConsolidateContainers(Robot robot) {
         // Use Task constructor
         super(NAME, robot, true, false, STRESS_MODIFIER, true, DURATION);
-                
-        topInventory = robot.getTopContainerUnit().getInventory();
-        if (topInventory != null) {
-            
-            if (robot.isInVehicle()) {//.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-                // If robot is in rover, walk to passenger activity spot.
-                if (robot.getVehicle() instanceof Rover) {
-                    walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), true);
-                }
-            }
-            else {
-                // Walk to location to consolidate containers.
-                walkToRandomLocation(false);
+        
+        if (robot.isInVehicle()) {
+           	topInventory = robot.getContainerUnit().getInventory();
+            // If robot is in rover, walk to passenger activity spot.
+            if (robot.getVehicle() instanceof Rover) {
+                walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), true);
             }
         }
+        else if (robot.isInSettlement()) {
+        	topInventory = robot.getContainerUnit().getInventory();
+            // Walk to location to consolidate containers.
+            walkToRandomLocation(false);
+        }
+        
         else {
             logger.severe("A top inventory could not be determined for consolidating containers for " + 
                     robot.getName());
@@ -127,17 +128,19 @@ implements Serializable {
         addPhase(CONSOLIDATING);
         setPhase(CONSOLIDATING);
     }    
+    
     /**
      * Checks if containers need resource consolidation at the person's location.
      * @param person the person.
      * @return true if containers need resource consolidation.
      */
     public static boolean needResourceConsolidation(Person person) {
-        Inventory inv = person.getTopContainerUnit().getInventory();    
+        Inventory inv = person.getTopContainerUnit().getInventory();
         return consolidate(inv);
     }
+    
     public static boolean needResourceConsolidation(Robot robot) {
-        Inventory inv = robot.getTopContainerUnit().getInventory();     
+        Inventory inv = robot.getTopContainerUnit().getInventory(); 
         return consolidate(inv);
     }
     

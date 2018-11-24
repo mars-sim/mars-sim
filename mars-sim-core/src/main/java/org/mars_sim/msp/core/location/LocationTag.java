@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -103,9 +104,9 @@ public class LocationTag implements LocationState, Serializable {
 		}
 
 		else if (e != null) {
-			if (e.getContainerUnit() != null)
+			if (!(e.getContainerUnit() instanceof MarsSurface))
 				return e.getContainerUnit().getName();
-			else if (e.getTopContainerUnit() != null)
+			else if (!(e.getTopContainerUnit() instanceof MarsSurface))
 				return e.getTopContainerUnit().getName();
 			else
 				return e.getCoordinates().getFormattedString();
@@ -150,39 +151,29 @@ public class LocationTag implements LocationState, Serializable {
 		}
 
 		else if (e != null) {
-//			if (e.getContainerUnit() != null)
-//				return e.getContainerUnit().getName();
-			if (e.getTopContainerUnit() != null)
-				return e.getTopContainerUnit().getLocationTag().getLocale();
+			if (e.getSettlement() != null)
+				return e.getSettlement().getName();
 			else
-				// if its top container is null
 				return e.getCoordinates().getFormattedString();
 		}
 
 		else if (r != null) {
 			if (r.getSettlement() != null)
 				return r.getSettlement().getName();
-//			else if (r.getVehicle() != null)
-//				return r.getVehicle().getName();
 			else
 				return r.getCoordinates().getFormattedString();
 
-		} else if (b != null) {
+		} 
+		
+		else if (b != null) {
 			return b.getSettlement().getName();
 		}
 
 		else if (v != null) {
-			if (v.getSettlement() != null) {
-//				if (v.getBuildingLocation() != null)
-//					return v.getBuildingLocation().getNickName();
-//				else
-				return v.getSettlement().getName();
-			} else {
-//				if (v.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
-//					return v.getAssociatedSettlement().getName() + " Vicinity";
-//				else
+			if (v.getSettlement() != null)
+				return v.getSettlement().getName();		
+			else
 				return v.getCoordinates().getFormattedString();
-			}
 		}
 
 		return UNKNOWN;
@@ -195,70 +186,6 @@ public class LocationTag implements LocationState, Serializable {
 	 */
 	public String getExtendedLocations() {
 		return getImmediateLocation() + IN + getLocale();
-
-//		if (p != null) {
-//			if (p.getSettlement() != null) {
-//				if (p.getBuildingLocation() != null) {
-//					return p.getBuildingLocation().getNickName() + " in " + p.getSettlement().getName();
-//				}
-//				else {
-//					return p.getSettlement().getName();
-//				}
-//			}
-//			else if (p.getVehicle() != null) {
-//				if (p.getVehicle().getBuildingLocation() != null) {
-//					return p.getBuildingLocation().getNickName() + " in " + p.getSettlement().getName();
-//				}
-//				else {
-//					return p.getVehicle().getName() + " at " + p.getCoordinates().getFormattedString();
-//				}
-//			}
-//			else
-//				return p.getCoordinates().getFormattedString(); 
-//		}
-//		
-//		else if (e != null) {
-//			if (e.getContainerUnit() != null)
-//				return e.getContainerUnit().getName();
-//			else if (e.getTopContainerUnit() != null)
-//				return e.getTopContainerUnit().getName();
-//			else
-//				return e.getCoordinates().getFormattedString();	
-//		}
-//		
-//		else if (r != null) {
-//			if (r.getSettlement() != null) {
-//				if (r.getBuildingLocation() != null) {
-//					return r.getBuildingLocation().getNickName() + " in " + r.getSettlement().getName();
-//				}
-//				else {
-//					return r.getSettlement().getName();
-//				}
-//			}
-//			else if (r.getVehicle() != null)
-//				return r.getVehicle().getName();
-//			else
-//				return p.getCoordinates().getFormattedString(); 
-//			
-//		}
-//		else if (b != null) {
-//			return b.getNickName() + " in " + b.getSettlement().getName();
-//		}
-//		
-//		else if (v != null) {
-//			if (v.getSettlement() != null) {
-//				if (v.getBuildingLocation() != null) {
-//					return v.getBuildingLocation().getNickName() + " in " + v.getSettlement().getName();
-//				}
-//				else {
-//					return v.getSettlement().getName();
-//				}
-//			}
-//			else
-//				return v.getCoordinates().getFormattedString();
-//		}
-//		
-//		return UNKNOWN;
 	}
 
 	/**
@@ -292,12 +219,10 @@ public class LocationTag implements LocationState, Serializable {
 		}
 
 		else if (e != null) {
-			if (e.getContainerUnit() != null)
-				return e.getContainerUnit().getName();
-//			else if (e.getTopContainerUnit() != null)
-//				return e.getTopContainerUnit().getName();
-			else if (e.isRightOutsideSettlement())
+			if (e.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
+			else if (!(e.getContainerUnit() instanceof MarsSurface))
+				return e.getContainerUnit().getName();
 			else
 				return OUTSIDE_ON_MARS;
 		}

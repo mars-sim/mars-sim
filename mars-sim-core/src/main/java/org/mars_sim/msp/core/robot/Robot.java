@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -305,7 +306,7 @@ public class Robot
 	public boolean isOutside() {
 		if (isInoperable)
 			return true;
-		else if (getContainerUnit() == null)
+		else if (getContainerUnit() instanceof MarsSurface)
 				return true;
 		return false;
 	}
@@ -329,39 +330,15 @@ public class Robot
 	 * @return true if the robot is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
-//		if (isInoperable)
-//			return false;
-//		else {
-//			Unit c = getContainerUnit();
-//			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
-//				return true;
-		if (getContainerUnit() instanceof Vehicle) {
-				Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-				if (b != null)
-					// still inside the garage
-					return true;
+	if (getContainerUnit() instanceof Vehicle) {
+			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+			if (b != null)
+				// still inside the garage
+				return true;
 		}
 		return false;
 	}
 
-//	/**
-//	 * Is the robot inside a settlement but not in a vehicle inside a garage
-//	 * 
-//	 * @return true or false
-//	 */
-//	public boolean isInSettlementNotVehicleGarage() {
-////		if (isInoperable)
-////			return false;
-////		else {
-////			Unit c = getContainerUnit();
-////			if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)//.getGarage() != null)
-////				return false;	
-//		if (getContainerUnit() instanceof Settlement) {
-//			return true;
-//		}
-//		return false;
-//	}
-	
 	/**
 	 * Is the robot inside a settlement
 	 * 
@@ -371,13 +348,6 @@ public class Robot
 		if (getContainerUnit() instanceof Settlement) {
 			return true;
 		}
-//		else if (getContainerUnit() instanceof Vehicle) {
-//		Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-//		if (b != null)
-//			// still inside the garage
-//			return true;
-//		}		
-		
 //		if (isInoperable)
 //			return false;
 //			if (getContainerUnit() instanceof Settlement)
@@ -393,19 +363,13 @@ public class Robot
 	 * @return true if the robot is inside a settlement or a vehicle
 	 */
 	public boolean isInside() {
-//		if (isInoperable)
-//			return false;
-//		else {
-			Unit container = getContainerUnit();
-			if (container instanceof Settlement)
-				return true;
-			else if (container instanceof Vehicle)
-				return true;
-//			else if (container == null)
-//				return false;
-//		}
-		return false;
+		Unit c = getContainerUnit();
+		if (c instanceof Settlement)
+			return true;
+		else if (c instanceof Vehicle)
+			return true;
 
+		return false;
 	}
 
 	/**
@@ -432,7 +396,7 @@ public class Robot
 				return LocationSituation.IN_SETTLEMENT;
 			else if (container instanceof Vehicle)
 				return LocationSituation.IN_VEHICLE;
-			else if (container == null)
+			else if (container instanceof MarsSurface)
 				return LocationSituation.OUTSIDE;
 		}
 		return LocationSituation.UNKNOWN;
@@ -481,7 +445,6 @@ public class Robot
 	 */
 	@Override
 	public Settlement getSettlement() {
-
 		Unit c = getContainerUnit();
 
 		if (c instanceof Settlement) {
@@ -493,43 +456,9 @@ public class Robot
 			if (b != null)
 				// still inside the garage
 				return b.getSettlement();
-//			else
-				// either at the vicinity of a settlement or already outside on a mission
-				// TODO: need to differentiate which case in future better granularity
-//				return null;
 		}
 
-//		else if (container == null) {
-//			return null;
-//		}
-
-//		logger.warning("Error in determining " + getName() + "'s settlement when calling getSettlement().");
-
 		return null;
-
-//       if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-//    	   Settlement settlement = (Settlement) getContainerUnit();
-//    	   return settlement;
-//       }
-//
-//       else if (getLocationSituation() == LocationSituation.OUTSIDE)
-//    	   return null;
-//
-//       else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
-//    	   Vehicle vehicle = (Vehicle) getContainerUnit();
-//    	   Settlement settlement = (Settlement) vehicle.getContainerUnit();
-//    	   return settlement;
-//       }
-//
-//       else if (getLocationSituation() == LocationSituation.DECOMMISSIONED) {
-//    	   return null; // TODO: create buriedSettlement;
-//       }
-//
-//       else {
-//    	   System.err.println("Error in determining " + getName() + "'s getSettlement() ");
-//    	   return null;
-//       }
-
 	}
 
 	/**
@@ -551,16 +480,16 @@ public class Robot
 	 * @param containerUnit the unit to contain this unit.
 	 */
 	public void setContainerUnit(Unit containerUnit) {
+		super.setContainerUnit(containerUnit);
 		// if (containerUnit instanceof Vehicle) {
 		// vehicle = (Vehicle) containerUnit;
 		// }
-		super.setContainerUnit(containerUnit);
 	}
 
 	// TODO: allow parts to be recycled
 	public void toBeSalvaged() {
 		Unit containerUnit = getContainerUnit();
-		if (containerUnit != null) {
+		if (!(containerUnit instanceof MarsSurface)) {
 			containerUnit.getInventory().retrieveUnit(this);
 		}
 		isInoperable = true;
