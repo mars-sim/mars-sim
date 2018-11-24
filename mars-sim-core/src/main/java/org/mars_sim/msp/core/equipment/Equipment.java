@@ -200,7 +200,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		else if (c instanceof Person) {
 			Unit cc = ((Person) c).getContainerUnit();
 			if (cc instanceof Settlement) {
-				return (Settlement) c;
+				return (Settlement) cc;
 			}
 //		} else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED) {
 //			Unit cc = ((Vehicle) c).getContainerUnit();
