@@ -148,8 +148,6 @@ public class Simulation implements ClockListener, Serializable {
 
 	private boolean isFXGL = false;
 
-	private double fileSize;
-	
 	/** The modified time stamp of the last saved sim */	
 	private String lastSaveTimeStampMod;
 	/** The time stamp of the last saved sim. */
@@ -425,14 +423,14 @@ public class Simulation implements ClockListener, Serializable {
 		return interactiveTerm;
 	}
 	
-	/*
-	 * Obtains the size of the file
-	 * 
-	 * @return fileSize in megabytes
-	 */
-	public double getFileSize() {
-		return fileSize;
-	}
+//	/*
+//	 * Obtains the size of the file
+//	 * 
+//	 * @return fileSize in megabytes
+//	 */
+//	public double getFileSize() {
+//		return fileSize;
+//	}
 
 	/**
 	 * Loads a simulation instance from a save file.
@@ -648,16 +646,19 @@ public class Simulation implements ClockListener, Serializable {
      * @return the file size with unit in a string
      */
     private String computeFileSize(File file) {
-		// Compute the size of the saved sim
-		fileSize = file.length() / 1000D;
-		String fileStr = "";
-
-		if (fileSize < 1000)
-			fileStr = Math.round(fileSize / 10.0) * 10.0 + " KB";
-		else
-			fileStr = Math.round(fileSize / 10_000.0 ) * 10.0  + " MB";
+		// Convert from Bytes to KB
+		double fileSize = file.length() / 1000D;
+		String s = "";
 		
-		return fileStr;
+		if (fileSize > 1000D) {
+			fileSize = fileSize / 1_000.0;
+			s = " MB";
+		}
+		else {
+			s = " KB";
+		}
+
+		return Math.round(fileSize * 100.0) / 100.0 + s;
     }
  
 	/**
@@ -671,8 +672,9 @@ public class Simulation implements ClockListener, Serializable {
 		// logger.config("Simulation : running readFromFile()");
 		logger.config("Loading and processing the saved sim. Please wait...");
 		
-		// Compute the size of the saved sim
-		String fileStr = computeFileSize(file);
+//		System.out.println(file.length() / 1000D);
+//		// Compute the size of the saved sim
+//		String sizeStr = computeFileSize(file);
 
 		loadBuild = SimulationConfig.instance().build;
 		if (loadBuild == null)
@@ -686,7 +688,7 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config(" --------------------------------------------------------------------");
 		logger.config("                   Filename : " + filename);
 		logger.config("                       Path : " + path);
-		logger.config("                       Size : " + fileStr);
+		logger.config("                       Size : " + computeFileSize(file));
 		logger.config("              Made in Build : " + loadBuild);
 		logger.config("  Current Core Engine Build : " + Simulation.BUILD);
 		
