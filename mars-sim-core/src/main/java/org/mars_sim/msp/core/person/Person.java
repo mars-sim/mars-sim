@@ -663,11 +663,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return true if the person is outside
 	 */
 	public boolean isOutside() {
-		if (getContainerUnit() instanceof MarsSurface)
+		if (LocationStateType.OUTSIDE_ON_MARS == currentStateType
+				|| LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType)
 			return true;
 		else if (isBuried)
 			return true;
-		return false;
+		return false;	
+//		if (getContainerUnit() instanceof MarsSurface)
+//			return true;
+//		else if (isBuried)
+//			return true;
+//		return false;
 	}
 
 	/**
@@ -676,7 +682,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return true if the person is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
-		if (getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
+		if (LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType)
 			return true;
 		return false;
 	}
@@ -687,11 +693,15 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return true if the person is inside a vehicle
 	 */
 	public boolean isInVehicle() {
-		if (isBuried)
-			return false;
-		else if (getContainerUnit() instanceof Vehicle)
-				return true;
-		return false;
+		if (LocationStateType.INSIDE_VEHICLE == currentStateType)
+			return true;
+
+		return false;	
+//		if (isBuried)
+//			return false;
+//		else if (getContainerUnit() instanceof Vehicle)
+//				return true;
+//		return false;
 	}
 
 	/**
@@ -718,11 +728,15 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return true if the person is inside a settlement
 	 */
 	public boolean isInSettlement() {
-		if (getContainerUnit() instanceof Settlement) {
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
-		}
+		return false;	
 		
-		return false;
+//		if (getContainerUnit() instanceof Settlement) {
+//			return true;
+//		}
+//		
+//		return false;
 	}
 
 
@@ -734,14 +748,22 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public boolean isInside() {
 		if (isBuried)
 			return false;
-		else {
-			Unit c = getContainerUnit();
-			if (c instanceof Settlement)
-				return true;
-			else if (c instanceof Vehicle)
-				return true;
-		}
-		return false;
+		else if (LocationStateType.INSIDE_SETTLEMENT == currentStateType
+				|| LocationStateType.INSIDE_VEHICLE == currentStateType)
+			return true;
+		
+		return false;	
+		
+//		if (isBuried)
+//			return false;
+//		else {
+//			Unit c = getContainerUnit();
+//			if (c instanceof Settlement)
+//				return true;
+//			else if (c instanceof Vehicle)
+//				return true;
+//		}
+//		return false;
 
 	}
 

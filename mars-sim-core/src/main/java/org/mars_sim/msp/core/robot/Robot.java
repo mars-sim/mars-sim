@@ -304,11 +304,16 @@ public class Robot
 	 * @return true if the robot is outside
 	 */
 	public boolean isOutside() {
-		if (isInoperable)
+		if (LocationStateType.OUTSIDE_ON_MARS == currentStateType
+				|| LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType)
 			return true;
-		else if (getContainerUnit() instanceof MarsSurface)
-				return true;
-		return false;
+		
+		return false;	
+//		if (isInoperable)
+//			return true;
+//		else if (getContainerUnit() instanceof MarsSurface)
+//				return true;
+//		return false;
 	}
 
 	/**
@@ -317,11 +322,15 @@ public class Robot
 	 * @return true if the robot is inside a vehicle
 	 */
 	public boolean isInVehicle() {
-		if (isInoperable)
-			return false;
-		else if (getContainerUnit() instanceof Vehicle)
-				return true;
-		return false;
+		if (LocationStateType.INSIDE_VEHICLE == currentStateType)
+			return true;
+
+		return false;	
+//		if (isInoperable)
+//			return false;
+//		else if (getContainerUnit() instanceof Vehicle)
+//				return true;
+//		return false;
 	}
 
 	/**
@@ -345,16 +354,20 @@ public class Robot
 	 * @return true if the robot is inside a settlement
 	 */
 	public boolean isInSettlement() {
-		if (getContainerUnit() instanceof Settlement) {
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
-		}
-//		if (isInoperable)
-//			return false;
-//			if (getContainerUnit() instanceof Settlement)
-//				return true;
-//			else if (getContainerUnit() instanceof Vehicle && ((Vehicle) getContainerUnit()).getStatus() == StatusType.GARAGED)//getGarage() != null)
-//				return true;
-		return false;
+		return false;	
+		
+//		if (getContainerUnit() instanceof Settlement) {
+//			return true;
+//		}
+////		if (isInoperable)
+////			return false;
+////			if (getContainerUnit() instanceof Settlement)
+////				return true;
+////			else if (getContainerUnit() instanceof Vehicle && ((Vehicle) getContainerUnit()).getStatus() == StatusType.GARAGED)//getGarage() != null)
+////				return true;
+//		return false;
 	}
 
 	/**
@@ -363,13 +376,18 @@ public class Robot
 	 * @return true if the robot is inside a settlement or a vehicle
 	 */
 	public boolean isInside() {
-		Unit c = getContainerUnit();
-		if (c instanceof Settlement)
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType
+				|| LocationStateType.INSIDE_VEHICLE == currentStateType)
 			return true;
-		else if (c instanceof Vehicle)
-			return true;
-
-		return false;
+		return false;	
+		
+//		Unit c = getContainerUnit();
+//		if (c instanceof Settlement)
+//			return true;
+//		else if (c instanceof Vehicle)
+//			return true;
+//
+//		return false;
 	}
 
 	/**
@@ -378,7 +396,7 @@ public class Robot
 	 * @return true if the robot is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
-		if (getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
+		if (LocationStateType.OUTSIDE_SETTLEMENT_VICINITY  == currentStateType)
 			return true;
 		return false;
 	}

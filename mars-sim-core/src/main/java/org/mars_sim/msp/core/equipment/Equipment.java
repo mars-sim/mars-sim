@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
+import org.mars_sim.msp.core.location.LocationState;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
@@ -195,6 +196,28 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 //	}
 
 	/**
+	 * Is the person inside a settlement or a vehicle
+	 * 
+	 * @return true if the person is inside a settlement or a vehicle
+	 */
+	public boolean isInside() {
+		Unit c = getContainerUnit();
+		if (c instanceof Settlement
+			|| c instanceof Vehicle)
+			return true;
+		else if (c instanceof Person) {
+			Unit cc = ((Person) c).getContainerUnit();
+			if (cc instanceof Settlement
+				|| cc instanceof Vehicle) {
+				return true;
+			}
+		}
+			
+		return false;
+	}
+	
+	
+	/**
 	 * Get the equipment's settlement, null if equipment is not at a settlement
 	 *
 	 * @return {@link Settlement} the equipment's settlement
@@ -250,7 +273,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return true if the equipment's is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
-		if (getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
+		if (LocationStateType.OUTSIDE_SETTLEMENT_VICINITY  == currentStateType)
 			return true;
 		return false;
 	}
@@ -279,12 +302,15 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return true if yes
 	 */
 	public boolean isInSettlement() {
-		Unit c = getTopContainerUnit();
-		if (c instanceof Settlement)
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
-//		else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)
+		return false;		
+//		Unit c = getTopContainerUnit();
+//		if (c instanceof Settlement)
 //			return true;
-		return false;
+////		else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)
+////			return true;
+//		return false;
 	}
 
 	/**
@@ -293,9 +319,13 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return true if yes
 	 */
 	public boolean isInPerson() {
-		if (getContainerUnit() instanceof Person)
+		if (LocationStateType.ON_A_PERSON == currentStateType)
 			return true;
-		return false;
+		
+		return false;	
+//		if (getContainerUnit() instanceof Person)
+//			return true;
+//		return false;
 	}
 
 	/**
@@ -304,9 +334,13 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return true if yes
 	 */
 	public boolean isInVehicle() {
-		if (getContainerUnit() instanceof Vehicle)
+		if (LocationStateType.INSIDE_VEHICLE == currentStateType)
 			return true;
-		return false;
+		
+		return false;	
+//		if (getContainerUnit() instanceof Vehicle)
+//			return true;
+//		return false;
 	}
 
 	/**
@@ -315,9 +349,14 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return true if the equipment is outside
 	 */
 	public boolean isOutside() {
-		if (getContainerUnit() instanceof MarsSurface)
+		if (LocationStateType.OUTSIDE_ON_MARS == currentStateType
+				|| LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType)
 			return true;
-		return false;
+		
+		return false;	
+//		if (getContainerUnit() instanceof MarsSurface)
+//			return true;
+//		return false;
 	}
 
 	public void setLastOwner(Unit unit) {

@@ -84,7 +84,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	/** Unit location coordinates. */
 	private Coordinates location;
 
-	private LocationStateType currentStateType;
+	protected LocationStateType currentStateType;
 
 	/** Unit listeners. */
 	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());

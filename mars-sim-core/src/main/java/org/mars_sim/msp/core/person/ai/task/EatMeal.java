@@ -440,7 +440,7 @@ public class EatMeal extends Task implements Serializable {
 		double foodAmount = foodConsumptionRate * mealProportion;
 		
 		Unit container = person.getContainerUnit();
-		if (!(container instanceof MarsSurface)) {
+		if (person.isInside()) {//!(container instanceof MarsSurface)) {
 			Inventory inv = container.getInventory();
 
 			// Take preserved food from inventory if it is available.
@@ -926,7 +926,7 @@ public class EatMeal extends Task implements Serializable {
 		// Throw away napkin waste if one was used.
 		if (hasNapkin) {
 			Unit containerUnit = person.getContainerUnit();
-			if (!(containerUnit instanceof MarsSurface)) {
+			if (person.isInside()) {//!(containerUnit instanceof MarsSurface)) {
 				Inventory inv = containerUnit.getInventory();
 				if (NAPKIN_MASS > 0)
 					Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteAR, inv, sourceName + "::endTask");

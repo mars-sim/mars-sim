@@ -221,7 +221,7 @@ public class LocationTag implements LocationState, Serializable {
 		else if (e != null) {
 			if (e.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
-			else if (!(e.getContainerUnit() instanceof MarsSurface))
+			else if (e.isInside()) //!(e.getContainerUnit() instanceof MarsSurface))
 				return e.getContainerUnit().getName();
 			else
 				return OUTSIDE_ON_MARS;
