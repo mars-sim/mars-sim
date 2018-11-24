@@ -454,10 +454,10 @@ public abstract class Airlock implements Serializable {
 				if (isDead) {
 					// If operator is dead, deactivate airlock.
 					String operatorName = operator.getName();
-					deactivateAirlock();
 					LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + operator.getLocationTag().getLocale() + "] "
 					+ "Airlock operator " + operatorName + " was dead. Emergency deactivating the airlock of "
 							+ getEntityName(), null);
+					deactivateAirlock();
 				} else {
 					// Check if airlock operator still has a task involving the airlock.
 					boolean hasAirlockTask = false;
@@ -473,10 +473,10 @@ public abstract class Airlock implements Serializable {
 
 					if (!hasAirlockTask) {
 						String operatorName = operator.getName();
-						deactivateAirlock();
 						LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + operator.getLocationTag().getLocale() + "] "
 								+ "Airlock operator " + operatorName + " was no longer "
 								+ "operating the airlock.  Deactivating airlock of " + getEntityName(), null);
+						deactivateAirlock();
 					}
 				}
 			} else {

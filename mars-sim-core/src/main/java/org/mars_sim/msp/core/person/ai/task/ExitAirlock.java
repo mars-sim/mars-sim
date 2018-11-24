@@ -764,10 +764,9 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	private void loadEVASuit(EVASuit suit) {
 
-		Inventory suitInv = suit.getInventory();
+		Inventory suitInv = suit.getInventory();		
 		
-		
-		if (!(person.getContainerUnit() instanceof MarsSurface)) { 
+		if (!(person.getContainerUnit() instanceof MarsSurface)) {
 			Inventory entityInv = person.getContainerUnit().getInventory();
 			// Warning : if person.getContainerUnit().getInventory() is null, the simulation hang up
 			// person.getContainerUnit() instanceof MarsSurface may alleviate this situation
@@ -814,6 +813,10 @@ public class ExitAirlock extends Task implements Serializable {
 						null);
 			}
 
+			// Return suit to entity's inventory.
+			LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+					+ " in " + person.getLocationTag().getImmediateLocation() + " had just loaded up "  + suit.getName() + ".", null);
 		}
 	}
 

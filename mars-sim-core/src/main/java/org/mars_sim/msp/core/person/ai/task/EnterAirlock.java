@@ -412,15 +412,16 @@ public class EnterAirlock extends Task implements Serializable {
 									+ person + " had no container. Location state type : " 
 									+ person.getLocationStateType()
 									, null);
+				endTask();
 			}
 			else {
 				// Empty the EVA suit
 				LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " was stowing away " + suit.getName(), null);
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " was going to retrieve the O2 and H2O in " + suit.getName(), null);
 	
 				Inventory entityInv = null;
 				
-				if (!(person.getContainerUnit() instanceof MarsSurface)) {
+				if (person.getContainerUnit().getInventory() != null) {
 	
 					try {
 						entityInv = person.getContainerUnit().getInventory();
@@ -441,6 +442,7 @@ public class EnterAirlock extends Task implements Serializable {
 						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 								+ " was in storingEVASuitPhase() but something wrong with retrieving/storing oxygen : " + e.getMessage(), null);
+						endTask();
 					}
 		
 					// Unload water from suit.
@@ -458,14 +460,18 @@ public class EnterAirlock extends Task implements Serializable {
 						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 								+ " was in storingEVASuitPhase() but something wrong with retrieving/storing water : " + e.getMessage(), null);
+						endTask();
 					}
 		
-					// Return suit to entity's inventory.
 		//			 logger.finer(person.getName() + " putting away EVA suit into " +
 		//			 entity.getName());
 					personInv.retrieveUnit(suit);
 		//			 suit.setLastOwner(person);
 					entityInv.storeUnit(suit);
+					// Return suit to entity's inventory.
+					LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
+							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+							+ " in " + person.getLocationTag().getImmediateLocation() + " had just stowed away "  + suit.getName() + ".", null);
 				}
 			}
 		}
@@ -475,9 +481,9 @@ public class EnterAirlock extends Task implements Serializable {
 					"[" + person.getLocationTag().getLocale() + "] " 
 					+ person.getName() + " doesn't have an EVA suit to put away in "
 							+ person.getLocationTag().getImmediateLocation() , null);
+			endTask();
 		}
 
-		endTask();
 
 		// Add experience
 		addExperience(time - remainingTime);
