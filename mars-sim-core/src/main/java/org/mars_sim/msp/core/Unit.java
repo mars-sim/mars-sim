@@ -335,6 +335,16 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		return topUnit;
 	}
 
+	public void setTopContainerUnit(Unit u) {
+		Unit topUnit = containerUnit;
+		if (!(topUnit instanceof MarsSurface)) {
+			while (topUnit.containerUnit != null && !(topUnit.containerUnit instanceof MarsSurface)) {
+				topUnit = topUnit.containerUnit;
+			}
+		}
+
+		containerUnit.setContainerUnit(u);
+	}
 	
 	/**
 	 * Sets the unit's container unit.

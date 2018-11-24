@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -253,27 +254,30 @@ implements Serializable {
             double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
             		iceID, false, false);
 
-            // Try to store ice in settlement.
-            if (collectedAmount < settlementCap) {
-                bag.getInventory().retrieveAmountResource(iceID, collectedAmount);
-                settlement.getInventory().storeAmountResource(iceID, collectedAmount, false);
-                settlement.getInventory().addAmountSupplyAmount(iceID, collectedAmount);
+            if (settlement.getInventory() != null) {
+            	Inventory sInv = settlement.getInventory();
+	            // Try to store ice in settlement.
+	            if (collectedAmount < settlementCap) {
+	                bag.getInventory().retrieveAmountResource(iceID, collectedAmount);
+	                sInv.storeAmountResource(iceID, collectedAmount, false);
+	                sInv.addAmountSupplyAmount(iceID, collectedAmount);
+	            }
+	
+	            if (person.getInventory() != null) {
+	            	// TODO: java.lang.IllegalStateException: Unit: Bag 104 could not be retrieved
+	            	// ExitAirlock : [Alpha Base] Cheryl Halvorson had tried to exit the airlock 1 times
+		            
+	            	// Retrieve the bag from the person
+		            person.getInventory().retrieveUnit(bag);
+					// Place this equipment within a settlement
+		            bag.enter(LocationCodeType.MOBILE_UNIT_4);
+		            sInv.storeUnit(bag);	            
+	            }
+	
+	            // Recalculate settlement good value for output item.
+	            GoodsManager goodsManager = settlement.getGoodsManager();
+	            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(iceID), false);
             }
-
-            if (person.getInventory() != null) {
-            	// TODO: java.lang.IllegalStateException: Unit: Bag 104 could not be retrieved
-            	// ExitAirlock : [Alpha Base] Cheryl Halvorson had tried to exit the airlock 1 times
-	            
-            	// Store bag.
-	            person.getInventory().retrieveUnit(bag);
-				// Place this equipment within a settlement
-	            bag.enter(LocationCodeType.MOBILE_UNIT_4);
-	            settlement.getInventory().storeUnit(bag);	            
-            }
-
-            // Recalculate settlement good value for output item.
-            GoodsManager goodsManager = settlement.getGoodsManager();
-            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(iceID), false);
         }
 
         super.endTask();

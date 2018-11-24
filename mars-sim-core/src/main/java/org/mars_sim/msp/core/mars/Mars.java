@@ -30,8 +30,8 @@ public class Mars implements Serializable {
 	private SurfaceFeatures surfaceFeatures;
 	/** Orbital information. */
 	private OrbitInfo orbitInfo;
-	
-	private static MarsSurface marsSurface;
+	/** Mars Surface as a unit container */
+	private MarsSurface marsSurface;
 	/**
 	 * Constructor.
 	 * 
@@ -51,7 +51,10 @@ public class Mars implements Serializable {
 		marsSurface = new MarsSurface();
 	}
 
-
+	public void setMarsSurface(MarsSurface ms) {
+		marsSurface = ms;
+	}
+	
 	/**
 	 * Initialize transient data in the simulation.
 	 * 

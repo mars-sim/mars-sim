@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.GenderType;
@@ -93,7 +94,7 @@ public class UnitManager implements Serializable {
 	public static boolean isCommanderMode = false;	
 	
 	/** Collection of all units. */
-	private Collection<Unit> units;
+	private List<Unit> units;
 
 	// Transient members
 	/** Flag true if the class has just been deserialized */
@@ -140,7 +141,7 @@ public class UnitManager implements Serializable {
 	private static PartConfig partConfig;
 
 	private static MarsClock marsClock;
-//	private static MarsSurface marsSurface;
+	private static MarsSurface marsSurface;
 
 	/**
 	 * Constructor.
@@ -153,7 +154,7 @@ public class UnitManager implements Serializable {
 			partConfig = SimulationConfig.instance().getPartConfiguration();
 
 		// Initialize unit collection
-		units = new ConcurrentLinkedQueue<Unit>();
+		units = new CopyOnWriteArrayList<>();//ConcurrentLinkedQueue<Unit>();
 		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		equipmentNumberMap = new HashMap<String, Integer>();
 		vehicleNumberMap = new HashMap<String, Integer>();
@@ -164,8 +165,10 @@ public class UnitManager implements Serializable {
 		relationshipManager = Simulation.instance().getRelationshipManager();
 		
 
-		// Initialize mars surface		
-//		marsSurface = new MarsSurface();
+		// Add mars surface
+		marsSurface = Simulation.instance().getMars().getMarsSurface();
+		addUnit(marsSurface);
+//		System.out.println("UnitManager marsSurface hashcode : " + marsSurface.hashCode());
 	}
 
 	/**

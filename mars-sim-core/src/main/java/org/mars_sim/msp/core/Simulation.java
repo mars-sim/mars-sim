@@ -701,7 +701,8 @@ public class Simulation implements ClockListener, Serializable {
 		isUpdating = false;
 		
 		// Call to initialize the resources for the saved sim
-		ResourceUtil.getInstance().prep4ResourcesSavedSim();
+		ResourceUtil.getInstance().load();
+		
 	}
 
 	

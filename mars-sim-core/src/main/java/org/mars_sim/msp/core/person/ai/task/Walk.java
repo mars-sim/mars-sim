@@ -1091,7 +1091,7 @@ public class Walk extends Task implements Serializable {
 
 //        if (person != null) {
 //		logger.finer(person + " walking entering airlock phase.");
-		LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+		LogConsolidated.log(logger, Level.FINER, 0, sourceName,
   				"[" + person.getLocationTag().getLocale() + "] "
 				+ person + " was in " + person.getLocationTag().getImmediateLocation()
 				+ " and in enteringAirlockPhase().", null);
@@ -1103,7 +1103,7 @@ public class Walk extends Task implements Serializable {
 			if (EnterAirlock.canEnterAirlock(person, airlock)) {
 				// setDescription("is OUTSIDE and attempting to enter an airlock. calling
 				// EnterAirlock as a subTask now");
-				LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+				LogConsolidated.log(logger, Level.FINER, 00, sourceName,
 		  				"[" + person.getLocationTag().getLocale() + "] "
 						+ person + " was in " + person.getLocationTag().getImmediateLocation()
 						+ " and starting EnterAirlock subtask.", null);
@@ -1111,7 +1111,7 @@ public class Walk extends Task implements Serializable {
 			} else {
 				endTask();
 				LogConsolidated.log(
-						logger, Level.SEVERE, 5_000, sourceName, 
+						logger, Level.SEVERE, 0, sourceName, 
 	      				"[" + person.getLocationTag().getLocale() + "] "
 	      						+ person + " is in " + person.getLocationTag().getImmediateLocation()
 								+ " is OUTSIDE, unable to physically enter the airlock of " + airlock.getEntityName(),
@@ -1129,40 +1129,6 @@ public class Walk extends Task implements Serializable {
 				endTask();
 			}
 		}
-
-//        }
-//        else if (robot != null) {
-//            logger.finer(robot + " walking entering airlock phase.");
-//
-//            // Check if robot has reached the inside of the airlock.
-//            WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-//            Airlock airlock = step.airlock;
-//            if (robot.isOutside()) {
-//                if (EnterAirlock.canEnterAirlock(robot, airlock)) {
-//    	        	//setDescription("is OUTSIDE and attempting to enter an airlock. calling EnterAirlock as a subTask now");
-//                    addSubTask(new EnterAirlock(robot, airlock));
-//                }
-//                else {
-//                    endTask();
-//                    LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName, 
-//                    		robot.getName() + " is still OUTSIDE, unable to physically enter the airlock of " +
-//                            airlock.getEntityName(), null);
-//                }
-//            }
-//            else {
-//                if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-//                    walkingStepIndex++;
-//       	        	// 2015-11-11 setDescription()
-//    	        	//setDescription("Walking outside to an airlock to enter");
-//    	        	//setDescription("is INSIDE and still walking toward an airlock");
-//                    setPhase(getWalkingStepPhase());
-//                }
-//                else {
-//    	        	//setDescription("is INSIDE and arrived at an airlock");
-//                    endTask();
-//                }
-//            }
-//        }
 
 		return timeLeft;
 	}

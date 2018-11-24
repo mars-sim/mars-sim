@@ -474,6 +474,12 @@ public class EnterAirlock extends Task implements Serializable {
 					LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 							+ " in " + person.getLocationTag().getImmediateLocation() + " had just stowed away "  + suit.getName() + ".", null);
+					
+					// Add experience
+					addExperience(remainingTime);
+					
+					endTask();
+					// NOTE: endTask() above is absolutely needed, or else it will call storingEVASuitPhase()  
 				}
 			}
 		}
@@ -481,14 +487,10 @@ public class EnterAirlock extends Task implements Serializable {
 		else {
 			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " 
-					+ person.getName() + " doesn't have an EVA suit to put away in "
+					+ person.getName() + " did NOT have an EVA suit to put away in "
 							+ person.getLocationTag().getImmediateLocation() , null);
 			endTask();
 		}
-
-
-		// Add experience
-		addExperience(time - remainingTime);
 
 		return remainingTime;
 	}

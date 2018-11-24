@@ -217,7 +217,10 @@ public class ResourceUtil implements Serializable {
 		savedARs();
 	}
 
-	public void prep4ResourcesSavedSim() {
+	/**
+	 * Remaps Amount Resources from saved sim
+	 */
+	public void load() {
 		// Restores the saved ARs references
 		restoreSavedARs();
 		mapARs();
@@ -225,6 +228,9 @@ public class ResourceUtil implements Serializable {
 		// restoreInventory();
 	}
 
+	/**
+	 * Restores the Amount Resource addresses
+	 */
 	public void restoreSavedARs() {
 		for (AmountResource r : resources) {
 			for (AmountResource ar : ARs) {
