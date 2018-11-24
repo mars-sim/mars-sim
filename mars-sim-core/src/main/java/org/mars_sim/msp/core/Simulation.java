@@ -33,10 +33,12 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.health.MedicalManager;
@@ -700,9 +702,13 @@ public class Simulation implements ClockListener, Serializable {
 		instance().initialSimulationCreated = true;
 		isUpdating = false;
 		
-		// Call to initialize the resources for the saved sim
-		ResourceUtil.getInstance().load();
-		
+		// Re-initialize the resources for the saved sim
+		ResourceUtil.getInstance().justReloaded();
+		// Re-initialize the MarsSurface instance
+		unitManager.justReloaded();
+		Unit.justReloaded();
+		Equipment.justReloaded();
+		Person.justReloaded();
 	}
 
 	

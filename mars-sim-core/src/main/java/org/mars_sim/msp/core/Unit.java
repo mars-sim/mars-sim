@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
@@ -57,6 +58,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	private static int unitIdentifer = 0;
 
 	// Data members
+//	private static boolean once = true;
 	// Unique identifier
 	private int identifier;
 	// The unit's location code
@@ -87,7 +89,8 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	/** Unit listeners. */
 	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());
 
-	private static MarsSurface marsSurface;
+	private static Mars mars;
+//	private static MarsSurface marsSurface;
 	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -109,6 +112,8 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
 
 		this.identifier = getNextIdentifier();
+		
+		// Creates a new location tag instance for each unit
 		tag = new LocationTag(this);
 
 		// Initialize data members from parameters
@@ -123,11 +128,6 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 			this.location.setCoords(location);
 			this.inventory.setCoordinates(location);
 		}
-
-//		if (marsSurface == null)		
-////			marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
-//			marsSurface = Simulation.instance().getMars().getMarsSurface();
-//		this.containerUnit = marsSurface;
 		
 		// Define the default LocationStateType of an unit at the start of the sim
 		if (this instanceof Robot)
@@ -142,7 +142,9 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 			currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
 		else if (this instanceof Settlement)
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
-
+		
+		mars = Simulation.instance().getMars();
+//		marsSurface = mars.getMarsSurface();
 	}
 
 	/**
@@ -291,15 +293,13 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * @throws Exception if error during time passing.
 	 */
 	public void timePassing(double time) {
-//		System.out.println("unit.timePassing()");
-		if (marsSurface == null) {
-////			marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
-			marsSurface = Simulation.instance().getMars().getMarsSurface();
-//			if (containerUnit == null)
-//				this.containerUnit = marsSurface;
-		}
 	}
 
+	public static void justReloaded() {
+		mars = Simulation.instance().getMars();
+//		marsSurface = mars.getMarsSurface();
+	}
+	
 	/**
 	 * Gets the unit's inventory
 	 * 
@@ -315,6 +315,10 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * @return the unit's container unit
 	 */
 	public Unit getContainerUnit() {
+//		if (once && containerUnit != null && containerUnit instanceof MarsSurface) {
+//			System.out.println(containerUnit + " has " + containerUnit.getCode());
+//			once = false;
+//		}
 		return containerUnit;
 	}
 
@@ -352,8 +356,8 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * @param newContainer the unit to contain this unit.
 	 */
 	public void setContainerUnit(Unit newContainer) {	
-		if (newContainer == null)
-			newContainer = marsSurface;
+		if (newContainer == null && mars != null) // to pass maven test
+			newContainer = mars.getMarsSurface();//marsSurface;
 			
 		if (this instanceof Person || this instanceof Robot)
 			updatePersonRobotState(newContainer);
@@ -539,6 +543,10 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		return name;
 	}
 
+    public String getCode() {
+        return getClass().getName() + "@" + Integer.toHexString(hashCode());
+    }
+    
 	public synchronized boolean hasUnitListener(UnitListener listener) {
 		if (listeners == null)
 			return false;

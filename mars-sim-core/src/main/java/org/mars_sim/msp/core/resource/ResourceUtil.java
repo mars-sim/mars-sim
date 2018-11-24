@@ -218,9 +218,9 @@ public class ResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Remaps Amount Resources from saved sim
+	 * Remaps the Amount Resource instances in all map
 	 */
-	public void load() {
+	public void justReloaded() {
 		// Restores the saved ARs references
 		restoreSavedARs();
 		mapARs();

@@ -1675,10 +1675,10 @@ public class Inventory implements Serializable {
 		}
 
 		else {
-//			throw new IllegalStateException("Unit: " + unit + " could not be retrieved.");
-			 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName +
-			 "::retrieveUnit",
-			 "Unit: " + unit + " could not be retrieved.", null);
+			throw new IllegalStateException("Unit: " + unit + " could not be retrieved."); // needed for maven test
+//			 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName +
+//			 "::retrieveUnit",
+//			 "Unit: " + unit + " could not be retrieved.", null);
 		}
 	}
 
@@ -1729,13 +1729,16 @@ public class Inventory implements Serializable {
 		double result = Double.MAX_VALUE;
 
 		if ((owner != null) && !(owner.getContainerUnit() instanceof MarsSurface)) {
-			Inventory containerInv = owner.getContainerUnit().getInventory();
-			if (containerInv.getRemainingGeneralCapacity(allowDirty) < result) {
-				result = containerInv.getRemainingGeneralCapacity(allowDirty);
-			}
-
-			if (containerInv.getContainerUnitGeneralCapacityLimit(allowDirty) < result) {
-				result = containerInv.getContainerUnitGeneralCapacityLimit(allowDirty);
+			Inventory containerInv = null;
+			if (owner.getContainerUnit() != null) {
+				containerInv = owner.getContainerUnit().getInventory();
+				if (containerInv.getRemainingGeneralCapacity(allowDirty) < result) {
+					result = containerInv.getRemainingGeneralCapacity(allowDirty);
+				}
+	
+				if (containerInv.getContainerUnitGeneralCapacityLimit(allowDirty) < result) {
+					result = containerInv.getContainerUnitGeneralCapacityLimit(allowDirty);
+				}
 			}
 		}
 
@@ -1860,7 +1863,7 @@ public class Inventory implements Serializable {
 			if (owner instanceof MarsSurface) {
 				return;
 			}
-			else if (!(container instanceof MarsSurface)) { 
+			else if (container != null && !(container instanceof MarsSurface)) { 
 				// Note : still need (container != null) since MarsSurface may not have been initiated
 				container.getInventory().setAmountResourceCapacityCacheAllDirty(true);
 			}
@@ -2112,7 +2115,7 @@ public class Inventory implements Serializable {
 		// Set owner unit's amount resource stored cache as dirty (if any).
 		if (owner != null) {
 			Unit container = owner.getContainerUnit();
-			if (!(container instanceof MarsSurface)) {
+			if (container != null && !(container instanceof MarsSurface)) {
 				container.getInventory().setARStoredCacheAllDirty(true);
 			}
 		}
@@ -2252,7 +2255,7 @@ public class Inventory implements Serializable {
 		// Mark owner unit's all stored amount resources stored as dirty, if any.
 		if (owner != null) {
 			Unit container = owner.getContainerUnit();
-			if (!(container instanceof MarsSurface)) {
+			if (container != null && !(container instanceof MarsSurface)) {
 				container.getInventory().setAllStoredARCacheDirty();
 			}
 		}
@@ -2336,7 +2339,7 @@ public class Inventory implements Serializable {
 		// Mark owner unit's total resources stored as dirty, if any.
 		if (owner != null) {
 			Unit container = owner.getContainerUnit();
-			if (!(container instanceof MarsSurface)) {
+			if (container != null && !(container instanceof MarsSurface)) {
 				container.getInventory().setTotalAmountResourcesStoredCacheDirty();
 			}
 		}
@@ -2475,7 +2478,7 @@ public class Inventory implements Serializable {
 		// Set owner's unit total mass to dirty, if any.
 		if (owner != null) {
 			Unit container = owner.getContainerUnit();
-			if (!(container instanceof MarsSurface)) {
+			if (container != null && !(container instanceof MarsSurface)) {
 				container.getInventory().setUnitTotalMassCacheDirty();
 			}
 		}

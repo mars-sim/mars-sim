@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -206,8 +207,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private static MarsClock marsClock;
 	private static EarthClock earthClock;
 	private static MasterClock masterClock;
-//	private static MarsSurface marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
-	private static MarsSurface marsSurface = Simulation.instance().getMars().getMarsSurface();
+	private static Mars mars;
+	private static MarsSurface marsSurface;
 	
 	// private PersonConfig config;
 
@@ -267,13 +268,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		if (masterClock != null) { // avoid NullPointerException during maven test
 			marsClock = masterClock.getMarsClock();
 			earthClock = masterClock.getEarthClock();
+			mars = Simulation.instance().getMars();
+			marsSurface = mars.getMarsSurface();
 			// TODO : avoid declaring a birth clock for each person
 			// Find a way to use existing EarthClock inside MasterClock, plus the difference
 			// in date
 			birthTimeStamp = new EarthClock(createBirthTimeString());
 		}
 		
-
 		isBuried = false;
 
 		// Put person in proper building.
@@ -1654,6 +1656,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public Map<Integer, List<Double>> getMissionExperiences() {
 		return missionExperiences;
+	}
+	
+	public static void justReloaded() {
+		mars = Simulation.instance().getMars();
+		marsSurface = mars.getMarsSurface();
 	}
 	
 	@Override

@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
@@ -48,10 +49,11 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	private Unit lastOwner;
 
+	private static Simulation sim;
 	private static UnitManager unitManager;
-	
 	private static MarsSurface marsSurface;
-
+	private static Mars mars;
+	
 	/**
 	 * Constructs an Equipment object
 	 * 
@@ -65,11 +67,15 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		salvageInfo = null;
 		// this.name = name;
 
-		unitManager = Simulation.instance().getUnitManager();
-		marsSurface = Simulation.instance().getMars().getMarsSurface();
+		sim = Simulation.instance();
+		unitManager = sim.getUnitManager();
+		mars = sim.getMars();
 		
-		// Initially set container unit to the mars surface
-		setContainerUnit(marsSurface);
+		if (mars != null) {// For passing maven test
+			marsSurface = mars.getMarsSurface();
+			// Initially set container unit to the mars surface
+			setContainerUnit(marsSurface);
+		}
 		
 		// Place this person within a settlement
 		enter(LocationCodeType.SETTLEMENT);
@@ -79,6 +85,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		
 	}
 
+	public static void justReloaded() {
+		unitManager = Simulation.instance().getUnitManager();
+	}
+	
 	/**
 	 * Gets a collection of people affected by this entity.
 	 * 

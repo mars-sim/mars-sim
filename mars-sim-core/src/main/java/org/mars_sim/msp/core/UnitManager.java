@@ -98,7 +98,7 @@ public class UnitManager implements Serializable {
 
 	// Transient members
 	/** Flag true if the class has just been deserialized */
-	public transient boolean justReloaded = true;
+	public transient boolean justLoaded = true;
 	/** List of unit manager listeners. */
 	private transient List<UnitManagerListener> listeners;
 
@@ -1988,8 +1988,7 @@ public class UnitManager implements Serializable {
 			partConfig.computeReliability();
 		}
 
-		if (justReloaded) {
-//			System.out.println("justReloaded is true");
+		if (justLoaded) {
 			// Only need to run all these below once at the start of the sim
 			partConfig.computeReliability();
 
@@ -1999,7 +1998,7 @@ public class UnitManager implements Serializable {
 				s.updateAllAssociatedRobots();
 			}
 
-			justReloaded = false;
+			justLoaded = false;
 		}
 
 		for (Unit u : units) {
@@ -2369,6 +2368,9 @@ public class UnitManager implements Serializable {
 //		return marsSurface;
 //	}
 	
+	public void justReloaded() {
+		Simulation.instance().getMars().setMarsSurface((MarsSurface)units.get(0));
+	}
 	
 	/**
 	 * Prepare object for garbage collection.

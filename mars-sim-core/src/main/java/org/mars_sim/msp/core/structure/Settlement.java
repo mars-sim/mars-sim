@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.DustStorm;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -296,8 +297,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static int co2ID = ResourceUtil.co2ID;
 //	private static int foodID = ResourceUtil.foodID;
 	
+	private static MarsSurface marsSurface;
+	
 	/** 
-	 * Constructor 1 called by ConstructionStageTest 
+	 * Constructor 1 called by ConstructionStageTest for maven testing.
 	 */
 	private Settlement() {
 		super(null, null);
@@ -317,7 +320,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 
 	/** 
-	 * Constructor 2 for maven testing. Called by MockSettlement
+	 * Constructor 2 called by MockSettlement for maven testing.
 	 */
 	public Settlement(String name, int scenarioID, Coordinates location) {
 		// Use Structure constructor.
@@ -359,8 +362,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		marsClock = sim.getMasterClock().getMarsClock();
 		weather = sim.getMars().getWeather();
 
-		// inv = getInventory();
-//		unitManager = Simulation.instance().getUnitManager();
 		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
@@ -373,7 +374,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		updateAllAssociatedRobots();
 
 		// Set the container unit of the settlement to the MarsSurface
-		setContainerUnit(Simulation.instance().getMars().getMarsSurface());
+		marsSurface = Simulation.instance().getMars().getMarsSurface();
+		setContainerUnit(marsSurface);
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);// 
 

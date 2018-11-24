@@ -31,7 +31,7 @@ public class Mars implements Serializable {
 	/** Orbital information. */
 	private OrbitInfo orbitInfo;
 	/** Mars Surface as a unit container */
-	private MarsSurface marsSurface;
+	private static MarsSurface marsSurface;
 	/**
 	 * Constructor.
 	 * 
@@ -52,6 +52,8 @@ public class Mars implements Serializable {
 	}
 
 	public void setMarsSurface(MarsSurface ms) {
+		System.out.println("Mars : " + marsSurface + " has " + marsSurface.getCode());
+		System.out.println("Mars : " + ms + " has " + ms.getCode());
 		marsSurface = ms;
 	}
 	

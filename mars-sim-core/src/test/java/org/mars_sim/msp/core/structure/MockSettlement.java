@@ -33,27 +33,25 @@ public class MockSettlement extends Settlement {
 
         // Initialize power grid
         powerGrid = new PowerGrid(this);
-/*
-        Settlement settlement = Settlement.createMockSettlement("Mock Settlement", 0, new Coordinates(0, 0));
 
-        // Set inventory total mass capacity.
-		settlement.getInventory().addGeneralCapacity(Double.MAX_VALUE);
-
-        // Initialize building manager
-		BuildingManager mgr = new BuildingManager(settlement, true);
-        mgr.addBuilding(new MockBuilding(mgr), false);
-
-        // Initialize building connector manager.
-        BuildingConnectorManager buildingConnectorManager = new BuildingConnectorManager(settlement,
-                new ArrayList<BuildingTemplate>());
-
-        // Initialize construction manager.
-        ConstructionManager constructionManager = new ConstructionManager(settlement);
-
-        // Initialize power grid
-        PowerGrid powerGrid = new PowerGrid(settlement);
-
-*/
+//        Settlement settlement = Settlement.createMockSettlement("Mock Settlement", 0, new Coordinates(0, 0));
+//
+//        // Set inventory total mass capacity.
+//		settlement.getInventory().addGeneralCapacity(Double.MAX_VALUE);
+//
+//        // Initialize building manager
+//		BuildingManager mgr = new BuildingManager(settlement, true);
+//        mgr.addBuilding(new MockBuilding(mgr), false);
+//
+//        // Initialize building connector manager.
+//        BuildingConnectorManager buildingConnectorManager = new BuildingConnectorManager(settlement,
+//                new ArrayList<BuildingTemplate>());
+//
+//        // Initialize construction manager.
+//        ConstructionManager constructionManager = new ConstructionManager(settlement);
+//
+//        // Initialize power grid
+//        PowerGrid powerGrid = new PowerGrid(settlement);
 
 	}
 }
