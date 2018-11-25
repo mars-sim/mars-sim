@@ -54,6 +54,7 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
@@ -754,9 +755,12 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize the MarsSurface instance
 		MasterClock.justReloaded();
 		MarsClock marsClock = masterClock.getMarsClock();
+		
 		MissionManager.justReloaded(marsClock);
 		MedicalManager.justReloaded();
 		unitManager.justReloaded();
+		MalfunctionManager.justReloaded(masterClock, marsClock);
+		
 		Unit.justReloaded();
 		Equipment.justReloaded();
 		Person.justReloaded(masterClock, marsClock);
@@ -764,12 +768,15 @@ public class Simulation implements ClockListener, Serializable {
 		Vehicle.justReloaded();
 		GroundVehicle.justReloaded();
 		Rover.justReloaded();
+		
 		Mind.justReloaded(marsClock);
 		BotMind.justReloaded(marsClock);
+		
+		Building.justReloaded(masterClock, marsClock);
 		BuildingManager.justReloaded(masterClock, marsClock);
-		MalfunctionManager.justReloaded(masterClock, marsClock);
 		Settlement.justReloaded(marsClock);
 		ChainOfCommand.justReloaded();
+		
 		Cooking.justReloaded(marsClock);
 		LivingAccommodations.justReloaded(marsClock);
 		PowerStorage.justReloaded(marsClock);

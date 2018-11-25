@@ -385,8 +385,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			// large greenhouse : 9.63E-4 or 0.000963
 		}
 
-		if (masterClock == null)
-			masterClock = Simulation.instance().getMasterClock();
+		masterClock = Simulation.instance().getMasterClock();
+		marsClock = masterClock.getMarsClock();
 
 		powerModeCache = PowerMode.FULL_POWER;
 		heatModeCache = HeatMode.HALF_HEAT;
@@ -1328,26 +1328,32 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded(MasterClock c0, MarsClock c1) {
+		masterClock = c0;
+		marsClock = c1;
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		malfunctionMeteoriteImpact = MalfunctionFactory
+				.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
+	}
+	
+	/**
 	 * Time passing for building.
 	 * 
 	 * @param time amount of time passing (in millisols)
 	 */
 	public void timePassing(double time) {
-
-		// s_inv = settlement.getInventory();
-		// b_inv = super.getInventory();
 		// Check for valid argument.
-		if (time < 0D)
-			throw new IllegalArgumentException("Time must be > 0D");
+//		if (time < 0D)
+//			throw new IllegalArgumentException("Time must be > 0D");
 
 		// Send time to each building function.
 		for (Function f : functions)
 			f.timePassing(time);
-
-		if (masterClock == null)
-			masterClock = Simulation.instance().getMasterClock();
-		if (marsClock == null)
-			marsClock = masterClock.getMarsClock();
 
 		int msol = marsClock.getMillisolInt();
 
@@ -1360,12 +1366,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			// Update malfunction manager.
 			malfunctionManager.timePassing(time);
 
-			// If powered up, active time passing.
-			if (powerModeCache == PowerMode.FULL_POWER)
-				malfunctionManager.activeTimePassing(time);
-
 		}
 
+		// If powered up, active time passing.
+		if (powerModeCache == PowerMode.FULL_POWER)
+			malfunctionManager.activeTimePassing(time);
+		
 		inTransportMode = false;
 	}
 
@@ -1428,8 +1434,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				if (penetrated_length >= wallThickness) {
 					// Yes it's breached !
 //					if (malfunctionMeteoriteImpact == null)
-					malfunctionMeteoriteImpact = MalfunctionFactory
-								.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
+//					malfunctionMeteoriteImpact = MalfunctionFactory
+//								.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 					// Simulate the meteorite impact as a malfunction event for now
 					try {
 						malfunctionManager.activateMalfunction(MalfunctionFactory

@@ -80,14 +80,15 @@ public class Farming extends Function implements Serializable {
 
 	// private static ItemResource LED_Item;
 	// private static ItemResource HPS_Item;
-
-	/** The number of crop types available */
-	private static int size;
-
 	// private int numLEDInUse;
 	// private int cacheNumLED;
+	/** The number of crop types available. */
+//	private static int cropTypeNum;
+	/** The number of High Power Sodium Lamp needed. */
 	private int numHPSinNeed;
-	private int cropNum;
+	/** The default number of crops allowed by the building type. */
+	private int defaultCropNum;
+	/** The sol cache.  */
 	private int solCache = 1;
 
 	private double powerGrowingCrop;
@@ -106,11 +107,11 @@ public class Farming extends Function implements Serializable {
 	private String cropInQueue;
 
 	/** List of crop types in queue */
-	private List<CropType> cropListInQueue = new ArrayList<CropType>();
+	private List<CropType> cropListInQueue;
 	/** List of crop types the greenhouse is currently growing */
-	private List<String> plantedCrops = new ArrayList<String>();
+	private List<String> plantedCrops;
 	/** List of crops the greenhouse is currently growing */
-	private List<Crop> crops = new ArrayList<Crop>();
+	private List<Crop> crops;
 
 	private List<String> inspectionList, cleaningList;
 
@@ -157,25 +158,28 @@ public class Farming extends Function implements Serializable {
 		setupInspection();
 		setupCleaning();
 
+		plantedCrops = new ArrayList<String>();
+		cropListInQueue = new ArrayList<CropType>();
+		crops = new ArrayList<Crop>();
+		
+		BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 //		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		cropConfig = SimulationConfig.instance().getCropConfiguration();
+		if (cropTypeList == null)
+			cropTypeList = new ArrayList<>(cropConfig.getCropList());
+		defaultCropNum = buildingConfig.getCropNum(building.getBuildingType());	
 
-		BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 		powerGrowingCrop = buildingConfig.getPowerForGrowingCrop(building.getBuildingType());
 		powerSustainingCrop = buildingConfig.getPowerForSustainingCrop(building.getBuildingType());
 		maxGrowingArea = buildingConfig.getCropGrowingArea(building.getBuildingType());
 		remainingGrowingArea = maxGrowingArea;
 
-		cropConfig = SimulationConfig.instance().getCropConfiguration();
-		if (cropTypeList == null)
-			cropTypeList = new ArrayList<>(cropConfig.getCropList());
-		size = cropTypeList.size();
-		cropNum = buildingConfig.getCropNum(building.getBuildingType());
 
 		// Load activity spots
 		loadActivitySpots(buildingConfig.getFarmingActivitySpots(building.getBuildingType()));
 
-		for (int x = 0; x < cropNum; x++) {
+		for (int x = 0; x < defaultCropNum; x++) {
 			// Add cropInQueue and chang method name to getNewCrop()
 			CropType cropType = pickACrop(true, false);
 			if (cropType == null)
@@ -401,8 +405,9 @@ public class Farming extends Function implements Serializable {
 	 * @return crop type
 	 */
 	public CropType getRandomCropType() {
-		if (size > 2)
-			return cropTypeList.get(RandomUtil.getRandomInt(0, size - 1));
+		int cropTypeNum = cropTypeList.size();
+		if (cropTypeNum > 2)
+			return cropTypeList.get(RandomUtil.getRandomInt(0, cropTypeNum - 1));
 		else
 			return null;
 	}
@@ -434,7 +439,7 @@ public class Farming extends Function implements Serializable {
 		} else if (designatedGrowingArea != 0) {
 			cropArea = designatedGrowingArea;
 		} else { // if (remainingGrowingArea > 1D)
-			cropArea = maxGrowingArea / (double) cropNum;
+			cropArea = maxGrowingArea / (double) defaultCropNum;
 		}
 
 		remainingGrowingArea = remainingGrowingArea - cropArea;
@@ -687,7 +692,7 @@ public class Farming extends Function implements Serializable {
 			// Crop type average edible biomass (kg) per Sol.
 			totalFoodPerSolPerArea += c.getEdibleBiomass() / 1000D;
 
-		double producedFoodPerSolPerArea = totalFoodPerSolPerArea / size;
+		double producedFoodPerSolPerArea = totalFoodPerSolPerArea / cropTypeList.size();
 
 		return neededFoodPerSol / producedFoodPerSolPerArea;
 	}
@@ -835,6 +840,9 @@ public class Farming extends Function implements Serializable {
 		marsClock = clock;
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
 		cropTypeList = new ArrayList<>(cropConfig.getCropList());
+		BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+//		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();	
 	}
 	
 	/**
