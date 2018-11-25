@@ -96,9 +96,9 @@ public abstract class EVAOperation extends Task implements Serializable {
 			if (interiorObject == null) {
 				// throw new IllegalStateException(person.getName() + " is in " +
 				// person.getSettlement() + " but not in building : interiorObject is null.");
-				LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
-						"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName() + " is in "
-								+ person.getSettlement()
+				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " is in "
+								+ person.getLocationTag().getImmediateLocation()
 								+ " and is supposed to be in a building but interiorObject is null.",
 						null);
 				endTask();

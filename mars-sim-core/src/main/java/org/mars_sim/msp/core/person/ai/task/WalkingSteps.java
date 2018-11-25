@@ -1231,12 +1231,12 @@ implements Serializable {
 
                     if (person != null)
                     	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
-            					"[" + person.getLocationTag().getQuickLocation()  + "] " + person.getName()
+            					"[" + person.getLocationTag().getLocale()  + "] " + person.getName()
             					+ " in " + person.getBuildingLocation().getNickName()
                         		+ " cannot find walkable airlock from building airlock exterior to building interior.", null);
                     else if (robot != null)
                     	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
-            					"[" + robot.getLocationTag().getQuickLocation()  + "] " + robot.getName()
+            					"[" + robot.getLocationTag().getLocale()  + "] " + robot.getName()
                         		+ " in " + robot.getBuildingLocation().getNickName()
                         		+ " cannot find walkable airlock from building airlock exterior to building interior.", null);
 
@@ -1272,12 +1272,12 @@ implements Serializable {
                 
                 if (person != null)
                 	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
-        					"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName()
+        					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
         					+ " in " + person.getBuildingLocation().getNickName()
                     		+ " cannot find walkable airlock from rover airlock exterior to building interior.", null);
                 else if (robot != null)
                 	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
-        					"[" + robot.getLocationTag().getQuickLocation()  + "] " + robot.getName()
+        					"[" + robot.getLocationTag().getLocale()  + "] " + robot.getName()
                     		+ " in " + robot.getBuildingLocation().getNickName()
                     		+ " cannot find walkable airlock from rover airlock exterior to building interior.", null);
                 
@@ -1346,12 +1346,12 @@ implements Serializable {
            
                 if (person != null)
                 	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
-        					"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName()
+        					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
         					+ " in " + person.getBuildingLocation().getNickName()
                     		+ " cannot find walkable airlock from airlock exterior to rover in garage.", null);
                 else if (robot != null)
                 	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
-        					"[" + robot.getLocationTag().getQuickLocation() + "] " + robot.getName()
+        					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
                     		+ " in " + robot.getBuildingLocation().getNickName()
                     		+ " cannot find walkable airlock from airlock exterior to rover in garage.", null);
                 
@@ -1468,12 +1468,12 @@ implements Serializable {
             
             if (person != null)
             	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
-    					"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName()
+    					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
     					+ " in " + person.getBuildingLocation().getNickName()
                 		+ " cannot find walkable airlock from outside to building interior.", null);
             else if (robot != null)
             	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
-    					"[" + robot.getLocationTag().getQuickLocation() + "] " + robot.getName()
+    					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
                 		+ " in " + robot.getBuildingLocation().getNickName()
                 		+ " cannot find walkable airlock from outside to building interior.", null);
             
@@ -1520,12 +1520,12 @@ implements Serializable {
                 
                 if (person != null)
                 	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
-        					"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName()
+        					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
         					+ " in " + person.getBuildingLocation().getNickName()
                     		+ " cannot find walkable airlock from outside to rover in garage.", null);
                 else if (robot != null)
                 	LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
-        					"[" + robot.getLocationTag().getQuickLocation()  + "] " + robot.getName()
+        					"[" + robot.getLocationTag().getLocale()  + "] " + robot.getName()
                     		+ " in " + robot.getBuildingLocation().getNickName()
                     		+ " cannot find walkable airlock from outside to rover in garage.", null);
                 

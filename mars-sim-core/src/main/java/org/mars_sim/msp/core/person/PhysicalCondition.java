@@ -881,7 +881,7 @@ public class PhysicalCondition implements Serializable {
 						addMedicalComplaint(panicAttack);
 						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 						LogConsolidated.log(logger, Level.INFO, 500, sourceName,
-								"[" + person.getLocationTag().getQuickLocation() + "] " + name
+								"[" + person.getLocationTag().getLocale() + "] " + name
 										+ " suffers from a panic attack.",
 								null);
 
@@ -901,7 +901,7 @@ public class PhysicalCondition implements Serializable {
 						addMedicalComplaint(depression);
 						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 						LogConsolidated.log(logger, Level.INFO, 500, sourceName,
-								"[" + person.getLocationTag().getQuickLocation() + "] " + name
+								"[" + person.getLocationTag().getLocale() + "] " + name
 										+ " has an episode of depression.",
 								null);
 
@@ -947,7 +947,7 @@ public class PhysicalCondition implements Serializable {
 					addMedicalComplaint(highFatigue);
 					person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 					LogConsolidated.log(logger, Level.INFO, 500, sourceName,
-							"[" + person.getLocationTag().getQuickLocation() + "] " + name
+							"[" + person.getLocationTag().getLocale() + "] " + name
 									+ " collapses because of high fatigue exhaustion.",
 							null);
 
@@ -985,7 +985,7 @@ public class PhysicalCondition implements Serializable {
 				isRadiationPoisoned = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 				LogConsolidated.log(logger, Level.INFO, 500, sourceName,
-						"[" + person.getLocationTag().getQuickLocation() + "] " + name
+						"[" + person.getLocationTag().getLocale() + "] " + name
 								+ " collapses because of radiation poisoning.",
 						null);
 
@@ -1265,7 +1265,7 @@ public class PhysicalCondition implements Serializable {
 			// throw new IllegalStateException("Warning: less than 0.01 kg dried food
 			// remaining!");
 			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-					"[" + person.getLocationTag().getQuickLocation() + "]" + " only " + foodAvailable
+					"[" + person.getLocationTag().getLocale() + "]" + " only " + foodAvailable
 							+ " kg preserved food remaining.",
 					null);
 		}

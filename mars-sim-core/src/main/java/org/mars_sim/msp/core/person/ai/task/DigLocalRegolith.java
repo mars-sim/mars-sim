@@ -321,7 +321,7 @@ implements Serializable {
             setPhase(WALK_BACK_INSIDE);
 
             LogConsolidated.log(logger, Level.INFO, 0, logger.getName(), 
-        		"[" + person.getLocationTag().getQuickLocation() +  "] " +
+        		"[" + person.getLocationTag().getLocale() +  "] " +
         		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
         		+ " kg of regolith outside " + person.getAssociatedSettlement(), null);
  

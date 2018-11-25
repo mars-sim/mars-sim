@@ -57,17 +57,17 @@ public class LocationTag implements LocationState, Serializable {
 
 	public String getSettlementName() {
 		if (p != null) {
-			if (p.getSettlement() != null)
+			if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType())
 				return p.getSettlement().getName();
 			else
 				return p.getCoordinates().getFormattedString();
 		} else if (e != null) {
-			if (e.getSettlement() != null)
+			if (LocationStateType.INSIDE_SETTLEMENT == e.getLocationStateType())
 				return e.getSettlement().getName();
 			else
 				return e.getCoordinates().getFormattedString();
 		} else if (r != null) {
-			if (r.getSettlement() != null)
+			if (LocationStateType.INSIDE_SETTLEMENT == r.getLocationStateType())
 				return r.getSettlement().getName();
 			else
 				return r.getCoordinates().getFormattedString();// OUTSIDE_ON_MARS;
@@ -76,7 +76,7 @@ public class LocationTag implements LocationState, Serializable {
 		}
 
 		else if (v != null) {
-			if (v.getSettlement() != null)
+			if (LocationStateType.INSIDE_SETTLEMENT == v.getLocationStateType())
 				return v.getSettlement().getName();
 			else
 				return v.getCoordinates().getFormattedString();// OUTSIDE_ON_MARS;
@@ -93,12 +93,14 @@ public class LocationTag implements LocationState, Serializable {
 	 */
 	public String getQuickLocation() {
 		if (p != null) {
-			if (p.getSettlement() != null)
+			if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType())
 				return p.getSettlement().getName();
-			else if (p.getVehicle() != null)
+			else if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType())
 				return p.getVehicle().getName();
-			else if (p.getBuriedSettlement() != null)
+			else if (p.isBuried())
 				return p.getBuriedSettlement().getName();
+			else if (p.isDeclaredDead())
+				return p.getAssociatedSettlement().getName();
 			else
 				return p.getCoordinates().getFormattedString();
 		}
@@ -113,9 +115,9 @@ public class LocationTag implements LocationState, Serializable {
 		}
 
 		else if (r != null) {
-			if (r.getSettlement() != null)
+			if (LocationStateType.INSIDE_SETTLEMENT == r.getLocationStateType())
 				return r.getSettlement().getName();
-			else if (r.getVehicle() != null)
+			else if (LocationStateType.INSIDE_VEHICLE == r.getLocationStateType())
 				return r.getVehicle().getName();
 			else
 				return r.getCoordinates().getFormattedString();
@@ -125,12 +127,11 @@ public class LocationTag implements LocationState, Serializable {
 		}
 
 		else if (v != null) {
-			if (v.getSettlement() != null) {
-				if (v.getBuildingLocation() != null)
-					return v.getBuildingLocation().getNickName();
-				else
-					return v.getSettlement().getName();
-			} else
+			if (LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == v.getLocationStateType())
+				return v.getSettlement().getName();
+			else if (LocationStateType.INSIDE_SETTLEMENT == v.getLocationStateType())
+				return v.getBuildingLocation().getNickName();
+			else
 				return v.getCoordinates().getFormattedString();
 		}
 
@@ -144,21 +145,21 @@ public class LocationTag implements LocationState, Serializable {
 	 */
 	public String getLocale() {
 		if (p != null) {
-			if (p.getSettlement() != null)
+			if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType())
 				return p.getSettlement().getName();
 			else
 				return p.getCoordinates().getFormattedString();
 		}
 
 		else if (e != null) {
-			if (e.getSettlement() != null)
+			if (LocationStateType.INSIDE_SETTLEMENT == e.getLocationStateType())
 				return e.getSettlement().getName();
 			else
 				return e.getCoordinates().getFormattedString();
 		}
 
 		else if (r != null) {
-			if (r.getSettlement() != null)
+			if (LocationStateType.INSIDE_SETTLEMENT == r.getLocationStateType())
 				return r.getSettlement().getName();
 			else
 				return r.getCoordinates().getFormattedString();
@@ -170,7 +171,7 @@ public class LocationTag implements LocationState, Serializable {
 		}
 
 		else if (v != null) {
-			if (v.getSettlement() != null)
+			if (LocationStateType.INSIDE_SETTLEMENT == v.getLocationStateType())
 				return v.getSettlement().getName();		
 			else
 				return v.getCoordinates().getFormattedString();
@@ -196,14 +197,14 @@ public class LocationTag implements LocationState, Serializable {
 	 */
 	public String getImmediateLocation() {
 		if (p != null) {
-			if (p.getSettlement() != null) {
+			if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType()) {
 				if (p.getBuildingLocation() != null) {
 					return p.getBuildingLocation().getNickName();
 				}
 				else {
 					return p.getLocationStateType().getName();
 				}
-			} else if (p.getVehicle() != null) {
+			} else if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType()) {
 				Vehicle v = p.getVehicle();
 				if (v.getBuildingLocation() == null) {
 					return v.getNickName();
@@ -228,7 +229,7 @@ public class LocationTag implements LocationState, Serializable {
 		}
 
 		else if (r != null) {
-			if (r.getSettlement() != null) {
+			if (LocationStateType.INSIDE_SETTLEMENT == r.getLocationStateType()) {
 				if (r.getBuildingLocation() != null) {
 					return r.getBuildingLocation().getNickName();
 				} else {
@@ -251,7 +252,7 @@ public class LocationTag implements LocationState, Serializable {
 		}
 
 		else if (v != null) {
-			if (v.getSettlement() != null) {
+			if (LocationStateType.INSIDE_SETTLEMENT == v.getLocationStateType()) {
 				if (v.getBuildingLocation() != null) {
 					return v.getBuildingLocation().getNickName();
 				} else {
@@ -271,11 +272,12 @@ public class LocationTag implements LocationState, Serializable {
 
 		Collection<Settlement> ss = Simulation.instance().getUnitManager().getSettlements();
 		for (Settlement s : ss) {
-			if (s.getCoordinates().equals(c))
+			if (s.getCoordinates().equals(c) || s.getCoordinates() == c)
 				return s;
 		}
 
-		return null;
+		return unit.getAssociatedSettlement(); 
+		// WARNING : using associated settlement needs to exercise more caution
 	}
 
 	public LocationStateType getType() {

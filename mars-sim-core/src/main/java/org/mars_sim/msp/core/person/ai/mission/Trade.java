@@ -180,7 +180,7 @@ public class Trade extends RoverMission implements Serializable {
 		setPhaseDescription(Msg.getString("Mission.phase.approval.description", s.getName())); //$NON-NLS-1$
 		if (logger.isLoggable(Level.INFO)) {
 			if (startingMember != null && getRover() != null) {
-				logger.info("[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()
+				logger.info("[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
 						+ " starting Trade mission on " + getRover().getName());
 			}
 		}
@@ -246,7 +246,7 @@ public class Trade extends RoverMission implements Serializable {
 		if (logger.isLoggable(Level.INFO)) {
 			MissionMember startingMember = (MissionMember) members.toArray()[0];
 			if (startingMember != null && getRover() != null) {
-				logger.info("[" + startingMember.getLocationTag().getQuickLocation() + "] " + startingMember.getName()
+				logger.info("[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
 						+ " starting Trade mission on " + getRover().getName());
 			}
 		}
@@ -368,7 +368,7 @@ public class Trade extends RoverMission implements Serializable {
 						assignTask(person,
 								new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
 					} else {
-						logger.severe("[" + person.getLocationTag().getQuickLocation() + "] " + person.getName()
+						logger.severe("[" + person.getLocationTag().getLocale() + "] " + person.getName()
 								+ " is unable to walk to building " + destinationBuilding);
 						// + " at " + tradingSettlement);
 					}
@@ -377,7 +377,7 @@ public class Trade extends RoverMission implements Serializable {
 					if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
 						assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
 					} else {
-						logger.severe("[" + robot.getLocationTag().getQuickLocation() + "] " + robot.getName()
+						logger.severe("[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
 								+ " is unable to walk to building " + destinationBuilding);
 						// + " at " + tradingSettlement);
 					}
