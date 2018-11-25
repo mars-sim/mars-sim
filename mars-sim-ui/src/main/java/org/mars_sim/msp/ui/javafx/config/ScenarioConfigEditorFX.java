@@ -1199,7 +1199,6 @@ public class ScenarioConfigEditorFX {
 
 				// CHECK LATITUDE
 				String latStr = tableViewCombo.getAllData().get(x).getLatitude().toString().trim().toUpperCase();
-				;
 
 				// check if it's empty or having a length less than 2 characters.
 				if (latStr == null || latStr.length() < 2) {

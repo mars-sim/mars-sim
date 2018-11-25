@@ -68,10 +68,6 @@ public class ExitAirlock extends Task implements Serializable {
 	private static final double STRESS_MODIFIER = .5D;
 
 	// Data members
-
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-
 	/** The airlock to be used. */
 	private Airlock airlock;
 	/** True if person has an EVA suit. */
@@ -79,6 +75,10 @@ public class ExitAirlock extends Task implements Serializable {
 
 	private Point2D insideAirlockPos = null;
 	private Point2D exteriorAirlockPos = null;
+	
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+
 	
 	/**
 	 * Constructor.

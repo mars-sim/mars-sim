@@ -52,8 +52,8 @@ public class Mars implements Serializable {
 	}
 
 	public void setMarsSurface(MarsSurface ms) {
-		System.out.println("Mars : " + marsSurface + " has " + marsSurface.getCode());
-		System.out.println("Mars : " + ms + " has " + ms.getCode());
+//		System.out.println("Mars : " + marsSurface + " has " + marsSurface.getCode());
+//		System.out.println("Mars : " + ms + " has " + ms.getCode());
 		marsSurface = ms;
 	}
 	

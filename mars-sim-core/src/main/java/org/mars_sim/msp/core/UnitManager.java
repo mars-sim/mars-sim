@@ -1543,6 +1543,7 @@ public class UnitManager implements Serializable {
 	 */
 	private void createPreconfiguredRobots() {
 		int size = robotConfig.getNumberOfConfiguredRobots();
+		// If players choose # of bots less than what's being configured
 		// Create all configured robot.
 		for (int x = 0; x < size; x++) {
 			boolean isDestinationChange = false;
@@ -1564,9 +1565,54 @@ public class UnitManager implements Serializable {
 				if (settlement == null) {
 					// TODO: If settlement cannot be found that matches the settlement name,
 					// should we put the robot in a randomly selected settlement?
-					settlement = CollectionUtils.getRandomSettlement(col);
-					isDestinationChange = true;
+					boolean done = false;
+					while (!done) {
+						if (col.size() > 0) {
+							settlement = CollectionUtils.getRandomSettlement(col);
+							settlement.updateAllAssociatedRobots();
+							col.remove(settlement);
+							
+							if (settlement.getNumBots() < settlement.getInitialNumOfRobots()) {
+								isDestinationChange = true;
+								done = true;
+							}	
+						}
+						else {
+							isDestinationChange = false;
+							done = true;
+							break;
+						}
+						
+					}
 				}
+				else {
+					
+					if (settlement.getNumBots() < settlement.getInitialNumOfRobots()) {
+						isDestinationChange = true;
+					}
+					
+					else {
+						boolean done = false;
+						while (!done) {
+							if (col.size() > 0) {
+								settlement = CollectionUtils.getRandomSettlement(col);
+								settlement.updateAllAssociatedRobots();
+								col.remove(settlement);
+								
+								if (settlement.getNumBots() < settlement.getInitialNumOfRobots()) {
+									isDestinationChange = true;
+									done = true;
+								}	
+							}
+							else {
+								isDestinationChange = false;
+								done = true;
+								break;
+							}
+						}
+					}
+				}
+				
 
 			} else {
 				Collection<Settlement> col = CollectionUtils.getSettlement(units);
@@ -1580,6 +1626,7 @@ public class UnitManager implements Serializable {
 				return;
 			}
 
+			settlement.updateAllAssociatedRobots();
 			// If settlement does not have initial robot capacity, try another settlement.
 			if (settlement.getInitialNumOfRobots() <= settlement.getNumBots()) {
 				return;
@@ -1608,36 +1655,37 @@ public class UnitManager implements Serializable {
 						robot.initialize();
 						addUnit(robot);
 
-						if (isDestinationChange)
+						if (isDestinationChange) {
 							logger.log(Level.INFO, name + " is being sent to " + settlement + " since "
 									+ preConfigSettlementName + " doesn't exist.");
 	
-						RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
-						if (robotJob != null) {
-							robot.getBotMind().setRobotJob(robotJob, true);
-						}
-
-						// Set robot's configured natural attributes (if any).
-						Map<String, Integer> attributeMap = robotConfig.getRoboticAttributeMap(x);
-						if (attributeMap != null) {
-							Iterator<String> i = attributeMap.keySet().iterator();
-							while (i.hasNext()) {
-								String attributeName = i.next();
-								int value = (Integer) attributeMap.get(attributeName);
-								robot.getRoboticAttributeManager()
-										.setAttribute(RoboticAttributeType.valueOfIgnoreCase(attributeName), value);
+							RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
+							if (robotJob != null) {
+								robot.getBotMind().setRobotJob(robotJob, true);
 							}
-						}
-
-						// Set robot's configured skills (if any).
-						Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
-						if (skillMap != null) {
-							Iterator<String> i = skillMap.keySet().iterator();
-							while (i.hasNext()) {
-								String skillName = i.next();
-								int level = (Integer) skillMap.get(skillName);
-								robot.getBotMind().getSkillManager()
-										.addNewSkill(new Skill(SkillType.valueOfIgnoreCase(skillName), level));
+	
+							// Set robot's configured natural attributes (if any).
+							Map<String, Integer> attributeMap = robotConfig.getRoboticAttributeMap(x);
+							if (attributeMap != null) {
+								Iterator<String> i = attributeMap.keySet().iterator();
+								while (i.hasNext()) {
+									String attributeName = i.next();
+									int value = (Integer) attributeMap.get(attributeName);
+									robot.getRoboticAttributeManager()
+											.setAttribute(RoboticAttributeType.valueOfIgnoreCase(attributeName), value);
+								}
+							}
+	
+							// Set robot's configured skills (if any).
+							Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
+							if (skillMap != null) {
+								Iterator<String> i = skillMap.keySet().iterator();
+								while (i.hasNext()) {
+									String skillName = i.next();
+									int level = (Integer) skillMap.get(skillName);
+									robot.getBotMind().getSkillManager()
+											.addNewSkill(new Skill(SkillType.valueOfIgnoreCase(skillName), level));
+								}
 							}
 						}
 					}

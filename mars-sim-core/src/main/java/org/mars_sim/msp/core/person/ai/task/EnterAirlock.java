@@ -63,13 +63,13 @@ public class EnterAirlock extends Task implements Serializable {
 	private static final double STRESS_MODIFIER = .5D;
 
 	// Data members
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-
 	/** The airlock to be used. */
 	private Airlock airlock;
 	private Point2D insideAirlockPos = null;
 	private Point2D interiorAirlockPos = null;
+	
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
 
 	/**
 	 * Constructor.

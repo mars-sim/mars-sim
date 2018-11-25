@@ -110,6 +110,13 @@ public class BuildingManager implements Serializable {
 	private Resupply resupply;
 	private Meteorite meteorite;
 
+	private List<Building> buildings, farmsNeedingWorkCache, buildingsNickNames;
+	private Map<String, Double> buildingValuesNewCache;
+	private Map<String, Double> buildingValuesOldCache;
+	private Map<FunctionType, List<Building>> buildingFunctionsMap;
+	private Map<String, Integer> buildingTypeIDMap;
+
+
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static HistoricalEventManager eventManager;
@@ -118,12 +125,6 @@ public class BuildingManager implements Serializable {
 	private static BuildingConfig buildingConfig;
 	private static RelationshipManager relationshipManager;
 	
-
-	private List<Building> buildings, farmsNeedingWorkCache, buildingsNickNames;
-	private Map<String, Double> buildingValuesNewCache;
-	private Map<String, Double> buildingValuesOldCache;
-	private Map<FunctionType, List<Building>> buildingFunctionsMap;
-	private Map<String, Integer> buildingTypeIDMap;
 
 	/**
 	 * Constructor 1 : construct buildings from settlement config template. Called
