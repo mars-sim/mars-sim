@@ -37,21 +37,48 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.health.MedicalManager;
+import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.core.structure.ChainOfCommand;
+import org.mars_sim.msp.core.structure.CompositionOfAir;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.EVA;
+import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
+import org.mars_sim.msp.core.structure.building.function.Manufacture;
+import org.mars_sim.msp.core.structure.building.function.PowerStorage;
+import org.mars_sim.msp.core.structure.building.function.Research;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
+import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
+import org.mars_sim.msp.core.structure.building.function.farming.Crop;
+import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.terminal.InteractiveTerm;
 import org.mars_sim.msp.core.time.AutosaveScheduler;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.tukaani.xz.FilterOptions;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
@@ -78,41 +105,51 @@ public class Simulation implements ClockListener, Serializable {
 
 	private static Logger logger = Logger.getLogger(Simulation.class.getName());
 
-	// Categories of loading and saving simulation
-	public static final int OTHER = 0; // load other file
-	public static final int SAVE_DEFAULT = 1; // save as default.sim
-	public static final int SAVE_AS = 2; // save with other name
-	public static final int AUTOSAVE_AS_DEFAULT = 3; // save as default.sim
-	public static final int AUTOSAVE = 4; // save with build info/date/time stamp
+	/** The mode to load other file. */ 
+	public static final int OTHER = 0;
+	/** The mode to save as default.sim. */
+	public static final int SAVE_DEFAULT = 1;
+	/** The mode to save with other name. */
+	public static final int SAVE_AS = 2;
+	/** # The mode to autosave as default.sim. */
+	public static final int AUTOSAVE_AS_DEFAULT = 3;
+	/**  The mode to save with build info/date/time stamp. */
+	public static final int AUTOSAVE = 4;
 	/** # of thread(s). */
 	public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
-	/** Version string. */
+	/** User's home directory string. */
+	public static final String USER_HOME = System.getProperty("user.home");
+	/** User's mars-sim directory string. */
+	public static final String MARS_SIM_DIR = ".mars-sim";
+	/** User's logs directory string. */
+	public static final String LOGS_DIR = "logs";
+	/** OS string. */
 	public static final String OS = System.getProperty("os.name"); // e.g. 'linux', 'mac os x'
 	/** Version string. */
 	public final static String VERSION = Msg.getString("Simulation.version"); //$NON-NLS-1$
 	/** Build string. */
 	public final static String BUILD = Msg.getString("Simulation.build"); //$NON-NLS-1$
 	/** Java version string. */
-	private final static String JAVA_TAG = System.getProperty("java.version");// VersionInfo.getRuntimeVersion(); //e.g.
-																				// "8.0.121-b13 (abcdefg)";																			// System.getProperty("java.version");/
+	private final static String JAVA_TAG = System.getProperty("java.version");
+	// VersionInfo.getRuntimeVersion() e.g. "8.0.121-b13 (abcdefg)";																			
 	/** Java version string. */
 	public final static String JAVA_VERSION = (JAVA_TAG.contains("(") ? JAVA_TAG.substring(0, JAVA_TAG.indexOf("(") - 1)
 			: JAVA_TAG);
 	/** Vendor string. */
 	// public final static String VENDOR = System.getProperty("java.vendor");
-	/** Vendor string. */
+	/** OS architecture string. */
 	private final static String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
 	/** Default save filename. */
 	private final static String DEFAULT_FILE = Msg.getString("Simulation.defaultFile"); //$NON-NLS-1$
 	/** Default temp filename. */
-	private final static String TEMP_FILE = Msg.getString("Simulation.tempFile"); //$NON-NLS-1$
+//	private final static String TEMP_FILE = Msg.getString("Simulation.tempFile"); //$NON-NLS-1$
 	/** Default save filename extension. */
 	private final static String DEFAULT_EXTENSION = Msg.getString("Simulation.defaultFile.extension"); //$NON-NLS-1$
 	/** JSON save filename extension. */
 	private final static String JSON_EXTENSION = Msg.getString("Simulation.jsonFile.extension"); //$NON-NLS-1$
-	
+	/** local time string */
 	private final static String LOCAL_TIME = Msg.getString("Simulation.localTime"); //$NON-NLS-1$ " (Local Time) ";
-
+	/** 2 whitespaces. */
 	private final static String WHITESPACES = "  ";
 
 	/** Save directory. */
@@ -132,7 +169,7 @@ public class Simulation implements ClockListener, Serializable {
 			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_THREADS
 			+ ((NUM_THREADS == 1) ? " CPU thread" : " CPU threads")); // $NON-NLS-1$
 
-	private static final boolean debug = logger.isLoggable(Level.FINE);
+	private static final boolean debug = false; // logger.isLoggable(Level.FINE);
 	/** true if displaying graphic user interface. */
 	private static boolean useGUI = true;
 	/** Flag to indicate that a new simulation is being created or loaded. */
@@ -279,7 +316,7 @@ public class Simulation implements ClockListener, Serializable {
 	/**
 	 * Creates a new simulation instance.
 	 */
-	public static void createNewSimulation(int timeRatio) {
+	public static void createNewSimulation(int timeRatio, boolean loadSaveSim) {
 		isUpdating = true;
 
 		logger.config(Msg.getString("Simulation.log.createNewSim")); //$NON-NLS-1$
@@ -294,7 +331,7 @@ public class Simulation implements ClockListener, Serializable {
 		sim.initialSimulationCreated = true;
 
 		// Initialize intransient data members.
-		sim.initializeIntransientData(timeRatio);
+		sim.initializeIntransientData(timeRatio, loadSaveSim);
 
 		// Initialize transient data members.
 //        sim.initializeTransientData(); // done in the constructor already (MultiplayerClient needs HistoricalEnventManager)
@@ -324,7 +361,7 @@ public class Simulation implements ClockListener, Serializable {
 	/**
 	 * Initialize intransient data in the simulation.
 	 */
-	private void initializeIntransientData(int timeRatio) {		
+	private void initializeIntransientData(int timeRatio, boolean loadSaveSim) {
 		malfunctionFactory = new MalfunctionFactory();
 		mars = new Mars();
 		missionManager = new MissionManager();
@@ -332,7 +369,7 @@ public class Simulation implements ClockListener, Serializable {
 		medicalManager = new MedicalManager();
 		masterClock = new MasterClock(isFXGL, timeRatio);
 		unitManager = new UnitManager();
-		unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
+		unitManager.constructInitialUnits(loadSaveSim); // unitManager needs to be on the same thread as masterClock
 		eventManager = new HistoricalEventManager();
 		creditManager = new CreditManager();
 		scientificStudyManager = new ScientificStudyManager();
@@ -702,16 +739,63 @@ public class Simulation implements ClockListener, Serializable {
 		instance().initialSimulationCreated = true;
 		isUpdating = false;
 		
-		// Re-initialize the resources for the saved sim
-		ResourceUtil.getInstance().justReloaded();
-		// Re-initialize the MarsSurface instance
-		unitManager.justReloaded();
-		Unit.justReloaded();
-		Equipment.justReloaded();
-		Person.justReloaded();
+		// Re-initialize instances
+		reinitializeInstances();
+
 	}
 
 	
+	/**
+	 *  Re-initialize instances after loading from a saved sim
+	 */
+	private void reinitializeInstances() {
+		// Re-initialize the resources for the saved sim
+		ResourceUtil.getInstance().justReloaded();
+		// Re-initialize the MarsSurface instance
+		MasterClock.justReloaded();
+		MarsClock marsClock = masterClock.getMarsClock();
+		MissionManager.justReloaded(marsClock);
+		MedicalManager.justReloaded();
+		unitManager.justReloaded();
+		Unit.justReloaded();
+		Equipment.justReloaded();
+		Person.justReloaded(masterClock, marsClock);
+		Robot.justReloaded(masterClock, marsClock);
+		Vehicle.justReloaded();
+		GroundVehicle.justReloaded();
+		Rover.justReloaded();
+		Mind.justReloaded(marsClock);
+		BotMind.justReloaded(marsClock);
+		BuildingManager.justReloaded(masterClock, marsClock);
+		MalfunctionManager.justReloaded(masterClock, marsClock);
+		Settlement.justReloaded(marsClock);
+		ChainOfCommand.justReloaded();
+		Cooking.justReloaded(marsClock);
+		LivingAccommodations.justReloaded(marsClock);
+		PowerStorage.justReloaded(marsClock);
+		Research.justReloaded(marsClock);
+		Farming.justReloaded(marsClock);
+		Crop.justReloaded(masterClock, marsClock);
+		CompositionOfAir.justReloaded(masterClock, marsClock);
+		ThermalGeneration.justReloaded();
+		Storage.justReloaded();
+		Manufacture.justReloaded(marsClock);
+		CircadianClock.justReloaded(marsClock);
+		RadiationExposure.justReloaded(masterClock, marsClock);
+		ResourceProcessing.justReloaded();
+		ResourceProcess.justReloaded(marsClock);
+		PhysicalCondition.justReloaded(masterClock, marsClock);
+		EVA.justReloaded();
+	}
+	
+	
+	/**
+	 * Writes the JSON file
+	 * 
+	 * @throws JsonGenerationException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
 	public void writeJSON() throws JsonGenerationException, JsonMappingException, IOException {	
 		// Write to console, can write to any output stream such as file
 //		StringWriter stringEmp = new StringWriter();

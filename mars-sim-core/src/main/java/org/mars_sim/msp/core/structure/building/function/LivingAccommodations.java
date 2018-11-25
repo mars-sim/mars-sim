@@ -261,6 +261,15 @@ public class LivingAccommodations extends Function implements Serializable {
 	}
 
 	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
+	}
+	
+	/**
 	 * Time passing for the building.
 	 * 
 	 * @param time amount of time passing (in millisols)

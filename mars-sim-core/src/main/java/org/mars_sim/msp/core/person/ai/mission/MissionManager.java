@@ -59,11 +59,12 @@ public class MissionManager implements Serializable {
 
 	// Transient members
 	private transient MarsClock personTimeCache;
-	private transient MarsClock robotTimeCache;
+//	private transient MarsClock robotTimeCache;
 	private transient Map<MetaMission, Double> missionProbCache;
 	private transient Map<MetaMission, Double> robotMissionProbCache;
 	
-	private transient MarsClock marsClock;
+	private static MarsClock marsClock;
+	// Note that mission manager is instantiated before master/mars clock
 	
 	private static List<String> missionNames;
 
@@ -73,9 +74,8 @@ public class MissionManager implements Serializable {
 	public MissionManager() {
 		// Initialize cache values.
 		personTimeCache = null;
-		robotTimeCache = null;
+//		robotTimeCache = null;
 		totalProbCache = 0D;
-		//marsClock = Simulation.instance().getMasterClock().getMarsClock(); // null at the start of the sim
 		
 		createMissionArray();
 		// Initialize data members
@@ -593,7 +593,7 @@ public class MissionManager implements Serializable {
 		}
 
 		// Set the time cache to the current time.
-		personTimeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		personTimeCache = (MarsClock) marsClock.clone();
 	}
 
 //	/**
@@ -625,7 +625,7 @@ public class MissionManager implements Serializable {
 //		}
 //
 //		// Set the time cache to the current time.
-//		robotTimeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+//		robotTimeCache = (MarsClock) marsClock.clone();
 //
 //	}
 
@@ -637,8 +637,8 @@ public class MissionManager implements Serializable {
 	 */
 	private boolean useCache(Person person) {
 		// if (currentTime == null)
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		return currentTime.equals(personTimeCache);// && (person == personCache);
+//		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		return marsClock.equals(personTimeCache);// && (person == personCache);
 	}
 
 //	/**
@@ -675,7 +675,7 @@ public class MissionManager implements Serializable {
 	 */
 	public void addMissionPlanning(MissionPlanning plan) {
 //		if (marsClock == null)
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		int mSol = marsClock.getMissionSol();
 
 		if (historicalMissions.containsKey(mSol)) {
@@ -770,6 +770,19 @@ public class MissionManager implements Serializable {
 	}
 	
 	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
+	}
+	
+	public static void setMarsClock(MarsClock clock) {
+		marsClock = clock;
+	}
+	
+	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
@@ -783,9 +796,10 @@ public class MissionManager implements Serializable {
 			listeners = null;
 		}
 
+		marsClock = null;
 		// personCache = null;
 		personTimeCache = null;
-		robotTimeCache = null;
+//		robotTimeCache = null;
 		if (missionProbCache != null) {
 			missionProbCache.clear();
 			missionProbCache = null;

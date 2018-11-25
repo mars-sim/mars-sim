@@ -243,11 +243,10 @@ public class RadiationExposure implements Serializable {
 	// private List<RadiationEvent> eventList = new CopyOnWriteArrayList<>();
 	private Map<RadiationEvent, Integer> eventMap = new ConcurrentHashMap<>();
 
-	private static MarsClock marsClock;
-
-	private static MasterClock masterClock;
-
 	private Person person;
+	
+	private static MarsClock marsClock;
+	private static MasterClock masterClock;
 
 	public RadiationExposure(PhysicalCondition condition) {
 		this.person = condition.getPerson();
@@ -608,5 +607,26 @@ public class RadiationExposure implements Serializable {
 
 		return false;
 	}
+	
+
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded(MasterClock c0, MarsClock c1) {
+		masterClock = c0;
+		marsClock = c1;
+	}
+	
+	
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+		person = null;
+	}
+
 
 }

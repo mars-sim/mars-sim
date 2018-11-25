@@ -584,6 +584,10 @@ implements Serializable {
 		return 0;
 	}
 	
+	public static void justReloaded() {
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

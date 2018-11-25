@@ -948,6 +948,16 @@ implements Serializable {
     	return cookedMeals;
     }
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
+		prepareOilMenu();
+	}
+	
     /**
      * Time passing for the Cooking function in a building.
      * @param time amount of time passing (in millisols)

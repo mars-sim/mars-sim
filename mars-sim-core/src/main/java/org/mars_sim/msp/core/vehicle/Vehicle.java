@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The Vehicle class represents a generic vehicle. It keeps track of generic
@@ -1073,6 +1074,15 @@ public abstract class Vehicle extends Unit
 		return this;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 */
+	public static void justReloaded() {
+		missionManager = Simulation.instance().getMissionManager();
+		config = SimulationConfig.instance().getVehicleConfiguration();
+	}
+
+	
 	@Override
 	public void destroy() {
 		super.destroy();

@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
-import org.mars_sim.msp.core.location.LocationState;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
@@ -86,6 +85,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 */
 	public static void justReloaded() {
 		unitManager = Simulation.instance().getUnitManager();
 	}

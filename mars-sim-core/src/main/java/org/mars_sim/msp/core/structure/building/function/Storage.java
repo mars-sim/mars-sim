@@ -25,6 +25,8 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * The storage class is a building function for storing resources and units.
@@ -40,13 +42,14 @@ public class Storage extends Function implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	private static final FunctionType FUNCTION = FunctionType.STORAGE;
-
-	private static BuildingConfig config;
 
 	private Map<AmountResource, Double> resourceCapacities;
 	
 	private Settlement settlement;
+	
+	private static final FunctionType FUNCTION = FunctionType.STORAGE;
+
+	private static BuildingConfig buildingConfig;
 
 	/**
 	 * Constructor.
@@ -58,13 +61,13 @@ public class Storage extends Function implements Serializable {
 		// Use Function constructor.
 		super(FUNCTION, building);
 
-		config = SimulationConfig.instance().getBuildingConfiguration();
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 		// Inventory inventory = building.getSettlementInventory();
 		settlement = building.getBuildingManager().getSettlement();
 		Inventory inv = settlement.getInventory();
 		// Get capacity for each resource.
-		resourceCapacities = config.getStorageCapacities(building.getBuildingType());
+		resourceCapacities = buildingConfig.getStorageCapacities(building.getBuildingType());
 
 		// Initialize resource capacities for this building.
 		Set<AmountResource> capSet = resourceCapacities.keySet();
@@ -76,7 +79,7 @@ public class Storage extends Function implements Serializable {
 			inv.addAmountResourceTypeCapacity(ar, capacity);
 		}
 
-		double stockCapacity = config.getStockCapacity(building.getBuildingType());
+		double stockCapacity = buildingConfig.getStockCapacity(building.getBuildingType());
 		inv.addGeneralCapacity(stockCapacity);
 
 		// Initialize stock capacities for all resource
@@ -86,7 +89,7 @@ public class Storage extends Function implements Serializable {
 		// }
 
 		// Fill up initial resources for this building.
-		Map<AmountResource, Double> initialResources = config.getInitialResources(building.getBuildingType());
+		Map<AmountResource, Double> initialResources = buildingConfig.getInitialResources(building.getBuildingType());
 		Set<AmountResource> initialSet = initialResources.keySet();
 		for (AmountResource ar : initialSet) {
 			double initialAmount = initialResources.get(ar);
@@ -113,7 +116,7 @@ public class Storage extends Function implements Serializable {
 
 		double result = 0D;
 
-		Map<AmountResource, Double> storageMap = config.getStorageCapacities(buildingName);
+		Map<AmountResource, Double> storageMap = buildingConfig.getStorageCapacities(buildingName);
 		Iterator<AmountResource> i = storageMap.keySet().iterator();
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
@@ -170,6 +173,17 @@ public class Storage extends Function implements Serializable {
 		return resourceCapacities;
 	}
 
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded() {
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	}
+	
 	/**
 	 * Time passing for the building.
 	 * 
@@ -480,7 +494,7 @@ public class Storage extends Function implements Serializable {
 	@Override
 	public void destroy() {
 		super.destroy();
-		config = null;
+		buildingConfig = null;
 		resourceCapacities = null;
 	}
 }

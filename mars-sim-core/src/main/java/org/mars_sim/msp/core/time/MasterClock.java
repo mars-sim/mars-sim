@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.time;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 
 //import javafx.animation.Timeline;
 
@@ -100,9 +101,9 @@ public class MasterClock implements Serializable {
 	private transient List<ClockListenerTask> clockListenerTasks = new CopyOnWriteArrayList<>();
 
 	/** The martian Clock. */
-	private MarsClock marsTime;
+	private MarsClock marsClock;
 	/** A copy of the initial martian clock at the start of the sim. */
-	private static MarsClock initialMarsTime;
+	private MarsClock initialMarsTime;
 	/** The Earth Clock. */
 	private EarthClock earthClock;
 	/** The Uptime Timer. */
@@ -117,8 +118,7 @@ public class MasterClock implements Serializable {
 	// see https://netopyr.com/2017/03/13/surprising-behavior-of-cached-thread-pool/
 
 	private static Simulation sim;
-
-	private static SimulationConfig config;
+	private static SimulationConfig simulationConfig;
 
 	/**
 	 * Constructor
@@ -134,17 +134,19 @@ public class MasterClock implements Serializable {
 
 		sim = Simulation.instance();
 		// Initialize data members
-		config = SimulationConfig.instance();
+		simulationConfig = SimulationConfig.instance();
 
 		// Create a martian clock
-		marsTime = new MarsClock(config.getMarsStartDateTime());
+		marsClock = new MarsClock(simulationConfig.getMarsStartDateTime());
 
-		initialMarsTime = (MarsClock) marsTime.clone();
-
+		initialMarsTime = (MarsClock) marsClock.clone();
+		// Set the mars clock in MissionManager
+		MissionManager.setMarsClock(marsClock);
+		
 //		testNewMarsLandingDayTime();
 
 		// Create an Earth clock
-		earthClock = new EarthClock(config.getEarthStartDateTime());
+		earthClock = new EarthClock(simulationConfig.getEarthStartDateTime());
 
 		// Create an Uptime Timer
 		uptimer = new UpTimer(this);
@@ -161,12 +163,12 @@ public class MasterClock implements Serializable {
 		// Setting the initial time ratio.
 		double tr = 0;
 		if (userTimeRatio == -1)
-			tr = config.getTimeRatio();
+			tr = simulationConfig.getTimeRatio();
 		else {
 			tr = userTimeRatio;
 		logger.config("   User-Defined Time Ratio (TR) : " + (int) tr + "x");
 		}
-		double tbu = config.getTimeBetweenUpdates();
+		double tbu = simulationConfig.getTimeBetweenUpdates();
 
 		int threads = Simulation.NUM_THREADS;
 
@@ -206,8 +208,8 @@ public class MasterClock implements Serializable {
 		currentTR = adjustedTR;
 
 		// Added loading the values below from SimulationConfig
-		setNoDelaysPerYield(config.getNoDelaysPerYield());
-		setMaxFrameSkips(config.getMaxFrameSkips());
+		setNoDelaysPerYield(simulationConfig.getNoDelaysPerYield());
+		setMaxFrameSkips(simulationConfig.getMaxFrameSkips());
 
 //		logger.config("Based on # CPU cores/threads, the following parameters have been re-adjusted as follows :");
 		logger.config("       Adjusted Time Ratio (TR) : " + (int) adjustedTR + "x");
@@ -302,7 +304,7 @@ public class MasterClock implements Serializable {
 	 * @return Martian clock instance
 	 */
 	public MarsClock getMarsClock() {
-		return marsTime;
+		return marsClock;
 	}
 
 	/**
@@ -749,7 +751,7 @@ public class MasterClock implements Serializable {
 
 				// Add time pulse length to Earth and Mars clocks.
 				earthClock.addTime(millis * currentTR);
-				marsTime.addTime(timePulse);
+				marsClock.addTime(timePulse);
 				fireClockPulse(timePulse);
 			}
 		}
@@ -1048,7 +1050,7 @@ public class MasterClock implements Serializable {
 						&& !clockListenerExecutor.isShutdown()) {
 					// Add time pulse length to Earth and Mars clocks.
 					earthClock.addTime(1000D * t);
-					marsTime.addTime(timePulse);
+					marsClock.addTime(timePulse);
 					fireClockPulse(timePulse);
 				}
 
@@ -1081,12 +1083,21 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded() {
+		sim = Simulation.instance();
+	}
+	
+	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		config = null;
+		simulationConfig = null;
 		sim = null;
-		marsTime = null;
+		marsClock = null;
 		initialMarsTime = null;
 		earthClock = null;
 		uptimer = null;

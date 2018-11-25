@@ -423,7 +423,7 @@ public class MarsProjectFX extends Application {
 				// Start interactive terminal
 				sim.getTerm().startCommanderMode();
 				// Initialize the simulation.
-				Simulation.createNewSimulation(-1);
+				Simulation.createNewSimulation(-1, false);
 				// Start the simulation.
 				startSimulation(true);				
 				// Load the menu choice
@@ -434,7 +434,7 @@ public class MarsProjectFX extends Application {
 				// CASE B //
 				
 				// Initialize the simulation.
-				Simulation.createNewSimulation(-1);
+				Simulation.createNewSimulation(-1, true);
 
 				if (savedSim) {
 

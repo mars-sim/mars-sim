@@ -38,7 +38,7 @@ public class ResourceProcessing extends Function implements Serializable {
 	
 	private List<ResourceProcess> resourceProcesses;
 
-	private static BuildingConfig config;
+	private static BuildingConfig buildingConfig;
 
 	/**
 	 * Constructor.
@@ -50,13 +50,13 @@ public class ResourceProcessing extends Function implements Serializable {
 		// Use Function constructor
 		super(FUNCTION, building);
 
-		config = SimulationConfig.instance().getBuildingConfiguration();
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
-		powerDownProcessingLevel = config.getResourceProcessingPowerDown(building.getBuildingType());
-		resourceProcesses = config.getResourceProcesses(building.getBuildingType());
+		powerDownProcessingLevel = buildingConfig.getResourceProcessingPowerDown(building.getBuildingType());
+		resourceProcesses = buildingConfig.getResourceProcesses(building.getBuildingType());
 
 		// Load activity spots
-		loadActivitySpots(config.getResourceProcessingActivitySpots(building.getBuildingType()));
+		loadActivitySpots(buildingConfig.getResourceProcessingActivitySpots(building.getBuildingType()));
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class ResourceProcessing extends Function implements Serializable {
 		Inventory inv = settlement.getInventory();
 
 		double result = 0D;
-		List<ResourceProcess> processes = config.getResourceProcesses(buildingName);
+		List<ResourceProcess> processes = buildingConfig.getResourceProcesses(buildingName);
 		for (ResourceProcess process : processes) {
 			double processValue = 0D;
 			for (int resource : process.getOutputResources()) {
@@ -145,6 +145,15 @@ public class ResourceProcessing extends Function implements Serializable {
 		return powerDownProcessingLevel;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded() {
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	}
+	
 	/**
 	 * Time passing for the building.
 	 * 

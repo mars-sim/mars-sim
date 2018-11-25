@@ -87,8 +87,7 @@ public class Manufacture extends Function implements Serializable {
 	private ItemResource printerItem;
 	private BuildingManager buildingManager;
 
-	private MarsClock marsClock;
-
+	private static MarsClock marsClock;
 //	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	private static BuildingConfig buildingConfig;
 
@@ -128,6 +127,16 @@ public class Manufacture extends Function implements Serializable {
 		// checkNumPrinter = true;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	}
+	
 	/**
 	 * Gets the value of the function for a named building.
 	 * 

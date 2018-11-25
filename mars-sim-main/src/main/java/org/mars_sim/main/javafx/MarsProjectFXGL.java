@@ -455,7 +455,7 @@ public class MarsProjectFXGL extends GameApplication {
 				// Start interactive terminal 
 				sim.getTerm().startCommanderMode();
 				// Initialize the simulation.
-				Simulation.createNewSimulation(-1);
+				Simulation.createNewSimulation(-1, false);
 				// Start the simulation.
 				startSimulation(true);
 			}
@@ -463,7 +463,7 @@ public class MarsProjectFXGL extends GameApplication {
 			else if (loadSim) {
 				// CASE B //
 				// Initialize the simulation.
-				Simulation.createNewSimulation(-1);
+				Simulation.createNewSimulation(-1, true);
 
 				if (savedSim) {
 

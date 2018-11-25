@@ -215,11 +215,6 @@ public class Crop implements Serializable {
 
 	private Map<Integer, Phase> phases = new HashMap<>();
 
-	private static SurfaceFeatures surface;
-	private static MarsClock marsClock;
-	private static MasterClock masterClock;
-	private static CropConfig cropConfig;
-
 	private static int waterID = ResourceUtil.waterID;
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int carbonDioxideID = ResourceUtil.co2ID;
@@ -228,6 +223,11 @@ public class Crop implements Serializable {
 	private static int fertilizerID = ResourceUtil.fertilizerID;
 
 	private static Part mushroomBoxAR = ItemResourceUtil.mushroomBoxAR;
+
+	private static MasterClock masterClock;
+	private static MarsClock marsClock;
+	private static SurfaceFeatures surface;
+	private static CropConfig cropConfig;
 
 	/**
 	 * Constructor.
@@ -731,6 +731,20 @@ public class Crop implements Serializable {
 	}
 
 	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded(MasterClock c0, MarsClock c1) {
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		cropConfig = SimulationConfig.instance().getCropConfiguration();
+		cropTypeList = new ArrayList<>(cropConfig.getCropList());
+		masterClock = c0;
+		marsClock = c1;
+	}
+	
+	/**
 	 * Time passing for crop.
 	 * 
 	 * @param time - amount of time passing (millisols)
@@ -1225,15 +1239,6 @@ public class Crop implements Serializable {
 		// bees in the greenhouse
 		// TODO: Modify harvest modifier by amount of artificial light available to the
 		// whole greenhouse
-
-		if (surface == null)
-			surface = Simulation.instance().getMars().getSurfaceFeatures();
-
-		if (masterClock == null)
-			masterClock = Simulation.instance().getMasterClock();
-
-		if (marsClock == null)
-			marsClock = masterClock.getMarsClock();
 
 		int phaseNum = getCurrentPhaseNum();
 		int length = phases.size();

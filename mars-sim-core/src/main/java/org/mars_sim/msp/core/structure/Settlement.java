@@ -123,7 +123,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	public static final double MIN_WATER_RESERVE = 400D; // per person
 
-	public static final double SAFETY_TEMPERATURE = 7;
+	public static final double SAFE_TEMPERATURE_RANGE = 18;
 
 	// public static final double SAFETY_PRESSURE = 20;
 
@@ -284,6 +284,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private DustStorm storm;
 
 	// Static members
+
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+	private static int co2ID = ResourceUtil.co2ID;
+//	private static int foodID = ResourceUtil.foodID;
+	
 	private static Simulation sim = Simulation.instance();
 	// WARNING : The UnitManager instance will be stale after loading from a saved sim
 	// It will fail to run methods in Settlement and without any warning as to why that it fails.
@@ -291,12 +297,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static MissionManager missionManager = sim.getMissionManager();
 	private static Weather weather;
 	private static MarsClock marsClock;
-
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-	private static int co2ID = ResourceUtil.co2ID;
-//	private static int foodID = ResourceUtil.foodID;
-	
 	private static MarsSurface marsSurface;
 	
 	/** 
@@ -821,10 +821,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			}
 
 			double t = currentTemperature;
-			if (t < life_support_value[0][4] - SAFETY_TEMPERATURE
-					|| t > life_support_value[1][4] + SAFETY_TEMPERATURE) {
+			if (t < life_support_value[0][4] - SAFE_TEMPERATURE_RANGE
+					|| t > life_support_value[1][4] + SAFE_TEMPERATURE_RANGE) {
 				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-						this.getName() + " detected out-of-range temperature at " + Math.round(p * 10D) / 10D + " C",
+						this.getName() + " detected out-of-range temperature at " + Math.round(t * 10D) / 10D + " C",
 						null);
 				return false;
 			}
@@ -1020,6 +1020,17 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
+		weather = Simulation.instance().getMars().getWeather();
+	}
+	
+	
 	/**
 	 * Perform time-related processes
 	 *

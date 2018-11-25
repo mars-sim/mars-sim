@@ -26,7 +26,7 @@ public class TestLocalAreaUtil extends TestCase {
         
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1);
+        Simulation.createNewSimulation(-1, false);
         
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();

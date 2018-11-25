@@ -8,10 +8,8 @@ package org.mars_sim.msp.core.science;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
@@ -32,7 +30,7 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(ScientificStudyManager.class.getName());
     
     // Data members
-    private static List<ScientificStudy> studies;
+    private List<ScientificStudy> studies;
     
     /**
      * Constructor.

@@ -135,9 +135,9 @@ public class Robot
 
 	private Walk walk;
 
-	private MarsClock marsClock;
-	private EarthClock earthClock;
-	private MasterClock masterClock;
+	private static MarsClock marsClock;
+	private static EarthClock earthClock;
+	private static MasterClock masterClock;
 
 	// private Vehicle vehicle;
 
@@ -537,10 +537,10 @@ public class Robot
 //		}
 //		malfunctionManager.timePassing(time);
 
-		if (marsClock == null) {
-			masterClock = Simulation.instance().getMasterClock();
-			marsClock = masterClock.getMarsClock();
-		}
+//		if (marsClock == null) {
+//			masterClock = Simulation.instance().getMasterClock();
+//			marsClock = masterClock.getMarsClock();
+//		}
 
 		double msol1 = marsClock.getMillisolOneDecimal();
 
@@ -977,6 +977,20 @@ public class Robot
 		return this;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded(MasterClock c0, MarsClock c1) {
+		masterClock = c0;
+		marsClock = c1;
+		earthClock = masterClock.getEarthClock();
+//		config = SimulationConfig.instance().getRobotConfiguration();
+	}
+	
+	
 	@Override
 	public void destroy() {
 		super.destroy();

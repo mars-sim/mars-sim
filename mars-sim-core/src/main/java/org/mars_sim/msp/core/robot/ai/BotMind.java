@@ -52,13 +52,11 @@ public class BotMind implements Serializable {
 	/** The robot's personality. */
 	private PersonalityType personality;
 	/** The robot's skill manager. */
-	private static SkillManager skillManager;
+	private SkillManager skillManager;
 
 	private static MissionManager missionManager;
-
 	private static Simulation sim;
-
-	private MarsClock marsClock;
+	private static MarsClock marsClock;
 
 	/**
 	 * Constructor 1.
@@ -96,6 +94,15 @@ public class BotMind implements Serializable {
 
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
+	}
+	
 	/**
 	 * Time passing.
 	 * 

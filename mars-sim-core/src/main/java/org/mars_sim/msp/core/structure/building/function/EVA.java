@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * This class is a building function for extra vehicular activity.
@@ -30,7 +31,7 @@ implements Serializable {
 
 	private Airlock airlock;
 	
-	private static BuildingConfig config;
+	private static BuildingConfig buildingConfig;
 	
 
 	/**
@@ -41,17 +42,17 @@ implements Serializable {
 		// Use Function constructor.
 		super(FUNCTION, building);
 
-		config = SimulationConfig.instance().getBuildingConfiguration();
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 		String buildingType = building.getBuildingType();
 		// Add a building airlock.
-		int airlockCapacity = config.getAirlockCapacity(buildingType);
-		double airlockXLoc = config.getAirlockXLoc(buildingType);
-		double airlockYLoc = config.getAirlockYLoc(buildingType);
-		double interiorXLoc = config.getAirlockInteriorXLoc(buildingType);
-		double interiorYLoc = config.getAirlockInteriorYLoc(buildingType);
-		double exteriorXLoc = config.getAirlockExteriorXLoc(buildingType);
-		double exteriorYLoc = config.getAirlockExteriorYLoc(buildingType);
+		int airlockCapacity = buildingConfig.getAirlockCapacity(buildingType);
+		double airlockXLoc = buildingConfig.getAirlockXLoc(buildingType);
+		double airlockYLoc = buildingConfig.getAirlockYLoc(buildingType);
+		double interiorXLoc = buildingConfig.getAirlockInteriorXLoc(buildingType);
+		double interiorYLoc = buildingConfig.getAirlockInteriorYLoc(buildingType);
+		double exteriorXLoc = buildingConfig.getAirlockExteriorXLoc(buildingType);
+		double exteriorYLoc = buildingConfig.getAirlockExteriorYLoc(buildingType);
 
 		airlock = new BuildingAirlock(building, airlockCapacity, airlockXLoc, airlockYLoc,
 				interiorXLoc, interiorYLoc, exteriorXLoc, exteriorYLoc);
@@ -100,7 +101,7 @@ implements Serializable {
 
 		double airlockCapacityValue = demand / (supply + 1D);
 
-		double airlockCapacity = config.getAirlockCapacity(buildingName);
+		double airlockCapacity = buildingConfig.getAirlockCapacity(buildingName);
 
 		return airlockCapacity * airlockCapacityValue;
 	}
@@ -143,12 +144,7 @@ implements Serializable {
 		return airlock.getCapacity() * 5D;
 	}
 
-	@Override
-	public void destroy() {
-		super.destroy();
 
-		airlock = null;
-	}
 
 	@Override
 	public double getFullHeatRequired() {
@@ -160,5 +156,20 @@ implements Serializable {
 	public double getPoweredDownHeatRequired() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 */
+	public static void justReloaded() {
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	}
+
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+
+		airlock = null;
 	}
 }

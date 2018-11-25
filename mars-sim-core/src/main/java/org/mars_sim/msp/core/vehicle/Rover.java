@@ -81,7 +81,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	// Static data members
 	// private static VehicleConfig vehicleConfig;
 	private static PersonConfig personConfig;
-	private static Weather weather;
+//	private static Weather weather;
 
 	/**
 	 * Constructs a Rover object at a given settlement
@@ -98,7 +98,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		// SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
 
 		// Get vehicle configuration.
-		weather = Simulation.instance().getMars().getWeather();
+//		weather = Simulation.instance().getMars().getWeather();
 		VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
 
@@ -306,10 +306,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		double t = getTemperature();
 //		if (getTemperature() != NORMAL_TEMP)
 //			result = false;
-		if (t < Settlement.life_support_value[0][4] - Settlement.SAFETY_TEMPERATURE
-				|| t > Settlement.life_support_value[1][4] + Settlement.SAFETY_TEMPERATURE) {
+		if (t < Settlement.life_support_value[0][4] - Settlement.SAFE_TEMPERATURE_RANGE
+				|| t > Settlement.life_support_value[1][4] + Settlement.SAFE_TEMPERATURE_RANGE) {
 			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-					this.getName() + " detected out-of-range temperature at " + Math.round(p * 10D) / 10D + " C",
+					this.getName() + " detected out-of-range temperature at " + Math.round(t * 10D) / 10D + " C",
 					null);
 			return false;
 		}
@@ -663,7 +663,19 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	public String getNickName() {
 		return getName();
 	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded() {
+//		weather = Simulation.instance().getMars().getWeather();
+//		VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
+		personConfig = SimulationConfig.instance().getPersonConfiguration();
 
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();
@@ -671,7 +683,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		// vehicleConfig = null;
 		personConfig = null;
 		// inv = null;
-		weather = null;
+//		weather = null;
 		towedVehicle = null;
 
 		labActivitySpots = null;

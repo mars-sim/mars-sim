@@ -889,7 +889,7 @@ public class MainMenu {
 			// " Thread");
 
 			// Initialize the simulation.
-			Simulation.createNewSimulation(-1);
+			Simulation.createNewSimulation(-1, true);
 
 			try {
 				// Loading settlement data from the default saved simulation

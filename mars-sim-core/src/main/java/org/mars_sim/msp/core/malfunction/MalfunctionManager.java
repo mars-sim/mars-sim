@@ -127,15 +127,15 @@ public class MalfunctionManager implements Serializable {
 
 	// The static instances
 	private static MasterClock masterClock;
-	private static MarsClock startTime;
+//	private static MarsClock startTime;
 	private static MarsClock currentTime;
 
 	private static MalfunctionFactory factory;
 	private static PartConfig partConfig;
 	private static MalfunctionConfig malfunctionConfig;
 
-	private static SimulationConfig simconfig;
-	private static Simulation sim;
+	private static SimulationConfig simconfig= SimulationConfig.instance();
+	private static Simulation sim = Simulation.instance();
 
 	// NOTE : each building has its own MalfunctionManager
 
@@ -160,8 +160,11 @@ public class MalfunctionManager implements Serializable {
 		this.wearLifeTime = wearLifeTime;
 		wearCondition = 100D;
 
-		simconfig = SimulationConfig.instance();
-		sim = Simulation.instance();
+		masterClock = sim.getMasterClock();
+		if (masterClock != null)
+			// Note that this if above is for maven test, or else NullPointerException
+			currentTime = masterClock.getMarsClock();
+			
 		partConfig = simconfig.getPartConfiguration();
 		malfunctionConfig = simconfig.getMalfunctionConfiguration();
 		factory = sim.getMalfunctionFactory();
@@ -1333,6 +1336,21 @@ public class MalfunctionManager implements Serializable {
 	}
 
 	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded(MasterClock c0, MarsClock c1) {
+		masterClock = c0;
+//		startTime = masterClock.getInitialMarsTime();
+		currentTime = c1;
+		partConfig = simconfig.getPartConfiguration();
+		malfunctionConfig = simconfig.getMalfunctionConfiguration();
+		factory = sim.getMalfunctionFactory();
+	}
+		
+	/**
 	 * Gets the estimated number of malfunctions this entity will have in one
 	 * Martian orbit.
 	 * 
@@ -1341,29 +1359,19 @@ public class MalfunctionManager implements Serializable {
 	public double getEstimatedNumberOfMalfunctionsPerOrbit() {
 		double avgMalfunctionsPerOrbit = 0D;
 
-		// Note : the elaborate if-else conditions below is for passing the maven test
-		if (masterClock == null)
-			masterClock = sim.getMasterClock();
-		else {
-			if (startTime == null)
-				startTime = masterClock.getInitialMarsTime();
-			if (currentTime == null)
-				currentTime = masterClock.getMarsClock();
+		double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, masterClock.getInitialMarsTime());
+		double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
-			double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
-			double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+		if (totalTimeOrbits < 1D) {
+			avgMalfunctionsPerOrbit = (numberMalfunctions + ESTIMATED_MALFUNCTIONS_PER_ORBIT) / 2D;
+		} else {
+			avgMalfunctionsPerOrbit = numberMalfunctions / totalTimeOrbits;
+		}
 
-			if (totalTimeOrbits < 1D) {
-				avgMalfunctionsPerOrbit = (numberMalfunctions + ESTIMATED_MALFUNCTIONS_PER_ORBIT) / 2D;
-			} else {
-				avgMalfunctionsPerOrbit = numberMalfunctions / totalTimeOrbits;
-			}
-
-			int orbit = currentTime.getOrbit();
-			if (orbitCache != orbit) {
-				orbitCache = orbit;
-				numberMalfunctions = 0;
-			}
+		int orbit = currentTime.getOrbit();
+		if (orbitCache != orbit) {
+			orbitCache = orbit;
+			numberMalfunctions = 0;
 		}
 
 		return avgMalfunctionsPerOrbit;
@@ -1379,15 +1387,15 @@ public class MalfunctionManager implements Serializable {
 		double avgMaintenancesPerOrbit = 0D;
 
 		// Note : the elaborate if-else conditions below is for passing the maven test
-		if (masterClock == null)
-			masterClock = sim.getMasterClock();
-		else {
-			if (startTime == null)
-				startTime = masterClock.getInitialMarsTime();
-			if (currentTime == null)
-				currentTime = masterClock.getMarsClock();
+//		if (masterClock == null)
+//			masterClock = sim.getMasterClock();
+//		else {
+//			if (startTime == null)
+//				startTime = masterClock.getInitialMarsTime();
+//			if (currentTime == null)
+//				currentTime = masterClock.getMarsClock();
 
-			double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
+			double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, masterClock.getInitialMarsTime());
 			double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 			if (totalTimeOrbits < 1D) {
@@ -1395,7 +1403,7 @@ public class MalfunctionManager implements Serializable {
 			} else {
 				avgMaintenancesPerOrbit = numberMaintenances / totalTimeOrbits;
 			}
-		}
+//		}
 
 		return avgMaintenancesPerOrbit;
 	}

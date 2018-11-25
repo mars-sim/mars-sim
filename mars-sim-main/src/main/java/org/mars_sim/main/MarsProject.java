@@ -129,7 +129,7 @@ public class MarsProject {
 				// Initialize the simulation.
 				SimulationConfig.loadConfig();
 				
-				Simulation.createNewSimulation(-1);
+				Simulation.createNewSimulation(-1, true);
 				
 				handleLoadSimulation(argList);
 
@@ -147,7 +147,7 @@ public class MarsProject {
 				// Initialize the simulation.
 				SimulationConfig.loadConfig();
 				
-				Simulation.createNewSimulation(-1);
+				Simulation.createNewSimulation(-1, true);
 				
 				handleLoadDefaultSimulation();
 			} catch (Exception e) {

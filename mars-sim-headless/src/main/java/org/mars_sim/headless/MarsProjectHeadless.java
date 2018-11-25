@@ -118,7 +118,7 @@ public class MarsProjectHeadless {
 				// Initialize the simulation.
 				SimulationConfig.loadConfig();
 				
-				Simulation.createNewSimulation(userTimeRatio);
+				Simulation.createNewSimulation(userTimeRatio, true);
 				
 				handleLoadDefaultSimulation();
 				// Initialize interactive terminal and load menu
@@ -207,7 +207,7 @@ public class MarsProjectHeadless {
 			
 			sim.destroyOldSimulation();
 
-			Simulation.createNewSimulation(userTimeRatio);
+			Simulation.createNewSimulation(userTimeRatio, false);
 			
 			sim.start(true);
 			
@@ -236,7 +236,7 @@ public class MarsProjectHeadless {
 
 		MarsProjectHeadless.args = args;
 
-		new File(System.getProperty("user.home"), ".mars-sim" + File.separator + "logs").mkdirs();
+		new File(Simulation.USER_HOME, Simulation.MARS_SIM_DIR + File.separator + Simulation.LOGS_DIR).mkdirs();
 
 		try {
 			LogManager.getLogManager()

@@ -575,7 +575,7 @@ public class ScenarioConfigEditorFX {
 //				sim.getTerm().startCommanderMode();
 //			}
 			
-			Simulation.createNewSimulation(-1);
+			Simulation.createNewSimulation(-1, false);
 
 			sim.start(false);
 

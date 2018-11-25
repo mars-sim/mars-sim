@@ -203,7 +203,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The person's mission experiences */
 	private Map<Integer, List<Double>> missionExperiences;
 	
-	// private Simulation sim = Simulation.instance();
+	private Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;
 	private static EarthClock earthClock;
 	private static MasterClock masterClock;
@@ -264,11 +264,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void initialize() {
 
 		// sim = Simulation.instance();
-		masterClock = Simulation.instance().getMasterClock();
+		masterClock = sim.getMasterClock();
 		if (masterClock != null) { // avoid NullPointerException during maven test
 			marsClock = masterClock.getMarsClock();
 			earthClock = masterClock.getEarthClock();
-			mars = Simulation.instance().getMars();
+			mars = sim.getMars();
 			marsSurface = mars.getMarsSurface();
 			// TODO : avoid declaring a birth clock for each person
 			// Find a way to use existing EarthClock inside MasterClock, plus the difference
@@ -1680,9 +1680,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return missionExperiences;
 	}
 	
-	public static void justReloaded() {
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded(MasterClock c0, MarsClock c1) {
+		masterClock = c0;
+		marsClock = c1;
 		mars = Simulation.instance().getMars();
 		marsSurface = mars.getMarsSurface();
+		earthClock = c0.getEarthClock();
 	}
 	
 	@Override

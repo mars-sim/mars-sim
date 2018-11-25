@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -298,6 +299,14 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 //		}
 //		return foundGoodLocation;
 //	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 */
+	public static void justReloaded() {
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
+		terrain = surface.getTerrainElevation();
+	}
 	
 	/**
 	 * Prepare object for garbage collection.

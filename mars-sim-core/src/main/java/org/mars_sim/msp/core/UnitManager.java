@@ -97,8 +97,10 @@ public class UnitManager implements Serializable {
 	private List<Unit> units;
 
 	// Transient members
-	/** Flag true if the class has just been deserialized */
+	/** Flag true if the class has just been loaded */
 	public transient boolean justLoaded = true;
+	/** Flag true if the class has just been reloaded/deserialized */
+	public transient boolean justReloaded = false;
 	/** List of unit manager listeners. */
 	private transient List<UnitManagerListener> listeners;
 
@@ -176,7 +178,7 @@ public class UnitManager implements Serializable {
 	 *
 	 * @throws Exception in unable to load names.
 	 */
-	void constructInitialUnits() {
+	void constructInitialUnits(boolean loadSaveSim) {
 
 		if (countries == null)
 			countries = personConfig.createCountryList();
@@ -191,25 +193,28 @@ public class UnitManager implements Serializable {
 		initializeSettlementNames();
 		initializeVehicleNames();
 
-		// Create initial units.
-		createInitialSettlements();
-		createInitialVehicles();
-		createInitialEquipment();
-		createInitialResources();
-		createInitialParts();
-
-		// Create pre-configured robots as stated in robots.xml
-		createPreconfiguredRobots();
-		// Create more robots to fill the settlement(s)
-		createInitialRobots();
-		// Create pre-configured settlers as stated in people.xml
-		createPreconfiguredPeople();			
-		// Find the settlement match for the user proposed commander's sponsor 
-		if (isCommanderMode)
-			matchSettlement();
-		// Create more settlers to fill the settlement(s)
-		createInitialPeople();
 		
+		if (!loadSaveSim) {
+			// Create initial units.
+			createInitialSettlements();
+			createInitialVehicles();
+			createInitialEquipment();
+			createInitialResources();
+			createInitialParts();
+			
+			// Find the settlement match for the user proposed commander's sponsor 
+			if (isCommanderMode)
+				matchSettlement();
+			
+			// Create pre-configured robots as stated in robots.xml
+			createPreconfiguredRobots();
+			// Create more robots to fill the settlement(s)
+			createInitialRobots();
+			// Create pre-configured settlers as stated in people.xml
+			createPreconfiguredPeople();
+			// Create more settlers to fill the settlement(s)
+			createInitialPeople();
+		}
 
 	}
 
@@ -1558,8 +1563,8 @@ public class UnitManager implements Serializable {
 			// configured.
 			String preConfigSettlementName = robotConfig.getConfiguredRobotSettlement(x);
 			Settlement settlement = null;
+			Collection<Settlement> col = CollectionUtils.getSettlement(units);
 			if (preConfigSettlementName != null) {
-				Collection<Settlement> col = CollectionUtils.getSettlement(units);
 				// Find the settlement instance with that name
 				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
 				if (settlement == null) {
@@ -1571,10 +1576,14 @@ public class UnitManager implements Serializable {
 							settlement = CollectionUtils.getRandomSettlement(col);
 							settlement.updateAllAssociatedRobots();
 							col.remove(settlement);
-							
+//							logger.log(Level.INFO, name + " has no destination settlement specified and goes to "
+//									+ preConfigSettlementName + " by random.");
 							if (settlement.getNumBots() < settlement.getInitialNumOfRobots()) {
 								isDestinationChange = true;
 								done = true;
+								logger.log(Level.INFO, name + " is being sent to " + settlement + " since "
+										+ preConfigSettlementName + " doesn't exist.");
+		
 							}	
 						}
 						else {
@@ -1612,13 +1621,33 @@ public class UnitManager implements Serializable {
 						}
 					}
 				}
+			}
+			
+			else {
+				boolean done = false;
+				while (!done) {
+					if (col.size() > 0) {
+						settlement = CollectionUtils.getRandomSettlement(col);
+						
+						settlement.updateAllAssociatedRobots();
+						col.remove(settlement);
+						
+						if (settlement.getNumBots() < settlement.getInitialNumOfRobots()) {
+							isDestinationChange = true;
+							done = true;
+							logger.log(Level.INFO, name + " is being sent to " + settlement + " since "
+									+ preConfigSettlementName + " doesn't exist.");
+	
+						}	
+					}
+					else {
+						isDestinationChange = false;
+						done = true;
+						break;
+					}
+					
+				}
 				
-
-			} else {
-				Collection<Settlement> col = CollectionUtils.getSettlement(units);
-				settlement = CollectionUtils.getRandomSettlement(col);
-				logger.log(Level.INFO, name + " has no destination settlement specified and goes to "
-						+ preConfigSettlementName + " by random.");
 			}
 
 			// If settlement is still null (no settlements available), don't create robot.
@@ -1656,9 +1685,7 @@ public class UnitManager implements Serializable {
 						addUnit(robot);
 
 						if (isDestinationChange) {
-							logger.log(Level.INFO, name + " is being sent to " + settlement + " since "
-									+ preConfigSettlementName + " doesn't exist.");
-	
+
 							RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
 							if (robotJob != null) {
 								robot.getBotMind().setRobotJob(robotJob, true);
@@ -1732,6 +1759,13 @@ public class UnitManager implements Serializable {
 		}
 	}
 
+	/**
+	 * Obtains a robot type
+	 * 
+	 * @param s
+	 * @param max
+	 * @return
+	 */
 	public RobotType getABot(Settlement s, int max) {
 
 		int[] numBots = new int[] { 0, 0, 0, 0, 0, 0, 0 };
@@ -2416,6 +2450,9 @@ public class UnitManager implements Serializable {
 //		return marsSurface;
 //	}
 	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 */
 	public void justReloaded() {
 		Simulation.instance().getMars().setMarsSurface((MarsSurface)units.get(0));
 	}

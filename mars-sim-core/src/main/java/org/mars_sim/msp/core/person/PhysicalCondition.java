@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.person.health.HealthProblem;
-import org.mars_sim.msp.core.person.health.MedicalEvent;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.Medication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
@@ -40,7 +39,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.core.tool.MathUtils;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -198,6 +196,7 @@ public class PhysicalCondition implements Serializable {
 
 	private NaturalAttributeManager naturalAttributeManager;
 
+	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 	
@@ -242,6 +241,22 @@ public class PhysicalCondition implements Serializable {
 
 		medicalManager = Simulation.instance().getMedicalManager();
 
+		if (medicalManager != null) {
+			// Note that this 'if' above is for maven test, or else NullPointerException
+			panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
+			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
+			highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+			radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
+			dehydration = medicalManager.getDehydration();
+			starvation = medicalManager.getStarvation();
+			freezing = medicalManager.getFreezing();
+			heatStroke = medicalManager.getHeatStroke();
+			decompression = medicalManager.getDecompression();
+			suffocation = medicalManager.getSuffocation();
+		}
+		
+//		initialize();
+		
 		taskMgr = person.getMind().getTaskManager();
 
 		alive = true;
@@ -316,10 +331,12 @@ public class PhysicalCondition implements Serializable {
 
 		dehydrationStartTime = 1000D * (personConfig.getDehydrationStartTime() * bodyMassDeviation);
 //		System.out.println("dehydrationStartTime : " + dehydrationStartTime);
+		
 	}
 
 	/**
 	 * Initialize values and instances at the beginning of sol 1
+	 * (Note : Must skip this when running maven test or else having exceptions)
 	 */
 	public void initialize() {
 
@@ -330,11 +347,6 @@ public class PhysicalCondition implements Serializable {
 
 		personalMaxEnergy = personalMaxEnergy + d1 + d2 + preference;
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
-
-		freezing = getMedicalManager().getFreezing();
-		heatStroke = getMedicalManager().getHeatStroke();
-		decompression = getMedicalManager().getDecompression();
-		suffocation = getMedicalManager().getSuffocation();
 
 	}
 
@@ -740,8 +752,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void checkStarvation(double hunger) {
 
-		if (starvation == null)
-			starvation = getMedicalManager().getStarvation();
+//		if (starvation == null)
+//			starvation = getMedicalManager().getStarvation();
 
 		if (!isStarving && hunger > starvationStartTime && (kJoules < 120D)) {
 			if (!problems.containsKey(starvation)) {
@@ -786,8 +798,8 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void checkDehydration(double thirst) {
 
-		if (dehydration == null)
-			dehydration = getMedicalManager().getDehydration();
+//		if (dehydration == null)
+//			dehydration = getMedicalManager().getDehydration();
 
 		if (thirst > dehydrationStartTime) {
 			if (!isDehydrated && !problems.containsKey(dehydration)) {
@@ -849,11 +861,11 @@ public class PhysicalCondition implements Serializable {
 		// Expanded Anxiety Attack into either Panic Attack or Depression
 
 		// a person is limited to have only one of them at a time
-		if (panicAttack == null)
-			panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
-
-		if (depression == null)
-			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
+//		if (panicAttack == null)
+//			panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
+//
+//		if (depression == null)
+//			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
 
 		if (!problems.containsKey(panicAttack) && !problems.containsKey(depression)) {
 
@@ -924,9 +936,6 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private void checkForHighFatigueCollapse(double time) {
 
-		if (highFatigue == null)
-			highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
-
 		if (!problems.containsKey(highFatigue)) {
 			// Calculate the modifier (from 10D to 0D) Note that the base
 			// high-fatigue-collapse-chance is 5%
@@ -968,9 +977,6 @@ public class PhysicalCondition implements Serializable {
 	 * @param time the time passing (millisols)
 	 */
 	private void checkRadiationPoisoning(double time) {
-
-		if (radiationPoisoning == null)
-			radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
 
 		if (!problems.containsKey(radiationPoisoning) && radiation.isSick()) {
 			// Calculate the modifier (from 10D to 0D) Note that the base
@@ -1183,8 +1189,8 @@ public class PhysicalCondition implements Serializable {
 				clocks = new ArrayList<>();
 			}
 			
-			masterClock = Simulation.instance().getMasterClock();
-			marsClock = masterClock.getMarsClock();
+//			masterClock = Simulation.instance().getMasterClock();
+//			marsClock = masterClock.getMarsClock();
 			
 			clocks.add(marsClock.getDateTimeStamp());
 			healthHistory.put(type, clocks);
@@ -1824,6 +1830,25 @@ public class PhysicalCondition implements Serializable {
 	
 	public double getDehydrationStartTime() {
 		return dehydrationStartTime;
+	}
+	
+	public static void justReloaded(MasterClock c0, MarsClock c1) {
+		masterClock = c0;
+		marsClock = c1;
+		
+		medicalManager = sim.getMedicalManager();
+		panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
+		depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);	
+		highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);	
+		radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
+		dehydration = medicalManager.getDehydration();
+		starvation = medicalManager.getStarvation();
+		
+		freezing = medicalManager.getFreezing();
+		heatStroke = medicalManager.getHeatStroke();
+		decompression = medicalManager.getDecompression();
+		suffocation = medicalManager.getSuffocation();
+		
 	}
 	
 	/**

@@ -122,13 +122,15 @@ public class Farming extends Function implements Serializable {
 
 	private Map<String, List<Double>> cropDailyCO2Consumed;
 
-	private static MarsClock marsClock;
-//	private static SurfaceFeatures surface;
-
 	private Inventory inv;
 	private Settlement settlement;
 	private Building building;
 	private Research lab;
+	
+	private static MarsClock marsClock;
+	private static CropConfig cropConfig;
+//	private static SurfaceFeatures surface;
+
 
 	/**
 	 * Constructor.
@@ -164,7 +166,7 @@ public class Farming extends Function implements Serializable {
 		maxGrowingArea = buildingConfig.getCropGrowingArea(building.getBuildingType());
 		remainingGrowingArea = maxGrowingArea;
 
-		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+		cropConfig = SimulationConfig.instance().getCropConfiguration();
 		if (cropTypeList == null)
 			cropTypeList = new ArrayList<>(cropConfig.getCropList());
 		size = cropTypeList.size();
@@ -824,6 +826,17 @@ public class Farming extends Function implements Serializable {
 		return sum;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
+		cropConfig = SimulationConfig.instance().getCropConfiguration();
+		cropTypeList = new ArrayList<>(cropConfig.getCropList());
+	}
+	
 	/**
 	 * Time passing for the building.
 	 * 

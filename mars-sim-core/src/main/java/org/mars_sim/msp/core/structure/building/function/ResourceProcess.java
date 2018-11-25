@@ -361,6 +361,15 @@ public class ResourceProcess implements Serializable {
 	}
 
 	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
+	}
+	
+	/**
 	 * Checks if it has exceeded the time limit
 	 * 
 	 * @return

@@ -189,7 +189,7 @@ public class CompositionOfAir implements Serializable {
 	private BuildingManager buildingManager;
 
 	private static MasterClock masterClock;
-	private static MarsClock clock;
+	private static MarsClock marsClock;
 	// private static SurfaceFeatures surfaceFeatures;
 	private static PersonConfig personConfig;
 
@@ -204,7 +204,7 @@ public class CompositionOfAir implements Serializable {
 		this.buildingManager = settlement.getBuildingManager();
 
 		masterClock = Simulation.instance().getMasterClock();
-		clock = masterClock.getMarsClock();
+		marsClock = masterClock.getMarsClock();
 		// weather = Simulation.instance().getMars().getWeather();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
 
@@ -331,6 +331,17 @@ public class CompositionOfAir implements Serializable {
 	}
 
 	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded(MasterClock c0, MarsClock c1) {
+		masterClock = c0;
+		marsClock = c1;
+	}
+	
+	/**
 	 * Time passing for the building.
 	 * 
 	 * @param time amount of time passing (in millisols)
@@ -346,7 +357,7 @@ public class CompositionOfAir implements Serializable {
 		// For each time interval
 		calculateGasExchange(time, newList, num);
 
-		int msol = clock.getMillisolInt();
+		int msol = marsClock.getMillisolInt();
 
 		if (msolCache != msol && msol % MILLISOLS_PER_UPDATE == 0) {
 			msolCache = msol;
@@ -923,7 +934,7 @@ public class CompositionOfAir implements Serializable {
 		buildingManager = null;
 		settlement = null;
 		masterClock = null;
-		clock = null;
+		marsClock = null;
 		personConfig = null;
 	}
 

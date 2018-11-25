@@ -121,11 +121,11 @@ implements Serializable {
 	 */
 	private boolean locked;
 	
-	private static BuildingConfig config;
+	private Building building;
+	
+	private static BuildingConfig buildingConfig;
 	
 	private static MarsClock marsClock;
-	
-	private Building building;
 
 	/**
 	 * Constructor.
@@ -138,12 +138,12 @@ implements Serializable {
 		
 		this.building = building;
 
-		config = SimulationConfig.instance().getBuildingConfiguration();
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-		max_kWh_nameplate = config.getPowerStorageCapacity(building.getBuildingType());
+		max_kWh_nameplate = buildingConfig.getPowerStorageCapacity(building.getBuildingType());
 		
 		currentMaxCap = max_kWh_nameplate;
 
@@ -198,7 +198,7 @@ implements Serializable {
 		double existingPowerStorageValue = demand / (supply + 1D);
 
 		//BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		double powerStorage = config.getPowerStorageCapacity(buildingName);
+		double powerStorage = buildingConfig.getPowerStorageCapacity(buildingName);
 
 		double value = powerStorage * existingPowerStorageValue / hrInSol;
 		if (value > 10D) value = 10D;
@@ -301,6 +301,16 @@ implements Serializable {
 				+ building.getNickName() + " in " + building.getSettlement()
 				+ " has just been reconditioned."
 				, null);
+	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 	}
 	
 	@Override

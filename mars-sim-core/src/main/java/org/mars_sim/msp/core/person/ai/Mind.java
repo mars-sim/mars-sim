@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
@@ -76,8 +77,8 @@ public class Mind implements Serializable {
 	private MissionManager missionManager;
 
 	private static Simulation sim;
-
-	private MarsClock marsClock;
+	private static MarsClock marsClock;
+	private static RelationshipManager relationshipManager;
 
 	/**
 	 * Constructor 1.
@@ -96,6 +97,8 @@ public class Mind implements Serializable {
 		if (sim.getMasterClock() != null) // for passing maven test
 			marsClock = sim.getMasterClock().getMarsClock();
 
+		relationshipManager = sim.getRelationshipManager();
+		
 		// Construct the Big Five personality trait.
 		trait = new PersonalityTraitManager(person);
 		// Construct the MBTI personality type.
@@ -110,6 +113,17 @@ public class Mind implements Serializable {
 		skillManager = new SkillManager(person);
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
+		sim = Simulation.instance();
+		relationshipManager = sim.getRelationshipManager();
+	}
+	
 	/**
 	 * Time passing.
 	 * 
@@ -137,7 +151,7 @@ public class Mind implements Serializable {
 				updateEmotion();
 				
 				// Update relationships.
-				sim.getRelationshipManager().timePassing(person, time);
+				relationshipManager.timePassing(person, time);
 			}
 
 			// Note : for now a Mayor/Manager cannot switch job

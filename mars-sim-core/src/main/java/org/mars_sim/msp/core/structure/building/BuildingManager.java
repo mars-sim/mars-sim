@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.location.LocationCodeType;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.mars.Meteorite;
 import org.mars_sim.msp.core.mars.MeteoriteModule;
 import org.mars_sim.msp.core.person.Person;
@@ -634,6 +635,20 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded(MasterClock c0, MarsClock c1) {
+		masterClock = c0;
+		marsClock = c1;
+		buildingConfig = simulationConfig.getBuildingConfiguration();
+		eventManager = sim.getEventManager();
+		relationshipManager = sim.getRelationshipManager();
+	}
+	
+	/**
 	 * Time passing for all buildings.
 	 *
 	 * @param time amount of time passing (in millisols)
@@ -641,6 +656,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public void timePassing(double time) {
 		// check for the passing of each day
+	
 		int solElapsed = marsClock.getMissionSol();
 
 		if (solCache != solElapsed) {

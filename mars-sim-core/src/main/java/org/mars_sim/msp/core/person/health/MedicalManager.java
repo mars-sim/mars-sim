@@ -33,14 +33,14 @@ public class MedicalManager implements Serializable {
 	public final static int MINUTES_PER_DAY = 24 * 60;
 
 	/** Possible Complaints. */
-	private HashMap<ComplaintType, Complaint> complaints = new HashMap<ComplaintType, Complaint>();
+	private static HashMap<ComplaintType, Complaint> complaints = new HashMap<ComplaintType, Complaint>();
 	/** Environmentally Related Complaints. */
-	private HashMap<ComplaintType, Complaint> environmentalComplaints = new HashMap<ComplaintType, Complaint>();
+	private static HashMap<ComplaintType, Complaint> environmentalComplaints = new HashMap<ComplaintType, Complaint>();
 
 	/** Possible Treatments. */
-	private HashMap<String, Treatment> treatments = new HashMap<String, Treatment>();
+	private static HashMap<String, Treatment> treatments = new HashMap<String, Treatment>();
 	/** Treatments to Facilities. */
-	private HashMap<Integer, List<Treatment>> supported = new HashMap<Integer, List<Treatment>>();
+	private static HashMap<Integer, List<Treatment>> supported = new HashMap<Integer, List<Treatment>>();
 
 	/** Settlement's Postmortem Exam waiting list. */
 	private Map<Settlement, List<DeathInfo>> awaitingPostmortemExam;// = new HashMap<Integer, List<Treatment>>();
@@ -51,20 +51,22 @@ public class MedicalManager implements Serializable {
 //	private List<DeathInfo> deathRegistry;
 	
 	/** Pre-defined complaint. */
-	private Complaint starvation;
+	private static Complaint starvation;
 	/** Pre-defined complaint. */
-	private Complaint suffocation;
+	private static Complaint suffocation;
 	/** Pre-defined complaint. */
-	private Complaint dehydration;
+	private static Complaint dehydration;
 	/** Pre-defined complaint. */
-	private Complaint decompression;
+	private static Complaint decompression;
 	/** Pre-defined complaint. */
-	private Complaint freezing;
+	private static Complaint freezing;
 	/** Pre-defined complaint. */
-	private Complaint heatStroke;
+	private static Complaint heatStroke;
 
-	private SimulationConfig simConfig;
-	// 2016-06-15 Moved these environement complaints to ComplaintType
+	private static SimulationConfig simConfig = SimulationConfig.instance();
+//	private static MedicalConfig medicalConfig;
+	
+	// Move these environement complaints to ComplaintType
 	/** The name of the suffocation complaint. */
 	//public final static String SUFFOCATION = Msg.getString("MedicalManager.suffocation"); //$NON-NLS-1$
 	/** The name of the dehydration complaint. */
@@ -83,16 +85,19 @@ public class MedicalManager implements Serializable {
 	 * the XML configuration file.
 	 */
 	public MedicalManager() {
-		simConfig = SimulationConfig.instance();
+//		simConfig = SimulationConfig.instance();
 
 		initMedical();
+		
+		awaitingPostmortemExam = new HashMap<>();
+		deathRegistry = new HashMap<>();
 	}
 
 	/**
 	 * Initialize the Medical Complaints from the configuration.
 	 * @throws exception if not able to initialize complaints.
 	 */
-	public void initMedical() {
+	public static void initMedical() {
 		MedicalConfig medicalConfig = simConfig.getMedicalConfiguration();
 
 		setUpEnvironmentalComplaints();
@@ -108,15 +113,12 @@ public class MedicalManager implements Serializable {
 		Iterator<Complaint> j = medicalConfig.getComplaintList().iterator();
 		while (j.hasNext())
 			addComplaint(j.next());
-
-		awaitingPostmortemExam = new HashMap<>();
-		deathRegistry = new HashMap<>();
 	}
 
 	/***
 	 * Creates the instance for each environmental complaints
 	 */
-	private void setUpEnvironmentalComplaints() {
+	private static void setUpEnvironmentalComplaints() {
 		// Create the pre-defined complaints, using person configuration.
 		PersonConfig personConfig = simConfig.getPersonConfiguration();
 
@@ -151,7 +153,7 @@ public class MedicalManager implements Serializable {
 		addEnvComplaint(starvation);
 	}
 	
-	void addEnvComplaint(Complaint c) {
+	static void addEnvComplaint(Complaint c) {
 		environmentalComplaints.put(c.getType(), c);
 	}
 	
@@ -172,7 +174,7 @@ public class MedicalManager implements Serializable {
 	 * 
 	 * @return {@link Complaint}
 	 */
-	private Complaint createEnvironmentComplaint(ComplaintType type,
+	private static Complaint createEnvironmentComplaint(ComplaintType type,
 			int seriousness,
 			double degrade, 
 			double recovery,
@@ -216,7 +218,7 @@ public class MedicalManager implements Serializable {
 	 * @param newComplaint the new complaint to add.
 	 * @throws Exception if complaint already exists in map.
 	 */
-	void addComplaint(Complaint newComplaint) {
+	static void addComplaint(Complaint newComplaint) {
 		if (!complaints.containsKey(newComplaint.getType()))
 			complaints.put(newComplaint.getType(), newComplaint);
 		else throw new IllegalStateException(
@@ -242,7 +244,7 @@ public class MedicalManager implements Serializable {
 	 * @param newTreatment the new treatment to add.
 	 * @throws Exception if treatment already exists in map.
 	 */
-	void addTreatment(Treatment newTreatment) {
+	static void addTreatment(Treatment newTreatment) {
 		if (!treatments.containsKey(newTreatment.getName()))
 			treatments.put(newTreatment.getName(), newTreatment);
 		else throw new IllegalStateException(
@@ -265,8 +267,8 @@ public class MedicalManager implements Serializable {
 	 * Gets a list of all environmentally related complaints.
 	 * @return list of environmental complaints.
 	 */
-	public List<Complaint> getEnvironmentalComplaints() {
-	    return new ArrayList<Complaint>(this.environmentalComplaints.values());
+	public List<Complaint> getAllEnvironmentalComplaints() {
+	    return new ArrayList<Complaint>(environmentalComplaints.values());
 	}
 	
 	/**
@@ -274,7 +276,6 @@ public class MedicalManager implements Serializable {
 	 * @param name Name of the complaintType to retrieve.
 	 * @return Matched complaint, if none is found then a null.
 	 */
-	// 2016-06-15 Converted all complaint String names to ComplaintType
 	public Complaint getComplaintByName(ComplaintType type) {//String name) {
 		return complaints.get(type);//.getName());
 	}
@@ -426,20 +427,34 @@ public class MedicalManager implements Serializable {
 	}
 	
 	/**
+	 * Reloads instances after loading from a saved sim
+
+	 */
+	public static void justReloaded() {
+//		initMedical();
+	}
+	
+	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
+
+		environmentalComplaints.clear();
+		environmentalComplaints = null;
 		complaints.clear();
 		complaints = null;
 		treatments.clear();
 		treatments = null;
 		supported.clear();
 		supported = null;
+		
 		starvation = null;
 		suffocation = null;
 		dehydration = null;
 		decompression = null;
 		freezing = null;
 		heatStroke = null;
+		
+		simConfig = null;
 	}
 }

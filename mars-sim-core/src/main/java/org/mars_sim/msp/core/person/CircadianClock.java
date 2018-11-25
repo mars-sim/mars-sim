@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -85,15 +86,13 @@ public class CircadianClock implements Serializable {
 
 	private Person person;
 
-	// private PhysicalCondition condition;
+//	private PhysicalCondition condition;
 
 	/** Sleep habit map keeps track of the sleep cycle */
 	private Map<Integer, Integer> sleepCycleMap;
 
 	/** The amount of Sleep [millisols] a person on each mission sol */
 	private List<Double> sleepTime;
-	
-	// private static PersonConfig personConfig;
 
 	private static MarsClock marsClock;
 
@@ -101,7 +100,6 @@ public class CircadianClock implements Serializable {
 		this.person = person;
 
 		init();
-
 	}
 
 	public void init() {
@@ -119,6 +117,15 @@ public class CircadianClock implements Serializable {
 
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
+	}
+	
 	public void timePassing(double time, LifeSupportType support) {
 
 		int solElapsed = marsClock.getMissionSol();
