@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -294,23 +295,19 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 			result = false;
 
 		double p = getAirPressure();
-//		if (p > NORMAL_AIR_PRESSURE * 1.1 && p > NORMAL_AIR_PRESSURE * .9)
-//			result = false;
 		if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimum_air_pressure) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-					this.getName() + " detected improper air pressure at " + Math.round(p * 10D) / 10D + " kPa",
-					null);
+			LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
+					"[" + this.getName() + "] out-of-range overall air pressure at " + Math.round(p * 10D) / 10D 
+					+ " kPa detected.", null);
 			return false;
 		}
 		
 		double t = getTemperature();
-//		if (getTemperature() != NORMAL_TEMP)
-//			result = false;
 		if (t < Settlement.life_support_value[0][4] - Settlement.SAFE_TEMPERATURE_RANGE
 				|| t > Settlement.life_support_value[1][4] + Settlement.SAFE_TEMPERATURE_RANGE) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-					this.getName() + " detected out-of-range temperature at " + Math.round(t * 10D) / 10D + " C",
-					null);
+				LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
+					"[" + this.getName() + "] out-of-range overall temperature at " + Math.round(t * 10D) / 10D 
+						+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.", null);		
 			return false;
 		}
 

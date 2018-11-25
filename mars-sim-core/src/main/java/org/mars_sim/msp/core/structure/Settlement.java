@@ -361,23 +361,17 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		marsClock = sim.getMasterClock().getMarsClock();
 		weather = sim.getMars().getWeather();
-
-		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
-
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-		water_consumption = personConfig.getWaterConsumptionRate();
-		minimum_air_pressure = personConfig.getMinAirPressure();
-
-		life_support_value = settlementConfig.loadLifeSupportRequirements();
-
-		updateAllAssociatedPeople();
-		updateAllAssociatedRobots();
-
 		// Set the container unit of the settlement to the MarsSurface
 		marsSurface = Simulation.instance().getMars().getMarsSurface();
 		setContainerUnit(marsSurface);
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);// 
+
+		// Loads default values
+		loadDefaultValues();
+
+		updateAllAssociatedPeople();
+		updateAllAssociatedRobots();
 
 		double max = 500;
 		// Initialize inventory of this building for resource storage
@@ -433,6 +427,19 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		return new Settlement(name, id, template, sponsor, location, populationNumber, initialNumOfRobots);
 	}
 
+	/**
+	 * Loads default values
+	 */
+	public static void loadDefaultValues() {
+		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
+	
+		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+		water_consumption = personConfig.getWaterConsumptionRate();
+		minimum_air_pressure = personConfig.getMinAirPressure();
+	
+		life_support_value = settlementConfig.loadLifeSupportRequirements();
+	}
+	
 	/**
 	 * Create a map of buildings with their lists of building connectors attached to
 	 * it
@@ -796,36 +803,26 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public boolean lifeSupportCheck() {
 		// boolean result = true;
 		try {
-			// if (AmountResource.oxygenAR == null)
-			// Restructure for avoiding NullPointerException during maven test
 			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= 0D)
 				return false;
-
-			// if (AmountResource.waterAR == null)
-			// Restructure for avoiding NullPointerException during maven test
 			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D)
 				return false;
 
 			// TODO: check against indoor air pressure
 			double p = getAirPressure();
-			// if (p <= minimum_air_pressure) {// 25331.25)// NORMAL_AIR_PRESSURE) ?
-			// System.out.println("life_support_req[0][0] is " + life_support_req[0][0]);
-			// System.out.println("life_support_req[1][0] is " + life_support_req[1][0]);
-			// if (p < life_support_value[0][0] - SAFETY_PRESSURE || p >
-			// life_support_value[1][0] + SAFETY_PRESSURE) {
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimum_air_pressure) {
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-						this.getName() + " detected improper air pressure at " + Math.round(p * 10D) / 10D + " kPa",
-						null);
+				LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
+						"[" + this.getName() + "] out-of-range overall air pressure at " + Math.round(p * 10D) / 10D 
+						+ " kPa detected.", null);
 				return false;
 			}
 
 			double t = currentTemperature;
 			if (t < life_support_value[0][4] - SAFE_TEMPERATURE_RANGE
 					|| t > life_support_value[1][4] + SAFE_TEMPERATURE_RANGE) {
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-						this.getName() + " detected out-of-range temperature at " + Math.round(t * 10D) / 10D + " C",
-						null);
+				LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
+						"[" + this.getName() + "] out-of-range overall temperature at " + Math.round(t * 10D) / 10D 
+						+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.", null);
 				return false;
 			}
 			// result = false;
@@ -1028,6 +1025,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public static void justReloaded(MarsClock clock) {
 		marsClock = clock;
 		weather = Simulation.instance().getMars().getWeather();
+		loadDefaultValues();
 	}
 	
 	

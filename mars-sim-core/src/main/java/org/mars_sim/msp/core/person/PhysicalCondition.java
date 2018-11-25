@@ -59,21 +59,19 @@ public class PhysicalCondition implements Serializable {
 	public static final String WELL = "Well";
 	public static final String DEAD = "Dead : ";
 	public static final String ILL = "Sick : ";
-
+	/** The amount of thirst threshold [millisols]. */
 	public static final int THIRST_THRESHOLD = 100;
-
 	/** Life support minimum value. */
 	private static int MIN_VALUE = 0;
 	/** Life support maximum value. */
 	private static int MAX_VALUE = 1;
-
+	/** The amount of fatigue for the mental breakdown to occur [millisols]. */
 	public static final double MENTAL_BREAKDOWN = 100D;
-
+	/** The amount of fatigue for the collapse to occur [millisols]. */
 	private static final double COLLAPSE_IMMINENT = 3000D;
-
 	/** Stress jump resulting from being in an accident. */
 	public static final double ACCIDENT_STRESS = 10D;
-
+	/** The food reserve factor. */
 	public static final double FOOD_RESERVE_FACTOR = 1.5D;
 	/** Performance modifier for thirst. */
 	private static final double THIRST_PERFORMANCE_MODIFIER = .00015D;
@@ -87,17 +85,12 @@ public class PhysicalCondition implements Serializable {
 	private static final double ENERGY_PERFORMANCE_MODIFIER = .0001D;
 	/** The average maximum daily energy intake */
 	private static final double MAX_DAILY_ENERGY_INTAKE = 10100D;
-	/**
-	 * The average kJ of a 1kg food. Assume each meal has 0.1550 kg and has 2525 kJ.
-	 */
+	/** The average kJ of a 1kg food. Assume each meal has 0.1550 kg and has 2525 kJ. */
 	public static final double FOOD_COMPOSITION_ENERGY_RATIO = 16290.323;
 	// public static int MAX_KJ = 16290; // 1kg of food has ~16290 kJ (see notes on
 	// people.xml under <food-consumption-rate value="0.62" />)
 	public static final double ENERGY_FACTOR = 0.8D;
-	/**
-	 * The maximum air pressure a person can live without harm in kPa. (somewhat
-	 * arbitrary)
-	 */
+	/** The maximum air pressure a person can live without harm in kPa. (somewhat arbitrary). */
 	public static final double MAXIMUM_AIR_PRESSURE = 68D; // Assume 68 kPa time dependent
 	/** Period of time (millisols) over which random ailments may happen. */
 	private static double RANDOM_AILMENT_PROBABILITY_TIME = 100_000D;
@@ -301,19 +294,33 @@ public class PhysicalCondition implements Serializable {
 		// hygiene = RandomUtil.getRandomDouble(100D);
 
 		personalMaxEnergy = MAX_DAILY_ENERGY_INTAKE;
-
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
-
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-
-		h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
-		o2_consumption = personConfig.getNominalO2ConsumptionRate();
-
+		
 		bodyMassDeviation = Math
 				.sqrt(person.getBaseMass() / Person.AVERAGE_WEIGHT * person.getHeight() / Person.AVERAGE_HEIGHT);
 
 		// assuming a person drinks 10 times a day, each time ~375 mL
 		waterConsumedPerServing = h2o_consumption * bodyMassDeviation / 10D; // about .3 kg per serving
+		
+		foodDryMassPerServing = food_consumption / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
+
+		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() * bodyMassDeviation / 2);
+		// + RandomUtil.getRandomDouble(.15) - RandomUtil.getRandomDouble(.15));
+		dehydrationStartTime = 1000D * (personConfig.getDehydrationStartTime() * bodyMassDeviation);
+//		System.out.println("dehydrationStartTime : " + dehydrationStartTime);
+		
+		loadStaticValues();
+	}
+
+	/**
+	 * Loads the values
+	 */
+	public static void loadStaticValues() {
+
+		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+
+		h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
+		o2_consumption = personConfig.getNominalO2ConsumptionRate();
 
 		minimum_air_pressure = personConfig.getMinAirPressure();
 		min_temperature = personConfig.getMinTemperature();
@@ -323,17 +330,8 @@ public class PhysicalCondition implements Serializable {
 
 		stressBreakdownChance = personConfig.getStressBreakdownChance();
 		highFatigueCollapseChance = personConfig.getHighFatigueCollapseChance();
-
-		foodDryMassPerServing = food_consumption / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
-
-		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() * bodyMassDeviation / 2);
-		// + RandomUtil.getRandomDouble(.15) - RandomUtil.getRandomDouble(.15));
-
-		dehydrationStartTime = 1000D * (personConfig.getDehydrationStartTime() * bodyMassDeviation);
-//		System.out.println("dehydrationStartTime : " + dehydrationStartTime);
-		
 	}
-
+	
 	/**
 	 * Initialize values and instances at the beginning of sol 1
 	 * (Note : Must skip this when running maven test or else having exceptions)
@@ -345,6 +343,7 @@ public class PhysicalCondition implements Serializable {
 		double d2 = person.getBaseMass() - Person.AVERAGE_WEIGHT;
 		double preference = person.getPreference().getPreferenceScore(eatMealMeta) * 10D;
 
+		// Update the personal max energy and appetite based on one's age and weight
 		personalMaxEnergy = personalMaxEnergy + d1 + d2 + preference;
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
 
@@ -373,8 +372,6 @@ public class PhysicalCondition implements Serializable {
 
 		if (alive) {
 
-			boolean illnessEvent = false;
-
 			masterClock = Simulation.instance().getMasterClock();
 			marsClock = masterClock.getMarsClock();
 			
@@ -382,17 +379,13 @@ public class PhysicalCondition implements Serializable {
 
 			if (solCache != solElapsed) {
 				// check once a day only
-
 				if (solCache == 0)
 					initialize();
-
 				// reduce the muscle soreness
 				recoverFromSoreness(1);
 
 				solCache = solElapsed;
 			}
-
-			String loc = person.getLocationTag().getQuickLocation();
 
 			// Check if a person is performing low aerobic tasks 
 			if (person.getTaskDescription().toLowerCase().contains("eat")
@@ -418,110 +411,11 @@ public class PhysicalCondition implements Serializable {
 				o2_consumption = personConfig.getNominalO2ConsumptionRate();
 				
 			// Check life support system
-			try {
-				if (consumeOxygen(support, o2_consumption * (time / 1000D)))
-					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-							"[" + loc + "] " + name + " has insufficient oxygen.", null);
-				// if (consumeWater(support, h2o_consumption * (time / 1000D)))
-				// LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has
-				// insufficient water.", null);
-				if (requireAirPressure(support, minimum_air_pressure))
-					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-							"[" + loc + "] " + name + " is under insufficient air pressure.", null);
-				if (requireTemperature(support, min_temperature, max_temperature))
-					LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-							"[" + loc + "] " + name + " cannot survive long at this extreme temperature.", null);
-
-				// TODO: how to run to another building/location
-			} catch (Exception e) {
-				e.printStackTrace();
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-						"[" + loc + "] " + name + "'s life support system is failing !", null);
-			}
-
+			checkLifeSupport(time, support);
 			// Update radiation counter
 			radiation.timePassing(time);
-
-
 			// Update the existing health problems
-			if (!problems.isEmpty()) {
-				// Throw illness event if any problems already exist.
-				illnessEvent = true;
-
-				List<Complaint> newProblems = new ArrayList<Complaint>();
-				List<HealthProblem> currentProblems = new ArrayList<HealthProblem>(problems.values());
-
-				Iterator<HealthProblem> hp = currentProblems.iterator();
-				while (hp.hasNext()) {
-					HealthProblem problem = hp.next();
-					// Advance each problem, they may change into a worse problem.
-					// If the current is completed or a new problem exists then
-					// remove this one.
-					Complaint nextPhase = problem.timePassing(time, this);
-
-					if (problem.isCured() || (nextPhase != null)) {
-						Complaint c = problem.getIllness();
-
-						if (c.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
-							isCollapsed = false;
-
-						else if (c.getType() == ComplaintType.PANIC_ATTACK || c.getType() == ComplaintType.DEPRESSION)
-							isStressedOut = false;
-
-						else if (c.getType() == ComplaintType.DEHYDRATION)
-							isDehydrated = false;
-
-						else if (c.getType() == ComplaintType.STARVATION)
-							isStarving = false;
-
-						else if (c.getType() == ComplaintType.RADIATION_SICKNESS)
-							isRadiationPoisoned = false;
-
-						// If nextPhase is not null, remove this problem so that it can 
-						// properly be transitioned into the next.
-						problems.remove(c);
-
-					}
-
-					// If a new problem, check it doesn't exist already
-					if (nextPhase != null) {
-						newProblems.add(nextPhase);
-					}
-				}
-
-				// Add the new problems
-				for (Complaint c : newProblems) {
-					addMedicalComplaint(c);
-					illnessEvent = true;
-				}
-
-			}
-
-			// Has the person died ?
-			// if (isDead()) return false;
-
-			// See if any random illnesses happen.
-			if (!restingTask) {
-				List<Complaint> randomAilments = checkForRandomAilments(time);
-				if (randomAilments.size() > 0) {
-					illnessEvent = true;
-				}
-			}
-
-			if (illnessEvent) {
-				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-			}
-
-			// Add time to all medications affecting the person.
-			Iterator<Medication> i = medicationList.iterator();
-			while (i.hasNext()) {
-				Medication med = i.next();
-				med.timePassing(time);
-				if (!med.isMedicated()) {
-					i.remove();
-				}
-			}
-
+			checkHealth(time);
 			// Build up fatigue & hunger for given time passing.
 			setThirst(thirst + time * bodyMassDeviation);
 			setFatigue(fatigue + time);
@@ -559,7 +453,125 @@ public class PhysicalCondition implements Serializable {
 
 			// Calculate performance and most serious illness.
 			recalculatePerformance();
+		}
+	}
+		
 
+	 /**
+	  * Checks and updates existing health problems
+	  * 
+	  * @param time
+	  */
+	public void checkHealth(double time) {
+		boolean illnessEvent = false;
+		
+		if (!problems.isEmpty()) {
+			// Throw illness event if any problems already exist.
+			illnessEvent = true;
+	
+			List<Complaint> newProblems = new ArrayList<Complaint>();
+			List<HealthProblem> currentProblems = new ArrayList<HealthProblem>(problems.values());
+	
+			Iterator<HealthProblem> hp = currentProblems.iterator();
+			while (hp.hasNext()) {
+				HealthProblem problem = hp.next();
+				// Advance each problem, they may change into a worse problem.
+				// If the current is completed or a new problem exists then
+				// remove this one.
+				Complaint nextPhase = problem.timePassing(time, this);
+	
+				if (problem.isCured() || (nextPhase != null)) {
+					Complaint c = problem.getIllness();
+	
+					if (c.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
+						isCollapsed = false;
+	
+					else if (c.getType() == ComplaintType.PANIC_ATTACK || c.getType() == ComplaintType.DEPRESSION)
+						isStressedOut = false;
+	
+					else if (c.getType() == ComplaintType.DEHYDRATION)
+						isDehydrated = false;
+	
+					else if (c.getType() == ComplaintType.STARVATION)
+						isStarving = false;
+	
+					else if (c.getType() == ComplaintType.RADIATION_SICKNESS)
+						isRadiationPoisoned = false;
+	
+					// If nextPhase is not null, remove this problem so that it can 
+					// properly be transitioned into the next.
+					problems.remove(c);
+	
+				}
+	
+				// If a new problem, check it doesn't exist already
+				if (nextPhase != null) {
+					newProblems.add(nextPhase);
+				}
+			}
+	
+			// Add the new problems
+			for (Complaint c : newProblems) {
+				addMedicalComplaint(c);
+				illnessEvent = true;
+			}
+		}
+	
+		// Has the person died ?
+		// if (isDead()) return false;
+	
+		// See if any random illnesses happen.
+		if (!restingTask) {
+			List<Complaint> randomAilments = checkForRandomAilments(time);
+			if (randomAilments.size() > 0) {
+				illnessEvent = true;
+			}
+		}
+	
+		if (illnessEvent) {
+			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+		}
+	
+		// Add time to all medications affecting the person.
+		Iterator<Medication> i = medicationList.iterator();
+		while (i.hasNext()) {
+			Medication med = i.next();
+			med.timePassing(time);
+			if (!med.isMedicated()) {
+				i.remove();
+			}
+		}
+	}
+	
+	/**
+	 * Checks on the life support
+	 * 
+	 * @param time
+	 * @param support
+	 */
+	public void checkLifeSupport(double time, LifeSupportType support) {
+		String loc0 = person.getLocationTag().getLocale();
+		String loc1 = person.getLocationTag().getImmediateLocation();
+		
+		try {
+			if (consumeOxygen(support, o2_consumption * (time / 1000D)))
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+						"[" + loc0 + "] " + name + " in " + loc1 + " reported lack of oxygen.", null);
+			// if (consumeWater(support, h2o_consumption * (time / 1000D)))
+			// LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has
+			// insufficient water.", null);
+			if (requireAirPressure(support, minimum_air_pressure))
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+						"[" + loc0 + "] " + name + " in " + loc1 + " reported non-optimal air pressure.", null);
+			if (requireTemperature(support, min_temperature, max_temperature))
+				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+						"[" + loc0 + "] " + name + " in " + loc1 + " reported non-optimal temperature.", null);
+
+			// TODO: how to run to another building/location
+		} catch (Exception e) {
+			e.printStackTrace();
+			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+					"[" + loc0 + "] " + name + " in " + loc1 + " reported anomaly in the life support system.", null);
 		}
 
 	}
@@ -1355,7 +1367,6 @@ public class PhysicalCondition implements Serializable {
 	 * @return new problem added.
 	 */
 	private boolean requireTemperature(LifeSupportType support, double minTemperature, double maxTemperature) {
-
 		boolean freeze = checkResourceConsumption(support.getTemperature(), minTemperature, MIN_VALUE, freezing);
 		boolean hot = checkResourceConsumption(support.getTemperature(), maxTemperature, MAX_VALUE, heatStroke);
 		return freeze || hot;
@@ -1849,6 +1860,7 @@ public class PhysicalCondition implements Serializable {
 		decompression = medicalManager.getDecompression();
 		suffocation = medicalManager.getSuffocation();
 		
+		loadStaticValues();	
 	}
 	
 	/**
