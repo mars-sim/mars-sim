@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.malfunction;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -376,15 +377,26 @@ public class Malfunction implements Serializable {
 	 * @return clone of this malfunction
 	 */
 	public Malfunction getClone() {
-		int id = MalfunctionFactory.getNewIncidentNum();
+		int id = Simulation.instance().getMalfunctionFactory().getNewIncidentNum();
 		Malfunction clone = new Malfunction(name, id, severity, probability, emergencyWorkTime, workTime, EVAWorkTime,
 				systems, resourceEffects, lifeSupportEffects, medicalComplaints);
 
 		String id_string = INCIDENT_NUM + id;
 
-		if (emergencyWorkTime > 0D)
+		if (emergencyWorkTime > 0D) {
 			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-					name + id_string + " - Emergency Repair alert triggered.", null);
+					name + id_string + " - an emergency repair work order was requested.", null);
+		}
+
+		if (this.EVAWorkTime > 0) {
+			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+					name + id_string + " - a EVA repair work order was put in place.", null);
+		}
+
+		if (this.workTime > 0) {
+			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+					name + id_string + " - a regular repair work order was set up.", null);
+		}
 
 		return clone;
 	}

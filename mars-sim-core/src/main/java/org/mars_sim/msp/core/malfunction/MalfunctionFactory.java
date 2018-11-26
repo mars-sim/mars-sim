@@ -24,6 +24,8 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -40,15 +42,13 @@ public final class MalfunctionFactory implements Serializable {
 	public static final String METEORITE_IMPACT_DAMAGE = "Meteorite Impact Damage";
 
 	// Data members
-	private static int newIncidentNum = 0;
-
-//	private static int numMal;
+	private int newIncidentNum = 0;
 
 	/** The possible malfunctions in the simulation. */
 	private Collection<Malfunction> malfunctions;
 
 	private static MalfunctionConfig config;
-
+	
 	private static Malfunction meteoriteImpactMalfunction;
 
 	private static MissionManager missionManager;
@@ -59,11 +59,9 @@ public final class MalfunctionFactory implements Serializable {
 	 * @param config malfunction configuration DOM document.
 	 * @throws Exception when malfunction list could not be found.
 	 */
-	public MalfunctionFactory() {//MalfunctionConfig config) {
+	public MalfunctionFactory() {
 		config = SimulationConfig.instance().getMalfunctionConfiguration();
 		malfunctions = config.getMalfunctionList();
-//		 numMal = malfunctions.size(); // = 39 in total
-
 		missionManager = Simulation.instance().getMissionManager();
 	}
 
@@ -361,10 +359,16 @@ public final class MalfunctionFactory implements Serializable {
 		return meteoriteImpactMalfunction;
 	}
 
-	public static int getNewIncidentNum() {
+	/**
+	 * Gets the next incident number for the simulation 
+	 * 
+	 * @return
+	 */
+	public int getNewIncidentNum() {
 		return ++newIncidentNum;
 	}
 
+	
 	/**
 	 * Prepares the object for garbage collection.
 	 */
