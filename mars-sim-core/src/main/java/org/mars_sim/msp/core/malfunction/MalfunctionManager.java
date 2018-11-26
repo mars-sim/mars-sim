@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -131,7 +130,7 @@ public class MalfunctionManager implements Serializable {
 	private static MarsClock currentTime;
 
 	private static MalfunctionFactory factory;
-	private static PartConfig partConfig;
+//	private static PartConfig partConfig;
 	private static MalfunctionConfig malfunctionConfig;
 
 	private static SimulationConfig simconfig= SimulationConfig.instance();
@@ -165,7 +164,7 @@ public class MalfunctionManager implements Serializable {
 			// Note that this if above is for maven test, or else NullPointerException
 			currentTime = masterClock.getMarsClock();
 			
-		partConfig = simconfig.getPartConfiguration();
+//		partConfig = simconfig.getPartConfiguration();
 		malfunctionConfig = simconfig.getMalfunctionConfiguration();
 		factory = sim.getMalfunctionFactory();
 	}
@@ -746,7 +745,7 @@ public class MalfunctionManager implements Serializable {
 	 */
 	public void resetModifiers(int type) {
 		// compare from previous modifier
-		
+		System.out.println("MalfunctionManager : Calling resetModifiers type " + type );
 		if (type == 0) {
 			oxygenFlowModifier = 100D;
 			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
@@ -1351,7 +1350,7 @@ public class MalfunctionManager implements Serializable {
 		masterClock = c0;
 //		startTime = masterClock.getInitialMarsTime();
 		currentTime = c1;
-		partConfig = simconfig.getPartConfiguration();
+//		partConfig = simconfig.getPartConfiguration();
 		malfunctionConfig = simconfig.getMalfunctionConfiguration();
 		factory = sim.getMalfunctionFactory();
 	}

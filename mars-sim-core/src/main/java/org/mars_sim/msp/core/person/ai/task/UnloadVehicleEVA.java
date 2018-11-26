@@ -106,6 +106,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 			// Initialize task phase
 			addPhase(UNLOADING);
+			setPhase(UNLOADING);
 			
 			LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 

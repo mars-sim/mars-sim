@@ -390,12 +390,12 @@ public class Malfunction implements Serializable {
 
 		if (this.EVAWorkTime > 0) {
 			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-					name + id_string + " - a EVA repair work order was put in place.", null);
+					name + id_string + " - an EVA repair work order was put in place.", null);
 		}
 
 		if (this.workTime > 0) {
 			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-					name + id_string + " - a regular repair work order was set up.", null);
+					name + id_string + " - a normal repair work order was set up.", null);
 		}
 
 		return clone;

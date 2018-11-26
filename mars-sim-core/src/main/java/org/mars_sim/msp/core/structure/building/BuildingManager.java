@@ -669,9 +669,9 @@ public class BuildingManager implements Serializable {
 
 		numBuildings = countBuildingNum();
 
-		for (Building b : buildings) {
-			b.timePassing(time);
-		}
+//		for (Building b : buildings) {
+//			b.timePassing(time);
+//		}
 	}
 
 	/**

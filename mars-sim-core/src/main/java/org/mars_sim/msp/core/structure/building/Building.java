@@ -1363,11 +1363,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			// Determine if a meteorite impact will occur within the new sol
 			checkForMeteoriteImpact();
 
-			// Update malfunction manager.
-			malfunctionManager.timePassing(time);
-
 		}
 
+		// Update malfunction manager.
+		malfunctionManager.timePassing(time); 
+		
 		// If powered up, active time passing.
 		if (powerModeCache == PowerMode.FULL_POWER)
 			malfunctionManager.activeTimePassing(time);

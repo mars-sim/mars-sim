@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -924,9 +925,9 @@ implements Serializable {
 
 	        		if (totalAmountDessertStored < totalDessertNeeded) {
 	        			if (logger.isLoggable(Level.INFO))
-	        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "desserts needed: " 
+	        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "Desserts needed: " 
 	        						+ Math.round(totalDessertNeeded*10.0)/10.0  
-	        						+ " total stored: " + Math.round(totalAmountDessertStored*10.0)/10.0 , null);
+	        						+ " kg   Total stored: " + Math.round(totalAmountDessertStored*10.0)/10.0 + " kg ", null);
 	        			enoughSupplies = false;
 	        		}
                 }
@@ -939,9 +940,10 @@ implements Serializable {
 	        		if (inv.getAmountResourceStored(resource, false) < totalNeeded) {
 	        			double stored = inv.getAmountResourceStored(resource, false);
 	        			if (logger.isLoggable(Level.INFO))
-	        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, ResourceUtil.findAmountResource(resource).getName() 
+	        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
+	        						Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)) 
 	        						+ " needed: " + Math.round(totalNeeded*10.0)/10.0 
-	        						+ " stored: " + Math.round(stored*10.0)/10.0 , null);
+	        						+ " kg   Stored: " + Math.round(stored*10.0)/10.0 + " kg ", null);
 	        			//enoughSupplies = false;
 	        			return false;
 	        		}
@@ -956,8 +958,9 @@ implements Serializable {
         		if (inv.getItemResourceNum(resource) < totalNeeded) {
         			int stored = inv.getItemResourceNum(resource);
         			if (logger.isLoggable(Level.INFO))
-        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, ItemResourceUtil.findItemResource(resource).getName() 
-        						+ " needed: " + totalNeeded + " stored: " + stored, null);
+        				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
+        						Conversion.capitalize(ResourceUtil.findAmountResourceName(resource))
+        						+ " needed: " + totalNeeded + "  Stored: " + stored, null);
         			//enoughSupplies = false;
         			return false;
         		}
@@ -977,7 +980,7 @@ implements Serializable {
         		int stored = inv.findNumEmptyUnitsOfClass(equipmentType, false);
     			if (logger.isLoggable(Level.INFO))
     				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
-    						equipmentType + " needed: " + totalNeeded + " stored: " + stored, null);
+    						equipmentType + " needed: " + totalNeeded + "  Stored: " + stored, null);
         		//enoughSupplies = false;
         		return false;
         	}
