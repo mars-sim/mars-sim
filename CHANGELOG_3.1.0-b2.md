@@ -41,14 +41,14 @@ Copyright (C) 2018 Scott Davis
 
 8. Add Commander Mode vs. Sandbox Mode.
 
-9. Compare settlement achievement using metrics (e.g. overall social score of 
-   a settlement)
+9. Compare settlement achievement using metrics (e.g. social & science score)
 
 10. Add customizing desired logging level.
 
-11. Speed up saving and loading.
+11. Streamline saving and loading simulation.
 
-12. Reduce the size of the saved simulation file.
+12. Reduce the file size of the saved simulation.
+
 
 
 ### UI IMPROVEMENT :

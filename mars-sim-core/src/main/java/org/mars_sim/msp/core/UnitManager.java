@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.FavoriteType;
@@ -137,38 +138,42 @@ public class UnitManager implements Serializable {
 //	private static Settlement firstSettlement;
 	private static PersonConfig personConfig;
 	private static SettlementConfig settlementConfig;
-	private static RelationshipManager relationshipManager;
 	private static VehicleConfig vehicleConfig;
 	private static RobotConfig robotConfig;
 	private static PartConfig partConfig;
 
+	private static RelationshipManager relationshipManager;
+	private static MalfunctionFactory factory;
+	
 	private static MarsClock marsClock;
 	private static MarsSurface marsSurface;
-
+	
+	private static SimulationConfig simulationConfig = SimulationConfig.instance();
+	private static Simulation sim = Simulation.instance();
+	
 	/**
 	 * Constructor.
 	 */
 	public UnitManager() {
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
-		if (partConfig == null)
-			partConfig = SimulationConfig.instance().getPartConfiguration();
+		marsClock = sim.getMasterClock().getMarsClock();
 
 		// Initialize unit collection
 		units = new CopyOnWriteArrayList<>();//ConcurrentLinkedQueue<Unit>();
 		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		equipmentNumberMap = new HashMap<String, Integer>();
 		vehicleNumberMap = new HashMap<String, Integer>();
-		personConfig = SimulationConfig.instance().getPersonConfiguration();
-		robotConfig = SimulationConfig.instance().getRobotConfiguration();
-		settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
-		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-		relationshipManager = Simulation.instance().getRelationshipManager();
 		
+		partConfig = simulationConfig.getPartConfiguration();
+		personConfig = simulationConfig.getPersonConfiguration();
+		robotConfig = simulationConfig.getRobotConfiguration();
+		settlementConfig = simulationConfig.getSettlementConfiguration();
+		vehicleConfig = simulationConfig.getVehicleConfiguration();
+		
+		relationshipManager = sim.getRelationshipManager();
+		factory = sim.getMalfunctionFactory();		
 
 		// Add mars surface
-		marsSurface = Simulation.instance().getMars().getMarsSurface();
+		marsSurface = sim.getMars().getMarsSurface();
 		addUnit(marsSurface);
 //		System.out.println("UnitManager marsSurface hashcode : " + marsSurface.hashCode());
 	}
@@ -2067,12 +2072,12 @@ public class UnitManager implements Serializable {
 				logger.info(" - - - - - - - - - - - - Sol " + solCache + " - - - - - - - - - - - - ");
 			
 			// Compute reliability daily
-			partConfig.computeReliability();
+			factory.computeReliability();
 		}
 
 		if (justLoaded) {
 			// Only need to run all these below once at the start of the sim
-			partConfig.computeReliability();
+			factory.computeReliability();
 
 			Collection<Settlement> c = CollectionUtils.getSettlement(units);
 			for (Settlement s : c) {
@@ -2491,5 +2496,8 @@ public class UnitManager implements Serializable {
 		relationshipManager = null;
 		// emotionJSONConfig = null;
 		vehicleConfig = null;
+		
+		factory = null;
+		marsClock = null;
 	}
 }

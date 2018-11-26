@@ -140,8 +140,6 @@ public class MasterClock implements Serializable {
 		marsClock = new MarsClock(simulationConfig.getMarsStartDateTime());
 
 		initialMarsTime = (MarsClock) marsClock.clone();
-		// Set the mars clock in MissionManager
-		MissionManager.setMarsClock(marsClock);
 		
 //		testNewMarsLandingDayTime();
 

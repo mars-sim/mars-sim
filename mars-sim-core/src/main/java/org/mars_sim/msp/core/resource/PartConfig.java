@@ -7,19 +7,13 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.jdom.Document;
 import org.jdom.Element;
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
+
 
 /**
  * Provides configuration information about parts. Uses a DOM document to get
@@ -31,8 +25,7 @@ public final class PartConfig implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
 //	private static Logger logger = Logger.getLogger(PartConfig.class.getName());
-
-//    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+//  private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	// Element names
 	public static final String PART = "part";
@@ -44,25 +37,11 @@ public final class PartConfig implements Serializable {
 	public static final String PROBABILITY = "probability";
 	public static final String MAX_NUMBER = "max-number";
 
-	/** The assumed # of years for calculating MTBF. */
-	public static final int NUM_YEARS = 3;
-	/** The maximum possible mean time between failure rate on Mars (Note that Mars has 669 sols in a year). */
-	public static final double MAX_MTBF = 669 * NUM_YEARS;
-	/** The maximum possible reliability percentage. */
-	public static final double MAX_RELIABILITY = 99.999;
+
 	/** The next global part ID. */
 	private static int nextID;
 
 	private static Set<Part> partSet = new TreeSet<Part>();
-	private static Map<String, Part> namePartMap;
-	private static Map<Integer, Double> MTBF_map;
-	private static Map<Integer, Double> reliability_map;
-	private static Map<Integer, Integer> failure_map;
-
-	private static MarsClock marsClock;
-
-//	private static UnitManager unitManager;
-
 	
 	/**
 	 * Constructor
@@ -73,133 +52,7 @@ public final class PartConfig implements Serializable {
 	public PartConfig(Document itemResourceDoc) {
 		// Pick up from the last resource id
 		nextID = ResourceUtil.FIRST_ITEM_RESOURCE;
-
-//		unitManager = Simulation.instance().getUnitManager();
-
 		loadItemResources(itemResourceDoc);
-
-		namePartMap = new HashMap<String, Part>();
-
-		for (Part p : partSet) {
-			namePartMap.put(p.getName(), p);
-		}
-
-		setupReliability();
-
-	}
-
-	/**
-	 * Sets up the reliability, MTBF and failure map
-	 * 
-	 */
-	public void setupReliability() {
-		MTBF_map = new HashMap<Integer, Double>();
-		reliability_map = new HashMap<Integer, Double>();
-		failure_map = new HashMap<Integer, Integer>();
-
-		for (Part p : partSet) {
-			int id = p.getID();
-			MTBF_map.put(id, MAX_MTBF);
-			failure_map.put(id, 0);
-			reliability_map.put(id, 100.0);
-		}
-	}
-
-	public Map<Integer, Double> getMTBFs() {
-		return MTBF_map;
-	}
-
-	/**
-	 * Computes reliability for a given part 
-	 * 
-	 * @param p
-	 */
-	public void computeReliability(Part p) {
-
-		int id = p.getID();
-		// double old_mtbf = MTBF_map.get(id);
-		double new_mtbf = 0;
-
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
-		int sol = marsClock.getMissionSol();
-		int numSols = sol - p.getStartSol();
-		int numFailures = failure_map.get(id);
-
-		if (numFailures == 0)
-			new_mtbf = MAX_MTBF;
-		else {
-			if (numSols == 0) {
-				numSols = 1;
-
-				new_mtbf = computeMTBF(numSols, numFailures, p);
-			} else
-				new_mtbf = computeMTBF(numSols, numFailures, p);
-		}
-
-		MTBF_map.put(id, new_mtbf);
-
-		double percent_reliability = Math.exp(-numSols / new_mtbf) * 100;
-
-//		 LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-//		 "The 3-year reliability rating of " + p.getName() + " is now "
-//		 + Math.round(percent_reliability*100.0)/100.0 + " %", null);
-
-		if (percent_reliability >= 100)
-			percent_reliability = MAX_RELIABILITY;
-
-		reliability_map.put(id, percent_reliability);
-
-	}
-
-	/**
-	 * Computes the MTBF 
-	 * 
-	 * @param numSols
-	 * @param numFailures
-	 * @param p
-	 * @return
-	 */
-	public double computeMTBF(double numSols, int numFailures, Part p) {
-		int numItem = 0;
-		// obtain the total # of this part in used from all settlements
-//		if (unitManager == null)
-//			unitManager = Simulation.instance().getUnitManager();
-		Collection<Settlement> ss = Simulation.instance().getUnitManager().getSettlements();
-		for (Settlement s : ss) {
-			Inventory inv = s.getInventory();
-			int num = inv.getItemResourceNum(p);
-			numItem += num;
-		}
-
-		// Take the average between the factory mtbf and the field measured mtbf
-		return (numItem * numSols / numFailures + MAX_MTBF) / 2D;
-	}
-
-	public void computeReliability() {
-		for (Part p : partSet) {
-			computeReliability(p);
-		}
-	}
-
-	public int getFailure(int id) {
-		return failure_map.get(id);
-	}
-
-	public double getReliability(int id) {
-		return reliability_map.get(id);
-	}
-
-	/**
-	 * Sets the failure rate for a given part
-	 * 
-	 * @param p
-	 * @param num
-	 */
-	public void setFailure(Integer p, int num) {
-		int old_failures = failure_map.get(p);// .getID());
-		failure_map.put(p, old_failures + num);
 	}
 
 	/**
@@ -267,13 +120,6 @@ public final class PartConfig implements Serializable {
 	// return itemResourceMap;
 	// }
 
-	/**
-	 * Gets a map of part names and corresponding objects
-	 * 
-	 * @return a map of part names and objects
-	 */
-	public Map<String, Part> getNamePartMap() {
-		return namePartMap;
 
 //		TreeMap<String,Part> map = new TreeMap<String,Part>();
 //		for (Part resource : itemResources) {
@@ -281,5 +127,5 @@ public final class PartConfig implements Serializable {
 //		}
 //		return map;
 
-	}
+//	}
 }

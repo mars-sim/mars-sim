@@ -379,6 +379,10 @@ public class Simulation implements ClockListener, Serializable {
 		// ResourceUtil.getInstance().initializeNewSim();
 		// ResourceUtil.printID();
 		
+		// Initialize mars clock
+		MalfunctionFactory.setMarsClock(masterClock.getMarsClock());
+		MissionManager.setMarsClock(masterClock.getMarsClock());
+		
 		ut = masterClock.getUpTimer();
 	}
 
@@ -756,7 +760,8 @@ public class Simulation implements ClockListener, Serializable {
 		MasterClock.justReloaded();
 		MarsClock marsClock = masterClock.getMarsClock();
 		
-		MissionManager.justReloaded(marsClock);
+		MalfunctionFactory.setMarsClock(marsClock);
+		MissionManager.setMarsClock(marsClock);
 		MedicalManager.justReloaded();
 		unitManager.justReloaded();
 		MalfunctionManager.justReloaded(masterClock, marsClock);

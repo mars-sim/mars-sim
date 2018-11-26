@@ -19,7 +19,9 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 
 public class ItemResourceUtil implements Serializable {
@@ -68,7 +70,11 @@ public class ItemResourceUtil implements Serializable {
 
 	private static List<Part> sortedParts;
 
+	private static MalfunctionFactory factory;
+	
 	public ItemResourceUtil() {
+		factory = Simulation.instance().getMalfunctionFactory();		
+		
 		partSet = getItemResources();
 		
 		createMaps();
@@ -184,7 +190,7 @@ public class ItemResourceUtil implements Serializable {
 
 	public static Map<String, Part> getItemResourcesMap() {
 		// if (partConfig == null) System.err.println("partConfig == null");
-		return partConfig.getNamePartMap();
+		return factory.getNamePartMap();
 	}
 
 	/**

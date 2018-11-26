@@ -611,21 +611,23 @@ public class MalfunctionManager implements Serializable {
 				return;
 			}
 
-			double old_rel = partConfig.getReliability(id);
+			double old_rel = factory.getReliability(id);
 			double old_prob = malfunctionConfig.getRepairPartProbability(malfunction.getName(), part_name);
 			double old_failure = (100 - old_rel) * old_prob / 100D;
 			double old_mal_probl_failure = malfunction.getProbability();
+			double old_MTBF = factory.getMTBFs().get(id);
 
 			// Increment the number of failure for this Part
-			partConfig.setFailure(p, num);
+			factory.setFailure(p, num);
 			// Recompute the reliability of this Part
-			partConfig.computeReliability(part);
+			factory.computeReliability(part);
 
 			// String name = p.getName();
-			double new_rel = partConfig.getReliability(id);
+			double new_rel = factory.getReliability(id);
 			double new_prob = malfunctionConfig.getRepairPartProbability(malfunction.getName(), part_name);
 			double new_failure = (100 - new_rel) * new_prob / 100D;
 			double new_mal_prob_failure = 0;
+			double new_MTBF = factory.getMTBFs().get(id);
 			logger.warning("Updating field reliability data for the part '" + part_name + "' as follows :");
 			logger.warning("   (1).  Reliability : " + Math.round(old_rel * 1000.0) / 1000.0 + " % --> "
 					+ Math.round(new_rel * 1000.0) / 1000.0 + " %");
@@ -635,6 +637,10 @@ public class MalfunctionManager implements Serializable {
 					+ Math.round(new_failure * 1000.0) / 1000.0 + " %");
 			new_mal_prob_failure = (old_mal_probl_failure + new_failure) / 2.0;
 
+			logger.warning("   (3).         MTBF : " + Math.round(old_MTBF * 1000.0) / 1000.0 + " % --> "
+					+ Math.round(new_MTBF * 1000.0) / 1000.0 + " %");
+
+			
 			logger.warning("Updating field reliability data for the malfunction '" + malfunctionName + "' as follows :");
 			logger.warning("   (3).  Probability : " + Math.round(old_mal_probl_failure * 10000.0) / 10000.0
 					+ " % --> " + Math.round(new_mal_prob_failure * 10000.0) / 10000.0 + " %");

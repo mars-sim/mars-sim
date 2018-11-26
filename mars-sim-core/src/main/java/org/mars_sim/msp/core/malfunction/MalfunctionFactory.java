@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -22,10 +23,10 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -41,28 +42,55 @@ public final class MalfunctionFactory implements Serializable {
 
 	public static final String METEORITE_IMPACT_DAMAGE = "Meteorite Impact Damage";
 
+	/** The assumed # of years for calculating MTBF. */
+	public static final int NUM_YEARS = 3;
+	/** The maximum possible mean time between failure rate on Mars (Note that Mars has 669 sols in a year). */
+	public static final double MAX_MTBF = 669 * NUM_YEARS;
+	/** The maximum possible reliability percentage. */
+	public static final double MAX_RELIABILITY = 99.999;
+	
 	// Data members
 	private int newIncidentNum = 0;
 
 	/** The possible malfunctions in the simulation. */
 	private Collection<Malfunction> malfunctions;
-
-	private static MalfunctionConfig config;
+	/** The map for storing Part name and its instance. */
+	private Map<String, Part> namePartMap;
+	/** The map for storing the MTBF of Parts. */
+	private Map<Integer, Double> MTBF_map;
+	/** The map for storing the reliability of Parts. */
+	private Map<Integer, Double> reliability_map;
+	/** The map for storing the failure rate of Parts. */
+	private Map<Integer, Integer> failure_map;
+	
+	private static MalfunctionConfig malfunctionConfig;
+	private static PartConfig partConfig;
 	
 	private static Malfunction meteoriteImpactMalfunction;
-
 	private static MissionManager missionManager;
+	private static MarsClock marsClock;
 
 	/**
 	 * Constructs a MalfunctionFactory object.
 	 * 
-	 * @param config malfunction configuration DOM document.
+	 * @param malfunctionConfig malfunction configuration DOM document.
 	 * @throws Exception when malfunction list could not be found.
 	 */
 	public MalfunctionFactory() {
-		config = SimulationConfig.instance().getMalfunctionConfiguration();
-		malfunctions = config.getMalfunctionList();
+		malfunctionConfig = SimulationConfig.instance().getMalfunctionConfiguration();
+		partConfig = SimulationConfig.instance().getPartConfiguration();
+		malfunctions = malfunctionConfig.getMalfunctionList();
 		missionManager = Simulation.instance().getMissionManager();
+//		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		
+		// Initialize maps 
+		namePartMap = new HashMap<String, Part>();
+
+		for (Part p : partConfig.getPartSet()) {
+			namePartMap.put(p.getName(), p);
+		}
+
+		setupReliability();
 	}
 
 	/**
@@ -290,10 +318,10 @@ public final class MalfunctionFactory implements Serializable {
 			if (m.isMatched(scope)) {
 				double malfunctionProbability = m.getProbability() / 100D;
 
-				String[] partNames = config.getRepairPartNamesForMalfunction(m.getName());
+				String[] partNames = malfunctionConfig.getRepairPartNamesForMalfunction(m.getName());
 				for (String partName : partNames) {
-					double partProbability = config.getRepairPartProbability(m.getName(), partName) / 100D;
-					int partNumber = config.getRepairPartNumber(m.getName(), partName);
+					double partProbability = malfunctionConfig.getRepairPartProbability(m.getName(), partName) / 100D;
+					int partNumber = malfunctionConfig.getRepairPartNumber(m.getName(), partName);
 					double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
 					double totalNumber = averageNumber * partProbability * malfunctionProbability;
 //					Part part = (Part) ItemResource.findItemResource(partName);
@@ -351,7 +379,7 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	public static Malfunction getMeteoriteImpactMalfunction(String malfunctionName) {
 		if (meteoriteImpactMalfunction == null) {
-			for (Malfunction m : config.getMalfunctionList()) {
+			for (Malfunction m : malfunctionConfig.getMalfunctionList()) {
 				if (m.getName().equals(malfunctionName))
 					meteoriteImpactMalfunction = m;
 			}
@@ -368,13 +396,145 @@ public final class MalfunctionFactory implements Serializable {
 		return ++newIncidentNum;
 	}
 
+
+	/**
+	 * Sets up the reliability, MTBF and failure map
+	 * 
+	 */
+	public void setupReliability() {
+		MTBF_map = new HashMap<Integer, Double>();
+		reliability_map = new HashMap<Integer, Double>();
+		failure_map = new HashMap<Integer, Integer>();
+
+		for (Part p : partConfig.getPartSet()) {
+			int id = p.getID();
+			MTBF_map.put(id, MAX_MTBF);
+			failure_map.put(id, 0);
+			reliability_map.put(id, 100.0);
+		}
+	}
+
+	public Map<Integer, Double> getMTBFs() {
+		return MTBF_map;
+	}
+
+	/**
+	 * Computes reliability for a given part 
+	 * 
+	 * @param p
+	 */
+	public void computeReliability(Part p) {
+
+		int id = p.getID();
+		// double old_mtbf = MTBF_map.get(id);
+		double new_mtbf = 0;
+
+//		if (marsClock == null)
+//			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+
+		int sol = marsClock.getMissionSol();
+		int numSols = sol - p.getStartSol();
+		int numFailures = failure_map.get(id);
+
+		if (numFailures == 0)
+			new_mtbf = MAX_MTBF;
+		else {
+			if (numSols == 0) {
+				numSols = 1;
+
+				new_mtbf = computeMTBF(numSols, numFailures, p);
+			} else
+				new_mtbf = computeMTBF(numSols, numFailures, p);
+		}
+
+		MTBF_map.put(id, new_mtbf);
+
+		double percent_reliability = Math.exp(-numSols / new_mtbf) * 100;
+
+//		 LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//		 "The 3-year reliability rating of " + p.getName() + " is now "
+//		 + Math.round(percent_reliability*100.0)/100.0 + " %", null);
+
+		if (percent_reliability >= 100)
+			percent_reliability = MAX_RELIABILITY;
+
+		reliability_map.put(id, percent_reliability);
+
+	}
+
+	/**
+	 * Computes the MTBF 
+	 * 
+	 * @param numSols
+	 * @param numFailures
+	 * @param p
+	 * @return
+	 */
+	public double computeMTBF(double numSols, int numFailures, Part p) {
+		int numItem = 0;
+		// obtain the total # of this part in used from all settlements
+//		if (unitManager == null)
+//			unitManager = Simulation.instance().getUnitManager();
+		Collection<Settlement> ss = Simulation.instance().getUnitManager().getSettlements();
+		for (Settlement s : ss) {
+			Inventory inv = s.getInventory();
+			int num = inv.getItemResourceNum(p);
+			numItem += num;
+		}
+
+		// Take the average between the factory mtbf and the field measured mtbf
+		return (numItem * numSols / numFailures + MAX_MTBF) / 2D;
+	}
+
+	public void computeReliability() {
+		for (Part p : partConfig.getPartSet()) {
+			computeReliability(p);
+		}
+	}
+
+	public int getFailure(int id) {
+		return failure_map.get(id);
+	}
+
+	public double getReliability(int id) {
+		return reliability_map.get(id);
+	}
+
+	/**
+	 * Sets the failure rate for a given part
+	 * 
+	 * @param p
+	 * @param num
+	 */
+	public void setFailure(Integer p, int num) {
+		int old_failures = failure_map.get(p);// .getID());
+		failure_map.put(p, old_failures + num);
+	}
+
+	/**
+	 * Gets a map of part names and corresponding objects
+	 * 
+	 * @return a map of part names and objects
+	 */
+	public Map<String, Part> getNamePartMap() {
+		return namePartMap;
+	}
+	
+	/**
+	 * Set instances
+	 * 
+	 * @param clock
+	 */
+	public static void setMarsClock(MarsClock clock) {
+		marsClock = clock;
+	}
 	
 	/**
 	 * Prepares the object for garbage collection.
 	 */
 	public void destroy() {
 		malfunctions = null;
-		config = null;
+		malfunctionConfig = null;
 		meteoriteImpactMalfunction = null;
 		missionManager = null;
 	}

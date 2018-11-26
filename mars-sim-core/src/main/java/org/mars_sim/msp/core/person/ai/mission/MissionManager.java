@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
@@ -63,11 +62,11 @@ public class MissionManager implements Serializable {
 	private transient Map<MetaMission, Double> missionProbCache;
 	private transient Map<MetaMission, Double> robotMissionProbCache;
 	
+	private static List<String> missionNames;
+
 	private static MarsClock marsClock;
 	// Note that mission manager is instantiated before master/mars clock
 	
-	private static List<String> missionNames;
-
 	/**
 	 * Constructor.
 	 */
@@ -86,6 +85,9 @@ public class MissionManager implements Serializable {
 		robotMissionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getRobotMetaMissions().size());
 	}
 
+	/**
+	 * Creates an array of all missions
+	 */
 	private void createMissionArray() {
 		missionNames = Arrays.asList(
 				AreologyStudyFieldMission.DEFAULT_DESCRIPTION,
@@ -636,9 +638,7 @@ public class MissionManager implements Serializable {
 	 * @return true if cache should be used.
 	 */
 	private boolean useCache(Person person) {
-		// if (currentTime == null)
-//		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		return marsClock.equals(personTimeCache);// && (person == personCache);
+		return marsClock.equals(personTimeCache);
 	}
 
 //	/**
@@ -674,8 +674,6 @@ public class MissionManager implements Serializable {
 	 * @param {{@link MissionPlanning}
 	 */
 	public void addMissionPlanning(MissionPlanning plan) {
-//		if (marsClock == null)
-//		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		int mSol = marsClock.getMissionSol();
 
 		if (historicalMissions.containsKey(mSol)) {
@@ -770,14 +768,10 @@ public class MissionManager implements Serializable {
 	}
 	
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Set instances
 	 * 
 	 * @param clock
 	 */
-	public static void justReloaded(MarsClock clock) {
-		marsClock = clock;
-	}
-	
 	public static void setMarsClock(MarsClock clock) {
 		marsClock = clock;
 	}
