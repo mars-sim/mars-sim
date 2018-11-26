@@ -77,15 +77,16 @@ public class TaskManager implements Serializable {
 
 	private TaskSchedule ts;
 
-	private MarsClock marsClock;
-
-	private MissionManager missionManager;
-
-	private transient MarsClock timeCache;
-
 	private transient Map<MetaTask, Double> taskProbCache;
 
 	private transient List<MetaTask> mtListCache;
+	
+	private transient MarsClock timeCache;
+	
+	private static MarsClock marsClock;
+
+	private static MissionManager missionManager;
+
 
 	/**
 	 * Constructor.
@@ -600,16 +601,10 @@ public class TaskManager implements Serializable {
 
 		List<MetaTask> mtList = null;
 
-//    	if (marsClock == null) {
-//    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-//    	}
-
 		if (timeCache == null) {
 			timeCache = Simulation.instance().getMasterClock().getMarsClock();
 			marsClock = timeCache;
 		}
-
-		// int msol = marsClock.getMsol0();
 
 		double msol1 = marsClock.getMillisolOneDecimal();
 
@@ -666,8 +661,6 @@ public class TaskManager implements Serializable {
 			}
 
 			// Set the time cache to the current time.
-			// if (marsClock != null)
-			// marsClock = Simulation.instance().getMasterClock().getMarsClock();
 			timeCache = (MarsClock) marsClock.clone();
 
 		}
@@ -679,12 +672,20 @@ public class TaskManager implements Serializable {
 	 * @return true if cache should be used.
 	 */
 	private boolean useCache() {
-		// MarsClock currentTime =
-		// Simulation.instance().getMasterClock().getMarsClock();
-		// return currentTime.equals(timeCache);
 		return marsClock.equals(timeCache);
 	}
 
+
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
+		missionManager = Simulation.instance().getMissionManager();
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

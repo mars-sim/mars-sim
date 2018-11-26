@@ -204,8 +204,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 						robot.getLocationTag().getExtendedLocations(), "");
 			}
 
-			if (eventManager == null)
-				eventManager = Simulation.instance().getEventManager();
+//			if (eventManager == null)
+//				eventManager = Simulation.instance().getEventManager();
 			eventManager.registerNewEvent(endingEvent);
 		}
 	}
@@ -1264,7 +1264,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 
 	}
-
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 */
+	public static void justReloaded() {
+		eventManager = Simulation.instance().getEventManager();
+		relationshipManager = Simulation.instance().getRelationshipManager();
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

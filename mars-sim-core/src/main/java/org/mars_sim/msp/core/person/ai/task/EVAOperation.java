@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -97,9 +96,9 @@ public abstract class EVAOperation extends Task implements Serializable {
 				// throw new IllegalStateException(person.getName() + " is in " +
 				// person.getSettlement() + " but not in building : interiorObject is null.");
 				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " is in "
-								+ person.getLocationTag().getImmediateLocation()
-								+ " and is supposed to be in a building but interiorObject is null.",
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
+						" in " + person.getLocationTag().getImmediateLocation()
+								+ " is supposed to be in a building but interiorObject is null.",
 						null);
 				endTask();
 			} else {
@@ -119,8 +118,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 					// throw new IllegalStateException(person.getName() + " not in a vehicle and
 					// interiorObject is null.");
 					LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
-							"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName()
-									+ " is supposed to be in a vehicle but interiorObject is null.",
+							"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
+								+ person.getLocationTag().getImmediateLocation() + " is supposed to be in a vehicle but interiorObject is null.",
 							null);
 				}
 				// Add task phases.
@@ -133,22 +132,6 @@ public abstract class EVAOperation extends Task implements Serializable {
 				throw new IllegalStateException(person.getName() + " not in a rover vehicle: " + person.getVehicle());
 			}
 		}
-
-//        else { // already outside
-//        	
-//            // Add task phases.
-//            addPhase(WALK_BACK_INSIDE);
-//
-//            // Set initial phase.
-//            setPhase(WALK_BACK_INSIDE);
-//            
-//            logger.info(person.getName() +
-//                    " is already outside and is about to do an EVA to walk back inside");          
-//            //throw new IllegalStateException(person.getName() +
-//            //       " is not in a valid location situation to start EVA task: " +
-//            //        person.getLocationSituation());
-//        }
-
 	}
 
 	public EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration) {
@@ -581,6 +564,14 @@ public abstract class EVAOperation extends Task implements Serializable {
 		super.setStressModifier(stressModifier);
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+
+	 */
+	public static void justReloaded() {
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

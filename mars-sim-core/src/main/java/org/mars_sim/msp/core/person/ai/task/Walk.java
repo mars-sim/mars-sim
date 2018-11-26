@@ -86,7 +86,7 @@ public class Walk extends Task implements Serializable {
 
 	private Map<Integer, TaskPhase> walkingStepPhaseMap;
 
-	private static UnitManager unitManager;
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
 	 * Constructor.
@@ -97,6 +97,8 @@ public class Walk extends Task implements Serializable {
 		super(null, person, false, false, STRESS_MODIFIER, false, 0D);
 		// this.person = person;
 
+//		unitManager = Simulation.instance().getUnitManager();
+		
 		// Initialize data members.
 		walkingStepIndex = 0;
 
@@ -344,8 +346,8 @@ public class Walk extends Task implements Serializable {
 	 */
 	public static Airlock findEmergencyAirlock(Person person) {
 
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
+//		if (unitManager == null)
+//			unitManager = Simulation.instance().getUnitManager();
 
 		Airlock result = null;
 
@@ -1322,6 +1324,13 @@ public class Walk extends Task implements Serializable {
 		// Do nothing
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 */
+	public static void justReloaded() {
+		unitManager = Simulation.instance().getUnitManager();
+	}
+	
 	public void destroy() {
 		walkingSteps = null;
 		walkingStepPhaseMap = null;

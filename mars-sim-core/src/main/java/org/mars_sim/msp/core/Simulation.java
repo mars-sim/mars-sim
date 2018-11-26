@@ -44,7 +44,13 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
+import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.person.ai.task.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -760,12 +766,14 @@ public class Simulation implements ClockListener, Serializable {
 		MasterClock.justReloaded();
 		MarsClock marsClock = masterClock.getMarsClock();
 		
+		// The Original Serialized Object class
 		MalfunctionFactory.setMarsClock(marsClock);
 		MissionManager.setMarsClock(marsClock);
 		MedicalManager.justReloaded();
 		unitManager.justReloaded();
 		MalfunctionManager.justReloaded(masterClock, marsClock);
 		
+		// Unit related class
 		Unit.justReloaded();
 		Equipment.justReloaded();
 		Person.justReloaded(masterClock, marsClock);
@@ -774,14 +782,18 @@ public class Simulation implements ClockListener, Serializable {
 		GroundVehicle.justReloaded();
 		Rover.justReloaded();
 		
+		// Person/Robot related class
 		Mind.justReloaded(marsClock);
 		BotMind.justReloaded(marsClock);
+		TaskManager.justReloaded(marsClock);
 		
+		// Structure related class
 		Building.justReloaded(masterClock, marsClock);
 		BuildingManager.justReloaded(masterClock, marsClock);
 		Settlement.justReloaded(marsClock);
 		ChainOfCommand.justReloaded();
 		
+		// Building function related class
 		Cooking.justReloaded(marsClock);
 		LivingAccommodations.justReloaded(marsClock);
 		PowerStorage.justReloaded(marsClock);
@@ -798,6 +810,16 @@ public class Simulation implements ClockListener, Serializable {
 		ResourceProcess.justReloaded(marsClock);
 		PhysicalCondition.justReloaded(masterClock, marsClock);
 		EVA.justReloaded();
+		
+		// Task related class
+		Task.justReloaded();
+		Walk.justReloaded();
+		EVAOperation.justReloaded();
+		
+		// Mission related class
+		RoverMission.justReloaded();
+		VehicleMission.justReloaded();
+
 	}
 	
 	

@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
@@ -76,7 +77,7 @@ public abstract class RoverMission extends VehicleMission {
 
 	public static AmountResource[] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
-//	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
 	// Data members
 	private Settlement startingSettlement;
@@ -314,31 +315,38 @@ public abstract class RoverMission extends VehicleMission {
 							// Random chance of having person load (this allows person to do other things
 							// sometimes)
 							if (RandomUtil.lessThanRandPercent(75)) {
-								if (BuildingManager.getBuilding(getVehicle()) != null) {
-									// TODO Refactor.
-									if (member instanceof Person) {
-										Person person = (Person) member;
+								if (member instanceof Person) {
+									Person person = (Person) member;
+									if (BuildingManager.getBuilding(getVehicle()) != null) {
+										// TODO Refactor.
 										assignTask(person,
-												new LoadVehicleGarage(person, getVehicle(),
+													new LoadVehicleGarage(person, getVehicle(),
+															getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
+															getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+									} else {
+	//									SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+										// Check if it is day time.
+										if (!EVAOperation.isGettingDark(person)) {
+											assignTask(person, new LoadVehicleEVA(person, getVehicle(),
 														getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 														getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
-									}
-								} else {
-									SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-									// Check if it is day time.
-									if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D)
-											|| surface.inDarkPolarRegion(member.getCoordinates())) {
-										// TODO Refactor.
-										if (member instanceof Person) {
-											Person person = (Person) member;
-											assignTask(person, new LoadVehicleEVA(person, getVehicle(),
-													getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
-													getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
 										}
 									}
 								}
 							}
 						}
+						else {
+							if (member instanceof Person) {
+								Person person = (Person) member;
+								// Check if it is day time.
+								if (!EVAOperation.isGettingDark(person)) {
+									assignTask(person, new LoadVehicleEVA(person, getVehicle(),
+												getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
+												getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+								}
+							}
+						}
+						
 					} else {
 						endMission(Msg.getString("RoverMission.log.notLoadable")); //$NON-NLS-1$
 						return;
@@ -593,10 +601,8 @@ public abstract class RoverMission extends VehicleMission {
 							} 
 							
 							else {
-								SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 								// Check if it is day time.
-								if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D)
-										|| surface.inDarkPolarRegion(member.getCoordinates())) {
+								if (!EVAOperation.isGettingDark(person)) {
 									assignTask(person, new UnloadVehicleEVA(person, rover));
 								}
 							}
@@ -604,6 +610,14 @@ public abstract class RoverMission extends VehicleMission {
 							return;
 						}
 					}
+					
+					else {
+						// Check if it is day time.
+						if (!EVAOperation.isGettingDark(person)) {
+							assignTask(person, new UnloadVehicleEVA(person, rover));
+						}
+					}
+					
 				} else {
 					// End the phase.
 
@@ -768,8 +782,8 @@ public abstract class RoverMission extends VehicleMission {
 		// , null);
 		result.put(waterID, waterAmount);
 
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum * Mission.FOOD_MARGIN; // *
-																													// PhysicalCondition.FOOD_RESERVE_FACTOR
+		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum * Mission.FOOD_MARGIN; 
+		
 		if (useBuffer)
 			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		result.put(foodID, foodAmount);
@@ -952,6 +966,13 @@ public abstract class RoverMission extends VehicleMission {
 		}
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 */
+	public static void justReloaded() {
+		surface = Simulation.instance().getMars().getSurfaceFeatures();
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

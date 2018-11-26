@@ -87,7 +87,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/** Caches */
 	protected Map<Integer, Integer> equipmentNeededCache;
 
-	private static MissionManager manager = Simulation.instance().getMissionManager();
+	private static MissionManager missionManager = Simulation.instance().getMissionManager();
 
 	protected VehicleMission(String missionName, MissionMember startingMember, int minPeople) {
 		// Use TravelMission constructor.
@@ -1286,10 +1286,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public static boolean hasEmbarkingMissions(Settlement settlement) {
 		boolean result = false;
-//		MissionManager manager = Simulation.instance().getMissionManager();
-		if (manager == null)
-			manager = Simulation.instance().getMissionManager();
-		Iterator<Mission> i = manager.getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			if (EMBARKING.equals(i.next().getPhase())) {
 				result = true;
@@ -1308,9 +1305,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public static int numEmbarkingMissions(Settlement settlement) {
 		int result = 0;
-		if (manager == null)
-			manager = Simulation.instance().getMissionManager();
-		Iterator<Mission> i = manager.getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			if (EMBARKING.equals(i.next().getPhase())) {
 				result++;
@@ -1318,6 +1313,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 
 		return result;
+	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 */
+	public static void justReloaded() {
+		missionManager = Simulation.instance().getMissionManager();
 	}
 	
 	@Override
