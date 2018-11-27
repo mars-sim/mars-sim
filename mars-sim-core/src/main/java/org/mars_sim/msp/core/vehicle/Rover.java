@@ -289,10 +289,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		if (inv.getAmountResourceStored(ResourceUtil.waterID, false) <= 0D)
 			result = false;
 
-		if (malfunctionManager.getOxygenFlowModifier() < 100D)
-			result = false;
-		if (malfunctionManager.getWaterFlowModifier() < 100D)
-			result = false;
+//		if (malfunctionManager.getOxygenFlowModifier() < 100D)
+//			result = false;
+//		if (malfunctionManager.getWaterFlowModifier() < 100D)
+//			result = false;
 
 		double p = getAirPressure();
 		if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimum_air_pressure) {
@@ -349,7 +349,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		getInventory().addAmountDemandTotalRequest(ResourceUtil.oxygenID);
 		getInventory().addAmountDemand(ResourceUtil.oxygenID, oxygenTaken);
 
-		return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
+//		return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
+		return oxygenTaken;
 	}
 
 	/**
@@ -378,7 +379,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		getInventory().addAmountDemandTotalRequest(ResourceUtil.waterID);
 		getInventory().addAmountDemand(ResourceUtil.waterID, waterTaken);
 
-		return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
+//		return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
+		return waterTaken;
 	}
 
 	/**
@@ -393,7 +395,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		if (getStatus() == StatusType.GARAGED)// || getStatus() == StatusType.PARKED)	
 			result = getSettlement().getAirPressure();
 		else
-			result = NORMAL_AIR_PRESSURE * (malfunctionManager.getAirPressureModifier() / 100D);
+			result = NORMAL_AIR_PRESSURE;// * (malfunctionManager.getAirPressureModifier() / 100D);
 		
 //		double ambient = weather.getAirPressure(getCoordinates());
 //		if (result < ambient)
@@ -414,7 +416,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		if (getStatus() == StatusType.GARAGED)// || getStatus() == StatusType.PARKED)
 			result = getSettlement().getTemperature();
 		else
-			result = NORMAL_TEMP * (malfunctionManager.getTemperatureModifier() / 100D);
+			result = NORMAL_TEMP;// * (malfunctionManager.getTemperatureModifier() / 100D);
 		
 //		double ambient = weather.getTemperature(getCoordinates());
 //		if (result < ambient)

@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -94,6 +95,8 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		// Use Equipment constructor.
 		super(TYPE, location);
 
+		weather = Simulation.instance().getMars().getWeather();
+		
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString(TYPE);
@@ -143,18 +146,18 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 								+ person.getName() + "'s " + this.getName() + " ran out of water.", null);
 				return false;
 			}
-			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-						"[" + this.getLocationTag().getLocale() + "] " 
-								+ person.getName() + "'s " + this.getName() + "'s oxygen flow sensor detected malfunction.", null);
-				return false;
-			}
-			if (malfunctionManager.getWaterFlowModifier() < 100D) {
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-						"[" + this.getLocationTag().getLocale() + "] " 
-								+ person.getName() + "'s " + this.getName() + "'s water flow sensor detected malfunction.", null);
-				return false;
-			}
+//			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
+//				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+//						"[" + this.getLocationTag().getLocale() + "] " 
+//								+ person.getName() + "'s " + this.getName() + "'s oxygen flow sensor detected malfunction.", null);
+//				return false;
+//			}
+//			if (malfunctionManager.getWaterFlowModifier() < 100D) {
+//				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+//						"[" + this.getLocationTag().getLocale() + "] " 
+//								+ person.getName() + "'s " + this.getName() + "'s water flow sensor detected malfunction.", null);
+//				return false;
+//			}
 
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= minimum_air_pressure) {
@@ -232,7 +235,7 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, this.getName() + " - Error in providing O2 needs: " + e.getMessage());
 		}
-		return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
+		return oxygenTaken;// * (malfunctionManager.getOxygenFlowModifier() / 100D);
 	}
 
 	/**
@@ -253,7 +256,7 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		getInventory().addAmountDemandTotalRequest(ResourceUtil.waterID);
 		getInventory().addAmountDemand(ResourceUtil.waterID, waterTaken);
 
-		return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
+		return waterTaken;// * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}
 
 	/**
@@ -262,9 +265,9 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	 * @return air pressure (Pa)
 	 */
 	public double getAirPressure() {
-		double result = NORMAL_AIR_PRESSURE * (malfunctionManager.getAirPressureModifier() / 100D);
-		if (weather == null)
-			weather = Simulation.instance().getMars().getWeather();
+		double result = NORMAL_AIR_PRESSURE;// * (malfunctionManager.getAirPressureModifier() / 100D);
+//		if (weather == null)
+//			weather = Simulation.instance().getMars().getWeather();
 		double ambient = weather.getAirPressure(getCoordinates());
 		if (result < ambient) {
 			return ambient;
@@ -279,13 +282,13 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	 * @return temperature (degrees C)
 	 */
 	public double getTemperature() {
-		double result = NORMAL_TEMP * (malfunctionManager.getTemperatureModifier() / 100D);
+		double result = NORMAL_TEMP;// * (malfunctionManager.getTemperatureModifier() / 100D);
 		double ambient = 0;
-		if (weather == null) {
-			weather = Simulation.instance().getMars().getWeather();
+//		if (weather == null) {
+//			weather = Simulation.instance().getMars().getWeather();
 			// For the first time calling, use calculateTemperature()
-			ambient = weather.calculateTemperature(getCoordinates());
-		} else
+//			ambient = weather.calculateTemperature(getCoordinates());
+//		} else
 			ambient = weather.getTemperature(getCoordinates());
 
 		// the temperature of the suit will not be lower than the ambient temperature
@@ -371,6 +374,15 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		return getLocationTag().getLocale();
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param w
+	 */
+	public static void justReloaded(Weather w) {
+		weather = w;
+	}
+	
 	public void destroy() {
 		malfunctionManager = null;
 		weather = null;

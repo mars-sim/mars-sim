@@ -17,10 +17,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InvalidObjectException;
+import java.io.NotActiveException;
+import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
+import java.io.OptionalDataException;
 import java.io.Serializable;
+import java.io.StreamCorruptedException;
+import java.io.WriteAbortedException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -30,9 +36,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
@@ -548,14 +556,14 @@ public class Simulation implements ClockListener, Serializable {
 
 			} catch (ClassNotFoundException e2) {
 				logger.log(Level.SEVERE,
-						"Quitting mars-sim with Class Not Found Exception when loading the simulation! " + " : "
+						"Quitting mars-sim with ClassNotFoundException when loading the simulation! " + " : "
 								+ e2.getMessage());
 //    	        Platform.exit();
 				System.exit(1);
 
 			} catch (IOException e1) {
 				logger.log(Level.SEVERE,
-						"Quitting mars-sim with I/O error when loading the simulation! " + " : " + e1.getMessage());
+						"Quitting mars-sim with IOException when loading the simulation! " + " : " + e1.getMessage());
 //    	        Platform.exit();
 				System.exit(1);
 
@@ -568,7 +576,7 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		else {
-			logger.log(Level.SEVERE, "Quitting mars-sim. The saved sim cannot be read or found. ");
+			logger.log(Level.SEVERE, "Quitting mars-sim. The saved sim cannot be read or is NOT found.");
 			System.exit(1);
 		}
 	}
@@ -658,7 +666,39 @@ public class Simulation implements ClockListener, Serializable {
 			}		
 			logger.config("  - - - - - - - - - Sol " + masterClock.getMarsClock().getMissionSol() 
 					+ " (Cont') - - - - - - - - - - - ");
-					
+
+		// Note: see https://docs.oracle.com/javase/7/docs/platform/serialization/spec/exceptions.html
+		} catch (WriteAbortedException e) {
+			// Thrown when reading a stream terminated by an exception that occurred while the stream was being written.
+			logger.log(Level.SEVERE, "Quitting mars-sim with WriteAbortedException when loading " + file + " : " + e.getMessage());
+			System.exit(1);		
+
+		} catch (OptionalDataException e) {
+			// Thrown by readObject when there is primitive data in the stream and an object is expected. The length field of the exception indicates the number of bytes that are available in the current block.
+			logger.log(Level.SEVERE, "Quitting mars-sim with OptionalDataException when loading " + file + " : " + e.getMessage());
+			System.exit(1);		
+		
+		} catch (InvalidObjectException e) {
+			// Thrown when a restored object cannot be made valid.
+			logger.log(Level.SEVERE, "Quitting mars-sim with InvalidObjectException when loading " + file + " : " + e.getMessage());
+			System.exit(1);		
+
+		} catch (NotActiveException e) {
+			logger.log(Level.SEVERE, "Quitting mars-sim with NotActiveException when loading " + file + " : " + e.getMessage());
+			System.exit(1);		
+
+		} catch (StreamCorruptedException e) {
+			logger.log(Level.SEVERE, "Quitting mars-sim with StreamCorruptedException when loading " + file + " : " + e.getMessage());
+			System.exit(1);		
+		
+		} catch (NotSerializableException e) {
+			logger.log(Level.SEVERE, "Quitting mars-sim with NotSerializableException when loading " + file + " : " + e.getMessage());
+			System.exit(1);		
+			
+		} catch (ObjectStreamException e) {
+			logger.log(Level.SEVERE, "Quitting mars-sim with ObjectStreamException when loading " + file + " : " + e.getMessage());
+			System.exit(1);
+			
 		} catch (FileNotFoundException e) {
 			logger.log(Level.SEVERE, "Quitting mars-sim since " + file + " cannot be found : ", e.getMessage());
 			System.exit(1);
@@ -808,6 +848,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Unit related class
 		Unit.justReloaded(mars);						// mars
 		Equipment.justReloaded(unitManager);					// unitManager
+		EVASuit.justReloaded(w);				// weather,
 		Person.justReloaded(masterClock, marsClock);
 		Robot.justReloaded(masterClock, marsClock);
 		Vehicle.justReloaded(missionManager);						// mission, vehicleconfig 
@@ -826,7 +867,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Structure related class
 		Building.justReloaded(masterClock, marsClock);
 		BuildingManager.justReloaded(masterClock, marsClock);
-		Settlement.justReloaded(marsClock);						// weather, loadDefaultValues()
+		Settlement.justReloaded(marsClock, w);						// weather, loadDefaultValues()
 		ChainOfCommand.justReloaded(unitManager); 				//unitmgr
 		
 //		System.out.println("Done with Structure instances");
@@ -1007,6 +1048,19 @@ public class Simulation implements ClockListener, Serializable {
 
 	}
 
+	/**
+	 * Delays for a period of time in millis
+	 * 
+	 * @param millis
+	 */
+    public static void delay(long millis) {
+        try {
+			TimeUnit.MILLISECONDS.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    
     /**
      * Serialize the given object and save it to a given file.
      */
@@ -1028,6 +1082,9 @@ public class Simulation implements ClockListener, Serializable {
 		
 		try {
 	
+			// Set a delay for 200 millis to avoid java.util.ConcurrentModificationException
+			delay(200L);
+			
 			// Store the in-transient objects.
 			oos.writeObject(SimulationConfig.instance());
 			oos.writeObject(ResourceUtil.getInstance());
@@ -1076,8 +1133,39 @@ public class Simulation implements ClockListener, Serializable {
 			logger.config("           File size : " + computeFileSize(file));
 			
 			logger.config("Done saving. The simulation resumes.");
+		// Note: see https://docs.oracle.com/javase/7/docs/platform/serialization/spec/exceptions.html
+		} catch (WriteAbortedException e) {
+			// Thrown when reading a stream terminated by an exception that occurred while the stream was being written.
+			logger.log(Level.SEVERE, "Quitting mars-sim with WriteAbortedException when loading " + file + " : " + e.getMessage());
+			e.printStackTrace();		
 
-		} catch (NullPointerException e0) {
+		} catch (OptionalDataException e) {
+			// Thrown by readObject when there is primitive data in the stream and an object is expected. The length field of the exception indicates the number of bytes that are available in the current block.
+			logger.log(Level.SEVERE, "Quitting mars-sim with OptionalDataException when loading " + file + " : " + e.getMessage());
+			e.printStackTrace();	
+		
+		} catch (InvalidObjectException e) {
+			// Thrown when a restored object cannot be made valid.
+			logger.log(Level.SEVERE, "Quitting mars-sim with InvalidObjectException when loading " + file + " : " + e.getMessage());
+			e.printStackTrace();	
+
+		} catch (NotActiveException e) {
+			logger.log(Level.SEVERE, "Quitting mars-sim with NotActiveException when loading " + file + " : " + e.getMessage());
+			e.printStackTrace();	
+
+		} catch (StreamCorruptedException e) {
+			logger.log(Level.SEVERE, "Quitting mars-sim with StreamCorruptedException when loading " + file + " : " + e.getMessage());
+			e.printStackTrace();	
+		
+		} catch (NotSerializableException e) {
+			logger.log(Level.SEVERE, "Quitting mars-sim with NotSerializableException when loading " + file + " : " + e.getMessage());
+			e.printStackTrace();	
+			
+		} catch (ObjectStreamException e) {
+			logger.log(Level.SEVERE, "Quitting mars-sim with ObjectStreamException when loading " + file + " : " + e.getMessage());
+			e.printStackTrace();
+
+		} catch (IOException e0) {
 			logger.log(Level.SEVERE, Msg.getString("Simulation.log.saveError"), e0); //$NON-NLS-1$
 			e0.printStackTrace();
 

@@ -109,10 +109,10 @@ public class MalfunctionManager implements Serializable {
 	private double wearLifeTime;
 
 	// Life support modifiers.
-	private double oxygenFlowModifier = 100D;
-	private double waterFlowModifier = 100D;
-	private double airPressureModifier = 100D;
-	private double temperatureModifier = 100D;
+//	private double oxygenFlowModifier = 100D;
+//	private double waterFlowModifier = 100D;
+//	private double airPressureModifier = 100D;
+//	private double temperatureModifier = 100D;
 
 	/** The owning entity. */
 	private Malfunctionable entity;
@@ -723,7 +723,7 @@ public class MalfunctionManager implements Serializable {
 	public void timePassing(double time) {
 
 		// Check if life support modifiers are still in effect.
-		setLifeSupportModifiers(time);
+//		setLifeSupportModifiers(time);
 
 		// Check if resources is still draining
 		try {
@@ -738,43 +738,43 @@ public class MalfunctionManager implements Serializable {
 		timeSinceLastMaintenance += time;
 	}
 
-	/**
-	 * Resets one or more flow modifier
-	 * 
-	 * @param type
-	 */
-	public void resetModifiers(int type) {
-		// compare from previous modifier
-		System.out.println("MalfunctionManager : Calling resetModifiers type " + type );
-		if (type == 0) {
-			oxygenFlowModifier = 100D;
-			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-					"[" + entity.getLocale() + "] The oxygen flow retrictor has been fixed in "
-					+ entity.getImmediateLocation(), null);
-		}
-		
-		else if (type == 1) {
-			waterFlowModifier = 100D;
-			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-					"[" + entity.getLocale() + "] The water flow retrictor has been fixed in "
-					+ entity.getImmediateLocation(), null);
-		}
-		
-		else if (type == 2) {
-			airPressureModifier = 100D;
-			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-				"[" + entity.getLocale() + "] The air pressure regulator has been fixed in "
-				+ entity.getImmediateLocation(), null);
-		}
-		
-		else if (type == 3) {
-			temperatureModifier = 100D;
-			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-					"[" + entity.getLocale() + "] The temperature regulator has been fixed in "
-					+ entity.getImmediateLocation(), null);
-			
-		}
-	}
+//	/**
+//	 * Resets one or more flow modifier
+//	 * 
+//	 * @param type
+//	 */
+//	public void resetModifiers(int type) {
+//		// compare from previous modifier
+//		System.out.println("MalfunctionManager : Calling resetModifiers type " + type );
+//		if (type == 0) {
+//			oxygenFlowModifier = 100D;
+//			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+//					"[" + entity.getLocale() + "] The oxygen flow retrictor has been fixed in "
+//					+ entity.getImmediateLocation(), null);
+//		}
+//		
+//		else if (type == 1) {
+//			waterFlowModifier = 100D;
+//			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+//					"[" + entity.getLocale() + "] The water flow retrictor has been fixed in "
+//					+ entity.getImmediateLocation(), null);
+//		}
+//		
+//		else if (type == 2) {
+//			airPressureModifier = 100D;
+//			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+//				"[" + entity.getLocale() + "] The air pressure regulator has been fixed in "
+//				+ entity.getImmediateLocation(), null);
+//		}
+//		
+//		else if (type == 3) {
+//			temperatureModifier = 100D;
+//			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+//					"[" + entity.getLocale() + "] The temperature regulator has been fixed in "
+//					+ entity.getImmediateLocation(), null);
+//			
+//		}
+//	}
 	
 	/**
 	 * Checks if any malfunctions have been fixed
@@ -800,17 +800,18 @@ public class MalfunctionManager implements Serializable {
 			for (Malfunction malfunction : fixedMalfunctions) {
 
 				// Reset the modifiers
-				Map<String, Double> effects = malfunction.getLifeSupportEffects();
-				if (!effects.isEmpty()) {
-					if (effects.containsKey(OXYGEN))
-						resetModifiers(0);
-					if (effects.containsKey(WATER))
-						resetModifiers(1);
-					if (effects.containsKey(PRESSURE))
-						resetModifiers(2);
-					if (effects.containsKey(TEMPERATURE))
-						resetModifiers(3);
-				}
+//				Map<String, Double> effects = malfunction.getLifeSupportEffects();
+//				if (!effects.isEmpty()) {
+//					if (effects.containsKey(OXYGEN))
+//						resetModifiers(0);
+//					if (effects.containsKey(WATER))
+//						resetModifiers(1);
+//					if (effects.containsKey(PRESSURE))
+//						resetModifiers(2);
+//					if (effects.containsKey(TEMPERATURE))
+//						resetModifiers(3);
+//				}
+				
 				try {
 					getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
 				} catch (Exception e) {
@@ -834,73 +835,72 @@ public class MalfunctionManager implements Serializable {
 		}
 	}
 	
-	/**
-	 * Determine life support modifiers for given time.
-	 * 
-	 * @param time amount of time passing (in millisols)
-	 */
-	public void setLifeSupportModifiers(double time) {
-
-		double tempOxygenFlowModifier = 0D;
-		double tempWaterFlowModifier = 0D;
-		double tempAirPressureModifier = 0D;
-		double tempTemperatureModifier = 0D;
-
-		// Make any life support modifications.
-		if (hasMalfunction()) {
-			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isFixed()) {
-					Map<String, Double> effects = malfunction.getLifeSupportEffects();
-					if (effects.get(OXYGEN) != null)
-						tempOxygenFlowModifier += effects.get(OXYGEN) * (100D - malfunction.getPercentageFixed())/100D;
-					if (effects.get(WATER) != null)
-						tempWaterFlowModifier += effects.get(WATER) * (100D - malfunction.getPercentageFixed())/100D;
-					if (effects.get(PRESSURE) != null)
-						tempAirPressureModifier += effects.get(PRESSURE) * (100D - malfunction.getPercentageFixed())/100D;
-					if (effects.get(TEMPERATURE) != null)
-						tempTemperatureModifier += effects.get(TEMPERATURE) * (100D - malfunction.getPercentageFixed())/100D;
-				}
-			}
-
-			if (tempOxygenFlowModifier < 0D) {
-				oxygenFlowModifier += tempOxygenFlowModifier * time ;
-				if (oxygenFlowModifier < 0)
-					oxygenFlowModifier = 0;
-				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-						"[" + getUnit().getLocationTag().getLocale() + "] Oxygen flow restricted to "
-								+ Math.round(oxygenFlowModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation()+ ".", null);
-			} 
-
-			if (tempWaterFlowModifier < 0D) {
-				waterFlowModifier += tempWaterFlowModifier * time;
-				if (waterFlowModifier < 0)
-					waterFlowModifier = 0;
-				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-						"[" + getUnit().getLocationTag().getLocale() + "] Water flow restricted to "
-								+ Math.round(waterFlowModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
-			} 
-
-			if (tempAirPressureModifier < 0D) {
-				airPressureModifier += tempAirPressureModifier * time;
-				if (airPressureModifier < 0)
-					airPressureModifier = 0;
-				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-						"[" + getUnit().getLocationTag().getLocale() + "] Air pressure regulator malfunctioned at "
-								+ Math.round(airPressureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
-			} 
-
-			// temp mod can be above 0 or below zero
-			if (tempTemperatureModifier != 0D) {
-				temperatureModifier += tempTemperatureModifier * time;
-				if (temperatureModifier < 0)
-					temperatureModifier = 0;
-				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-						"[" + getUnit().getLocationTag().getLocale() + "] Temperature regulator malfunctioned at "
-								+ Math.round(temperatureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
-			}
-		}
-
-	}
+//	/**
+//	 * Determine life support modifiers for given time.
+//	 * 
+//	 * @param time amount of time passing (in millisols)
+//	 */
+//	public void setLifeSupportModifiers(double time) {
+//
+//		double tempOxygenFlowModifier = 0D;
+//		double tempWaterFlowModifier = 0D;
+//		double tempAirPressureModifier = 0D;
+//		double tempTemperatureModifier = 0D;
+//
+//		// Make any life support modifications.
+//		if (hasMalfunction()) {
+//			for (Malfunction malfunction : malfunctions) {
+//				if (!malfunction.isFixed()) {
+//					Map<String, Double> effects = malfunction.getLifeSupportEffects();
+//					if (effects.get(OXYGEN) != null)
+//						tempOxygenFlowModifier += effects.get(OXYGEN) * (100D - malfunction.getPercentageFixed())/100D;
+//					if (effects.get(WATER) != null)
+//						tempWaterFlowModifier += effects.get(WATER) * (100D - malfunction.getPercentageFixed())/100D;
+//					if (effects.get(PRESSURE) != null)
+//						tempAirPressureModifier += effects.get(PRESSURE) * (100D - malfunction.getPercentageFixed())/100D;
+//					if (effects.get(TEMPERATURE) != null)
+//						tempTemperatureModifier += effects.get(TEMPERATURE) * (100D - malfunction.getPercentageFixed())/100D;
+//				}
+//			}
+//
+//			if (tempOxygenFlowModifier < 0D) {
+//				oxygenFlowModifier += tempOxygenFlowModifier * time ;
+//				if (oxygenFlowModifier < 0)
+//					oxygenFlowModifier = 0;
+//				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+//						"[" + getUnit().getLocationTag().getLocale() + "] Oxygen flow restricted to "
+//								+ Math.round(oxygenFlowModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation()+ ".", null);
+//			} 
+//
+//			if (tempWaterFlowModifier < 0D) {
+//				waterFlowModifier += tempWaterFlowModifier * time;
+//				if (waterFlowModifier < 0)
+//					waterFlowModifier = 0;
+//				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+//						"[" + getUnit().getLocationTag().getLocale() + "] Water flow restricted to "
+//								+ Math.round(waterFlowModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
+//			} 
+//
+//			if (tempAirPressureModifier < 0D) {
+//				airPressureModifier += tempAirPressureModifier * time;
+//				if (airPressureModifier < 0)
+//					airPressureModifier = 0;
+//				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+//						"[" + getUnit().getLocationTag().getLocale() + "] Air pressure regulator malfunctioned at "
+//								+ Math.round(airPressureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
+//			} 
+//
+//			// temp mod can be above 0 or below zero
+//			if (tempTemperatureModifier != 0D) {
+//				temperatureModifier += tempTemperatureModifier * time;
+//				if (temperatureModifier < 0)
+//					temperatureModifier = 0;
+//				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+//						"[" + getUnit().getLocationTag().getLocale() + "] Temperature regulator malfunctioned at "
+//								+ Math.round(temperatureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
+//			}
+//		}
+//	}
 
 	/**
 	 * Depletes resources due to malfunctions.
@@ -1210,41 +1210,41 @@ public class MalfunctionManager implements Serializable {
 		}
 	}
 
-	/**
-	 * Gets the oxygen flow modifier.
-	 * 
-	 * @return modifier
-	 */
-	public double getOxygenFlowModifier() {
-		return oxygenFlowModifier;
-	}
-
-	/**
-	 * Gets the water flow modifier.
-	 * 
-	 * @return modifier
-	 */
-	public double getWaterFlowModifier() {
-		return waterFlowModifier;
-	}
-
-	/**
-	 * Gets the air flow modifier.
-	 * 
-	 * @return modifier
-	 */
-	public double getAirPressureModifier() {
-		return airPressureModifier;
-	}
-
-	/**
-	 * Gets the temperature modifier.
-	 * 
-	 * @return modifier
-	 */
-	public double getTemperatureModifier() {
-		return temperatureModifier;
-	}
+//	/**
+//	 * Gets the oxygen flow modifier.
+//	 * 
+//	 * @return modifier
+//	 */
+//	public double getOxygenFlowModifier() {
+//		return oxygenFlowModifier;
+//	}
+//
+//	/**
+//	 * Gets the water flow modifier.
+//	 * 
+//	 * @return modifier
+//	 */
+//	public double getWaterFlowModifier() {
+//		return waterFlowModifier;
+//	}
+//
+//	/**
+//	 * Gets the air flow modifier.
+//	 * 
+//	 * @return modifier
+//	 */
+//	public double getAirPressureModifier() {
+//		return airPressureModifier;
+//	}
+//
+//	/**
+//	 * Gets the temperature modifier.
+//	 * 
+//	 * @return modifier
+//	 */
+//	public double getTemperatureModifier() {
+//		return temperatureModifier;
+//	}
 
 	/**
 	 * Gets the unit associated with this malfunctionable.

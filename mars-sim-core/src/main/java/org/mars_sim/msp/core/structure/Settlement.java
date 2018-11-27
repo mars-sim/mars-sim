@@ -636,8 +636,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public Collection<Person> getOutsideEVAPeople() {
 
 		return allAssociatedPeople.stream()
-				.filter(p -> p.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY
-						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
+				.filter(p -> 
+						!p.isDeclaredDead() 
+						&& (p.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY
+							|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS))
 				.collect(Collectors.toList());
 
 	}
@@ -650,13 +652,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public Collection<Person> getOnMissionPeople() {
 			
 		return allAssociatedPeople.stream()
-				.filter(p -> p.getMind().getMission() != null
-					&& !p.getMind().getMission().getPhase().equals(VehicleMission.APPROVAL)
-//					&& p.isInVehicle() && !p.isInVehicleInGarage()
-//					&& p.getAssociatedVehicle() != null 	
-//				p.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY
-//						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS
-						)
+				.filter(p -> 
+					!p.isDeclaredDead() 
+					&& p.getMind().getMission() != null
+					&& !p.getMind().getMission().getPhase().equals(VehicleMission.APPROVAL))
 				.collect(Collectors.toList());
 
 	}
@@ -668,7 +667,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public int getNumOutsideEVAPeople() {
 		Collection<Person> ppl = getOutsideEVAPeople();
-		if (ppl.isEmpty() || ppl == null)
+		if (ppl == null || ppl.isEmpty())
 			return 0;
 		else
 			return ppl.size();
@@ -689,15 +688,16 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return array of inhabitants
 	 */
 	public Person[] getInhabitantArray() {
-		Collection<Person> people = getIndoorPeople();
-		Person[] personArray = new Person[people.size()];
-		Iterator<Person> i = people.iterator();
-		int count = 0;
-		while (i.hasNext()) {
-			personArray[count] = i.next();
-			count++;
-		}
-		return personArray;
+		return getIndoorPeople().toArray(new Person[getIndoorPeople().size()]);
+//		Collection<Person> people = getIndoorPeople();
+//		Person[] personArray = new Person[people.size()];
+//		Iterator<Person> i = people.iterator();
+//		int count = 0;
+//		while (i.hasNext()) {
+//			personArray[count] = i.next();
+//			count++;
+//		}
+//		return personArray;
 	}
 
 	/**
@@ -724,14 +724,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return the number of robots
 	 */
 	public int getIndoorRobotsCount() {
-
 //		int n = 0;
 //		Iterator<Unit> i = getInventory().getAllContainedUnits().iterator();
 //		while (i.hasNext()) {
 //			if (i.next() instanceof Robot)
 //				n++;
 //		}
-		
 		int n = 0;
 		for (Unit u : getInventory().getAllContainedUnits()) {
 			if (u instanceof Robot)
@@ -764,15 +762,16 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return array of robots
 	 */
 	public Robot[] getRobotArray() {
-		Collection<Robot> robots = getRobots();
-		Robot[] robotArray = new Robot[robots.size()];
-		Iterator<Robot> i = robots.iterator();
-		int count = 0;
-		while (i.hasNext()) {
-			robotArray[count] = i.next();
-			count++;
-		}
-		return robotArray;
+		return getRobots().toArray(new Robot[getRobots().size()]);
+//		Collection<Robot> robots = getRobots();
+//		Robot[] robotArray = new Robot[robots.size()];
+//		Iterator<Robot> i = robots.iterator();
+//		int count = 0;
+//		while (i.hasNext()) {
+//			robotArray[count] = i.next();
+//			count++;
+//		}
+//		return robotArray;
 	}
 
 	/**
@@ -1021,10 +1020,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * Reloads instances after loading from a saved sim
 	 * 
 	 * @param clock
+	 * @param w
 	 */
-	public static void justReloaded(MarsClock clock) {
+	public static void justReloaded(MarsClock clock, Weather w) {
 		marsClock = clock;
-		weather = Simulation.instance().getMars().getWeather();
+		weather = w;
 		loadDefaultValues();
 	}
 	

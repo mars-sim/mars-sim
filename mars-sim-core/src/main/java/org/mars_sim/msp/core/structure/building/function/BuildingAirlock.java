@@ -121,8 +121,11 @@ public class BuildingAirlock extends Airlock {
                 }
                 else {
                 	//if (LocationSituation.BURIED != person.getLocationSituation()) {
-                    throw new IllegalStateException(person + " was in " + person.getLocationTag().getImmediateLocation() + " and entering " + getEntityName() +
-                            " from an airlock but not from outside.");
+//                    throw new IllegalStateException(person + " was in " + person.getLocationTag().getImmediateLocation() + " and entering " + getEntityName() +
+//                            " from an airlock but not from outside.");
+                  	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,		
+                  		person +  " was supposed to be entering " + getEntityName() +
+                          "'s airlock but now alraedy in " + person.getLocationTag().getImmediateLocation(), null);
                 }
             }
             
@@ -166,8 +169,10 @@ public class BuildingAirlock extends Airlock {
                 }
                 else {
                 	//if (LocationSituation.BURIED != person.getLocationSituation()) {
-                    throw new IllegalStateException(person +  " was in " + person.getLocationTag().getImmediateLocation() + " and exiting " + getEntityName() +
-                            " from an airlock but not from inside.");
+//                    throw new IllegalStateException(
+                    	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,		
+                    		person +  " was supposed to be exiting " + getEntityName() +
+                            "'s airlock but now alraedy in " + person.getLocationTag().getImmediateLocation(), null);
                 }
             }
             else {

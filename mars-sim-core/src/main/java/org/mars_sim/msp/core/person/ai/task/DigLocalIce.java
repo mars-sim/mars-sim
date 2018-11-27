@@ -325,7 +325,7 @@ implements Serializable {
         if (finishedCollecting) {
             setPhase(WALK_BACK_INSIDE);
 
-            LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+            LogConsolidated.log(logger, Level.FINE, 0, sourceName, 
 	    		"[" + person.getLocationTag().getLocale() +  "] " +
 	    		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
 	    		+ " kg of ice outside " + person.getAssociatedSettlement(), null);

@@ -526,7 +526,7 @@ public class ExitAirlock extends Task implements Serializable {
 			String newLog = person.getName() + " could exit airlock from " + airlock.getEntityName()
 					+ " due to crippling performance rating";
 
-			LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, newLog, null);
+			LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, newLog, null);
 
 			try {
 				// logger.info(person.getName() + " is nearly abandoning the action of exiting
@@ -700,7 +700,7 @@ public class ExitAirlock extends Task implements Serializable {
 			} catch (Exception e) {
 				// e.printStackTrace(System.err);
 				LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, "[" + p.getLocationTag().getLocale()
-						+ "] " + p + " detected malfunctions when examing " + suit.getName() + e.getMessage(), null);
+						+ "] " + p + " detected malfunctions when examining " + suit.getName() + e.getMessage(), null);
 			}
 		}
 
@@ -751,8 +751,7 @@ public class ExitAirlock extends Task implements Serializable {
 		// it's okay even if there's not enough water
 		if (!hasEnoughWater)
 			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-					"[" + suit.getContainerUnit() + "] "
-					+ " won't have enough water to feed " + suit.getNickName(), null);
+					"[" + suit.getContainerUnit() + "] won't have enough water to feed " + suit.getNickName(), null);
 
 		return hasEnoughOxygen;// && hasEnoughWater;
 	}

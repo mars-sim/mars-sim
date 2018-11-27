@@ -9,10 +9,6 @@ package org.mars_sim.msp.core.time;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-
-//import javafx.animation.Timeline;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;

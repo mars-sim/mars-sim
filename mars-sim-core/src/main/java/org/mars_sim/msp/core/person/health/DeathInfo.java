@@ -206,7 +206,7 @@ public class DeathInfo implements Serializable {
 			MalfunctionManager malfunctionMgr = entity.getMalfunctionManager();
 			if (malfunctionMgr.hasEmergencyMalfunction()) {
 				Malfunction m = malfunctionMgr.getMostSeriousEmergencyMalfunction();
-				if (m.getSeverity() > severity) {
+				if (m != null && m.getSeverity() > severity) {
 					mostSerious = m;
 					severity = m.getSeverity();
 				}
@@ -214,7 +214,7 @@ public class DeathInfo implements Serializable {
 
 			else if (malfunctionMgr.hasEVAMalfunction()) {
 				Malfunction m = malfunctionMgr.getMostSeriousEVAMalfunction();
-				if (m.getSeverity() > severity) {
+				if (m != null && m.getSeverity() > severity) {
 					mostSerious = m;
 					severity = m.getSeverity();
 				}
@@ -222,7 +222,7 @@ public class DeathInfo implements Serializable {
 
 			else if (malfunctionMgr.hasNormalMalfunction()) {
 				Malfunction m = malfunctionMgr.getMostSeriousNormalMalfunction();
-				if (m.getSeverity() > severity) {
+				if (m != null && m.getSeverity() > severity) {
 					mostSerious = m;
 					severity = m.getSeverity();
 				}
@@ -230,7 +230,7 @@ public class DeathInfo implements Serializable {
 
 			else if (malfunctionMgr.hasMalfunction()) {
 				Malfunction m = malfunctionMgr.getMostSeriousMalfunction();
-				if (m.getSeverity() > severity) {
+				if (m != null && m.getSeverity() > severity) { // why java.lang.NullPointerException ?
 					mostSerious = m;
 					severity = m.getSeverity();
 				}
