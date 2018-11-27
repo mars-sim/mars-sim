@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -63,7 +62,7 @@ public class FoodProduction extends Function implements Serializable {
 
 	private List<FoodProductionProcess> processes;
 
-	private static BuildingConfig config;
+	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 	/**
 	 * Constructor.
@@ -79,13 +78,13 @@ public class FoodProduction extends Function implements Serializable {
 
 		inv = building.getInventory();
 
-		config = SimulationConfig.instance().getBuildingConfiguration();
+//		config = SimulationConfig.instance().getBuildingConfiguration();
 
-		techLevel = config.getFoodProductionTechLevel(building.getBuildingType());
-		concurrentProcesses = config.getFoodProductionConcurrentProcesses(building.getBuildingType());
+		techLevel = buildingConfig.getFoodProductionTechLevel(building.getBuildingType());
+		concurrentProcesses = buildingConfig.getFoodProductionConcurrentProcesses(building.getBuildingType());
 
 		// Load activity spots
-		loadActivitySpots(config.getFoodProductionActivitySpots(building.getBuildingType()));
+		loadActivitySpots(buildingConfig.getFoodProductionActivitySpots(building.getBuildingType()));
 
 		processes = new ArrayList<FoodProductionProcess>();
 	}
@@ -103,9 +102,7 @@ public class FoodProduction extends Function implements Serializable {
 
 		double result = 0D;
 
-		if (config == null)
-			config = SimulationConfig.instance().getBuildingConfiguration();
-		int buildingTech = config.getFoodProductionTechLevel(buildingType);
+		int buildingTech = buildingConfig.getFoodProductionTechLevel(buildingType);
 
 		double demand = 0D;
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
@@ -136,7 +133,7 @@ public class FoodProduction extends Function implements Serializable {
 
 		double baseFoodProductionValue = demand / (supply + 1D);
 
-		double processes = config.getFoodProductionConcurrentProcesses(buildingType);
+		double processes = buildingConfig.getFoodProductionConcurrentProcesses(buildingType);
 		double foodProductionValue = (buildingTech * buildingTech) * processes;
 
 		result = foodProductionValue * baseFoodProductionValue;

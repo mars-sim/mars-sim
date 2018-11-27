@@ -636,8 +636,8 @@ public class MalfunctionManager implements Serializable {
 					+ Math.round(new_failure * 1000.0) / 1000.0 + " %");
 			new_mal_prob_failure = (old_mal_probl_failure + new_failure) / 2.0;
 
-			logger.warning("   (3).         MTBF : " + Math.round(old_MTBF * 1000.0) / 1000.0 + " % --> "
-					+ Math.round(new_MTBF * 1000.0) / 1000.0 + " %");
+			logger.warning("   (3).         MTBF : " + Math.round(old_MTBF * 1000.0) / 1000.0 + " hr --> "
+					+ Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
 
 			
 			logger.warning("Updating field reliability data for the malfunction '" + malfunctionName + "' as follows :");

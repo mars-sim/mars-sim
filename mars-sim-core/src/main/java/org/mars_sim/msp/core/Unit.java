@@ -295,8 +295,14 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	public void timePassing(double time) {
 	}
 
-	public static void justReloaded() {
-		mars = Simulation.instance().getMars();
+	
+	/**
+	 * Reloads instances
+	 * 
+	 * @param m
+	 */
+	public static void justReloaded(Mars m) {
+		mars = m;
 //		marsSurface = mars.getMarsSurface();
 	}
 	

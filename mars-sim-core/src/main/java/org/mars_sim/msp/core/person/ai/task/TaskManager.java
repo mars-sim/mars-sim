@@ -680,10 +680,11 @@ public class TaskManager implements Serializable {
 	 * Reloads instances after loading from a saved sim
 	 * 
 	 * @param clock
+	 * @param mgr
 	 */
-	public static void justReloaded(MarsClock clock) {
+	public static void justReloaded(MarsClock clock, MissionManager mgr) {
 		marsClock = clock;
-		missionManager = Simulation.instance().getMissionManager();
+		missionManager = mgr;
 	}
 	
 	/**

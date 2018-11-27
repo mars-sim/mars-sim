@@ -359,15 +359,6 @@ public class ResourceProcess implements Serializable {
 	public double getPowerRequired() {
 		return powerRequired;
 	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void justReloaded(MarsClock clock) {
-		marsClock = clock;
-	}
 	
 	/**
 	 * Checks if it has exceeded the time limit
@@ -403,6 +394,16 @@ public class ResourceProcess implements Serializable {
 	public void setTimeLimit(int sol, int millisols) {
 		timeLimit[0] = sol;
 		timeLimit[1] = millisols;
+	}
+	
+
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
 	}
 	
 	/**

@@ -47,6 +47,8 @@ public class RoboticStation extends Function implements Serializable {
 	private Inventory inv;
 	private Collection<Robot> robotOccupants;
 
+	private static BuildingConfig buildingConfig;
+	
     /**
      * Constructor
      * @param building the building this function is for.
@@ -61,18 +63,18 @@ public class RoboticStation extends Function implements Serializable {
 
 		inv = building.getSettlementInventory();
 
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 		robotOccupants = new ConcurrentLinkedQueue<Robot>();
 		// Set occupant capacity.
-		occupantCapacity = config.getLifeSupportCapacity(building.getBuildingType());
-		powerRequired = config.getLifeSupportPowerRequirement(building.getBuildingType());
+		occupantCapacity = buildingConfig.getLifeSupportCapacity(building.getBuildingType());
+		powerRequired = buildingConfig.getLifeSupportPowerRequirement(building.getBuildingType());
 		//this.occupantCapacity = occupantCapacity;
 		//this.powerRequired = powerRequired;
 
-        slots = config.getRoboticStationSlots(building.getBuildingType());
+        slots = buildingConfig.getRoboticStationSlots(building.getBuildingType());
         // Load activity spots
-        loadActivitySpots(config.getRoboticStationActivitySpots(building.getBuildingType()));
+        loadActivitySpots(buildingConfig.getRoboticStationActivitySpots(building.getBuildingType()));
     }
 
     /**
@@ -106,11 +108,7 @@ public class RoboticStation extends Function implements Serializable {
         }
 
         double stationCapacityValue = demand / (supply + 1D);
-
-        BuildingConfig config = SimulationConfig.instance()
-                .getBuildingConfiguration();
-        double stationCapacity = config.getRoboticStationSlots(buildingName);
-
+        double stationCapacity = buildingConfig.getRoboticStationSlots(buildingName);
         return stationCapacity * stationCapacityValue;
     }
 
@@ -331,6 +329,15 @@ public class RoboticStation extends Function implements Serializable {
 
 	public Building getBuilding() {
 		return building;
+	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param bc
+	 */
+	public static void justReloaded(BuildingConfig bc) {
+		buildingConfig = bc;
 	}
 	
     /**

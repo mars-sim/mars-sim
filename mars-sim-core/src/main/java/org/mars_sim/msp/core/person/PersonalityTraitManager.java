@@ -28,8 +28,6 @@ public class PersonalityTraitManager implements Serializable {
 	/** List of the person's big five personalities keyed by unique name. */
 	private Hashtable<PersonalityTraitType, Integer> personalityTraits;
 
-	// private Mind mind;
-
 	/**
 	 * Constructor.
 	 * 

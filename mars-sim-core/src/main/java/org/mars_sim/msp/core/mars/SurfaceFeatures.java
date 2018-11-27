@@ -56,16 +56,22 @@ public class SurfaceFeatures implements Serializable {
 	private static double opticalDepthStartingValue = 0.2342;
 
 	// Data members
+	// non static instances
 	private MineralMap mineralMap;
 	private AreothermalMap areothermalMap;
+	
 
+	
 	private List<ExploredLocation> exploredLocations;
 
 	private Map<Coordinates, Double> opticalDepthMap;// = new ConcurrentHashMap<>();
 	private Map<Coordinates, List<Double>> solarIrradianceCaches;
 	private Map<Coordinates, Double> solarIrradiance;
 
+	@JsonIgnore // Need to have both @JsonIgnore and transient for Jackson to ignore converting this list
+	private transient List<Landmark> landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
 	
+	// static instances
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static MissionManager missionManager;
@@ -73,18 +79,12 @@ public class SurfaceFeatures implements Serializable {
 	private static MarsClock solarIrradianceMapCacheTime;
 	private static MasterClock masterClock;
 	
-	private transient Mars mars;
-	private transient Weather weather;
-	private transient OrbitInfo orbitInfo;
-	private transient TerrainElevation terrainElevation;
+	private static TerrainElevation terrainElevation;
+	private static Mars mars;
+	private static Weather weather;
+	private static OrbitInfo orbitInfo;
 	
-	private transient Coordinates sunDirection;
-	
-
-	
-	@JsonIgnore // Need to have both @JsonIgnore and transient for Jackson to ignore converting this list
-	private transient List<Landmark> landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
-
+	private static Coordinates sunDirection;
 
 	// private DecimalFormat fmt3 = new DecimalFormat("#0.000");
 
@@ -94,19 +94,17 @@ public class SurfaceFeatures implements Serializable {
 	 * @throws Exception when error in creating surface features.
 	 */
 	public SurfaceFeatures() {
-
 //		sim = Simulation.instance();
 //		simulationConfig = SimulationConfig.instance();
-
+		
+		// Initialize instances.
 		terrainElevation = new TerrainElevation();
 		mineralMap = new RandomMineralMap();
 		exploredLocations = new CopyOnWriteArrayList<>(); // will need to make sure explored locations are serialized
 		areothermalMap = new AreothermalMap();
-
-		// weather = sim.getMars().getWeather();
-		// mars = sim.getMars();
-		// orbitInfo = mars.getOrbitInfo();
-		// missionManager = sim.getMissionManager();
+//		terrainElevation = new TerrainElevation();
+			
+		missionManager = sim.getMissionManager();
 
 //		try {
 //			landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
@@ -136,9 +134,12 @@ public class SurfaceFeatures implements Serializable {
 		// Initialize surface terrain.
 		terrainElevation = new TerrainElevation();
 
-		if (sunDirection == null)
-			sunDirection = sim.getMars().getOrbitInfo().getSunDirection();
-
+		mars = sim.getMars();
+		orbitInfo = mars.getOrbitInfo();
+		weather = mars.getWeather();
+		
+		sunDirection = orbitInfo.getSunDirection();
+		masterClock = sim.getMasterClock();
 	}
 
 	/**
@@ -194,7 +195,7 @@ public class SurfaceFeatures implements Serializable {
 
 // Method 2:
 
-		if (orbitInfo != null) {
+//		if (orbitInfo != null) {
 			double z = orbitInfo.getSolarZenithAngle(location);
 			// System.out.println("z2 : " + Math.round(z * 180D / Math.PI * 1000D)/1000D);
 
@@ -207,19 +208,19 @@ public class SurfaceFeatures implements Serializable {
 				// double twilightAngle = z - 1.6708;
 				result = 8.354 - 5 * z;
 			}
-		}
-
-		else {
-
-			if (mars == null)
-				mars = sim.getMars();
-
-			// missionManager = sim.getMissionManager();
-
-			else {
-				orbitInfo = mars.getOrbitInfo();
-			}
-		}
+//		}
+//
+//		else {
+//
+////			if (mars == null)
+////				mars = sim.getMars();
+//
+//			// missionManager = sim.getMissionManager();
+//
+//			else {
+//				orbitInfo = mars.getOrbitInfo();
+//			}
+//		}
 
 		return result;
 	}
@@ -242,8 +243,8 @@ public class SurfaceFeatures implements Serializable {
 
 		double tau = 0;
 
-		if (weather == null)
-			weather = sim.getMars().getWeather();
+//		if (weather == null)
+//			weather = sim.getMars().getWeather();
 
 		double newTau = 0.2237 * weather.getDailyVariationAirPressure(location);
 		// System.out.println("DailyVariationAirPressure : " +
@@ -336,8 +337,8 @@ public class SurfaceFeatures implements Serializable {
 	 * @return solar irradiance (W/m2)
 	 */
 	public double getSolarIrradiance(Coordinates location) {
-		if (masterClock == null)
-			masterClock = sim.getMasterClock();
+//		if (masterClock == null)
+//			masterClock = sim.getMasterClock();
 		MarsClock currentTime = masterClock.getMarsClock();
 		if (!currentTime.equals(solarIrradianceMapCacheTime)) {
 			// Call here once per frame because getSolarIrradiance()
@@ -599,10 +600,11 @@ public class SurfaceFeatures implements Serializable {
 
 		boolean result = false;
 
-		if (mars == null)
-			mars = sim.getMars();
+//		if (mars == null)
+//			mars = sim.getMars();
+		
 		if (sunDirection == null)
-			sunDirection = mars.getOrbitInfo().getSunDirection();
+			sunDirection = orbitInfo.getSunDirection();
 
 		double sunPhi = sunDirection.getPhi();
 		double darkPhi = 0D;
@@ -736,6 +738,23 @@ public class SurfaceFeatures implements Serializable {
 		}
 	}
 
+	
+	/**
+	 * Reloads instances
+	 * 
+	 * @param m
+	 */
+	public static void justReloaded(MasterClock ms, Mars m) {
+		masterClock = ms;
+		mars = m;
+		orbitInfo = m.getOrbitInfo();
+		weather = m.getWeather();
+		sim = Simulation.instance();
+		missionManager = sim.getMissionManager();
+		sunDirection = orbitInfo.getSunDirection();
+	}
+	
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

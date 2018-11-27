@@ -302,9 +302,11 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	
 	/**
 	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param s
 	 */
-	public static void justReloaded() {
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
+	public static void justReloaded(SurfaceFeatures s) {
+		surface = s;
 		terrain = surface.getTerrainElevation();
 	}
 	

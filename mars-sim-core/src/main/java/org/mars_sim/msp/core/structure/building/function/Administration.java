@@ -32,7 +32,6 @@ public class Administration extends Function implements Serializable {
 	private static Logger logger = Logger.getLogger(Administration.class.getName());
 
 	private static final FunctionType FUNCTION = FunctionType.ADMINISTRATION;
-	private static BuildingConfig buildingConfig;
 
 	// Data members
 	private int populationSupport;
@@ -42,6 +41,8 @@ public class Administration extends Function implements Serializable {
 	private String buildingType;
 	private Building building;
 
+	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	
 	/**
 	 * Constructor.
 	 * 
@@ -53,9 +54,8 @@ public class Administration extends Function implements Serializable {
 		this.building = building;
 
 		buildingType = building.getBuildingType();
+		
 		// Populate data members.
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-
 		if (buildingType.equalsIgnoreCase("Command and Control"))
 			populationSupport = 16;
 		else if (buildingType.equalsIgnoreCase("Lander Hab"))
@@ -94,8 +94,6 @@ public class Administration extends Function implements Serializable {
 		}
 
 		if (!newBuilding) {
-			// BuildingConfig config =
-			// SimulationConfig.instance().getBuildingConfiguration();
 			supply -= buildingConfig.getAdministrationPopulationSupport(buildingName);
 			if (supply < 0D)
 				supply = 0D;

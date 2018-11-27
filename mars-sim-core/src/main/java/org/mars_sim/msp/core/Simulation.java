@@ -39,6 +39,9 @@ import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.mars.OrbitInfo;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -61,16 +64,26 @@ import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.EVA;
+import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.Heating;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
+import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerStorage;
+import org.mars_sim.msp.core.structure.building.function.Recreation;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.core.structure.building.function.RoboticStation;
+import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
+import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
+import org.mars_sim.msp.core.structure.building.function.SolarThermalPowerSource;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
+import org.mars_sim.msp.core.structure.building.function.WindPowerSource;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
@@ -388,6 +401,11 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize mars clock
 		MalfunctionFactory.setMarsClock(masterClock.getMarsClock());
 		MissionManager.setMarsClock(masterClock.getMarsClock());
+		
+		// Initialize instances
+		mars.initializeTransientData();
+		mars.getOrbitInfo().initializeTransientData();
+		mars.getWeather().initializeTransientData();
 		
 		ut = masterClock.getUpTimer();
 	}
@@ -763,63 +781,104 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().justReloaded();
 		// Re-initialize the MarsSurface instance
-		MasterClock.justReloaded();
+		MasterClock.justReloaded();					// sim
 		MarsClock marsClock = masterClock.getMarsClock();
+		SurfaceFeatures surface = mars.getSurfaceFeatures();
+		Weather w = mars.getWeather();
+		
+		// Mars environment instances
+		Weather.justReloaded(masterClock, marsClock, mars);
+		SurfaceFeatures.justReloaded(masterClock, mars);
+		OrbitInfo.justReloaded(marsClock);				// earthclock, marsclock
+
+//		System.out.println("Done with Mars environment instances");
+		
+		// config files
+		BuildingConfig bc = SimulationConfig.instance().getBuildingConfiguration();
 		
 		// The Original Serialized Object class
 		MalfunctionFactory.setMarsClock(marsClock);
 		MissionManager.setMarsClock(marsClock);
-		MedicalManager.justReloaded();
-		unitManager.justReloaded();
+//		MedicalManager.justReloaded();
+		unitManager.justReloaded();						// getting marsSurface
 		MalfunctionManager.justReloaded(masterClock, marsClock);
 		
+//		System.out.println("Done with Serialized Object instances");
+		
 		// Unit related class
-		Unit.justReloaded();
-		Equipment.justReloaded();
+		Unit.justReloaded(mars);						// mars
+		Equipment.justReloaded(unitManager);					// unitManager
 		Person.justReloaded(masterClock, marsClock);
 		Robot.justReloaded(masterClock, marsClock);
-		Vehicle.justReloaded();
-		GroundVehicle.justReloaded();
-		Rover.justReloaded();
+		Vehicle.justReloaded(missionManager);						// mission, vehicleconfig 
+		GroundVehicle.justReloaded(surface);				// surface, terrain
+		Rover.justReloaded();						// personConfig
+		
+//		System.out.println("Done with Unit Object instances");
 		
 		// Person/Robot related class
-		Mind.justReloaded(marsClock);
+		Mind.justReloaded(marsClock);					// sim, relationship
 		BotMind.justReloaded(marsClock);
-		TaskManager.justReloaded(marsClock);
+		TaskManager.justReloaded(marsClock, missionManager);			// missionManager
+		PhysicalCondition.justReloaded(masterClock, marsClock);
+		RadiationExposure.justReloaded(masterClock, marsClock);
 		
 		// Structure related class
 		Building.justReloaded(masterClock, marsClock);
 		BuildingManager.justReloaded(masterClock, marsClock);
-		Settlement.justReloaded(marsClock);
-		ChainOfCommand.justReloaded();
+		Settlement.justReloaded(marsClock);						// weather, loadDefaultValues()
+		ChainOfCommand.justReloaded(unitManager); 				//unitmgr
+		
+//		System.out.println("Done with Structure instances");
 		
 		// Building function related class
+		CircadianClock.justReloaded(marsClock);
 		Cooking.justReloaded(marsClock);
-		LivingAccommodations.justReloaded(marsClock);
-		PowerStorage.justReloaded(marsClock);
-		Research.justReloaded(marsClock);
-		Farming.justReloaded(marsClock);
 		Crop.justReloaded(masterClock, marsClock);
 		CompositionOfAir.justReloaded(masterClock, marsClock);
-		ThermalGeneration.justReloaded();
-		Storage.justReloaded();
+		EVA.justReloaded(bc);
+		
+//		System.out.println("Done with 1 instances");
+		
+		Farming.justReloaded(marsClock);
+		GroundVehicleMaintenance.justReloaded(bc);
+		Heating.justReloaded(masterClock, marsClock, mars);
+		LivingAccommodations.justReloaded(marsClock);
 		Manufacture.justReloaded(marsClock);
-		CircadianClock.justReloaded(marsClock);
-		RadiationExposure.justReloaded(masterClock, marsClock);
-		ResourceProcessing.justReloaded();
+		
+//		System.out.println("Done with 2 instances");
+		
+		ResourceProcessing.justReloaded(bc);
 		ResourceProcess.justReloaded(marsClock);
-		PhysicalCondition.justReloaded(masterClock, marsClock);
-		EVA.justReloaded();
+		RoboticStation.justReloaded(bc);
+		
+//		System.out.println("Done with 3 instances");
+		
+		PowerGeneration.justReloaded(bc);
+		PowerStorage.justReloaded(marsClock, bc);
+		Recreation.justReloaded(bc);
+		Research.justReloaded(marsClock, bc);
+		SolarHeatSource.justReloaded(mars, surface);
+		SolarThermalPowerSource.justReloaded(surface); // surface
+		SolarPowerSource.justReloaded(mars, surface);
+		Storage.justReloaded(bc);
+		ThermalGeneration.justReloaded(bc);
+		WindPowerSource.justReloaded(w);					// weather
+		
+//		System.out.println("Done with Building function instances");
 		
 		// Task related class
-		Task.justReloaded();
-		Walk.justReloaded();
-		EVAOperation.justReloaded();
+		Task.justReloaded();					// eventManager, relationshipmanager
+		Walk.justReloaded(unitManager);			// unitManager
+		EVAOperation.justReloaded(surface); // surface
+		
+//		System.out.println("Done with Task instances");
 		
 		// Mission related class
-		RoverMission.justReloaded();
-		VehicleMission.justReloaded();
+//		RoverMission.justReloaded(surface);  // surface
+		VehicleMission.justReloaded(missionManager); // missionmgr
 
+//		System.out.println("Done with mission instances");
 	}
 	
 	
@@ -1450,38 +1509,38 @@ public class Simulation implements ClockListener, Serializable {
 
 			ut.updateTime();
 
-			if (debug) {
-				logger.fine(Msg.getString("Simulation.log.clockPulseMars", //$NON-NLS-1$
-						ut.getUptime(), mars.toString()));
-			}
+//			if (debug) {
+//				logger.fine(Msg.getString("Simulation.log.clockPulseMars", //$NON-NLS-1$
+//						ut.getUptime(), mars.toString()));
+//			}
 			mars.timePassing(time);
-			ut.updateTime();
+//			ut.updateTime();
 
-			if (debug) {
-				logger.fine(Msg.getString("Simulation.log.clockPulseMissionManager", //$NON-NLS-1$
-						masterClock.getUpTimer().getUptime(), missionManager.toString()));
-			}
+//			if (debug) {
+//				logger.fine(Msg.getString("Simulation.log.clockPulseMissionManager", //$NON-NLS-1$
+//						masterClock.getUpTimer().getUptime(), missionManager.toString()));
+//			}
 			missionManager.timePassing(time);
-			ut.updateTime();
+//			ut.updateTime();
 
-			if (debug) {
-				logger.fine(Msg.getString("Simulation.log.clockPulseUnitManager", //$NON-NLS-1$
-						masterClock.getUpTimer().getUptime(), unitManager.toString()));
-			}
+//			if (debug) {
+//				logger.fine(Msg.getString("Simulation.log.clockPulseUnitManager", //$NON-NLS-1$
+//						masterClock.getUpTimer().getUptime(), unitManager.toString()));
+//			}
 			unitManager.timePassing(time);
-			ut.updateTime();
+//			ut.updateTime();
 
-			if (debug) {
-				logger.fine(Msg.getString("Simulation.log.clockPulseScientificStudyManager", //$NON-NLS-1$
-						masterClock.getUpTimer().getUptime(), scientificStudyManager.toString()));
-			}
+//			if (debug) {
+//				logger.fine(Msg.getString("Simulation.log.clockPulseScientificStudyManager", //$NON-NLS-1$
+//						masterClock.getUpTimer().getUptime(), scientificStudyManager.toString()));
+//			}
 			scientificStudyManager.updateStudies();
-			ut.updateTime();
+//			ut.updateTime();
 
-			if (debug) {
-				logger.fine(Msg.getString("Simulation.log.clockPulseTransportManager", //$NON-NLS-1$
-						masterClock.getUpTimer().getUptime(), transportManager.toString()));
-			}
+//			if (debug) {
+//				logger.fine(Msg.getString("Simulation.log.clockPulseTransportManager", //$NON-NLS-1$
+//						masterClock.getUpTimer().getUptime(), transportManager.toString()));
+//			}
 			transportManager.timePassing(time);
 
 		}

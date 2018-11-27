@@ -49,7 +49,7 @@ implements Lab, Serializable {
     private Map<String, Integer> tissueCultureMap;
     //private List<String> tissueCultureList;
     
-    private static BuildingConfig config;
+    private static BuildingConfig buildingConfig;
     private static MarsClock marsClock;
     
     /**
@@ -60,19 +60,19 @@ implements Lab, Serializable {
         // Use Function constructor
         super(FUNCTION, building);
 
-        config = SimulationConfig.instance().getBuildingConfiguration();
+        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
         marsClock = Simulation.instance().getMasterClock().getMarsClock();
         
         setupTissueCultures();
         
         String type = building.getBuildingType();
-        techLevel = config.getResearchTechLevel(type);
-        researcherCapacity = config.getResearchCapacity(type);
-        researchSpecialties = config.getResearchSpecialties(type);
+        techLevel = buildingConfig.getResearchTechLevel(type);
+        researcherCapacity = buildingConfig.getResearchCapacity(type);
+        researchSpecialties = buildingConfig.getResearchSpecialties(type);
 
         // Load activity spots
-        loadActivitySpots(config.getResearchActivitySpots(type));
+        loadActivitySpots(buildingConfig.getResearchActivitySpots(type));
     }
 
     /**
@@ -87,10 +87,7 @@ implements Lab, Serializable {
 
         double result = 0D;
 
-        if (config == null)
-        	config = SimulationConfig.instance().getBuildingConfiguration();
-        
-        List<ScienceType> specialties = config.getResearchSpecialties(buildingName);
+        List<ScienceType> specialties = buildingConfig.getResearchSpecialties(buildingName);
 
         for (ScienceType specialty : specialties) {
             double researchDemand = 0D;
@@ -122,8 +119,8 @@ implements Lab, Serializable {
 
             double existingResearchValue = researchDemand / (researchSupply + 1D);
 
-            int techLevel = config.getResearchTechLevel(buildingName);
-            int labSize = config.getResearchCapacity(buildingName);
+            int techLevel = buildingConfig.getResearchTechLevel(buildingName);
+            int labSize = buildingConfig.getResearchCapacity(buildingName);
             double buildingResearchSupply = techLevel * labSize;
 
             result += buildingResearchSupply * existingResearchValue;
@@ -219,9 +216,11 @@ implements Lab, Serializable {
 	 * Reloads instances after loading from a saved sim
 	 * 
 	 * @param clock
+	 * @param bc
 	 */
-	public static void justReloaded(MarsClock clock) {
+	public static void justReloaded(MarsClock clock, BuildingConfig bc) {
 		marsClock = clock;
+		buildingConfig = bc;
 	}
 	
     /**

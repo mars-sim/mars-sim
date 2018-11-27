@@ -71,9 +71,10 @@ implements Serializable {
 	// an atmospheric opacity (Tau) of 0.748 and a solar array dust factor of 0.549.
 	
 	private Coordinates location ;
-	private SurfaceFeatures surface ;
-	private Mars mars;
-	private OrbitInfo orbitInfo;
+	
+	private static SurfaceFeatures surface ;
+	private static Mars mars;
+	private static OrbitInfo orbitInfo;
 	
 	/**
 	 * Constructor.
@@ -82,7 +83,12 @@ implements Serializable {
 	public SolarPowerSource(double maxPower) {
 		// Call PowerSource constructor.
 		super(PowerSourceType.SOLAR_POWER, maxPower);
-
+        if (mars == null)
+        	mars = Simulation.instance().getMars();
+		if (surface == null)
+			surface = mars.getSurfaceFeatures();
+        if (orbitInfo == null)
+            orbitInfo = mars.getOrbitInfo();
 	}
 
 	/***
@@ -93,10 +99,10 @@ implements Serializable {
 
 		if (location == null)
 			location = settlement.getCoordinates();
-        if (mars == null)
-        	mars = Simulation.instance().getMars();
-		if (surface == null)
-			surface = mars.getSurfaceFeatures();
+//        if (mars == null)
+//        	mars = Simulation.instance().getMars();
+//		if (surface == null)
+//			surface = mars.getSurfaceFeatures();
 		double tau = surface.getOpticalDepth(location);		
 	
 		// e.g. The Material Adherence Experiement (MAE) on Pathfinder indicate steady dust accumulation on the Martian 
@@ -116,14 +122,14 @@ implements Serializable {
 		BuildingManager manager = building.getBuildingManager();
 		if (location == null)
 			location = manager.getSettlement().getCoordinates();
-        if (mars == null)
-        	mars = Simulation.instance().getMars();
-		if (surface == null)
-			surface = mars.getSurfaceFeatures();
+//        if (mars == null)
+//        	mars = Simulation.instance().getMars();
+//		if (surface == null)
+//			surface = mars.getSurfaceFeatures();
 		double area = AUXILLARY_PANEL_AREA;
 		if (building.getBuildingType().equalsIgnoreCase("Solar Photovoltaic Array")) {
-	        if (orbitInfo == null)
-	            orbitInfo = mars.getOrbitInfo();
+//	        if (orbitInfo == null)
+//	            orbitInfo = mars.getOrbitInfo();
 			double angle = orbitInfo.getSolarZenithAngle(location);
 			//logger.info("angle : " + angle/ Math.PI*180D);
 			// assuming the total area will change from 3 full panels to 1 panel based on the solar zenith angle 
@@ -181,6 +187,18 @@ implements Serializable {
 	public void setTime(double time) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 * @param s
+	 */
+	public static void justReloaded(Mars m, SurfaceFeatures s) {
+		mars = m;
+		surface = s;
+		orbitInfo = m.getOrbitInfo();
 	}
 	
 	@Override

@@ -28,7 +28,7 @@ implements Serializable {
 
 	private static final FunctionType FUNCTION = FunctionType.GROUND_VEHICLE_MAINTENANCE;
 
-	private static BuildingConfig config;
+	private static BuildingConfig buildingConfig;
 	
 	/**
 	 * Constructor.
@@ -38,18 +38,18 @@ implements Serializable {
 		// Call VehicleMaintenance constructor.
 		super(FUNCTION, building);
 
-		config = SimulationConfig.instance().getBuildingConfiguration();
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
-		vehicleCapacity = config.getVehicleCapacity(building.getBuildingType());
+		vehicleCapacity = buildingConfig.getVehicleCapacity(building.getBuildingType());
 
-		int parkingLocationNum = config.getParkingLocationNumber(building.getBuildingType());
+		int parkingLocationNum = buildingConfig.getParkingLocationNumber(building.getBuildingType());
 		for (int x = 0; x < parkingLocationNum; x++) {
-			Point2D.Double parkingLocationPoint = config.getParkingLocation(building.getBuildingType(), x);
+			Point2D.Double parkingLocationPoint = buildingConfig.getParkingLocation(building.getBuildingType(), x);
 			addParkingLocation(parkingLocationPoint.getX(), parkingLocationPoint.getY());
 		}
 		
 		// Load activity spots
-        loadActivitySpots(config.getGroundVehicleMaintenanceActivitySpots(building.getBuildingType()));
+        loadActivitySpots(buildingConfig.getGroundVehicleMaintenanceActivitySpots(building.getBuildingType()));
 	}
 
 	/**
@@ -101,9 +101,7 @@ implements Serializable {
 
 		double vehicleCapacityValue = demand / (supply + 1D);
 
-		if (config == null)
-			config = SimulationConfig.instance().getBuildingConfiguration();
-		double vehicleCapacity = config.getVehicleCapacity(buildingName);
+		double vehicleCapacity = buildingConfig.getVehicleCapacity(buildingName);
 
 		return vehicleCapacity * vehicleCapacityValue;
 	}
@@ -119,4 +117,14 @@ implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param bc
+	 */
+	public static void justReloaded(BuildingConfig bc) {
+		buildingConfig = bc;
+	}
+	
 }

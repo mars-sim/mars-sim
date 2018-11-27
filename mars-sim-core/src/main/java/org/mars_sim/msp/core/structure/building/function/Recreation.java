@@ -30,7 +30,7 @@ implements Serializable {
     // Data members
     private int populationSupport;
 
-    private static BuildingConfig config;
+    private static BuildingConfig buildingConfig;
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -40,11 +40,11 @@ implements Serializable {
         super(FUNCTION, building);
 
         // Populate data members.
-        config = SimulationConfig.instance().getBuildingConfiguration();
-        populationSupport = config.getRecreationPopulationSupport(building.getBuildingType());
+        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        populationSupport = buildingConfig.getRecreationPopulationSupport(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getRecreationActivitySpots(building.getBuildingType()));
+        loadActivitySpots(buildingConfig.getRecreationActivitySpots(building.getBuildingType()));
     }
 
     /**
@@ -72,9 +72,9 @@ implements Serializable {
         }
 
         if (!newBuilding) {
-        	if (config == null)
-        		config = SimulationConfig.instance().getBuildingConfiguration();
-            supply -= config.getRecreationPopulationSupport(buildingName);
+//        	if (buildingConfig == null)
+//        		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+            supply -= buildingConfig.getRecreationPopulationSupport(buildingName);
             if (supply < 0D) supply = 0D;
         }
 
@@ -128,4 +128,19 @@ implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param bc
+	 */
+	public static void justReloaded(BuildingConfig bc) {
+		buildingConfig = bc;
+	}
+
+	@Override
+	public void destroy() {
+		buildingConfig = null;
+	}
+	
 }

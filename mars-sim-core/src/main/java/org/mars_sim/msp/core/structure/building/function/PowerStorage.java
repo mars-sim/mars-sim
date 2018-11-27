@@ -303,15 +303,6 @@ implements Serializable {
 				, null);
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void justReloaded(MarsClock clock) {
-		marsClock = clock;
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-	}
 	
 	@Override
 	public void timePassing(double time) {
@@ -401,5 +392,21 @@ implements Serializable {
 	public double getResistance() {
 		return r_total;
 	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 * @param bc
+	 */
+	public static void justReloaded(MarsClock clock, BuildingConfig bc) {
+		marsClock = clock;
+		buildingConfig = bc;
+	}
 
+	@Override
+	public void destroy() {
+		marsClock = null;
+		buildingConfig = null;
+	}
 }

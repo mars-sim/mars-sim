@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Inventory;
 
 /**
  * Mars represents the planet Mars in the simulation.
@@ -31,7 +30,7 @@ public class Mars implements Serializable {
 	/** Orbital information. */
 	private OrbitInfo orbitInfo;
 	/** Mars Surface as a unit container */
-	private static MarsSurface marsSurface;
+	private MarsSurface marsSurface;
 	/**
 	 * Constructor.
 	 * 

@@ -41,6 +41,8 @@ public class PowerGeneration extends Function implements Serializable {
 	private ThermalGeneration thermalGeneration;
 	private Building building;
 
+	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	
 	/**
 	 * Constructor.
 	 * 
@@ -53,10 +55,7 @@ public class PowerGeneration extends Function implements Serializable {
 		this.building = building;
 
 		// Determine power sources.
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		powerSources = config.getPowerSources(building.getBuildingType());
-
-		// thermalGeneration = building.getThermalGeneration();
+		powerSources = buildingConfig.getPowerSources(building.getBuildingType());
 
 	}
 
@@ -81,7 +80,7 @@ public class PowerGeneration extends Function implements Serializable {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				PowerGeneration powerFunction = (PowerGeneration) building.getFunction(FUNCTION);
+				PowerGeneration powerFunction = building.getPowerGeneration();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += getPowerSourceSupply(powerFunction.powerSources, settlement) * wearModifier;
 			}
@@ -89,8 +88,8 @@ public class PowerGeneration extends Function implements Serializable {
 
 		double existingPowerValue = demand / (supply + 1D);
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		double powerSupply = getPowerSourceSupply(config.getPowerSources(buildingName), settlement);
+//		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+		double powerSupply = getPowerSourceSupply(buildingConfig.getPowerSources(buildingName), settlement);
 
 		return powerSupply * existingPowerValue;
 	}
@@ -322,6 +321,15 @@ public class PowerGeneration extends Function implements Serializable {
 		return powerGeneratedCache;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param bc
+	 */
+	public static void justReloaded(BuildingConfig bc) {
+		buildingConfig = bc;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

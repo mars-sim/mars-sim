@@ -86,13 +86,18 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	/** Caches */
 	protected Map<Integer, Integer> equipmentNeededCache;
-
-	private static MissionManager missionManager = Simulation.instance().getMissionManager();
+	
+	// static instances
+	private static Simulation sim = Simulation.instance();
+	protected static MissionManager missionManager = sim.getMissionManager(); 
+	// TODO : had NullPointerException not necesarily available at the start of the sim ?
 
 	protected VehicleMission(String missionName, MissionMember startingMember, int minPeople) {
 		// Use TravelMission constructor.
 		super(missionName, startingMember, minPeople);
 
+		missionManager = sim.getMissionManager();
+		
 		description = missionName;
 		this.startingMember = startingMember;
 
@@ -119,6 +124,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// Use TravelMission constructor.
 		super(missionName, startingMember, minPeople);
 
+		missionManager = sim.getMissionManager();
+		
 		description = missionName;
 		this.startingMember = startingMember;
 
@@ -1286,7 +1293,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public static boolean hasEmbarkingMissions(Settlement settlement) {
 		boolean result = false;
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = sim.getMissionManager().getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			if (EMBARKING.equals(i.next().getPhase())) {
 				result = true;
@@ -1305,7 +1312,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public static int numEmbarkingMissions(Settlement settlement) {
 		int result = 0;
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = sim.getMissionManager().getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			if (EMBARKING.equals(i.next().getPhase())) {
 				result++;
@@ -1317,9 +1324,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 	/**
 	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param mgr
 	 */
-	public static void justReloaded() {
-		missionManager = Simulation.instance().getMissionManager();
+	public static void justReloaded(MissionManager mgr) {
+		missionManager = mgr;
 	}
 	
 	@Override

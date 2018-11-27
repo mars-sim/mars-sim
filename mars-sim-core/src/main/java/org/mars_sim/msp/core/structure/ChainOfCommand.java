@@ -469,9 +469,11 @@ public class ChainOfCommand implements Serializable {
 
 	/**
 	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param um
 	 */
-	public static void justReloaded() {
-		unitManager = Simulation.instance().getUnitManager();
+	public static void justReloaded(UnitManager um) {
+		unitManager = um;
 	}
 	
 	public void destroy() {

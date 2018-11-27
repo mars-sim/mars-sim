@@ -102,12 +102,17 @@ public class Weather implements Serializable {
 	private List<DustStorm> dustDevils = new CopyOnWriteArrayList<>();
 
 	private static Simulation sim = Simulation.instance();
-	private static MarsClock marsClock;
+	
 	private static SurfaceFeatures surfaceFeatures;
 	private static TerrainElevation terrainElevation;
-	private static MasterClock masterClock;
+
 	private static OrbitInfo orbitInfo;
 	private static Mars mars;
+	
+	private static MasterClock masterClock;
+	private static MarsClock marsClock;
+	
+
 
 	/** Constructs a Weather object */
 	public Weather() {
@@ -132,12 +137,33 @@ public class Weather implements Serializable {
 		TEMPERATURE_DELTA_PER_DEG_LAT = del_temperature / del_latitude;
 
 		if (masterClock == null) {
-			if (sim.getMasterClock() != null)
+			if (sim.getMasterClock() != null) {
 				masterClock = sim.getMasterClock();
+			}
 		}
 
 	}
 
+	/**
+	 * Initialize transient data in the simulation.
+	 * 
+	 * @throws Exception if transient data could not be constructed.
+	 */
+	public void initializeTransientData() {
+		if (mars == null)
+			mars = sim.getMars();
+		
+		if (orbitInfo == null)
+			orbitInfo = mars.getOrbitInfo();
+		
+		if (surfaceFeatures == null)
+			surfaceFeatures = sim.getMars().getSurfaceFeatures();
+		
+		if (terrainElevation == null)
+			terrainElevation = surfaceFeatures.getTerrainElevation();
+
+	}
+	
 	/**
 	 * Checks if a location with certain coordinates already exists and add any new
 	 * location
@@ -479,11 +505,11 @@ public class Weather implements Serializable {
 
 		double t = 0;
 
-		if (surfaceFeatures == null)
-			surfaceFeatures = sim.getMars().getSurfaceFeatures();
-
-		if (terrainElevation == null)
-			terrainElevation = surfaceFeatures.getTerrainElevation();
+//		if (surfaceFeatures == null)
+//			surfaceFeatures = sim.getMars().getSurfaceFeatures();
+//
+//		if (terrainElevation == null)
+//			terrainElevation = surfaceFeatures.getTerrainElevation();
 
 		if (surfaceFeatures.inDarkPolarRegion(location)) {
 
@@ -509,10 +535,10 @@ public class Weather implements Serializable {
 			// for
 			// over five Mars Years (MY), at the “Tleilax” site.
 
-			if (mars == null)
-				mars = sim.getMars();
-			if (orbitInfo == null)
-				orbitInfo = mars.getOrbitInfo();
+//			if (mars == null)
+//				mars = sim.getMars();
+//			if (orbitInfo == null)
+//				orbitInfo = mars.getOrbitInfo();
 
 			double L_s = orbitInfo.getL_s();
 
@@ -726,10 +752,10 @@ public class Weather implements Serializable {
 		int newSol = marsClock.getMissionSol();
 		if (newSol != solCache) {
 
-			if (mars == null)
-				mars = sim.getMars();
-			if (orbitInfo == null)
-				orbitInfo = mars.getOrbitInfo();
+//			if (mars == null)
+//				mars = sim.getMars();
+//			if (orbitInfo == null)
+//				orbitInfo = mars.getOrbitInfo();
 
 			dailyVariationAirPressure += RandomUtil.getRandomDouble(.01) - RandomUtil.getRandomDouble(.01);
 			if (dailyVariationAirPressure > .05)
@@ -1002,6 +1028,22 @@ public class Weather implements Serializable {
 		return dailyVariationAirPressure;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 * @param {{@link Mars}
+	 */
+	public static void justReloaded(MasterClock c0, MarsClock c1, Mars m) {
+		masterClock = c0;
+		marsClock = c1;
+		mars = m;	
+		surfaceFeatures = mars.getSurfaceFeatures();
+		terrainElevation = mars.getSurfaceFeatures().getTerrainElevation();
+		orbitInfo = mars.getOrbitInfo();
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

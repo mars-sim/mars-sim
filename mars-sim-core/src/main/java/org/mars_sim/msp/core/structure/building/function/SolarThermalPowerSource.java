@@ -31,8 +31,10 @@ implements Serializable {
 	
 	public static double ARRAY_AREA = 100D;		// in square feet
 	
-	private Coordinates location ;
-	private SurfaceFeatures surface ;
+	private Coordinates location;
+	
+	private static SurfaceFeatures surface;
+	
 	/**
 	 * Constructor.
 	 * @param maxPower the maximum generated power.
@@ -51,8 +53,8 @@ implements Serializable {
 		BuildingManager manager = building.getBuildingManager();
 		if (location == null)
 			location = manager.getSettlement().getCoordinates();
-		if (surface == null)
-			surface = Simulation.instance().getMars().getSurfaceFeatures();
+//		if (surface == null)
+//			surface = Simulation.instance().getMars().getSurfaceFeatures();
 		double sunlight = surface.getSolarIrradiance(location) * efficiency_solar_thermal / 1000D * ARRAY_AREA;
 		double max = getMaxPower(); 
 		if (sunlight <= max)
@@ -82,6 +84,15 @@ implements Serializable {
 	public void setTime(double time) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param s
+	 */
+	public static void justReloaded(SurfaceFeatures s) {
+		surface = s;
 	}
 	
 	@Override

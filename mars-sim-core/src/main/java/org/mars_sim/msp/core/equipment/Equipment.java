@@ -87,9 +87,11 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	/**
 	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param um
 	 */
-	public static void justReloaded() {
-		unitManager = Simulation.instance().getUnitManager();
+	public static void justReloaded(UnitManager um) {
+		unitManager = um;
 	}
 	
 	/**

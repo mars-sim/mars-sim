@@ -148,10 +148,10 @@ public class ResourceProcessing extends Function implements Serializable {
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
-	 * @param clock
+	 * @param bc
 	 */
-	public static void justReloaded() {
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	public static void justReloaded(BuildingConfig bc) {
+		buildingConfig = bc;
 	}
 	
 	/**

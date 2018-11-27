@@ -11,7 +11,6 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.Mars;
-import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -37,10 +36,10 @@ implements Serializable {
 	private double factor = 1;
 
 	private Coordinates location ;
-	private SurfaceFeatures surface ;
-	private Mars mars;
-	private OrbitInfo orbitInfo;
 	
+	private static SurfaceFeatures surface ;
+	private static Mars mars;
+
 	/**
 	 * The dust deposition rates is proportional to the dust loading. Here we use MER program's extended the analysis 
 	 * to account for variations in the atmospheric columnar dust amount.
@@ -56,6 +55,11 @@ implements Serializable {
 		// Call HeatSource constructor.
 		super(HeatSourceType.SOLAR_HEATING, maxHeat);
 		this.maxHeat = maxHeat;
+		
+        if (mars == null)
+        	mars = Simulation.instance().getMars();
+		if (surface == null)
+			surface = mars.getSurfaceFeatures();
 	}
 	
 	/***
@@ -66,10 +70,10 @@ implements Serializable {
 
 		if (location == null)
 			location = settlement.getCoordinates();
-        if (mars == null)
-        	mars = Simulation.instance().getMars();
-		if (surface == null)
-			surface = mars.getSurfaceFeatures();
+//        if (mars == null)
+//        	mars = Simulation.instance().getMars();
+//		if (surface == null)
+//			surface = mars.getSurfaceFeatures();
 		double tau = surface.getOpticalDepth(location);		
 	
 		// e.g. The Material Adherence Experiement (MAE) on Pathfinder indicate steady dust accumulation on the Martian 
@@ -80,8 +84,8 @@ implements Serializable {
 	}
 	
 	public double getCollected(Building building) {
-		if (surface == null)
-			surface = Simulation.instance().getMars().getSurfaceFeatures();
+//		if (surface == null)
+//			surface = Simulation.instance().getMars().getSurfaceFeatures();
 		return surface.getSolarIrradiance(building.getCoordinates()) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * building.getFloorArea() / 1000D ;
 	}
 
@@ -150,13 +154,24 @@ implements Serializable {
 		factor = 1D;
 	}
 	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 * @param s
+	 */
+	public static void justReloaded(Mars m, SurfaceFeatures s) {
+		mars = m;
+		surface = s;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();
 		surface = null;
 		location = null;
 		mars = null;
-		orbitInfo = null;
+//		orbitInfo = null;
 	}
 
 

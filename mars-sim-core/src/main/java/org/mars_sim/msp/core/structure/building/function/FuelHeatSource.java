@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -47,9 +46,6 @@ implements Serializable {
 	
 	private boolean toggle = false;
 	
-//	private AmountResource methaneAR;// = ResourceUtil.methaneAR;
-//	private AmountResource oxygenAR = ResourceUtil.oxygenAR;
-
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int methaneID = ResourceUtil.methaneID;
 		

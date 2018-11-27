@@ -31,6 +31,8 @@ implements Serializable {
 	private int crewCapacity;
 	private boolean hasLaunched;
 
+	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+
 	/**
 	 * Constructor.
 	 * @param building the building this function is for.
@@ -40,8 +42,7 @@ implements Serializable {
 		super(NAME, building);
 
 		// Populate data members.
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		crewCapacity = config.getEarthReturnCrewCapacity(building.getBuildingType());
+		crewCapacity = buildingConfig.getEarthReturnCrewCapacity(building.getBuildingType());
 
 		// Initialize hasLaunched to false.
 		hasLaunched = false;
@@ -72,8 +73,7 @@ implements Serializable {
 		}
 
 		if (!newBuilding) {
-			BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-			supply -= config.getEarthReturnCrewCapacity(buildingName);
+			supply -= buildingConfig.getEarthReturnCrewCapacity(buildingName);
 			if (supply < 0D) supply = 0D;
 		}
 

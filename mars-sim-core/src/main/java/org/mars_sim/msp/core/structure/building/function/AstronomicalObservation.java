@@ -33,14 +33,14 @@ public class AstronomicalObservation extends Function {
 
 	private static final FunctionType FUNCTION = FunctionType.ASTRONOMICAL_OBSERVATIONS;
 
-	private static BuildingConfig buildingConfig;
-
 	// Data members
 	private double powerRequired;
 	private int techLevel;
 	private int observatoryCapacity;
 	private int observerNum;
 
+	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	
 	/**
 	 * Constructor.
 	 * 
@@ -50,8 +50,6 @@ public class AstronomicalObservation extends Function {
 	public AstronomicalObservation(Building building) {
 		// Use function constructor.
 		super(FUNCTION, building);
-
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 		powerRequired = buildingConfig.getAstronomicalObservationPowerRequirement(building.getBuildingType());
 		techLevel = buildingConfig.getAstronomicalObservationTechLevel(building.getBuildingType());
@@ -187,8 +185,7 @@ public class AstronomicalObservation extends Function {
 
 		// Determine settlement value for this building's astronomical observatory
 		// function.
-		// BuildingConfig config =
-		// SimulationConfig.instance().getBuildingConfiguration();
+
 		int techLevel = buildingConfig.getAstronomicalObservationTechLevel(buildingName);
 		int observatorySize = buildingConfig.getAstronomicalObservationCapacity(buildingName);
 		double buildingObservatorySupply = techLevel * observatorySize;

@@ -30,6 +30,8 @@ implements Serializable {
     // Data members
     private int populationSupport;
 
+	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -39,11 +41,11 @@ implements Serializable {
         super(FUNCTION, building);
 
         // Populate data members.
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        populationSupport = config.getManagementPopulationSupport(building.getBuildingType());
+//        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        populationSupport = buildingConfig.getManagementPopulationSupport(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getManagementActivitySpots(building.getBuildingType()));
+        loadActivitySpots(buildingConfig.getManagementActivitySpots(building.getBuildingType()));
     }
 
     /**
@@ -64,15 +66,15 @@ implements Serializable {
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
         while (i.hasNext()) {
             Building managementBuilding = i.next();
-            Management management = (Management) managementBuilding.getFunction(FUNCTION);
+            Management management = managementBuilding.getManagement();
             double populationSupport = management.getPopulationSupport();
             double wearFactor = ((managementBuilding.getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
             supply += populationSupport * wearFactor;
         }
 
         if (!newBuilding) {
-            BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-            supply -= config.getManagementPopulationSupport(buildingName);
+//            BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+            supply -= buildingConfig.getManagementPopulationSupport(buildingName);
             if (supply < 0D) supply = 0D;
         }
 

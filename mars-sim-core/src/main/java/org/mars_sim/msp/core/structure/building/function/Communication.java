@@ -25,14 +25,14 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final FunctionType FUNCTION = FunctionType.COMMUNICATION;
-
-    private static BuildingConfig buildingConfig;
-    
+  
     // Data members
     private int populationSupport;
     private int user;
     private int userCapacity;
 
+    private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+    
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -42,7 +42,6 @@ implements Serializable {
         super(FUNCTION, building);
 
         // Load activity spots
-        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
         loadActivitySpots(buildingConfig.getCommunicationActivitySpots(building.getBuildingType()));
     }
 

@@ -34,7 +34,7 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ThermalSystem.class.getName());
 
-	DecimalFormat fmt = new DecimalFormat("#.####");
+//	private DecimalFormat fmt = new DecimalFormat("#.####");
 
 	// Data members
 	private double powerGeneratedCache;
@@ -53,8 +53,6 @@ implements Serializable {
 
 	private BuildingManager manager;
 	
-	//private ThermalGeneration heater;
-
 	/**
 	 * Constructor.
 	 */

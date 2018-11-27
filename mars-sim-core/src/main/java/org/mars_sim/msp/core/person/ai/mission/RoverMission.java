@@ -77,7 +77,7 @@ public abstract class RoverMission extends VehicleMission {
 
 	public static AmountResource[] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
-	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+//	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
 	// Data members
 	private Settlement startingSettlement;
@@ -968,9 +968,11 @@ public abstract class RoverMission extends VehicleMission {
 
 	/**
 	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param s
 	 */
-	public static void justReloaded() {
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
+	public static void justReloaded(SurfaceFeatures s) {
+//		surface = s;
 	}
 	
 	@Override

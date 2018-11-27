@@ -840,9 +840,6 @@ public class Farming extends Function implements Serializable {
 		marsClock = clock;
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
 		cropTypeList = new ArrayList<>(cropConfig.getCropList());
-		BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-//		surface = Simulation.instance().getMars().getSurfaceFeatures();
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();	
 	}
 	
 	/**

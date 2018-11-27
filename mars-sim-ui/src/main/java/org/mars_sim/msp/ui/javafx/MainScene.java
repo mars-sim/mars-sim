@@ -4054,7 +4054,7 @@ public class MainScene implements ClockListener {
 			billboardTimer = new AnimationTimer() {
 				@Override
 				public void handle(final long now) {
-					if (now > lastTimerCall + 10_000_000l) {
+					if (now > lastTimerCall + 1_000_000l) {
 						if (x < -textLengthInPixel) {
 							x = matrix.getCols() + 7;
 						}

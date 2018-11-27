@@ -97,7 +97,7 @@ public class Walk extends Task implements Serializable {
 		super(null, person, false, false, STRESS_MODIFIER, false, 0D);
 		// this.person = person;
 
-//		unitManager = Simulation.instance().getUnitManager();
+		unitManager = Simulation.instance().getUnitManager();
 		
 		// Initialize data members.
 		walkingStepIndex = 0;
@@ -1326,9 +1326,11 @@ public class Walk extends Task implements Serializable {
 
 	/**
 	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param mgr
 	 */
-	public static void justReloaded() {
-		unitManager = Simulation.instance().getUnitManager();
+	public static void justReloaded(UnitManager mgr) {
+		unitManager = mgr;
 	}
 	
 	public void destroy() {

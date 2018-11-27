@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -32,7 +31,8 @@ public class CircadianClock implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(CircadianClock.class.getName());
 
-	private static String sourceName = logger.getName();
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
 
 	/** Sleep Habit Map resolution. */
 	private static double SLEEP_INFLATION = 1.15;
@@ -103,11 +103,7 @@ public class CircadianClock implements Serializable {
 	}
 
 	public void init() {
-		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
-		// PersonConfig personConfig =
-		// SimulationConfig.instance().getPersonConfiguration();
-		// condition = person.getPhysicalCondition();
-		
+
 		sleepCycleMap = new HashMap<>();
 
 		sleepTime = new ArrayList<>();

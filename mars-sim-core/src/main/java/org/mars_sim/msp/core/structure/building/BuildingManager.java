@@ -656,7 +656,6 @@ public class BuildingManager implements Serializable {
 	 */
 	public void timePassing(double time) {
 		// check for the passing of each day
-	
 		int solElapsed = marsClock.getMissionSol();
 
 		if (solCache != solElapsed) {
@@ -669,9 +668,9 @@ public class BuildingManager implements Serializable {
 
 		numBuildings = countBuildingNum();
 
-//		for (Building b : buildings) {
-//			b.timePassing(time);
-//		}
+		for (Building b : buildings) {
+			b.timePassing(time);
+		}
 	}
 
 	/**

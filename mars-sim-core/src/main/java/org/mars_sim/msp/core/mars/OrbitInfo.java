@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * The OrbitInfo class keeps track of the orbital position of Mars
@@ -126,21 +127,18 @@ public class OrbitInfo implements Serializable {
 	/** The solar zenith angle z */
 	// private double solarZenithAngle;
 
-	/**
-	 * The point on the surface of Mars perpendicular to the Sun as Mars rotates.
-	 */
+	/**  The point on the surface of Mars perpendicular to the Sun as Mars rotates. */
 	private Coordinates sunDirection;
 
+	// static instances
 	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;
-	private static EarthClock earthClock;// = sim.getMasterClock().getEarthClock();
+	private static EarthClock earthClock;
 
 	/** Constructs an {@link OrbitInfo} object */
 	public OrbitInfo() {
 		// Set orbit coordinates to start of orbit.
-//		if (earthClock == null)
-//			earthClock = sim.getMasterClock().getEarthClock();
-
+	
 		orbitTime = 0D;
 		theta = 0D;
 
@@ -158,6 +156,16 @@ public class OrbitInfo implements Serializable {
 //		testOrbitData();
 
 		offsetL_s = computePerihelion(2043);
+	}
+	
+	/**
+	 * Initialize transient data in the simulation.
+	 * 
+	 * @throws Exception if transient data could not be constructed.
+	 */
+	public void initializeTransientData() {
+		earthClock = sim.getMasterClock().getEarthClock();
+		marsClock = sim.getMasterClock().getMarsClock();
 	}
 
 	public void testOrbitData() {
@@ -297,9 +305,6 @@ public class OrbitInfo implements Serializable {
 		// Determine new radius
 		instantaneousSunMarsDistance = 1.510818924D / (1 + (ECCENTRICITY * Math.cos(theta)));
 
-		if (earthClock == null)
-			earthClock = sim.getMasterClock().getEarthClock();
-
 //		offsetL_s = computePerihelion(earthClock.getYear());
 //		double v = getTrueAnomaly(instantaneousSunMarsDistance);
 
@@ -325,8 +330,8 @@ public class OrbitInfo implements Serializable {
 	}
 
 	public double computePerihelion() {
-		if (earthClock == null)
-			earthClock = sim.getMasterClock().getEarthClock();
+//		if (earthClock == null)
+//			earthClock = sim.getMasterClock().getEarthClock();
 
 		L_s_perihelion = 251D + .0064891 * (earthClock.getYear() - 2000);
 
@@ -411,8 +416,8 @@ public class OrbitInfo implements Serializable {
 	// Reference : https://en.wiki2.org/wiki/Solar_zenith_angle
 	public double getCosineSolarZenithAngle(Coordinates location) {
 
-		if (marsClock == null)
-			marsClock = sim.getMasterClock().getMarsClock();
+//		if (marsClock == null)
+//			marsClock = sim.getMasterClock().getMarsClock();
 
 		double solar_time = marsClock.getMillisol();
 
@@ -627,6 +632,18 @@ public class OrbitInfo implements Serializable {
 		return sunDirection;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 * @param {{@link Mars}
+	 */
+	public static void justReloaded(MarsClock c1) {
+		marsClock = c1;
+		earthClock = sim.getMasterClock().getEarthClock();
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

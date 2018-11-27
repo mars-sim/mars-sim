@@ -177,11 +177,10 @@ public class Storage extends Function implements Serializable {
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
+	 * @param bc
 	 */
-	public static void justReloaded() {
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	public static void justReloaded(BuildingConfig bc) {
+		buildingConfig = bc;
 	}
 	
 	/**

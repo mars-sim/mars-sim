@@ -111,9 +111,9 @@ public class Manufacture extends Function implements Serializable {
 
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-		printerItem = ItemResourceUtil.findItemResource(LASER_SINTERING_3D_PRINTER);
-
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+
+		printerItem = ItemResourceUtil.findItemResource(LASER_SINTERING_3D_PRINTER);
 
 		techLevel = buildingConfig.getManufactureTechLevel(building.getBuildingType());
 		maxProcesses = buildingConfig.getManufactureConcurrentProcesses(building.getBuildingType());

@@ -584,8 +584,13 @@ implements Serializable {
 		return 0;
 	}
 	
-	public static void justReloaded() {
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param bc
+	 */
+	public static void justReloaded(BuildingConfig bc) {
+		buildingConfig = bc;
 	}
 	
 	@Override

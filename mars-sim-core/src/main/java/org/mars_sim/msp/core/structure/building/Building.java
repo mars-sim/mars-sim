@@ -10,10 +10,8 @@ package org.mars_sim.msp.core.structure.building;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -38,7 +36,6 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
@@ -219,6 +216,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private transient LivingAccommodations livingAccommodations;
 	private transient PreparingDessert preparingDessert;
 	private transient Cooking cooking;
+	private transient Management management;
 	private transient MedicalCare medical;
 	private transient WasteDisposal waste;
 	private transient VehicleMaintenance garage;
@@ -637,6 +635,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return lab;
 	}
 
+	public Management getManagement() {
+		if (management == null)
+			management = (Management) getFunction(FunctionType.MANAGEMENT);
+		return management;
+	}
+	
 	public Manufacture getManufacture() {
 		if (workshop == null)
 			workshop = (Manufacture) getFunction(FunctionType.MANUFACTURE);

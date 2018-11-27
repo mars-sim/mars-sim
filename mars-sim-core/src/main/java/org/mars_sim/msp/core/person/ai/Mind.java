@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonalityTraitManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -28,7 +27,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
-import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.MathUtils;
@@ -74,7 +72,7 @@ public class Mind implements Serializable {
 	/** The person's skill manager. */
 	private SkillManager skillManager;
 
-	private MissionManager missionManager;
+	private static MissionManager missionManager;
 
 	private static Simulation sim;
 	private static MarsClock marsClock;
@@ -97,6 +95,9 @@ public class Mind implements Serializable {
 		if (sim.getMasterClock() != null) // for passing maven test
 			marsClock = sim.getMasterClock().getMarsClock();
 
+		// Load the mission manager
+		missionManager = sim.getMissionManager();
+		
 		relationshipManager = sim.getRelationshipManager();
 		
 		// Construct the Big Five personality trait.
@@ -107,8 +108,7 @@ public class Mind implements Serializable {
 		emotion = new EmotionManager(person);
 		// Construct the task manager
 		taskManager = new TaskManager(this);
-		// Load the mission manager
-		missionManager = sim.getMissionManager();
+
 		// Construct the skill manager.
 		skillManager = new SkillManager(person);
 	}
@@ -122,6 +122,7 @@ public class Mind implements Serializable {
 		marsClock = clock;
 		sim = Simulation.instance();
 		relationshipManager = sim.getRelationshipManager();
+		missionManager = sim.getMissionManager();
 	}
 	
 	/**

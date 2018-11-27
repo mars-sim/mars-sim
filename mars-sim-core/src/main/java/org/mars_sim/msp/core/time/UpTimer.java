@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UpTimer.java
- * @version 3.07 2015-01-12
+ * @version 3.1.0 2018-11-26
  * @author Scott Davis
  */
 
@@ -42,7 +42,7 @@ public class UpTimer implements Serializable {
 
 	private transient boolean paused = true;
 
-	private static MasterClock masterClock;// = Simulation.instance().getMasterClock();
+	private static MasterClock masterClock;
 
     public UpTimer(MasterClock masterclock) {
     	this.masterClock = masterclock;
@@ -99,24 +99,22 @@ public class UpTimer implements Serializable {
     	result.append("s ");
 
         return result.toString();
-/*
-        String minstr = "" + minutes;
-        if (minutes < 10)
-        	minstr = "0" + minutes;
 
-        String secstr = "" + seconds;
-        if (seconds < 10) secstr = "0" + seconds;
-
-        String daystr = "";
-        if (days == 1) daystr = "" + days + " Day ";
-        else {
-            daystr = "" + days + " Days ";
-        }
-
-        String hourstr = "" + hours;
-        return daystr + hourstr + ":" + minstr + ":" + secstr;
-*/
-
+//        String minstr = "" + minutes;
+//        if (minutes < 10)
+//        	minstr = "0" + minutes;
+//
+//        String secstr = "" + seconds;
+//        if (seconds < 10) secstr = "0" + seconds;
+//
+//        String daystr = "";
+//        if (days == 1) daystr = "" + days + " Day ";
+//        else {
+//            daystr = "" + days + " Days ";
+//        }
+//
+//        String hourstr = "" + hours;
+//        return daystr + hourstr + ":" + minstr + ":" + secstr;
 
     }
 

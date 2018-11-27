@@ -126,7 +126,7 @@ public abstract class Vehicle extends Unit
 	private Settlement associatedSettlement;
 
 	// Static members
-	private static VehicleConfig config;
+	private static VehicleConfig vehicleConfig;
 	private static MissionManager missionManager;
 
 	/**
@@ -156,7 +156,7 @@ public abstract class Vehicle extends Unit
 		settlement.getInventory().storeUnit(this);
 
 		missionManager = Simulation.instance().getMissionManager();
-		config = SimulationConfig.instance().getVehicleConfiguration();
+		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 
 		// Initialize vehicle data
 		vehicleType = vehicleType.toLowerCase();
@@ -175,26 +175,26 @@ public abstract class Vehicle extends Unit
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());// "Vehicle");
 
 		// Set width and length of vehicle.
-		width = config.getWidth(vehicleType);
-		length = config.getLength(vehicleType);
+		width = vehicleConfig.getWidth(vehicleType);
+		length = vehicleConfig.getLength(vehicleType);
 
 		// Set base speed.
-		setBaseSpeed(config.getBaseSpeed(vehicleType));
+		setBaseSpeed(vehicleConfig.getBaseSpeed(vehicleType));
 
 		// Set the empty mass of the vehicle.
-		setBaseMass(config.getEmptyMass(vehicleType));
+		setBaseMass(vehicleConfig.getEmptyMass(vehicleType));
 
 		// Set the fuel efficiency of the vehicle.
-		drivetrainEfficiency = config.getDrivetrainEfficiency(getDescription()) / 100.0;
+		drivetrainEfficiency = vehicleConfig.getDrivetrainEfficiency(getDescription()) / 100.0;
 
 		// Set initial parked location and facing at settlement.
 		determinedSettlementParkedLocationAndFacing();
 
 		// Initialize operator activity spots.
-		operatorActivitySpots = new ArrayList<Point2D>(config.getOperatorActivitySpots(vehicleType));
+		operatorActivitySpots = new ArrayList<Point2D>(vehicleConfig.getOperatorActivitySpots(vehicleType));
 
 		// Initialize passenger activity spots.
-		passengerActivitySpots = new ArrayList<Point2D>(config.getPassengerActivitySpots(vehicleType));
+		passengerActivitySpots = new ArrayList<Point2D>(vehicleConfig.getPassengerActivitySpots(vehicleType));
 	}
 
 	/**
@@ -256,7 +256,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	public String getDescription(String vehicleType) {
-		return config.getDescription(vehicleType);
+		return vehicleConfig.getDescription(vehicleType);
 	}
 
 	public String getVehicleType() {
@@ -1076,10 +1076,12 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param mgr
 	 */
-	public static void justReloaded() {
-		missionManager = Simulation.instance().getMissionManager();
-		config = SimulationConfig.instance().getVehicleConfiguration();
+	public static void justReloaded(MissionManager mgr) {
+		missionManager = mgr;
+		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 	}
 
 	
