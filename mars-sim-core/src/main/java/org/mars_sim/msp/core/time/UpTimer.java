@@ -27,7 +27,7 @@ public class UpTimer implements Serializable {
 	private static final long NANOSECONDS_PER_MILLISECONDS = 1_000_000L;
 
 	/** The time limit (ms) allowed between time pulses. */
-	private static final long TIME_LIMIT = 1000L;
+	private static final long TIME_LIMIT = 1_000L;
 
 	private transient long thiscall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
 	private transient long lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
@@ -134,8 +134,8 @@ public class UpTimer implements Serializable {
             }
             else {
                 thiscall = lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
+                logger.warning("Time limit exceeded between the last and this call, resetting the total # of pulses");
                 masterClock.resetTotalPulses();
-                //logger.warning("Time limit exceeded between the last and this call, resetting the total # of pules");
                 return uptime;
             }
         }

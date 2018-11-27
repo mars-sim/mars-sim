@@ -497,6 +497,7 @@ public class MasterClock implements Serializable {
 	 */
 	public void resetTotalPulses() {
 		totalPulses = (long) (1D / adjustedTBU_ms * uptimer.getLastUptime());
+		logger.config("Resetting the pulse count to " + totalPulses + ".");
 	}
 
 	/**
@@ -684,7 +685,8 @@ public class MasterClock implements Serializable {
 
 						if (skips >= maxFrameSkips) {
 							logger.config(
-									"# of skips has reached the maximum # of frame skips. Resetting total pulse and slowing down (TBU).");
+									"# of skips : " + skips + " Max Frame skips : " + maxFrameSkips 
+									+ "Resetting the pulse count.");
 							resetTotalPulses();
 							if (currentTBU_ns > (long) (adjustedTBU_ns * 1.25))
 								currentTBU_ns = (long) (adjustedTBU_ns * 1.25);
@@ -707,8 +709,6 @@ public class MasterClock implements Serializable {
 
 					// Exit program if exitProgram flag is true.
 					if (exitProgram) {
-//						if (sim.getAutosaveTimer() != null)
-//							sim.getAutosaveTimer().shutdownNow();// .stop();
 						AutosaveScheduler.cancel();
 						System.exit(0);
 					}
@@ -899,23 +899,15 @@ public class MasterClock implements Serializable {
 	 */
 	public void setPaused(boolean isPaused, boolean showPane) {
 		if (this.isPaused != isPaused) {
+			this.isPaused = isPaused;
 			uptimer.setPaused(isPaused);
 	
-			if (isPaused) {
-//				&& sim.getAutosaveTimer() != null 
-//					&& !sim.getAutosaveTimer().isShutdown()
-//					&& !sim.getAutosaveTimer().isTerminated()) {
-				
+			if (isPaused) {			
 				AutosaveScheduler.cancel();
-//				sim.getAutosaveTimer().shutdown(); 
-				// Note: using sim (instead of Simulation.instance()) 
-				// won't work when loading a saved sim.
 			} else {
 				AutosaveScheduler.start();
-//				sim.startAutosaveTimer();
 			}
 	
-			this.isPaused = isPaused;
 			// Fire pause change to all clock listeners.
 			firePauseChange(showPane);
 			
@@ -1066,8 +1058,6 @@ public class MasterClock implements Serializable {
 
 			// Exit program if exitProgram flag is true.
 			if (exitProgram) {
-//				if (sim.getAutosaveTimer() != null)
-//					sim.getAutosaveTimer().shutdownNow();
 				AutosaveScheduler.cancel();
 				System.exit(0);
 			}

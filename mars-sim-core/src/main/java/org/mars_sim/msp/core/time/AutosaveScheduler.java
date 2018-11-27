@@ -23,10 +23,20 @@ public class AutosaveScheduler {
     static ScheduledExecutorService autosaveService = Executors.newSingleThreadScheduledExecutor();
     static ScheduledFuture<?> t;
     
+    static long lastRemainingMinutes;
+    
     static Simulation sim = Simulation.instance() ;
     static SimulationConfig simulationConfig = SimulationConfig.instance();
     static MasterClock masterClock = sim.getMasterClock();
 
+    AutosaveScheduler() {
+    	if (simulationConfig == null)
+			simulationConfig = SimulationConfig.instance();
+		
+    	lastRemainingMinutes = simulationConfig.getAutosaveInterval();
+    }
+    
+    // see https://stackoverflow.com/questions/48216740/scheduledexecutorservice-end-after-a-timeout
     static class MyTask implements Runnable {
 
         public void run() {
@@ -34,7 +44,9 @@ public class AutosaveScheduler {
         		sim = Simulation.instance();
         	if (masterClock == null)
         		masterClock = sim.getMasterClock();
+        	
         	if (sim.getAutosaveDefault()) {
+        		// Choose the type of autosave based on the setting
         		masterClock.setSaveSim(Simulation.AUTOSAVE_AS_DEFAULT, null);
         	}
         	else {
@@ -48,6 +60,7 @@ public class AutosaveScheduler {
      */
     public static void cancel() {
     	if (t != null) {
+    		lastRemainingMinutes = getRemainingMinutes();
     		t.cancel(false);
     		t = null;
     	}
@@ -60,10 +73,16 @@ public class AutosaveScheduler {
     	if (t == null) {
     		if (simulationConfig == null)
     			simulationConfig = SimulationConfig.instance();
+    		
     		int m = simulationConfig.getAutosaveInterval();
-    		t = autosaveService.scheduleAtFixedRate(new MyTask(), m,
+    		
+    		t = autosaveService.scheduleAtFixedRate(new MyTask(), lastRemainingMinutes,
     				m, TimeUnit.MINUTES);
     	}
+    }
+    
+    public static long getRemainingMinutes() {
+    	return t.getDelay(TimeUnit.MINUTES);
     }
     
     /**
@@ -75,7 +94,9 @@ public class AutosaveScheduler {
     	if (t == null) {	
     		if (simulationConfig == null)
     			simulationConfig = SimulationConfig.instance();
+    		
     		simulationConfig.setAutosaveInterval(minutes);
+    		
     		t = autosaveService.scheduleAtFixedRate(new MyTask(), minutes,
     				minutes, TimeUnit.MINUTES);
     	}

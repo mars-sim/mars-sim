@@ -50,11 +50,17 @@ public class AutosaveMenu implements BiConsumer<TextIO, RunnerData> {
 	
 	    int m = Interval.interval;
 	    
-		if (m >= 2 && m <= 360) {
+	    if (m == 0) {
+	    	// cancel
+	    	String s = "The autosave time interval remains unchanged.";
+	        terminal.printf(System.lineSeparator() + s + System.lineSeparator());
+	        logger.config(s);
+	    }
+	    
+	    else if (m <= 360) {
 			AutosaveScheduler.cancel();
 			AutosaveScheduler.start(m);   
 			String s = "The new autosave time interval is now once every " + m + " minutes.";
-
 	        terminal.printf(System.lineSeparator() + s + System.lineSeparator());
 	        logger.config(s);
 	        
@@ -63,14 +69,23 @@ public class AutosaveMenu implements BiConsumer<TextIO, RunnerData> {
 	        terminal.printf(
 	        		"Invalid value." 
 	        		+ System.lineSeparator() 
-	        		+  "Please choose a number between 2 and 360." 
+	        		+  "Please choose a number between 1 and 360 (0 to quit)" 
 	            		+ System.lineSeparator());
             
     }
 
+    /**
+     * Prints the current autosave setting
+     */
     public void printCurrentMin() {
     	int m =  SimulationConfig.instance().getAutosaveInterval();
         terminal.println("The current autosave time interval is once every " + m + " minutes."
+        		+ System.lineSeparator());
+        long r = AutosaveScheduler.getRemainingMinutes();
+        terminal.println("You have " + r + " remaining minutes in performing the next autosave"
+        		+ System.lineSeparator());
+        
+        terminal.println("Please choose a number between 1 and 360 (0 to quit)"
         		+ System.lineSeparator());
     }
     
