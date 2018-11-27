@@ -60,8 +60,6 @@ public class SurfaceFeatures implements Serializable {
 	private MineralMap mineralMap;
 	private AreothermalMap areothermalMap;
 	
-
-	
 	private List<ExploredLocation> exploredLocations;
 
 	private Map<Coordinates, Double> opticalDepthMap;// = new ConcurrentHashMap<>();
@@ -164,11 +162,7 @@ public class SurfaceFeatures implements Serializable {
 	public double getSurfaceSunlight(Coordinates location) {
 		double result = 1D;
 
-// Method 1:
-
-//      	if (sunDirection == null)
-//      		sunDirection = sim.getMars().getOrbitInfo().getSunDirection();
-//
+		// Method 1:
 //        double angleFromSun = sunDirection.getAngle(location);
 //        //System.out.print ("z1 : "+  Math.round(angleFromSun * 180D / Math.PI * 1000D)/1000D + "   ");
 //
@@ -193,34 +187,19 @@ public class SurfaceFeatures implements Serializable {
 //            result = 8.354 - 5 * angleFromSun;
 //        }
 
-// Method 2:
+		// Method 2:
+		double z = orbitInfo.getSolarZenithAngle(location);
+		// System.out.println("z2 : " + Math.round(z * 180D / Math.PI * 1000D)/1000D);
 
-//		if (orbitInfo != null) {
-			double z = orbitInfo.getSolarZenithAngle(location);
-			// System.out.println("z2 : " + Math.round(z * 180D / Math.PI * 1000D)/1000D);
-
-			// double twilightzone = .2D;
-			if (z < 1.4708) {
-				result = 1D;
-			} else if (z > 1.6708) {
-				result = 0D;
-			} else {
-				// double twilightAngle = z - 1.6708;
-				result = 8.354 - 5 * z;
-			}
-//		}
-//
-//		else {
-//
-////			if (mars == null)
-////				mars = sim.getMars();
-//
-//			// missionManager = sim.getMissionManager();
-//
-//			else {
-//				orbitInfo = mars.getOrbitInfo();
-//			}
-//		}
+		// double twilightzone = .2D;
+		if (z < 1.4708) {
+			result = 1D;
+		} else if (z > 1.6708) {
+			result = 0D;
+		} else {
+			// double twilightAngle = z - 1.6708;
+			result = 8.354 - 5 * z;
+		}
 
 		return result;
 	}
@@ -242,9 +221,6 @@ public class SurfaceFeatures implements Serializable {
 	public double computeOpticalDepth(Coordinates location) {
 
 		double tau = 0;
-
-//		if (weather == null)
-//			weather = sim.getMars().getWeather();
 
 		double newTau = 0.2237 * weather.getDailyVariationAirPressure(location);
 		// System.out.println("DailyVariationAirPressure : " +

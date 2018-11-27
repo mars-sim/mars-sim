@@ -212,12 +212,12 @@ public class RandomMineralMap implements Serializable, MineralMap {
 					emptyMap = false;
 				}
 				double totalConcentration = 0D;
-				if (result.containsKey(mineralConcentration.mineralType))
-					totalConcentration = result.get(mineralConcentration.mineralType);
+				if (result.containsKey(mineralConcentration.getMineralType()))
+					totalConcentration = result.get(mineralConcentration.getMineralType());
 				totalConcentration += effect;
 				if (totalConcentration > 100D)
 					totalConcentration = 100D;
-				result.put(mineralConcentration.mineralType, totalConcentration);
+				result.put(mineralConcentration.getMineralType(), totalConcentration);
 			}
 		}
 		return result;
@@ -336,31 +336,4 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		mineralConcentrations = null;
 	}
 
-	/**
-	 * Internal class representing a mineral concentration.
-	 */
-	@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = As.PROPERTY, property = "@class")
-	private static class MineralConcentration implements Serializable {
-		private Coordinates location;
-		private double concentration;
-		private String mineralType;
-
-		private MineralConcentration(Coordinates location, double concentration, String mineralType) {
-			this.location = location;
-			this.concentration = concentration;
-			this.mineralType = mineralType;
-		}
-
-		private Coordinates getLocation() {
-			return location;
-		}
-
-		private double getConcentration() {
-			return concentration;
-		}
-
-		private String getMineralType() {
-			return mineralType;
-		}
-	}
 }

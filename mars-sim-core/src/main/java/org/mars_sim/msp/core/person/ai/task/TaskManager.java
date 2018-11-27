@@ -54,7 +54,7 @@ public class TaskManager implements Serializable {
 	/** The cache for msolInt */
 	private double msolCache = -1.0;
 
-	private transient double totalProbCache;
+	private double totalProbCache;
 
 	private String taskNameCache = "";
 
@@ -63,7 +63,7 @@ public class TaskManager implements Serializable {
 	private String taskPhaseNameCache = "Relaxing";
 
 	/** The current task the person/robot is doing. */
-	private transient Task currentTask;
+	private Task currentTask;
 	/** The last task the person/robot was doing. */
 	private Task lastTask;
 	/** The mind of the person the task manager is responsible for. */

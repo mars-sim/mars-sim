@@ -25,6 +25,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import javafx.scene.Parent;
+import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -4010,6 +4011,9 @@ public class MainScene implements ClockListener {
 		// BorderStrokeStyle.DOTTED, CornerRadii.EMPTY, BorderWidths.FULL)));
 		dragNode = new DraggableNode(billboard, stage, 925, 54);
 
+		dragNode.setCache(true);
+		dragNode.setCacheShape(true);
+		dragNode.setCacheHint(CacheHint.SPEED);
 	}
 
 	
