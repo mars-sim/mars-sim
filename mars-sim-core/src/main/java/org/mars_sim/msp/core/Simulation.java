@@ -47,7 +47,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -403,6 +402,7 @@ public class Simulation implements ClockListener, Serializable {
 		MissionManager.setMarsClock(masterClock.getMarsClock());
 		
 		// Initialize instances
+//		MedicalManager.initializeInstances();
 		mars.initializeTransientData();
 		mars.getOrbitInfo().initializeTransientData();
 		mars.getWeather().initializeTransientData();

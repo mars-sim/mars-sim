@@ -50,6 +50,8 @@ public class SimulationConfig implements Serializable {
 	private static final Logger logger = Logger.getLogger(SimulationConfig.class.getName());
 
 	// Configuration files to load.
+	public static final String CONF = "/conf/";
+	public static final String XML = ".xml";
 	public static final String SIMULATION_FILE = "simulation";
 	public static final String PEOPLE_FILE = "people";
 	public static final String VEHICLE_FILE = "vehicles";
@@ -221,10 +223,10 @@ public class SimulationConfig implements Serializable {
 	 */
 	public static void loadConfig() {
 		// logger.info("loadConfig() is on " + Thread.currentThread().getName());
-		if (instance.simulationDoc != null) {
+		if (simulationDoc != null) {
 			instance.destroyOldConfiguration();
 		}
-		instance.loadDefaultConfiguration();
+		loadDefaultConfiguration();
 	}
 
 	/*
@@ -816,32 +818,33 @@ public class SimulationConfig implements Serializable {
 		 * [landrus, 28.11.09]: dont use filesystem separators in classloader loading
 		 * envs.
 		 */
-		String fullPathName = "/conf/" + filename + ".xml";
+		String fullPathName = CONF + filename + XML;
 		InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
 		if (stream == null)
 			throw new IOException(fullPathName + " failed to load");
 		return stream;
 	}
 
-	/*
-	 * public int testValue(String str, String name) { int result = 0;
-	 * 
-	 * if ((str == null) || str.trim().length() == 0) throw new
-	 * IllegalStateException(name +
-	 * " must be greater than zero and cannot be blank."); else { try { result =
-	 * Integer.parseInt(str);
-	 * 
-	 * if (result > 200 || result < 1) throw new IllegalStateException(name +
-	 * " must be between 1 and 200.");
-	 * 
-	 * 
-	 * } catch (NumberFormatException nfe) { System.out.println(name +
-	 * " has NumberFormatException : " + nfe.getMessage()); } }
-	 * 
-	 * return result;
-	 * 
-	 * }
-	 */
+
+//	 public int testValue(String str, String name) {
+//		int result = 0;
+//	 	if ((str == null) || str.trim().length() == 0) 
+//			throw new IllegalStateException(name + " must be greater than zero and cannot be blank."); 
+//		else {
+//			try {
+//				result = Integer.parseInt(str);
+//		 
+//			if (result > 200 || result < 1) 
+//				throw new IllegalStateException(name + " must be between 1 and 200.");
+//
+//			} catch (NumberFormatException nfe) { 
+//				System.out.println(name + " has NumberFormatException : " + nfe.getMessage()); 
+//			}
+//		}
+//		 
+//		 return result;
+//	 
+//	 } 
 
 	/**
 	 * Prepares all configuration objects for garbage collection.
