@@ -1369,7 +1369,6 @@ public class ChatUtils {
 		if (text.toLowerCase().contains("attribute")) {
 			questionText = YOU_PROMPT + "What are your natural attributes ?"; 
 			
-	        
 			responseText.append("here's a list of my natural attributes with scores ");
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
@@ -2281,6 +2280,8 @@ public class ChatUtils {
 			// incorporate help and other commands
 			int num = -1;
 
+//			System.out.println("settlementCache == null");
+			
 			if (isInteger(text, 10)) {
 				num = Integer.parseUnsignedInt(text, 10);
 			}
@@ -2347,10 +2348,14 @@ public class ChatUtils {
 			else {
 				// if not using expert mode
 				
+//				System.out.println("before askPersonRobot()");
+				
 				String[] ans = askPersonRobot(text, num, name, u);
 				
 				questionText = ans[0];
 				responseText.append(ans[1]);
+				
+//				System.out.println("after askPersonRobot()");
 			}
 		}
 

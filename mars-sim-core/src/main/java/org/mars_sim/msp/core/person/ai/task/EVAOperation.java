@@ -206,11 +206,12 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @return remaining time after performing the phase.
 	 */
 	private double walkToOutsideSitePhase(double time) {
-//    	if (person != null) {
 		// If not outside, create walk outside subtask.
 		if (person.isOutside()) {
 			setPhase(getOutsideSitePhase());
-		} else {
+		} 
+		
+		else {
 
 			if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, null)) {
 				Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, null);
@@ -221,9 +222,6 @@ public abstract class EVAOperation extends Task implements Serializable {
 				endTask();
 			}
 		}
-//    	}
-//    	else if (robot != null) {       
-//    	}
 
 		return time;
 	}

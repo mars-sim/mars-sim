@@ -73,18 +73,11 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	            return 0;
 			}
 			
-	        // Check if it is night time.
-	        if (surface == null)
-	            surface = Simulation.instance().getMars().getSurfaceFeatures();
-	        
-	        if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
-	            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-	                return 0;
-	            }
-	        }
+            // Check if it is night time.          
+            if (EVAOperation.isGettingDark(person))
+            	return 0;
 	
-	        Inventory inv = settlement.getInventory();
-	
+	        Inventory inv = settlement.getInventory();	
 	
 	        // Check at least one EVA suit at settlement.
 	        int numSuits = inv.findNumUnitsOfClass(EVASuit.class);

@@ -48,8 +48,9 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(DigLocalIce.class.getName());
 	
-    private static String sourceName = logger.getName();
-    
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			 logger.getName().length());
+
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.digLocalIce"); //$NON-NLS-1$
@@ -82,8 +83,6 @@ implements Serializable {
         // Use EVAOperation constructor.
         super(NAME, person, false, 10D);
 
-        sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
-
         settlement = person.getAssociatedSettlement();
 
         // Get an available airlock.
@@ -102,7 +101,7 @@ implements Serializable {
 
             // If bags are not available, end task.
             if (!hasBags()) {
-                logger.fine(person.getName() + " not able to find bag to collect ice.");
+                logger.fine(person.getName() + " was not able to find bag to collect ice.");
                 endTask();
             }
         }
@@ -110,7 +109,7 @@ implements Serializable {
         // Add task phases
         addPhase(COLLECT_ICE);
 
-        logger.finest(person.getName() + " starting DigLocalIce task.");
+        logger.finest(person.getName() + " was going to start digging for ice.");
     }
 
     /**
@@ -141,11 +140,11 @@ implements Serializable {
                 bag = emptyBag;
             }
             else {
-                logger.severe(person.getName() + " unable to carry empty bag");
+                logger.severe(person.getName() + " was unable to carry empty bag. Why? ");
             }
         }
         else {
-            logger.severe("Unable to find empty bag in settlement inventory");
+            logger.severe(person.getName() + " was nable to find empty bag in settlement inventory");
         }
     }
 
@@ -261,9 +260,7 @@ implements Serializable {
 	                bag.getInventory().retrieveAmountResource(iceID, collectedAmount);
 	                sInv.storeAmountResource(iceID, collectedAmount, false);
 	                sInv.addAmountSupplyAmount(iceID, collectedAmount);
-	            }
-	
-	            if (person.getInventory() != null) {
+	                
 	            	// TODO: java.lang.IllegalStateException: Unit: Bag 104 could not be retrieved
 	            	// ExitAirlock : [Alpha Base] Cheryl Halvorson had tried to exit the airlock 1 times
 		            
@@ -271,12 +268,12 @@ implements Serializable {
 		            person.getInventory().retrieveUnit(bag);
 					// Place this equipment within a settlement
 		            bag.enter(LocationCodeType.MOBILE_UNIT_4);
-		            sInv.storeUnit(bag);	            
+		            sInv.storeUnit(bag);	      
+		            
+		            // Recalculate settlement good value for output item.
+		            GoodsManager goodsManager = settlement.getGoodsManager();
+		            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(iceID), false);
 	            }
-	
-	            // Recalculate settlement good value for output item.
-	            GoodsManager goodsManager = settlement.getGoodsManager();
-	            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(iceID), false);
             }
         }
 

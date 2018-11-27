@@ -99,7 +99,7 @@ implements Serializable {
 
             // If bags are not available, end task.
             if (!hasBags()) {
-                logger.fine(person.getName() + " not able to find bag to collect regolith.");
+                logger.fine(person.getName() + " was not able to find bag to collect regolith.");
                 endTask();
             }
         }
@@ -107,7 +107,7 @@ implements Serializable {
         // Add task phases
         addPhase(COLLECT_REGOLITH);
 
-        logger.finest(person.getName() + " starting DigLocalRegolith task.");
+        logger.finest(person.getName() + " was going to start digging for regolith.");
     }
 
     /**
@@ -138,11 +138,11 @@ implements Serializable {
                 bag = emptyBag;
             }
             else {
-                logger.severe(person.getName() + " unable to carry empty bag");
+                logger.severe(person.getName() + " was unable to carry empty bag. Why? ");
             }
         }
         else {
-            logger.severe("Unable to find empty bag in settlement inventory");
+            logger.severe(person.getName() + " was unable to find empty bag in settlement inventory.");
         }
     }
 
