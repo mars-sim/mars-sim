@@ -626,7 +626,7 @@ public class EatMeal extends Task implements Serializable {
 					inv.retrieveAmountResource(ResourceUtil.waterID, amount);
 					LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person
-									+ " drink " + Math.round(amount * 1000.0) / 1.0
+									+ " drank " + Math.round(amount * 1000.0) / 1.0
 									+ " mL of water", null);
 //					LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 //						 person + " is drinking " + Math.round(amount * 1000.0)/1000.0 + "kg of water"
@@ -652,7 +652,7 @@ public class EatMeal extends Task implements Serializable {
 							setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
 						LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person
-										+ " is put on water ration and is allocated to drink " + Math.round(amount * 1000.0) / 1.0
+										+ " was put on water ration and allocated to drink no more than " + Math.round(amount * 1000.0) / 1.0
 										+ " mL of water", null);
 						if (amount > MIN) {
 							Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
@@ -671,7 +671,7 @@ public class EatMeal extends Task implements Serializable {
 								setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
 							LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
 									"[" + person.getLocationTag().getLocale() + "] " + person
-											+ " is put on water ration and is allocated to drink " + Math.round(amount * 1000.0) / 1.0
+											+ " was put on water ration and allocated to drink no more than " + Math.round(amount * 1000.0) / 1.0
 											+ " mL of water", null);
 							if (amount > MIN) {
 								Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
@@ -691,7 +691,7 @@ public class EatMeal extends Task implements Serializable {
 									setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
 								LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
 										"[" + person.getLocationTag().getLocale() + "] " + person
-												+ " is put on water ration and is allocated to drink " + Math.round(amount * 1000.0) / 1.0
+												+ " was put on water ration and allocated to drink no more than " + Math.round(amount * 1000.0) / 1.0
 												+ " mL of water", null);
 								if (amount > MIN) {
 									Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);

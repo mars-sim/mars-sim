@@ -118,7 +118,8 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 			// Initialize task phase
 			addPhase(UNLOADING);
-			setPhase(UNLOADING);
+//			setPhase(UNLOADING); 
+			// NOTE: EVAOperation will set the phase. Do NOT do it here
 			
 			LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
@@ -160,7 +161,8 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 			// Initialize task phase
 			addPhase(UNLOADING);
-			setPhase(UNLOADING);
+//			setPhase(UNLOADING); 
+			// NOTE: EVAOperation will set the phase. Do NOT do it here
 			
 			LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
@@ -193,7 +195,8 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		// Initialize phase
 		addPhase(UNLOADING);
-		setPhase(UNLOADING);
+//		setPhase(UNLOADING); 
+		// NOTE: EVAOperation will set the phase. Do NOT do it here
 
 		LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
@@ -220,7 +223,8 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		// Initialize phase
 		addPhase(UNLOADING);
-		setPhase(UNLOADING);
+//		setPhase(UNLOADING); 
+		// NOTE: EVAOperation will set the phase. Do NOT do it here
 
 		LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
 				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 

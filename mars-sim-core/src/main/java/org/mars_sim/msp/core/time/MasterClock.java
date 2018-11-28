@@ -693,7 +693,7 @@ public class MasterClock implements Serializable {
 							else
 								currentTBU_ns = (long) (currentTBU_ns * .9925); // decrement by 2.5%
 							
-							logger.config("TBU : " + Math.round(100.0 * currentTBU_ns/1_000)/100.0 + " ms");
+							logger.config("TBU : " + Math.round(100.0 * currentTBU_ns/1_000_000.0)/100.0 + " ms");
 						}
 
 						addTime();
