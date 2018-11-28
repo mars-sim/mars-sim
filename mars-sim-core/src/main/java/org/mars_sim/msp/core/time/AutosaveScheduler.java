@@ -36,7 +36,6 @@ public class AutosaveScheduler {
     	lastRemainingMinutes = simulationConfig.getAutosaveInterval();
     }
     
-    // see https://stackoverflow.com/questions/48216740/scheduledexecutorservice-end-after-a-timeout
     static class MyTask implements Runnable {
 
         public void run() {
@@ -75,7 +74,7 @@ public class AutosaveScheduler {
     			simulationConfig = SimulationConfig.instance();
     		
     		int m = simulationConfig.getAutosaveInterval();
-    		
+    	    // see https://stackoverflow.com/questions/48216740/scheduledexecutorservice-end-after-a-timeout
     		t = autosaveService.scheduleAtFixedRate(new MyTask(), lastRemainingMinutes,
     				m, TimeUnit.MINUTES);
     	}
@@ -99,6 +98,23 @@ public class AutosaveScheduler {
     		
     		t = autosaveService.scheduleAtFixedRate(new MyTask(), minutes,
     				minutes, TimeUnit.MINUTES);
+    	}
+    }
+    
+    /**
+     * Starts the autosave service with a designated interval in minutes
+     * 
+     * @param minutes
+     */
+    public static void defaultStart() {
+    	if (t == null) {	
+    		if (simulationConfig == null)
+    			simulationConfig = SimulationConfig.instance();
+    		
+    		int m = simulationConfig.getAutosaveInterval();
+    		
+    		t = autosaveService.scheduleAtFixedRate(new MyTask(), m,
+    				m, TimeUnit.MINUTES);
     	}
     }
     

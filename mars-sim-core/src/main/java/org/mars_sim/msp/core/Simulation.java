@@ -484,8 +484,8 @@ public class Simulation implements ClockListener, Serializable {
 				clockExecutor.execute(masterClock.getClockThreadTask());
 		}
 
-		this.autosaveDefault = autosaveDefault;
-		AutosaveScheduler.start();
+		Simulation.autosaveDefault = autosaveDefault;
+		AutosaveScheduler.defaultStart();
 		ut = masterClock.getUpTimer();
 	}
 
@@ -1377,7 +1377,6 @@ public class Simulation implements ClockListener, Serializable {
 			masterClock.stop();
 			masterClock.setPaused(true, false);
 			masterClock.removeClockListener(this);
-//			AutosaveScheduler.cancel();
 		}
 	}
 
@@ -1389,7 +1388,6 @@ public class Simulation implements ClockListener, Serializable {
 			masterClock.addClockListener(this);
 			masterClock.setPaused(false, false);
 			masterClock.restart();
-//			AutosaveScheduler.start();
 		}
 	}
 

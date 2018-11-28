@@ -147,6 +147,8 @@ public class MasterClock implements Serializable {
 
 		// Create listener list.
 		clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
+		
+		// Calculate elapsedLast
 		elapsedLast = uptimer.getUptimeMillis();
 
 		if (!isFXGL)
@@ -497,9 +499,15 @@ public class MasterClock implements Serializable {
 	 */
 	public void resetTotalPulses() {
 		totalPulses = (long) (1D / adjustedTBU_ms * uptimer.getLastUptime());
-		logger.config("Resetting the pulse count to " + totalPulses + ".");
+		// At the start of the sim, totalPulses is zero
+		if (totalPulses > 0)
+			logger.config("Resetting the pulse count to " + totalPulses + ".");
 	}
 
+	public long getDefaultTotalPulses() {
+		return (long)(1D / adjustedTBU_ms * uptimer.getLastUptime());
+	}
+	
 	/**
 	 * Sets the simulation time ratio and adjust the value of time between update
 	 * (TBU)
@@ -742,7 +750,8 @@ public class MasterClock implements Serializable {
 
 			if (timePulse > 0 && keepRunning
 			// || !clockListenerExecutor.isTerminating()
-					&& clockListenerExecutor != null && !clockListenerExecutor.isTerminated()
+					&& clockListenerExecutor != null 
+					&& !clockListenerExecutor.isTerminated()
 					&& !clockListenerExecutor.isShutdown()) {
 
 				// Add time pulse length to Earth and Mars clocks.
@@ -750,18 +759,29 @@ public class MasterClock implements Serializable {
 				marsClock.addTime(timePulse);
 				fireClockPulse(timePulse);
 			}
-			else {
-				logger.config("The simulation appeareed to be stuck. Restarting the clock listener"); 
-				System.out.println("Restarting the master clock..."); 
-//				clockListenerExecutor.isShutdown();
-//				clockListenerExecutor = null;
-				Simulation sim = Simulation.instance();
-				sim.halt();
-				sim.proceed();
-			}
+			// NOTE: when resuming from power saving, timePulse becomes zero
+
 		}
 	}
 
+	private void shutdownAndAwaitTermination(ExecutorService pool) {
+		pool.shutdown(); // Disable new tasks from being submitted
+		try {
+		// Wait a while for existing tasks to terminate
+		if (!pool.awaitTermination(2, TimeUnit.SECONDS)) {
+			pool.shutdownNow(); // Cancel currently executing tasks
+		// Wait a while for tasks to respond to being cancelled
+			if (!pool.awaitTermination(2, TimeUnit.SECONDS))
+				System.err.println("Pool did not terminate");
+			}
+		} catch (InterruptedException ie) {
+			// (Re-)Cancel if current thread also interrupted
+			pool.shutdownNow();
+			// Preserve interrupt status
+			Thread.currentThread().interrupt();
+		}
+	}
+		   
 	/**
 	 * Checks if it is on pause or a saving process has been requested. Keeps track
 	 * of the time pulse
