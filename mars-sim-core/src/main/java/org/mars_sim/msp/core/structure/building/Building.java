@@ -334,7 +334,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		// Thread.currentThread().getName() + " Thread");
 		
 		// Place it within a settlement
-		enter(LocationCodeType.SETTLEMENT);
+//		enter(LocationCodeType.SETTLEMENT);
 		
 		this.templateID = id;
 		this.buildingType = buildingType;
@@ -486,7 +486,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected Building(BuildingManager manager) {
 		super("Mock Building", new Coordinates(0D, 0D));
 		// Place it in a settlement
-		enter(LocationCodeType.SETTLEMENT);
+//		enter(LocationCodeType.SETTLEMENT);
 	}
 
 	/**

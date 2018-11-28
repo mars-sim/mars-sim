@@ -800,7 +800,7 @@ implements Serializable {
                         if (vInv.canStoreUnit(eq, false)) {
                             sInv.retrieveUnit(eq);
                             // Put this equipment into a vehicle 
-                            eq.enter(LocationCodeType.MOBILE_UNIT_4);
+//                            eq.enter(LocationCodeType.MOBILE_UNIT_4);
                             vInv.storeUnit(eq);
                             amountLoading -= eq.getMass();
                             if (amountLoading < 0D) {
@@ -827,11 +827,11 @@ implements Serializable {
                 for (int x = 0; x < numToRemove; x++) {
                     Equipment eq = (Equipment) array[x];
                     // Take this equipment from a vehicle 
-                    eq.exit(LocationCodeType.MOBILE_UNIT_4);
+//                    eq.exit(LocationCodeType.MOBILE_UNIT_4);
 
                     vInv.retrieveUnit(eq);
                     // Put this equipment into a settlement 
-                    eq.enter(LocationCodeType.SETTLEMENT);
+//                    eq.enter(LocationCodeType.SETTLEMENT);
 
                     sInv.storeUnit(eq);
                 }

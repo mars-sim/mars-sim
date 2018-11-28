@@ -110,7 +110,7 @@ public class BuildingAirlock extends Airlock {
                     air.releaseOrRecaptureAir(building.getInhabitableID(), true, building);
 
                     // Enter a settlement
-                    person.enter(LocationCodeType.SETTLEMENT);               
+//                    person.enter(LocationCodeType.SETTLEMENT);               
                     // Put the person into the settlement
                 	inv.storeUnit(person);
                     BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
@@ -160,12 +160,11 @@ public class BuildingAirlock extends Airlock {
                     air.releaseOrRecaptureAir(building.getInhabitableID(), false, building);
                     
                     // Exit the settlement into its vicinity
-                    person.exit(LocationCodeType.SETTLEMENT);
+//                    person.exit(LocationCodeType.SETTLEMENT);
                     // Take the person out of the settlement
                     inv.retrieveUnit(person);
                     BuildingManager.removePersonOrRobotFromBuilding(person, building);
-                    
-                    
+                                     
           			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
         	  				"[" + person.getLocationTag().getLocale() + "] "
         					+ person

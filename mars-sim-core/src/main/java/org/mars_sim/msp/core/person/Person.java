@@ -235,10 +235,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		super.setDescription(settlement.getName());
 
 		this.pid = getNextCount();
-		// Place this person within a settlement
-		enter(LocationCodeType.SETTLEMENT);
-		// Place this person within a building
-		enter(LocationCodeType.BUILDING);
+//		// Place this person within a settlement
+//		enter(LocationCodeType.SETTLEMENT);
+//		// Place this person within a building
+//		enter(LocationCodeType.BUILDING);
 		
 		// Initialize data members
 		this.name = name;

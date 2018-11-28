@@ -54,8 +54,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
-	
-	
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleGarage"); //$NON-NLS-1$
 
@@ -119,10 +118,12 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			// Initialize task phase
 			addPhase(UNLOADING);
 			setPhase(UNLOADING);
-			
-			LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-					+ " in " + person.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName() + ".", null);
+
+			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
+							+ person.getLocationTag().getImmediateLocation() + " was going to unload "
+							+ vehicle.getName() + ".",
+					null);
 		} else
 			endTask();
 	}
@@ -161,10 +162,12 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			// Initialize task phase
 			addPhase(UNLOADING);
 			setPhase(UNLOADING);
-			
-			LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
-					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-					+ " in " + robot.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName() + ".", null);
+
+			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
+							+ robot.getLocationTag().getImmediateLocation() + " was going to unload "
+							+ vehicle.getName() + ".",
+					null);
 		} else
 			endTask();
 	}
@@ -195,10 +198,12 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		addPhase(UNLOADING);
 		setPhase(UNLOADING);
 
-		LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
-				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-				+ " in " + person.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName() + ".", null);
-		
+		LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
+						+ person.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName()
+						+ ".",
+				null);
+
 //		logger.fine(person.getName() + " is unloading " + vehicle.getName());
 	}
 
@@ -222,10 +227,12 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		addPhase(UNLOADING);
 		setPhase(UNLOADING);
 
-		LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
-				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-				+ " in " + robot.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName() + ".", null);
-		
+		LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
+						+ robot.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName()
+						+ ".",
+				null);
+
 //		logger.fine(robot.getName() + " is unloading " + vehicle.getName());
 	}
 
@@ -408,15 +415,19 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		Inventory settlementInv = settlement.getInventory();
 
-//		if (person != null)
-//			LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-//				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-//				+ " in " + person.getLocationTag().getImmediateLocation() + " proceeded to unload " + vehicle.getName() + ".", null);
-//		else 
-//			LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-//					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-//					+ " in " + robot.getLocationTag().getImmediateLocation() + " proceeded to unload " + vehicle.getName() + ".", null);
-//		
+		if (person != null)
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
+							+ person.getLocationTag().getImmediateLocation() + " proceeded to unload "
+							+ vehicle.getName() + ".",
+					null);
+		else
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
+							+ robot.getLocationTag().getImmediateLocation() + " proceeded to unload "
+							+ vehicle.getName() + ".",
+					null);
+
 		// Unload equipment.
 		if (amountUnloading > 0D) {
 			Iterator<Unit> k = vehicleInv.findAllUnitsOfClass(Equipment.class).iterator();
@@ -429,18 +440,22 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				vehicleInv.retrieveUnit(equipment);
 				settlementInv.storeUnit(equipment);
 				amountUnloading -= equipment.getMass();
-				
-				if (person != null)				
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-						+ " in " + person.getLocationTag().getImmediateLocation() + " unloaded " + equipment.getNickName() + " from " + vehicle.getName() + ".", null);
+
+				if (person != null)
+					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+							"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
+									+ person.getLocationTag().getImmediateLocation() + " unloaded "
+									+ equipment.getNickName() + " from " + vehicle.getName() + ".",
+							null);
 				else
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
-						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-						+ " in " + robot.getLocationTag().getImmediateLocation() + " unloaded " + equipment.getNickName() + " from " + vehicle.getName() + ".", null);
+					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+							"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
+									+ robot.getLocationTag().getImmediateLocation() + " unloaded "
+									+ equipment.getNickName() + " from " + vehicle.getName() + ".",
+							null);
 			}
 		}
-		
+
 		double totalAmount = 0;
 		// Unload amount resources.
 		Iterator<Integer> i = vehicleInv.getAllARStored(false).iterator();
@@ -460,21 +475,27 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			} catch (Exception e) {
 			}
 			amountUnloading -= amount;
-			
+
 			totalAmount += amount;
 		}
 
 		if (totalAmount > 0) {
 			if (person != null)
-				LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-					+ " in " + person.getLocationTag().getImmediateLocation() + " just unloaded a total of " + Math.round(totalAmount*100.0)/100.0 + " kg of resources from " + vehicle.getName() + ".", null);
+				LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
+								+ person.getLocationTag().getImmediateLocation() + " just unloaded a total of "
+								+ Math.round(totalAmount * 100.0) / 100.0 + " kg of resources from " + vehicle.getName()
+								+ ".",
+						null);
 			else
-				LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
-					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-					+ " in " + robot.getLocationTag().getImmediateLocation() + " just unloaded a total of " + Math.round(totalAmount*100.0)/100.0 + " kg of resources from " + vehicle.getName() + ".", null);
+				LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
+								+ robot.getLocationTag().getImmediateLocation() + " just unloaded a total of "
+								+ Math.round(totalAmount * 100.0) / 100.0 + " kg of resources from " + vehicle.getName()
+								+ ".",
+						null);
 		}
-		
+
 		int totalItems = 0;
 		// Unload item resources.
 		if (amountUnloading > 0D) {
@@ -492,16 +513,20 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				settlementInv.storeItemResources(resource, num);
 				amountUnloading -= (num * resource.getMassPerItem());
 			}
-			
+
 			if (totalItems > 0) {
 				if (person != null)
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-						+ " in " + person.getLocationTag().getImmediateLocation() + " just unloaded a total of " + totalItems + " items from " + vehicle.getName() + ".", null);
+					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+							"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
+									+ person.getLocationTag().getImmediateLocation() + " just unloaded a total of "
+									+ totalItems + " items from " + vehicle.getName() + ".",
+							null);
 				else
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
-					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-					+ " in " + robot.getLocationTag().getImmediateLocation() + " just unloaded a total of " + totalItems + " items from " + vehicle.getName() + ".", null);
+					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+							"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
+									+ robot.getLocationTag().getImmediateLocation() + " just unloaded a total of "
+									+ totalItems + " items from " + vehicle.getName() + ".",
+							null);
 			}
 		}
 
@@ -524,23 +549,25 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			Crewable crewable = (Crewable) this;
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
-					
+
 					if (person != null)
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-							+ " was retrieving the dead body of " + p + " from " + vehicle.getName() + " parked inside "
-							+ settlement, null);
+								"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+										+ " was retrieving the dead body of " + p + " from " + vehicle.getName()
+										+ " parked inside " + settlement,
+								null);
 					else
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-							"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-							+ " was retrieving the dead body of " + p + " from " + vehicle.getName() + " parked inside "
-							+ settlement, null);
-					
+								"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
+										+ " was retrieving the dead body of " + p + " from " + vehicle.getName()
+										+ " parked inside " + settlement,
+								null);
+
 					// Place this person within a settlement
-					p.enter(LocationCodeType.SETTLEMENT);
+//					p.enter(LocationCodeType.SETTLEMENT);
 					settlementInv.storeUnit(p);
 					BuildingManager.addToRandomBuilding(p, settlement);
-					
+
 //					PhysicalCondition pc = p.getPhysicalCondition();
 //					pc.handleBody();
 					// pc.retrieveBody();

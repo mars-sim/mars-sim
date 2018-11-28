@@ -401,7 +401,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 				equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
 				unitManager.addUnit(equipment);
 				// Place this equipment within a settlement
-				equipment.enter(LocationCodeType.SETTLEMENT);
+//				equipment.enter(LocationCodeType.SETTLEMENT);
 				newSettlement.getInventory().storeUnit(equipment);
 			}
 		}

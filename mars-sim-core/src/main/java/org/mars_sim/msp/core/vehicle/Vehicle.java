@@ -142,7 +142,7 @@ public abstract class Vehicle extends Unit
 		super(name, settlement.getCoordinates());
 		
 		// Place this person within a settlement
-		enter(LocationCodeType.SETTLEMENT);
+//		enter(LocationCodeType.SETTLEMENT);
 
 		this.vehicleType = vehicleType;
 
@@ -215,7 +215,7 @@ public abstract class Vehicle extends Unit
 		super(name, settlement.getCoordinates());
 		
 		// Place this person within a settlement
-		enter(LocationCodeType.SETTLEMENT);
+//		enter(LocationCodeType.SETTLEMENT);
 		
 		this.vehicleType = vehicleType;
 

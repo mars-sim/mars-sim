@@ -1159,7 +1159,7 @@ public class Walk extends Task implements Serializable {
 
 			
 			// Exit a rover inside a garage
-			person.exit(LocationCodeType.MOBILE_UNIT_3);
+//			person.exit(LocationCodeType.MOBILE_UNIT_3);
 			
 			rover.getInventory().retrieveUnit(person);
 			garageBuilding.getSettlementInventory().storeUnit(person);
@@ -1180,7 +1180,7 @@ public class Walk extends Task implements Serializable {
 					+ ") [exitingRoverGaragePhase()].", null);
 			
 			// Exit a rover inside a garage
-			robot.exit(LocationCodeType.MOBILE_UNIT_3);
+//			robot.exit(LocationCodeType.MOBILE_UNIT_3);
 			
 			rover.getInventory().retrieveUnit(robot);
 			garageBuilding.getSettlementInventory().storeUnit(robot);
@@ -1225,7 +1225,7 @@ public class Walk extends Task implements Serializable {
 					+ " and in enteringRoverInsideGaragePhase().", null);
 			
 			// Place this person within a vehicle inside a garage in a settlement
-			person.enter(LocationCodeType.MOBILE_UNIT_3);
+//			person.enter(LocationCodeType.MOBILE_UNIT_3);
 			
 			garageBuilding.getSettlementInventory().retrieveUnit(person);
 			BuildingManager.removePersonOrRobotFromBuilding(person, garageBuilding);		
@@ -1244,7 +1244,7 @@ public class Walk extends Task implements Serializable {
 					+ " and in enteringRoverInsideGaragePhase().", null);
 			
 			// Place this robot within a vehicle inside a garage in a settlement
-			robot.enter(LocationCodeType.MOBILE_UNIT_3);
+//			robot.enter(LocationCodeType.MOBILE_UNIT_3);
 			
 			garageBuilding.getSettlementInventory().retrieveUnit(robot);
 			BuildingManager.removePersonOrRobotFromBuilding(robot, garageBuilding);

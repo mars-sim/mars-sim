@@ -389,7 +389,7 @@ public class FoodProduction extends Function implements Serializable {
 							equipment.setName(Simulation.instance().getUnitManager().getNewName(UnitType.EQUIPMENT,
 									equipmentType, null, null));
 							// Place this equipment within a settlement
-							equipment.enter(LocationCodeType.SETTLEMENT);
+//							equipment.enter(LocationCodeType.SETTLEMENT);
 							inv.storeUnit(equipment);
 						}
 					}
@@ -459,7 +459,7 @@ public class FoodProduction extends Function implements Serializable {
 							equipment.setName(Simulation.instance().getUnitManager().getNewName(UnitType.EQUIPMENT,
 									equipmentType, null, null));
 							// Place this equipment within a settlement
-							equipment.enter(LocationCodeType.SETTLEMENT);
+//							equipment.enter(LocationCodeType.SETTLEMENT);
 							inv.storeUnit(equipment);
 						}
 					}

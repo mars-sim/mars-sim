@@ -146,10 +146,10 @@ public class Robot
 		// super(name, settlement.getCoordinates()); // if extending Unit
 		// super(name, null, birthplace, settlement); // if extending Person
 		
-		// Place this person within a settlement
-		enter(LocationCodeType.SETTLEMENT);
-		// Place this person within a building
-		enter(LocationCodeType.BUILDING);
+//		// Place this person within a settlement
+//		enter(LocationCodeType.SETTLEMENT);
+//		// Place this person within a building
+//		enter(LocationCodeType.BUILDING);
 		// Initialize data members.
 		this.name = name;
 		this.associatedSettlement = settlement;

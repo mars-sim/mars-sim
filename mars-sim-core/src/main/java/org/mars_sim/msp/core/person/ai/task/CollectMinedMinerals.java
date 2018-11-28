@@ -307,7 +307,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 				Bag bag = (Bag) i.next();
 				pInv.retrieveUnit(bag);
 				// Place this equipment within a rover outside on Mars
-				bag.enter(LocationCodeType.MOBILE_UNIT_4);
+//				bag.enter(LocationCodeType.MOBILE_UNIT_4);
 				rover.getInventory().storeUnit(bag);
 			}
 		}

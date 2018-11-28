@@ -91,7 +91,7 @@ extends Airlock {
 				if (person.isOutside()) {
 					
 					// Enter the vehicle from the surface of Mars
-					person.enter(LocationCodeType.MOBILE_UNIT_4);
+//					person.enter(LocationCodeType.MOBILE_UNIT_4);
 					// Exit person to inside vehicle.
 					vehicle.getInventory().storeUnit(person);
 				}
@@ -105,14 +105,14 @@ extends Airlock {
 			else if (DEPRESSURIZED.equals(getState())) {
 				if (person.isInVehicle()) {
 					
-					if (vehicle.getSettlement() == null) {
-						// Exit the vehicle and land on the surface of Mars
-						person.exit(LocationCodeType.MOBILE_UNIT_4);
-					}
-					else {
-						// Exit the vehicle and enter the settlement vicinity
-						person.exit(LocationCodeType.MOBILE_UNIT_3);
-					}
+//					if (vehicle.getSettlement() == null) {
+//						// Exit the vehicle and land on the surface of Mars
+//						person.exit(LocationCodeType.MOBILE_UNIT_4);
+//					}
+//					else {
+//						// Exit the vehicle and enter the settlement vicinity
+//						person.exit(LocationCodeType.MOBILE_UNIT_3);
+//					}
 
 					// Exit person outside vehicle.
 					vehicle.getInventory().retrieveUnit(person);

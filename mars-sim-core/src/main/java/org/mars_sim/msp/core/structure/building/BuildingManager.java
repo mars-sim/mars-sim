@@ -840,7 +840,7 @@ public class BuildingManager implements Serializable {
 		if (vehicle.getStatus() == StatusType.GARAGED) {
 			if (vehicle.getSettlement() == null) {
 				// Place this vehicle inside a building
-				vehicle.enter(LocationCodeType.BUILDING);
+//				vehicle.enter(LocationCodeType.BUILDING);
 				settlement.getInventory().storeUnit(vehicle);
 			}
 			else { 
@@ -863,7 +863,7 @@ public class BuildingManager implements Serializable {
 			openGarages.get(rand).addVehicle(vehicle);
 			if (vehicle.getSettlement() == null) {
 				// Place this vehicle inside a building
-				vehicle.enter(LocationCodeType.BUILDING);
+//				vehicle.enter(LocationCodeType.BUILDING);
 				settlement.getInventory().storeUnit(vehicle);
 				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 						"[" + settlement.getName() + "] " +  vehicle.getName() + " has just been stowed inside " + getBuilding(vehicle, settlement), null);
@@ -1403,7 +1403,7 @@ public class BuildingManager implements Serializable {
 
 					if (!lifeSupport.containsOccupant(person)) {
 						// Place this person within a building
-						person.enter(LocationCodeType.BUILDING);
+//						person.enter(LocationCodeType.BUILDING);
 						lifeSupport.addPerson(person);
 					}
 					person.setXLocation(settlementLoc.getX());
@@ -1417,7 +1417,7 @@ public class BuildingManager implements Serializable {
 
 					if (!roboticStation.containsRobotOccupant(robot)) {
 						// Place this robot within a building
-						robot.enter(LocationCodeType.BUILDING);
+//						robot.enter(LocationCodeType.BUILDING);
 						roboticStation.addRobot(robot);
 					}
 					robot.setXLocation(settlementLoc.getX());

@@ -262,7 +262,7 @@ implements Serializable {
             // Store bag.
             person.getInventory().retrieveUnit(bag);
 			// Place this equipment within a settlement
-            bag.enter(LocationCodeType.MOBILE_UNIT_4);
+//            bag.enter(LocationCodeType.MOBILE_UNIT_4);
             settlement.getInventory().storeUnit(bag);
 
             // Recalculate settlement good value for output item.

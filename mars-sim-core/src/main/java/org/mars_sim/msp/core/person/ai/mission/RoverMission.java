@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
@@ -76,8 +75,6 @@ public abstract class RoverMission extends VehicleMission {
 	private static int methaneID = ResourceUtil.methaneID;
 
 	public static AmountResource[] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
-
-//	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
 	// Data members
 	private Settlement startingSettlement;
@@ -479,7 +476,7 @@ public abstract class RoverMission extends VehicleMission {
 				}
 				
 				// Place this person within a settlement
-				p.enter(LocationCodeType.SETTLEMENT);
+//				p.enter(LocationCodeType.SETTLEMENT);
 				disembarkSettlement.getInventory().storeUnit(p);
 				
 				BuildingManager.addToRandomBuilding(p, disembarkSettlement);

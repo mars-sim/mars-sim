@@ -750,13 +750,13 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		locationCode = code;
 	}
 	
-	public void enter(LocationCodeType type) {
-		locationCode = locationCode + type.getCode();
-	}
-
-	public void exit(LocationCodeType type) {
-		locationCode = locationCode - type.getCode();
-	}
+//	public void enter(LocationCodeType type) {
+//		locationCode = locationCode + type.getCode();
+//	}
+//
+//	public void exit(LocationCodeType type) {
+//		locationCode = locationCode - type.getCode();
+//	}
 
 	
 	/**

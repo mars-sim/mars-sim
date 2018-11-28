@@ -462,7 +462,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					"[" + rover.getLocationTag().getLocale() + "] " + rover + " is being unhooked from " + towedVehicle + " at " + disembarkSettlement, null);
 
 			// Place this vehicle near settlement vicinity
-			towedVehicle.enter(LocationCodeType.SETTLEMENT_VICINITY);
+//			towedVehicle.enter(LocationCodeType.SETTLEMENT_VICINITY);
 			// Store towing and towed vehicle in settlement.
 			disembarkSettlement.getInventory().storeUnit(towedVehicle);		
 			//disembarkSettlement.getInventory().storeUnit(rover);
@@ -517,12 +517,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					}
 					
 					// Place this person within a settlement
-					p.enter(LocationCodeType.SETTLEMENT);
+//					p.enter(LocationCodeType.SETTLEMENT);
 					disembarkSettlement.getInventory().storeUnit(p);
 					
 					BuildingManager.addToRandomBuilding(p, disembarkSettlement);
 					p.setAssociatedSettlement(disembarkSettlement);
-					p.getMind().getTaskManager().clearTask();
+//					p.getMind().getTaskManager().clearTask();
 
 					HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, this,
 							p.getPhysicalCondition().getHealthSituation(), p.getTaskDescription(), p.getName(),
@@ -545,7 +545,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				}
 				
 				// Place this person within a settlement
-				p.enter(LocationCodeType.SETTLEMENT);
+//				p.enter(LocationCodeType.SETTLEMENT);
 				disembarkSettlement.getInventory().storeUnit(p);
 
 				BuildingManager.addToRandomBuilding(p, disembarkSettlement);

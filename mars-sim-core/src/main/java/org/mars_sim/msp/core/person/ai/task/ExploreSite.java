@@ -371,7 +371,7 @@ implements Serializable {
             Unit container = pInv.findUnitOfClass(SpecimenContainer.class);
             pInv.retrieveUnit(container);
          // Place this equipment within a rover outside on Mars
-            container.enter(LocationCodeType.MOBILE_UNIT_4);
+//            container.enter(LocationCodeType.MOBILE_UNIT_4);
             rover.getInventory().storeUnit(container);
         }
 

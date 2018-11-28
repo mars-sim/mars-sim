@@ -77,10 +77,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 			setContainerUnit(marsSurface);
 		}
 		
-		// Place this person within a settlement
-		enter(LocationCodeType.SETTLEMENT);
-		// Place this person within a building
-		enter(LocationCodeType.BUILDING);
+//		// Place this person within a settlement
+//		enter(LocationCodeType.SETTLEMENT);
+//		// Place this person within a building
+//		enter(LocationCodeType.BUILDING);
 
 		
 	}
