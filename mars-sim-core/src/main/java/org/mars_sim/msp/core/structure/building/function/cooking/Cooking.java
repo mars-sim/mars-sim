@@ -893,7 +893,7 @@ implements Serializable {
     		usage = 1 - rand;
 
         // If settlement is rationing water, reduce water usage according to its level
-        int level = settlement.computeWaterRation();
+        int level = settlement.getWaterRation();
         if (level != 0)
             usage = usage / 1.5D / level;
 

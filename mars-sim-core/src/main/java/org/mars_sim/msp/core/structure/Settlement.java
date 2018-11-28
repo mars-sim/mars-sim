@@ -134,9 +134,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/** Amount of time (millisols) required for periodic maintenance. */
 	// private static final double MAINTENANCE_TIME = 1000D;
 
-	/** The initial population of the settlement. */
+	/** The water ration level of the settlement. */
+	private int waterRationLevel = 1;
+	/** The number of people at the start of the settlement. */
 	private int initialPopulation;
+	/** The number of robots at the start of the settlement. */
 	private int initialNumOfRobots;
+	/** The scenario ID of the settlement. */
 	private int scenarioID;
 	
 	private int solCache = 0;
@@ -1081,21 +1085,26 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		int millisols = marsClock.getMillisolInt();
 
 		int remainder = millisols % SAMPLING_FREQ;
-		if (remainder == 0)
-			if (millisols != 1000) // will NOT check for radiation at the exact 1000 millisols in order to balance
-									// the simulation load
+		if (remainder == 0 && millisols != 1000) {
+			// will NOT check for radiation at the exact 1000 millisols in order to balance the simulation load
 				// take a sample for each critical resource
 				sampleAllResources();
-
+		}
+		
+		remainder = millisols % 100;
+		if (remainder == 0 && millisols != 1000) {
+				// Recompute the water ration level
+				computeWaterRation();
+		}
+		
 		// Check every RADIATION_CHECK_FREQ (in millisols)
 		// Compute whether a baseline, GCR, or SEP event has occurred
 		remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ;
-		if (remainder == 5)
-			// if (millisols != 1000) // will NOT check for radiation at the exact 1000
-			// millisols in order to balance the simulation load
+		if (remainder == 5 && millisols != 1000) {
 			checkRadiationProbability(time);
-
-		// Updates the goodsManager twice per sol at random time.
+		}
+		
+		// Updates the goodsManager randomly 4 times per sol .
 		updateGoodsManager(time);
 
 		// updateRegistry();
@@ -3111,50 +3120,71 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * 
 	 * @return level of water ration.
 	 */
-	public int computeWaterRation() {
-		int result = 0;
-
+	public int getWaterRation() {
+		return waterRationLevel;
+	}
+	
+	/**
+	 * Computes the water ration level at the settlement due to low water supplies.
+	 * 
+	 * @return level of water ration.
+	 */
+	public void computeWaterRation() {
 		double storedWater = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
 		double requiredDrinkingWaterOrbit = water_consumption * getNumCitizens() //getIndoorPeopleCount()
 				* MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 		// If stored water is less than 20% of required drinking water for Orbit, wash
 		// water should be rationed.
-		if (storedWater < (requiredDrinkingWaterOrbit * .0025D)) {
-			result = 11;
-			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 64;
-		} else if (storedWater < (requiredDrinkingWaterOrbit * .005D)) {
-			result = 10;
-			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 48;
-		} else if (storedWater < (requiredDrinkingWaterOrbit * .01D)) {
-			result = 9;
-			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 32;
-		} else if (storedWater < (requiredDrinkingWaterOrbit * .015D)) {
-			result = 8;
-			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 24;
-		} else if (storedWater < (requiredDrinkingWaterOrbit * .025D)) {
-			result = 7;
-			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 16;
-		} else if (storedWater < (requiredDrinkingWaterOrbit * .05D)) {
-			result = 6;
-			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 12;
-		} else if (storedWater < (requiredDrinkingWaterOrbit * .075D)) {
-			result = 5;
-			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 8;
-		} else if (storedWater < (requiredDrinkingWaterOrbit * .1D)) {
-			result = 4;
-			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 6;
-		} else if (storedWater < (requiredDrinkingWaterOrbit * .125D)) {
-			result = 3;
-			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 4;
-		} else if (storedWater < (requiredDrinkingWaterOrbit * .15D)) {
-			result = 2;
-			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 3;
-		} else if (storedWater < (requiredDrinkingWaterOrbit * .2D)) {
-			result = 1;
-			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 2;
-		}
-		return result;
+		double ratio = storedWater / requiredDrinkingWaterOrbit;
+		GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER / ratio;
+		if (GoodsManager.WATER_VALUE_MODIFIER < 1)
+			GoodsManager.WATER_VALUE_MODIFIER = 1;
+		else if (GoodsManager.WATER_VALUE_MODIFIER > 1000)
+			GoodsManager.WATER_VALUE_MODIFIER = 1000;
+		
+		waterRationLevel = (int)(1.0 / ratio);
+		
+		if (waterRationLevel < 1)
+			waterRationLevel = 1;
+		else if (waterRationLevel > 50)
+			waterRationLevel = 50;
+//				
+//		if (storedWater < (requiredDrinkingWaterOrbit * .0025D)) {
+//			result = 11;
+//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 64;
+//		} else if (storedWater < (requiredDrinkingWaterOrbit * .005D)) {
+//			result = 10;
+//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 48;
+//		} else if (storedWater < (requiredDrinkingWaterOrbit * .01D)) {
+//			result = 9;
+//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 32;
+//		} else if (storedWater < (requiredDrinkingWaterOrbit * .015D)) {
+//			result = 8;
+//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 24;
+//		} else if (storedWater < (requiredDrinkingWaterOrbit * .025D)) {
+//			result = 7;
+//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 16;
+//		} else if (storedWater < (requiredDrinkingWaterOrbit * .05D)) {
+//			result = 6;
+//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 12;
+//		} else if (storedWater < (requiredDrinkingWaterOrbit * .075D)) {
+//			result = 5;
+//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 8;
+//		} else if (storedWater < (requiredDrinkingWaterOrbit * .1D)) {
+//			result = 4;
+//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 6;
+//		} else if (storedWater < (requiredDrinkingWaterOrbit * .125D)) {
+//			result = 3;
+//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 4;
+//		} else if (storedWater < (requiredDrinkingWaterOrbit * .15D)) {
+//			result = 2;
+//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 3;
+//		} else if (storedWater < (requiredDrinkingWaterOrbit * .2D)) {
+//			result = 1;
+//			GoodsManager.WATER_VALUE_MODIFIER = GoodsManager.WATER_VALUE_MODIFIER * 2;
+//		}		
+//		waterRationLevel = result;
 	}
 
 	public void setObjective(ObjectiveType objectiveType) {

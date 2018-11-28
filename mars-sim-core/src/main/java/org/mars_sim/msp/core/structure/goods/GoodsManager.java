@@ -666,7 +666,7 @@ public class GoodsManager implements Serializable {
 	private double getPotableWaterUsageDemand(AmountResource resource) {
 		if (resource.equals(ResourceUtil.waterAR)) {
 			// Add the awareness of the water ration level in adjusting the water demand
-			double waterRationLevel = settlement.computeWaterRation();
+			double waterRationLevel = settlement.getWaterRation();
 			double amountNeededSol = personConfig.getWaterUsageRate();
 			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getIndoorPeopleCount();

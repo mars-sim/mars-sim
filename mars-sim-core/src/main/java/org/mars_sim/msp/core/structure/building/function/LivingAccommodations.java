@@ -311,7 +311,7 @@ public class LivingAccommodations extends Function implements Serializable {
 		// This includes showering, washing hands, washing dishes, etc.
 		double usage = TOILET_CHANCE * washWaterUsage * time * numBed;
 		// If settlement is rationing water, reduce water usage according to its level
-		int level = settlement.computeWaterRation();
+		int level = settlement.getWaterRation();
 		if (level != 0)
 			usage = usage / 1.5D / level / 2D;
 		// Account for people who are out there in an excursion and NOT in the

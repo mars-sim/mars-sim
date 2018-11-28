@@ -38,7 +38,6 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparedDessert
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The EatMeal class is a task for eating a meal. The duration of the task is 40
@@ -609,22 +608,26 @@ public class EatMeal extends Task implements Serializable {
 			double waterFinal = Math.min(waterEachServing, currentThirst);
 
 			if (waterFinal > 0) {
+				int level = person.getAssociatedSettlement().getWaterRation();
 
 				double new_thirst = (currentThirst - waterFinal) / 10;
 				// Test to see if there's enough water
 				boolean haswater = false;
-				if (waterFinal / 1000D > MIN)
-					haswater = Storage.retrieveAnResource(waterFinal / 1000D, ResourceUtil.waterID, inv, false);
-
+				double amount = waterFinal / 1000D / level;
+				if (amount > MIN)
+					haswater = Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
+			
 				if (haswater) {
 					condition.setThirsty(false);
-					person.setWaterRation(false);
+//					person.setWaterRation(false);
 					condition.setThirst(new_thirst);
 					if (waterOnly)
 						setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
-					double amount = waterFinal / 1000D;
 					inv.retrieveAmountResource(ResourceUtil.waterID, amount);
-					inv.addAmountDemand(ResourceUtil.waterID, amount);
+					LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
+							"[" + person.getLocationTag().getLocale() + "] " + person
+									+ " drink " + Math.round(amount * 1000.0) / 1.0
+									+ " mL of water", null);
 //					LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 //						 person + " is drinking " + Math.round(amount * 1000.0)/1000.0 + "kg of water"
 //						 + " thirst : " + Math.round(currentThirst* 100.0)/100.0
@@ -633,64 +636,75 @@ public class EatMeal extends Task implements Serializable {
 //						 + " new_thirst : " + Math.round(new_thirst* 100.0)/100.0, null);
 				}
 
-				if (person.getWaterRation() || !haswater) {
-					if (!haswater)
-						person.setWaterRation(true);
+				else if (!haswater) {
+//					if (!haswater)
+//						person.setWaterRation(true);
 					// Test to see if there's just half of the amount of water
-					if (waterFinal / 1000D  * RATION_FACTOR > MIN)
-						haswater = Storage.retrieveAnResource(waterFinal / 1000D * RATION_FACTOR, ResourceUtil.waterID, inv,
-							false);
+					amount = waterFinal / 1000D / level / 1.5;
+					if (amount > MIN)
+						haswater = Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
+					
 					if (haswater) {
 						condition.setThirsty(false);
-						new_thirst = new_thirst * (1 - RATION_FACTOR) / 2D;
+						new_thirst = new_thirst * (1 - 1/level) / 10D;
 						condition.setThirst(new_thirst);
 						if (waterOnly)
 							setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
-						double amount = waterFinal / 1000D * RATION_FACTOR;
-						LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+						LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person
-										+ " is on ration when drinking " + Math.round(amount * 1000.0) / 1000.0
-										+ " kg of water",
-								null);
+										+ " is put on water ration and is allocated to drink " + Math.round(amount * 1000.0) / 1.0
+										+ " mL of water", null);
 						if (amount > MIN) {
 							Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
 						}
 					}
-				}
-
-				if (!haswater) {
-					person.setWaterRation(true);
-					// Test to see if there's just a quarter of the amount of water
-					if (waterFinal / 2000D * RATION_FACTOR > MIN) {
-						haswater = Storage.retrieveAnResource(waterFinal / 2000D * RATION_FACTOR, ResourceUtil.waterID, inv,
-							false);
-					}
-					if (haswater) {
-						condition.setThirsty(false);
-						new_thirst = new_thirst * (1 - RATION_FACTOR) / 1.5;
-						condition.setThirst(new_thirst);
-						if (waterOnly)
-							setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
-						double amount = waterFinal / 2000D * RATION_FACTOR;
-						LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " + person
-										+ " is on ration when drinking " + Math.round(amount * 1000.0) / 1000.0
-										+ " kg of water",
-								null);
-						if (amount > MIN) {
-							Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
+					else {
+						amount = waterFinal / 1000D / level / 3.0;
+						if (amount > MIN)
+							haswater = Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
+						
+						if (haswater) {
+							condition.setThirsty(false);
+							new_thirst = new_thirst * (1 - 1/level) / 5D;
+							condition.setThirst(new_thirst);
+							if (waterOnly)
+								setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
+							LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
+									"[" + person.getLocationTag().getLocale() + "] " + person
+											+ " is put on water ration and is allocated to drink " + Math.round(amount * 1000.0) / 1.0
+											+ " mL of water", null);
+							if (amount > MIN) {
+								Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
+							}
+						}
+						
+						else {
+							amount = waterFinal / 1000D / level / 4.5;
+							if (amount > MIN)
+								haswater = Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
+							
+							if (haswater) {
+								condition.setThirsty(false);
+								new_thirst = new_thirst * (1 - 1/level) / 2.5D;
+								condition.setThirst(new_thirst);
+								if (waterOnly)
+									setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
+								LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
+										"[" + person.getLocationTag().getLocale() + "] " + person
+												+ " is put on water ration and is allocated to drink " + Math.round(amount * 1000.0) / 1.0
+												+ " mL of water", null);
+								if (amount > MIN) {
+									Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
+								}
+							}
 						}
 					}
 				}
 			}
 		}
-
-		// if (condition.getThirst() > 50) {
-		// logger.info(person + " new thirst : " + Math.round(condition.getThirst() *
-		// 1000.0)/1000.0);
-		// }
 	}
 
+	
 	/**
 	 * Eat an unprepared dessert.
 	 * 

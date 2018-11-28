@@ -1494,13 +1494,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return circadian;
 	}
 
-	public void setWaterRation(boolean value) {
-		waterRation = value;
-	}
-
-	public boolean getWaterRation() {
-		return waterRation;
-	}
+//	public void setWaterRation(boolean value) {
+//		waterRation = value;
+//	}
+//
+//	public boolean getWaterRation() {
+//		return waterRation;
+//	}
 
 	public Relax getRelax() {
 		return relax;
