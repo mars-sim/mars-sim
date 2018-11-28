@@ -812,29 +812,29 @@ implements Serializable {
      * @return true if an EVA problem.
      */
     public boolean checkEVAProblem(Person person) {	
-    	return EVAOperation.checkEVAProblem(person);
+    	return EVAOperation.noEVAProblem(person);
     }
 
 
-    /**
-     * Check for radiation exposure of the person performing this EVA.
-     * @param time the amount of time on EVA (in millisols)
+//    /**
+//     * Check for radiation exposure of the person performing this EVA.
+//     * @param time the amount of time on EVA (in millisols)
+//
+//    protected void isRadiationDetected(double time) {
+//
+//    	if (person != null) {
+//    	    int millisols =  (int) marsClock.getMillisol();
+//    		// Check every RADIATION_CHECK_FREQ (in millisols)
+//    	    // Compute whether a baseline, GCR, or SEP event has occurred
+//    	    // Note : remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ ;
+//    	    if (millisols % RadiationExposure.RADIATION_CHECK_FREQ == 0)
+//    	    	person.getPhysicalCondition().getRadiationExposure().isRadiationDetected(time);
+//
+//    	} else if (robot != null) {
+//
+//    	}
+//    }
 
-    protected void isRadiationDetected(double time) {
-
-    	if (person != null) {
-    	    int millisols =  (int) marsClock.getMillisol();
-    		// Check every RADIATION_CHECK_FREQ (in millisols)
-    	    // Compute whether a baseline, GCR, or SEP event has occurred
-    	    // Note : remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ ;
-    	    if (millisols % RadiationExposure.RADIATION_CHECK_FREQ == 0)
-    	    	person.getPhysicalCondition().getRadiationExposure().isRadiationDetected(time);
-
-    	} else if (robot != null) {
-
-    	}
-    }
-*/
 
     /**
      * Gets the person's EVA walking speed.

@@ -19,10 +19,13 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
@@ -470,6 +473,20 @@ public abstract class RoverMission extends VehicleMission {
 				if (p.isDeclaredDead()) {
 					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + "'s body had been retrieved from rover " + v.getName() + ".", null);
+
+					// Place this person within a settlement
+//					p.enter(LocationCodeType.SETTLEMENT);
+					disembarkSettlement.getInventory().storeUnit(p);
+					
+					BuildingManager.addToRandomBuilding(p, disembarkSettlement);
+					p.setAssociatedSettlement(disembarkSettlement);
+//					p.getMind().getTaskManager().clearTask();
+
+					HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, this,
+							p.getPhysicalCondition().getHealthSituation(), p.getTaskDescription(), p.getName(),
+							p.getVehicle().getName(), p.getLocationTag().getLocale());
+					Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
+					
 				} else {
 					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " came home safety on rover "+ v.getName() + ".", null);
@@ -477,9 +494,8 @@ public abstract class RoverMission extends VehicleMission {
 				
 				// Place this person within a settlement
 //				p.enter(LocationCodeType.SETTLEMENT);
-				disembarkSettlement.getInventory().storeUnit(p);
-				
-				BuildingManager.addToRandomBuilding(p, disembarkSettlement);
+//				disembarkSettlement.getInventory().storeUnit(p);
+//				BuildingManager.addToRandomBuilding(p, disembarkSettlement);
 			}
 			
 			// Reset the vehicle reservation

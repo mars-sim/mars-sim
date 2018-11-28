@@ -91,8 +91,9 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		addPhase(WINCH_VEHICLE);
 
 		LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " was taking "
-						+ (person.getGender() == GenderType.MALE ? "his" : "her") + " driving " + vehicle.getName()
+				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " took the wheel of rover "
+//						+ (person.getGender() == GenderType.MALE ? "his" : "her") + " driving " 
+						+ vehicle.getName()
 						+ ".",
 				null);
 	}
@@ -143,8 +144,9 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 			setPhase(startingPhase);
 
 		LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " was taking "
-						+ (person.getGender() == GenderType.MALE ? "his" : "her") + " driving " + vehicle.getName()
+				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " took the wheel of rover "
+//						+ (person.getGender() == GenderType.MALE ? "his" : "her") + " driving " 
+						+ vehicle.getName()
 						+ ".",
 				null);
 

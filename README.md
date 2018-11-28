@@ -74,8 +74,11 @@ For a more detail description of this project, see our project website at at htt
 ## Getting Started
 
 ### Prerequisites
-* Require JRE/JDK 8 (u77 or above) for binaries compiled under Java 8 
-* Require JRE/JDK 9+ for binaries compiled under Java 9
+* Require Java 8 (u77 or above) for binaries compiled under Java 8 
+* Require Java 9+ for binaries compiled under Java 9
+
+> Note 1 : Java 11 or OpenJDK/JFK 11 is not officially supported yet. OpenJFX 11 must be downloaded and installed apart from OpenJDK 11.
+
 * For Windows OS, one should manually set up the following : 
   - Edit the `JAVA_HOME` and `PATH` in the System's "Environment Variables" in Control Panel 
   - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-10.0.2` or `C:\Program Files\Java\jre-10.0.2`
@@ -84,13 +87,13 @@ For a more detail description of this project, see our project website at at htt
     Java that should be used. 
   - Check if the correct version of Java is being enable in "Java Control Panel" in Windows's Control Panel. 
 
-> Note 1 : The order of precedence inside `PATH` is crucial. The first available folder having Java executable inside will be the one to be loaded  by Windows OS. 
+> Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java executable inside will be the one to be loaded  by Windows OS. 
 
-> Note 2 : The BEST approach is to enable only one Java build (such as Java 10.0.2) inside `PATH` and remove  all other folders referencing other java versions/builds.
+> Note 3 : The BEST approach is to enable only one Java build (such as Java 10.0.2) inside `PATH` and remove  all other folders referencing other java versions/builds.
 
-> Note 3 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
+> Note 4 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
 
-> Note 4 : Remove all Java related executables inside the folder `C:\ProgramData\Oracle\Java\javapath` in order to avoid loading the undesired version of jre/jdk.
+> Note 5 : Remove all Java related executables inside the folder `C:\ProgramData\Oracle\Java\javapath` in order to avoid loading the undesired version of jre/jdk.
 
 
 ## Feedback/Comments

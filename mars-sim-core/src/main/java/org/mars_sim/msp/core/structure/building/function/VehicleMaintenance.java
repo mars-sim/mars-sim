@@ -118,7 +118,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		double newFacing = getBuilding().getFacing();
 		vehicle.setParkedLocation(newXLoc, newYLoc, newFacing);
 
-		logger.fine("Adding " + vehicle.getName());
+		logger.fine("Adding " + vehicle.getName() + " to " + building.getNickName() + " in " + building.getSettlement());
 	}
 
 	/**
@@ -144,7 +144,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 			
 			vehicle.determinedSettlementParkedLocationAndFacing();
 
-			logger.fine("Removing " + vehicle.getName());
+			logger.fine("Removing " + vehicle.getName() + " from " + building.getNickName() + " in " + building.getSettlement());
 		}
 	}
 

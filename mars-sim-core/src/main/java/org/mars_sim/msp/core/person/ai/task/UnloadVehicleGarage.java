@@ -551,31 +551,19 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			Crewable crewable = (Crewable) this;
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
-
-					if (person != null)
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 										+ " was retrieving the dead body of " + p + " from " + vehicle.getName()
-										+ " parked inside " + settlement,
-								null);
-					else
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-								"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
-										+ " was retrieving the dead body of " + p + " from " + vehicle.getName()
-										+ " parked inside " + settlement,
-								null);
+										+ " parked inside " + settlement, null);
 
 					// Place this person within a settlement
 //					p.enter(LocationCodeType.SETTLEMENT);
 					settlementInv.storeUnit(p);
 					BuildingManager.addToRandomBuilding(p, settlement);
 
-//					PhysicalCondition pc = p.getPhysicalCondition();
-//					pc.handleBody();
-					// pc.retrieveBody();
-					// pc.examBody(pc.getDeathDetails().getProblem());
-					// p.buryBody();
-				}
+					p.setAssociatedSettlement(settlement);
+					
+				}			
 			}
 		}
 

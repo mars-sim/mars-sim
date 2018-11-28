@@ -187,9 +187,15 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	@Override
 	protected double performMappedPhase(double time) {
-
 		if (getPhase() == null) {
-			throw new IllegalArgumentException(person + "'s Task phase is null");
+			//throw new IllegalArgumentException(person + "'s Task phase is null");
+			logger.severe(person + " has no task phase. Setting him/her upto walk outside now.");
+			if (EVAOperation.noEVAProblem(person)) {
+				return walkToOutsideSitePhase(time);
+			}
+			else {
+				return walkBackInsidePhase(time);
+			}
 		} else if (WALK_TO_OUTSIDE_SITE.equals(getPhase())) {
 			return walkToOutsideSitePhase(time);
 		} else if (WALK_BACK_INSIDE.equals(getPhase())) {
@@ -305,7 +311,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 		}
 
 		// Check if any EVA problem.
-		else if (checkEVAProblem(person)) {
+		else if (noEVAProblem(person)) {
 			result = true;
 		}
 //    	}
@@ -360,7 +366,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @param person the person.
 	 * @return true if an EVA problem.
 	 */
-	public static boolean checkEVAProblem(Person person) {
+	public static boolean noEVAProblem(Person person) {
 		
 		if (isGettingDark(person))
 			return false;
@@ -369,7 +375,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 		if (suit == null) {
 			LogConsolidated.log(
 					logger, Level.SEVERE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-							+ person.getName() + " ended " + person.getTaskDescription() + " : No EVA suit found.",
+							+ person.getName() + " ended the attempt to perform EVA because no EVA suit is available.",
 					null);
 			return false;
 		}

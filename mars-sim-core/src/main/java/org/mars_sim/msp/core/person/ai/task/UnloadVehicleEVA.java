@@ -22,13 +22,16 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionHistoricalEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -497,23 +500,27 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
 					
-					if (person != null)
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 							+ " was retrieving the dead body of " + p + " from " + vehicle.getName() 
 							+ " parked in the vicinity of "
 							+ settlement, null);
-					else
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-							"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-							+ " was retrieving the dead body of " + p + " from " + vehicle.getName() + " parked inside "
-							+ settlement, null);
+					
+
 					
 					// Place this person within a settlement
 //					p.enter(LocationCodeType.SETTLEMENT);
 					settlementInv.storeUnit(p);
-					BuildingManager.addToRandomBuilding(p, settlement);					
+					BuildingManager.addToRandomBuilding(p, settlement);			
+					
+					p.setAssociatedSettlement(settlement);
+//					p.getMind().getTaskManager().clearTask();
+
 				}
+				
+//				else {
+//					
+//				}
 			}
 		}
 

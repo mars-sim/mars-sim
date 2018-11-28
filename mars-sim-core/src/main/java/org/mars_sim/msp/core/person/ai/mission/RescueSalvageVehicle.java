@@ -510,12 +510,37 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 						LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
 								"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
 								+ p.getName() + "'s body had been retrieved from the towed rover " + towedVehicle.getName() + " during the rescue operation.", null);
+						
+						// Place this person within a settlement
+//						p.enter(LocationCodeType.SETTLEMENT);
+						disembarkSettlement.getInventory().storeUnit(p);
+						
+						BuildingManager.addToRandomBuilding(p, disembarkSettlement);
+						p.setAssociatedSettlement(disembarkSettlement);
+//						p.getMind().getTaskManager().clearTask();
+
+						HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, this,
+								p.getPhysicalCondition().getHealthSituation(), p.getTaskDescription(), p.getName(),
+								p.getVehicle().getName(), p.getLocationTag().getLocale());
+						Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
+						
 					} else {
 						LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
 								"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
 								+ " finally came home safety on the towed rover "+ towedVehicle.getName() + ".", null);
 					}
-					
+
+				}
+			}
+
+			// Retrieve the person if he/she is dead
+			for (Person p : rover.getCrew()) {
+				rover.getInventory().retrieveUnit(p);
+
+				if (p.isDeclaredDead()) {
+					LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+							"[" + p.getLocationTag().getLocale() + "] " 
+									+ p.getName() + "'s body had been retrieved from the towed rover " + towedVehicle.getName() + " during the rescue operation.", null);
 					// Place this person within a settlement
 //					p.enter(LocationCodeType.SETTLEMENT);
 					disembarkSettlement.getInventory().storeUnit(p);
@@ -528,41 +553,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 							p.getPhysicalCondition().getHealthSituation(), p.getTaskDescription(), p.getName(),
 							p.getVehicle().getName(), p.getLocationTag().getLocale());
 					Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
-				}
-			}
-
-			// Retrieve the person if he/she is dead
-			for (Person p : rover.getCrew()) {
-				rover.getInventory().retrieveUnit(p);
-
-				if (p.isDeclaredDead()) {
-					LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-							"[" + p.getLocationTag().getLocale() + "] " 
-									+ p.getName() + "'s body had been retrieved from the towed rover " + towedVehicle.getName() + " during the rescue operation.", null);
 				} else {
 					LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " finally came home safety on the towed rover "+ towedVehicle.getName() + ".", null);
+							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " successfully towed the rover "+ towedVehicle.getName() + " back home.", null);
 				}
 				
-				// Place this person within a settlement
-//				p.enter(LocationCodeType.SETTLEMENT);
-				disembarkSettlement.getInventory().storeUnit(p);
-
-				BuildingManager.addToRandomBuilding(p, disembarkSettlement);
-				p.setAssociatedSettlement(disembarkSettlement);
-				p.getMind().getTaskManager().clearTask();
-
-//				logger.info(p.getName() + " has completed the rescue operation.");
-//				 HistoricalEvent rescueEvent = new MissionHistoricalEvent(p,
-//				 this, p.getSettlement().getName(), EventType..MISSION_RESCUE_PERSON);
-//				 Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
-
 			}
-
-			// Unhook the towed vehicle this vehicle is towing if any.
-//			 if (towedVehicle instanceof Rover) {
-//			 disembarkTowedVehicles(person, (Rover) towedVehicle, disembarkSettlement);
-//			 }
 		}
 	}
 
