@@ -117,6 +117,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private static HistoricalEventManager eventManager;
 	/** An instance of the relationship manager */
 	private static RelationshipManager relationshipManager;
+	
+	private static Simulation sim = Simulation.instance();
 
 	/**
 	 * Constructs a Task object.
@@ -140,8 +142,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		this.hasDuration = hasDuration;
 		this.duration = duration;
 
-		eventManager = Simulation.instance().getEventManager();
-		relationshipManager = Simulation.instance().getRelationshipManager();
+		eventManager = sim.getEventManager();
+		relationshipManager = sim.getRelationshipManager();
 
 		Person person = null;
 		Robot robot = null;
@@ -204,8 +206,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 						robot.getLocationTag().getExtendedLocations(), "");
 			}
 
-//			if (eventManager == null)
-//				eventManager = Simulation.instance().getEventManager();
+			if (eventManager == null)
+				System.out.println("Task : eventManager == null");
 			eventManager.registerNewEvent(endingEvent);
 		}
 	}
@@ -770,9 +772,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static double getRelationshipModifier(Person person, Building building) {
 		double result = 1D;
 
-		// RelationshipManager relationshipManager =
-		// Simulation.instance().getRelationshipManager();
-
 		if ((person == null) || (building == null)) {
 			throw new IllegalArgumentException("Task.getRelationshipModifier(): null parameter.");
 		} else {
@@ -1269,8 +1268,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Reloads instances after loading from a saved sim
 	 */
 	public static void justReloaded() {
-		eventManager = Simulation.instance().getEventManager();
-		relationshipManager = Simulation.instance().getRelationshipManager();
+		sim = Simulation.instance();
+		eventManager = sim.getEventManager();
+		relationshipManager = sim.getRelationshipManager();
 	}
 	
 	/**

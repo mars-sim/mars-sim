@@ -221,7 +221,7 @@ public class EnterAirlock extends Task implements Serializable {
 				}
 				LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
-						" had entered airlock", null);
+						" had entered the airlock in " + person.getLocationTag().getImmediateLocation(), null);
 
 				setPhase(WAITING_INSIDE_AIRLOCK);
 			} else {
@@ -295,20 +295,25 @@ public class EnterAirlock extends Task implements Serializable {
 				} else {
 					remainingTime = 0D;
 				}
+				
 				boolean activationSuccessful = airlock.addCycleTime(activationTime);
 				if (!activationSuccessful) {
 					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 							+ person.getName() + " has problems with airlock activation.", null);
 				}
-			} else {
+			} 
+			
+			else {
 				// If person is not airlock operator, just wait.
 				remainingTime = 0D;
 			}
-		} else {
+		} 
+		
+		else {
 			LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 					+ " was in " + person.getLocationTag().getImmediateLocation() + 
-					" and was not inside the airlock or no longer inside the airlock.", null);
+					" and somehow was not inside its airlock.", null);
 			setPhase(EXITING_AIRLOCK);
 		}
 
@@ -340,9 +345,10 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		if (LocalAreaUtil.areLocationsClose(personLocation, interiorAirlockPos)) {
 			LogConsolidated.log(logger, Level.FINER, 0, sourceName, 
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " had exited airlock inside and going to store the EVA suit", null);
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " had exited the airlock and going to store the EVA suit", null);
 
 			setPhase(STORING_EVA_SUIT);
+			
 		} else {
 
 			// Walk to interior airlock position.
@@ -479,7 +485,7 @@ public class EnterAirlock extends Task implements Serializable {
 					addExperience(remainingTime);
 					
 					endTask();
-					// NOTE: endTask() above is absolutely needed, or else it will call storingEVASuitPhase()  
+					// NOTE: endTask() above is absolutely needed, or else it will call storingEVASuitPhase() again and again
 				}
 			}
 		}

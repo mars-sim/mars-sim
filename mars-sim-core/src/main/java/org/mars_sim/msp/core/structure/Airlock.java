@@ -125,11 +125,11 @@ public abstract class Airlock implements Serializable {
 		awaitingOuterDoor = new ArrayList<Person>();
 		
 		if (getEntity() instanceof Building) {
-			locale = ((Building)getEntity()).getSettlement().getName();
+			locale = ((Building)getEntity()).getBuildingManager().getSettlement().getName();
 		}
 		
 		else if (getEntity() instanceof Vehicle) {
-			if ( ((Vehicle)getEntity()).getSettlement() != null) {
+			if (((Vehicle)getEntity()).getSettlement() != null) {
 				locale = ((Vehicle)getEntity()).getSettlement().getName();
 			}
 			else {
@@ -322,7 +322,7 @@ public abstract class Airlock implements Serializable {
 					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " 
 						+ person.getName()
-						+ " reported that the airlock " + " in " + getEntity() + " had been " + getState() 
+						+ " reported that the airlock in " + getEntity() + " had been " + getState() 
 							+ ".", null);
 				}
 
@@ -479,11 +479,13 @@ public abstract class Airlock implements Serializable {
 						deactivateAirlock();
 					}
 				}
-			} else {
+			}
+			
+			else {
 				// If no operator, deactivate airlock.
 				deactivateAirlock();
 				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + locale + "] " 
-						+ "Airlock has no operator.  Deactivating airlock of " + getEntityName(), null);
+						+ "Airlock has no operator. Deactivating airlock of " + getEntityName(), null);
 			}
 		}
 	}

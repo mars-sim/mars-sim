@@ -38,7 +38,6 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -148,52 +147,7 @@ implements Serializable {
             endTask();
         }
     }
-    public LoadVehicleEVA(Robot robot) {
-        // Use Task constructor
-        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
-
-        /*
-        List<Rover> roversNeedingEVASuits = getRoversNeedingEVASuits(robot.getSettlement());
-        if (roversNeedingEVASuits.size() > 0) {
-            int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
-            vehicle = roversNeedingEVASuits.get(roverIndex);
-            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
-                    vehicle.getName())); //$NON-NLS-1$
-            requiredResources = new HashMap<Resource, Number>(2);
-            requiredResources.put(AmountResource.findAmountResource(LifeSupportType.WATER), 40D);
-            requiredResources.put(AmountResource.findAmountResource(LifeSupportType.OXYGEN), 10D);
-            optionalResources = new HashMap<Resource, Number>(0);
-            requiredEquipment = new HashMap<Class, Integer>(1);
-            requiredEquipment.put(EVASuit.class, 1);
-            optionalEquipment = new HashMap<Class, Integer>(0);
-            settlement = robot.getSettlement();
-        }
-
-        VehicleMission mission = getMissionNeedingLoading();
-        if ((vehicle == null) && (mission != null)) {
-            vehicle = mission.getVehicle();
-            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
-                    vehicle.getName())); //$NON-NLS-1$
-            requiredResources = mission.getRequiredResourcesToLoad();
-            optionalResources = mission.getOptionalResourcesToLoad();
-            requiredEquipment = mission.getRequiredEquipmentToLoad();
-            optionalEquipment = mission.getOptionalEquipmentToLoad();
-            settlement = robot.getSettlement();
-        }
-
-        if (vehicle != null) {
-            // Determine location for loading.
-            Point2D loadingLoc = determineLoadingLocation();
-            setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
-
-            // Initialize task phase
-            addPhase(LOADING);
-        }
-        else {
-            endTask();
-        }
-*/
-    }
+  
 
     /**
      * Constructor
@@ -237,41 +191,7 @@ implements Serializable {
         addPhase(LOADING);
     }
 
-    public LoadVehicleEVA(Robot robot, Vehicle vehicle, Map<Integer, Number> requiredResources,
-            Map<Integer, Number> optionalResources, Map<Class<? extends Equipment>, Integer> requiredEquipment,
-            Map<Class<? extends Equipment>, Integer> optionalEquipment) {
-        // Use Task constructor.
-        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
-
-/*
-        setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
-                vehicle.getName())); //$NON-NLS-1$
-        this.vehicle = vehicle;
-
-        if (requiredResources != null) {
-            this.requiredResources = new HashMap<Resource, Number>(requiredResources);
-        }
-        if (optionalResources != null) {
-            this.optionalResources = new HashMap<Resource, Number>(optionalResources);
-        }
-        if (requiredEquipment != null) {
-            this.requiredEquipment = new HashMap<Class, Integer>(requiredEquipment);
-        }
-        if (optionalEquipment != null) {
-            this.optionalEquipment = new HashMap<Class, Integer>(optionalEquipment);
-        }
-
-        settlement = robot.getSettlement();
-
-        // Determine location for loading.
-        Point2D loadingLoc = determineLoadingLocation();
-        setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
-
-        // Initialize task phase
-        addPhase(LOADING);
-
-*/
-    }
+  
 
     /**
      * Gets a list of all embarking vehicle missions at a settlement with vehicle
@@ -406,7 +326,7 @@ implements Serializable {
         time = super.performMappedPhase(time);
 
         if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
+            throw new IllegalArgumentException(person + "'s Task phase is null");
         }
         else if (LOADING.equals(getPhase())) {
             return loadingPhase(time);
@@ -940,131 +860,6 @@ implements Serializable {
     	    		 equipment, vehicleCrewNum, tripTime);
     }
     
-//        // Check input parameters.
-//        if (settlement == null) {
-//            throw new IllegalArgumentException("settlement is null");
-//        }
-//
-//        boolean enoughSupplies = true;
-//        Inventory inv = settlement.getSettlementInventory();
-//        Inventory vInv = vehicle.getSettlementInventory();
-//
-//        boolean roverInSettlement = false;
-//        if (inv.containsUnit(vehicle)) {
-//            roverInSettlement = true;
-//            inv.retrieveUnit(vehicle);
-//        }
-//
-//        // Check if there are enough resources at the settlement.
-//        Iterator<Resource> iR = resources.keySet().iterator();
-//        while (iR.hasNext()) {
-//            Resource resource = iR.next();
-//            if (resource instanceof AmountResource) {
-//                double amountNeeded = (Double) resources.get(resource);
-//                double remainingSettlementAmount = getRemainingSettlementAmount(settlement, vehicleCrewNum,
-//                        (AmountResource) resource, tripTime);
-//                double amountLoaded = vInv.getAmountResourceStored((AmountResource) resource, false);
-//                double totalNeeded = amountNeeded + remainingSettlementAmount - amountLoaded;
-//                if (inv.getAmountResourceStored((AmountResource) resource, false) < totalNeeded) {
-//                    double stored = inv.getAmountResourceStored((AmountResource) resource, false);
-//                    inv.addAmountDemandTotalRequest((AmountResource) resource);
-//                    if (logger.isLoggable(Level.INFO)) {
-//                        logger.info(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
-//                    }
-//                    enoughSupplies = false;
-//                }
-//            }
-//            else if (resource instanceof ItemResource) {
-//                int numNeeded = (Integer) resources.get(resource);
-//                int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum,
-//                        (ItemResource) resource);
-//                int numLoaded = vInv.getItemResourceNum((ItemResource) resource);
-//                int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
-//                if (inv.getItemResourceNum((ItemResource) resource) < totalNeeded) {
-//                    int stored = inv.getItemResourceNum((ItemResource) resource);
-//                    if (logger.isLoggable(Level.INFO)) {
-//                        logger.info(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
-//                    }
-//                    enoughSupplies = false;
-//                }
-//            }
-//            else {
-//                throw new IllegalStateException("Unknown resource type: " + resource);
-//            }
-//        }
-//
-//        // Check if there is enough equipment at the settlement.
-//        Iterator<Class> iE = equipment.keySet().iterator();
-//        while (iE.hasNext()) {
-//            Class equipmentType = iE.next();
-//            int numNeeded = (Integer) equipment.get(equipmentType);
-//            int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
-//            int numLoaded = vInv.findNumUnitsOfClass(equipmentType);
-//            int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
-//            if (inv.findNumEmptyUnitsOfClass(equipmentType, false) < totalNeeded) {
-//                int stored = inv.findNumEmptyUnitsOfClass(equipmentType, false);
-//                if (logger.isLoggable(Level.INFO)) {
-//                    logger.info(equipmentType + " needed: " + totalNeeded + " stored: " + stored);
-//                }
-//                enoughSupplies = false;
-//            }
-//        }
-//
-//        if (roverInSettlement) {
-//            inv.storeUnit(vehicle);
-//        }
-//
-//        return enoughSupplies;
-//    }
-
-//    /**
-//     * Gets the amount of an amount resource that should remain at the settlement.
-//     * @param settlement the settlement
-//     * @param vehicleCrewNum the number of crew leaving on the vehicle.
-//     * @param resource the amount resource
-//     * @param double tripTime the estimated trip time (millisols).
-//     * @return remaining amount (kg)
-//     */
-//    private static double getRemainingSettlementAmount(Settlement settlement, int vehicleCrewNum,
-//    		AmountResource resource, double tripTime) {
-//
-//    	return LoadVehicleGarage.getRemainingSettlementAmount(settlement, vehicleCrewNum,
-//        		resource, tripTime);
-//    }
-
-//    /**
-//     * Gets the number of an item resource that should remain at the settlement.
-//     * @param settlement the settlement
-//     * @param vehicleCrewNum the number of crew leaving on the vehicle.
-//     * @param resource the item resource
-//     * @return remaining number
-//     */
-//    private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum,
-//            ItemResource resource) {
-//        // No item resources required at settlement at this time.
-//        return 0;
-//    }
-  
-//    /**
-//     * Gets the number of an equipment type that should remain at the settlement.
-//     * @param settlement the settlement
-//     * @param vehicleCrewNum the number of crew leaving on the vehicle.
-//     * @param equipmentType the equipment type class.
-//     * @return remaining number.
-//     */
-//    private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum,
-//            Class<? extends Equipment> equipmentType) {
-//        int remainingPeopleNum = settlement.getIndoorPeopleCount() - vehicleCrewNum;
-//        // Leave one EVA suit for every four remaining people at settlement (min 1).
-//        if (equipmentType == EVASuit.class) {
-//            int minSuits = remainingPeopleNum / 4;
-//            if (minSuits == 0) {
-//                minSuits = 1;
-//            }
-//            return minSuits;
-//        }
-//        else return 0;
-//    }
 
     /**
      * Checks if a vehicle has enough storage capacity for the supplies needed on the trip.

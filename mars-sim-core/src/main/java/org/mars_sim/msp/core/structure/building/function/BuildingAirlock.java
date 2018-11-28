@@ -92,6 +92,9 @@ public class BuildingAirlock extends Airlock {
             if (PRESSURIZED.equals(getState())) {
             	// check if the airlock has been sealed from outside and pressurized, ready to 
             	// open the inner door to release the person into the settlement
+            	LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+    	  				"[" + person.getLocationTag().getLocale() 
+    	  				+ "] The airlock had been pressurized and is ready to open the inner door to release " + person + ".", null);
             	
                 if (person.isOutside()) {
                 	
@@ -99,7 +102,7 @@ public class BuildingAirlock extends Airlock {
         	  				"[" + person.getLocationTag().getLocale() + "] "
         					+ person + " was about to get inside the airlock at " + building + " in " 
                 			+ building.getBuildingManager().getSettlement()
-                			+ ". The airlock had been pressurized and is ready to open the inner door to release the person. ", null);
+                			+ ".", null);
         			
                     // Pump air into the airlock to make it breathable
                 	if (air == null)
@@ -116,9 +119,10 @@ public class BuildingAirlock extends Airlock {
         	  				"[" + person.getLocationTag().getLocale() + "] "
         					+ person + " had just got inside the airlock at " + building + " in " 
                 			+ building.getBuildingManager().getSettlement()
-                			+ ". The airlock had been pressurized and is ready to open the inner door to release the person. ", null);
+                			+ ".", null);
 
                 }
+                
                 else {
                 	//if (LocationSituation.BURIED != person.getLocationSituation()) {
 //                    throw new IllegalStateException(person + " was in " + person.getLocationTag().getImmediateLocation() + " and entering " + getEntityName() +
@@ -132,6 +136,9 @@ public class BuildingAirlock extends Airlock {
             else if (DEPRESSURIZED.equals(getState())) { 
             	// check if the airlock has been depressurized, ready to open the outer door to 
             	// get exposed to the outside air and release the person
+            	LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+    	  				"[" + person.getLocationTag().getLocale() 
+    	  				+ "] The airlock had been depressurized and is ready to open the outer door to release " + person + ".", null);
             	
             	if (person.isInSettlement()) {
           			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
@@ -139,7 +146,7 @@ public class BuildingAirlock extends Airlock {
         					+ person
                 			+ " was about to get inside the airlock at " + building + " in " 
                 			+ building.getBuildingManager().getSettlement()
-                			+ ". The airlock had been depressurized and is ready to open the outer door to release the person. ", null);
+                			+ ".", null);
           			
           			
                     // Upon depressurization, there is heat loss to the Martian air in Heating class
@@ -164,7 +171,7 @@ public class BuildingAirlock extends Airlock {
         					+ person
                 			+ " was about to leave the airlock at " + building + " in " 
                 			+ building.getBuildingManager().getSettlement()
-                			+ ". The airlock had been depressurized and is ready to open the outer door to release the person. ", null);
+                			+ ".", null);
           			
                 }
                 else {

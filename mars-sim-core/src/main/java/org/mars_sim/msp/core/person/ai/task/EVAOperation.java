@@ -189,7 +189,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	protected double performMappedPhase(double time) {
 
 		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
+			throw new IllegalArgumentException(person + "'s Task phase is null");
 		} else if (WALK_TO_OUTSIDE_SITE.equals(getPhase())) {
 			return walkToOutsideSitePhase(time);
 		} else if (WALK_BACK_INSIDE.equals(getPhase())) {

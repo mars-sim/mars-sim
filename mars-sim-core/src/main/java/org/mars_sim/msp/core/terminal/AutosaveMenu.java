@@ -43,7 +43,7 @@ public class AutosaveMenu implements BiConsumer<TextIO, RunnerData> {
         printCurrentMin();
         
         handler.addIntTask("interval", "Enter the new time interval [in mins]", false)
-    	.withInputReaderConfigurator(r -> r.withMinVal(2).withMaxVal(360));
+    	.withInputReaderConfigurator(r -> r.withMinVal(0).withMaxVal(360));
 //    	.addChoices(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
     
 	    handler.executeOneTask();
