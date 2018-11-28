@@ -29,6 +29,12 @@ public class UpTimer implements Serializable {
 	/** The time limit (ms) allowed between time pulses. */
 	private static final long TIME_LIMIT = 1_000L;
 
+	private static final String DAY = "d ";
+	private static final String HR = "h ";
+	private static final String MIN = "m ";
+	private static final String SEC = "s ";
+	private static final String ZERO = "0";
+	
 	private transient long thiscall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
 	private transient long lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
 
@@ -74,29 +80,29 @@ public class UpTimer implements Serializable {
 
         if (days > 0) {
         	result.append(days);
-        	result.append("d ");
+        	result.append(DAY);
         }
 
         if (hours < 10) {
-        	result.append("0");
+        	result.append(ZERO);
         }
 
     	result.append(hours);
-    	result.append("h ");
+    	result.append(HR);
 
         if (minutes < 10) {
-        	result.append("0");
+        	result.append(ZERO);
         }
 
     	result.append(minutes);
-    	result.append("m ");
+    	result.append(MIN);
 
         if (seconds < 10) {
-        	result.append("0");
+        	result.append(ZERO);
         }
 
     	result.append(seconds);
-    	result.append("s ");
+    	result.append(SEC);
 
         return result.toString();
 

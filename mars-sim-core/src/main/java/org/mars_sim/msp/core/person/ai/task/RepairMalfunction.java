@@ -81,7 +81,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		addPhase(REPAIRING);
 		setPhase(REPAIRING);
 
-		logger.fine(person.getName() + " repairing malfunction.");
+		logger.fine(person.getName() + " was about to repair malfunction.");
 	}
 
 	public RepairMalfunction(Robot robot) {
@@ -100,7 +100,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		addPhase(REPAIRING);
 		setPhase(REPAIRING);
 
-		logger.fine(robot.getName() + " repairing malfunction.");
+		logger.fine(robot.getName() + " was about to repair malfunction.");
 	}
 
 	/**

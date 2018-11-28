@@ -70,7 +70,7 @@ public class Malfunction implements Serializable {
 	 */
 	private Map<String, Double> repairersWorkTime;
 
-	private static MalfunctionConfig config;
+	private static MalfunctionConfig malfunctionConfig = SimulationConfig.instance().getMalfunctionConfiguration();
 
 	/**
 	 * Constructs a Malfunction object
@@ -101,7 +101,7 @@ public class Malfunction implements Serializable {
 
 		repairersWorkTime = new HashMap<>();
 
-		config = SimulationConfig.instance().getMalfunctionConfiguration();
+//		malfunctionConfig = SimulationConfig.instance().getMalfunctionConfiguration();
 
 	}
 
@@ -409,10 +409,10 @@ public class Malfunction implements Serializable {
 	void determineRepairParts() {
 		// MalfunctionConfig config =
 		// SimulationConfig.instance().getMalfunctionConfiguration();
-		String[] partNames = config.getRepairPartNamesForMalfunction(name);
+		String[] partNames = malfunctionConfig.getRepairPartNamesForMalfunction(name);
 		for (String partName : partNames) {
-			if (RandomUtil.lessThanRandPercent(config.getRepairPartProbability(name, partName))) {
-				int number = RandomUtil.getRandomRegressionInteger(config.getRepairPartNumber(name, partName));
+			if (RandomUtil.lessThanRandPercent(malfunctionConfig.getRepairPartProbability(name, partName))) {
+				int number = RandomUtil.getRandomRegressionInteger(malfunctionConfig.getRepairPartNumber(name, partName));
 				// Part part = (Part) ItemResource.findItemResource(partName);
 				repairParts.put(ItemResourceUtil.findIDbyItemResourceName(partName), number);
 				String id_string = INCIDENT_NUM + incidentNum;
@@ -485,6 +485,6 @@ public class Malfunction implements Serializable {
 		lifeSupportEffects = null;
 		medicalComplaints = null;
 		repairParts = null;
-		config = null;
+		malfunctionConfig = null;
 	}
 }

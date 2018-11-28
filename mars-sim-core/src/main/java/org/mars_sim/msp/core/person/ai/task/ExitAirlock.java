@@ -597,20 +597,17 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		else if (person.isInVehicle()) {
-
 			// Check if EVA suit is available.
 			if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
-
-				// TODO: how to have someone deliver him a working EVASuit
-				LogConsolidated.log(
-						logger, Level.WARNING, 2000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-								+ person + " could not find a working EVA suit and awaiting the response for rescue.",
-						null);
 
 				Vehicle v = person.getVehicle();
 				Mission m = person.getMind().getMission();
 				// Mission m = missionManager.getMission(person);
-
+				// TODO: how to have someone deliver him a working EVASuit
+				LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, "[" + person.getLocationTag().getLocale() 
+						+ "] " + person + " in " + v.getName() + " for " + m.getName() 
+						+ " did NOT have a working EVA suit, awaiting the response for rescue.", null);
+				
 				// TODO: should at least wait for a period of time for the EVA suit to be fixed
 				// before calling for rescue
 				if (v != null && m != null && !v.isBeaconOn() && !v.isBeingTowed()) {
@@ -622,7 +619,20 @@ public class ExitAirlock extends Task implements Serializable {
 //                	person.getMind().getNewAction(true, false);
 
 					// Repair this EVASuit by himself/herself
-					person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
+					
+					LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, "[" + person.getLocationTag().getLocale() 
+							+ "] " + person + " in " + v.getName() + " for " + m.getName() 
+							+ " will try to repair an EVA suit.", null);
+					
+					EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+					// Check if suit has any malfunctions.
+					if (suit != null && suit.getMalfunctionManager().hasMalfunction()) {
+						LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+								+ person.getName() + " ended " + person.getTaskDescription() + " since " 
+								+ suit.getName() + " has malfunctions and not usable.", null);
+					}
+					
+//					person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
 
 					if (airlock.getCheckEVASuit() > 21)
 						// Set the emergency beacon on since no EVA suit is available
@@ -689,6 +699,9 @@ public class ExitAirlock extends Task implements Serializable {
 		for (Unit u : list) {
 			EVASuit suit = (EVASuit) u;
 			boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
+			if (malfunction)
+				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + p.getLocationTag().getLocale()
+					+ "] " + p + " spotted malfunctions when examining " + suit.getName() + ".", null);
 			try {
 				boolean hasEnoughResources = hasEnoughResourcesForSuit(inv, suit);
 				if (!malfunction && hasEnoughResources) {
@@ -698,9 +711,7 @@ public class ExitAirlock extends Task implements Serializable {
 						return suit;
 				}
 			} catch (Exception e) {
-				// e.printStackTrace(System.err);
-				LogConsolidated.log(logger, Level.SEVERE, 10000, sourceName, "[" + p.getLocationTag().getLocale()
-						+ "] " + p + " detected malfunctions when examining " + suit.getName() + e.getMessage(), null);
+				e.printStackTrace(System.err);
 			}
 		}
 
@@ -751,7 +762,7 @@ public class ExitAirlock extends Task implements Serializable {
 		// it's okay even if there's not enough water
 		if (!hasEnoughWater)
 			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-					"[" + suit.getContainerUnit() + "] won't have enough water to feed " + suit.getNickName(), null);
+					"[" + suit.getContainerUnit() + "] won't have enough water to feed " + suit.getNickName() + " but can still use it.", null);
 
 		return hasEnoughOxygen;// && hasEnoughWater;
 	}

@@ -67,16 +67,17 @@ public class MalfunctionManager implements Serializable {
 	/** Initial estimate for maintenances per orbit for an entity. */
 	private static double ESTIMATED_MAINTENANCES_PER_ORBIT = 10D;
 	/** Factor for chance of malfunction by time since last maintenance. */
-	private static double MAINTENANCE_MALFUNCTION_FACTOR = .000000001D;
+	private static double MAINTENANCE_MALFUNCTION_FACTOR = .000_000_001D;
 	/** Factor for chance of malfunction due to wear condition. */
-	private static double WEAR_MALFUNCTION_FACTOR = 10D;
+	private static double WEAR_MALFUNCTION_FACTOR = 9D;
 	/** Factor for chance of accident due to wear condition. */
-	private static double WEAR_ACCIDENT_FACTOR = 5D;
+	private static double WEAR_ACCIDENT_FACTOR = 1D;
 
-	private static final String OXYGEN = "Oxygen";
-	private static final String WATER = "Water";
-	private static final String PRESSURE = "Air Pressure";
-	private static final String TEMPERATURE = "Temperature";
+//	private static final String OXYGEN = "Oxygen";
+//	private static final String WATER = "Water";
+//	private static final String PRESSURE = "Air Pressure";
+//	private static final String TEMPERATURE = "Temperature";
+	
 	private static final String PARTS_FAILURE = "Parts Failure";// due to reliability";
 
 	// Data members
@@ -102,6 +103,8 @@ public class MalfunctionManager implements Serializable {
 	 * tear. 0% = worn out -> 100% = new condition.
 	 */
 	private double wearCondition;
+	/** The max percentage between 0% to 100%.  */
+	private double maxCondition;
 	/**
 	 * The expected life time (millisols) of active use before the malfunctionable
 	 * is worn out.
@@ -704,9 +707,11 @@ public class MalfunctionManager implements Serializable {
 		// Check for malfunction due to lack of maintenance and wear condition.
 		if (RandomUtil.lessThanRandPercent(chance)) {
 			int solsLastMaint = (int) (effectiveTimeSinceLastMaintenance / 1000D);
+			// Reduce the max possible health condition
+			maxCondition = (wearCondition + 400D)/500D; 
 			LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
 					"[" + entity.getImmediateLocation() + "] " + entity.getNickName() + " is behind on maintenance.  "
-							+ "Time since last check-up: " + solsLastMaint + " sols.  Condition: " + wearCondition
+							+ "Time since last check-up: " + solsLastMaint + " sols.  Condition: " + Math.round(wearCondition*10.0)/10.0
 							+ " %.",
 					null);
 
@@ -786,10 +791,10 @@ public class MalfunctionManager implements Serializable {
 
 		// Check if any malfunctions are fixed.
 		if (hasMalfunction()) {
-			for (Malfunction malfunction : malfunctions) {
-				if (malfunction.isFixed()) {
-					System.out.println(malfunction.getName() + " is fixed.");
-					fixedMalfunctions.add(malfunction);
+			for (Malfunction m : malfunctions) {
+				if (m.isFixed()) {
+					System.out.println(m.getName() + " is fixed.");
+					fixedMalfunctions.add(m);
 				}
 			}
 		}
@@ -797,7 +802,7 @@ public class MalfunctionManager implements Serializable {
 		int size = fixedMalfunctions.size();
 		
 		if (size > 0) {
-			for (Malfunction malfunction : fixedMalfunctions) {
+			for (Malfunction m : fixedMalfunctions) {
 
 				// Reset the modifiers
 //				Map<String, Double> effects = malfunction.getLifeSupportEffects();
@@ -813,24 +818,24 @@ public class MalfunctionManager implements Serializable {
 //				}
 				
 				try {
-					getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
+					getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, m);
 				} catch (Exception e) {
 					e.printStackTrace(System.err);
 				}
 
-				String chiefRepairer = malfunction.getChiefRepairer();
+				String chiefRepairer = m.getChiefRepairer();
 
-				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, malfunction,
-						malfunction.getName(), "Repairing", chiefRepairer, entity.getImmediateLocation(),
+				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, m,
+						m.getName(), "Repairing", chiefRepairer, entity.getImmediateLocation(),
 						entity.getLocale());
 
 				Simulation.instance().getEventManager().registerNewEvent(newEvent);
 				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						"[" + entity.getLocale() + "] The malfunction '" + malfunction.getName() + "' has been fixed in "
+						"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' has been fixed in "
 						+ entity.getImmediateLocation(), null);
 			
 				// Remove the malfunction
-				malfunctions.remove(malfunction);				
+				malfunctions.remove(m);				
 			}
 		}
 	}

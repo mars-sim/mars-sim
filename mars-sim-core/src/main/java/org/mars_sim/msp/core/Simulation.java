@@ -1372,7 +1372,7 @@ public class Simulation implements ClockListener, Serializable {
 	/*
 	 * Stops and removes the master clock and pauses the simulation
 	 */
-	private void halt() {
+	public void halt() {
 		if (masterClock != null) {
 			masterClock.stop();
 			masterClock.setPaused(true, false);
@@ -1602,28 +1602,28 @@ public class Simulation implements ClockListener, Serializable {
 //						ut.getUptime(), mars.toString()));
 //			}
 			mars.timePassing(time);
-//			ut.updateTime();
+			ut.updateTime();
 
 //			if (debug) {
 //				logger.fine(Msg.getString("Simulation.log.clockPulseMissionManager", //$NON-NLS-1$
 //						masterClock.getUpTimer().getUptime(), missionManager.toString()));
 //			}
 			missionManager.timePassing(time);
-//			ut.updateTime();
+			ut.updateTime();
 
 //			if (debug) {
 //				logger.fine(Msg.getString("Simulation.log.clockPulseUnitManager", //$NON-NLS-1$
 //						masterClock.getUpTimer().getUptime(), unitManager.toString()));
 //			}
 			unitManager.timePassing(time);
-//			ut.updateTime();
+			ut.updateTime();
 
 //			if (debug) {
 //				logger.fine(Msg.getString("Simulation.log.clockPulseScientificStudyManager", //$NON-NLS-1$
 //						masterClock.getUpTimer().getUptime(), scientificStudyManager.toString()));
 //			}
 			scientificStudyManager.updateStudies();
-//			ut.updateTime();
+			ut.updateTime();
 
 //			if (debug) {
 //				logger.fine(Msg.getString("Simulation.log.clockPulseTransportManager", //$NON-NLS-1$

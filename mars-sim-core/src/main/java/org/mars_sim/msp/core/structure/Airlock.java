@@ -194,7 +194,11 @@ public abstract class Airlock implements Serializable {
 	 * @return true if airlock successfully activated.
 	 */
 	public boolean activateAirlock(Person operator) {
-
+		LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+				"[" + operator.getLocationTag().getLocale() + "] " 
+					+ operator.getName() + " was getting ready to activate the airlock at "
+					+ getEntityName(), null);
+		
 		boolean result = false;
 
 		if (!activated) {
@@ -206,7 +210,7 @@ public abstract class Airlock implements Serializable {
 					awaitingInnerDoor.remove(person);
 
 					if (awaitingInnerDoor.contains(person)) {
-						throw new IllegalStateException(person + " still awaiting inner door!");
+						throw new IllegalStateException(person + " was still awaiting inner door!");
 					}
 
 					if (!occupants.contains(person)) {

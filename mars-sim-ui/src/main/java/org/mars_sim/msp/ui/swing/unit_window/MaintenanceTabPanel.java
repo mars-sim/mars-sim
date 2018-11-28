@@ -69,9 +69,9 @@ public class MaintenanceTabPanel extends TabPanel {
 
         // Create wear condition label.
         wearConditionCache = (int) Math.round(manager.getWearCondition());
-        wearConditionLabel = new JLabel("Wear Condition: " + wearConditionCache +
+        wearConditionLabel = new JLabel("Condition: " + wearConditionCache +
                 "%", JLabel.CENTER);
-        wearConditionLabel.setToolTipText("The wear & tear condition: 100% = new; 0% = worn out");
+        wearConditionLabel.setToolTipText("The health condition due to wear & tear : 100% = new; 0% = worn out");
         maintenancePanel.add(wearConditionLabel);
 
         // Create lastCompletedLabel.

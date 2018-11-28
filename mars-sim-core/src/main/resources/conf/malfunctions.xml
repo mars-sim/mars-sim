@@ -935,9 +935,9 @@
 
 	<!-- Meteorite Impact -->
 	<malfunction name="Meteorite Impact Damage">
-		<severity value="90" />
+		<severity value="70" />
 		<probability value="0.0002547" /> <!-- 0.0002547 or = 0.7% per year per sq m (assuming a 50 m^2 roof)  -->
-		<repair-time value="500.0" />
+		<repair-time value="400.0" />
 		<emergency-repair-time value="100.0" />
 		<eva-repair-time value="100.0" />
 		<system-list>
@@ -958,7 +958,7 @@
 			<medical-complaint name="HeartBurn" probability="10.0" />			
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="fire extinguisher" number="2" probability="10" />
+			<part name="fire extinguisher" number="1" probability="10" />
 			<part name="airleak patch" number="5" probability="10" />
 			<part name="aluminum sheet" number="2" probability="10" />
 			<part name="polycarbonate roofing" number="2" probability="20" />

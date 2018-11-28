@@ -684,14 +684,16 @@ public class MasterClock implements Serializable {
 						skips++;
 
 						if (skips >= maxFrameSkips) {
-							logger.config(
-									"# of skips : " + skips + " Max Frame skips : " + maxFrameSkips 
-									+ "Resetting the pulse count.");
+							logger.config("# of skips : " + skips + "    Max Frame skips : " + maxFrameSkips); 
+							// Reset the pulse count
 							resetTotalPulses();
+							// Adjust the time between update
 							if (currentTBU_ns > (long) (adjustedTBU_ns * 1.25))
 								currentTBU_ns = (long) (adjustedTBU_ns * 1.25);
 							else
 								currentTBU_ns = (long) (currentTBU_ns * .9925); // decrement by 2.5%
+							
+							logger.config("TBU : " + Math.round(100.0 * currentTBU_ns/1_000)/100.0 + " ms");
 						}
 
 						addTime();
@@ -747,6 +749,15 @@ public class MasterClock implements Serializable {
 				earthClock.addTime(millis * currentTR);
 				marsClock.addTime(timePulse);
 				fireClockPulse(timePulse);
+			}
+			else {
+				logger.config("The simulation appeareed to be stuck. Restarting the clock listener"); 
+				System.out.println("Restarting the master clock..."); 
+//				clockListenerExecutor.isShutdown();
+//				clockListenerExecutor = null;
+				Simulation sim = Simulation.instance();
+				sim.halt();
+				sim.proceed();
 			}
 		}
 	}
