@@ -606,10 +606,10 @@ public abstract class RoverMission extends VehicleMission {
 				boolean roverUnloaded = rover.getInventory().getTotalInventoryMass(false) == 0D;
 				if (!roverUnloaded) {
 					if (member.isInSettlement()) {
-						// Random chance of having person unload (this allows person to do other things
+						// Note : Random chance of having person unload (this allows person to do other things
 						// sometimes)
 						if (RandomUtil.lessThanRandPercent(50)) {
-							if (BuildingManager.getBuilding(rover) != null) {
+							if (isRoverInAGarage()) {
 								assignTask(person, new UnloadVehicleGarage(person, rover));
 							} 
 							
@@ -624,12 +624,12 @@ public abstract class RoverMission extends VehicleMission {
 						}
 					}
 					
-					else {
-						// Check if it is day time.
-						if (!EVAOperation.isGettingDark(person)) {
-							assignTask(person, new UnloadVehicleEVA(person, rover));
-						}
-					}
+//					else {
+//						// Check if it is day time.
+//						if (!EVAOperation.isGettingDark(person)) {
+//							assignTask(person, new UnloadVehicleEVA(person, rover));
+//						}
+//					}
 					
 				} else {
 					// End the phase.

@@ -700,7 +700,7 @@ public class ExitAirlock extends Task implements Serializable {
 			EVASuit suit = (EVASuit) u;
 			boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
 			if (malfunction)
-				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + p.getLocationTag().getLocale()
+				LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName, "[" + p.getLocationTag().getLocale()
 					+ "] " + p + " spotted malfunctions when examining " + suit.getName() + ".", null);
 			try {
 				boolean hasEnoughResources = hasEnoughResourcesForSuit(inv, suit);

@@ -101,4 +101,12 @@ public class AutosaveScheduler {
     				minutes, TimeUnit.MINUTES);
     	}
     }
+    
+    public void destroy() {
+    	autosaveService = null;
+    	t = null;
+        sim = null;
+        simulationConfig = null;
+        masterClock = null;
+    }
 }

@@ -984,12 +984,13 @@ implements Serializable {
 
                         // Check if cooked meal has gone bad and has to be thrown out.
                         double quality = meal.getQuality() / 2D + 1D;
-                        double num = RandomUtil.getRandomDouble(7 * quality + 1);
+                        double qNum = RandomUtil.getRandomDouble(7 * quality + 1);
                         StringBuilder log = new StringBuilder();
                 		
-                        if (num < 1) {
+                        if (qNum < 1) {
                         	if (dryMassPerServing > 0)
-                        		Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodWasteAR, inv, "::timePassing");                     	
+                        		// Turn into food waste 
+                        		Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodWasteID, inv, "::timePassing");                     	
 
             				log.append("[").append(settlement.getName()).append("] ")
                             		.append(dryMassPerServing)

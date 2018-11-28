@@ -22,16 +22,12 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
-import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionHistoricalEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -331,7 +327,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		time = super.performMappedPhase(time);
 
 		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
+			logger.finer(person + " had no task phase. Ending the task of unloading vehicle with EVA.");
+			endTask();
+			return time;
+//			throw new IllegalArgumentException("Task phase is null");
 		} else if (UNLOADING.equals(getPhase())) {
 			return unloadingPhase(time);
 		} else {

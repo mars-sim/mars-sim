@@ -282,8 +282,11 @@ public class TaskManager implements Serializable {
 		// Remove tasks such as Walk, WalkRoverInterior, WalkSettlementInterior,
 		// WalkSteps
 		// Filters off descriptions such as "Walking inside a settlement"
-		if (!taskName.toLowerCase().contains(WALK) && !taskDescription.equals(taskDescriptionCache)
-				&& !taskDescription.toLowerCase().contains(WALK) && !taskDescription.equals("")) {
+		if (taskName != null
+				&& !taskName.toLowerCase().contains(WALK) 
+				&& !taskDescription.equals(taskDescriptionCache)
+				&& !taskDescription.toLowerCase().contains(WALK) 
+				&& !taskDescription.equals("")) {
 
 			String taskPhaseName = null;
 			TaskPhase tp = getMainTaskPhase();
@@ -300,10 +303,11 @@ public class TaskManager implements Serializable {
 			if (ts == null)
 				ts = person.getTaskSchedule();
 
-			// TODO: decide if it needs to record the same task description as the last
-			ts.recordTask(taskName, taskDescription, taskPhaseName, missionName);
-			taskDescriptionCache = taskDescription;
-
+			if (taskPhaseName != null) {
+				// TODO: decide if it needs to record the same task description as the last
+				ts.recordTask(taskName, taskDescription, taskPhaseName, missionName);
+				taskDescriptionCache = taskDescription;
+			}
 		}
 	}
 

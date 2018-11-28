@@ -34,7 +34,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
@@ -88,8 +87,8 @@ implements Serializable {
     private double[] obstacleSearchLimits;
     private boolean ignoreEndEVA;
 
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
+//	private static int oxygenID = ResourceUtil.oxygenID;
+//	private static int waterID = ResourceUtil.waterID;
 	
     /**
      * Constructor.
@@ -696,7 +695,7 @@ implements Serializable {
 		    // Check for radiation exposure during the EVA operation.
 	        //checkForRadiation(time);
 	        // If there are any EVA problems, end walking outside task.
-	        if (!ignoreEndEVA && checkEVAProblem(person)) {
+	        if (!ignoreEndEVA && !noEVAProblem(person)) {
 	            endTask();
 	            return time;
 	        }
@@ -811,7 +810,7 @@ implements Serializable {
      * @param person the person.
      * @return true if an EVA problem.
      */
-    public boolean checkEVAProblem(Person person) {	
+    public boolean noEVAProblem(Person person) {	
     	return EVAOperation.noEVAProblem(person);
     }
 

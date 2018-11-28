@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
@@ -462,10 +463,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 						assignTask(person, new UnloadVehicleGarage(person, getRover()));
 					} else {
 						// Check if it is day time.
-						if (surface == null)
-							surface = Simulation.instance().getMars().getSurfaceFeatures();
-						if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D)
-								|| surface.inDarkPolarRegion(person.getCoordinates())) {
+						if (!EVAOperation.isGettingDark(person)) {
 							assignTask(person, new UnloadVehicleEVA(person, getRover()));
 						}
 					}

@@ -630,22 +630,20 @@ public class MalfunctionManager implements Serializable {
 			double new_failure = (100 - new_rel) * new_prob / 100D;
 			double new_mal_prob_failure = 0;
 			double new_MTBF = factory.getMTBFs().get(id);
-			logger.warning("Updating field reliability data for the part '" + part_name + "' as follows :");
-			logger.warning("   (1).  Reliability : " + Math.round(old_rel * 1000.0) / 1000.0 + " % --> "
+			logger.warning("For the part '" + part_name + "' :");
+			logger.warning(" (1).   Reliability : " + addWhiteSpace(Math.round(old_rel * 1000.0) / 1000.0 + " %") + " --> "
 					+ Math.round(new_rel * 1000.0) / 1000.0 + " %");
-//				 logger.warning("(2). Part Needed Probability: " + Math.round(old_prob*1000.0)/1000.0 + " % --> "
-//						 + Math.round(new_prob*1000.0)/1000.0 + " %");
-			logger.warning("   (2). Failure Rate : " + Math.round(old_failure * 1000.0) / 1000.0 + " % --> "
+
+			logger.warning(" (2).  Failure Rate : " + addWhiteSpace(Math.round(old_failure * 1000.0) / 1000.0 + " %") + " --> "
 					+ Math.round(new_failure * 1000.0) / 1000.0 + " %");
 			new_mal_prob_failure = (old_mal_probl_failure + new_failure) / 2.0;
 
-			logger.warning("   (3).         MTBF : " + Math.round(old_MTBF * 1000.0) / 1000.0 + " hr --> "
+			logger.warning(" (3).          MTBF : " + addWhiteSpace(Math.round(old_MTBF * 1000.0) / 1000.0 + " hr") + " --> "
 					+ Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
 
-			
-			logger.warning("Updating field reliability data for the malfunction '" + malfunctionName + "' as follows :");
-			logger.warning("   (3).  Probability : " + Math.round(old_mal_probl_failure * 10000.0) / 10000.0
-					+ " % --> " + Math.round(new_mal_prob_failure * 10000.0) / 10000.0 + " %");
+			logger.warning("For the malfunction '" + malfunctionName + "' :");
+			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_probl_failure * 1000.0) / 1000.0 + " %") 
+					+ " --> " + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
 			malfunction.setProbability(new_mal_prob_failure);
 
 		}
@@ -654,6 +652,25 @@ public class MalfunctionManager implements Serializable {
 
 	}
 
+	/**
+	 * Adds whitespaces
+	 * 
+	 * @param text
+	 * @return
+	 */
+	public String addWhiteSpace(String text) {
+		StringBuffer s = new StringBuffer();
+		int max = 11;
+		int size = text.length();
+
+		for (int j=0; j< (max-size); j++) {
+			s.append(" ");
+		}
+		s.append(text);		
+	
+		return s.toString();	
+	}
+	
 //	 public void consumeFireExtingusher(int type) {
 //		 if (type == 0) {
 //			 if (entity.getInventory().hasItemResource(ItemResourceUtil.fireExtinguisherAR)) {

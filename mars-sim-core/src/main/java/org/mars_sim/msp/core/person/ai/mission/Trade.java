@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.NegotiateTrade;
@@ -468,21 +469,16 @@ public class Trade extends RoverMission implements Serializable {
 				// Random chance of having person unload (this allows person to do other things
 				// sometimes)
 				if (RandomUtil.lessThanRandPercent(50)) {
-					if (isRoverInAGarage()) {
-						// TODO Refactor.
-						if (member instanceof Person) {
-							Person person = (Person) member;
+					// TODO Refactor to allow robots.
+					if (member instanceof Person) {
+						Person person = (Person) member;
+						if (isRoverInAGarage()) {
 							assignTask(person, new UnloadVehicleGarage(person, getRover()));
-						}
-					} else {
-						// Check if it is day time.
-						if (surface == null)
-							surface = Simulation.instance().getMars().getSurfaceFeatures();
-						if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D)
-								|| surface.inDarkPolarRegion(member.getCoordinates())) {
-							// TODO Refactor.
-							if (member instanceof Person) {
-								Person person = (Person) member;
+						} 
+						
+						else {
+							// Check if it is day time.
+							if (!EVAOperation.isGettingDark(person)) {
 								assignTask(person, new UnloadVehicleEVA(person, getRover()));
 							}
 						}
@@ -526,14 +522,10 @@ public class Trade extends RoverMission implements Serializable {
 												getOptionalEquipmentToLoad()));
 							}
 						} else {
-							// Check if it is day time.
-							if (surface == null)
-								surface = Simulation.instance().getMars().getSurfaceFeatures();
-							if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D)
-									|| surface.inDarkPolarRegion(member.getCoordinates())) {
-								// TODO Refactor.
-								if (member instanceof Person) {
-									Person person = (Person) member;
+							if (member instanceof Person) {
+								Person person = (Person) member;
+								// Check if it is day time.
+								if (!EVAOperation.isGettingDark(person)) {
 									assignTask(person,
 											new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
 													getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(),

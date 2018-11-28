@@ -18,13 +18,16 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Airlockable;
@@ -189,11 +192,14 @@ public abstract class EVAOperation extends Task implements Serializable {
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
 			//throw new IllegalArgumentException(person + "'s Task phase is null");
-			logger.severe(person + " has no task phase. Setting him/her upto walk outside now.");
 			if (EVAOperation.noEVAProblem(person)) {
+				logger.finer(person + " had no EVA problems but had no task phase. Setting " 
+						+ ((person.getGender() == GenderType.MALE) ? "him" : "her") + "  up to continue to walk outside.");
 				return walkToOutsideSitePhase(time);
 			}
 			else {
+				logger.finer(person + " had EVA problems and had no task phase. Setting " 
+						+ ((person.getGender() == GenderType.MALE) ? "him" : "her") + " up to walk back inside now.");
 				return walkBackInsidePhase(time);
 			}
 		} else if (WALK_TO_OUTSIDE_SITE.equals(getPhase())) {
@@ -242,9 +248,45 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 		if (person != null) {
 
-			if ((returnInsideLoc == null)
-					|| !LocalAreaUtil.checkLocationWithinLocalBoundedObject(returnInsideLoc.getX(),
-							returnInsideLoc.getY(), interiorObject)) {
+			if (interiorObject == null) {
+				// throw new IllegalStateException(person.getName() + " is in " +
+				// person.getSettlement() + " but not in building : interiorObject is null.");
+				
+				// Get closest airlock building at settlement.
+				if (LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == person.getLocationStateType()) {
+					Settlement s = person.getLocationTag().findSettlementVicinity();
+					if (s != null) {
+						interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); // (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());//
+						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+								"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//								" in " + person.getLocationTag().getImmediateLocation()
+								+ " found " + ((Building)interiorObject).getNickName()
+								+ " as the closet building with an airlock to enter to. Returning from EVA now.", null);
+					}
+					else {
+						// near a vehicle
+						Rover r = (Rover)person.getVehicle();
+//						interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
+						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+								"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+								+ " was near " + r.getName() //person.getLocationTag().getImmediateLocation()
+								+ " and had to end the EVA now.", null);
+						endTask();
+					}
+				}
+				else {				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+						+ " was " + person.getLocationTag().getImmediateLocation()
+						+ " had to end the EVA now.", null);
+					endTask();
+				}
+
+			} 
+			
+			if (interiorObject != null 
+					&& (returnInsideLoc == null
+						|| !LocalAreaUtil.checkLocationWithinLocalBoundedObject(returnInsideLoc.getX(),
+							returnInsideLoc.getY(), interiorObject))) {
 				// Set return location.
 				Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
 				returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(),
@@ -252,7 +294,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 			}
 
 			// If not inside, create walk inside subtask.
-			if (person.isOutside()) {
+			if (person.isOutside() && interiorObject != null) {
 				if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
 					Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
 					addSubTask(walkingTask);
@@ -267,7 +309,17 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 		} else if (robot != null) {
 
-			if ((returnInsideLoc == null)
+			if (interiorObject == null) {
+				// throw new IllegalStateException(person.getName() + " is in " +
+				// person.getSettlement() + " but not in building : interiorObject is null.");
+				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + 
+						" in " + robot.getLocationTag().getImmediateLocation()
+						+ " did not have a designated building to go to yet. Ending EVA now.", null);
+				endTask();
+			} 
+			
+			else if ((returnInsideLoc == null)
 					|| !LocalAreaUtil.checkLocationWithinLocalBoundedObject(returnInsideLoc.getX(),
 							returnInsideLoc.getY(), interiorObject)) {
 				// Set return location.
@@ -311,7 +363,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 		}
 
 		// Check if any EVA problem.
-		else if (noEVAProblem(person)) {
+		else if (!noEVAProblem(person)) {
 			result = true;
 		}
 //    	}
@@ -349,10 +401,6 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 		// Check if it is night time.
 		if (surface.getSolarIrradiance(person.getCoordinates()) < 10D) {
-			LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
-							+ person.getTaskDescription() + " : Too dark at night to perform EVA.",
-					null);
 			if (!surface.inDarkPolarRegion(person.getCoordinates()))
 				return false;
 		}
@@ -364,13 +412,18 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * Checks if there is an EVA problem for a person.
 	 * 
 	 * @param person the person.
-	 * @return true if an EVA problem.
+	 * @return false if having EVA problem.
 	 */
 	public static boolean noEVAProblem(Person person) {
 		
-		if (isGettingDark(person))
+		if (isGettingDark(person)) {
+			LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+			"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
+					+ person.getTaskDescription() + " because the sky was getting too dark to continue with the EVA.",
+			null);
 			return false;
-
+		}
+		
 		EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 		if (suit == null) {
 			LogConsolidated.log(

@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -349,6 +348,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this.location = manager.getSettlement().getCoordinates();
 
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		malfunctionMeteoriteImpact = MalfunctionFactory
+				.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 
 //		if (inv == null)
 //			inv = settlement.getInventory();

@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationCodeType;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -384,7 +385,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
+//			throw new IllegalArgumentException("Task phase is null");
+			logger.finer(person + " had no task phase. Ending the task of unloading vehicle garage.");
+			endTask();
+			return time;
 		} else if (UNLOADING.equals(getPhase())) {
 			return unloadingPhase(time);
 		} else {
@@ -417,18 +421,18 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		Inventory settlementInv = settlement.getInventory();
 
-		if (person != null)
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
-							+ person.getLocationTag().getImmediateLocation() + " proceeded to unload "
-							+ vehicle.getName() + ".",
-					null);
-		else
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
-							+ robot.getLocationTag().getImmediateLocation() + " proceeded to unload "
-							+ vehicle.getName() + ".",
-					null);
+//		if (person != null)
+//			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
+//							+ person.getLocationTag().getImmediateLocation() + " proceeded to unload "
+//							+ vehicle.getName() + ".",
+//					null);
+//		else
+//			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
+//							+ robot.getLocationTag().getImmediateLocation() + " proceeded to unload "
+//							+ vehicle.getName() + ".",
+//					null);
 
 		// Unload equipment.
 		if (amountUnloading > 0D) {
