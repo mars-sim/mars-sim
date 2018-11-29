@@ -34,7 +34,8 @@ public class InteractiveTerm {
 
     private static final String KEY_STROKE_UP = "pressed UP";
     private static final String KEY_STROKE_DOWN = "pressed DOWN";
-
+    private static final String KEY_ESC = "ESCAPE";
+    
     private String originalInput = "";
     private String[] choices = {};
 
@@ -54,19 +55,17 @@ public class InteractiveTerm {
 	
 	private static SwingHandler handler;
 	
-//	private Commander commander = new Commander();
-	
+
 	public InteractiveTerm() {
 		
 		terminal = new MarsTerminal();
         terminal.init();
         
-//        terminal = new SwingTextTerminal();
-//        terminal.init();
-        
         textIO = new TextIO(terminal);
         
         setUpArrows();
+        
+        setUpESC();
 	}
 	
     
@@ -285,6 +284,28 @@ public class InteractiveTerm {
             }
             return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
         });
+    }
+    
+
+    public void setUpESC() {
+        terminal.registerHandler(KEY_ESC, t -> {
+        	
+			if (Simulation.instance().getMasterClock().isPaused()) {
+				Simulation.instance().getMasterClock().setPaused(false, false);
+				terminal.printf(System.lineSeparator() + System.lineSeparator());
+				terminal.printf("                          [ Simulation Unpaused ]");
+				terminal.printf(System.lineSeparator() + System.lineSeparator());
+			}
+			else {
+				Simulation.instance().getMasterClock().setPaused(true, false);
+				terminal.printf(System.lineSeparator() + System.lineSeparator());
+				terminal.printf("                           [ Simulation Paused ]");
+				terminal.printf(System.lineSeparator() + System.lineSeparator());
+			}
+			
+            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
+        });
+
     }
     	
     public void setChoices(String... choices) {

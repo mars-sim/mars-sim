@@ -124,7 +124,8 @@ public class ChatUtils {
 	public final static String[] SETTLEMENT_KEYS = new String[] {
 			"weather", 
 			"people", "settler", "person",
-			"robot", "bot"
+			"robot", "bot",
+			"proposal"
 	};
 	
 	public final static String[] PERSON_KEYS = new String[] {
@@ -154,7 +155,8 @@ public class ChatUtils {
 			"log", "log reset", "log help", "log all", "log fine", "log info", "log severe", "log finer", "log finest", "log warning", "log config",
 			"log all walk off", "log all eva off", "log all mission off", "log all airlock off",
 			"vehicle", "rover", 
-			"hi", "hello", "hey"
+			"hi", "hello", "hey",
+			"proposal"
 	};
 
 	public final static String SWITCHES = 
@@ -518,7 +520,22 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 		
-		if (text.toLowerCase().contains("relationship")
+		if (text.equalsIgnoreCase("proposal")) {
+//			System.out.println("/p is submitted");
+			responseText.append(System.lineSeparator());
+			responseText.append(SYSTEM_PROMPT);
+			responseText.append("[EXPERIMENTAL & NON-FUNCTIONAL] Below is a list of proposals for your review :");
+			responseText.append(System.lineSeparator());
+			responseText.append("1. Safety and Health Measures");
+			responseText.append(System.lineSeparator());
+			responseText.append("2. Manufacturing Priority");
+			responseText.append(System.lineSeparator());
+			responseText.append("3. Food Allocation Plan");
+			responseText.append(System.lineSeparator());
+
+		}
+		
+		else if (text.toLowerCase().contains("relationship")
 				|| text.toLowerCase().contains("relation")
 				|| text.toLowerCase().contains("social")) {
 			questionText = YOU_PROMPT + "How is the overall social score in this settlement ?"; 
@@ -3210,7 +3227,7 @@ public class ChatUtils {
 		}
 
 		// Add proposals
-		else if (text.equalsIgnoreCase("/p")) {
+		else if (text.equalsIgnoreCase("proposal")) {
 //			System.out.println("/p is submitted");
 			responseText.append(System.lineSeparator());
 			responseText.append(SYSTEM_PROMPT);

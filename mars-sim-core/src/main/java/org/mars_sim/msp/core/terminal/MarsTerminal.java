@@ -3,6 +3,7 @@ package org.mars_sim.msp.core.terminal;
 import org.beryx.textio.TextTerminal;
 import org.beryx.textio.jline.JLineTextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
+import org.mars_sim.msp.core.Simulation;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -35,7 +36,10 @@ public class MarsTerminal extends SwingTextTerminal {
         }
     }
 
-    public MarsTerminal() {
+    public MarsTerminal() {	
+//    	System.out.println("w: " + getFrame().getWidth()); // w: 656  	
+//    	System.out.println("h: " + getFrame().getHeight()); // h: 519    	
+    	this.getFrame().setSize(1024, 600);
         configureMainMenu();
 
         JTextPane textPane = getTextPane();
@@ -56,11 +60,32 @@ public class MarsTerminal extends SwingTextTerminal {
     private void configureMainMenu() {
         JFrame frame = getFrame();
         frame.setTitle("Mars Simulation Project");
+        
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Help");
         menu.setMnemonic(KeyEvent.VK_H);
 
-        JMenuItem clearItem = new JMenuItem("Clear Screen", KeyEvent.VK_A);
+        JMenuItem pauseItem = new JMenuItem("Pause/Unpause", KeyEvent.VK_P);
+        pauseItem.addActionListener(e -> {
+
+        	if (Simulation.instance().getMasterClock() != null) {
+				if (Simulation.instance().getMasterClock().isPaused()) {
+					Simulation.instance().getMasterClock().setPaused(false, false);
+					printf(System.lineSeparator() + System.lineSeparator());
+					printf("                      [ Simulation Unpaused ]");
+					printf(System.lineSeparator() + System.lineSeparator());
+				}
+				else {
+					Simulation.instance().getMasterClock().setPaused(true, false);
+					printf(System.lineSeparator() + System.lineSeparator());
+					printf("                       [ Simulation Paused ]");
+					printf(System.lineSeparator() + System.lineSeparator());
+				}
+        	}
+        });
+        menu.add(pauseItem);
+        
+        JMenuItem clearItem = new JMenuItem("Clear Screen", KeyEvent.VK_C);
         clearItem.addActionListener(e -> clearScreen(this));
         menu.add(clearItem);
         
