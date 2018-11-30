@@ -750,46 +750,53 @@ public class ChatUtils {
 		
 		if (text.equalsIgnoreCase("vehicle range")) {
 //			questionText = YOU_PROMPT + "I'd like to change the vehicle range for this settlement." ; 
-
+			
 			double oldRange = settlementCache.getMaxMssionRange();
 			
-//			responseText.append(System.lineSeparator());
-//			responseText.append("Old Range : " + oldRange);
-			
-			Input input = new Input();		
-			SwingHandler handler = new SwingHandler(Simulation.instance().getTerm().getTextIO(), input);
+//			Input input = new Input();		
+//			SwingHandler handler = new SwingHandler(Simulation.instance().getTerm().getTextIO(), input);
 	        
-			//boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().withDefaultValue(true).read("Would you like to change the range ?");
-          
-	        handler.addStringTask("change", System.lineSeparator() + "Current Vehicle Range Limit is " + oldRange + " km. Would you like to change it? (y/n)", false)
-	        		.addChoices("y", "n").constrainInputToChoices();
-			handler.executeOneTask();
+			String prompt = System.lineSeparator() + "Current Vehicle Range Limit is " + oldRange + " km. Would you like to change it? (y/n)";
+			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
+        
+//	        handler.addStringTask("change", System.lineSeparator() + "Current Vehicle Range Limit is " + oldRange + " km. Would you like to change it? (y/n)", false)
+//	        		.addChoices("y", "n").constrainInputToChoices();
+//			handler.executeOneTask();
 	        
-        	if (Input.change.equalsIgnoreCase("y")) {
-        		      		
-        		//int newRange = Simulation.instance().getTerm().getTextIO().newIntInputReader().withMinVal(49).withMaxVal(2001).read("Enter a number between 50 and 2000 (km)");
-        		handler.addIntTask("range", "Enter a number between 50 and 2000 (km)" , false);
-    	        handler.executeOneTask();
+			if (change) {
+//        	if (Input.change.equalsIgnoreCase("y")) {   		      		
+        		double range = Simulation.instance().getTerm().getTextIO().newDoubleInputReader().withMinVal(50.0).withMaxVal(2000.0).read("Enter a number between 50 and 2000 [km]");
+//        		handler.addIntTask("range", "Enter a number between 50 and 2000 (km)" , false).withInputReaderConfigurator(r -> r.withMinVal(50).withMaxVal(2000));
+//    	        handler.executeOneTask();
+    	        String s = "";
     	        
-    	        if (Input.range > 49 && Input.range < 2001) {
+    	        if (range >= 50.0 && range <= 2000.0) {
+//    	        if (Input.range > 49 && Input.range < 2001) {
 
-    				settlementCache.setMaxMssionRange(Input.range);
+    				settlementCache.setMaxMssionRange(range);
     				
 //    				responseText.append(System.lineSeparator());
     				responseText.append(settlementCache + " : I've updated it for you as follows : ");
     				responseText.append(System.lineSeparator());
     				responseText.append(System.lineSeparator());
-    				responseText.append("     Old Vehicle Range Limit : ").append(oldRange).append(" km");
+    				s = "     Old Vehicle Range Limit : " + oldRange + " km";
+    				responseText.append(s);
+    				logger.config(s);
     				responseText.append(System.lineSeparator());
-    				responseText.append("     New Vehicle Range Limit : ").append(Input.range).append(" km");
-
+    				s = "     New Vehicle Range Limit : " + range + " km";
+    				responseText.append(s);
+//    				responseText.append("     New Vehicle Range Limit : ").append(Input.range).append(" km");
+    				logger.config(s);
     				
     	        }
     	        else {
-    	        	responseText.append(System.lineSeparator());
-    				responseText.append(settlementCache + " : It's outside of the normal range. Aborted.");
+//    	        	responseText.append(System.lineSeparator());
+    	        	s = settlementCache + " : It's outside of the normal range. Aborted.";
+    				responseText.append(s);
+    				logger.config(s);
     	        }
         	}
+        	
 		}
 		
 		else if (text.equalsIgnoreCase("proposal")) {
