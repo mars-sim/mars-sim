@@ -342,6 +342,10 @@ public class InteractiveTerm {
     	terminal.dispose(null);
     }
     
+    public SwingHandler getHandler() {
+    	return handler;
+    }
+    
     private static class CommanderInput {
         public static String mode;
         public static String choice;

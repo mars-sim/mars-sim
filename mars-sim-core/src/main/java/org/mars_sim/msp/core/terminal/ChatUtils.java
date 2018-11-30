@@ -73,7 +73,6 @@ import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.person.health.HealthProblem;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
@@ -134,7 +133,7 @@ public class ChatUtils {
 			"weather", 
 			"people", "settler", "person",
 			"robot", "bot",
-			"proposal"
+			"proposal", "vehicle range"
 	};
 	
 	public final static String[] PERSON_KEYS = new String[] {
@@ -749,11 +748,55 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 		
-		if (text.equalsIgnoreCase("proposal")) {
+		if (text.equalsIgnoreCase("vehicle range")) {
+//			questionText = YOU_PROMPT + "I'd like to change the vehicle range for this settlement." ; 
+
+			double oldRange = settlementCache.getMaxMssionRange();
+			
+//			responseText.append(System.lineSeparator());
+//			responseText.append("Old Range : " + oldRange);
+			
+			Input input = new Input();		
+			SwingHandler handler = new SwingHandler(Simulation.instance().getTerm().getTextIO(), input);
+	        
+			//boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().withDefaultValue(true).read("Would you like to change the range ?");
+          
+	        handler.addStringTask("change", System.lineSeparator() + "Current Vehicle Range Limit is " + oldRange + " km. Would you like to change it? (y/n)", false)
+	        		.addChoices("y", "n").constrainInputToChoices();
+			handler.executeOneTask();
+	        
+        	if (Input.change.equalsIgnoreCase("y")) {
+        		      		
+        		//int newRange = Simulation.instance().getTerm().getTextIO().newIntInputReader().withMinVal(49).withMaxVal(2001).read("Enter a number between 50 and 2000 (km)");
+        		handler.addIntTask("range", "Enter a number between 50 and 2000 (km)" , false);
+    	        handler.executeOneTask();
+    	        
+    	        if (Input.range > 49 && Input.range < 2001) {
+
+    				settlementCache.setMaxMssionRange(Input.range);
+    				
+//    				responseText.append(System.lineSeparator());
+    				responseText.append(settlementCache + " : I've updated it for you as follows : ");
+    				responseText.append(System.lineSeparator());
+    				responseText.append(System.lineSeparator());
+    				responseText.append("     Old Vehicle Range Limit : ").append(oldRange).append(" km");
+    				responseText.append(System.lineSeparator());
+    				responseText.append("     New Vehicle Range Limit : ").append(Input.range).append(" km");
+
+    				
+    	        }
+    	        else {
+    	        	responseText.append(System.lineSeparator());
+    				responseText.append(settlementCache + " : It's outside of the normal range. Aborted.");
+    	        }
+        	}
+		}
+		
+		else if (text.equalsIgnoreCase("proposal")) {
 			questionText = YOU_PROMPT + "Can you show me the list of proposals ?"; 
 			
-			responseText.append(System.lineSeparator());
-			responseText.append(SYSTEM_PROMPT);
+//			responseText.append(System.lineSeparator());
+//			responseText.append(SYSTEM_PROMPT);
 			responseText.append("[EXPERIMENTAL & NON-FUNCTIONAL] Below is a list of proposals for your review :");
 			responseText.append(System.lineSeparator());
 			responseText.append("1. Safety and Health Measures");
@@ -4086,6 +4129,16 @@ public class ChatUtils {
 //		expertMode = value;
 //	}
 	
+    private static class Input {
+        public static String change;
+        public static int range ;
+
+        @Override
+        public String toString() {
+            return System.lineSeparator() +">" + range;
+        }
+    }
+    
 	/**
 	 * Prepare object for garbage collection.
 	 */

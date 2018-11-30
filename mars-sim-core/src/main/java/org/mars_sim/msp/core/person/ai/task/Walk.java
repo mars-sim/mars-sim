@@ -141,7 +141,7 @@ public class Walk extends Task implements Serializable {
 
 					// Check if person has a good EVA suit available if in a rover.
 					boolean goodEVASuit = true;
-					boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getInventory());
+					boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getInventory(), person);
 					boolean wearingSuit = person.getInventory().containsUnitClass(EVASuit.class);
 					goodEVASuit = roverSuit || wearingSuit;
 

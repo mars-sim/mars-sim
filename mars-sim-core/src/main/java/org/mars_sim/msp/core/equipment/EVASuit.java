@@ -137,14 +137,14 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= 0D) {
 				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ person.getName() + "'s " + this.getName() + " ran out of oxygen.", null);
+								+ this.getName() + " ran out of oxygen.", null);
 				return false;
 			}
 			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {
 				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ person.getName() + "'s " + this.getName() + " ran out of water.", null);
-				return false;
+								+ this.getName() + " ran out of water.", null);
+//				return false;
 			}
 //			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
 //				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
@@ -163,14 +163,14 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= minimum_air_pressure) {
 				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ person.getName() + "'s " + this.getName() + " detected improper air pressure at " + Math.round(p * 10D) / 10D, null);
+								+ this.getName() + " detected improper air pressure at " + Math.round(p * 10D) / 10D, null);
 				return false;
 			}
 			double t = getTemperature();
 			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 20) {
 				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ person.getName() + "'s " + this.getName() + " detected improper temperature at " + Math.round(t * 10D) / 10D, null);
+								+ this.getName() + " detected improper temperature at " + Math.round(t * 10D) / 10D, null);
 				return false;
 			}
 		} catch (Exception e) {

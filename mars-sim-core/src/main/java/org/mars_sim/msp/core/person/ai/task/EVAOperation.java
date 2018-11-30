@@ -462,8 +462,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 			// Check if life support system in suit is working properly.
 			if (!suit.lifeSupportCheck()) {
 				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
-								+ person.getTaskDescription() + " : " + suit.getName() + " failed life support check.",
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended '"
+								+ person.getTaskDescription() + "' : " + suit.getName() + " failed life support check.",
 						null);
 				return false;
 			}
@@ -474,18 +474,19 @@ public abstract class EVAOperation extends Task implements Serializable {
 		// Check if suit has any malfunctions.
 		if (suit.getMalfunctionManager().hasMalfunction()) {
 			LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-					+ person.getName() + " ended " + person.getTaskDescription() + " : EVA suit has malfunction.",
+					+ person.getName() + " ended '" + person.getTaskDescription() + "' : " + suit.getName() + " has malfunction.",
 					null);
 			return false;
 		}
 
+		double perf = person.getPerformanceRating();
 		// Check if person's medical condition is sufficient to continue phase.
-		if (person.getPerformanceRating() < 5D) {
+		if (perf < .1D) {
 			// Add back to 3% so that the person can walk
-			person.getPhysicalCondition().setPerformanceFactor(5);
+			person.getPhysicalCondition().setPerformanceFactor(perf * 1.1 );
 			LogConsolidated.log(
 					logger, Level.INFO, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-							+ person.getName() + " ended " + person.getTaskDescription() + " : performance is too low.",
+							+ person.getName() + " ended '" + person.getTaskDescription() + "' : performance is less than 10%.",
 					null);
 			return false;
 		}

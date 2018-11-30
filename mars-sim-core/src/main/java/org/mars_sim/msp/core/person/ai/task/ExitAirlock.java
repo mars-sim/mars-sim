@@ -554,7 +554,7 @@ public class ExitAirlock extends Task implements Serializable {
 		else if (person.isInSettlement()) {
 
 			// Check if EVA suit is available.
-			if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
+			if (!goodEVASuitAvailable(airlock.getEntityInventory(), person)) {
 
 				LogConsolidated.log(
 						logger, Level.WARNING, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
@@ -599,7 +599,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 		else if (person.isInVehicle()) {
 			// Check if EVA suit is available.
-			if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
+			if (!goodEVASuitAvailable(airlock.getEntityInventory(), person)) {
 
 				Vehicle v = person.getVehicle();
 				Mission m = person.getMind().getMission();
@@ -676,10 +676,11 @@ public class ExitAirlock extends Task implements Serializable {
 	 * Checks if a good EVA suit is in entity inventory.
 	 * 
 	 * @param inv the inventory to check.
+	 * @param {@link Person}
 	 * @return true if good EVA suit is in inventory
 	 */
-	public static boolean goodEVASuitAvailable(Inventory inv) {
-		if (getGoodEVASuit(inv, null) != null) {
+	public static boolean goodEVASuitAvailable(Inventory inv, Person p) {
+		if (getGoodEVASuit(inv, p) != null) {
 			return true;
 		} else
 			return false;
@@ -700,9 +701,9 @@ public class ExitAirlock extends Task implements Serializable {
 		for (Unit u : list) {
 			EVASuit suit = (EVASuit) u;
 			boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-			if (malfunction)
+			if (malfunction) 
 				LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName, "[" + p.getLocationTag().getLocale()
-					+ "] " + p + " spotted malfunctions when examining " + suit.getName() + ".", null);
+					+ "] " + p + " spotted malfunction when examining " + suit.getName() + ".", null);
 			try {
 				boolean hasEnoughResources = hasEnoughResourcesForSuit(inv, suit);
 				if (!malfunction && hasEnoughResources) {

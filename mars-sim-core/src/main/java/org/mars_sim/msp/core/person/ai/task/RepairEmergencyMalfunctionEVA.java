@@ -182,7 +182,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 				return false;
 			}
 			// Check if EVA suit is available.
-			else if (!ExitAirlock.goodEVASuitAvailable(airlock.getEntityInventory())) {
+			else if (!ExitAirlock.goodEVASuitAvailable(airlock.getEntityInventory(), person)) {
 				return false;
 			}
 
