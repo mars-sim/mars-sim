@@ -57,18 +57,17 @@ public class RelaxMeta implements MetaTask, Serializable {
     @Override
     public Task constructInstance(Person person) {
     	return new Relax(person);
-/*    	Relax relax = person.getRelax();
-    	if (relax == null) {
-    		relax = new Relax(person);
-    		person.setRelax(relax);
-    	}
-    	else {
-    		relax.taskCompute();
-    		relax.compute();
-    	}
-    	
-    	return relax;
-*/	
+//    	Relax relax = person.getRelax();
+//    	if (relax == null) {
+//    		relax = new Relax(person);
+//    		person.setRelax(relax);
+//    	}
+//    	else {
+//    		relax.taskCompute();
+//    		relax.compute();
+//    	}
+//    	
+//    	return relax;
     }
 
     @Override
@@ -118,43 +117,36 @@ public class RelaxMeta implements MetaTask, Serializable {
 	@Override
 	public Task constructInstance(Robot robot) {
     	return new Relax(robot);
-/*		Relax relax = robot.getRelax();
-    	if (relax == null) {
-    		relax = new Relax(robot);
-    		robot.setRelax(relax);
-    	}
-    	//else {
-    	//  relax.taskCompute();
-    	//	relax.botCompute();
-    	//}	
-    	return relax;
-*/    	
+//		Relax relax = robot.getRelax();
+//    	if (relax == null) {
+//    		relax = new Relax(robot);
+//    		robot.setRelax(relax);
+//    	}
+//    	//else {
+//    	//  relax.taskCompute();
+//    	//	relax.botCompute();
+//    	//}	
+//    	return relax;
+    	
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
         //double result = 0D;
-
         // TODO: in what case should a bot "relax" or slow down its pace?
         // result += robot.getPhysicalCondition().getStress();
-
-        /*
-
-
-        // Crowding modifier
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            try {
-                Building recBuilding = Relax.getAvailableRecreationBuilding(robot);
-                if (recBuilding != null) {
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, recBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(robot, recBuilding);
-                }
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, e.getMessage());
-            }
-        }
-*/
+//        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+//            try {
+//                Building recBuilding = Relax.getAvailableRecreationBuilding(robot);
+//                if (recBuilding != null) {
+//                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, recBuilding);
+//                    result *= TaskProbabilityUtil.getRelationshipModifier(robot, recBuilding);
+//                }
+//            }
+//            catch (Exception e) {
+//                logger.log(Level.SEVERE, e.getMessage());
+//            }
+//        }
         return 0;
 	}
 	

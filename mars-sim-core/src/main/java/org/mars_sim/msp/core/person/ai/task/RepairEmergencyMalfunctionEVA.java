@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -170,11 +169,8 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		}
 
 		// Check if it is night time.
-		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
-			if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-				return false;
-			}
+		if (EVAOperation.isGettingDark(person)) {
+			return false;
 		}
 
 		// Check if person is inside

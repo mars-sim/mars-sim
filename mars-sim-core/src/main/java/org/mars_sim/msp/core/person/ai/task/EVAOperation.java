@@ -382,7 +382,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	public static boolean isGettingDark(Person person) {
 	
-		if (surface.getTrend(person.getCoordinates()) <= 0
+		if (surface.getTrend(person.getCoordinates()) < 0
 				&& hasLittleSunlight(person)) {
 			return true;
 		}
@@ -400,7 +400,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	public static boolean hasLittleSunlight(Person person) {
 
 		// Check if it is night time.
-		if (surface.getSolarIrradiance(person.getCoordinates()) < 10D) {
+		if (surface.getSolarIrradiance(person.getCoordinates()) < 12D) {
 			if (!surface.inDarkPolarRegion(person.getCoordinates()))
 				return false;
 		}

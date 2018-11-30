@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -55,38 +54,36 @@ implements Serializable {
         // Use Task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER, true, 5D);
 
-        LocationSituation ls = person.getLocationSituation(); 
-        
-        if (LocationSituation.IN_SETTLEMENT == ls || LocationSituation.IN_VEHICLE == ls) {
+
+        if (person.isInSettlement() || person.isInVehicle()) {
 
         	boolean walkSite = false;
 
             int score = person.getPreference().getPreferenceScore(new ReadMeta());
             super.setDuration(5 + score);
-            //2016-09-24 Factored in a person's preference for the new stress modifier 
+            // Factor in a person's preference for the new stress modifier 
             super.setStressModifier(score/10D + STRESS_MODIFIER);
 
 	        // set the boolean to true so that it won't be done again today
         	//person.getPreference().setTaskStatus(this, false);
 
-            if (LocationSituation.IN_SETTLEMENT == ls) {
+            if (person.isInSettlement()) {
 
 				Building recBuilding = getAvailableRecreationBuilding(person);
 				if (recBuilding != null) {
 					// Walk to recreation building.
-					// 2016-01-10 Added BuildingFunction.RECREATION
 				    walkToActivitySpotInBuilding(recBuilding, FunctionType.RECREATION, true);
 				    walkSite = true;
 				} 
 				else {
-	            	// 2016-01-10 if rec building is not available, go to a gym
+	            	// If rec building is not available, go to a gym
 	            	Building gym = Workout.getAvailableGym(person);
 	            	if (gym != null) {
 	                	walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
 	                	walkSite = true;
 	                } 
 	            	else {
-						// 2016-01-10 if gym is not available, go back to his quarters
+						// if gym is not available, go back to his quarters
 		                Building quarters = person.getQuarters();    
 		                if (quarters != null) {
 		                	walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMODATIONS, true);
@@ -97,7 +94,7 @@ implements Serializable {
             }
             
     		if (!walkSite) {
-    		    if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+    		    if (person.isInVehicle()) {
                     // If person is in rover, walk to passenger activity spot.
                     if (person.getVehicle() instanceof Rover) {
                         walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
@@ -142,7 +139,7 @@ implements Serializable {
 
 		Building result = null;
 
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (person.isInSettlement()) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
 			List<Building> recreationBuildings = manager.getBuildings(FunctionType.RECREATION);
 			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);

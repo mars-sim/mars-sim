@@ -557,24 +557,25 @@ public class ExitAirlock extends Task implements Serializable {
 			if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
 
 				LogConsolidated.log(
-						logger, Level.WARNING, 2000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-								+ person + " could not find a working EVA suit and needed to wait until they are repaired.",
+						logger, Level.WARNING, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+								+ person + " could not find a working EVA suit and needed to wait.",
 						null);
-
+				// TODO: how to reduce the probability of doing any EVA tasks to save cpu util
+				
 //	    		Mission m = person.getMind().getMission();
 				// TODO: what about outdoor tasks such as DiggingIce ?
 
 //	    		// TODO: should at least wait for a period of time for the EVA suit to be fixed before calling for rescue
 //	    		if (m != null) {	
 				airlock.addCheckEVASuit();
-				LogConsolidated.log(
-						logger, Level.WARNING, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-								+ person + " had tried to exit the airlock " + airlock.getCheckEVASuit() + " time(s).",
-						null);
+//				LogConsolidated.log(
+//						logger, Level.WARNING, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+//								+ person + " had tried to exit the airlock " + airlock.getCheckEVASuit()// + " time(s).",
+//						, null);
 
 				person.getMind().getTaskManager().clearTask();
 				// Call getNewAction(true, false) so as not to get "stuck" inside the airlock.
-            	person.getMind().getNewAction(true, false);
+//            	person.getMind().getNewAction(true, false);
 				// Repair this EVASuit by himself/herself
 //				person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
 				
@@ -760,9 +761,9 @@ public class ExitAirlock extends Task implements Serializable {
 		boolean hasEnoughWater = (availableWater >= neededWater);
 
 		// it's okay even if there's not enough water
-		if (!hasEnoughWater)
-			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
-					"[" + suit.getContainerUnit() + "] won't have enough water to feed " + suit.getNickName() + " but can still use it.", null);
+//		if (!hasEnoughWater)
+//			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+//					"[" + suit.getContainerUnit() + "] won't have enough water to feed " + suit.getNickName() + " but can still use it.", null);
 
 		return hasEnoughOxygen;// && hasEnoughWater;
 	}
