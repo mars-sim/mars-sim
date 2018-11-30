@@ -27,6 +27,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -72,9 +73,11 @@ import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.person.health.HealthProblem;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -84,6 +87,8 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleAirlock;
@@ -119,6 +124,10 @@ public class ChatUtils {
 			"bye", "/b", 
 			"exit", "/x",     
 			"pause", "/p"
+	};
+	
+	public final static String[] VEHICLE_KEYS = new String[] {
+			"specs"
 	};
 	
 	public final static String[] SETTLEMENT_KEYS = new String[] {
@@ -319,7 +328,7 @@ public class ChatUtils {
 			else if (r0 == 5)
 				return "Take care !";
 			else if (r0 == 6)
-				return "Take care !";
+				return "Hang in there !";
 			else
 				return "I have to leave. Bye !";
 		}
@@ -507,7 +516,227 @@ public class ChatUtils {
 		return responseText;
 	}
 	
+	public static StringBuffer getNextNum(int num) {
+//		StringBuffer s = new StringBuffer();
+//		if (num < 10)
+//			return s.append("   " + num);
+//		else
+//			return s.append("  " + num);	
+		return new StringBuffer();
+	}
+	
+	/**
+	 * Asks the vehicle when the input is a string
+	 * 
+	 * @param text the input string
+	 * @param name the input name of the vehicle
+	 * @return the response string[]
+	 */
+	public static String[] askVehicle(String text, String name) {
+		
+		int num = 0;
+		String questionText = "";
+		StringBuffer responseText = new StringBuffer();
+		
+		if (text.equalsIgnoreCase("specs")) {
+			questionText = YOU_PROMPT + "Can you show me the specification for this vehicle ?"; 
 
+			int max = 26;
+			responseText.append(System.lineSeparator());
+//			responseText.append(SYSTEM_PROMPT);
+//			responseText.append("Specifications :");
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesName("Name : ", max) + vehicleCache.getName());
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesName("Type : ", max) + vehicleCache.getVehicleType());
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesName("Description : ", max) + vehicleCache.getVehicleType());
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesName("Base Mass : ", max)).append(vehicleCache.getBaseMass()).append(" kg");
+			responseText.append(System.lineSeparator());
+
+//			System.out.println("next is speed : " + responseText.toString());
+
+			responseText.append(addhiteSpacesName("Base Speed : ", max)).append(vehicleCache.getBaseSpeed()).append(" km/h");
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesName("Drivetrain Efficiency : ", max)).append(vehicleCache.getDrivetrainEfficiency()).append(" kWh/km");
+//			responseText.append(System.lineSeparator());
+//			responseText.append(addhiteSpacesName("Travel per sol : ", max) + vehicleCache.getEstimatedTravelDistancePerSol() + " km (Estimated)");
+			responseText.append(System.lineSeparator());
+			
+//			System.out.println("next is SOFC : " + responseText.toString());
+			
+			String fuel = "Electrical Battery";
+			if (vehicleCache instanceof Rover) {
+				fuel = Conversion.capitalize(((Rover)vehicleCache).getFuelTypeAR().getName()) + " (Solid Oxide Fuel Cell)";
+				
+				responseText.append(addhiteSpacesName("Power Source : ", max) + fuel);
+				responseText.append(System.lineSeparator());
+				
+				responseText.append(addhiteSpacesName("Fuel Capacity : ", max)).append(vehicleCache.getFuelCapacity() + " kg");
+				responseText.append(System.lineSeparator());
+				
+				responseText.append(addhiteSpacesName("Base Range : ", max)).append(Math.round(vehicleCache.getBaseRange() *100.0)/100.0 + " km (Estimated)");
+				responseText.append(System.lineSeparator());
+				
+				responseText.append(addhiteSpacesName("Fuel Consumption : ", max)).append(Math.round(vehicleCache.getfuelConsumption() *100.0)/100.0 + " km/kg (Estimated)");
+				responseText.append(System.lineSeparator());
+			}
+			else {
+				responseText.append(addhiteSpacesName("Power Source : ", max) + fuel);
+				responseText.append(System.lineSeparator());
+			}
+
+//			System.out.println("next is getCrewCapacity : " + responseText.toString());
+			
+			int crewSize = 0;
+			if (vehicleCache instanceof Rover) {
+				crewSize = ((Rover)vehicleCache).getCrewCapacity();
+			}
+			else if (vehicleCache instanceof LightUtilityVehicle) {
+				crewSize = ((LightUtilityVehicle)vehicleCache).getCrewCapacity();
+			}
+			responseText.append(addhiteSpacesName("Crew Size : ", max)).append(crewSize);
+			responseText.append(System.lineSeparator());
+			
+			double cargo = 0;
+			if (vehicleCache instanceof Rover) {
+				cargo = ((Rover)vehicleCache).getCargoCapacity();
+				responseText.append(addhiteSpacesName("Cargo Capacity : ", max)).append(cargo + " kg");
+				responseText.append(System.lineSeparator());
+			}
+
+//			System.out.println("next is sick bay : " + responseText.toString());				
+				
+			String hasSickBayStr = "No";
+			if (vehicleCache instanceof Rover) {
+
+				boolean hasSickBay = ((Rover)vehicleCache).hasSickBay();
+				if (hasSickBay) {
+					hasSickBayStr = "Yes";
+					
+					responseText.append(addhiteSpacesName("Has Sick Bay : ", max) + hasSickBayStr);
+					responseText.append(System.lineSeparator());
+								
+					int bed = ((Rover)vehicleCache).getSickBay().getSickBedNum();
+					responseText.append(addhiteSpacesName("# Beds (Sick Bay) : ", max)).append(bed);
+					responseText.append(System.lineSeparator());
+					
+					int lvl = ((Rover)vehicleCache).getSickBay().getTreatmentLevel();
+					responseText.append(addhiteSpacesName("Tech Level (Sick Bay) : ", max)).append(lvl);
+					responseText.append(System.lineSeparator());
+				
+				}
+				else {
+					responseText.append(addhiteSpacesName("Has Sick Bay : ", max)  + hasSickBayStr);
+					responseText.append(System.lineSeparator());
+				}
+				
+			}
+
+
+//			System.out.println("next is lab : " + responseText.toString());
+			
+			String hasLabStr = "No";
+			if (vehicleCache instanceof Rover) {
+
+				boolean hasLab = ((Rover)vehicleCache).hasLab();
+				if (hasLab) {
+					hasLabStr = "Yes";
+					
+					responseText.append(addhiteSpacesName("Has Lab : ", max)  + hasLabStr);
+					responseText.append(System.lineSeparator());
+									
+					int lvl = ((Rover)vehicleCache).getLab().getTechnologyLevel();
+					responseText.append(addhiteSpacesName("Tech Level (Lab) : ", max)).append(lvl);
+					responseText.append(System.lineSeparator());
+					
+					int size = ((Rover)vehicleCache).getLab().getLaboratorySize();
+					responseText.append(addhiteSpacesName("Lab Size : ", max)).append(size);
+					responseText.append(System.lineSeparator());
+					
+					ScienceType[] types = ((Rover)vehicleCache).getLab().getTechSpecialties();
+					String names = "";
+					for (ScienceType t: types) {
+						names += t.getName() + ", ";
+					}
+					names = names.substring(0, names.length()-2);
+					
+					responseText.append(addhiteSpacesName("Lab Specialties : ", max) + names);
+					responseText.append(System.lineSeparator());
+				
+				}
+				else {
+					responseText.append(addhiteSpacesName("Has Lab: ", max) + hasSickBayStr);
+					responseText.append(System.lineSeparator());
+				}
+				
+			}
+
+				
+//			if (vehicleCache instanceof LightUtilityVehicle) {
+//
+//				Collection<Part> parts = ((LightUtilityVehicle)vehicleCache).getPossibleAttachmentParts();
+//
+//				String partNames = "";
+//				for (Part p: parts) {
+//					partNames += p.getName() + ", ";
+//				}
+//				partNames = partNames.substring(0, partNames.length()-2);
+//				
+//				System.out.println("[partNames" + partNames + "]");
+//				
+//				responseText.append(addhiteSpacesName("Attachment Parts : ", max) + partNames);
+//				responseText.append(System.lineSeparator());
+//					
+//			}
+			
+		}
+		
+		else if (text.equalsIgnoreCase("key") 
+				|| text.equalsIgnoreCase("keys")  
+				|| text.equalsIgnoreCase("keyword")  
+				|| text.equalsIgnoreCase("keywords")  
+				|| text.equalsIgnoreCase("/k")) {
+
+//			help = true;
+			questionText = REQUEST_KEYS;
+			if (connectionMode == 0) {
+				keywordText = KEYWORDS_TEXT;
+			} else {
+				keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
+			}
+			// responseText.append(System.lineSeparator());
+			responseText.append(keywordText);
+
+		}
+
+		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
+				|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
+
+//			help = true;
+			questionText = REQUEST_HELP;
+			if (connectionMode == 0) {
+				helpText = HELP_TEXT;
+			} else {
+				helpText = HELP_TEXT + HELP_HEIGHT;
+			}
+			// responseText.append(System.lineSeparator());
+			responseText.append(helpText);
+
+		}
+
+		else {
+
+			String[] txt = clarify(name);
+			questionText = txt[0];
+			responseText.append(txt[1]);
+		}
+
+		return new String[] { questionText, responseText.toString() };
+	}
+	
+	
 	/**
 	 * Asks the settlement when the input is a string
 	 * 
@@ -521,7 +750,8 @@ public class ChatUtils {
 		StringBuffer responseText = new StringBuffer();
 		
 		if (text.equalsIgnoreCase("proposal")) {
-//			System.out.println("/p is submitted");
+			questionText = YOU_PROMPT + "Can you show me the list of proposals ?"; 
+			
 			responseText.append(System.lineSeparator());
 			responseText.append(SYSTEM_PROMPT);
 			responseText.append("[EXPERIMENTAL & NON-FUNCTIONAL] Below is a list of proposals for your review :");
@@ -932,16 +1162,22 @@ public class ChatUtils {
 		}
 		
 		else if (text.toLowerCase().contains("weather")) {
+			
 			questionText = YOU_PROMPT + "How's the weather in " + settlementCache.toString() + " ?";
 			responseText.append(System.lineSeparator());
-			responseText.append(settlementCache + " : ");
-			responseText.append("See below.");
+			
+			int max = 28;
+			responseText.append(addhiteSpacesName("Name : ", max));
+			responseText.append(settlementCache);
 			
 			if (marsClock == null) marsClock = Simulation.instance().getMasterClock().getMarsClock();
 			if (mars == null) mars = Simulation.instance().getMars();
 			if (weather == null) weather = mars.getWeather();
 			if (surfaceFeatures == null) surfaceFeatures = mars.getSurfaceFeatures();
 			if (orbitInfo == null) orbitInfo = mars.getOrbitInfo();
+			
+			String DEGREE_CELSIUS =  Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+			String DEGREE = Msg.getString("direction.degreeSign"); //$NON-NLS-1$
 			
 			Coordinates location = settlementCache.getCoordinates();
 //			System.out.println("location in ChatUtils : " + location);
@@ -950,11 +1186,11 @@ public class ChatUtils {
 			
 			responseText.append(System.lineSeparator());
 //			responseText.append(settlementCache + " is at " + location);//(" + lat + ", " + lon + ")"); 
-			responseText.append("Location : " + location);
+			responseText.append(addhiteSpacesName("Location : ", max) + location.toString());
 			responseText.append(System.lineSeparator());
 
 			String date = marsClock.getDateString();
-			responseText.append("On " + date); 
+			responseText.append(addhiteSpacesName("Date and Time : ", max) + date); 
 
 			String time = marsClock.getDecimalTimeString();
 			responseText.append(" at " + time); 
@@ -963,48 +1199,48 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			
 			double t = weather.getTemperature(location);
-			String tt = fmt.format(t) + " " + Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$		
-			responseText.append("Current outside temperature : " + tt); 
+			String tt = fmt.format(t) + DEGREE_CELSIUS;
+			responseText.append(addhiteSpacesName("Outside temperature : ", max) + tt); 
 			responseText.append(System.lineSeparator());
 			
 			double p = weather.getAirPressure(location);
 			String pp = fmt2.format(p) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$		
-			responseText.append("Current air pressure : " + pp); 
+			responseText.append(addhiteSpacesName("Air Pressure : ", max) + pp); 
 			responseText.append(System.lineSeparator());
 			
 			double ad = weather.getAirDensity(location);
 			String aad = fmt2.format(ad) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
-			responseText.append("Current air density : " + aad);
+			responseText.append(addhiteSpacesName("Air Density : ", max) + aad);
 			responseText.append(System.lineSeparator());
 			
 			double ws = weather.getWindSpeed(location);
 			String wws = fmt2.format(ws) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
-			responseText.append("Current wind speed : " + wws); 		
+			responseText.append(addhiteSpacesName("Wind Speed : ", max) + wws); 		
 			responseText.append(System.lineSeparator());
 			
 			double wd = weather.getWindDirection(location);
-			String wwd = fmt.format(wd) + " " + Msg.getString("windDirection.unit.deg"); //$NON-NLS-1$
-			responseText.append("Current wind direction : " + wwd); 		
+			String wwd = fmt.format(wd) + Msg.getString("windDirection.unit.deg"); //$NON-NLS-1$
+			responseText.append(addhiteSpacesName("Wind Direction : ", max) + wwd); 		
 			responseText.append(System.lineSeparator());
 			
 	 		double od = surfaceFeatures.getOpticalDepth(location);
 	 		String ood = fmt2.format(od);
-			responseText.append("Current optical depth : " + ood); 
+			responseText.append(addhiteSpacesName("Optical Depth : ", max) + ood); 
 			responseText.append(System.lineSeparator());
 			
 			double sza = orbitInfo.getSolarZenithAngle(location);
-			String ssza = fmt2.format(sza* RADIANS_TO_DEGREES) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
-			responseText.append("Current solar zenith angle : " + ssza); 
+			String ssza = fmt2.format(sza* RADIANS_TO_DEGREES) + DEGREE;
+			responseText.append(addhiteSpacesName("Solar Zenith Angle : ", max) + ssza); 
 			responseText.append(System.lineSeparator());
 			
 			double sda = orbitInfo.getSolarDeclinationAngleDegree();
-			String ssda = fmt2.format(sda) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
-			responseText.append("Current solar declination angel : " + ssda); 
+			String ssda = fmt2.format(sda) + DEGREE;
+			responseText.append(addhiteSpacesName("Solar Declination Angle : ", max) + ssda); 
 			responseText.append(System.lineSeparator());
 			
 			double si = surfaceFeatures.getSolarIrradiance(location);
 			String ssi = fmt2.format(si) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$		
-			responseText.append("Current solar irradiance : " + ssi); 		
+			responseText.append(addhiteSpacesName("Solar Irradiance : ", max) + ssi); 		
 			responseText.append(System.lineSeparator());
 		}
 		
@@ -2212,7 +2448,8 @@ public class ChatUtils {
 				responseText.append(System.lineSeparator());
 				responseText.append(name);
 
-				if (settlementCache != null || vehicleCache != null) {
+				if (settlementCache != null || vehicleCache != null
+						|| robotCache != null) {
 					responseText.append(" is disconnected from the line.");
 				}
 				
@@ -2221,8 +2458,8 @@ public class ChatUtils {
 	
 					if (rand1 == 0)
 						responseText.append(" has left the conversation.");
-					else
-						responseText.append(" just hung up the line.");
+					else if (rand1 == 1)
+						responseText.append(" just hung up.");
 				}
 				
 				// set personCache and robotCache to null so as to quit the conversation
@@ -2260,7 +2497,7 @@ public class ChatUtils {
 		// Add changing the height of the chat box
 		// DELETED
 
-		// Case 1: ask about a particular settlement
+		// Case 0: ask about a particular settlement
 		else if (settlementCache != null) {
 
 			personCache = null;
@@ -2290,6 +2527,21 @@ public class ChatUtils {
 
 		}
 
+		// Case 1: ask about a particular vehicle
+		else if (vehicleCache != null) {
+
+			personCache = null;
+			robotCache = null;
+			settlementCache = null;
+//			vehicleCache = null;
+			
+			String[] ans = askVehicle(text, name);
+
+			questionText = ans[0];
+			responseText.append(ans[1]);
+
+		}
+		
 		// Case 2: ask to talk to a person or robot
 		else if (settlementCache == null) {
 			// Note : this is better than personCache != null || robotCache != null since it
@@ -2451,6 +2703,23 @@ public class ChatUtils {
 		for (int i=0; i< max-size; i++)
 			sb.append(ONE_SPACE);
 		
+		return sb;
+	}
+	
+	/**
+	 * Computes the # of whitespaces
+	 * 
+	 * @param name
+	 * @param max
+	 * @return
+	 */
+	public static StringBuffer addhiteSpacesName(String name, int max) {
+		int size = name.length();
+		StringBuffer sb = new StringBuffer();
+		for (int i=0; i< max-size; i++)
+			sb.append(ONE_SPACE);
+		
+		sb.append(name);
 		return sb;
 	}
 	
@@ -2927,6 +3196,18 @@ public class ChatUtils {
 		return responseText;
 	}
 	
+//	public static boolean hasDuplicateNames(int[] names) {
+//		 int size = names.length;
+//		
+//		 for (int i=0; i<size; i++){
+//			 for (int j=0; j<size; j++){
+//				 if (names[i] > 1 && names[j] > 1)
+//					 return true;
+//			 }
+//		 }
+//
+//		 return false;
+//	}
 	
 	/*
 	 * Asks the system a question
@@ -2936,13 +3217,15 @@ public class ChatUtils {
 	public static String askSystem(String text) {
 		StringBuffer responseText = new StringBuffer();
 
-		boolean available = true;
+//		boolean available = true;
 		int nameCase = 0;
 		boolean proceed = false;
 
 		Person person = null;
 		Robot robot = null;
-
+		Vehicle vehicle = null;
+		Settlement settlement = null;
+		
 		text = text.trim();
 		int len = text.length();
 
@@ -3300,7 +3583,7 @@ public class ChatUtils {
 		else if (text.toLowerCase().contains("vehicle") || text.toLowerCase().contains("rover")) {
 			// questionText = YOU_PROMPT + "What are the names of the vehicles ?";
 			responseText.append(SYSTEM_PROMPT);
-			responseText.append("Here's the roster list of vehicles in each settlement.");
+			responseText.append("Here's the roster list of vehicles associated with each settlement.");
 			responseText.append(System.lineSeparator());
 			
 			// Creates an array with the names of all of settlements
@@ -3403,153 +3686,194 @@ public class ChatUtils {
 
 			List<Person> personList = new ArrayList<>();
 			List<Robot> robotList = new ArrayList<>();
+			List<Vehicle> vehicleList = new ArrayList<>();
+			List<Settlement> settlementList = new ArrayList<>();
+			
+			// check settlements
+			settlementList = CollectionUtils.returnSettlementList(text);
 			
 			// person and robot
 			Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
 			while (i.hasNext()) {
-				Settlement settlement = i.next();
+				Settlement s = i.next();
 				// Check if anyone has this name (as first/last name) in any settlements
 				// and if he/she is still alive
 				if (text.contains("bot") || text.contains("Bot")) {
 					// Check if it is a bot
-					robotList.addAll(settlement.returnRobotList(text));
-				} else {
-					personList.addAll(settlement.returnPersonList(text));
-
-				}
-
-				if (personList.size() != 0)
-					nameCase = personList.size();
-				else
+					robotList.addAll(s.returnRobotList(text));
 					nameCase = robotList.size();
-
-				// System.out.println("nameCase is " + nameCase);
+				} 
+				
+				else { //if (text.contains("rover") || text.contains("vehicle")) {
+					// check vehicles/rovers
+					vehicleList.addAll(s.returnVehicleList(text));
+					// check persons
+					personList.addAll(s.returnPersonList(text));				
+				}
+			}		
+			
+			if (vehicleList.size() 
+					+ robotList.size() 
+					+ settlementList.size() 
+					+ personList.size()
+					> 1) {
+				responseText.append(SYSTEM_PROMPT);
+				responseText.append("There are more than one \"");
+				responseText.append(text);
+				responseText.append("\".Please be more specific by spelling out the full name of the party you would like to reach.");
+				// System.out.println(responseText);
+				return responseText.toString();
 			}
-
-			// System.out.println("total nameCase is " + nameCase);
+			
+			else if (robotList.size() > 0) {
+				nameCase = robotList.size();
+			}
+			
+			else if (vehicleList.size() > 0) {
+				nameCase = vehicleList.size();
+			}
+			
+			else if (personList.size() > 0) {
+				nameCase = personList.size();
+			}
+			
+			else if (settlementList.size() > 0) {
+				nameCase = settlementList.size();
+			}
 
 			// capitalize the first initial of a name
 			text = Conversion.capitalize(text);
 
-			// Case 1: more than one person with that name
+			// Case 1: more than one with the same name
 			if (nameCase >= 2) {
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append("There are more than one \"");
 				responseText.append(text);
-				responseText.append("\". Would you be more specific?");
+				responseText.append("\".Please be more specific by spelling out the full name of the party you would like to reach.");
 				// System.out.println(responseText);
 				return responseText.toString();
 				
 			// Case 2: there is one person
 			} else if (nameCase == 1) {
 				String taskStr = "";
-				if ((!personList.isEmpty())) {
+				
+				// for people
+				if (!personList.isEmpty()) {
+					
+					nameCase = personList.size();
+					
 					taskStr = personList.get(0).getMind().getTaskManager().getTaskName();
-					if (taskStr.toLowerCase().contains("sleep")) {
-						available = false;
-					}
-				}
-				
-				if (!available) {
-					// TODO: check if the person is available or not (e.g. sleeping or if on a mission and out of comm range
-					// broke down)
-					responseText.append(SYSTEM_PROMPT);
-					responseText.append("I'm sorry. ");
-					responseText.append(text);
-					responseText.append(" is unavailable (" + taskStr + ") at this moment.");
-					return responseText.toString();
-				}
-				
-				else if (!personList.isEmpty()) {
-					person = personList.get(0);
-					if (person.isDeclaredDead()) {
-						// Case 4: passed away
-						String buried = "";
-						if (person.getBuriedSettlement() != null)
-							buried = person.getBuriedSettlement().getName();
-						int rand = RandomUtil.getRandomInt(1);
-						if (rand == 0) {
-							responseText.append(SYSTEM_PROMPT);
-							responseText.append("I'm sorry. ");
-							responseText.append(text);
-							responseText.append(" has passed away");
-						} else {
-							responseText.append(SYSTEM_PROMPT);
-							responseText.append("Perhaps you haven't heard. ");
-							responseText.append(text);
-							responseText.append(" is dead");
-						}
-						if (!buried.equals("")) {
-							responseText.append(" and is buried at ");
-							responseText.append(buried);
-							responseText.append("." + System.lineSeparator());
-						}
-						else {
-							responseText.append("." + System.lineSeparator());
-						}
-												
-						DeathInfo info = person.getPhysicalCondition().getDeathDetails();
-						String cause = info.getCause();
-						String doctor = info.getDoctor();
-						boolean examDone = info.getExamDone();
-						String time = info.getTimeOfDeath();
-						String coord = info.getLocationOfDeath().getFormattedString();
-						String place = info.getPlaceOfDeath();
-						String missionPhase = info.getMissionPhase();
-						String mission = info.getMission();
-						String task = info.getTask();
-						String taskPhase = info.getTaskPhase();
-						String problem = info.getProblem().getSituation();
-						String mal = info.getMalfunction();
-						String job = info.getJob();
-						String ill = info.getIllness().toString();
-						String health = info.getHealth() + "";
-						String lastWord = info.getLastWord();
-						
-						responseText.append(System.lineSeparator());
-						responseText.append(System.lineSeparator());
-						responseText.append("      Time of Death : " + time);
-						responseText.append(System.lineSeparator());
-						responseText.append("     Place of Death : " + place);
-						responseText.append(System.lineSeparator());
-						if (examDone) {
-						responseText.append(" Postmortem Exam by : " + doctor);
-							responseText.append(System.lineSeparator());							
-						}
-						responseText.append("     Cause of Death : " + cause);
-						responseText.append(System.lineSeparator());
-						responseText.append("        Coordinates : " + coord);
-						responseText.append(System.lineSeparator());
-						responseText.append("                Job : " + job);
-						responseText.append(System.lineSeparator());
-						responseText.append("               Task : " + task);
-						responseText.append(System.lineSeparator());
-						responseText.append("         Task Phase : " + taskPhase);
-						responseText.append(System.lineSeparator());
-						responseText.append("            Mission : " + mission);
-						responseText.append(System.lineSeparator());
-						responseText.append("      Mission Phase : " + missionPhase);
-						responseText.append(System.lineSeparator());
-						responseText.append("        Malfunction : " + mal);							
-						responseText.append(System.lineSeparator());
-						responseText.append("            Illness : " + problem);	
-						responseText.append(System.lineSeparator());
-						responseText.append("          Complaint : " + ill);	
-						responseText.append(System.lineSeparator());
-						responseText.append("     General Health : " + health);							
-						responseText.append(System.lineSeparator());
-						responseText.append("         Last Words : '" + lastWord +"'");							
-						responseText.append(System.lineSeparator());
-						
+					
+					if (taskStr.toLowerCase().contains("sleep")) {					
+						// TODO: check if the person is available or not (e.g. sleeping or if on a mission and out of comm range
+						// broke down)
+						responseText.append(SYSTEM_PROMPT);
+						responseText.append("I'm sorry. ");
+						responseText.append(text);
+						responseText.append(" is unavailable (" + taskStr + ") at this moment.");
 						return responseText.toString();
 					}
+					
 					else {
-						personCache = person;
-//							unitCache = person;
+						person = personList.get(0);
+						if (person.isDeclaredDead()) {
+							// Case 4: passed away
+							String buried = "";
+							if (person.getBuriedSettlement() != null)
+								buried = person.getBuriedSettlement().getName();
+							int rand = RandomUtil.getRandomInt(1);
+							if (rand == 0) {
+								responseText.append(SYSTEM_PROMPT);
+								responseText.append("I'm sorry. ");
+								responseText.append(text);
+								responseText.append(" has passed away");
+							} else {
+								responseText.append(SYSTEM_PROMPT);
+								responseText.append("Perhaps you haven't heard. ");
+								responseText.append(text);
+								responseText.append(" is dead");
+							}
+							if (!buried.equals("")) {
+								responseText.append(" and is buried at ");
+								responseText.append(buried);
+								responseText.append("." + System.lineSeparator());
+							}
+							else {
+								responseText.append("." + System.lineSeparator());
+							}
+													
+							DeathInfo info = person.getPhysicalCondition().getDeathDetails();
+							String cause = info.getCause();
+							String doctor = info.getDoctor();
+							boolean examDone = info.getExamDone();
+							String time = info.getTimeOfDeath();
+							String coord = info.getLocationOfDeath().getFormattedString();
+							String place = info.getPlaceOfDeath();
+							String missionPhase = info.getMissionPhase();
+							String mission = info.getMission();
+							String task = info.getTask();
+							String taskPhase = info.getTaskPhase();
+							String problem = info.getProblem().getSituation();
+							String mal = info.getMalfunction();
+							String job = info.getJob();
+							String ill = info.getIllness().toString();
+							String health = info.getHealth() + "";
+							String lastWord = info.getLastWord();
+							
+							responseText.append(System.lineSeparator());
+							responseText.append(System.lineSeparator());
+							responseText.append("      Time of Death : " + time);
+							responseText.append(System.lineSeparator());
+							responseText.append("     Place of Death : " + place);
+							responseText.append(System.lineSeparator());
+							if (examDone) {
+							responseText.append(" Postmortem Exam by : " + doctor);
+								responseText.append(System.lineSeparator());							
+							}
+							responseText.append("     Cause of Death : " + cause);
+							responseText.append(System.lineSeparator());
+							responseText.append("        Coordinates : " + coord);
+							responseText.append(System.lineSeparator());
+							responseText.append("                Job : " + job);
+							responseText.append(System.lineSeparator());
+							responseText.append("               Task : " + task);
+							responseText.append(System.lineSeparator());
+							responseText.append("         Task Phase : " + taskPhase);
+							responseText.append(System.lineSeparator());
+							responseText.append("            Mission : " + mission);
+							responseText.append(System.lineSeparator());
+							responseText.append("      Mission Phase : " + missionPhase);
+							responseText.append(System.lineSeparator());
+							responseText.append("        Malfunction : " + mal);							
+							responseText.append(System.lineSeparator());
+							responseText.append("            Illness : " + problem);	
+							responseText.append(System.lineSeparator());
+							responseText.append("          Complaint : " + ill);	
+							responseText.append(System.lineSeparator());
+							responseText.append("     General Health : " + health);							
+							responseText.append(System.lineSeparator());
+							responseText.append("         Last Words : '" + lastWord +"'");							
+							responseText.append(System.lineSeparator());
+							
+							return responseText.toString();
+						}
+						
+						else {
+							personCache = person;
+							
+							responseText.append(personCache.getName());
+							responseText.append(" : This is ");
+							responseText.append(text);					
+							responseText.append(". " + getGreeting(1));
+							return responseText.toString();
+						}
 					}
 				}
 
-				if (!robotList.isEmpty()) {
+				// for robots
+				else if (!robotList.isEmpty()) {
+					nameCase = robotList.size();
+					
 					robot = robotList.get(0);
 					if (robot.getSystemCondition().isInoperable()) {
 						// Case 4: decomissioned
@@ -3558,101 +3882,120 @@ public class ChatUtils {
 						responseText.append(text);
 						responseText.append(" has been decomissioned.");
 						return responseText.toString();
-					} else {
+					} 
+					
+					else {
 						robotCache = robot;
-//							unitCache = robot;
-					}
-				}
 
-				if (robotCache != null) {
-					responseText.append(robotCache.getName());
-					responseText.append(" : This is ");
-					responseText.append(text);
-					responseText.append(". ");
-					return responseText.toString();
-
-				}
-
-				else if (personCache != null) {
-					responseText.append(personCache.getName());
-					responseText.append(" : This is ");
-					responseText.append(text);					
-					responseText.append(". ");
-					return responseText.toString();
-				}
-
-				// Case 3: doesn't exist, check settlement's name
-			} else if (nameCase == 0) {
-				// System.out.println("nameCase is 0");
-				// Match a settlement's name
-				if (text.length() > 1) {
-					boolean notMatched = true;
-					Iterator<Settlement> j = Simulation.instance().getUnitManager().getSettlements().iterator();
-					while (j.hasNext()) {
-						Settlement settlement = j.next();
-						String s_name = settlement.getName();
-
-						if (s_name.equalsIgnoreCase(text.toLowerCase())) {
-							// name = "System";
-							responseText.append(SYSTEM_PROMPT);
-							responseText.append("You are now connected with ");
-							responseText.append(s_name);
-							responseText.append(". What would like to know ?");
-
-							settlementCache = settlement;
-							// System.out.println("matching settlement name " + s_name);
-							return responseText.toString();
-						}
-
-						else if (s_name.toLowerCase().contains(text.toLowerCase())) {
-							responseText.append(SYSTEM_PROMPT);
-							responseText.append("Do you mean '");
-							responseText.append(s_name);
-							responseText.append("' or something else ?");
-							// System.out.println("partially matching settlement name " + s_name);
-							return responseText.toString();
-						} 
-						
-
-						// TODO: check vehicle names
-						// TODO: check commander's name
-					}
-						
-					if (notMatched) {
-						responseText.append(SYSTEM_PROMPT);
-						responseText.append("I do not recognize any person or settlement by the name of '");
+						responseText.append(robotCache.getName());
+						responseText.append(" : This is ");
 						responseText.append(text);
-						responseText.append("'.");
+						responseText.append(". " + getGreeting(2));
 						return responseText.toString();
 					}
 
 				}
-				
-				else {
-					responseText.append(SYSTEM_PROMPT);
-					responseText.append("I do not recognize any person or settlement by the name of '");
-					responseText.append(text);
-					responseText.append("'.");
-					return responseText.toString();
-				}
-			}
 
-			else {
-				responseText.append(SYSTEM_PROMPT);
-				responseText.append("I do not recognize any person or settlement by the name of '");
-				responseText.append(text);
-				responseText.append("'.");
-				return responseText.toString();
-			}
+				// For vehicles
+				else if (!vehicleList.isEmpty()) {
+					vehicle = vehicleList.get(0);
+					if (vehicle.getStatus() == StatusType.MAINTENANCE) {
+						// Case 4: decomissioned
+						responseText.append(SYSTEM_PROMPT);
+						responseText.append("I'm sorry. ");
+						responseText.append(text);
+						responseText.append(" is down for maintenance and connection cannot be established.");
+						return responseText.toString();
+					} 
+					
+					else {
+						vehicleCache = vehicle;
+
+						responseText.append(vehicleCache.getName());
+						responseText.append(" : This is ");
+						responseText.append(text);
+						responseText.append(". " + getGreeting(3));
+						return responseText.toString();
+					}
+
+				}
+
+				// For settlements
+				else if (!settlementList.isEmpty()) {
+					settlement = settlementList.get(0);
+					responseText.append(SYSTEM_PROMPT);
+					responseText.append("You are now connected with ");
+					responseText.append(settlement.getName());
+					responseText.append(". " + getGreeting(0));
+
+					settlementCache = settlement;
+
+					return responseText.toString();
+
+				}
+				
+			} 
+
 		}
 
 		responseText.append(SYSTEM_PROMPT);
-		responseText.append("I do not recognize any person or settlement by the name of '");
+		responseText.append("I do not recognize any person, robot, vehicle or settlement by the name of '");
 		responseText.append(text);
 		responseText.append("'.");
 		return responseText.toString();
 	}
 
+	/**
+	 * Gets a greeting
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static StringBuffer getGreeting(int type) {
+		StringBuffer s = new StringBuffer();
+		
+		if (type == 1) {
+			// For a human being
+			int num = RandomUtil.getRandomInt(7);
+			if (num == 0)
+				s.append("How may I help you?");
+			else if (num == 1)
+				s.append("How can I help you?");
+			else if (num == 2)
+				s.append("How can I help?");
+			else if (num == 3)
+				s.append("How may I assist you?");
+			else if (num == 4)
+				s.append("Hi, do you need something? ");
+			else if (num == 5)
+				s.append("How are you, is there anything you need?");
+			else if (num == 6)
+				s.append("Howdy? anything you meed from me?");
+			else
+				s.append("Hi, do let me know what you need.");
+			
+		}
+		else {
+			// for machine AI
+			int num = RandomUtil.getRandomInt(5);
+			if (num == 0)
+				s.append("How may I help you?");
+			else if (num == 1)
+				s.append("How can I help you?");
+			else if (num == 2)
+				s.append("How can I help?");
+			else if (num == 3)
+				s.append("How may I assist you?");
+			else if (num == 4)
+				s.append("How can I help?");
+			else
+				s.append("How can I help?");
+		}
+		
+		return s;
+	}
+	
+	
 	/**
      * Generates and prints the list that needs to be processed
      * 

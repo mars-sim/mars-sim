@@ -376,10 +376,12 @@ public class CollectionUtils {
 		list.addAll(Arrays.asList(ChatUtils.SYSTEM_KEYS));
 		// Add keywords for all parties	
 		list.addAll(Arrays.asList(ChatUtils.ALL_PARTIES_KEYS));
-		// Add keywords specifically for a settlement 
+		// Add keywords specifically for settlements 
 		list.addAll(Arrays.asList(ChatUtils.SETTLEMENT_KEYS));
-		// Add keywords specifically for a person/robot
-		list.addAll(Arrays.asList(ChatUtils.PERSON_KEYS));			
+		// Add keywords specifically for persons/robots
+		list.addAll(Arrays.asList(ChatUtils.PERSON_KEYS));	
+		// Add keywords specifically for a vehicles
+		list.addAll(Arrays.asList(ChatUtils.VEHICLE_KEYS));
 		// Add shortcuts
 		list.addAll(createShortcutHelp());
 		
@@ -388,6 +390,28 @@ public class CollectionUtils {
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * Gets a list of settlements that match the name
+	 * 
+	 * @param text
+	 * @return {@link List<Settlement>}
+	 */
+	public static List<Settlement> returnSettlementList(String text) {
+		List<Settlement> sList = new ArrayList<>();
+		Iterator<Settlement> j = Simulation.instance().getUnitManager().getSettlements().iterator();
+		while (j.hasNext()) {
+			Settlement settlement = j.next();
+			String s_name = settlement.getName();
+
+			if (s_name.equalsIgnoreCase(text.toLowerCase())
+					|| s_name.toLowerCase().contains(text.toLowerCase())) {
+				sList.add(settlement);
+			} 
+		}
+		
+		return sList;
+	}
+	
 //	/**
 //	 * Compiles the names of all people into one single list
 //	 * 

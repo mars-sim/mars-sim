@@ -413,23 +413,23 @@
 	</part>
 
 	<part name="pneumatic drill" mass="25.0">
-		<description>Attachment part for light utility vehicle.</description>
+		<description>Attachment part for LUV. A pneumatic hand for lifting.</description>
 	</part>
 
 	<part name="backhoe" mass="35.0" >
-		<description>Attachment part for light utility vehicle.</description>
+		<description>Attachment part for LUV. An excavating equipment with a digging bucket on the end of a two-part articulated arm</description>
 	</part>
 
 	<part name="bulldozer blade" mass="40.0">
-		<description>Attachment part for light utility vehicle.</description>
+		<description>Attachment part for LUV. A bulldozer blade (possible use for new structures).</description>
 	</part>
 
 	<part name="soil compactor" mass="100.0">
-		<description>Attachment part for light utility vehicle.</description>
+		<description>Attachment part for LUV. A drum roller that applied stress to a soil</description>
 	</part>
 
 	<part name="crane boom" mass="75.0">
-		<description>Attachment part for light utility vehicle.</description>
+		<description>Attachment part for LUV. A long, telescopic or fixed arm for moving objects</description>
 	</part>
 
 	<part name="small motor" mass="10.0" >
@@ -528,8 +528,7 @@
 
 	<part name="drilling rig" mass="135.0">
 		<description>
-			A light utility vehicle attachment with a motor for supporting drilling.
-			Should be used in conjunction with the crane boom.
+			An attachment for LUV. A motor platform for supporting drilling (used in conjunction with the crane boom)
 		</description>
 	</part>
 

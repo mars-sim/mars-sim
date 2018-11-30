@@ -2116,6 +2116,33 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return a list of robots
 	 *
 	 */
+	public List<Vehicle> returnVehicleList(String aName) {
+		List<Vehicle> vList = new ArrayList<>();
+		
+		Collection<Vehicle> list = getAllAssociatedVehicles();
+
+		Iterator<Vehicle> i = list.iterator();
+		while (i.hasNext()) {
+			Vehicle v = i.next();
+			if (v.getName().equalsIgnoreCase(aName)
+					|| v.getName().replaceAll(" ", "").equalsIgnoreCase(aName.replaceAll(" ", ""))
+					|| v.getName().replaceAll(" ", "").toLowerCase().contains(aName.replaceAll(" ", "").toLowerCase())) {
+				vList.add(v);
+			}
+		}
+			
+		return vList;
+	}
+	
+	
+	
+	/**
+	 * Returns a list of robots containing a particular name
+	 * 
+	 * @param aName bot's name
+	 * @return a list of robots
+	 *
+	 */
 	public List<Robot> returnRobotList(String aName) {
 		List<Robot> robotList = new ArrayList<>();
 		aName = aName.trim();
@@ -2155,14 +2182,15 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		while (i.hasNext()) {
 			Robot robot = i.next();
 			// Case 1: exact match e.g. chefbot001
-			if (robot.getName().replace(" ", "").equalsIgnoreCase(aName)) {
+			if (robot.getName().equalsIgnoreCase(aName)
+					|| robot.getName().replace(" ", "").equalsIgnoreCase(aName.replace(" ", ""))) {
 				robotList.add(robot);
 			}
 			// Case 2: some parts are matched
 			else {
 				// Case 2 e.g. chefbot, chefbot0_, chefbot0__, chefbot1_, chefbot00_, chefbot01_
 				// need more information !
-				if (robot.getName().replace(" ", "").toLowerCase().contains(aName.toLowerCase())) {
+				if (robot.getName().replace(" ", "").toLowerCase().contains(aName.toLowerCase().replace(" ", ""))) {
 					// System.out.println("aName is a part of " + robot.getName().replace(" ", ""));
 					robotList.add(robot);
 				}

@@ -258,14 +258,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	        }
 
 		}
-		else if (robot != null) {
-/*			
-	        // Set robot as the vehicle operator if it isn't already.
-	        if (!robot.equals(vehicle.getOperator())) {
-	            vehicle.setOperator(robot);
-	        }
-*/
-		}		
+//		else if (robot != null) {
+//			
+//	        // Set robot as the vehicle operator if it isn't already.
+//	        if (!robot.equals(vehicle.getOperator())) {
+//	            vehicle.setOperator(robot);
+//	        }
+//
+//		}		
 		
         // Find starting distance to destination.
         double startingDistanceToDestination = getDistanceToDestination();
@@ -275,7 +275,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double distanceTraveled = secondsTime * ((vehicle.getSpeed() / 60D) / 60D);
 
         // Consume fuel for distance traveled.
-        double fuelConsumed = distanceTraveled / vehicle.getDrivetrainEfficiency() / GoodsManager.SOFC_CONVERSION_EFFICIENCY;
+        double fuelConsumed = distanceTraveled / vehicle.getfuelConsumption();
         Inventory vInv = vehicle.getInventory();
         int fuelType = vehicle.getFuelType();
         double remainingFuel = vInv.getAmountResourceStored(fuelType, false);

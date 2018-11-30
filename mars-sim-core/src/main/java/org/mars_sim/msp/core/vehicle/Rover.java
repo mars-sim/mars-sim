@@ -61,10 +61,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	// Data members
 	/** The rover's capacity for crew members. */
 	private int crewCapacity = 0;
+	/** The rover's capacity for robot crew members. */
 	private int robotCrewCapacity = 0;
-
-	/** The rover's inventory. */
-	// private Inventory inv;
+	/** The rover's cargo capacity */
+	private double cargoCapacity = 0;
 	/** The rover's airlock. */
 	private Airlock airlock;
 	/** The rover's lab. */
@@ -86,12 +86,12 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	 * Constructs a Rover object at a given settlement
 	 * 
 	 * @param name        the name of the rover
-	 * @param description the configuration description of the vehicle.
+	 * @param type the configuration type of the vehicle.
 	 * @param settlement  the settlement the rover is parked at
 	 */
-	public Rover(String name, String description, Settlement settlement) {
+	public Rover(String name, String type, Settlement settlement) {
 		// Use GroundVehicle constructor
-		super(name, description, settlement, MAINTENANCE_WORK_TIME);
+		super(name, type, settlement, MAINTENANCE_WORK_TIME);
 
 		// life_support_range_error_margin =
 		// SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
@@ -112,60 +112,62 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		// malfunctionManager.addScopeString("Sickbay");
 
 		// Set crew capacity
-		crewCapacity = vehicleConfig.getCrewSize(description);
+		crewCapacity = vehicleConfig.getCrewSize(type);
 		robotCrewCapacity = crewCapacity;
 
 		Inventory inv = getInventory();
 
+		// Set total cargo capacity
+		cargoCapacity = vehicleConfig.getTotalCapacity(type);
 		// Set inventory total mass capacity.
-		inv.addGeneralCapacity(vehicleConfig.getTotalCapacity(description));
+		inv.addGeneralCapacity(cargoCapacity);
 
 		// Set inventory resource capacities.
-		inv.addARTypeCapacity(ResourceUtil.methaneID, vehicleConfig.getCargoCapacity(description, ResourceUtil.METHANE));
-		inv.addARTypeCapacity(ResourceUtil.oxygenID, vehicleConfig.getCargoCapacity(description, LifeSupportType.OXYGEN));
-		inv.addARTypeCapacity(ResourceUtil.waterID, vehicleConfig.getCargoCapacity(description, LifeSupportType.WATER));
-		inv.addARTypeCapacity(ResourceUtil.foodID, vehicleConfig.getCargoCapacity(description, LifeSupportType.FOOD));
-		inv.addARTypeCapacity(ResourceUtil.rockSamplesID, vehicleConfig.getCargoCapacity(description, ResourceUtil.ROCK_SAMLES));
-		inv.addARTypeCapacity(ResourceUtil.iceID, vehicleConfig.getCargoCapacity(description, ResourceUtil.ICE));
+		inv.addARTypeCapacity(ResourceUtil.methaneID, vehicleConfig.getCargoCapacity(type, ResourceUtil.METHANE));
+		inv.addARTypeCapacity(ResourceUtil.oxygenID, vehicleConfig.getCargoCapacity(type, LifeSupportType.OXYGEN));
+		inv.addARTypeCapacity(ResourceUtil.waterID, vehicleConfig.getCargoCapacity(type, LifeSupportType.WATER));
+		inv.addARTypeCapacity(ResourceUtil.foodID, vehicleConfig.getCargoCapacity(type, LifeSupportType.FOOD));
+		inv.addARTypeCapacity(ResourceUtil.rockSamplesID, vehicleConfig.getCargoCapacity(type, ResourceUtil.ROCK_SAMLES));
+		inv.addARTypeCapacity(ResourceUtil.iceID, vehicleConfig.getCargoCapacity(type, ResourceUtil.ICE));
 		
 		inv.addAmountResourceTypeCapacity(ResourceUtil.foodWasteAR,
-				vehicleConfig.getCargoCapacity(description, ResourceUtil.FOOD_WASTE));
+				vehicleConfig.getCargoCapacity(type, ResourceUtil.FOOD_WASTE));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.solidWasteAR,
-				vehicleConfig.getCargoCapacity(description, ResourceUtil.SOLID_WASTE));
+				vehicleConfig.getCargoCapacity(type, ResourceUtil.SOLID_WASTE));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.toxicWasteAR,
-				vehicleConfig.getCargoCapacity(description, ResourceUtil.TOXIC_WASTE));
+				vehicleConfig.getCargoCapacity(type, ResourceUtil.TOXIC_WASTE));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.blackWaterID,
-				vehicleConfig.getCargoCapacity(description, ResourceUtil.BLACK_WATER));
+				vehicleConfig.getCargoCapacity(type, ResourceUtil.BLACK_WATER));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.greyWaterID,
-				vehicleConfig.getCargoCapacity(description, ResourceUtil.GREY_WATER));
+				vehicleConfig.getCargoCapacity(type, ResourceUtil.GREY_WATER));
 
 		// Construct sick bay.
-		if (vehicleConfig.hasSickbay(description)) {
-			sickbay = new SickBay(this, vehicleConfig.getSickbayTechLevel(description),
-					vehicleConfig.getSickbayBeds(description));
+		if (vehicleConfig.hasSickbay(type)) {
+			sickbay = new SickBay(this, vehicleConfig.getSickbayTechLevel(type),
+					vehicleConfig.getSickbayBeds(type));
 
 			// Initialize sick bay activity spots.
-			sickBayActivitySpots = new ArrayList<Point2D>(vehicleConfig.getSickBayActivitySpots(description));
+			sickBayActivitySpots = new ArrayList<Point2D>(vehicleConfig.getSickBayActivitySpots(type));
 		}
 
 		// Construct lab.
-		if (vehicleConfig.hasLab(description)) {
-			lab = new MobileLaboratory(1, vehicleConfig.getLabTechLevel(description),
-					vehicleConfig.getLabTechSpecialties(description));
+		if (vehicleConfig.hasLab(type)) {
+			lab = new MobileLaboratory(1, vehicleConfig.getLabTechLevel(type),
+					vehicleConfig.getLabTechSpecialties(type));
 
 			// Initialize lab activity spots.
-			labActivitySpots = new ArrayList<Point2D>(vehicleConfig.getLabActivitySpots(description));
+			labActivitySpots = new ArrayList<Point2D>(vehicleConfig.getLabActivitySpots(type));
 		}
 		// Set rover terrain modifier
 		setTerrainHandlingCapability(0D);
 
 		// Create the rover's airlock.
-		double airlockXLoc = vehicleConfig.getAirlockXLocation(description);
-		double airlockYLoc = vehicleConfig.getAirlockYLocation(description);
-		double airlockInteriorXLoc = vehicleConfig.getAirlockInteriorXLocation(description);
-		double airlockInteriorYLoc = vehicleConfig.getAirlockInteriorYLocation(description);
-		double airlockExteriorXLoc = vehicleConfig.getAirlockExteriorXLocation(description);
-		double airlockExteriorYLoc = vehicleConfig.getAirlockExteriorYLocation(description);
+		double airlockXLoc = vehicleConfig.getAirlockXLocation(type);
+		double airlockYLoc = vehicleConfig.getAirlockYLocation(type);
+		double airlockInteriorXLoc = vehicleConfig.getAirlockInteriorXLocation(type);
+		double airlockInteriorYLoc = vehicleConfig.getAirlockInteriorYLocation(type);
+		double airlockExteriorXLoc = vehicleConfig.getAirlockExteriorXLocation(type);
+		double airlockExteriorYLoc = vehicleConfig.getAirlockExteriorYLocation(type);
 
 		try {
 			airlock = new VehicleAirlock(this, 2, airlockXLoc, airlockYLoc, airlockInteriorXLoc, airlockInteriorYLoc,
@@ -659,6 +661,11 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	@Override
 	public String getNickName() {
 		return getName();
+	}
+	
+	
+	public double getCargoCapacity() {
+		return cargoCapacity;
 	}
 	
 	/**

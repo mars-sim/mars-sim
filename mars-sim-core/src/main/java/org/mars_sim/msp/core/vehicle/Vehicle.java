@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -41,14 +40,13 @@ import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
-import org.mars_sim.msp.core.structure.goods.GoodsManager;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The Vehicle class represents a generic vehicle. It keeps track of generic
@@ -65,31 +63,46 @@ public abstract class Vehicle extends Unit
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	// Vehicle Status Strings
-//	 public final static String PARKED = "Parked";
-//	 public final static String GARAGED = "Garaged";
-//	 public final static String MOVING = "Moving";
-//	 public final static String MALFUNCTION = "Malfunction";
-//	 public final static String MAINTENANCE = "Periodic Maintenance";
-//	 public final static String TOWED = "Towed";
-
-	// The error margin for determining vehicle range. (actual distance / safe
-	// distance)
+	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
 	private static double fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration()
 			.loadMissionControl()[0];
 	private static double life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration()
 			.loadMissionControl()[1];
 
-	// Maintenance info
+	// For Methane : 
+	// Specific energy is 55.5	MJ/kg, or 15,416 Wh/kg, or 15.416kWh / kg
+	// Energy density is 0.0364 MJ/L, 36.4 kJ/L or 10 Wh/L
+	// Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
+	// as comparison, 1 gallon (or 3.7854 L) of gasoline (which, for the record, it says is 33.7 kilowatt-hours) +> 8.9 kWh / L
+	
+	/** The specific energy of CH4 [kWh/kg] */
+	private static final double METHANE_SPECIFIC_ENERGY = 15.416D;
+	/** The Solid Oxide Fuel Cell Conversion Efficiency (dimension-less) */
+	public static final double SOFC_CONVERSION_EFFICIENCY = .57;
+	/** Lifetime Wear in millisols **/
 	private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
 
 	// Data members
-	private double speed = 0; // Current speed of vehicle in kph
-	private double baseSpeed = 0; // Base speed of vehicle in kph (can be set in child class)
-	private double distanceTraveled = 0; // Total distance traveled by vehicle (km)
-	private double distanceMaint = 0; // Distance traveled by vehicle since last maintenance (km)
-	private double drivetrainEfficiency; // The fuel efficiency of the vehicle. (km/kg)
-
+	/** Current speed of vehicle in kph. */
+	private double speed = 0; // 
+	/** Base speed of vehicle in kph (can be set in child class). */
+	private double baseSpeed = 0; // 
+	/** The base range of the vehicle (with full tank of fuel and no cargo) (km). */
+	private double baseRange = 0;
+	/** Total distance traveled by vehicle (km). */
+	private double distanceTraveled = 0; // 
+	/** Distance traveled by vehicle since last maintenance (km) . */
+	private double distanceMaint = 0; // 
+	/** The efficiency of the vehicle's drivetrain. (kWh/km). */
+	private double drivetrainEfficiency; // 
+	/** The maximum fuel capacity of the vehicle [kg] */
+	private double fuelCapacity;
+	/** The total energy of the vehicle in full tank [kWh]. */
+	private double totalEnergy = 100D;
+	/** The specific fuel consumption of the vehicle [km/kg]. */
+	private double fuelConsumption;
+	
+	
 	private double width; // Width of vehicle (meters).
 	private double length; // Length of vehicle (meters).
 	private double xLocParked; // Parked X location (meters) from center of settlement.
@@ -145,12 +158,6 @@ public abstract class Vehicle extends Unit
 //		enter(LocationCodeType.SETTLEMENT);
 
 		this.vehicleType = vehicleType;
-
-//		 life_support_range_error_margin =
-//		 SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
-//		 fuel_range_error_margin =
-//		 SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
-
 		associatedSettlement = settlement;
 		containerUnit = settlement;
 		settlement.getInventory().storeUnit(this);
@@ -160,7 +167,7 @@ public abstract class Vehicle extends Unit
 
 		// Initialize vehicle data
 		vehicleType = vehicleType.toLowerCase();
-		setDescription(vehicleType);
+
 		direction = new Direction(0);
 		trail = new ArrayList<Coordinates>();
 		status = StatusType.PARKED;
@@ -178,15 +185,30 @@ public abstract class Vehicle extends Unit
 		width = vehicleConfig.getWidth(vehicleType);
 		length = vehicleConfig.getLength(vehicleType);
 
+		setDescription(vehicleType);
+//		setDescription(vehicleConfig.getDescription(vehicleType));
+		
 		// Set base speed.
 		setBaseSpeed(vehicleConfig.getBaseSpeed(vehicleType));
 
 		// Set the empty mass of the vehicle.
 		setBaseMass(vehicleConfig.getEmptyMass(vehicleType));
 
-		// Set the fuel efficiency of the vehicle.
-		drivetrainEfficiency = vehicleConfig.getDrivetrainEfficiency(getDescription()) / 100.0;
+		// Set the drivetrain efficiency of the vehicle.
+		drivetrainEfficiency = vehicleConfig.getDrivetrainEfficiency(vehicleType) ;
+		
+		// Gets the capacity of vehicle's fuel tank 
+		fuelCapacity = vehicleConfig.getCargoCapacity(vehicleType, ResourceUtil.findAmountResourceName(getFuelType())); 
+//		System.out.println("fuelCapacity: " + fuelCapacity);
+		// Gets the total energy on a full tank of methane
+		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY * drivetrainEfficiency;	
 
+		// Gets the base range of the vehicle
+		baseRange = totalEnergy / drivetrainEfficiency;
+		
+		// Gets the fuel consumption of this vehicle [km/kg]
+		fuelConsumption = baseRange / fuelCapacity; 
+		
 		// Set initial parked location and facing at settlement.
 		determinedSettlementParkedLocationAndFacing();
 
@@ -195,6 +217,7 @@ public abstract class Vehicle extends Unit
 
 		// Initialize passenger activity spots.
 		passengerActivitySpots = new ArrayList<Point2D>(vehicleConfig.getPassengerActivitySpots(vehicleType));
+		
 	}
 
 	/**
@@ -618,21 +641,56 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the range of the vehicle
+	 * Gets the current range of the vehicle
 	 * 
-	 * @return the range of the vehicle (in km)
+	 * @return the current range of the vehicle (in km)
 	 * @throws Exception if error getting range.
 	 */
 	public double getRange() {
-		double fuelCapacity = getInventory().getARCapacity(getFuelType(), false);
-		return fuelCapacity * drivetrainEfficiency * GoodsManager.SOFC_CONVERSION_EFFICIENCY
-				/ fuel_range_error_margin;
+		return totalEnergy * getMass() / (getBaseMass() + fuelCapacity) / fuel_range_error_margin;
 	}
 
 	/**
+	 * Gets the base range of the vehicle
+	 * 
+	 * @return the base range of the vehicle (in km)
+	 * @throws Exception if error getting range.
+	 */
+	public double getBaseRange() {
+		return baseRange;
+	}
+
+	/**
+	 * Gets the fuel capaacity of the vehicle [kg].
+	 * 
+	 * @return
+	 */
+	public double getFuelCapacity() {
+		return fuelCapacity;
+	}
+	
+
+	/**
+	 * Gets the energy available at the full tank [kWh].
+	 * 
+	 * @return
+	 */
+	public double getFullEnergy() {
+		return totalEnergy;	
+	}
+	
+	/**
+	 * Gets the specific fuel consumption of the vehicle [km/kg].
+	 * @return
+	 */
+	public double getfuelConsumption() {
+		return fuelConsumption;
+	}
+	
+	/**
 	 * Gets the drivetrain efficiency of the vehicle.
 	 * 
-	 * @return drivetrain efficiency (km/kg)
+	 * @return drivetrain efficiency [km/kg]
 	 */
 	public double getDrivetrainEfficiency() {
 		return drivetrainEfficiency;

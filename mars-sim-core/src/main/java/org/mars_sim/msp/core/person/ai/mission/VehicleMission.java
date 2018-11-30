@@ -812,8 +812,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public Map<Integer, Number> getResourcesNeededForTrip(boolean useMargin, double distance) {
 		Map<Integer, Number> result = new HashMap<Integer, Number>();
 		if (vehicle != null) {
-			result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance,
-					vehicle.getDrivetrainEfficiency() * GoodsManager.SOFC_CONVERSION_EFFICIENCY, useMargin));
+			result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, 1D, useMargin));
 		}
 		return result;
 	}

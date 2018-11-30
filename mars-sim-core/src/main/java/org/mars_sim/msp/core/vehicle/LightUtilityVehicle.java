@@ -40,9 +40,9 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
     private Collection<Part> attachments = null;
     private int slotNumber  = 0;
 
-    public LightUtilityVehicle(String name, String description, Settlement settlement) {
+    public LightUtilityVehicle(String name, String type, Settlement settlement) {
         // Use GroundVehicle constructor.
-        super(name, description, settlement, MAINTENANCE_WORK_TIME);
+        super(name, type, settlement, MAINTENANCE_WORK_TIME);
 
         // Get vehicle configuration.
         VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
@@ -53,16 +53,16 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
         //if (config.hasLab(description)) malfunctionManager.addScopeString("Laboratory");
         //if (config.hasSickbay(description)) malfunctionManager.addScopeString("Sickbay");
 
-        if (config.hasPartAttachments(description)) {
-            attachments = config.getAttachableParts(description);
-            slotNumber = config.getPartAttachmentSlotNumber(description);
+        if (config.hasPartAttachments(type)) {
+            attachments = config.getAttachableParts(type);
+            slotNumber = config.getPartAttachmentSlotNumber(type);
         }
 
-        crewCapacity = config.getCrewSize(description);
-        robotCrewCapacity = config.getCrewSize(description);
+        crewCapacity = config.getCrewSize(type);
+        robotCrewCapacity = config.getCrewSize(type);
 
         Inventory inv = getInventory();
-        inv.addGeneralCapacity(config.getTotalCapacity(description));
+        inv.addGeneralCapacity(config.getTotalCapacity(type));
 
         // Set rover terrain modifier
         setTerrainHandlingCapability(0D);
