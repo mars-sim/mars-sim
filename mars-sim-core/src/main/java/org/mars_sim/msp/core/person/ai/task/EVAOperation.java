@@ -439,11 +439,11 @@ public abstract class EVAOperation extends Task implements Serializable {
 			// Check if EVA suit is at 15% of its oxygen capacity.
 			double oxygenCap = suitInv.getAmountResourceCapacity(ResourceUtil.oxygenID, false);
 			double oxygen = suitInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
-			if (oxygen <= (oxygenCap * .15D)) {
+			if (oxygen <= (oxygenCap * .10D)) {
 				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
 								+ person.getTaskDescription() + " : " + suit.getName()
-								+ "'s oxygen level less than 15%.",
+								+ "'s oxygen level less than 10%.",
 						null);
 				return false;
 			}
@@ -451,13 +451,12 @@ public abstract class EVAOperation extends Task implements Serializable {
 			// Check if EVA suit is at 15% of its water capacity.
 			double waterCap = suitInv.getAmountResourceCapacity(ResourceUtil.waterID, false);
 			double water = suitInv.getAmountResourceStored(ResourceUtil.waterID, false);
-			if (water <= (waterCap * .15D)) {
+			if (water <= (waterCap * .10D)) {
 				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
-								+ person.getTaskDescription() + " : " + suit.getName()
-								+ "'s water level less than 15%.",
-						null);
-				return false;
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + "'s " + suit.getName()
+								+ " reported less than 10% water level left when "
+										+ person.getTaskDescription(), null);
+//				return false;
 			}
 
 			// Check if life support system in suit is working properly.
@@ -481,12 +480,12 @@ public abstract class EVAOperation extends Task implements Serializable {
 		}
 
 		// Check if person's medical condition is sufficient to continue phase.
-		if (person.getPerformanceRating() == 0D) {
+		if (person.getPerformanceRating() < 5D) {
 			// Add back to 3% so that the person can walk
-			person.getPhysicalCondition().setPerformanceFactor(3);
+			person.getPhysicalCondition().setPerformanceFactor(5);
 			LogConsolidated.log(
 					logger, Level.INFO, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-							+ person.getName() + " ended " + person.getTaskDescription() + " : medical problems.",
+							+ person.getName() + " ended " + person.getTaskDescription() + " : performance is too low.",
 					null);
 			return false;
 		}

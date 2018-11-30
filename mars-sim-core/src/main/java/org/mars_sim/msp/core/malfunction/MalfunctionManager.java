@@ -631,19 +631,19 @@ public class MalfunctionManager implements Serializable {
 			double new_mal_prob_failure = 0;
 			double new_MTBF = factory.getMTBFs().get(id);
 			logger.warning("For the part '" + part_name + "' :");
-			logger.warning(" (1).   Reliability : " + addWhiteSpace(Math.round(old_rel * 1000.0) / 1000.0 + " %") + " --> "
-					+ Math.round(new_rel * 1000.0) / 1000.0 + " %");
+			logger.warning(" (1).   Reliability : " + addWhiteSpace(Math.round(old_rel * 1000.0) / 1000.0 + " %") 
+					+ "  -->  " + Math.round(new_rel * 1000.0) / 1000.0 + " %");
 
-			logger.warning(" (2).  Failure Rate : " + addWhiteSpace(Math.round(old_failure * 1000.0) / 1000.0 + " %") + " --> "
-					+ Math.round(new_failure * 1000.0) / 1000.0 + " %");
+			logger.warning(" (2).  Failure Rate : " + addWhiteSpace(Math.round(old_failure * 1000.0) / 1000.0 + " %") 
+					+ "  -->  " + Math.round(new_failure * 1000.0) / 1000.0 + " %");
 			new_mal_prob_failure = (old_mal_probl_failure + new_failure) / 2.0;
 
-			logger.warning(" (3).          MTBF : " + addWhiteSpace(Math.round(old_MTBF * 1000.0) / 1000.0 + " hr") + " --> "
-					+ Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
+			logger.warning(" (3).          MTBF : " + addWhiteSpace(Math.round(old_MTBF * 1000.0) / 1000.0 + " hr") 
+					+ "  -->  " + Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
 
 			logger.warning("For the malfunction '" + malfunctionName + "' :");
 			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_probl_failure * 1000.0) / 1000.0 + " %") 
-					+ " --> " + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
+					+ "  -->  " + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
 			malfunction.setProbability(new_mal_prob_failure);
 
 		}
