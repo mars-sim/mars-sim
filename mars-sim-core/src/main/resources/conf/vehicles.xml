@@ -20,8 +20,14 @@ Energy density is 0.0364 MJ/L, 36.4 kJ/L or 10 Wh/L
  
 Note : 1 MJ = 0.277778 kWh; 1 kWh = 3.6 MJ
  
-5. Assume Solid Oxide Fuel Cell (SOFC) has 57% efficiency. see https://www.sciencedaily.com/releases/2012/05/120531165720.htm
+5. Assume Solid Oxide Fuel Cell (SOFC) has 57% efficiency. 
+ https://www.sciencedaily.com/releases/2012/05/120531165720.htm
  
+6. According to Zubrin, it is estimated that a 1 tonne pressurized ground rover would require about 0.5 kg of
+methane/oxygen bipropellant to travel 1 km. Thus a 800 km round trip excursion would consume about 400 kg of
+propellant. 
+http://www.marspapers.org/paper/Zubrin_1991.pdf
+
  -->
  
 

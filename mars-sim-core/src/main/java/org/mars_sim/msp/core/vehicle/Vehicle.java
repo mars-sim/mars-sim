@@ -104,8 +104,8 @@ public abstract class Vehicle extends Unit
 	private double fuelCapacity;
 	/** The total energy of the vehicle in full tank [kWh]. */
 	private double totalEnergy = 100D;
-	/** The specific fuel consumption of the vehicle [km/kg]. */
-	private double fuelConsumption;
+	/** The base fuel consumption of the vehicle [km/kg]. */
+	private double baseFuelConsumption;
 	
 	
 	private double width; // Width of vehicle (meters).
@@ -212,7 +212,7 @@ public abstract class Vehicle extends Unit
 		baseRange = totalEnergy / drivetrainEfficiency;
 		
 		// Gets the fuel consumption of this vehicle [km/kg]
-		fuelConsumption = baseRange / fuelCapacity; 
+		baseFuelConsumption = baseRange / fuelCapacity; 
 		
 		// Set initial parked location and facing at settlement.
 		determinedSettlementParkedLocationAndFacing();
@@ -685,11 +685,20 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Gets the specific fuel consumption of the vehicle [km/kg].
+	 * Gets the base fuel consumption of the vehicle [km/kg].
 	 * @return
 	 */
-	public double getfuelConsumption() {
-		return fuelConsumption;
+	public double getBaseFuelConsumption() {
+		return baseFuelConsumption;
+	}
+
+	/**
+	 * Gets the instantaneous fuel consumption of the vehicle [km/kg] 
+	 * (Depending on the current weight of the vehicle)
+	 * @return
+	 */
+	public double getIFuelConsumption() {
+		return baseFuelConsumption * (getMass() + fuelCapacity) / (getBaseMass() + fuelCapacity) ;
 	}
 	
 	/**

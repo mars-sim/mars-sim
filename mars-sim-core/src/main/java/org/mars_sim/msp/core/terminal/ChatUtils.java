@@ -540,7 +540,7 @@ public class ChatUtils {
 		if (text.equalsIgnoreCase("specs")) {
 			questionText = YOU_PROMPT + "Can you show me the specification for this vehicle ?"; 
 
-			int max = 26;
+			int max = 28;
 			responseText.append(System.lineSeparator());
 //			responseText.append(SYSTEM_PROMPT);
 //			responseText.append("Specifications :");
@@ -578,7 +578,7 @@ public class ChatUtils {
 				responseText.append(addhiteSpacesName("Base Range : ", max)).append(Math.round(vehicleCache.getBaseRange() *100.0)/100.0 + " km (Estimated)");
 				responseText.append(System.lineSeparator());
 				
-				responseText.append(addhiteSpacesName("Fuel Consumption : ", max)).append(Math.round(vehicleCache.getfuelConsumption() *100.0)/100.0 + " km/kg (Estimated)");
+				responseText.append(addhiteSpacesName("Base Fuel Consumption : ", max)).append(Math.round(vehicleCache.getBaseFuelConsumption() *100.0)/100.0 + " km/kg (Estimated)");
 				responseText.append(System.lineSeparator());
 			}
 			else {
