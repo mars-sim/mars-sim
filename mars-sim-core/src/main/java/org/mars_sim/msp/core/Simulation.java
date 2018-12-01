@@ -867,7 +867,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Structure related class
 		Building.justReloaded(masterClock, marsClock);
 		BuildingManager.justReloaded(masterClock, marsClock);
-		Settlement.justReloaded(marsClock, w);						// weather, loadDefaultValues()
+		Settlement.justReloaded(marsClock, w, unitManager);						// weather, loadDefaultValues()
 		ChainOfCommand.justReloaded(unitManager); 				//unitmgr
 		
 //		System.out.println("Done with Structure instances");

@@ -518,6 +518,9 @@ class AmountResourceTypeStorage implements Serializable {
 	 */
 	private static class ResourceAmount implements Serializable {
 
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+		
 		private double amount;
 
 		private ResourceAmount(double amount) {

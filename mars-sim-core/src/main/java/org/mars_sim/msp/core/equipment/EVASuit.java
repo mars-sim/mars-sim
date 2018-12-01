@@ -95,7 +95,9 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		// Use Equipment constructor.
 		super(TYPE, location);
 
-		weather = Simulation.instance().getMars().getWeather();
+		if (Simulation.instance().getMars() != null)
+			// Note: the use of if above is for passing maven test
+			weather = Simulation.instance().getMars().getWeather();
 		
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);

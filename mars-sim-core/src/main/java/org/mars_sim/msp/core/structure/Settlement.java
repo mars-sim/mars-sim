@@ -1027,9 +1027,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @param clock
 	 * @param w
 	 */
-	public static void justReloaded(MarsClock clock, Weather w) {
+	public static void justReloaded(MarsClock clock, Weather w, UnitManager u) {
 		marsClock = clock;
 		weather = w;
+		unitManager = u;
 		loadDefaultValues();
 	}
 	
