@@ -652,7 +652,7 @@ public abstract class Vehicle extends Unit
 	 * @throws Exception if error getting range.
 	 */
 	public double getRange() {
-		return totalEnergy * (getMass() + fuelCapacity) / (getBaseMass() + fuelCapacity) / fuel_range_error_margin;
+		return totalEnergy * (getBaseMass() + fuelCapacity) / (getMass() + fuelCapacity);// / fuel_range_error_margin;
 	}
 
 	/**
