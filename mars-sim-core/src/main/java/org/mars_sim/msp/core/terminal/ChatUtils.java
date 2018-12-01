@@ -3635,6 +3635,7 @@ public class ChatUtils {
 			responseText.append(SYSTEM_PROMPT);
 			responseText.append("Here's the roster list of vehicles associated with each settlement.");
 			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
 			
 			// Creates an array with the names of all of settlements
 			List<Settlement> settlementList = new ArrayList<Settlement>(

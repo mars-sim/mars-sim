@@ -297,7 +297,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static Simulation sim = Simulation.instance();
 	// WARNING : The UnitManager instance will be stale after loading from a saved sim
 	// It will fail to run methods in Settlement and without any warning as to why that it fails.
-//	private static UnitManager unitManager;
+	private static UnitManager unitManager;
 	private static MissionManager missionManager = sim.getMissionManager();
 	private static Weather weather;
 	private static MarsClock marsClock;
@@ -332,10 +332,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		this.name = name;
 		this.scenarioID = scenarioID;
 		this.location = location;
-//		if (unitManager == null) // for passing maven test
-//			unitManager = Simulation.instance().getUnitManager();
+		if (unitManager == null) // for passing maven test
+			unitManager = sim.getUnitManager();
 		if (missionManager == null) // for passing maven test
-			missionManager = Simulation.instance().getMissionManager();
+			missionManager = sim.getMissionManager();
 	}
 
 	/**
@@ -365,6 +365,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		marsClock = sim.getMasterClock().getMarsClock();
 		weather = sim.getMars().getWeather();
+		unitManager = sim.getUnitManager();
 		// Set the container unit of the settlement to the MarsSurface
 		marsSurface = Simulation.instance().getMars().getMarsSurface();
 		setContainerUnit(marsSurface);
@@ -2290,7 +2291,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public Collection<Robot> updateAllAssociatedRobots() {
 		// using java 8 stream
-		Collection<Robot> result = Simulation.instance().getUnitManager().getRobots().stream().filter(r -> r.getAssociatedSettlement() == this)
+		Collection<Robot> result =unitManager.getRobots().stream().filter(r -> r.getAssociatedSettlement() == this)
 				.collect(Collectors.toList());
 
 		allAssociatedRobots = result;
@@ -2338,24 +2339,33 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return collection of associated vehicles.
 	 */
 	public Collection<Vehicle> getAllAssociatedVehicles() {
-		Collection<Vehicle> result = getParkedVehicles();
-		if (missionManager == null) // needed for passing maven test
-			missionManager = Simulation.instance().getMissionManager();
-		// Also add vehicle mission vehicles not parked at settlement.
-		List<Mission> missions = missionManager.getMissionsForSettlement(this);
-		if (!missions.isEmpty()) {
-			Iterator<Mission> i = missions.iterator();
-			while (i.hasNext()) {
-				Mission mission = i.next();
-				if (mission instanceof VehicleMission) {
-					Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-					if ((vehicle != null) && !this.equals(vehicle.getSettlement()))
-						result.add(vehicle);
-				}
-			}
+		List<Vehicle> list = new ArrayList<>();
+		Collection<Vehicle> vehicles = CollectionUtils.getVehicle(unitManager.getUnits());
+		for (Vehicle v : vehicles) {
+			if (v.getAssociatedSettlement() == this)
+				list.add(v);
 		}
-
-		return result;
+		
+		return list;
+		
+//		Collection<Vehicle> result = getParkedVehicles();
+//		if (missionManager == null) // needed for passing maven test
+//			missionManager = Simulation.instance().getMissionManager();
+//		// Also add vehicle mission vehicles not parked at settlement.
+//		List<Mission> missions = missionManager.getMissionsForSettlement(this);
+//		if (!missions.isEmpty()) {
+//			Iterator<Mission> i = missions.iterator();
+//			while (i.hasNext()) {
+//				Mission mission = i.next();
+//				if (mission instanceof VehicleMission) {
+//					Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+//					if ((vehicle != null) && !this.equals(vehicle.getSettlement()))
+//						result.add(vehicle);
+//				}
+//			}
+//		}
+//
+//		return result;
 	}
 
 	public Collection<Vehicle> getLUVs(int mode) {

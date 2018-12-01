@@ -82,6 +82,11 @@ public abstract class Vehicle extends Unit
 	/** Lifetime Wear in millisols **/
 	private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
 
+	// 1989 NASA Mars Manned Transportation Vehicle - Shuttle Fuel Cell Power Plant (FCP)  7.6 kg/kW
+	
+	// DOE 2010 Targe : Specific power = 650 W_e/L; Power Density = 650 W_e/kg
+	// Toyota Mirai Fuel cell - 90 kW
+	
 	// Data members
 	/** Current speed of vehicle in kph. */
 	private double speed = 0; // 
@@ -201,7 +206,7 @@ public abstract class Vehicle extends Unit
 		fuelCapacity = vehicleConfig.getCargoCapacity(vehicleType, ResourceUtil.findAmountResourceName(getFuelType())); 
 //		System.out.println("fuelCapacity: " + fuelCapacity);
 		// Gets the total energy on a full tank of methane
-		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY * drivetrainEfficiency;	
+		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY;// * drivetrainEfficiency;	
 
 		// Gets the base range of the vehicle
 		baseRange = totalEnergy / drivetrainEfficiency;
