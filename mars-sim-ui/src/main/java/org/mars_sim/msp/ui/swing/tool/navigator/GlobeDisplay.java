@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.ui.javafx.MainScene;
@@ -62,12 +63,6 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 	// Data members
 //	private double timeCache = 0;
-	/** Real surface sphere object. */
-	private MarsGlobe marsSphere;
-	/** Topographical sphere object. */
-	private MarsGlobe topoSphere;
-	/** Spherical coordinates for globe center. */
-	private Coordinates centerCoords;
 	/** Refresh thread. */
 	// private Thread showThread;
 	/**
@@ -90,6 +85,15 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	private boolean update;
 	/** <code>true</code> if refresh thread should continue. */
 	private boolean keepRunning;
+	
+	/** Real surface sphere object. */
+	private MarsGlobe marsSphere;
+	/** Topographical sphere object. */
+	private MarsGlobe topoSphere;
+	/** Spherical coordinates for globe center. */
+	private Coordinates centerCoords;
+	
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
 	 * stores the internationalized string for reuse in
@@ -552,11 +556,11 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 //		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 //		g.setRenderingHint( RenderingHints.  KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-		Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
+		Iterator<Unit> i = unitManager.getUnits().iterator();
 		while (i.hasNext()) {
 			Unit unit = i.next();
 			UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-			if (displayInfo.isGlobeDisplayed(unit)) {
+			if (displayInfo != null && displayInfo.isGlobeDisplayed(unit)) {
 				Coordinates unitCoords = unit.getCoordinates();
 				if (centerCoords.getAngle(unitCoords) < HALF_PI) {
 					if (topo) {

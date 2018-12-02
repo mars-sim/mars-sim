@@ -11,6 +11,7 @@ import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -50,20 +51,29 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 	public double getProbability(Person person) {
 		double result = 0D;
 
-//		if (person.isInSettlement()) {
+		Settlement as = person.getAssociatedSettlement();
 
-			Settlement settlement = person.getAssociatedSettlement();//.getSettlement();
-
+		Settlement vin = person.getLocationTag().findSettlementVicinity();
+		
+		boolean returnFromMission = false;
+		
+		if (person.isInVehicle() && person.getVehicle().getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY) {
+			returnFromMission = true;
+		}
+		
+		if (returnFromMission || person.isInSettlement() || as == vin) {
+			
 			// Check for radiation events
-			boolean[] exposed = settlement.getExposed();
+			boolean[] exposed = as.getExposed();
 
 			if (exposed[2]) {// SEP can give lethal dose of radiation
 				return 0;
 			}
 
 			// Check if an airlock is available
-			if (EVAOperation.getWalkableAvailableAirlock(person) == null)
-				return 0;
+			if (person.isInSettlement() || person.isInVehicle())
+				if (EVAOperation.getWalkableAvailableAirlock(person) == null)
+					return 0;
 
 			// Check if it is night time.
 //			SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
@@ -138,7 +148,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 				result = 0;
 			}
 
-//		}
+		}
 
 		return result;
 	}
