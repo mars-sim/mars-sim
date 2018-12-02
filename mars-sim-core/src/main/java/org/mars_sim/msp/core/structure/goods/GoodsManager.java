@@ -114,11 +114,16 @@ public class GoodsManager implements Serializable {
 	private static final String EMERGENCY_SUPPLY_MISSION = "deliver emergency supplies";
 
 	// Number modifiers for outstanding repair and maintenance parts.
-	private static final int OUTSTANDING_REPAIR_PART_MODIFIER = 100;
-	private static final int OUTSTANDING_MAINT_PART_MODIFIER = 10;
-
+	private static final int OUTSTANDING_REPAIR_PART_MODIFIER = 150;
+	private static final int OUTSTANDING_MAINT_PART_MODIFIER = 15;
 	// Value multiplier factors for certain goods.
-	private static final double EVA_SUIT_FACTOR = 100D;
+	private static final int EVA_SUIT_FACTOR = 150;
+
+	private static double repairMod = OUTSTANDING_REPAIR_PART_MODIFIER;
+	private static double maintenanceMod = OUTSTANDING_MAINT_PART_MODIFIER;
+	// Value multiplier factors for certain goods.
+	private static double eVASuitMod = EVA_SUIT_FACTOR;
+
 	private static final double VEHICLE_FACTOR = 1000D;
 	private static final double LIFE_SUPPORT_FACTOR = 1D;
 	private static final double WATER_FACTOR = 10D;
@@ -1755,7 +1760,7 @@ public class GoodsManager implements Serializable {
 			Iterator<Integer> j = repairParts.keySet().iterator();
 			while (j.hasNext()) {
 				Integer part = j.next();
-				int number = repairParts.get(part) * OUTSTANDING_REPAIR_PART_MODIFIER;
+				int number = (int)Math.round(repairParts.get(part) * repairMod);
 				if (result.containsKey(part))
 					number += result.get(part).intValue();
 				result.put(part, number);
@@ -1793,7 +1798,7 @@ public class GoodsManager implements Serializable {
 		Iterator<Integer> i = maintParts.keySet().iterator();
 		while (i.hasNext()) {
 			Integer part = i.next();
-			int number = maintParts.get(part) * OUTSTANDING_MAINT_PART_MODIFIER;
+			int number = (int)Math.round(maintParts.get(part) * maintenanceMod);
 			result.put(part, number);
 		}
 
@@ -2148,7 +2153,7 @@ public class GoodsManager implements Serializable {
 
 		// Determine number of EVA suits that are needed
 		if (EVASuit.class.equals(equipmentClass)) {
-			numDemand += 2D * settlement.getNumCitizens() * EVA_SUIT_FACTOR;
+			numDemand += (int)Math.round(2D * settlement.getNumCitizens() * eVASuitMod);
 		}
 
 		// Determine the number of containers that are needed.
@@ -2806,6 +2811,84 @@ public class GoodsManager implements Serializable {
 		vehicleSellValueCache.clear();
 	}
 
+    /**
+     * Gets the nth power
+     * 
+     * @return
+     */
+    public int getNthPower(double num) {
+    	int power = 0;
+        int base = 2;
+        int n = (int)num;
+        while (n != 1) {
+        	n = n/base;
+            --power;
+        }
+        
+    	return -power;
+    }
+
+    
+	public int computePriority(double ratio) {
+		double lvl = 0;
+		if (ratio < 1) {
+			double m = getNthPower(1D/ratio);
+			lvl = 5 - m;
+		}
+		else if (ratio > 1) {
+			double m = getNthPower(ratio);
+			lvl = 5 + m ;
+		}
+		else {
+			lvl = 5 ;
+		}
+
+		return (int)lvl;
+	}
+	
+	public int getRepairLevel() {
+		return computePriority(repairMod/OUTSTANDING_REPAIR_PART_MODIFIER);
+	}
+	
+	public int getMaintenanceLevel(){
+		return computePriority(maintenanceMod/OUTSTANDING_MAINT_PART_MODIFIER);
+	}
+	
+	public int getEVASuitLevel() {
+		return computePriority(eVASuitMod/EVA_SUIT_FACTOR);
+	}
+
+	
+	public void setRepairPriority(int level) {
+		repairMod = computeModifier(OUTSTANDING_REPAIR_PART_MODIFIER, level);
+	}
+	
+	public void setMaintenancePriority(int level) {
+		maintenanceMod = computeModifier(OUTSTANDING_MAINT_PART_MODIFIER, level);
+
+	}
+	
+	public void setEVASuitPriority(int level) {
+		eVASuitMod = computeModifier(EVA_SUIT_FACTOR, level);
+	}
+
+	public double computeModifier(int baseValue, int level) {
+		double mod = 0;
+		if (level == 5) {
+			mod = baseValue ;
+		}
+		else if (level < 5) {
+			double m = Math.pow(2, (5 - level));
+			mod = baseValue / m;
+		}
+		else if (level > 5) {
+			double m = Math.pow(2, (level - 5));
+			mod = m * baseValue ;
+		}
+		return mod;
+	}
+
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

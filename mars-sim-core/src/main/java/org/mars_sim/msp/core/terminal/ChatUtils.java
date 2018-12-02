@@ -82,6 +82,7 @@ import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
+import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -133,7 +134,7 @@ public class ChatUtils {
 			"weather", 
 			"people", "settler", "person",
 			"robot", "bot",
-			"proposal", "vehicle range"
+			"proposal", "vehicle range", "dash", "dashboard", "repair", "maintenance", "evasuit", "eva suit"
 	};
 	
 	public final static String[] PERSON_KEYS = new String[] {
@@ -231,6 +232,7 @@ public class ChatUtils {
 	private static ScientificStudyManager scientificManager;
 	private static SkillManager skillManager;
 	private static LogManager logManager;
+	private static GoodsManager goodsManager;
 	
 	private static DecimalFormat fmt = new DecimalFormat("##0");
 	private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
@@ -249,6 +251,7 @@ public class ChatUtils {
 		relationshipManager = sim.getRelationshipManager();
 		scientificManager = sim.getScientificStudyManager();
 		logManager = LogManager.getLogManager();
+//		goodsManager = sim.get
 	}
 
 	/**
@@ -734,7 +737,15 @@ public class ChatUtils {
 
 		return new String[] { questionText, responseText.toString() };
 	}
-	
+
+	public static StringBuffer printLevel(String[] str, int[] mods) {
+		StringBuffer s = new StringBuffer();
+		for (int i=0; i<str.length; i++) {
+			s.append(" " + str[i] + computeWhiteSpaces(str[i], 25) + " :   " + mods[i]);
+			s.append(System.lineSeparator());
+		}
+		return s;
+	}
 	
 	/**
 	 * Asks the settlement when the input is a string
@@ -747,8 +758,139 @@ public class ChatUtils {
 //		System.out.println("askSettlementStr() in ChatUtils");
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
-		
-		if (text.equalsIgnoreCase("vehicle range")) {
+
+		if (text.equalsIgnoreCase("repair")) {
+			responseText.append(System.lineSeparator());			
+
+			GoodsManager goodsManager = settlementCache.getGoodsManager();
+			
+			int level = goodsManager.getRepairLevel();
+
+			String prompt = System.lineSeparator() + "Current Outstanding Repair Priority Level is " + level + ". Would you like to change it?";
+			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
+        	        
+			if (change) {
+        		int newLevel = Simulation.instance().getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(9).read("Enter the Priority Level (1 = lowest; 9 = highest)");
+    	        String s = "";
+    	        
+    	        if (newLevel > 0  && newLevel < 10) {
+
+    	        	goodsManager.setRepairPriority(newLevel);
+    				
+    				responseText.append(settlementCache + " : I've updated it for you as follows : ");
+    				responseText.append(System.lineSeparator());
+    				responseText.append(System.lineSeparator());
+    				s = "     New Outstanding Repair Priority Level : " + newLevel;
+    				responseText.append(s);
+    				logger.config(s);
+    				
+    	        }
+    	        else {
+    	        	s = settlementCache + " : It's outside of the normal range. Aborted.";
+    				responseText.append(s);
+    				logger.config(s);
+    	        }
+        	}
+											
+		}
+
+
+		else if (text.equalsIgnoreCase("maintenance")) {
+			responseText.append(System.lineSeparator());			
+
+			GoodsManager goodsManager = settlementCache.getGoodsManager();
+			
+			int level = goodsManager.getMaintenanceLevel();
+
+			String prompt = System.lineSeparator() + "Current Outstanding Maintenance Priority Level is " + level + ". Would you like to change it?";
+			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
+        	        
+			if (change) {
+        		int newLevel = Simulation.instance().getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(9).read("Enter the Priority Level (1 = lowest; 9 = highest)");
+    	        String s = "";
+    	        
+    	        if (newLevel > 0  && newLevel < 10) {
+
+    	        	goodsManager.setMaintenancePriority(newLevel);
+    				
+    				responseText.append(settlementCache + " : I've updated it for you as follows : ");
+    				responseText.append(System.lineSeparator());
+    				responseText.append(System.lineSeparator());
+    				s = "     New Outstanding Maintenance Priority Level : " + newLevel;
+    				responseText.append(s);
+    				logger.config(s);
+    				
+    	        }
+    	        else {
+    	        	s = settlementCache + " : It's outside of the normal range. Aborted.";
+    				responseText.append(s);
+    				logger.config(s);
+    	        }
+        	}
+											
+		}
+
+		else if (text.equalsIgnoreCase("evasuit") || text.equalsIgnoreCase("eva suit")) {
+			responseText.append(System.lineSeparator());			
+
+			GoodsManager goodsManager = settlementCache.getGoodsManager();
+			
+			int level = goodsManager.getEVASuitLevel();
+
+			String prompt = System.lineSeparator() + "Current EVA Suit Production Priority Level is " + level + ". Would you like to change it?";
+			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
+        	        
+			if (change) {
+        		int newLevel = Simulation.instance().getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(9).read("Enter the Priority Level (1 = lowest; 9 = highest)");
+    	        String s = "";
+    	        
+    	        if (newLevel > 0  && newLevel < 10) {
+
+    	        	goodsManager.setEVASuitPriority(newLevel);
+    				
+    				responseText.append(settlementCache + " : I've updated it for you as follows : ");
+    				responseText.append(System.lineSeparator());
+    				responseText.append(System.lineSeparator());
+    				s = "     New EVA Suit Production Priority Level : " + newLevel;
+    				responseText.append(s);
+    				logger.config(s);
+    				
+    	        }
+    	        else {
+    	        	s = settlementCache + " : It's outside of the normal range. Aborted.";
+    				responseText.append(s);
+    				logger.config(s);
+    	        }
+        	}
+											
+		}
+
+		else if (text.equalsIgnoreCase("dash") || text.equalsIgnoreCase("dashboard")) {
+			questionText = YOU_PROMPT + "Commander's Dashboard" ; 
+			responseText.append(System.lineSeparator());			
+			
+			String[] s = new String[] {
+					"Outstanding Repair",
+					"Outstanding Maintenance",
+					"EVA Suit Production"
+			};
+
+			GoodsManager goodsManager = settlementCache.getGoodsManager();
+			
+			int[] mods = new int[] {
+					goodsManager.getRepairLevel(),
+					goodsManager.getMaintenanceLevel(),
+					goodsManager.getEVASuitLevel()					
+			};
+			
+			responseText.append(" Category" + computeWhiteSpaces("Category", 25) + " | Level");
+			responseText.append(System.lineSeparator());
+			responseText.append(" ----------------------------------- ");
+			responseText.append(System.lineSeparator());			
+			responseText.append(printLevel(s, mods));						
+		}
+
+		else if (text.equalsIgnoreCase("vehicle range")) {
 //			questionText = YOU_PROMPT + "I'd like to change the vehicle range for this settlement." ; 
 			
 			double oldRange = settlementCache.getMaxMssionRange();
@@ -756,7 +898,7 @@ public class ChatUtils {
 //			Input input = new Input();		
 //			SwingHandler handler = new SwingHandler(Simulation.instance().getTerm().getTextIO(), input);
 	        
-			String prompt = System.lineSeparator() + "Current Vehicle Range Limit is " + oldRange + " km. Would you like to change it? (y/n)";
+			String prompt = System.lineSeparator() + "Current Vehicle Range Limit is " + oldRange + " km. Would you like to change it?";
 			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
         
 //	        handler.addStringTask("change", System.lineSeparator() + "Current Vehicle Range Limit is " + oldRange + " km. Would you like to change it? (y/n)", false)

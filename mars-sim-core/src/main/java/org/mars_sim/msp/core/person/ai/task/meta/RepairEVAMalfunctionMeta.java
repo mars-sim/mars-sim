@@ -84,7 +84,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 					try {
 						if (RepairEVAMalfunction.hasRepairPartsForMalfunction(person, person.getTopContainerUnit(),
 								malfunction)) {
-							result += 100D;
+							result += 150D;
 						}
 					} catch (Exception e) {
 						e.printStackTrace(System.err);
@@ -98,7 +98,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 						Malfunction malfunction = k.next();
 						try {
 							if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
-								result += 100D;
+								result += 150D;
 							}
 						} catch (Exception e) {
 							e.printStackTrace(System.err);

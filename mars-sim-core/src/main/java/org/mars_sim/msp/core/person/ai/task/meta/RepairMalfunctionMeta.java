@@ -62,7 +62,7 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 	                    Malfunction malfunction = j.next();
 	                    try {
 	                        if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
-	                            result += 100D;
+	                            result += 200D;
 	                        }
 	                    }
 	                    catch (Exception e) {
@@ -118,7 +118,7 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 	                    Malfunction malfunction = j.next();
 	                    try {
 	                        if (RepairMalfunction.hasRepairPartsForMalfunction(robot, malfunction)) {
-	                            result += 200D;
+	                            result += 300D;
 	                        }
 	                    }
 	                    catch (Exception e) {
