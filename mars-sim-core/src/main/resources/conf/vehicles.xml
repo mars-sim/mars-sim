@@ -60,27 +60,33 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<!-- Default: varies according to the type of vehicle -->
 		<cargo total-capacity="5800.0">
 
+			<!-- If assuming a 10 sol excursion, each person would 
+      			 consume the following : -->
+			<!--   Water : 30.0 kg -->
+			<!--    Food :  6.2 kg -->
+			<!-- Dessert :  3.0 kg -->
+			<!--  Oxygen :  8.4 kg -->
 
 			<!-- The methane cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle -->
 			<!-- The H2 tank on Toyota Mirai has a 5 kg capacity http://www.mytoyotamirai.com/toyota-mirai-specifications/ -->
-			<capacity resource="methane" value="30.0" />
+			<capacity resource="methane" value="400.0" />
 
 			<!-- The oxygen cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="oxygen" value="140.0" />
+			<capacity resource="oxygen" value="44.0" />
 
 			<!-- The water cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="water" value="560.0" />
+			<capacity resource="water" value="150.0" />
 
 			<!-- The food cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="food" value="210.0" />
+			<capacity resource="food" value="32.0" />
 
 			<!-- The dessert cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle -->
-			<capacity resource="dessert" value="50.0" />
+			<capacity resource="dessert" value="15.0" />
 
 			<!-- The rock samples cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
@@ -94,11 +100,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 			<!-- The food waste capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="food waste" value="40.0" />
+			<capacity resource="food waste" value="20.0" />
 			
 			<!-- The solid waste capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="solid waste" value="80.0" />	
+			<capacity resource="solid waste" value="40.0" />	
 
 			<!-- The toxic waste capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
@@ -106,11 +112,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 			<!-- The grey water capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="grey water" value="80.0" />	
+			<capacity resource="grey water" value="120.0" />	
 
 			<!-- The black water capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="black water" value="40.0" />	
+			<capacity resource="black water" value="30.0" />	
 	
 		</cargo>
 
@@ -155,18 +161,18 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<empty-mass value="10000.0" />
 		<crew-size value="8" />
 		<cargo total-capacity="7300.0">
-			<capacity resource="methane" value="80.0" />
-			<capacity resource="oxygen" value="350.0" />
-			<capacity resource="water" value="1400.0" />
-			<capacity resource="food" value="525.0" />
-			<capacity resource="dessert" value="50.0" />
+			<capacity resource="methane" value="600.0" />
+			<capacity resource="oxygen" value="88.0" />
+			<capacity resource="water" value="300.0" />
+			<capacity resource="food" value="64.0" />
+			<capacity resource="dessert" value="30.0" />
 
-			<capacity resource="food waste" value="80.0" />
-			<capacity resource="solid waste" value="160.0" />
+			<capacity resource="food waste" value="40.0" />
+			<capacity resource="solid waste" value="80.0" />
 			<capacity resource="toxic waste" value="40.0" />	
 			
-			<capacity resource="grey water" value="160.0" />
-			<capacity resource="black water" value="80.0" />
+			<capacity resource="grey water" value="240.0" />
+			<capacity resource="black water" value="60.0" />
 			
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
@@ -193,18 +199,18 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<empty-mass value="8000.0" />
 		<crew-size value="2" />
 		<cargo total-capacity="10300.0">
-			<capacity resource="methane" value="80.0" />
-			<capacity resource="oxygen" value="350.0" />
-			<capacity resource="water" value="1400.0" />
-			<capacity resource="food" value="525.0" />
-			<capacity resource="dessert" value="100.0" />
+			<capacity resource="methane" value="800.0" />
+			<capacity resource="oxygen" value="22.0" />
+			<capacity resource="water" value="75.0" />
+			<capacity resource="food" value="16.0" />
+			<capacity resource="dessert" value="27.5" />
 
-			<capacity resource="food waste" value="20.0" />
-			<capacity resource="solid waste" value="40.0" />
+			<capacity resource="food waste" value="10.0" />
+			<capacity resource="solid waste" value="20.0" />
 			<capacity resource="toxic waste" value="10.0" />	
 			
-			<capacity resource="grey water" value="40.0" />
-			<capacity resource="black water" value="20.0" />
+			<capacity resource="grey water" value="60.0" />
+			<capacity resource="black water" value="15.0" />
 		</cargo>
 		<sickbay tech-level="1" beds="1" />
 		<airlock xloc="-1.5" yloc="0.0" interior-xloc="-1.0" interior-yloc="0.0" exterior-xloc="-3.0"

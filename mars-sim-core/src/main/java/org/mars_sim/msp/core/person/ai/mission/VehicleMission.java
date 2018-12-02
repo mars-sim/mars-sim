@@ -503,11 +503,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				getPeopleNumber(), tripTime);
 		if (!vehicleCapacity) {
 			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-					"[" + vehicle.getName() + "] Doesn't have enough capacity for the proposed excursion.", null);
+					"[" + vehicle.getName() + "] doesn't have enough capacity for " + startingMember + "'s proposed excursion.", null);
 		}
 		if (!settlementSupplies) {
 			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-					"[" + settlement.getName() + "] Doesn't have supplies for the proposed excursion.", null);
+					"[" + settlement.getName() + "] doesn't have enough supplies for " + startingMember + "'s proposed excursion.", null);
 		}
 
 		return vehicleCapacity && settlementSupplies;

@@ -829,7 +829,7 @@ public class Inventory implements Serializable {
 			} else {
 				throw new IllegalStateException("Insufficient capacity to store " + resource.getName() + ", capacity: "
 						+ getAmountResourceRemainingCapacity(resource, useContainedUnits, false) + ", attempted: "
-						+ amount);
+						+ Math.round(amount*1000.0)/1000.0);
 			}
 		}
 	}
@@ -916,7 +916,7 @@ public class Inventory implements Serializable {
 				throw new IllegalStateException("Insufficient capacity to store "
 						+ ResourceUtil.findAmountResourceName(resource) + ", capacity: "
 						+ getAmountResourceRemainingCapacity(resource, useContainedUnits, false) + ", attempted: "
-						+ amount);
+						+ Math.round(amount*1000.0)/1000.0);
 			}
 		}
 	}

@@ -324,13 +324,12 @@ public abstract class RoverMission extends VehicleMission {
 															getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 															getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
 									} else {
-	//									SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 										// Check if it is day time.
-										if (!EVAOperation.isGettingDark(person)) {
+//										if (!EVAOperation.isGettingDark(person)) {
 											assignTask(person, new LoadVehicleEVA(person, getVehicle(),
 														getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 														getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
-										}
+//										}
 									}
 								}
 							}
@@ -339,11 +338,11 @@ public abstract class RoverMission extends VehicleMission {
 							if (member instanceof Person) {
 								Person person = (Person) member;
 								// Check if it is day time.
-								if (!EVAOperation.isGettingDark(person)) {
+//								if (!EVAOperation.isGettingDark(person)) {
 									assignTask(person, new LoadVehicleEVA(person, getVehicle(),
 												getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 												getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
-								}
+//								}
 							}
 						}
 						

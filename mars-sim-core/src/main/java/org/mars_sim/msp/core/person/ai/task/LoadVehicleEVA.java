@@ -14,11 +14,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -26,7 +28,6 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -59,6 +60,9 @@ implements Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(LoadVehicleEVA.class.getName());
+    
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -483,9 +487,9 @@ implements Serializable {
             if (settlementStored < amountNeeded) {
                 if (required) {
                     canLoad = false;
-                    loadingError = "Not enough resource stored at settlement to load "
-                            + "resource: " + resource + " needed: " + amountNeeded + ", stored: "
-                            + settlementStored;
+                    loadingError = " did NOT have enough resource stored at settlement to load "
+                            + "resource: " + resource + " needed: " + Math.round(amountNeeded*100.0)/100.0 + ", stored: "
+                            + Math.round(settlementStored*100.0)/100.0;
                 }
                 else {
                     amountNeeded = settlementStored;
@@ -501,9 +505,9 @@ implements Serializable {
                     }
                     else {
                         canLoad = false;
-                        loadingError = "Not enough capacity in vehicle for loading resource "
-                                + resource + ": " + amountNeeded + ", remaining capacity: "
-                                + remainingCapacity;
+                        loadingError = " did NOT have enough capacity for loading resource "
+                                + resource + ": " + Math.round(amountNeeded*100.0)/100.0 + ", remaining capacity: "
+                                + Math.round(remainingCapacity*100.0)/100.0;
                     }
                 }
                 else {
@@ -530,8 +534,10 @@ implements Serializable {
                 amountLoading -= resourceAmount;
             }
             else {
+    			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
+    					"[" + settlement.getName() + "] Rover " + vehicle + loadingError, null);
                 endTask();
-                throw new IllegalStateException(loadingError);
+//                throw new IllegalStateException(loadingError);
             }
         }
         else {
@@ -546,8 +552,6 @@ implements Serializable {
                 try {
                     vInv.retrieveAmountResource(resource, amountToRemove);
                     sInv.storeAmountResource(resource, amountToRemove, true);
-       			    // 2015-01-15 Add addSupplyAmount()
-                    //sInv.addAmountSupplyAmount(resource, amountToRemove);
                 }
                 catch (Exception e) {}
             }
@@ -592,7 +596,7 @@ implements Serializable {
             if (settlementStored < numNeeded) {
                 if (required) {
                     canLoad = false;
-                    loadingError = "Not enough resource stored at settlement to load "
+                    loadingError = " did NOT have enough resource stored at settlement to load "
                             + "resource: " + resource + " needed: " + numNeeded + ", stored: "
                             + settlementStored;
                 }
@@ -608,7 +612,7 @@ implements Serializable {
             if (remainingMassCapacity < (numNeeded * ir.getMassPerItem())) {
                 if (required) {
                     canLoad = false;
-                    loadingError = "Not enough capacity in vehicle for loading resource "
+                    loadingError = " did NOT have enough capacity in vehicle for loading resource "
                             + resource + ": " + numNeeded + ", remaining capacity: "
                             + remainingMassCapacity + " kg";
                 }
@@ -635,8 +639,10 @@ implements Serializable {
                 if (amountLoading < 0D) amountLoading = 0D;
             }
             else {
+    			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
+    					"[" + settlement.getName() + "] Rover " + vehicle + loadingError, null);
                 endTask();
-                throw new IllegalStateException(loadingError);
+//                throw new IllegalStateException(loadingError);
             }
         }
         else {
@@ -719,7 +725,9 @@ implements Serializable {
                                 loaded++;
                             }
                             else {
-                                logger.warning(vehicle + " cannot store " + eq);
+                    			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
+                    					"[" + settlement.getName() + "] Rover " + vehicle
+                    						+ " cannot store " + eq + ".", null);
                                 endTask();
                             }
                         }
@@ -809,7 +817,10 @@ implements Serializable {
                             loaded++;
                         }
                         else {
-                            logger.warning(vehicle + " cannot store " + eq);
+                			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
+                					"[" + settlement.getName() + "] Rover " + vehicle
+                						+ " cannot store " + eq + ".", null);
+//                            logger.warning(vehicle + " cannot store " + eq);
                             endTask();
                         }
                     }
@@ -904,7 +915,10 @@ implements Serializable {
             }
         }
         catch (Exception e) {
-            logger.info(e.getMessage());
+//            logger.info(e.getMessage());
+			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
+					"[" + settlement.getName() + "] did NOT have enough capacity in rover "
+							+ vehicle + " to store needed resources for a proposed mission. " + e.getMessage(), null);
             sufficientCapacity = false;
         }
 

@@ -200,7 +200,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/** The settlement's outside temperature. */
 	private double outside_temperature;
 	/** The maximum distance the rovers are allowed to travel. */
-	private double maxMssionRange = 800;
+	private double maxMssionRange = 500;
 
 	/** The flag signifying this settlement as the destination of the user customized commander. */ 
 	private boolean isCommanderMode = false;	
