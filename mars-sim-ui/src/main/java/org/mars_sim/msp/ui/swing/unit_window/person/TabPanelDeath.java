@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.health.DeathInfo;
@@ -153,7 +154,8 @@ implements ActionListener {
 			topContainerButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
 					DeathInfo death = ((Person) getUnit()).getPhysicalCondition().getDeathDetails();
-					getDesktop().openUnitWindow(death.getContainerUnit(), false);
+					if (!(death.getContainerUnit() instanceof MarsSurface))
+						getDesktop().openUnitWindow(death.getContainerUnit(), false);
 				}
 			});
 			locationLabelPanel.add(topContainerButton);

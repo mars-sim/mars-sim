@@ -5,7 +5,7 @@ Copyright (C) 2018 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-beta2 (build 4630) - 2018-12-03
+## v3.1.0-beta2 (build 4631) - 2018-12-03
 
 ### KNOWN LIMITATIONS :
 
@@ -48,6 +48,8 @@ Copyright (C) 2018 Scott Davis
 11. Streamline saving and loading simulation.
 
 12. Reduce the file size of the saved simulation.
+
+13. Create a death report on a deceased person.
 
 
 

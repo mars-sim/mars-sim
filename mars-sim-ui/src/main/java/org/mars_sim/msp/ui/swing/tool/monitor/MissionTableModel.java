@@ -198,7 +198,7 @@ public class MissionTableModel extends AbstractTableModel
 	 */
 	public void missionUpdate(MissionEvent event) {
 		// Update the missionCache
-//		missionCache = missionManager.getMissions(); // not legit. not needed
+		missionCache = missionManager.getMissions();
 		
 		int index = missionCache.indexOf(event.getSource());
 		if ((index > -1) && (index < missionCache.size())) {

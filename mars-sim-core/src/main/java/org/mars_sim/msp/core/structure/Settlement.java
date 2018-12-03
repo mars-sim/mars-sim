@@ -631,7 +631,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return Collection of inhabitants
 	 */
 	public Collection<Person> getIndoorPeople() {
-		return CollectionUtils.getPerson(getInventory().getContainedUnits());
+//		return CollectionUtils.getPerson(getInventory().getContainedUnits());
+		return allAssociatedPeople.stream()
+				.filter(p -> 
+						!p.isDeclaredDead() 
+						&& p.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT
+						&& p.getSettlement() == this)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -1997,10 +2003,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	public void addPerson(Person p) {
 		allAssociatedPeople.add(p);
+		// Call to update people list
+		updateAllAssociatedPeople();
 	}
 
 	public void removePerson(Person p) {
 		allAssociatedPeople.remove(p);
+		// Call to update people list
+		updateAllAssociatedPeople();
 	}
 
 	public void addRobot(Robot r) {

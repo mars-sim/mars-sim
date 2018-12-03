@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.Mars;
@@ -870,12 +869,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void buryBody() {
 		// Remove the person from the settlement
 //		getContainerUnit().getInventory().retrieveUnit(this);
-		// set container unit to null if not done so
-		setContainerUnit(null);
 		// Bury the body
 		isBuried = true;
 		// Back up the last container unit
 		condition.getDeathDetails().backupContainerUnit(containerUnit);
+		// set container unit to null if not done so
+		setContainerUnit(null);
 		// Set his/her buried settlement
 		setBuriedSettlement(associatedSettlement);
 		// Remove the person from being a member of the associated settlement
@@ -1271,20 +1270,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			
 			Settlement oldSettlement = associatedSettlement;
 			associatedSettlement = newSettlement;
+			
 			fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT, associatedSettlement);
 			
 			if (oldSettlement != null) {
 				oldSettlement.removePerson(this);				
 				oldSettlement.fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
-				// Call to update people list in the old settlement
-				oldSettlement.updateAllAssociatedPeople();
 			}
 			
 			if (newSettlement != null) {
 				newSettlement.addPerson(this);
 				newSettlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
-				// Call to update people list in the new settlement
-				newSettlement.updateAllAssociatedPeople();
 			}
 		}
 	}

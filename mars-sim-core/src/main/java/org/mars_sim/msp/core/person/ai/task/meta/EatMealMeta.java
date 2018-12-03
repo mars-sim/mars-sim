@@ -57,19 +57,20 @@ public class EatMealMeta implements MetaTask, Serializable {
 
 		// When thirst is greater than 100, a person may start feeling thirsty
 		if (thirst > PhysicalCondition.THIRST_THRESHOLD) {
-			result = thirst;
+			result = Math.pow((thirst - PhysicalCondition.THIRST_THRESHOLD + 1), 1.2);
 			pc.setThirsty(true);
 		}
+		
 		// Only eat a meal if person is sufficiently hungry or low on caloric energy.
-		else if (hunger > 250 || energy < 2525) {// || ghrelin-leptin > 300) {
-			result = thirst * 3.0;
+		if (hunger > 250 || energy < 2525) {// || ghrelin-leptin > 300) {
+			result += thirst;
 			result += hunger / 8D;
 			result += (2525 - energy) / 50D; // + (ghrelin-leptin - 300);
 			if (result <= 0)
 				return 0;
 		}
 
-		else
+		else if (thirst < PhysicalCondition.THIRST_THRESHOLD)
 			return 0;
 
 		if (person.isInSettlement()) {
@@ -83,7 +84,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 						// If no cooked meal, check if preserved food is available to eat.
 				if (!EatMeal.isPreservedFoodAvailable(person)) {
 					// If no preserved food, person can't eat a meal.
-					return result / 5D;
+					return result / 2D;
 				}
 			}
 

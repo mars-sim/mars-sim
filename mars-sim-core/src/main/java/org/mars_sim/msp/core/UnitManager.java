@@ -175,6 +175,7 @@ public class UnitManager implements Serializable {
 		// Add mars surface
 		marsSurface = sim.getMars().getMarsSurface();
 		addUnit(marsSurface);
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 //		System.out.println("UnitManager marsSurface hashcode : " + marsSurface.hashCode());
 	}
 
@@ -2056,7 +2057,7 @@ public class UnitManager implements Serializable {
 	void timePassing(double time) {
 		// Note : resetting marsClock is needed after loading from a saved sim 
 		// Cannot add "if (marsClock == null)"		
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		
 		int solElapsed = marsClock.getMissionSol();
 		
@@ -2457,9 +2458,12 @@ public class UnitManager implements Serializable {
 	
 	/**
 	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
 	 */
-	public void justReloaded() {
+	public void justReloaded(MarsClock clock) {
 		Simulation.instance().getMars().setMarsSurface((MarsSurface)units.get(0));
+		marsClock = clock;
 	}
 	
 	/**
