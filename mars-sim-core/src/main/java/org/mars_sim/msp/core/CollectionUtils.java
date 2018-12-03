@@ -367,8 +367,7 @@ public class CollectionUtils {
 	 * 
 	 * @return a list of string
 	 */
-	public static List<String> createAutoCompleteData() {
-
+	public static List<String> createAutoCompleteKeywords() {		
 		// Creates a list of proper nouns
 		List<String> list = createProperNounsList();
 		

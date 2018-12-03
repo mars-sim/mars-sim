@@ -134,7 +134,11 @@ public class ChatUtils {
 			"weather", 
 			"people", "settler", "person",
 			"robot", "bot",
-			"proposal", "vehicle range", "dash", "dashboard", "repair", "maintenance", "evasuit", "eva suit"
+			"proposal",
+			"vehicle range",
+			"dash", "dashboard",
+			"repair", "maintenance", "evasuit", "eva suit", 
+			"trip", "excursion", "mission"
 	};
 	
 	public final static String[] PERSON_KEYS = new String[] {
@@ -147,7 +151,8 @@ public class ChatUtils {
 			"outside", "inside", "container", 
 			"building", "associated", "association", "home", "home town",		
 			"garage", "vehicle top container", "vehicle container",  "vehicle park", "vehicle settlement", "vehicle outside", "vehicle inside",			
-			"bed time", "sleep hour"
+			"bed time", "sleep hour", 
+			"trip", "excursion", "mission"
 	};
 	
 	public final static String[] ALL_PARTIES_KEYS = new String[] {
@@ -155,8 +160,7 @@ public class ChatUtils {
 			"bed", "sleep", "lodging", "quarters", "time", "date",
 			"where", "location", "located",	
 			"job", "role", "career",
-			"task", "activity", "action", "doing", 
-			"mission", "trip", "excursion"
+			"task", "activity", "action", "doing"
 	};
 	
 	public final static String[] SYSTEM_KEYS = new String[] {
@@ -169,32 +173,64 @@ public class ChatUtils {
 	};
 
 	public final static String SWITCHES = 
-			  "(5) Type 'bye', '/b', 'exit', '/x', 'quit', '/q' to leave the chat." + System.lineSeparator()
-			+ "(6) Type 'help', '/h', '/?' for this help page." + System.lineSeparator()
-			+ "(7) Type 'expert', '/e' to toggle between normal and expert mode." + System.lineSeparator()
-			+ "(8) Type 'pause', '/p' to pause and unpause the simulation." + System.lineSeparator();
+			  "  Type 'bye', '/b', 'exit', '/x', 'quit', '/q' to leave the chat." + System.lineSeparator()
+			+ "  Type 'help', '/h', '/?' for this help page." + System.lineSeparator()
+			+ "  Type 'expert', '/e' to toggle between normal and expert mode." + System.lineSeparator()
+			+ "  Type 'pause', '/p' to pause and unpause the simulation." + System.lineSeparator();
 
 	public final static String HELP_TEXT = System.lineSeparator()
 			+ "    ------------------------- H E L P ------------------------- " + System.lineSeparator()
-			+ "(1) Type in the NAME of a person, a bot, or a settlement to connect with." + System.lineSeparator()
-			+ "(2) Use KEYWORDS or type in a number between 0 and 18 (specific QUESTIONS on a party)." + System.lineSeparator() 
-			+ "(3) Type '/k' or 'key' to see a list of KEYWORDS." + System.lineSeparator()
-			+ "(4) Type 'settlement' to obtain the NAMES of the established settlements." + System.lineSeparator()
+			+ "  Type in the NAME of a person, a bot, or a settlement to connect with." + System.lineSeparator()
+			+ "  Use KEYWORDS or type in a number between 0 and 18 (specific QUESTIONS on a party)." + System.lineSeparator() 
+			+ "  Type '/k' or 'key' to see a list of KEYWORDS." + System.lineSeparator()
+			+ "  Type 'settlement' to obtain the NAMES of the established settlements." + System.lineSeparator()
 			+ SWITCHES;
 
-	public final static String HELP_HEIGHT = "(9) Type 'y_' to change the chat box height; '/y1'-> 256 pixels (default) '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
+	public final static String HELP_HEIGHT = "  Type 'y_' to change the chat box height; '/y1'-> 256 pixels (default) '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
 			+ System.lineSeparator();
 
-	public final static String KEYWORDS_TEXT = System.lineSeparator()
-			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "(1)       In MarsNet : a settlement/bot/person's name OR " + getKeywordList(SYSTEM_KEYS) + System.lineSeparator() 
-			+ "(2) For a Settlement : " + getKeywordList(SETTLEMENT_KEYS) + System.lineSeparator() 
-			+ "(3)    For a Settler : " + getKeywordList(PERSON_KEYS) + System.lineSeparator() 
-			+ "(4)  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator() 
-//			+ "(5) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator() 
-			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
-			+ SWITCHES;
+//	public final static String KEYWORDS_TEXT = System.lineSeparator()
+//			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
+//			+ "(1)       In MarsNet : a settlement/bot/person's name OR " + getKeywordList(SYSTEM_KEYS) + System.lineSeparator() 
+//			+ "(2) For a Settlement : " + getKeywordList(SETTLEMENT_KEYS) + System.lineSeparator() 
+//			+ "(3)    For a Settler : " + getKeywordList(PERSON_KEYS) + System.lineSeparator() 
+//			+ "(4)  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator()
+//			+ "(5) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
+////			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
+////			+ SWITCHES;
 
+	public final static String SYSTEM_KEYWORDS = System.lineSeparator()
+			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
+			+ "  For MarsNet : a settlement/bot/person's name OR " + getKeywordList(SYSTEM_KEYS) + System.lineSeparator() 
+			+ "  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
+//			+ " 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
+//			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
+//			+ SWITCHES;
+	
+	public final static String VEHICLE_KEYWORDS = System.lineSeparator()
+			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
+			+ "  For Vehicles : " + getKeywordList(VEHICLE_KEYS) + System.lineSeparator()
+			+ "  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
+//			+ "(2) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
+//			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
+//			+ SWITCHES;
+	
+	public final static String PERSON_KEYWORDS = System.lineSeparator()
+			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
+			+ "  For Settlers : " + getKeywordList(PERSON_KEYS) + System.lineSeparator()
+			+ "  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
+//			+ "(2) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
+//			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
+//			+ SWITCHES;
+	
+	public final static String SETTLEMENT_KEYWORDS = System.lineSeparator()
+			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
+			+ "  For Settlements : " + getKeywordList(SETTLEMENT_KEYS) + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
+//			+ "(4)  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator()
+//			+ "(5) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator() 
+//			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
+//			+ SWITCHES;
+	
 	public final static String KEYWORDS_HEIGHT = HELP_HEIGHT; //"(8) '/y1' to reset height to 256 pixels (by default) after closing chat box. '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels" + System.lineSeparator();
 
 	public final static String DASHES_0 = " ----------------------------------------------------";
@@ -704,9 +740,9 @@ public class ChatUtils {
 //			help = true;
 			questionText = REQUEST_KEYS;
 			if (connectionMode == 0) {
-				keywordText = KEYWORDS_TEXT;
+				keywordText = VEHICLE_KEYWORDS;
 			} else {
-				keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
+				keywordText = VEHICLE_KEYWORDS + KEYWORDS_HEIGHT;
 			}
 			// responseText.append(System.lineSeparator());
 			responseText.append(keywordText);
@@ -1762,9 +1798,9 @@ public class ChatUtils {
 //			help = true;
 			questionText = REQUEST_KEYS;
 			if (connectionMode == 0) {
-				keywordText = KEYWORDS_TEXT;
+				keywordText = SETTLEMENT_KEYWORDS;
 			} else {
-				keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
+				keywordText = SETTLEMENT_KEYWORDS + KEYWORDS_HEIGHT;
 			}
 			// responseText.append(System.lineSeparator());
 			responseText.append(keywordText);
@@ -2553,9 +2589,9 @@ public class ChatUtils {
 
 			questionText = REQUEST_KEYS;
 			if (connectionMode == 0) {
-				keywordText = KEYWORDS_TEXT;
+				keywordText = PERSON_KEYWORDS;
 			} else {
-				keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
+				keywordText = PERSON_KEYWORDS + KEYWORDS_HEIGHT;
 			}
 			responseText.append(System.lineSeparator());
 			responseText.append(keywordText);
@@ -2689,9 +2725,6 @@ public class ChatUtils {
 //			responseText.append("3. Food Allocation Plan");
 //		}
 
-		// Add changing the height of the chat box
-		// DELETED
-
 		// Case 0: ask about a particular settlement
 		else if (settlementCache != null) {
 
@@ -2706,18 +2739,28 @@ public class ChatUtils {
 
 				String[] ans = askSettlementNum(num);
 
-				questionText = ans[0];
-				responseText.append(ans[1]);
-
+				try {
+					questionText = ans[0];
+					responseText.append(ans[1]);
+				}
+				catch (NullPointerException ne){
+					ne.printStackTrace();
+				}
+				
 				// if it's not a integer input
 			}
 
 			else {
 				
 				String[] ans = askSettlementStr(text, name);
-
-				questionText = ans[0];
-				responseText.append(ans[1]);
+				
+				try {
+					questionText = ans[0];
+					responseText.append(ans[1]);
+				}
+				catch (NullPointerException ne){
+					ne.printStackTrace();
+				}
 			}
 
 		}
@@ -2731,9 +2774,14 @@ public class ChatUtils {
 //			vehicleCache = null;
 			
 			String[] ans = askVehicle(text, name);
-
-			questionText = ans[0];
-			responseText.append(ans[1]);
+			
+			try {
+				questionText = ans[0];
+				responseText.append(ans[1]);
+			}
+			catch (NullPointerException ne){
+				ne.printStackTrace();
+			}
 
 		}
 		
@@ -2816,9 +2864,13 @@ public class ChatUtils {
 				
 				String[] ans = askPersonRobot(text, num, name, u);
 				
-				questionText = ans[0];
-				responseText.append(ans[1]);
-				
+				try {
+					questionText = ans[0];
+					responseText.append(ans[1]);
+				}
+				catch (NullPointerException ne){
+					ne.printStackTrace();
+				}
 //				System.out.println("after askPersonRobot()");
 			}
 		}
@@ -3683,9 +3735,9 @@ public class ChatUtils {
 
 			// responseText.append(System.lineSeparator());
 			if (connectionMode == 0) {
-				keywordText = KEYWORDS_TEXT;
+				keywordText = SYSTEM_KEYWORDS; 
 			} else {
-				keywordText = KEYWORDS_TEXT + KEYWORDS_HEIGHT;
+				keywordText = SYSTEM_KEYWORDS + KEYWORDS_HEIGHT;
 			}
 			responseText.append(keywordText);
 			return responseText.toString();
@@ -3979,13 +4031,19 @@ public class ChatUtils {
 								responseText.append(SYSTEM_PROMPT);
 								responseText.append("I'm sorry. ");
 								responseText.append(text);
-								responseText.append(" has passed away");
+								responseText.append(" has passed away.");
+							} else if (rand == 1) {
+								responseText.append(SYSTEM_PROMPT);
+								responseText.append("Regrettably, ");
+								responseText.append(text);
+								responseText.append(" has passed away.");								
 							} else {
 								responseText.append(SYSTEM_PROMPT);
 								responseText.append("Perhaps you haven't heard. ");
 								responseText.append(text);
-								responseText.append(" is dead");
+								responseText.append(" is dead.");
 							}
+							
 							if (!buried.equals("")) {
 								responseText.append(" and is buried at ");
 								responseText.append(buried);
@@ -3994,12 +4052,20 @@ public class ChatUtils {
 							else {
 								responseText.append("." + System.lineSeparator());
 							}
-													
+									
+							responseText.append(System.lineSeparator());
+							responseText.append("                Death Report");
+							responseText.append(System.lineSeparator());
+							responseText.append("---------------------------------------------");
+
+							
 							DeathInfo info = person.getPhysicalCondition().getDeathDetails();
 							String cause = info.getCause();
 							String doctor = info.getDoctor();
 							boolean examDone = info.getExamDone();
 							String time = info.getTimeOfDeath();
+							String earthTime = info.getEarthTimeOfDeath();
+							int sol = info.getMissionSol();
 							String coord = info.getLocationOfDeath().getFormattedString();
 							String place = info.getPlaceOfDeath();
 							String missionPhase = info.getMissionPhase();
@@ -4013,9 +4079,13 @@ public class ChatUtils {
 							String health = info.getHealth() + "";
 							String lastWord = info.getLastWord();
 							
+//							responseText.append(System.lineSeparator());
 							responseText.append(System.lineSeparator());
+							responseText.append("Time of Death (TOD) : " + time);
 							responseText.append(System.lineSeparator());
-							responseText.append("      Time of Death : " + time);
+							responseText.append("          Earth TOD : " + earthTime);
+							responseText.append(System.lineSeparator());
+							responseText.append("        Mission Sol : " + sol);
 							responseText.append(System.lineSeparator());
 							responseText.append("     Place of Death : " + place);
 							responseText.append(System.lineSeparator());

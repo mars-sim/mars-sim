@@ -1389,7 +1389,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void setDead(HealthProblem problem, Boolean causedByUser, String lastWord) {
 		alive = false;
-		String cause = "";
+		String cause = "(To be determined)";
 		setFatigue(0D);
 		setHunger(0D);
 		setPerformanceFactor(0D);

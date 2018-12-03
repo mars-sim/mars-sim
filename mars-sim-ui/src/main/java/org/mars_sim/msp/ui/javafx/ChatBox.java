@@ -89,7 +89,7 @@ public class ChatBox extends BorderPane {
 		box_height[3] = 1024;// box_height[0] * 4D;
 
 		// Added autoCompleteData
-		ObservableList<String> autoCompleteData = FXCollections.observableArrayList(CollectionUtils.createAutoCompleteData());
+		ObservableList<String> autoCompleteData = FXCollections.observableArrayList(CollectionUtils.createAutoCompleteKeywords());
 
 		textArea = new TextArea();
 		textArea.textProperty().addListener(new ChangeListener<Object>() {

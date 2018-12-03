@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -52,6 +53,8 @@ public class DeathInfo implements Serializable {
 	private boolean bodyRetrieved = false;	
 	/** Is the postmortem exam done ? */	
 	private boolean examDone = false;	
+	/** Mission sol */	
+	private int missionSol;
 	/** Amount of time performed so far in postmortem exam [in Millisols]. */	
 	private double timeExam;
 	/** Estimated time the postmortem exam should take [in Millisols]. */	
@@ -62,6 +65,8 @@ public class DeathInfo implements Serializable {
 	private String causeOfDeath;
 	/** Time of death. */
 	private String timeOfDeath;
+	/** Time of death. */
+	private String earthTimeOfDeath;
 	/** Place of death. */
 	private String placeOfDeath;
 	/** Name of the doctor who did the postmortem. */	
@@ -77,7 +82,7 @@ public class DeathInfo implements Serializable {
 	/** Name of the most serious local emergency malfunction. */
 	private String malfunction;
 	/** The person's last word before departing. */
-	private String lastWord;
+	private String lastWord = "None";
 
 	/** the robot's job at time of being decomissioned. */
 	private RobotJob robotJob;
@@ -110,7 +115,7 @@ public class DeathInfo implements Serializable {
 		this.person = person;
 		this.problem = problem;
 		this.causeOfDeath = cause;
-		this.lastWord = lastWord;
+//		this.lastWord = lastWord;
 		this.gender = person.getGender();
 
 		// Initialize data members
@@ -119,24 +124,30 @@ public class DeathInfo implements Serializable {
 			// Quotes from http://www.phrases.org.uk/quotes/last-words/suicide-notes.html
 			// https://www.goodreads.com/quotes/tag/suicide-note
 			if (rand == 0)
-				lastWord = "Take care of my family.";
+				this.lastWord = "Take care of my family.";
 			else if (rand == 1)
-				lastWord = "One day, send my ashes back to Earth and give it to my family.";
+				this.lastWord = "One day, send my ashes back to Earth and give it to my family.";
 			else if (rand == 2)
-				lastWord = "Send my ashes to orbit around Mars one day.";
+				this.lastWord = "Send my ashes to orbit around Mars one day.";
 			else if (rand == 3)
-				lastWord = "I have to move on. Farewell.";
+				this.lastWord = "I have to move on. Farewell.";
 			else if (rand == 4)
-				lastWord = "I want to be buried outside the settlement.";
+				this.lastWord = "I want to be buried outside the settlement.";
 			else if (rand == 5)
-				lastWord = "Take care my friend.";
+				this.lastWord = "Take care my friend.";
 			else if (rand == 6)
-				lastWord = "I will be the patron saint for the future Mars generations.";
+				this.lastWord = "I will be the patron saint for the future Mars generations.";
 			else 
-				lastWord = "I'm leaving this world. No more sorrow to bear. See ya.";
+				this.lastWord = "I'm leaving this world. No more sorrow to bear. See ya.";
 		}
 		
-		timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
+		MasterClock masterClock = Simulation.instance().getMasterClock();
+		
+		timeOfDeath = masterClock.getMarsClock().getDateTimeStamp();
+				
+		missionSol = masterClock.getMarsClock().getMissionSol();
+		
+		earthTimeOfDeath = masterClock.getEarthClock().getTimeStampF1();
 				
 		if (problem == null) {
 			Complaint serious = person.getPhysicalCondition().getMostSerious();
@@ -316,7 +327,7 @@ public class DeathInfo implements Serializable {
 	}
 
 	/**
-	 * Get the time death happened.
+	 * Get the time of death.
 	 * 
 	 * @return formatted time.
 	 */
@@ -327,6 +338,27 @@ public class DeathInfo implements Serializable {
 			return "";
 	}
 
+	/**
+	 * Get the earth time of death.
+	 * 
+	 * @return formatted time.
+	 */
+	public String getEarthTimeOfDeath() {
+		if (earthTimeOfDeath != null)
+			return earthTimeOfDeath;
+		else
+			return "";
+	}
+	
+	/**
+	 * Gets the mission sol on the day of passing
+	 * 
+	 * @return
+	 */
+	public int getMissionSol() {
+		return missionSol;
+	}
+	
 	/**
 	 * Gets the place the death happened. Either the name of the unit the person was
 	 * in, or 'outside' if the person died on an EVA.
@@ -383,14 +415,14 @@ public class DeathInfo implements Serializable {
 		if (job != null)
 			return job.getName(gender);
 		else
-			return "";
+			return "   --";
 	}
 
 	public String getRobotJob() {
 		if (robotJob != null)
 			return robotJob.getName(robotType);
 		else
-			return "";
+			return "   --";
 	}
 
 	/**
@@ -402,7 +434,7 @@ public class DeathInfo implements Serializable {
 		if (mission != null)
 			return mission;
 		else
-			return "";
+			return "   --";
 	}
 
 	/**
@@ -414,7 +446,7 @@ public class DeathInfo implements Serializable {
 		if (missionPhase != null)
 			return missionPhase;
 		else
-			return "";
+			return "   --";
 	}
 
 	/**
@@ -426,7 +458,7 @@ public class DeathInfo implements Serializable {
 		if (task != null)
 			return task;
 		else
-			return "";
+			return "   --";
 	}
 
 	/**
@@ -438,7 +470,7 @@ public class DeathInfo implements Serializable {
 		if (taskPhase != null)
 			return taskPhase;
 		else
-			return "";
+			return "   --";
 	}
 
 	/**
@@ -451,7 +483,7 @@ public class DeathInfo implements Serializable {
 		if (malfunction != null)
 			return malfunction;
 		else
-			return "";
+			return "   --";
 	}
 
 	public void setBodyRetrieved(boolean b) {

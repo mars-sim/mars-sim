@@ -81,7 +81,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	        // Settlement
 	        // Vehicle
 	     
-	        List<String> names = CollectionUtils.createAutoCompleteData();
+	        List<String> names = CollectionUtils.createAutoCompleteKeywords();
 //	        String[] array = names.toArray(new String[names.size()]);
 	        quit = false;
  
