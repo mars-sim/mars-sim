@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -1566,7 +1567,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>(getIndoorPeople());
 
 		// Check all people.
-		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			Task task = person.getMind().getTaskManager().getTask();
@@ -1612,7 +1613,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		if (allSettlements) {
 			// could be either radio (non face-to-face) conversation, don't care
-			i = Simulation.instance().getUnitManager().getPeople().iterator();
+			i = unitManager.getPeople().iterator();
 			sameBuilding = false;
 		} else {
 			// the only initiator's settlement
@@ -1934,20 +1935,46 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * 
 	 * @return int
 	 */
+	public int getNumBuried() {
+		return getBuriedPeople().size();		
+	}
+	
+	/**
+	 * Returns a collection of people buried outside this settlement
+	 * 
+	 * @return {@link Collection<Person>}
+	 */
+	public Collection<Person> getBuriedPeople() {
+		// using java 8 stream
+		return 
+				unitManager.getPeople().stream()
+				.filter(p -> p.getBuriedSettlement() == this)
+				.collect(Collectors.toList());
+	}
+	
+	
+	/**
+	 * Gets the number of deceased people
+	 * 
+	 * @return int
+	 */
 	public int getNumDeceased() {
 		return getDeceasedPeople().size();		
 	}
 	
 	/**
-	 * Returns a collection of deceased people buried outside this settlement
+	 * Returns a collection of deceased people who may or may NOT have been buried outside this settlement
 	 * 
 	 * @return {@link Collection<Person>}
 	 */
 	public Collection<Person> getDeceasedPeople() {
 		// using java 8 stream
-		return Simulation.instance().getUnitManager()
-				.getPeople().stream()
-				.filter(p -> p.getBuriedSettlement() == this)
+		return 
+//				Simulation.instance().getUnitManager()
+				unitManager.getPeople().stream()
+				.filter(p -> 
+					(p.getAssociatedSettlement() == this && p.isDeclaredDead()) 
+						|| p.getBuriedSettlement() == this)
 				.collect(Collectors.toList());
 	}
 	
@@ -1958,7 +1985,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public Collection<Person> updateAllAssociatedPeople() {
 		// using java 8 stream
-		Collection<Person> result = Simulation.instance().getUnitManager().getPeople().stream().filter(p -> p.getAssociatedSettlement() == this)
+		Collection<Person> result = unitManager.getPeople().stream().filter(p -> p.getAssociatedSettlement() == this)
 				.collect(Collectors.toList());
 
 		allAssociatedPeople = result;
@@ -2046,10 +2073,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			}
 		}
 
-		Collection<Person> list = getAllAssociatedPeople();
+		Set<Person> list = new HashSet<>(getAllAssociatedPeople());
 		
 		// Add those who are deceased
 		list.addAll(getDeceasedPeople());
+		list.addAll(getBuriedPeople());
 		
 		Iterator<Person> i = list.iterator();
 		while (i.hasNext()) {

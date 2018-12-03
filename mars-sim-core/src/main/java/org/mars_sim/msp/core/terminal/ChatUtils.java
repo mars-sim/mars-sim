@@ -232,7 +232,7 @@ public class ChatUtils {
 	private static ScientificStudyManager scientificManager;
 	private static SkillManager skillManager;
 	private static LogManager logManager;
-	private static GoodsManager goodsManager;
+	private static UnitManager unitManager;
 	
 	private static DecimalFormat fmt = new DecimalFormat("##0");
 	private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
@@ -251,7 +251,7 @@ public class ChatUtils {
 		relationshipManager = sim.getRelationshipManager();
 		scientificManager = sim.getScientificStudyManager();
 		logManager = LogManager.getLogManager();
-//		goodsManager = sim.get
+		unitManager = sim.getUnitManager();
 	}
 
 	/**
@@ -1448,49 +1448,43 @@ public class ChatUtils {
 			List<Person> eva = new ArrayList<>(settlementCache.getOutsideEVAPeople());
 			List<Person> indoorP = new ArrayList<>(settlementCache.getIndoorPeople());
 			List<Person> deceasedP = new ArrayList<>(settlementCache.getDeceasedPeople());
+			List<Person> buriedP = new ArrayList<>(settlementCache.getBuriedPeople());
 			List<Person> onMission = new ArrayList<>(settlementCache.getOnMissionPeople());
 			
 			Collections.sort(all);
 			Collections.sort(eva);
 			Collections.sort(indoorP);
 			Collections.sort(deceasedP);
+			Collections.sort(buriedP);
 			Collections.sort(onMission);
 			
 			int numAll = all.size(); 
 			int numIndoor = indoorP.size();//settlementCache.getIndoorPeopleCount();
 			int numDead = deceasedP.size();//settlementCache.getNumDeceased();
+			int numBuried = buriedP.size();
 			int numEva = eva.size();//settlementCache.getNumOutsideEVAPeople(); //total - indoor - dead;
 			int numMission = onMission.size();
 			
 			questionText = YOU_PROMPT + "Who are the settlers ? ";
-			responseText.append(settlementCache + " : below is the brief summary of the settlers :"); 
+			responseText.append(settlementCache + " : below is the brief summary of the whereabout of the settlers :"); 
 //			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			responseText.append("  -----------------------");
 			responseText.append(System.lineSeparator());
-			responseText.append("         Summary");
+			responseText.append("          Summary");
 			responseText.append(System.lineSeparator());
-			responseText.append("  -----------------------");
+			responseText.append(" --------------------------");
 			responseText.append(System.lineSeparator());
-			responseText.append("      Registered : " + numAll);
+			responseText.append("        Registered : " + numAll);
 			responseText.append(System.lineSeparator());
-			responseText.append("          Inside : " + numIndoor);
+			responseText.append("            Inside : " + numIndoor);
 			responseText.append(System.lineSeparator());
-			responseText.append("    On a Mission : " + numMission);
+			responseText.append("      On a Mission : " + numMission);
 			responseText.append(System.lineSeparator());
-			responseText.append("   EVA Operation : " + numEva);
+			responseText.append("     EVA Operation : " + numEva);
 			responseText.append(System.lineSeparator());
-			responseText.append("        Deceased : " + numDead);
-//			responseText.append(System.lineSeparator());
+			responseText.append(" Deceased (Buried) : " + numDead + "(" + numBuried + ")");
 			responseText.append(System.lineSeparator());
 			
-//			responseText.append("  -----------------------");
-//			responseText.append(System.lineSeparator());
-//			responseText.append("          Roster");
-//			responseText.append(System.lineSeparator());
-//			responseText.append("  -----------------------");
-//			responseText.append(System.lineSeparator());
-						
 			// Indoor
 			responseText.append(System.lineSeparator());
 			responseText.append("  A. Registered");
@@ -1535,6 +1529,15 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			
 			responseText.append(printList(deceasedP));
+			
+			// Buried
+			responseText.append(System.lineSeparator());
+			responseText.append("  F. Buried");
+			responseText.append(System.lineSeparator());
+			responseText.append("  ---------");
+			responseText.append(System.lineSeparator());
+			
+			responseText.append(printList(buriedP));
 		
 		}
 		
@@ -3443,7 +3446,7 @@ public class ChatUtils {
 			List<Double> totalList = new ArrayList<>();
 //			List<Double> sciList = new ArrayList<>();
 //			List<Double> socialList = new ArrayList<>();
-			Collection<Settlement> col = sim.getUnitManager().getSettlements();
+			Collection<Settlement> col = unitManager.getSettlements();
 			for (Settlement s : col) {
 				double social = relationshipManager.getRelationshipScore(s);
 				double science = scientificManager.getScienceScore(s, null);
@@ -3568,7 +3571,7 @@ public class ChatUtils {
 //			}
 			responseText.append("  Core Engine : r" + Simulation.BUILD);
 			responseText.append(System.lineSeparator());
-			responseText.append("   # Settlers : " + sim.getUnitManager().getTotalNumPeople());
+			responseText.append("   # Settlers : " + unitManager.getTotalNumPeople());
 			responseText.append(System.lineSeparator());
 			responseText.append("  Mission Sol : " + missionSol);
 			responseText.append(System.lineSeparator());
@@ -3592,7 +3595,7 @@ public class ChatUtils {
 			Map<Double, String> map = new HashMap<>();
 //			List<String> list = new ArrayList<>();
 			List<Double> scores = new ArrayList<>();
-			Collection<Settlement> col = sim.getUnitManager().getSettlements();
+			Collection<Settlement> col = unitManager.getSettlements();
 			for (Settlement s : col) {
 				double score = relationshipManager.getRelationshipScore(s);
 				ave += score;
@@ -3723,8 +3726,7 @@ public class ChatUtils {
 			// questionText = YOU_PROMPT + "What are the names of the settlements ?";
 
 			// Creates an array with the names of all of settlements
-			List<Settlement> settlementList = new ArrayList<Settlement>(
-					Simulation.instance().getUnitManager().getSettlements());
+			List<Settlement> settlementList = new ArrayList<Settlement>(unitManager.getSettlements());
 
 			int num = settlementList.size();
 			String s = "";
@@ -3780,8 +3782,7 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			
 			// Creates an array with the names of all of settlements
-			List<Settlement> settlementList = new ArrayList<Settlement>(
-					Simulation.instance().getUnitManager().getSettlements());
+			List<Settlement> settlementList = new ArrayList<Settlement>(unitManager.getSettlements());
 
 			for (Settlement s : settlementList) {
 				Collection<Vehicle> list = s.getAllAssociatedVehicles();
@@ -3874,9 +3875,8 @@ public class ChatUtils {
 
 		}
 
-		else if (proceed) { // && text.length() > 1) {
-//			System.out.println("proceed is true: text is " + text);
-
+		else if (proceed) {
+			
 			List<Person> personList = new ArrayList<>();
 			List<Robot> robotList = new ArrayList<>();
 			List<Vehicle> vehicleList = new ArrayList<>();
@@ -3886,7 +3886,7 @@ public class ChatUtils {
 			settlementList = CollectionUtils.returnSettlementList(text);
 			
 			// person and robot
-			Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
+			Iterator<Settlement> i = unitManager.getSettlements().iterator();
 			while (i.hasNext()) {
 				Settlement s = i.next();
 				// Check if anyone has this name (as first/last name) in any settlements
@@ -3911,9 +3911,9 @@ public class ChatUtils {
 					+ personList.size()
 					> 1) {
 				responseText.append(SYSTEM_PROMPT);
-				responseText.append("There are more than one \"");
+				responseText.append("There are more than one '");
 				responseText.append(text);
-				responseText.append("\".Please be more specific by spelling out the full name of the party you would like to reach.");
+				responseText.append("'. Please be more specific by spelling out the full name of the party you would like to reach.");
 				// System.out.println(responseText);
 				return responseText.toString();
 			}
