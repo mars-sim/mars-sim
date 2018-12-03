@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -90,8 +91,10 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
@@ -103,6 +106,7 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.javafx.dashboard.DashboardController;
 import org.mars_sim.msp.ui.javafx.dotMatrix.DotMatrix;
 import org.mars_sim.msp.ui.javafx.dotMatrix.DotMatrixBuilder;
@@ -2356,7 +2360,7 @@ public class MainScene implements ClockListener {
 		final DashboardController c = controller;
 
 		tabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
-
+			
 			if (newTab == dashboardTab) {
 				c.checkSettlements();
 				dashboardStackPane.requestFocus();
@@ -2391,6 +2395,7 @@ public class MainScene implements ClockListener {
 		// in case user open and close the same repeated.
 
 	}
+	
 
 	/**
 	 * Anchors all the map widgets

@@ -71,7 +71,7 @@ extends UnitWindow {
 
 		addTabPanel(new TabPanelSponsorship(person, desktop));
 
-	    // 2015-06-20 Added tab sorting
+	    // Add tab sorting
 		sortTabPanels();
 	}
 

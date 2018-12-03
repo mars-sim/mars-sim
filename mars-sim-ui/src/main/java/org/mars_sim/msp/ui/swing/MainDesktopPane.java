@@ -131,8 +131,10 @@ public class MainDesktopPane extends WebDesktopPane
 	private EventTableModel eventTableModel;
 	private SingleSelectionModel ssm;
 
-	private static MasterClock masterClock = Simulation.instance().getMasterClock();
-
+	private static Simulation sim = Simulation.instance();
+	private static MasterClock masterClock = sim.getMasterClock();
+	private static UnitManager unitManager = sim.getUnitManager();
+	
 	/**
 	 * Constructor 1.
 	 * 
@@ -201,7 +203,7 @@ public class MainDesktopPane extends WebDesktopPane
 		// Create update thread.
 		setupToolWindowTasks();
 
-		Simulation.instance().getMasterClock().addClockListener(this);
+		sim.getMasterClock().addClockListener(this);
 
 		if (mainScene == null)
 			prepareAnnouncementWindow();
@@ -330,7 +332,7 @@ public class MainDesktopPane extends WebDesktopPane
 //		if (event.getUnit() instanceof Settlement) {		  
 		//removeAllElements(); 
 //		UnitManager unitManager =
-//		Simulation.instance().getUnitManager(); 
+//		sim.getUnitManager(); 
 //		List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
 //		Collections.sort(settlements);
 //		  
@@ -378,7 +380,7 @@ public class MainDesktopPane extends WebDesktopPane
 		// Thread.currentThread().getName() + " Thread");
 
 		// Add addUnitManagerListener()
-		UnitManager unitManager = Simulation.instance().getUnitManager();
+//		UnitManager unitManager = sim.getUnitManager();
 		unitManager.addUnitManagerListener(this);
 
 		// Add addUnitListener()
@@ -554,7 +556,7 @@ public class MainDesktopPane extends WebDesktopPane
 	 */
 	public boolean isUnitWindowOpen(UnitWindow w) {
 		if (w != null) {
-			return !w.isClosed();
+			return !w.isClosed() || !w.isVisible();
 		} else {
 			return false;
 		}
@@ -823,6 +825,85 @@ public class MainDesktopPane extends WebDesktopPane
 	}
 
 	/**
+	 * Creates and opens a window for a unit if it isn't already in existence and
+	 * open.
+	 * 
+	 * @param unit          the unit the window is for.
+	 * @param initialWindow true if window is opened at UI startup.
+	 */
+	public void openUnitWindow(Unit unit, boolean initialWindow, boolean toShow) {
+		UnitWindow tempWindow = null;
+
+		// go to the main tab
+		if (toShow && mainScene != null) {
+			if (ssm == null)
+				ssm = mainScene.getJFXTabPane().getSelectionModel();
+			Platform.runLater(() -> {
+				ssm.select(MainScene.MAIN_TAB);
+				mainScene.desktopFocus();
+			});
+		}
+
+		for (UnitWindow window : unitWindows) {
+			if (window.getUnit() == unit) {
+				tempWindow = window;
+			}
+		}
+
+		if (tempWindow != null) {
+			if (tempWindow.isClosed()) {
+				add(tempWindow, 0);
+			}
+
+		}
+
+		else {
+			// Create new window for unit.
+			tempWindow = UnitWindowFactory.getUnitWindow(unit, this);
+
+			add(tempWindow, 0);
+			tempWindow.pack();
+
+			// Set internal frame listener
+			tempWindow.addInternalFrameListener(new UnitWindowListener(this));
+
+			if (initialWindow) {
+				// Put window in configured position on desktop.
+				tempWindow.setLocation(UIConfig.INSTANCE.getInternalWindowLocation(unit.getName()));
+			} else {
+				// Put window in random position on desktop.
+				tempWindow.setLocation(getRandomLocation(tempWindow));
+			}
+
+			// Add unit window to unit windows
+			unitWindows.add(tempWindow);
+
+			// Create new unit button in tool bar if necessary
+			if (mainWindow != null)
+				mainWindow.createUnitButton(unit);
+		}
+
+		if (toShow) {
+			tempWindow.setVisible(true);
+		
+			// Correct window becomes selected
+			try {
+				tempWindow.setSelected(true);
+				tempWindow.moveToFront();
+			} catch (java.beans.PropertyVetoException e) {
+			}
+	
+			// Play sound
+			String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
+			if (soundFilePath != null && soundFilePath.length() != 0) {
+				soundPlayer.playSound(soundFilePath);
+			}
+		}
+
+
+	}
+	
+	/**
 	 * Finds an existing unit window for a unit.
 	 * 
 	 * @param unit the unit to search for.
@@ -839,32 +920,32 @@ public class MainDesktopPane extends WebDesktopPane
 		return result;
 	}
 
-	/**
-	 * Disposes a unit window and button.
-	 *
-	 * @param unit the unit the window is for.
-	 */
-	public void disposeUnitWindow(Unit unit) {
-
-		// Dispose unit window
-		UnitWindow deadWindow = null;
-
-		for (UnitWindow window : unitWindows) {
-			if (unit == window.getUnit()) {
-				deadWindow = window;
-			}
-		}
-
-		unitWindows.remove(deadWindow);
-
-		if (deadWindow != null) {
-			deadWindow.dispose();
-		}
-
-		// Have main window dispose of unit button
-		if (mainWindow != null)
-			mainWindow.disposeUnitButton(unit);
-	}
+//	/**
+//	 * Disposes a unit window and button.
+//	 *
+//	 * @param unit the unit the window is for.
+//	 */
+//	public void disposeUnitWindow(Unit unit) {
+//
+//		// Dispose unit window
+//		UnitWindow deadWindow = null;
+//
+//		for (UnitWindow window : unitWindows) {
+//			if (unit == window.getUnit()) {
+//				deadWindow = window;
+//			}
+//		}
+//
+//		unitWindows.remove(deadWindow);
+//
+//		if (deadWindow != null) {
+//			deadWindow.dispose();
+//		}
+//
+//		// Have main window dispose of unit button
+//		if (mainWindow != null)
+//			mainWindow.disposeUnitButton(unit);
+//	}
 
 	/**
 	 * Disposes a unit window and button.
@@ -883,6 +964,18 @@ public class MainDesktopPane extends WebDesktopPane
 		}
 	}
 
+	public void makeUnitWindowInvisible(UnitWindow window) {
+
+		if (window != null) {
+//			unitWindows.remove(window);
+			window.setVisible(false);
+
+			// Have main window dispose of unit button
+			if (mainWindow != null)
+				mainWindow.disposeUnitButton(window.getUnit());
+		}
+	}
+	
 	class UnitWindowTask implements Runnable {
 		// long SLEEP_TIME = 1000;
 		UnitWindow unitWindow;
@@ -1187,10 +1280,25 @@ public class MainDesktopPane extends WebDesktopPane
 	}
 
 	/**
+	 * Caches the creation of settlements for speeding up loading time
+	 */
+	public void cacheSettlementUnitWindow() {
+		List<Settlement> ss = new ArrayList<>(unitManager.getSettlements());
+//		int rand = RandomUtil.getRandomInt(ss.size()-1);
+//		desktop.openUnitWindow((Settlement)(ss.get(rand)), true, false);
+		for (Settlement s : ss) {
+			openUnitWindow((Settlement)s, true, false);
+		}
+	}
+	
+	/**
 	 * Opens all initial windows based on UI configuration.
 	 */
 	public void openInitialWindows() {
 
+		// Caches the settlement unit windows
+		cacheSettlementUnitWindow();
+		
 		UIConfig config = UIConfig.INSTANCE;
 		if (config.useUIDefault()) {
 
@@ -1200,8 +1308,7 @@ public class MainDesktopPane extends WebDesktopPane
 			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
 			openToolWindow(GuideWindow.NAME);
 
-			if (mainScene != null) {
-
+			if (mainScene != null) {					
 				int Xloc = (int) ((mainScene.getWidth() - ourGuide.getWidth()) * .5D);
 				int Yloc = (int) ((mainScene.getHeight() - ourGuide.getHeight()) * .5D);
 
@@ -1223,7 +1330,7 @@ public class MainDesktopPane extends WebDesktopPane
 					String name = i.next();
 					boolean display = config.isInternalWindowDisplayed(name);
 					String type = config.getInternalWindowType(name);
-					if (UIConfig.UNIT.equals(type) && !Simulation.instance().isDefaultLoad()) {
+					if (UIConfig.UNIT.equals(type) && !sim.isDefaultLoad()) {
 						display = false;
 					}
 					if (display) {
@@ -1239,7 +1346,7 @@ public class MainDesktopPane extends WebDesktopPane
 					if (UIConfig.TOOL.equals(type)) {
 						openToolWindow(highestZName);
 					} else if (UIConfig.UNIT.equals(type)) {
-						Unit unit = Simulation.instance().getUnitManager().findUnit(highestZName);
+						Unit unit = unitManager.findUnit(highestZName);
 						if (unit != null) {
 							openUnitWindow(unit, true);
 						}
@@ -1250,13 +1357,13 @@ public class MainDesktopPane extends WebDesktopPane
 
 			if (mainWindow != null) {
 				// Create unit bar buttons for closed unit windows.
-				if (Simulation.instance().isDefaultLoad()) {
+				if (sim.isDefaultLoad()) {
 					Iterator<String> i = config.getInternalWindowNames().iterator();
 					while (i.hasNext()) {
 						String name = i.next();
 						if (UIConfig.UNIT.equals(config.getInternalWindowType(name))) {
 							if (!config.isInternalWindowDisplayed(name)) {
-								Unit unit = Simulation.instance().getUnitManager().findUnit(name);
+								Unit unit = unitManager.findUnit(name);
 								if (unit != null) {
 									mainWindow.createUnitButton(unit);
 								}
@@ -1266,6 +1373,7 @@ public class MainDesktopPane extends WebDesktopPane
 				}
 			}
 		}
+		
 	}
 
 	/**
@@ -1319,7 +1427,7 @@ public class MainDesktopPane extends WebDesktopPane
 					mainWindow.openTransportWizard(mgr);
 				else if (mainScene != null)
 					mainScene.openTransportWizard(mgr);
-				// Simulation.instance().getTransportManager().setIsTransportingBuilding(false);
+				// sim.getTransportManager().setIsTransportingBuilding(false);
 			}
 
 		}
@@ -1431,7 +1539,7 @@ public class MainDesktopPane extends WebDesktopPane
 	 * Prepares the panel for deletion.
 	 */
 	public void destroy() {
-		Simulation.instance().getMasterClock().removeClockListener(this);
+		sim.getMasterClock().removeClockListener(this);
 		unitWindows = null;
 		toolWindows = null;
 		backgroundImageIcon = null;

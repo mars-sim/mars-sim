@@ -110,7 +110,7 @@ implements ActionListener {
         wrapper3.add(malTF);//, BorderLayout.CENTER);
         deathLabelPanel.add(wrapper3);
 
-		// 2017-03-31 Prepare SpringLayout
+		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(deathLabelPanel,
 		                                3, 2, //rows, cols
 		                                50, 5,        //initX, initY
@@ -159,8 +159,6 @@ implements ActionListener {
 			locationLabelPanel.add(topContainerButton);
 		}
 		else {
-			//JLabel locationLabel2 = new JLabel(death.getPlaceOfDeath(), JLabel.CENTER);
-			//locationLabelPanel.add(locationLabel2);
 			JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 			JTextField TF4 = new JTextField();
 	        TF4.setText(death.getPlaceOfDeath());
@@ -170,10 +168,6 @@ implements ActionListener {
 	        wrapper4.add(TF4);//, BorderLayout.CENTER);
 	        locationLabelPanel.add(wrapper4);
 		}
-
-		// Prepare location coordinates panel
-		//JPanel locationCoordsPanel = new JPanel(new GridLayout(2, 1, 0, 0));
-		//locationPanel.add(locationCoordsPanel, BorderLayout.CENTER);
 
 		// Prepare location panel
 		JPanel springPanel = new JPanel(new SpringLayout());//BorderLayout());
@@ -199,7 +193,7 @@ implements ActionListener {
 		JLabel longitudeLabel = new JLabel(deathLocation.getFormattedLongitudeString(), JLabel.LEFT); //$NON-NLS-1$
 		springPanel.add(longitudeLabel);
 
-		// 2017-03-31 Prepare SpringLayout
+		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(springPanel,
 		                                2, 2, //rows, cols
 		                                0, 0,        //initX, initY
