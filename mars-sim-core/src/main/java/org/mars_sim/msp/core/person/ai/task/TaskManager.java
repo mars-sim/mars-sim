@@ -76,15 +76,16 @@ public class TaskManager implements Serializable {
 	private CircadianClock circadian;
 
 	private TaskSchedule ts;
+	
+//	private MarsClock timeCache;
 
+	private ShiftType shiftTypeCache;
+	
 	private transient Map<MetaTask, Double> taskProbCache;
 
 	private transient List<MetaTask> mtListCache;
-	
-	private transient MarsClock timeCache;
-	
-	private static MarsClock marsClock;
 
+	private static MarsClock marsClock;
 	private static MissionManager missionManager;
 
 
@@ -105,12 +106,10 @@ public class TaskManager implements Serializable {
 
 		health = person.getPhysicalCondition();
 
-		ts = person.getTaskSchedule();
-
 		currentTask = null;
 
 		// Initialize cache values.
-		timeCache = null;
+//		timeCache = null;
 		taskProbCache = new HashMap<MetaTask, Double>();
 		totalProbCache = 0D;
 
@@ -118,6 +117,13 @@ public class TaskManager implements Serializable {
 			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // marsClock won't pass maven test
 	}
 
+	/**
+	 * Initializes tash schedule instance
+	 */
+	public void initialize() {
+		ts = person.getTaskSchedule();
+	}
+	
 	/**
 	 * Returns true if person has an active task.
 	 * 
@@ -300,8 +306,8 @@ public class TaskManager implements Serializable {
 
 			}
 
-			if (ts == null)
-				ts = person.getTaskSchedule();
+//			if (ts == null)
+//				ts = person.getTaskSchedule();
 
 			if (taskPhaseName != null) {
 				// TODO: decide if it needs to record the same task description as the last
@@ -550,17 +556,6 @@ public class TaskManager implements Serializable {
 		double r = RandomUtil.getRandomDouble(totalProbability);
 
 		MetaTask selectedMetaTask = null;
-		// System.out.println("size of metaTask : " + taskProbCache.size());
-
-//		taskProbCache.keySet().forEach(mt -> {
-//			double probWeight = taskProbCache.get(mt);
-//			if (r <= probWeight) {
-//				selectedMetaTask = mt;
-//			}
-//			else {
-//				r -= probWeight;
-//			}
-//		});
 
 		// Determine which task is selected.
 		for (MetaTask mt : taskProbCache.keySet()) {
@@ -581,7 +576,8 @@ public class TaskManager implements Serializable {
 		}
 
 		// Clear time cache.
-		timeCache = null;
+//		timeCache = null;
+		msolCache = -1;
 		return result;
 	}
 
@@ -603,70 +599,68 @@ public class TaskManager implements Serializable {
 	 */
 	private void calculateProbability() {
 
-		List<MetaTask> mtList = null;
-
-		if (timeCache == null) {
-			timeCache = Simulation.instance().getMasterClock().getMarsClock();
-			marsClock = timeCache;
-		}
-
+//		if (timeCache == null)
+//			timeCache = marsClock;
+		
 		double msol1 = marsClock.getMillisolOneDecimal();
 
-		if (msolCache != msol1) {
+		int retval = Double.compare(msolCache, msol1);
+	    
+		if(retval > 0 || retval < 0) {    
+//		if (msolCache != msol1) {
 			msolCache = msol1;
+			
+			// Set the time cache to the current time.
+//			timeCache = (MarsClock) marsClock.clone();
 
-			if (ts == null)
-				ts = person.getTaskSchedule();
+//			if (ts == null)
+//				ts = person.getTaskSchedule();
 
 			ShiftType st = ts.getShiftType();
 
-			// boolean isOnCall = (st == ShiftType.ON_CALL);
-			// boolean isOff = (st == ShiftType.OFF);
-			// boolean isShiftHour = true;
+			if (shiftTypeCache != st) {
+				
+				List<MetaTask> mtList = null;
 
-			if (st == ShiftType.ON_CALL) {
-				mtList = MetaTaskUtil.getAllMetaTasks();// getAnyHourTasks();
-			} else if (st == ShiftType.OFF) {
-				mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
-			} else {
-				// is the person off the shift ?
-				// isShiftHour = ts.isShiftHour(millisols);
-
-				if (ts.isShiftHour((int) msol1)) {
+				// NOTE: any need to use getAnyHourTasks()
+				if (st == ShiftType.ON_CALL) {
+					mtList = MetaTaskUtil.getAllMetaTasks();
+				} else if (ts.isShiftHour(marsClock.getMillisolInt())) {
 					mtList = MetaTaskUtil.getWorkHourMetaTasks();
 				} else {
 					mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
 				}
+
+				//if (mtListCache != mtList) {// && mtList != null) {
+					// TODO: is there a better way to compare them this way ?
+//					mtListCache = mtList;
+//					taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
+//				}
+				
+				// Use new mtList
+				mtListCache = mtList;
+				// Create new taskProbCache
+				taskProbCache = new HashMap<MetaTask, Double>(mtList.size());		
 			}
 
-			if (mtListCache != mtList && mtList != null) {
-				// TODO: is there a better way to compare them this way ?
-				mtListCache = mtList;
-				taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
-			}
 
 			// Clear total probabilities.
 			totalProbCache = 0D;
 			// Determine probabilities.
 			for (MetaTask mt : mtListCache) {
 				double probability = mt.getProbability(person);
-
 				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 					taskProbCache.put(mt, probability);
 					totalProbCache += probability;
-				} else {
+				} 
+				
+				else {
 					taskProbCache.put(mt, 0D);
-
-					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-							"Task probability is invalid when calculating for " + mind.getPerson().getName() + " on "
-									+ mt.getName() + " : Probability is " + probability + ".",
-							null);
+					LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
+							mind.getPerson().getName() + " has invalid probability when calculating "
+								+ mt.getName() + " : Probability is " + probability + ".", null);
 				}
 			}
-
-			// Set the time cache to the current time.
-			timeCache = (MarsClock) marsClock.clone();
-
 		}
 	}
 
@@ -676,7 +670,13 @@ public class TaskManager implements Serializable {
 	 * @return true if cache should be used.
 	 */
 	private boolean useCache() {
-		return marsClock.equals(timeCache);
+		int retval = Double.compare(msolCache, marsClock.getMillisolOneDecimal());
+		if (retval > 0 || retval < 0) {
+			return false;
+		}
+		return true;
+//		return (msolCache == marsClock.getMillisolOneDecimal());
+//		return marsClock.equals(timeCache);
 	}
 
 
@@ -699,7 +699,7 @@ public class TaskManager implements Serializable {
 			currentTask.destroy();
 		mind = null;
 		person = null;
-		timeCache = null;
+//		timeCache = null;
 		lastTask = null;
 		health = null;
 		circadian = null;

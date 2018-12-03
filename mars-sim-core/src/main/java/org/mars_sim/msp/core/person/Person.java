@@ -304,6 +304,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		taskSchedule = new TaskSchedule(this);
 
+		mind.getTaskManager().initialize();
+		
 		preference = new Preference(this);
 
 		assignReportingAuthority();

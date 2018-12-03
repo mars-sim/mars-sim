@@ -822,6 +822,7 @@ public class Simulation implements ClockListener, Serializable {
 		ResourceUtil.getInstance().justReloaded();
 		// Re-initialize the MarsSurface instance
 		MasterClock.justReloaded();					// sim
+		MarsClock.justReloaded(mars);	
 		MarsClock marsClock = masterClock.getMarsClock();
 		SurfaceFeatures surface = mars.getSurfaceFeatures();
 		Weather w = mars.getWeather();

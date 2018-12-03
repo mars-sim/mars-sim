@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
@@ -44,6 +45,10 @@ public class Mind implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Mind.class.getName());
 	
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
+	private static final double MINIMUM_MISSION_PERFORMANCE = 0.1;
 	private static final double FACTOR = .05;
 
 	// Data members
@@ -108,7 +113,6 @@ public class Mind implements Serializable {
 		emotion = new EmotionManager(person);
 		// Construct the task manager
 		taskManager = new TaskManager(this);
-
 		// Construct the skill manager.
 		skillManager = new SkillManager(person);
 	}
@@ -252,7 +256,8 @@ public class Mind implements Serializable {
 				try {
 					getNewAction(true, (!hasActiveMission && !overrideMission));
 				} catch (Exception e) {
-					logger.log(Level.WARNING, person + " could not get new action", e);
+					LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
+							person.getName() + " could not get new action", e);
 					e.printStackTrace(System.err);
 				}
 			}
@@ -391,16 +396,16 @@ public class Mind implements Serializable {
 	 */
 	public void setMission(Mission newMission) {
 		if (newMission != mission) {
-				if (mission != null) {
-					mission.removeMember(person);
-				}
-				mission = newMission;
+			if (mission != null) {
+				mission.removeMember(person);
+			}
+			mission = newMission;
 
-				if (newMission != null) {
-					newMission.addMember(person);
-				}
+			if (newMission != null) {
+				newMission.addMember(person);
+			}
 
-				person.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
+			person.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
 		}
 	}
 
@@ -422,7 +427,7 @@ public class Mind implements Serializable {
 	public void getNewAction(boolean tasks, boolean missions) {
 
 		// If this Person is too weak then they can not do Missions
-		if (person.getPerformanceRating() < 0.5D) {
+		if (person.getPerformanceRating() < MINIMUM_MISSION_PERFORMANCE) {
 			missions = false;
 		}
 
@@ -449,7 +454,9 @@ public class Mind implements Serializable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			throw new IllegalStateException("Mind.getNewAction(): " + person + " weight sum: " + weightSum);
+			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
+					person.getName() + " has invalid weight sum : " + weightSum + ". tasks is " + tasks + ". missions is " + missions, null);
+//			throw new IllegalStateException("Mind.getNewAction(): " + person + " weight sum: " + weightSum);
 		}
 
 		// Select randomly across the total weight sum.
@@ -462,7 +469,7 @@ public class Mind implements Serializable {
 				if (newTask != null)
 					taskManager.addTask(newTask);
 				else
-					logger.severe(person + " : newTask is null ");
+					logger.severe(person + "'s newTask is null ");
 
 				return;
 			} else {
@@ -472,10 +479,7 @@ public class Mind implements Serializable {
 
 		if (missions) {
 			if (rand < missionWeights) {
-				Mission newMission = null;
-//				logger.info(person.getName() + " is looking at what mission to take on.");
-				newMission = missionManager.getNewMission(person);
-
+				Mission newMission = missionManager.getNewMission(person);
 				if (newMission != null) {
 					missionManager.addMission(newMission);
 					setMission(newMission);

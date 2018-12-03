@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 
 // References: 
@@ -151,7 +152,7 @@ public class MarsClock implements Serializable {
 
 //	private static EarthClock earthClock;
 
-	private Simulation sim;
+	private static Simulation sim;
 
 
 	/**
@@ -166,9 +167,7 @@ public class MarsClock implements Serializable {
 
 		sim = Simulation.instance();
 //		earthClock = sim.getMasterClock().getEarthClock();
-
-		if (orbitInfo == null)
-			orbitInfo = sim.getMars().getOrbitInfo();
+		orbitInfo = sim.getMars().getOrbitInfo();
 
 		// Set initial date to dateString. ex: "0000-Adir-01 000.000"
 		String orbitStr = dateString.substring(0, dateString.indexOf(DASH));
@@ -1031,6 +1030,16 @@ public class MarsClock implements Serializable {
 		return orbit * month * sol + ((int) (millisol * 1000D));
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param mars
+	 */
+	public static void justReloaded(Mars mars) {
+		sim = Simulation.instance();
+		orbitInfo = mars.getOrbitInfo();
+	}
+	
 	public void destroy() {
 		orbitInfo = null;
 		sim = null;
