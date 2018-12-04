@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.EventType;
@@ -479,7 +478,7 @@ public abstract class RoverMission extends VehicleMission {
 //					p.enter(LocationCodeType.SETTLEMENT);
 					disembarkSettlement.getInventory().storeUnit(p);
 					
-					BuildingManager.addToRandomBuilding(p, disembarkSettlement);
+					BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
 					p.setAssociatedSettlement(disembarkSettlement);
 //					p.getMind().getTaskManager().clearTask();
 
@@ -488,7 +487,12 @@ public abstract class RoverMission extends VehicleMission {
 							p.getVehicle().getName(), p.getLocationTag().getLocale());
 					Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
 					
+				} else {
+					LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+							"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
+							+ " finally came home safety on the towed rover "+ rover.getName() + ".", null);
 				}
+				
 			}
 		}
 		
@@ -514,26 +518,53 @@ public abstract class RoverMission extends VehicleMission {
 						rover.getInventory().retrieveUnit(p);
 						disembarkSettlement.getInventory().storeUnit(p);
 						BuildingManager.addPersonOrRobotToBuilding(p, v.getGarage());
+						
+						p.getMind().getTaskManager().getNewTask();
+//						assignTask(p, new Walk(p));
 					}
 					
 					else { 
-						// the person is outside
+						// the person is still inside the vehicle
 						
-						//unitManager.getInventory().storeUnit(p);
-	
-						// Get closest airlock building at settlement.
-						Building destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock(p)
-									.getEntity();
-	
+						// Get random inhabitable building at emergency settlement.
+						Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
 						if (destinationBuilding != null) {
 							Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
 							Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
 									destinationLoc.getY(), destinationBuilding);
-							
+
 							if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
 								assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+							} 
+							
+							else {
+								logger.severe("Unable to walk to building " + destinationBuilding);
 							}
+	
+						} 
+						
+						else {
+							logger.severe("No inhabitable buildings at " + disembarkSettlement);
+							endMission("No inhabitable buildings at " + disembarkSettlement);
 						}
+
+						
+//						p.getMind().getTaskManager().clearTask();
+//						//unitManager.getInventory().storeUnit(p);
+//	
+//						// Get closest airlock building at settlement.
+//						Building destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock(p)
+//									.getEntity();
+//	
+//						if (destinationBuilding != null) {
+//							Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
+//							Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
+//									destinationLoc.getY(), destinationBuilding);
+//							
+//							if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+//								assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+//							}
+//						}
 					}
 					
 							

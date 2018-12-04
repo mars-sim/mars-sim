@@ -34,7 +34,6 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -513,44 +512,33 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 					// Place this person within a settlement
 //					p.enter(LocationCodeType.SETTLEMENT);
 					settlementInv.storeUnit(p);
-					BuildingManager.addToRandomBuilding(p, settlement);			
+					BuildingManager.addToMedicalBuilding(p, settlement);			
 					
 					p.setAssociatedSettlement(settlement);
 //					p.getMind().getTaskManager().clearTask();
 
 				}
 				
-				else {
-					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " came home safety on rover "+ vehicle.getName() + ".", null);
-				
-					if (vehicle.getGarage() != null) {
-						// the rover is parked inside a garage
-						vehicle.getInventory().retrieveUnit(p);
-						settlement.getInventory().storeUnit(p);
-						BuildingManager.addPersonOrRobotToBuilding(p, vehicle.getGarage());
-					}
-					
-					else { 
-						// the person is outside
-						
-						//unitManager.getInventory().storeUnit(p);
-	
-						// Get closest airlock building at settlement.
-						Building destinationBuilding = (Building) settlement.getClosestAvailableAirlock(p)
-									.getEntity();
-	
-						if (destinationBuilding != null) {
-							Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-							Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
-									destinationLoc.getY(), destinationBuilding);
-							
-							if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
-								p.getMind().getTaskManager().addTask(new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
-							}
-						}
-					}
-				}
+//				else {
+//					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+//							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " came home safety on rover "+ vehicle.getName() + ".", null);
+//				
+//					if (vehicle.getGarage() != null) {
+//						// the rover is parked inside a garage
+//						vehicle.getInventory().retrieveUnit(p);
+//						settlement.getInventory().storeUnit(p);
+//						BuildingManager.addPersonOrRobotToBuilding(p, vehicle.getGarage());
+//						
+////						p.getMind().getTaskManager().addTask(new Walk(p));
+//						p.getMind().getTaskManager().getNewTask();
+//					}
+//					
+//					else if (p != person) {
+//						// the person is still inside the vehicle
+//						// Clear any other task and 
+////						p.getMind().getTaskManager().clearTask();
+//					}
+//				}
 			}
 		}
 

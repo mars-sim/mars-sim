@@ -691,6 +691,31 @@ public class BuildingManager implements Serializable {
 		return getBuildings(FunctionType.EVA).stream().findAny().orElse(null);
 
 	}
+	
+	/**
+	 * Adds a person to a random medical building within a settlement.
+	 *
+	 * @param unit       the person/robot to add.
+	 * @param settlement the settlement to find a building.
+	 * @throws BuildingException if person/robot cannot be added to any building.
+	 */
+	public static void addToMedicalBuilding(Person p, Settlement settlement) {
+	
+		Building building = getLeastCrowdedBuildings(
+				settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT)).stream()
+						.findAny().orElse(null);
+
+		if (building != null) {
+			addPersonOrRobotToBuildingRandomLocation(p, building);
+		} 
+		
+		else {
+			LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
+					"[" + p.getLocationTag().getLocale() + "] No medical facility available for "
+							+ p.getName() + ". Go to a random building.", null);
+			addToRandomBuilding(p, settlement);
+		}
+	}
 
 	/**
 	 * Adds a person/robot to a random inhabitable building within a settlement.
@@ -824,6 +849,7 @@ public class BuildingManager implements Serializable {
 		}
 
 	}
+	
 
 	/**
 	 * Adds a ground vehicle to a random ground vehicle maintenance building within

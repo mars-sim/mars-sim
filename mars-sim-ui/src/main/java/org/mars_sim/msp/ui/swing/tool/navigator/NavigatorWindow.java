@@ -145,7 +145,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	private MapLayer landmarkLayer;
 	private MapLayer exploredSiteLayer;
 
-	private List<Landmark> landmarks;
+	private static List<Landmark> landmarks;
 
 	/**
 	 * Constructor.

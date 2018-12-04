@@ -39,7 +39,7 @@ implements MapLayer {
 	/** Horizontal offset for label. */
 	private int LABEL_HORIZONTAL_OFFSET = 2;
 	
-	private List<Landmark> landmarks = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks();
+	private static List<Landmark> landmarks = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks();
 
 	private double angle = CannedMarsMap.HALF_MAP_ANGLE;
 	/**

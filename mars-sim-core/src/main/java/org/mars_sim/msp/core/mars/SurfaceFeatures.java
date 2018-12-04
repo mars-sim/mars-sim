@@ -66,9 +66,7 @@ public class SurfaceFeatures implements Serializable {
 	private Map<Coordinates, List<Double>> solarIrradianceCaches;
 	private Map<Coordinates, Double> solarIrradiance;
 
-	@JsonIgnore // Need to have both @JsonIgnore and transient for Jackson to ignore converting this list
-	private transient List<Landmark> landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
-	
+
 	// static instances
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -83,6 +81,10 @@ public class SurfaceFeatures implements Serializable {
 	private static OrbitInfo orbitInfo;
 	
 	private static Coordinates sunDirection;
+	
+	@JsonIgnore // Need to have both @JsonIgnore and transient for Jackson to ignore converting this list
+	private static List<Landmark> landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
+	
 
 	// private DecimalFormat fmt3 = new DecimalFormat("#0.000");
 
@@ -728,6 +730,7 @@ public class SurfaceFeatures implements Serializable {
 		sim = Simulation.instance();
 		missionManager = sim.getMissionManager();
 		sunDirection = orbitInfo.getSunDirection();
+		landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
 	}
 	
 	
