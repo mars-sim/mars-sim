@@ -60,7 +60,12 @@ public class PhysicalCondition implements Serializable {
 	public static final String DEAD = "Dead : ";
 	public static final String ILL = "Sick : ";
 	/** The amount of thirst threshold [millisols]. */
-	public static final int THIRST_THRESHOLD = 100;
+	public static final int THIRST_THRESHOLD = 250;
+	/** The amount of thirst threshold [millisols]. */
+	public static final int HUNGER_THRESHOLD = 250;
+	/** The amount of thirst threshold [millisols]. */
+	public static final int ENERGY_THRESHOLD = 2525;
+
 	/** Life support minimum value. */
 	private static int MIN_VALUE = 0;
 	/** Life support maximum value. */
@@ -267,8 +272,8 @@ public class PhysicalCondition implements Serializable {
 
 		medicationList = new ArrayList<Medication>();
 
-		if (naturalAttributeManager == null)
-			naturalAttributeManager = person.getNaturalAttributeManager();
+//		if (naturalAttributeManager == null)
+		naturalAttributeManager = person.getNaturalAttributeManager();
 
 		endurance = naturalAttributeManager.getAttribute(NaturalAttributeType.ENDURANCE);
 		strength = naturalAttributeManager.getAttribute(NaturalAttributeType.STRENGTH);
@@ -287,11 +292,10 @@ public class PhysicalCondition implements Serializable {
 
 		performance = 1.0D;
 		thirst = RandomUtil.getRandomRegressionInteger(100);
-		fatigue = 0; // RandomUtil.getRandomRegressionInteger(1000) * .5;
+		fatigue = RandomUtil.getRandomRegressionInteger(100) * .5;
 		stress = RandomUtil.getRandomRegressionInteger(100);
 		hunger = RandomUtil.getRandomRegressionInteger(100);
-		kJoules = 2500;// 1000D + RandomUtil.getRandomDouble(1500);
-		// hygiene = RandomUtil.getRandomDouble(100D);
+		kJoules = 500 + RandomUtil.getRandomDouble(1500);
 
 		personalMaxEnergy = MAX_DAILY_ENERGY_INTAKE;
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
@@ -299,24 +303,28 @@ public class PhysicalCondition implements Serializable {
 		bodyMassDeviation = Math
 				.sqrt(person.getBaseMass() / Person.AVERAGE_WEIGHT * person.getHeight() / Person.AVERAGE_HEIGHT);
 
-		// assuming a person drinks 10 times a day, each time ~375 mL
+		// Note: must load static values such as h2o_consumption here
+		loadStaticValues();		
+		// Assume a person drinks 10 times a day, each time ~375 mL
 		waterConsumedPerServing = h2o_consumption * bodyMassDeviation / 10D; // about .3 kg per serving
-		
+
 		foodDryMassPerServing = food_consumption / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
 		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() * bodyMassDeviation / 2);
-		// + RandomUtil.getRandomDouble(.15) - RandomUtil.getRandomDouble(.15));
+
 		dehydrationStartTime = 1000D * (personConfig.getDehydrationStartTime() * bodyMassDeviation);
-//		System.out.println("dehydrationStartTime : " + dehydrationStartTime);
-		
-		loadStaticValues();
+	
+
 	}
 
 	/**
 	 * Loads the values
 	 */
 	public static void loadStaticValues() {
-
+		masterClock = Simulation.instance().getMasterClock();
+		if (masterClock != null)  // check for null in order to pass maven test
+			marsClock = masterClock.getMarsClock();
+		
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 
 		h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
@@ -339,7 +347,8 @@ public class PhysicalCondition implements Serializable {
 	public void initialize() {
 
 		// Modify personalMaxEnergy at the start of the sim
-		int d1 = 2 * (35 - person.updateAge()); // Assume that after age 35, metabolism slows down
+		int d1 = 2 * (35 - person.updateAge()); 
+		// Assume that after age 35, metabolism slows down
 		double d2 = person.getBaseMass() - Person.AVERAGE_WEIGHT;
 		double preference = person.getPreference().getPreferenceScore(eatMealMeta) * 10D;
 
@@ -350,7 +359,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	public void recoverFromSoreness(double value) {
-		// reduce the muscle soreness by 1 point at the end of the day
+		// Reduce the muscle soreness by 1 point at the end of the day
 		double soreness = musculoskeletal[2];
 		soreness = soreness - value;
 		if (soreness < 0)
@@ -371,14 +380,12 @@ public class PhysicalCondition implements Serializable {
 	public void timePassing(double time, LifeSupportType support) {
 
 		if (alive) {
-
-			masterClock = Simulation.instance().getMasterClock();
-			marsClock = masterClock.getMarsClock();
 			
 			int solElapsed = marsClock.getMissionSol();
 
+			// Check once a day only
 			if (solCache != solElapsed) {
-				// check once a day only
+				// Need to initialize at the start of the sim
 				if (solCache == 0)
 					initialize();
 				// reduce the muscle soreness
@@ -432,10 +439,10 @@ public class PhysicalCondition implements Serializable {
 			int factor = (int) (Math.sqrt(masterClock.getTimeRatio())/10D);
 			if (msol % 7 * factor == 0) {
 
-				if (!restingTask) {
+//				if (!restingTask) {
 					checkStarvation(hunger);
 					checkDehydration(thirst);
-				}
+//				}
 
 				// If person is at high stress, check for mental breakdown.
 				if (!isStressedOut)
@@ -557,9 +564,9 @@ public class PhysicalCondition implements Serializable {
 			if (consumeOxygen(support, o2_consumption * (time / 1000D)))
 				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
 						"[" + loc0 + "] " + name + " in " + loc1 + " reported lack of oxygen.", null);
-			// if (consumeWater(support, h2o_consumption * (time / 1000D)))
-			// LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has
-			// insufficient water.", null);
+//			 if (consumeWater(support, h2o_consumption * (time / 1000D)))
+//			 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has
+//			 insufficient water.", null);
 			if (requireAirPressure(support, minimum_air_pressure))
 				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
 						"[" + loc0 + "] " + name + " in " + loc1 + " reported non-optimal air pressure.", null);
@@ -731,22 +738,23 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	public void setThirst(double t) {
-//		if (thirst != t)
+		if (t > 4000)
+			t = 4000;
 		thirst = t;
-		if (t > THIRST_THRESHOLD && !isThirsty)
-			isThirsty = true;
-		else if (isThirsty)
-			isThirsty = false;
+//		if (t > THIRST_THRESHOLD && !isThirsty)
+//			isThirsty = true;
+//		else if (isThirsty)
+//			isThirsty = false;
 		// person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
 	}
 
-	public boolean isThirsty() {
-		return isThirsty;
-	}
+//	public boolean isThirsty() {
+//		return isThirsty;
+//	}
 
-	public void setThirsty(boolean value) {
-		isThirsty = value;
-	}
+//	public void setThirsty(boolean value) {
+//		isThirsty = value;
+//	}
 
 	/**
 	 * Gets the person's hunger level
@@ -777,8 +785,8 @@ public class PhysicalCondition implements Serializable {
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 			}
 
-			if (taskMgr == null)
-				taskMgr = person.getMind().getTaskManager();
+//			if (taskMgr == null)
+//				taskMgr = person.getMind().getTaskManager();
 
 			// TODO : how to tell a person to walk back to the settlement ?
 			if (person.isInside()) {
@@ -810,9 +818,6 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void checkDehydration(double thirst) {
 
-//		if (dehydration == null)
-//			dehydration = getMedicalManager().getDehydration();
-
 		if (thirst > dehydrationStartTime) {
 			if (!isDehydrated && !problems.containsKey(dehydration)) {
 				addMedicalComplaint(dehydration);
@@ -820,19 +825,19 @@ public class PhysicalCondition implements Serializable {
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 			}
 
-			if (taskMgr == null)
-				taskMgr = person.getMind().getTaskManager();
+//			if (taskMgr == null)
+//				taskMgr = person.getMind().getTaskManager();
 
-			if (person.isInside()) {
+//			if (person.isInside()) {
 				// Stop any on-going tasks
 				taskMgr.clearTask();
 				// go drink water by eating a meal
 				taskMgr.addTask(new EatMeal(person));
-			}
+//			}
 
 		}
 
-		else if (isDehydrated && thirst < 500D) {
+		if (isDehydrated && thirst < 500D) {
 			
 			if (dehydrated == null)
 				dehydrated = problems.get(dehydration);
@@ -929,15 +934,17 @@ public class PhysicalCondition implements Serializable {
 										+ " has an episode of depression.",
 								null);
 
-						// the person should be carried to the sickbay at this point
-						person.getMind().getTaskManager().clearTask();
-						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
-
 					} else
 						logger.log(Level.SEVERE, "Could not find 'Depression' medical complaint in 'conf/medical.xml'");
 				}
 			}
 
+		}
+		
+		else {
+			// the person should be carried to the sickbay at this point
+			person.getMind().getTaskManager().clearTask();
+			person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 		}
 	}
 
@@ -951,10 +958,6 @@ public class PhysicalCondition implements Serializable {
 		if (!problems.containsKey(highFatigue)) {
 			// Calculate the modifier (from 10D to 0D) Note that the base
 			// high-fatigue-collapse-chance is 5%
-			// int endurance =
-			// person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
-			// int strength =
-			// person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
 
 			// a person with high endurance will be less likely to be collapse
 			double modifier = (double) (100 - endurance * .6 - strength * .4) / 100D;
@@ -972,14 +975,16 @@ public class PhysicalCondition implements Serializable {
 									+ " collapsed because of high fatigue exhaustion.",
 							null);
 
-					// the person should be carried to the sickbay at this point
-					person.getMind().getTaskManager().clearTask();
-					person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
-
 				} else
 					logger.log(Level.SEVERE,
 							"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
 			}
+		}
+		
+		else {
+			// the person should be carried to the sickbay at this point
+			person.getMind().getTaskManager().clearTask();
+			person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 		}
 	}
 
@@ -1007,9 +1012,6 @@ public class PhysicalCondition implements Serializable {
 								+ " collapses because of radiation poisoning.",
 						null);
 
-				// the person should be carried to the sickbay at this point
-				person.getMind().getTaskManager().clearTask();
-				person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 
 			} else
 				logger.log(Level.SEVERE, "Could not find 'Radiation Sickness' medical complaint in 'conf/medical.xml'");
@@ -1027,6 +1029,11 @@ public class PhysicalCondition implements Serializable {
 			 * 
 			 * }
 			 */
+		}
+		else {
+			// the person should be carried to the sickbay at this point
+			person.getMind().getTaskManager().clearTask();
+			person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 		}
 	}
 
@@ -1228,7 +1235,7 @@ public class PhysicalCondition implements Serializable {
 			else if (type == ComplaintType.DECOMPRESSION)// n.equalsIgnoreCase("decompression"))
 				phrase = " is suffering from decompression";
 			else if (type == ComplaintType.DEHYDRATION)// n.equalsIgnoreCase("dehydration"))
-				phrase = " is suffering from dehydration";
+				phrase = " was dehydrated";
 			else if (type == ComplaintType.FREEZING)// n.equalsIgnoreCase("freezing"))
 				phrase = " is freezing";
 			else if (type == ComplaintType.HEAT_STROKE)// n.equalsIgnoreCase("heat stroke"))
@@ -1236,7 +1243,7 @@ public class PhysicalCondition implements Serializable {
 			else if (type == ComplaintType.SUFFOCATION)// n.equalsIgnoreCase("suffocation"))
 				phrase = " is suffocating";
 			else if (type == ComplaintType.LACERATION)// n.equalsIgnoreCase("laceration"))
-				phrase = " sufferred laceration";
+				phrase = " had a laceration";
 			else if (type == ComplaintType.PULL_MUSCLE_TENDON)// n.equalsIgnoreCase("laceration"))
 				phrase = " had a pulled muscle";
 			else

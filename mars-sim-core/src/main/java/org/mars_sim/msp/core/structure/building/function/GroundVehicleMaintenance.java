@@ -64,6 +64,8 @@ implements Serializable {
 		super(FUNCTION, building);
 
 		this.vehicleCapacity = vehicleCapacity;
+		
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 		for (int x = 0; x < parkingLocations.length; x++) {
 			addParkingLocation(parkingLocations[x].getX(), parkingLocations[x].getY());
@@ -79,7 +81,7 @@ implements Serializable {
 	 * @throws Exception if error getting function value.
 	 */
 	public static double getFunctionValue(String buildingName, boolean newBuilding,
-			Settlement settlement) {
+			Settlement settlement, BuildingConfig buildingConfig) {
 
 		// Demand is one ground vehicle capacity for every ground vehicles.
 		double demand = settlement.getAllAssociatedVehicles().size();

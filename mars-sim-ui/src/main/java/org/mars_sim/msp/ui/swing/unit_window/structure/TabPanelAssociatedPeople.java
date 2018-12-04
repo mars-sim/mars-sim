@@ -149,7 +149,7 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 		// Update population num
 		if (populationNumCache != num) {
 			populationNumCache = num;
-			populationNumLabel.setText(Msg.getString("TabPanelAssociatedPeople.population", populationNumCache)); // $NON-NLS-1$
+			populationNumLabel.setText(Msg.getString("TabPanelAssociatedPeople.associated", populationNumCache)); // $NON-NLS-1$
 		}
 
 		// Update population list

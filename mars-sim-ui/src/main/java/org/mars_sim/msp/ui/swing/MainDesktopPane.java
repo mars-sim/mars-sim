@@ -1296,9 +1296,6 @@ public class MainDesktopPane extends WebDesktopPane
 	 */
 	public void openInitialWindows() {
 
-		// Caches the settlement unit windows
-		cacheSettlementUnitWindow();
-		
 		UIConfig config = UIConfig.INSTANCE;
 		if (config.useUIDefault()) {
 

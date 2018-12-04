@@ -54,17 +54,15 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
         double result = 0D;
-        
-        /*
-        // TODO: listening to music is driven by boredom, not so much fatigue
-        // Fatigue modifier.
-        double fatigue = person.getPhysicalCondition().getFatigue();
-    	result = fatigue;
 
-        if (fatigue > 800D) {
-            result += (fatigue - 800D) / 4D;
-        }
-*/
+//        // TODO: listening to music is driven by boredom, not so much fatigue
+//        // Fatigue modifier.
+//        double fatigue = person.getPhysicalCondition().getFatigue();
+//    	result = fatigue;
+//
+//        if (fatigue > 800D) {
+//            result += (fatigue - 800D) / 4D;
+//        }
 
         // Crowding modifier
         if (person.isInSettlement()) {

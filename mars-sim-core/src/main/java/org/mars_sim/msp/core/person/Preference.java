@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.PrepareDessertMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ProduceFoodMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ProposeScientificStudyMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ReadMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.RecordActivityMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RelaxMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairEVAMalfunctionMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
@@ -226,17 +227,20 @@ public class Preference implements Serializable {
 					|| metaTask instanceof ManufactureConstructionMaterialsMeta
 					|| metaTask instanceof ManufactureGoodMeta || metaTask instanceof ObserveAstronomicalObjectsMeta
 					|| metaTask instanceof ProduceFoodMeta || metaTask instanceof PrepareDessertMeta
-					|| metaTask instanceof ProduceFoodMeta || metaTask instanceof SalvageGoodMeta
+					|| metaTask instanceof ProduceFoodMeta 
+					|| metaTask instanceof RecordActivityMeta
+					|| metaTask instanceof SalvageGoodMeta
 					|| metaTask instanceof TendGreenhouseMeta)
 				result += (int) art;
 
-			if (metaTask instanceof WorkoutMeta || metaTask instanceof PlayHoloGameMeta)
+			if (metaTask instanceof WorkoutMeta || metaTask instanceof PlayHoloGameMeta
+					|| metaTask instanceof YogaMeta)
 				result += (int) ag;
 
-			if (result > 7)
-				result = 7;
-			else if (result < -7)
-				result = -7;
+			if (result > 10)
+				result = 10;
+			else if (result < -10)
+				result = -10;
 
 			String s = getStringName(metaTask);
 			if (!scoreStringMap.containsKey(s)) {

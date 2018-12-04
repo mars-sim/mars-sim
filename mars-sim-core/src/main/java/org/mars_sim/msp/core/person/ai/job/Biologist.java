@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -22,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
@@ -58,8 +56,6 @@ implements Serializable {
 
 	//	private static Logger logger = Logger.getLogger(Biologist.class.getName());
 
-	private static MissionManager missionManager;
-	
 	/**
 	 * Constructor.
 	 */
@@ -67,7 +63,7 @@ implements Serializable {
 		// Use Job constructor
 		super(Biologist.class);
 
-		missionManager = Simulation.instance().getMissionManager();
+//		missionManager = Simulation.instance().getMissionManager();
 		
 		// Add biologist-related tasks.
 		jobTasks.add(StudyFieldSamples.class);

@@ -237,7 +237,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 			// Remove process panels for old processes.
 			Iterator<ManufactureProcess> j = processCache.iterator();
 			while (j.hasNext()) {
-				ManufactureProcess process = j.next();
+				ManufactureProcess process = j.next(); // java.util.ConcurrentModificationException
 				// for (ManufactureProcess process : processCache) {//= j.next();
 				if (!processes.contains(process)) {
 					ManufacturePanel panel = getManufacturePanel(process);

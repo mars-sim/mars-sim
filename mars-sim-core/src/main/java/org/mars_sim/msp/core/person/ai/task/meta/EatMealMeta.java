@@ -49,6 +49,9 @@ public class EatMealMeta implements MetaTask, Serializable {
 		double hunger = pc.getHunger();
 		double energy = pc.getEnergy();
 
+		boolean notHungry = hunger < PhysicalCondition.HUNGER_THRESHOLD && energy > PhysicalCondition.ENERGY_THRESHOLD;
+		boolean notThirsty = thirst < PhysicalCondition.THIRST_THRESHOLD;
+		
 		// CircadianClock cc = person.getCircadianClock();
 		// double ghrelin = cc.getSurplusGhrelin();
 		// double leptin = cc.getSurplusLeptin();
@@ -56,13 +59,12 @@ public class EatMealMeta implements MetaTask, Serializable {
 		// persson per sol
 
 		// When thirst is greater than 100, a person may start feeling thirsty
-		if (thirst > PhysicalCondition.THIRST_THRESHOLD) {
+		if (!notThirsty) {
 			result = Math.pow((thirst - PhysicalCondition.THIRST_THRESHOLD), 1.2);
-			pc.setThirsty(true);
 		}
 		
 		// Only eat a meal if person is sufficiently hungry or low on caloric energy.
-		if (hunger > 250 || energy < 2525) {// || ghrelin-leptin > 300) {
+		if (!notHungry) {// || ghrelin-leptin > 300) {
 			result += thirst;
 			result += hunger / 8D;
 			result += (2525 - energy) / 50D; // + (ghrelin-leptin - 300);
@@ -70,7 +72,8 @@ public class EatMealMeta implements MetaTask, Serializable {
 				return 0;
 		}
 
-		else if (thirst < PhysicalCondition.THIRST_THRESHOLD)
+		else if (notThirsty)
+			// if not thirsty and not hungry
 			return 0;
 
 		if (person.isInSettlement()) {
@@ -120,7 +123,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 		
 		else if (person.isOutside()) {
 
-			if (!pc.isThirsty()) {
+			if (notThirsty) {
 				return 0;
 			}
 			else if (CookMeal.isMealTime(person.getCoordinates())) {

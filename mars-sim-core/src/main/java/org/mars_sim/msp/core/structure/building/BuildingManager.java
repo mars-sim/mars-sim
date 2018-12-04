@@ -1545,7 +1545,7 @@ public class BuildingManager implements Serializable {
 			if (buildingConfig.hasFoodProduction(buildingType))
 				result += FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
 			if (buildingConfig.hasGroundVehicleMaintenance(buildingType))
-				result += GroundVehicleMaintenance.getFunctionValue(buildingType, newBuilding, settlement);
+				result += GroundVehicleMaintenance.getFunctionValue(buildingType, newBuilding, settlement, buildingConfig);
 
 			if (buildingConfig.hasThermalGeneration(buildingType))
 				result += ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);

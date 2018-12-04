@@ -215,7 +215,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 		// Update all process panels.
 		Iterator<FoodProductionProcess> i = processes.iterator();
 		while (i.hasNext()) {
-			FoodProductionPanel panel = getFoodProductionPanel(i.next());
+			FoodProductionPanel panel = getFoodProductionPanel(i.next()); // java.util.ConcurrentModificationException
 			if (panel != null)
 				panel.update();
 

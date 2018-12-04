@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -56,13 +55,10 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	private static final Color MAP_BACKGROUND = new Color(181, 95, 0);
 
 	// Data members
-//	private double timeCache = 0;
 	private double xPos;
 	private double yPos;
 	private double rotation;
 	private double scale;
-	// private int width;
-	// private int height;
 
 	/** Last X mouse drag position. */
 	private int xLast;
@@ -86,8 +82,6 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	private Settlement settlement;
 	private PopUpUnitMenu menu;
 	private SettlementTransparentPanel settlementTransparentPanel;
-
-	private static MasterClock masterClock = Simulation.instance().getMasterClock();
 
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
@@ -181,9 +175,9 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	}
 
 	/**
-	 * Constructor 2 A panel for initializing the display of a building svg image.
+	 * Constructor 2 A panel for initializing the display of a building svg image
+	 * by BuildingPanel
 	 */
-	// Add this constructor for loading an svg image, called by BuildingPanel.java
 	public SettlementMapPanel(Settlement settlement, Building building) {
 		super();
 
@@ -617,9 +611,9 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			// System.out.println("building : " + building.getNickName());
+
 			if (!building.getInTransport()) {
-				// System.out.println("building : " + building.getNickName());
+
 				double width = building.getWidth();
 				double length = building.getLength();
 				int facing = (int) building.getFacing();
@@ -662,8 +656,6 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 				if (Math.abs(distanceX) <= xx && Math.abs(distanceY) <= yy) {
 					selectedBuilding = building;
-
-					// System.out.println(" x : " + distanceX + " y : " + distanceY);
 
 					settlementWindow.setXCoor(distanceX);
 					settlementWindow.setYCoor(distanceY);
@@ -806,13 +798,12 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	}
 
 	/**
-	 * Selects a vehicle
+	 * Selects a vehicle, as used by TransportWizard
 	 * 
 	 * @param xLoc the position of the template building on the displayed map.
 	 * @param yLoc the position of the template building on the displayed map.
 	 * @return selectedVehicle
 	 */
-	// Used by TransportWizard
 	public Vehicle selectVehicleAsObstacle(double xLoc, double yLoc) {
 
 		Vehicle selectedVehicle = null;

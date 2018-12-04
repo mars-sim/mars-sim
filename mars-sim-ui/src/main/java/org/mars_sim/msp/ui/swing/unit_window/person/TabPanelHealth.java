@@ -685,7 +685,7 @@ extends TabPanel {
 			Object result = null;
 			if (row < getRowCount()) {
 				if (column == 0) {
-				    result = row;
+				    result = row + 1;
 				}
 				else if (column == 1) {
 				    result = fmt.format(sleepTime.get(row));

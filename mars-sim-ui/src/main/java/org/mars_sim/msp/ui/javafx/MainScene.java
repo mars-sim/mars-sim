@@ -592,6 +592,9 @@ public class MainScene implements ClockListener {
 			openInitialWindows();
 //			hideWaitStage(MainScene.LOADING);
 
+			// Caches the settlement unit windows
+			desktop.cacheSettlementUnitWindow();
+			
 		});
 		
 		// Add MainScene to MasterClock's clock listener
