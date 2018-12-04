@@ -555,22 +555,22 @@ public class PhysicalCondition implements Serializable {
 		
 		try {
 			if (consumeOxygen(support, o2_consumption * (time / 1000D)))
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
 						"[" + loc0 + "] " + name + " in " + loc1 + " reported lack of oxygen.", null);
 			// if (consumeWater(support, h2o_consumption * (time / 1000D)))
 			// LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has
 			// insufficient water.", null);
 			if (requireAirPressure(support, minimum_air_pressure))
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
 						"[" + loc0 + "] " + name + " in " + loc1 + " reported non-optimal air pressure.", null);
 			if (requireTemperature(support, min_temperature, max_temperature))
-				LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
 						"[" + loc0 + "] " + name + " in " + loc1 + " reported non-optimal temperature.", null);
 
 			// TODO: how to run to another building/location
 		} catch (Exception e) {
 			e.printStackTrace();
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+			LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
 					"[" + loc0 + "] " + name + " in " + loc1 + " reported anomaly in the life support system.", null);
 		}
 
@@ -969,7 +969,7 @@ public class PhysicalCondition implements Serializable {
 					person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 					LogConsolidated.log(logger, Level.INFO, 500, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + name
-									+ " collapses because of high fatigue exhaustion.",
+									+ " collapsed because of high fatigue exhaustion.",
 							null);
 
 					// the person should be carried to the sickbay at this point
@@ -1245,6 +1245,9 @@ public class PhysicalCondition implements Serializable {
 			LogConsolidated.log(logger, Level.INFO, 0, sourceName, prefix + person + phrase + suffix, null);
 
 			recalculatePerformance();
+			
+			// Stop any on-going tasks
+			taskMgr.clearTask();
 		}
 	}
 

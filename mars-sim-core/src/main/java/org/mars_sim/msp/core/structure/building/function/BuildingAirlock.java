@@ -112,7 +112,7 @@ public class BuildingAirlock extends Airlock {
 //                    person.enter(LocationCodeType.SETTLEMENT);               
                     // Put the person into the settlement
                 	inv.storeUnit(person);
-                    BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
+                    BuildingManager.addPersonOrRobotToBuilding(person, building);
                     
            			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
         	  				"[" + person.getLocationTag().getLocale() + "] "

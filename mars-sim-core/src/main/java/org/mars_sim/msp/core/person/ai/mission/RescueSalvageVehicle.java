@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -27,10 +29,11 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Driver;
-
+import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -499,17 +502,19 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					person.getLocationTag().getLocale());
 			Simulation.instance().getEventManager().registerNewEvent(salvageEvent);
 
-			// Unload any crew at settlement.
+			// Unload crew from the towed vehicle at settlement.
 			if (towedVehicle instanceof Crewable) {
 				Crewable crewVehicle = (Crewable) towedVehicle;
 
 				for (Person p : crewVehicle.getCrew()) {
-					towedVehicle.getInventory().retrieveUnit(p);
-
+	
 					if (p.isDeclaredDead()) {
 						LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
 								"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
 								+ p.getName() + "'s body had been retrieved from the towed rover " + towedVehicle.getName() + " during the rescue operation.", null);
+						
+						// Retrieve the person if he/she is dead
+						towedVehicle.getInventory().retrieveUnit(p);
 						
 						// Place this person within a settlement
 //						p.enter(LocationCodeType.SETTLEMENT);
@@ -533,14 +538,18 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				}
 			}
 
-			// Retrieve the person if he/she is dead
-			for (Person p : rover.getCrew()) {
-				rover.getInventory().retrieveUnit(p);
+			// Unload crew from the towing vehicle at settlement.
 
+			for (Person p : rover.getCrew()) {
+				// Retrieve the person if he/she is dead
 				if (p.isDeclaredDead()) {
 					LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
 							"[" + p.getLocationTag().getLocale() + "] " 
 									+ p.getName() + "'s body had been retrieved from the towed rover " + towedVehicle.getName() + " during the rescue operation.", null);
+					
+					// Retrieve the person if he/she is dead
+					rover.getInventory().retrieveUnit(p);
+					
 					// Place this person within a settlement
 //					p.enter(LocationCodeType.SETTLEMENT);
 					disembarkSettlement.getInventory().storeUnit(p);
@@ -553,11 +562,40 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 							p.getPhysicalCondition().getHealthSituation(), p.getTaskDescription(), p.getName(),
 							p.getVehicle().getName(), p.getLocationTag().getLocale());
 					Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
-				} else {
-					LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " successfully towed the rover "+ towedVehicle.getName() + " back home.", null);
 				}
 				
+				else {
+					LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " successfully towed the rover "+ towedVehicle.getName() + " back home.", null);
+					
+				
+					if (rover.getGarage() != null) {
+						// the rover is parked inside a garage
+						rover.getInventory().retrieveUnit(p);
+						disembarkSettlement.getInventory().storeUnit(p);
+						BuildingManager.addPersonOrRobotToBuilding(p, rover.getGarage());
+					}
+					
+					else { 
+						// the person is outside
+						
+						//unitManager.getInventory().storeUnit(p);
+	
+						// Get closest airlock building at settlement.
+						Building destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock(p)
+									.getEntity();
+	
+						if (destinationBuilding != null) {
+							Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
+							Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
+									destinationLoc.getY(), destinationBuilding);
+							
+							if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+								p.getMind().getTaskManager().addTask(new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+							}
+						}
+					}
+				}
 			}
 		}
 	}

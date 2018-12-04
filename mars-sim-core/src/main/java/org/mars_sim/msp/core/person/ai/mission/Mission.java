@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -142,7 +143,8 @@ public abstract class Mission implements Serializable {
 	private transient List<MissionListener> listeners;
 
 	// Static members
-
+	private static HistoricalEventManager eventManager;
+	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
 	 * threads.
@@ -184,7 +186,9 @@ public abstract class Mission implements Serializable {
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_START, this,
 					"Mission Starting", missionName, person.getName(), loc0, loc1);
 
-			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+			eventManager = Simulation.instance().getEventManager();
+			
+			eventManager.registerNewEvent(newEvent);
 
 			// Log mission starting.
 			int n = members.size();
@@ -314,7 +318,7 @@ public abstract class Mission implements Serializable {
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_JOINING, this,
 					"Adding a member", missionName, person.getName(), loc0, loc1);
 
-			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+			eventManager.registerNewEvent(newEvent);
 
 			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
 
@@ -368,8 +372,7 @@ public abstract class Mission implements Serializable {
 					loc1 = person.getCoordinates().toString();
 				}
 
-				Simulation.instance().getEventManager()
-						.registerNewEvent(new MissionHistoricalEvent(EventType.MISSION_FINISH, this,
+				eventManager.registerNewEvent(new MissionHistoricalEvent(EventType.MISSION_FINISH, this,
 								"Removing a member", missionName, person.getName(), loc0, loc1));
 				fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 
@@ -770,7 +773,7 @@ public abstract class Mission implements Serializable {
 				if (!members.isEmpty()) {
 					LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 							"[" + startingMember.getLocationTag().getLocale()
-									+ "] Disbanding mission member(s) : " + members,
+									+ "] " + startingMember + " is disbanding mission member(s) : " + members,
 							null);
 					Iterator<MissionMember> i = members.iterator();
 					while (i.hasNext()) {
@@ -1293,8 +1296,9 @@ public abstract class Mission implements Serializable {
 		
 		if (approved || plan.getStatus() == PlanType.APPROVED) {
 			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
-					+ p.getName() + " (" + p.getRole().getType() 
-					+ ")'s " + getDescription() + " is preparing to embark.", null);
+					+ p.getRole().getType() + " " + p.getName() 
+					+ " is getting"// the rover " + startingMember.getVehicle() 
+					+ " ready to embark on " + getDescription(), null);
 
 			setPhaseEnded(true);
 		}
@@ -1334,6 +1338,16 @@ public abstract class Mission implements Serializable {
 	 */
 	public Person getStartingMember() {
 		return (Person)startingMember;
+	}
+	
+
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {{@link HistoricalEventManager}
+	 */
+	public static void justReloaded(HistoricalEventManager event) {
+		eventManager = event;
 	}
 	
 	/**

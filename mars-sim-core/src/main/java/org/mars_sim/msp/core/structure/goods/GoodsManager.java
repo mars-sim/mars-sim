@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
@@ -52,6 +53,7 @@ import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -184,7 +186,12 @@ public class GoodsManager implements Serializable {
 	private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
 	private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
 	private static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
-
+	
+	private static Simulation sim = Simulation.instance();
+	private static MissionManager missionManager = sim.getMissionManager();
+	private static UnitManager unitManager = sim.getUnitManager();
+	private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
+	
 	/**
 	 * Constructor.
 	 * 
@@ -360,7 +367,7 @@ public class GoodsManager implements Serializable {
 		double tradeDemand = 0;
 	
 		// needed for loading a saved sim
-		int solElapsed = Simulation.instance().getMasterClock().getMarsClock().getMissionSol();
+		int solElapsed = marsClock.getMissionSol();
 		// System.out.println("GoodManager : solElapsed : "+ solElapsed);
 		
 		// Compact and/or clear supply and demand maps every 5 days
@@ -725,7 +732,7 @@ public class GoodsManager implements Serializable {
 		Collection<Vehicle> vehicles = settlement.getParkedVehicles();
 
 		// Add associated vehicles out on missions.
-		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
@@ -1528,7 +1535,7 @@ public class GoodsManager implements Serializable {
 		amount += settlement.getInventory().getAmountResourceStored(resource, false);
 
 		// Get amount of resource out on mission vehicles.
-		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
@@ -1633,7 +1640,9 @@ public class GoodsManager implements Serializable {
 
 			// Clear parts demand cache so it will be calculated next time.
 			partsDemandCache.clear();
-		} else {
+		} 
+		
+		else {
 			// Get demand for part.
 			if (resource instanceof Part) {
 
@@ -1643,6 +1652,9 @@ public class GoodsManager implements Serializable {
 				if (partsDemandCache.containsKey(part))
 					demand = partsDemandCache.get(part);
 
+				// Add eva related parts demand.
+				demand += getEVADemand(demand, part);
+				
 				// Add manufacturing demand.
 				demand += getPartManufacturingDemand(part);
 
@@ -1832,6 +1844,22 @@ public class GoodsManager implements Serializable {
 		return result;
 	}
 
+	
+	/**
+	 * Gets the eva related demand for a part.
+	 * 
+	 * @param part the part.
+	 * @return demand
+	 */
+	private double getEVADemand(double demand, Part part) {
+		for (String s : EVASuit.parts) {
+			if (part.getName().equalsIgnoreCase(s)) {
+				return demand * eVASuitMod;
+			}
+		}
+		return demand;
+	}
+	
 	/**
 	 * Gets the manufacturing demand for a part.
 	 * 
@@ -2080,7 +2108,7 @@ public class GoodsManager implements Serializable {
 		number += settlement.getInventory().getItemResourceNum(resource);
 
 		// Get number of resources out on mission vehicles.
-		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
@@ -2213,7 +2241,7 @@ public class GoodsManager implements Serializable {
 //
 //        Inventory inv = settlement.getSettlementInventory();
 //        Collection<Unit> equipmentList = inv.findAllUnitsOfClass(equipmentClass);
-//        MissionManager missionManager = Simulation.instance().getMissionManager();
+//        MissionManager missionManager = missionManager;
 //        Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 //        while (i.hasNext()) {
 //            Mission mission = i.next();
@@ -2326,7 +2354,7 @@ public class GoodsManager implements Serializable {
 		number += settlement.getInventory().findNumEmptyUnitsOfClass(equipmentClass, false);
 
 		// Get number of equipment out on mission vehicles.
-		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
@@ -2567,7 +2595,7 @@ public class GoodsManager implements Serializable {
 		} else if (BIOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
 			demand = getBiologistNum();
 		} else if (EMERGENCY_SUPPLY_MISSION.equals(missionType)) {
-			demand = Simulation.instance().getUnitManager().getSettlementNum() - 1D;
+			demand = unitManager.getSettlementNum() - 1D;
 			if (demand < 0D) {
 				demand = 0D;
 			}
@@ -2788,7 +2816,7 @@ public class GoodsManager implements Serializable {
 		} else {
 			double bestTradeValue = 0D;
 
-			for (Settlement tempSettlement : Simulation.instance().getUnitManager().getSettlements()) {
+			for (Settlement tempSettlement : unitManager.getSettlements()) {
 				if (tempSettlement != settlement) {
 					double baseValue = tempSettlement.getGoodsManager().getGoodValuePerItem(good);
 					double distance = settlement.getCoordinates().getDistance(tempSettlement.getCoordinates());
@@ -2888,6 +2916,26 @@ public class GoodsManager implements Serializable {
 		return mod;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 * @param mgr
+	 * @param um
+	 */
+	public static void justReloaded(MarsClock clock, MissionManager mgr, UnitManager um) {
+		unitManager = um;
+		missionManager = mgr;
+		marsClock = clock;
+		sim = Simulation.instance();
+		simulationConfig = SimulationConfig.instance();
+//		buildingConfig = simulationConfig.getBuildingConfiguration();
+		cropConfig = simulationConfig.getCropConfiguration();
+		mealConfig = simulationConfig.getMealConfiguration();
+		personConfig = simulationConfig.getPersonConfiguration();
+		vehicleConfig = simulationConfig.getVehicleConfiguration();
+
+	}
 	
 	/**
 	 * Prepare object for garbage collection.

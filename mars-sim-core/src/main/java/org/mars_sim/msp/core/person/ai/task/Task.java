@@ -1266,10 +1266,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	
 	/**
 	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {{@link HistoricalEventManager}
 	 */
-	public static void justReloaded() {
+	public static void justReloaded(HistoricalEventManager event) {
 		sim = Simulation.instance();
-		eventManager = sim.getEventManager();
+		eventManager = event;
 		relationshipManager = sim.getRelationshipManager();
 	}
 	

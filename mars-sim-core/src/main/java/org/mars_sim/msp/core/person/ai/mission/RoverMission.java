@@ -465,14 +465,16 @@ public abstract class RoverMission extends VehicleMission {
 	        if (!garaged)
 	        	rover.determinedSettlementParkedLocationAndFacing();
 	        
-			// Retrieve the person if he/she is dead
 			for (Person p : rover.getCrew()) {
-				v.getInventory().retrieveUnit(p);
 
 				if (p.isDeclaredDead()) {
+					
 					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + "'s body had been retrieved from rover " + v.getName() + ".", null);
 
+					// Retrieve the person if he/she is dead
+					v.getInventory().retrieveUnit(p);
+					
 					// Place this person within a settlement
 //					p.enter(LocationCodeType.SETTLEMENT);
 					disembarkSettlement.getInventory().storeUnit(p);
@@ -486,81 +488,12 @@ public abstract class RoverMission extends VehicleMission {
 							p.getVehicle().getName(), p.getLocationTag().getLocale());
 					Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
 					
-				} else {
-					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " came home safety on rover "+ v.getName() + ".", null);
-				}
-				
-				// Place this person within a settlement
-//				p.enter(LocationCodeType.SETTLEMENT);
-//				disembarkSettlement.getInventory().storeUnit(p);
-//				BuildingManager.addToRandomBuilding(p, disembarkSettlement);
-			}
-			
-			// Reset the vehicle reservation
-			v.correctVehicleReservation();
-		}
-
-		Person person = null;
-		
-		if (member instanceof Person) {
-			person = (Person) member;
-		}
-		
-		// Have member exit rover if necessary.
-		if (person.isOutside()) {
-			// member should be in a vehicle
-
-			// Get closest airlock building at settlement.
-			Building destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock(person)
-						.getEntity();
-
-			if (destinationBuilding != null) {
-				Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-				Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
-						destinationLoc.getY(), destinationBuilding);
-
-			if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
-				assignTask(person,
-						new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
-			}
-
-			else {
-				// a person cannot walk and needs to be rescued
-
-				// TODO : see https://github.com/mars-sim/mars-sim/issues/22
-				
-				// TODO : How to simulate the sequence of events of a strapped personnel inside a broken
-				// vehicle to be retrieved and moved to a settlement in emergency?
-
-				if (person.isInVehicle()) {
-					Vehicle v1 = person.getVehicle();
-					v1.getInventory().retrieveUnit(person);
-					
-					logger.warning("[" + disembarkSettlement.getName() + "] "
-							+ Msg.getString("RoverMission.log.requestRescue", person.getName(), v1.getName(),
-									destinationBuilding.getNickName())); // $NON-NLS-1$
-				} else {
-
-					// TODO: how to simulated the sequence of events of a person collapsed outside and is being rescued
-					disembarkSettlement.getInventory().storeUnit(person);
-					BuildingManager.addPersonOrRobotToBuilding(person, destinationBuilding, adjustedLoc.getX(),
-							adjustedLoc.getY());
-
-					logger.warning("[" + disembarkSettlement.getName() + "] "
-							+ Msg.getString("RoverMission.log.emergencyEnterBuilding", person.getName(),
-									destinationBuilding.getNickName())); // $NON-NLS-1$
-
-					person.getMind().getTaskManager().clearTask();
-					person.getMind().getTaskManager().getNewTask();
 				}
 			}
-
-			} else {
-				logger.severe(Msg.getString("RoverMission.log.noHabitat", destinationBuilding)); //$NON-NLS-1$
-				endMission(Msg.getString("RoverMission.log.noHabitat", destinationBuilding)); //$NON-NLS-1$
-			}
 		}
+		
+		// Reset the vehicle reservation
+		v.correctVehicleReservation();
 
 		if (rover != null) {
 
@@ -571,34 +504,66 @@ public abstract class RoverMission extends VehicleMission {
 				
 				Iterator<Person> i = rover.getCrew().iterator();
 				while (i.hasNext()) {
-					Person crewmember = i.next(); 
-					rover.getInventory().retrieveUnit(crewmember);
-					disembarkSettlement.getInventory().storeUnit(crewmember);
-					
-					// TODO : How to simulate the sequence of events of a strapped personnel inside a broken
-					// vehicle to be retrieved and moved to a settlement in emergency?
-					
-					logger.warning("[" + disembarkSettlement.getName() + "] "
-							+ Msg.getString("RoverMission.log.emergencyEnterSettlement", crewmember.getName())); //$NON-NLS-1$
-
-					
-					Building destinationBuilding = null;
-					// TODO Refactor
-					if (member instanceof Person) {
-						destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock((Person) member)
-								.getEntity();
-					} else if (member instanceof Robot) {
-						destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock((Robot) member)
-								.getEntity();
+					Person p = i.next(); 
+				
+					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " came home safety on rover "+ v.getName() + ".", null);
+				
+					if (rover.getGarage() != null) {
+						// the rover is parked inside a garage
+						rover.getInventory().retrieveUnit(p);
+						disembarkSettlement.getInventory().storeUnit(p);
+						BuildingManager.addPersonOrRobotToBuilding(p, v.getGarage());
 					}
-
-					if (destinationBuilding != null) {
-						BuildingManager.addPersonOrRobotToBuildingRandomLocation(crewmember, destinationBuilding);
+					
+					else { 
+						// the person is outside
+						
+						//unitManager.getInventory().storeUnit(p);
+	
+						// Get closest airlock building at settlement.
+						Building destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock(p)
+									.getEntity();
+	
+						if (destinationBuilding != null) {
+							Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
+							Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
+									destinationLoc.getY(), destinationBuilding);
+							
+							if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+								assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+							}
+						}
 					}
+					
+							
+//					disembarkSettlement.getInventory().storeUnit(crewmember);
+//					
+//					// TODO : How to simulate the sequence of events of a strapped personnel inside a broken
+//					// vehicle to be retrieved and moved to a settlement in emergency?
+//	
+//					Building destinationBuilding = null;
+//					// TODO Refactor
+//					if (member instanceof Person) {
+//						destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock((Person) member)
+//								.getEntity();
+//					} else if (member instanceof Robot) {
+//						destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock((Robot) member)
+//								.getEntity();
+//					}
+//
+//					if (destinationBuilding != null) {
+//						BuildingManager.addPersonOrRobotToBuildingRandomLocation(crewmember, destinationBuilding);
+//					}
+//					
+//					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+//							"[" + disembarkSettlement.getName() + "] "
+//							+ Msg.getString("RoverMission.log.emergencyEnterSettlement", crewmember.getName(), disembarkSettlement.getNickName()), null); //$NON-NLS-1$
+
 				}
 			}
 
-			// If no one is in the rover, unload it and end phase.
+			// Check to see if no one is in the rover, unload the resources and end phase.
 			if (isNoOneInRover()) {
 
 				// Unload rover if necessary.
@@ -609,28 +574,20 @@ public abstract class RoverMission extends VehicleMission {
 						// sometimes)
 						if (RandomUtil.lessThanRandPercent(50)) {
 							if (isRoverInAGarage()) {
-								assignTask(person, new UnloadVehicleGarage(person, rover));
+								assignTask((Person)member, new UnloadVehicleGarage((Person)member, rover));
 							} 
 							
 							else {
 								// Check if it is day time.
-								if (!EVAOperation.isGettingDark(person)) {
-									assignTask(person, new UnloadVehicleEVA(person, rover));
+								if (!EVAOperation.isGettingDark((Person)member)) {
+									assignTask((Person)member, new UnloadVehicleEVA((Person)member, rover));
 								}
 							}
-
-							return;
 						}
-					}
-					
-//					else {
-//						// Check if it is day time.
-//						if (!EVAOperation.isGettingDark(person)) {
-//							assignTask(person, new UnloadVehicleEVA(person, rover));
-//						}
-//					}
-					
-				} else {
+					}		
+				}
+				
+				else {
 					// End the phase.
 
 					// If the rover is in a garage, put the rover outside.

@@ -1295,12 +1295,12 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Adds the person to the building the person's same location if possible.
+	 * Adds the person to the building if possible.
 	 * 
 	 * @param person   the person to add.
 	 * @param building the building to add the person to.
 	 */
-	public static void addPersonOrRobotToBuildingSameLocation(Unit unit, Building building) {
+	public static void addPersonOrRobotToBuilding(Unit unit, Building building) {
 		if (building != null) {
 			try {
 

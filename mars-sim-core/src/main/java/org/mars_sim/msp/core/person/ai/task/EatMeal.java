@@ -130,7 +130,7 @@ public class EatMeal extends Task implements Serializable {
 
 		boolean notHungry = startingHunger < 150 && energy > 1500;
 
-		waterEachServing = condition.getWaterConsumedPerServing() * 1000D;
+		waterEachServing = condition.getWaterConsumedPerServing() * 1000D; // about 300 (3 * 1000)
 	
 		// Check if person is outside and is not thirsty
 		if (person.isOutside()) {
@@ -577,7 +577,7 @@ public class EatMeal extends Task implements Serializable {
 	 * @param dryMass of the dessert
 	 */
 	public void consumeWater(double dryMass) {
-		double currentThirst = condition.getThirst();
+		double currentThirst = Math.min(condition.getThirst(), 1_000);
 		double waterFinal = Math.min(waterEachServing, currentThirst);
 
 		// Note that the water content within the dessert has already been deducted from
@@ -589,7 +589,9 @@ public class EatMeal extends Task implements Serializable {
 		}
 
 		if (waterFinal > 0) {
-			double new_thirst = (currentThirst - waterFinal) / 8;
+			double new_thirst = (currentThirst - waterFinal) / 8 - waterFinal * 5;
+			if (new_thirst < 0)
+				new_thirst = 0;
 			condition.setThirst(new_thirst);
 			// condition.setThirsty(false);
 		}
@@ -601,7 +603,7 @@ public class EatMeal extends Task implements Serializable {
 	 * @param is it water only
 	 */
 	public void consumeWater(boolean waterOnly) {
-		double currentThirst = condition.getThirst();
+		double currentThirst = Math.min(condition.getThirst(), 1_000);
 		Unit containerUnit = person.getTopContainerUnit();
 		if (containerUnit != null && currentThirst > 50) {
 			Inventory inv = containerUnit.getInventory();
@@ -609,7 +611,6 @@ public class EatMeal extends Task implements Serializable {
 
 			if (waterFinal > 0) {
 				int level = person.getAssociatedSettlement().getWaterRation();
-
 				double new_thirst = (currentThirst - waterFinal) / 10;
 				// Test to see if there's enough water
 				boolean haswater = false;
@@ -619,7 +620,9 @@ public class EatMeal extends Task implements Serializable {
 			
 				if (haswater) {
 					condition.setThirsty(false);
-//					person.setWaterRation(false);
+					new_thirst = new_thirst - amount * 5_000;
+					if (new_thirst < 0)
+						new_thirst = 0;
 					condition.setThirst(new_thirst);
 					if (waterOnly)
 						setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
@@ -646,7 +649,9 @@ public class EatMeal extends Task implements Serializable {
 					
 					if (haswater) {
 						condition.setThirsty(false);
-						new_thirst = new_thirst * (1 - 1/level) / 10D;
+						new_thirst = new_thirst - amount * 5_000;
+						if (new_thirst < 0)
+							new_thirst = 0;
 						condition.setThirst(new_thirst);
 						if (waterOnly)
 							setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
@@ -665,7 +670,9 @@ public class EatMeal extends Task implements Serializable {
 						
 						if (haswater) {
 							condition.setThirsty(false);
-							new_thirst = new_thirst * (1 - 1/level) / 5D;
+							new_thirst = new_thirst - amount * 5_000;
+							if (new_thirst < 0)
+								new_thirst = 0;
 							condition.setThirst(new_thirst);
 							if (waterOnly)
 								setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
@@ -685,7 +692,9 @@ public class EatMeal extends Task implements Serializable {
 							
 							if (haswater) {
 								condition.setThirsty(false);
-								new_thirst = new_thirst * (1 - 1/level) / 2.5D;
+								new_thirst = new_thirst - amount * 5_000;
+								if (new_thirst < 0)
+									new_thirst = 0;
 								condition.setThirst(new_thirst);
 								if (waterOnly)
 									setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$

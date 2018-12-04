@@ -1163,7 +1163,7 @@ public class Walk extends Task implements Serializable {
 			
 			rover.getInventory().retrieveUnit(person);
 			garageBuilding.getSettlementInventory().storeUnit(person);
-			BuildingManager.addPersonOrRobotToBuildingSameLocation(person, garageBuilding);
+			BuildingManager.addPersonOrRobotToBuilding(person, garageBuilding);
 
 			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
@@ -1184,7 +1184,7 @@ public class Walk extends Task implements Serializable {
 			
 			rover.getInventory().retrieveUnit(robot);
 			garageBuilding.getSettlementInventory().storeUnit(robot);
-			BuildingManager.addPersonOrRobotToBuildingSameLocation(robot, garageBuilding);
+			BuildingManager.addPersonOrRobotToBuilding(robot, garageBuilding);
 			
 			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
 	  				"[" + robot.getLocationTag().getLocale() + "] "

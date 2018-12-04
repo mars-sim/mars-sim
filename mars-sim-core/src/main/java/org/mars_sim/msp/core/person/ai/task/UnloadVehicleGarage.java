@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -555,11 +557,15 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			Crewable crewable = (Crewable) this;
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+					
+					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 										+ " was retrieving the dead body of " + p + " from " + vehicle.getName()
 										+ " parked inside " + settlement, null);
 
+					// Retrieve the person if he/she is dead	
+					vehicle.getInventory().retrieveUnit(p);
+						
 					// Place this person within a settlement
 //					p.enter(LocationCodeType.SETTLEMENT);
 					settlementInv.storeUnit(p);
@@ -567,7 +573,38 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 					p.setAssociatedSettlement(settlement);
 					
-				}			
+				}
+				else {
+					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " came home safety on rover "+ vehicle.getName() + ".", null);
+				
+					if (vehicle.getGarage() != null) {
+						// the rover is parked inside a garage
+						vehicle.getInventory().retrieveUnit(p);
+						settlement.getInventory().storeUnit(p);
+						BuildingManager.addPersonOrRobotToBuilding(p, vehicle.getGarage());
+					}
+					
+					else { 
+						// the person is outside
+						
+						//unitManager.getInventory().storeUnit(p);
+	
+						// Get closest airlock building at settlement.
+						Building destinationBuilding = (Building) settlement.getClosestAvailableAirlock(p)
+									.getEntity();
+	
+						if (destinationBuilding != null) {
+							Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
+							Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
+									destinationLoc.getY(), destinationBuilding);
+							
+							if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+								p.getMind().getTaskManager().addTask(new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+							}
+						}
+					}
+				}
 			}
 		}
 

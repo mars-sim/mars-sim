@@ -54,6 +54,7 @@ import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.Mind;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -95,6 +96,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
+import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.terminal.InteractiveTerm;
 import org.mars_sim.msp.core.time.AutosaveScheduler;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -843,6 +845,7 @@ public class Simulation implements ClockListener, Serializable {
 //		MedicalManager.justReloaded();
 		unitManager.justReloaded(marsClock);						// getting marsSurface
 		MalfunctionManager.justReloaded(masterClock, marsClock);
+
 		
 //		System.out.println("Done with Serialized Object instances");
 		
@@ -870,6 +873,7 @@ public class Simulation implements ClockListener, Serializable {
 		BuildingManager.justReloaded(masterClock, marsClock);
 		Settlement.justReloaded(marsClock, w, unitManager);						// weather, loadDefaultValues()
 		ChainOfCommand.justReloaded(unitManager); 				//unitmgr
+		GoodsManager.justReloaded(marsClock, missionManager, unitManager);
 		
 //		System.out.println("Done with Structure instances");
 		
@@ -910,13 +914,14 @@ public class Simulation implements ClockListener, Serializable {
 //		System.out.println("Done with Building function instances");
 		
 		// Task related class
-		Task.justReloaded();					// eventManager, relationshipmanager
+		Task.justReloaded(eventManager);					// eventManager, relationshipmanager
 		Walk.justReloaded(unitManager);			// unitManager
 		EVAOperation.justReloaded(surface); // surface
 		
 //		System.out.println("Done with Task instances");
 		
 		// Mission related class
+		Mission.justReloaded(eventManager);   // eventManager
 //		RoverMission.justReloaded(surface);  // surface
 		VehicleMission.justReloaded(missionManager); // missionmgr
 

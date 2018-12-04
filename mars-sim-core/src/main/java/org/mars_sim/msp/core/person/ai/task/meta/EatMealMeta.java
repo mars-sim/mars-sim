@@ -57,7 +57,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 
 		// When thirst is greater than 100, a person may start feeling thirsty
 		if (thirst > PhysicalCondition.THIRST_THRESHOLD) {
-			result = Math.pow((thirst - PhysicalCondition.THIRST_THRESHOLD + 1), 1.2);
+			result = Math.pow((thirst - PhysicalCondition.THIRST_THRESHOLD), 1.2);
 			pc.setThirsty(true);
 		}
 		

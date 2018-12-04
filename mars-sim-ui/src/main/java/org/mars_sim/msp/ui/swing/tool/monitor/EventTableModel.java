@@ -497,17 +497,26 @@ public class EventTableModel extends AbstractTableModel
 							phrase = " is complaining about the " + cause;//" is suffering from ";
 						
 						willNotify = true;
-						message = who + phrase + " while " + during + " in/outside " + location0 + " at " + location1;
+						
+						if (!during.equals("sleeping"))
+							during = "falling asleep";
+						if (!location0.equals("outside on Mars"))
+							location0 = " in " + location0;
+						message = who + phrase + " while " + during + location0 + " at " + location1;
 
 					} else if (eventType == EventType.MEDICAL_DEATH) {
 
 						willNotify = true;
-						message = who + " died from " + cause + " in/outside " + location0 + " at " + location1;
+						if (!location0.equals("outside on Mars"))
+							location0 = " in " + location0;
+						message = who + " died from " + cause + location0 + " at " + location1;
 						
 					} else if (eventType == EventType.MEDICAL_TREATED) {
 
 						willNotify = true;
-						message = who + " was being treated for " + cause + " in/outside " + location0 + " at " + location1;
+						if (!location0.equals("outside on Mars"))
+							location0 = " in " + location0;
+						message = who + " was being treated for " + cause + location0 + " at " + location1;
 						
 //					} else if (eventType == EventType.MEDICAL_CURED) {
 //

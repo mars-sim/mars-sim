@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -48,6 +47,21 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	// Static members
 	public static String TYPE = SystemType.EVA_SUIT.getName();
 
+	public static String[] parts = new String[] {
+			"eva helmet",
+			"helmet visor",
+			"counter pressure suit",
+			"coveralls",
+			"suit heating unit",
+			"eva gloves",
+			"eva boots",
+			"eva pads",
+			"eva backpack",
+			"eva antenna",
+			"eva battery",
+			"eva radio",
+	};
+	
 	/** Unloaded mass of EVA suit (kg.). */
 	public static final double EMPTY_MASS = 45D;
 	/** Oxygen capacity (kg.). */
