@@ -731,8 +731,8 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	public void setThirst(double t) {
-		if (thirst != t)
-			thirst = t;
+//		if (thirst != t)
+		thirst = t;
 		if (t > THIRST_THRESHOLD && !isThirsty)
 			isThirsty = true;
 		else if (isThirsty)
@@ -1533,7 +1533,7 @@ public class PhysicalCondition implements Serializable {
 			}
 		}
 
-		// High hunger reduces performance.
+		// High thirst reduces performance.
 		if (thirst > 400D) {
 			tempPerformance -= (thirst - 400D) * THIRST_PERFORMANCE_MODIFIER / 2;
 		} else if (thirst > 250D) {

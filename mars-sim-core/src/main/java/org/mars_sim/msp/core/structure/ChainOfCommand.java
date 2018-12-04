@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.job.Mathematician;
 import org.mars_sim.msp.core.person.ai.job.Meteorologist;
 import org.mars_sim.msp.core.person.ai.job.Physicist;
+import org.mars_sim.msp.core.person.ai.job.Reporter;
 import org.mars_sim.msp.core.person.ai.job.Technician;
 import org.mars_sim.msp.core.person.ai.job.Trader;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -80,11 +81,11 @@ public class ChainOfCommand implements Serializable {
 		int e = getNumFilled(RoleType.ENGINEERING_SPECIALIST);
 
 		// fill up a particular role in sequence without considering one's job type
-		if (safe == num - 1) {
+		if (safe < num - 1) {
 			person.getRole().setNewRoleType(RoleType.SAFETY_SPECIALIST);
-		} else if (e == num - 1) {
+		} else if (e < num - 1) {
 			person.getRole().setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
-		} else if (r == num - 1) {
+		} else if (r < num - 1) {
 			person.getRole().setNewRoleType(RoleType.RESOURCE_SPECIALIST);
 		}
 		else {
@@ -94,10 +95,10 @@ public class ChainOfCommand implements Serializable {
 					person.getRole().setNewRoleType(RoleType.SAFETY_SPECIALIST);
 				}
 				else if (least == r) {
-					person.getRole().setNewRoleType(RoleType.SAFETY_SPECIALIST);
+					person.getRole().setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
 				}
 				else if (least == e) {
-					person.getRole().setNewRoleType(RoleType.SAFETY_SPECIALIST);
+					person.getRole().setNewRoleType(RoleType.RESOURCE_SPECIALIST);
 				}
 			}
 			else {
@@ -165,25 +166,25 @@ public class ChainOfCommand implements Serializable {
 			}
 		}
 
-		boolean allSlotsFilledOnce = metMinimiumFilled(1);
-
-		boolean allSlotsFilledTwice = true;
-		if (pop >= 4)
-			allSlotsFilledTwice = metMinimiumFilled(2);
-
-		boolean allSlotsFilledTriple = true;
-		if (pop > 8)
-			allSlotsFilledTriple = metMinimiumFilled(3);
-
-		if (!allSlotsFilledOnce) {
-			assignRole(job, person, 1);
-		} else if (!allSlotsFilledTwice) {
-			assignRole(job, person, 2);
-		} else if (!allSlotsFilledTriple) {
-			assignRole(job, person, 3);
-		}
-
-		else {
+//		boolean allSlotsFilledOnce = metMinimiumFilled(1);
+//
+//		boolean allSlotsFilledTwice = true;
+//		if (pop >= 4)
+//			allSlotsFilledTwice = metMinimiumFilled(2);
+//
+//		boolean allSlotsFilledTriple = true;
+//		if (pop > 8)
+//			allSlotsFilledTriple = metMinimiumFilled(3);
+//
+//		if (!allSlotsFilledOnce) {
+//			assignRole(job, person, 1);
+//		} else if (!allSlotsFilledTwice) {
+//			assignRole(job, person, 2);
+//		} else if (!allSlotsFilledTriple) {
+//			assignRole(job, person, 3);
+//		}
+//
+//		else {
 
 			if (job.equals(JobManager.getJob(Architect.class.getSimpleName()))) {
 				if (RandomUtil.getRandomInt(1, 2) == 1) {
@@ -227,6 +228,15 @@ public class ChainOfCommand implements Serializable {
 					role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
 				else
 					role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
+			} else if (job.equals(JobManager.getJob(Reporter.class.getSimpleName()))) {
+				int num = RandomUtil.getRandomInt(1, 3);
+				if (num == 1) {
+					role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+				} else if (num == 2) {
+						role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);	
+				} else {
+					role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
+				}
 			} else if (job.equals(JobManager.getJob(Technician.class.getSimpleName()))) {
 				if (RandomUtil.getRandomInt(1, 2) == 1)
 					role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
@@ -238,10 +248,11 @@ public class ChainOfCommand implements Serializable {
 				else
 					role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
 			}
+			
 			if (Simulation.instance().getMasterClock().getMarsClock().getMissionSol() > 1)
 				logger.config("[" + person.getLocationTag().getLocale() + "] Selecting " + person.getName()
 				+ " the " + job.getClass().getSimpleName() + " to be " + person.getRole() + ".");
-		}
+//		}
 	}
 
 	/**
@@ -262,40 +273,40 @@ public class ChainOfCommand implements Serializable {
 
 		Job job = person.getMind().getJob();
 		Role role = person.getRole();
-		int pop = person.getSettlement().getNumCitizens();
+//		int pop = person.getSettlement().getNumCitizens();
 		// int slot = (int) ((pop - 2 - 7 )/ 7);
 
-		boolean allSlotsFilledOnce = metMinimiumFilled(1);
-
-		boolean allSlotsFilledTwice = true;
-		if (pop >= 4)
-			allSlotsFilledTwice = metMinimiumFilled(2);
-
-		boolean allSlotsFilledTriple = true;
-		if (pop > 8)
-			allSlotsFilledTriple = metMinimiumFilled(3);
-
-		boolean allSlotsFilledQuad = true;
-		if (pop > 12)
-			allSlotsFilledQuad = metMinimiumFilled(4);
-
-		boolean allSlotsFilledPenta = true;
-		if (pop > 24)
-			allSlotsFilledPenta = metMinimiumFilled(5);
-
-		if (!allSlotsFilledOnce) {
-			assignRole(job, person, 1);
-		} else if (!allSlotsFilledTwice) {
-			assignRole(job, person, 2);
-		} else if (!allSlotsFilledTriple) {
-			assignRole(job, person, 3);
-		} else if (!allSlotsFilledQuad) {
-			assignRole(job, person, 4);
-		} else if (!allSlotsFilledPenta) {
-			assignRole(job, person, 5);
-		} 
-		
-		else {
+//		boolean allSlotsFilledOnce = metMinimiumFilled(1);
+//
+//		boolean allSlotsFilledTwice = true;
+//		if (pop >= 4)
+//			allSlotsFilledTwice = metMinimiumFilled(2);
+//
+//		boolean allSlotsFilledTriple = true;
+//		if (pop > 8)
+//			allSlotsFilledTriple = metMinimiumFilled(3);
+//
+//		boolean allSlotsFilledQuad = true;
+//		if (pop > 12)
+//			allSlotsFilledQuad = metMinimiumFilled(4);
+//
+//		boolean allSlotsFilledPenta = true;
+//		if (pop > 24)
+//			allSlotsFilledPenta = metMinimiumFilled(5);
+//
+//		if (!allSlotsFilledOnce) {
+//			assignRole(job, person, 1);
+//		} else if (!allSlotsFilledTwice) {
+//			assignRole(job, person, 2);
+//		} else if (!allSlotsFilledTriple) {
+//			assignRole(job, person, 3);
+//		} else if (!allSlotsFilledQuad) {
+//			assignRole(job, person, 4);
+//		} else if (!allSlotsFilledPenta) {
+//			assignRole(job, person, 5);
+//		} 
+//		
+//		else {
 
 			if (job.equals(JobManager.getJob(Architect.class.getSimpleName()))) {
 				role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
@@ -350,6 +361,15 @@ public class ChainOfCommand implements Serializable {
 				} else {
 					role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
 				}
+			} else if (job.equals(JobManager.getJob(Reporter.class.getSimpleName()))) {
+				int num = RandomUtil.getRandomInt(1, 3);
+				if (num == 1) {
+					role.setNewRoleType(RoleType.MISSION_SPECIALIST);
+				} else if (num == 2) {
+						role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);	
+				} else {
+					role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
+				}
 			} else if (job.equals(JobManager.getJob(Technician.class.getSimpleName()))) {
 				if (RandomUtil.getRandomInt(1, 2) == 1) {
 					role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
@@ -366,7 +386,7 @@ public class ChainOfCommand implements Serializable {
 			if (Simulation.instance().getMasterClock().getMarsClock().getMissionSol() > 1)
 				logger.config("[" + person.getLocationTag().getLocale() + "] Selecting " + person.getName()
 					+ " the " + job.getClass().getSimpleName() + " to be " + person.getRole() + ".");
-		}
+//		}
 	}
 
 	/**

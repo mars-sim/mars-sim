@@ -592,6 +592,8 @@ public class EatMeal extends Task implements Serializable {
 			double new_thirst = (currentThirst - waterFinal) / 8 - waterFinal * 5;
 			if (new_thirst < 0)
 				new_thirst = 0;
+			else if (new_thirst > 500)
+				new_thirst = 500;			
 			condition.setThirst(new_thirst);
 			// condition.setThirsty(false);
 		}
@@ -623,6 +625,8 @@ public class EatMeal extends Task implements Serializable {
 					new_thirst = new_thirst - amount * 5_000;
 					if (new_thirst < 0)
 						new_thirst = 0;
+					else if (new_thirst > 500)
+						new_thirst = 500;
 					condition.setThirst(new_thirst);
 					if (waterOnly)
 						setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
@@ -652,6 +656,8 @@ public class EatMeal extends Task implements Serializable {
 						new_thirst = new_thirst - amount * 5_000;
 						if (new_thirst < 0)
 							new_thirst = 0;
+						else if (new_thirst > 500)
+							new_thirst = 500;
 						condition.setThirst(new_thirst);
 						if (waterOnly)
 							setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
@@ -673,6 +679,8 @@ public class EatMeal extends Task implements Serializable {
 							new_thirst = new_thirst - amount * 5_000;
 							if (new_thirst < 0)
 								new_thirst = 0;
+							else if (new_thirst > 500)
+								new_thirst = 500;
 							condition.setThirst(new_thirst);
 							if (waterOnly)
 								setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
@@ -695,6 +703,8 @@ public class EatMeal extends Task implements Serializable {
 								new_thirst = new_thirst - amount * 5_000;
 								if (new_thirst < 0)
 									new_thirst = 0;
+								else if (new_thirst > 500)
+									new_thirst = 500;
 								condition.setThirst(new_thirst);
 								if (waterOnly)
 									setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
