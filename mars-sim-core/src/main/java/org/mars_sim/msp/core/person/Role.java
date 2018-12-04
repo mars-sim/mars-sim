@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -24,11 +23,11 @@ public class Role implements Serializable {
 
 	private Person person;
 
-	private MarsClock clock;
-
 	private RoleType roleType;
 
 	private Map<RoleType, MarsClock> roleHistory = new ConcurrentHashMap<>();
+
+	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
 	// TODO: Use more methods of parallel operation in ConcurrentHashMap.
 	// see https://dzone.com/articles/concurrenthashmap-in-java8
@@ -58,9 +57,9 @@ public class Role implements Serializable {
 
 		if (roleType != null) {
 			if (person.getAssociatedSettlement() != null)		
-				person.getAssociatedSettlement().getChainOfCommand().releaseRoleTypeMap(roleType);
+				person.getAssociatedSettlement().getChainOfCommand().releaseRole(roleType);
 			else 
-				person.getBuriedSettlement().getChainOfCommand().releaseRoleTypeMap(roleType);
+				person.getBuriedSettlement().getChainOfCommand().releaseRole(roleType);
 		}
 	}
 
@@ -74,31 +73,13 @@ public class Role implements Serializable {
 
 		if (newType != oldType) {
 			this.roleType = newType;
-			person.getAssociatedSettlement().getChainOfCommand().addRoleTypeMap(newType);
+			person.getAssociatedSettlement().getChainOfCommand().registerRole(newType);
 			person.fireUnitUpdate(UnitEventType.ROLE_EVENT, newType);
 			relinquishOldRoleType();
 
 			// Add saving roleHistory
-			if (clock == null)
-				clock = Simulation.instance().getMasterClock().getMarsClock();
-			roleHistory.put(newType, clock);
+			roleHistory.put(newType, marsClock);
 		}
-
-//		if (type == RoleType.SAFETY_SPECIALIST)
-//			person.getSettlement().getChainOfCommand().addRole(type);
-//		else if (type == RoleType.ENGINEERING_SPECIALIST)
-//			person.getSettlement().addEngr();
-//		else if (type == RoleType.RESOURCE_SPECIALIST)
-//			person.getSettlement().addResource();
-//		else if (type == RoleType.MISSION_SPECIALIST)
-//			person.getSettlement().addMission();
-//		else if (type == RoleType.SCIENCE_SPECIALIST)
-//			person.getSettlement().addScience();
-//		else if (type == RoleType.LOGISTIC_SPECIALIST)
-//			person.getSettlement().addLogistic();
-//		else if (type == RoleType.AGRICULTURE_SPECIALIST)
-//			person.getSettlement().addAgri();
-
 	}
 
 	/**
@@ -110,7 +91,7 @@ public class Role implements Serializable {
 		ChainOfCommand cc = s.getChainOfCommand();
 
 		// Assign a role associate with
-		if (s.getNumCitizens() >= UnitManager.POPULATION_WITH_MAYOR) {
+		if (s.getNumCitizens() >= ChainOfCommand.POPULATION_WITH_MAYOR) {
 			cc.set7Divisions(true);
 			cc.assignSpecialiststo7Divisions(person);
 		}
@@ -118,6 +99,15 @@ public class Role implements Serializable {
 			cc.set3Divisions(true);
 			cc.assignSpecialiststo3Divisions(person);
 		}
+	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
 	}
 	
 	/**

@@ -326,11 +326,11 @@ implements Serializable {
 
     @Override
     protected double performMappedPhase(double time) {
-
         time = super.performMappedPhase(time);
-
         if (getPhase() == null) {
-            throw new IllegalArgumentException(person + "'s Task phase is null");
+        	endTask();
+        	return time;
+//            throw new IllegalArgumentException(person + "'s Task phase is null");
         }
         else if (LOADING.equals(getPhase())) {
             return loadingPhase(time);

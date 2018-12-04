@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -105,6 +106,9 @@ public class DeathInfo implements Serializable {
 	private GenderType gender;
 	/** Bot's RoboType. */
 	private RobotType robotType;
+	/** Person's role type. */
+	private RoleType roleType;
+	
 
 	/**
 	 * The construct creates an instance of a DeathInfo class.
@@ -573,5 +577,13 @@ public class DeathInfo implements Serializable {
 
 	public String getLastWord() {
 		return lastWord;
+	}
+	
+	public RoleType getRoleType() {
+		return roleType;
+	}
+	
+	public void setRoleType(RoleType type) {
+		roleType = type;
 	}
 }

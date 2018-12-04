@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.BotMind;
+import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -467,7 +468,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		pop = settlement.getNumCitizens();
 
-		if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
+		if (pop > ChainOfCommand.POPULATION_WITH_COMMANDER) {
 
 			if (status == JobAssignmentType.PENDING) {
 				statusCache = JobAssignmentType.PENDING;
@@ -654,7 +655,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					pop = settlement.getNumCitizens();
 
 					// if the population is beyond 4
-					if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
+					if (pop > ChainOfCommand.POPULATION_WITH_COMMANDER) {
 	
 						jobChangeLabel.setForeground(Color.BLUE);
 						
@@ -678,7 +679,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 						jobHistoryTableModel.update();
 					}
 
-					else if (pop > 0 && pop <= UnitManager.POPULATION_WITH_COMMANDER) {
+					else if (pop > 0 && pop <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
 						jobChangeLabel.setForeground(Color.RED);
 						jobChangeLabel.setText("");
 						jobComboBox.setSelectedItem(selectedJobStr);

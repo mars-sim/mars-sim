@@ -559,7 +559,7 @@ public class Resupply implements Serializable, Transportable {
 			settlement.reassignWorkShift();
 
 			// Reset command/government system at settlement.
-			unitManager.establishSettlementGovernance(settlement);
+			settlement.getChainOfCommand().establishSettlementGovernance(settlement);
 
 		}
 

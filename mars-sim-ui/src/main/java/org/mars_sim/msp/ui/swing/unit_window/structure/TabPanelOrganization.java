@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RoleType;
+import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -158,7 +159,7 @@ public class TabPanelOrganization extends TabPanel {
 
 		int population = settlement.getNumCitizens();
 
-		if (population >= UnitManager.POPULATION_WITH_MAYOR) {
+		if (population >= ChainOfCommand.POPULATION_WITH_MAYOR) {
 			root.add(mayorNode);
 			root.add(cabinetNode);
 
@@ -191,7 +192,7 @@ public class TabPanelOrganization extends TabPanel {
 			supplyNode.add(supplySpecialistNode);
 
 			// TODO: More to add
-		} else if (population >= UnitManager.POPULATION_WITH_SUB_COMMANDER) {
+		} else if (population >= ChainOfCommand.POPULATION_WITH_SUB_COMMANDER) {
 			root.add(commanderStaffNode);
 			commanderStaffNode.add(commanderNode);
 			commanderStaffNode.add(subCommanderNode);

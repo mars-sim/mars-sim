@@ -53,6 +53,7 @@ import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.Role;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -867,12 +868,13 @@ public class Simulation implements ClockListener, Serializable {
 		TaskManager.justReloaded(marsClock, missionManager);			// missionManager
 		PhysicalCondition.justReloaded(masterClock, marsClock);
 		RadiationExposure.justReloaded(masterClock, marsClock);
+		Role.justReloaded(marsClock);
 		
 		// Structure related class
 		Building.justReloaded(masterClock, marsClock);
 		BuildingManager.justReloaded(masterClock, marsClock);
 		Settlement.justReloaded(marsClock, w, unitManager);						// weather, loadDefaultValues()
-		ChainOfCommand.justReloaded(unitManager); 				//unitmgr
+		ChainOfCommand.justReloaded(marsClock, unitManager); 				//unitmgr
 		GoodsManager.justReloaded(marsClock, missionManager, unitManager);
 		
 //		System.out.println("Done with Structure instances");

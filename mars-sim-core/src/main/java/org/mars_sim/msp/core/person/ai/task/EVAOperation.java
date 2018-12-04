@@ -261,7 +261,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 //								" in " + person.getLocationTag().getImmediateLocation()
 								+ " found " + ((Building)interiorObject).getNickName()
-								+ " as the closet building with an airlock to enter to. Returning from EVA now.", null);
+								+ " as the closet building with an airlock to enter.", null);
 					}
 					else {
 						// near a vehicle

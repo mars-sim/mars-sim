@@ -1419,8 +1419,12 @@ public class PhysicalCondition implements Serializable {
 		person.setDescription("Dead");
 		// Set work shift to OFF
 		person.setShiftType(ShiftType.OFF);
+		// Backup the role type
+		deathDetails.setRoleType(person.getRole().getType());
 		// Relinquish his role
 		person.getRole().relinquishOldRoleType();
+		// Re-elect the role
+		person.getAssociatedSettlement().getChainOfCommand().reelectLeadership(deathDetails.getRoleType());
 		// Set the state of the health problem to DEAD
 		problem.setState(HealthProblem.DEAD);	
 		// Set the mind of the person to inactive
