@@ -42,6 +42,7 @@ public class BuildingAirlock extends Airlock {
 	private Settlement settlement;
     private Building building; // The building this airlock is for.
     private Inventory inv;
+    
     private CompositionOfAir air;
     private Heating heating;
     
@@ -65,13 +66,9 @@ public class BuildingAirlock extends Airlock {
 
         inv = settlement.getInventory();
         
-//        air = building.getSettlement().getCompositionOfAir();
-        
-//        heating = building.getThermalGeneration().getHeating();
-        
-//        if (building == null) {
-//            throw new IllegalArgumentException("building is null.");
-//        }
+//    	air = building.getSettlement().getCompositionOfAir();
+//    	if (air != null) // no need for heating at the start of the sim
+//    		heating = building.getThermalGeneration().getHeating();
 
         // Determine airlock interior position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc, interiorYLoc, building);
@@ -82,6 +79,11 @@ public class BuildingAirlock extends Airlock {
         // Determine airlock inside position.
         airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(xLoc, yLoc, building);
     }
+       
+//    public void setHeating() {
+//    	if (building.getThermalGeneration() != null)
+//    		heating = building.getThermalGeneration().getHeating();
+//    }
     
     @Override
     protected void exitAirlock(Person person) {
@@ -103,9 +105,10 @@ public class BuildingAirlock extends Airlock {
                 			+ building.getBuildingManager().getSettlement()
                 			+ ".", null);
         			
+        			if (air == null)
+        				air = building.getSettlement().getCompositionOfAir();
+        	    	
                     // Pump air into the airlock to make it breathable
-                	if (air == null)
-                		air = building.getSettlement().getCompositionOfAir();
                     air.releaseOrRecaptureAir(building.getInhabitableID(), true, building);
 
                     // Enter a settlement
@@ -148,14 +151,16 @@ public class BuildingAirlock extends Airlock {
                 			+ ".", null);
           			
           			
+          			if (heating == null) 
+          	    		heating = building.getThermalGeneration().getHeating();
+          				
                     // Upon depressurization, there is heat loss to the Martian air in Heating class
-                	if (heating == null)
-                		heating = building.getThermalGeneration().getHeating();
                     heating.flagHeatLostViaAirlockOuterDoor(true);
                     
+        			if (air == null)
+        				air = building.getSettlement().getCompositionOfAir();
+        			
                     // Recapture air from the airlock before depressurizing it
-                	if (air == null)
-                		air = building.getSettlement().getCompositionOfAir();
                     air.releaseOrRecaptureAir(building.getInhabitableID(), false, building);
                     
                     // Exit the settlement into its vicinity

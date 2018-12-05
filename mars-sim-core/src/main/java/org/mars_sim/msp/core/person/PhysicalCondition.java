@@ -1322,7 +1322,9 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private boolean consumeOxygen(LifeSupportType support, double amount) {
 		double amountRecieved = support.provideOxygen(amount);
-		return checkResourceConsumption(amountRecieved, amount / 2D, MIN_VALUE, suffocation);
+		double required = amount / 2D; 
+		// TODO: how to model how much oxygen we need properly ?
+		return checkResourceConsumption(amountRecieved, required, MIN_VALUE, suffocation);
 	}
 
 	/**
@@ -1364,9 +1366,10 @@ public class PhysicalCondition implements Serializable {
 				reading = "High Temperature sensor";
 				unit = " C";
 			}
-			String s = "[" + loc0 + "] " + reading + " triggered.   Affected : " + name + "   Location : " + loc1 + "   Actual : " + actual + unit + "   Required " + required + unit + ".";
+			String s = "[" + loc0 + "] " + reading + " triggered.   Affected : " + name + "   Location : " + loc1 
+					+ "   Actual : " + Math.round(actual*100.0)/100.0 + unit + "   Required :" + Math.round(required*100.0)/100.0 + unit + ".";
 			LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName, s, null);
-			System.out.println(s);
+//			System.out.println(s);
 			
 			addMedicalComplaint(complaint);
 			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);

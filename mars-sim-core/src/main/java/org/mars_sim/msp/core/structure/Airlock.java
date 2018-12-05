@@ -488,8 +488,9 @@ public abstract class Airlock implements Serializable {
 			else {
 				// If no operator, deactivate airlock.
 				deactivateAirlock();
-				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + locale + "] " 
-						+ " " + getEntityName(), null);
+				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, //"[" + locale + "] "
+					"Without an operator, the airlock at " 
+					+ getEntityName() + " was deactivated.", null);
 			}
 		}
 	}
@@ -500,9 +501,6 @@ public abstract class Airlock implements Serializable {
 	 * @param person to be checked
 	 * @return true if person is in airlock
 	 */
-//    public boolean inAirlock(Unit unit) {
-//        return occupants.contains(unit);
-//    }
 	public boolean inAirlock(Person p) {
 		return occupants.contains(p);
 	}

@@ -1153,8 +1153,10 @@ public class Walk extends Task implements Serializable {
 
 			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
-					+ person + " was about to exit the rover " + rover.getName() + " (or in " + person.getLocationTag().getImmediateLocation()
-					+ ") [exitingRoverGaragePhase()].", null);
+					+ person + " was about to exit the rover " + rover.getName() + " in " + rover.getLocationTag().getImmediateLocation()
+//					+ " (or in " + person.getLocationTag().getImmediateLocation()
+//					+ ") [exitingRoverGaragePhase()]."
+					, null);
 
 			
 			// Exit a rover inside a garage

@@ -138,7 +138,8 @@ public class ChatUtils {
 			"vehicle range",
 			"dash", "dashboard",
 			"repair", "maintenance", "evasuit", "eva suit", 
-			"trip", "excursion", "mission"
+			"trip", "excursion", "mission",
+			"objective"
 	};
 	
 	public final static String[] PERSON_KEYS = new String[] {
@@ -802,7 +803,8 @@ public class ChatUtils {
 			
 			int level = goodsManager.getRepairLevel();
 
-			String prompt = System.lineSeparator() + "Current Outstanding Repair Priority Level is " + level + ". Would you like to change it?";
+			String prompt = System.lineSeparator() + "Current Outstanding Repair Priority Level is " + level 
+					+ System.lineSeparator() + System.lineSeparator() + "Would you like to change it?";
 			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
         	        
 			if (change) {
@@ -838,7 +840,8 @@ public class ChatUtils {
 			
 			int level = goodsManager.getMaintenanceLevel();
 
-			String prompt = System.lineSeparator() + "Current Outstanding Maintenance Priority Level is " + level + ". Would you like to change it?";
+			String prompt = System.lineSeparator() + "Current Outstanding Maintenance Priority Level is " + level 
+					+ System.lineSeparator() + System.lineSeparator() + "Would you like to change it?";
 			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
         	        
 			if (change) {
@@ -873,7 +876,8 @@ public class ChatUtils {
 			
 			int level = goodsManager.getEVASuitLevel();
 
-			String prompt = System.lineSeparator() + "Current EVA Suit Production Priority Level is " + level + ". Would you like to change it?";
+			String prompt = System.lineSeparator() + "Current EVA Suit Production Priority Level is " + level 
+					+ System.lineSeparator() + System.lineSeparator() + "Would you like to change it?";
 			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
         	        
 			if (change) {
@@ -893,7 +897,7 @@ public class ChatUtils {
     				
     	        }
     	        else {
-    	        	s = settlementCache + " : It's outside of the normal range. Aborted.";
+    	        	s = settlementCache + " : Invald input. Please try it again.";
     				responseText.append(s);
     				logger.config(s);
     	        }
@@ -901,9 +905,58 @@ public class ChatUtils {
 											
 		}
 
+		else if (text.equalsIgnoreCase("obj") || text.equalsIgnoreCase("objective")) {
+			//questionText = YOU_PROMPT + "Commander's Dashboard" ; 
+//			responseText.append(System.lineSeparator());			
+			
+			String obj = settlementCache.getObjective().getName();
+			
+			String prompt = YOU_PROMPT + "Commander's Dashboard" + System.lineSeparator()
+					+ System.lineSeparator() + "Current Development Objective : " + obj 
+					+ System.lineSeparator() + System.lineSeparator() + "Would you like to change it?";
+			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
+        	        
+			if (change) {
+				String prompt2 =  " 1. " + Msg.getString("ObjectiveType.crop") + System.lineSeparator() 
+								+ " 2. " + Msg.getString("ObjectiveType.manu") + System.lineSeparator() 
+								+ " 3. " + Msg.getString("ObjectiveType.research") + System.lineSeparator() 
+								+ " 4. " + Msg.getString("ObjectiveType.transportation") + System.lineSeparator() 
+								+ " 5. " + Msg.getString("ObjectiveType.trade") + System.lineSeparator() 
+								+ " 6. " + Msg.getString("ObjectiveType.tourism") + System.lineSeparator() 
+								+ "Enter your choice (1-6)";
+        		int newObj = Simulation.instance().getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(6).read(prompt2);
+    	        String s = "";
+    	        
+    	        if (newObj > 0  && newObj < 7) {
+
+    	        	String newObjStr = settlementCache.getObjectiveArray()[newObj - 1];
+    	        	
+    				responseText.append(settlementCache + " : I've updated it for you as follows : ");
+    				responseText.append(System.lineSeparator());
+    				responseText.append(System.lineSeparator());
+//    				responseText.append(System.lineSeparator());
+
+    				s = "New Development Objective : " + newObjStr;
+    				responseText.append(s);
+    				logger.config(s);
+    				
+    	        }
+    	        else {
+    	        	s = settlementCache + " : Invald input. Please try it again.";
+    				responseText.append(s);
+    				logger.config(s);
+    	        }
+        	}
+		}
+		
 		else if (text.equalsIgnoreCase("dash") || text.equalsIgnoreCase("dashboard")) {
 			questionText = YOU_PROMPT + "Commander's Dashboard" ; 
 			responseText.append(System.lineSeparator());			
+			
+			String obj = settlementCache.getObjective().getName();
+			
+			responseText.append(" Development Objective : " + obj + System.lineSeparator());
+			responseText.append(System.lineSeparator());
 			
 			String[] s = new String[] {
 					"Outstanding Repair",

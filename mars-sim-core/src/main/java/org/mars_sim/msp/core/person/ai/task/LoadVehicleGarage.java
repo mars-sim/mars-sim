@@ -83,13 +83,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	/** The duration of the loading task (millisols). */
 	private static double DURATION = RandomUtil.getRandomDouble(50D) + 10D;
 
+	
 	// Data members
-	/** The vehicle that needs to be loaded. */
-	private Vehicle vehicle;
-	/** The person's settlement. */
-	private Settlement settlement;
-
-	private static PersonConfig personConfig;
 
 	/** Resources required to load. */
 	private Map<Integer, Number> requiredResources;
@@ -99,6 +94,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	private Map<Integer, Integer> requiredEquipment;
 	/** Equipment desired to load but not required. */
 	private Map<Integer, Integer> optionalEquipment;
+	/** The vehicle that needs to be loaded. */
+	private Vehicle vehicle;
+	/** The person's settlement. */
+	private Settlement settlement;
 
 	public static AmountResource[] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
@@ -106,7 +105,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	private static int waterID = ResourceUtil.waterID;
 	private static int foodID = ResourceUtil.foodID;
 	private static int methaneID = ResourceUtil.methaneID;
+	
+	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 
+	
 	/**
 	 * Constructor.
 	 * 
@@ -215,6 +217,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;
 
+		if (personConfig == null)
+			personConfig = SimulationConfig.instance().getPersonConfiguration();
+		
 		if (requiredResources != null) {
 			this.requiredResources = new HashMap<Integer, Number>(requiredResources);
 		}
@@ -251,6 +256,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 		setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;
+		
+		if (personConfig == null)
+			personConfig = SimulationConfig.instance().getPersonConfiguration();
 
 		if (requiredResources != null) {
 			this.requiredResources = new HashMap<Integer, Number>(requiredResources);

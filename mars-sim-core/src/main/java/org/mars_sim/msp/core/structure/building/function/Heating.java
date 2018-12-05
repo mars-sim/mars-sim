@@ -69,10 +69,9 @@ implements Serializable {
 
     private static final double HEAT_DISSIPATED_PER_PERSON = .1; //[in kW]
     
-    //private static final double MSOL_LIMIT = 1.5;
-    
-     //private static final double kPASCAL_PER_ATM = 1D/0.00986923267 ; // 1 kilopascal = 0.00986923267 atm
-    //private static final double R_GAS_CONSTANT = 8.31441; //R = 8.31441 m3 Pa K−1 mol−1
+//    private static final double MSOL_LIMIT = 1.5;
+//    private static final double kPASCAL_PER_ATM = 1D/0.00986923267 ; // 1 kilopascal = 0.00986923267 atm
+//    private static final double R_GAS_CONSTANT = 8.31441; //R = 8.31441 m3 Pa K−1 mol−1
 	// 1 kilopascal = 0.00986923267 atm
 	// 1 cubic ft = L * 0.035315
     // A full scale pressurized Mars rover prototype may have an airlock volume of 5.7 m^3
@@ -85,12 +84,11 @@ implements Serializable {
 	/** The average volume of a airlock [m^3] */	
     private static double AIRLOCK_VOLUME_IN_CM = Building.AIRLOCK_VOLUME_IN_CM; // = 12 [in m^3]
     /**  convert meters to feet  */
-	//private static final double M_TO_FT = 3.2808399;//10.764;
+//	private static final double M_TO_FT = 3.2808399;//10.764;
 	/**  Specific Heat Capacity = 4.0 for a typical U.S. house */
-	//private static final double SHC = 6.0; // [in BTU / sq ft / °F]
-
-	// Building Loss Coefficient (BLC) is 1.0 for a typical U.S. house 
-	//private static double BLC = 0.2;
+//	private static final double SHC = 6.0; // [in BTU / sq ft / °F]
+	/** Building Loss Coefficient (BLC) is 1.0 for a typical U.S. house  */
+//	private static double BLC = 0.2;
 
 	/** 
 	 * Cooling Load Factor accounts for the fact that building thermal mass creates a time lag between 
@@ -119,13 +117,13 @@ implements Serializable {
     
     // Molar mass of CO2 = 44.0095 g/mol
     // average density of air : 0.020 kg/m3
-	//double n = weather.getAirDensity(coordinates) * vol / 44D;
-	//private double n_CO2 = .02D * VOLUME_OF_AIRLOCK / 44*1000;
+	// double n = weather.getAirDensity(coordinates) * vol / 44D;
+//	private double n_CO2 = .02D * VOLUME_OF_AIRLOCK / 44*1000;
 	// 1 cubic feet of air has a total weight of 38.76 g
-	//private double n_air = 1D;
-	//private double n_sum = n_CO2 + n_air;
+//	private double n_air = 1D;
+//	private double n_sum = n_CO2 + n_air;
     
-    //private static final int HEAT_CAP = 200;  
+//    private static final int HEAT_CAP = 200;  
  	private static final int PER_UPDATE = 2 ; // must be a multiple of 2
     /** The cache for msols */     
  	private int msolCache;
