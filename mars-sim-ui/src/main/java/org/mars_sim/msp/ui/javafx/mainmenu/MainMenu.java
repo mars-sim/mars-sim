@@ -1452,7 +1452,7 @@ public class MainMenu {
 //					if (!t.equals(t1)) {
 						countryCombo.setValue(t1);
 						int id = countries.indexOf(t1);
-						commander.setCountryInt(id);
+						commander.setCountryInt(id+1);
 						goodToGo[5] = true;
 						if (areAllGoodToGo()) 
 							doneBtn.setDisable(false);

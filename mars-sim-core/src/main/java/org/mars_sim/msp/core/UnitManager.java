@@ -1099,10 +1099,8 @@ public class UnitManager implements Serializable {
 	 * @param cc the person instance
 	 */
 	public void updateCommander(Person cc) {
-		String newCountry = getCountryStr();//personConfig.getCountry(getCountry()); 
-		String newSponsor = getSponsor();//personConfig.getSponsorFromCountry(newCountry);
-//		String oldName = cc.getName();
-//		GenderType oldGender = cc.getGender();			
+		String newCountry = getCountryStr();
+		String newSponsor = getSponsor();		
 		String newName = getFullname();
 		String newGender = getGender();
 
@@ -1114,7 +1112,6 @@ public class UnitManager implements Serializable {
 		setJob(cc, getJob());
 		cc.setCountry(newCountry);
 		cc.setSponsor(newSponsor);		
-//		isProfileRetrieved = true;
 	}
 	
 	
@@ -1123,8 +1120,8 @@ public class UnitManager implements Serializable {
 	 */
 	public void matchSettlement() {
 		
-		String country = getCountryStr();//personConfig.getCountry(getCountry()); 
-		String sponsor = getSponsor();//personConfig.getSponsorFromCountry(country);
+		String country = getCountryStr();
+		String sponsor = getSponsor();
 		
 		List<Settlement> list = new ArrayList<>(getSettlements());
 		int size = getSettlements().size();

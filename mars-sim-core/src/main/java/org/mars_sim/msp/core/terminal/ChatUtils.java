@@ -4012,7 +4012,7 @@ public class ChatUtils {
 					
 					// Note: can taskStr be null and thus causing the simulation to hang ?
 					if (taskStr == null) {
-						s = "I'm sorry. " + text + " is occupiedd at this moment. Please try again later.";
+						s = "I'm sorry. " + text + " is occupied at this moment. Please try again later.";
 						responseText.append(SYSTEM_PROMPT);
 						responseText.append(s);
 						return responseText.toString();

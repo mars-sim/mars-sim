@@ -72,7 +72,6 @@ public class Commander implements Serializable {
     
     public void setCountryInt(int c) {
     	countryInt = c-1;
-//    	System.out.println("countryInt is " + countryInt);
     }
     
     public void setCountryStr(String c) {

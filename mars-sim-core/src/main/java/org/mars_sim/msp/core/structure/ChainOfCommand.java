@@ -677,7 +677,7 @@ public class ChainOfCommand implements Serializable {
 		
 		if (pop >= POPULATION_WITH_SUB_COMMANDER) {
 			cv.setRole(RoleType.SUB_COMMANDER);
-			logger.config(cc + " got elected as the " + RoleType.SUB_COMMANDER.getName() + " in " + cv.getAssociatedSettlement().getName());
+			logger.config(cv + " got elected as the " + RoleType.SUB_COMMANDER.getName() + " in " + cv.getAssociatedSettlement().getName());
 		}
 	}
 	
