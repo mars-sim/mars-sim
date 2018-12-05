@@ -72,6 +72,9 @@ public class ItemResourceUtil implements Serializable {
 
 	private static MalfunctionFactory factory;
 	
+	/**
+	 * Constructor
+	 */
 	public ItemResourceUtil() {
 		factory = Simulation.instance().getMalfunctionFactory();		
 		
@@ -82,6 +85,23 @@ public class ItemResourceUtil implements Serializable {
 		createIDs();
 	}
 
+	/**
+	 * Creates an item resource
+	 * 
+	 * @param resourceName
+	 * @param id
+	 * @param description
+	 * @param massPerItem
+	 * @param solsUsed
+	 * @return
+	 */
+	public static Part createItemResource(String resourceName, int id, String description, double massPerItem,
+			int solsUsed) {
+		Part p = new Part(resourceName, id, description, massPerItem, solsUsed);
+		ItemResourceUtil.registerBrandNewPart(p);
+		return p;
+	}
+	
 	/**
 	 * Prepares the id's of a few item resources
 	 */
@@ -144,7 +164,6 @@ public class ItemResourceUtil implements Serializable {
 		// Use Java 8 stream
 		return getItemResources().stream().filter(item -> item.getName().equals(name.toLowerCase())).findFirst()
 				.orElse(null);// .get();
-
 		// return getItemResourcesMap().get(name.toLowerCase());
 	}
 
@@ -167,6 +186,11 @@ public class ItemResourceUtil implements Serializable {
 //		return Collections.unmodifiableSet(partConfig.getItemResources());
 //	}
 
+	/**
+	 * Creates a set of item resources
+	 * 
+	 * @return
+	 */
 	public static Set<Part> getItemResources() {
 		if (partSet == null)
 			partSet = Collections.unmodifiableSet(partConfig.getPartSet());
@@ -182,12 +206,23 @@ public class ItemResourceUtil implements Serializable {
 		return itemResourceIDMap.keySet();
 	}
 
+	/**
+	 * Gets a list of sorted parts
+	 * 
+	 * @return
+	 */
 	public static List<Part> getSortedParts() {
 		sortedParts = new ArrayList<>(partSet);
 		Collections.sort(sortedParts);
 		return sortedParts;
 	}
 
+	
+	/**
+	 * Gets a map of parts
+	 * 
+	 * @return
+	 */
 	public static Map<String, Part> getItemResourcesMap() {
 		// if (partConfig == null) System.err.println("partConfig == null");
 		return factory.getNamePartMap();
@@ -296,11 +331,5 @@ public class ItemResourceUtil implements Serializable {
 		return resourceNames;
 	}
 
-	public static Part createBrandNewItemResource(String resourceName, int id, String description, double massPerItem,
-			int solsUsed) {
-		Part p = new Part(resourceName, id, description, massPerItem, solsUsed);
-		ItemResourceUtil.registerBrandNewPart(p);
-		return p;
-	}
-	
+
 }

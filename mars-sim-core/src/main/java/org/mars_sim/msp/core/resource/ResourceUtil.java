@@ -188,15 +188,43 @@ public class ResourceUtil implements Serializable {
 	 * Default Constructor for ResoureUtil
 	 */
 	private ResourceUtil() {
+		amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
 		createResourceSet();
 		createItemResourceUtil();
 	}
 
+	/**
+	 * Creates an amount resource instance
+	 * 
+	 * @param id
+	 * @param name
+	 * @param type
+	 * @param description
+	 * @param phase
+	 * @param lifeSupport
+	 * @param edible
+	 * @return {@link AmountResource}
+	 */
+	public static AmountResource createAmountResource(int id, String name, String type, String description, PhaseType phase,
+			boolean lifeSupport, boolean edible
+
+	) {
+		AmountResource ar = new AmountResource(id, name, type, description, phase, lifeSupport, edible);
+		ResourceUtil.registerBrandNewAR(ar);
+		return ar;
+	}
+
+	/**
+	 * Creates an amount resource set
+	 */
 	public void createResourceSet() {
-		amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
 		resources = amountResourceConfig.getAmountResources();
 	}
 
+	
+	/**
+	 * Starts ItemResourceUtil
+	 */
 	public void createItemResourceUtil() {
 		new ItemResourceUtil();
 	}
@@ -244,6 +272,7 @@ public class ResourceUtil implements Serializable {
 		}
 	}
 
+	
 	public void restoreInventory() {
 		Collection<Unit> units = Simulation.instance().getUnitManager().getUnits();
 		for (Unit u : units) {
@@ -254,6 +283,9 @@ public class ResourceUtil implements Serializable {
 		}
 	}
 
+	/**
+	 * Creates maps of amount resources
+	 */
 	public static void createMaps() {
 		amountResourceMap = new HashMap<String, AmountResource>();
 		sortedResources = new ArrayList<>(resources);

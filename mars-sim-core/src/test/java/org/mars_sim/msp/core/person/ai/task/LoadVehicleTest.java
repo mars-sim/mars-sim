@@ -88,7 +88,7 @@ extends TestCase {
 		person.initialize();
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 100);
 		Vehicle vehicle = new MockVehicle(settlement);
-        Part hammer = ItemResourceUtil.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
+        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
         
 		Inventory vehicleInv = vehicle.getInventory();
 
@@ -209,7 +209,7 @@ extends TestCase {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
 //        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
-        Part hammer = ItemResourceUtil.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
+        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
 		int hammerID = hammer.getID();
 		
 		inv.storeItemResources(hammer, 5);
@@ -243,7 +243,7 @@ extends TestCase {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
 //        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
-        Part hammer = ItemResourceUtil.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
+        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
 		int hammerID = hammer.getID();
 		
 //		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
@@ -284,7 +284,7 @@ extends TestCase {
 		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
 //        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
-        Part hammer = ItemResourceUtil.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
+        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
         
 //		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
 //		AmountResource food = AmountResource.findAmountResource(FOOD);
@@ -327,7 +327,7 @@ extends TestCase {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
 //        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
-        Part hammer = ItemResourceUtil.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
+        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
@@ -377,7 +377,7 @@ extends TestCase {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
 //        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
-        Part hammer = ItemResourceUtil.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
+        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
@@ -418,7 +418,7 @@ extends TestCase {
 	public void testIsFullyLoadedNoItemResources() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
-        Part hammer = ItemResourceUtil.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
+        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
@@ -467,7 +467,7 @@ extends TestCase {
 		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
 //        ItemResource hammer = ItemResourceUtil.createBrandNewItemResource(resourceName,id,description,massPerItem, 1);
-        Part hammer = ItemResourceUtil.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
+        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
         Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 

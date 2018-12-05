@@ -51,8 +51,6 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 
 	private PhaseType phase;
 
-//	 private static AmountResourceConfig amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
-
 	public AmountResource() {
 	}
 
@@ -157,27 +155,6 @@ public final class AmountResource extends ResourceAbstract implements Serializab
 	 */
 	public int hashCode() {
 		return hashcode;
-	}
-
-	/**
-	 * Creates an amount resource instance
-	 * 
-	 * @param id
-	 * @param name
-	 * @param type
-	 * @param description
-	 * @param phase
-	 * @param lifeSupport
-	 * @param edible
-	 * @return {@link AmountResource}
-	 */
-	public static AmountResource createAmountResource(int id, String name, String type, String description, PhaseType phase,
-			boolean lifeSupport, boolean edible
-
-	) {
-		AmountResource ar = new AmountResource(id, name, type, description, phase, lifeSupport, edible);
-		ResourceUtil.registerBrandNewAR(ar);
-		return ar;
 	}
 
 	public void destroy() {

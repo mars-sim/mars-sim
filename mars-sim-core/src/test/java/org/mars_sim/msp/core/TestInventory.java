@@ -359,7 +359,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryItemResourceStoreGood() throws Exception {
-        ItemResource pipeWrench = ItemResourceUtil.createBrandNewItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(50D);
         inventory.storeItemResources(pipeWrench, 20);
@@ -370,7 +370,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryItemResourceStoreDeep() throws Exception {
-        ItemResource pipeWrench = ItemResourceUtil.createBrandNewItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(60D);
         Unit testUnit = new MockUnit1();
@@ -384,7 +384,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryItemResourceStoreOverload() throws Exception {
-        ItemResource pipeWrench = ItemResourceUtil.createBrandNewItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(50D);
         try {
@@ -396,7 +396,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryItemResourceStoreNegativeNumber() throws Exception {
-        ItemResource pipeWrench = ItemResourceUtil.createBrandNewItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(50D);
         try {
@@ -408,7 +408,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryItemResourceStoreNoCapacity() throws Exception {
-        ItemResource pipeWrench = ItemResourceUtil.createBrandNewItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         Inventory inventory = new MockUnit1().getInventory();
         try {
             inventory.storeItemResources(pipeWrench, 1);
@@ -419,7 +419,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryItemResourceStoreDeepOverload() throws Exception {
-        ItemResource pipeWrench = ItemResourceUtil.createBrandNewItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         Unit testUnit1 = new MockUnit1();
         testUnit1.getInventory().addGeneralCapacity(50D);
         Unit testUnit2 = new MockUnit2();
@@ -434,7 +434,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryItemResourceRemainingCapacityGood() throws Exception {
-        ItemResource pipeWrench = ItemResourceUtil.createBrandNewItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(50D);
         inventory.storeItemResources(pipeWrench, 10);
@@ -449,7 +449,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryItemResourceRetrieveGood() throws Exception {
-        ItemResource pipeWrench = ItemResourceUtil.createBrandNewItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(50D);
         inventory.storeItemResources(pipeWrench, 10);
@@ -459,7 +459,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryItemResourceRetrieveDeep() throws Exception {
-        ItemResource pipeWrench = ItemResourceUtil.createBrandNewItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(60D);
         Unit testUnit = new MockUnit1();
@@ -477,7 +477,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryItemResourceRetrieveTooMuch() throws Exception {
-        ItemResource pipeWrench = ItemResourceUtil.createBrandNewItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(50D);
         inventory.storeItemResources(pipeWrench, 10);
@@ -490,7 +490,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryItemResourceRetrieveNegative() throws Exception {
-        ItemResource pipeWrench = ItemResourceUtil.createBrandNewItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(50D);
         inventory.storeItemResources(pipeWrench, 10);
@@ -503,7 +503,7 @@ public class TestInventory extends TestCase {
     }
 
     public void testInventoryItemResourceRetrieveNoItem() throws Exception {
-        ItemResource pipeWrench = ItemResourceUtil.createBrandNewItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
         Inventory inventory = new MockUnit1().getInventory();
         try {
             inventory.retrieveItemResources(pipeWrench, 1);
