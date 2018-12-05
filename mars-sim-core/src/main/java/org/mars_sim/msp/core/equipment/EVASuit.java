@@ -151,13 +151,13 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		// boolean result = true;
 		try {
 			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= 0D) {
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ this.getName() + " ran out of oxygen.", null);
 				return false;
 			}
 			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ this.getName() + " ran out of water.", null);
 //				return false;
@@ -177,14 +177,14 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= minimum_air_pressure) {
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ this.getName() + " detected improper air pressure at " + Math.round(p * 10D) / 10D, null);
 				return false;
 			}
 			double t = getTemperature();
 			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 20) {
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ this.getName() + " detected improper temperature at " + Math.round(t * 10D) / 10D, null);
 				return false;

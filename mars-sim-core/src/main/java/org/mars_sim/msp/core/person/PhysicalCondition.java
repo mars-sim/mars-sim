@@ -527,7 +527,7 @@ public class PhysicalCondition implements Serializable {
 		// Has the person died ?
 		// if (isDead()) return false;
 	
-		// See if any random illnesses happen.
+		// Generates any random illnesses.
 		if (!restingTask) {
 			List<Complaint> randomAilments = checkForRandomAilments(time);
 			if (randomAilments.size() > 0) {
@@ -1048,17 +1048,15 @@ public class PhysicalCondition implements Serializable {
 
 		List<Complaint> result = new ArrayList<Complaint>(0);
 
-		// Check each possible medical complaint.
 		if (allMedicalComplaints == null)
 			allMedicalComplaints = medicalManager.getAllMedicalComplaints();
 
 		for (Complaint complaint : allMedicalComplaints) {
-
+			// Check each possible medical complaint.
 			ComplaintType ct = complaint.getType();
 
 			boolean noGo = false;
-			// If a person is performing a resting task, then it is impossible to suffer
-			// from laceration.
+
 			if (!problems.containsKey(complaint)) {
 
 				if (ct == ComplaintType.LACERATION || ct == ComplaintType.BROKEN_BONE
@@ -1067,8 +1065,10 @@ public class PhysicalCondition implements Serializable {
 							|| person.getTaskDescription().toLowerCase().contains("compil")
 							|| person.getTaskDescription().toLowerCase().contains("peer")
 							|| person.getTaskDescription().toLowerCase().contains("teach")
-//						|| restingTask
+						|| restingTask
 					) {
+						// If a person is performing a resting task, then it is impossible to suffer
+						// from laceration.
 						noGo = true;
 					}
 				}
@@ -1098,8 +1098,8 @@ public class PhysicalCondition implements Serializable {
 						double taskModifier = 1;
 						double tendency = 1;
 						
-						masterClock = Simulation.instance().getMasterClock();
-						marsClock = masterClock.getMarsClock();
+//						masterClock = Simulation.instance().getMasterClock();
+//						marsClock = masterClock.getMarsClock();
 						
 						int msol = marsClock.getMissionSol();
 
@@ -1344,9 +1344,35 @@ public class PhysicalCondition implements Serializable {
 			newProblem = true;
 
 		if (newProblem) {
+			String loc0 = person.getLocationTag().getLocale();
+			String loc1 = person.getLocationTag().getImmediateLocation();
+			String reading = "";
+			String unit = "";
+			if (complaint.getType() == ComplaintType.SUFFOCATION) {
+				reading = "Oxygen sensor";
+				unit = " kg";
+			}
+			else if (complaint.getType() == ComplaintType.DECOMPRESSION) {
+				reading = "Pressure sensor";
+				unit = " kPa";
+			}
+			if (complaint.getType() == ComplaintType.FREEZING) {
+				reading = "Low Temperature sensor";
+				unit = " C";
+			}
+			if (complaint.getType() == ComplaintType.HEAT_STROKE) {
+				reading = "High Temperature sensor";
+				unit = " C";
+			}
+			String s = "[" + loc0 + "] " + reading + " triggered.   Affected : " + name + "   Location : " + loc1 + "   Actual : " + actual + unit + "   Required " + required + unit + ".";
+			LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName, s, null);
+			System.out.println(s);
+			
 			addMedicalComplaint(complaint);
 			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-		} else {
+		}
+		
+		else {
 			// Is the person suffering from the illness, if so recovery
 			// as the amount has been provided
 			HealthProblem illness = problems.get(complaint);

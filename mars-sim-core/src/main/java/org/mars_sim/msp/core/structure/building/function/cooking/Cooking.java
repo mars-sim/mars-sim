@@ -67,7 +67,7 @@ implements Serializable {
 
 	private static final String CONVERTING = "A meal has expired. Converting ";
     public static final String DISCARDED = " is expired and discarded at "; 
-    public static final String PRESERVED = " into preserved food at ";
+    public static final String PRESERVED = "into preserved food at ";
     
     public static final int RECHECKING_FREQ = 250; // in millisols
     public static final int NUMBER_OF_MEAL_PER_SOL = 4;

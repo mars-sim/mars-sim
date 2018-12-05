@@ -643,7 +643,7 @@ public class ChainOfCommand implements Serializable {
 		
 		else {
 			cc.setRole(RoleType.COMMANDER);
-			logger.config(cc + " got elected as the " + RoleType.COMMANDER.getName() + " in " + cc.getSettlement().getName());
+			logger.config(cc + " got elected as the " + RoleType.COMMANDER.getName() + " in " + cc.getAssociatedSettlement().getName());
 		}
 		
 //		if (isProfileRetrieved) {
@@ -677,7 +677,7 @@ public class ChainOfCommand implements Serializable {
 		
 		if (pop >= POPULATION_WITH_SUB_COMMANDER) {
 			cv.setRole(RoleType.SUB_COMMANDER);
-			logger.config(cc + " got elected as the " + RoleType.SUB_COMMANDER.getName() + " in " + cv.getSettlement().getName());
+			logger.config(cc + " got elected as the " + RoleType.SUB_COMMANDER.getName() + " in " + cv.getAssociatedSettlement().getName());
 		}
 	}
 	
@@ -871,7 +871,7 @@ public class ChainOfCommand implements Serializable {
 		
 		if (winner != null) {
 			winner.setRole(role);
-			logger.config(winner + " got elected as the " + role.getName() + " in " + winner.getSettlement().getName());
+			logger.config(winner + " got elected as the " + role.getName() + " in " + winner.getAssociatedSettlement().getName());
 		}
 	}
 	

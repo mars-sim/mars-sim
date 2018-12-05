@@ -136,9 +136,10 @@ public class MalfunctionManager implements Serializable {
 //	private static PartConfig partConfig;
 	private static MalfunctionConfig malfunctionConfig;
 
-	private static SimulationConfig simconfig= SimulationConfig.instance();
+	private static SimulationConfig simconfig = SimulationConfig.instance();
 	private static Simulation sim = Simulation.instance();
-
+	private static MedicalManager medic = sim.getMedicalManager();
+	
 	// NOTE : each building has its own MalfunctionManager
 
 	/**
@@ -1215,7 +1216,7 @@ public class MalfunctionManager implements Serializable {
 		while (i1.hasNext()) {
 			ComplaintType type = i1.next();
 			double probability = malfunction.getMedicalComplaints().get(type);
-			MedicalManager medic = Simulation.instance().getMedicalManager();
+//			MedicalManager medic = Simulation.instance().getMedicalManager();
 			// Replace the use of String name with ComplaintType
 			Complaint complaint = medic.getComplaintByName(type);
 			if (complaint != null) {
@@ -1375,6 +1376,7 @@ public class MalfunctionManager implements Serializable {
 //		partConfig = simconfig.getPartConfiguration();
 		malfunctionConfig = simconfig.getMalfunctionConfiguration();
 		factory = sim.getMalfunctionFactory();
+		medic = sim.getMedicalManager();
 	}
 		
 	/**
