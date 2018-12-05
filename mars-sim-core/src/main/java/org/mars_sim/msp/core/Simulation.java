@@ -52,6 +52,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Role;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -60,6 +61,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.Walk;
@@ -839,6 +841,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// config files
 		BuildingConfig bc = SimulationConfig.instance().getBuildingConfiguration();
+		PersonConfig pc = SimulationConfig.instance().getPersonConfiguration();
 		
 		// The Original Serialized Object class
 		MalfunctionFactory.setMarsClock(marsClock);
@@ -919,6 +922,7 @@ public class Simulation implements ClockListener, Serializable {
 		Task.justReloaded(eventManager);					// eventManager, relationshipmanager
 		Walk.justReloaded(unitManager);			// unitManager
 		EVAOperation.justReloaded(surface); // surface
+		LoadVehicleGarage.justReloaded(pc);   // pc
 		
 //		System.out.println("Done with Task instances");
 		

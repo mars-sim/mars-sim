@@ -544,7 +544,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				} else {
 					logger.severe("Connector from " + connector.getBuilding1() + " to " + connector.getBuilding2()
 							+ " not connected to current building " + currentBuilding);
-					throw new IllegalStateException("Connector not connected to " + currentBuilding);
+//					throw new IllegalStateException("Connector not connected to " + currentBuilding);
 				}
 
 				if (person != null)

@@ -582,12 +582,12 @@ implements Serializable {
 			} else {
 
 				if (person != null) {
-					if (!person.getSettlement().getFoodProductionOverride()) {
+					if (!person.getAssociatedSettlement().getFoodProductionOverride()) {
 						process = createNewFoodProductionProcess();
 					}
 				}
 				else if (robot != null) {
-					if (!robot.getSettlement().getFoodProductionOverride()) {
+					if (!robot.getAssociatedSettlement().getFoodProductionOverride()) {
 						process = createNewFoodProductionProcess();
 					}
 				}

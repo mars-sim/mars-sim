@@ -489,7 +489,7 @@ public abstract class Airlock implements Serializable {
 				// If no operator, deactivate airlock.
 				deactivateAirlock();
 				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + locale + "] " 
-						+ "Airlock has no operator. Deactivating airlock of " + getEntityName(), null);
+						+ " " + getEntityName(), null);
 			}
 		}
 	}

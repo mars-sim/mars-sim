@@ -79,7 +79,7 @@ extends TestCase {
         building0.addFunction(new EVA(building0, airlock0));
 
 		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+		// Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
@@ -88,17 +88,10 @@ extends TestCase {
 		person.initialize();
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 100);
 		Vehicle vehicle = new MockVehicle(settlement);
-//        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
         Part hammer = ItemResourceUtil.createBrandNewItemResource(resourceName, id, description, massPerItem, 1);
         
 		Inventory vehicleInv = vehicle.getInventory();
 
-//		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
-//		AmountResource food = AmountResource.findAmountResource(FOOD);
-//		AmountResource water = AmountResource.findAmountResource(WATER);
-//		AmountResource methane = AmountResource.findAmountResource(METHANE);
-//		AmountResource soymilk = AmountResource.findAmountResource(SOYMILK);
-		
 		int oxygenID = ResourceUtil.oxygenID;
 		int foodID = ResourceUtil.foodID;
 		int waterID = ResourceUtil.waterID;

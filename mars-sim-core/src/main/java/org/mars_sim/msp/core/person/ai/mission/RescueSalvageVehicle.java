@@ -527,18 +527,68 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 								p.getPhysicalCondition().getHealthSituation(), p.getTaskDescription(), p.getName(),
 								p.getVehicle().getName(), p.getLocationTag().getLocale());
 						Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
-						
-					} else {
-						LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-								"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
-								+ " finally came home safety on the towed rover "+ towedVehicle.getName() + ".", null);
+												
+//					} else {
+//						LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+//								"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
+//								+ " finally came home safety on the towed rover "+ towedVehicle.getName() + ".", null);
 					}
+					else {
+						LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+								"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " successfully towed the rover "+ towedVehicle.getName() + " back home.", null);
+						
+					
+						if (towedVehicle.getGarage() != null) {
+							// the rover is parked inside a garage
+							rover.getInventory().retrieveUnit(p);
+							disembarkSettlement.getInventory().storeUnit(p);
+							BuildingManager.addPersonOrRobotToBuilding(p, towedVehicle.getGarage());
+//							assignTask(p, new Walk(p));
+							p.getMind().getTaskManager().getNewTask();
+						}
+						
+						else { 
+							// the person is still inside the vehicle
+							
+							// Get random inhabitable building at emergency settlement.
+							Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
+							if (destinationBuilding != null) {
+								Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
+								Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
+										destinationLoc.getY(), destinationBuilding);
 
+								if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+									assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+								} 
+								
+								else {
+//									logger.severe("Unable to walk to building " + destinationBuilding);
+									
+									// the rover is parked inside a garage
+									towedVehicle.getInventory().retrieveUnit(p);
+									
+									// This person needs to be rescued.
+									LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+									"[" + disembarkSettlement.getName() + "] "
+									+ Msg.getString("RoverMission.log.emergencyEnterSettlement", p.getName(), disembarkSettlement.getNickName()), null); //$NON-NLS-1$
+									
+									disembarkSettlement.getInventory().storeUnit(p);
+
+									BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
+								}
+		
+							} 
+							
+							else {
+								logger.severe("No inhabitable buildings at " + disembarkSettlement);
+								endMission("No inhabitable buildings at " + disembarkSettlement);
+							}
+						}
+					}
 				}
 			}
 
 			// Unload crew from the towing vehicle at settlement.
-
 			for (Person p : rover.getCrew()) {
 				// Retrieve the person if he/she is dead
 				if (p.isDeclaredDead()) {
@@ -587,12 +637,24 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 							Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
 									destinationLoc.getY(), destinationBuilding);
 
-							if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
-								assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+							if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+								assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
 							} 
 							
 							else {
-								logger.severe("Unable to walk to building " + destinationBuilding);
+//								logger.severe("Unable to walk to building " + destinationBuilding);
+								
+								// the rover is parked inside a garage
+								rover.getInventory().retrieveUnit(p);
+								
+								// This person needs to be rescued.
+								LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+								"[" + disembarkSettlement.getName() + "] "
+								+ Msg.getString("RoverMission.log.emergencyEnterSettlement", p.getName(), disembarkSettlement.getNickName()), null); //$NON-NLS-1$
+								
+								disembarkSettlement.getInventory().storeUnit(p);
+
+								BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
 							}
 	
 						} 

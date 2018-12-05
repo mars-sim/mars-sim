@@ -27,7 +27,7 @@ public class Role implements Serializable {
 
 	private Map<RoleType, MarsClock> roleHistory = new ConcurrentHashMap<>();
 
-	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	private static MarsClock marsClock;
 
 	// TODO: Use more methods of parallel operation in ConcurrentHashMap.
 	// see https://dzone.com/articles/concurrenthashmap-in-java8
@@ -37,6 +37,9 @@ public class Role implements Serializable {
 	public Role(Person person) {
 		this.person = person;
 
+		if (Simulation.instance().getMasterClock() != null)
+			// check for null in order to pass the LoadVehicleTest.java maven test
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	/**

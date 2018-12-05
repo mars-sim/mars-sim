@@ -89,7 +89,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	/** The person's settlement. */
 	private Settlement settlement;
 
-	private static PersonConfig personConfig;// = SimulationConfig.instance().getPersonConfiguration();
+	private static PersonConfig personConfig;
 
 	/** Resources required to load. */
 	private Map<Integer, Number> requiredResources;
@@ -157,6 +157,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	public LoadVehicleGarage(Robot robot) {
 		// Use Task constructor
 		super(NAME, robot, true, false, STRESS_MODIFIER, true, DURATION);
+
+		if (personConfig == null)
+			personConfig = SimulationConfig.instance().getPersonConfiguration();
 
 		VehicleMission mission = getMissionNeedingLoading();
 		if (mission != null) {
@@ -1003,10 +1006,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		double amountPersonPerSol = 0D;
 		double tripTimeSols = tripTime / 1000D;
 
-		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfiguration();
-		// throw new IllegalArgumentException("personConfig is null");
-
 		// Only life support resources are required at settlement at this time.
 		if (resource == oxygenID)
 			amountPersonPerSol = personConfig.getNominalO2ConsumptionRate();
@@ -1331,6 +1330,15 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		return new ArrayList<SkillType>(0);
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param pc
+	 */
+	public static void justReloaded(PersonConfig pc) {
+		personConfig = pc;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();
