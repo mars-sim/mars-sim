@@ -87,45 +87,50 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
  
 	        while (!quit) {
 	        	
-		        String expertString = "";
-		        // See if user opts in the expert mode
-	        	if (ChatUtils.isExpertMode()) {
-	        		expertString = EXPERT_MODE;
+	        	try {
+			        String expertString = "";
+			        // See if user opts in the expert mode
+		        	if (ChatUtils.isExpertMode()) {
+		        		expertString = EXPERT_MODE;
+		        	}
+		        	
+		        	prompt = "Connected with MarsNet" + expertString + " >";
+		        	
+		        	if (ChatUtils.personCache != null)
+		        		prompt = "Connected with " + ChatUtils.personCache.toString() + expertString + " >";
+		        	else if (ChatUtils.robotCache != null) 
+		        		prompt = "Connected with " + ChatUtils.robotCache.toString() + expertString + " >";
+		        	else if (ChatUtils.settlementCache != null)
+		        		prompt = "Connected with " + ChatUtils.settlementCache.toString() + expertString + " >";	
+		        	else if (ChatUtils.vehicleCache != null)
+		        		prompt = "Connected with " + ChatUtils.vehicleCache.toString() + expertString + " >";	
+	
+			        handler.addStringTask("party", prompt, false).addChoices(names);//.constrainInputToChoices();
+			        handler.executeOneTask();
+			        		        
+					// if no settlement, robot, person, or vehicle has been selected yet
+					if (ChatUtils.personCache == null && ChatUtils.robotCache == null 
+							&& ChatUtils.settlementCache == null && ChatUtils.vehicleCache == null) {	
+						// Call parse() to obtain a new value of unit
+						askSystem(Party.party);
+					} 
+					
+					else {
+						// Connect to a certain party
+						askParty(Party.party);
+						// Note : if all xxx_Cache are null, then leave
+						// askParty() and go back to askSystem()
+					}
+					
+			        // if choosing to quit the chat mode
+					if (leaveSystem && ChatUtils.isQuitting(Party.party)) {
+						quit = true;
+						ChatUtils.setConnectionMode(-1);
+					}		
+	        	} catch (NullPointerException ne) {
+	        		ne.printStackTrace();
+	        		quit = true;
 	        	}
-	        	
-	        	prompt = "Connected with MarsNet" + expertString + " >";
-	        	
-	        	if (ChatUtils.personCache != null)
-	        		prompt = "Connected with " + ChatUtils.personCache.toString() + expertString + " >";
-	        	else if (ChatUtils.robotCache != null) 
-	        		prompt = "Connected with " + ChatUtils.robotCache.toString() + expertString + " >";
-	        	else if (ChatUtils.settlementCache != null)
-	        		prompt = "Connected with " + ChatUtils.settlementCache.toString() + expertString + " >";	
-	        	else if (ChatUtils.vehicleCache != null)
-	        		prompt = "Connected with " + ChatUtils.vehicleCache.toString() + expertString + " >";	
-
-		        handler.addStringTask("party", prompt, false).addChoices(names);//.constrainInputToChoices();
-		        handler.executeOneTask();
-		        		        
-				// if no settlement, robot, person, or vehicle has been selected yet
-				if (ChatUtils.personCache == null && ChatUtils.robotCache == null 
-						&& ChatUtils.settlementCache == null && ChatUtils.vehicleCache == null) {	
-					// Call parse() to obtain a new value of unit
-					askSystem(Party.party);
-				} 
-				
-				else {
-					// Connect to a certain party
-					askParty(Party.party);
-					// Note : if all xxx_Cache are null, then leave
-					// askParty() and go back to askSystem()
-				}
-				
-		        // if choosing to quit the chat mode
-				if (leaveSystem && ChatUtils.isQuitting(Party.party)) {
-					quit = true;
-					ChatUtils.setConnectionMode(-1);
-				}				
 	        }
         }
     }

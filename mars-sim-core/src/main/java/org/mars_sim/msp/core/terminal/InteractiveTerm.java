@@ -289,20 +289,21 @@ public class InteractiveTerm {
 
     public void setUpESC() {
         terminal.registerHandler(KEY_ESC, t -> {
-        	
-			if (Simulation.instance().getMasterClock().isPaused()) {
-				Simulation.instance().getMasterClock().setPaused(false, false);
-				terminal.printf(System.lineSeparator() + System.lineSeparator());
-				terminal.printf("                          [ Simulation Unpaused ]");
-				terminal.printf(System.lineSeparator() + System.lineSeparator());
-			}
-			else {
-				Simulation.instance().getMasterClock().setPaused(true, false);
-				terminal.printf(System.lineSeparator() + System.lineSeparator());
-				terminal.printf("                           [ Simulation Paused ]");
-				terminal.printf(System.lineSeparator() + System.lineSeparator());
-			}
-			
+        	MasterClock mc = Simulation.instance().getMasterClock();
+        	if (mc != null) {
+				if (mc.isPaused()) {
+					mc.setPaused(false, false);
+					terminal.printf(System.lineSeparator() + System.lineSeparator());
+					terminal.printf("                          [ Simulation Unpaused ]");
+					terminal.printf(System.lineSeparator() + System.lineSeparator());
+				}
+				else {
+					mc.setPaused(true, false);
+					terminal.printf(System.lineSeparator() + System.lineSeparator());
+					terminal.printf("                           [ Simulation Paused ]");
+					terminal.printf(System.lineSeparator() + System.lineSeparator());
+				}
+        	}
             return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
         });
 

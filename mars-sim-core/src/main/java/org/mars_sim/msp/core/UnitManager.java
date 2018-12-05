@@ -28,14 +28,12 @@ import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonalityTraitType;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.Skill;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
@@ -955,26 +953,26 @@ public class UnitManager implements Serializable {
 						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA) {
 							index = 1;
 
-						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA) {
+						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO) {
 							index = 2;
+
+						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA) {
+							index = 3;
+
+						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA) {
+							index = 4;
+
+						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA) {
+							index = 5;
+
+						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA) {
+							index = 6;
 
 							int countryID = getCountryID(country);
 
 							last_list = lastNamesByCountry.get(countryID);
 							male_first_list = maleFirstNamesByCountry.get(countryID);
 							female_first_list = femaleFirstNamesByCountry.get(countryID);
-
-						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO) {
-							index = 3;
-
-						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA) {
-							index = 4;
-
-						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.NASA) {
-							index = 5;
-
-						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA) {
-							index = 6;
 
 //						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY
 //								 || ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACE_X) {
@@ -1101,7 +1099,7 @@ public class UnitManager implements Serializable {
 	 * @param cc the person instance
 	 */
 	public void updateCommander(Person cc) {
-		String newCountry = personConfig.getCountry(getCountry()); 
+		String newCountry = getCountryStr();//personConfig.getCountry(getCountry()); 
 		String newSponsor = getSponsor();//personConfig.getSponsorFromCountry(newCountry);
 //		String oldName = cc.getName();
 //		GenderType oldGender = cc.getGender();			
@@ -1125,7 +1123,7 @@ public class UnitManager implements Serializable {
 	 */
 	public void matchSettlement() {
 		
-		String country = personConfig.getCountry(getCountry()); 
+		String country = getCountryStr();//personConfig.getCountry(getCountry()); 
 		String sponsor = getSponsor();//personConfig.getSponsorFromCountry(country);
 		
 		List<Settlement> list = new ArrayList<>(getSettlements());
@@ -1135,14 +1133,14 @@ public class UnitManager implements Serializable {
 			// If the sponsors are a match
 			if (sponsor.equals(s.getSponsor()) ) {			
 				s.setCommanderMode(true);
-				logger.config("'" + country + "' does have a settlement called '" + s + "'.");
+				logger.config("The nation of '" + country + "' does have a settlement called '" + s + "'.");
 				return;
 			}
 			
 			// If this is the last settlement to examine
 			else if ((j == size - 1)) {			
 				s.setCommanderMode(true);
-				logger.config("'" + country + "' doesn't have any settlements.");
+				logger.config("The nation of '" + country + "' doesn't have any settlements.");
 				return;
 			}
 		}			
@@ -1937,8 +1935,6 @@ public class UnitManager implements Serializable {
 			return "China";
 		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CSA)
 			return "Canada";
-		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA)
-			return countries.get(RandomUtil.getRandomInt(6, 27));
 		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ISRO)
 			return "India";
 		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.JAXA)
@@ -1947,6 +1943,8 @@ public class UnitManager implements Serializable {
 			return "USA";
 		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.RKA)
 			return "Russia";
+		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA)
+			return countries.get(RandomUtil.getRandomInt(6, 27));
 		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY)
 			return "USA";
 		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX)
@@ -2075,11 +2073,16 @@ public class UnitManager implements Serializable {
 		return personConfig.getCommander().getJob();
 	}
 	
-	/** Gets the commander's country */
-	public int getCountry() {
-		return personConfig.getCommander().getCountry();
-	}
+//	/** Gets the commander's country */
+//	public int getCountry() {
+//		return personConfig.getCommander().getCountry();
+//	}
 
+	/** Gets the commander's country */
+	public String getCountryStr() {
+		return personConfig.getCommander().getCountryStr();
+	}
+	
 	/** Gets the commander's sponsor */
 	public String getSponsor() {
 		return personConfig.getCommander().getSponsor();

@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.reportingAuthority;
 
 import java.util.List;
-import java.util.Set;
 
 import org.mars_sim.msp.core.Msg;
 
@@ -16,21 +15,21 @@ public enum ReportingAuthorityType {
 
 	CNSA				(Msg.getString("ReportingAuthorityType.CNSA")), //$NON-NLS-1$
 	CSA					(Msg.getString("ReportingAuthorityType.CSA")), //$NON-NLS-1$
-	ESA					(Msg.getString("ReportingAuthorityType.ESA")), //$NON-NLS-1$
 	ISRO				(Msg.getString("ReportingAuthorityType.ISRO")), //$NON-NLS-1$
 	JAXA				(Msg.getString("ReportingAuthorityType.JAXA")), //$NON-NLS-1$
 	NASA				(Msg.getString("ReportingAuthorityType.NASA")), //$NON-NLS-1$
 	RKA					(Msg.getString("ReportingAuthorityType.RKA")), //$NON-NLS-1$
+	ESA					(Msg.getString("ReportingAuthorityType.ESA")), //$NON-NLS-1$
 	MARS_SOCIETY		(Msg.getString("ReportingAuthorityType.MS")), //$NON-NLS-1$
 	SPACEX				(Msg.getString("ReportingAuthorityType.SpaceX")), //$NON-NLS-1$
 	
 	CNSA_L				(Msg.getString("ReportingAuthorityType.long.CNSA")), //$NON-NLS-1$
 	CSA_L				(Msg.getString("ReportingAuthorityType.long.CSA")), //$NON-NLS-1$
-	ESA_L				(Msg.getString("ReportingAuthorityType.long.ESA")), //$NON-NLS-1$
 	ISRO_L				(Msg.getString("ReportingAuthorityType.long.ISRO")), //$NON-NLS-1$
 	JAXA_L				(Msg.getString("ReportingAuthorityType.long.JAXA")), //$NON-NLS-1$
 	NASA_L				(Msg.getString("ReportingAuthorityType.long.NASA")), //$NON-NLS-1$
 	RKA_L				(Msg.getString("ReportingAuthorityType.long.RKA")), //$NON-NLS-1$
+	ESA_L				(Msg.getString("ReportingAuthorityType.long.ESA")), //$NON-NLS-1$
 	MARS_SOCIETY_L		(Msg.getString("ReportingAuthorityType.long.MarsSociety")), //$NON-NLS-1$
 	SPACEX_L			(Msg.getString("ReportingAuthorityType.long.SpaceX")) //$NON-NLS-1$
 	
@@ -39,11 +38,11 @@ public enum ReportingAuthorityType {
 	public static ReportingAuthorityType[] SPONSORS = new ReportingAuthorityType[]{
 			CNSA,
 			CSA,
-			ESA,
 			ISRO,
 			JAXA,
 			NASA,
 			RKA,
+			ESA,
 			MARS_SOCIETY,
 			SPACEX
 			};
@@ -51,11 +50,11 @@ public enum ReportingAuthorityType {
 	public static ReportingAuthorityType[] SPONSORS_LONG = new ReportingAuthorityType[]{
 			CNSA_L,
 			CSA_L,
-			ESA_L,
 			ISRO_L,
 			JAXA_L,
 			NASA_L,
 			RKA_L,
+			ESA_L,
 			MARS_SOCIETY_L,
 			SPACEX_L
 			};

@@ -64,14 +64,15 @@ public class Commander implements Serializable {
     	gender = g;
     }
 
-    public int getCountry() {
+    public int getCountryInt() {
     	if (countryInt == -1)
-    		countryInt = SimulationConfig.instance().getPersonConfiguration().getCountryNum(countryStr) + 1;
+    		countryInt = SimulationConfig.instance().getPersonConfiguration().getCountryNum(countryStr);
     	return countryInt - 1;
     }
     
-    public void setCountry(int c) {
-    	countryInt = c;
+    public void setCountryInt(int c) {
+    	countryInt = c-1;
+//    	System.out.println("countryInt is " + countryInt);
     }
     
     public void setCountryStr(String c) {
@@ -80,7 +81,7 @@ public class Commander implements Serializable {
     
     public String getCountryStr() {
     	if (countryStr.equals(""))
-    		countryStr = UnitManager.getCountryByID(countryInt-1);
+    		countryStr = UnitManager.getCountryByID(countryInt);
     	return countryStr;
     }
     
@@ -139,7 +140,10 @@ public class Commander implements Serializable {
     		s = Msg.getString("ReportingAuthorityType.long.MarsSociety");
     	}
     	else {
-    		s = UnitManager.getSponsorByCountryID(countryInt-1);
+    		if (!countryStr.equals(""))
+    			s = UnitManager.mapCountry2Sponsor(countryStr);
+    		else
+    			s = UnitManager.getSponsorByCountryID(countryInt);
     	}
     	return s;
     }

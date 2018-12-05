@@ -502,13 +502,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void setSponsor(String sponsor) {
 		this.sponsor = sponsor;
+		assignReportingAuthority();
 	}
 
 	/*
 	 * Assigns sponsoring agency and set up specific mission control for the person
 	 */
 	public void assignReportingAuthority() {
-		if (ra == null) {
+//		if (ra == null) {
 			if (sponsor.contains(ReportingAuthorityType.CNSA.getName())) {
 				ra = CNSAMissionControl.createMissionControl(); // ProspectingMineral
 
@@ -537,7 +538,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				logger.warning(name + " has no reporting authority!");
 				// ra = null;
 			}
-		}
+//		}
 	}
 
 	/*

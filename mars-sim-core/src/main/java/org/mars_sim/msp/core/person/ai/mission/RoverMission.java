@@ -539,6 +539,8 @@ public abstract class RoverMission extends VehicleMission {
 							
 							else {
 								logger.severe("Unable to walk to building " + destinationBuilding);
+								p.getMind().getTaskManager().clearTask();
+//								endMission("Unable to walk to building " + destinationBuilding);
 							}
 	
 						} 

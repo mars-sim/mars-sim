@@ -4007,15 +4007,23 @@ public class ChatUtils {
 					
 					nameCase = personList.size();
 					
+					String s = "";
 					taskStr = personList.get(0).getMind().getTaskManager().getTaskName();
 					
-					if (taskStr.toLowerCase().contains("sleep")) {					
+					// Note: can taskStr be null and thus causing the simulation to hang ?
+					if (taskStr == null) {
+						s = "I'm sorry. " + text + " is occupiedd at this moment. Please try again later.";
+						responseText.append(SYSTEM_PROMPT);
+						responseText.append(s);
+						return responseText.toString();
+					}
+					
+					else if (taskStr.toLowerCase().contains("sleep")) {
+						s = "I'm sorry. " + text + " is unavailable (" + taskStr + ") at this moment. Please try again later.";				
 						// TODO: check if the person is available or not (e.g. sleeping or if on a mission and out of comm range
 						// broke down)
 						responseText.append(SYSTEM_PROMPT);
-						responseText.append("I'm sorry. ");
-						responseText.append(text);
-						responseText.append(" is unavailable (" + taskStr + ") at this moment.");
+						responseText.append(s);
 						return responseText.toString();
 					}
 					

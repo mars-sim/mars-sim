@@ -114,7 +114,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         addAge(textIO, getFieldName(fields[3]), () -> commander.getAge(), s -> commander.setAge(s));	      
         addJobTask(textIO, getFieldName(fields[4]), () -> commander.getJob(), s -> commander.setJob(s));	
         addAffiliation(textIO, getFieldName(fields[5]), () -> commander.isMarsSocietyAffiliated(), s -> commander.setMarsSocietyAffiliated(s));
-        addCountryTask(textIO, getFieldName(fields[6]), () -> commander.getCountry(), s -> commander.setCountry(s));
+        addCountryTask(textIO, getFieldName(fields[6]), () -> commander.getCountryInt(), s -> commander.setCountryInt(s));
           
         setUpCountryKey();
         setUpJobKey();
@@ -452,7 +452,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	        FileInputStream fi = new FileInputStream(PATH);
 	        p.load(fi);
 	        fi.close();
-	        System.out.println("Commander's profile loaded: " + p);
+	        logger.config("Commander's profile loaded: " + p);
 	        commander.setLastName(p.getProperty("commander.lastname"));
 	        commander.setFirstName(p.getProperty("commander.firstname"));
 	        commander.setGender(p.getProperty("commander.gender"));
