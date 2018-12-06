@@ -333,7 +333,7 @@ public class Storage extends Function implements Serializable {
 					// Vent or drain 1% of resource
 					double ventAmount = 0.01 * inv.getAmountResourceCapacity(id, false);
 					inv.retrieveAmountResource(id, ventAmount);
-//					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName + "::" + method, 
+//					LogConsolidated.log(Level.WARNING, 10_000, sourceName + "::" + method, 
 //							"[" + inv.getOwner()
 //				    		+ "] No more room to store " + Math.round(amount*100.0)/100.0 + " kg of "
 //				    		+ ResourceUtil.findAmountResourceName(id) + ". Venting ", null);
@@ -343,9 +343,9 @@ public class Storage extends Function implements Serializable {
 						Settlement s = (Settlement)(inv.getOwner());
 						s.increaseGreyWaterFilteringRate();
 						double r = s.getGreyWaterFilteringRate();
-						LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName + "::" + method, 
+						LogConsolidated.log(Level.WARNING, 1_000, sourceName + "::" + method, 
 								"[" + s
-					    		+ "] Updated the grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".", null);
+					    		+ "] Updated the grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 					}
 				}
 
@@ -355,17 +355,16 @@ public class Storage extends Function implements Serializable {
 					// capacity to full
 					if (!method.equals(""))
 						method = " at " + method;
-				    LogConsolidated.log(logger, Level.SEVERE, 1_000, sourceName + method, 
+				    LogConsolidated.log(Level.SEVERE, 30_000, sourceName + method, 
 				    		"[" + inv.getOwner()
 				    		+ "] The storage capacity for " 
 				    		+ ResourceUtil.findAmountResourceName(id) + " has been reached. Only "
 					    	+ Math.round(remainingCapacity*10000.0)/10000.0 
 					    	+ " kg can be stored."  
-					    	+ "."
 					    	//+ " (Remaining capacity : " + Math.round(remainingCapacity*100.0)/100.0
 					    	//+ " (Stored : " + Math.round(stored*100.0)/100.0
 					    	//+ ")"
-				    	, null);	
+				    	);	
 					amount = remainingCapacity;
 					inv.storeAmountResource(id, amount, true);
 					inv.addAmountSupplyAmount(id, amount);
@@ -380,17 +379,17 @@ public class Storage extends Function implements Serializable {
 
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
-				LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
+				LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
 						"[" + inv.getOwner()
-			    		+ "] Issues with (int) storeAnResource on " + ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), null);
+			    		+ "] Issues with (int) storeAnResource on " + ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), e);
 			}
 		} else {
 			result = false;
 			if (!method.equals(""))
 				method = " at " + method;
-			LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
+			LogConsolidated.log(Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
     		+ "] Attempting to store non-positive amount of "
-					+ ResourceUtil.findAmountResourceName(id) + method, null);
+					+ ResourceUtil.findAmountResourceName(id) + method);
 		}
 
 		return result;
@@ -445,9 +444,9 @@ public class Storage extends Function implements Serializable {
 						// Adjust the grey water filtering rate
 						s.decreaseGreyWaterFilteringRate();
 						double r = s.getGreyWaterFilteringRate();
-						LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName, 
+						LogConsolidated.log(Level.WARNING, 1_000, sourceName, 
 								"[" + s
-					    		+ "] Updated the new grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".", null);
+					    		+ "] Updated the new grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 					}
 				
 				} else if (amountStored < amount) {
@@ -456,11 +455,11 @@ public class Storage extends Function implements Serializable {
 						inv.retrieveAmountResource(id, amount);
 						inv.addAmountDemand(id, amount);
 					}
-					LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+					LogConsolidated.log(Level.WARNING, 30_000, sourceName,
 							"[" + inv.getOwner()
-				    		+ "] No more "
-							+ ResourceUtil.findAmountResourceName(id) + ".",
-							null);
+				    		+ "] ran out of "
+							+ ResourceUtil.findAmountResourceName(id) + "."
+							);
 					result = false;
 				
 				} else {
@@ -472,15 +471,15 @@ public class Storage extends Function implements Serializable {
 				}
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
-				LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
+				LogConsolidated.log(Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
 	    		+ "] Issues with retrieveAnResource(ar) on "
-						+ ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), null);
+						+ ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), e);
 			}
 		} else {
 			result = false;
-			LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
+			LogConsolidated.log(Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
     		+ "] Attempting to retrieve non-positive amount of "
-					+ ResourceUtil.findAmountResourceName(id), null);
+					+ ResourceUtil.findAmountResourceName(id));
 		}
 
 		return result;

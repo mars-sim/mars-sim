@@ -130,8 +130,6 @@ public class EventTableModel extends AbstractTableModel
 	 * @param manager   Manager to extract events from.
 	 * @param notifyBox to present notification message to user.
 	 */
-	// 2014-11-29 Added NotificationWindow as param
-	// 2015-01-14 Added desktop as param
 	public EventTableModel(HistoricalEventManager manager, NotificationWindow notifyBox, MainDesktopPane desktop) {
 		this.manager = manager;
 		this.notifyBox = notifyBox;

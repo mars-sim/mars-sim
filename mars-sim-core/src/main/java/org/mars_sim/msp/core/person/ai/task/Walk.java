@@ -1157,19 +1157,22 @@ public class Walk extends Task implements Serializable {
 			// Exit a rover inside a garage
 //			person.exit(LocationCodeType.MOBILE_UNIT_3);
 			
-			rover.getInventory().retrieveUnit(person);
-			garageBuilding.getSettlementInventory().storeUnit(person); 
+			if (person.isInVehicleInGarage())
+				rover.getInventory().retrieveUnit(person);
+			
+			if (!person.isInSettlement()) {
+				garageBuilding.getSettlementInventory().storeUnit(person); 
 			// java.lang.IllegalStateException: Unit: Gerardo Marinez could not be stored.
 			// [Alpha Base] Gerardo Marinez was about to exit the rover Gypsea and reportedly in Garage 1.
 			
-			BuildingManager.addPersonOrRobotToBuilding(person, garageBuilding);
+				BuildingManager.addPersonOrRobotToBuilding(person, garageBuilding);
 
-			LogConsolidated.log(Level.FINER, 0, sourceName + "::exitingRoverGaragePhase",
+				LogConsolidated.log(Level.FINER, 0, sourceName + "::exitingRoverGaragePhase",
 	  				"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " had just exit the rover " + rover.getName() 
 					+ " and was reportedly in " + person.getLocationTag().getImmediateLocation()
 					+ ".");
-			
+			}
 		} 
 		
 		else if (robot != null) {
@@ -1183,16 +1186,19 @@ public class Walk extends Task implements Serializable {
 			// Exit a rover inside a garage
 //			robot.exit(LocationCodeType.MOBILE_UNIT_3);
 			
-			rover.getInventory().retrieveUnit(robot);
-			garageBuilding.getSettlementInventory().storeUnit(robot);
-			BuildingManager.addPersonOrRobotToBuilding(robot, garageBuilding);
+			if (robot.isInVehicleInGarage())
+				rover.getInventory().retrieveUnit(robot);
 			
-			LogConsolidated.log(Level.FINER, 00, sourceName + "::exitingRoverGaragePhase",
-	  				"[" + robot.getLocationTag().getLocale() + "] "
-					+ robot + " had just exited rover " + rover.getName() 
-					+ " and was reportedly in " + robot.getLocationTag().getImmediateLocation()
-					+ ".");
-
+			if (!robot.isInSettlement()) {
+				garageBuilding.getSettlementInventory().storeUnit(robot);
+				BuildingManager.addPersonOrRobotToBuilding(robot, garageBuilding);
+				
+				LogConsolidated.log(Level.FINER, 00, sourceName + "::exitingRoverGaragePhase",
+		  				"[" + robot.getLocationTag().getLocale() + "] "
+						+ robot + " had just exited rover " + rover.getName() 
+						+ " and was reportedly in " + robot.getLocationTag().getImmediateLocation()
+						+ ".");
+			}
 		}
 
 		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {

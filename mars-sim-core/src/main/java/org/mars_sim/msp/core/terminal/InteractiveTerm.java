@@ -298,8 +298,9 @@ public class InteractiveTerm {
 					//terminal.printf(System.lineSeparator() + System.lineSeparator());
 				}
 				else {
+					terminal.resetLine();
 					mc.setPaused(true, false);
-					terminal.printf(System.lineSeparator() + System.lineSeparator());
+//					terminal.printf(System.lineSeparator() + System.lineSeparator());
 					terminal.printf("                           [ Simulation Paused ]");
 					//terminal.printf(System.lineSeparator() + System.lineSeparator());
 				}

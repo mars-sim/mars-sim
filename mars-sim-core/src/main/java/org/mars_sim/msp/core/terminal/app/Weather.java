@@ -18,7 +18,6 @@ package org.mars_sim.msp.core.terminal.app;
 import org.beryx.textio.PropertiesConstants;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
-import org.beryx.textio.TextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.terminal.AppUtil;
 import org.mars_sim.msp.core.terminal.RunnerData;

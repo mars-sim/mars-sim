@@ -419,16 +419,17 @@ public abstract class EVAOperation extends Task implements Serializable {
 	public static boolean noEVAProblem(Person person) {
 		
 		if (isGettingDark(person)) {
-			LogConsolidated.log(Level.INFO, 5000, sourceName,
+			LogConsolidated.log(Level.FINE, 5000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
-					+ person.getTaskDescription() + " because the sky was getting too dark to continue with the EVA.");
+					+ person.getTaskDescription() + " : too dark to continue with the EVA.");
 			return false;
 		}
 		
 		EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 		if (suit == null) {
-			LogConsolidated.log(Level.SEVERE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-							+ person.getName() + " ended the attempt to perform EVA because no EVA suit is available.");
+			LogConsolidated.log(Level.WARNING, 5000, sourceName, 
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended " 
+							+ person.getTaskDescription() + " : no EVA suit is available.");
 			return false;
 		}
 
@@ -441,7 +442,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 			if (oxygen <= (oxygenCap * .2D)) {
 				LogConsolidated.log(Level.INFO, 5000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-								+ " reported less than 10% O2 level left. Ending "
+								+ " reported less than 20% O2 level left. Ending "
 								+ person.getTaskDescription() + " : " + suit.getName());
 				return false;
 			}

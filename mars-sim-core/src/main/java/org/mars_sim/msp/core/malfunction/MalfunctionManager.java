@@ -882,6 +882,7 @@ public class MalfunctionManager implements Serializable {
 						entity.getLocale());
 
 				eventManager.registerNewEvent(newEvent);
+				
 				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 						"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' has been fixed in "
 						+ entity.getImmediateLocation(), null);
