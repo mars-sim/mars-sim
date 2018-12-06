@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.Landmark;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -92,7 +93,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	private Integer[] lon_degrees = new Integer[361];
 	private Integer[] lat_degrees = new Integer[91];
 
-	private JComboBoxMW<?> latCB, longCB;
+	private JComboBoxMW<?> latCB;
+	private JComboBoxMW<?> longCB;
 	/** map navigation. */
 	private MapPanel map;
 	/** Globe navigation. */
@@ -146,6 +148,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	private MapLayer exploredSiteLayer;
 
 	private static List<Landmark> landmarks;
+	
+	private static Simulation sim = Simulation.instance();
+	private static UnitManager unitManager = sim.getUnitManager();
 
 	/**
 	 * Constructor.
@@ -157,7 +162,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		super(NAME, desktop);
 		this.desktop = desktop;
 
-		landmarks = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks();
+		landmarks = sim.getMars().getSurfaceFeatures().getLandmarks();
 
 		if (desktop.getMainScene() != null) {
 
@@ -887,13 +892,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 			Coordinates clickedPosition = map.getCenterLocation().convertRectToSpherical(x, y, rho);
 
-			Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
+			Iterator<Unit> i = unitManager.getUnits().iterator();
 
 			// Open window if unit is clicked on the map
 			while (i.hasNext()) {
 				Unit unit = i.next();
 				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-				if (displayInfo.isMapDisplayed(unit)) {
+				if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
 					Coordinates unitCoords = unit.getCoordinates();
 					double clickRange = unitCoords.getDistance(clickedPosition);
 					double unitClickRange = displayInfo.getMapClickRange();
@@ -919,13 +924,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			Coordinates mousePos = map.getCenterLocation().convertRectToSpherical(x, y, rho);
 			boolean onTarget = false;
 
-			Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
+			Iterator<Unit> i = unitManager.getUnits().iterator();
 
 			// Change mouse cursor if hovering over an unit on the map
 			while (i.hasNext()) {
 				Unit unit = i.next();
 				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-				if (displayInfo.isMapDisplayed(unit)) {
+				if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
 					Coordinates unitCoords = unit.getCoordinates();
 					double clickRange = unitCoords.getDistance(mousePos);
 					double unitClickRange = displayInfo.getMapClickRange();
@@ -968,9 +973,33 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	public void destroy() {
 		map.destroy();
 		globeNav.destroy();
-		// navButtons = null;
-		ruler = null;
 
+		latCB = null;
+		longCB = null;
+		map = null;
+		globeNav = null;
+		ruler = null;
+		latText = null;
+		longText = null;
+		latDir = null;
+		longDir = null;
+		goThere = null;
+		optionsButton = null;
+		optionsMenu = null;
+		mineralsButton = null;
+		topoItem = null;
+		unitLabelItem = null;
+		dayNightItem = null;
+		trailItem = null;
+		landmarkItem = null;
+		navpointItem = null;
+		exploredSiteItem = null;
+		mineralItem = null;
+		mapPaneInner = null;
+		
+		unitManager = null;
+		landmarks = null;
+		
 		unitIconLayer = null;
 		unitLabelLayer = null;
 		shadingLayer = null;
@@ -979,8 +1008,5 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		navpointLayer = null;
 		landmarkLayer = null;
 		exploredSiteLayer = null;
-
-		mapPaneInner = null;
-
 	}
 }
