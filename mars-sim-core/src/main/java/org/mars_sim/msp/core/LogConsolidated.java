@@ -8,9 +8,11 @@
 package org.mars_sim.msp.core;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.common.flogger.FluentLogger;
 //  See https://stackoverflow.com/questions/9132193/log4j-standard-way-to-prevent-repetitive-log-messages#37619797
 //	Do
 // 		LogConsolidated.log(logger, Level.WARN, 5000, "File: " + f + " not found.", e);
@@ -19,6 +21,9 @@ import java.util.logging.Logger;
 
 public class LogConsolidated {
 
+	/* Google fluent logger. */
+	private static final FluentLogger flogger = FluentLogger.forEnclosingClass();
+	
 	private static HashMap<String, TimeAndCount> lastLogged = new HashMap<>();
 
 	private static final String OPEN_BRACKET = "[x";
@@ -57,7 +62,7 @@ public class LogConsolidated {
 		long dTime = timeBetweenLogs;
 		String className = sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length());
 
-		// if (logger.isEnabledFor(level)) {
+//		if (logger.isEnabledFor(level)) {
 		String uniqueIdentifier = getFileAndLine();
 		TimeAndCount lastTimeAndCount = lastLogged.get(uniqueIdentifier);
 		if (lastTimeAndCount != null) {
@@ -82,9 +87,31 @@ public class LogConsolidated {
 
 		// Register the message
 		lastLogged.put(uniqueIdentifier, new TimeAndCount());
-		// }
 	}
+//	}
 
+//	public static void go(Level level, int timeBetweenLogs, StringBuffer sb) {
+//		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.SECONDS).log(sb.toString());
+//	}
+	
+	public static void log(Level level, int timeBetweenLogs, String sourceName, String message) {
+		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.SECONDS).log(sourceName + COLON + message);
+	}
+	
+	public static void log(Level level, int timeBetweenLogs, String sourceName, String message, Throwable t) {
+		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.SECONDS).log(sourceName + COLON + message, t);
+	}
+	
+//	public static void info(int timeBetweenLogs, String sourceName, String message) {
+//		flogger.atInfo().atMostEvery(timeBetweenLogs, TimeUnit.SECONDS)
+//			.log(sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length()) + COLON + message);
+//	}
+//	
+//	public static void info(int timeBetweenLogs, String sourceName, String message, Throwable t) {
+//		flogger.atInfo().atMostEvery(timeBetweenLogs, TimeUnit.SECONDS)
+//			.log(sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length()) + COLON + message, t);
+//	}
+	
 	/**
 	 * Returns the line
 	 * 

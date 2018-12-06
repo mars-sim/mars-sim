@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
 import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import java.awt.geom.Point2D;
@@ -125,16 +126,17 @@ public abstract class Airlock implements Serializable {
 		awaitingOuterDoor = new ArrayList<Person>();
 		
 		if (getEntity() instanceof Building) {
-			locale = ((Building)getEntity()).getBuildingManager().getSettlement().getName();
+			locale = ((Building)getEntity()).getLocationTag().getLocale();//.getBuildingManager().getSettlement().getName();
 		}
 		
 		else if (getEntity() instanceof Vehicle) {
-			if (((Vehicle)getEntity()).getSettlement() != null) {
-				locale = ((Vehicle)getEntity()).getSettlement().getName();
-			}
-			else {
-				locale = ((Vehicle)getEntity()).getLocale();
-			}
+			locale = ((Vehicle)getEntity()).getLocationTag().getLocale();
+//			if (((Vehicle)getEntity()).getSettlement() != null) {
+//				locale = ((Vehicle)getEntity()).getSettlement().getName();
+//			}
+//			else {
+//				locale = ((Vehicle)getEntity()).getLocale();
+//			}
 		}
 	}
 
@@ -157,24 +159,26 @@ public abstract class Airlock implements Serializable {
 			if (inside && !innerDoorLocked) {
 				if (awaitingInnerDoor.contains(person)) {
 					awaitingInnerDoor.remove(person);
+					
 					if (awaitingInnerDoor.contains(person)) {
-						throw new IllegalStateException(person + " still awaiting inner door!");
+						throw new IllegalStateException(person + " was still waiting inner door.");
 					}
 				}
-				LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+				LogConsolidated.log(Level.FINER, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " 
-							+ person.getName() + " enters through the inner door of the airlock at " + getEntityName(), null);
+							+ person.getName() + " entered through the inner door of the airlock at " + getEntityName());
 				result = true;
 			} else if (!inside && !outerDoorLocked) {
 				if (awaitingOuterDoor.contains(person)) {
 					awaitingOuterDoor.remove(person);
+					
 					if (awaitingOuterDoor.contains(person)) {
-						throw new IllegalStateException(person + " still awaiting outer door!");
+						throw new IllegalStateException(person + " was still awaiting outer door!");
 					}
 				}
-				LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+				LogConsolidated.log(Level.FINER, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " 
-							+ person.getName() + " enters through the outer door of the airlock at " + getEntityName(), null);
+							+ person.getName() + " entered through the outer door of the airlock at " + getEntityName());
 				result = true;
 			}
 
@@ -194,10 +198,10 @@ public abstract class Airlock implements Serializable {
 	 * @return true if airlock successfully activated.
 	 */
 	public boolean activateAirlock(Person operator) {
-		LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+		LogConsolidated.log(Level.FINER, 0, sourceName,
 				"[" + operator.getLocationTag().getLocale() + "] " 
-					+ operator.getName() + " was getting ready to activate the airlock at "
-					+ getEntityName(), null);
+					+ operator.getName() + " as the operator was getting ready to activate the airlock at "
+					+ getEntityName());
 		
 		boolean result = false;
 
@@ -214,10 +218,10 @@ public abstract class Airlock implements Serializable {
 					}
 
 					if (!occupants.contains(person)) {
-						LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+						LogConsolidated.log(Level.FINER, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " 
 									+ person.getName() + " entered through the inner door of the airlock at "
-									+ getEntityName(), null);
+									+ getEntityName());
 						occupants.add(person);
 					}
 
@@ -235,10 +239,10 @@ public abstract class Airlock implements Serializable {
 					}
 
 					if (!occupants.contains(person)) {
-						LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+						LogConsolidated.log(Level.FINER, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " 
 								+ person.getName() + " entered through the outer door of the airlock at "
-								+ getEntityName(), null);
+								+ getEntityName());
 						occupants.add(person);
 					}
 
@@ -258,9 +262,9 @@ public abstract class Airlock implements Serializable {
 			} else if (DEPRESSURIZED.equals(state)) {
 				setState(PRESSURIZING);
 			} else {
-				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,
+				LogConsolidated.log(Level.SEVERE, 0, sourceName,
 						"[" + operator.getLocationTag().getLocale() + "] " 
-					+ operator.getName() + " reported the airlock was having incorrect state for activation: '" + state + "'.", null);
+					+ operator.getName() + " reported the airlock was having incorrect state for activation: '" + state + "'.");
 				return false;
 			}
 
@@ -296,6 +300,25 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
+	 * Elects an operator randomly
+	 * 
+	 * @return
+	 */
+	private Person electAnOperator() {
+		int size = occupants.size();
+		
+		int rand = -1;
+		
+		if (size > 0) {
+			rand = RandomUtil.getRandomInt(size-1);
+			List<Person> list = new ArrayList<>(occupants);
+			return list.get(rand);
+		}
+		
+		return null;	
+	}
+	
+	/**
 	 * Deactivates the airlock and opens the appropriate door. Any people in the
 	 * airlock are transferred inside or outside the airlock.
 	 * 
@@ -323,11 +346,11 @@ public abstract class Airlock implements Serializable {
 				Person occupant = i.next();
 				if (occupant instanceof Person) {
 					Person person = (Person) occupant;
-					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+					LogConsolidated.log(Level.FINER, 0, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " 
 						+ person.getName()
 						+ " reported that the airlock in " + getEntity() + " had been " + getState() 
-							+ ".", null);
+							+ ".");
 				}
 
 				exitAirlock(occupant);
@@ -393,7 +416,7 @@ public abstract class Airlock implements Serializable {
 	 */
 	private void setState(String state) {
 		this.state = state;
-		logger.finer("The airlock in " + getEntityName() + " is " + state);
+		logger.finer("The airlock in " + getEntityName() + " was " + state);
 	}
 
 	public Person getOperator() {
@@ -423,8 +446,8 @@ public abstract class Airlock implements Serializable {
 	 */
 	public void addAwaitingAirlockInnerDoor(Person p) {
 		if (!awaitingInnerDoor.contains(p)) {
-			LogConsolidated.log(logger, Level.FINER, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
-					+ p.getName() + " was awaiting the inner door of the airlock in " + getEntityName() + " to open.", null);
+			LogConsolidated.log(Level.FINER, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+					+ p.getName() + " was awaiting the inner door of the airlock in " + getEntityName() + " to open.");
 			awaitingInnerDoor.add(p);
 		}
 	}
@@ -436,8 +459,9 @@ public abstract class Airlock implements Serializable {
 	 */
 	public void addAwaitingAirlockOuterDoor(Person p) {
 		if (!awaitingOuterDoor.contains(p)) {
-			LogConsolidated.log(logger, Level.FINER, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
-					+ p.getName() + " was in " + p.getLocationTag().getImmediateLocation() + " and waiting the outer door of the airlock in " + getEntityName() + " to open.", null);
+			LogConsolidated.log(Level.FINER, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+					+ p.getName() + " was in " + p.getLocationTag().getImmediateLocation() 
+					+ " and waiting the outer door of the airlock in " + getEntityName() + " to open.");
 			awaitingOuterDoor.add(p);
 		}
 	}
@@ -450,19 +474,31 @@ public abstract class Airlock implements Serializable {
 	 */
 	public void timePassing(double time) {
 		if (activated) {
-			// Check if operator is dead.
+			
 			if (operator != null) {
 
 				boolean isDead = operator.getPhysicalCondition().isDead();
-
+				// Check if operator is dead.
 				if (isDead) {
 					// If operator is dead, deactivate airlock.
 					String operatorName = operator.getName();
-					LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + operator.getLocationTag().getLocale() + "] "
-					+ "Airlock operator " + operatorName + " was dead. Emergency deactivating the airlock of "
-							+ getEntityName(), null);
-					deactivateAirlock();
-				} else {
+					LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + operator.getLocationTag().getLocale() + "] "
+							+ "Airlock operator " + operatorName + " was dead."
+							+ getEntityName());
+					
+					// Elect a new operator
+					operator = electAnOperator();
+					if (operator == null) 
+						// No operator, deactivate the air lock
+						deactivateAirlock();
+					else {
+						LogConsolidated.log(Level.INFO, 0, sourceName, "[" + operator.getLocationTag().getLocale() + "] "
+								+ operator + " stepped up and became the operator of the airlock in "
+								+ getEntityName());
+					}
+				} 
+				
+				else {
 					// Check if airlock operator still has a task involving the airlock.
 					boolean hasAirlockTask = false;
 
@@ -477,20 +513,37 @@ public abstract class Airlock implements Serializable {
 
 					if (!hasAirlockTask) {
 						String operatorName = operator.getName();
-						LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "[" + operator.getLocationTag().getLocale() + "] "
+						LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + operator.getLocationTag().getLocale() + "] "
 								+ "Airlock operator " + operatorName + " was no longer "
-								+ "operating the airlock.  Deactivating airlock of " + getEntityName(), null);
-						deactivateAirlock();
+								+ "operating the airlock in " + getEntityName());
+						// Elect a new operator
+						operator = electAnOperator();
+						if (operator == null) 
+							// No operator, deactivate the air lock
+							deactivateAirlock();
+						else {
+							LogConsolidated.log(Level.INFO, 0, sourceName, "[" + operator.getLocationTag().getLocale() + "] "
+									+ operator + " stepped up and became the operator of the airlock in "
+									+ getEntityName());
+						}
 					}
 				}
 			}
 			
 			else {
 				// If no operator, deactivate airlock.
-				deactivateAirlock();
-				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, //"[" + locale + "] "
-					"Without an operator, the airlock at " 
-					+ getEntityName() + " was deactivated.", null);
+				LogConsolidated.log(Level.SEVERE, 0, sourceName, //"[" + locale + "] "
+						"Without an operator, the airlock in " 
+						+ getEntityName() + " may get deactivated.");
+				if (operator == null) 
+					// No operator, deactivate the air lock
+					deactivateAirlock();
+				else {
+					LogConsolidated.log(Level.INFO, 0, sourceName, "[" + operator.getLocationTag().getLocale() + "] "
+							+ operator + " stepped up and became the operator of the airlock in "
+							+ getEntityName());
+				}
+
 			}
 		}
 	}

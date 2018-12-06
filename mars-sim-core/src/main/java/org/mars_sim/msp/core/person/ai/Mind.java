@@ -256,7 +256,7 @@ public class Mind implements Serializable {
 				try {
 					getNewAction(true, (!hasActiveMission && !overrideMission));
 				} catch (Exception e) {
-					LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
+					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 							person.getName() + " could not get new action", e);
 					e.printStackTrace(System.err);
 				}
@@ -454,8 +454,8 @@ public class Mind implements Serializable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
-					person.getName() + " has invalid weight sum : " + weightSum + ". tasks is " + tasks + ". missions is " + missions, null);
+			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+					person.getName() + " has invalid weight sum : " + weightSum + ". tasks is " + tasks + ". missions is " + missions);
 //			throw new IllegalStateException("Mind.getNewAction(): " + person + " weight sum: " + weightSum);
 		}
 

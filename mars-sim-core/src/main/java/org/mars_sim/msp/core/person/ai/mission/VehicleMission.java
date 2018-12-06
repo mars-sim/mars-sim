@@ -373,11 +373,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					if (!vehicle.isBeaconOn()) {
 						// if the emergency beacon is off
 						// Question: could the emergency beacon itself be broken ?
-						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+						LogConsolidated.log(Level.WARNING, 0, sourceName,
 								"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
 										+ " turned on " + vehicle
-										+ "'s emergency beacon and request for towing. Reason : " + reason,
-								null);
+										+ "'s emergency beacon and request for towing. Reason : " + reason);
 						vehicle.setEmergencyBeacon(true);
 
 						if (!vehicle.isBeingTowed()) {
@@ -401,9 +400,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 							// Note: the vehicle is being towed, wait till the journey is over
 							// don't end the mission yet
 							// So do not called setPhaseEnded(true) and super.endMission(reason);
-							LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
+							LogConsolidated.log(Level.WARNING, 2000, sourceName,
 									"[" + vehicle.getLocationTag().getLocale() + "] "
-									+  vehicle.getName() + " is currently being towed by " + vehicle.getTowingVehicle(), null);
+									+  vehicle.getName() + " is currently being towed by " + vehicle.getTowingVehicle());
 //									+ " Remaining distance : " + getClosestDistance() + " km.", null);
 						}
 					}
@@ -418,10 +417,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 				else { // Vehicle is already in the settlement vicinity
 					// e.g. unrepairable malfunction
-					LogConsolidated.log(logger, Level.WARNING, 2000, sourceName, 
+					LogConsolidated.log(Level.WARNING, 2000, sourceName, 
 							"[" + vehicle.getLocationTag().getLocale() + "] "
 							+ vehicle.getName() + " is currently at " + vehicle.getSettlement()
-							+ " and its mission ended. Reason : " + reason, null);
+							+ " and its mission ended. Reason : " + reason);
 					// if the vehicle is still somewhere inside the settlement when it got broken
 					// down
 					// TODO: wait till the repair is done and the mission may resume ?!?
@@ -502,12 +501,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		boolean settlementSupplies = LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resources, equipment,
 				getPeopleNumber(), tripTime);
 		if (!vehicleCapacity) {
-			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-					"[" + vehicle.getName() + "] doesn't have enough capacity for " + startingMember + "'s proposed excursion.", null);
+			LogConsolidated.log(Level.WARNING, 5000, sourceName,
+					"[" + vehicle.getName() + "] doesn't have enough capacity for " + startingMember + "'s proposed excursion.");
 		}
 		if (!settlementSupplies) {
-			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
-					"[" + settlement.getName() + "] doesn't have enough supplies for " + startingMember + "'s proposed excursion.", null);
+			LogConsolidated.log(Level.WARNING, 5000, sourceName,
+					"[" + settlement.getName() + "] doesn't have enough supplies for " + startingMember + "'s proposed excursion.");
 		}
 
 		return vehicleCapacity && settlementSupplies;
@@ -881,7 +880,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 								+ ResourceUtil.findAmountResourceName(resource) + " to continue with "
 								+ getName() + " (Required: " + Math.round(amount * 100D) / 100D + " kg  Stored: "
 								+ Math.round(amountStored * 100D) / 100D + " kg).";
-						LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, newLog, null);
+						LogConsolidated.log(Level.WARNING, 10_000, sourceName, newLog);
 						result = false;
 					}
 				}
@@ -894,7 +893,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						String newLog = "[" + vehicle.getLocationTag().getLocale() + "] " + vehicle.getName() + " does not have enough " 
 								+ ResourceUtil.findAmountResource(resource).getName() + " to continue with "
 								+ getName() + " (Required: " + num + "  Stored: " + numStored + ").";
-						LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, newLog, null);
+						LogConsolidated.log(Level.WARNING, 10_000, sourceName, newLog);
 						result = false;
 					}
 				}
@@ -967,11 +966,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
 					sameDestination = true;
 
-					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
+					LogConsolidated.log(Level.WARNING, 5000, sourceName,
 							"[" + vehicle.getName() + "] Home Settlement (" + newDestination.getName() + ") : " 
 							+ Math.round(newDistance * 100D) / 100D
-							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols",
-							null);
+							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
 					
 					returnHome();
 
@@ -979,13 +977,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 				if (!sameDestination) {
 
-					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
+					LogConsolidated.log(Level.WARNING, 5000, sourceName,
 							"[" + vehicle.getName() + "] Home Settlement (" + oldHome.getName() + ") : " 
 							+ Math.round(oldDistance * 100D) / 100D
 							+ " km    Nearest Settlement (" + newDestination.getName() + ") : " 
 							+ Math.round(newDistance * 100D) / 100D
-							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols",
-							null);
+							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
 
 					// Creating emergency destination mission event.
 					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION, this,
@@ -1022,26 +1019,24 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
 					sameDestination = true;
 
-					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
+					LogConsolidated.log(Level.WARNING, 5000, sourceName,
 							"[" + vehicle.getName() 
 							+ "] Home Settlement (" + newDestination.getName() + ") : " 
 							+ Math.round(newDistance * 2 / 3 * 100D) / 100D 
 							+ " km    Duration : "
-							+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols",
-							null);
+							+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
 
 					returnHome();
 				}
 
 				if (!sameDestination) {
 
-					LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
+					LogConsolidated.log(Level.WARNING, 5000, sourceName,
 							"[" + vehicle.getName() 
 							+ "] Home Settlement (" + oldHome.getName() + ") : " 
 							+ Math.round(oldDistance * 100D) / 100D
 							+ " km    Next Routing Stop : " + Math.round(newDistance * 2 / 3 * 100D) / 100D
-							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols",
-							null);
+							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
 
 					// Creating emergency destination mission event.
 					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION, this,

@@ -513,7 +513,7 @@ public class TaskManager implements Serializable {
 //				//}
 //            	
 //        		// if he is not outside, he may take on this repair task
-//        		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+//        		LogConsolidated.log(Level.INFO, 1000, sourceName, 
 //        				person + " cancelled '" + currentTask +
 //                        "' and rushed to the scene to participate in an EVA emergency repair.", null);
 //                clearTask();
@@ -525,7 +525,7 @@ public class TaskManager implements Serializable {
 //		
 //		else { // requires no EVA for the repair
 //			
-//    		LogConsolidated.log(logger, Level.INFO, 1000, sourceName, 
+//    		LogConsolidated.log(Level.INFO, 1000, sourceName, 
 //    				person + " cancelled '" + currentTask +
 //                    "' and rushed to the scene to participate in an non-EVA emergency repair.", null);
 //            clearTask();
@@ -550,7 +550,9 @@ public class TaskManager implements Serializable {
 		double totalProbability = getTotalTaskProbability(true);
 
 		if (totalProbability == 0D) {
-			throw new IllegalStateException(mind.getPerson() + " has zero total task probability weight.");
+//			throw new IllegalStateException(mind.getPerson() + " has zero total task probability weight.");
+			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+					person.getName() + " has zero total task probability weight.");
 		}
 
 		double r = RandomUtil.getRandomDouble(totalProbability);
@@ -569,7 +571,9 @@ public class TaskManager implements Serializable {
 		}
 
 		if (selectedMetaTask == null) {
-			throw new IllegalStateException(mind.getPerson() + " could not determine a new task.");
+//			throw new IllegalStateException(mind.getPerson() + " could not determine a new task.");
+			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+					person.getName() + " could not determine a new task.");
 		} else {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			result = selectedMetaTask.constructInstance(mind.getPerson());
@@ -656,9 +660,9 @@ public class TaskManager implements Serializable {
 				
 				else {
 					taskProbCache.put(mt, 0D);
-					LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
+					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 							mind.getPerson().getName() + " has invalid probability when calculating "
-								+ mt.getName() + " : Probability is " + probability + ".", null);
+								+ mt.getName() + " : Probability is " + probability + ".");
 				}
 			}
 		}

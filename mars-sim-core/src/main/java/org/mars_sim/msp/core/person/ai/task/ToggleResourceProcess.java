@@ -436,11 +436,11 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 //		if (resourceProcessBuilding != null) {
 //			process = getResourceProcess(resourceProcessBuilding);
-
+		double perf = person.getPerformanceRating();
 		// If person is incapacitated, enter airlock.
-		if (person.getPerformanceRating() == 0D) {
-			// reset it to 3% so that he can walk inside
-			person.getPhysicalCondition().setPerformanceFactor(3);
+		if (perf == 0D) {
+			// reset it to 10% so that he can walk inside
+			person.getPhysicalCondition().setPerformanceFactor(.1);
 //			if (needEVA) {
 //				setPhase(WALK_BACK_INSIDE);
 //			} else {

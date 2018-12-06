@@ -192,7 +192,7 @@ public abstract class Mission implements Serializable {
 
 			// Log mission starting.
 			int n = members.size();
-			String str = null;
+			String str = "";
 			if (n == 0)
 				str = ".";
 			else if (n == 1)
@@ -205,8 +205,8 @@ public abstract class Mission implements Serializable {
 			if(Conversion.isVowel(missionName))
 				article = "an ";
 
-			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, "[" + person.getSettlement() + "] "
-					+ startingMember.getName() + " is organizing " + article + missionName + " mission" + str, null);
+			LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + person.getSettlement() + "] "
+					+ startingMember.getName() + " is organizing " + article + missionName + " mission" + str);
 
 			// Add starting member to mission.
 			// Temporarily set the shift type to none during the mission
@@ -756,10 +756,9 @@ public abstract class Mission implements Serializable {
 			// TODO : there can be custom reason such as "Equipment EVA Suit 12 cannot be
 			// loaded in rover Rahu" with mission name 'Trade With Camp Bradbury'
 
-			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+			LogConsolidated.log(Level.INFO, 1000, sourceName,
 					"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
-							+ " ended the " + missionName + " mission. Reason : " + reason,
-					null);
+							+ " ended the " + missionName + " mission. Reason : " + reason);
 
 			done = true; // Note: done = true is very important to keep !
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
@@ -770,11 +769,10 @@ public abstract class Mission implements Serializable {
 				startingMember.getVehicle().correctVehicleReservation();
 			
 			if (members != null) {
-				if (!members.isEmpty()) {
-					LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+				if (!members.isEmpty()) { 
+					LogConsolidated.log(Level.INFO, 1000, sourceName,
 							"[" + startingMember.getLocationTag().getLocale()
-									+ "] " + startingMember + " is disbanding mission member(s) : " + members,
-							null);
+									+ "] " + startingMember + " is disbanding mission member(s) : " + members);
 					Iterator<MissionMember> i = members.iterator();
 					while (i.hasNext()) {
 						removeMember(i.next());
@@ -786,10 +784,9 @@ public abstract class Mission implements Serializable {
 
 
 		} else
-			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+			LogConsolidated.log(Level.INFO, 1000, sourceName,
 					"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
-							+ " is ending the " + missionName + ". Reason : '" + reason + "'",
-					null);
+							+ " is ending the " + missionName + ". Reason : '" + reason + "'");
 		
 		
 		// Proactively call removeMission to update the list in MissionManager right away
@@ -1241,7 +1238,7 @@ public abstract class Mission implements Serializable {
 				}
 			}
 			
-			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, s.toString(), null);
+			LogConsolidated.log(Level.INFO, 1000, sourceName, s.toString());
 		}
 
 		return result;
@@ -1280,12 +1277,10 @@ public abstract class Mission implements Serializable {
 		Person p = (Person)member;
 		
 		if (!approved && plan == null) {			
-//			System.out.println(p.getName()+ "'s" + this.getDescription() + " is going to make a plan.");
-			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());
-			
-			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
+			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());		
+			LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
 					+ p.getName() + " (" + p.getRole().getType() 
-					+ ") is requesting approval for " + getDescription() + ".", null);
+					+ ") is requesting approval for " + getDescription() + ".");
 
 			 Simulation.instance().getMissionManager().requestMissionApproval(plan);
 		}
@@ -1295,10 +1290,10 @@ public abstract class Mission implements Serializable {
 		}
 		
 		if (approved || plan.getStatus() == PlanType.APPROVED) {
-			LogConsolidated.log(logger, Level.INFO, 1000, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
+			LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
 					+ p.getRole().getType() + " " + p.getName() 
 					+ " is getting"// the rover " + startingMember.getVehicle() 
-					+ " ready to embark on " + getDescription(), null);
+					+ " ready to embark on " + getDescription());
 
 			setPhaseEnded(true);
 		}

@@ -22,11 +22,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * The storage class is a building function for storing resources and units.
@@ -37,8 +34,7 @@ public class Storage extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
 	private static Logger logger = Logger.getLogger(Storage.class.getName());
-	// private static org.apache.log4j.Logger log4j =
-	// LogManager.getLogger(Storage.class);
+	// private static org.apache.log4j.Logger log4j = LogManager.getLogger(Storage.class);
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
@@ -83,10 +79,10 @@ public class Storage extends Function implements Serializable {
 		inv.addGeneralCapacity(stockCapacity);
 
 		// Initialize stock capacities for all resource
-		// for (AmountResource ar : ResourceUtil.getInstance().getAmountResources()) {
-		// if (!building.getBuildingType().toLowerCase().contains("storage bin"))
-		// inv.addAmountResourceTypeCapacity(ar, stockCapacity);
-		// }
+//		 for (AmountResource ar : ResourceUtil.getInstance().getAmountResources()) {
+//			 if (!building.getBuildingType().toLowerCase().contains("storage bin"))
+//				 inv.addAmountResourceTypeCapacity(ar, stockCapacity);
+//		 }
 
 		// Fill up initial resources for this building.
 		Map<AmountResource, Double> initialResources = buildingConfig.getInitialResources(building.getBuildingType());
@@ -347,9 +343,9 @@ public class Storage extends Function implements Serializable {
 						Settlement s = (Settlement)(inv.getOwner());
 						s.increaseGreyWaterFilteringRate();
 						double r = s.getGreyWaterFilteringRate();
-						LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName + "::" + method, 
+						LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName + "::" + method, 
 								"[" + s
-					    		+ "] New grey water filtering rate : " + Math.round(r*100.0)/100.0 + ".", null);
+					    		+ "] Updated the grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".", null);
 					}
 				}
 
@@ -359,7 +355,7 @@ public class Storage extends Function implements Serializable {
 					// capacity to full
 					if (!method.equals(""))
 						method = " at " + method;
-				    LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName + method, 
+				    LogConsolidated.log(logger, Level.SEVERE, 1_000, sourceName + method, 
 				    		"[" + inv.getOwner()
 				    		+ "] The storage capacity for " 
 				    		+ ResourceUtil.findAmountResourceName(id) + " has been reached. Only "
@@ -449,9 +445,9 @@ public class Storage extends Function implements Serializable {
 						// Adjust the grey water filtering rate
 						s.decreaseGreyWaterFilteringRate();
 						double r = s.getGreyWaterFilteringRate();
-						LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, 
+						LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName, 
 								"[" + s
-					    		+ "] New grey water filtering rate : " + Math.round(r*100.0)/100.0 + ".", null);
+					    		+ "] Updated the new grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".", null);
 					}
 				
 				} else if (amountStored < amount) {

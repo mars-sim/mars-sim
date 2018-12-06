@@ -28,8 +28,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
-import org.mars_sim.msp.core.location.LocationCodeType;
-import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.mars.Meteorite;
 import org.mars_sim.msp.core.mars.MeteoriteModule;
 import org.mars_sim.msp.core.person.Person;
@@ -710,9 +708,9 @@ public class BuildingManager implements Serializable {
 		} 
 		
 		else {
-			LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
+			LogConsolidated.log(Level.WARNING, 2000, sourceName,
 					"[" + p.getLocationTag().getLocale() + "] No medical facility available for "
-							+ p.getName() + ". Go to a random building.", null);
+							+ p.getName() + ". Go to a random building.");
 			addToRandomBuilding(p, settlement);
 		}
 	}
@@ -739,10 +737,9 @@ public class BuildingManager implements Serializable {
 			} else {
 				// throw new IllegalStateException("No inhabitable buildings available for " +
 				// person.getName());
-				LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
+				LogConsolidated.log(Level.WARNING, 2000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] No inhabitable buildings available for "
-								+ person.getName(),
-						null);
+								+ person.getName());
 			}
 
 		}
@@ -870,8 +867,8 @@ public class BuildingManager implements Serializable {
 				settlement.getInventory().storeUnit(vehicle);
 			}
 			else { 
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-					"[" + settlement.getName() + "] " + vehicle.getName() + " already garaged in " + getBuilding(vehicle, settlement), null);
+				LogConsolidated.log(Level.INFO, 1000, sourceName,
+					"[" + settlement.getName() + "] " + vehicle.getName() + " already garaged in " + getBuilding(vehicle, settlement));
 			}
 			return true;
 		}
@@ -891,8 +888,8 @@ public class BuildingManager implements Serializable {
 				// Place this vehicle inside a building
 //				vehicle.enter(LocationCodeType.BUILDING);
 				settlement.getInventory().storeUnit(vehicle);
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-						"[" + settlement.getName() + "] " +  vehicle.getName() + " has just been stowed inside " + getBuilding(vehicle, settlement), null);
+				LogConsolidated.log(Level.INFO, 1000, sourceName,
+						"[" + settlement.getName() + "] " +  vehicle.getName() + " has just been stowed inside " + getBuilding(vehicle, settlement));
 				vehicle.setStatus(StatusType.GARAGED);
 			}
 			return true;
@@ -925,7 +922,10 @@ public class BuildingManager implements Serializable {
 						return garageBuilding;
 					}
 				} catch (Exception e) {
-					logger.log(Level.SEVERE, "Calling getBuilding(vehicle): " + e.getMessage());
+//					logger.log(Level.SEVERE, "Calling getBuilding(vehicle): " + e.getMessage());
+					LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+							"[" + vehicle.getLocationTag().getLocale() + "] "
+									+ vehicle.getName() + " is not in a building.", e);
 				}
 			}
 		}
@@ -949,7 +949,10 @@ public class BuildingManager implements Serializable {
 						return garageBuilding;
 					}
 				} catch (Exception e) {
-					logger.log(Level.SEVERE, "Calling getBuilding(vehicle, settlement) : " + e.getMessage());
+//					logger.log(Level.SEVERE, "Calling getBuilding(vehicle, settlement) : " + e.getMessage());
+					LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+							"[" + vehicle.getLocationTag().getLocale() + "] "
+									+ vehicle.getName() + " is not in a building.", e);
 				}
 			}
 		}
@@ -1329,7 +1332,6 @@ public class BuildingManager implements Serializable {
 	public static void addPersonOrRobotToBuilding(Unit unit, Building building) {
 		if (building != null) {
 			try {
-
 				if (unit instanceof Person) {
 					Person person = (Person) unit;
 					LifeSupport lifeSupport = building.getLifeSupport();
@@ -1353,11 +1355,18 @@ public class BuildingManager implements Serializable {
 				}
 
 			} catch (Exception e) {
-				throw new IllegalStateException(
-						"BuildingManager.addPersonOrRobotToBuildingSameLocation(): " + e.getMessage());
+//				throw new IllegalStateException(
+//						"BuildingManager.addPersonOrRobotToBuildingSameLocation(): " + e.getMessage());
+				LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+						"[" + unit.getLocationTag().getLocale() + "] "
+								+ unit.getName() + " could not be added to " + building.getNickName(), e);
 			}
-		} else
-			throw new IllegalStateException("Building is null");
+		}
+		
+		else 
+//			throw new IllegalStateException("Building is null");
+			LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+				" the building is null.");
 	}
 
 	/**
@@ -1401,10 +1410,15 @@ public class BuildingManager implements Serializable {
 				}
 
 			} catch (Exception e) {
-				throw new IllegalStateException("BuildingManager.addPersonOrRobotToBuilding(): " + e.getMessage());
+//				throw new IllegalStateException("BuildingManager.addPersonOrRobotToBuilding(): " + e.getMessage());
+				LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+						"[" + unit.getLocationTag().getLocale() + "] "
+								+ unit.getName() + " could not be added to " + building.getNickName(), e);
 			}
 		} else {
-			throw new IllegalStateException("Building is null");
+//			throw new IllegalStateException("Building is null");
+			LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+				" the building is null.");
 		}
 	}
 
@@ -1451,11 +1465,16 @@ public class BuildingManager implements Serializable {
 					robot.setCurrentBuilding(building);
 				}
 			} catch (Exception e) {
-				throw new IllegalStateException(
-						"BuildingManager.addPersonOrRobotToBuildingRandomLocation(): " + e.getMessage());
+//				throw new IllegalStateException(
+//						"BuildingManager.addPersonOrRobotToBuildingRandomLocation(): " + e.getMessage());
+				LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+						"[" + unit.getLocationTag().getLocale() + "] "
+								+ unit.getName() + " could not be added to " + building.getNickName(), e);
 			}
 		} else {
-			throw new IllegalStateException("Building is null");
+//			throw new IllegalStateException("Building is null");
+			LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+					" the building is null.");
 		}
 	}
 
@@ -1490,10 +1509,15 @@ public class BuildingManager implements Serializable {
 				}
 
 			} catch (Exception e) {
-				throw new IllegalStateException("BuildingManager.removePersonOrRobotFromBuilding(): " + e.getMessage());
+//				throw new IllegalStateException("BuildingManager.removePersonOrRobotFromBuilding(): " + e.getMessage());
+				LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+						"[" + unit.getLocationTag().getLocale() + "] "
+								+ unit.getName() + " could not be removed from " + building.getNickName(), e);
 			}
 		} else {
-			throw new IllegalStateException("Building is null");
+//			throw new IllegalStateException("Building is null");
+			LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+					" the building is null.");
 		}
 	}
 
@@ -1541,17 +1565,14 @@ public class BuildingManager implements Serializable {
 				result += Exercise.getFunctionValue(buildingType, newBuilding, settlement);
 			if (buildingConfig.hasFarming(buildingType))
 				result += Farming.getFunctionValue(buildingType, newBuilding, settlement);
-
 			if (buildingConfig.hasFoodProduction(buildingType))
 				result += FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
 			if (buildingConfig.hasGroundVehicleMaintenance(buildingType))
 				result += GroundVehicleMaintenance.getFunctionValue(buildingType, newBuilding, settlement, buildingConfig);
-
 			if (buildingConfig.hasThermalGeneration(buildingType))
 				result += ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);
-			// if (config.hasThermalStorage(buildingType))
-			// result += ThermalStorage.getFunctionValue(buildingType, newBuilding,
-			// settlement);
+//			if (config.hasThermalStorage(buildingType))
+//				result += ThermalStorage.getFunctionValue(buildingType, newBuilding, settlement);
 			if (buildingConfig.hasLifeSupport(buildingType))
 				result += LifeSupport.getFunctionValue(buildingType, newBuilding, settlement);
 			if (buildingConfig.hasLivingAccommodations(buildingType))

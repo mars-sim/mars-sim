@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -17,16 +16,11 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.location.LocationCodeType;
-import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -36,7 +30,6 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
-import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -125,11 +118,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			addPhase(UNLOADING);
 			setPhase(UNLOADING);
 
-			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+			LogConsolidated.log(Level.FINER, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 							+ person.getLocationTag().getImmediateLocation() + " was going to unload "
-							+ vehicle.getName() + ".",
-					null);
+							+ vehicle.getName() + ".");
 		} else
 			endTask();
 	}
@@ -169,11 +161,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			addPhase(UNLOADING);
 			setPhase(UNLOADING);
 
-			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+			LogConsolidated.log(Level.FINER, 0, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 							+ robot.getLocationTag().getImmediateLocation() + " was going to unload "
-							+ vehicle.getName() + ".",
-					null);
+							+ vehicle.getName() + ".");
 		} else
 			endTask();
 	}
@@ -202,14 +193,12 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		// Initialize phase
 		addPhase(UNLOADING);
-//		setPhase(UNLOADING); 
-		// NOTE: EVAOperation will set the phase. Do NOT do it here
-
-		LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+		setPhase(UNLOADING); 
+	
+		LogConsolidated.log(Level.FINER, 0, sourceName,
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 						+ person.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName()
-						+ ".",
-				null);
+						+ ".");
 
 //		logger.fine(person.getName() + " is unloading " + vehicle.getName());
 	}
@@ -232,14 +221,12 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		// Initialize phase
 		addPhase(UNLOADING);
-//		setPhase(UNLOADING); 
-		// NOTE: EVAOperation will set the phase. Do NOT do it here
-
-		LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+		setPhase(UNLOADING); 
+	
+		LogConsolidated.log(Level.FINER, 0, sourceName,
 				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 						+ robot.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName()
-						+ ".",
-				null);
+						+ ".");
 
 //		logger.fine(robot.getName() + " is unloading " + vehicle.getName());
 	}
@@ -427,13 +414,13 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		Inventory settlementInv = settlement.getInventory();
 
 //		if (person != null)
-//			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//			LogConsolidated.log(Level.INFO, 0, sourceName,
 //					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 //							+ person.getLocationTag().getImmediateLocation() + " proceeded to unload "
 //							+ vehicle.getName() + ".",
 //					null);
 //		else
-//			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//			LogConsolidated.log(Level.INFO, 0, sourceName,
 //					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 //							+ robot.getLocationTag().getImmediateLocation() + " proceeded to unload "
 //							+ vehicle.getName() + ".",
@@ -453,17 +440,15 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				amountUnloading -= equipment.getMass();
 
 				if (person != null)
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+					LogConsolidated.log(Level.INFO, 3_000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 									+ person.getLocationTag().getImmediateLocation() + " unloaded "
-									+ equipment.getNickName() + " from " + vehicle.getName() + ".",
-							null);
+									+ equipment.getNickName() + " from " + vehicle.getName() + ".");
 				else
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+					LogConsolidated.log(Level.INFO, 3_000, sourceName,
 							"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 									+ robot.getLocationTag().getImmediateLocation() + " unloaded "
-									+ equipment.getNickName() + " from " + vehicle.getName() + ".",
-							null);
+									+ equipment.getNickName() + " from " + vehicle.getName() + ".");
 			}
 		}
 
@@ -484,6 +469,9 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				vehicleInv.retrieveAmountResource(resource, amount);
 				settlementInv.storeAmountResource(resource, amount, true);
 			} catch (Exception e) {
+				LogConsolidated.log(Level.INFO, 3_000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
+								+ person.getLocationTag().getImmediateLocation() + " Could NOT unload the resources.", e);
 			}
 			amountUnloading -= amount;
 
@@ -492,19 +480,17 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		if (totalAmount > 0) {
 			if (person != null)
-				LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+				LogConsolidated.log(Level.INFO, 3_000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 								+ person.getLocationTag().getImmediateLocation() + " just unloaded a total of "
 								+ Math.round(totalAmount * 100.0) / 100.0 + " kg of resources from " + vehicle.getName()
-								+ ".",
-						null);
+								+ ".");
 			else
-				LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+				LogConsolidated.log(Level.INFO, 3_000, sourceName,
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 								+ robot.getLocationTag().getImmediateLocation() + " just unloaded a total of "
 								+ Math.round(totalAmount * 100.0) / 100.0 + " kg of resources from " + vehicle.getName()
-								+ ".",
-						null);
+								+ ".");
 		}
 
 		int totalItems = 0;
@@ -527,17 +513,15 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 			if (totalItems > 0) {
 				if (person != null)
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+					LogConsolidated.log(Level.INFO, 3_000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 									+ person.getLocationTag().getImmediateLocation() + " just unloaded a total of "
-									+ totalItems + " items from " + vehicle.getName() + ".",
-							null);
+									+ totalItems + " items from " + vehicle.getName() + ".");
 				else
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+					LogConsolidated.log(Level.INFO, 3_000, sourceName,
 							"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 									+ robot.getLocationTag().getImmediateLocation() + " just unloaded a total of "
-									+ totalItems + " items from " + vehicle.getName() + ".",
-							null);
+									+ totalItems + " items from " + vehicle.getName() + ".");
 			}
 		}
 
@@ -561,7 +545,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
 					
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+					LogConsolidated.log(Level.INFO, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 										+ " was retrieving the dead body of " + p + " from " + vehicle.getName()
 										+ " parked inside " + settlement, null);
@@ -577,26 +561,6 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 					p.setAssociatedSettlement(settlement);
 					
 				}
-//				else if (p != person) {
-//					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-//							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " came home safety on rover "+ vehicle.getName() + ".", null);
-//				
-//					if (vehicle.getGarage() != null) {
-//						// the rover is parked inside a garage
-//						vehicle.getInventory().retrieveUnit(p);
-//						settlement.getInventory().storeUnit(p);
-//						BuildingManager.addPersonOrRobotToBuilding(p, vehicle.getGarage());
-////						p.getMind().getTaskManager().addTask(new Walk(p));
-//						p.getMind().getTaskManager().getNewTask();
-//					}
-//					
-//					else { 
-//						// the person is still inside the vehicle
-//						
-//						// Clear any other task and 
-//						p.getMind().getTaskManager().clearTask();
-//					}
-//				}
 			}
 		}
 

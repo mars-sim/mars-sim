@@ -90,7 +90,7 @@ implements Serializable {
             // If in settlement, move doctor to building patient is in.
             else if (person.isInSettlement() && patient.getBuildingLocation() != null) {
                 // Walk to patient's building.
-            	patient.getMind().getTaskManager().clearTask();
+//            	patient.getMind().getTaskManager().clearTask();
             	patient.getMind().getTaskManager().addTask(new RequestMedicalTreatment(patient));
             	//walkToActivitySpotInBuilding(patient.getBuildingLocation(), FunctionType.MEDICAL_CARE, false);
                 //walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
@@ -122,7 +122,7 @@ implements Serializable {
             // If in settlement, move doctor to building patient is in.
             if (robot.isInSettlement() && patient.getBuildingLocation() != null) {
                 // Walk to patient's building.
-            	patient.getMind().getTaskManager().clearTask();
+//            	patient.getMind().getTaskManager().clearTask();
             	patient.getMind().getTaskManager().addTask(new RequestMedicalTreatment(patient));
             	//walkToActivitySpotInBuilding(BuildingManager.getBuilding(patient), FunctionType.MEDICAL_CARE, false);
                 //walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);

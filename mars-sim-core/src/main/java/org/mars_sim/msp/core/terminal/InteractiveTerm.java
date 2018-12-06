@@ -295,13 +295,13 @@ public class InteractiveTerm {
 					mc.setPaused(false, false);
 					terminal.printf(System.lineSeparator() + System.lineSeparator());
 					terminal.printf("                          [ Simulation Unpaused ]");
-					terminal.printf(System.lineSeparator() + System.lineSeparator());
+					//terminal.printf(System.lineSeparator() + System.lineSeparator());
 				}
 				else {
 					mc.setPaused(true, false);
 					terminal.printf(System.lineSeparator() + System.lineSeparator());
 					terminal.printf("                           [ Simulation Paused ]");
-					terminal.printf(System.lineSeparator() + System.lineSeparator());
+					//terminal.printf(System.lineSeparator() + System.lineSeparator());
 				}
         	}
             return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);

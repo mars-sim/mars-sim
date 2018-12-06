@@ -93,7 +93,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 		// Check that destination location is within destination building.
 		if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
-			LogConsolidated.log(logger, Level.WARNING, 3000, logger.getName(),
+			LogConsolidated.log(Level.WARNING, 3000, logger.getName(),
 					person + " is unable to walk to the destination in " + person.getBuildingLocation() + " at "
 							+ person.getSettlement(),
 					null);
@@ -165,7 +165,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 		// Check that destination location is within destination building.
 		if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
-			LogConsolidated.log(logger, Level.WARNING, 3000, logger.getName(),
+			LogConsolidated.log(Level.WARNING, 3000, logger.getName(),
 					robot + " is unable to walk to the destination in " + robot.getBuildingLocation() + " at "
 							+ robot.getSettlement(),
 					null);
@@ -221,11 +221,11 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		if (getPhase() == null) {
 
 			if (person != null) {
-				LogConsolidated.log(logger, Level.SEVERE, 2000, logger.getName(),
-						person.getName() + " at " + person.getBuildingLocation() + " : Task phase is null", null);
+				LogConsolidated.log(Level.SEVERE, 2000, logger.getName(),
+						person.getName() + " at " + person.getBuildingLocation() + " : Task phase is null");
 			} else if (robot != null) {
-				LogConsolidated.log(logger, Level.SEVERE, 2000, logger.getName(),
-						robot.getName() + " at " + robot.getBuildingLocation() + " : Task phase is null", null);
+				LogConsolidated.log(Level.SEVERE, 2000, logger.getName(),
+						robot.getName() + " at " + robot.getBuildingLocation() + " : Task phase is null");
 			}
 			// endTask();
 			throw new IllegalArgumentException("Task phase is null");
@@ -255,7 +255,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			if (!checkRemainingPathLocations()) {
 				// Exception in thread "pool-4-thread-1" java.lang.StackOverflowError
 				// Flooding with the following statement in stacktrace
-				LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(),
+				LogConsolidated.log(Level.SEVERE, 1000, logger.getName(),
 						person.getName() + " unable to continue walking due to missing path objects.", null);
 				// endTask();
 				return time / 2D;
@@ -266,7 +266,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			if (!checkRemainingPathLocations()) {
 				// Exception in thread "pool-4-thread-1" java.lang.StackOverflowError
 				// Flooding with the following statement in stacktrace
-				LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(),
+				LogConsolidated.log(Level.SEVERE, 1000, logger.getName(),
 						robot.getName() + " unable to continue walking due to missing path objects.", null);
 				// endTask();
 				return time / 2D;
@@ -547,10 +547,12 @@ public class WalkSettlementInterior extends Task implements Serializable {
 //					throw new IllegalStateException("Connector not connected to " + currentBuilding);
 				}
 
-				if (person != null)
-					BuildingManager.addPersonOrRobotToBuilding(person, newBuilding);
-				else if (robot != null)
-					BuildingManager.addPersonOrRobotToBuilding(robot, newBuilding);
+				if (newBuilding != null) {
+					if (person != null)
+						BuildingManager.addPersonOrRobotToBuilding(person, newBuilding);
+					else if (robot != null)
+						BuildingManager.addPersonOrRobotToBuilding(robot, newBuilding);
+				}
 			}
 		}
 	}

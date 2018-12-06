@@ -22,8 +22,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.location.LocationSituation;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -82,6 +82,8 @@ public abstract class RoverMission extends VehicleMission {
 	private Settlement startingSettlement;
 	
 	private Map<Integer, Double> dessertResources;
+	
+	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
 
 	/**
 	 * Constructor.
@@ -260,7 +262,7 @@ public abstract class RoverMission extends VehicleMission {
 		boolean result = true;
 		Iterator<MissionMember> i = getMembers().iterator();
 		while (i.hasNext()) {
-			if (i.next().getLocationSituation() == LocationSituation.IN_VEHICLE) {
+			if (i.next().isInVehicle()) {
 				result = false;
 			}
 		}
@@ -316,7 +318,7 @@ public abstract class RoverMission extends VehicleMission {
 							if (RandomUtil.lessThanRandPercent(75)) {
 								if (member instanceof Person) {
 									Person person = (Person) member;
-									if (BuildingManager.getBuilding(getVehicle()) != null) {
+									if (isRoverInAGarage()) {
 										// TODO Refactor.
 										assignTask(person,
 													new LoadVehicleGarage(person, getVehicle(),
@@ -468,8 +470,9 @@ public abstract class RoverMission extends VehicleMission {
 
 				if (p.isDeclaredDead()) {
 					
-					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + "'s body had been retrieved from rover " + v.getName() + ".", null);
+					LogConsolidated.log(Level.FINER, 0, sourceName,
+							"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
+							+ "'s body had been retrieved from rover " + v.getName() + ".");
 
 					// Retrieve the person if he/she is dead
 					v.getInventory().retrieveUnit(p);
@@ -480,57 +483,57 @@ public abstract class RoverMission extends VehicleMission {
 					
 					BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
 					p.setAssociatedSettlement(disembarkSettlement);
-//					p.getMind().getTaskManager().clearTask();
 
 					HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, this,
 							p.getPhysicalCondition().getHealthSituation(), p.getTaskDescription(), p.getName(),
 							p.getVehicle().getName(), p.getLocationTag().getLocale());
-					Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
-					
-//				} else {
-//					LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-//							"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
-//							+ " finally came home safety on the towed rover "+ rover.getName() + ".", null);
+					eventManager.registerNewEvent(rescueEvent);
+
 				}
 				
 				else { 
 					// the person is still inside the vehicle
 					
-					// Get random inhabitable building at emergency settlement.
-					Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
-					if (destinationBuilding != null) {
-						Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-						Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
-								destinationLoc.getY(), destinationBuilding);
-
-						if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
-							assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+					LogConsolidated.log(Level.FINER, 0, sourceName,
+							"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
+							+ " finally came home safety on the rover "+ rover.getName() + ".");
+					
+			
+					if (!p.isInSettlement()) {
+						// Get random inhabitable building at emergency settlement.
+						Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
+						if (destinationBuilding != null) {
+							Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
+							Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
+									destinationLoc.getY(), destinationBuilding);
+	
+							if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+								assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+								
+							} 
+							
+							else {						
+								// This person needs to be rescued.
+								LogConsolidated.log(Level.WARNING, 0, sourceName, 
+										"[" + disembarkSettlement.getName() + "] "
+										+ Msg.getString("RoverMission.log.emergencyEnterSettlement", p.getName(), 
+												disembarkSettlement.getNickName())); //$NON-NLS-1$
+								
+								// the rover is parked inside a garage
+								rover.getInventory().retrieveUnit(p);
+								
+								disembarkSettlement.getInventory().storeUnit(p);
+	
+								BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
+	
+							}
+	
 						} 
 						
 						else {
-//							logger.severe("Unable to walk to building " + destinationBuilding);
-							
-							// This person needs to be rescued.
-							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-							"[" + disembarkSettlement.getName() + "] "
-							+ Msg.getString("RoverMission.log.emergencyEnterSettlement", p.getName(), disembarkSettlement.getNickName()), null); //$NON-NLS-1$
-							
-							// the rover is parked inside a garage
-							rover.getInventory().retrieveUnit(p);
-							
-							disembarkSettlement.getInventory().storeUnit(p);
-
-							BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
-
-//							p.getMind().getTaskManager().clearTask();
-//							endMission("Unable to walk to building " + destinationBuilding);
+							logger.severe("No inhabitable buildings at " + disembarkSettlement);
+							endMission("No inhabitable buildings at " + disembarkSettlement);
 						}
-
-					} 
-					
-					else {
-						logger.severe("No inhabitable buildings at " + disembarkSettlement);
-						endMission("No inhabitable buildings at " + disembarkSettlement);
 					}
 				}
 			}
@@ -543,110 +546,23 @@ public abstract class RoverMission extends VehicleMission {
 
 			// Check if any people still aboard the rover who aren't mission members
 			// and direct them into the settlement.
-			
-			if (!isNoOneInRover() || (rover.getCrewNum() > 0)) {
+			if (isNoOneInRover() && (rover.getCrewNum() > 0)) {
 				
 				Iterator<Person> i = rover.getCrew().iterator();
 				while (i.hasNext()) {
 					Person p = i.next(); 
+					rover.getInventory().retrieveUnit(p);
+					disembarkSettlement.getInventory().storeUnit(p);
+					BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
 				
-					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-							"[" + p.getLocationTag().getLocale() + "] " + p.getName() + " came home safety on rover "+ v.getName() + ".", null);
-				
-					if (rover.getGarage() != null) {
-						// the rover is parked inside a garage
-						rover.getInventory().retrieveUnit(p);
-						disembarkSettlement.getInventory().storeUnit(p);
-						BuildingManager.addPersonOrRobotToBuilding(p, v.getGarage());
-						
-						p.getMind().getTaskManager().getNewTask();
-//						assignTask(p, new Walk(p));
-					}
-					
-					else { 
-						// the person is still inside the vehicle
-						
-						// Get random inhabitable building at emergency settlement.
-						Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
-						if (destinationBuilding != null) {
-							Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-							Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
-									destinationLoc.getY(), destinationBuilding);
+					LogConsolidated.log(Level.FINER, 0, sourceName,
+							"[" + p.getLocationTag().getLocale() + "] " 
+									+ Msg.getString("RoverMission.log.emergencyEnterSettlement", 
+							p.getName(), disembarkSettlement.getName())); //$NON-NLS-1$
 
-							if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
-								assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
-							} 
-							
-							else {
-//								logger.severe("Unable to walk to building " + destinationBuilding);
-								
-								// This person needs to be rescued.
-								LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-								"[" + disembarkSettlement.getName() + "] "
-								+ Msg.getString("RoverMission.log.emergencyEnterSettlement", p.getName(), disembarkSettlement.getNickName()), null); //$NON-NLS-1$
-								
-								// the rover is parked inside a garage
-								rover.getInventory().retrieveUnit(p);
-								
-								disembarkSettlement.getInventory().storeUnit(p);
-
-								BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
-
-//								p.getMind().getTaskManager().clearTask();
-//								endMission("Unable to walk to building " + destinationBuilding);
-							}
-	
-						} 
-						
-						else {
-							logger.severe("No inhabitable buildings at " + disembarkSettlement);
-							endMission("No inhabitable buildings at " + disembarkSettlement);
-						}
-
-						
-//						p.getMind().getTaskManager().clearTask();
-//						//unitManager.getInventory().storeUnit(p);
-//	
-//						// Get closest airlock building at settlement.
-//						Building destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock(p)
-//									.getEntity();
-//	
-//						if (destinationBuilding != null) {
-//							Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-//							Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
-//									destinationLoc.getY(), destinationBuilding);
-//							
-//							if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
-//								assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
-//							}
-//						}
-					}
-					
-							
-//					disembarkSettlement.getInventory().storeUnit(crewmember);
-//					
-//					// TODO : How to simulate the sequence of events of a strapped personnel inside a broken
-//					// vehicle to be retrieved and moved to a settlement in emergency?
-//	
-//					Building destinationBuilding = null;
-//					// TODO Refactor
-//					if (member instanceof Person) {
-//						destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock((Person) member)
-//								.getEntity();
-//					} else if (member instanceof Robot) {
-//						destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock((Robot) member)
-//								.getEntity();
-//					}
-//
-//					if (destinationBuilding != null) {
-//						BuildingManager.addPersonOrRobotToBuildingRandomLocation(crewmember, destinationBuilding);
-//					}
-//					
-//					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-//							"[" + disembarkSettlement.getName() + "] "
-//							+ Msg.getString("RoverMission.log.emergencyEnterSettlement", crewmember.getName(), disembarkSettlement.getNickName()), null); //$NON-NLS-1$
 
 				}
+
 			}
 
 			// Check to see if no one is in the rover, unload the resources and end phase.
@@ -669,7 +585,9 @@ public abstract class RoverMission extends VehicleMission {
 									assignTask((Person)member, new UnloadVehicleEVA((Person)member, rover));
 								}
 							}
-						}
+							
+//							return;	
+						}				
 					}		
 				}
 				
@@ -1024,10 +942,10 @@ public abstract class RoverMission extends VehicleMission {
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
-	 * @param s
+	 * @param {{@link HistoricalEventManager}
 	 */
-	public static void justReloaded(SurfaceFeatures s) {
-//		surface = s;
+	public static void justReloaded(HistoricalEventManager event) {
+		eventManager = event;
 	}
 	
 	@Override

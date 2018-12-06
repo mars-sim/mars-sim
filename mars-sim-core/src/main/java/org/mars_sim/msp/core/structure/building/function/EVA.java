@@ -57,8 +57,6 @@ implements Serializable {
 		airlock = new BuildingAirlock(building, airlockCapacity, airlockXLoc, airlockYLoc,
 				interiorXLoc, interiorYLoc, exteriorXLoc, exteriorYLoc);
 		
-//		// Iniitialize the heating instance
-//		((BuildingAirlock)airlock).setHeating();
 	}
 
 	/**

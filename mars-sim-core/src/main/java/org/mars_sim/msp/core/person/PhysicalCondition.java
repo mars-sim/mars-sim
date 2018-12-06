@@ -791,7 +791,7 @@ public class PhysicalCondition implements Serializable {
 			// TODO : how to tell a person to walk back to the settlement ?
 			if (person.isInside()) {
 				// Stop any on-going tasks
-				taskMgr.clearTask();
+//				taskMgr.clearTask();
 				// go eat a meal
 				taskMgr.addTask(new EatMeal(person));
 			}
@@ -830,7 +830,7 @@ public class PhysicalCondition implements Serializable {
 
 //			if (person.isInside()) {
 				// Stop any on-going tasks
-				taskMgr.clearTask();
+//				taskMgr.clearTask();
 				// go drink water by eating a meal
 				taskMgr.addTask(new EatMeal(person));
 //			}
@@ -915,7 +915,7 @@ public class PhysicalCondition implements Serializable {
 								null);
 
 						// the person should be carried to the sickbay at this point
-						person.getMind().getTaskManager().clearTask();
+//						person.getMind().getTaskManager().clearTask();
 						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 
 					} else
@@ -943,7 +943,7 @@ public class PhysicalCondition implements Serializable {
 		
 		else {
 			// the person should be carried to the sickbay at this point
-			person.getMind().getTaskManager().clearTask();
+//			person.getMind().getTaskManager().clearTask();
 			person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 		}
 	}
@@ -983,7 +983,7 @@ public class PhysicalCondition implements Serializable {
 		
 		else {
 			// the person should be carried to the sickbay at this point
-			person.getMind().getTaskManager().clearTask();
+//			person.getMind().getTaskManager().clearTask();
 			person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 		}
 	}
@@ -1032,7 +1032,7 @@ public class PhysicalCondition implements Serializable {
 		}
 		else {
 			// the person should be carried to the sickbay at this point
-			person.getMind().getTaskManager().clearTask();
+//			person.getMind().getTaskManager().clearTask();
 			person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 		}
 	}
@@ -1254,7 +1254,7 @@ public class PhysicalCondition implements Serializable {
 			recalculatePerformance();
 			
 			// Stop any on-going tasks
-			taskMgr.clearTask();
+//			taskMgr.clearTask();
 		}
 	}
 
@@ -1321,6 +1321,8 @@ public class PhysicalCondition implements Serializable {
 	 * @throws Exception if error consuming oxygen.
 	 */
 	private boolean consumeOxygen(LifeSupportType support, double amount) {
+		if (support == null)
+			System.out.println(person + " in " + person.getLocationTag().getImmediateLocation() + " has no life support.");
 		double amountRecieved = support.provideOxygen(amount);
 		double required = amount / 2D; 
 		// TODO: how to model how much oxygen we need properly ?

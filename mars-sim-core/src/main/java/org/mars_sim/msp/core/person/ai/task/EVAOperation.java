@@ -98,11 +98,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 			if (interiorObject == null) {
 				// throw new IllegalStateException(person.getName() + " is in " +
 				// person.getSettlement() + " but not in building : interiorObject is null.");
-				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+				LogConsolidated.log(Level.WARNING, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
 						" in " + person.getLocationTag().getImmediateLocation()
-								+ " is supposed to be in a building but interiorObject is null.",
-						null);
+								+ " is supposed to be in a building but interiorObject is null.");
 				endTask();
 			} else {
 				// Add task phases.
@@ -120,10 +119,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 				if (interiorObject == null) {
 					// throw new IllegalStateException(person.getName() + " not in a vehicle and
 					// interiorObject is null.");
-					LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
+					LogConsolidated.log(Level.WARNING, 3000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
-								+ person.getLocationTag().getImmediateLocation() + " is supposed to be in a vehicle but interiorObject is null.",
-							null);
+								+ person.getLocationTag().getImmediateLocation() 
+								+ " is supposed to be in a vehicle but interiorObject is null.");
 				}
 				// Add task phases.
 				addPhase(WALK_TO_OUTSIDE_SITE);
@@ -132,7 +131,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 				// Set initial phase.
 				setPhase(WALK_TO_OUTSIDE_SITE);
 			} else {
-				throw new IllegalStateException(person.getName() + " not in a rover vehicle: " + person.getVehicle());
+				LogConsolidated.log(Level.SEVERE, 3000, sourceName,
+						"[" + person.getName() + " not in a rover vehicle: " + person.getVehicle());
 			}
 		}
 	}
@@ -257,27 +257,28 @@ public abstract class EVAOperation extends Task implements Serializable {
 					Settlement s = person.getLocationTag().findSettlementVicinity();
 					if (s != null) {
 						interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); // (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());//
-						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+						LogConsolidated.log(Level.WARNING, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 //								" in " + person.getLocationTag().getImmediateLocation()
 								+ " found " + ((Building)interiorObject).getNickName()
-								+ " as the closet building with an airlock to enter.", null);
+								+ " as the closet building with an airlock to enter.");
 					}
 					else {
 						// near a vehicle
 						Rover r = (Rover)person.getVehicle();
 //						interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
-						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+						LogConsolidated.log(Level.WARNING, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 								+ " was near " + r.getName() //person.getLocationTag().getImmediateLocation()
-								+ " and had to end the EVA now.", null);
+								+ " and had to end the EVA now.");
 						endTask();
 					}
 				}
-				else {				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+				else {				
+					LogConsolidated.log(Level.WARNING, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " was " + person.getLocationTag().getImmediateLocation()
-						+ " had to end the EVA now.", null);
+						+ " had to end the EVA now.");
 					endTask();
 				}
 
@@ -299,8 +300,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 					Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
 					addSubTask(walkingTask);
 				} else {
-					LogConsolidated.log(logger, Level.SEVERE, 3000, sourceName,
-							person.getName() + " cannot walk back to inside location.", null);
+					LogConsolidated.log(Level.SEVERE, 3000, sourceName,
+							person.getName() + " cannot walk back to inside location.");
 					endTask();
 				}
 			} else {
@@ -312,10 +313,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 			if (interiorObject == null) {
 				// throw new IllegalStateException(person.getName() + " is in " +
 				// person.getSettlement() + " but not in building : interiorObject is null.");
-				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+				LogConsolidated.log(Level.WARNING, 0, sourceName,
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + 
 						" in " + robot.getLocationTag().getImmediateLocation()
-						+ " did not have a designated building to go to yet. Ending EVA now.", null);
+						+ " did not have a designated building to go to yet. Ending EVA now.");
 				endTask();
 			} 
 			
@@ -334,7 +335,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 					Task walkingTask = new Walk(robot, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
 					addSubTask(walkingTask);
 				} else {
-					logger.severe(robot.getName() + " cannot walk back to inside location.");
+					LogConsolidated.log(Level.SEVERE, 0, sourceName,
+							"[" + robot.getName() + " cannot walk back to inside location.");
 					endTask();
 				}
 			} else {
@@ -417,19 +419,16 @@ public abstract class EVAOperation extends Task implements Serializable {
 	public static boolean noEVAProblem(Person person) {
 		
 		if (isGettingDark(person)) {
-			LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-			"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
-					+ person.getTaskDescription() + " because the sky was getting too dark to continue with the EVA.",
-			null);
+			LogConsolidated.log(Level.INFO, 5000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
+					+ person.getTaskDescription() + " because the sky was getting too dark to continue with the EVA.");
 			return false;
 		}
 		
 		EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 		if (suit == null) {
-			LogConsolidated.log(
-					logger, Level.SEVERE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-							+ person.getName() + " ended the attempt to perform EVA because no EVA suit is available.",
-					null);
+			LogConsolidated.log(Level.SEVERE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+							+ person.getName() + " ended the attempt to perform EVA because no EVA suit is available.");
 			return false;
 		}
 
@@ -439,12 +438,11 @@ public abstract class EVAOperation extends Task implements Serializable {
 			// Check if EVA suit is at 15% of its oxygen capacity.
 			double oxygenCap = suitInv.getAmountResourceCapacity(ResourceUtil.oxygenID, false);
 			double oxygen = suitInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
-			if (oxygen <= (oxygenCap * .10D)) {
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
-								+ person.getTaskDescription() + " : " + suit.getName()
-								+ "'s oxygen level less than 10%.",
-						null);
+			if (oxygen <= (oxygenCap * .2D)) {
+				LogConsolidated.log(Level.INFO, 5000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+								+ " reported less than 10% O2 level left. Ending "
+								+ person.getTaskDescription() + " : " + suit.getName());
 				return false;
 			}
 
@@ -452,42 +450,41 @@ public abstract class EVAOperation extends Task implements Serializable {
 			double waterCap = suitInv.getAmountResourceCapacity(ResourceUtil.waterID, false);
 			double water = suitInv.getAmountResourceStored(ResourceUtil.waterID, false);
 			if (water <= (waterCap * .10D)) {
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+				LogConsolidated.log(Level.INFO, 5000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + "'s " + suit.getName()
 								+ " reported less than 10% water level left when "
-										+ person.getTaskDescription(), null);
+										+ person.getTaskDescription());
 //				return false;
 			}
 
 			// Check if life support system in suit is working properly.
 			if (!suit.lifeSupportCheck()) {
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+				LogConsolidated.log(Level.WARNING, 5000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended '"
-								+ person.getTaskDescription() + "' : " + suit.getName() + " failed life support check.",
-						null);
+								+ person.getTaskDescription() + "' : " + suit.getName() + " failed life support check.");
 				return false;
 			}
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
+			LogConsolidated.log(Level.WARNING, 5000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended '"
+							+ person.getTaskDescription() + "' : " + suit.getName() + " failed system check.", e);
 		}
 
 		// Check if suit has any malfunctions.
 		if (suit.getMalfunctionManager().hasMalfunction()) {
-			LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-					+ person.getName() + " ended '" + person.getTaskDescription() + "' : " + suit.getName() + " has malfunction.",
-					null);
+			LogConsolidated.log(Level.INFO, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+					+ person.getName() + " ended '" + person.getTaskDescription() + "' : " + suit.getName() + " has malfunction.");
 			return false;
 		}
 
 		double perf = person.getPerformanceRating();
 		// Check if person's medical condition is sufficient to continue phase.
 		if (perf < .1D) {
-			// Add back to 3% so that the person can walk
-			person.getPhysicalCondition().setPerformanceFactor(perf * 1.1 );
-			LogConsolidated.log(
-					logger, Level.INFO, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-							+ person.getName() + " ended '" + person.getTaskDescription() + "' : performance is less than 10%.",
-					null);
+			// Add back to 10% so that the person can walk
+			person.getPhysicalCondition().setPerformanceFactor((perf + .01)* 1.1);
+			LogConsolidated.log(Level.INFO, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+							+ person.getName() + " ended '" + person.getTaskDescription() + "' : performance is less than 10%.");
 			return false;
 		}
 

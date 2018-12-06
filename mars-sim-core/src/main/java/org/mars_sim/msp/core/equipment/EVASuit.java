@@ -213,11 +213,11 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	 * @throws Exception if error providing oxygen.
 	 */
 	public double provideOxygen(double amountRequested) {
-		// Should we assume breathing in pure oxygen or trimix and heliox
+		// NOTE: Should we assume breathing in pure oxygen or trimix and heliox
 		// http://www.proscubadiver.net/padi-course-director-joey-ridge/helium-and-diving/
-
 		// May pressurize the suit to 1/3 of atmospheric pressure, per NASA aboard on
 		// the ISS
+		
 		double oxygenTaken = amountRequested;
 		try {
 			double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
@@ -234,9 +234,8 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 			getInventory().addAmountDemandTotalRequest(ResourceUtil.oxygenID);
 			getInventory().addAmountDemand(ResourceUtil.oxygenID, oxygenTaken);
 
-			// Assume the EVA Suit has pump system to vent out all CO2 to prevent the
-			// built-up
-			// Since the breath rate is 12 to 25 per minute. Size of breath is 500 mL.
+			// NOTE: Assume the EVA Suit has pump system to vent out all CO2 to prevent the
+			// built-up. Since the breath rate is 12 to 25 per minute. Size of breath is 500 mL.
 			// Percent CO2 exhaled is 4% so CO2 per breath is approx 0.04g ( 2g/L x .04 x
 			// .5l).
 

@@ -66,10 +66,6 @@ public class BuildingAirlock extends Airlock {
 
         inv = settlement.getInventory();
         
-//    	air = building.getSettlement().getCompositionOfAir();
-//    	if (air != null) // no need for heating at the start of the sim
-//    		heating = building.getThermalGeneration().getHeating();
-
         // Determine airlock interior position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc, interiorYLoc, building);
 
@@ -80,11 +76,6 @@ public class BuildingAirlock extends Airlock {
         airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(xLoc, yLoc, building);
     }
        
-//    public void setHeating() {
-//    	if (building.getThermalGeneration() != null)
-//    		heating = building.getThermalGeneration().getHeating();
-//    }
-    
     @Override
     protected void exitAirlock(Person person) {
 
@@ -93,17 +84,17 @@ public class BuildingAirlock extends Airlock {
             if (PRESSURIZED.equals(getState())) {
             	// check if the airlock has been sealed from outside and pressurized, ready to 
             	// open the inner door to release the person into the settlement
-            	LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+            	LogConsolidated.log(Level.FINER, 0, sourceName,
     	  				"[" + person.getLocationTag().getLocale() 
-    	  				+ "] The airlock had been pressurized and is ready to open the inner door to release " + person + ".", null);
+    	  				+ "] The airlock had been pressurized and is ready to open the inner door to release " + person + ".");
             	
                 if (person.isOutside()) {
                 	
-        			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+        			LogConsolidated.log(Level.FINER, 0, sourceName,
         	  				"[" + person.getLocationTag().getLocale() + "] "
-        					+ person + " was about to get inside the airlock at " + building + " in " 
+        					+ person + " was about to leave the airlock in " + building + " to go inside " 
                 			+ building.getBuildingManager().getSettlement()
-                			+ ".", null);
+                			+ ".");
         			
         			if (air == null)
         				air = building.getSettlement().getCompositionOfAir();
@@ -117,11 +108,11 @@ public class BuildingAirlock extends Airlock {
                 	inv.storeUnit(person);
                     BuildingManager.addPersonOrRobotToBuilding(person, building);
                     
-           			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+           			LogConsolidated.log(Level.FINER, 0, sourceName,
         	  				"[" + person.getLocationTag().getLocale() + "] "
-        					+ person + " had just got inside the airlock at " + building + " in " 
+        					+ person + " had just exited the airlock at " + building + " and went inside " 
                 			+ building.getBuildingManager().getSettlement()
-                			+ ".", null);
+                			+ ".");
 
                 }
                 
@@ -129,26 +120,26 @@ public class BuildingAirlock extends Airlock {
                 	//if (LocationSituation.BURIED != person.getLocationSituation()) {
 //                    throw new IllegalStateException(person + " was in " + person.getLocationTag().getImmediateLocation() + " and entering " + getEntityName() +
 //                            " from an airlock but not from outside.");
-                  	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,		
+                  	LogConsolidated.log(Level.SEVERE, 0, sourceName,		
                   		person +  " was supposed to be entering " + getEntityName() +
-                          "'s airlock but now alraedy in " + person.getLocationTag().getImmediateLocation(), null);
+                          "'s airlock but now alraedy in " + person.getLocationTag().getImmediateLocation());
                 }
             }
             
             else if (DEPRESSURIZED.equals(getState())) { 
             	// check if the airlock has been depressurized, ready to open the outer door to 
             	// get exposed to the outside air and release the person
-            	LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+            	LogConsolidated.log(Level.FINER, 0, sourceName,
     	  				"[" + person.getLocationTag().getLocale() 
-    	  				+ "] The airlock had been depressurized and is ready to open the outer door to release " + person + ".", null);
+    	  				+ "] The airlock had been depressurized and is ready to open the outer door to release " + person + ".");
             	
             	if (person.isInSettlement()) {
-          			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+          			LogConsolidated.log(Level.FINER, 0, sourceName,
         	  				"[" + person.getLocationTag().getLocale() + "] "
         					+ person
-                			+ " was about to get inside the airlock at " + building + " in " 
+                			+ " was about to leave the airlock at " + building + " in " 
                 			+ building.getBuildingManager().getSettlement()
-                			+ ".", null);
+                			+ " to step outside.");
           			
           			
           			if (heating == null) 
@@ -169,20 +160,20 @@ public class BuildingAirlock extends Airlock {
                     inv.retrieveUnit(person);
                     BuildingManager.removePersonOrRobotFromBuilding(person, building);
                                      
-          			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+          			LogConsolidated.log(Level.FINER, 0, sourceName,
         	  				"[" + person.getLocationTag().getLocale() + "] "
         					+ person
-                			+ " was about to leave the airlock at " + building + " in " 
+                			+ " had just left the airlock at " + building + " in " 
                 			+ building.getBuildingManager().getSettlement()
-                			+ ".", null);
+                			+ " and stepped outside.");
           			
                 }
                 else {
                 	//if (LocationSituation.BURIED != person.getLocationSituation()) {
 //                    throw new IllegalStateException(
-                    	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,		
+                    	LogConsolidated.log(Level.SEVERE, 0, sourceName,		
                     		person +  " was supposed to be exiting " + getEntityName() +
-                            "'s airlock but now alraedy in " + person.getLocationTag().getImmediateLocation(), null);
+                            "'s airlock but now alraedy in " + person.getLocationTag().getImmediateLocation());
                 }
             }
             else {
@@ -225,25 +216,6 @@ public class BuildingAirlock extends Airlock {
     public Point2D getAvailableAirlockPosition() {
         return airlockInsidePos;
     }
-
-//	@Override
-//	protected void exitAirlock(Unit occupant) {
-//
-//        Person person = null;
-//        Robot robot = null;
-//
-//        if (occupant instanceof Person) {
-//         	person = (Person) occupant;
-//         	exitAirlock(person);
-//
-//        }
-//        else if (occupant instanceof Robot) {
-//        	robot = (Robot) occupant;
-//        	exitAirlock(robot);
-//
-//        }
-//	}
-
 
 	public void destroy() {
 		settlement = null;

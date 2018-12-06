@@ -97,7 +97,7 @@ implements ResearchScientificStudy, Serializable {
             		"[" + person.getLocationTag().getLocale() + "] " 
             			+ person + NO_LAB_SLOT, null);
             	endTask();
-            	person.getMind().getTaskManager().clearTask();
+//            	person.getMind().getTaskManager().clearTask();
             	//person.getMind().getTaskManager().getNewTask();
             }
             
@@ -109,7 +109,7 @@ implements ResearchScientificStudy, Serializable {
         else {
         	//LogConsolidated.log(logger, Level.INFO, 5000, sourceName, person + " can't find a research collaboration.", null);
         	endTask();
-        	person.getMind().getTaskManager().clearTask();
+//        	person.getMind().getTaskManager().clearTask();
         	//person.getMind().getTaskManager().getNewTask();
         }
 

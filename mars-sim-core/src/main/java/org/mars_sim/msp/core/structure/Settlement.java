@@ -415,7 +415,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		else
 			setObjective(ObjectiveType.CROP_FARM);
 
-//		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//		LogConsolidated.log(Level.INFO, 0, sourceName,
 //				"[" + this + "] Set development objective to " + objectiveType.toString() 
 //				+ " (based upon the '" + template + "' Template).", null);
 
@@ -822,18 +822,18 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			// TODO: check against indoor air pressure
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimum_air_pressure) {
-				LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
+				LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
 						"[" + this.getName() + "] out-of-range overall air pressure at " + Math.round(p * 10D) / 10D 
-						+ " kPa detected.", null);
+						+ " kPa detected.");
 				return false;
 			}
 
 			double t = currentTemperature;
 			if (t < life_support_value[0][4] - SAFE_TEMPERATURE_RANGE
 					|| t > life_support_value[1][4] + SAFE_TEMPERATURE_RANGE) {
-				LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
+				LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
 						"[" + this.getName() + "] out-of-range overall temperature at " + Math.round(t * 10D) / 10D 
-						+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.", null);
+						+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");
 				return false;
 			}
 			// result = false;
@@ -885,8 +885,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			 getInventory().addAmountSupplyAmount(co2ID, carbonDioxideProvided);
 			 
 		} catch (Exception e) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-					name + " - Error in providing O2/removing CO2: " + e.getMessage(), null);
+			LogConsolidated.log(Level.SEVERE, 5000, sourceName,
+					name + " - Error in providing O2/removing CO2: ", e);
 		}
 
 		return oxygenTaken;
@@ -913,8 +913,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				getInventory().addAmountDemand(waterID, waterTaken);
 			}
 		} catch (Exception e) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-					name + " - Error in providing H2O needs: " + e.getMessage(), null);
+			LogConsolidated.log(Level.SEVERE, 5000, sourceName,
+					name + " - Error in providing H2O needs: ", e);
 		}
 
 		return waterTaken;
@@ -3160,7 +3160,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 //	    	//System.out.println("chance0 : " + chance0);
 //	    	exposed[0] = true;
 //	    	//logger.info("An unspecified low-dose radiation event is detected by the radiation sensor grid on " + getName());
-//			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//			LogConsolidated.log(Level.INFO, 0, sourceName,
 //					"[" + name + DETECTOR_GRID + UnitEventType.LOW_DOSE_EVENT.toString() + " is imminent.", null);
 //	    	this.fireUnitUpdate(UnitEventType.LOW_DOSE_EVENT);
 //	    }
@@ -3171,8 +3171,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// double rand2 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
 		if (RandomUtil.lessThanRandPercent(chance1)) {
 			exposed[1] = true;
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					"[" + name + DETECTOR_GRID + UnitEventType.GCR_EVENT.toString() + " is imminent.", null);
+			LogConsolidated.log(Level.INFO, 1_000, sourceName,
+					"[" + name + DETECTOR_GRID + UnitEventType.GCR_EVENT.toString() + " is imminent.");
 			this.fireUnitUpdate(UnitEventType.GCR_EVENT);
 		} else
 			exposed[1] = false;
@@ -3181,8 +3181,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// Solar energetic particles (SEPs) event
 		if (RandomUtil.lessThanRandPercent(chance2)) {
 			exposed[2] = true;
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-					"[" + name + DETECTOR_GRID + UnitEventType.SEP_EVENT.toString() + " is imminent.", null);
+			LogConsolidated.log(Level.INFO, 1_000, sourceName,
+					"[" + name + DETECTOR_GRID + UnitEventType.SEP_EVENT.toString() + " is imminent.");
 			this.fireUnitUpdate(UnitEventType.SEP_EVENT);
 		} else
 			exposed[2] = false;

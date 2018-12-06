@@ -19,6 +19,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Container;
@@ -1624,7 +1625,7 @@ public class Inventory implements Serializable {
 			}
 		} else {
 			throw new IllegalStateException("Unit: " + unit + " could not be stored.");
-			// LogConsolidated.log(logger, Level.WARNING, 5000, sourceName + "::storeUnit",
+			// LogConsolidated.log(Level.WARNING, 5000, sourceName + "::storeUnit",
 			// "Unit: " + unit + " could not be stored.", null);
 		}
 	}
@@ -1674,10 +1675,9 @@ public class Inventory implements Serializable {
 		}
 
 		else {
-			throw new IllegalStateException("Unit: " + unit + " could not be retrieved by " + owner.getName()); // needed for maven test
-//			 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName +
-//			 "::retrieveUnit",
-//			 "Unit: " + unit + " could not be retrieved.", null);
+//			throw new IllegalStateException("Unit: " + unit + " could not be retrieved by " + owner.getName()); // needed for maven test
+			 LogConsolidated.log(Level.SEVERE, 5000, sourceName +
+					 "::retrieveUnit", "Unit: " + unit + " could not be retrieved.");
 		}
 	}
 

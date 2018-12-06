@@ -93,11 +93,13 @@ extends Airlock {
 //					person.enter(LocationCodeType.MOBILE_UNIT_4);
 					// Exit person to inside vehicle.
 					vehicle.getInventory().storeUnit(person);
+					LogConsolidated.log(Level.FINER, 0, sourceName, 
+							"[" + person.getLocationTag().getLocale() + "] "
+							+ person.getName() + " had just stepped inside rover " + vehicle.getName());
 				}
 				else if (person.isInSettlement()) {
-					LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, 
-							Msg.getString("VehicleAirlock.error.notOutside", person.getName(), getEntityName())
-							, null);
+					LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+							Msg.getString("VehicleAirlock.error.notOutside", person.getName(), getEntityName()));
 					//throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notOutside",person.getName(),getEntityName())); //$NON-NLS-1$
 				}
 			}
@@ -115,11 +117,14 @@ extends Airlock {
 
 					// Exit person outside vehicle.
 					vehicle.getInventory().retrieveUnit(person);
+					
+					LogConsolidated.log(Level.FINER, 0, sourceName, 
+							"[" + person.getLocationTag().getLocale() + "] "
+							+ person.getName() + " had just stepped outside rover " + vehicle.getName());
 				}
 				else if (person.isOutside()) {
-					LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, 
-							Msg.getString("VehicleAirlock.error.notInside", person.getName(), getEntityName())
-							, null);
+					LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+							Msg.getString("VehicleAirlock.error.notInside", person.getName(), getEntityName()));
 					//throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInside",person.getName(),getEntityName())); //$NON-NLS-1$
 				}
 			}
@@ -131,37 +136,6 @@ extends Airlock {
 			throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInAirlock",person.getName(),getEntityName())); //$NON-NLS-1$
 		}
 	}
-	
-//	protected void exitAirlock(Robot robot) {
-//
-//		if (inAirlock(robot)) {
-//			if (PRESSURIZED.equals(getState())) {
-//				if (robot.isOutside()) {
-//					// Exit robot to inside vehicle.
-//					vehicle.getInventory().storeUnit(robot);
-//				}
-//				else if (robot.isInSettlement()) {
-//					throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notOutside",robot.getName(),getEntityName())); //$NON-NLS-1$
-//				}
-//			}
-//			else if (DEPRESSURIZED.equals(getState())) {
-//				if (robot.isInVehicle()) {
-//					// Exit robot outside vehicle.
-//					vehicle.getInventory().retrieveUnit(robot);
-//				}
-//				else if (robot.isOutside()) {
-//					throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInside",robot.getName(),getEntityName())); //$NON-NLS-1$
-//				}
-//			}
-//			else {
-//				logger.severe(Msg.getString("VehicleAirlock.error.badState",getState())); //$NON-NLS-1$
-//			}
-//		}
-//		else {
-//			throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInAirlock",robot.getName(),getEntityName())); //$NON-NLS-1$
-//		}
-//	}
-
 
 	/**
 	 * Gets the name of the entity this airlock is attached to.
@@ -199,25 +173,6 @@ extends Airlock {
 	public Point2D getAvailableAirlockPosition() {
 		return LocalAreaUtil.getLocalRelativeLocation(airlockInsidePos.getX(),airlockInsidePos.getY(),vehicle);
 	}
-
-//	@Override
-//	protected void exitAirlock(Unit occupant) {
-//
-//        Person person = null;
-//        Robot robot = null;
-//
-//        if (occupant instanceof Person) {
-//         	person = (Person) occupant;
-//         	exitAirlock(person);
-//
-//        }
-//        else if (occupant instanceof Robot) {
-//        	robot = (Robot) occupant;
-//        	exitAirlock(robot);
-//
-//        }
-//	}
-	
 	
 	public void destroy() {
 	    vehicle = null; 

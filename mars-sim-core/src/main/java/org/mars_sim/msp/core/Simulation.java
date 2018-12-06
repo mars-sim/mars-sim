@@ -58,6 +58,8 @@ import org.mars_sim.msp.core.person.Role;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -928,8 +930,9 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Mission related class
 		Mission.justReloaded(eventManager);   // eventManager
-//		RoverMission.justReloaded(surface);  // surface
+		RoverMission.justReloaded(eventManager);  // eventManager
 		VehicleMission.justReloaded(missionManager); // missionmgr
+		RescueSalvageVehicle.justReloaded(eventManager);  // eventManager
 
 //		System.out.println("Done with mission instances");
 	}

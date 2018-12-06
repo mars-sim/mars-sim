@@ -197,17 +197,17 @@ public class Walk extends Task implements Serializable {
 //        }
 
 		if (walkingSteps == null) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+			LogConsolidated.log(Level.SEVERE, 5000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] "
       						+ person + " is in " + person.getLocationTag().getImmediateLocation()
-      						+ " but walking steps could not be determined.", null);
+      						+ " but walking steps could not be determined.");
 			endTask();
 			person.getMind().getNewAction(true, false);
 		} else if (!canWalkAllSteps(person, walkingSteps)) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+			LogConsolidated.log( Level.SEVERE, 5000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] "
       						+ person + " is in " + person.getLocationTag().getImmediateLocation()
-					+ " but Valid Walking steps could not be determined.", null);
+					+ " but Valid Walking steps could not be determined.");
 			endTask();
 			person.getMind().getNewAction(true, false);
 		}
@@ -292,10 +292,10 @@ public class Walk extends Task implements Serializable {
 
 		// End task if all steps cannot be walked.
 		if (!canWalkAllSteps(person, walkingSteps)) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+			LogConsolidated.log(Level.SEVERE, 5000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] "
       						+ person + " was in " + person.getLocationTag().getImmediateLocation()
-					+ " and could not find valid walking steps to " + interiorObject, null);
+					+ " and could not find valid walking steps to " + interiorObject);
 			endTask();
 		}
 
@@ -324,10 +324,10 @@ public class Walk extends Task implements Serializable {
 
 		// End task if all steps cannot be walked.
 		if (!canWalkAllSteps(robot, walkingSteps)) {
-			LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+			LogConsolidated.log(Level.SEVERE, 5000, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] "
       						+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
-      						+ " and could not find valid walking steps to " + interiorObject, null);
+      						+ " and could not find valid walking steps to " + interiorObject);
 			endTask();
 		}
 
@@ -600,10 +600,10 @@ public class Walk extends Task implements Serializable {
 					Airlock airlock = step.airlock;
 					if (!ExitAirlock.canExitAirlock(person, airlock)) {
 						result = false;
-						 LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
+						 LogConsolidated.log(Level.WARNING, 5000, sourceName,
 								 "[" + person.getLocationTag().getLocale() + "] "
 				      					+ person + " was in " + person.getLocationTag().getImmediateLocation()
-				      					+ " and could exit airlock at " + airlock.getEntityName(), null);
+				      					+ " and could exit airlock at " + airlock.getEntityName());
 					}
 				}
 			}
@@ -625,7 +625,7 @@ public class Walk extends Task implements Serializable {
 //                    Airlock airlock = step.airlock;
 //                    if (!ExitAirlock.canExitAirlock(robot, airlock)) {
 //                        result = false;
-//                       	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+//                       	LogConsolidated.log(Level.SEVERE, 5000, sourceName,
 //                       			robot + " cannot exit airlock at " + airlock.getEntityName(), null);
 //                    }
 //                }
@@ -670,10 +670,10 @@ public class Walk extends Task implements Serializable {
 		double timeLeft = time;
 
 		if (person != null) {
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 5_000, sourceName,
       				"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " was in " + person.getLocationTag().getImmediateLocation()
-					+ " and walking inside the settlement.", null);
+					+ " and walking inside the settlement.");
 
 			// Check if person has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -701,17 +701,17 @@ public class Walk extends Task implements Serializable {
 					if (step.building != null)
 						addSubTask(new WalkSettlementInterior(person, step.building, x, y));
 					else {
-						LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
+						LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 			      				"[" + person.getLocationTag().getLocale() + "] "
 								+ person + " was in " + person.getBuildingLocation()
-								+ " but couldn't find a destination building to go.", null);
+								+ " but couldn't find a destination building to go.");
 						endTask();
 					}
 				} else {
-					LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
+					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 		      				"[" + person.getLocationTag().getLocale() + "] "
 							+ person + " was in " + person.getLocationTag().getImmediateLocation() 
-							+ " and was not in a building.", null);
+							+ " and was not in a building.");
 					endTask();
 					// do this for now so as to debug why this happen and how often
 					// setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is
@@ -721,10 +721,10 @@ public class Walk extends Task implements Serializable {
 			}
 
 		} else if (robot != null) {
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 5_000, sourceName,
       				"[" + robot.getLocationTag().getLocale() + "] "
 					+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
-					+ " and walking inside the settlement.", null);
+					+ " and walking inside the settlement.");
 			
 			// Check if robot has reached destination location.
 			WalkingSteps.RobotWalkStep step = walkingSteps.getRobotWalkingStepsList().get(walkingStepIndex);
@@ -751,10 +751,10 @@ public class Walk extends Task implements Serializable {
 					// step.building.getNickName());
 					addSubTask(new WalkSettlementInterior(robot, step.building, x, y));
 				} else {
-					LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
+					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 		      				"[" + robot.getLocationTag().getLocale() + "] "
 							+ robot + " was in " + person.getLocationTag().getImmediateLocation() 
-							+ " but was not in a building.", null);
+							+ " but was not in a building.");
 //	        		logger.info(robot + " may be at " + robot.getBuildingLocation());
 //	        		logger.info(robot + "'s location is " + robot.getLocationSituation());
 //	        		logger.info(robot + " is in " + robot.getSettlement());
@@ -785,10 +785,10 @@ public class Walk extends Task implements Serializable {
 		double timeLeft = time;
 
 		if (person != null) {
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 5_000, sourceName,
       				"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " was in " + person.getLocationTag().getImmediateLocation()
-					+ " and walking inside the rover.", null);
+					+ " and walking inside the rover.");
 			
 			// Check if person has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -825,40 +825,41 @@ public class Walk extends Task implements Serializable {
 				}
 			} else { // this is a high traffic case when a person is in a vehicle
 
-//				if (person.isInSettlement() || person.isInVehicleInGarage()) {
-//					LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
-//		      				"[" + person.getLocationTag().getLocale() + "] "
-//							+ person + " is in " + person.getLocationTag().getImmediateLocation()
-//							+ " but is in walkingRoverInteriorPhase() and NOT in a rover.",
-//							null);
+				if (person.isInSettlement()) {// || person.isInVehicleInGarage()) {
+					LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
+		      				"[" + person.getLocationTag().getLocale() + "] "
+							+ person + " is in " + person.getLocationTag().getImmediateLocation()
+							+ " but is supposed to be in a rover.");
+					endTask();
 //					person.getMind().getTaskManager().clearTask();
 //					person.getMind().getTaskManager().getNewTask();// .clearTask();
-//				}
+				}
 
 				if (person.isInVehicle() || person.isInVehicleInGarage()) {
-					LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+					LogConsolidated.log(Level.FINER, 5_000, sourceName,
 		      				"[" + person.getLocationTag().getLocale() + "] "
 							+ person + " was in " + person.getLocationTag().getImmediateLocation()
-							+ " and starting WalkRoverInterior.", null);
+							+ " and starting WalkRoverInterior.");
 					addSubTask(new WalkRoverInterior(person, step.rover, x, y));
 				}
 
 				else if (person.isOutside()) {
-					LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
+					LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] "
 							+ person +  " was in " + person.getLocationTag().getImmediateLocation()
-							+ " and outside (in walkingRoverInteriorPhase()) and NOT in rover.", null);
-					person.getMind().getTaskManager().clearTask();
-					person.getMind().getTaskManager().getNewTask();// clearTask();
+							+ " and outside (in walkingRoverInteriorPhase()) and NOT in rover.");
+					endTask();
+//					person.getMind().getTaskManager().clearTask();
+//					person.getMind().getTaskManager().getNewTask();// clearTask();
 				}
 
 			}
 
 		} else if (robot != null) {
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 5_000, sourceName,
       				"[" + robot.getLocationTag().getLocale() + "] "
 					+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
-					+ " and walking inside the rover.", null);
+					+ " and walking inside the rover.");
 			
 			// Check if robot has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -892,10 +893,10 @@ public class Walk extends Task implements Serializable {
 				}
 			} else {
 //				logger.finest("Starting walk rover interior from Walk.walkingRoverInteriorPhase.");
-				LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+				LogConsolidated.log(Level.FINER, 5_000, sourceName,
 	      				"[" + robot.getLocationTag().getLocale() + "] "
 						+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
-						+ " and starting WalkRoverInterior.", null);
+						+ " and starting WalkRoverInterior.");
 				addSubTask(new WalkRoverInterior(robot, step.rover, x, y));
 			}
 
@@ -918,10 +919,10 @@ public class Walk extends Task implements Serializable {
 		if (person != null) {
 
 //			logger.finer(person + " walking exterior phase.");
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 5_000, sourceName,
       				"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " was in " + person.getLocationTag().getImmediateLocation()
-					+ " and in walkingExteriorPhase().", null);
+					+ " and in walkingExteriorPhase().");
 			
 			// Check if person has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -947,19 +948,19 @@ public class Walk extends Task implements Serializable {
 				// endTask();
 				if (person.isOutside()) {
 //					logger.finer(person + " starting walk outside task.");
-					LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+					LogConsolidated.log(Level.FINER, 5_000, sourceName,
 		      				"[" + person.getLocationTag().getLocale() + "] "
 							+ person + " was in " + person.getLocationTag().getImmediateLocation()
-							+ " and starting WalkOutside task.", null);
+							+ " and starting WalkOutside task.");
 					// setDescription("Walking Outside from (" + x + ", " + y + ") to (" + xx + ", "
 					// + yy + ")");
 					addSubTask(new WalkOutside(person, x, y, xx, yy, true));
 				} else {
 //					logger.severe(person + " is already physically outside.");
-					LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
+					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 		      				"[" + person.getLocationTag().getLocale() + "] "
 							+ person + " was in " + person.getLocationTag().getImmediateLocation()
-							+ " but already physically outside.", null);
+							+ " but already physically outside.");
 					endTask();
 				}
 
@@ -968,10 +969,10 @@ public class Walk extends Task implements Serializable {
 		} else if (robot != null) {
 
 //			logger.finer(robot + " walking exterior phase.");
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 5_000, sourceName,
       				"[" + robot.getLocationTag().getLocale() + "] "
 					+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
-					+ " and in walkingExteriorPhase().", null);
+					+ " and in walkingExteriorPhase().");
 			
 			// Check if robot has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -995,10 +996,10 @@ public class Walk extends Task implements Serializable {
 				// endTask();
 				if (robot.isOutside()) {
 //					logger.finer(robot + " starting walk outside task.");
-					LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+					LogConsolidated.log(Level.FINER, 5_000, sourceName,
 		      				"[" + robot.getLocationTag().getLocale() + "] "
 							+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
-							+ " and starting WalkOutside subtask.", null);
+							+ " and starting WalkOutside subtask.");
 					// setDescription("Walking Outside from (" + x + ", " + y + ") to (" + xx + ", "
 					// + yy + ")");
 					addSubTask(new WalkOutside(robot, x, y, xx, yy, true));
@@ -1006,10 +1007,10 @@ public class Walk extends Task implements Serializable {
 
 				else {
 //					logger.severe(robot + " is already physically outside.");
-					LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
+					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 		      				"[" + robot.getLocationTag().getLocale() + "] "
 							+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
-							+ " but already physically outside.", null);
+							+ " but already physically outside.");
 					endTask();
 				}
 
@@ -1031,10 +1032,10 @@ public class Walk extends Task implements Serializable {
 		double timeLeft = time;
 		if (person != null) {
 //			logger.finer(person + " in exitingAirlockPhase()");
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 5_000, sourceName,
       				"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " was in " + person.getLocationTag().getImmediateLocation()
-					+ " and in exitingAirlockPhase().", null);
+					+ " and in exitingAirlockPhase().");
 			// Check if person has reached the outside of the airlock.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 			Airlock airlock = step.airlock;
@@ -1053,22 +1054,19 @@ public class Walk extends Task implements Serializable {
 			} else {
 				if (ExitAirlock.canExitAirlock(person, airlock)) {
 //					logger.finer(person + " to add ExitAirlock as a subTask");
-					LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+					LogConsolidated.log(Level.FINER, 5_000, sourceName,
 		      				"[" + person.getLocationTag().getLocale() + "] "
 							+ person + " was in " + person.getLocationTag().getImmediateLocation()
-							+ " and starting ExitAirlock subTask.", null);
+							+ " and starting ExitAirlock subTask.");
 					addSubTask(new ExitAirlock(person, airlock));
 				} else {
-					LogConsolidated.log(
-							logger, Level.SEVERE, 5_000, sourceName, 
+					LogConsolidated.log(Level.SEVERE, 5_000, sourceName, 
 		      				"[" + person.getLocationTag().getLocale() + "] "
 		      						+ person + " is in " + person.getLocationTag().getImmediateLocation()
-									+ " is unable to physically exit the airlock of " + airlock.getEntityName() + ".",
-							null);
-
-					person.getMind().getTaskManager().clearTask();
-					person.getMind().getTaskManager().getNewTask();
-					// endTask(); // will call Walk many times again
+									+ " is unable to physically exit the airlock of " + airlock.getEntityName() + ".");
+//					person.getMind().getTaskManager().clearTask();
+//					person.getMind().getTaskManager().getNewTask();
+					endTask(); // will call Walk many times again
 				}
 			}
 
@@ -1092,10 +1090,10 @@ public class Walk extends Task implements Serializable {
 
 //        if (person != null) {
 //		logger.finer(person + " walking entering airlock phase.");
-		LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+		LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringAirlockPhase",
   				"[" + person.getLocationTag().getLocale() + "] "
 				+ person + " was in " + person.getLocationTag().getImmediateLocation()
-				+ " and in enteringAirlockPhase().", null);
+				+ ".");
 
 		// Check if person has reached the inside of the airlock.
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -1104,19 +1102,17 @@ public class Walk extends Task implements Serializable {
 			if (EnterAirlock.canEnterAirlock(person, airlock)) {
 				// setDescription("is OUTSIDE and attempting to enter an airlock. calling
 				// EnterAirlock as a subTask now");
-				LogConsolidated.log(logger, Level.FINER, 00, sourceName,
+				LogConsolidated.log(Level.FINER, 00, sourceName + "::enteringAirlockPhase",
 		  				"[" + person.getLocationTag().getLocale() + "] "
 						+ person + " was in " + person.getLocationTag().getImmediateLocation()
-						+ " and starting EnterAirlock subtask.", null);
+						+ " and starting EnterAirlock subtask.");
 				addSubTask(new EnterAirlock(person, airlock));
 			} else {
 				endTask();
-				LogConsolidated.log(
-						logger, Level.SEVERE, 0, sourceName, 
+				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::enteringAirlockPhase", 
 	      				"[" + person.getLocationTag().getLocale() + "] "
 	      						+ person + " is in " + person.getLocationTag().getImmediateLocation()
-								+ " is OUTSIDE, unable to physically enter the airlock of " + airlock.getEntityName(),
-						null);
+								+ " is OUTSIDE, unable to physically enter the airlock in" + airlock.getEntityName());
 			}
 
 		} else {
@@ -1151,34 +1147,38 @@ public class Walk extends Task implements Serializable {
 
 		if (person != null) {
 
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 0, sourceName + "::exitingRoverGaragePhase",
 	  				"[" + person.getLocationTag().getLocale() + "] "
-					+ person + " was about to exit the rover " + rover.getName() + " in " + rover.getLocationTag().getImmediateLocation()
-//					+ " (or in " + person.getLocationTag().getImmediateLocation()
-//					+ ") [exitingRoverGaragePhase()]."
-					, null);
+					+ person + " was about to exit the rover " + rover.getName() 
+					+ " and was reportedly in " + person.getLocationTag().getImmediateLocation()
+					+ ".");
 
 			
 			// Exit a rover inside a garage
 //			person.exit(LocationCodeType.MOBILE_UNIT_3);
 			
 			rover.getInventory().retrieveUnit(person);
-			garageBuilding.getSettlementInventory().storeUnit(person);
+			garageBuilding.getSettlementInventory().storeUnit(person); 
+			// java.lang.IllegalStateException: Unit: Gerardo Marinez could not be stored.
+			// [Alpha Base] Gerardo Marinez was about to exit the rover Gypsea and reportedly in Garage 1.
+			
 			BuildingManager.addPersonOrRobotToBuilding(person, garageBuilding);
 
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 0, sourceName + "::exitingRoverGaragePhase",
 	  				"[" + person.getLocationTag().getLocale() + "] "
-					+ person + " had just exit the rover " + rover.getName() + " and now at " + person.getLocationTag().getImmediateLocation()
-					+ " [exitingRoverGaragePhase()].", null);
+					+ person + " had just exit the rover " + rover.getName() 
+					+ " and was reportedly in " + person.getLocationTag().getImmediateLocation()
+					+ ".");
 			
 		} 
 		
 		else if (robot != null) {
 //			logger.finer(robot + " walking exiting rover garage phase.");
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 0, sourceName + "::exitingRoverGaragePhase",
 	  				"[" + robot.getLocationTag().getLocale() + "] "
-					+ robot + " was about to exit rover " + rover.getName() + " (or in " + robot.getLocationTag().getImmediateLocation()
-					+ ") [exitingRoverGaragePhase()].", null);
+					+ robot + " was about to exit rover " + rover.getName()
+					+ " and was reportedly in " + robot.getLocationTag().getImmediateLocation()
+					+ ".");
 			
 			// Exit a rover inside a garage
 //			robot.exit(LocationCodeType.MOBILE_UNIT_3);
@@ -1187,10 +1187,11 @@ public class Walk extends Task implements Serializable {
 			garageBuilding.getSettlementInventory().storeUnit(robot);
 			BuildingManager.addPersonOrRobotToBuilding(robot, garageBuilding);
 			
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 00, sourceName + "::exitingRoverGaragePhase",
 	  				"[" + robot.getLocationTag().getLocale() + "] "
-					+ robot + " had just exited rover " + rover.getName() + " and now in " + robot.getLocationTag().getImmediateLocation()
-					+ " [exitingRoverGaragePhase()].", null);
+					+ robot + " had just exited rover " + rover.getName() 
+					+ " and was reportedly in " + robot.getLocationTag().getImmediateLocation()
+					+ ".");
 
 		}
 
@@ -1220,10 +1221,11 @@ public class Walk extends Task implements Serializable {
 		Building garageBuilding = step.building;
 
 		if (person != null) {
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
 	  				"[" + person.getLocationTag().getLocale() + "] "
-					+ person + " was in " + person.getLocationTag().getImmediateLocation()
-					+ " and in enteringRoverInsideGaragePhase().", null);
+					+ person + " was about to enter rover " + rover.getName() 
+					+ " and was reportedly in " + person.getLocationTag().getImmediateLocation()
+					+ ".");
 			
 			// Place this person within a vehicle inside a garage in a settlement
 //			person.enter(LocationCodeType.MOBILE_UNIT_3);
@@ -1232,17 +1234,19 @@ public class Walk extends Task implements Serializable {
 			BuildingManager.removePersonOrRobotFromBuilding(person, garageBuilding);		
 			rover.getInventory().storeUnit(person);
 			
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
 	  				"[" + person.getLocationTag().getLocale() + "] "
-					+ person + " had just entered " + person.getLocationTag().getImmediateLocation()
-					+ " and in enteringRoverInsideGaragePhase().", null);
+					+ person + " had just entered rover " + rover.getName() 
+					+ " and was reportedly in " + person.getLocationTag().getImmediateLocation()
+					+ ".");
 		} 
 		
 		else if (robot != null) {
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
 	  				"[" + robot.getLocationTag().getLocale() + "] "
-					+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
-					+ " and in enteringRoverInsideGaragePhase().", null);
+					+ robot + " was about to enter rover " + rover.getName() 
+					+ " and was reportedly in " + robot.getLocationTag().getImmediateLocation()
+					+ ".");
 			
 			// Place this robot within a vehicle inside a garage in a settlement
 //			robot.enter(LocationCodeType.MOBILE_UNIT_3);
@@ -1251,10 +1255,11 @@ public class Walk extends Task implements Serializable {
 			BuildingManager.removePersonOrRobotFromBuilding(robot, garageBuilding);
 			rover.getInventory().storeUnit(robot);
 			
-			LogConsolidated.log(logger, Level.FINER, 5_000, sourceName,
+			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
 	  				"[" + robot.getLocationTag().getLocale() + "] "
-					+ robot + " had just entered " + robot.getLocationTag().getImmediateLocation()
-					+ " and in enteringRoverInsideGaragePhase().", null);
+					+ robot + " had just entered rover " + rover.getName()
+					+ " and was reportedly in " + robot.getLocationTag().getImmediateLocation()
+					+ ".");
 		}
 
 		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {

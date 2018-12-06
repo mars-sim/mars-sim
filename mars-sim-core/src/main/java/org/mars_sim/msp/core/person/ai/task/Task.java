@@ -107,18 +107,19 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private TaskPhase phase;
 	/** The person's physical condition. */
 	private PhysicalCondition condition;
-	/** FunctionType of the task. */
+//	/** FunctionType of the task. */
 	// private FunctionType functionType;
 
 	/** A collection of the task's phases. */
 	private Collection<TaskPhase> phases;
 
+	
+	private static Simulation sim = Simulation.instance();
 	/** An instance of the event manager */
 	private static HistoricalEventManager eventManager;
 	/** An instance of the relationship manager */
 	private static RelationshipManager relationshipManager;
-	
-	private static Simulation sim = Simulation.instance();
+
 
 	/**
 	 * Constructs a Task object.
@@ -184,14 +185,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		done = true;
 
-//		if (person != null) { 
-//			// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
-//	        person.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this); 
-//		}
-//		else if (robot != null) {
-//			// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
-//			robot.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
-//		}
+		if (person != null) { 
+			// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
+	        person.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this); 
+		}
+		else if (robot != null) {
+			// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
+			robot.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
+		}
 
 		// Create ending task historical event if needed.
 		if (createEvents) {
@@ -202,12 +203,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				endingEvent = new TaskEvent(person, this, person, EventType.TASK_FINISH,
 						person.getLocationTag().getExtendedLocations(), "");
 			} else if (robot != null) {
-				endingEvent = new TaskEvent(robot, this, person, EventType.TASK_FINISH,
+				endingEvent = new TaskEvent(robot, this, robot, EventType.TASK_FINISH,
 						robot.getLocationTag().getExtendedLocations(), "");
 			}
 
-			if (eventManager == null)
-				System.out.println("Task : eventManager == null");
 			eventManager.registerNewEvent(endingEvent);
 		}
 	}
@@ -502,10 +501,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 			if (person != null) {
 
+				double perf = person.getPerformanceRating();
 				// If task is effort-driven and person is incapacitated, end task.
-				if (effortDriven && (person.getPerformanceRating() == 0D)) {
+				if (effortDriven && (perf == 0D)) {
 					// "Resurrect" him a little to give him a chance to make amend
-					condition.setPerformanceFactor(3);
+					condition.setPerformanceFactor(.1);
 					endTask();
 
 				} else {
@@ -1210,9 +1210,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 					if (building.getNickName().toLowerCase().contains("astronomy")) {
 						if (robot.getSettlement().getBuildingConnectors(building).size() > 0) {
-							LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+							LogConsolidated.log(Level.FINER, 5000, sourceName,
 									"[" + robot.getLocationTag().getLocale() + "] " 
-											+ robot.getName() + " is walking toward " + building.getNickName(), null);
+											+ robot.getName() + " is walking toward " + building.getNickName());
 							walkToActivitySpotInBuilding(building, fct, allowFail);
 						}
 					} else {
@@ -1240,9 +1240,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				addSubTask(new Walk(person, settlementPos.getX(), settlementPos.getY(), interiorObject));
 			} else {
 //				logger.fine(person.getName() + " unable to walk to " + interiorObject);
-				LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+				LogConsolidated.log(Level.FINER, 5000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " 
-								+ person.getName() + " was unable to walk to " + interiorObject, null);
+								+ person.getName() + " was unable to walk to " + interiorObject);
 				if (!allowFail) {
 					endTask();
 				}
@@ -1253,9 +1253,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				addSubTask(new Walk(robot, settlementPos.getX(), settlementPos.getY(), interiorObject));
 			} else {
 //				logger.fine(robot.getName() + " unable to walk to " + interiorObject);
-				LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+				LogConsolidated.log(Level.FINER, 5000, sourceName,
 						"[" + robot.getLocationTag().getLocale() + "] " 
-								+ robot.getName() + " was unable to walk to " + interiorObject, null);
+								+ robot.getName() + " was unable to walk to " + interiorObject);
 				if (!allowFail) {
 					endTask();
 				}

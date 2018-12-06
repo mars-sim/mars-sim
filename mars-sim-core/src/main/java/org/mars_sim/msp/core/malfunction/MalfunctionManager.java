@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonalityTraitType;
@@ -104,7 +105,7 @@ public class MalfunctionManager implements Serializable {
 	 */
 	private double wearCondition;
 	/** The max percentage between 0% to 100%.  */
-	private double maxCondition;
+//	private double maxCondition;
 	/**
 	 * The expected life time (millisols) of active use before the malfunctionable
 	 * is worn out.
@@ -128,17 +129,16 @@ public class MalfunctionManager implements Serializable {
 	private Map<Integer, Integer> partsNeededForMaintenance;
 
 	// The static instances
+	private static SimulationConfig simconfig = SimulationConfig.instance();
+	private static Simulation sim = Simulation.instance();
+	
 	private static MasterClock masterClock;
-//	private static MarsClock startTime;
 	private static MarsClock currentTime;
-
+	private static MedicalManager medic;
 	private static MalfunctionFactory factory;
 //	private static PartConfig partConfig;
 	private static MalfunctionConfig malfunctionConfig;
-
-	private static SimulationConfig simconfig = SimulationConfig.instance();
-	private static Simulation sim = Simulation.instance();
-	private static MedicalManager medic = sim.getMedicalManager();
+	private static HistoricalEventManager eventManager;
 	
 	// NOTE : each building has its own MalfunctionManager
 
@@ -168,9 +168,11 @@ public class MalfunctionManager implements Serializable {
 			// Note that this if above is for maven test, or else NullPointerException
 			currentTime = masterClock.getMarsClock();
 			
+		medic = sim.getMedicalManager();
 //		partConfig = simconfig.getPartConfiguration();
 		malfunctionConfig = simconfig.getMalfunctionConfiguration();
 		factory = sim.getMalfunctionFactory();
+		eventManager = sim.getEventManager();
 	}
 
 	/**
@@ -462,7 +464,7 @@ public class MalfunctionManager implements Serializable {
 		if (registerEvent) {
 
 			if (!malfunctionName.contains("Meteorite")) {
-				// if it has nothing to do with meteorite impact
+				// if it has NOTHING to do with meteorite impact
 
 				String loc0 = null;
 				String loc1 = null;
@@ -489,8 +491,8 @@ public class MalfunctionManager implements Serializable {
 				}
 
 				else if (object.toLowerCase().contains("bot")) {
-					loc0 = ((EVASuit) entity).getImmediateLocation();
-					loc1 = ((EVASuit) entity).getLocale();
+					loc0 = entity.getImmediateLocation();
+					loc1 = entity.getLocale();
 				}
 
 				else {
@@ -502,44 +504,69 @@ public class MalfunctionManager implements Serializable {
 					if (actor == null) {
 						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
 								malfunction, malfunctionName, "N/A", "None", loc0, loc1);
-						Simulation.instance().getEventManager().registerNewEvent(newEvent);
+						eventManager.registerNewEvent(newEvent);
+						
 						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-								"[" + loc1 + "] '" + malfunction.getName() + "' in " + loc0 + ". Cause : Parts Fatigue.", null);
+								"[" + loc1 + "] " + object + " has " 
+								+ malfunction.getName() + ". Cause : Parts Fatigue.", null);
 					} else {
 						if (person != null) {
 							HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
 									malfunction, malfunctionName, task, offender, loc0, loc1);
-							Simulation.instance().getEventManager().registerNewEvent(newEvent);
+							eventManager.registerNewEvent(newEvent);
+							
 							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-									"[" + loc1 + "] " + offender + " may have to do with '"
-									+ malfunction.getName() + "' in " + loc0 + ". Cause : Human Factors.", null);
+									"[" + loc1 + "] " + object + " has "
+									+ malfunction.getName() + " as reported by " 
+									+ offender + ". Cause : Human Factors.", null);
 						} else if (robot != null) {
 							HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
 									malfunction, malfunctionName, task, offender, loc0, loc1);
-							Simulation.instance().getEventManager().registerNewEvent(newEvent);
+							eventManager.registerNewEvent(newEvent);
+							
 							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-									"[" + loc1 + "] " + offender + " may have to do with '"
-									+ malfunction.getName() + "' in " + loc0  + ". Cause : Software Quality Control.", null);
+									"[" + loc1 + "] " + object + " has "
+									+ malfunction.getName() + " as reported by " 
+									+ offender + ". Cause : Software Quality Control.", null);
 						}
 					}
-
-				} else {
+				} 
+				
+				else {
 					if (actor == null) {
 						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
 								malfunction, malfunctionName + " on " + object, "N/A", "None", loc0, loc1);
-						Simulation.instance().getEventManager().registerNewEvent(newEvent);
+						eventManager.registerNewEvent(newEvent);
+						
 						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-								"[" + loc1 + "] '" + malfunction.getName() + "' detected in " + loc0 + ". Cause : Parts Fatigue.", null);
-					} else {
-						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
-								malfunction, malfunctionName + " on " + object, task, offender, loc0, loc1);
-						Simulation.instance().getEventManager().registerNewEvent(newEvent);
-						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-								"[" + loc1 + "] " + offender + " may have to do with '"
-								+ malfunction.getName() + "' in " + loc0 + ". Cause : Human Factors.", null);
+								"[" + loc1 + "] " + object + " has " 
+								+ malfunction.getName() + " in " + loc0 + ". Cause : Parts Fatigue.", null);					
+					} 
+					
+					else {
+						if (person != null) {
+							HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
+									malfunction, malfunctionName + " on " + object, task, offender, loc0, loc1);
+							eventManager.registerNewEvent(newEvent);
+							
+							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+									"[" + loc1 + "] " + object + " has "
+									+ malfunction.getName() + " in " + loc0 + " as reported by " 
+									+ offender + ". Cause : Human Factors.", null);
+						} 
+						
+						else if (robot != null) {
+							HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
+									malfunction, malfunctionName, task, offender, loc0, loc1);
+							eventManager.registerNewEvent(newEvent);
+							
+							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+									"[" + loc1 + "] " + object + " has "
+									+ malfunction.getName() + " in " + loc0 + " as reported by " 
+									+ offender + ". Cause : Software Quality Control.", null);
+						}
 					}
 				}
-
 			}
 
 			else {
@@ -571,8 +598,8 @@ public class MalfunctionManager implements Serializable {
 				}
 
 				else if (object.toLowerCase().contains("bot")) {
-					loc0 = ((EVASuit) entity).getImmediateLocation();
-					loc1 = ((EVASuit) entity).getLocale();
+					loc0 = entity.getImmediateLocation();
+					loc1 = entity.getLocale();
 				}
 
 				else {
@@ -585,9 +612,16 @@ public class MalfunctionManager implements Serializable {
 				// if it is a meteorite impact
 				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_ACT_OF_GOD, malfunction,
 						malfunctionName, task, name, loc0, loc1);
-				Simulation.instance().getEventManager().registerNewEvent(newEvent);
-				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						"[" + loc1 + "] " +  malfunction.getName() + " damage detected in " + loc0, null);
+				eventManager.registerNewEvent(newEvent);
+				
+				if (object.equals(loc0)) {
+					LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+						"[" + loc1 + "] " + object + " was damaged by " +  malfunction.getName(), null);
+				}
+				else {
+					LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+							"[" + loc1 + "] " + object + " was damaged by " +  malfunction.getName() + " in " + loc0, null);
+				}
 			}
 			
 		} 
@@ -631,7 +665,7 @@ public class MalfunctionManager implements Serializable {
 			double new_failure = (100 - new_rel) * new_prob / 100D;
 			double new_mal_prob_failure = 0;
 			double new_MTBF = factory.getMTBFs().get(id);
-			logger.warning("         < Part '" + part_name + "' >");
+			logger.warning("        < Part : " + part_name + " >");
 			logger.warning(" (1).   Reliability : " + addWhiteSpace(Math.round(old_rel * 1000.0) / 1000.0 + " %") 
 					+ "  -->  " + Math.round(new_rel * 1000.0) / 1000.0 + " %");
 
@@ -642,7 +676,7 @@ public class MalfunctionManager implements Serializable {
 			logger.warning(" (3).          MTBF : " + addWhiteSpace(Math.round(old_MTBF * 1000.0) / 1000.0 + " hr") 
 					+ "  -->  " + Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
 
-			logger.warning("         < Malfunction '" + malfunctionName + "' >");
+			logger.warning("        < Malfunction : " + malfunctionName + " >");
 			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_probl_failure * 1000.0) / 1000.0 + " %") 
 					+ "  -->  " + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
 			malfunction.setProbability(new_mal_prob_failure);
@@ -726,7 +760,7 @@ public class MalfunctionManager implements Serializable {
 		if (RandomUtil.lessThanRandPercent(chance)) {
 			int solsLastMaint = (int) (effectiveTimeSinceLastMaintenance / 1000D);
 			// Reduce the max possible health condition
-			maxCondition = (wearCondition + 400D)/500D; 
+//			maxCondition = (wearCondition + 400D)/500D; 
 			LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
 					"[" + entity.getImmediateLocation() + "] " + entity.getNickName() + " is behind on maintenance.  "
 							+ "Time since last check-up: " + solsLastMaint + " sols.  Condition: " + Math.round(wearCondition*10.0)/10.0
@@ -847,7 +881,7 @@ public class MalfunctionManager implements Serializable {
 						m.getName(), "Repairing", chiefRepairer, entity.getImmediateLocation(),
 						entity.getLocale());
 
-				Simulation.instance().getEventManager().registerNewEvent(newEvent);
+				eventManager.registerNewEvent(newEvent);
 				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 						"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' has been fixed in "
 						+ entity.getImmediateLocation(), null);
@@ -1377,6 +1411,7 @@ public class MalfunctionManager implements Serializable {
 		malfunctionConfig = simconfig.getMalfunctionConfiguration();
 		factory = sim.getMalfunctionFactory();
 		medic = sim.getMedicalManager();
+		eventManager = sim.getEventManager();
 	}
 		
 	/**

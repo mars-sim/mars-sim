@@ -15,9 +15,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -74,6 +76,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
 	private static transient Logger logger = Logger.getLogger(Person.class.getName());
+	
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
 	/** The base carrying capacity (kg) of a person. */
 	private final static double BASE_CAPACITY = 60D;
 
@@ -202,7 +207,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The person's mission experiences */
 	private Map<Integer, List<Double>> missionExperiences;
 	
-	private Simulation sim = Simulation.instance();
+	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;
 	private static EarthClock earthClock;
 	private static MasterClock masterClock;
@@ -912,18 +917,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param time amount of time passing (in millisols).
 	 */
 	public void timePassing(double time) {
-//		System.out.println("person.timePassing()");
-//		super.timePassing(time); // is not needed. 
-		// Note : will automatically call uni.timePassing(time) first before calling person.timePassing();
-		if (marsSurface == null)
-			marsSurface = Simulation.instance().getMars().getMarsSurface();
+
+//		if (marsSurface == null)
+//			marsSurface = Simulation.instance().getMars().getMarsSurface();
+//		
 		if (containerUnit == null)
 			this.containerUnit = marsSurface;
-
-		if (marsClock == null) {
-			masterClock = Simulation.instance().getMasterClock();
-			marsClock = masterClock.getMarsClock();
-		}
+//
+//		if (marsClock == null) {
+//			masterClock = Simulation.instance().getMasterClock();
+//			marsClock = masterClock.getMarsClock();
+//		}
 
 		double msol1 = marsClock.getMillisolOneDecimal();
 
@@ -949,6 +953,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 						mind.timePassing(time);
 					} catch (Exception ex) {
 						ex.printStackTrace();
+						LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+								"[" + getLocationTag().getLocale() + "] "
+								+ getName() + "'s Mind was having trouble.", ex);
 					}
 
 					// check for the passing of each day
@@ -1688,10 +1695,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public static void justReloaded(MasterClock c0, MarsClock c1) {
 		masterClock = c0;
 		marsClock = c1;
-		mars = Simulation.instance().getMars();
+		sim = Simulation.instance();
+		mars = sim.getMars();
 		marsSurface = mars.getMarsSurface();
 		earthClock = c0.getEarthClock();
 	}
+
 	
 	@Override
 	public void destroy() {
