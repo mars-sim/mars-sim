@@ -59,7 +59,7 @@ public class Inventory implements Serializable {
 	private Collection<Unit> containedUnits = null;
 	/** Map of item resources. */
 	private Map<ItemResource, Integer> containedItemResources = null;
-	/** Map of item resources. */
+//	/** Map of item resources. */
 //    private Map<Integer, Integer> containedItemIDs = null;
 	/** General mass capacity of inventory. */
 	private double generalCapacity = 0D;
@@ -67,16 +67,6 @@ public class Inventory implements Serializable {
 	private AmountResourceStorage resourceStorage = new AmountResourceStorage();
 
 	// Cache capacity variables.
-//    private transient Map<AmountResource, Double> amountResourceCapacityCache = null;
-//    private transient Map<AmountResource, Boolean> amountResourceCapacityCacheDirty = null;
-//    private transient Map<AmountResource, Double> amountResourceContainersCapacityCache = null;
-//    private transient Map<AmountResource, Boolean> amountResourceContainersCapacityCacheDirty = null;
-//    private transient Map<AmountResource, Double> amountResourceStoredCache = null;
-//    private transient Map<AmountResource, Boolean> amountResourceStoredCacheDirty = null;
-//    private transient Map<AmountResource, Double> amountResourceContainersStoredCache = null;
-//    private transient Map<AmountResource, Boolean> amountResourceContainersStoredCacheDirty = null;    
-	// private transient Set<AmountResource> allStoredAmountResourcesCache = null;
-
 	private transient Map<Integer, Double> capacityCache = null;
 	private transient Map<Integer, Boolean> capacityCacheDirty = null;
 	private transient Map<Integer, Double> containersCapacityCache = null;
@@ -1624,9 +1614,9 @@ public class Inventory implements Serializable {
 				}
 			}
 		} else {
-			throw new IllegalStateException("Unit: " + unit + " could not be stored.");
-			// LogConsolidated.log(Level.WARNING, 5000, sourceName + "::storeUnit",
-			// "Unit: " + unit + " could not be stored.", null);
+			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::storeUnit",
+					 "Unit: " + unit + " could not be stored.");
+			throw new IllegalStateException("Unit: " + unit + " could not be stored in " + owner.getName()); // needed for maven test
 		}
 	}
 
@@ -1675,9 +1665,9 @@ public class Inventory implements Serializable {
 		}
 
 		else {
-//			throw new IllegalStateException("Unit: " + unit + " could not be retrieved by " + owner.getName()); // needed for maven test
-			 LogConsolidated.log(Level.SEVERE, 5000, sourceName +
+			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName +
 					 "::retrieveUnit", "Unit: " + unit + " could not be retrieved.");
+			throw new IllegalStateException("Unit: " + unit + " could not be retrieved by " + owner.getName()); // needed for maven test
 		}
 	}
 
@@ -2548,6 +2538,15 @@ public class Inventory implements Serializable {
 			resourceStorage.restoreARs(ars);
 	}
 
+	/**
+	 * Remaps the instances
+	 * 
+	 * @return {@Link MarsSurface}
+	 */
+	public static void justReloaded(MarsSurface ms) {
+		marsSurface = ms;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

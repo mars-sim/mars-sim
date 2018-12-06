@@ -856,6 +856,7 @@ public class Simulation implements ClockListener, Serializable {
 //		System.out.println("Done with Serialized Object instances");
 		
 		// Unit related class
+		Inventory.justReloaded(mars.getMarsSurface());
 		Unit.justReloaded(mars);						// mars
 		Equipment.justReloaded(unitManager);					// unitManager
 		EVASuit.justReloaded(w);				// weather,
