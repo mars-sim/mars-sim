@@ -83,10 +83,11 @@
 			</building>
 
 			<!-- Small nuclear reactor power generator. -->
-			<building id="3" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />		
-			<building id="4" type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />			
-			<building id="5" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />	
-	
+			<building id="3" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-60.0" facing="0.0" />
+			<building id="4" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-80.0" facing="0.0" />
+			<building id="5" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
+
+			
 			<!-- Earth Return Vehicle base building with Sabatier reactor for converting
 			     hydrogen and carbon dioxide into methane, water and oxygen.
 			     The starting ERV base has a full load of hydrogen and has not reacted yet. -->
@@ -96,6 +97,9 @@
 			     hydrogen and carbon dioxide into methane, water and oxygen.  -->
 			<building id="7" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
 
+			<building id="8" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+
+			<building id="9" type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />		
 			<!-- A rover for collecting rock samples from remote sites
 			     and ice prospecting. -->
 			<vehicle type="Explorer Rover" number="2" />
@@ -193,15 +197,19 @@
 					<connection id="5" x-location="0.0" y-location="4.5" />
 				</connection-list>
 			</building>
-			<building id="7" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />
-			<building id="8" type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
-			<building id="9" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />
-			<building id="10" type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-68.0" facing="0.0" />
 					
+			<building id="7" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-60.0" facing="0.0" />
+			<building id="8" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-80.0" facing="0.0" />
+			<building id="9" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
+			<building id="10" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-80.0" facing="0.0" />
+								
 			<building id="11" type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
 			<building id="12" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
 			<building id="13" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
-			
+	
+			<building id="14" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+			<building id="15" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
+					
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			
@@ -397,17 +405,22 @@
 					<connection id="9" x-location="0.0" y-location="4.5" />
 				</connection-list>
 			</building>
-			<building id="11" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />
-			<building id="12" type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
-			<building id="13" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />
-			<building id="14" type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-68.0" facing="0.0" />
+					
+			<building id="11" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-60.0" facing="0.0" />
+			<building id="12" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-80.0" facing="0.0" />
+			<building id="13" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
+			<building id="14" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-80.0" facing="0.0" />
 			
-			<building id="15" type="MD4 Nuclear Reactor" x-location="-85.0" y-location="-60.0" facing="0.0" />	
-			
+			<building id="15" type="MD4 Nuclear Reactor" x-location="100.0" y-location="-100" facing="0.0" />
+		
 			<building id="16" type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
 			<building id="17" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
 			<building id="18" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
 			<building id="19" type="ERV Base" x-location="80.0" y-location="15.0" facing="135.0" />		
+			
+			<building id="20" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+			<building id="21" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
+			<building id="22" type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
 			
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Transport Rover" number="1" />
@@ -697,13 +710,13 @@
 					<connection id="25" x-location="0.0" y-location="-8.0" />
 				</connection-list>
 			</building>
-			<building id="27" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />
-			<building id="28" type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
-			<building id="29" type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />
-			<building id="30" type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-68.0" facing="0.0" />
+			<building id="27" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-60.0" facing="0.0" />
+			<building id="28" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-80.0" facing="0.0" />
+			<building id="29" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
+			<building id="30" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-80.0" facing="0.0" />
 			
-			<building id="31" type="MD4 Nuclear Reactor" x-location="-85.0" y-location="-60.5" facing="0.0" />
-			<building id="32" type="MD4 Nuclear Reactor" x-location="-110.0" y-location="-60.5" facing="0.0" />
+			<building id="31" type="MD4 Nuclear Reactor" x-location="100.0" y-location="-100" facing="0.0" />
+			<building id="32" type="MD4 Nuclear Reactor" x-location="120.0" y-location="-100" facing="0.0" />
 			
 			<building id="33" type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
 			<building id="34" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
@@ -712,9 +725,15 @@
 			<building id="37" type="ERV Base" x-location="80.0" y-location="-15.0" facing="45.0" />			
 			
 			<building id="38" type="Astronomy Observatory" x-location="-55.0" y-location="-20.0" facing="90.0" />
-			<building id="39" type="Atmospheric Processor" x-location="0.0" y-location="-20.0" facing="90.0" />
-			<building id="40" type="Large Sabatier Processor" x-location="-30.0" y-location="-20.0" facing="90.0" />
 			
+			<building id="39" type="Atmospheric Processor" x-location="0.0" y-location="-20.0" facing="90.0" />
+			
+			<building id="40" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+			<building id="41" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
+			<building id="42" type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
+			<building id="43" type="Large Sabatier Processor" x-location="0.0" y-location="-55.0" facing="90.0" />
+			<building id="44" type="Large Sabatier Processor" x-location="0.0" y-location="-60.0" facing="90.0" />
+			<building id="45" type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />					
 			
 			<vehicle type="Explorer Rover" number="3" />
 			<vehicle type="Transport Rover" number="2" />
@@ -951,6 +970,9 @@
 			<building id="33" type="Methane Power Generator" x-location="-44.5" y-location="5.0" facing="270.0" />
 			<building id="34" type="Methane Power Generator" x-location="-44.5" y-location="0.0" facing="270.0" />
 
+			<building id="35" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+			<building id="36" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
+	
 			<vehicle type="Cargo Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 
@@ -1113,6 +1135,9 @@
 			<building id="37" type="Methane Power Generator" x-location="-44.5" y-location="5.0" facing="270.0" />
 			<building id="38" type="Methane Power Generator" x-location="-44.5" y-location="0.0" facing="270.0" />
 
+			<building id="39" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+			<building id="40" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
+			
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="2" />
 

@@ -19,14 +19,16 @@
 		<building type="Lander Hab" x-location="0.0" y-location="13.0" facing="0.0" />
 		
 		<building type="Inflatable Greenhouse" x-location="-12.0" y-location="13.0" facing="270.0" />
-					
-		<building type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-68.0" facing="0.0" />
-	
+
+		<building type="MD1 Nuclear Reactor" x-location="60.0" y-location="-80.0" facing="0.0" />
+
 		<building type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
 
 		<building type="Hallway" length="4.0" x-location="0.0" y-location="6.5" facing="0.0" />
 		<building type="Hallway" length="3.0" x-location="-6.0" y-location="13.0" facing="270.0" />
 
+		<building type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
+			
 		<!-- New equipment -->
 		<!-- type: the type of equipment. -->
 		<!-- number: the number of this type of equipment. -->
@@ -58,13 +60,15 @@
 		<building type="Lander Hab" x-location="0.0" y-location="26.0" facing="0.0" />
 		<building type="Inflatable Greenhouse" x-location="-12.0" y-location="26.0" facing="270.0" />
 	
-		<building type="MD4 Nuclear Reactor" x-location="-85.0" y-location="-60.5" facing="0.0" />
-	
+		<building type="MD4 Nuclear Reactor" x-location="100.0" y-location="-100" facing="0.0" />
+		
 		<building type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />		
 	
 		<building type="Hallway" length="4.0" x-location="0.0" y-location="19.5" facing="0.0" />
 		<building type="Hallway" length="3.0" x-location="-6.0" y-location="26.0" facing="270.0" />
 		
+		<building type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
+					
 		<vehicle type="Explorer Rover" number="1" />
 		<vehicle type="Transport Rover" number="1" />
 		<vehicle type="Light Utility Vehicle" number="1" />
@@ -82,10 +86,10 @@
 
 	<resupply name="Mars Direct Base Resupply 3">
 
-		<building type="MD4 Nuclear Reactor" x-location="-110.0" y-location="-60.5" facing="0.0" />
-	
 		<building type="Astronomy Observatory" x-location="-55.0" y-location="-20.05" facing="90.0" />
 		
+		<building type="MD4 Nuclear Reactor" x-location="120.0" y-location="-100" facing="0.0" />
+						
 		<building type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />			
 		<building type="Atmospheric Processor" x-location="0.0" y-location="-20.0" facing="90.0" />
 		<building type="Large Sabatier Processor" x-location="-30.0" y-location="-20.0" facing="90.0" />
@@ -113,6 +117,10 @@
 <!-- 		<building type="Hallway" length="5.0" x-location="-55.0" y-location="43.5" facing="0.0" /> -->
 		<building type="Hallway" length="4.0" x-location="-55.0" y-location="43.5" facing="0.0" />
 
+		<building type="Large Sabatier Processor" x-location="0.0" y-location="-55.0" facing="90.0" />
+		<building type="Large Sabatier Processor" x-location="0.0" y-location="-60.0" facing="90.0" />
+		<building type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />	
+			
 		<vehicle type="Explorer Rover" number="2" />
 		<vehicle type="Transport Rover" number="2" />
 		<vehicle type="Light Utility Vehicle" number="1" />
