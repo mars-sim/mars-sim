@@ -51,7 +51,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
         AppUtil.printGsonMessage(terminal, initData);
 
         Party party = new Party();
-        handler = new SwingHandler(textIO, party);
+        handler = new SwingHandler(textIO, "console", party);
       
         if (ChatUtils.getConnectionMode() == 1) {
         	terminal.println("Cannot establish more than one line of connections. Please type 'exit' to leave the graphic chat box first." + System.lineSeparator());			
@@ -125,11 +125,13 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 			        // if choosing to quit the chat mode
 					if (leaveSystem && ChatUtils.isQuitting(Party.party)) {
 						quit = true;
+						handler.save();
 						ChatUtils.setConnectionMode(-1);
 					}		
 	        	} catch (NullPointerException ne) {
-	        		ne.printStackTrace();
+	        		ne.printStackTrace();      		
 	        		quit = true;
+					handler.save();
 	        	}
 	        }
         }

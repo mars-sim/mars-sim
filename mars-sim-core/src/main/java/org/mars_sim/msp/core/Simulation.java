@@ -47,6 +47,7 @@ import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
@@ -186,7 +187,8 @@ public class Simulation implements ClockListener, Serializable {
 	private final static String LOCAL_TIME = Msg.getString("Simulation.localTime"); //$NON-NLS-1$ " (Local Time) ";
 	/** 2 whitespaces. */
 	private final static String WHITESPACES = "  ";
-
+	/** Console directory for saving/loading console related files. */
+	public final static String CONSOLE_DIR = "/console";
 	/** Save directory. */
 	public final static String DEFAULT_DIR = System.getProperty("user.home") + //$NON-NLS-1$
 			File.separator + Msg.getString("Simulation.defaultFolder") + //$NON-NLS-1$
@@ -848,6 +850,8 @@ public class Simulation implements ClockListener, Serializable {
 		Weather w = mars.getWeather();
 		// Gets the orbitInfo instance
 		OrbitInfo orbitInfo = mars.getOrbitInfo();
+		// Gets MarsSurface instance
+		MarsSurface marsSurface = mars.getMarsSurface();
 		
 		// Re-initialize Mars environmental instances
 		Weather.justReloaded(masterClock, marsClock, mars, surface, orbitInfo); // terrain
@@ -874,7 +878,7 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.justReloaded(mars);
 		Equipment.justReloaded(unitManager);
 		EVASuit.justReloaded(w);				
-		Person.justReloaded(masterClock, marsClock);
+		Person.justReloaded(masterClock, marsClock, this, mars, marsSurface, earthClock);
 		Robot.justReloaded(masterClock, marsClock);
 		Vehicle.justReloaded(missionManager);				//  vehicleconfig 
 		GroundVehicle.justReloaded(surface);				//  terrain

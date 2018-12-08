@@ -38,7 +38,7 @@ public class AutosaveMenu implements BiConsumer<TextIO, RunnerData> {
         AppUtil.printGsonMessage(terminal, initData);
         
         Interval interval = new Interval();
-        SwingHandler handler = new SwingHandler(textIO, interval);
+        SwingHandler handler = new SwingHandler(textIO, "console", interval);
 
         printCurrentMin();
         

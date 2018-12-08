@@ -86,7 +86,7 @@ public class InteractiveTerm {
 
 		CommanderInput ci = new CommanderInput();
 		
-        handler = new SwingHandler(textIO, ci);
+        handler = new SwingHandler(textIO, "console", ci);
         
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
 		terminal.registerUserInterruptHandler(term -> {}, false);

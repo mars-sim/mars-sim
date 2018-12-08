@@ -15,11 +15,11 @@
  */
 package org.mars_sim.msp.core.terminal.app;
 
-import org.apache.commons.lang3.StringUtils;
 import org.beryx.textio.ReadHandlerData;
 import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.swing.SwingTextTerminal;
+import org.mars_sim.msp.core.tool.Conversion;
 
 import java.time.Month;
 import java.util.stream.Stream;
@@ -98,7 +98,7 @@ public class SwingHandler {
         String[] monthNames = Stream.of(Month.values())
                 .map(Month::name)
                 .map(String::toLowerCase)
-                .map(StringUtils::capitalize)
+                .map(Conversion::capitalize)
                 .toArray(String[]::new);
         handler.setChoices(monthNames);
         String month = textIO.newStringInputReader()

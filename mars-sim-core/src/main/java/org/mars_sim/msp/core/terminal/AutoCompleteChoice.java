@@ -41,7 +41,7 @@ public class AutoCompleteChoice {
         TextIO textIO = new TextIO(terminal);
 
         Product product = new Product();
-        SwingHandler handler = new SwingHandler(textIO, product);
+        SwingHandler handler = new SwingHandler(textIO, "console", product);
 
         terminal.println("----------------------------------------------------------------");
         terminal.println("|   Use the up and down arrow keys to scroll through choices.  |");

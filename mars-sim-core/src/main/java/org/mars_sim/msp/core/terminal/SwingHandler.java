@@ -38,9 +38,12 @@ import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
 public class SwingHandler {
     private static final String KEY_STROKE_UP = "pressed UP";
     private static final String KEY_STROKE_DOWN = "pressed DOWN";
+    private static final String KEY_PREV_HISTORY = "ctrl pressed LEFT";
+    private static final String KEY_NEXT_HISTORY = "ctrl pressed RIGHT";
 
     private final TextIO textIO;
     private final SwingTextTerminal terminal;
+    private final History historyStore;
     private final Object dataObject;
 
     private final String backKeyStroke;
@@ -50,6 +53,10 @@ public class SwingHandler {
     private List<String> choices = new ArrayList<>();
     private List<String> filteredChoices = new ArrayList<>();
 
+    private String historyInput = "";
+    private int historyIndex = -1;
+    private List<String> history = new ArrayList<>();
+    
     private final Supplier<StringInputReader> stringInputReaderSupplier;
     private final Supplier<IntInputReader> intInputReaderSupplier;
     private final Supplier<LongInputReader> longInputReaderSupplier;
@@ -57,9 +64,10 @@ public class SwingHandler {
 
     private final List<Task<?,?,?>> tasks = new ArrayList<>();
 
-    public SwingHandler(TextIO textIO, Object dataObject) {
+    public SwingHandler(TextIO textIO, String appName, Object dataObject) {
         this.textIO = textIO;
         this.terminal = (SwingTextTerminal)textIO.getTextTerminal();
+        this.historyStore = new History(appName);
         this.dataObject = dataObject;
 
         this.stringInputReaderSupplier = () -> textIO.newStringInputReader();
@@ -75,6 +83,27 @@ public class SwingHandler {
             @Override public void changedUpdate(DocumentEvent e) {choiceIndex = -1;}
         });
 
+
+        history.addAll(Arrays.asList("/p", "/q"));
+
+        terminal.registerHandler(KEY_NEXT_HISTORY, t -> {
+            if (historyIndex < history.size() - 1) {
+                historyIndex++;
+                String text = history.get(historyIndex);
+                t.replaceInput(text, false);
+            }
+            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
+        });
+
+        terminal.registerHandler(KEY_PREV_HISTORY, t -> {
+            if (historyIndex >= 0) {
+                historyIndex--;
+                String text = (historyIndex < 0) ? historyInput : history.get(historyIndex);
+                t.replaceInput(text, false);
+            }
+            return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
+        });
+        
         terminal.registerHandler(KEY_STROKE_UP, t -> {
             if(choiceIndex < 0) {
                 originalInput = terminal.getPartialInput();
@@ -113,16 +142,18 @@ public class SwingHandler {
 
     public class Task<T,B extends Task<T,B, R>, R extends InputReader<T, ?>> implements Runnable {
         protected final String prompt;
-        protected boolean showPrevious;
+        protected final String key;
         protected final Supplier<R> inputReaderSupplier;
-        protected Supplier<T> defaultValueSupplier;
+        protected final Supplier<T> defaultValueSupplier;
         protected final Consumer<T> valueSetter;
         protected final List<T> choices = new ArrayList<>();
+        protected boolean showPrevious;
         protected boolean constrainedInput;
         protected Consumer<R> inputReaderConfigurator;
 
-        public Task(String prompt, boolean showPrevious, Supplier<R> inputReaderSupplier, Supplier<T> defaultValueSupplier, Consumer<T> valueSetter) {
+        public Task(String key, String prompt, boolean showPrevious, Supplier<R> inputReaderSupplier, Supplier<T> defaultValueSupplier, Consumer<T> valueSetter) {
             this.prompt = prompt;
+            this.key = key;
             this.showPrevious = showPrevious;
             this.inputReaderSupplier = inputReaderSupplier;
             this.defaultValueSupplier = defaultValueSupplier;
@@ -132,6 +163,8 @@ public class SwingHandler {
         @Override
         public void run() {
             setChoices(choices.stream().map(Object::toString).collect(Collectors.toList()));
+            setHistory(historyStore.getValues(key));
+            
             try {
                 R inputReader = inputReaderSupplier.get();
                 if (showPrevious)
@@ -144,9 +177,12 @@ public class SwingHandler {
                             : Arrays.asList("'" + val + "' is not in the choice list."));
 
                 }
-                valueSetter.accept(inputReader.read(prompt));
+                T value = inputReader.read(prompt);
+                historyStore.addValue(key, value.toString());
+                valueSetter.accept(value);
             } finally {
                 setChoices(Collections.emptyList());
+                setHistory(Collections.emptyList());
             }
         }
 
@@ -176,6 +212,11 @@ public class SwingHandler {
         this.choiceIndex = -1;
         this.choices = choices;
     }
+    
+    private void setHistory(List<String> history) {
+        this.historyIndex = -1;
+        this.history = history;
+    }
 
     private final <T> Supplier<T> getDefaultValueSupplier(String fieldName) {
         return () -> getFieldValue(fieldName);
@@ -187,7 +228,7 @@ public class SwingHandler {
 
     public class StringTask extends Task<String, StringTask, StringInputReader> {
         public StringTask(String fieldName, String prompt, boolean showPrevious) {
-            super(prompt,
+            super(fieldName, prompt,
             		showPrevious,
                     stringInputReaderSupplier,
                     getDefaultValueSupplier(fieldName),
@@ -209,7 +250,7 @@ public class SwingHandler {
 
     public class IntTask extends Task<Integer, IntTask, IntInputReader> {
         public IntTask(String fieldName, String prompt, boolean showPrevious) {
-            super(prompt,
+            super(fieldName, prompt,
             		showPrevious,
                     intInputReaderSupplier,
                     getDefaultValueSupplier(fieldName),
@@ -230,7 +271,7 @@ public class SwingHandler {
 
     public class LongTask extends Task<Long, LongTask, LongInputReader> {
         public LongTask(String fieldName, String prompt, boolean showPrevious) {
-            super(prompt,
+            super(fieldName, prompt,
             		showPrevious,
                     longInputReaderSupplier,
                     getDefaultValueSupplier(fieldName),
@@ -251,7 +292,7 @@ public class SwingHandler {
 
     public class DoubleTask extends Task<Double, DoubleTask, DoubleInputReader> {
         public DoubleTask(String fieldName, String prompt, boolean showPrevious) {
-            super(prompt,
+            super(fieldName, prompt,
             		showPrevious,
                     doubleInputReaderSupplier,
                     getDefaultValueSupplier(fieldName),
@@ -322,5 +363,9 @@ public class SwingHandler {
         } catch (Exception e) {
             throw new IllegalArgumentException("Cannot set value of " + fieldName, e);
         }
+    }
+    
+    public void save() {
+    	historyStore.save();
     }
 }

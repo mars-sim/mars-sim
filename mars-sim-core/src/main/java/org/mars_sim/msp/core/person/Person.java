@@ -1692,13 +1692,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1) {
+	public static void justReloaded(MasterClock c0, MarsClock c1, Simulation s, Mars m, MarsSurface ms, EarthClock e) {
 		masterClock = c0;
 		marsClock = c1;
-		sim = Simulation.instance();
-		mars = sim.getMars();
-		marsSurface = mars.getMarsSurface();
-		earthClock = c0.getEarthClock();
+		sim = s;
+		mars = m;
+		marsSurface = ms;
+		earthClock = e;
 	}
 
 	
