@@ -32,34 +32,35 @@ public class ItemResourceUtil implements Serializable {
 	// Light utility vehicle attachment parts for mining.
 	public static final String PNEUMATIC_DRILL = "pneumatic drill";
 	public static final String BACKHOE = "backhoe";
-	public static final String SMALL_HAMMER = "small hammer";
-//	public static final String HAMMER = "hammer";
 	public static final String SOCKET_WRENCH = "socket wrench";
 	public static final String PIPE_WRENCH = "pipe wrench";
+	
+	// Other strings
 	public static final String EXTINGUSHER = "fire extinguisher";
 	public static final String WORK_GLOVES = "work gloves";
 	public static final String CONTAINMENT = "mushroom containment kit";
-
-	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
+	public static final String SMALL_HAMMER = "small hammer";
 
 	public static Part pneumaticDrillAR = (Part) findItemResource(PNEUMATIC_DRILL);
 	public static Part backhoeAR = (Part) findItemResource(BACKHOE);
-	public static Part smallHammerAR = (Part) findItemResource(SMALL_HAMMER);
 	public static Part socketWrenchAR = (Part) findItemResource(SOCKET_WRENCH);
 	public static Part pipeWrenchAR = (Part) findItemResource(PIPE_WRENCH);
+	
 	public static Part fireExtinguisherAR = (Part) findItemResource(EXTINGUSHER);
 	public static Part workGlovesAR = (Part) findItemResource(WORK_GLOVES);
 	public static Part mushroomBoxAR = (Part) findItemResource(CONTAINMENT);
+	public static Part smallHammerAR = (Part) findItemResource(SMALL_HAMMER);
 
 	public static int pneumaticDrillID;
 	public static int backhoeID;
-	public static int smallHammerID;
-//	public static int hammerID;
 	public static int socketWrenchID;
 	public static int pipeWrenchID;
+	
 	public static int fireExtinguisherID;
 	public static int workGlovesID;
 	public static int mushroomBoxID;
+	public static int smallHammerID;
+
 	public static int printerID;
 
 	private static Map<String, Part> itemResourceMap;
@@ -71,6 +72,9 @@ public class ItemResourceUtil implements Serializable {
 	private static List<Part> sortedParts;
 
 	private static MalfunctionFactory factory;
+
+	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
+
 	
 	/**
 	 * Constructor
@@ -108,13 +112,14 @@ public class ItemResourceUtil implements Serializable {
 	public void createIDs() {
 		pneumaticDrillID = findIDbyItemResourceName(PNEUMATIC_DRILL);
 		backhoeID = findIDbyItemResourceName(BACKHOE);
-		smallHammerID = findIDbyItemResourceName(SMALL_HAMMER);
-		// hammerID = findIDbyItemResourceName("hammer");
 		socketWrenchID = findIDbyItemResourceName(SOCKET_WRENCH);
 		pipeWrenchID = findIDbyItemResourceName(PIPE_WRENCH);
+		
 		fireExtinguisherID = findIDbyItemResourceName(EXTINGUSHER);
 		workGlovesID = findIDbyItemResourceName(WORK_GLOVES);
 		mushroomBoxID = findIDbyItemResourceName(CONTAINMENT);
+		smallHammerID = findIDbyItemResourceName(SMALL_HAMMER);
+
 		printerID = findIDbyItemResourceName(Manufacture.LASER_SINTERING_3D_PRINTER);
 	}
 
@@ -128,7 +133,6 @@ public class ItemResourceUtil implements Serializable {
 
 		for (Part p : sortedParts) {
 			itemResourceMap.put(p.getName(), p);
-			// System.out.println(resource.getName());
 		}
 
 		itemResourceIDMap = new HashMap<>();
@@ -192,6 +196,8 @@ public class ItemResourceUtil implements Serializable {
 	 * @return
 	 */
 	public static Set<Part> getItemResources() {
+		if (partConfig == null)
+			partConfig = SimulationConfig.instance().getPartConfiguration();
 		if (partSet == null)
 			partSet = Collections.unmodifiableSet(partConfig.getPartSet());
 		return partSet;
@@ -224,7 +230,6 @@ public class ItemResourceUtil implements Serializable {
 	 * @return
 	 */
 	public static Map<String, Part> getItemResourcesMap() {
-		// if (partConfig == null) System.err.println("partConfig == null");
 		return factory.getNamePartMap();
 	}
 
@@ -283,7 +288,7 @@ public class ItemResourceUtil implements Serializable {
 	 * 
 	 * @return set of amount resources.
 	 */
-	public Set<Integer> getARIDs() {
+	public static Set<Integer> getIDs() {
 		return itemResourceIDMap.keySet();
 	}
 

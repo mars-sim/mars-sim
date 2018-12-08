@@ -53,19 +53,22 @@ public class Inventory implements Serializable {
 	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
 	// Data members
+//	/** Map of item resources. */
+//    private Map<Integer, Integer> containedItemIDs = null;
+	
+	/** General mass capacity of inventory. */
+	private double generalCapacity = 0D;
+	
 	/** The unit that owns this inventory. */
 	private Unit owner;
+	/** Resource storage. */
+	private AmountResourceStorage resourceStorage = new AmountResourceStorage();
+
 	/** Collection of units in inventory. */
 	private Collection<Unit> containedUnits = null;
 	/** Map of item resources. */
 	private Map<ItemResource, Integer> containedItemResources = null;
-//	/** Map of item resources. */
-//    private Map<Integer, Integer> containedItemIDs = null;
-	/** General mass capacity of inventory. */
-	private double generalCapacity = 0D;
-	/** Resource storage. */
-	private AmountResourceStorage resourceStorage = new AmountResourceStorage();
-
+	
 	// Cache capacity variables.
 	private transient Map<Integer, Double> capacityCache = null;
 	private transient Map<Integer, Boolean> capacityCacheDirty = null;
@@ -118,6 +121,7 @@ public class Inventory implements Serializable {
 	public Inventory(Unit owner) {
 		// Set owning unit.
 		this.owner = owner;
+//		marsSurface = Simulation.instance().getMars().getMarsSurface();
 	}
 
 	public int getAmountSupplyRequest(String resourceName) {
@@ -1746,7 +1750,7 @@ public class Inventory implements Serializable {
 	 */
 	public synchronized void initializeARCapacityCache() {
 
-		Collection<Integer> resources = ResourceUtil.getInstance().getARIDs();
+		Collection<Integer> resources = ResourceUtil.getIDs();
 		capacityCache = new HashMap<Integer, Double>();
 		capacityCacheDirty = new HashMap<Integer, Boolean>();
 		containersCapacityCache = new HashMap<Integer, Double>();
@@ -1838,7 +1842,7 @@ public class Inventory implements Serializable {
 			initializeAmountResourceCapacityCache();
 		}
 
-		for (int amountResource : ResourceUtil.getInstance().getARIDs()) {
+		for (int amountResource : ResourceUtil.getIDs()) {
 			setARCapacityCacheDirty(amountResource);
 
 			if (containersDirty) {
@@ -2003,7 +2007,7 @@ public class Inventory implements Serializable {
 	 * Initializes the amount resource stored cache.
 	 */
 	private synchronized void initializeARStoredCache() {
-		Collection<Integer> resources = ResourceUtil.getInstance().getARIDs();
+		Collection<Integer> resources = ResourceUtil.getIDs();
 		storedCache = new HashMap<Integer, Double>();
 		storedCacheDirty = new HashMap<Integer, Boolean>();
 		containersStoredCache = new HashMap<Integer, Double>();
@@ -2093,11 +2097,11 @@ public class Inventory implements Serializable {
 			initializeAmountResourceStoredCache();
 		}
 
-		for (int amountResource : ResourceUtil.getInstance().getARIDs()) {
-			setARStoredCacheDirty(amountResource);
+		for (int id : ResourceUtil.getIDs()) {
+			setARStoredCacheDirty(id);
 
 			if (containersDirty) {
-				containersStoredCacheDirty.put(amountResource, true);
+				containersStoredCacheDirty.put(id, true);
 			}
 		}
 

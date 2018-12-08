@@ -140,30 +140,30 @@ public class SimulationConfig implements Serializable {
 	private SimulationConfig() {
 	}
 
-	/**
-	 * Gets a Bill Pugh Singleton instance of the simulation.
-	 * 
-	 * @return Simulation instance
-	 */
-	// public static SimulationConfig instance() {
-	// logger.info("Simulation's instance() is on " +
-	// Thread.currentThread().getName() + " Thread");
-	// NOTE: Simulation.instance() is accessible on any threads or by any threads
-	// return SingletonHelper.INSTANCE;
-	// }
+//	/**
+//	 * Gets a Bill Pugh Singleton instance of the simulation.
+//	 * 
+//	 * @return Simulation instance
+//	 */
+//	 public static SimulationConfig instance() {
+//	 logger.info("Simulation's instance() is on " +
+//	 Thread.currentThread().getName() + " Thread");
+//	 NOTE: Simulation.instance() is accessible on any threads or by any threads
+//	 return SingletonHelper.INSTANCE;
+//	 }
 
-	/**
-	 * Initializes an inner static helper class for Bill Pugh Singleton Pattern
-	 * Note: as soon as the instance() method is called the first time, the class is
-	 * loaded into memory and an instance gets created. Advantage: it supports
-	 * multiple threads calling instance() simultaneously with no synchronized
-	 * keyword needed (which slows down the VM) {@link SingletonHelper} is loaded on
-	 * the first execution of {@link Singleton#instance()} or the first access to
-	 * {@link SingletonHelper#INSTANCE}, not before.
-	 */
-	// private static class SingletonHelper{
-	// private static final SimulationConfig INSTANCE = new SimulationConfig();
-	// }
+//	/**
+//	 * Initializes an inner static helper class for Bill Pugh Singleton Pattern
+//	 * Note: as soon as the instance() method is called the first time, the class is
+//	 * loaded into memory and an instance gets created. Advantage: it supports
+//	 * multiple threads calling instance() simultaneously with no synchronized
+//	 * keyword needed (which slows down the VM) {@link SingletonHelper} is loaded on
+//	 * the first execution of {@link Singleton#instance()} or the first access to
+//	 * {@link SingletonHelper#INSTANCE}, not before.
+//	 */
+//	 private static class SingletonHelper{
+//	 private static final SimulationConfig INSTANCE = new SimulationConfig();
+//	 }
 
 	/**
 	 * Prevents the singleton pattern from being destroyed at the time of
@@ -566,7 +566,6 @@ public class SimulationConfig implements Serializable {
 	 * @return resource config
 	 */
 	public AmountResourceConfig getResourceConfiguration() {
-		// System.out.println("SimulationConfig : caling getResourceConfiguration()");
 		return resourceConfig;
 	}
 
@@ -780,7 +779,7 @@ public class SimulationConfig implements Serializable {
 			// Load simulation document
 			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 			// Load subset configuration classes.
-			resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));
+			resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));	
 			partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
 			partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
 			personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));

@@ -317,7 +317,7 @@ public class ResourceUtil implements Serializable {
 		arIDNameMap.put(ar.getID(), ar.getName());
 	}
 
-	public void mapARs() {
+	public static void mapARs() {
 
 		// in Integer
 		
@@ -402,7 +402,7 @@ public class ResourceUtil implements Serializable {
 
 	}
 
-	public void savedARs() {
+	public static void savedARs() {
 
 		ARs = new AmountResource[] { 
 				foodAR, waterAR, oxygenAR, carbonDioxideAR, 
@@ -503,7 +503,7 @@ public class ResourceUtil implements Serializable {
 	 * 
 	 * @return set of amount resources.
 	 */
-	public Set<AmountResource> getAmountResources() {
+	public static Set<AmountResource> getAmountResources() {
 		return resources;
 	}
 
@@ -512,7 +512,7 @@ public class ResourceUtil implements Serializable {
 	 * 
 	 * @return set of amount resources.
 	 */
-	public Set<Integer> getARIDs() {
+	public static Set<Integer> getIDs() {
 		return amountResourceIDMap.keySet();
 	}
 

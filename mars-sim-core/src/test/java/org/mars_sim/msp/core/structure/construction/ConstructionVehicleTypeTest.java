@@ -11,7 +11,6 @@ package org.mars_sim.msp.core.structure.construction;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;

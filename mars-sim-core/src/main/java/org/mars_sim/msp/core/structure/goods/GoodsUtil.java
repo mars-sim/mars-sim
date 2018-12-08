@@ -184,7 +184,7 @@ public class GoodsUtil {
 	 */
 	private static void populateAmountResources() {
 //		Iterator<Integer> i = ResourceUtil.getInstance().getARIDs().iterator();
-		Iterator<AmountResource> i = ResourceUtil.getInstance().getAmountResources().iterator();
+		Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
 		while (i.hasNext())
 			goodsList.add(getResourceGood(i.next()));
 	}

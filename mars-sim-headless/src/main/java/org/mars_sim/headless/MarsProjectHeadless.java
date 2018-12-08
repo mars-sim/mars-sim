@@ -50,6 +50,7 @@ public class MarsProjectHeadless {
 		logger.config("Starting " + Simulation.title);
 		sim.startSimExecutor();
 		sim.getSimExecutor().submit(new SimulationTask());
+		
 	}
 
 	public class SimulationTask implements Runnable {

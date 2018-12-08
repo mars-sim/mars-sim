@@ -46,9 +46,9 @@ public class PartPackageConfig implements Serializable {
 	 * @throws Exception if error reading XML document
 	 */
 	public PartPackageConfig(Document partPackageDoc) {
-		// Call to just initialize PartConfig in this constructor
-		// new ItemResource();
+		// Call ResourceUtil.getInstance() to initialize PartConfig
 		ResourceUtil.getInstance();
+		
 		partPackages = new ArrayList<PartPackage>();
 		loadPartPackages(partPackageDoc);
 	}

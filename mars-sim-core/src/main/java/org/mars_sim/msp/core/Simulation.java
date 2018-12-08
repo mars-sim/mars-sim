@@ -284,8 +284,9 @@ public class Simulation implements ClockListener, Serializable {
 		
 	}
 
-	/** (NOT USED) Eager Initialization Singleton instance. */
-	// private static final Simulation instance = new Simulation();
+//	/** (NOT USED) Eager Initialization Singleton instance. */
+//	private static final Simulation instance = new Simulation();
+	
 //	/**
 //	 * Gets a Eager Initialization Singleton instance of the simulation.
 //	 * 

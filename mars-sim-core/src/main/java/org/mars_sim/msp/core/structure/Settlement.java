@@ -310,8 +310,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private Settlement() {
 		super(null, null);
 		location = getCoordinates();
-//		unitManager = Simulation.instance().getUnitManager();
-
+		unitManager = Simulation.instance().getUnitManager();
 		updateAllAssociatedPeople();
 		updateAllAssociatedRobots();
 	}
@@ -381,7 +380,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		double max = 500;
 		// Initialize inventory of this building for resource storage
-		for (AmountResource ar : ResourceUtil.getInstance().getAmountResources()) {
+		for (AmountResource ar : ResourceUtil.getAmountResources()) {
 			double resourceCapacity = getInventory().getAmountResourceRemainingCapacity(ar, true, false);
 			if (resourceCapacity >= 0) {
 				getInventory().addAmountResourceTypeCapacity(ar, max);
@@ -3263,7 +3262,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 //		}		
 //		waterRationLevel = result;
 	}
+	
 
+	/**
+	 * Sets the objective
+	 * 
+	 * @param {{@link ObjectiveType}
+	 */
 	public void setObjective(ObjectiveType objectiveType) {
 		this.objectiveType = objectiveType;
 
@@ -3302,10 +3307,18 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	}
 
+	/**
+	 * Gets the objective
+	 */
 	public ObjectiveType getObjective() {
 		return objectiveType;
 	}
-
+	
+	/**
+	 * Gets the building type related to the objective
+	 * 
+	 * @return
+	 */
 	public String getObjectiveBuildingType() {
 
 		// TODO: check if a particular building has existed, if yes, build the next
@@ -3362,7 +3375,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * 
 	 * @return number of crops.
 	 */
-	// Add caching and relocated from TendGreenhouse
 	public int getCropsNeedingTending() {
 		int result = 0;
 

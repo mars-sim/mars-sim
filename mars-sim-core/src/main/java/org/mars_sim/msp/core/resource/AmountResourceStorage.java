@@ -37,6 +37,8 @@ public class AmountResourceStorage implements Serializable {
 	private transient boolean allStoredResourcesCacheDirty = true;
 	private transient double totalResourcesStored = 0D;
 	private transient boolean totalResourcesStoredDirty = true;
+	
+//	private static ResourceUtil resourceUtil = ResourceUtil.getInstance();
 
 	/**
 	 * Adds capacity for a resource type.
@@ -98,7 +100,7 @@ public class AmountResourceStorage implements Serializable {
 		Map<Integer, Double> typeCapacities = new HashMap<Integer, Double>();
 
 		if (typeStorage != null) {
-			Iterator<Integer> i = ResourceUtil.getInstance().getARIDs().iterator();
+			Iterator<Integer> i = ResourceUtil.getIDs().iterator();
 			while (i.hasNext()) {
 				Integer resource = i.next();
 				double capacity = typeStorage.getAmountResourceTypeCapacity(resource);

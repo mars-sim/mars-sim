@@ -191,7 +191,7 @@ public class GoodsManager implements Serializable {
 	private static MissionManager missionManager = sim.getMissionManager();
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -2191,7 +2191,7 @@ public class GoodsManager implements Serializable {
 			double containerCapacity = ContainerUtil.getContainerCapacity((Class<? extends Container>) equipmentClass);
 
 			double totalPhaseOverfill = 0D;
-			Iterator<AmountResource> i = ResourceUtil.getInstance().getAmountResources().iterator();
+			Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
 			while (i.hasNext()) {
 				AmountResource resource = i.next();
 				if (resource.getPhase() == containerPhase) {

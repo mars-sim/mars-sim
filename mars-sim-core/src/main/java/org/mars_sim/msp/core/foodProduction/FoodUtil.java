@@ -181,7 +181,7 @@ public class FoodUtil {
 	private static void populateAmountResources() {
 		boolean edible = false;
 		AmountResource ar = null;
-		Iterator<AmountResource> i = ResourceUtil.getInstance().getAmountResources().iterator();
+		Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
 		while (i.hasNext()) {
 			ar = i.next();
 			edible = ar.isEdible();
