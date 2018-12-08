@@ -1397,23 +1397,6 @@ public class MalfunctionManager implements Serializable {
 		// MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		return factory.getMaintenancePartProbabilities(scopes);
 	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
-	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1) {
-		masterClock = c0;
-//		startTime = masterClock.getInitialMarsTime();
-		currentTime = c1;
-//		partConfig = simconfig.getPartConfiguration();
-		malfunctionConfig = simconfig.getMalfunctionConfiguration();
-		factory = sim.getMalfunctionFactory();
-		medic = sim.getMedicalManager();
-		eventManager = sim.getEventManager();
-	}
 		
 	/**
 	 * Gets the estimated number of malfunctions this entity will have in one
@@ -1514,6 +1497,25 @@ public class MalfunctionManager implements Serializable {
 		return (100D - wearCondition) / 100D * WEAR_ACCIDENT_FACTOR + 1D;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded(MasterClock c0, MarsClock c1) {
+		masterClock = c0;
+//		startTime = masterClock.getInitialMarsTime();
+		currentTime = c1;
+//		partConfig = simconfig.getPartConfiguration();
+		sim = Simulation.instance();
+		simconfig = SimulationConfig.instance();
+		malfunctionConfig = simconfig.getMalfunctionConfiguration();
+		factory = sim.getMalfunctionFactory();
+		medic = sim.getMedicalManager();
+		eventManager = sim.getEventManager();
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

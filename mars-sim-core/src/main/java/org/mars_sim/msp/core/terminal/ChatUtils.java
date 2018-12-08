@@ -73,6 +73,7 @@ import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.person.health.HealthProblem;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
@@ -82,6 +83,12 @@ import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -139,7 +146,7 @@ public class ChatUtils {
 			"dash", "dashboard",
 			"repair", "maintenance", "evasuit", "eva suit", 
 			"trip", "excursion", "mission",
-			"objective"
+			"objective", "water"
 	};
 	
 	public final static String[] PERSON_KEYS = new String[] {
@@ -796,7 +803,82 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 
-		if (text.equalsIgnoreCase("repair")) {
+		if (text.equalsIgnoreCase("water")) {
+			int max = 16;
+			double reserve = 0;
+			
+			double greenhouseUsage = 0;
+//			double area = 0;
+			
+			double livingUsage = 0;
+			double output = 0;
+			
+					
+			String r0 = " Reserve";
+			responseText.append(addNameFirstWhiteSpaces(r0, max-2));
+			
+			String u0 = "| Greenhouse";
+			responseText.append(addNameFirstWhiteSpaces(u0, max));
+			
+			String u1 = " Hygiene ";
+			responseText.append(addNameFirstWhiteSpaces(u1, max));
+			
+			String u2 = "Processes";
+			responseText.append(addNameFirstWhiteSpaces(u2, max));
+
+			responseText.append(System.lineSeparator());
+			responseText.append(" -------------+------------------------------------------------------------");
+			responseText.append(System.lineSeparator());
+			
+			// Prints the current reserve
+			//settlementCache
+			try {
+				reserve = settlementCache.getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
+			}
+			catch (Exception e) {
+			}
+
+			String s0 = " " + Math.round(reserve* 100.0)/100.0 + " kg ";
+			responseText.append(addNameFirstWhiteSpaces(s0, max-2));
+			
+			// Prints greenhouse usage
+			List<Building> farms = settlementCache.getBuildingManager().getBuildings(FunctionType.FARMING);
+			for (Building b : farms) {
+				Farming f = b.getFarming();
+				greenhouseUsage += f.getDailyAverageWaterUsage();
+//				area += f.getGrowingArea();
+			}
+			String s1 = "|   -" + Math.round(greenhouseUsage * 100.0)/100.0;
+			responseText.append(addNameFirstWhiteSpaces(s1, max));
+		
+			// Prints living usage
+			List<Building> quarters = settlementCache.getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMODATIONS);
+			for (Building b : quarters) {
+				LivingAccommodations la = b.getLivingAccommodations();
+				livingUsage += la.getDailyAverageWaterUsage();
+
+			}
+			String s2 = "  -" + Math.round(livingUsage * 100.0)/100.0;
+			responseText.append(addNameFirstWhiteSpaces(s2, max));
+			
+			// Prints output from resource processing
+			List<Building> bldgs = settlementCache.getBuildingManager().getBuildings(FunctionType.RESOURCE_PROCESSING);
+			for (Building b : bldgs) {
+				ResourceProcessing rp = b.getResourceProcessing();
+				List<ResourceProcess> processes = rp.getProcesses();
+				for (ResourceProcess p : processes) {
+					if (p.isProcessRunning())
+						output += p.getMaxOutputResourceRate(ResourceUtil.waterID);
+				}
+			}
+			String s3 = "  +" + Math.round(output * 1_000 * 100.0)/100.0;
+			responseText.append(addNameFirstWhiteSpaces(s3, max));
+			
+			responseText.append(" [kg/sol]");
+			responseText.append(System.lineSeparator());		
+		}
+		
+		else if (text.equalsIgnoreCase("repair")) {
 			responseText.append(System.lineSeparator());			
 
 			GoodsManager goodsManager = settlementCache.getGoodsManager();
@@ -3024,6 +3106,22 @@ public class ChatUtils {
 	}
 	
 	/**
+	 * Computes the # of whitespaces
+	 * 
+	 * @param name
+	 * @param max
+	 * @return
+	 */
+	public static StringBuffer addNameFirstWhiteSpaces(String name, int max) {
+		int size = name.length();
+		StringBuffer sb = new StringBuffer();
+		sb.append(name);
+		for (int i=0; i< max-size; i++)
+			sb.append(ONE_SPACE);
+		return sb;
+	}
+	
+	/**
 	 * Gets the first available key of a map given its value 
 	 * 
 	 * @param map
@@ -4418,16 +4516,16 @@ public class ChatUtils {
 //		expertMode = value;
 //	}
 	
-    private static class Input {
-        public static String change;
-        public static int range ;
-
-        @Override
-        public String toString() {
-            return System.lineSeparator() +">" + range;
-        }
-    }
-    
+//    private static class Input {
+//        public static String change;
+//        public static int range ;
+//
+//        @Override
+//        public String toString() {
+//            return System.lineSeparator() +">" + range;
+//        }
+//    }
+//    
 	/**
 	 * Prepare object for garbage collection.
 	 */

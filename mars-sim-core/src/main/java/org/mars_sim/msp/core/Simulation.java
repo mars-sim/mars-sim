@@ -413,8 +413,10 @@ public class Simulation implements ClockListener, Serializable {
 		// ResourceUtil.printID();
 		
 		// Initialize mars clock
-		MalfunctionFactory.setMarsClock(masterClock.getMarsClock());
-		MissionManager.setMarsClock(masterClock.getMarsClock());
+		MarsClock marsClock = masterClock.getMarsClock();
+		MalfunctionFactory.setMarsClock(marsClock);
+		MissionManager.setMarsClock(marsClock);
+		MalfunctionManager.justReloaded(masterClock, marsClock);
 		
 		// Initialize instances
 //		MedicalManager.initializeInstances();

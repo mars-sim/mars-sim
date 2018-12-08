@@ -7,7 +7,7 @@
 <crop-configuration>
 
 	<!-- The average amount of carbon dioxide (kg) needed by a crop per square 
-	     meter area during the day-->
+	     meter area during the day [kg/m2/sol] -->
 	<!-- Default: .2 -->
 	<carbon-dioxide-consumption-rate value =".2" />
 
@@ -17,7 +17,7 @@
 	<oxygen-consumption-rate value=".1" />
 
 	<!-- The average amount of water (kg) consumed by a crop per square meter 
-	     area in each Martian Sol
+	     area in each Martian Sol [kg/m2/sol]
 	Note : KSC has daily water makeup requirements of 7 to 10 L/sq m/day 
 	depending on type and maturity of the crop -->
 	<!-- Default: 3 -->

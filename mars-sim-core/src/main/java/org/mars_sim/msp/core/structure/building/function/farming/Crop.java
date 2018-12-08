@@ -757,12 +757,6 @@ public class Crop implements Serializable {
 		fractionalGrowingTimeCompleted = growingTimeCompleted / growingTime;
 
 		growingTimeCompleted += time;
-//		 double w = phases.get(current).getWorkRequired() * 1000D;
-//		 System.out.print("timePassing() : current phase is " + current);
-//		 System.out.print(" growingTimeCompleted is " +
-//		 Math.round(growingTimeCompleted*10D)/10D);
-//		 System.out.println(" growingTime is " + growingTime);
-
 
 		if (current > 1 && current < length - 1) { // Note: (length - 1) does include the harvesting phase.
 			if (time > 0D) {
@@ -770,7 +764,6 @@ public class Crop implements Serializable {
 
 				if (current < length - 2) {
 					// in a growing phase (excluding the harvesting phase).
-					// System.out.println(" upper percent is " + getUpperPercent(current));
 					if (fractionalGrowingTimeCompleted * 100D > getUpperPercent(current)) {
 						// Advance onto the next phase
 						phaseType = cropType.getPhases().get(current + 1).getPhaseType();
@@ -780,7 +773,7 @@ public class Crop implements Serializable {
 
 				// check for the passing of each day
 				int newSol = marsClock.getMissionSol();
-				if (newSol != currentSol) {
+				if (currentSol != newSol) {
 					// TODO: what needs to be done at the end of each sol ?
 					currentSol = newSol;
 					// double maxDailyHarvest = maxHarvest / cropGrowingDay;
@@ -791,8 +784,9 @@ public class Crop implements Serializable {
 					actualHarvest += (dailyMaxHarvest * (dailyWorkCompleted - .5D));
 
 					if (cumulative_water_usage > 0) {
-						// Records the water usage in the farm
-						farm.addWaterUsage(cropName, cumulative_water_usage / growingArea);
+						// Records the water usage per crop in the farm
+						farm.addCropWaterUsage(cropName, cumulative_water_usage / growingArea);
+//						System.out.println(this.getCropType() + " : " + cumulative_water_usage + " kg");
 						// Reset the water usage
 						cumulative_water_usage = 0;
 					}
@@ -1028,8 +1022,8 @@ public class Crop implements Serializable {
 	public void computeWaterFertilizer(double needFactor, double time) {
 
 		// Calculate water usage
-		double waterRequired = fractionalGrowingTimeCompleted * needFactor * (averageWaterNeeded * time / 1000)
-				* growingArea;
+		double waterRequired =  0.2 * needFactor * (averageWaterNeeded * time / 1_000D) * growingArea; // fractionalGrowingTimeCompleted
+//		System.out.println(getCropType() + "  waterRequired : " + waterRequired);
 		// Determine the amount of grey water available.
 		double gw = inv.getAmountResourceStored(greywaterID, false);
 		double greyWaterAvailable = Math.min(gw * settlement.getGreyWaterFilteringRate() * time, gw);
@@ -1059,14 +1053,20 @@ public class Crop implements Serializable {
 			
 			if (waterAvailable >= waterRequired) {
 				waterUsed = waterRequired;
-				if (waterUsed > MIN)
+				if (waterUsed > MIN) {
 					Storage.retrieveAnResource(waterUsed, waterID, inv, true);
+					//  Records the daily water usage in the farm
+					farm.addDailyWaterUsage(waterUsed);
+				}
 			}
 			else {
 				// not enough water
 				waterUsed = waterAvailable;
-				if (waterUsed > MIN)
+				if (waterUsed > MIN) {
 					Storage.retrieveAnResource(waterUsed, waterID, inv, true);
+					//  Records the daily water usage in the farm
+					farm.addDailyWaterUsage(waterUsed);
+				}
 				// Incur penalty if water is NOT available
 				waterModifier = (greyWaterAvailable + waterUsed) / waterRequired;
 			}
@@ -1108,8 +1108,8 @@ public class Crop implements Serializable {
 		// Assume an universal rate of water vapor evaporation rate of 5%
 		// farm.addMoisture(totalWaterUsed*.05);
 		// Record the amount of water taken up by the crop
-		cumulative_water_usage = cumulative_water_usage + totalWaterUsed * .95;
-
+		cumulative_water_usage = cumulative_water_usage + waterUsed * .95;
+//		System.out.println(getCropType() + " waterUsed : " + waterUsed + "  cumulative_water_usage : " + cumulative_water_usage);
 		environment[3] = .5 * waterModifier + .5 * environment[3];
 		if (environment[3] > 1.1)
 			environment[3] = 1.1;
@@ -1248,17 +1248,17 @@ public class Crop implements Serializable {
 		// amount of grey water/water needed is also based on % of growth
 		if (phaseNum == 2)
 			// if (phaseType == PhaseType.GERMINATION)
-			growthFactor = .1;
+			growthFactor = .05;
 		else if (fractionalGrowingTimeCompleted < .1)
-			growthFactor = .2;
+			growthFactor = .1;
 		else if (fractionalGrowingTimeCompleted < .15)
-			growthFactor = .3;
+			growthFactor = .15;
 		else if (fractionalGrowingTimeCompleted < .2)
-			growthFactor = .4;
+			growthFactor = .2;
 		else if (phaseNum > 2 && phaseNum < length - 2)
 			growthFactor = fractionalGrowingTimeCompleted * 2;
 		else if (phaseType == PhaseType.FINISHED)
-			growthFactor = .5;
+			growthFactor = .25;
 
 		// STEP 1 : COMPUTE THE EFFECTS OF THE SUNLIGHT AND ARTIFICIAL LIGHT
 		double uPAR = 0;

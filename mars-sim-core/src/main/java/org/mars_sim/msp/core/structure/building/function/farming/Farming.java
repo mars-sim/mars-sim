@@ -57,6 +57,8 @@ public class Farming extends Function implements Serializable {
 	private static String sourceName = logger.getName();
 
 	private static final FunctionType FARMING_FUNCTION = FunctionType.FARMING;
+	
+	public static final int MAX_NUM_SOLS = 14;
 
 	public static final String FERTILIZER = "fertilizer";
 	public static final String SOIL = "soil";
@@ -122,7 +124,9 @@ public class Farming extends Function implements Serializable {
 	private Map<String, List<Double>> cropDailyO2Generated;
 
 	private Map<String, List<Double>> cropDailyCO2Consumed;
-
+	/** The daily water usage in this facility [kg/sol]. */
+	private Map<Integer, Double> dailyWaterUsage;
+	
 	private Inventory inv;
 	private Settlement settlement;
 	private Building building;
@@ -161,6 +165,7 @@ public class Farming extends Function implements Serializable {
 		plantedCrops = new ArrayList<String>();
 		cropListInQueue = new ArrayList<CropType>();
 		crops = new ArrayList<Crop>();
+		dailyWaterUsage = new HashMap<>();
 		
 		BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 //		surface = Simulation.instance().getMars().getSurfaceFeatures();
@@ -852,7 +857,7 @@ public class Farming extends Function implements Serializable {
 
 		// check for the passing of each day
 		int solElapsed = marsClock.getMissionSol();
-		if (solElapsed != solCache) {
+		if (solCache != solElapsed) {
 			solCache = solElapsed;
 
 			for (String s : cleaningMap.keySet()) {
@@ -861,6 +866,10 @@ public class Farming extends Function implements Serializable {
 			// Reset cumulativeDailyPAR
 			for (Crop c : crops)
 				c.resetPAR();
+			
+			// Limit the size of the dailyWaterUsage to 20 key value pairs
+			if (dailyWaterUsage.size() > MAX_NUM_SOLS)
+				dailyWaterUsage.remove(solElapsed - MAX_NUM_SOLS);
 		}
 
 		// Determine the production level.
@@ -943,6 +952,7 @@ public class Farming extends Function implements Serializable {
 
 	}
 
+	
 	/**
 	 * Gets the amount of power required when function is at full power.
 	 * 
@@ -1369,7 +1379,7 @@ public class Farming extends Function implements Serializable {
 	 * @param cropName
 	 * @param usage    average water consumption in kg/m^2/sol
 	 */
-	public void addWaterUsage(String cropName, double usage) {
+	public void addCropWaterUsage(String cropName, double usage) {
 		if (cropDailyWaterUsage.containsKey(cropName)) {
 			List<Double> cropWaterData = cropDailyWaterUsage.get(cropName);
 			cropWaterData.add(usage);
@@ -1434,9 +1444,9 @@ public class Farming extends Function implements Serializable {
 		}
 		return 0;
 	}
-
+	
 	/**
-	 * Computes the average water usage on all crop
+	 * Computes the average water usage on all crops
 	 * 
 	 * @return average water consumption in kg/m^2/sol
 	 */
@@ -1456,6 +1466,72 @@ public class Farming extends Function implements Serializable {
 			return Math.round(sum / size * 1000.0) / 1000.0;
 	}
 
+	/**
+	 * Gets the daily average water usage of the last 5 sols
+	 * Not: most weight on yesterday's usage. Least weight on usage from 5 sols ago
+	 * 
+	 * @return
+	 */
+	public double getDailyAverageWaterUsage() {
+		boolean quit = false;
+		int today = solCache;
+		int sol = solCache;
+		double sum = 0;
+		double numSols = 0;
+		double cumulativeWeight = 0.75;
+		double weight = 1;
+
+		while (!quit) {
+			if (dailyWaterUsage.size() == 0) {
+				quit = true;
+				return 0;
+			}
+			
+			else if (dailyWaterUsage.containsKey(sol)) {
+				if (today == sol) {
+					// If it's getting the today's average, one may 
+					// project the full-day usage based on the usage up to this moment 
+					weight = .25;
+					sum = sum + dailyWaterUsage.get(sol) * 1_000D / marsClock.getMillisol() * weight ;
+				}
+				
+				else {
+					sum = sum + dailyWaterUsage.get(sol) * weight;
+				}
+			}
+			
+			else if (dailyWaterUsage.containsKey(sol - 1)) {
+				sum = sum + dailyWaterUsage.get(sol - 1) * weight;
+				sol--;
+			}
+			
+			cumulativeWeight = cumulativeWeight + weight;
+			weight = (numSols + 1) / (cumulativeWeight + 1);
+			numSols++;
+			sol--;
+			// Get the last x sols only
+			if (numSols > MAX_NUM_SOLS)
+				quit = true;
+		}
+		
+		return sum/cumulativeWeight; 
+	}
+	
+	/**
+	 * Adds to the daily water usage
+	 * 
+	 * @param waterUssed
+	 * @param solElapsed
+	 */
+	public void addDailyWaterUsage(double waterUssed) {
+		if (dailyWaterUsage.containsKey(solCache)) {
+			dailyWaterUsage.put(solCache, waterUssed + dailyWaterUsage.get(solCache));
+		}
+		else {
+			dailyWaterUsage.put(solCache, waterUssed);
+		}
+	}
+	
 	/**
 	 * Computes the average O2 generated on a particular crop
 	 * 

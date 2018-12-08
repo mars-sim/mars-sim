@@ -41,12 +41,14 @@ public class LivingAccommodations extends Function implements Serializable {
 
 	private static String sourceName = logger.getName();
 
+	public static final int MAX_NUM_SOLS = 14;
+	
 	public static final double TOILET_WASTE_PERSON_SOL = .02D;
 	public static final double WASH_AND_WASTE_WATER_RATIO = .85D;
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.00001;
 	/** 1/5 of chance of going to a restroom per frame */
-	public static final int TOILET_CHANCE = 5;
+	public static final int TOILET_CHANCE = 20;
 
 	private static final FunctionType FUNCTION = FunctionType.LIVING_ACCOMODATIONS;
 
@@ -55,7 +57,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	private int maxNumBeds; 
 	/** The curent # of sleepers. */
 	private int sleepers;
-	/** Water used per person for washing (showers, washing clothes, hands, dishes, etc) per millisol (avg over Sol).*/
+	/** The average water used per person for washing (showers, washing clothes, hands, dishes, etc) [kg/sol].*/
 	private double washWaterUsage;
 	// private double wasteWaterProduced; // Waste water produced by
 	// urination/defecation per person per millisol (avg over Sol).
@@ -66,8 +68,12 @@ public class LivingAccommodations extends Function implements Serializable {
 	private Inventory inv;
 	private Building building;
 
+	/** The bed registry in this facility. */
 	private Map<Person, Point2D> assignedBeds = new HashMap<>();
 
+	/** The daily water usage in this facility [kg/sol]. */
+	private Map<Integer, Double> dailyWaterUsage;
+	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
 	private static MarsClock marsClock;
@@ -94,25 +100,25 @@ public class LivingAccommodations extends Function implements Serializable {
 		this.building = building;
 
 		settlement = building.getBuildingManager().getSettlement();
+		
 		inv = settlement.getInventory();
-		// inv = building.getBuildingManager().getSettlement().getInventory();
-		// inv = building.getSettlementInventory();
-
+		
+		dailyWaterUsage = new HashMap<>();
+		
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
 		BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration(); // need this to pass maven test
-		maxNumBeds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
-
 		PersonConfig personconfig = simulationConfig.getPersonConfiguration();
-		washWaterUsage = personconfig.getWaterUsageRate() / 1000D;
-		// wasteWaterProduced = (personconfig.getWaterConsumptionRate() +
-		// personconfig.getFoodConsumptionRate()) / 1000D;
+		
+		// Loads the max # of beds available 
+		maxNumBeds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
+		// Loads the wash water usage kg/sol
+		washWaterUsage = personconfig.getWaterUsageRate();
+		// Loads the grey to black water ratio
 		double grey2BlackWaterRatio = personconfig.getGrey2BlackWaterRatio();
+		// Calculate the grey water fraction
 		greyWaterFraction = grey2BlackWaterRatio / (grey2BlackWaterRatio + 1);
-
 		// Load activity spots
 		loadActivitySpots(buildingConfig.getLivingAccommodationsActivitySpots(building.getBuildingType()));
-
 	}
 
 	/**
@@ -276,7 +282,14 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * @throws BuildingException if error occurs.
 	 */
 	public void timePassing(double time) {
+		
 		int solElapsed = marsClock.getMissionSol();
+		
+		int rand = RandomUtil.getRandomInt(TOILET_CHANCE);
+		if (rand == 0) {
+			generateWaste(time);
+		}
+
 		if (solCache != solElapsed) {
 			solCache = solElapsed;
 			// Designate a bed for each inhabitant
@@ -289,44 +302,116 @@ public class LivingAccommodations extends Function implements Serializable {
 					}
 				}
 			}
-		}
-
-		int rand = RandomUtil.getRandomInt(TOILET_CHANCE);
-		if (rand == 0) {
-			// Inventory inv = settlement.getInventory();
-			generateWaste(time);
+			
+			// Limit the size of the dailyWaterUsage to 20 key value pairs
+			if (dailyWaterUsage.size() > MAX_NUM_SOLS)
+				dailyWaterUsage.remove(solElapsed - MAX_NUM_SOLS);
 		}
 	}
 
+	/**
+	 * Adds to the daily water usage
+	 * 
+	 * @param waterUssed
+	 * @param solElapsed
+	 */
+	public void addDailyWaterUsage(double waterUssed) {
+		if (dailyWaterUsage.containsKey(solCache)) {
+			dailyWaterUsage.put(solCache, waterUssed + dailyWaterUsage.get(solCache));
+		}
+		else {
+			dailyWaterUsage.put(solCache, waterUssed);
+		}
+	}
+	
+	/**
+	 * Gets the daily average water usage of the last 5 sols
+	 * Not: most weight on yesterday's usage. Least weight on usage from 5 sols ago
+	 * 
+	 * @return
+	 */
+	public double getDailyAverageWaterUsage() {
+		boolean quit = false;
+		int today = solCache;
+		int sol = solCache;
+		double sum = 0;
+		double numSols = 0;
+		double cumulativeWeight = 0.75;
+		double weight = 1;
+
+		while (!quit) {
+			if (dailyWaterUsage.size() == 0) {
+				quit = true;
+				return 0;
+			}
+			
+			else if (dailyWaterUsage.containsKey(sol)) {
+				if (today == sol) {
+					// If it's getting the today's average, one may 
+					// project the full-day usage based on the usage up to this moment 
+					weight = .25;
+					sum = sum + dailyWaterUsage.get(sol) * 1_000D / marsClock.getMillisol() * weight ;
+				}
+				
+				else {
+					sum = sum + dailyWaterUsage.get(sol) * weight;
+				}
+			}
+			
+			else if (dailyWaterUsage.containsKey(sol - 1)) {
+				sum = sum + dailyWaterUsage.get(sol - 1) * weight;
+				sol--;
+			}
+			
+			cumulativeWeight = cumulativeWeight + weight;
+			weight = (numSols + 1) / (cumulativeWeight + 1);
+			numSols++;
+			sol--;
+			// Get the last x sols only
+			if (numSols > MAX_NUM_SOLS)
+				quit = true;
+		}
+		
+		return sum/cumulativeWeight; 
+	}
+	
 	/**
 	 * Utilizes water for bathing, washing, etc based on population.
 	 * 
 	 * @param time amount of time passing (millisols)
 	 */
 	public void generateWaste(double time) {
-		double random_factor = 1 + RandomUtil.getRandomDouble(0.25) - RandomUtil.getRandomDouble(0.25);
-		int numBed = this.getNumAssignedBeds();
+		double random_factor = 1 + RandomUtil.getRandomDouble(0.1) - RandomUtil.getRandomDouble(0.1);
+		int numBed = getNumAssignedBeds();
 		// int pop = settlement.getNumCurrentPopulation();
 		// Total average wash water used at the settlement over this time period.
 		// This includes showering, washing hands, washing dishes, etc.
-		double usage = TOILET_CHANCE * washWaterUsage * time * numBed;
+	
+		double ration = 1;
 		// If settlement is rationing water, reduce water usage according to its level
 		int level = settlement.getWaterRation();
+//		System.out.print("level : " + level);
 		if (level != 0)
-			usage = usage / 1.5D / level / 2D;
+			ration = 1 / level;
 		// Account for people who are out there in an excursion and NOT in the
 		// settlement
 		double absentee_factor = settlement.getIndoorPeopleCount() / settlement.getPopulationCapacity();
-
-		double waterUsed = usage * time * numBed * absentee_factor;
-		// double waterProduced = wasteWaterProduced * time * numBed * absentee_factor;
-		double wasteWaterProduced = usage * WASH_AND_WASTE_WATER_RATIO;
+		
+		double usage =  (washWaterUsage * time / 1_000D) * numBed * absentee_factor;
+//		System.out.print("   usage : " + usage);
+		double waterUsed = usage * TOILET_CHANCE * random_factor * ration;
+//		System.out.println("   waterUsed : " + waterUsed);
+		double wasteWaterProduced = waterUsed * WASH_AND_WASTE_WATER_RATIO;
 
 		// Remove wash water from settlement.
 		if (inv == null)
 			inv = settlement.getInventory();
-		if (waterUsed * random_factor > MIN)
-			Storage.retrieveAnResource(waterUsed * random_factor, waterID, inv, true);
+		
+		if (waterUsed> MIN) {
+			Storage.retrieveAnResource(waterUsed, waterID, inv, true);
+			// Track daily average
+			addDailyWaterUsage(waterUsed);
+		}
 
 		// Grey water is produced by wash water.
 		double greyWaterProduced = wasteWaterProduced * greyWaterFraction;
@@ -342,8 +427,7 @@ public class LivingAccommodations extends Function implements Serializable {
 		double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000D;
 
 		double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time * numBed * random_factor;// toiletPaperUsageSettlement
-																										// *
-																										// buildingProportionCap;
+																										// *																									// buildingProportionCap;
 		if (toiletPaperUsageBuilding > MIN)
 			Storage.retrieveAnResource(toiletPaperUsageBuilding, ResourceUtil.toiletTissueID, inv, true);
 
