@@ -1102,8 +1102,8 @@ public class MasterClock implements Serializable {
 	 * 
 	 * @param clock
 	 */
-	public static void justReloaded() {
-		sim = Simulation.instance();
+	public static void justReloaded(Simulation s) {
+		sim = s;
 	}
 	
 	/**

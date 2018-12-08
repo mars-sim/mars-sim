@@ -1032,16 +1032,17 @@ public class Weather implements Serializable {
 	 * Reloads instances after loading from a saved sim
 	 * 
 	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
-	 * @param {{@link Mars}
+	 * @param {@link MarsClock}
+	 * @param {@link Mars}
+	 * @param {@link SurfaceFeatures}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1, Mars m) {
+	public static void justReloaded(MasterClock c0, MarsClock c1, Mars m, SurfaceFeatures s, OrbitInfo o) {
 		masterClock = c0;
 		marsClock = c1;
 		mars = m;	
-		surfaceFeatures = mars.getSurfaceFeatures();
-		terrainElevation = mars.getSurfaceFeatures().getTerrainElevation();
-		orbitInfo = mars.getOrbitInfo();
+		surfaceFeatures = s;
+		terrainElevation = s.getTerrainElevation();
+		orbitInfo = o;
 	}
 	
 	/**

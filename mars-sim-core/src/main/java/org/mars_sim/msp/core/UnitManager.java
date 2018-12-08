@@ -2105,9 +2105,13 @@ public class UnitManager implements Serializable {
 	 * @param clock
 	 */
 	public void justReloaded(MarsClock clock) {
-		Simulation.instance().getMars().setMarsSurface((MarsSurface)units.get(0));
 		marsClock = clock;
 	}
+	
+	public void setMarsSurface() {
+		Simulation.instance().getMars().setMarsSurface((MarsSurface)units.get(0));
+	}
+	
 	
 	/**
 	 * Prepare object for garbage collection.

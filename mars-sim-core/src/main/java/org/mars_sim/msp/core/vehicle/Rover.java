@@ -673,10 +673,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	 * 
 	 * @param clock
 	 */
-	public static void justReloaded() {
+	public static void justReloaded(PersonConfig pc) {
 //		weather = Simulation.instance().getMars().getWeather();
 //		VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-		personConfig = SimulationConfig.instance().getPersonConfiguration();
+		personConfig = pc;
 
 	}
 	

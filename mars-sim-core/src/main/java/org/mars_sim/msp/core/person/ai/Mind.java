@@ -122,11 +122,11 @@ public class Mind implements Serializable {
 	 * 
 	 * @param clock
 	 */
-	public static void justReloaded(MarsClock clock) {
+	public static void justReloaded(MarsClock clock, Simulation s, MissionManager m) {
 		marsClock = clock;
-		sim = Simulation.instance();
-		relationshipManager = sim.getRelationshipManager();
-		missionManager = sim.getMissionManager();
+		sim = s;
+		relationshipManager = s.getRelationshipManager();
+		missionManager = m;
 	}
 	
 	/**

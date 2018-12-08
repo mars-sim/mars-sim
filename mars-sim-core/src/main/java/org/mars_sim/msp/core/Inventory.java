@@ -2547,7 +2547,7 @@ public class Inventory implements Serializable {
 	 * 
 	 * @return {@Link MarsSurface}
 	 */
-	public static void justReloaded(MarsSurface ms) {
+	public static void initializeInstances(MarsSurface ms) {
 		marsSurface = ms;
 	}
 	

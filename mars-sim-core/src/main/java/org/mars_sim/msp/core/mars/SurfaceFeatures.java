@@ -721,15 +721,16 @@ public class SurfaceFeatures implements Serializable {
 	 * Reloads instances
 	 * 
 	 * @param m
+	 * @param {@link Weather}
 	 */
-	public static void justReloaded(MasterClock ms, Mars m) {
+	public static void justReloaded(MasterClock ms, Mars m, Simulation s, Weather w, OrbitInfo o, MissionManager mmgr) {
 		masterClock = ms;
 		mars = m;
-		orbitInfo = m.getOrbitInfo();
-		weather = m.getWeather();
-		sim = Simulation.instance();
-		missionManager = sim.getMissionManager();
-		sunDirection = orbitInfo.getSunDirection();
+		orbitInfo = o;
+		weather = w;
+		sim = s;
+		missionManager = mmgr;
+		sunDirection = o.getSunDirection();
 		landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
 	}
 	

@@ -1498,12 +1498,12 @@ public class MalfunctionManager implements Serializable {
 	}
 
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * initializes instances after loading from a saved sim
 	 * 
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1) {
+	public static void initializeInstances(MasterClock c0, MarsClock c1) {
 		masterClock = c0;
 //		startTime = masterClock.getInitialMarsTime();
 		currentTime = c1;
