@@ -54,6 +54,9 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	/** Task name */
 	private static final String NAME_ON = Msg.getString("Task.description.toggleResourceProcess.on"); //$NON-NLS-1$
 	private static final String NAME_OFF = Msg.getString("Task.description.toggleResourceProcess.off"); //$NON-NLS-1$
+	
+	private static final String C2 = "command and control"; 
+	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .25D;
 	
@@ -141,7 +144,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 						List<Building> adminsNotFull = new ArrayList<>();
 						
 						for (Building b : admins) {
-							if (b.getBuildingType().toLowerCase().equals("command and control")) {
+							if (b.getBuildingType().toLowerCase().equals(C2)) {
 								destination = b;
 								walkToActivitySpotInBuilding(b, false);
 								done = true;
@@ -503,6 +506,10 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			String toggle = OFF;
 			if (toBeToggledOn) {
 				toggle = ON;
+				process.setProcessRunning(true);
+			}
+			else {
+				process.setProcessRunning(false);
 			}
 	
 			if (destination == resourceProcessBuilding) {

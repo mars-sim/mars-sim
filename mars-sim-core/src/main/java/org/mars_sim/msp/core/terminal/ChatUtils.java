@@ -804,7 +804,7 @@ public class ChatUtils {
 		StringBuffer responseText = new StringBuffer();
 
 		if (text.equalsIgnoreCase("water")) {
-			int max = 16;
+			int max = 15;
 			double reserve = 0;
 			
 			double greenhouseUsage = 0;
@@ -813,21 +813,25 @@ public class ChatUtils {
 			double livingUsage = 0;
 			double output = 0;
 			
+			double net = 0;
 					
-			String r0 = " Reserve";
-			responseText.append(addNameFirstWhiteSpaces(r0, max-2));
+			String t0 = "   Reserve";
+			responseText.append(addNameFirstWhiteSpaces(t0, max));
 			
-			String u0 = "| Greenhouse";
-			responseText.append(addNameFirstWhiteSpaces(u0, max));
+			String t1 = "| Greenhouse";
+			responseText.append(addNameFirstWhiteSpaces(t1, max));
 			
-			String u1 = " Hygiene ";
-			responseText.append(addNameFirstWhiteSpaces(u1, max));
+			String t2 = " Hygiene";
+			responseText.append(addNameFirstWhiteSpaces(t2, max-2));
 			
-			String u2 = "Processes";
-			responseText.append(addNameFirstWhiteSpaces(u2, max));
+			String t3 = "Processes";
+			responseText.append(addNameFirstWhiteSpaces(t3, max-1));
 
+			String t4 = "   Net";
+			responseText.append(t4);
+			
 			responseText.append(System.lineSeparator());
-			responseText.append(" -------------+------------------------------------------------------------");
+			responseText.append(" --------------+------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
 			
 			// Prints the current reserve
@@ -838,9 +842,9 @@ public class ChatUtils {
 			catch (Exception e) {
 			}
 
-			String s0 = " " + Math.round(reserve* 100.0)/100.0 + " kg ";
-			responseText.append(addNameFirstWhiteSpaces(s0, max-2));
-			
+			String s0 = " " + Math.round(reserve* 100.0)/100.0 + " kg";
+			responseText.append(addNameFirstWhiteSpaces(s0, max));
+
 			// Prints greenhouse usage
 			List<Building> farms = settlementCache.getBuildingManager().getBuildings(FunctionType.FARMING);
 			for (Building b : farms) {
@@ -850,7 +854,8 @@ public class ChatUtils {
 			}
 			String s1 = "|   -" + Math.round(greenhouseUsage * 100.0)/100.0;
 			responseText.append(addNameFirstWhiteSpaces(s1, max));
-		
+			net = net - greenhouseUsage;
+			
 			// Prints living usage
 			List<Building> quarters = settlementCache.getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMODATIONS);
 			for (Building b : quarters) {
@@ -859,7 +864,8 @@ public class ChatUtils {
 
 			}
 			String s2 = "  -" + Math.round(livingUsage * 100.0)/100.0;
-			responseText.append(addNameFirstWhiteSpaces(s2, max));
+			responseText.append(addNameFirstWhiteSpaces(s2, max-2));
+			net = net - livingUsage;
 			
 			// Prints output from resource processing
 			List<Building> bldgs = settlementCache.getBuildingManager().getBuildings(FunctionType.RESOURCE_PROCESSING);
@@ -872,9 +878,18 @@ public class ChatUtils {
 				}
 			}
 			String s3 = "  +" + Math.round(output * 1_000 * 100.0)/100.0;
-			responseText.append(addNameFirstWhiteSpaces(s3, max));
+			responseText.append(addNameFirstWhiteSpaces(s3, max-1));
+			net = net + output * 1_000;
 			
-			responseText.append(" [kg/sol]");
+			String s4 = "";
+			if (net > 0) {
+				s4 = " +" + Math.round(net * 100.0)/100.0 + " [kg/sol]";
+			}
+			else {
+				s4 = " " + Math.round(net * 100.0)/100.0 + " [kg/sol]";
+			}
+			
+			responseText.append(s4);
 			responseText.append(System.lineSeparator());		
 		}
 		
