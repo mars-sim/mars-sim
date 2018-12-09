@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.time;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import java.io.File;
@@ -34,6 +35,9 @@ public class MasterClock implements Serializable {
 
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
+	
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
 
 	private static final double PERIOD_IN_MILLISOLS = 1500D / MarsClock.SECONDS_PER_MILLISOL;
 
@@ -44,8 +48,6 @@ public class MasterClock implements Serializable {
 	private transient volatile boolean keepRunning = true;
 	/** Pausing clock. */
 	private transient volatile boolean isPaused = false;
-	
-	
 	/** The Current time between updates (TBU). */
 	private volatile long currentTBU_ns = 0L;
 	/** Simulation time ratio. */
@@ -72,25 +74,28 @@ public class MasterClock implements Serializable {
 	/** The pulses since last elapsed. */
 	private transient long elapsedLast;
 	
+	/** Is FXGL is in use. */
+	public boolean isFXGL = false;
+	/** The time between two ui pulses. */	
+	private float pulseTime;
 	/** The maximum number of counts allowed in waiting for other threads to execute. */
 	private int noDelaysPerYield = 0;
 	/** The measure of tolerance of the maximum number of lost frames for saving a simulation. */
 	private int maxFrameSkips = 0;
+	/** The total number of pulses cumulated. */
+	private long totalPulses = 1;
+	/** The cache for the last nano time of an ui pulse. */	
+	private long t01;
 	/** Mode for saving a simulation. */
 	private double tpfCache = 0;
 	/** The UI refresh cycle. */
 	private double refresh;
-	/** The total number of pulses cumulated. */
-	private long totalPulses = 1;
 
-	/** The cache for the last nano time of an ui pulse. */	
-	private long t01;
-	/** The time between two ui pulses. */	
-	private float pulseTime;
+	/** The file to save or load the simulation. */
+	private transient volatile File file;
+	/** The thread for running the clock listeners. */
+	private transient ExecutorService clockListenerExecutor;
 	
-	/** Is FXGL is in use. */
-	public boolean isFXGL = false;
-
 	/** A list of clock listeners. */
 	private transient List<ClockListener> clockListeners;
 	/** A list of clock listener tasks. */
@@ -104,12 +109,9 @@ public class MasterClock implements Serializable {
 	private EarthClock earthClock;
 	/** The Uptime Timer. */
 	private UpTimer uptimer;
-	/** The file to save or load the simulation. */
-	private transient volatile File file;
 	/** The thread for running the game loop. */
 	private ClockThreadTask clockThreadTask;
-	/** The thread for running the clock listeners. */
-	private transient ExecutorService clockListenerExecutor;
+
 	// Note: ExecutorService may not stop after the program exits.
 	// see https://netopyr.com/2017/03/13/surprising-behavior-of-cached-thread-pool/
 
@@ -353,9 +355,9 @@ public class MasterClock implements Serializable {
 	 * @param oldListener the listener to remove.
 	 */
 	public final void removeClockListener(ClockListener oldListener) {
-		if (clockListeners == null)
-			clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
-		if (clockListeners.contains(oldListener))
+//		if (clockListeners == null)
+//			clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
+		if (clockListeners != null && clockListeners.contains(oldListener))
 			clockListeners.remove(oldListener);
 		// Check if clockListenerTaskList contain the newListener's task, if it does,
 		// delete it
@@ -935,7 +937,24 @@ public class MasterClock implements Serializable {
 	
 			if (isPaused) {			
 				AutosaveScheduler.cancel();
-			} else {
+			} 
+			
+			else {
+				// If the clockListenerExecutor is not working,
+				// need to restart it
+				if (clockListenerExecutor.isTerminated()
+						|| clockListenerExecutor.isShutdown()) {
+					LogConsolidated.log(Level.CONFIG, 0, sourceName, "The Clock Thread has died. Restarting...");
+					// Re-instantiate clockListenerExecutor
+					clockListenerExecutor = Executors.newSingleThreadExecutor();
+					// Re-instantiate clockListeners
+					clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
+
+					clockListeners.add(sim);
+					
+					addClockListenerTask(sim);
+				}
+				
 				AutosaveScheduler.start();
 			}
 	

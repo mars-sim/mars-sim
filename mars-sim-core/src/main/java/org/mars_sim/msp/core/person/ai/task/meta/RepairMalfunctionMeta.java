@@ -62,7 +62,7 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 	                    Malfunction malfunction = j.next();
 	                    try {
 	                        if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
-	                            result += 200D;
+	                            result += 400D;
 	                        }
 	                    }
 	                    catch (Exception e) {

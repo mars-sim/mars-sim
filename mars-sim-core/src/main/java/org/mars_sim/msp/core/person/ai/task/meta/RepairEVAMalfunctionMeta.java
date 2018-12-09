@@ -10,13 +10,11 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -34,8 +32,6 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.repairEVAMalfunction"); //$NON-NLS-1$
-
-//    private SurfaceFeatures surface;
 
 	@Override
 	public String getName() {
@@ -94,7 +90,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 					try {
 						if (RepairEVAMalfunction.hasRepairPartsForMalfunction(person, person.getTopContainerUnit(),
 								malfunction)) {
-							result += 150D;
+							result += 400D;
 						}
 					} catch (Exception e) {
 						e.printStackTrace(System.err);
@@ -108,7 +104,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 						Malfunction malfunction = k.next();
 						try {
 							if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
-								result += 150D;
+								result += 400D;
 							}
 						} catch (Exception e) {
 							e.printStackTrace(System.err);
