@@ -65,10 +65,11 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 		       	+ System.lineSeparator() 		       	
 	       	);
 		       		       
-	        terminal.println(" -------------------------------------------------------------- ");
-	        terminal.println("|     Press UP arrow key to autocomplete with a keyword.       |");
-	        terminal.println("|     Press UP/DOWN arrow keys to scroll through choices.      |");
-	        terminal.println(" -------------------------------------------------------------- "
+	        terminal.println("  --------------------------------------------------------------- ");
+	        terminal.println("|          Press UP key to autocomplete with a keyword            |");
+	        terminal.println("|          Press UP/DOWN keys to scroll through choices           |");
+	        terminal.println("|    Press Crtl+LEFT/RIGHT keys to scroll through input history   |");
+	        terminal.println("  --------------------------------------------------------------- "
 	        	+ System.lineSeparator() + System.lineSeparator() 	       	
 			    + "'/h' : help,  '/k' : keywords,  '/p' : pause/unpause,  '/q' : quit"
 			    + System.lineSeparator()		
