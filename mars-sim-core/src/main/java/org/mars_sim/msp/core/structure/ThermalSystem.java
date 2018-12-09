@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;

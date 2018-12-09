@@ -12,6 +12,8 @@ import java.io.Serializable;
  * A template for resupply mission information.
  */
 public class ResupplyMissionTemplate implements Serializable {
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
     // Data members
     private String name;

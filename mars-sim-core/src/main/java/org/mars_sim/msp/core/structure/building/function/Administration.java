@@ -219,4 +219,14 @@ public class Administration extends Function implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param bc
+	 */
+	public static void initializeInstances(BuildingConfig bc) {
+		buildingConfig = bc;
+	}
+
 }

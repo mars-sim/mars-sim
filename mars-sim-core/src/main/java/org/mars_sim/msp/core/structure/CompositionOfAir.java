@@ -336,9 +336,10 @@ public class CompositionOfAir implements Serializable {
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1) {
+	public static void justReloaded(MasterClock c0, MarsClock c1, PersonConfig pc) {
 		masterClock = c0;
 		marsClock = c1;
+		personConfig = pc;
 	}
 	
 	/**

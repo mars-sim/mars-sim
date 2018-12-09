@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
-import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.Person;
@@ -37,7 +36,6 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
-import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -58,15 +56,19 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	private static Logger logger = Logger.getLogger(ArrivingSettlement.class.getName());
 
 	// Data members.
+	private int populationNum;
+	private int numOfRobots;
+	private int scenarioID;
+	
 	private String name;
 	private String template;
+	
 	private TransitState transitState;
 	private MarsClock launchDate;
 	private MarsClock arrivalDate;
 	private Coordinates landingLocation;
-	private int populationNum;
-	private int numOfRobots;
-	private int scenarioID;
+	
+
 
 	/**
 	 * Constructor.

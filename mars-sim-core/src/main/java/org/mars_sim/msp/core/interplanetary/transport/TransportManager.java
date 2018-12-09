@@ -15,11 +15,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlementUtil;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 
 /**
@@ -38,7 +41,11 @@ implements Serializable {
 	// Data members
 	//private volatile boolean isTransportingBuilding = false;
 
-	private static Collection<Transportable> transportItems;
+	private Collection<Transportable> transportItems;
+	
+	private static MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+	
+	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
 
 	/**
 	 * Constructor.
@@ -62,7 +69,7 @@ implements Serializable {
 	    		EventType.TRANSPORT_ITEM_CREATED,
 	    		"Mission Control",
 	    		transportItem.getSettlementName());
-	    Simulation.instance().getEventManager().registerNewEvent(newEvent);
+	    eventManager.registerNewEvent(newEvent);
 	    logger.info("A new transport item was created ");// + transportItem.toString());
 	}
 
@@ -117,13 +124,12 @@ implements Serializable {
 	 * @param transportItem the transport item.
 	 */
 	public void cancelTransportItem(Transportable transportItem) {
-		// 2014-10-04 by mkung -- confirmation dialog box--an UI element-- is relocated to ResupplyWindows.java
 		  transportItem.setTransitState(TransitState.CANCELED);
           HistoricalEvent cancelEvent = new TransportEvent(transportItem, 
         		  EventType.TRANSPORT_ITEM_CANCELLED,
         		  "Reserved",
         		  transportItem.getSettlementName());
-          Simulation.instance().getEventManager().registerNewEvent(cancelEvent);
+          eventManager.registerNewEvent(cancelEvent);
           logger.info("A transport item was cancelled: ");// + transportItem.toString());
 	}
 
@@ -137,7 +143,7 @@ implements Serializable {
 		Iterator<Transportable> i = transportItems.iterator();
 		while (i.hasNext()) {
 			Transportable transportItem = i.next();
-			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+//			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 			if (TransitState.PLANNED == transportItem.getTransitState()) {
 			    if (MarsClock.getTimeDiff(currentTime, transportItem.getLaunchDate()) >= 0D) {
 			        // Transport item is launched.
@@ -147,7 +153,7 @@ implements Serializable {
 			        		"Transport item launched",
 			        		transportItem.getSettlementName()
 			        		);
-			        Simulation.instance().getEventManager().registerNewEvent(deliverEvent);
+			        eventManager.registerNewEvent(deliverEvent);
 			        logger.info("Transport item launched: " + transportItem.toString());
 			        continue;
 			    }
@@ -161,7 +167,7 @@ implements Serializable {
                     		EventType.TRANSPORT_ITEM_ARRIVED, 
                     		transportItem.getSettlementName(),
                     		"Transport item arrived on Mars");
-                    Simulation.instance().getEventManager().registerNewEvent(arrivalEvent);
+                    eventManager.registerNewEvent(arrivalEvent);
                     logger.info("Transport item arrived at " + transportItem.toString());
                 }
 			}
@@ -176,6 +182,17 @@ implements Serializable {
 	//	isTransportingBuilding = value;
 	//}
 
+	/**
+	 * initializes instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void initializeInstances(MarsClock c, HistoricalEventManager h) {
+		currentTime = c;
+		eventManager = h;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

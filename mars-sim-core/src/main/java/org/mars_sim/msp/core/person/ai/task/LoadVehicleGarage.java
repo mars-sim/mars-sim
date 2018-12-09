@@ -1343,7 +1343,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	 * 
 	 * @param pc
 	 */
-	public static void justReloaded(PersonConfig pc) {
+	public static void initializeInstances(PersonConfig pc) {
 		personConfig = pc;
 	}
 	

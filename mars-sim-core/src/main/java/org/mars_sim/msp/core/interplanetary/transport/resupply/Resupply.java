@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
-import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.Person;
@@ -44,7 +43,7 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
-import org.mars_sim.msp.core.structure.ChainOfCommand;
+
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -189,8 +188,7 @@ public class Resupply implements Serializable, Transportable {
 
 				// Replace width and length defaults to deal with variable width and length
 				// buildings.
-				double width = SimulationConfig.instance().getBuildingConfiguration()
-						.getWidth(template.getBuildingType());
+				double width = buildingConfig.getWidth(template.getBuildingType());
 
 				if (template.getWidth() > 0D) {
 					width = template.getWidth();
@@ -199,8 +197,7 @@ public class Resupply implements Serializable, Transportable {
 					width = DEFAULT_VARIABLE_BUILDING_WIDTH;
 				}
 
-				double length = SimulationConfig.instance().getBuildingConfiguration()
-						.getLength(template.getBuildingType());
+				double length = buildingConfig.getLength(template.getBuildingType());
 				if (template.getLength() > 0D) {
 					length = template.getLength();
 				}
@@ -575,7 +572,7 @@ public class Resupply implements Serializable, Transportable {
 
 		List<BuildingTemplate> result = new ArrayList<BuildingTemplate>(getNewBuildings().size());
 
-		BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+//		BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 		Iterator<BuildingTemplate> i = getNewBuildings().iterator();
 		while (i.hasNext()) {
@@ -606,7 +603,7 @@ public class Resupply implements Serializable, Transportable {
 
 		// Replace width and length defaults to deal with variable width and length
 		// buildings.
-		double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
+		double width = buildingConfig.getWidth(template.getBuildingType());
 		if (template.getWidth() > 0D) {
 			width = template.getWidth();
 		}
@@ -614,7 +611,7 @@ public class Resupply implements Serializable, Transportable {
 			width = DEFAULT_VARIABLE_BUILDING_WIDTH;
 		}
 
-		double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getBuildingType());
+		double length = buildingConfig.getLength(template.getBuildingType());
 		if (template.getLength() > 0D) {
 			length = template.getLength();
 		}
@@ -726,11 +723,11 @@ public class Resupply implements Serializable, Transportable {
 			} else {
 				// Replace width and length defaults to deal with variable width and length
 				// buildings.
-				double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(buildingType);
+				double width = buildingConfig.getWidth(buildingType);
 				if (width <= 0D) {
 					width = DEFAULT_VARIABLE_BUILDING_WIDTH;
 				}
-				double length = SimulationConfig.instance().getBuildingConfiguration().getLength(buildingType);
+				double length = buildingConfig.getLength(buildingType);
 				if (length <= 0D) {
 					length = DEFAULT_VARIABLE_BUILDING_LENGTH;
 				}
@@ -996,11 +993,11 @@ public class Resupply implements Serializable, Transportable {
 
 		// Replace width and length defaults to deal with variable width and length
 		// buildings.
-		double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(newBuildingType);
+		double width = buildingConfig.getWidth(newBuildingType);
 		if (width <= 0D) {
 			width = DEFAULT_VARIABLE_BUILDING_WIDTH;
 		}
-		double length = SimulationConfig.instance().getBuildingConfiguration().getLength(newBuildingType);
+		double length = buildingConfig.getLength(newBuildingType);
 		if (length <= 0D) {
 			length = DEFAULT_VARIABLE_BUILDING_LENGTH;
 		}
@@ -1112,7 +1109,7 @@ public class Resupply implements Serializable, Transportable {
 
 		// Check each building side for the two buildings for a valid line unblocked by
 		// obstacles.
-		double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(newBuildingType);
+		double width = buildingConfig.getWidth(newBuildingType);
 		List<Point2D> firstBuildingPositions = getFourPositionsSurroundingBuilding(firstBuilding, .1D);
 		List<Point2D> secondBuildingPositions = getFourPositionsSurroundingBuilding(secondBuilding, .1D);
 		for (int x = 0; x < firstBuildingPositions.size(); x++) {
@@ -1461,6 +1458,15 @@ public class Resupply implements Serializable, Transportable {
 		return result;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param pc
+	 */
+	public static void initializeInstances(BuildingConfig bc) {
+		buildingConfig = bc;
+	}
+			
 	@Override
 	public void destroy() {
 		settlement = null;

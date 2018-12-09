@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.Mars;
@@ -80,6 +81,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.Heating;
@@ -870,6 +872,7 @@ public class Simulation implements ClockListener, Serializable {
 //		MedicalManager.justReloaded();
 		unitManager.justReloaded(marsClock);
 		MalfunctionManager.initializeInstances(masterClock, marsClock);
+		TransportManager.initializeInstances(marsClock, eventManager);
 
 //		System.out.println("Done with Serialized Object instances");
 		
@@ -904,10 +907,11 @@ public class Simulation implements ClockListener, Serializable {
 //		System.out.println("Done with Structure instances");
 		
 		// Re-initialize Building function related class
+//		Administration.initializeInstances(bc);
 		CircadianClock.justReloaded(marsClock);
 		Cooking.justReloaded(marsClock);
 		Crop.justReloaded(masterClock, marsClock);
-		CompositionOfAir.justReloaded(masterClock, marsClock);
+		CompositionOfAir.justReloaded(masterClock, marsClock, pc);
 		EVA.justReloaded(bc);
 		Farming.justReloaded(marsClock);
 		GroundVehicleMaintenance.justReloaded(bc);
@@ -934,7 +938,7 @@ public class Simulation implements ClockListener, Serializable {
 		Task.justReloaded(eventManager);		// eventManager, relationshipmanager
 		Walk.justReloaded(unitManager);	
 		EVAOperation.justReloaded(surface); 
-		LoadVehicleGarage.justReloaded(pc); 
+		LoadVehicleGarage.initializeInstances(pc); 
 		
 //		System.out.println("Done with Task instances");
 		
@@ -943,7 +947,8 @@ public class Simulation implements ClockListener, Serializable {
 		RoverMission.justReloaded(eventManager);  // eventManager
 		VehicleMission.justReloaded(missionManager); // missionmgr
 		RescueSalvageVehicle.justReloaded(eventManager);  // eventManager
-
+		Resupply.initializeInstances(bc);
+		
 //		System.out.println("Done with mission instances");
 	}
 	
