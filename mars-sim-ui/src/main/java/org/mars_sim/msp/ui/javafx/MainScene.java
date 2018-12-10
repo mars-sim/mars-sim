@@ -232,13 +232,7 @@ public class MainScene implements ClockListener {
 	public static final int TAB_PANEL_HEIGHT = 35;
 	public static final int TITLE_BAR_HEIGHT = 25;
 	
-	public static int chatBoxHeight = 256;
-	public static int LINUX_WIDTH = 270+10;
-	public static int MACOS_WIDTH = 230+10;
-	public static int WIN_WIDTH = 230+10;
-	
-	public static int spacing = 0;
-
+	private static boolean justStarted = true;
 	public static boolean isFXGL = false;
 	public static boolean menuBarVisible = false;
 
@@ -246,6 +240,13 @@ public class MainScene implements ClockListener {
 	
 	private static final int DEFAULT_ZOOM = 10;
 	
+	public static int chatBoxHeight = 256;
+	public static int LINUX_WIDTH = 270+10;
+	public static int MACOS_WIDTH = 230+10;
+	public static int WIN_WIDTH = 230+10;
+	
+	public static int spacing = 0;
+
 	private static int defaultThemeColor = 0;
 	private static int theme = 6; // 6 is snow blue; 7 is the mud orange with nimrod
 
@@ -562,6 +563,8 @@ public class MainScene implements ClockListener {
 			esc = new ESCHandler();
 			setEscapeEventHandler(true, stage);
 		}
+		
+		stage.hide();
 	}
 
 	/*
@@ -580,21 +583,20 @@ public class MainScene implements ClockListener {
 			initializeTheme();
 			prepareOthers();
 			
+			createSavingIndicator();
+			openInitialWindows();
+//			hideWaitStage(MainScene.LOADING);
+
+//			// Caches the settlement unit windows
+//			desktop.cacheSettlementUnitWindow();
+			
 			// Call setMonitor() for screen detection
 			setMonitor(stage);
 			stage.centerOnScreen();
 			stage.setTitle(Simulation.title);
 			stage.setResizable(false);
-			stage.show();
-			stage.requestFocus();
-
-			createSavingIndicator();
-			openInitialWindows();
-//			hideWaitStage(MainScene.LOADING);
-
-			// Caches the settlement unit windows
-			desktop.cacheSettlementUnitWindow();
-			
+//			stage.show();
+//			stage.requestFocus();
 		});
 		
 		// Add MainScene to MasterClock's clock listener
@@ -3084,6 +3086,15 @@ public class MainScene implements ClockListener {
 
 		// Check if the new has been on display for over one sol or not
 		checkBillboardTimer();
+		
+		if (justStarted) {
+			justStarted = false;
+			// Caches the settlement unit windows
+			desktop.cacheSettlementUnitWindow();
+			
+			stage.show();
+			stage.requestFocus();			
+		}
 		
 //		double tr = masterClock.getTimeRatio();
 		// if (msol % 10 == 0) {
