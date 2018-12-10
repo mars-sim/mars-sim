@@ -665,7 +665,8 @@ public class MalfunctionManager implements Serializable {
 			double new_failure = (100 - new_rel) * new_prob / 100D;
 			double new_mal_prob_failure = 0;
 			double new_MTBF = factory.getMTBFs().get(id);
-			logger.warning("        < Part : " + part_name + " >");
+			
+			logger.warning("     < Part : " + part_name + " >");
 			logger.warning(" (1).   Reliability : " + addWhiteSpace(Math.round(old_rel * 1000.0) / 1000.0 + " %") 
 					+ "  -->  " + Math.round(new_rel * 1000.0) / 1000.0 + " %");
 
@@ -676,9 +677,10 @@ public class MalfunctionManager implements Serializable {
 			logger.warning(" (3).          MTBF : " + addWhiteSpace(Math.round(old_MTBF * 1000.0) / 1000.0 + " hr") 
 					+ "  -->  " + Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
 
-			logger.warning("        < Malfunction : " + malfunctionName + " >");
+			logger.warning("     < Malfunction : " + malfunctionName + " >");
 			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_probl_failure * 1000.0) / 1000.0 + " %") 
 					+ "  -->  " + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
+			
 			malfunction.setProbability(new_mal_prob_failure);
 
 		}

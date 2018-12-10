@@ -137,7 +137,7 @@ public class Mind implements Serializable {
 	 */
 	public void timePassing(double time) {
 		if (taskManager != null)
-			taskManager.recordTask();
+			taskManager.recordTask(time);
 
 		double msol1 = marsClock.getMillisolOneDecimal();
 

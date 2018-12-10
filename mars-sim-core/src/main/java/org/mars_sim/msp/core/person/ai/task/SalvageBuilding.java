@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageBuilding.java
- * @version 3.08 2015-06-17
+ * @version 3.1.0 2018-12-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -187,13 +186,11 @@ implements Serializable {
         }
 
 		// Check if it is night time.
-		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
-			if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-				return false;
-			}
+		if (EVAOperation.isGettingDark(person)) {
+            logger.fine(person.getName() + " end salvaging building : night time");
+            return false;
 		}
-
+		
         // Check if person's medical condition will not allow task.
         if (person.getPerformanceRating() < .5D)
         	return false;

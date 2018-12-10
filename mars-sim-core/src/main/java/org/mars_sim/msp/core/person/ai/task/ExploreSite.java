@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
-import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MineralMap;
@@ -144,12 +143,10 @@ implements Serializable {
             if(!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
             	return false;
 
-            Mars mars = Simulation.instance().getMars();
-            if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
+    		if (EVAOperation.isGettingDark(person)) {
                 logger.fine(person.getName() + " end exploring site: night time");
-                if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
-                    return false;
-            }
+                return false;
+    		}
 
             // Check if person's medical condition will not allow task.
             if (person.getPerformanceRating() < .5D)

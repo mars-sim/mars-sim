@@ -69,7 +69,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	public static final int FIRST_EQUIPMENT_RESOURCE = ResourceUtil.FIRST_EQUIPMENT_RESOURCE;
 
 	// Data members
-
 	/** True if task is finished. */
 	private boolean done;
 	/** True if task has a time duration. */
@@ -78,7 +77,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected boolean effortDriven;
 	/** Task should create Historical events. */
 	private boolean createEvents;
-
 	/** Amount of time required to complete current phase. (in millisols) */
 	protected double phaseTimeRequired;
 	/** Amount of time completed on the current phase. (in millisols) */

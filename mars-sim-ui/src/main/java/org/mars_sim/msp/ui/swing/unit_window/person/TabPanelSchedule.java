@@ -15,6 +15,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -63,18 +64,22 @@ public class TabPanelSchedule extends TabPanel {
 	private static final String TWO_SPACES = "  ";
 
 	// private int sol;
+
+	private boolean hideRepeated;
+	private boolean hideRepeatedCache;
+	private boolean isRealTimeUpdate;
 	private int todayCache = 1;
 	private int today;
 	private int start;
 	private int end;
 	private int theme;
-
-	private boolean hideRepeated, hideRepeatedCache, isRealTimeUpdate;
-
+	private int selectedSolCache;
+	
 	private Integer selectedSol;
 	private Integer todayInteger;
 
-	private ShiftType shiftType, shiftCache = null;
+	private ShiftType shiftType;
+	private ShiftType shiftCache = null;
 
 	private WebTable table;
 
@@ -160,7 +165,7 @@ public class TabPanelSchedule extends TabPanel {
 			start = taskSchedule.getShiftStart();
 			end = taskSchedule.getShiftEnd();
 			shiftTF.setEditable(false);
-			shiftTF.setColumns(4);
+			shiftTF.setColumns(6);
 
 			shiftTF.setHorizontalAlignment(WebTextField.CENTER);
 			buttonPane.add(shiftTF);
@@ -510,9 +515,6 @@ public class TabPanelSchedule extends TabPanel {
 	 */
 	private class ScheduleTableModel extends AbstractTableModel {
 
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
 		DecimalFormat fmt = new DecimalFormat("000");
 
 		/**
@@ -572,9 +574,18 @@ public class TabPanelSchedule extends TabPanel {
 				return taskSchedule.convertTaskDescription(activities.get(row).getDescription());
 			else if (column == 2)
 				return taskSchedule.convertTaskPhase(activities.get(row).getPhase());
-			else if (column == 3)
-				return taskSchedule.convertMissionName(activities.get(row).getTaskName());
+			else if (column == 3) {
+				return taskSchedule.convertMissionName(activities.get(row).getMission());
+				
+//				int id = activities.get(row).getTaskName();
+//				if (taskSchedule.convertTaskName(id) != null
+//						|| taskSchedule.convertTaskName(id).equals(""))
+//					return taskSchedule.convertTaskName(id);
+//				else
+//					return taskSchedule.convertMissionName(id);
+				
 			// formatClassName(taskSchedule.convertTaskName(activities.get(row).getTaskName()));
+			}
 			else
 				return null;
 		}
@@ -593,60 +604,48 @@ public class TabPanelSchedule extends TabPanel {
 		 */
 		public void update(boolean hideRepeatedTasks, int selectedSol) {
 			int todaySol = taskSchedule.getSolCache();
-			// OneTask lastTask = null;
 			OneActivity lastTask = null;
-			// String lastName = null;
 			String lastDes = null;
-			// String lastPhase = null;
-			// OneTask currentTask = null;
 			OneActivity currentTask = null;
 			String currentDes = null;
 
-			// Load previous day's schedule if selected
-			if (todaySol == selectedSol) {
-				// Load today's schedule
-				// tasks = new CopyOnWriteArrayList<OneTask>(taskSchedule.getTodaySchedule());
-				activities = new CopyOnWriteArrayList<OneActivity>(taskSchedule.getTodayActivities());
-			} else {
-				// tasks = new CopyOnWriteArrayList<OneTask>(schedules.get(selectedSol));
-				// List<OneActivity> list = ((List<?>)allActivities).search(1, (k,v) -> { if (k
-				// == selectedSol) return k;}); //.get(selectedSol));
-				activities = new CopyOnWriteArrayList<OneActivity>(allActivities.get(selectedSol));
+			if (selectedSolCache != selectedSol) {
+				selectedSolCache = selectedSol;
+				// Load previous day's schedule if selected
+				if (todaySol == selectedSol) {
+					// Load today's schedule
+					activities = new ArrayList<OneActivity>(taskSchedule.getTodayActivities());
+				} 
+				
+				else {
+					// Load the schedule of a particular sol
+					activities = new ArrayList<OneActivity>(allActivities.get(selectedSol));
+				}
 			}
-
-			// check if user selected hide repeated tasks checkbox
+			
+			// Check if user selected hide repeated tasks checkbox
 			if (activities != null && hideRepeatedTasks) {
-				// show only non-repeating consecutive tasks
-				// List<OneTask> displaySchedule = new CopyOnWriteArrayList<OneTask>(tasks);
-				List<OneActivity> displaySchedule = new CopyOnWriteArrayList<OneActivity>(activities);
+				// Show only non-repeating consecutive tasks
+				List<OneActivity> displaySchedule = new ArrayList<OneActivity>(activities);
 
 				int size = displaySchedule.size();
 
 				for (int i = size - 1; i >= 0; i--) {
 					currentTask = displaySchedule.get(i);
-					// String currentName = currentTask.getTaskName();
 					currentDes = taskSchedule.convertTaskDescription(currentTask.getDescription());
-					// String currentPhase = currentTask.getPhase();
-					// make sure this is NOT the very first task (i = 0) of the day
+					// Make sure this is NOT the very first task (i = 0) of the day
 					if (i != 0) {
 						lastTask = displaySchedule.get(i - 1);
-						// lastName = taskSchedule.convertTaskName(lastTask.getTaskName());
 						lastDes = taskSchedule.convertTaskDescription(lastTask.getDescription());
-						// lastPhase = taskSchedule.convertTaskPhase(lastTask.getPhase());
 
-						// check if the last task is the same as the current task
+						// Check if the last task is the same as the current task
 						if (lastDes.equals(currentDes)) {
-							// if (lastName.equals(currentName)) {
-							// if (lastPhase.equals(currentPhase)) {
-							// remove the current task if they are the same
 							displaySchedule.remove(i);
-							// }
-							// }
 						}
 					}
 				}
 
-				activities = displaySchedule;
+//				activities = displaySchedule;
 			}
 
 			fireTableDataChanged();

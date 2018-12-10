@@ -274,10 +274,23 @@ public class TaskManager implements Serializable {
 
 	}
 
+	public boolean isEVATask(String taskName) {
+		return (taskName.toLowerCase().contains("eva")
+				|| taskName.toLowerCase().contains("dig")
+				|| taskName.toLowerCase().contains("exploresite")
+				|| taskName.toLowerCase().contains("salvagebuilding")
+				|| taskName.toLowerCase().contains("walkoutside")
+				|| taskName.toLowerCase().contains("minesite")
+				|| taskName.toLowerCase().contains("collectmined")
+				|| taskName.toLowerCase().contains("fieldwork")
+				|| taskName.toLowerCase().contains("collectresources")
+				);
+	}
+	
 	/*
 	 * Filters tasks for recording in the task schedule
 	 */
-	public void recordTask() {
+	public void recordTask(double time) {
 		String taskDescription = getTaskDescription(false);
 		String taskName = getTaskClassName();
 
@@ -288,11 +301,17 @@ public class TaskManager implements Serializable {
 		// Remove tasks such as Walk, WalkRoverInterior, WalkSettlementInterior,
 		// WalkSteps
 		// Filters off descriptions such as "Walking inside a settlement"
-		if (taskName != null
-				&& !taskName.toLowerCase().contains(WALK) 
-				&& !taskDescription.equals(taskDescriptionCache)
-				&& !taskDescription.toLowerCase().contains(WALK) 
-				&& !taskDescription.equals("")) {
+		if (taskName != null) {
+			
+			if (isEVATask(taskName)) {
+				person.addEVATime(taskName, time);
+			}
+			
+			if (!taskDescription.equals(taskDescriptionCache)
+//				&& !taskName.toLowerCase().contains(WALK) 
+//				&& !taskDescription.toLowerCase().contains(WALK) 
+				&& !taskDescription.equals("")
+				) {
 
 			String taskPhaseName = null;
 			TaskPhase tp = getMainTaskPhase();
@@ -306,15 +325,14 @@ public class TaskManager implements Serializable {
 
 			}
 
-//			if (ts == null)
-//				ts = person.getTaskSchedule();
-
-			if (taskPhaseName != null) {
+			// Note : can taskPhaseName be null ?
+//			if (taskPhaseName != null) { 
 				// TODO: decide if it needs to record the same task description as the last
 				ts.recordTask(taskName, taskDescription, taskPhaseName, missionName);
 				taskDescriptionCache = taskDescription;
-			}
+//			}
 		}
+	}
 	}
 
 	/**

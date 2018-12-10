@@ -287,11 +287,11 @@ public class TaskSchedule implements Serializable {
 //	    return map.entrySet().stream().filter(e -> e.getValue().equals(value)).map(e -> e.getKey()).findFirst();
 //	}
 
-	/*
-	 * Performs the actions per frame
-	 * 
-	 * @param time amount of time passing (in millisols).
-	 */
+//	/*
+//	 * Performs the actions per frame
+//	 * 
+//	 * @param time amount of time passing (in millisols).
+//	 */
 //    public void timePassing(double time) {
 //    }
 
@@ -326,7 +326,100 @@ public class TaskSchedule implements Serializable {
 	public Map<Integer, List<OneActivity>> getAllActivities() {
 		return allActivities;
 	}
+	
+	public double getTaskTime(int sol, String name) {
+		double time = 0;
+		if (allActivities.containsKey(sol)) {
+			List<OneActivity> list = allActivities.get(sol);
+			int size = list.size();
+			for (int i=0; i < size; i++) {
+				OneActivity o0 = list.get(i);
+				String tName = convertMissionName(o0.getTaskName());
+				if (tName.equals(name)) {
+//					System.out.println("tName : " + tName);
+					int endTime = 1000;
+					if (i+1 < size) {
+						endTime = list.get(i + 1).getStartTime();
+					}
+					
+					time += endTime - o0.getStartTime();
+//					System.out.println("time : " + time);
+				}
+			}
+		}
+		
+		return time;
+	}
 
+	
+	public boolean isEVATask(String taskName) {
+		return (taskName.toLowerCase().contains("eva")
+				|| taskName.toLowerCase().contains("dig")
+				|| taskName.toLowerCase().contains("exploresite")
+				|| taskName.toLowerCase().contains("salvagebuilding")
+				|| taskName.toLowerCase().contains("walkoutside")
+				|| taskName.toLowerCase().contains("minesite")
+				|| taskName.toLowerCase().contains("collectmined")
+				|| taskName.toLowerCase().contains("fieldwork")
+				|| taskName.toLowerCase().contains("collectresources")
+				);
+	}
+	
+	
+	public double getEVATasksTime(int sol) {
+		double time = 0;
+		if (allActivities.containsKey(sol)) {
+			List<OneActivity> list = allActivities.get(sol);
+			int size = list.size();
+			for (int i=0; i < size; i++) {
+				OneActivity o0 = list.get(i);
+				String tName = convertTaskName(o0.getTaskName());
+				if (isEVATask(tName)) {
+//					System.out.println("tName : " + tName);
+					int endTime = 1000;
+					if (i+1 < size) {
+						endTime = list.get(i + 1).getStartTime();
+					}
+					
+					time += endTime - o0.getStartTime();
+//					System.out.println("time : " + time);
+				}
+			}
+		}
+		
+		return time;
+	}
+
+	public boolean isAirlockTask(String taskName) {
+		return (taskName.toLowerCase().contains("airlock"));
+	}
+	
+	public double getAirlockTasksTime(int sol) {
+		double time = 0;
+		if (allActivities.containsKey(sol)) {
+			List<OneActivity> list = allActivities.get(sol);
+			int size = list.size();
+			for (int i=0; i < size; i++) {
+				OneActivity o0 = list.get(i);
+				String tName = convertTaskName(o0.getTaskName());
+				if (isAirlockTask(tName)) {
+					int endTime = 0;
+					if (i+1 < size) {
+						OneActivity o1 = list.get(i + 1);
+						endTime = o1.getStartTime();
+					}
+					else {
+						endTime = 1000;
+					}
+					
+					time += endTime - o0.getStartTime();
+				}
+			}
+		}
+		
+		return time;
+	}
+	
 	/**
 	 * Gets the today's activities.
 	 * 
@@ -336,20 +429,20 @@ public class TaskSchedule implements Serializable {
 		return todayActivities;
 	}
 
-	/**
-	 * Gets all schedules of a person.
-	 * 
-	 * @return schedules
-	 */
+//	/**
+//	 * Gets all schedules of a person.
+//	 * 
+//	 * @return schedules
+//	 */
 //	public Map <Integer, List<OneTask>> getSchedules() {
 //		return schedules;
 //	}
 
-	/**
-	 * Gets the today's schedule.
-	 * 
-	 * @return todaySchedule
-	 */
+//	/**
+//	 * Gets the today's schedule.
+//	 * 
+//	 * @return todaySchedule
+//	 */
 //	public List<OneTask> getTodaySchedule() {
 //		return todaySchedule;
 //	}

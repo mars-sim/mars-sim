@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +37,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
@@ -206,6 +208,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private Map<Integer, Gene> maternal_chromosome;
 	/** The person's mission experiences */
 	private Map<Integer, List<Double>> missionExperiences;
+	/** The person's EVA times */
+	private Map<Integer, Map<String, Double>> eVAHours;
 	
 	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;
@@ -281,13 +285,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 		
 		isBuried = false;
-
 		// Put person in proper building.
 		associatedSettlement.getInventory().storeUnit(this);
 		// Note: setAssociatedSettlement(settlement) will cause suffocation when  reloading from a saved sim
 		BuildingManager.addToRandomBuilding(this, associatedSettlement); // why failed ?
 		// testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
-
 		attributes = new NaturalAttributeManager(this);
 		// Set up genetic make-up. Notes it requires attributes.
 		setupChromosomeMap();
@@ -314,10 +316,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		assignReportingAuthority();
 
-		support = getLifeSupportType();
-			
+		support = getLifeSupportType();		
 		// Create the mission experiences map
 		missionExperiences = new HashMap<>();
+		// Create the EVA hours map
+		eVAHours = new ConcurrentHashMap<>();
 
 	}
 
@@ -1685,6 +1688,55 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public Map<Integer, List<Double>> getMissionExperiences() {
 		return missionExperiences;
 	}
+	
+	
+	/**
+	 * Adds the EVA time
+	 * 
+	 * @param taskName
+	 * @param time
+	 */
+	public void addEVATime(String taskName, double time) {
+		
+		Map<String, Double> map = null;
+		
+		if (eVAHours.containsKey(solCache)) {
+			 map = eVAHours.get(solCache);
+			if (map.containsKey(taskName)) {
+				double oldTime = map.get(taskName);
+				map.put(taskName, time + oldTime);
+			}
+			else {
+				map.put(taskName, time);
+			}
+		}
+		else {
+			map = new ConcurrentHashMap<>();
+			map.put(taskName, time);
+		}
+		
+		eVAHours.put(solCache, map);
+	}
+	
+	
+	
+	public Map<Integer, Double> getTotalEVATimeBySol() {
+		Map<Integer, Double> map = new ConcurrentHashMap<>();
+		
+		for (Integer sol : eVAHours.keySet()) {
+			double sum = 0;
+			
+			for (String t : eVAHours.get(sol).keySet()) {
+				sum += eVAHours.get(sol).get(t);
+			}
+			
+			map.put(sol, sum);			
+		}
+		
+		return map;
+	}
+	
+	
 	
 	/**
 	 * Reloads instances after loading from a saved sim

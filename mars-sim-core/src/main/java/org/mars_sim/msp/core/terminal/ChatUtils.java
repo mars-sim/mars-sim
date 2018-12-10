@@ -87,7 +87,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
-import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -160,7 +159,8 @@ public class ChatUtils {
 			"building", "associated", "association", "home", "home town",		
 			"garage", "vehicle top container", "vehicle container",  "vehicle park", "vehicle settlement", "vehicle outside", "vehicle inside",			
 			"bed time", "sleep hour", 
-			"trip", "excursion", "mission"
+			"trip", "excursion", "mission",
+			"eva time", "airlock time"
 	};
 	
 	public final static String[] ALL_PARTIES_KEYS = new String[] {
@@ -188,8 +188,8 @@ public class ChatUtils {
 
 	public final static String HELP_TEXT = System.lineSeparator()
 			+ "    ------------------------- H E L P ------------------------- " + System.lineSeparator()
-			+ "  Type in the NAME of a person, a bot, or a settlement to connect with." + System.lineSeparator()
-			+ "  Use KEYWORDS or type in a number between 0 and 18 (specific QUESTIONS on a party)." + System.lineSeparator() 
+			+ "  Type in the NAME of a person, bot, vehicle or settlement to connect with." + System.lineSeparator()
+//			+ "  Use KEYWORDS or type in a number between 0 and 18 (specific QUESTIONS on a party)." + System.lineSeparator() 
 			+ "  Type '/k' or 'key' to see a list of KEYWORDS." + System.lineSeparator()
 			+ "  Type 'settlement' to obtain the NAMES of the established settlements." + System.lineSeparator()
 			+ SWITCHES;
@@ -209,31 +209,41 @@ public class ChatUtils {
 
 	public final static String SYSTEM_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "  For MarsNet : a settlement/bot/person's name OR " + getKeywordList(SYSTEM_KEYS) + System.lineSeparator() 
-			+ "  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
+			+ "  For MarsNet : " + System.lineSeparator()
+			+ "  Type in the NAME of a person, bot, vehicle or settlement to connect with." + System.lineSeparator()
+			+ getKeywordList(SYSTEM_KEYS) + System.lineSeparator() 
+			+ "  For all Parties : "  + System.lineSeparator()
+			+ getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
 //			+ " 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
 //			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
 //			+ SWITCHES;
 	
 	public final static String VEHICLE_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "  For Vehicles : " + getKeywordList(VEHICLE_KEYS) + System.lineSeparator()
-			+ "  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
+			+ "  For Vehicles : "  + System.lineSeparator()
+			+ getKeywordList(VEHICLE_KEYS) + System.lineSeparator()
+			+ "  For all Parties : "  + System.lineSeparator()
+			+ getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
 //			+ "(2) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
 //			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
 //			+ SWITCHES;
 	
 	public final static String PERSON_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "  For Settlers : " + getKeywordList(PERSON_KEYS) + System.lineSeparator()
-			+ "  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
+			+ "  For Settlers : "  + System.lineSeparator()
+			+ getKeywordList(PERSON_KEYS) + System.lineSeparator()
+			+ "  For all Parties : "  + System.lineSeparator()
+			+ getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
 //			+ "(2) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
 //			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
 //			+ SWITCHES;
 	
 	public final static String SETTLEMENT_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "  For Settlements : " + getKeywordList(SETTLEMENT_KEYS) + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
+			+ "  For Settlements : "  + System.lineSeparator()
+			+ getKeywordList(SETTLEMENT_KEYS) + System.lineSeparator()
+			+ "  For all Parties : "  + System.lineSeparator()
+			+ getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
 //			+ "(4)  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator()
 //			+ "(5) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator() 
 //			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
@@ -1999,8 +2009,74 @@ public class ChatUtils {
 
 		responseText.append(name);
 		responseText.append(": ");
-	
-		if (text.toLowerCase().contains("attribute")) {
+		
+		if (text.toLowerCase().contains("airlock time")) {
+			questionText = YOU_PROMPT + "How long have you spent inside the airlock ?"; 
+			
+			responseText.append("See my records as follows :");
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			
+			responseText.append("  Sol  | Millisols");
+			responseText.append(System.lineSeparator());
+			responseText.append(" ------+------------");	
+			responseText.append(System.lineSeparator());
+			
+			int size = marsClock.getMissionSol();
+			int MAX0 = 5;
+			int MAX1 = 10;
+			for (int i=0; i<size; i++) {
+				double milliSol = personCache.getTaskSchedule().getAirlockTasksTime(i);
+				if (milliSol > 0) {
+					responseText.append(addhiteSpacesName(i + "", MAX0));
+					String m = Math.round(milliSol*10.0)/10.0 + "";
+					responseText.append(addhiteSpacesName(m, MAX1));	
+					responseText.append(System.lineSeparator());
+				}
+			}
+		}
+		
+		else if (text.toLowerCase().contains("eva time")) {
+			questionText = YOU_PROMPT + "What is your EVA history and experience ?"; 
+			
+			responseText.append("See my EVA records as follows :");
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			
+			responseText.append("  Sol  | Millisols");
+			responseText.append(System.lineSeparator());
+			responseText.append(" ------+------------");	
+			responseText.append(System.lineSeparator());
+			
+			Map<Integer, Double> eVATime = personCache.getTotalEVATimeBySol();	
+			int size = marsClock.getMissionSol();
+			int MAX0 = 5;
+			int MAX1 = 10;
+			for (int i=0; i<size; i++) {
+				if (eVATime.containsKey(i)) {
+					double milliSol = eVATime.get(i);
+					responseText.append(addhiteSpacesName(i + "", MAX0));
+					String m = Math.round(milliSol*10.0)/10.0 + "";
+					responseText.append(addhiteSpacesName(m, MAX1));	
+					responseText.append(System.lineSeparator());
+				}
+			}
+			
+//			int size = marsClock.getMissionSol();
+//			int MAX0 = 5;
+//			int MAX1 = 10;
+//			for (int i=0; i<size; i++) {
+//				double milliSol = personCache.getTaskSchedule().getEVATasksTime(i);
+//				if (milliSol > 0) {
+//					responseText.append(addhiteSpacesName(i + "", MAX0));
+//					String m = Math.round(milliSol*10.0)/10.0 + "";
+//					responseText.append(addhiteSpacesName(m, MAX1));	
+//					responseText.append(System.lineSeparator());
+//				}
+//			}
+		}
+		
+		else if (text.toLowerCase().contains("attribute")) {
 			questionText = YOU_PROMPT + "What are your natural attributes ?"; 
 			
 			responseText.append("here's a list of my natural attributes with scores ");
@@ -4447,17 +4523,17 @@ public class ChatUtils {
      * @param indoorP
      * @return String
      */
-    public static StringBuffer printList(List<?> indoorP) {
+    public static StringBuffer printList(List<?> list0) {
       	StringBuffer sb = new StringBuffer();
       	
-    	if (indoorP.isEmpty()) {
+    	if (list0.isEmpty()) {
     		sb.append("    None");
     		sb.append(System.lineSeparator());
     		return sb;
     	}
     		
       	List<String> list = new ArrayList<>();
-      	for (Object o : indoorP) {
+      	for (Object o : list0) {
       		list.add(o.toString());
       	}
       	
