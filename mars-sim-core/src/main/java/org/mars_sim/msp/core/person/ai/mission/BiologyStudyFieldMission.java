@@ -20,11 +20,9 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.BiologyStudyFieldWork;
@@ -79,10 +77,6 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 	private static int foodID = ResourceUtil.foodID;
 
 	private static ScienceType biology = ScienceType.BIOLOGY;
-
-	private static PersonConfig personConfig;
-
-	private static ScientificStudyManager manager;
 
 	/**
 	 * Constructor.
@@ -226,9 +220,7 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
 		// Add primary study if in research phase.
-		if (manager == null)
-			manager = Simulation.instance().getScientificStudyManager();
-		ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(researcher);
+		ScientificStudy primaryStudy = scientificManager.getOngoingPrimaryStudy(researcher);
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
 					&& !primaryStudy.isPrimaryResearchCompleted()) {
@@ -241,7 +233,7 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 		}
 
 		// Add all collaborative studies in research phase.
-		Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(researcher).iterator();
+		Iterator<ScientificStudy> i = scientificManager.getOngoingCollaborativeStudies(researcher).iterator();
 		while (i.hasNext()) {
 			ScientificStudy collabStudy = i.next();
 			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
@@ -272,9 +264,6 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 		Inventory vInv = rover.getInventory();
 
 		double timeLimit = Double.MAX_VALUE;
-
-		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfiguration();
 
 		// Check food capacity as time limit.
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();

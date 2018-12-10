@@ -10,12 +10,12 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -39,28 +39,30 @@ implements Serializable {
 
     private static Logger logger = Logger.getLogger(AreologyStudyFieldWork.class.getName());
 
+	private static String sourceName = logger.getName();
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.areologyFieldWork"); //$NON-NLS-1$
 
     /** Task phases. */
     private static final TaskPhase FIELD_WORK = new TaskPhase(Msg.getString(
-            "Task.phase.fieldWork")); //$NON-NLS-1$
+            "Task.phase.fieldWork.areology")); //$NON-NLS-1$
 
     // https://en.wikipedia.org/wiki/Volcanology_of_Mars
     // http://www.space.com/198-mars-volcanoes-possibly-active-pictures-show.html
     private static final TaskPhase STUDY_VOLCANIC_ACTIVITIES = new TaskPhase(Msg.getString(
-            "Task.phase.fieldWork")); //$NON-NLS-1$
+            "Task.phase.fieldWork.volcanic")); //$NON-NLS-1$
 
     // http://www.ibtimes.com/marsquake-seismic-activity-red-planet-bodes-well-life-414690
     private static final TaskPhase STUDY_SEISMIC_ACTIVITIES = new TaskPhase(Msg.getString(
-            "Task.phase.fieldWork")); //$NON-NLS-1$
+            "Task.phase.fieldWork.seismic")); //$NON-NLS-1$
 
     // Aeolian or Eolian science is where meteorology meets geology
     // http://www.lpi.usra.edu/publications/slidesets/winds/
     // Modification of the martian surface by the wind (atmospheric dust storms, dust devils, and perhaps even tornados)
     private static final TaskPhase STUDY_AEOLIAN_ACTIVITIES = new TaskPhase(Msg.getString(
-            "Task.phase.fieldWork")); //$NON-NLS-1$
+            "Task.phase.fieldWork.aeolian")); //$NON-NLS-1$
 
     // Data members
     private Person leadResearcher;
@@ -134,15 +136,16 @@ implements Serializable {
             // Check if person can exit the rover.
             if(!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
             	return false;
-
-           Mars mars = Simulation.instance().getMars();
-            if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
-                logger.fine(person.getName() + " end areology study field work: night time");
-                if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
-                    return false;
-            }
+            
+            if (isGettingDark(person)) {
+    			LogConsolidated.log(Level.FINE, 5000, sourceName,
+    					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
+    					+ person.getTaskDescription() + " : too dark to continue with the EVA.");
+    			return false;
+    		}
+            
             // Check if person's medical condition will not allow task.
-            if (person.getPerformanceRating() < .5D)
+            if (person.getPerformanceRating() < .3D)
             	return false;
         }
 
@@ -199,6 +202,10 @@ implements Serializable {
         // Add experience points
         addExperience(time);
 
+		LogConsolidated.log(Level.FINE, 5000, sourceName,
+				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " was doing "
+				+ person.getTaskDescription() + ".");
+		
         return 0D;
     }
 

@@ -20,14 +20,12 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CollectResources;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -89,8 +87,6 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	private static int waterID = ResourceUtil.waterID;
 	private static int foodID = ResourceUtil.foodID;
 	private static int methaneID = ResourceUtil.methaneID;
-
-	private static PersonConfig personConfig;
 
 	/**
 	 * Constructor
@@ -748,9 +744,6 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		Inventory vInv = rover.getInventory();
 
 		double timeLimit = Double.MAX_VALUE;
-
-		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfiguration();
 
 		// Check food capacity as time limit.
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();

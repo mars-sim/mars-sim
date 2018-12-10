@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -86,13 +85,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 	private Vehicle vehicleTarget;
 
-	private static MissionManager missionManager;
-
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 	private static int foodID = ResourceUtil.foodID;
-
-	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
 
 	/**
 	 * Constructor
@@ -103,9 +98,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	public RescueSalvageVehicle(Person startingPerson) {
 		// Use RoverMission constructor
 		super(DEFAULT_DESCRIPTION, startingPerson, MIN_GOING_MEMBERS);
-
-//		unitManager = Simulation.instance().getUnitManager();
-		missionManager = Simulation.instance().getMissionManager();
 
 		if (!isDone()) {
 			setStartingSettlement(startingPerson.getSettlement());
@@ -187,9 +179,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 		// Use RoverMission constructor.
 		super(description, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
-
-//		unitManager = Simulation.instance().getUnitManager();
-		missionManager = Simulation.instance().getMissionManager();
 
 		setStartingSettlement(startingSettlement);
 		this.vehicleTarget = vehicleTarget;
@@ -881,14 +870,14 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {{@link HistoricalEventManager}
-	 */
-	public static void justReloaded(HistoricalEventManager event) {
-		eventManager = event;
-	}
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 * 
+//	 * @param {{@link HistoricalEventManager}
+//	 */
+//	public static void justReloaded(HistoricalEventManager event) {
+//		eventManager = event;
+//	}
 	
 	@Override
 	public void destroy() {

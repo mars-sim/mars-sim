@@ -91,9 +91,6 @@ public class Trade extends RoverMission implements Serializable {
 	private MarsClock startNegotiationTime;
 	private NegotiateTrade negotiationTask;
 
-	private static SurfaceFeatures surface;
-	private static MarsClock marsClock;
-
 	private Map<Good, Integer> sellLoad;
 	private Map<Good, Integer> buyLoad;
 	private Map<Good, Integer> desiredBuyLoad;
@@ -412,8 +409,7 @@ public class Trade extends RoverMission implements Serializable {
 					}
 				} else {
 					if (startNegotiationTime == null) {
-						if (marsClock == null)
-							marsClock = Simulation.instance().getMasterClock().getMarsClock();
+
 						startNegotiationTime = (MarsClock) marsClock.clone();
 					}
 					Person settlementTrader = getSettlementTrader();
@@ -426,8 +422,7 @@ public class Trade extends RoverMission implements Serializable {
 							assignTask(person, negotiationTask);
 						}
 					} else {
-						if (marsClock == null)
-							marsClock = Simulation.instance().getMasterClock().getMarsClock();
+
 						MarsClock currentTime = (MarsClock) marsClock.clone();
 						double timeDiff = MarsClock.getTimeDiff(currentTime, startNegotiationTime);
 						if (timeDiff > 1000D) {
@@ -1037,7 +1032,7 @@ public class Trade extends RoverMission implements Serializable {
 	 * Inner class for storing trade profit info.
 	 */
 	public static class TradeProfitInfo {
-
+		
 		public double profit;
 		public MarsClock time;
 

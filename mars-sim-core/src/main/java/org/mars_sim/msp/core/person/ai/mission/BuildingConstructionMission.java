@@ -113,12 +113,12 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	private Settlement settlement;
 	private ConstructionSite site;
 	private ConstructionStage stage;
+	private MarsClock sitePreparationStartTime;
 
 	private List<GroundVehicle> constructionVehicles;
 	private Collection<MissionMember> members;// = constructionSite.getMembers();
 	private List<Integer> luvAttachmentParts;
 
-	private static MarsClock sitePreparationStartTime;
 
 	/**
 	 * Constructor 1 for Case 1

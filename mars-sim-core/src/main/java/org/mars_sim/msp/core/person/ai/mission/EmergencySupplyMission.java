@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -28,9 +27,7 @@ import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
@@ -106,10 +103,6 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 	private static int foodID = ResourceUtil.foodID;
 	private static int methaneID = ResourceUtil.methaneID;
 
-	private static PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-	private static MissionManager missionManager;
-
 	/**
 	 * Constructor.
 	 * 
@@ -118,8 +111,6 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 	public EmergencySupplyMission(Person startingPerson) {
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson);
-
-		missionManager = Simulation.instance().getMissionManager();
 
 		// Set the mission capacity.
 		setMissionCapacity(MAX_MEMBERS);
@@ -503,10 +494,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 											getOptionalEquipmentToLoad()));
 						} else {
 							// Check if it is day time.
-							if (surface == null)
-								surface = Simulation.instance().getMars().getSurfaceFeatures();
-							if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D)
-									|| surface.inDarkPolarRegion(person.getCoordinates())) {
+							if (EVAOperation.isGettingDark(person)) {
 								assignTask(person,
 										new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
 												getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(),
@@ -696,11 +684,11 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		if (ResourceUtil.findAmountResource(resource).isLifeSupport()) {
 			double amountNeededSol = 0D;
 			if (resource.equals(oxygenID))
-				amountNeededSol = config.getNominalO2ConsumptionRate();
+				amountNeededSol = personConfig.getNominalO2ConsumptionRate();
 			if (resource.equals(waterID))
-				amountNeededSol = config.getWaterConsumptionRate();
+				amountNeededSol = personConfig.getWaterConsumptionRate();
 			if (resource.equals(foodID))
-				amountNeededSol = config.getFoodConsumptionRate();
+				amountNeededSol = personConfig.getFoodConsumptionRate();
 
 			double amountNeededOrbit = amountNeededSol * (MarsClock.SOLS_PER_MONTH_LONG * 3D);
 			int numPeople = startingSettlement.getNumCitizens();
@@ -729,8 +717,6 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 
 		boolean result = false;
 
-		if (missionManager == null)
-			missionManager = Simulation.instance().getMissionManager();
 		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
@@ -782,7 +768,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		int numPeople = settlement.getNumCitizens();
 		Inventory inv = settlement.getInventory();
 		// Determine oxygen amount needed.
-		double oxygenAmountNeeded = config.getNominalO2ConsumptionRate() * numPeople * solsMonth
+		double oxygenAmountNeeded = personConfig.getNominalO2ConsumptionRate() * numPeople * solsMonth
 				* Mission.OXYGEN_MARGIN;
 		double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygenID, false);
 
@@ -798,7 +784,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		}
 
 		// Determine water amount needed.
-		double waterAmountNeeded = config.getWaterConsumptionRate() * numPeople * solsMonth * Mission.WATER_MARGIN;
+		double waterAmountNeeded = personConfig.getWaterConsumptionRate() * numPeople * solsMonth * Mission.WATER_MARGIN;
 		double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(waterID, false);
 
 		inv.addAmountDemandTotalRequest(waterID);
@@ -813,7 +799,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		}
 
 		// Determine food amount needed.
-		double foodAmountNeeded = config.getFoodConsumptionRate() * numPeople * solsMonth * Mission.FOOD_MARGIN;
+		double foodAmountNeeded = personConfig.getFoodConsumptionRate() * numPeople * solsMonth * Mission.FOOD_MARGIN;
 		double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(foodID, false);
 
 		inv.addAmountDemandTotalRequest(foodID);
@@ -855,8 +841,6 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 	private static double getResourcesOnMissions(Settlement settlement, Integer resource) {
 		double result = 0D;
 
-		if (missionManager == null)
-			missionManager = Simulation.instance().getMissionManager();
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();

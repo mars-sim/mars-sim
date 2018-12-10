@@ -81,10 +81,6 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 
 	private static ScienceType areology = ScienceType.AREOLOGY;
 
-	private static PersonConfig personConfig;
-
-	private static ScientificStudyManager manager;
-
 	/**
 	 * Constructor.
 	 * 
@@ -227,9 +223,7 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
 		// Add primary study if in research phase.
-		if (manager == null)
-			manager = Simulation.instance().getScientificStudyManager();
-		ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(researcher);
+		ScientificStudy primaryStudy = scientificManager.getOngoingPrimaryStudy(researcher);
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
 					&& !primaryStudy.isPrimaryResearchCompleted()) {
@@ -242,7 +236,7 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 		}
 
 		// Add all collaborative studies in research phase.
-		Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(researcher).iterator();
+		Iterator<ScientificStudy> i = scientificManager.getOngoingCollaborativeStudies(researcher).iterator();
 		while (i.hasNext()) {
 			ScientificStudy collabStudy = i.next();
 			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())

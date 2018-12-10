@@ -987,7 +987,8 @@ public class MainDesktopPane extends WebDesktopPane
 		@Override
 		public void run() {
 			// SwingUtilities.invokeLater(() -> {
-			unitWindow.update();
+			if (unitWindow.isVisible() && unitWindow.isShowing())
+				unitWindow.update();
 			// });
 		}
 	}
@@ -1033,7 +1034,8 @@ public class MainDesktopPane extends WebDesktopPane
 		@Override
 		public void run() {
 			// SwingUtilities.invokeLater(() -> {
-			toolWindow.update();
+			if (toolWindow.isVisible() && toolWindow.isShowing())
+				toolWindow.update();
 			// });
 		}
 	}

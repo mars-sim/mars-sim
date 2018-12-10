@@ -20,8 +20,6 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.mars.ExploredLocation;
@@ -29,7 +27,6 @@ import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MineralMap;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ExploreSite;
@@ -89,8 +86,6 @@ public class Exploration extends RoverMission implements Serializable {
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 	private static int foodID = ResourceUtil.foodID;
-
-	private static PersonConfig personConfig;
 
 	/**
 	 * Constructor.
@@ -634,9 +629,6 @@ public class Exploration extends RoverMission implements Serializable {
 		Inventory vInv = rover.getInventory();
 
 		double timeLimit = Double.MAX_VALUE;
-
-		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfiguration();
 
 		// Check food capacity as time limit.
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();

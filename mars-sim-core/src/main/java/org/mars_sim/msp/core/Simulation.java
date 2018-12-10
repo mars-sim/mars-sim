@@ -430,8 +430,11 @@ public class Simulation implements ClockListener, Serializable {
 		mars.getOrbitInfo().initializeTransientData();
 		mars.getWeather().initializeTransientData();
 		Inventory.initializeInstances(mars.getMarsSurface());
+		Mission.initializeInstances();
 		
 		ut = masterClock.getUpTimer();
+		
+		logger.config("Done initializing intransient data.");
 	}
 
 //	public void runLoadConfigTask() {
@@ -876,6 +879,8 @@ public class Simulation implements ClockListener, Serializable {
 
 //		System.out.println("Done with Serialized Object instances");
 		
+		Resupply.initializeInstances(bc);
+		
 		// Re-initialize Unit related class
 		Inventory.initializeInstances(mars.getMarsSurface());
 		Unit.justReloaded(mars);
@@ -943,12 +948,11 @@ public class Simulation implements ClockListener, Serializable {
 //		System.out.println("Done with Task instances");
 		
 		// Re-initialize Mission related class
-		Mission.justReloaded(eventManager);   // eventManager
-		RoverMission.justReloaded(eventManager);  // eventManager
-		VehicleMission.justReloaded(missionManager); // missionmgr
-		RescueSalvageVehicle.justReloaded(eventManager);  // eventManager
-		Resupply.initializeInstances(bc);
-		
+		Mission.justReloaded(marsClock, eventManager, missionManager, surface, pc);  // ScientificStudyManager
+//		RoverMission.justReloaded(eventManager);  // eventManager
+//		VehicleMission.justReloaded(missionManager); // missionmgr
+//		RescueSalvageVehicle.justReloaded(eventManager);  // eventManager
+
 //		System.out.println("Done with mission instances");
 	}
 	

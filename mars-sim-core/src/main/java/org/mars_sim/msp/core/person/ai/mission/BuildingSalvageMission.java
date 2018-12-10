@@ -79,14 +79,18 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	private static final double SITE_PREPARE_TIME = 500D;
 
 	// Data members
+	private boolean finishingExistingStage;
+	
+	private double wearCondition;
+	
 	private Settlement settlement;
 	private ConstructionSite constructionSite;
 	private ConstructionStage constructionStage;
-	private List<GroundVehicle> constructionVehicles;
 	private MarsClock sitePreparationStartTime;
-	private boolean finishingExistingStage;
+	
+	private List<GroundVehicle> constructionVehicles;
 	private List<Integer> luvAttachmentParts;
-	private double wearCondition;
+	
 
 	/**
 	 * Constructor.

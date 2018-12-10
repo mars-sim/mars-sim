@@ -19,10 +19,8 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
@@ -83,8 +81,6 @@ public abstract class RoverMission extends VehicleMission {
 	
 	private Map<Integer, Double> dessertResources;
 	
-	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
-
 	/**
 	 * Constructor.
 	 * 
@@ -939,14 +935,14 @@ public abstract class RoverMission extends VehicleMission {
 		}
 	}
 
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {{@link HistoricalEventManager}
-	 */
-	public static void justReloaded(HistoricalEventManager event) {
-		eventManager = event;
-	}
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 * 
+//	 * @param {{@link HistoricalEventManager}
+//	 */
+//	public static void justReloaded(HistoricalEventManager event) {
+//		eventManager = event;
+//	}
 	
 	@Override
 	public void destroy() {

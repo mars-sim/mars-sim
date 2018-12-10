@@ -45,6 +45,14 @@ public abstract class TravelMission extends Mission {
 	/** The time the last leg of the mission started at. */
 	private MarsClock legStartingTime;
 
+	
+	/**
+	 * Constructor 1
+	 * 
+	 * @param missionName
+	 * @param startingMember
+	 * @param minPeople
+	 */
 	protected TravelMission(String missionName, MissionMember startingMember, int minPeople) {
 		// Use Mission constructor.
 		super(missionName, startingMember, minPeople);

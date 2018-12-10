@@ -20,11 +20,14 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -32,7 +35,9 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
+import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -143,7 +148,14 @@ public abstract class Mission implements Serializable {
 	private transient List<MissionListener> listeners;
 
 	// Static members
-	private static HistoricalEventManager eventManager;
+	protected static Simulation sim = Simulation.instance();
+	
+	protected static HistoricalEventManager eventManager;
+	protected static MissionManager missionManager;
+	protected static ScientificStudyManager scientificManager;
+	protected static SurfaceFeatures surface;
+	protected static PersonConfig personConfig;
+	protected static MarsClock marsClock;
 	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -155,6 +167,13 @@ public abstract class Mission implements Serializable {
 		return missionIdentifer++;
 	}
 
+	/**
+	 * Constructor 1
+	 * 
+	 * @param missionName
+	 * @param startingMember
+	 * @param minMembers
+	 */
 	public Mission(String missionName, MissionMember startingMember, int minMembers) {
 		// Initialize data members
 		this.identifier = getNextIdentifier();
@@ -173,7 +192,7 @@ public abstract class Mission implements Serializable {
 		missionCapacity = Integer.MAX_VALUE;
 				
 		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
-
+		
 		Person person = (Person) startingMember;
 		String loc0 = null;
 		String loc1 = null;
@@ -185,8 +204,6 @@ public abstract class Mission implements Serializable {
 			// Created mission starting event.
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_START, this,
 					"Mission Starting", missionName, person.getName(), loc0, loc1);
-
-			eventManager = Simulation.instance().getEventManager();
 			
 			eventManager.registerNewEvent(newEvent);
 
@@ -219,6 +236,7 @@ public abstract class Mission implements Serializable {
 
 	}
 
+	
 	public int getIdentifier() {
 		return identifier;
 	}
@@ -1336,13 +1354,32 @@ public abstract class Mission implements Serializable {
 	}
 	
 
+	public static void initializeInstances() {
+		eventManager = sim.getEventManager();
+		missionManager = sim.getMissionManager();
+		scientificManager = sim.getScientificStudyManager();
+		
+		surface = sim.getMars().getSurfaceFeatures();
+		
+		personConfig = SimulationConfig.instance().getPersonConfiguration();
+		
+		marsClock = sim.getMasterClock().getMarsClock();
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
 	 * @param {{@link HistoricalEventManager}
+	 * @param {{@link MissionManager}
 	 */
-	public static void justReloaded(HistoricalEventManager event) {
-		eventManager = event;
+	public static void justReloaded(MarsClock c, HistoricalEventManager e, MissionManager m, SurfaceFeatures s, PersonConfig pc) {
+		sim = Simulation.instance();
+		marsClock = c;
+		eventManager = e;
+		missionManager = m;		
+		scientificManager = sim.getScientificStudyManager();		
+		surface = s;		
+		personConfig = pc;
 	}
 	
 	/**

@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -88,16 +87,19 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected Map<Integer, Integer> equipmentNeededCache;
 	
 	// static instances
-	private static Simulation sim = Simulation.instance();
-	protected static MissionManager missionManager = sim.getMissionManager(); 
-	// TODO : had NullPointerException not necesarily available at the start of the sim ?
-
+	// static instances from Mission
+	
+	/**
+	 * Constructor 1
+	 * 
+	 * @param missionName
+	 * @param startingMember
+	 * @param minPeople
+	 */
 	protected VehicleMission(String missionName, MissionMember startingMember, int minPeople) {
 		// Use TravelMission constructor.
 		super(missionName, startingMember, minPeople);
-
-		missionManager = sim.getMissionManager();
-		
+	
 		description = missionName;
 		this.startingMember = startingMember;
 
@@ -111,21 +113,18 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	}
 
-	protected boolean reserveVehicle() {
-		// Reserve a vehicle.
-		if (!reserveVehicle(startingMember)) {
-			endMission(NO_RESERVABLE_VEHICLES);
-			return false;
-		}
-		return true;
-	}
-
+	/**
+	 * Constructor 2
+	 *  
+	 * @param missionName
+	 * @param startingMember
+	 * @param minPeople
+	 * @param vehicle
+	 */
 	protected VehicleMission(String missionName, MissionMember startingMember, int minPeople, Vehicle vehicle) {
 		// Use TravelMission constructor.
 		super(missionName, startingMember, minPeople);
-
-		missionManager = sim.getMissionManager();
-		
+	
 		description = missionName;
 		this.startingMember = startingMember;
 
@@ -137,6 +136,20 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		// Set the vehicle.
 		setVehicle(vehicle);
+	}
+
+	/**
+	 * Reserve a vehicle
+	 * 
+	 * @return
+	 */
+	protected boolean reserveVehicle() {
+		// Reserve a vehicle.
+		if (!reserveVehicle(startingMember)) {
+			endMission(NO_RESERVABLE_VEHICLES);
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -1287,7 +1300,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public static boolean hasEmbarkingMissions(Settlement settlement) {
 		boolean result = false;
-		Iterator<Mission> i = sim.getMissionManager().getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			if (EMBARKING.equals(i.next().getPhase())) {
 				result = true;
@@ -1306,7 +1319,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	public static int numEmbarkingMissions(Settlement settlement) {
 		int result = 0;
-		Iterator<Mission> i = sim.getMissionManager().getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			if (EMBARKING.equals(i.next().getPhase())) {
 				result++;
@@ -1316,14 +1329,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		return result;
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param mgr
-	 */
-	public static void justReloaded(MissionManager mgr) {
-		missionManager = mgr;
-	}
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 * 
+//	 * @param mgr
+//	 */
+//	public static void justReloaded(MissionManager mgr) {
+//		missionManager = mgr;
+//	}
 	
 	@Override
 	public void destroy() {
