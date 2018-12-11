@@ -1237,13 +1237,14 @@ public class MainScene implements ClockListener {
 
 		timePickerFX = new JFXTimePicker();
 		timePickerFX.setValue(earthClock.getLocalTime());
-		timePickerFX.setIs24HourView(true);
+
 		timePickerFX.setEditable(false);
 		// timePickerFX.setDefaultColor(Color.valueOf("#065185"));
 		// blueDatePicker.setOverLay(true);
 		timePickerFX.setPromptText("Earth Time");
 		timePickerFX.setId("earth-time");
-
+//		timePickerFX.set24HourView(true);
+		
 		setQuickToolTip(timePickerFX, "Earth Time in UTC");
 
 		HBox box = new HBox(5, datePickerFX, timePickerFX);

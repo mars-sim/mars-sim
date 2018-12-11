@@ -48,6 +48,8 @@ public class MenuApp {
     
     private StackPane titleStackPane;
     
+    private StackPane commanderPane;
+    
     private VBox menuBox;
     private VBox modeBox;
     
@@ -61,6 +63,13 @@ public class MenuApp {
     private List<Pair<String, Runnable>> menuChoice;
     private List<Pair<String, Runnable>> modeChoice;
     
+    
+    /**
+     * Constructor 1
+     * 
+     * @param mainMenu
+     * @param isFXGL
+     */
     public MenuApp(MainMenu mainMenu, boolean isFXGL) {
     	
     	this.mainMenu = mainMenu;
@@ -70,6 +79,10 @@ public class MenuApp {
     	//root.setMaxSize(WIDTH-10, HEIGHT-20);
     }
     
+    
+    /**
+     * Sets up the menu choice
+     */
     public void setupMenuData() {
     	
     	menuChoice = Arrays.asList(
@@ -94,21 +107,37 @@ public class MenuApp {
         );
     }    
     
-    public void selectMode() {
+    /**
+     * Selects the game mode
+     */
+    public void selectCommanderMode() {
         int y = Y_OFFSET - 25;
 
-    	StackPane pane = mainMenu.createCommanderPane();
+    	commanderPane = mainMenu.createCommanderPane();
     	
         clearLineItems();
     	clearModeBoxItems();
     	
-        optionMenu.getChildren().add(pane);
+        optionMenu.getChildren().add(commanderPane);
 
         optionMenu.setTranslateX(WIDTH/1.45);//2.6);
         optionMenu.setTranslateY(y);
 
     }
     
+    /**
+     * Goes back to selecting the game mode
+     */
+    public void backToSelectMode() {
+         optionMenu.getChildren().remove(commanderPane);
+         setupModeChoice();
+    }
+    
+    
+    
+    /**
+     * Sets up the game mode choice menu
+     */
     public void setupModeChoice() {
     	    	
     	endLineAnimation();
@@ -127,7 +156,7 @@ public class MenuApp {
         int y = Y_OFFSET - 25;
 
     	modeChoice = Arrays.asList(
-            new Pair<String, Runnable>("Commander Mode", () -> selectMode()),	
+            new Pair<String, Runnable>("Commander Mode", () -> selectCommanderMode()),	
             new Pair<String, Runnable>("Sandbox Mode", () -> mainMenu.runNew(isFXGL, false)),
             new Pair<String, Runnable>("Exit", () -> {
             	//Platform::exit
@@ -166,6 +195,11 @@ public class MenuApp {
     }    
  
     
+    /**
+     * Create the anchor pane for the main menu
+     * 
+     * @return
+     */
     public AnchorPane createContent() {
     	addStarfield();
         addGlobe();     
@@ -174,6 +208,9 @@ public class MenuApp {
         return root;
     }
     
+    /**
+     * Adds the line and menu box
+     */
     public void addLineMenuBox() {
     	addLine(X_OFFSET, Y_OFFSET, 430);
     	addMenuBox(X_OFFSET + 10, Y_OFFSET - 25);	
@@ -185,12 +222,19 @@ public class MenuApp {
 //        root.getChildren().add(rect);
 //    }
 
+    
+    /**
+     * Adds the star field
+     */
     private void addStarfield() {
         StarfieldFX sf = new StarfieldFX();
         Parent starfield = sf.createStars(WIDTH-5, HEIGHT-5);
         root.getChildren().add(starfield);
     }
 
+    /**
+     * Adds the spinning Mars Globe
+     */
     private void addGlobe() {
     	spinningGlobe = new SpinningGlobe(mainMenu);
         Parent globe = spinningGlobe.createDraggingGlobe();   
@@ -208,6 +252,9 @@ public class MenuApp {
 //        root.getChildren().add(imageView);
 //    }
 
+    /**
+     * Adds the titles
+     */
     private void addTitle() {
         MenuTitle title = new MenuTitle("Mars Simulation Project", 36, Color.LIGHTGOLDENRODYELLOW, true);//DARKGOLDENROD);
         title.setTranslateX(WIDTH / 2 - title.getTitleWidth() / 2);
@@ -235,6 +282,13 @@ public class MenuApp {
     }
 
     
+    /**
+     * Adds a line 
+     * 
+     * @param x
+     * @param y
+     * @param yLength
+     */
     private void addLine(double x, double y, double yLength) {
     	if (line == null) {
 	        line = new Line(x, y, x, y + yLength);
@@ -248,6 +302,12 @@ public class MenuApp {
     	}
     }
 
+    /**
+     * Adds the menu box
+     * 
+     * @param x
+     * @param y
+     */
     private void addMenuBox(double x, double y) {
     	if (menuBox == null) {
 	    	menuBox = new VBox(-5);	        
@@ -288,6 +348,9 @@ public class MenuApp {
     	}    	
     }
 
+    /**
+     * Starts the fading animation
+     */
     public void startBoxAnimation() {
 		FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), getOptionMenu());
 		fadeTransition.setFromValue(0.0);
@@ -295,6 +358,11 @@ public class MenuApp {
 		fadeTransition.play();
     }
     
+    /**
+     * Start the translation animation 
+     * 
+     * @param currentBox
+     */
     public void startAnimation(VBox currentBox) {
         ScaleTransition st = new ScaleTransition(Duration.seconds(1), line);
         st.setToY(1);
@@ -313,6 +381,9 @@ public class MenuApp {
         st.play();
     }
 
+    /**
+     * Ends the line animation
+     */
     public void endLineAnimation() {
         ScaleTransition st = new ScaleTransition(Duration.seconds(.5), line);
         st.setToY(0);
@@ -321,6 +392,10 @@ public class MenuApp {
 //        clearLineItems();
     }
     
+    
+    /**
+     * Ends the menu box animation
+     */
     public void endMenuBoxAnimation() {		
 		FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), getOptionMenu());
 		fadeTransition.setFromValue(1.0);
@@ -330,6 +405,10 @@ public class MenuApp {
 //		clearMenuBoxItems();
     }
 
+    
+    /**
+     * Clears the line items
+     */
     public void clearLineItems() {
         if (line != null) {
 	    	optionMenu.getChildren().remove(line);
@@ -337,6 +416,10 @@ public class MenuApp {
         }
     }
     
+    
+    /**
+     * Clears the menu box items
+     */
     public void clearMenuBoxItems() {
         
         if (menuChoice != null) {
@@ -355,6 +438,10 @@ public class MenuApp {
 //        addMenuBox(X_OFFSET + 10, Y_OFFSET - 25);	
     }
 
+    
+    /**
+     * Clears the game mode box items
+     */
     public void clearModeBoxItems() {
         
         if (modeChoice != null) {

@@ -1205,6 +1205,22 @@ public class MainMenu {
 	 */
 	public StackPane createCommanderPane() {
 		if (exitDialog == null || (exitDialog != null && !exitDialog.isVisible())) {
+			StackPane sp = null;
+			
+			JFXButton backBtn = new JFXButton("Back");
+			setMouseCursor(backBtn);
+			backBtn.setGraphic(
+					new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/undo_orange.png"))));
+			backBtn.getStyleClass().add("button-mid");
+			backBtn.setId("commitButton");
+			backBtn.setPrefSize(100, 35);
+			backBtn.setAlignment(Pos.CENTER);
+//			backBtn.setDisable(true);
+			backBtn.setStyle("-fx-background-color: lightgoldenrodyellow;");// lightgrey;");
+			backBtn.setOnAction(e -> {
+				menuApp.backToSelectMode();
+				return;
+			});
 			
 			JFXButton doneBtn = new JFXButton("Commit");
 			setMouseCursor(doneBtn);
@@ -1212,6 +1228,7 @@ public class MainMenu {
 					new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_32.png"))));
 			doneBtn.getStyleClass().add("button-mid");
 			doneBtn.setId("commitButton");
+			doneBtn.setPrefSize(100, 35);
 			doneBtn.setAlignment(Pos.CENTER);
 			doneBtn.setDisable(true);
 			doneBtn.setStyle("-fx-background-color: lightgoldenrodyellow;");// lightgrey;");
@@ -1225,7 +1242,8 @@ public class MainMenu {
 
 			HBox doneHB = new HBox();
 			doneHB.setPadding(new Insets(20, 15, 15, 25));
-			doneHB.getChildren().add(doneBtn);
+			doneHB.setSpacing(20);
+			doneHB.getChildren().addAll(backBtn, doneBtn);
 			doneHB.setAlignment(Pos.CENTER);
 
 //			HBox.setMargin(done_btn, new Insets(10, 10, 10, 10));
@@ -1470,7 +1488,7 @@ public class MainMenu {
 			vb.setPadding(new Insets(10, 10, 10, 10));
 			vb.getChildren().addAll(titleLabel, fnameBox, lnameBox, genderBox, ageBox, jobBox, countryBox, doneHB);
 			
-			StackPane sp = new StackPane(vb);
+			sp = new StackPane(vb);
 			//sp.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 			StackPane.setMargin(vb, new Insets(10, 10, 10, 10));
 
