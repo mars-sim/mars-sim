@@ -11,7 +11,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -78,7 +77,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
 
-@SuppressWarnings("restriction")
 public class BuildingStage {
 
 	/** default serial id. */
@@ -148,7 +146,6 @@ public class BuildingStage {
 	/**
 	 * Initializes the BuildingStage
 	 */
-	@SuppressWarnings("restriction")
 	public BorderPane init() {
 
         this.functionPanels = new ArrayList<BuildingFunctionPanel>();
@@ -208,7 +205,7 @@ public class BuildingStage {
         scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
         mainPanel.add(scrollPanel, BorderLayout.CENTER);
 
-		// 2014-11-04 Added SVG Image loading for the building
+		// Add SVG Image loading for the building
   	    Dimension expectedDimension = new Dimension(100, 100);
 	        //GraphicsNode node = SVGMapUtil.getSVGGraphicsNode("building", buildingType);
 	    Settlement settlement = building.getBuildingManager().getSettlement();
@@ -228,7 +225,6 @@ public class BuildingStage {
 	    Box box = new Box(BoxLayout.Y_AXIS);
 	    box.add(Box.createVerticalGlue());
 	    box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-	        // 2014-11-05 Added setBorder()
 	    //box.setBorder(BorderFactory.createLineBorder(Color.black, 2, true));
 	    box.add(svgHolder);
 	    box.add(Box.createVerticalGlue());
@@ -261,8 +257,6 @@ public class BuildingStage {
 //        	catch (BuildingException e) {}
         }
 
-
-        // 2014-11-24 Added FoodProduction
         if (building.hasFunction(FunctionType.FOOD_PRODUCTION)) {
 //        	try {
         		FoodProduction foodFactory = building.getFoodProduction();//.getFunction(FunctionType.FOOD_PRODUCTION);
@@ -296,7 +290,6 @@ public class BuildingStage {
 //			catch (BuildingException e) {}
 		}
 
-		//2014-11-11 Added preparing dessert function
 		// Prepare dessert panel if building has preparing dessert function.
 		if (building.hasFunction(FunctionType.PREPARING_DESSERT)) {
 //			try {
@@ -376,7 +369,6 @@ public class BuildingStage {
 //            catch (BuildingException e) {}
         }
 
-        //2014-10-27 mkung: Modified Heating Panel
         if (building.hasFunction(FunctionType.THERMAL_GENERATION)) {
 //          try {
         		ThermalGeneration heat = building.getThermalGeneration();
@@ -387,20 +379,20 @@ public class BuildingStage {
 //        }
 //      catch (BuildingException e) {}
   }
-        /*
-        //2014-10-17 mkung: Added Heating Storage
+        
+
         // Prepare heating storage panel if building has heating storage.
-        if (building.hasFunction(BuildingFunction.THERMAL_STORAGE)) {
-//            try {
-                ThermalStorage storage = (ThermalStorage) building.getFunction(BuildingFunction.THERMAL_STORAGE);
-                BuildingFunctionPanel heatStoragePanel = new BuildingPanelThermalStorage(storage, desktop);
-                functionPanels.add(heatStoragePanel);
-                functionListPanel.add(heatStoragePanel);
-                //if (isTranslucent) setPanelStyle(heatStoragePanel);
-//            }
-//            catch (BuildingException e) {}
-        }
-        */
+//        if (building.hasFunction(BuildingFunction.THERMAL_STORAGE)) {
+////            try {
+//                ThermalStorage storage = (ThermalStorage) building.getFunction(BuildingFunction.THERMAL_STORAGE);
+//                BuildingFunctionPanel heatStoragePanel = new BuildingPanelThermalStorage(storage, desktop);
+//                functionPanels.add(heatStoragePanel);
+//                functionListPanel.add(heatStoragePanel);
+//                //if (isTranslucent) setPanelStyle(heatStoragePanel);
+////            }
+////            catch (BuildingException e) {}
+//        }
+        
 
         // Prepare resource processing panel if building has resource processes.
         if (building.hasFunction(FunctionType.RESOURCE_PROCESSING)) {
@@ -447,7 +439,6 @@ public class BuildingStage {
 	 * Ask for a new building name using JOptionPane
 	 * @return new name
 	 */
-	// 2014-11-27 Moved askNameDialog() from TabPanelBuilding.java to here
 	public String askNameDialog() {
 		return JOptionPane
 			.showInputDialog(desktop,
@@ -482,8 +473,6 @@ public class BuildingStage {
 	 * Change and validate the new name of a Building
 	 * @return call Dialog popup
 	 */
-	// 2014-11-27 Moved renameBuilding() from TabPanelBuilding.java to here
-	@SuppressWarnings("restriction")
 	private void renameBuilding() {
 
 		//boolean isRenamed;
@@ -571,7 +560,6 @@ public class BuildingStage {
 	 * @since 2.0
 	 * @author commons.apache.org
 	 */
-	// 2015-10-19 Added isBlank()
 	public static boolean isBlank(String str) {
 	    int strLen;
 	    if (str == null || (strLen = str.length()) == 0) {
@@ -606,9 +594,12 @@ public class BuildingStage {
      */
     public void update() {
         // Update each building function panel.
-	    Iterator<BuildingFunctionPanel> i = functionPanels.iterator();
-	    while (i.hasNext())
-	    	i.next().update();
+//	    Iterator<BuildingFunctionPanel> i = functionPanels.iterator();
+//	    while (i.hasNext())
+//	    	i.next().update();
+		for (BuildingFunctionPanel p : functionPanels)
+			if (p.isVisible() && p.isShowing())
+				p.update();
 
     }
 	

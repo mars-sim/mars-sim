@@ -85,13 +85,12 @@ public class ManufacturePanel extends WebPanel {
         	name = " " + firstLetter + name.substring(1);
         }
         if (name.length() > processStringWidth) name = name.substring(0, processStringWidth) + "...";
-		// 2014-11-19 Capitalized process names
+		// Capitalize process names
         JLabel nameLabel = new JLabel(Conversion.capitalize(name), JLabel.CENTER);
         namePane.add(nameLabel);
 
         if (showBuilding) {
         	// Prepare building name label.
-        	// 2014-11-19 Changed from getName() to getNickName()
         	String buildingName = process.getWorkshop().getBuilding().getNickName();
         	JLabel buildingNameLabel = new JLabel(buildingName, JLabel.CENTER);
         	add(buildingNameLabel);
@@ -168,7 +167,6 @@ public class ManufacturePanel extends WebPanel {
         StringBuilder result = new StringBuilder("<html>");
 
         result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;Process : ").append(Conversion.capitalize(info.getName())).append("<br>");
-    	// 2014-11-19 Changed from getName() to getNickName()
     	//if (building != null) result.append("Building : ").append(building.getNickName()).append("<br>");
         result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Labor Req : ").append(info.getWorkTimeRequired()).append(" millisols<br>");
         result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;Time Req : ").append(info.getProcessTimeRequired()).append(" millisols<br>");
@@ -182,7 +180,7 @@ public class ManufacturePanel extends WebPanel {
     	int ii = 0;
     	while (i.hasNext()) {
     		ManufactureProcessItem item = i.next();
-    		// 2014-11-19 Capitalized process names
+    		// Capitalize process names
             if (ii ==0) result.append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName())).append("<br>");
             else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName())).append("<br>");
             ii++;
@@ -194,7 +192,7 @@ public class ManufacturePanel extends WebPanel {
     	int jj = 0;
     	while (j.hasNext()) {
     		ManufactureProcessItem item = j.next();
-    		// 2014-11-19 Capitalized process names
+    		//  Capitalize process names
             if (jj==0) result.append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName())).append("<br>");
             else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName())).append("<br>");
             jj++;

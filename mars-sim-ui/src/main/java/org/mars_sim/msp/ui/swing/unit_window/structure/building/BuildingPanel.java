@@ -522,7 +522,8 @@ public class BuildingPanel extends WebPanel {
 	public void update() {
 		// Update each building function panel.
 		for (BuildingFunctionPanel p : functionPanels)
-			p.update();
+			if (p.isVisible() && p.isShowing())
+				p.update();
 	}
 
 }

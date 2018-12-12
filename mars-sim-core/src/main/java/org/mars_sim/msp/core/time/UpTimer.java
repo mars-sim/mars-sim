@@ -139,9 +139,11 @@ public class UpTimer implements Serializable {
                 return uptime;
             }
             else {
+            	// If the difference between thiscall and lastcall is greater than the threshold, 
+            	// then there could be a powering saving event
                 thiscall = lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
-				if (masterClock.getTotalPulses() > 0);
-                	logger.warning("Time limit exceeded between the last and this call, resetting the total # of pulses");
+//				if (masterClock.getTotalPulses() > 0)
+            	logger.warning("Time limit exceeded between the last and this call, total # of pulses : " + masterClock.getTotalPulses());
                 masterClock.resetTotalPulses();
                 return uptime;
             }
@@ -170,10 +172,9 @@ public class UpTimer implements Serializable {
      */
     public void setPaused(boolean value) {
         paused = value;
-        if (value) {
-
-        } else {
-            thiscall = lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
+        if (!value) {
+            // When unpausing the simulation, set thiscall and lastcall to start over
+        	thiscall = lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
         }
     }
     
