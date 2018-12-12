@@ -60,9 +60,6 @@ import org.mars_sim.msp.core.person.Role;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
@@ -81,7 +78,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.Heating;
@@ -220,6 +216,8 @@ public class Simulation implements ClockListener, Serializable {
 
 	private static boolean autosaveDefault;
 	
+	private static boolean clockOnPause = false;
+	
 	private boolean initialSimulationCreated = false;
 
 	private boolean changed = true;
@@ -234,7 +232,7 @@ public class Simulation implements ClockListener, Serializable {
 	private String loadBuild;// = "unknown";
 	
 	// Note: Transient data members aren't stored in save file
-	private transient ExecutorService clockExecutor;
+	private transient ExecutorService clockThreadExecutor;
 
 	private transient ExecutorService simExecutor;
 
@@ -437,24 +435,6 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("Done initializing intransient data.");
 	}
 
-//	public void runLoadConfigTask() {
-//		SimulationConfig.loadConfig();
-////		startSimExecutor();
-////		simExecutor.execute(new LoadConfigTask());
-//
-//	}
-
-//	public class LoadConfigTask implements Runnable {
-//		LoadConfigTask() {
-//		}
-//
-//		public void run() {
-//			// logger.config("SimConfigTask's run() is on " +
-//			// Thread.currentThread().getName());
-//			SimulationConfig.loadConfig();
-//		}
-//	}
-
 	public void runStartTask(boolean autosaveDefault) {
 		simExecutor.execute(new StartTask(autosaveDefault));
 	}
@@ -473,7 +453,8 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	/**
-	 * Start the simulation.
+	 * Starts the simulation.
+	 * 
 	 * @param autosaveDefault. True if default is used for autosave
 	 */
 	public void start(boolean autosaveDefault) {
@@ -482,9 +463,20 @@ public class Simulation implements ClockListener, Serializable {
 		masterClock.addClockListener(this);
 		masterClock.startClockListenerExecutor();
 
-		if (clockExecutor == null || clockExecutor.isShutdown() || clockExecutor.isTerminated()) {
+		restartClockExecutor();
 
-			clockExecutor = Executors.newSingleThreadExecutor();
+		Simulation.autosaveDefault = autosaveDefault;
+		AutosaveScheduler.defaultStart();
+		ut = masterClock.getUpTimer();
+	}
+
+	/**
+	 * Starts or restarts the executive service thread that the MasterClock's ClockThreadTask runs on.
+	 */
+	public void restartClockExecutor() {
+		//if (clockExecutor == null || clockExecutor.isShutdown() || clockExecutor.isTerminated()) {
+
+			clockThreadExecutor = Executors.newSingleThreadExecutor();
 
 			// if (NUM_THREADS <= 3)
 			// clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
@@ -500,14 +492,9 @@ public class Simulation implements ClockListener, Serializable {
 			// newSingleThreadExecutor();// newCachedThreadPool(); //
 
 			if (masterClock.getClockThreadTask() != null)
-				clockExecutor.execute(masterClock.getClockThreadTask());
-		}
-
-		Simulation.autosaveDefault = autosaveDefault;
-		AutosaveScheduler.defaultStart();
-		ut = masterClock.getUpTimer();
+				clockThreadExecutor.execute(masterClock.getClockThreadTask());
+		//}
 	}
-
 
 	/**
 	 * Get the interactive terminal instance
@@ -575,20 +562,26 @@ public class Simulation implements ClockListener, Serializable {
 
 			} catch (ClassNotFoundException e2) {
 				logger.log(Level.SEVERE,
-						"Quitting mars-sim with ClassNotFoundException when loading the simulation! " + " : "
+						"Quitting mars-sim with ClassNotFoundException when loading the simulation : "
 								+ e2.getMessage());
 //    	        Platform.exit();
 				System.exit(1);
 
 			} catch (IOException e1) {
 				logger.log(Level.SEVERE,
-						"Quitting mars-sim with IOException when loading the simulation! " + " : " + e1.getMessage());
+						"Quitting mars-sim with IOException when loading the simulation : " + e1.getMessage());
 //    	        Platform.exit();
 				System.exit(1);
 
+			} catch (NullPointerException e) {
+				logger.log(Level.SEVERE,
+						"Quitting mars-sim with NullPointerException when loading the simulation : " + e.getMessage());
+//    	        Platform.exit();
+				System.exit(1);
+			
 			} catch (Exception e0) {
 				logger.log(Level.SEVERE,
-						"Quitting mars-sim. Could not create a new simulation " + " : " + e0.getMessage());
+						"Quitting mars-sim. Could not load the simulation : " + e0.getMessage());
 //    	        Platform.exit();
 				System.exit(1);
 			}
@@ -719,7 +712,7 @@ public class Simulation implements ClockListener, Serializable {
 			System.exit(1);
 			
 		} catch (FileNotFoundException e) {
-			logger.log(Level.SEVERE, "Quitting mars-sim since " + file + " cannot be found : ", e.getMessage());
+			logger.log(Level.SEVERE, "Quitting mars-sim with FileNotFoundException since " + file + " cannot be found : ", e.getMessage());
 			System.exit(1);
 
 		} catch (EOFException e) {
@@ -729,12 +722,12 @@ public class Simulation implements ClockListener, Serializable {
 
 		} catch (IOException e) {
 			logger.log(Level.SEVERE,
-					"Quitting mars-sim. I/O error when decompressing " + file + " : " + e.getMessage());
+					"Quitting mars-sim. IOException when decompressing " + file + " : " + e.getMessage());
 			System.exit(1);
 
 		} catch (NullPointerException e) {
 			logger.log(Level.SEVERE,
-					"Quitting mars-sim. Null pointer error when loading " + file + " : " + e.getMessage());
+					"Quitting mars-sim. NullPointerException when loading " + file + " : " + e.getMessage());
 			System.exit(1);
 
 		} catch (Exception e) {
@@ -1153,10 +1146,10 @@ public class Simulation implements ClockListener, Serializable {
 //			LZMA2Options lzma2 = new LZMA2Options();
 //			FilterOptions[] options = { x86, lzma2 };
 			logger.config("Encoder memory usage : "
-			              + FilterOptions.getEncoderMemoryUsage(options) + " KiB");
+		              + Math.round(FilterOptions.getEncoderMemoryUsage(options)/1_000.0*100.00)/100.00 + " MB");
 			logger.config("Decoder memory usage : "
-			              + FilterOptions.getDecoderMemoryUsage(options) + " KiB");
-					
+		              + Math.round(FilterOptions.getDecoderMemoryUsage(options)/1_000.0*100.00)/100.00 + " MB");
+		
 			xzout = new XZOutputStream(new BufferedOutputStream(new FileOutputStream(file)), options);
 		
 			ByteStreams.copy(is, xzout);
@@ -1384,8 +1377,8 @@ public class Simulation implements ClockListener, Serializable {
 		instance().defaultLoad = false;
 		instance().stop();
 		masterClock.endClockListenerExecutor();
-		if (clockExecutor != null)
-			clockExecutor.shutdownNow();
+		if (clockThreadExecutor != null)
+			clockThreadExecutor.shutdownNow();
 	}
 
 	public void endMasterClock() {
@@ -1578,12 +1571,9 @@ public class Simulation implements ClockListener, Serializable {
 		return useGUI;
 	}
 
-	// public ThreadPoolExecutor getClockScheduler() {
-	// return clockScheduler;
-	// }
 
-	public ExecutorService getClockScheduler() {
-		return clockExecutor;
+	public ExecutorService getClockThreadExecutor() {
+		return clockThreadExecutor;
 	}
 
 	// public PausableThreadPoolExecutor getClockScheduler() {
@@ -1625,7 +1615,7 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	@Override
 	public void clockPulse(double time) {
-		if (ut != null && !masterClock.isPaused()) {
+		if (ut != null && !clockOnPause && !masterClock.isPaused()) {
 
 			ut.updateTime();
 
@@ -1685,7 +1675,10 @@ public class Simulation implements ClockListener, Serializable {
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		// Do nothing
+		if (isPaused)
+			clockOnPause = true;
+		else
+			clockOnPause = false;
 	}
 
 	/**
