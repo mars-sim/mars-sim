@@ -907,7 +907,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Building function related class
 //		Administration.initializeInstances(bc);
 		CircadianClock.justReloaded(marsClock);
-		Cooking.justReloaded(marsClock);
+		Cooking.justReloaded(marsClock, bc);
 		Crop.justReloaded(masterClock, marsClock);
 		CompositionOfAir.justReloaded(masterClock, marsClock, pc);
 		EVA.justReloaded(bc);

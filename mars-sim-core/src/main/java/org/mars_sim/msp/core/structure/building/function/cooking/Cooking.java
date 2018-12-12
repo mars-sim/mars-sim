@@ -119,7 +119,6 @@ implements Serializable {
 
     // Data members
     private List<CookedMeal> cookedMeals = new CopyOnWriteArrayList<>();
-	private List<HotMeal> mealConfigMealList;
     private List<CropType> cropTypeList;
 
 	private Multimap<String, Double> qualityMap;
@@ -137,11 +136,13 @@ implements Serializable {
     private static Simulation sim = Simulation.instance();
     private static SimulationConfig simulationConfig = SimulationConfig.instance();
     private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
-    private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
-    private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
-    private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
+//    private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
+//    private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
+//    private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
     private static MarsClock marsClock;
 
+	private static List<HotMeal> mealConfigMealList;
+	
 //	private static int oxygenID = ResourceUtil.oxygenID;
 //	private static int co2ID = ResourceUtil.co2ID;
 	private static int foodID = ResourceUtil.foodID;
@@ -181,7 +182,7 @@ implements Serializable {
 		cropTypeList = new ArrayList <>(cropConfig.getCropList());
 
     	MealConfig mealConfig = simulationConfig.getMealConfiguration(); // need this to pass maven test
-        mealConfigMealList = mealConfig.getMealList();
+        mealConfigMealList = MealConfig.getMealList();
 
         cleaningAgentPerSol = mealConfig.getCleaningAgentPerSol();
         waterUsagePerMeal = mealConfig.getWaterConsumptionRate();
@@ -948,16 +949,6 @@ implements Serializable {
     	return cookedMeals;
     }
 
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void justReloaded(MarsClock clock) {
-		marsClock = clock;
-		prepareOilMenu();
-	}
-	
     /**
      * Time passing for the Cooking function in a building.
      * @param time amount of time passing (in millisols)
@@ -1143,6 +1134,27 @@ implements Serializable {
 		return oilMenuAR;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 * @param pc
+	 * @param bc
+	 */
+	public static void justReloaded(MarsClock clock, BuildingConfig bc) {
+		marsClock = clock;
+	    buildingConfig = bc;
+//	    personConfig = pc;
+	    sim = Simulation.instance();
+	    simulationConfig = SimulationConfig.instance();
+//	    cropConfig = simulationConfig.getCropConfiguration();
+//	    mealConfig = simulationConfig.getMealConfiguration();
+	    mealConfigMealList = MealConfig.getMealList();
+	    
+		prepareOilMenu();
+	}
+	
+	
     @Override
     public void destroy() {
         super.destroy();
@@ -1162,9 +1174,9 @@ implements Serializable {
         sim = null;
         simulationConfig = null;
         buildingConfig = null;
-        cropConfig = null;
-        mealConfig = null;
-        personConfig = null;
+//        cropConfig = null;
+//        mealConfig = null;
+//        personConfig = null;
         marsClock = null;
     }
 

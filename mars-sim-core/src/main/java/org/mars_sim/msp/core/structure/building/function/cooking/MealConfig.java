@@ -48,14 +48,15 @@ implements Serializable {
 	private static final String OIL = "oil";
 	private static final String SALT = "salt";
 
-	private Document mealDoc;
-	private List<HotMeal> mealList;
-
+	// water consumption rate, cleaning agent per sol
+	private double[] values = new double[] {0,0};
+	
 //	private List<HotMeal> mainDishes;
 //	private List<HotMeal> sideDishes;
 
-	// water consumption rate, cleaning agent per sol
-	private double[] values = new double[] {0,0};
+	private static Document mealDoc;
+
+	private static List<HotMeal> mealList;
 
 	/**
 	 * Constructor.
@@ -63,6 +64,9 @@ implements Serializable {
 	 */
 	public MealConfig(Document mealDoc) {
 		this.mealDoc = mealDoc;
+		
+		// Generate meal list 
+		getMealList();
 	}
 
 
@@ -116,7 +120,7 @@ implements Serializable {
 	 * @return list of meal
 	 * @throws Exception when meal could not be parsed.
 	 */
-	public List<HotMeal> getMealList() {
+	public static List<HotMeal> getMealList() {
 		if (mealList == null) {
 			mealList = new ArrayList<HotMeal>();
 
