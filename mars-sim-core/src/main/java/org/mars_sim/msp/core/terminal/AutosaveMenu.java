@@ -81,8 +81,8 @@ public class AutosaveMenu implements BiConsumer<TextIO, RunnerData> {
     	int m =  SimulationConfig.instance().getAutosaveInterval();
         terminal.println("The current autosave time interval is once every " + m + " minutes."
         		+ System.lineSeparator());
-        long r = AutosaveScheduler.getRemainingMinutes();
-        terminal.println("You have " + r + " remaining minutes in performing the next autosave"
+        double sec = Math.round(AutosaveScheduler.getRemainingSeconds()/60.0 *10.0)*10.0;
+        terminal.println("You have " + sec + " remaining minutes before the next autosave"
         		+ System.lineSeparator());
         
         terminal.println("Please choose a number between 1 and 360 (0 to quit)"

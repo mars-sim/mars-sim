@@ -26,9 +26,7 @@ For instance, each settler has a well-defined job, a role, a bunch of technical 
 ## Operation Modeling
 mars-sim adopts a rich set of scientific vocabulary from research journal and paper when it comes to defining operation paradigms and programming models based on the present day technologies that are applicable for the near-term human exploration and settlement on Mars.
 
-For instance, a low pressure atmosphere of 34 kPa (5 psi) is chosen for humans to live inside the settlement, as opposed to the Earth's 
-sea level atmosphere of 101 kPa (14.7 psi). The amount of oxygen (at 58.8% composition), carbon dioxide, and water moisture indoor are continuously monitored 
-and replenished periodically in each building being equipped with various life-support system [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function). These gases are generated via systems such as Sabatier Reverse Water Gas (SRWG), and Oxygen Generation System, etc..
+For instance, the simulation assumes a low-pressure living environment that facilitates EVA and reduces structural requirements on buildings. At the Earth's sea level, the atmospheric pressure is 101 kPa (14.7 psi) and has 20.9% oxygen. In mars-sim, a low pressure atmosphere of 34 kPa (5 psi) is chosen for the settlement. As a result, the composition of oxygen within the settlement is 58.8%. Other than oxygen, carbon dioxide, and water moisture indoor are continuously monitored and replenished periodically in each building being equipped with various life-support system [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function). These gases are generated via systems such as Sabatier Reverse Water Gas (SRWG), and Oxygen Generation System, etc..
 
 Another example is the mode of operation involved in EVA. Prior to each EVA activity, one of the settlers will be selected as the airlock operator. The airlock would have to be pressurized and depressurized (gases captured and released and reheated) with inner/outer doors opened and closed at a specific sequence in order to allow the ingress/egress of the settlers onto the surface of Mars.
 

@@ -7,9 +7,8 @@
 
 package org.mars_sim.msp.core.time;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.mars_sim.msp.core.Simulation;
@@ -20,20 +19,24 @@ import org.mars_sim.msp.core.SimulationConfig;
 // regarding the issue of calling cancel()
 
 public class AutosaveScheduler {
-    static ScheduledExecutorService autosaveService = Executors.newSingleThreadScheduledExecutor();
+//    static ScheduledExecutorService autosaveService = Executors.newSingleThreadScheduledExecutor();
+    static ScheduledThreadPoolExecutor autosaveService = new ScheduledThreadPoolExecutor(1);
     static ScheduledFuture<?> t;
     
-    static long lastRemainingMinutes;
+    static long lastRemainingSeconds;
     
     static Simulation sim = Simulation.instance() ;
     static SimulationConfig simulationConfig = SimulationConfig.instance();
     static MasterClock masterClock = sim.getMasterClock();
 
     AutosaveScheduler() {
+    	// see https://stackoverflow.com/questions/36747987/how-to-setremoveoncancelpolicy-for-executors-newscheduledthreadpool5/36748183#36748183
+    	autosaveService.setRemoveOnCancelPolicy(true);
+    	
     	if (simulationConfig == null)
 			simulationConfig = SimulationConfig.instance();
 		
-    	lastRemainingMinutes = simulationConfig.getAutosaveInterval();
+    	lastRemainingSeconds = simulationConfig.getAutosaveInterval() * 60;
     }
     
     static class MyTask implements Runnable {
@@ -59,8 +62,11 @@ public class AutosaveScheduler {
      */
     public static void cancel() {
     	if (t != null) {
-    		lastRemainingMinutes = getRemainingMinutes();
-    		t.cancel(false);
+    		lastRemainingSeconds = getRemainingSeconds();
+//        	System.out.println("Autosave remaining seconds : " + lastRemainingSeconds);
+    		t.cancel(true);
+//    		if (t.isCancelled())
+//    			System.out.println("the autosave timer was cancelled.");
     		t = null;
     	}
     }
@@ -73,15 +79,15 @@ public class AutosaveScheduler {
     		if (simulationConfig == null)
     			simulationConfig = SimulationConfig.instance();
     		
-    		int m = simulationConfig.getAutosaveInterval();
+    		int s = simulationConfig.getAutosaveInterval() * 60;
     	    // see https://stackoverflow.com/questions/48216740/scheduledexecutorservice-end-after-a-timeout
-    		t = autosaveService.scheduleAtFixedRate(new MyTask(), lastRemainingMinutes,
-    				m, TimeUnit.MINUTES);
+    		t = autosaveService.scheduleAtFixedRate(new MyTask(), lastRemainingSeconds,
+    				s, TimeUnit.SECONDS);
     	}
     }
     
-    public static long getRemainingMinutes() {
-    	return t.getDelay(TimeUnit.MINUTES);
+    public static long getRemainingSeconds() {
+    	return t.getDelay(TimeUnit.SECONDS);
     }
     
     /**
@@ -90,14 +96,20 @@ public class AutosaveScheduler {
      * @param minutes
      */
     public static void start(int minutes) {
-    	if (t == null) {	
+    	if (t == null) {
     		if (simulationConfig == null)
     			simulationConfig = SimulationConfig.instance();
     		
     		simulationConfig.setAutosaveInterval(minutes);
     		
-    		t = autosaveService.scheduleAtFixedRate(new MyTask(), minutes,
-    				minutes, TimeUnit.MINUTES);
+    		int secs = minutes * 60;
+    		
+    		// Resets the remaining seconds to the new input value
+    		if (lastRemainingSeconds < secs)
+    			lastRemainingSeconds = secs;
+    		
+    		t = autosaveService.scheduleAtFixedRate(new MyTask(), secs,
+    				secs, TimeUnit.SECONDS);
     	}
     }
     
@@ -111,10 +123,10 @@ public class AutosaveScheduler {
     		if (simulationConfig == null)
     			simulationConfig = SimulationConfig.instance();
     		
-    		int m = simulationConfig.getAutosaveInterval();
+    		int s = simulationConfig.getAutosaveInterval() * 60;
     		
-    		t = autosaveService.scheduleAtFixedRate(new MyTask(), m,
-    				m, TimeUnit.MINUTES);
+    		t = autosaveService.scheduleAtFixedRate(new MyTask(), s,
+    				s, TimeUnit.SECONDS);
     	}
     }
     
