@@ -7,9 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -110,12 +108,15 @@ public class Crop implements Serializable {
 	private static final double MIN = 0.00001;
 	/** The string reference variable of the tissue culture */
 	public static final String TISSUE_CULTURE = "tissue culture";
-
-	private static int cropNum;
-
-	/** The list of crop types from CropConfig. */
-	private static List<CropType> cropTypeList;
-
+	/** The string reference for mustard */
+	public static final String MUSTARD = "Mustard";
+	/** The string reference for seed */
+	public static final String SEED = "Seed";
+	/** The string reference for sesame */
+	public static final String SESAME = "Sesame";
+	/** The string reference for mushroom */	
+	public static final String MUSHROOM = "mushroom";
+	
 	// public static final double MEAN_DAILY_PAR = 237.2217D ; // in [mol/m2/day]
 	// SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217
 
@@ -186,6 +187,10 @@ public class Crop implements Serializable {
 
 	private double cumulative_co2 = 0;
 
+	private double inedibleBiomass;
+	
+	private double edibleBiomass;
+	
 	/** The cache values of the pastor environment factors influencing the crop */
 	private Double[] environment = new Double[] { 1.0, // light
 			1.0, // fertilizer
@@ -255,6 +260,9 @@ public class Crop implements Serializable {
 
 		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
+		inedibleBiomass = cropType.getInedibleBiomass();	
+		edibleBiomass = cropType.getEdibleBiomass();
+		
 		building = farm.getBuilding();
 		farmName = building.getNickName();
 		phases = cropType.getPhases();
@@ -270,9 +278,6 @@ public class Crop implements Serializable {
 			p.setHarvestFactor(1);
 		}
 
-		cropTypeList = new ArrayList<>(cropConfig.getCropList());
-		cropNum = cropTypeList.size();
-
 		cropName = cropType.getName();
 		// String tissue = cropName + " " + TISSUE_CULTURE;
 		dailyPARRequired = cropType.getDailyPAR();
@@ -284,21 +289,21 @@ public class Crop implements Serializable {
 		double growingDay = growingTime / 1000D;
 		maxHarvest = dailyMaxHarvest * growingDay;
 
-		// 2017-03-30 Add special case for extracting seeds from White Mustard
-		if (cropName.equalsIgnoreCase("White Mustard"))
+		// Add special case for extracting seeds from White Mustard
+		if (cropName.equalsIgnoreCase("White " + MUSTARD))
 			hasSeed = true;
 
-		else if (cropName.equalsIgnoreCase("Sesame"))
+		else if (cropName.equalsIgnoreCase(SESAME))
 			isSeedPlant = true;
 
 		if (hasSeed) {
-			ratio = cropType.getInedibleBiomass() / cropType.getEdibleBiomass();
-			seedAR = ResourceUtil.findAmountResource("Mustard Seed");
+			ratio = inedibleBiomass / edibleBiomass;
+			seedAR = ResourceUtil.findAmountResource(MUSTARD + " " + SEED);
 		}
 
 		if (isSeedPlant) {
-			ratio = cropType.getInedibleBiomass() / cropType.getEdibleBiomass();
-			seedAR = ResourceUtil.findAmountResource(cropName + " Seed");
+			ratio = inedibleBiomass / edibleBiomass;
+			seedAR = ResourceUtil.findAmountResource(cropName + " " + SEED);
 		}
 
 		cropAR = ResourceUtil.findAmountResource(cropName);
@@ -319,20 +324,18 @@ public class Crop implements Serializable {
 				// assume a max 2-day incubation period if no 0% tissue culture is available
 				currentPhaseWorkCompleted = 0;
 				phaseType = PhaseType.INCUBATION;
-				LogConsolidated.log(logger, Level.INFO, 10000, sourceName,
+				LogConsolidated.log(Level.INFO, 10000, sourceName,
 						"[" + settlement + "] " + " No " + capitalizedCropName + " tissue culture left in " + farmName
-								+ " Will need to restock via incubation in " + farmName + ".",
-						null);
+								+ " Will need to restock via incubation in " + farmName + ".");
 			}
 
 			else if (tissuePercent >= 100) {
 				// assume zero day incubation period if 100% tissue culture is available
 				currentPhaseWorkCompleted = 0;
 				phaseType = PhaseType.PLANTING;
-				LogConsolidated.log(logger, Level.INFO, 10000, sourceName,
+				LogConsolidated.log(Level.INFO, 10000, sourceName,
 						"[" + settlement + "] Proceeding to transferring plantflets from " + capitalizedCropName
-								+ "'s tissue culture into the field.",
-						null);
+								+ "'s tissue culture into the field.");
 
 				setupMushroom();
 			}
@@ -340,11 +343,10 @@ public class Crop implements Serializable {
 			else {
 				currentPhaseWorkCompleted = 1000D * phases.get(0).getWorkRequired() * (100D - tissuePercent) / 100D;
 				phaseType = PhaseType.INCUBATION;
-				LogConsolidated.log(logger, Level.INFO, 10000, sourceName,
+				LogConsolidated.log(Level.INFO, 10000, sourceName,
 						"[" + settlement + "] A work period of "
 								+ Math.round(currentPhaseWorkCompleted / 1000D * 10D) / 10D
-								+ " sols is needed to clone enough " + capitalizedCropName + " tissues before planting in " + farmName + ".",
-						null);
+								+ " sols is needed to clone enough " + capitalizedCropName + " tissues before planting in " + farmName + ".");
 			}
 
 		}
@@ -382,7 +384,7 @@ public class Crop implements Serializable {
 	}
 
 	public void setupMushroom() {
-		if (cropName.toLowerCase().contains("mushroom")) {
+		if (cropName.toLowerCase().contains(MUSHROOM)) {
 			if (inv.hasItemResource(mushroomBoxAR)) {
 				inv.retrieveItemResources(mushroomBoxAR, 1);
 				inv.addItemDemand(mushroomBoxAR, 2);
@@ -739,7 +741,6 @@ public class Crop implements Serializable {
 	public static void justReloaded(MasterClock c0, MarsClock c1) {
 		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
-		cropTypeList = new ArrayList<>(cropConfig.getCropList());
 		masterClock = c0;
 		marsClock = c1;
 	}
@@ -1306,9 +1307,9 @@ public class Crop implements Serializable {
 	 */
 	public static double getAverageCropGrowingTime() {
 		double totalGrowingTime = 0D;
-		for (CropType ct : cropTypeList)
+		for (CropType ct : CropConfig.getCropTypes())
 			totalGrowingTime += ct.getGrowingTime();
-		return totalGrowingTime / cropNum;
+		return totalGrowingTime / CropConfig.getNumCropTypes();
 	}
 
 	public int getCurrentPhaseNum() {

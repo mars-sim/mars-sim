@@ -77,9 +77,6 @@ public class Farming extends Function implements Serializable {
 	private static final int NUM_INSPECTIONS = 2;
 	private static final int NUM_CLEANING = 2;
 
-	/** The list of crop types from CropConfig. */
-	private static List<CropType> cropTypeList;
-
 	// private static ItemResource LED_Item;
 	// private static ItemResource HPS_Item;
 	// private int numLEDInUse;
@@ -171,8 +168,7 @@ public class Farming extends Function implements Serializable {
 //		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
-		if (cropTypeList == null)
-			cropTypeList = new ArrayList<>(cropConfig.getCropList());
+
 		defaultCropNum = buildingConfig.getCropNum(building.getBuildingType());	
 
 		powerGrowingCrop = buildingConfig.getPowerForGrowingCrop(building.getBuildingType());
@@ -254,7 +250,7 @@ public class Farming extends Function implements Serializable {
 		// TODO: at the start of the sim, choose only from a list of staple food crop
 		if (isStartup) {
 			while (flag) {
-				ct = getRandomCropType();
+				ct = CropConfig.getRandomCropType();
 				if (noCorn && ct.getName().equalsIgnoreCase("corn")) {
 					ct = pickACrop(isStartup, noCorn);
 				}
@@ -294,7 +290,7 @@ public class Farming extends Function implements Serializable {
 		double no_1_crop_VP = 0;
 		double no_2_crop_VP = 0;
 
-		for (CropType c : cropTypeList) {
+		for (CropType c : CropConfig.getCropTypes()) {
 			double cropVP = getCropValue(ResourceUtil.findAmountResource(c.getName()));
 			if (cropVP >= no_1_crop_VP) {
 				if (no_1_crop != null) {
@@ -383,7 +379,7 @@ public class Farming extends Function implements Serializable {
 		boolean flag = containCrop(chosen.getName());
 
 		while (flag) {
-			chosen = getRandomCropType();
+			chosen = CropConfig.getRandomCropType();
 			flag = containCrop(chosen.getName());
 		}
 
@@ -402,19 +398,6 @@ public class Farming extends Function implements Serializable {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Picks a crop type randomly
-	 * 
-	 * @return crop type
-	 */
-	public CropType getRandomCropType() {
-		int cropTypeNum = cropTypeList.size();
-		if (cropTypeNum > 2)
-			return cropTypeList.get(RandomUtil.getRandomInt(0, cropTypeNum - 1));
-		else
-			return null;
 	}
 
 	public double getCropValue(AmountResource resource) {
@@ -693,11 +676,11 @@ public class Farming extends Function implements Serializable {
 		// Determine average amount (kg) of food produced per farm area (m^2).
 		// CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 		double totalFoodPerSolPerArea = 0D;
-		for (CropType c : cropTypeList)
+		for (CropType c : CropConfig.getCropTypes())
 			// Crop type average edible biomass (kg) per Sol.
 			totalFoodPerSolPerArea += c.getEdibleBiomass() / 1000D;
 
-		double producedFoodPerSolPerArea = totalFoodPerSolPerArea / cropTypeList.size();
+		double producedFoodPerSolPerArea = totalFoodPerSolPerArea / CropConfig.getNumCropTypes();
 
 		return neededFoodPerSol / producedFoodPerSolPerArea;
 	}
@@ -844,7 +827,6 @@ public class Farming extends Function implements Serializable {
 	public static void justReloaded(MarsClock clock) {
 		marsClock = clock;
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
-		cropTypeList = new ArrayList<>(cropConfig.getCropList());
 	}
 	
 	/**
@@ -1453,7 +1435,7 @@ public class Farming extends Function implements Serializable {
 	public double computeWaterUsage() {
 		double sum = 0;
 		int size = 0;
-		for (CropType ct : cropTypeList) {
+		for (CropType ct : CropConfig.getCropTypes()) {
 			String n = ct.getName();
 			Double ave = computeCropWaterUsage(n);
 			if (ave > 0)
@@ -1561,7 +1543,7 @@ public class Farming extends Function implements Serializable {
 	public double computeTotalO2Generated() {
 		double sum = 0;
 		int size = 0;
-		for (CropType ct : cropTypeList) {
+		for (CropType ct : CropConfig.getCropTypes()) {
 			String n = ct.getName();
 			Double ave = computeCropO2Generated(n);
 			if (ave > 0)
@@ -1603,7 +1585,7 @@ public class Farming extends Function implements Serializable {
 	public double computeTotalCO2Consumed() {
 		double sum = 0;
 		int size = 0;
-		for (CropType ct : cropTypeList) {
+		for (CropType ct : CropConfig.getCropTypes()) {
 			String n = ct.getName();
 			Double ave = computeCropCO2Consumed(n);
 			if (ave > 0)
@@ -1650,13 +1632,6 @@ public class Farming extends Function implements Serializable {
 		}
 
 		crops = null;
-
-		Iterator<CropType> iii = cropTypeList.iterator();
-		while (iii.hasNext()) {
-			iii.next().destroy();
-		}
-
-		cropTypeList = null;
 
 	}
 

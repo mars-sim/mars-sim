@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,6 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
-import org.mars_sim.msp.core.structure.building.function.farming.CropType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -85,25 +83,19 @@ implements Serializable {
     public static double UP = 0.01;
     public static double DOWN = 0.007;
     
-
     public static final String SOYBEAN_OIL = "soybean oil";
     public static final String GARLIC_OIL = "garlic oil";
     public static final String SESAME_OIL = "sesame oil";
     public static final String PEANUT_OIL = "peanut oil";
 
-    private static List<AmountResource> oilMenuAR;
-
-    private boolean cookNoMore = false, no_oil_last_time = false;
+    private boolean cookNoMore = false;
+    private boolean no_oil_last_time = false;
 
     /** The cache for msols */     
  	private int msolCache;
- 	
     private int cookCapacity;
-    
     private int mealCounterPerSol = 0;
-    
     private int solCache = 1;
-    
     private int numCookableMeal;
     
     // Dynamically adjusted the rate of generating meals
@@ -118,8 +110,8 @@ implements Serializable {
     private String producerName;
 
     // Data members
-    private List<CookedMeal> cookedMeals = new CopyOnWriteArrayList<>();
-    private List<CropType> cropTypeList;
+    private List<CookedMeal> cookedMeals;
+    private Map<AmountResource, Double> ingredientMap;
 
 	private Multimap<String, Double> qualityMap;
 	private Multimap<String, MarsClock> timeMap;
@@ -130,8 +122,6 @@ implements Serializable {
     private Person person;
     private Robot robot;
 
-    private Map<AmountResource, Double> ingredientMap = new ConcurrentHashMap<>();
-    private Map<String, Integer> mealMap = new ConcurrentHashMap<>(); 
 
     private static Simulation sim = Simulation.instance();
     private static SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -142,7 +132,8 @@ implements Serializable {
     private static MarsClock marsClock;
 
 	private static List<HotMeal> mealConfigMealList;
-	
+    private static List<AmountResource> oilMenuAR;
+
 //	private static int oxygenID = ResourceUtil.oxygenID;
 //	private static int co2ID = ResourceUtil.co2ID;
 	private static int foodID = ResourceUtil.foodID;
@@ -163,7 +154,9 @@ implements Serializable {
 
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
-        //inv = getBuilding().getSettlementInventory();
+        cookedMeals = new CopyOnWriteArrayList<>();
+        ingredientMap = new ConcurrentHashMap<>();
+        
         inv = getBuilding().getBuildingManager().getSettlement().getInventory();
 
         settlement = getBuilding().getBuildingManager().getSettlement();
@@ -177,9 +170,6 @@ implements Serializable {
 
         // Load activity spots
         loadActivitySpots(buildingConfig.getCookingActivitySpots(building.getBuildingType()));
-
-		CropConfig cropConfig = simulationConfig.getCropConfiguration(); // need this to pass maven test
-		cropTypeList = new ArrayList <>(cropConfig.getCropList());
 
     	MealConfig mealConfig = simulationConfig.getMealConfiguration(); // need this to pass maven test
         mealConfigMealList = MealConfig.getMealList();
@@ -267,20 +257,25 @@ implements Serializable {
 
 	/**
 	 * Gets the water content for a crop.
+	 * 
 	 * @return water content ( 1 is equal to 100% )
 	 */
 	public double getCropWaterContent(String name) {
-		double w = 0 ;
-		Iterator<CropType> i = cropTypeList.iterator();
-		while (i.hasNext()) {
-			CropType c = i.next();
-			String cropName = c.getName();
-			if (cropName.equals(name)) {
-				w = c.getEdibleWaterContent();
-				break;
-			}
-		}
-		return w;
+		if (CropConfig.getCropTypeByName(name) == null)
+			return 0;
+		else
+			return CropConfig.getCropTypeByName(name).getEdibleWaterContent();	
+//		double w = 0 ;
+//		Iterator<CropType> i = CropConfig.getCropTypes().iterator();
+//		while (i.hasNext()) {
+//			CropType c = i.next();
+//			String cropName = c.getName();
+//			if (cropName.equals(name)) {
+//				w = c.getEdibleWaterContent();
+//				break;
+//			}
+//		}
+//		return w;
 	}
 
     public Multimap<String, Double> getQualityMap() {
@@ -1154,7 +1149,6 @@ implements Serializable {
 		prepareOilMenu();
 	}
 	
-	
     @Override
     public void destroy() {
         super.destroy();
@@ -1164,13 +1158,11 @@ implements Serializable {
         settlement = null;
         aMeal = null;
         mealConfigMealList = null;
-        cropTypeList = null;
     	qualityMap = null;
     	timeMap = null;
         person = null;
         robot = null;
         ingredientMap = null;
-        mealMap = null;
         sim = null;
         simulationConfig = null;
         buildingConfig = null;

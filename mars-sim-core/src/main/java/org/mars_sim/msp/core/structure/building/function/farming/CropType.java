@@ -25,6 +25,8 @@ public class CropType implements Serializable, Comparable<CropType> {
 	private static final int BIENNIAL = 2;
 
 	// Data members
+	/** The id of this crop type. */
+	private int id;
 	/** The length of the crop type's growing phase. */
 	private double growingTime;
 	/** The fresh basis edible biomass productivity [in gram per sq m per day] */
@@ -186,6 +188,15 @@ public class CropType implements Serializable, Comparable<CropType> {
 		return phases;
 	}
 
+
+	public void setID(int id) {
+		this.id = id;
+	}
+	
+	public int getID() {
+		return id;
+	}
+	
 	/**
 	 * Compares this object with the specified object for order.
 	 * 

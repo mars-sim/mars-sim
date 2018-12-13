@@ -126,7 +126,7 @@ implements MouseListener {
 		location = farm.getBuilding().getCoordinates();
 		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		CropConfig config = SimulationConfig.instance().getCropConfiguration();
-		cropTypeList = new ArrayList<>(config.getCropList());
+		cropTypeList = new ArrayList<>(config.getCropTypes());
 		
 		// Set panel layout
 		setLayout(new BorderLayout()); //new GridLayout(6, 1, 0, 0));//
