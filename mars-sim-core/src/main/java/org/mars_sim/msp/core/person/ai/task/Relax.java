@@ -246,4 +246,14 @@ implements Serializable {
 		List<SkillType> results = new ArrayList<SkillType>(0);
 		return results;
 	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
+	}
+	
 }

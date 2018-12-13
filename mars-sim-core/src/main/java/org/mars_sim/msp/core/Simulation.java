@@ -63,6 +63,8 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.Relax;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.Walk;
@@ -937,6 +939,8 @@ public class Simulation implements ClockListener, Serializable {
 		Walk.justReloaded(unitManager);	
 		EVAOperation.justReloaded(surface); 
 		LoadVehicleGarage.initializeInstances(pc); 
+		Relax.justReloaded(marsClock);
+		Sleep.justReloaded(masterClock, marsClock);
 		
 //		System.out.println("Done with Task instances");
 		

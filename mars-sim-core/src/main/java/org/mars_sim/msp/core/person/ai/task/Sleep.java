@@ -85,10 +85,6 @@ public class Sleep extends Task implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	//
-	// Organized into 9 branching decisions
-	// A bed can be either empty(E) or occupied(O), either unmarked(U) or
-	// designated(D).
-	// thus a 2x2 matrix with 4 possibilities: EU, ED, OU, OD
 	public Sleep(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(10D)));
 
@@ -107,7 +103,11 @@ public class Sleep extends Task implements Serializable {
 	}
 
 	public void compute() {
-
+		// Organized into 9 branching decisions
+		// A bed can be either empty(E) or occupied(O), either unmarked(U) or
+		// designated(D).
+		// thus a 2x2 matrix with 4 possibilities: EU, ED, OU, OD
+		
 		// boolean walkSite = false;
 		// If person is in rover, walk to passenger activity spot.
 		if (person.isInVehicle() && person.getVehicle() instanceof Rover) {
@@ -629,6 +629,17 @@ public class Sleep extends Task implements Serializable {
 		return results;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded(MasterClock c0, MarsClock c1) {
+		masterClock = c0;
+		marsClock = c1;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

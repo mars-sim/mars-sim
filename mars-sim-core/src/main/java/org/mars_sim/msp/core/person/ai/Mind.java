@@ -26,6 +26,9 @@ import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.task.EatMeal;
+import org.mars_sim.msp.core.person.ai.task.Relax;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -454,7 +457,7 @@ public class Mind implements Serializable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+			LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
 					person.getName() + " has invalid weight sum : " + weightSum + ". tasks is " + tasks + ". missions is " + missions);
 //			throw new IllegalStateException("Mind.getNewAction(): " + person + " weight sum: " + weightSum);
 		}
@@ -491,9 +494,21 @@ public class Mind implements Serializable {
 			}
 		}
 
+		
 		// If reached this point, no task or mission has been found.
-		logger.severe(person.getName() + " couldn't determine new action - taskWeights: " + taskWeights
+		LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
+					person.getName() + " couldn't determine new action - taskWeights: " + taskWeights
 				+ ", missionWeights: " + missionWeights);
+		
+		
+		int rand1 = RandomUtil.getRandomInt(6);
+		if (rand1 == 0)
+			taskManager.addTask(new EatMeal(person));
+		else if (rand1 < 3)
+			taskManager.addTask(new Relax(person));
+		else 
+			taskManager.addTask(new Sleep(person));
+		
 	}
 
 	/**
