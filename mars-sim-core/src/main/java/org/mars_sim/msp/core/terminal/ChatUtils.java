@@ -177,7 +177,8 @@ public class ChatUtils {
 			"log all walk off", "log all eva off", "log all mission off", "log all airlock off",
 			"vehicle", "rover", 
 			"hi", "hello", "hey",
-			"proposal"
+			"proposal",
+			"reset clock thread", "reset clock pulse", "reset clock listener"
 	};
 
 	public final static String SWITCHES = 
@@ -3724,7 +3725,35 @@ public class ChatUtils {
 			proceed = true;
 		}
 
-		if (text.toLowerCase().contains("log")) {
+		if (expertMode) {
+			
+			if (text.toLowerCase().contains("reset clock thread")) {
+				String s = "Resetting the clock executor thread...";
+				responseText.append(s + System.lineSeparator());
+				logger.config(s);
+				sim.restartClockExecutor();
+				return responseText.toString();
+			}
+						
+			else if (text.toLowerCase().contains("reset clock pulse")) {
+				String s = "Resetting the # of clock pulses according to the default TBU value...";
+				responseText.append(s + System.lineSeparator());
+				logger.config(s);
+				masterClock.resetTotalPulses();
+				return responseText.toString();
+			}
+			
+			else if (text.toLowerCase().contains("reset clock listener")) {
+				String s = "Resetting the clock listeners...";
+				responseText.append(s + System.lineSeparator());
+				logger.config(s);
+				masterClock.resetClockListeners();
+				return responseText.toString();
+			}
+			
+		}
+		
+		else if (text.toLowerCase().contains("log")) {
 			return processLogChange(text, responseText).toString();
 		}
 		

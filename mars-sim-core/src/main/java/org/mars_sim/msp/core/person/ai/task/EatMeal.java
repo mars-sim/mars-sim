@@ -291,12 +291,12 @@ public class EatMeal extends Task implements Serializable {
 			// Pick up a meal at kitchen if one is available.
 			cookedMeal = kitchen.chooseAMeal(person);
 			if (cookedMeal != null) {
-				logger.fine(person + " picking up a cooked meal to eat: " + cookedMeal.getName());
+				logger.fine(person + " picked up a cooked meal to eat: " + cookedMeal.getName());
 			}
 		}
 
 		setPhase(EAT_MEAL);
-		return time *.9;
+		return time *.5;
 	}
 
 	/**
