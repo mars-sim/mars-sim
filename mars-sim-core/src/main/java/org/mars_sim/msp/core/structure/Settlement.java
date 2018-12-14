@@ -212,7 +212,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/** The settlement's current indoor pressure [in kPa], not Pascal. */
 	private double currentPressure = NORMAL_AIR_PRESSURE; 
 	/** Amount of time (millisols) that the settlement has had zero population. */
-	private double zeroPopulationTime;
+//	private double zeroPopulationTime;
 	/** The settlement's current meal replenishment rate. */
 	public double mealsReplenishmentRate = 0.6;
 	/** The settlement's current dessert replenishment rate. */
@@ -318,8 +318,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		super(null, null);
 		location = getCoordinates();
 		unitManager = Simulation.instance().getUnitManager();
-		updateAllAssociatedPeople();
-		updateAllAssociatedRobots();
+//		updateAllAssociatedPeople();
+//		updateAllAssociatedRobots();
 	}
 
 	/**
@@ -1002,9 +1002,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	public ShiftType getCurrentSettlementShift() {
 
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
 		int millisols = marsClock.getMillisolInt();
 
 		int num = getNumShift();
@@ -1095,7 +1092,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// thermalSystem.setHeatMode(HeatMode.HEAT_OFF);
 		// }
 		// } else {
-		zeroPopulationTime = 0D;
+//		zeroPopulationTime = 0D;
 		if (powerGrid.getPowerMode() != PowerMode.POWER_UP)
 			powerGrid.setPowerMode(PowerMode.POWER_UP);
 		// TODO: check if POWER_UP is necessary
