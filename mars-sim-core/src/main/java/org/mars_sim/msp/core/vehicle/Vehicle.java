@@ -506,20 +506,6 @@ public abstract class Vehicle extends Unit
 		}
 	}
 
-	/**
-	 * Returns vehicle's current status
-	 * 
-	 * @return the vehicle's current status
-	 * 
-	 *         public int getStatusNum() { // Update status string if necessary.
-	 *         updateStatus();
-	 * 
-	 *         if (status.equals(PARKED)) return 0; if (status.equals(GARAGED))
-	 *         return 1; else if (status.equals(MOVING)) return 2; else if
-	 *         (status.equals(MAINTENANCE)) return 3; else if (status.equals(TOWED))
-	 *         return 4; else if (status.equals(MALFUNCTION)) return 5; else return
-	 *         -1; }
-	 */
 
 	/**
 	 * Checks if the vehicle is reserved for any reason.
@@ -964,6 +950,11 @@ public abstract class Vehicle extends Unit
 		return people;
 	}
 
+	/**
+	 * Gets a collection of robots affected by this entity.
+	 * 
+	 * @return robots collection
+	 */
 	public Collection<Robot> getAffectedRobots() {
 		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
 

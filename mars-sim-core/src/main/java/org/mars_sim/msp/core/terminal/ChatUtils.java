@@ -133,7 +133,7 @@ public class ChatUtils {
 	};
 	
 	public final static String[] VEHICLE_KEYS = new String[] {
-			"specs"
+			"specs", "status"
 	};
 	
 	public final static String[] SETTLEMENT_KEYS = new String[] {
@@ -590,13 +590,84 @@ public class ChatUtils {
 	 * @return the response string[]
 	 */
 	public static String[] askVehicle(String text, String name) {
-		
-		int num = 0;
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 		
-		if (text.equalsIgnoreCase("specs")) {
-			questionText = YOU_PROMPT + "Can you show me the specification for this vehicle ?"; 
+		if (text.equalsIgnoreCase("status")) {
+			questionText = YOU_PROMPT + "What is your status ?"; 
+			int max = 28;
+			
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesName("Status : ", max) + vehicleCache.getStatus().getName());
+			
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesName("Associated Settlement : ", max) + vehicleCache.getAssociatedSettlement().getName());
+			
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesName("Location : ", max) + vehicleCache.getImmediateLocation());
+			
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesName("Locale : ", max) + vehicleCache.getLocale());
+						
+			String reserve = "Yes";
+			if (!vehicleCache.isReservedForMission())
+				reserve = "No";
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesName("Reserved : ", max) + reserve);
+			
+			MissionManager missionManager = Simulation.instance().getMissionManager();
+			String missionStr = "None";
+			if (missionManager.getMissionForVehicle(vehicleCache) != null) {
+				Mission m = missionManager.getMissionForVehicle(vehicleCache);
+				String lead = m.getStartingMember().getName();
+				missionStr = "Yes. " + m.getName();
+				responseText.append(System.lineSeparator());
+				responseText.append(addhiteSpacesName("On a Mission : ", max) + missionStr);
+				responseText.append(System.lineSeparator());
+				responseText.append(addhiteSpacesName("Mission Lead : ", max) + lead);
+				responseText.append(System.lineSeparator());
+				
+				double dist = 0;
+				double trav = 0;
+	
+				if (m instanceof VehicleMission) {
+					dist = Math.round(((VehicleMission)m).getTotalDistance()*10.0)/10.0;//.getStartingTravelledDistance(); // getTotalDistance();//.
+					trav = Math.round(((VehicleMission)m).getTotalDistanceTravelled()*10.0)/10.0;
+					responseText.append("  Est. Dist. : " + dist + " km");
+					responseText.append(System.lineSeparator());
+					responseText.append("   Travelled : " + trav + " km");
+					responseText.append(System.lineSeparator());
+				}
+				
+
+				
+			}
+			else {
+				responseText.append(System.lineSeparator());
+				responseText.append(addhiteSpacesName("On a Mission : ", max) + missionStr);
+			}		
+			
+			if (vehicleCache instanceof Rover) {
+				String towed = "No";
+				if (vehicleCache.isBeingTowed() && vehicleCache.getTowingVehicle().getName() != null) {
+					towed = "Yes. Towed by " + vehicleCache.getTowingVehicle().getName();
+				}
+				responseText.append(System.lineSeparator());
+				responseText.append(addhiteSpacesName("Being Towed : ", max) + towed);
+				
+				String towing = "No";
+				if (((Rover)vehicleCache).isTowingAVehicle() && ((Rover)vehicleCache).getTowedVehicle().getName() != null) {
+					towing = "Yes. Towing " + ((Rover)vehicleCache).getTowedVehicle().getName();
+				}
+				responseText.append(System.lineSeparator());
+				responseText.append(addhiteSpacesName("Towing : ", max) + towing);
+			}
+			
+			
+		}
+		
+		else if (text.equalsIgnoreCase("specs")) {
+			questionText = YOU_PROMPT + "Can you show me the specifications ?"; 
 
 			int max = 28;
 			responseText.append(System.lineSeparator());
@@ -1326,6 +1397,11 @@ public class ChatUtils {
 			
 			List<Mission> missions = sim.getMissionManager().getMissions();
 			
+			missions = missions.stream()
+					.filter(m -> m.getAssociatedSettlement() == settlementCache)
+					.collect(Collectors.toList());
+					
+			
 			if (missions.isEmpty()) {
 				responseText.append(settlementCache + " : ");
 				responseText.append("no on-going missions right now.");
@@ -1381,14 +1457,14 @@ public class ChatUtils {
 						responseText.append(System.lineSeparator());
 						
 						if (v != null) {
-						responseText.append("     Vehicle : " + v.getName());
-						responseText.append(System.lineSeparator());
-						responseText.append("        Type : " + v.getVehicleType());
-						responseText.append(System.lineSeparator());
-						responseText.append("  Est. Dist. : " + dist + " km");
-						responseText.append(System.lineSeparator());
-						responseText.append("   Travelled : " + trav + " km");
-						responseText.append(System.lineSeparator());
+							responseText.append("     Vehicle : " + v.getName());
+							responseText.append(System.lineSeparator());
+							responseText.append("        Type : " + v.getVehicleType());
+							responseText.append(System.lineSeparator());
+							responseText.append("  Est. Dist. : " + dist + " km");
+							responseText.append(System.lineSeparator());
+							responseText.append("   Travelled : " + trav + " km");
+							responseText.append(System.lineSeparator());
 						}
 						responseText.append("       Phase : " + mission.getPhaseDescription());
 						responseText.append(System.lineSeparator());
@@ -1806,7 +1882,7 @@ public class ChatUtils {
 			
 			int SPACING = 20;
 			// Print the heading of each column
-			String nameStr = "   < Name >";
+			String nameStr = "     Name  ";
 			responseText.append(nameStr);
 			// Add spaces
 			int num0 = SPACING - nameStr.length() - 2;
@@ -1814,7 +1890,7 @@ public class ChatUtils {
 				responseText.append(ONE_SPACE);
 			}
 			
-			String typeStr = "   < Type >";
+			String typeStr = "     Type  ";
 			responseText.append(typeStr);
 			// Add spaces
 			int num00 = SPACING - typeStr.length();
@@ -1822,7 +1898,7 @@ public class ChatUtils {
 				responseText.append(ONE_SPACE);
 			}
 			
-			String missionStr = "   < Mission >";
+			String missionStr = "     Mission  ";
 			responseText.append(missionStr);
 			// Add spaces
 			int num000 = SPACING - missionStr.length() + 2;
@@ -1830,7 +1906,7 @@ public class ChatUtils {
 				responseText.append(ONE_SPACE);
 			}
 			
-			String personStr = "   < Lead >";
+			String personStr = "     Lead  ";
 			responseText.append(personStr);
 			
 			
