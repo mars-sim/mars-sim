@@ -849,7 +849,7 @@ public class Farming extends Function implements Serializable {
 			for (Crop c : crops)
 				c.resetPAR();
 			
-			// Limit the size of the dailyWaterUsage to 20 key value pairs
+			// Limit the size of the dailyWaterUsage to x key value pairs
 			if (dailyWaterUsage.size() > MAX_NUM_SOLS)
 				dailyWaterUsage.remove(solElapsed - MAX_NUM_SOLS);
 		}

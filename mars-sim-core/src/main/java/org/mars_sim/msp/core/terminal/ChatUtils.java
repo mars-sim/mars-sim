@@ -810,43 +810,53 @@ public class ChatUtils {
 	 * @return the response string[]
 	 */
 	public static String[] askSettlementStr(String text, String name) {
-//		System.out.println("askSettlementStr() in ChatUtils");
+
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 
 		if (text.equalsIgnoreCase("water")) {
-			int max = 15;
+			int max = 14;
 			double reserve = 0;
-			
-			double greenhouseUsage = 0;
-//			double area = 0;
-			
+			double greenhouseUsage = 0;			
+			double consumption = 0;
 			double livingUsage = 0;
 			double output = 0;
-			
+			double cleaning = 0;
 			double net = 0;
-					
+			
+			String s = " -------------+-------------------------------------------------------+-----";
+			
+			responseText.append("                            Water - Rate of Change [kg/sol]");
+			responseText.append(System.lineSeparator());
+			responseText.append(s);
+			responseText.append(System.lineSeparator());
+
 			String t0 = "   Reserve";
 			responseText.append(addNameFirstWhiteSpaces(t0, max));
 			
 			String t1 = "| Greenhouse";
-			responseText.append(addNameFirstWhiteSpaces(t1, max));
-			
-			String t2 = " Hygiene";
-			responseText.append(addNameFirstWhiteSpaces(t2, max-2));
-			
-			String t3 = "Processes";
-			responseText.append(addNameFirstWhiteSpaces(t3, max-1));
+			responseText.append(addNameFirstWhiteSpaces(t1, max-1));
 
-			String t4 = "   Net";
-			responseText.append(t4);
+			String t2 = " Consumption";
+			responseText.append(addNameFirstWhiteSpaces(t2, max-1));
+			
+			String t3 = " Hygiene";
+			responseText.append(addNameFirstWhiteSpaces(t3, max-5));
+
+			String t4 = " Cleaning";
+			responseText.append(addNameFirstWhiteSpaces(t4, max-3));
+	
+			String t5 = "Processes";
+			responseText.append(addNameFirstWhiteSpaces(t5, max-4));
+
+			String t6 = "| Net";
+			responseText.append(t6);
 			
 			responseText.append(System.lineSeparator());
-			responseText.append(" --------------+------------------------------------------------------------");
+			responseText.append(s);
 			responseText.append(System.lineSeparator());
 			
 			// Prints the current reserve
-			//settlementCache
 			try {
 				reserve = settlementCache.getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
 			}
@@ -856,6 +866,7 @@ public class ChatUtils {
 			String s0 = " " + Math.round(reserve* 100.0)/100.0 + " kg";
 			responseText.append(addNameFirstWhiteSpaces(s0, max));
 
+			
 			// Prints greenhouse usage
 			List<Building> farms = settlementCache.getBuildingManager().getBuildings(FunctionType.FARMING);
 			for (Building b : farms) {
@@ -864,8 +875,21 @@ public class ChatUtils {
 //				area += f.getGrowingArea();
 			}
 			String s1 = "|   -" + Math.round(greenhouseUsage * 100.0)/100.0;
-			responseText.append(addNameFirstWhiteSpaces(s1, max));
+			responseText.append(addNameFirstWhiteSpaces(s1, max-1));
 			net = net - greenhouseUsage;
+
+			
+			// Prints consumption 
+			List<Person> ppl = new ArrayList<>(settlementCache.getAllAssociatedPeople());
+			for (Person p : ppl) {
+				consumption += p.getDailyUsage(1);
+			}
+			// Add water usage from making dessert
+			consumption += settlementCache.getDailyUsage(1);
+			String s2 = "    -" + Math.round(consumption * 100.0)/100.0;
+			responseText.append(addNameFirstWhiteSpaces(s2, max-1));
+			net = net - consumption;
+
 			
 			// Prints living usage
 			List<Building> quarters = settlementCache.getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMODATIONS);
@@ -874,10 +898,18 @@ public class ChatUtils {
 				livingUsage += la.getDailyAverageWaterUsage();
 
 			}
-			String s2 = "  -" + Math.round(livingUsage * 100.0)/100.0;
-			responseText.append(addNameFirstWhiteSpaces(s2, max-2));
+			String s3 = " -" + Math.round(livingUsage * 100.0)/100.0;
+			responseText.append(addNameFirstWhiteSpaces(s3, max-5));
 			net = net - livingUsage;
+
 			
+			// Prints cleaning usage
+			cleaning = settlementCache.getDailyUsage(2);			
+			String s4 = "  -" + Math.round(cleaning * 100.0)/100.0;
+			responseText.append(addNameFirstWhiteSpaces(s4, max-3));
+			net = net - cleaning;
+			
+						
 			// Prints output from resource processing
 			List<Building> bldgs = settlementCache.getBuildingManager().getBuildings(FunctionType.RESOURCE_PROCESSING);
 			for (Building b : bldgs) {
@@ -888,19 +920,20 @@ public class ChatUtils {
 						output += p.getMaxOutputResourceRate(ResourceUtil.waterID);
 				}
 			}
-			String s3 = "  +" + Math.round(output * 1_000 * 100.0)/100.0;
-			responseText.append(addNameFirstWhiteSpaces(s3, max-1));
+			String s5 = " +" + Math.round(output * 1_000 * 100.0)/100.0;
+			responseText.append(addNameFirstWhiteSpaces(s5, max-4));
 			net = net + output * 1_000;
 			
-			String s4 = "";
+			// Prints net change
+			String s6 = "";
 			if (net > 0) {
-				s4 = " +" + Math.round(net * 100.0)/100.0 + " [kg/sol]";
+				s6 = " +" + Math.round(net * 100.0)/100.0;// + " [kg/sol]";
 			}
 			else {
-				s4 = " " + Math.round(net * 100.0)/100.0 + " [kg/sol]";
+				s6 = " " + Math.round(net * 100.0)/100.0;// + " [kg/sol]";
 			}
 			
-			responseText.append(s4);
+			responseText.append(s6);
 			responseText.append(System.lineSeparator());		
 		}
 		
@@ -2049,7 +2082,7 @@ public class ChatUtils {
 			responseText.append(" ------+------------");	
 			responseText.append(System.lineSeparator());
 			
-			Map<Integer, Double> eVATime = personCache.getTotalEVATimeBySol();	
+			Map<Integer, Double> eVATime = personCache.getTotalEVATaskTimeBySol();	
 			int size = marsClock.getMissionSol();
 			int MAX0 = 5;
 			int MAX1 = 10;

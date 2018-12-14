@@ -72,7 +72,6 @@ implements Serializable {
      * to prepare fresh dessert . */
     public static final double PREPARE_DESSERT_WORK_REQUIRED = 3D;
 
-    // 2015-01-12 Dynamically adjusted the rate of generating desserts
     //public double dessertsReplenishmentRate;
     public static double UP = 0.01;
     public static double DOWN = 0.007;
@@ -86,9 +85,6 @@ implements Serializable {
 
     private static double dessertMassPerServing;
 
- 
-    
-    // 2015-01-03 Added availableDesserts
     private static String [] availableDesserts =
     	{
     		"soymilk",
@@ -184,7 +180,7 @@ implements Serializable {
         dessertMassPerServing = personConfig.getDessertConsumptionRate() / (double) NUM_OF_DESSERT_PER_SOL * DESSERT_SERVING_FRACTION;
 
     	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); // need this to pass maven test
-        // 2016-05-31 Added loading the two parameters from meals.xml
+        // Add loading the two parameters from meals.xml
         cleaningAgentPerSol = mealConfig.getCleaningAgentPerSol();
         //waterUsagePerMeal = mealConfig.getWaterConsumptionRate();
 
@@ -243,11 +239,9 @@ implements Serializable {
     	return null;
     }
 
-
-    // 2015-01-12 Added setChef()
-    //public void setChef(String name) {
-    //	this.producerName = name;
-    //}
+//    public void setChef(String name) {
+//    	this.producerName = name;
+//    }
 
     /**
      * Gets the value of the function for a named building.
@@ -487,8 +481,10 @@ implements Serializable {
 		if (cleaningAgentPerSol*.1 > MIN)
 			cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol*.1, NaClOID, inv, true); 
 		boolean cleaning1 = false;
-		if (cleaningAgentPerSol > MIN)
-			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol, waterID, inv, true);
+		if (cleaningAgentPerSol > MIN) {
+			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol*5, waterID, inv, true);
+        	settlement.addConsumptionTime(2, cleaningAgentPerSol*5);
+		}
 
 		if (cleaning0)
 			cleanliness = cleanliness + .05;
@@ -642,15 +638,19 @@ implements Serializable {
         }
 
         else {
-        	if (dryMass > MIN)
+        	if (dryMass > MIN) {
         		Storage.retrieveAnResource(dryMass, selectedDessert, inv, true);
-	        if (dessertMassPerServing - dryMass > MIN)
+        	}
+        	
+	        if (dessertMassPerServing - dryMass > MIN) {
 	        	Storage.retrieveAnResource(dessertMassPerServing-dryMass, waterID, inv, true);
+	        	settlement.addConsumptionTime(1, dessertMassPerServing-dryMass);
+	        }
 	        
 	        double dessertQuality = 0;
 	        // TODO: quality also dependent upon the hygiene of a person
 		    double culinarySkillPerf = 0;
-		    // 2017-04-26 Add influence of a person/robot's performance on meal quality
+		    // Add influence of a person/robot's performance on meal quality
 		    if (person != null)
 		    	culinarySkillPerf = .25 * person.getPerformanceRating() * person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 		    else if (robot != null)
@@ -667,7 +667,6 @@ implements Serializable {
 		    servingsOfDessert.add(new PreparedDessert(selectedDessert, dessertQuality, dessertMassPerServing, (MarsClock) marsClock.clone(), producerName, this));
 
 		    //consumeWater();
-
 		    dessertCounterPerSol++;
 
 		    //logger.info(producerName + " prepared a serving of " + selectedDessert
@@ -696,8 +695,11 @@ implements Serializable {
     		usage = 1 + rand;
     	else
     		usage = 1 - rand;
-    	if (usage > MIN)
+    	if (usage > MIN) {
     		Storage.retrieveAnResource(usage, waterID, inv, true);
+        	settlement.addConsumptionTime(1, usage);	
+    	}
+    	
 		double wasteWaterAmount = usage * .5;
 		if (wasteWaterAmount > MIN)
 			Storage.storeAnResource(wasteWaterAmount, greyWaterID, inv, sourceName + "::consumeWater");
@@ -750,7 +752,7 @@ implements Serializable {
 	                            		.append(getBuilding().getNickName())
 	                            		.append(".");
 	            				
-	                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, log.toString(), null);
+	                            LogConsolidated.log(Level.INFO, 10000, sourceName, log.toString());
 	                            
 	                        }
 	                        else  {
@@ -766,7 +768,7 @@ implements Serializable {
 	                            		.append(getBuilding().getNickName())
 	                            		.append(".");
 	            				
-	                            LogConsolidated.log(logger, Level.INFO, 10000, sourceName, log.toString(), null);
+	                            LogConsolidated.log( Level.INFO, 10000, sourceName, log.toString());
 	             
 	                            //logger.finest("The dessert has lost its freshness at " +
 	                            //        getBuilding().getBuildingManager().getSettlement().getName());
@@ -795,12 +797,11 @@ implements Serializable {
 	    }
     }
 
-    // 2015-01-12 Added checkEndOfDay()
   	public synchronized void checkEndOfDay() {
 		//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // needed for loading a saved sim
-		// Added 2015-01-04 : Sanity check for the passing of each day
+		// Sanity check for the passing of each day
 		int newSol = marsClock.getSolOfMonth();
 	    double rate = settlement.getDessertsReplenishmentRate();
 
@@ -808,7 +809,7 @@ implements Serializable {
 			solCache = newSol;
 	        // reset back to zero at the beginning of a new day.
 	    	dessertCounterPerSol = 0;
-			// 2015-01-12 Adjust this rate to go up automatically by default
+			// Adjust this rate to go up automatically by default
 	    	rate += UP;
 	      	settlement.setDessertsReplenishmentRate(rate);
 
@@ -835,31 +836,30 @@ implements Serializable {
         return dessertCounterPerSol;
     }
 
-    /**
-     * Gets the amount resource of the fresh food from a specified food group.
-     *
-     * @param String food group
-     * @return AmountResource of the specified fresh food
+//    /**
+//     * Gets the amount resource of the fresh food from a specified food group.
+//     *
+//     * @param String food group
+//     * @return AmountResource of the specified fresh food
+//
+//    public AmountResource getFreshFoodAR(String foodGroup) {
+//        AmountResource freshFoodAR = AmountResource.findAmountResource(foodGroup);
+//        return freshFoodAR;
+//    }
 
-    public AmountResource getFreshFoodAR(String foodGroup) {
-        AmountResource freshFoodAR = AmountResource.findAmountResource(foodGroup);
-        return freshFoodAR;
-    }
-     */
 
-    /**
-     * Computes amount of fresh food from a particular fresh food amount resource.
-     *
-     * @param AmountResource of a particular fresh food
-     * @return Amount of a particular fresh food in kg, rounded to the 4th decimal places
+//    /**
+//     * Computes amount of fresh food from a particular fresh food amount resource.
+//     *
+//     * @param AmountResource of a particular fresh food
+//     * @return Amount of a particular fresh food in kg, rounded to the 4th decimal places
+//
+//    public double getFreshFood(AmountResource ar) {
+//        double freshFoodAvailable = inv.getAmountResourceStored(ar, false);
+//    	//inv.addDemandTotalRequest(ar);
+//        return freshFoodAvailable;
+//    }
 
-    public double getFreshFood(AmountResource ar) {
-        double freshFoodAvailable = inv.getAmountResourceStored(ar, false);
-    	// 2015-01-09 Added addDemandTotalRequest()
-    	//inv.addDemandTotalRequest(ar);
-        return freshFoodAvailable;
-    }
-    */
 
     /**
      * Gets the amount of power required when function is at full power.

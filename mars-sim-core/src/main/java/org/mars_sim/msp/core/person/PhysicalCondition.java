@@ -1324,6 +1324,9 @@ public class PhysicalCondition implements Serializable {
 		if (support == null)
 			System.out.println(person + " in " + person.getLocationTag().getImmediateLocation() + " has no life support.");
 		double amountRecieved = support.provideOxygen(amount);
+		// Track the amount consumed
+		person.addConsumptionTime(0, amountRecieved);
+		
 		double required = amount / 2D; 
 		// TODO: how to model how much oxygen we need properly ?
 		return checkResourceConsumption(amountRecieved, required, MIN_VALUE, suffocation);

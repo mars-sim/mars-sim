@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
-import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
@@ -81,15 +80,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
+	
+	public static final int MAX_NUM_SOLS = 3;
+	
 	/** The base carrying capacity (kg) of a person. */
 	private final static double BASE_CAPACITY = 60D;
-
-	private final static String EARTH = "Earth";
-	private final static String MARS = "Mars";
-
-	private final static String HEIGHT = "Height";
-	private final static String WEIGHT = "Weight";
-
 	private final static double AVERAGE_TALL_HEIGHT = 176.5;
 	private final static double AVERAGE_SHORT_HEIGHT = 162.5;
 	final static double AVERAGE_HEIGHT = 169.5;// (AVERAGE_TALL_HEIGHT + AVERAGE_SHORT_HEIGHT)/2D;
@@ -98,7 +93,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private final static double AVERAGE_LOW_WEIGHT = 57.2;
 	final static double AVERAGE_WEIGHT = 62.85; // (AVERAGE_HIGH_WEIGHT + AVERAGE_LOW_WEIGHT)/2D ;
 
-	private static final String POLITICIAN = "Politician";
+	private final static String POLITICIAN = "Politician";
+	private final static String EARTH = "Earth";
+	private final static String MARS = "Mars";
+	private final static String HEIGHT = "Height";
+	private final static String WEIGHT = "Weight";
 
 	// static unit identifier
 	private static int unitCount = 0;
@@ -106,8 +105,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	// Data members
 	/** Unique person id. */
 	private int pid;
-	/** True if a person is rationing water */
-	private boolean waterRation;
+//	/** True if a person is rationing water */
+//	private boolean waterRation;
 	/** True if a person is born on Mars. */
 	private boolean bornOnMars;
 	/** True if person is buried. */
@@ -144,8 +143,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private String country;
 	/** The person's blood type. */
 	private String bloodType;
-	/** The person's status. */
-	private String status;
+//	/** The person's status. */
+//	private String status;
 	
 	/** The gender of the person (male or female). */
 	private GenderType gender;
@@ -192,8 +191,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	private Vehicle vehicle;
 
-//	private Vehicle associatedVehicle;
-
 	private Relax relax;
 
 	private Sleep sleep;
@@ -209,7 +206,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The person's mission experiences */
 	private Map<Integer, List<Double>> missionExperiences;
 	/** The person's EVA times */
-	private Map<Integer, Map<String, Double>> eVAHours;
+	private Map<Integer, Map<String, Double>> eVATaskTime;
+	/** The person's water/oxygen consumption */
+	private Map<Integer, Map<Integer, Double>> consumption;
 	
 	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;
@@ -320,7 +319,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// Create the mission experiences map
 		missionExperiences = new HashMap<>();
 		// Create the EVA hours map
-		eVAHours = new ConcurrentHashMap<>();
+		eVATaskTime = new ConcurrentHashMap<>();
+		// Create the consumption map
+		consumption = new ConcurrentHashMap<>();
 
 	}
 
@@ -969,6 +970,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 						age = updateAge();
 						solCache = solElapsed;
 
+						// Limit the size of the dailyWaterUsage to x key value pairs
+						if (consumption.size() > MAX_NUM_SOLS)
+							consumption.remove(solElapsed - MAX_NUM_SOLS);
+						
 						if (solElapsed % 3 == 0) {
 							// Adjust the shiftChoice once every 3 sols based on sleep hour
 							int bestSleepTime[] = getPreferredSleepHours();
@@ -1697,11 +1702,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param time
 	 */
 	public void addEVATime(String taskName, double time) {
-		
 		Map<String, Double> map = null;
 		
-		if (eVAHours.containsKey(solCache)) {
-			 map = eVAHours.get(solCache);
+		if (eVATaskTime.containsKey(solCache)) {
+			 map = eVATaskTime.get(solCache);
 			if (map.containsKey(taskName)) {
 				double oldTime = map.get(taskName);
 				map.put(taskName, time + oldTime);
@@ -1715,19 +1719,23 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			map.put(taskName, time);
 		}
 		
-		eVAHours.put(solCache, map);
+		eVATaskTime.put(solCache, map);
 	}
 	
 	
-	
-	public Map<Integer, Double> getTotalEVATimeBySol() {
+	/**
+	 * Gets the map of EVA task time.
+	 * 
+	 * @return
+	 */
+	public Map<Integer, Double> getTotalEVATaskTimeBySol() {
 		Map<Integer, Double> map = new ConcurrentHashMap<>();
 		
-		for (Integer sol : eVAHours.keySet()) {
+		for (Integer sol : eVATaskTime.keySet()) {
 			double sum = 0;
 			
-			for (String t : eVAHours.get(sol).keySet()) {
-				sum += eVAHours.get(sol).get(t);
+			for (String t : eVATaskTime.get(sol).keySet()) {
+				sum += eVATaskTime.get(sol).get(t);
 			}
 			
 			map.put(sol, sum);			
@@ -1736,6 +1744,107 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return map;
 	}
 	
+	
+	/**
+	 * Adds the amount consumed.
+	 * 
+	 * @param type
+	 * @param amount
+	 */
+	public void addConsumptionTime(int type, double amount) {
+		Map<Integer, Double> map = null;
+		
+		if (consumption.containsKey(solCache)) {
+			 map = consumption.get(solCache);
+			if (map.containsKey(type)) {
+				double oldAmt = map.get(type);
+				map.put(type, amount + oldAmt);
+			}
+			else {
+				map.put(type, amount);
+			}
+		}
+		else {
+			map = new ConcurrentHashMap<>();
+			map.put(type, amount);
+		}
+		
+		consumption.put(solCache, map);
+	}
+	
+	
+	/**
+	 * Gets the total amount consumed 
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public Map<Integer, Double> getTotalConsumptionBySol(int type) {
+		Map<Integer, Double> map = new ConcurrentHashMap<>();
+		
+		for (Integer sol : consumption.keySet()) {		
+			for (Integer t : consumption.get(sol).keySet()) {
+				if (t == type) {
+					map.put(sol, consumption.get(sol).get(t));
+				}
+			}
+		}
+		
+		return map;
+	}
+	
+	/**
+	 * Gets the daily average water usage of the last x sols
+	 * Not: most weight on yesterday's usage. Least weight on usage from x sols ago
+	 * 
+	 * @return
+	 */
+	public double getDailyUsage(int type) {
+		Map<Integer, Double> map = getTotalConsumptionBySol(type);
+		
+		boolean quit = false;
+		int today = solCache;
+		int sol = solCache;
+		double sum = 0;
+		double numSols = 0;
+		double cumulativeWeight = 0.75;
+		double weight = 1;
+
+		while (!quit) {
+			if (map.size() == 0) {
+				quit = true;
+				return 0;
+			}
+			
+			else if (map.containsKey(sol)) {
+				if (today == sol) {
+					// If it's getting the today's average, one may 
+					// project the full-day usage based on the usage up to this moment 
+					weight = .25;
+					sum = sum + map.get(sol) * 1_000D / marsClock.getMillisol() * weight ;
+				}
+				
+				else {
+					sum = sum + map.get(sol) * weight;
+				}
+			}
+			
+			else if (map.containsKey(sol - 1)) {
+				sum = sum + map.get(sol - 1) * weight;
+				sol--;
+			}
+			
+			cumulativeWeight = cumulativeWeight + weight;
+			weight = (numSols + 1) / (cumulativeWeight + 1);
+			numSols++;
+			sol--;
+			// Get the last x sols only
+			if (numSols > MAX_NUM_SOLS)
+				quit = true;
+		}
+		
+		return sum/cumulativeWeight; 
+	}
 	
 	
 	/**

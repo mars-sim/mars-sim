@@ -1064,8 +1064,10 @@ implements Serializable {
 		if (cleaningAgentPerSol*.1 > MIN)
 			cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol*.1, NaClOID, inv, true); 
 		boolean cleaning1 = false;
-		if (cleaningAgentPerSol > MIN)
-			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol, waterID, inv, true);
+		if (cleaningAgentPerSol > MIN) {
+			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol*5, waterID, inv, true);
+        	settlement.addConsumptionTime(2, cleaningAgentPerSol*5);
+		}
 
 		if (cleaning0)
 			cleanliness = cleanliness + .05;

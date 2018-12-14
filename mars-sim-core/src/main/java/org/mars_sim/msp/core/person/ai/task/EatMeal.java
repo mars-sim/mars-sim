@@ -148,8 +148,8 @@ public class EatMeal extends Task implements Serializable {
 			// Note : if a person is on EVA suit, he cannot eat 
 			// but should be able to drink water from the helmet tube if he's thirsty				
 			if (notThirsty) {
-//				LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
-//					person + " was trying to eat a meal, but is not inside a settlement/vehicle.", null);
+//				LogConsolidated.log(Level.WARNING, 3000, sourceName,
+//					person + " was trying to eat a meal, but is not inside a settlement/vehicle.");
 				endTask();
 			}
 			else {
@@ -638,16 +638,20 @@ public class EatMeal extends Task implements Serializable {
 							new_thirst = 0;
 						else if (new_thirst > 500)
 							new_thirst = 500;
-
 						condition.setThirst(new_thirst);
-						if (waterOnly)
-							setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
-						inv.retrieveAmountResource(ResourceUtil.waterID, amount);
-						LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " + person
-										+ " drank " + Math.round(amount * 1000.0) / 1.0
-										+ " mL of water", null);
-	//					LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+
+						if (amount > MIN) {
+							Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
+							// Track the water consumption
+							person.addConsumptionTime(1, amount);
+							if (waterOnly)
+								setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
+							LogConsolidated.log(Level.FINE, 1000, sourceName,
+									"[" + person.getLocationTag().getLocale() + "] " + person
+											+ " drank " + Math.round(amount * 1000.0) / 1.0
+											+ " mL of water.");
+						}
+	//					LogConsolidated.log(Level.INFO, 1000, sourceName,
 	//						 person + " is drinking " + Math.round(amount * 1000.0)/1000.0 + "kg of water"
 	//						 + " thirst : " + Math.round(currentThirst* 100.0)/100.0
 	//						 + " waterEachServing : " + Math.round(waterEachServing* 100.0)/100.0
@@ -668,14 +672,18 @@ public class EatMeal extends Task implements Serializable {
 							else if (new_thirst > 500)
 								new_thirst = 500;
 							condition.setThirst(new_thirst);
-							if (waterOnly)
-								setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
-							LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
-									"[" + person.getLocationTag().getLocale() + "] " + person
-											+ " was put on water ration and allocated to drink no more than " + Math.round(amount * 1000.0) / 1.0
-											+ " mL of water", null);
+							
 							if (amount > MIN) {
 								Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
+								// Track the water consumption
+								person.addConsumptionTime(1, amount);
+								if (waterOnly)
+									setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
+								LogConsolidated.log(Level.WARNING, 1000, sourceName,
+										"[" + person.getLocationTag().getLocale() + "] " + person
+												+ " was put on water ration and allocated to drink no more than " 
+												+ Math.round(amount * 1000.0) / 1.0
+												+ " mL of water.");
 							}
 						}
 						else {
@@ -690,14 +698,18 @@ public class EatMeal extends Task implements Serializable {
 								else if (new_thirst > 500)
 									new_thirst = 500;
 								condition.setThirst(new_thirst);
-								if (waterOnly)
-									setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
-								LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
-										"[" + person.getLocationTag().getLocale() + "] " + person
-												+ " was put on water ration and allocated to drink no more than " + Math.round(amount * 1000.0) / 1.0
-												+ " mL of water", null);
+
 								if (amount > MIN) {
 									Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
+									// Track the water consumption
+									person.addConsumptionTime(1, amount);
+									if (waterOnly)
+										setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
+									LogConsolidated.log(Level.WARNING, 1000, sourceName,
+											"[" + person.getLocationTag().getLocale() + "] " + person
+													+ " was put on water ration and allocated to drink no more than " 
+													+ Math.round(amount * 1000.0) / 1.0
+													+ " mL of water.");
 								}
 							}
 							
@@ -713,14 +725,18 @@ public class EatMeal extends Task implements Serializable {
 									else if (new_thirst > 500)
 										new_thirst = 500;
 									condition.setThirst(new_thirst);
-									if (waterOnly)
-										setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
-									LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
-											"[" + person.getLocationTag().getLocale() + "] " + person
-													+ " was put on water ration and allocated to drink no more than " + Math.round(amount * 1000.0) / 1.0
-													+ " mL of water", null);
+
 									if (amount > MIN) {
 										Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, true);
+										// Track the water consumption
+										person.addConsumptionTime(1, amount);
+										if (waterOnly)
+											setDescription(Msg.getString("Task.description.eatMeal.water")); //$NON-NLS-1$
+										LogConsolidated.log(Level.WARNING, 1000, sourceName,
+												"[" + person.getLocationTag().getLocale() + "] " + person
+														+ " was put on water ration and allocated to drink no more than " 
+														+ Math.round(amount * 1000.0) / 1.0
+														+ " mL of water.");
 									}
 								}
 							}

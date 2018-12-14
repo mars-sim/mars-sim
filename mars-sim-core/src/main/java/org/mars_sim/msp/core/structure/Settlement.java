@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -93,16 +94,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			logger.getName().length());
 
 	private static String DETECTOR_GRID = "] The detector grid forecast a ";
-
-	/** Normal air pressure [in kPa] */
-	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA;
-	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.00001;
-	/** Normal temperature (celsius) */
-	// private static final double NORMAL_TEMP = 22.5D;
-	// maximum & minimal acceptable temperature for living space (arbitrary)
-	// private static final double MIN_TEMP = -15.0D;
-	// private static final double MAX_TEMP = 45.0D;
+	
+	public static final int MAX_NUM_SOLS = 3;
 
 	public static final int SUPPLY_DEMAND_REFRESH = 10;
 
@@ -127,14 +120,47 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public static final double SAFE_TEMPERATURE_RANGE = 18;
 
 	// public static final double SAFETY_PRESSURE = 20;
+	
+	/** Normal air pressure [in kPa] */
+	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA;
+	/** The minimal amount of resource to be retrieved. */
+	private static final double MIN = 0.00001;
+	/** Normal temperature (celsius) */
+	// private static final double NORMAL_TEMP = 22.5D;
+	// maximum & minimal acceptable temperature for living space (arbitrary)
+	// private static final double MIN_TEMP = -15.0D;
+	// private static final double MAX_TEMP = 45.0D;
 
 	public static double water_consumption;
 
 	public static double minimum_air_pressure;
 		
+	/** The settlement life support requirements. */
+	public static double[][] life_support_value = new double[2][7];
+	
 	/** Amount of time (millisols) required for periodic maintenance. */
 	// private static final double MAINTENANCE_TIME = 1000D;
 
+	/** The flag signifying this settlement as the destination of the user customized commander. */ 
+	private boolean isCommanderMode = false;	
+	/** Override flag for food production. */
+	private boolean foodProductionOverride = false;
+	// private boolean reportSample = true;
+	/** Override flag for mission creation at settlement. */
+	private boolean missionCreationOverride = false;
+	/** Override flag for manufacturing at settlement. */
+	private boolean manufactureOverride = false;
+	/** Override flag for resource process at settlement. */
+	private boolean resourceProcessOverride = false;
+	/* Override flag for construction/salvage mission creation at settlement. */
+	private boolean constructionOverride = false;
+	/* Flag showing if the people list has been reloaded. */
+	public transient boolean justReloadedPeople = false;
+	/* Flag showing if the bots list has been reloaded. */
+	public transient boolean justReloadedRobots = false;
+	/** The Flag showing if the settlement has been exposed to the last radiation event. */
+	private boolean[] exposed = { false, false, false };
+	
 	/** The water ration level of the settlement. */
 	private int waterRationLevel = 1;
 	/** The number of people at the start of the settlement. */
@@ -170,6 +196,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private int numCitizens;
 	/**  Numbers of associated bots in this settlement. */
 	private int numBots;
+	
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
 	public double greyWaterFilteringRate = 1;
 	/** The currently minimum passing score for mission approval. */
@@ -203,27 +230,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/** The maximum distance the rovers are allowed to travel. */
 	private double maxMssionRange = 500;
 
-	/** The flag signifying this settlement as the destination of the user customized commander. */ 
-	private boolean isCommanderMode = false;	
-	/** Override flag for food production. */
-	private boolean foodProductionOverride = false;
-	// private boolean reportSample = true;
-	/** Override flag for mission creation at settlement. */
-	private boolean missionCreationOverride = false;
-	/** Override flag for manufacturing at settlement. */
-	private boolean manufactureOverride = false;
-	/** Override flag for resource process at settlement. */
-	private boolean resourceProcessOverride = false;
-	/* Override flag for construction/salvage mission creation at settlement. */
-	private boolean constructionOverride = false;
-	/* Flag showing if the people list has been reloaded. */
-	public transient boolean justReloadedPeople = false;
-	/* Flag showing if the bots list has been reloaded. */
-	public transient boolean justReloadedRobots = false;
-	/** The Flag showing if the settlement has been exposed to the last radiation event. */
-	private boolean[] exposed = { false, false, false };
-	/** The settlement life support requirements. */
-	public static double[][] life_support_value = new double[2][7];
 	/** The settlement sponsor. */
 	private String sponsor;
 	/** The settlement template name. */
@@ -271,6 +277,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/** The settlement's location. */
 	@JsonIgnore
 	private Coordinates location;
+	/** The settlement's last dust storm. */
+	private DustStorm storm;
 
 	/** The last 20 mission scores */
 	private List<Double> missionScores;	
@@ -284,12 +292,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
 	/** The settlement's map of adjacent buildings. */
 	private Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
-
-	/** The settlement's last dust storm. */
-	private DustStorm storm;
+	/** The person's water/oxygen consumption */
+	private Map<Integer, Map<Integer, Double>> consumption;
+	
 
 	// Static members
-
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 	private static int co2ID = ResourceUtil.co2ID;
@@ -421,6 +428,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// initialize the missionScores list
 		missionScores = new ArrayList<>();
 		missionScores.add(200D);
+		
+		// Create the consumption map
+		consumption = new ConcurrentHashMap<>();
 	}
 
 	/**
@@ -1049,6 +1059,18 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public void timePassing(double time) {
 
+		// check for the passing of each day
+		int solElapsed = marsClock.getMissionSol();
+
+		if (solCache != solElapsed) {
+			solCache = solElapsed;
+
+			// Limit the size of the dailyWaterUsage to x key value pairs
+			if (consumption.size() > MAX_NUM_SOLS)
+				consumption.remove(solElapsed - MAX_NUM_SOLS);
+			
+		}
+		
 		// If settlement is overcrowded, increase inhabitant's stress.
 		// TODO: should the number of robots be accounted for here?
 
@@ -3625,6 +3647,109 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	
 	public double getGreyWaterFilteringRate() {
 		return greyWaterFilteringRate; 
+	}
+	
+	/**
+	 * Adds the amount consumed.
+	 * 
+	 * @param type
+	 * @param amount
+	 */
+	public void addConsumptionTime(int type, double amount) {
+		// type = 1 : preparing dessert
+		// type = 2 : cleaning kitchen
+		Map<Integer, Double> map = null;
+		
+		if (consumption.containsKey(solCache)) {
+			 map = consumption.get(solCache);
+			if (map.containsKey(type)) {
+				double oldAmt = map.get(type);
+				map.put(type, amount + oldAmt);
+			}
+			else {
+				map.put(type, amount);
+			}
+		}
+		else {
+			map = new ConcurrentHashMap<>();
+			map.put(type, amount);
+		}
+		
+		consumption.put(solCache, map);
+	}
+	
+	
+	/**
+	 * Gets the total amount consumed 
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public Map<Integer, Double> getTotalConsumptionBySol(int type) {
+		Map<Integer, Double> map = new ConcurrentHashMap<>();
+		
+		for (Integer sol : consumption.keySet()) {		
+			for (Integer t : consumption.get(sol).keySet()) {
+				if (t == type) {
+					map.put(sol, consumption.get(sol).get(t));
+				}
+			}
+		}
+		
+		return map;
+	}
+	
+	/**
+	 * Gets the daily average water usage of the last x sols
+	 * Not: most weight on yesterday's usage. Least weight on usage from x sols ago
+	 * 
+	 * @return
+	 */
+	public double getDailyUsage(int type) {
+		Map<Integer, Double> map = getTotalConsumptionBySol(type);
+		
+		boolean quit = false;
+		int today = solCache;
+		int sol = solCache;
+		double sum = 0;
+		double numSols = 0;
+		double cumulativeWeight = 0.75;
+		double weight = 1;
+
+		while (!quit) {
+			if (map.size() == 0) {
+				quit = true;
+				return 0;
+			}
+			
+			else if (map.containsKey(sol)) {
+				if (today == sol) {
+					// If it's getting the today's average, one may 
+					// project the full-day usage based on the usage up to this moment 
+					weight = .25;
+					sum = sum + map.get(sol) * 1_000D / marsClock.getMillisol() * weight ;
+				}
+				
+				else {
+					sum = sum + map.get(sol) * weight;
+				}
+			}
+			
+			else if (map.containsKey(sol - 1)) {
+				sum = sum + map.get(sol - 1) * weight;
+				sol--;
+			}
+			
+			cumulativeWeight = cumulativeWeight + weight;
+			weight = (numSols + 1) / (cumulativeWeight + 1);
+			numSols++;
+			sol--;
+			// Get the last x sols only
+			if (numSols > MAX_NUM_SOLS)
+				quit = true;
+		}
+		
+		return sum/cumulativeWeight; 
 	}
 	
 	@Override
