@@ -346,7 +346,8 @@ public class TabPanelDashboard extends TabPanel {
 			else if (index == 5)
 				type = ObjectiveType.TOURISM;
 
-			settlement.setObjective(type);
+			// Assume always at level 2
+			settlement.setObjective(type, 2);
 			
 			update();
 			

@@ -11,10 +11,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -45,6 +47,9 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(RepairEVAMalfunction.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
 	// Static members
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = 1.2D;
@@ -67,7 +72,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	 * @param person the person to perform the task
 	 */
 	public RepairEmergencyMalfunctionEVA(Person person) {
-		super(NAME, person, false, 5D);
+		super(NAME, person, false, 25D);
 
 		// Factor in a person's preference for the new stress modifier
 		int score = person.getPreference().getPreferenceScore(new RepairEVAMalfunctionMeta());
@@ -278,7 +283,19 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 
 		// Check if there emergency malfunction work is fixed.
 		double workTimeLeft = malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime();
-		if (workTimeLeft == 0) {
+		if (workTimeLeft <= 0) {
+			if (person != null) {
+				LogConsolidated.log(Level.INFO, 5000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " had completed the emergency EVA repair on malfunction: " 
+				+ malfunction.getName() + " in "+ entity + ".");
+//				+ "@"+ Integer.toHexString(malfunction.hashCode()));
+			}
+        	else if (robot != null) {
+				LogConsolidated.log(Level.INFO, 5000, sourceName,
+						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " had completed the emergency EVA repair on malfunction: " 
+				+ malfunction.getName() + " in "+ entity + ".");
+//				+ "@" + Integer.toHexString(malfunction.hashCode()));
+        	}
 			setPhase(WALK_BACK_INSIDE);
 			return time;
 		}

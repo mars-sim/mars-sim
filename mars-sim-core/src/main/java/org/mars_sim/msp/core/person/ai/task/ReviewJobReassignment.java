@@ -176,20 +176,19 @@ public class ReviewJobReassignment extends Task implements Serializable {
 					tempPerson.getMind().reassignJob(lastJobStr, true, JobManager.USER,
 							JobAssignmentType.NOT_APPROVED, approvedBy);
 
-					LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
+					LogConsolidated.log(Level.INFO, 3000, sourceName,
 							"[" + s + "] " + approvedBy + " did NOT approve " + tempPerson
 							+ "'s job reassignment as " + pendingJobStr + "."
 							//+ "Try again when the performance rating is higher."
-							, null);
+							);
 				} else {
 
 					// Updates the job
 					tempPerson.getMind().reassignJob(pendingJobStr, true, JobManager.USER,
 							JobAssignmentType.APPROVED, approvedBy);
-					LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
+					LogConsolidated.log(Level.INFO, 3000, sourceName,
 							"[" + s + "] " + approvedBy + " just approved " + tempPerson
-							+ "'s job reassignment as " + pendingJobStr + "."
-							, null);
+							+ "'s job reassignment as " + pendingJobStr + ".");
 				}
 				
 				addExperience(time);

@@ -12,9 +12,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -46,6 +48,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(RepairMalfunction.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.repairMalfunction"); //$NON-NLS-1$
 
@@ -66,7 +71,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	 * @param person the person to perform the task
 	 */
 	public RepairMalfunction(Person person) {
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(50D));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 25D + RandomUtil.getRandomDouble(10D));
 
 		// Get the malfunctioning entity.
 		entity = getMalfunctionEntity(person);
@@ -314,7 +319,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double repairingPhase(double time) {
-
+		
 		// TODO: double check to see if checking person and robot as follows are valid
 		// or not
 		if (person != null) {
@@ -429,6 +434,19 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			malfunction.addWorkTime(workTime, robot.getName());
 		}
 
+		if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime() <= 0D)) {
+			if (person != null) {
+				LogConsolidated.log(Level.INFO, 5000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+						+ " had completed the regular repair of " + malfunction.getName() + " in "+ entity + ".");
+			}
+			else {
+				LogConsolidated.log(Level.INFO, 5000, sourceName,
+					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
+						+ " had completed the regular repair of "  + malfunction.getName() + " in "+ entity + ".");
+			}
+		}
+		
 		// Add experience
 		addExperience(time);
 

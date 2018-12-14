@@ -1267,10 +1267,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param {{@link HistoricalEventManager}
 	 */
-	public static void justReloaded(HistoricalEventManager event) {
+	public static void justReloaded(HistoricalEventManager event, RelationshipManager r) {
 		sim = Simulation.instance();
 		eventManager = event;
-		relationshipManager = sim.getRelationshipManager();
+		relationshipManager = r;
 	}
 	
 	/**

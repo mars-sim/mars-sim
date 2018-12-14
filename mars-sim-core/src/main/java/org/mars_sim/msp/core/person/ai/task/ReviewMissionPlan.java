@@ -16,20 +16,29 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
 import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
+import org.mars_sim.msp.core.person.ai.mission.Exploration;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
@@ -68,10 +77,9 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	/** The role of the person who is reviewing the mission plan. */
 	public RoleType roleType;
 	
-	private static MissionManager missionManager;
-	
-	private static RelationshipManager relationshipManager;
-
+	private static Simulation sim = Simulation.instance();
+	private static MissionManager missionManager = sim.getMissionManager();
+	private static RelationshipManager relationshipManager = sim.getRelationshipManager();
 
 	/**
 	 * Constructor. This is an effort-driven task.
@@ -154,14 +162,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
-	private double reviewingPhase(double time) {
-
-//		if (missionManager == null)
-        	missionManager = Simulation.instance().getMissionManager();
-
-//		if (relationshipManager == null)
-			relationshipManager = Simulation.instance().getRelationshipManager();
-		
+	private double reviewingPhase(double time) {	
         List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
         
 		// Iterates through each pending mission 
@@ -233,12 +234,50 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							else
 								qual = m.getMissionQualification(person);											
 							
-							// TODO: Go to him/her to have a chat
-				
-							// 4. randomness
+							// 4. Settlement objective score
+							double obj = 0;
+							
+							if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TOURISM
+									&& (m instanceof AreologyStudyFieldMission
+									|| m instanceof BiologyStudyFieldMission
+									|| m instanceof TravelToSettlement
+									|| m instanceof Exploration)
+									) {
+								obj = person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
+							}				
+							
+							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRADE_TOWN
+									&& m instanceof Trade) {
+								obj = person.getAssociatedSettlement().getGoodsManager().getTradeFactor();
+							}	
+							
+							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRANSPORTATION_HUB
+									&& (m instanceof TravelToSettlement
+									|| m instanceof Exploration)) {
+								obj = person.getAssociatedSettlement().getGoodsManager().getTransportationFactor();
+							}	
+							
+							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.MANUFACTURING
+									&& (m instanceof Mining
+									|| m instanceof CollectRegolith)) {
+								obj = person.getAssociatedSettlement().getGoodsManager().getManufacturingFactor();
+							}	
+							
+							// 5. emergency
+							int emer = 0;
+							if (m instanceof EmergencySupplyMission
+									|| m instanceof RescueSalvageVehicle) {
+								emer = 50;
+							}	
+							
+							// 6. randomness
 							int rand = RandomUtil.getRandomInt(-10, 10);
 							
-							score = rating + relation + qual + rand;
+	
+							// TODO: 6. Go to him/her to have a chat
+							// TODO: 7. look at the mission experience of a person
+							
+							score = rating + relation + qual + obj + emer + rand;
 							
 							// Updates the mission plan status
 							missionManager.scoreMissionPlan(mp, score);
@@ -276,9 +315,6 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double finishedPhase(double time) {
-
-//		if (missionManager == null)
-        missionManager = Simulation.instance().getMissionManager();
         
         List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
  		// Iterates through each pending mission 
@@ -371,6 +407,20 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		List<SkillType> results = new ArrayList<SkillType>(0);
 		return results;
 	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {{@link RelationshipManager}
+	 * @param {{@link MissionManager}
+	 */
+	public static void justReloaded(RelationshipManager r, MissionManager m) {
+		sim = Simulation.instance();
+		relationshipManager = r;
+		missionManager = m;
+	}
+	
+	
 	@Override
 	public void destroy() {
 		super.destroy();

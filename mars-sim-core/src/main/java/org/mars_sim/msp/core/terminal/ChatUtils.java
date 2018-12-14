@@ -54,6 +54,8 @@ import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
+import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
@@ -80,6 +82,7 @@ import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Airlock;
+import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
@@ -144,7 +147,7 @@ public class ChatUtils {
 			"vehicle range",
 			"dash", "dashboard",
 			"repair", "maintenance", "evasuit", "eva suit", 
-			"trip", "excursion", "mission",
+			"mission plan", "mission now",
 			"objective", "water"
 	};
 	
@@ -288,6 +291,7 @@ public class ChatUtils {
 	private static SkillManager skillManager;
 	private static LogManager logManager;
 	private static UnitManager unitManager;
+	private static MissionManager missionManager;
 	
 	private static DecimalFormat fmt = new DecimalFormat("##0");
 	private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
@@ -307,6 +311,7 @@ public class ChatUtils {
 		scientificManager = sim.getScientificStudyManager();
 		logManager = LogManager.getLogManager();
 		unitManager = sim.getUnitManager();
+		missionManager = sim.getMissionManager();
 	}
 
 	/**
@@ -615,7 +620,6 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append(addhiteSpacesName("Reserved : ", max) + reserve);
 			
-			MissionManager missionManager = Simulation.instance().getMissionManager();
 			String missionStr = "None";
 			if (missionManager.getMissionForVehicle(vehicleCache) != null) {
 				Mission m = missionManager.getMissionForVehicle(vehicleCache);
@@ -1141,20 +1145,33 @@ public class ChatUtils {
     	        
     	        if (newObj > 0  && newObj < 7) {
 
-    	        	String newObjStr = settlementCache.getObjectiveArray()[newObj - 1];
+    	        	String prompt3 =  "Enter the level choice (1-3)";
+    	        	int newLevel = Simulation.instance().getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(3).read(prompt3);
     	        	
-    				responseText.append(settlementCache + " : I've updated it for you as follows : ");
-    				responseText.append(System.lineSeparator());
-    				responseText.append(System.lineSeparator());
-//    				responseText.append(System.lineSeparator());
-
-    				s = "New Development Objective : " + newObjStr;
-    				responseText.append(s);
-    				logger.config(s);
-    				
+    	        	if (newLevel > 0 && newLevel < 4) {
+	    	        	String newObjStr = settlementCache.getObjectiveArray()[newObj - 1];
+	    	        	
+	    				responseText.append(settlementCache + " : I've updated it for you as follows : ");
+	    				responseText.append(System.lineSeparator());
+	    				responseText.append(System.lineSeparator());
+	//    				responseText.append(System.lineSeparator());
+	
+	    				s = "New Development Objective : " + newObjStr;
+	    				
+	    				settlementCache.setObjective(ObjectiveType.getType(newObjStr), newLevel);
+	    				responseText.append(s);
+	    				logger.config(s);
+    	        	}
+    	        	
+    	        	else {
+        	        	s = settlementCache + " : Invald level. Please try it again.";
+        				responseText.append(s);
+        				logger.config(s);
+    	        	}
     	        }
+    	        
     	        else {
-    	        	s = settlementCache + " : Invald input. Please try it again.";
+    	        	s = settlementCache + " : Invald objective. Please try it again.";
     				responseText.append(s);
     				logger.config(s);
     	        }
@@ -1388,23 +1405,194 @@ public class ChatUtils {
 			}
 		}
 
-		else if (text.toLowerCase().contains("mission") || text.toLowerCase().contains("trip")
-				|| text.toLowerCase().contains("excursion")) {
-			questionText = YOU_PROMPT + "Are there any on-going missions at this moment? ";
-//			responseText.append(settlementCache + " : ");
-//			responseText.append("Here's the mission roster.");
-//			responseText.append(System.lineSeparator());
+		else if (text.equalsIgnoreCase("mission") || text.equalsIgnoreCase("trip")
+				|| text.equalsIgnoreCase("excursion")) {
+			responseText.append("What would you like to know about mission ? ");
+			responseText.append(System.lineSeparator());
+			responseText.append("Say 'mission plan' or 'mission now'");
+			responseText.append(System.lineSeparator());
+		}
+		
+		else if (text.equalsIgnoreCase("mission plan")) {
 			
-			List<Mission> missions = sim.getMissionManager().getMissions();
+			questionText = "";//YOU_PROMPT + "Show me the statistics on the mission plans submitted.";
 			
-			missions = missions.stream()
-					.filter(m -> m.getAssociatedSettlement() == settlementCache)
-					.collect(Collectors.toList());
+			String prompt2 =  YOU_PROMPT + "Show me the statistics on the mission plans submitted."
+					+ System.lineSeparator()
+					+ System.lineSeparator()
+					+ " 1. Today" + System.lineSeparator() 
+					+ " 2. last 3 sols (Each)" + System.lineSeparator() 
+					+ " 3. Last 7 sols (Each)" + System.lineSeparator() 
+					+ " 4. last 3 sols (Combined)" + System.lineSeparator() 
+					+ " 5. Last 7 sols (Combined)" + System.lineSeparator() 
+					+ " 6. Last 14 sols (Combined)" + System.lineSeparator() 
+					+ " 7. Last 28 sols (Combined)" + System.lineSeparator() 
+					+ " 8. Since the beginning (Combined)" + System.lineSeparator() 
+					+ System.lineSeparator()
+					+ "Enter your choice (1-8)";
+
+			int newObj = Simulation.instance().getTerm().getTextIO()
+					.newIntInputReader().withMinVal(1).withMaxVal(8).read(prompt2);
+	
+			if (newObj > 0  && newObj <= 3) {
+				
+				int today = marsClock.getMissionSol();
+				int max = 0;
+				if (newObj == 1) {
+					max = 1;
+					responseText.append(System.lineSeparator());
+					responseText.append("On Sol " + today + ", it shows ");
+				}
+				else if (newObj == 2) {
+					max = 3;
+					responseText.append(System.lineSeparator());
+					responseText.append("On Sol " + today + ", the last " + max + " sols shows ");
+				}
+				else if (newObj == 3) {
+					max = 7;
+					responseText.append(System.lineSeparator());
+					responseText.append("On Sol " + today + ", the last " + max + " sols shows ");
+				}
+							
+				Map<Integer, List<MissionPlanning>> plannings = missionManager.getHistoricalMissions();
+
+				int size = Math.min(plannings.size(), max);
+				
+				if (size == 0) {
+					responseText.append(System.lineSeparator());
+					responseText.append("No mission plans have been submitted.");
+				}
+				
+				else {
+					int sol = marsClock.getMissionSol();
+					for (int i=0; i< size + 1; i++) {
+						List<MissionPlanning> plans = plannings.get(sol - i);
+						int approved = 0;
+						int notApproved = 0;
+						int pending = 0;
+						
+						responseText.append(System.lineSeparator());
+						responseText.append(System.lineSeparator());
+						responseText.append("           < Sol " + (sol - i) + " >");
+						responseText.append(System.lineSeparator());
+						responseText.append(" -----------------------------");
+						
+						if (plans != null && !plans.isEmpty()) {
+							
+							for (MissionPlanning mp : plans) {
+								if (PlanType.PENDING == mp.getStatus())
+									pending++;
+								else if (PlanType.NOT_APPROVED == mp.getStatus())
+									notApproved++;
+								else if (PlanType.APPROVED == mp.getStatus())
+									approved++;	
+							}
+							
+							responseText.append(System.lineSeparator());
+							responseText.append("     # of plans approved : " + approved);
+							responseText.append(System.lineSeparator());
+							responseText.append(" # of plans not approved : " + notApproved);
+							responseText.append(System.lineSeparator());
+							responseText.append("      # of plans pending : " + pending);
+							responseText.append(System.lineSeparator());
+						}
+						
+						else {
+							responseText.append(System.lineSeparator());
+							responseText.append("              # of plans : 0");
+							responseText.append(System.lineSeparator());
+						}
+					}		
+				}
+			}
+			
+			else if (newObj > 3  && newObj <= 8) {
+				// 4. last 3 sols (Combined)
+				// 5. Last 7 sols (Combined)
+				// 6. Last 14 sols (Combined)
+				// 7. Last 28 sols (Combined)
+				// 8. Since the beginning (Combined)
+				int today = marsClock.getMissionSol();
+				int max = 0;
+				if (newObj == 4) {
+					max = 3;
+					responseText.append("On Sol " + today + ", the combined data for the last 3 sols shows ");
+				}
+				else if (newObj == 5) {
+					max = 7;
+					responseText.append("On Sol " + today + ", the combined data for the last 7 sols shows ");
+				}
+				else if (newObj == 6) {
+					max = 14;
+					responseText.append("On Sol " + today + ", the combined data for the last 14 sols shows ");
+				}
+				else if (newObj == 7) {
+					max = 28;
+					responseText.append("On Sol " + today + ", the combined data for the last 28 sols shows ");
+				}
+				else if (newObj == 8) {
+					max = Integer.MAX_VALUE;
+					responseText.append("Since the beginning, the combined data shows ");
+				}
+				
+				Map<Integer, List<MissionPlanning>> plannings = missionManager.getHistoricalMissions();
+
+				int size = Math.min(plannings.size(), max);
+				
+				if (size == 0) {
+					responseText.append(System.lineSeparator());
+					responseText.append("No mission plans have been submitted.");
+				}
+				
+				else {
+					int sol = marsClock.getMissionSol();
+					int approved = 0;
+					int notApproved = 0;
+					int pending = 0;
+					
+					for (int i=0; i< size + 1; i++) {
+						List<MissionPlanning> plans = plannings.get(sol - i);
+						
+						if (plans != null && !plans.isEmpty()) {
+							
+							for (MissionPlanning mp : plans) {
+								if (PlanType.PENDING == mp.getStatus())
+									pending++;
+								else if (PlanType.NOT_APPROVED == mp.getStatus())
+									notApproved++;
+								else if (PlanType.APPROVED == mp.getStatus())
+									approved++;	
+							}						
+						}
+					}		
+					
+					responseText.append(System.lineSeparator());
+					responseText.append("     # of plans approved : " + approved);
+					responseText.append(System.lineSeparator());
+					responseText.append(" # of plans not approved : " + notApproved);
+					responseText.append(System.lineSeparator());
+					responseText.append("      # of plans pending : " + pending);
+					responseText.append(System.lineSeparator());
+				}
+			}
+			
+			else {
+				responseText.append("Invalid choice. Please try again.");
+			}
+		}
+		
+		else if (text.equalsIgnoreCase("mission now")) {
+			questionText = YOU_PROMPT + "Are there any on-going/pending missions at this moment? ";
+
+			List<Mission> missions = missionManager.getMissionsForSettlement(settlementCache);
+//			missions = missions.stream()
+//					.filter(m -> m.getAssociatedSettlement() == settlementCache)
+//					.collect(Collectors.toList());
 					
 			
 			if (missions.isEmpty()) {
 				responseText.append(settlementCache + " : ");
-				responseText.append("no on-going missions right now.");
+				responseText.append("no on-going/pending missions right now.");
 			}
 			
 			else {
@@ -1941,7 +2129,7 @@ public class ChatUtils {
 				// Print mission name
 				String missionName = " ";
 				Mission mission = null;
-				List<Mission> missions = Simulation.instance().getMissionManager().getMissions();
+				List<Mission> missions = missionManager.getMissions();
 				for (Mission m : missions) {
 					if (m instanceof VehicleMission) {
 						Vehicle vv = ((VehicleMission)m).getVehicle(); 

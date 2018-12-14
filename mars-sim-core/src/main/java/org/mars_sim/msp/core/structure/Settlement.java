@@ -415,11 +415,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		// Set objective()
 		if (template.equals("Trading Outpost"))
-			setObjective(ObjectiveType.TRADE_TOWN);
+			setObjective(ObjectiveType.TRADE_TOWN, 2);
 		else if (template.equals("Mining Outpost"))
-			setObjective(ObjectiveType.MANUFACTURING);
+			setObjective(ObjectiveType.MANUFACTURING, 2);
 		else
-			setObjective(ObjectiveType.CROP_FARM);
+			setObjective(ObjectiveType.CROP_FARM, 2);
 
 //		LogConsolidated.log(Level.INFO, 0, sourceName,
 //				"[" + this + "] Set development objective to " + objectiveType.toString() 
@@ -3290,9 +3290,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * Sets the objective
 	 * 
 	 * @param {{@link ObjectiveType}
+	 * @param level
 	 */
-	public void setObjective(ObjectiveType objectiveType) {
+	public void setObjective(ObjectiveType objectiveType, int level) {
 		this.objectiveType = objectiveType;
+		double lvl = 1.25 * level;
 
 		// reset all to 1
 		goodsManager.setCropFarmFactor(1);
@@ -3304,27 +3306,27 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// goodsManager.setFreeMarketFactor(1);
 
 		if (objectiveType == ObjectiveType.CROP_FARM) {
-			goodsManager.setCropFarmFactor(1.5);
+			goodsManager.setCropFarmFactor(lvl);
 		}
 
 		else if (objectiveType == ObjectiveType.MANUFACTURING) {
-			goodsManager.setManufacturingFactor(1.5);
+			goodsManager.setManufacturingFactor(lvl);
 		}
 
 		else if (objectiveType == ObjectiveType.RESEARCH_CENTER) {
-			goodsManager.setResearchFactor(1.5);
+			goodsManager.setResearchFactor(lvl);
 		}
 
 		else if (objectiveType == ObjectiveType.TRANSPORTATION_HUB) {
-			goodsManager.setTransportationFactor(1.5);
+			goodsManager.setTransportationFactor(lvl);
 		}
 
 		else if (objectiveType == ObjectiveType.TRADE_TOWN) {
-			goodsManager.setTradeFactor(1.5);
+			goodsManager.setTradeFactor(lvl);
 		}
 
 		else if (objectiveType == ObjectiveType.TOURISM) {
-			goodsManager.setTourismFactor(1.5);
+			goodsManager.setTourismFactor(lvl);
 		}
 
 	}

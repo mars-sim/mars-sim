@@ -10,8 +10,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -42,6 +44,9 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(RepairEmergencyMalfunction.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.repairEmergencyMalfunction"); //$NON-NLS-1$
 
@@ -66,7 +71,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 	 * @param person the person to perform the task
 	 */
 	public RepairEmergencyMalfunction(Unit unit) {
-		super(NAME, unit, true, true, STRESS_MODIFIER, false, 5D);
+		super(NAME, unit, true, true, STRESS_MODIFIER, false, 25D);
 
 		if (unit instanceof Person) {
 			this.person = (Person) unit;
@@ -110,13 +115,17 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
 		if (malfunction != null) {
 			if (person != null) {
-				logger.fine(person.getName() + " starting work on emergency malfunction: " + malfunction.getName() + "@"
-						+ Integer.toHexString(malfunction.hashCode()));
+				LogConsolidated.log(Level.INFO, 5000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " started repairing on emergency malfunction: " 
+				+ malfunction.getName() + " in "+ entity + ".");
+//				+ "@"+ Integer.toHexString(malfunction.hashCode()));
 			}
-//        	else if (robot != null) {
-//                //logger.fine(robot.getName() + " starting work on emergency malfunction: " +
-//                        //malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
-//        	}
+        	else if (robot != null) {
+				LogConsolidated.log(Level.INFO, 5000, sourceName,
+						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " started repairing on emergency malfunction: " 
+				+ malfunction.getName() + " in "+ entity + ".");
+//				+ "@" + Integer.toHexString(malfunction.hashCode()));
+        	}
 		}
 	}
 
@@ -142,7 +151,17 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
 		// Check if the emergency malfunction work is fixed.
 		double workTimeLeft = malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime();
-		if (workTimeLeft == 0) {
+		if (workTimeLeft <= 0) {
+			if (person != null) {
+			LogConsolidated.log(Level.INFO, 5000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+					+ " had finished the emergency malfunction of " + malfunction.getName() + " in "+ entity + ".");
+			}
+			else {
+				LogConsolidated.log(Level.INFO, 5000, sourceName,
+						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
+						+ " had finished the emergency malfunction of " + malfunction.getName() + " in "+ entity + ".");
+			}
 			endTask();
 		}
 

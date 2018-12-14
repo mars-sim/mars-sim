@@ -26,6 +26,7 @@ public class MissionPlanning implements Serializable {
 	private int requestedSol;
 	private double percentComplete = 10; // 0% to 100%
 	private double score = 0; // 0 to 1000 points
+	private double qualityScore = 0;
 	
 	private String reviewedBy;
 	private String requestedBy;
@@ -66,6 +67,10 @@ public class MissionPlanning implements Serializable {
 		score = value;
 	}
 	
+	public void setQualityScore(double value) {
+		qualityScore = value;
+	}
+	
 	public void setPercentComplete(double value) {
 		percentComplete = value;
 	}
@@ -90,4 +95,9 @@ public class MissionPlanning implements Serializable {
 	public double getScore() {;
 		return score;
 	}
+	
+	public double getQualityScore() {
+		return qualityScore;
+	}
+	
 }

@@ -13,11 +13,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -50,6 +52,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(RepairEVAMalfunction.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.repairEVAMalfunction"); //$NON-NLS-1$
 
@@ -70,7 +75,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	private Unit containerUnit;
 
 	public RepairEVAMalfunction(Person person) {
-		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+		super(NAME, person, true, RandomUtil.getRandomDouble(10D) + 25D);
 
 		containerUnit = person.getTopContainerUnit();
 		
@@ -379,7 +384,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	 */
 	private double repairMalfunctionPhase(double time) {
 
-		// 2015-05-29 Check for radiation exposure during the EVA operation.
+		// Check for radiation exposure during the EVA operation.
 		if (isRadiationDetected(time)) {
 			setPhase(WALK_BACK_INSIDE);
 			return time;
@@ -388,12 +393,18 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		boolean finishedRepair = false;
 		if (isEVAMalfunction) {
 			if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) <= 0D) {
+				LogConsolidated.log(Level.INFO, 5000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+						+ " had completed the EVA repair of " + malfunction.getName() + " in "+ entity + ".");
 				finishedRepair = true;
 			}
-		} else {
-			if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime() <= 0D)) {
+		} 
+		
+		else if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime() <= 0D)) {
+				LogConsolidated.log(Level.INFO, 5000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+						+ " had completed the regular repair of " + malfunction.getName() + " in "+ entity + ".");
 				finishedRepair = true;
-			}
 		}
 
 		if (finishedRepair || shouldEndEVAOperation() || addTimeOnSite(time)) {

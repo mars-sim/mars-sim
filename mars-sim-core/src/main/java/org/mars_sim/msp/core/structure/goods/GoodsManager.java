@@ -115,6 +115,7 @@ public class GoodsManager implements Serializable {
 	private static final String SALVAGE_BUILDING_MISSION = "salvage building";
 	private static final String EMERGENCY_SUPPLY_MISSION = "deliver emergency supplies";
 
+	
 	// Number modifiers for outstanding repair and maintenance parts.
 	private static final int OUTSTANDING_REPAIR_PART_MODIFIER = 150;
 	private static final int OUTSTANDING_MAINT_PART_MODIFIER = 15;
@@ -147,8 +148,13 @@ public class GoodsManager implements Serializable {
 //	private static final double FOOD_FACTOR = .001;
 	private static final double SPEED_TO_DISTANCE = 2D / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
 
-	private double inflation_rate = .8;
-
+	private static final double CROPFARM_BASE = 1;
+	private static final double MANU_BASE = 1;
+	private static final double RESEARCH_BASE = 1;
+	private static final double TRANSPORT_BASE = 1;
+	private static final double TRADE_BASE = 1;
+	private static final double TOURISM_BASE = 1;
+	
 	/** VP probability modifier. */
 	public static double ICE_VALUE_MODIFIER = 2D;
 	public static double WATER_VALUE_MODIFIER = 3D;
@@ -168,6 +174,9 @@ public class GoodsManager implements Serializable {
 	private double tourism_factor = 1;
 
 	private double vp_cache;
+	
+	private double inflation_rate = .8;
+
 
 	private Map<Good, Double> goodsValues;
 	private Map<Good, Double> goodsDemandCache;
@@ -769,23 +778,23 @@ public class GoodsManager implements Serializable {
 	}
 
 	public void setCropFarmFactor(double value) {
-		cropFarm_factor = value * cropFarm_factor;
+		cropFarm_factor = value * CROPFARM_BASE;
 	}
 
 	public void setManufacturingFactor(double value) {
-		manufacturing_factor = value * manufacturing_factor;
+		manufacturing_factor = value * MANU_BASE;
 	}
 
 	public void setTransportationFactor(double value) {
-		transportation_factor = value * transportation_factor;
+		transportation_factor = value * TRANSPORT_BASE;
 	}
 
 	public void setResearchFactor(double value) {
-		research_factor = value * research_factor;
+		research_factor = value * RESEARCH_BASE;
 	}
 
 	public void setTradeFactor(double value) {
-		trade_factor = value * trade_factor;
+		trade_factor = value * TRADE_BASE;
 	}
 
 	// public void setFreeMarketFactor(double value) {

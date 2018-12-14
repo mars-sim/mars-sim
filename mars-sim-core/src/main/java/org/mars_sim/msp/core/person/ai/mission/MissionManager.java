@@ -42,7 +42,8 @@ public class MissionManager implements Serializable {
 //	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 //			logger.getName().length());
 
-	private static final int MAX_SOLS = 10;
+	private static final int MAX_NUM_PLANS = 100;
+	
 	private static final double PERCENT_PER_SCORE = 20D;
 	
 	/** Current missions in the simulation. */
@@ -589,7 +590,7 @@ public class MissionManager implements Serializable {
 				totalProbCache += probability;
 			} else {
 				missionProbCache.put(metaMission, 0D);
-				logger.severe(person.getName() + " bad mission probability on " + metaMission.getName() + " probability: "
+				logger.severe(person.getName() + " had bad mission probability on " + metaMission.getName() + " probability: "
 						+ probability);
 			}
 		}
@@ -686,8 +687,8 @@ public class MissionManager implements Serializable {
 			historicalMissions.put(mSol, plans);
 			
 			// Keep only the last x # of sols of mission plans
-			if (mSol > MAX_SOLS && historicalMissions.size() > MAX_SOLS) {
-				historicalMissions.get(mSol-MAX_SOLS);
+			if (mSol > MAX_NUM_PLANS && historicalMissions.size() > MAX_NUM_PLANS) {
+				historicalMissions.get(mSol-MAX_NUM_PLANS);
 			}
 		}
 	}
@@ -765,6 +766,10 @@ public class MissionManager implements Serializable {
 			id = missionNames.indexOf(name);
 		}
 		return id;
+	}
+	
+	public Map<Integer, List<MissionPlanning>> getHistoricalMissions() {
+		return historicalMissions;
 	}
 	
 	/**
