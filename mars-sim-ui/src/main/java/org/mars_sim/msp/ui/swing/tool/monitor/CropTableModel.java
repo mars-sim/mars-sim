@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropCategoryType;
+import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.CropType;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
@@ -515,8 +516,8 @@ public class CropTableModel extends UnitTableModel {
 				kk++;
 				// logger.info("setUpNewCropCache() : kk is " + kk ) ;
 				Crop crop = k.next();
-				CropType cropType = crop.getCropType();
-				String catName = cropType.getCropCategoryType().getName();
+				int id = crop.getCropTypeID();
+				String catName = CropConfig.getCropTypeByID(id).getCropCategoryType().getName();
 				// logger.info("setUpNewCropCache() : testCat is " + testCat ) ;
 				int num = getCategoryNum(catName);
 				// logger.info("setUpNewCropCache() : num is " + num ) ;
@@ -562,14 +563,14 @@ public class CropTableModel extends UnitTableModel {
 			// TODO: check with total Crops get updated
 			// columnNum = CROPS; // = 2
 			Crop crop = (Crop) target;
-			CropType cropType = crop.getCropType();
-			String cropCat = cropType.getCropCategoryType().getName();
+			int id = crop.getCropTypeID();
+			String catName = CropConfig.getCropTypeByID(id).getCropCategoryType().getName();
 			// logger.info("unitUpdate() : cropCat is " + cropCat);
 
 			try {
 				int tempColumnNum = -1;
 
-				tempColumnNum = getCategoryNum(cropCat);
+				tempColumnNum = getCategoryNum(catName);
 				// logger.info(" tempColumnNum : " + tempColumnNum);
 
 				if (tempColumnNum > -1) {
@@ -577,7 +578,7 @@ public class CropTableModel extends UnitTableModel {
 					int currentValue = (Integer) getValueAt(unitIndex, tempColumnNum);
 					// logger.info("unitUpdate() : currentValue : " + currentValue);
 
-					int newValue = getNewValue(unit, cropCat);
+					int newValue = getNewValue(unit, catName);
 					// int groupNum = getGroupNum(cropCat);
 					// logger.info("unitUpdate() : newValue : " + newValue);
 
@@ -623,9 +624,10 @@ public class CropTableModel extends UnitTableModel {
 				Iterator<Crop> j = cropsList.iterator();
 				while (j.hasNext()) {
 					Crop crop = j.next();
-					String type = crop.getCropType().getCropCategoryType().getName();
+					int id = crop.getCropTypeID();
+					String catName = CropConfig.getCropTypeByID(id).getCropCategoryType().getName();
 					// System.out.println("type is " + type);
-					if (type.equals(cropCat))
+					if (catName.equals(cropCat))
 						total++;
 				}
 			} catch (Exception e) {
@@ -704,8 +706,10 @@ public class CropTableModel extends UnitTableModel {
 
 		Farming f = (Farming) b.getFunction(FunctionType.FARMING);
 		for (Crop c : f.getCrops()) {
-			if (getCategoryNum(c.getCropType().getCropCategoryType().toString()) == catNum)
-				tt.append(c.getCropType().getName()).append(System.lineSeparator());
+				int id = c.getCropTypeID();
+				String catStr = CropConfig.getCropTypeByID(id).getCropCategoryType().toString();
+			if (getCategoryNum(catStr) == catNum)
+				tt.append(c.getCropName()).append(System.lineSeparator());
 		}
 		System.out.println(tt);
 		return tt.toString();

@@ -436,7 +436,7 @@ implements MouseListener {
 	/*
 	 * Builds an tooltip for displaying the growth parameters of a crop
 	 */
-	public StringBuilder buildCropToolTip(int row, CropType ct) {
+	public StringBuilder buildCropToolTip(int row, CropType cType) {
 
 		StringBuilder result = new StringBuilder("");
 		String cropName, cat;
@@ -444,25 +444,27 @@ implements MouseListener {
 		double mass0, mass1;
 		double water, PAR;
 
-        if (ct == null) {
+        if (cType == null) {
     		List<Crop> crops = farm.getCrops();
             Crop crop = crops.get(row);
-        	cropName = Conversion.capitalize(crop.getCropType().getName());
-            cat = crop.getCropType().getCropCategoryType().getName();
-        	mass0 = crop.getCropType().getEdibleBiomass();
-        	water = 100 * crop.getCropType().getEdibleWaterContent();
-        	mass1 = crop.getCropType().getInedibleBiomass();
-        	time = crop.getCropType().getGrowingTime() /1000;
-        	PAR = crop.getCropType().getDailyPAR();
-        }
-        else {
-        	cropName = Conversion.capitalize(ct.getName());
-            cat = ct.getCropCategoryType().getName();
+            int id = crop.getCropTypeID();
+            CropType ct = CropConfig.getCropTypeByID(id);
+        	cropName = Conversion.capitalize(crop.getCropName());
+            cat = CropConfig.getCropCategoryType(id).getName();
         	mass0 = ct.getEdibleBiomass();
         	water = 100 * ct.getEdibleWaterContent();
         	mass1 = ct.getInedibleBiomass();
         	time = ct.getGrowingTime() /1000;
         	PAR = ct.getDailyPAR();
+        }
+        else {
+        	cropName = Conversion.capitalize(cType.getName());
+            cat = cType.getCropCategoryType().getName();
+        	mass0 = cType.getEdibleBiomass();
+        	water = 100 * cType.getEdibleWaterContent();
+        	mass1 = cType.getInedibleBiomass();
+        	time = cType.getGrowingTime() /1000;
+        	PAR = cType.getDailyPAR();
 
         }
 
@@ -755,8 +757,9 @@ implements MouseListener {
 			Crop crop = crops.get(row);
 			//String phase = crop.getPhase();
 			PhaseType currentPhase = crop.getPhaseType();
-			// 2014-10-10 Added the crop's category
-			String category = crop.getCropType().getCropCategoryType().getName();
+            int id = crop.getCropTypeID();
+            CropType ct = CropConfig.getCropTypeByID(id);
+			String category = CropConfig.getCropCategoryType(id).getName();
 
 			if (column == 0) {
 				double condition = crop.getHealthCondition();
@@ -764,7 +767,7 @@ implements MouseListener {
 				else if (condition > ((double) 1 / (double) 3)) return yellowDot;
 				else return redDot;
 			}
-			else if (column == 1) return Conversion.capitalize(crop.getCropType().getName());
+			else if (column == 1) return Conversion.capitalize(crop.getCropName());
 			else if (column == 2) return currentPhase.getName();
 			else if (column == 3) {
 				double growth = 0;
@@ -776,14 +779,14 @@ implements MouseListener {
 				//}
 				//else
 				if (currentPhase == PhaseType.HARVESTING) {
-					double growingCompleted = crop.getGrowingTimeCompleted() / crop.getCropType().getGrowingTime();
+					double growingCompleted = crop.getGrowingTimeCompleted() / ct.getGrowingTime();
 					growth = Math.round(growingCompleted * 1000D)/10D;
 				}
 				else if (currentPhase == PhaseType.FINISHED) {
 					growth = 100;
 				}
 				else {
-					double growingCompleted = crop.getGrowingTimeCompleted() / crop.getCropType().getGrowingTime();
+					double growingCompleted = crop.getGrowingTimeCompleted() / ct.getGrowingTime();
 					growth = Math.round(growingCompleted * 1000D)/10D;
 				}
 

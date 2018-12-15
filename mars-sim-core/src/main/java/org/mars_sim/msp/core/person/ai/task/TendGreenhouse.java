@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
+import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.CropType;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -244,7 +245,7 @@ public class TendGreenhouse extends Task implements Serializable {
 
 	public void setCropDescription(Crop needyCrop) {
 		setDescription(Msg.getString("Task.description.tendGreenhouse.tend",
-				Conversion.capitalize(needyCrop.getCropType().getName())));
+				Conversion.capitalize(needyCrop.getCropName())));
 
 	}
 
@@ -399,7 +400,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		if (type == null) {
 			// Obtain a needy crop to work on
 			// if (person != null) {
-			type = greenhouse.getNeedyCrop(null).getCropType();
+			type = CropConfig.getCropTypeByID(greenhouse.getNeedyCrop(null).getCropTypeID());
 			// }
 
 			// else {
@@ -409,7 +410,7 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		if (type != null) {
 			// System.out.println("type is " + type);
-			boolean hasLab = greenhouse.checkBotanyLab(type);
+			boolean hasLab = greenhouse.checkBotanyLab(type.getID());
 
 			if (hasLab) {
 				setDescription(Msg.getString("Task.description.tendGreenhouse.sample",

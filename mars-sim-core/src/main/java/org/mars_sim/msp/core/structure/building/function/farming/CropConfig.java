@@ -515,6 +515,19 @@ public class CropConfig implements Serializable {
 	}
 	
 	/**
+	 * Picks a crop type randomly
+	 * 
+	 * @return crop type
+	 */
+	public static String getCropTypeNameByID(int id) {
+		return getCropTypeByID(id).getName();
+	}
+	
+	public static CropCategoryType getCropCategoryType(int id) {
+		return getCropTypeByID(id).getCropCategoryType();
+	}
+	
+	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {

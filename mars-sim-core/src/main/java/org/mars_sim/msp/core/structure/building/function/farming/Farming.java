@@ -761,7 +761,7 @@ public class Farming extends Function implements Serializable {
 		for (Crop c : crops) {
 			if (c.requiresWork()) {
 				if (lastCrop != null) {
-					if (c.getCropType() == lastCrop.getCropType())
+					if (c.getCropTypeID() == lastCrop.getCropTypeID())
 						return c;
 					// else if (cropAssignment.get(unit) == c) {
 					// updateAssignmentMap(unit);
@@ -873,9 +873,9 @@ public class Farming extends Function implements Serializable {
 				remainingGrowingArea = remainingGrowingArea + crop.getGrowingArea();
 				if (harvestedCrops == null)
 					harvestedCrops = new ArrayList<>();
-				harvestedCrops.add(crop.getCropType().getName());
+				harvestedCrops.add(crop.getCropName());
 				i.remove();
-				plantedCrops.remove(crop.getCropType().getName());
+				plantedCrops.remove(crop.getCropName());
 				numCrops2Plant++;
 			}
 		}
@@ -1035,9 +1035,9 @@ public class Farming extends Function implements Serializable {
 	 * Checks to see if a botany lab with an open research slot is available and
 	 * performs cell tissue extraction
 	 * 
-	 * @param type
+	 * @param cropTypeID
 	 */
-	public boolean checkBotanyLab(CropType type) {
+	public boolean checkBotanyLab(int cropTypeID) {
 		// Check to see if a botany lab is available
 		boolean hasEmptySpace = false;
 		boolean done = false;
@@ -1056,7 +1056,7 @@ public class Farming extends Function implements Serializable {
 			hasEmptySpace = lab.addResearcher();
 
 			if (hasEmptySpace) {
-				growCropTissue(lab, type);// , true);
+				growCropTissue(lab, cropTypeID);// , true);
 				lab.removeResearcher();
 			}
 
@@ -1075,7 +1075,7 @@ public class Farming extends Function implements Serializable {
 					if (hasEmptySpace) {
 						hasEmptySpace = lab1.addResearcher();
 						if (hasEmptySpace) {
-							growCropTissue(lab1, type);// true);
+							growCropTissue(lab1, cropTypeID);// true);
 							lab.removeResearcher();
 						}
 
@@ -1091,7 +1091,7 @@ public class Farming extends Function implements Serializable {
 		// check to see if a person can still "squeeze into" this busy lab to get lab
 		// time
 		if (!hasEmptySpace && (lab.getLaboratorySize() == lab.getResearcherNum())) {
-			growCropTissue(lab, type);// , false);
+			growCropTissue(lab, cropTypeID);// , false);
 			done = true;
 		} else {
 
@@ -1104,7 +1104,7 @@ public class Farming extends Function implements Serializable {
 				if (lab2.hasSpecialty(ScienceType.BOTANY)) {
 					hasEmptySpace = lab2.checkAvailability();
 					if (lab2.getLaboratorySize() == lab2.getResearcherNum()) {
-						growCropTissue(lab2, type);// , false);
+						growCropTissue(lab2, cropTypeID);// , false);
 						done = true;
 					}
 				}
@@ -1120,16 +1120,16 @@ public class Farming extends Function implements Serializable {
 	 * @param lab
 	 * @param croptype
 	 */
-	public boolean growCropTissue(Research lab, CropType cropType) {
-		String cropName = cropType.getName();
+	public boolean growCropTissue(Research lab, int cropTypeID) {
+		String cropName = CropConfig.getCropTypeNameByID(cropTypeID);
 		String tissueName = cropName + TISSUE_CULTURE;
 		// TODO: re-tune the amount of tissue culture not just based on the edible
 		// biomass (actualHarvest)
 		// but also the inedible biomass and the crop category
 		boolean isDone = false;
-		AmountResource cropAR = ResourceUtil.findAmountResource(cropName);
-		AmountResource tissueAR = ResourceUtil.findAmountResource(tissueName);
-		double amountAvailable = inv.getAmountResourceStored(tissueAR, false);
+		int cropID = ResourceUtil.findIDbyAmountResourceName(cropName);
+		int tissueID = ResourceUtil.findIDbyAmountResourceName(tissueName);
+		double amountAvailable = inv.getAmountResourceStored(tissueID, false);
 		double amountExtracted = 0;
 
 		// Add the chosen tissue culture entry to the lab if it hasn't done it today.
@@ -1139,17 +1139,17 @@ public class Farming extends Function implements Serializable {
 
 			if (amountAvailable == 0) {
 				// if no tissue culture is available, go extract some tissues from the crop
-				double amount = inv.getAmountResourceStored(cropAR, false);
+				double amount = inv.getAmountResourceStored(cropID, false);
 				// TODO : Check for the health condition
 				amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE * RandomUtil.getRandomInt(5, 15);
 
 				if (amount > amountExtracted) {
 					// assume extracting an arbitrary 5 to 15% of the mass of crop will be developed
 					// into tissue culture
-					Storage.retrieveAnResource(amountExtracted, cropAR, inv, true);
+					Storage.retrieveAnResource(amountExtracted, cropID, inv, true);
 					// store the tissues
 					if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
-						Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueAR, inv,
+						Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, inv,
 								sourceName + "::growCropTissue");
 						LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 								"[" + settlement.getName() + "] During sampling, " + cropName + TISSUE_CULTURE
@@ -1178,7 +1178,7 @@ public class Farming extends Function implements Serializable {
 					amountExtracted = amountAvailable * 0.2;
 					// store the tissues
 					if (amountExtracted > 0) {
-						Storage.storeAnResource(amountExtracted, tissueAR, inv, sourceName + "::growCropTissue");
+						Storage.storeAnResource(amountExtracted, tissueID, inv, sourceName + "::growCropTissue");
 						// LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 						// "[" + settlement.getName() + "] During sampling, " +
 						// Math.round(amountExtracted*1000.0)/1000.0D + " kg "

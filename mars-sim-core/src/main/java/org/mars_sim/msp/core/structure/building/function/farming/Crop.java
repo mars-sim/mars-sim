@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -207,15 +206,19 @@ public class Crop implements Serializable {
 	private PhaseType phaseType;
 	private CropCategoryType cropCategoryType;
 
-	private CropType cropType;
+//	private CropType cropType;
 	private Inventory inv;
 	private Farming farm;
 	private Settlement settlement;
 	private Building building;
 
-	private AmountResource cropAR;
-	private AmountResource seedAR;
+//	private AmountResource cropAR;
+//	private AmountResource seedAR;
 
+	private int cropTypeID;
+	private int cropID;
+	private int seedID;
+	
 //	private DecimalFormat fmt = new DecimalFormat("0.00000");
 
 	private Map<Integer, Phase> phases = new HashMap<>();
@@ -250,7 +253,7 @@ public class Crop implements Serializable {
 	// Called by Farming.java constructor and timePassing()
 	public Crop(CropType cropType, double growingArea, double dailyMaxHarvest, Farming farm, Settlement settlement,
 			boolean isStartup, double tissuePercent) {
-		this.cropType = cropType;
+		this.cropTypeID = CropConfig.getIDByName(cropType.getName());
 		this.cropCategoryType = cropType.getCropCategoryType();
 		this.growingArea = growingArea;
 		this.dailyMaxHarvest = dailyMaxHarvest;
@@ -298,15 +301,15 @@ public class Crop implements Serializable {
 
 		if (hasSeed) {
 			ratio = inedibleBiomass / edibleBiomass;
-			seedAR = ResourceUtil.findAmountResource(MUSTARD + " " + SEED);
+			seedID = ResourceUtil.findIDbyAmountResourceName(MUSTARD + " " + SEED);
 		}
 
 		if (isSeedPlant) {
 			ratio = inedibleBiomass / edibleBiomass;
-			seedAR = ResourceUtil.findAmountResource(cropName + " " + SEED);
+			seedID = ResourceUtil.findIDbyAmountResourceName(cropName + " " + SEED);
 		}
 
-		cropAR = ResourceUtil.findAmountResource(cropName);
+		cropID = ResourceUtil.findIDbyAmountResourceName(cropName);
 		// tissueAR = ResourceUtil.findAmountResource(tissue);
 
 		averageWaterNeeded = cropConfig.getWaterConsumptionRate();
@@ -403,15 +406,34 @@ public class Crop implements Serializable {
 		return growingArea;
 	}
 
+//	/**
+//	 * Gets the type of crop.
+//	 *
+//	 * @return crop type
+//	 */
+//	public CropType getCropType() {
+//		return cropType;
+//	}
+
 	/**
-	 * Gets the type of crop.
+	 * Gets the crop type ID.
 	 *
-	 * @return crop type
+	 * @return crop type ID
 	 */
-	public CropType getCropType() {
-		return cropType;
+	public int getCropTypeID() {
+		return cropTypeID;
 	}
 
+
+	/**
+	 * Gets the crop name
+	 * 
+	 * @return crop name
+	 */
+	public String getCropName() {
+		return cropName;
+	}
+	
 //	/**
 //	 * Gets the phase of the crop.
 //	 * 
@@ -653,22 +675,22 @@ public class Crop implements Serializable {
 				if (lastHarvest > 0) {
 					// Store the crop harvest
 					if (isSeedPlant)
-						Storage.storeAnResource(lastHarvest, seedAR, inv, sourceName + "::addWork");
+						Storage.storeAnResource(lastHarvest, seedID, inv, sourceName + "::addWork");
 					else
-						Storage.storeAnResource(lastHarvest, cropAR, inv, sourceName + "::addWork");
+						Storage.storeAnResource(lastHarvest, cropID, inv, sourceName + "::addWork");
 
 					logger.info(unit.getName() + " just closed out the harvest of " + capitalizedCropName + " in "
 							+ farmName + " at " + settlement.getName());
 
 					// Extract Mustard Seed
 					if (hasSeed)
-						Storage.storeAnResource(lastHarvest * ratio, seedAR, inv, sourceName + "::addWork");
+						Storage.storeAnResource(lastHarvest * ratio, seedID, inv, sourceName + "::addWork");
 					else
 						// In case of white mustard, the inedible biomass is used as the seed
 						// mass, thus no crop waste
 						generateCropWaste(lastHarvest);
 					//  Check to see if a botany lab is available
-					if (!farm.checkBotanyLab(this.getCropType()))
+					if (!farm.checkBotanyLab(cropTypeID))
 						logger.info("Can't find an available lab bench to work on the tissue culture for " + cropName);
 
 					remainingTime = overWorkTime;
@@ -686,13 +708,13 @@ public class Crop implements Serializable {
 					// Store the crop harvest
 					if (modifiedHarvest > 0) {
 						if (isSeedPlant)
-							Storage.storeAnResource(modifiedHarvest, seedAR, inv, sourceName + "::addWork");
+							Storage.storeAnResource(modifiedHarvest, seedID, inv, sourceName + "::addWork");
 						else
-							Storage.storeAnResource(modifiedHarvest, cropAR, inv, sourceName + "::addWork");
+							Storage.storeAnResource(modifiedHarvest, cropID, inv, sourceName + "::addWork");
 
 						// Extract Mustard Seed
 						if (hasSeed)
-							Storage.storeAnResource(modifiedHarvest * ratio, seedAR, inv, sourceName + "addWork");
+							Storage.storeAnResource(modifiedHarvest * ratio, seedID, inv, sourceName + "addWork");
 						else
 							// In case of white mustard, the inedible biomass is used as the seed mass
 							// thus no crop waste
@@ -724,8 +746,8 @@ public class Crop implements Serializable {
 	 */
 	public void generateCropWaste(double harvestMass) {
 		// 2015-02-06 Added Crop Waste
-		double amountCropWaste = harvestMass * cropType.getInedibleBiomass()
-				/ (cropType.getInedibleBiomass() + cropType.getEdibleBiomass());
+		double amountCropWaste = harvestMass * inedibleBiomass
+				/ (inedibleBiomass + edibleBiomass);
 		if (amountCropWaste > 0)
 			Storage.storeAnResource(amountCropWaste, cropWasteID, inv, "::generateCropWaste");
 //		 logger.info("addWork() : " + cropName + " amountCropWaste " +
@@ -767,7 +789,7 @@ public class Crop implements Serializable {
 					// in a growing phase (excluding the harvesting phase).
 					if (fractionalGrowingTimeCompleted * 100D > getUpperPercent(current)) {
 						// Advance onto the next phase
-						phaseType = cropType.getPhases().get(current + 1).getPhaseType();
+						phaseType = CropConfig.getCropTypeByID(cropTypeID).getPhases().get(current + 1).getPhaseType();
 						// currentPhaseWorkCompleted = 0D;
 					}
 				}
@@ -1023,7 +1045,7 @@ public class Crop implements Serializable {
 	public void computeWaterFertilizer(double needFactor, double time) {
 
 		// Calculate water usage
-		double waterRequired =  0.2 * needFactor * (averageWaterNeeded * time / 1_000D) * growingArea; // fractionalGrowingTimeCompleted
+		double waterRequired =  0.5 * needFactor * (averageWaterNeeded * time / 1_000D) * growingArea; // fractionalGrowingTimeCompleted
 //		System.out.println(getCropType() + "  waterRequired : " + waterRequired);
 		// Determine the amount of grey water available.
 		double gw = inv.getAmountResourceStored(greywaterID, false);
@@ -1245,21 +1267,21 @@ public class Crop implements Serializable {
 		int length = phases.size();
 
 		// Tune the growthFactor according to the stage of a crop
-		double growthFactor = 0;
+		double growthFactor = 5;
 		// amount of grey water/water needed is also based on % of growth
 		if (phaseNum == 2)
 			// if (phaseType == PhaseType.GERMINATION)
-			growthFactor = .05;
-		else if (fractionalGrowingTimeCompleted < .1)
-			growthFactor = .1;
-		else if (fractionalGrowingTimeCompleted < .15)
-			growthFactor = .15;
-		else if (fractionalGrowingTimeCompleted < .2)
 			growthFactor = .2;
+		else if (fractionalGrowingTimeCompleted < .1)
+			growthFactor = .3;
+		else if (fractionalGrowingTimeCompleted < .15)
+			growthFactor = .4;
+		else if (fractionalGrowingTimeCompleted < .2)
+			growthFactor = .5;
 		else if (phaseNum > 2 && phaseNum < length - 2)
-			growthFactor = fractionalGrowingTimeCompleted * 2;
+			growthFactor = fractionalGrowingTimeCompleted;
 		else if (phaseType == PhaseType.FINISHED)
-			growthFactor = .25;
+			growthFactor = .4;
 
 		// STEP 1 : COMPUTE THE EFFECTS OF THE SUNLIGHT AND ARTIFICIAL LIGHT
 		double uPAR = 0;
@@ -1356,8 +1378,8 @@ public class Crop implements Serializable {
 		phaseType = null;
 		cropCategoryType = null;
 
-		cropAR = null;
-		cropType = null;
+//		cropAR = null;
+//		cropType = null;
 		farm = null;
 		inv = null;
 		settlement = null;
