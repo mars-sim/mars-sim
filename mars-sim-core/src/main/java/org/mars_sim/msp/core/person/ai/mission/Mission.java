@@ -129,8 +129,9 @@ public abstract class Mission implements Serializable {
 	private String missionName;
 	/** The description of the current phase of operation. */
 	private String phaseDescription;
+	/** The full mission designation. */
+	private String fullMissionDesignation;
 	
-
 	/** The current phase of the mission. */
 	private MissionPhase phase;
 	/** The name of the starting member */
@@ -551,7 +552,7 @@ public abstract class Mission implements Serializable {
 	public final void setDescription(String description) {
 		if (!this.missionName.equals(description)) {
 			this.missionName = description;
-			fireMissionUpdate(MissionEventType.DESCRIPTION_EVENT, description);
+			fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, description);
 		}
 	}
 
@@ -790,7 +791,7 @@ public abstract class Mission implements Serializable {
 				if (!members.isEmpty()) { 
 					LogConsolidated.log(Level.INFO, 1000, sourceName,
 							"[" + startingMember.getLocationTag().getLocale()
-									+ "] " + startingMember + " is disbanding mission member(s) : " + members);
+									+ "] " + startingMember + " disbanded mission member(s) : " + members);
 					Iterator<MissionMember> i = members.iterator();
 					while (i.hasNext()) {
 						removeMember(i.next());
@@ -967,12 +968,7 @@ public abstract class Mission implements Serializable {
 				break;
 			}
 		}
-		/*
-		 * // Recruit robots qualified for the mission. Iterator <Robot> k =
-		 * Simulation.instance().getUnitManager().getRobots().iterator(); while
-		 * (k.hasNext() && (getMembersNumber() < missionCapacity)) { Robot robot =
-		 * k.next(); if (isCapableOfMission(robot)) { robot.setMission(this); } }
-		 */
+
 		if (getMembersNumber() < minMembers) {
 			endMission("Not enough members");
 		}
@@ -1298,7 +1294,7 @@ public abstract class Mission implements Serializable {
 			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());		
 			LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
 					+ p.getName() + " (" + p.getRole().getType() 
-					+ ") is requesting approval for " + getDescription() + ".");
+					+ ") was requesting approval for " + getDescription() + ".");
 
 			 Simulation.instance().getMissionManager().requestMissionApproval(plan);
 		}
@@ -1308,9 +1304,12 @@ public abstract class Mission implements Serializable {
 		}
 		
 		if (approved || plan.getStatus() == PlanType.APPROVED) {
+			
+			fullMissionDesignation = createFullDesignation(p);
+			
 			LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
 					+ p.getRole().getType() + " " + p.getName() 
-					+ " is getting"// the rover " + startingMember.getVehicle() 
+					+ " was getting"// the rover " + startingMember.getVehicle() 
 					+ " ready to embark on " + getDescription());
 
 			setPhaseEnded(true);
@@ -1353,7 +1352,14 @@ public abstract class Mission implements Serializable {
 		return (Person)startingMember;
 	}
 	
+	public String getFullMissionDesignation() {
+		return fullMissionDesignation;
+	}
 
+	public String createFullDesignation(Person p) {	
+		return getType() + " " + MissionManager.getMissionDesignationString(p.getAssociatedSettlement().getName());
+	}
+	
 	public static void initializeInstances() {
 		eventManager = sim.getEventManager();
 		missionManager = sim.getMissionManager();

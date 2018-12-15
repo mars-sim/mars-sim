@@ -16,11 +16,8 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.events.HistoricalEventManager;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
@@ -94,17 +91,10 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		
 		if (person.isInside() && roleType != null) {
 
-			if (roleType == RoleType.PRESIDENT || roleType == RoleType.MAYOR
-					|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER
-					|| roleType == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
-					|| roleType == RoleType.CHIEF_OF_MISSION_PLANNING
-					|| roleType == RoleType.CHIEF_OF_ENGINEERING
-					|| roleType == RoleType.CHIEF_OF_SAFETY_N_HEALTH
-					|| roleType == RoleType.CHIEF_OF_SCIENCE
-					|| roleType == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
-					|| roleType == RoleType.CHIEF_OF_AGRICULTURE			
-					|| (roleType == RoleType.MISSION_SPECIALIST && person.getAssociatedSettlement().getNumCitizens() <= 8)
-					|| person.getAssociatedSettlement().getNumCitizens() <= 4) {
+			int pop = person.getAssociatedSettlement().getNumCitizens();
+			if (pop <= 4		
+				|| (pop <= 8 && roleType == RoleType.MISSION_SPECIALIST)
+				|| isRoleValid(roleType)) {
 
 				// If person is in a settlement, try to find an office building.
 				Building officeBuilding = Administration.getAvailableOffice(person);
@@ -138,6 +128,20 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		setPhase(REVIEWING);
 	}
 
+	
+	public boolean isRoleValid(RoleType roleType) {
+		return roleType == RoleType.PRESIDENT || roleType == RoleType.MAYOR
+				|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER
+				|| roleType == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
+				|| roleType == RoleType.CHIEF_OF_MISSION_PLANNING
+				|| roleType == RoleType.CHIEF_OF_ENGINEERING
+				|| roleType == RoleType.CHIEF_OF_SAFETY_N_HEALTH
+				|| roleType == RoleType.CHIEF_OF_SCIENCE
+				|| roleType == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
+				|| roleType == RoleType.CHIEF_OF_AGRICULTURE
+				|| roleType == RoleType.MISSION_SPECIALIST;
+	}
+	
 	@Override
 	protected FunctionType getLivingFunction() {
 		return FunctionType.ADMINISTRATION;
@@ -193,7 +197,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
             			
 						String s = person.getAssociatedSettlement().getName();
 						
-						if (!reviewedBy.equals(requestedBy)) {
+						if (!reviewedBy.equals(requestedBy)
+								&& mp.isValidReview(reviewedBy, person.getAssociatedSettlement().getNumCitizens())) {
 							
 							List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
 							int last = list.size() - 1;
@@ -220,19 +225,19 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							if (m instanceof AreologyStudyFieldMission) {
 	//							AreologyStudyFieldMission aM = (AreologyStudyFieldMission)m;
 	//							qual = (int)m.getMissionQualification(person);
-								qual = ((AreologyStudyFieldMission)m).getMissionQualification(person);
+								qual = 5 * ((AreologyStudyFieldMission)m).getMissionQualification(person);
 							}
 							else if (m instanceof BiologyStudyFieldMission) {
-								qual = ((BiologyStudyFieldMission)m).getMissionQualification(person);
+								qual = 5 * ((BiologyStudyFieldMission)m).getMissionQualification(person);
 							}
 							else if (m instanceof RescueSalvageVehicle) {
-								qual = ((RescueSalvageVehicle)m).getMissionQualification(person);
+								qual = 5 * ((RescueSalvageVehicle)m).getMissionQualification(person);
 							}
 							else if (m instanceof TravelToSettlement) {
-								qual = ((TravelToSettlement)m).getMissionQualification(person);
+								qual = 5 * ((TravelToSettlement)m).getMissionQualification(person);
 							}
 							else
-								qual = m.getMissionQualification(person);											
+								qual = 5 * m.getMissionQualification(person);											
 							
 							// 4. Settlement objective score
 							double obj = 0;
@@ -243,24 +248,24 @@ public class ReviewMissionPlan extends Task implements Serializable {
 									|| m instanceof TravelToSettlement
 									|| m instanceof Exploration)
 									) {
-								obj = person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
+								obj += 30 * person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
 							}				
 							
 							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRADE_TOWN
 									&& m instanceof Trade) {
-								obj = person.getAssociatedSettlement().getGoodsManager().getTradeFactor();
+								obj += 30 * person.getAssociatedSettlement().getGoodsManager().getTradeFactor();
 							}	
 							
 							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRANSPORTATION_HUB
 									&& (m instanceof TravelToSettlement
 									|| m instanceof Exploration)) {
-								obj = person.getAssociatedSettlement().getGoodsManager().getTransportationFactor();
+								obj += 30 * person.getAssociatedSettlement().getGoodsManager().getTransportationFactor();
 							}	
 							
 							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.MANUFACTURING
 									&& (m instanceof Mining
 									|| m instanceof CollectRegolith)) {
-								obj = person.getAssociatedSettlement().getGoodsManager().getManufacturingFactor();
+								obj += 30 * person.getAssociatedSettlement().getGoodsManager().getManufacturingFactor();
 							}	
 							
 							// 5. emergency
@@ -271,7 +276,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							}	
 							
 							// 6. randomness
-							int rand = RandomUtil.getRandomInt(-10, 10);
+							int rand = RandomUtil.getRandomInt(-30, 10);
 							
 	
 							// TODO: 6. Go to him/her to have a chat
@@ -280,7 +285,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							score = rating + relation + qual + obj + emer + rand;
 							
 							// Updates the mission plan status
-							missionManager.scoreMissionPlan(mp, score);
+							missionManager.scoreMissionPlan(mp, score, person);
 							
 							// Modify the sign for the random number
 							String sign = " + ";
@@ -289,10 +294,18 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								sign = " - ";
 							}
 							
-							LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
+							LogConsolidated.log(Level.INFO, 2000, sourceName, 
 									"[" + s + "] " + reviewedBy + " gave " + requestedBy
 									+ "'s " + m.getDescription() + " mission plan a score of " + score 
-									+ " (" + rating + " + " + relation + " + " + qual + sign + rand + ").", null);
+									+ " (" 
+									+ rating 
+									+ " + " + relation 
+									+ " + " + qual 
+									+ " + " + obj
+									+ " + " + emer
+									+ sign 
+									+ rand 
+									+ ").");
 							
 						      // Add experience
 					        addExperience(time);
@@ -344,19 +357,19 @@ public class ReviewMissionPlan extends Task implements Serializable {
 						// Updates the mission plan status
 						missionManager.approveMissionPlan(mp, p, PlanType.APPROVED);
 							
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+						LogConsolidated.log(Level.INFO, 0, sourceName,
 								"[" + s + "] " + reviewedBy + " approved " + requestedBy
 								+ "'s " + m.getDescription() + " mission plan. Score: " + score 
-								+ " (Min: " + settlement.getMinimumPassingScore() + ").", null);
+								+ " (Min: " + settlement.getMinimumPassingScore() + ").");
 					} else {
 						// Not Approved
 						// Updates the mission plan status
 						missionManager.approveMissionPlan(mp, p, PlanType.NOT_APPROVED);
 					
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+						LogConsolidated.log(Level.INFO, 0, sourceName, 
 								"[" + s + "] " + reviewedBy + " did NOT approve " + requestedBy
 								+ "'s " + m.getDescription() + " mission plan. Score: " + score 
-								+ " (Min: " + settlement.getMinimumPassingScore() + ").", null);
+								+ " (Min: " + settlement.getMinimumPassingScore() + ").");
 					}
 										
 					settlement.saveMissionScore(score);

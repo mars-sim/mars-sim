@@ -50,6 +50,7 @@ class MissionDataBean {
 
 	private String type;
 	private String description;
+	private String designation;
 	
 	private Settlement startingSettlement;
 	private Settlement destinationSettlement;
@@ -231,6 +232,14 @@ class MissionDataBean {
 	 */
     protected String getDescription() {
 		return description;
+	}
+
+	/**
+	 * Gets the mission designation.
+	 * @return designation.
+	 */
+    protected String getDesignation() {
+		return designation;
 	}
 
 	/**

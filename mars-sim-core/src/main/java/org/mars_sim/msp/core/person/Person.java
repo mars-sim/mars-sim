@@ -317,7 +317,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		support = getLifeSupportType();		
 		// Create the mission experiences map
-		missionExperiences = new HashMap<>();
+		missionExperiences = new ConcurrentHashMap<>();
 		// Create the EVA hours map
 		eVATaskTime = new ConcurrentHashMap<>();
 		// Create the consumption map

@@ -202,14 +202,34 @@ public class Walk extends Task implements Serializable {
       						+ person + " is in " + person.getLocationTag().getImmediateLocation()
       						+ " but walking steps could not be determined.");
 			endTask();
-			person.getMind().getNewAction(true, false);
-		} else if (!canWalkAllSteps(person, walkingSteps)) {
+			
+			if (person != null) {
+				int rand1 = RandomUtil.getRandomInt(6);
+				if (rand1 == 0)
+					person.getMind().getTaskManager().addTask(new EatMeal(person));
+				else if (rand1 < 3)
+					person.getMind().getTaskManager().addTask(new Relax(person));
+				else 
+					person.getMind().getTaskManager().addTask(new Sleep(person));
+			}
+		} 
+		
+		else if (!canWalkAllSteps(person, walkingSteps)) {
 			LogConsolidated.log( Level.SEVERE, 5000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] "
       						+ person + " is in " + person.getLocationTag().getImmediateLocation()
 					+ " but Valid Walking steps could not be determined.");
 			endTask();
-			person.getMind().getNewAction(true, false);
+			
+			if (person != null) {
+				int rand1 = RandomUtil.getRandomInt(6);
+				if (rand1 == 0)
+					person.getMind().getTaskManager().addTask(new EatMeal(person));
+				else if (rand1 < 3)
+					person.getMind().getTaskManager().addTask(new Relax(person));
+				else 
+					person.getMind().getTaskManager().addTask(new Sleep(person));
+			}
 		}
 
 		// Initialize task phase.
@@ -258,7 +278,9 @@ public class Walk extends Task implements Serializable {
 		if (walkingSteps == null) {
 			logger.severe("Walking steps could not be determined for " + robot.getName());
 			endTask();
-		} else if (!canWalkAllSteps(robot, walkingSteps)) {
+		} 
+		
+		else if (!canWalkAllSteps(robot, walkingSteps)) {
 			logger.fine("Valid Walking steps could not be determined for " + robot.getName());
 			endTask();
 		}

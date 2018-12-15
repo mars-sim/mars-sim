@@ -718,7 +718,7 @@ public class MasterClock implements Serializable {
 						skips++;
 
 						if (skips >= maxFrameSkips) {
-							logger.config("# of skips : " + skips + "    Max Frame skips : " + maxFrameSkips); 
+							logger.config("# of skips (" + skips + ") exceeds the max skips (" + maxFrameSkips + ")."); 
 							// Reset the pulse count
 							resetTotalPulses();
 							// Adjust the time between update
@@ -728,6 +728,9 @@ public class MasterClock implements Serializable {
 								currentTBU_ns = (long) (currentTBU_ns * .9925); // decrement by 2.5%
 							
 							logger.config("TBU : " + Math.round(100.0 * currentTBU_ns/1_000_000.0)/100.0 + " ms");
+						}
+						else {
+							logger.config("Recovering from a lost frame.  # of skips (" + skips + ")  Max skips (" + maxFrameSkips + ")."); 
 						}
 						
 						// Call addTime once to get back each lost frame

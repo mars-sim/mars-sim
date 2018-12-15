@@ -7,8 +7,11 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -28,16 +31,19 @@ public class MissionPlanning implements Serializable {
 	private double score = 0; // 0 to 1000 points
 	private double qualityScore = 0;
 	
-	private String reviewedBy;
 	private String requestedBy;
+	private String approvedBy;
+	
 	private String requestTimeStamp;
-	private String reviewedTimeStamp;
+	private String lastReviewedTimeStamp;
 
 	private RoleType requesterRole;
-	private RoleType reviewedRole;
+	private RoleType approvedRole;
 	private PlanType status = PlanType.PENDING;
 
 	private Mission mission;
+	
+	private Map<String, Integer> reviewers;
 	
 	private static MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 
@@ -47,22 +53,69 @@ public class MissionPlanning implements Serializable {
 		this.mission = mission;
 		this.requestedBy = requestedBy;
 		this.requesterRole = role;
+		reviewers = new HashMap<>();
 	}
 	
 	public void setReviewedBy(String name) {
-		this.reviewedBy = name;
+		setReviewer(name);
 		// Note : resetting marsClock is needed after loading from a saved sim 
-		reviewedTimeStamp = clock.getDateTimeStamp();
+		lastReviewedTimeStamp = clock.getDateTimeStamp();
+	}
+	
+	public void setReviewer(String name) {
+		if (reviewers.containsKey(name)) {
+			int num = reviewers.get(name);
+			reviewers.put(name, ++num);
+		}
+		
+		else {
+			reviewers.put(name, 1);
+		}
+	}
+	
+	public boolean isValidReview(String name, int pop) {
+		if (reviewers.containsKey(name)) {
+			int num = reviewers.get(name);
+			if (pop <= 8) {
+				if (num < 4)
+					return true;
+				else
+					return false;
+			}
+			
+			else if (pop >= 48) {
+				if (num < 2)
+					return true;
+				else
+					return false;
+			}
+			
+			else {
+				if (num < 3)
+					return true;
+				else
+					return false;
+			}
+		}
+		
+		else {
+			return true;
+		}
 	}
 	
 	public void setStatus(PlanType status) {
 		this.status = status;
 	}
 	
-	public void setReviewedRole(RoleType roleType) {
-		this.reviewedRole = roleType;
+	public void setApprovedRole(RoleType roleType) {
+		this.approvedRole = roleType;
 	}
 
+	public void setApproved(Person p) {
+		this.approvedBy = p.getName();
+		this.approvedRole = p.getRole().getType();
+	}
+	
 	public void setScore(double value) {
 		score = value;
 	}
@@ -100,4 +153,7 @@ public class MissionPlanning implements Serializable {
 		return qualityScore;
 	}
 	
+	public static void setInstances(MarsClock c) {
+		clock = c;
+	}
 }

@@ -35,26 +35,28 @@ public class MissionTableModel extends AbstractTableModel
 	private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
 
 	// Column indexes
-	/** Type column. */
+	/** Starting member column. */
 	private final static int STARTING_MEMBER = 0;
+	/** Desc column. */
+	private final static int DESC = 1;
 	/** Description column. */
-	private final static int DESCRIPTION = 1;
+	private final static int DESIGNATION = 2;
 	/** Phase column. */
-	private final static int PHASE = 2;
+	private final static int PHASE = 3;
 	/** Mission vehicle column. */
-	private final static int VEHICLE = 3;
+	private final static int VEHICLE = 4;
 	/** Starting settlement column. */
-	private final static int STARTING_SETTLEMENT = 4;
+	private final static int STARTING_SETTLEMENT = 5;
 	/** Member number column. */
-	private final static int MEMBER_NUM = 5;
+	private final static int MEMBER_NUM = 6;
 	/** Navpoint number column. */
-	private final static int NAVPOINT_NUM = 6;
+	private final static int NAVPOINT_NUM = 7;
 	/** Travelled distance column. */
-	private final static int TRAVELLED_DISTANCE = 7;
+	private final static int TRAVELLED_DISTANCE = 8;
 	/** Remaining distance column. */
-	private final static int REMAINING_DISTANCE = 8;
+	private final static int REMAINING_DISTANCE = 9;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 9;
+	private final static int COLUMNCOUNT = 10;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
@@ -69,8 +71,10 @@ public class MissionTableModel extends AbstractTableModel
 		columnTypes = new Class[COLUMNCOUNT];
 		columnNames[STARTING_MEMBER] = Msg.getString("MissionTableModel.column.name"); //$NON-NLS-1$
 		columnTypes[STARTING_MEMBER] = String.class;
-		columnNames[DESCRIPTION] = Msg.getString("MissionTableModel.column.description"); //$NON-NLS-1$
-		columnTypes[DESCRIPTION] = String.class;
+		columnNames[DESC] = Msg.getString("MissionTableModel.column.desc"); //$NON-NLS-1$
+		columnTypes[DESC] = String.class;
+		columnNames[DESIGNATION] = Msg.getString("MissionTableModel.column.designation"); //$NON-NLS-1$
+		columnTypes[DESIGNATION] = String.class;
 		columnNames[PHASE] = Msg.getString("MissionTableModel.column.phase"); //$NON-NLS-1$
 		columnTypes[PHASE] = String.class;
 		columnNames[STARTING_SETTLEMENT] = Msg.getString("MissionTableModel.column.startingSettlement"); //$NON-NLS-1$
@@ -209,7 +213,9 @@ public class MissionTableModel extends AbstractTableModel
 			if (eventType == MissionEventType.NAME_EVENT)
 				column1 = STARTING_MEMBER;
 			else if (eventType == MissionEventType.DESCRIPTION_EVENT)
-				column1 = DESCRIPTION;
+				column1 = DESC;
+			else if (eventType == MissionEventType.DESIGNATION_EVENT)
+				column1 = DESIGNATION;
 			else if (eventType == MissionEventType.PHASE_EVENT)
 				column1 = PHASE;
 			else if (eventType == MissionEventType.ADD_MEMBER_EVENT
@@ -266,8 +272,13 @@ public class MissionTableModel extends AbstractTableModel
 				}
 					break;
 
-				case DESCRIPTION: {
+				case DESC: {
 					result = mission.getDescription();
+				}
+					break;
+					
+				case DESIGNATION: {
+					result = mission.getFullMissionDesignation();
 				}
 					break;
 

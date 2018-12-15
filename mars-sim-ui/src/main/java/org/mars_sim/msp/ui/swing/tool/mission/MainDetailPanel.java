@@ -175,7 +175,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		String s = "";
 		// Implement the missing descriptionLabel
 		if (missionWindow.getCreateMissionWizard() != null) {
-			s = Conversion.capitalize(missionWindow.getCreateMissionWizard().getTypePanel().getDescription());
+			s = Conversion.capitalize(missionWindow.getCreateMissionWizard().getTypePanel().getDesignation());//getDescription());
 			descriptionTF.setText(s);
 		}
 
@@ -517,8 +517,8 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			// Update mission info in UI.
 		
 			if (missionWindow.getCreateMissionWizard() != null 
-					&& missionWindow.getCreateMissionWizard().getTypePanel().getDescription() != null) {
-				String now = missionWindow.getCreateMissionWizard().getTypePanel().getDescription();
+					&& missionWindow.getCreateMissionWizard().getTypePanel().getDesignation() != null) {
+				String now = missionWindow.getCreateMissionWizard().getTypePanel().getDesignation();//.getDescription();
 				// Set the description based on what has been input by the mission creation wizard
 				mission.setDescription(now);
 				descriptionTF.setText(now);
@@ -752,10 +752,10 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			// Update UI based on mission event type.
 			if (type == MissionEventType.NAME_EVENT)
 				typeLabel.setText(mission.getName()); //$NON-NLS-1$
-			else if (type == MissionEventType.DESCRIPTION_EVENT) {
+			else if (type == MissionEventType.DESIGNATION_EVENT) {
 				// Implement the missing descriptionLabel
 				if (missionWindow.getCreateMissionWizard() != null) {
-					String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription();
+					String s = missionWindow.getCreateMissionWizard().getTypePanel().getDesignation();//.getDescription();
 					if (s == null) {
 						s = "None";
 					}

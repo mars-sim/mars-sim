@@ -95,11 +95,11 @@ public class LogConsolidated {
 //	}
 	
 	public static void log(Level level, int timeBetweenLogs, String sourceName, String message) {
-		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.SECONDS).log(sourceName + COLON + message);
+		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.MILLISECONDS).log(sourceName + COLON + message);
 	}
 	
 	public static void log(Level level, int timeBetweenLogs, String sourceName, String message, Throwable t) {
-		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.SECONDS).log(sourceName + COLON + message, t);
+		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.MILLISECONDS).log(sourceName + COLON + message, t);
 	}
 	
 //	public static void info(int timeBetweenLogs, String sourceName, String message) {

@@ -500,15 +500,7 @@ public class Mind implements Serializable {
 					person.getName() + " couldn't determine new action - taskWeights: " + taskWeights
 				+ ", missionWeights: " + missionWeights);
 		
-		
-		int rand1 = RandomUtil.getRandomInt(6);
-		if (rand1 == 0)
-			taskManager.addTask(new EatMeal(person));
-		else if (rand1 < 3)
-			taskManager.addTask(new Relax(person));
-		else 
-			taskManager.addTask(new Sleep(person));
-		
+			
 	}
 
 	/**

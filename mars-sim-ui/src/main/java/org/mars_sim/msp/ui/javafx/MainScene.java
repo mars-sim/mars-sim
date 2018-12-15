@@ -11,7 +11,6 @@ import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -209,7 +208,7 @@ public class MainScene implements ClockListener {
 	private static final int RED = DotMatrix.convertToInt(Color.RED);
 	private static final int ORANGE = DotMatrix.convertToInt(Color.ORANGE);
 	private static final int YELLOW = DotMatrix.convertToInt(Color.YELLOW);
-	private static final int BLACK = DotMatrix.convertToInt(Color.BLACK);
+//	private static final int BLACK = DotMatrix.convertToInt(Color.BLACK);
 
 	public enum ThemeType {
 		System, Nimbus, Nimrod, Weblaf
@@ -1131,7 +1130,7 @@ public class MainScene implements ClockListener {
 			AnchorPane.setTopAnchor(soundBtn, 3.0 + TITLE_HEIGHT);
 			// AnchorPane.setTopAnchor(farmBtn, 3.0);
 			AnchorPane.setTopAnchor(earthTimeBox, 0.0 + TITLE_HEIGHT);
-			AnchorPane.setTopAnchor(marsTimeBox, 0.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(marsTimeBox, 2.0 + TITLE_HEIGHT);
 		}
 
 		else if (OS.contains("linux")) {

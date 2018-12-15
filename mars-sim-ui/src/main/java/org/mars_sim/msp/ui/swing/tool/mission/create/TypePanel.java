@@ -200,8 +200,13 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		// No previous panel to this one.
 	}
 	
-	public String getDescription() {
-		return getWizard().getMissionData().getDescription();
+	public String getDesignation() {
+		return getWizard().getMissionData().getDesignation();
 		//return descriptionField.getText();
 	}
+	
+//	public String getDescription() {
+//		return getWizard().getMissionData().getDescription();
+//		//return descriptionField.getText();
+//	}
 }

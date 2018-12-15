@@ -10,7 +10,9 @@ public enum MissionEventType {
 
 	// from Mission.java
 	NAME_EVENT					("name"),
+	TYPE_EVENT					("type"),
 	DESCRIPTION_EVENT			("description"),
+	DESIGNATION_EVENT			("designation"),
 	PHASE_EVENT					("phase"),
 	PHASE_DESCRIPTION_EVENT		("phase description"),
 	MIN_MEMBERS_EVENT           ("minimum members"),

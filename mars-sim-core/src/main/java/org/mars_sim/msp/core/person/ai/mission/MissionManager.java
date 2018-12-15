@@ -46,11 +46,6 @@ public class MissionManager implements Serializable {
 	
 	private static final double PERCENT_PER_SCORE = 20D;
 	
-	/** Current missions in the simulation. */
-	private List<Mission> missions;
-
-	private Map<Integer, List<MissionPlanning>> historicalMissions;
-	
 	/** Mission listeners. */
 	private transient List<MissionManagerListener> listeners;
 
@@ -59,14 +54,23 @@ public class MissionManager implements Serializable {
 
 	// Transient members
 	private transient MarsClock personTimeCache;
-//	private transient MarsClock robotTimeCache;
+	private static MarsClock marsClock;
+	// Note that mission manager is instantiated before master/mars clock
+	
 	private transient Map<MetaMission, Double> missionProbCache;
 	private transient Map<MetaMission, Double> robotMissionProbCache;
 	
 	private static List<String> missionNames;
 
-	private static MarsClock marsClock;
-	// Note that mission manager is instantiated before master/mars clock
+	private static Map<String, Integer> settlementID;
+	
+	// static unit identifier
+	private static int unitIdentifer;
+	
+	/** Current missions in the simulation. */
+	private List<Mission> missions;
+
+	private Map<Integer, List<MissionPlanning>> historicalMissions;
 	
 	/**
 	 * Constructor.
@@ -74,18 +78,66 @@ public class MissionManager implements Serializable {
 	public MissionManager() {
 		// Initialize cache values.
 		personTimeCache = null;
-//		robotTimeCache = null;
 		totalProbCache = 0D;
-		
+		// Create an array of mission names
 		createMissionArray();
+		
 		// Initialize data members
+		unitIdentifer = 0;
 		missions = new ArrayList<Mission>(0);
 		historicalMissions = new HashMap<>();
+		settlementID = new HashMap<>();
 		listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
 		missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getMetaMissions().size());
 		robotMissionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getRobotMetaMissions().size());
 	}
 
+	/**
+	 * Must be synchronised to prevent duplicate ids being assigned via different
+	 * threads.
+	 * 
+	 * @return
+	 */
+	private static synchronized int getNextIdentifier() {
+		return unitIdentifer++;
+	}
+	
+//	public static int getSettlementID(String name) {
+//		return getSettlementID(name);
+//	}
+	
+	public static int getSettlementID(String name) {
+		if (settlementID.containsKey(name)) {
+			return settlementID.get(name);			
+		}
+		else {
+			int size = settlementID.size();
+			settlementID.put(name, size);
+			
+			return size;
+		}
+	}
+	
+	public static String getMissionDesignationString(String settlementName) {
+		return padZeros(getSettlementID(settlementName)+"", 2) + "-" + padZeros(getNextIdentifier()+"", 3);
+	}
+	
+	public static String padZeros(String s, int numDigital) {
+		String value = "";
+		int size = s.length();
+		int numZeros = numDigital-size;
+		if (numZeros > 0) {
+			for (int i=0; i< numDigital-size; i++)
+				value += "0";
+			value += s;
+		}
+		
+		else 
+			value = "" + s;
+		
+		return value;
+	}
+	
 	/**
 	 * Creates an array of all missions
 	 */
@@ -716,8 +768,7 @@ public class MissionManager implements Serializable {
 			List<MissionPlanning> plans = historicalMissions.get(mSol);
 			for (MissionPlanning mp : plans) {
 				if (mp == missionPlan) {
-					mp.setReviewedBy(person.getName());
-					mp.setReviewedRole(person.getRole().getType());
+					mp.setApproved(person);
 					mp.setStatus(status);
 					if (mp.getStatus() == PlanType.PENDING) {
 						if (status == PlanType.APPROVED) {
@@ -744,7 +795,7 @@ public class MissionManager implements Serializable {
 	 * @param person
 	 * @param status
 	 */
-	public void scoreMissionPlan(MissionPlanning missionPlan, double newScore) {
+	public void scoreMissionPlan(MissionPlanning missionPlan, double newScore, Person reviewer) {
 		
 		for (int mSol : historicalMissions.keySet()) {
 			List<MissionPlanning> plans = historicalMissions.get(mSol);
@@ -754,6 +805,7 @@ public class MissionManager implements Serializable {
 					mp.setPercentComplete(percent + PERCENT_PER_SCORE);
 					double score = mp.getScore();
 					mp.setScore(score + newScore);
+					mp.setReviewedBy(reviewer.getName());
 					break;
 				}
 			}
