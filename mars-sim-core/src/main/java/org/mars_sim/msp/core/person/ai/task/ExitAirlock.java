@@ -706,7 +706,7 @@ public class ExitAirlock extends Task implements Serializable {
 			boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
 			if (malfunction) 
 				LogConsolidated.log(Level.SEVERE, 5_000, sourceName, "[" + p.getLocationTag().getLocale()
-					+ "] " + p + " spotted a malfunction when examining " + suit.getName() + ".", null);
+					+ "] " + p + " spotted a malfunction when examining " + suit.getName() + ".");
 			try {
 				boolean hasEnoughResources = hasEnoughResourcesForSuit(inv, suit);
 				if (!malfunction && hasEnoughResources) {
@@ -760,11 +760,11 @@ public class ExitAirlock extends Task implements Serializable {
 		boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
 
 		// Check if enough water.
-		double neededWater = suitInv.getAmountResourceRemainingCapacity(waterID, true, false);
-		double availableWater = entityInv.getAmountResourceStored(waterID, false);
-		// Make sure there is enough extra water for everyone else.
-		availableWater -= (neededWater * otherPeopleNum);
-		boolean hasEnoughWater = (availableWater >= neededWater);
+//		double neededWater = suitInv.getAmountResourceRemainingCapacity(waterID, true, false);
+//		double availableWater = entityInv.getAmountResourceStored(waterID, false);
+//		// Make sure there is enough extra water for everyone else.
+//		availableWater -= (neededWater * otherPeopleNum);
+//		boolean hasEnoughWater = (availableWater >= neededWater);
 
 		// it's okay even if there's not enough water
 //		if (!hasEnoughWater)

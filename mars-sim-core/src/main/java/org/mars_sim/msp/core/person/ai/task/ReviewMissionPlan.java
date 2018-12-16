@@ -225,19 +225,19 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							if (m instanceof AreologyStudyFieldMission) {
 	//							AreologyStudyFieldMission aM = (AreologyStudyFieldMission)m;
 	//							qual = (int)m.getMissionQualification(person);
-								qual = 5 * ((AreologyStudyFieldMission)m).getMissionQualification(person);
+								qual = 2D * ((AreologyStudyFieldMission)m).getMissionQualification(person);
 							}
 							else if (m instanceof BiologyStudyFieldMission) {
-								qual = 5 * ((BiologyStudyFieldMission)m).getMissionQualification(person);
+								qual = 2D * ((BiologyStudyFieldMission)m).getMissionQualification(person);
 							}
 							else if (m instanceof RescueSalvageVehicle) {
-								qual = 5 * ((RescueSalvageVehicle)m).getMissionQualification(person);
+								qual = 2D * ((RescueSalvageVehicle)m).getMissionQualification(person);
 							}
 							else if (m instanceof TravelToSettlement) {
-								qual = 5 * ((TravelToSettlement)m).getMissionQualification(person);
+								qual = 2D * ((TravelToSettlement)m).getMissionQualification(person);
 							}
 							else
-								qual = 5 * m.getMissionQualification(person);											
+								qual = 2D * m.getMissionQualification(person);											
 							
 							// 4. Settlement objective score
 							double obj = 0;
@@ -248,24 +248,24 @@ public class ReviewMissionPlan extends Task implements Serializable {
 									|| m instanceof TravelToSettlement
 									|| m instanceof Exploration)
 									) {
-								obj += 30 * person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
+								obj += 10D * person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
 							}				
 							
 							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRADE_TOWN
 									&& m instanceof Trade) {
-								obj += 30 * person.getAssociatedSettlement().getGoodsManager().getTradeFactor();
+								obj += 10D * person.getAssociatedSettlement().getGoodsManager().getTradeFactor();
 							}	
 							
 							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRANSPORTATION_HUB
 									&& (m instanceof TravelToSettlement
 									|| m instanceof Exploration)) {
-								obj += 30 * person.getAssociatedSettlement().getGoodsManager().getTransportationFactor();
+								obj += 10D * person.getAssociatedSettlement().getGoodsManager().getTransportationFactor();
 							}	
 							
 							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.MANUFACTURING
 									&& (m instanceof Mining
 									|| m instanceof CollectRegolith)) {
-								obj += 30 * person.getAssociatedSettlement().getGoodsManager().getManufacturingFactor();
+								obj += 10D * person.getAssociatedSettlement().getGoodsManager().getManufacturingFactor();
 							}	
 							
 							// 5. emergency
@@ -359,7 +359,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							
 						LogConsolidated.log(Level.INFO, 0, sourceName,
 								"[" + s + "] " + reviewedBy + " approved " + requestedBy
-								+ "'s " + m.getDescription() + " mission plan. Score: " + score 
+								+ "'s " + m.getDescription() + " mission plan. Total Score: " + score 
 								+ " (Min: " + settlement.getMinimumPassingScore() + ").");
 					} else {
 						// Not Approved
@@ -368,7 +368,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 					
 						LogConsolidated.log(Level.INFO, 0, sourceName, 
 								"[" + s + "] " + reviewedBy + " did NOT approve " + requestedBy
-								+ "'s " + m.getDescription() + " mission plan. Score: " + score 
+								+ "'s " + m.getDescription() + " mission plan. Total Score: " + score 
 								+ " (Min: " + settlement.getMinimumPassingScore() + ").");
 					}
 										
