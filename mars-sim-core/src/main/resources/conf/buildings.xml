@@ -574,10 +574,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<!-- The building is capable of growing plant crops. -->
 			<!-- crops: the number of different crops grown in the building. -->
-			<!-- power-growing-crop: the power (kW) required per kg harvest biomass per crop to grow an flourish. -->
+			<!-- power-growing-crop: the power (kW) required per kg harvest biomass per crop for basic life support (not including light-generating power. -->
 			<!-- power-sustaining-crop: the minimum power (kW) required per kg harvest biomass per crop just to keep it alive. -->
-			<!-- growing-area: the max growing area (square meters) of all crops. -->
-			<farming crops="5" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="75.0" >
+			<!-- growing-area: the max growing area (square meters) for all crops. -->
+			<farming crops="5" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="125.0" >
 				<activity>
 					<activity-spot xloc="1.5" yloc="2.25" />
 					<activity-spot xloc="-1.5" yloc="2.25" />
@@ -672,7 +672,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="4.0" base-power-down-power="0.4" />
 
 		<functions>
-			<farming crops="15" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="225.0">
+			<farming crops="15" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="375.0">
 				<activity>
 					<activity-spot xloc="1.6" yloc="4.9" />
 					<activity-spot xloc="1.6" yloc="2.45" />

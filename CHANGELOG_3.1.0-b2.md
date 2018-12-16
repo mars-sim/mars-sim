@@ -5,7 +5,7 @@ Copyright (C) 2018 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-beta2 (build 4676) - 2018-12-16
+## v3.1.0-beta2 (build 4677) - 2018-12-16
 
 ### KNOWN LIMITATIONS :
 
@@ -14,13 +14,12 @@ Copyright (C) 2018 Scott Davis
 
 2. In Linux, text fields do not allow text input.
 
-3. A JavaFX WebEngine's crypto issue cripples the full UI loading of certain secure 
+3. A JavaFX WebEngine's issue cripples the full UI loading of certain secure 
    websites such as GitHub pages
 
 4. When clicking on a combobox to pick an option, the option list would pop up
    at the far edge of the main window, unless the main window has been dragged
    around the screen and repainted.
-
 
 
 ### CORE ENGINE IMPROVEMENTS :
@@ -104,7 +103,7 @@ Copyright (C) 2018 Scott Davis
    during a mission. Will now travel toward a settlement as close as possible
    before turning on the beacon and asking for help.
 
-4. Limit the distance a rover may travel in a mission.
+4. Players may set limit to the distance a rover may travel in a mission.
 
 5. Enable flexible Earth start date/time in simulation.xml.
 
@@ -119,11 +118,12 @@ Copyright (C) 2018 Scott Davis
    "make soda from sodium oxide", "make glass from sand" and "extract silicon
    dioxide from sand".
    
-
+10. Players may set water rationing and emphasis on certain type of tasks.
+ 
 
 ### UI IMPROVEMENT :
 
-1. Display a lists of settlers according to their associated settlement in 
+1. Display a lists of settlers according to their associated settlements in 
    Dashboard tab.
 
 2. Add a draggable dot matrix news ticker for notifying users of events 

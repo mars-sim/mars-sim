@@ -461,19 +461,15 @@ public class Farming extends Function implements Serializable {
 
 		// Sets aside some areas
 		remainingGrowingArea = remainingGrowingArea - cropArea;
-		// System.out.println("cropArea : "+ cropArea);
 
 		if (remainingGrowingArea < 0)
 			remainingGrowingArea = 0;
-		// System.out.println("remainingGrowingArea : "+ remainingGrowingArea);
 
-		// 1kg = 1000 g
+		// Note edible-biomass is [ gram / m^2 / day ]
 		double dailyMaxHarvest = edibleBiomass / 1000D * cropArea;
-//		totalMaxHarvest = totalMaxHarvest + dailyMaxHarvest;
-		// logger.info("max possible harvest on " + cropType.getName() + " : " +
-		// Math.round(maxHarvestinKgPerDay*100.0)/100.0 + " kg per day");
+//		 logger.info("max possible daily harvest on " + cropType.getName() + " : " +
+//		 Math.round(dailyMaxHarvest*100.0)/100.0 + " kg per sol");
 
-		// totalHarvestinKgPerDay = (maxHarvestinKgPerDay + totalHarvestinKgPerDay) /2;
 		double percentAvailable = 0;
 
 		if (!isStartup) {
@@ -742,12 +738,11 @@ public class Farming extends Function implements Serializable {
 		// becoming very small double values and an endless loop occurs.
 		while (needyCrop != null && timeRemaining > MIN) {
 
-			try {
+//			try {
 				timeRemaining = needyCrop.addWork(unit, timeRemaining);
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
 			
 			needyCropCache = needyCrop;
 			// Get a new needy crop
