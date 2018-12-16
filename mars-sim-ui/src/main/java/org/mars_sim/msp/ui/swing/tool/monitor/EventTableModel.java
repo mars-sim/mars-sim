@@ -805,7 +805,7 @@ public class EventTableModel extends AbstractTableModel
 		}
 
 		public void run() {
-			System.out.println("EventTableModel : " + message);
+//			System.out.println("EventTableModel : " + message);
 
 			int theme = MainScene.getTheme();
 

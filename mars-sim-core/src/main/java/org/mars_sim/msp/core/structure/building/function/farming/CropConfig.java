@@ -162,6 +162,13 @@ public class CropConfig implements Serializable {
 				// Set up the default growth phases of a crop
 				Map<Integer, Phase> phases = setupPhases(cat);
 
+//				int sum = 0;
+//				for (int i : phases.keySet()) {
+//					sum += phases.get(i).getPercentGrowth();
+//				}
+//				
+//				System.out.println(cat + " : " + sum);
+				
 				CropType cropType = new CropType(name, growingTime * 1000D, cat, lifeCycle, edibleBiomass,
 						edibleWaterContent, inedibleBiomass, dailyPAR, phases);
 
@@ -192,10 +199,10 @@ public class CropConfig implements Serializable {
 			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
 			phases.put(2, new Phase(PhaseType.CLOVE_SPROUTING, 1D, 5D));
 			phases.put(3, new Phase(PhaseType.POST_EMERGENCE, 1D, 15D));
-			phases.put(4, new Phase(PhaseType.LEAFING, 1D, 25D));
+			phases.put(4, new Phase(PhaseType.LEAFING, 1D, 29D));
 			phases.put(5, new Phase(PhaseType.BULB_INITIATION, 1D, 35D));
-			phases.put(6, new Phase(PhaseType.MATURATION, 1D, 18D));
-			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(6, new Phase(PhaseType.MATURATION, 1D, 10D));
+			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 5D));
 			phases.put(8, new Phase(PhaseType.FINISHED, 0.5, 0));
 
 		} else if (cat == CropCategoryType.CORMS) {
@@ -205,9 +212,9 @@ public class CropConfig implements Serializable {
 			phases.put(2, new Phase(PhaseType.BUD_SPROUTING, 1D, 20D));
 			phases.put(3, new Phase(PhaseType.VEGETATIVE_DEVELOPMENT, 1D, 20D));
 			phases.put(4, new Phase(PhaseType.FLOWERING, 1D, 15D));
-			phases.put(5, new Phase(PhaseType.REPLACEMENT_CORMS_DEVELOPMENT, 1D, 34D));
+			phases.put(5, new Phase(PhaseType.REPLACEMENT_CORMS_DEVELOPMENT, 1D, 30D));
 			phases.put(6, new Phase(PhaseType.ANTHESIS, 1D, 9D));
-			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 5D));
 			phases.put(8, new Phase(PhaseType.FINISHED, 0.5, 0));
 
 		} else if (cat == CropCategoryType.FRUITS) {
@@ -215,11 +222,11 @@ public class CropConfig implements Serializable {
 			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
 			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
 			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
-			phases.put(3, new Phase(PhaseType.VEGETATIVE_DEVELOPMENT, 1D, 34D));
+			phases.put(3, new Phase(PhaseType.VEGETATIVE_DEVELOPMENT, 1D, 30D));
 			phases.put(4, new Phase(PhaseType.FLOWERING, 1D, 25D));
 			phases.put(5, new Phase(PhaseType.FRUITING, 1D, 24D));
 			phases.put(6, new Phase(PhaseType.MATURATION, 1D, 10D));
-			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 5D));
 			phases.put(8, new Phase(PhaseType.FINISHED, 0.5, 0));
 
 		} else if (cat == CropCategoryType.GRAINS) {
@@ -232,8 +239,8 @@ public class CropConfig implements Serializable {
 			phases.put(5, new Phase(PhaseType.FLOWERING, 1D, 20D));
 			phases.put(6, new Phase(PhaseType.MILK_DEVELOPMENT, 1D, 10D));
 			phases.put(7, new Phase(PhaseType.DOUGH_DEVELOPING, 1D, 10D));
-			phases.put(8, new Phase(PhaseType.MATURATION, 1D, 14D));
-			phases.put(9, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(8, new Phase(PhaseType.MATURATION, 1D, 10D));
+			phases.put(9, new Phase(PhaseType.HARVESTING, 0.5, 5D));
 			phases.put(10, new Phase(PhaseType.FINISHED, 0.5, 0));
 
 		} else if (cat == CropCategoryType.GRASSES) {
@@ -242,9 +249,9 @@ public class CropConfig implements Serializable {
 			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
 			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
 			phases.put(3, new Phase(PhaseType.TILLERING, 1D, 39D));
-			phases.put(4, new Phase(PhaseType.GRAND_GROWTH, 1D, 35D));
-			phases.put(5, new Phase(PhaseType.MATURATION, 1D, 19D));
-			phases.put(6, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(4, new Phase(PhaseType.GRAND_GROWTH, 1D, 40D));
+			phases.put(5, new Phase(PhaseType.MATURATION, 1D, 10D));
+			phases.put(6, new Phase(PhaseType.HARVESTING, 0.5, 5D));
 			phases.put(7, new Phase(PhaseType.FINISHED, 0.5, 0));
 
 		} else if (cat == CropCategoryType.LEAVES) {
@@ -254,9 +261,9 @@ public class CropConfig implements Serializable {
 			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
 			phases.put(3, new Phase(PhaseType.POST_EMERGENCE, 1D, 5D));
 			phases.put(4, new Phase(PhaseType.HEAD_DEVELOPMENT, 1D, 39D));
-			phases.put(5, new Phase(PhaseType.FIFTY_PERCENT_HEAD_SIZE_REACHED, 1D, 39D));
+			phases.put(5, new Phase(PhaseType.FIFTY_PERCENT_HEAD_SIZE_REACHED, 1D, 35D));
 			phases.put(6, new Phase(PhaseType.MATURATION, 1D, 10D));
-			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 5D));
 			phases.put(8, new Phase(PhaseType.FINISHED, 0.5, 0));
 
 		} else if (cat == CropCategoryType.LEGUMES) {
@@ -264,11 +271,11 @@ public class CropConfig implements Serializable {
 			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
 			phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 1D));
 			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
-			phases.put(3, new Phase(PhaseType.LEAFING, 1D, 34D));
+			phases.put(3, new Phase(PhaseType.LEAFING, 1D, 30D));
 			phases.put(4, new Phase(PhaseType.FLOWERING, 1D, 25D));
 			phases.put(5, new Phase(PhaseType.SEED_FILL, 1D, 20D));
 			phases.put(6, new Phase(PhaseType.POD_MATURING, 1D, 14D));
-			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 5D));
 			phases.put(8, new Phase(PhaseType.FINISHED, 0.5, 0));
 
 		} else if (cat == CropCategoryType.TUBERS) {
@@ -278,9 +285,9 @@ public class CropConfig implements Serializable {
 			phases.put(2, new Phase(PhaseType.SPROUTING, 1D, 10D));
 			phases.put(3, new Phase(PhaseType.LEAF_DEVELOPMENT, 1D, 15D));
 			phases.put(4, new Phase(PhaseType.TUBER_INITIATION, 1D, 20D));
-			phases.put(5, new Phase(PhaseType.TUBER_FILLING, 1D, 39D));
+			phases.put(5, new Phase(PhaseType.TUBER_FILLING, 1D, 35D));
 			phases.put(6, new Phase(PhaseType.MATURATION, 1D, 14D));
-			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(7, new Phase(PhaseType.HARVESTING, 0.5, 5D));
 			phases.put(8, new Phase(PhaseType.FINISHED, 0.5, 0));
 
 		} else if (cat == CropCategoryType.ROOTS) {
@@ -290,9 +297,9 @@ public class CropConfig implements Serializable {
 			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 1D));
 			phases.put(2, new Phase(PhaseType.SPROUTING, 1D, 5D));
 			phases.put(3, new Phase(PhaseType.LEAF_DEVELOPMENT, 1D, 39D));
-			phases.put(4, new Phase(PhaseType.ROOT_DEVELOPMENT, 1D, 44D));
+			phases.put(4, new Phase(PhaseType.ROOT_DEVELOPMENT, 1D, 40D));
 			phases.put(5, new Phase(PhaseType.MATURATION, 1D, 10D));
-			phases.put(6, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(6, new Phase(PhaseType.HARVESTING, 0.5, 5D));
 			phases.put(7, new Phase(PhaseType.FINISHED, 0.5, 0));
 
 		} else if (cat == CropCategoryType.STEMS) {
@@ -302,11 +309,11 @@ public class CropConfig implements Serializable {
 			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 1D));
 			phases.put(2, new Phase(PhaseType.EARLY_VEGETATIVE, 1D, 15D));
 			phases.put(3, new Phase(PhaseType.MID_VEGETATIVE, 1D, 15D));
-			phases.put(4, new Phase(PhaseType.STEM_ELONGATION, 1D, 38D));
+			phases.put(4, new Phase(PhaseType.STEM_ELONGATION, 1D, 34D));
 			phases.put(5, new Phase(PhaseType.EARLY_BULKING_UP, 1D, 10D));
 			phases.put(6, new Phase(PhaseType.MID_BULKING_UP, 1D, 10D));
-			phases.put(7, new Phase(PhaseType.LATE_BULKING_UP, 1D, 9D));
-			phases.put(8, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(7, new Phase(PhaseType.LATE_BULKING_UP, 1D, 10D));
+			phases.put(8, new Phase(PhaseType.HARVESTING, 0.5, 5D));
 			phases.put(9, new Phase(PhaseType.FINISHED, 0.5, 0));
 
 //		} else if (cat == CropCategoryType.SPICES) {
@@ -325,9 +332,9 @@ public class CropConfig implements Serializable {
 			phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0D));
 			phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 1D));
 			phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
-			phases.put(3, new Phase(PhaseType.GROWING, 1D, 83D));
+			phases.put(3, new Phase(PhaseType.GROWING, 1D, 79D));
 			phases.put(4, new Phase(PhaseType.MATURATION, 1D, 10D));
-			phases.put(5, new Phase(PhaseType.HARVESTING, 0.5, 1D));
+			phases.put(5, new Phase(PhaseType.HARVESTING, 0.5, 5D));
 			phases.put(6, new Phase(PhaseType.FINISHED, 0.5, 0));
 
 		}
@@ -514,7 +521,7 @@ public class CropConfig implements Serializable {
 	 * @return crop type
 	 */
 	public static CropType getRandomCropType() {
-		return getCropTypes().get(RandomUtil.getRandomInt(0, getNumCropTypes() - 1));
+		return getCropTypes().get(RandomUtil.getRandomInt(getNumCropTypes() - 1));
 	}
 	
 	/**

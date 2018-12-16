@@ -64,8 +64,8 @@ public class MissionManager implements Serializable {
 
 	private static Map<String, Integer> settlementID;
 	
-	// static unit identifier
-	private static int unitIdentifer;
+	// static mission identifier
+	private static int missionIdentifer;
 	
 	/** Current missions in the simulation. */
 	private List<Mission> missions;
@@ -83,7 +83,7 @@ public class MissionManager implements Serializable {
 		createMissionArray();
 		
 		// Initialize data members
-		unitIdentifer = 0;
+		missionIdentifer = 0;
 		missions = new ArrayList<Mission>(0);
 		historicalMissions = new HashMap<>();
 		settlementID = new HashMap<>();
@@ -99,7 +99,7 @@ public class MissionManager implements Serializable {
 	 * @return
 	 */
 	private static synchronized int getNextIdentifier() {
-		return unitIdentifer++;
+		return missionIdentifer++;
 	}
 	
 //	public static int getSettlementID(String name) {

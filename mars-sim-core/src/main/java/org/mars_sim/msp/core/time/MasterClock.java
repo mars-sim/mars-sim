@@ -696,7 +696,7 @@ public class MasterClock implements Serializable {
 					}
 
 					else { // last frame went beyond the PERIOD
-						logger.config("sleepTime : " + sleepTime); 
+						logger.config("sleepTime : " + sleepTime); // e.g. sleepTime : -28277033488
 						
 						excess -= sleepTime;
 						overSleepTime = 0L;

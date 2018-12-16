@@ -785,6 +785,8 @@ implements MouseListener {
 //				}
 
 				growth = crop.getPercentGrowth();
+				if (growth > 100)
+					growth = 100;
 				return String.valueOf(growth) + "%";
 			}
 			// Add column 4 showing the crop's category

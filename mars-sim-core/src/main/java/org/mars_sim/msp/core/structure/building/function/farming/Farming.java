@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,7 +55,8 @@ public class Farming extends Function implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Farming.class.getName());
 
-	private static String sourceName = logger.getName();
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
 
 	private static final FunctionType FARMING_FUNCTION = FunctionType.FARMING;
 	
@@ -64,24 +66,27 @@ public class Farming extends Function implements Serializable {
 	public static final String SOIL = "soil";
 	public static final String CROP_WASTE = "crop waste";
 	public static final String TISSUE_CULTURE = " tissue culture";
-	// public static final String LED_KIT = "light emitting diode kit";
-	// public static final String HPS_LAMP = "high pressure sodium lamp";
-	/**
-	 * amount of crop tissue culture needed for each square meter of growing area
-	 */
+	public static final String CORN = "corn";
+//	 public static final String LED_KIT = "light emitting diode kit";
+//	 public static final String HPS_LAMP = "high pressure sodium lamp";
+	
+	/** The amount of crop tissue culture needed for each square meter of growing area. */
 	public static final double TISSUE_PER_SQM = .0005; // 1/2 gram (arbitrary)
 	public static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.05;
 	public static final double CO2_RATE = 400;
 	public static final double O2_RATE = .75;
+	public static final double MIN  = .00001D;// 0.0000000001;
 
 	private static final int NUM_INSPECTIONS = 2;
 	private static final int NUM_CLEANING = 2;
-
-	// private static ItemResource LED_Item;
-	// private static ItemResource HPS_Item;
-	// private int numLEDInUse;
-	// private int cacheNumLED;
-	/** The number of crop types available. */
+	
+	private static double farmingAreaNeededPerPerson = 0;
+	
+//	 private static ItemResource LED_Item;
+//	 private static ItemResource HPS_Item;
+//	 private int numLEDInUse;
+//	 private int cacheNumLED;
+//	/** The number of crop types available. */
 //	private static int cropTypeNum;
 	/** The number of High Power Sodium Lamp needed. */
 	private int numHPSinNeed;
@@ -89,12 +94,14 @@ public class Farming extends Function implements Serializable {
 	private int defaultCropNum;
 	/** The sol cache.  */
 	private int solCache = 1;
+	/** The unique identifier. */
+	private int identifer;
 
 	private double powerGrowingCrop;
 	private double powerSustainingCrop;
 	private double maxGrowingArea;
 	private double remainingGrowingArea;
-	private double totalMaxHarvest = 0;
+//	private double totalMaxHarvest = 0;
 
 	/** The amount of air moisture in the greenhouse */
 	private double moisture = 0;
@@ -106,12 +113,14 @@ public class Farming extends Function implements Serializable {
 	private String cropInQueue;
 
 	/** List of crop types in queue */
-	private List<CropType> cropListInQueue;
-	/** List of crop types the greenhouse is currently growing */
-	private List<String> plantedCrops;
+	private List<String> cropListInQueue;
+//	/** List of crop types the greenhouse is currently growing */
+//	private List<Integer> plantedCrops;
 	/** List of crops the greenhouse is currently growing */
 	private List<Crop> crops;
-
+	/** A map of all the crops ever planted in this greenhouse. */
+	private Map<Integer, String> cropHistory;
+	
 	private List<String> inspectionList, cleaningList;
 
 	private Map<String, Integer> cleaningMap, inspectionMap;
@@ -156,13 +165,16 @@ public class Farming extends Function implements Serializable {
 		this.inv = settlement.getInventory();
 		// this.goodsManager = settlement.getGoodsManager();
 
+		identifer = 0;
+		
 		setupInspection();
 		setupCleaning();
 
-		plantedCrops = new ArrayList<String>();
-		cropListInQueue = new ArrayList<CropType>();
-		crops = new ArrayList<Crop>();
+//		plantedCrops = new ArrayList<>();
+		cropListInQueue = new ArrayList<>();
+		crops = new CopyOnWriteArrayList<>();
 		dailyWaterUsage = new HashMap<>();
+		cropHistory = new HashMap<>();
 		
 		BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 //		surface = Simulation.instance().getMars().getSurfaceFeatures();
@@ -183,11 +195,15 @@ public class Farming extends Function implements Serializable {
 		for (int x = 0; x < defaultCropNum; x++) {
 			// Add cropInQueue and chang method name to getNewCrop()
 			CropType cropType = pickACrop(true, false);
-			if (cropType == null)
+			if (cropType == null) {
 				break;// for avoiding NullPointerException during maven test
-			Crop crop = plantACrop(cropType, true, 0);
-			crops.add(crop);
-			building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+			}
+			else {
+				Crop crop = plantACrop(cropType, true, 0);
+				crops.add(crop);
+				cropHistory.put(crop.getIdentifier(), cropType.getName());//crop.getCropName());
+				settlement.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+			}
 		}
 
 		// Create BeeGrowing
@@ -200,6 +216,15 @@ public class Farming extends Function implements Serializable {
 
 	}
 
+	/**
+	 * Gets a new identifier
+	 * 
+	 * @return
+	 */
+	private int getNextIdentifier() {
+		return identifer++;
+	}
+	
 	public void setupInspection() {
 		inspectionMap = new HashMap<String, Integer>();
 		inspectionList = new ArrayList<>();
@@ -242,16 +267,16 @@ public class Farming extends Function implements Serializable {
 	 * @param isStartup - true if it is called at the start of the sim
 	 * @return {@link CropType}
 	 */
-	// TODO: need to specify the person who is doing it using the work time in the
-	// lab
 	public CropType pickACrop(boolean isStartup, boolean noCorn) {
+		// TODO: need to specify the person who is doing it using the work time in the
+		// lab
 		CropType ct = null;
 		boolean flag = true;
 		// TODO: at the start of the sim, choose only from a list of staple food crop
 		if (isStartup) {
 			while (flag) {
 				ct = CropConfig.getRandomCropType();
-				if (noCorn && ct.getName().equalsIgnoreCase("corn")) {
+				if (noCorn && ct.getName().equalsIgnoreCase(CORN)) {
 					ct = pickACrop(isStartup, noCorn);
 				}
 
@@ -264,7 +289,7 @@ public class Farming extends Function implements Serializable {
 		else {
 			while (flag) {
 				ct = selectVPCrop();
-				if (noCorn && ct.getName().equalsIgnoreCase("corn")) {
+				if (noCorn && ct.getName().equalsIgnoreCase(CORN)) {
 					ct = pickACrop(isStartup, noCorn);
 				}
 
@@ -310,12 +335,17 @@ public class Farming extends Function implements Serializable {
 		String last2CT = null;
 		boolean compareVP = false;
 
-		int size = plantedCrops.size();
-		if (size > 2) {
+		int size = cropHistory.size();
+//		System.out.println("size : " + size);
+		if (size > 1) {
 			// get the last two planted crops
-			last2CT = plantedCrops.get(size - 2);
-			lastCT = plantedCrops.get(size - 1);
-
+			last2CT = cropHistory.get(size - 2);
+			lastCT = cropHistory.get(size - 1);
+//			System.out.println("0 : " + cropHistory.get(0));
+//			System.out.println("1 : " + cropHistory.get(1));
+//			System.out.println("last2CT : " + last2CT);
+//			System.out.println("lastCT : " + lastCT);
+			
 			if (no_1_crop.getName().equalsIgnoreCase(last2CT) || no_1_crop.getName().equalsIgnoreCase(lastCT)) {
 				// if highestCrop has already been selected once
 
@@ -347,7 +377,7 @@ public class Farming extends Function implements Serializable {
 		}
 
 		else if (size == 1) {
-			lastCT = plantedCrops.get(0);
+			lastCT = cropHistory.get(0);
 
 			if (lastCT != null) {
 				// if highestCrop has already been selected for planting last time,
@@ -392,8 +422,8 @@ public class Farming extends Function implements Serializable {
 	}
 
 	public boolean containCrop(String name) {
-		for (String c : plantedCrops) {
-			if (c.equalsIgnoreCase(name))
+		for (Crop c : crops) {
+			if (c.getCropName().equalsIgnoreCase(name))
 				return true;
 		}
 
@@ -414,7 +444,6 @@ public class Farming extends Function implements Serializable {
 	 * @return Crop
 	 */
 	public Crop plantACrop(CropType cropType, boolean isStartup, double designatedGrowingArea) {
-		Crop crop = null;
 		// Implement new way of calculating amount of food in kg,
 		// accounting for the Edible Biomass of a crop
 		// edibleBiomass is in [ gram / m^2 / day ]
@@ -430,6 +459,7 @@ public class Farming extends Function implements Serializable {
 			cropArea = maxGrowingArea / (double) defaultCropNum;
 		}
 
+		// Sets aside some areas
 		remainingGrowingArea = remainingGrowingArea - cropArea;
 		// System.out.println("cropArea : "+ cropArea);
 
@@ -439,7 +469,7 @@ public class Farming extends Function implements Serializable {
 
 		// 1kg = 1000 g
 		double dailyMaxHarvest = edibleBiomass / 1000D * cropArea;
-		totalMaxHarvest = totalMaxHarvest + dailyMaxHarvest;
+//		totalMaxHarvest = totalMaxHarvest + dailyMaxHarvest;
 		// logger.info("max possible harvest on " + cropType.getName() + " : " +
 		// Math.round(maxHarvestinKgPerDay*100.0)/100.0 + " kg per day");
 
@@ -456,13 +486,8 @@ public class Farming extends Function implements Serializable {
 
 		}
 
-		crop = new Crop(cropType, cropArea, dailyMaxHarvest, this, settlement, isStartup, percentAvailable);
-		// TODO: Reduce the demand for this crop type
-
-		plantedCrops.add(cropType.getName());
-		// remove the very first crop on the list to prevent blotting.
-		// plantedCrops.remove(0);
-
+		Crop crop = new Crop(getNextIdentifier(), cropType, cropArea, dailyMaxHarvest, this, settlement, isStartup, percentAvailable);
+		
 		return crop;
 	}
 
@@ -513,18 +538,18 @@ public class Farming extends Function implements Serializable {
 
 		String tissueName = cropType.getName() + TISSUE_CULTURE;
 		// String name = Conversion.capitalize(cropType.getName()) + TISSUE_CULTURE;
-		AmountResource tissueAR = ResourceUtil.findAmountResource(tissueName);
+		int tissueID = ResourceUtil.findIDbyAmountResourceName(tissueName);
 
 		boolean available = false;
 
 		try {
 
-			double amountStored = inv.getAmountResourceStored(tissueAR, false);
-			inv.addAmountDemandTotalRequest(tissueAR);
+			double amountStored = inv.getAmountResourceStored(tissueID, false);
+			inv.addAmountDemandTotalRequest(tissueID);
 
-			if (amountStored < 0.0000000001) {
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-						"[" + settlement + "]" + "Run out of " + tissueName, null);
+			if (amountStored < MIN) {
+				LogConsolidated.log(Level.INFO, 1000, sourceName,
+						"[" + settlement + "]" + "Ran out of " + tissueName);
 				percent = 0;
 			}
 
@@ -532,24 +557,22 @@ public class Farming extends Function implements Serializable {
 				available = true;
 				percent = amountStored / requestedAmount * 100D;
 				requestedAmount = amountStored;
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+				LogConsolidated.log(Level.INFO, 1000, sourceName,
 						"[" + settlement + "] " + Math.round(requestedAmount * 100.0) / 100.0 + " kg " + tissueName
-								+ " is partially available.",
-						null);
+								+ " was partially available.");
 			}
 
 			else {
 				available = true;
 				percent = 100D;
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName, "[" + settlement + "] "
-						+ Math.round(requestedAmount * 100.0) / 100.0 + " kg " + tissueName + " is fully available.",
-						null);
+				LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + settlement + "] "
+						+ Math.round(requestedAmount * 100.0) / 100.0 + " kg " + tissueName + " was fully available.");
 			}
 
 			if (available)
-				inv.retrieveAmountResource(tissueAR, requestedAmount);
+				inv.retrieveAmountResource(tissueID, requestedAmount);
 
-			inv.addAmountDemand(tissueAR, requestedAmount);
+			inv.addAmountDemand(tissueID, requestedAmount);
 
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage());
@@ -572,7 +595,7 @@ public class Farming extends Function implements Serializable {
 	 * 
 	 * @return Collection of CropType
 	 */
-	public List<CropType> getCropListInQueue() {
+	public List<String> getCropListInQueue() {
 		return cropListInQueue;
 	}
 
@@ -581,9 +604,9 @@ public class Farming extends Function implements Serializable {
 	 * 
 	 * @param cropType
 	 */
-	public void addCropListInQueue(CropType cropType) {
-		if (cropType != null) {
-			cropListInQueue.add(cropType);
+	public void addCropListInQueue(String n) {
+		if (n != null) {
+			cropListInQueue.add(n);
 		}
 	}
 
@@ -592,22 +615,20 @@ public class Farming extends Function implements Serializable {
 	 * 
 	 * @param cropType
 	 */
-	public void deleteACropFromQueue(int index, CropType cropType) {
+	public void deleteACropFromQueue(int index, String n) {
 		// cropListInQueue.remove(index);
 		// Safer removal than cropListInQueue.remove(index)
 		int size = cropListInQueue.size();
 		if (size > 0) {
-			Iterator<CropType> j = cropListInQueue.iterator();
+			Iterator<String> j = cropListInQueue.iterator();
 			int i = 0;
 			while (j.hasNext()) {
-				CropType c = j.next();
+				String name = j.next();
 				if (i == index) {
-					// System.out.println("Farming.java: deleteCropListInQueue() : i is at " + i);
-					String name = c.getName();
 					// System.out.println("Farming.java: deleteCropListInQueue() : c is " + c);
-					if (!cropType.getName().equals(name))
-						logger.log(java.util.logging.Level.SEVERE,
-								"The crop queue encounters a problem removing a crop");
+					if (!n.equals(name))
+						logger.log(Level.SEVERE,
+								"The crop queue encountered a problem removing a crop");
 					else {
 						j.remove();
 						break; // remove the first entry only
@@ -669,20 +690,23 @@ public class Farming extends Function implements Serializable {
 	 * @return area (m^2) of farming surface.
 	 */
 	public static double getFarmingAreaNeededPerPerson() {
-
-		// Determine average amount (kg) of food required per person per orbit.
-		double neededFoodPerSol = SimulationConfig.instance().getPersonConfiguration().getFoodConsumptionRate();
-
-		// Determine average amount (kg) of food produced per farm area (m^2).
-		// CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-		double totalFoodPerSolPerArea = 0D;
-		for (CropType c : CropConfig.getCropTypes())
-			// Crop type average edible biomass (kg) per Sol.
-			totalFoodPerSolPerArea += c.getEdibleBiomass() / 1000D;
-
-		double producedFoodPerSolPerArea = totalFoodPerSolPerArea / CropConfig.getNumCropTypes();
-
-		return neededFoodPerSol / producedFoodPerSolPerArea;
+		if (farmingAreaNeededPerPerson <= 0) {
+			// Determine average amount (kg) of food required per person per orbit.
+			double neededFoodPerSol = SimulationConfig.instance().getPersonConfiguration().getFoodConsumptionRate();
+	
+			// Determine average amount (kg) of food produced per farm area (m^2).
+			// CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+			double totalFoodPerSolPerArea = 0D;
+			for (CropType c : CropConfig.getCropTypes())
+				// Crop type average edible biomass (kg) per Sol.
+				totalFoodPerSolPerArea += c.getEdibleBiomass() / 1000D;
+	
+			double producedFoodPerSolPerArea = totalFoodPerSolPerArea / CropConfig.getNumCropTypes();
+	
+			farmingAreaNeededPerPerson = neededFoodPerSol / producedFoodPerSolPerArea;
+		}
+		
+		return farmingAreaNeededPerPerson;
 	}
 
 	/**
@@ -716,30 +740,24 @@ public class Farming extends Function implements Serializable {
 		// Scott - I used the comparison criteria 00001D rather than 0D
 		// because sometimes math anomalies result in workTimeRemaining
 		// becoming very small double values and an endless loop occurs.
-		while (needyCrop != null && timeRemaining > .00001D) {
+		while (needyCrop != null && timeRemaining > MIN) {
 
-			timeRemaining = needyCrop.addWork(unit, timeRemaining);
+			try {
+				timeRemaining = needyCrop.addWork(unit, timeRemaining);
 
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 			needyCropCache = needyCrop;
 			// Get a new needy crop
 			needyCrop = getNeedyCrop(needyCropCache);
 
-			// if (needyCropCache != null && needyCrop != null &&
-			// needyCropCache.equals(needyCrop)) {
 			if (needyCrop != null && !needyCropCache.equals(needyCrop)) {
 				// Update the name of the crop being worked on in the task
 				// description
 				h.setCropDescription(needyCrop);
 			}
-
-//			
-//			 if (needyCropCache != null && needyCrop != null) { //
-//			 logger.info("inside while loop. lastCrop is " + lastCrop.getCropType()); 
-//			 if (needyCropCache.equals(needyCrop)) { 
-//				 // Update the name of the crop being worked on in the task description 
-//				 h.setCropDescription(needyCrop);
-//			 } }
-//			 
 		}
 
 		return timeRemaining;
@@ -861,21 +879,31 @@ public class Farming extends Function implements Serializable {
 		else if (building.getPowerMode() == PowerMode.POWER_DOWN)
 			productionLevel = .5D;
 
-		// Add time to each crop.
+		// Call timePassing on each crop.
 		Iterator<Crop> i = crops.iterator();
-		List<String> harvestedCrops = null;
+		List<Crop> harvestedCrops = null;
 		int numCrops2Plant = 0;
 		while (i.hasNext()) {
 			Crop crop = i.next();
-			crop.timePassing(time * productionLevel);
+			
+			try {
+				crop.timePassing(time * productionLevel);
+			
+			} catch (Exception e) {
+				LogConsolidated.log(Level.WARNING, 1000, sourceName,
+						"[" + settlement.getName() + "] " + crop.getCropName() + " ran into issues in " + building , e);
+				e.printStackTrace();
+			}
+			
 			// Remove old crops.
 			if (crop.getPhaseType() == PhaseType.FINISHED) {
+				// Take back the growing area
 				remainingGrowingArea = remainingGrowingArea + crop.getGrowingArea();
 				if (harvestedCrops == null)
 					harvestedCrops = new ArrayList<>();
-				harvestedCrops.add(crop.getCropName());
-				i.remove();
-				plantedCrops.remove(crop.getCropName());
+				harvestedCrops.add(crop);
+//				i.remove();
+				crops.remove(crop);
 				numCrops2Plant++;
 			}
 		}
@@ -883,22 +911,23 @@ public class Farming extends Function implements Serializable {
 		// Add any new crops.
 		for (int x = 0; x < numCrops2Plant; x++) {
 			// Add cropInQueue and change method name to getNewCrop()
-			CropType cropType = null;
+			String n = null;
 			int size = cropListInQueue.size();
 			if (size > 0) {
 				// Safer to remove using iterator than just cropListInQueue.remove(0);
-				Iterator<CropType> j = cropListInQueue.iterator();
+				Iterator<String> j = cropListInQueue.iterator();
 				while (j.hasNext()) {
-					CropType c = j.next();
-					cropType = c;
-					cropInQueue = cropType.getName();
+					String c = j.next();
+					n = c;
+					cropInQueue = n;
 
-					Iterator<String> k = harvestedCrops.iterator();
+					Iterator<Crop> k = harvestedCrops.iterator();
 					while (k.hasNext()) {
-						String s = k.next();
+						Crop cc = k.next();
 						// if the harvest crops contain corn, one cannot plant corn again
 						// since corn depletes nitrogen quickly in the soil.
-						if (s.equalsIgnoreCase("corn") && !c.getName().equalsIgnoreCase("corn")) {
+						if (cc.getCropName().equalsIgnoreCase(CORN) 
+								&& !c.equalsIgnoreCase(CORN)) {
 							j.remove();
 							break;
 						}
@@ -907,14 +936,14 @@ public class Farming extends Function implements Serializable {
 			}
 
 			else {
-				for (String s : harvestedCrops) {
+				for (Crop c : harvestedCrops) {
 					// if the harvest crops contain corn, one cannot plant corn again
 					// since corn depletes nitrogen quickly in the soil.
-					if (s.equalsIgnoreCase("corn")) {
-						cropType = pickACrop(false, true);
+					if (c.getCropName().equalsIgnoreCase(CORN)) {
+						n = pickACrop(false, true).getName();
 						break;
 					} else {
-						cropType = pickACrop(false, false);
+						n = pickACrop(false, false).getName();
 						break;
 					}
 				}
@@ -922,11 +951,13 @@ public class Farming extends Function implements Serializable {
 
 			// TODO: need to specify the person who is doing it using the work time in the
 			// lab
-			// System.out.println("Farming timePassing() : calling plantACrop()");
-			Crop crop = plantACrop(cropType, false, 0);
-			crops.add(crop);
-
-			settlement.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+			if (n != null && !n.equals("")) {
+				Crop crop = plantACrop(CropConfig.getCropTypeByName(n), false, 0);
+				crops.add(crop);
+//				System.out.println(crop.getIdentifier() + ", " + n);
+				cropHistory.put(crop.getIdentifier(), n);
+				settlement.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+			}
 		}
 
 		// Add beeGrowing.timePassing()
@@ -1151,12 +1182,11 @@ public class Farming extends Function implements Serializable {
 					if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
 						Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, inv,
 								sourceName + "::growCropTissue");
-						LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+						LogConsolidated.log(Level.INFO, 1000, sourceName,
 								"[" + settlement.getName() + "] During sampling, " + cropName + TISSUE_CULTURE
 										+ " is not in stock. " + "Extract " + STANDARD_AMOUNT_TISSUE_CULTURE
 										+ " kg from " + cropName + " and restock in " + lab.getBuilding().getNickName()
-										+ ".",
-								null);
+										+ ".");
 						isDone = true;
 					}
 				}
@@ -1226,14 +1256,14 @@ public class Farming extends Function implements Serializable {
 		return crops;
 	}
 
-	/**
-	 * Gets the names of the current crops.
-	 * 
-	 * @return list of crop names
-	 */
-	public List<String> getPlantedCrops() {
-		return plantedCrops;
-	}
+//	/**
+//	 * Gets the names of the current crops.
+//	 * 
+//	 * @return list of crop names
+//	 */
+//	public List<String> getPlantedCrops() {
+//		return plantedCrops;
+//	}
 
 	public Map<String, Integer> getCleaningMap() {
 		return cleaningMap;
@@ -1602,7 +1632,7 @@ public class Farming extends Function implements Serializable {
 	public void destroy() {
 		super.destroy();
 
-		plantedCrops = null;
+//		plantedCrops = null;
 
 		cleaningMap = null;
 		inspectionMap = null;
@@ -1619,10 +1649,10 @@ public class Farming extends Function implements Serializable {
 		settlement = null;
 		building = null;
 
-		Iterator<CropType> i = cropListInQueue.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
+//		Iterator<CropType> i = cropListInQueue.iterator();
+//		while (i.hasNext()) {
+//			i.next().destroy();
+//		}
 
 		cropListInQueue = null;
 
