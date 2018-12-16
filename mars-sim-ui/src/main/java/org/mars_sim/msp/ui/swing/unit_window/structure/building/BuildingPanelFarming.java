@@ -17,7 +17,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,7 +37,6 @@ import javax.swing.table.TableCellRenderer;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
@@ -89,8 +87,8 @@ implements MouseListener {
 	/** The cache value for the average CO2 consumed per sol per square meters. */
 	private double co2Cache;
 	
-	private DefaultComboBoxModel<CropType> comboBoxModel;
-	private JComboBoxMW<CropType> comboBox;
+	private DefaultComboBoxModel<String> comboBoxModel;
+	private JComboBoxMW<String> comboBox;
 	private ListModel listModel;
 	/** Table model for crop info. */
 	private CropTableModel cropTableModel;
@@ -98,16 +96,14 @@ implements MouseListener {
 
 	/** The farming building. */
 	private Farming farm;
-	private CropType cropType;
-	private CropType deletingCropType;
+	private String cropName;
+	private String deletingCropType;
 	private Coordinates location;
 	
 	private ArrayList<String> tooltipArray;
-	private List<CropType> cropCache;
-	private JList<CropType> list;
-	
-	private static List<CropType> cropTypeList;
-	
+	private List<String> cropCache;
+	private JList<String> list;
+		
 	private static SurfaceFeatures surface;
 	
 	/**
@@ -115,7 +111,6 @@ implements MouseListener {
 	 * @param farm {@link Farming} the farming building this panel is for.
 	 * @param desktop {@link MainDesktopPane} The main desktop.
 	 */
-	// 2014-11-20 Added tooltip for crops
 	public BuildingPanelFarming(final Farming farm, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
@@ -125,8 +120,6 @@ implements MouseListener {
 		this.farm = farm;
 		location = farm.getBuilding().getCoordinates();
 		surface = Simulation.instance().getMars().getSurfaceFeatures();
-		CropConfig config = SimulationConfig.instance().getCropConfiguration();
-		cropTypeList = new ArrayList<>(config.getCropTypes());
 		
 		// Set panel layout
 		setLayout(new BorderLayout()); //new GridLayout(6, 1, 0, 0));//
@@ -239,30 +232,30 @@ implements MouseListener {
 		                                65, 20,        //initX, initY
 		                                3, 1);       //xPad, yPad
 		
-/*
-		// 2015-09-19 Added opsPanel and opsButton
-		WebPanel opsPanel = new WebPanel(new FlowLayout());
-		labelPanel.add(opsPanel);
-        opsButton = new WebButton("Ops Panel");
-        //slotButton.setOpaque(false);
-        //slotButton.setBackground(new Color(51,25,0,128));
-        //slotButton.setForeground(Color.ORANGE);
-        //slotButton.setEnabled(processComboBox.getItemCount() > 0);
-        //opsButton.setToolTipText("Click to enter the greenhouse ops panel");
-		balloonToolTip.createBalloonTip(opsButton, "<html>Enter the greenhouse ops panel.</html>"); //$NON-NLS-1$
 
-        opsButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent event) {
-        		//try {
-        			openGreenhouseOps();
-        		//}
-        		//catch (Exception e) {
-        		//	logger.log(Level.SEVERE, "new slot button", e);
-        		//}
-        	}
-        });
-        opsPanel.add(opsButton);
-*/
+//		// Add opsPanel and opsButton
+//		WebPanel opsPanel = new WebPanel(new FlowLayout());
+//		labelPanel.add(opsPanel);
+//        opsButton = new WebButton("Ops Panel");
+//        //slotButton.setOpaque(false);
+//        //slotButton.setBackground(new Color(51,25,0,128));
+//        //slotButton.setForeground(Color.ORANGE);
+//        //slotButton.setEnabled(processComboBox.getItemCount() > 0);
+//        //opsButton.setToolTipText("Click to enter the greenhouse ops panel");
+//		balloonToolTip.createBalloonTip(opsButton, "<html>Enter the greenhouse ops panel.</html>"); //$NON-NLS-1$
+//
+//        opsButton.addActionListener(new ActionListener() {
+//        	public void actionPerformed(ActionEvent event) {
+//        		//try {
+//        			openGreenhouseOps();
+//        		//}
+//        		//catch (Exception e) {
+//        		//	logger.log(Level.SEVERE, "new slot button", e);
+//        		//}
+//        	}
+//        });
+//        opsPanel.add(opsButton);
+
 		WebPanel southPanel = new WebPanel(new BorderLayout());
 		add(southPanel, BorderLayout.SOUTH);
 		
@@ -271,7 +264,7 @@ implements MouseListener {
 		if (farm.getBuilding().getBuildingType().equalsIgnoreCase("Large Greenhouse"))
 			tableScrollPanel.setPreferredSize(new Dimension(200, 280)); // 280 is the best fit for 15 crops
 		else
-			// 2014-10-10 mkung: increased the height from 100 to 130 to make the first 5 rows of crop FULLY visible
+			// Increase the height from 100 to 130 to make the first 5 rows of crop FULLY visible
 			tableScrollPanel.setPreferredSize(new Dimension(200, 110)); // 110 is the best fit for 5 crops
 
 		southPanel.add(tableScrollPanel, BorderLayout.NORTH);
@@ -295,9 +288,9 @@ implements MouseListener {
 			                return comp;
 			            }
 
-			// 2014-11-20 Implement Table Cell ToolTip for crops
+			// Implement Table Cell ToolTip for crops
             public String getToolTipText(MouseEvent e) {
-                String name = null;
+//                String name = null;
                 java.awt.Point p = e.getPoint();
                 int rowIndex = rowAtPoint(p);
                 //int colIndex = columnAtPoint(p);
@@ -339,8 +332,8 @@ implements MouseListener {
 		addButton.setFont(new Font("Serif", Font.PLAIN, 9));
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				cropType = (CropType) comboBox.getSelectedItem();
-				farm.addCropListInQueue(cropType);
+				cropName = (String) comboBox.getSelectedItem();
+				farm.addCropListInQueue(cropName);
 		        listUpdate();
 				repaint();
 			}
@@ -366,34 +359,34 @@ implements MouseListener {
 		buttonPanel.add(delButton, BorderLayout.CENTER);
 
        	// Set up crop combo box model.
-		Collections.sort(cropTypeList);
-		cropCache = new ArrayList<CropType>(cropTypeList);
-		comboBoxModel = new DefaultComboBoxModel<CropType>();
+		List<String> nameList = CropConfig.getCropTypeNames();
+		cropCache = new ArrayList<String>(nameList);
+		comboBoxModel = new DefaultComboBoxModel<String>();
 
 		//tooltipArray = new String[cropCache.size()];
-		tooltipArray = new ArrayList<>();
+		tooltipArray = new ArrayList<String>();
 
-		Iterator<CropType> i = cropCache.iterator();
+		Iterator<String> i = cropCache.iterator();
 		int j = 0;
 		while (i.hasNext()) {
-			CropType c = i.next();
-	    	comboBoxModel.addElement(c);
+			String n = i.next();
+	    	comboBoxModel.addElement(n);
 			//tooltipArray[j] = buildCropToolTip(j, c).toString();
-	    	tooltipArray.add(buildCropToolTip(j, c).toString());
+	    	tooltipArray.add(buildCropToolTip(j, n).toString());
 	    	j++;
 		}
 
 		// Create comboBox.
-		comboBox = new JComboBoxMW<CropType>(comboBoxModel);
+		comboBox = new JComboBoxMW<String>(comboBoxModel);
 
-		// 2015-10-20 Added ComboboxToolTipRenderer to use tooltip to display the crop parameters for each crop in the combobox
+		// Add ComboboxToolTipRenderer to use tooltip to display the crop parameters for each crop in the combobox
 	    ComboboxToolTipRenderer toolTipRenderer = new ComboboxToolTipRenderer();
 	    comboBox.setRenderer(toolTipRenderer);
 	    toolTipRenderer.setTooltips(tooltipArray);
 
 		comboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	cropType = (CropType) comboBox.getSelectedItem();
+            	cropName = (String) comboBox.getSelectedItem();
             }
         });
 		comboBox.setMaximumRowCount(10);
@@ -420,7 +413,7 @@ implements MouseListener {
 		// Create list model
 		listModel = new ListModel(); //settlement);
 		// Create list
-		list = new JList<CropType>(listModel);
+		list = new JList<String>(listModel);
 	    //balloonToolTip.createBalloonTip(list, "<html>Crops in the queue</html>");
 		listScrollPanel.setViewportView(list);
 		list.addListSelectionListener(new ListSelectionListener() {
@@ -436,7 +429,7 @@ implements MouseListener {
 	/*
 	 * Builds an tooltip for displaying the growth parameters of a crop
 	 */
-	public StringBuilder buildCropToolTip(int row, CropType cType) {
+	public StringBuilder buildCropToolTip(int row, String n) {
 
 		StringBuilder result = new StringBuilder("");
 		String cropName, cat;
@@ -444,7 +437,7 @@ implements MouseListener {
 		double mass0, mass1;
 		double water, PAR;
 
-        if (cType == null) {
+        if (n == null || n.equals("")) {
     		List<Crop> crops = farm.getCrops();
             Crop crop = crops.get(row);
             int id = crop.getCropTypeID();
@@ -458,7 +451,8 @@ implements MouseListener {
         	PAR = ct.getDailyPAR();
         }
         else {
-        	cropName = Conversion.capitalize(cType.getName());
+        	cropName = Conversion.capitalize(n);
+        	CropType cType = CropConfig.getCropTypeByName(n);
             cat = cType.getCropCategoryType().getName();
         	mass0 = cType.getEdibleBiomass();
         	water = 100 * cType.getEdibleWaterContent();
@@ -478,46 +472,45 @@ implements MouseListener {
 
     	return result;
 	}
+	
 	/*
 	 * Creates a TWL display window for greenhouse operations
 	 */
-	// 2015-09-19 openGrowingArea()()
     public void openGreenhouseOps() {
-/*
-        try {
-            Display.setDisplayMode(new DisplayMode(800, 600));
-            Display.create();
-            Display.setTitle("Greenhouse Operations Panel");
-            Display.setVSyncEnabled(true);
+//        try {
+//            Display.setDisplayMode(new DisplayMode(800, 600));
+//            Display.create();
+//            Display.setTitle("Greenhouse Operations Panel");
+//            Display.setVSyncEnabled(true);
+//
+//            Mouse.setClipMouseCoordinatesToWindow(false);
+//
+//            InventoryDemo ops = new InventoryDemo();
+//
+//            LWJGLRenderer renderer = new LWJGLRenderer();
+//            GUI gui = new GUI(ops, renderer);
+//
+//            ThemeManager theme = ThemeManager.createThemeManager(
+//                    InventoryDemo.class.getResource("/twl/inventory/inventory.xml"), renderer);
+//            gui.applyTheme(theme);
+//
+//            gui.validateLayout();
+//            ops.positionFrame();
+//
+//            while(!Display.isCloseRequested() && !ops.quit) {
+//                GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+//
+//                gui.update();
+//                Display.update();
+//            }
+//
+//            gui.destroy();
+//            theme.destroy();
+//        } catch (Exception ex) {
+//            TestUtils.showErrMsg(ex);
+//        }
+//        Display.destroy();
 
-            Mouse.setClipMouseCoordinatesToWindow(false);
-
-            InventoryDemo ops = new InventoryDemo();
-
-            LWJGLRenderer renderer = new LWJGLRenderer();
-            GUI gui = new GUI(ops, renderer);
-
-            ThemeManager theme = ThemeManager.createThemeManager(
-                    InventoryDemo.class.getResource("/twl/inventory/inventory.xml"), renderer);
-            gui.applyTheme(theme);
-
-            gui.validateLayout();
-            ops.positionFrame();
-
-            while(!Display.isCloseRequested() && !ops.quit) {
-                GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-
-                gui.update();
-                Display.update();
-            }
-
-            gui.destroy();
-            theme.destroy();
-        } catch (Exception ex) {
-            TestUtils.showErrMsg(ex);
-        }
-        Display.destroy();
-*/
     }
 
 
@@ -527,9 +520,9 @@ implements MouseListener {
 	 */
 	public void selectCrop() {
 
-		CropType cropType = (CropType) list.getSelectedValue();
-		if (cropType != null) {
-			deletingCropType = cropType;
+		String n = (String) list.getSelectedValue();
+		if (n != null) {
+			deletingCropType = n;
 			deletingCropIndex = list.getSelectedIndex();
 		} else
 
@@ -639,30 +632,25 @@ implements MouseListener {
 	/**
 	 * List model for the crops in queue.
 	 */
-	private class ListModel extends AbstractListModel<CropType> {
+	private class ListModel extends AbstractListModel<String> {
 
 	    /** default serial id. */
 	    private static final long serialVersionUID = 1L;
 
-	    //private Settlement settlement;
-	    private List<CropType> list;
+	    private List<String> list;
 
 	    private ListModel() {
-	    	//System.out.println("ListModel constructor");
 
-        	List<CropType> c = farm.getCropListInQueue();
+        	List<String> c = farm.getCropListInQueue();
 	        if (c != null)
-	        	list = new ArrayList<CropType>(c);
-	        else list = null;
-	        //Collections.sort(list);
+	        	list = new ArrayList<String>(c);
+	        else 
+	        	list = null;
 	    }
 
         @Override
-        public CropType getElementAt(int index) {
-        	//System.out.println("ListModel : index is " + index);
-        	//System.out.println("ListModel : list.size() is " + list.size());
-
-        	CropType result = null;
+        public String getElementAt(int index) {
+        	String result = null;
 
             if ((index >= 0) && (index < list.size())) {
                 result = list.get(index);
@@ -673,11 +661,9 @@ implements MouseListener {
 
         @Override
         public int getSize() {
-         	//System.out.println("ListModel : index is " + index);
-        	//System.out.println("ListModel : list.size() is " + list.size());
         	if (list == null)
         		return 0;
-        	else return list.size();
+        	return list.size();
         }
 
         /**
@@ -685,11 +671,11 @@ implements MouseListener {
          */
         public void update() {
 
-        	List<CropType> c = farm.getCropListInQueue();
+        	List<String> c = farm.getCropListInQueue();
         		// if the list contains duplicate items, it somehow pass this test
         		if (list.size() != c.size() || !list.containsAll(c) || !c.containsAll(list)) {
-	                List<CropType> oldList = list;
-	                List<CropType> tempList = new ArrayList<CropType>(c);
+	                List<String> oldList = list;
+	                List<String> tempList = new ArrayList<String>(c);
 	                //Collections.sort(tempList);
 
 	                list = tempList;
@@ -726,7 +712,7 @@ implements MouseListener {
 			return crops.size();
 		}
 
-		// 2014-10-10 mkung: change from 4 to 5 in order to include the crop's category as columnIndex 4
+		// Change from 4 to 5 in order to include the crop's category as columnIndex 4
 		public int getColumnCount() {
 			return 5;
 		}
@@ -737,7 +723,7 @@ implements MouseListener {
 			else if (columnIndex == 1) dataType = String.class;
 			else if (columnIndex == 2) dataType = String.class;
 			else if (columnIndex == 3) dataType = String.class;
-			// 2014-10-10 mkung: added column 4 showing the crop's category
+			// Aadd column 4 showing the crop's category
 			else if (columnIndex == 4) dataType = String.class;
 			return dataType;
 		}
@@ -747,7 +733,7 @@ implements MouseListener {
 			else if (columnIndex == 1) return "Name";
 			else if (columnIndex == 2) return "Phase";
 			else if (columnIndex == 3) return "Growth";
-			// 2014-10-10 mkung: added column 4 showing the crop's category
+			// Add column 4 showing the crop's category
 			else if (columnIndex == 4) return "Category";
 			else return null;
 		}
@@ -778,21 +764,30 @@ implements MouseListener {
 				//	growth = (int) (growingCompleted * 100D);
 				//}
 				//else
-				if (currentPhase == PhaseType.HARVESTING) {
-					double growingCompleted = crop.getGrowingTimeCompleted() / ct.getGrowingTime();
-					growth = Math.round(growingCompleted * 1000D)/10D;
-				}
-				else if (currentPhase == PhaseType.FINISHED) {
-					growth = 100;
-				}
-				else {
-					double growingCompleted = crop.getGrowingTimeCompleted() / ct.getGrowingTime();
-					growth = Math.round(growingCompleted * 1000D)/10D;
-				}
+//				if (currentPhase == PhaseType.HARVESTING) {
+////					double growingCompleted = crop.getGrowingTimeCompleted() / ct.getGrowingTime();
+////					growth = Math.round(growingCompleted * 1000D)/10D;
+//					growth = crop.getPercentGrowth();
+////					if (growth > 100)
+////						growth = 100;
+//				}
+//				else if (currentPhase == PhaseType.FINISHED) {
+//					growth = crop.getPercentGrowth();
+////					if (growth > 100)
+////						growth = 100;
+//				}
+//				else {
+////					double growingCompleted = crop.getGrowingTimeCompleted() / ct.getGrowingTime();
+////					growth = Math.round(growingCompleted * 1000D)/10D;
+//					growth = crop.getPercentGrowth();
+////					if (growth > 100)
+////						growth = 100;
+//				}
 
+				growth = crop.getPercentGrowth();
 				return String.valueOf(growth) + "%";
 			}
-			// 2014-10-10 mkung: added column 4 showing the crop's category
+			// Add column 4 showing the crop's category
 			else if (column == 4) return Conversion.capitalize(category);
 			else return null;
 		}
@@ -830,7 +825,7 @@ implements MouseListener {
 	    }
 	}
 
-	// 2014-12-09 Added PromptComboBoxRenderer()
+	// Add PromptComboBoxRenderer()
 	class PromptComboBoxRenderer extends BasicComboBoxRenderer {
 
 		private static final long serialVersionUID = 1L;
@@ -850,7 +845,7 @@ implements MouseListener {
 		/*
 		 *  Custom rendering to display the prompt text when no item is selected
 		 */
-		// 2014-12-09 Added color rendering
+		// Add color rendering
 		public Component getListCellRendererComponent(
 			JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
@@ -917,7 +912,7 @@ implements MouseListener {
 		listModel= null;
 		cropTableModel= null;
 		listScrollPanel= null;
-		cropType= null;
+		cropName= null;
 		deletingCropType= null;
 	}
 }

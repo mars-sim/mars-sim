@@ -5,7 +5,7 @@ Copyright (C) 2018 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-beta2 (build 4674) - 2018-12-15
+## v3.1.0-beta2 (build 4675) - 2018-12-15
 
 ### KNOWN LIMITATIONS :
 
@@ -73,6 +73,7 @@ Copyright (C) 2018 Scott Davis
 
 6. Fix numerous mission bugs.
 
+7. Correct how food crop harvest should end.
 
 -----------------------------------------------------------------------------------------
 

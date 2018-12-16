@@ -517,7 +517,7 @@ public class CropTableModel extends UnitTableModel {
 				// logger.info("setUpNewCropCache() : kk is " + kk ) ;
 				Crop crop = k.next();
 				int id = crop.getCropTypeID();
-				String catName = CropConfig.getCropTypeByID(id).getCropCategoryType().getName();
+				String catName = CropConfig.getCropCategoryType(id).getName();
 				// logger.info("setUpNewCropCache() : testCat is " + testCat ) ;
 				int num = getCategoryNum(catName);
 				// logger.info("setUpNewCropCache() : num is " + num ) ;
@@ -564,7 +564,7 @@ public class CropTableModel extends UnitTableModel {
 			// columnNum = CROPS; // = 2
 			Crop crop = (Crop) target;
 			int id = crop.getCropTypeID();
-			String catName = CropConfig.getCropTypeByID(id).getCropCategoryType().getName();
+			String catName = CropConfig.getCropCategoryType(id).getName();
 			// logger.info("unitUpdate() : cropCat is " + cropCat);
 
 			try {
@@ -625,7 +625,7 @@ public class CropTableModel extends UnitTableModel {
 				while (j.hasNext()) {
 					Crop crop = j.next();
 					int id = crop.getCropTypeID();
-					String catName = CropConfig.getCropTypeByID(id).getCropCategoryType().getName();
+					String catName = CropConfig.getCropCategoryType(id).getName();
 					// System.out.println("type is " + type);
 					if (catName.equals(cropCat))
 						total++;
@@ -704,10 +704,10 @@ public class CropTableModel extends UnitTableModel {
 		Building b = buildings.get(row);
 		int catNum = cropCatMap.get(row).get(col);
 
-		Farming f = (Farming) b.getFunction(FunctionType.FARMING);
+		Farming f = b.getFarming();
 		for (Crop c : f.getCrops()) {
 				int id = c.getCropTypeID();
-				String catStr = CropConfig.getCropTypeByID(id).getCropCategoryType().toString();
+				String catStr = CropConfig.getCropCategoryType(id).toString();
 			if (getCategoryNum(catStr) == catNum)
 				tt.append(c.getCropName()).append(System.lineSeparator());
 		}
