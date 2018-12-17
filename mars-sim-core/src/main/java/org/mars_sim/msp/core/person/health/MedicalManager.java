@@ -46,9 +46,9 @@ public class MedicalManager implements Serializable {
 	private static Map<Integer, List<Treatment>> supportedTreatments;// = new HashMap<Integer, List<Treatment>>();
 
 	/** Settlement's Postmortem Exam waiting list. */
-	private Map<Settlement, List<DeathInfo>> awaitingPostmortemExam;// = new HashMap<Integer, List<Treatment>>();
+	private Map<Integer, List<DeathInfo>> awaitingPostmortemExam;// = new HashMap<Integer, List<Treatment>>();
 	/** Settlement's Death Registry. */
-	private Map<Settlement, List<DeathInfo>> deathRegistry;// = new HashMap<Integer, List<Treatment>>();
+	private Map<Integer, List<DeathInfo>> deathRegistry;// = new HashMap<Integer, List<Treatment>>();
 
 //	private List<DeathInfo> awaitingPostmortemExam;
 //	private List<DeathInfo> deathRegistry;
@@ -386,37 +386,39 @@ public class MedicalManager implements Serializable {
 	}
 
 	public void addDeathRegistry(Settlement s, DeathInfo death) {
-		awaitingPostmortemExam.get(s).remove(death);
-		if (deathRegistry.containsKey(s)) {
-			deathRegistry.get(s).add(death);
+		int id = s.getIdentifier();
+		awaitingPostmortemExam.get(id).remove(death);
+		if (deathRegistry.containsKey(id)) {
+			deathRegistry.get(id).add(death);
 		} else {
 			List<DeathInfo> list = new ArrayList<>();
 			list.add(death);
-			deathRegistry.put(s, list);
+			deathRegistry.put(id, list);
 		}
 	}
 
 	public List<DeathInfo> getDeathRegistry(Settlement s) {
-		if (deathRegistry.containsKey(s)) {
-			return deathRegistry.get(s);
+		if (deathRegistry.containsKey(s.getIdentifier())) {
+			return deathRegistry.get(s.getIdentifier());
 		} else {
 			return null;
 		}
 	}
 
 	public void addPostmortemExams(Settlement s, DeathInfo death) {
-		if (awaitingPostmortemExam.containsKey(s)) {
-			awaitingPostmortemExam.get(s).add(death);
+		int id = s.getIdentifier();
+		if (awaitingPostmortemExam.containsKey(id)) {
+			awaitingPostmortemExam.get(id).add(death);
 		} else {
 			List<DeathInfo> list = new ArrayList<>();
 			list.add(death);
-			awaitingPostmortemExam.put(s, list);
+			awaitingPostmortemExam.put(id, list);
 		}
 	}
 
 	public List<DeathInfo> getPostmortemExams(Settlement s) {
-		if (awaitingPostmortemExam.containsKey(s)) {
-			return awaitingPostmortemExam.get(s);
+		if (awaitingPostmortemExam.containsKey(s.getIdentifier())) {
+			return awaitingPostmortemExam.get(s.getIdentifier());
 		} else {
 			List<DeathInfo> list = new ArrayList<>();
 			return list;

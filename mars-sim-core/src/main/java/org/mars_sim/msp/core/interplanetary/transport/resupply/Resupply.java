@@ -104,6 +104,7 @@ public class Resupply implements Serializable, Transportable {
 	private Settlement settlement;
 	private MarsClock launchDate;
 	private MarsClock arrivalDate;
+	
 	private static BuildingConfig buildingConfig;
 
 	/**
@@ -113,10 +114,10 @@ public class Resupply implements Serializable, Transportable {
 	 * @param settlement  the settlement receiving the supplies.
 	 */
 	public Resupply(MarsClock arrivalDate, Settlement settlement) {
-
 		// Initialize data members.
 		this.arrivalDate = arrivalDate;
 		this.settlement = settlement;
+		
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 	}
 
@@ -1466,6 +1467,13 @@ public class Resupply implements Serializable, Transportable {
 		return result;
 	}
 
+
+	@Override
+	public String getSettlementName() {
+		// TODO Auto-generated method stub
+		return settlement.getName();
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
@@ -1492,10 +1500,5 @@ public class Resupply implements Serializable, Transportable {
 		newParts = null;
 	}
 
-	@Override
-	public String getSettlementName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }

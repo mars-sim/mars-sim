@@ -32,6 +32,8 @@ implements Serializable {
     // Data members
     private List<ScientificStudy> studies;
     
+	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+
     /**
      * Constructor.
      */
@@ -432,13 +434,11 @@ implements Serializable {
                         continue;
                     }
                     else {
-                        MarsClock currentDate = (MarsClock) Simulation.instance().getMasterClock().
-                                getMarsClock().clone();
                         
                         // Check primary researcher downtime.
                         if (!study.isPrimaryResearchCompleted()) {
                             MarsClock lastPrimaryWork = study.getLastPrimaryResearchWorkTime();
-                            if ((lastPrimaryWork != null) && MarsClock.getTimeDiff(currentDate, lastPrimaryWork) > 
+                            if ((lastPrimaryWork != null) && MarsClock.getTimeDiff(marsClock, lastPrimaryWork) > 
                                     ScientificStudy.PRIMARY_WORK_DOWNTIME_ALLOWED) {
                                 study.setCompleted(ScientificStudy.CANCELED);
                                 logger.fine(study.toString() + " canceled due to lack of primary researcher participation.");
@@ -452,7 +452,7 @@ implements Serializable {
                             Person researcher = l.next();
                             if (!study.isCollaborativeResearchCompleted(researcher)) {
                                 MarsClock lastCollaborativeWork = study.getLastCollaborativeResearchWorkTime(researcher);
-                                if ((lastCollaborativeWork != null) && MarsClock.getTimeDiff(currentDate, lastCollaborativeWork) 
+                                if ((lastCollaborativeWork != null) && MarsClock.getTimeDiff(marsClock, lastCollaborativeWork) 
                                         > ScientificStudy.COLLABORATIVE_WORK_DOWNTIME_ALLOWED) {
                                     study.removeCollaborativeResearcher(researcher);
                                     logger.fine(researcher.getName() + " removed as collaborator in " + study.toString() + 
@@ -569,6 +569,15 @@ implements Serializable {
 		score = Math.round(score *100.0)/100.0;
 		
 		return score;
+	}
+	
+	/**
+	 * initializes instances after loading from a saved sim
+	 * 
+	 * @param {{@link MarsClock}
+	 */
+	public static void initializeInstances(MarsClock c) {
+		marsClock = c;
 	}
 	
     /**

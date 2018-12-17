@@ -21,8 +21,8 @@ public class CreditEvent extends EventObject implements Serializable {
     private static final long serialVersionUID = 2L;
     
 	// Data members
-	private Settlement settlement1;
-	private Settlement settlement2;
+	private int settlement1;
+	private int settlement2;
 	private double credit;
 	
 	/**
@@ -35,8 +35,8 @@ public class CreditEvent extends EventObject implements Serializable {
 		// Use EventObject constructor
 		super(Simulation.instance().getCreditManager());
 		
-		this.settlement1 = settlement1;
-		this.settlement2 = settlement2;
+		this.settlement1 = settlement1.getIdentifier();
+		this.settlement2 = settlement2.getIdentifier();
 		this.credit = credit;
 	}
 
@@ -46,7 +46,7 @@ public class CreditEvent extends EventObject implements Serializable {
 	 * @return settlement.
 	 */
 	public Settlement getSettlement1() {
-		return settlement1;
+		return (Settlement)(Simulation.instance().getUnitManager().getUnitByID(settlement1));
 	}
 	
 	/**
@@ -54,7 +54,7 @@ public class CreditEvent extends EventObject implements Serializable {
 	 * @return settlement.
 	 */
 	public Settlement getSettlement2() {
-		return settlement2;
+		return (Settlement)(Simulation.instance().getUnitManager().getUnitByID(settlement2));
 	}
 	
 	/**

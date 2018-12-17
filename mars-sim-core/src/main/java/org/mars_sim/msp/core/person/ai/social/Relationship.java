@@ -38,9 +38,9 @@ public class Relationship implements Serializable {
 	private static final double SETTLER_MODIFIER = 20D;
 
 	// Data members
-	private Person person1;
+	private int person1;
 	private double person1Opinion;
-	private Person person2;
+	private int person2;
 	private double person2Opinion;
 
 	/**
@@ -56,8 +56,8 @@ public class Relationship implements Serializable {
 	Relationship(Person person1, Person person2, String startingRelationship) throws IllegalArgumentException {
 
 		// Initialize data members
-		this.person1 = person1;
-		this.person2 = person2;
+		this.person1 = person1.getIdentifier();
+		this.person2 = person2.getIdentifier();
 
 		if (FIRST_IMPRESSION.equals(startingRelationship)) {
 			setPerson1Opinion(getFirstImpression(person1, person2));
@@ -77,8 +77,8 @@ public class Relationship implements Serializable {
 	 * 
 	 * @return array of two people
 	 */
-	public Person[] getPeople() {
-		Person[] result = { person1, person2 };
+	public int[] getPeople() {
+		int[] result = { person1, person2 };
 		return result;
 	}
 
@@ -90,9 +90,9 @@ public class Relationship implements Serializable {
 	 */
 	public boolean hasPerson(Person person) {
 		boolean result = false;
-		if (person1 == person)
+		if (person1 == person.getIdentifier())
 			result = true;
-		else if (person2 == person)
+		else if (person2 == person.getIdentifier())
 			result = true;
 		return result;
 	}
@@ -132,9 +132,9 @@ public class Relationship implements Serializable {
 	 *                                  the relationship.
 	 */
 	public double getPersonOpinion(Person person) throws IllegalArgumentException {
-		if (person == person1)
+		if (person.getIdentifier() == person1)
 			return person1Opinion;
-		else if (person == person2)
+		else if (person.getIdentifier() == person2)
 			return person2Opinion;
 		else
 			throw new IllegalArgumentException("Invalid person: " + person);
@@ -150,9 +150,9 @@ public class Relationship implements Serializable {
 	 *                                  the relationship.
 	 */
 	public void setPersonOpinion(Person person, double opinion) throws IllegalArgumentException {
-		if (person == person1)
+		if (person.getIdentifier() == person1)
 			setPerson1Opinion(opinion);
-		else if (person == person2)
+		else if (person.getIdentifier() == person2)
 			setPerson2Opinion(opinion);
 		else
 			throw new IllegalArgumentException("Invalid person: " + person);

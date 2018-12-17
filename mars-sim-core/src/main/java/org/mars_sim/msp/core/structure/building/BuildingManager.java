@@ -325,10 +325,11 @@ public class BuildingManager implements Serializable {
 
 			buildings.add(newBuilding);
 			// Add tracking air composition
-			settlement.getCompositionOfAir().addAirNew(newBuilding);
+			if (settlement.getCompositionOfAir() != null)
+				settlement.getCompositionOfAir().addAirNew(newBuilding);
 			// Insert this new building into buildingFunctionsMap
 			addAllFunctionstoBFMap(newBuilding);
-	
+			
 			settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
 			// Create new building connections if needed.
 			if (createBuildingConnections) {

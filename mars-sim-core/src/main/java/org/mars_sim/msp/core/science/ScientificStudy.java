@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -72,28 +73,40 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	/** Amount of time (millisols) allowed as downtime for collaborative work. */
 	static final double COLLABORATIVE_WORK_DOWNTIME_ALLOWED = 30000D;
 
+	private transient List<ScientificStudyListener> listeners; // Scientific study listeners.
+	
 	// Data members
-	private String phase;
-	private ScienceType science;
+	private boolean completed;
+
 	private int difficultyLevel;
-	private Person primaryResearcher;
-	private Map<Person, ScienceType> collaborativeResearchers;
-	private Map<Person, Boolean> invitedResearchers;
 	private double proposalWorkTime;
 	private double primaryResearchWorkTime;
-	private Map<Person, Double> collaborativeResearchWorkTime;
-	private double primaryPaperWorkTime;
-	private Map<Person, Double> collaborativePaperWorkTime;
-	private MarsClock peerReviewStartTime;
-	private boolean completed;
-	private String completionState;
-	private Settlement primarySettlement;
-	private MarsClock lastPrimaryResearchWorkTime;
-	private Map<Person, MarsClock> lastCollaborativeResearchWorkTime;
-	private double primaryResearcherAchievementEarned;
-	private Map<Person, Double> collaborativeAchievementEarned;
-	private transient List<ScientificStudyListener> listeners; // Scientific study listeners.
 
+	private double primaryPaperWorkTime;
+	private double primaryResearcherAchievementEarned;
+	
+	private String phase;
+	private String completionState;
+	
+	private ScienceType science;
+	
+	private int primarySettlement;
+	private int primaryResearcher;
+
+	private MarsClock peerReviewStartTime;
+	private MarsClock lastPrimaryResearchWorkTime;
+	
+	private Map<Person, MarsClock> lastCollaborativeResearchWorkTime;
+	private Map<Person, Double> collaborativeAchievementEarned;
+	private Map<Person, Double> collaborativePaperWorkTime;
+	private Map<Person, Double> collaborativeResearchWorkTime;
+	private Map<Person, ScienceType> collaborativeResearchers;
+	private Map<Person, Boolean> invitedResearchers;
+	
+	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+
+	
 	/**
 	 * Constructor.
 	 * 
@@ -104,7 +117,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 */
 	ScientificStudy(Person primaryResearcher, ScienceType science, int difficultyLevel) {
 		// Initialize data members.
-		this.primaryResearcher = primaryResearcher;
+		this.primaryResearcher = primaryResearcher.getIdentifier();
 		this.science = science;
 		this.difficultyLevel = difficultyLevel;
 
@@ -119,7 +132,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		peerReviewStartTime = null;
 		completed = false;
 		completionState = null;
-		primarySettlement = primaryResearcher.getAssociatedSettlement();
+		primarySettlement = primaryResearcher.getAssociatedSettlement().getIdentifier();
 		lastPrimaryResearchWorkTime = null;
 		lastCollaborativeResearchWorkTime = new HashMap<Person, MarsClock>(MAX_NUM_COLLABORATORS);
 		primaryResearcherAchievementEarned = 0D;
@@ -172,7 +185,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return primary researcher
 	 */
 	public Person getPrimaryResearcher() {
-		return primaryResearcher;
+		return (Person) (unitManager.getUnitByID(primaryResearcher));
 	}
 
 	/**
@@ -208,8 +221,8 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 			proposalWorkTime = requiredWorkTime;
 
 		// Update primary settlement.
-		Settlement settlement = primaryResearcher.getAssociatedSettlement();
-		if ((settlement != null) && !primarySettlement.equals(settlement))
+		int settlement = getPrimaryResearcher().getAssociatedSettlement().getIdentifier();
+		if (primarySettlement != settlement)
 			primarySettlement = settlement;
 
 		// Fire scientific study update event.
@@ -365,12 +378,12 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		}
 
 		// Update primary settlement.
-		Settlement settlement = primaryResearcher.getAssociatedSettlement();
-		if ((settlement != null) && !primarySettlement.equals(settlement))
+		int settlement = getPrimaryResearcher().getAssociatedSettlement().getIdentifier();
+		if (primarySettlement != settlement)
 			primarySettlement = settlement;
-
+		
 		// Update last primary work time.
-		lastPrimaryResearchWorkTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		lastPrimaryResearchWorkTime = (MarsClock) marsClock.clone();
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.PRIMARY_RESEARCH_WORK_EVENT, getPrimaryResearcher());
@@ -426,8 +439,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 			collaborativeResearchWorkTime.put(researcher, currentWorkTime);
 
 			// Update last collaborative work time.
-			lastCollaborativeResearchWorkTime.put(researcher,
-					(MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone());
+			lastCollaborativeResearchWorkTime.put(researcher, (MarsClock) marsClock.clone());
 
 			// Fire scientific study update event.
 			fireScientificStudyUpdate(ScientificStudyEvent.COLLABORATION_RESEARCH_WORK_EVENT, researcher);
@@ -507,10 +519,14 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		}
 
 		// Update primary settlement.
-		Settlement settlement = primaryResearcher.getAssociatedSettlement();
-		if ((settlement != null) && !primarySettlement.equals(settlement))
-			primarySettlement = settlement;
+//		Settlement settlement = primaryResearcher.getAssociatedSettlement();
+//		if ((settlement != null) && !primarySettlement.equals(settlement))
+//			primarySettlement = settlement;
 
+		int settlement = getPrimaryResearcher().getAssociatedSettlement().getIdentifier();
+		if (primarySettlement != settlement)
+			primarySettlement = settlement;
+		
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(ScientificStudyEvent.PRIMARY_PAPER_WORK_EVENT);
 	}
@@ -614,8 +630,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * Start the peer review phase of the study.
 	 */
 	void startingPeerReview() {
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		peerReviewStartTime = (MarsClock) currentTime.clone();
+		peerReviewStartTime = (MarsClock) marsClock.clone();
 	}
 
 	/**
@@ -626,8 +641,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	public boolean isPeerReviewTimeFinished() {
 		boolean result = false;
 		if (peerReviewStartTime != null) {
-			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-			double peerReviewTime = MarsClock.getTimeDiff(currentTime, peerReviewStartTime);
+			double peerReviewTime = MarsClock.getTimeDiff(marsClock, peerReviewStartTime);
 			if (peerReviewTime >= PEER_REVIEW_TIME)
 				result = true;
 		}
@@ -642,8 +656,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	public double getPeerReviewTimeCompleted() {
 		double result = 0D;
 		if (peerReviewStartTime != null) {
-			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-			result = MarsClock.getTimeDiff(currentTime, peerReviewStartTime);
+			result = MarsClock.getTimeDiff(marsClock, peerReviewStartTime);
 		}
 		return result;
 	}
@@ -697,7 +710,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return settlement.
 	 */
 	public Settlement getPrimarySettlement() {
-		return primarySettlement;
+		return (Settlement) (unitManager.getUnitByID(primarySettlement));
 	}
 
 	/**
@@ -834,12 +847,22 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	}
 
 	/**
+	 * initializes instances after loading from a saved sim
+	 * 
+	 * @param {{@link MarsClock}
+	 */
+	public static void initializeInstances(MarsClock c, UnitManager u) {
+		unitManager = u;		
+		marsClock = c;
+	}
+	
+	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
 		phase = null;
 		science = null;
-		primaryResearcher = null;
+//		primaryResearcher = null;
 		collaborativeResearchers.clear();
 		collaborativeResearchers = null;
 		invitedResearchers.clear();
@@ -850,7 +873,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		collaborativePaperWorkTime = null;
 		peerReviewStartTime = null;
 		completionState = null;
-		primarySettlement = null;
+//		primarySettlement = null;
 		lastPrimaryResearchWorkTime = null;
 		lastCollaborativeResearchWorkTime.clear();
 		lastCollaborativeResearchWorkTime = null;

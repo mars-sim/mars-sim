@@ -293,17 +293,6 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 */
 	public void timePassing(double time) {
 	}
-
-	
-	/**
-	 * Reloads instances
-	 * 
-	 * @param m
-	 */
-	public static void justReloaded(Mars m) {
-		mars = m;
-//		marsSurface = mars.getMarsSurface();
-	}
 	
 	/**
 	 * Gets the unit's inventory
@@ -757,6 +746,16 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 //		locationCode = locationCode - type.getCode();
 //	}
 
+
+	/**
+	 * Loads instances
+	 * 
+	 * @param m
+	 */
+	public static void setInstances(Mars m) {
+		mars = m;
+//		marsSurface = mars.getMarsSurface();
+	}
 	
 	/**
 	 * Prepare object for garbage collection.

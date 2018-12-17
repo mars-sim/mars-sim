@@ -59,7 +59,7 @@ public class CreditManager implements Serializable {
 		// Add all settlements as nodes.
 		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext())
-			creditGraph.addNode(i.next());
+			creditGraph.addNode(i.next().getIdentifier());
 	}
 
 	/**
@@ -75,13 +75,13 @@ public class CreditManager implements Serializable {
 	public void setCredit(Settlement settlement1, Settlement settlement2, double amount) {
 
 		// Check that settlements are in graph.
-		if (!creditGraph.containsNode(settlement1))
+		if (!creditGraph.containsNode(settlement1.getIdentifier()))
 			throw new IllegalArgumentException("settlement: " + settlement1 + " is invalid");
-		if (!creditGraph.containsNode(settlement2))
+		if (!creditGraph.containsNode(settlement2.getIdentifier()))
 			throw new IllegalArgumentException("settlement: " + settlement2 + " is invalid");
 
 		// Remove existing edge between settlements if any.
-		EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(settlement1, settlement2,
+		EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(settlement1.getIdentifier(), settlement2.getIdentifier(),
 				GraphUtils.ANY_DIRECTION_MASK);
 		Edge existingEdge = creditGraph.getEdge(edgePredicate);
 		if (existingEdge != null)
@@ -89,9 +89,9 @@ public class CreditManager implements Serializable {
 
 		// Add edge for credit.
 		if (amount >= 0D)
-			creditGraph.addEdge(Math.abs(amount), settlement1, settlement2, true);
+			creditGraph.addEdge(Math.abs(amount), settlement1.getIdentifier(), settlement2.getIdentifier(), true);
 		else
-			creditGraph.addEdge(Math.abs(amount), settlement2, settlement1, true);
+			creditGraph.addEdge(Math.abs(amount), settlement2.getIdentifier(), settlement1.getIdentifier(), true);
 
 		// Update listeners.
 		synchronized (getListeners()) {
@@ -116,12 +116,13 @@ public class CreditManager implements Serializable {
 		double result = 0D;
 
 		// Gets an edge associated with these two settlements if any.
-		EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(settlement1, settlement2,
+		EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(settlement1.getIdentifier(), settlement2.getIdentifier(),
 				GraphUtils.ANY_DIRECTION_MASK);
 		Edge existingEdge = creditGraph.getEdge(edgePredicate);
 		if (existingEdge != null) {
 			result = (Double) existingEdge.getUserObject();
-			if (existingEdge.getHead() == settlement1)
+//			if (existingEdge.getHead() == settlement1)
+			if ((Integer) existingEdge.getHead() == settlement1.getIdentifier())
 				result *= -1D;
 		}
 
@@ -137,11 +138,11 @@ public class CreditManager implements Serializable {
 		if (newSettlement == null) {
 			throw new IllegalArgumentException("Settlement is null");
 		}
-		if (creditGraph.containsNode(newSettlement)) {
+		if (creditGraph.containsNode(newSettlement.getIdentifier())) {
 			throw new IllegalArgumentException("Settlement: " + newSettlement + " already exists in credit graph.");
 		}
 
-		creditGraph.addNode(newSettlement);
+		creditGraph.addNode(newSettlement.getIdentifier());
 	}
 
 	/**

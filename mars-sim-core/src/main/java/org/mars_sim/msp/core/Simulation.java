@@ -75,6 +75,7 @@ import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.BotMind;
+import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
@@ -425,6 +426,7 @@ public class Simulation implements ClockListener, Serializable {
 		MalfunctionFactory.setMarsClock(marsClock);
 		MissionManager.setMarsClock(marsClock);
 		MalfunctionManager.initializeInstances(masterClock, marsClock);
+		RelationshipManager.setInstances(unitManager);
 		
 		// Initialize instances
 //		MedicalManager.initializeInstances();
@@ -871,16 +873,19 @@ public class Simulation implements ClockListener, Serializable {
 		MissionManager.setMarsClock(marsClock);
 //		MedicalManager.justReloaded();
 		unitManager.justReloaded(marsClock);
+		RelationshipManager.setInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock);
 		TransportManager.initializeInstances(marsClock, eventManager);
-
+		ScientificStudyManager.initializeInstances(marsClock);
+		ScientificStudy.initializeInstances(marsClock, unitManager);
+		
 //		System.out.println("Done with Serialized Object instances");
 		
 		Resupply.initializeInstances(bc);
 		
 		// Re-initialize Unit related class
 		Inventory.initializeInstances(mars.getMarsSurface());
-		Unit.justReloaded(mars);
+		Unit.setInstances(mars);
 		Equipment.justReloaded(unitManager);
 		EVASuit.justReloaded(w);				
 		Person.justReloaded(masterClock, marsClock, this, mars, marsSurface, earthClock);

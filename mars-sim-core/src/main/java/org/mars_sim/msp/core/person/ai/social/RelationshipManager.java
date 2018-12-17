@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -76,7 +77,7 @@ public class RelationshipManager implements Serializable {
 	/** The relationship graph. */
 	private Graph relationshipGraph;
 	
-//	private static List<Relationship> allRelationshipList;
+	private static UnitManager unitManager;
 
 	/**
 	 * Constructor
@@ -120,8 +121,8 @@ public class RelationshipManager implements Serializable {
 		if ((person == null) || (initialGroup == null))
 			throw new IllegalArgumentException("RelationshipManager.addPerson(): null parameter.");
 	
-		if (!relationshipGraph.containsNode(person)) {
-			relationshipGraph.addNode(person);
+		if (!relationshipGraph.containsNode(person.getIdentifier())) {
+			relationshipGraph.addNode(person.getIdentifier());
 
 			Iterator<Person> i = initialGroup.iterator();
 			while (i.hasNext()) {
@@ -154,7 +155,7 @@ public class RelationshipManager implements Serializable {
 //				;
 //			else if (relationshipType.equals(Relationship.FIRST_IMPRESSION))
 //				;
-			relationshipGraph.addEdge(relationship, person1, person2, false);
+			relationshipGraph.addEdge(relationship, person1.getIdentifier(), person2.getIdentifier(), false);
 		} catch (NoSuchNodeException e) {
 		}
 	}
@@ -167,7 +168,7 @@ public class RelationshipManager implements Serializable {
 	 * @return true if the two people have a relationship
 	 */
 	public boolean hasRelationship(Person person1, Person person2) {
-		EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(person1, person2,
+		EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(person1.getIdentifier(), person2.getIdentifier(),
 				GraphUtils.UNDIRECTED_MASK);
 		return (relationshipGraph.getEdge(edgePredicate) != null);
 	}
@@ -182,7 +183,7 @@ public class RelationshipManager implements Serializable {
 	public Relationship getRelationship(Person person1, Person person2) {
 		Relationship result = null;
 		if (hasRelationship(person1, person2)) {
-			EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(person1, person2,
+			EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(person1.getIdentifier(), person2.getIdentifier(),
 					GraphUtils.UNDIRECTED_MASK);
 			result = (Relationship) relationshipGraph.getEdge(edgePredicate).getUserObject();
 		}
@@ -198,7 +199,7 @@ public class RelationshipManager implements Serializable {
 	public List<Relationship> getAllRelationships(Person person) {
 //		if (allRelationshipList == null) {
 		 List<Relationship> allRelationshipList = new ArrayList<Relationship>();
-			Traverser traverser = relationshipGraph.traverser(person, GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
+			Traverser traverser = relationshipGraph.traverser(person.getIdentifier(), GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
 			while (traverser.hasNext()) {
 				traverser.next();
 				Relationship relationship = (Relationship) traverser.getEdge().getUserObject();
@@ -216,9 +217,9 @@ public class RelationshipManager implements Serializable {
 	 */
 	public Collection<Person> getAllKnownPeople(Person person) {
 		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
-		Traverser traverser = relationshipGraph.traverser(person, GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
+		Traverser traverser = relationshipGraph.traverser(person.getIdentifier(), GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
 		while (traverser.hasNext()) {
-			Person knownPerson = (Person) traverser.next();
+			Person knownPerson = (Person) (unitManager.getUnitByID((Integer)traverser.next()));
 			result.add(knownPerson);
 		}
 		return result;
@@ -564,6 +565,10 @@ public class RelationshipManager implements Serializable {
 		score = Math.round(score/count *100.0)/100.0;
 		
 		return score;
+	}
+	
+	public static void setInstances(UnitManager u) {
+		unitManager = u;		
 	}
 	
 	/**

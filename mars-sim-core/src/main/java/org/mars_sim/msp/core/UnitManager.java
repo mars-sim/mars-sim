@@ -89,8 +89,10 @@ public class UnitManager implements Serializable {
 
 	public static boolean isCommanderMode = false;	
 	
-	/** Collection of all units. */
+	/** A list of all units. */
 	private List<Unit> units;
+	/** A map of all units with its unit identifier. */
+	private Map<Integer, Unit> lookupID;
 
 	// Transient members
 	/** Flag true if the class has just been loaded */
@@ -153,6 +155,7 @@ public class UnitManager implements Serializable {
 		marsClock = sim.getMasterClock().getMarsClock();
 
 		// Initialize unit collection
+		lookupID = new HashMap<>();
 		units = new CopyOnWriteArrayList<>();//ConcurrentLinkedQueue<Unit>();
 		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		equipmentNumberMap = new HashMap<String, Integer>();
@@ -169,9 +172,9 @@ public class UnitManager implements Serializable {
 
 		// Add mars surface
 		marsSurface = sim.getMars().getMarsSurface();
-		addUnit(marsSurface);
+
 		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-//		System.out.println("UnitManager marsSurface hashcode : " + marsSurface.hashCode());
+
 	}
 
 	/**
@@ -180,7 +183,9 @@ public class UnitManager implements Serializable {
 	 * @throws Exception in unable to load names.
 	 */
 	void constructInitialUnits(boolean loadSaveSim) {
-
+		// Add marsSurface as the very first unit
+		addUnit(marsSurface);
+		
 		if (countries == null)
 			countries = personConfig.createCountryList();
 
@@ -330,6 +335,15 @@ public class UnitManager implements Serializable {
 		}
 	}
 
+	
+	public Unit getUnitByID(int id) {
+		return lookupID.get(id);
+	}
+	
+	public void addUnitID(Unit unit) {
+		lookupID.put(unit.getIdentifier(), unit);
+	}
+	
 	/**
 	 * Adds a unit to the unit manager if it doesn't already have it.
 	 *
@@ -338,7 +352,9 @@ public class UnitManager implements Serializable {
 	public void addUnit(Unit unit) {
 		if (!units.contains(unit)) {
 			units.add(unit);
-//			marsSurface.getInventory().storeUnit(unit);
+			// Track the unit's id
+			addUnitID(unit);
+			
 			Iterator<Unit> i = unit.getInventory().getContainedUnits().iterator();
 			while (i.hasNext()) {
 				addUnit(i.next());
@@ -356,7 +372,7 @@ public class UnitManager implements Serializable {
 	public void removeUnit(Unit unit) {
 		if (units.contains(unit)) {
 			units.remove(unit);
-//			marsSurface.getInventory().retrieveUnit(unit);
+
 			// Fire unit manager event.
 			fireUnitManagerUpdate(UnitManagerEventType.REMOVE_UNIT, unit);
 		}

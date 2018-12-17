@@ -733,16 +733,11 @@ public class Farming extends Function implements Serializable {
 		double timeRemaining = workTime;
 		Crop needyCropCache = null;
 		Crop needyCrop = getNeedyCrop(needyCropCache);
-		// Scott - I used the comparison criteria 00001D rather than 0D
-		// because sometimes math anomalies result in workTimeRemaining
-		// becoming very small double values and an endless loop occurs.
+		// TODO: redesign addWork() to check on each food crop
 		while (needyCrop != null && timeRemaining > MIN) {
-
-//			try {
-				timeRemaining = needyCrop.addWork(unit, timeRemaining);
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
+			// WARNING : ensure timeRemaining gets smaller
+			// or else creating an infinite loop
+			timeRemaining = needyCrop.addWork(unit, timeRemaining) * .9999;
 			
 			needyCropCache = needyCrop;
 			// Get a new needy crop
