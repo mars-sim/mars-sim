@@ -98,12 +98,14 @@ class TableProperties extends JInternalFrame {
         
         pack();
         
-        // 2016-10-22 Add to its own tab pane
-        if (desktop.getMainScene() != null)
-        	desktop.add(this);
-        	//desktop.getMainScene().getDesktops().get(0).add(this);
-        else 
-        	desktop.add(this);
+        desktop.add(this);
+        
+//        // Add to its own tab pane
+//        if (desktop.getMainScene() != null)
+//        	desktop.add(this);
+//        	//desktop.getMainScene().getDesktops().get(0).add(this);
+//        else 
+//        	desktop.add(this);
     }
 
 
@@ -129,13 +131,13 @@ class TableProperties extends JInternalFrame {
      * @param event Event driving the action.
      */
     private void columnSelected(ActionEvent event) {
-        JCheckBox button = (JCheckBox)event.getSource();
-        int index = columnButtons.indexOf(button);
+        JCheckBox box = (JCheckBox)event.getSource();
+        int index = columnButtons.indexOf(box);
 
         // Either add or remove column
-        if (button.isSelected()) {
+        if (box.isSelected()) {
             TableColumn col = new TableColumn(index);
-            col.setHeaderValue(button.getText());
+            col.setHeaderValue(box.getText());
             model.addColumn(col);
         }
         else {

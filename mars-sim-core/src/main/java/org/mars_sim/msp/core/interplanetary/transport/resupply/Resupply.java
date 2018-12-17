@@ -133,7 +133,7 @@ public class Resupply implements Serializable, Transportable {
 	 * Generates START_BUILDING_PLACEMENT_EVENT and test if GUI is in use
 	 */
 	public synchronized void startDeliveryEvent() {
-		logger.info("startDeliverBuildings() is on " + Thread.currentThread().getName() + " Thread"); // normally on
+		logger.config("startDeliverBuildings() is on " + Thread.currentThread().getName() + " Thread"); // normally on
 																										// pool-4-thread-3
 																										// Thread
 		buildingManager = settlement.getBuildingManager();
@@ -159,6 +159,9 @@ public class Resupply implements Serializable, Transportable {
 //		} else {
 			// if GUI is NOT in use, use the version of deliverBuildings() here in
 			// Resuppply.java
+		
+			// Interrupts everyone's task (Walking tasks can cause issues) 
+			settlement.endAllIndoorTasks();
 			// Deliver buildings to the destination settlement.
 			deliverBuildings();
 
@@ -251,33 +254,33 @@ public class Resupply implements Serializable, Transportable {
 	 */
 	public BuildingTemplate clearCollision(BuildingTemplate bt, int count) {
 		count--;
-		logger.info("#" + (Resupply.MAX_COUNTDOWN - count) + " : calling clearCollision() for " + bt.getNickName());
+		logger.config("#" + (Resupply.MAX_COUNTDOWN - count) + " : calling clearCollision() for " + bt.getNickName());
 		boolean noVehicle = true;
 		boolean noImmovable = true;
 		boolean noConflictResupply = true;
 		boolean inZone = true;
 		if (count < 1) {
-			logger.info("clearCollision() : count is down to 0. Quit building placement.");
+			logger.config("clearCollision() : count is down to 0. Quit building placement.");
 			return null;
 		} else {
 			// check if a vehicle is the obstacle and move it
 			noVehicle = isCollisionFreeVehicle(bt);
-			logger.info("noVehicle is now " + noVehicle);
+			logger.config("noVehicle is now " + noVehicle);
 
 			if (noVehicle) {
 				noImmovable = isCollisionFreeImmovable(bt);
 			}
-			logger.info("noImmovable is now " + noImmovable);
+			logger.config("noImmovable is now " + noImmovable);
 
 			if (noImmovable) {
 				noConflictResupply = isCollisionFreeResupplyBuildings(bt, buildingManager);
 			}
-			logger.info("noConflictResupply is now " + noConflictResupply);
+			logger.config("noConflictResupply is now " + noConflictResupply);
 
 			if (noConflictResupply) {
 				inZone = isWithinZone(bt, buildingManager);
 			}
-			logger.info("inZone : " + inZone);
+			logger.config("inZone : " + inZone);
 
 			if (!noImmovable || !noConflictResupply || !inZone) {// if there are obstacles
 				// get a new template
@@ -419,7 +422,7 @@ public class Resupply implements Serializable, Transportable {
 			Building startingBuilding = i.next();
 			double distance = Point2D.distance(startingBuilding.getXLocation(), startingBuilding.getYLocation(),
 					bt.getXLoc(), bt.getYLoc());
-			// logger.info("distance : " + distance);
+			// logger.config("distance : " + distance);
 			if (distance < leastDistance) {
 				withinRadius = false;
 				break;
@@ -434,7 +437,7 @@ public class Resupply implements Serializable, Transportable {
 	 * mission
 	 */
 	public void deliverOthers() {
-		logger.info("deliverOthers() is in " + Thread.currentThread().getName() + " Thread");
+		logger.config("deliverOthers() is in " + Thread.currentThread().getName() + " Thread");
 
 		// Deliver vehicles.
 		UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -535,7 +538,7 @@ public class Resupply implements Serializable, Transportable {
 			relationshipManager.addNewImmigrant(immigrant, immigrants);
 			immigrants.add(immigrant);
 
-			logger.info(immigrantName + " arrives on Mars at " + settlement.getName());
+			logger.config(immigrantName + " arrived on Mars at " + settlement.getName());
 			// Add fireUnitUpdate()
 			settlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, immigrant);
 		}
@@ -637,7 +640,7 @@ public class Resupply implements Serializable, Transportable {
 	 * @return the repositioned building template.
 	 */
 	public BuildingTemplate positionNewResupplyBuilding(String buildingType) {
-		// logger.info("calling positionNewResupplyBuilding()");
+		// logger.config("calling positionNewResupplyBuilding()");
 		BuildingTemplate newPosition = null;
 		// Note : only hallway and tunnel has "building-connection" function
 		boolean isBuildingConnector = buildingConfig.hasBuildingConnection(buildingType);
@@ -646,23 +649,23 @@ public class Resupply implements Serializable, Transportable {
 		if (isBuildingConnector) {
 			// Try to find best location to connect between the two buildings.
 			newPosition = positionNewConnector(buildingType);
-			// logger.info("positionNewResupplyBuilding() : just returned from
+			// logger.config("positionNewResupplyBuilding() : just returned from
 			// positionNewConnector() for " + newPosition.getNickName());
 			if (newPosition != null) {
-				// logger.info("it is a hallway or tunnel");
+				// logger.config("it is a hallway or tunnel");
 			}
 		}
 
 		else if (hasLifeSupport) {
-			// logger.info("Case 2 : building has life support");
+			// logger.config("Case 2 : building has life support");
 			newPosition = positionSameType(buildingType, true);
 
 			if (newPosition != null) {
-				// logger.info("has building(s) with the same building type");
-				logger.info(
+				// logger.config("has building(s) with the same building type");
+				logger.config(
 						"Positioning " + newPosition.getNickName() + " near the same building type with life support");
 			} else {
-				// logger.info("No other same building type");
+				// logger.config("No other same building type");
 				// Put this habitable building next to another inhabitable building (e.g.
 				// greenhouse, lander hab, research hab...)
 				List<Building> inhabitableBuildings = settlement.getBuildingManager()
@@ -686,7 +689,7 @@ public class Resupply implements Serializable, Transportable {
 
 						newPosition = positionNextToBuilding(buildingType, building, Math.round(dist1), false);
 						if (newPosition != null) {
-							logger.info("Positioning " + building.getNickName()
+							logger.config("Positioning " + building.getNickName()
 									+ " near a different building type with life support");
 							break;
 						}
@@ -694,10 +697,10 @@ public class Resupply implements Serializable, Transportable {
 				}
 			}
 		} else {
-			// logger.info("Case 3 : no life support ");
+			// logger.config("Case 3 : no life support ");
 			newPosition = positionSameType(buildingType, false);
 			if (newPosition != null)
-				logger.info("Positioning " + newPosition.getNickName()
+				logger.config("Positioning " + newPosition.getNickName()
 						+ " near the same building type with no life support");
 		}
 
@@ -719,7 +722,7 @@ public class Resupply implements Serializable, Transportable {
 						Building building = i.next();
 						newPosition = positionNextToBuilding(buildingType, building, (double) x, false);
 						if (newPosition != null) {
-							logger.info("Positioning " + newPosition.getNickName() + " at " + x
+							logger.config("Positioning " + newPosition.getNickName() + " at " + x
 									+ " meters away near a different building type with no life support");
 							break;
 						}
@@ -751,7 +754,7 @@ public class Resupply implements Serializable, Transportable {
 						"Resupply Mission launched on " + MarsClock.getDateTimeStamp(launchDate), buildingID, scenario,
 						buildingType, buildingNickName, width, length, 0, 0, 0);
 
-				logger.info("Positioning " + buildingNickName + " at (0,0)");
+				logger.config("Positioning " + buildingNickName + " at (0,0)");
 			}
 		}
 
@@ -814,7 +817,7 @@ public class Resupply implements Serializable, Transportable {
 		// airlock and
 		// another inhabitable building with access to an airlock.
 		if (settlement.getAirlockNum() > 0) {
-			logger.info("Case 1 in positionNewConnector()");
+			logger.config("Case 1 in positionNewConnector()");
 			Building closestStartingBuilding = null;
 			Building closestEndingBuilding = null;
 			double leastDistance = Double.MAX_VALUE;
@@ -855,7 +858,7 @@ public class Resupply implements Serializable, Transportable {
 					newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, closestStartingBuilding,
 							closestEndingBuilding);
 //					if (newTemplate != null)
-//						logger.info("Case 1 : Just created a new connector template " +
+//						logger.config("Case 1 : Just created a new connector template " +
 							// newTemplate.getNickName() + " in positionNewConnector()");
 				}
 			}
@@ -865,7 +868,7 @@ public class Resupply implements Serializable, Transportable {
 		// Try to find valid connection location between two inhabitable buildings with
 		// no joining walking path.
 		if (newTemplate == null) {
-			logger.info("Case 2 in positionNewConnector()");
+			logger.config("Case 2 in positionNewConnector()");
 			Building closestStartingBuilding = null;
 			Building closestEndingBuilding = null;
 			double leastDistance = Double.MAX_VALUE;
@@ -907,7 +910,7 @@ public class Resupply implements Serializable, Transportable {
 				newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, closestStartingBuilding,
 						closestEndingBuilding);
 //				if (newTemplate != null)
-//					logger.info("Case 2 : Just created a new connector template in
+//					logger.config("Case 2 : Just created a new connector template in
 						// positionNewConnector()");
 			}
 		}
@@ -916,7 +919,7 @@ public class Resupply implements Serializable, Transportable {
 		// Try to find valid connection location between two inhabitable buildings that
 		// are not directly connected.
 		if (newTemplate == null) {
-			logger.info("Case 3 in positionNewConnector()");
+			logger.config("Case 3 in positionNewConnector()");
 			Building closestStartingBuilding = null;
 			Building closestEndingBuilding = null;
 			double leastDistance = Double.MAX_VALUE;
@@ -958,7 +961,7 @@ public class Resupply implements Serializable, Transportable {
 				newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, closestStartingBuilding,
 						closestEndingBuilding);
 //				if (newTemplate != null)
-//					logger.info("Case 3 : just created a new connector template in
+//					logger.config("Case 3 : just created a new connector template in
 						// positionNewConnector()");
 			}
 		}
@@ -966,14 +969,14 @@ public class Resupply implements Serializable, Transportable {
 		// Case 4
 		// Try to find connection to existing inhabitable building.
 		if (newTemplate == null) {
-			logger.info("Case 4 in positionNewConnector()");
+			logger.config("Case 4 in positionNewConnector()");
 			Iterator<Building> l = inhabitableBuildings.iterator();
 			while (l.hasNext()) {
 				Building building = l.next();
 				// Make connector building face away from building.
 				newTemplate = positionNextToBuilding(newBuildingType, building, 0D, true);
 //				if (newTemplate != null)
-//					logger.info("Case 4 :Finding a connection to existing inhabitable
+//					logger.config("Case 4 :Finding a connection to existing inhabitable
 						// building.");
 			}
 		}
@@ -1029,7 +1032,7 @@ public class Resupply implements Serializable, Transportable {
 			case front:
 				direction = building.getFacing();
 				structureDistance = (building.getLength() / 2D) + (length / 2D);
-				// logger.info("front");
+				// logger.config("front");
 				break;
 			case back:
 				direction = building.getFacing() + 180D;
@@ -1037,7 +1040,7 @@ public class Resupply implements Serializable, Transportable {
 				if (faceAway) {
 					rectRotation = building.getFacing() + 180D;
 				}
-				// logger.info("back");
+				// logger.config("back");
 				break;
 			case right:
 				direction = building.getFacing() + 90D;
@@ -1046,7 +1049,7 @@ public class Resupply implements Serializable, Transportable {
 					structureDistance = (building.getWidth() / 2D) + (length / 2D);
 					rectRotation = building.getFacing() + 90D;
 				}
-				// logger.info("right");
+				// logger.config("right");
 				break;
 			case left:
 				direction = building.getFacing() + 270D;
@@ -1055,7 +1058,7 @@ public class Resupply implements Serializable, Transportable {
 					structureDistance = (building.getWidth() / 2D) + (length / 2D);
 					rectRotation = building.getFacing() + 270D;
 				}
-				// logger.info("left");
+				// logger.config("left");
 			}
 
 			if (rectRotation > 360D) {
@@ -1080,7 +1083,7 @@ public class Resupply implements Serializable, Transportable {
 
 				String buildingNickName = newBuildingType + " " + buildingTypeID;
 
-				logger.info("Positioning at (" + Math.round(rectCenterX * 10D) / 10D + ", "
+				logger.config("Positioning at (" + Math.round(rectCenterX * 10D) / 10D + ", "
 						+ Math.round(rectCenterY * 10D) / 10D + ") at " + Math.round(rectRotation) + " deg");
 
 				newPosition = new BuildingTemplate(
@@ -1105,7 +1108,7 @@ public class Resupply implements Serializable, Transportable {
 	 */
 	private BuildingTemplate positionConnectorBetweenTwoBuildings(String newBuildingType, Building firstBuilding,
 			Building secondBuilding) {
-		// logger.info("Calling positionConnectorBetweenTwoBuildings()");
+		// logger.config("Calling positionConnectorBetweenTwoBuildings()");
 
 		BuildingTemplate newPosition = null;
 

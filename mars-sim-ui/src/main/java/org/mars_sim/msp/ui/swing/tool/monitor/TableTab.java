@@ -52,6 +52,7 @@ extends MonitorTab {
 	private TableCellRenderer tableCellRenderer;
 	private TableProperties propsWindow;
 	
+	
 	/**
 	 * This internal class provides a fixed image icon that is drawn using a Graphics
 	 * object. It represents an arrow Icon that can be other ascending or

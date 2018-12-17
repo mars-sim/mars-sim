@@ -619,6 +619,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// return getInhabitants().size();
 	}
 
+	public void endAllIndoorTasks() {
+		for (Person p : getIndoorPeople()) {
+			p.getMind().getTaskManager().clearTask();
+		}
+	}
+	
 	/**
 	 * Gets a collection of the people who are inside the settlement.
 	 * 
