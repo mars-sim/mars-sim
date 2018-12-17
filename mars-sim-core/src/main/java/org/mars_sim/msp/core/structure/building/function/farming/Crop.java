@@ -50,6 +50,9 @@ public class Crop implements Serializable {
 	 */
 	public static final double PHYSIOLOGICAL_LIMIT = 0.9; // 1 is max. if set to 1, a lot of lights will toggle on and
 															// off undesirably.
+	
+	public static final double RATIO_LEAVES = .75;
+	
 	/**
 	 * The average percentage of tissues that can be extracted from a crop upon
 	 * harvest.
@@ -638,21 +641,21 @@ public class Crop implements Serializable {
 				double lastHarvest = multiplier * dailyHarvest * (workTime - overWorkTime) / w;
 
 				if (lastHarvest > 0) {
-					// Store the crop harvest
-					if (isSeedPlant)
-						Storage.storeAnResource(lastHarvest, seedID, inv, sourceName + "::addWork");			
-					// Extract Mustard Seed
-					else if (hasSeed && lastHarvest * massRatio > 0) {
-						Storage.storeAnResource(lastHarvest * massRatio, seedID, inv, sourceName + "::addWork");
+					
+					if (isSeedPlant) {
+						// Extract Sesame Seed. 
+						// Note the purpose for this plant is primarily the seeds 
+						Storage.storeAnResource(lastHarvest, seedID, inv, sourceName + "::addWork");
 					}
-//					else {
-//						// In case of white mustard, the inedible biomass is used as the seed
-//						// mass, thus no crop waste
-//						generateCropWaste(lastHarvest);
-//					}
-					else
+					else if (hasSeed && lastHarvest * massRatio > 0) {
+						// White Mustard has leaves as food. Also extract Mustard Seed
+						Storage.storeAnResource(lastHarvest * massRatio, seedID, inv, sourceName + "::addWork");
 						Storage.storeAnResource(lastHarvest, cropID, inv, sourceName + "::addWork");
-		
+					}
+					else {
+						Storage.storeAnResource(lastHarvest, cropID, inv, sourceName + "::addWork");
+					}
+
 					if (current == length - 3)
 						logger.info(unit.getName() + " closed out the initial harvest of " + capitalizedCropName + " in "
 							+ farmName + " at " + settlement.getName());
@@ -661,18 +664,18 @@ public class Crop implements Serializable {
 								+ farmName + " at " + settlement.getName());
 					
 					
-					generateCropWaste(lastHarvest);
+					compueteLeavesCropWaste(lastHarvest);
 					
 					//  Check to see if a botany lab is available
 					if (!farm.checkBotanyLab(cropTypeID))
 						logger.info("Can't find an available lab bench to work on the tissue culture for " + cropName);
 
 					remainingHarvest -= lastHarvest;
-					
-					remainingTime = overWorkTime;
-					
+										
 					totalHarvest += lastHarvest;
 					
+					remainingTime = overWorkTime;
+
 					if (totalHarvest > 0)
 						LogConsolidated.log(Level.INFO, 0, sourceName,
 							"[" + settlement + "] " + unit.getName() + " harvested a total of "
@@ -694,19 +697,22 @@ public class Crop implements Serializable {
 					double modifiedHarvest = multiplier * dailyHarvest * workTime / w;
 					// Store the crop harvest
 					if (modifiedHarvest > 0 && remainingHarvest > 0) {
-						if (isSeedPlant)
+						if (isSeedPlant) {
+							// Extract Sesame Seed. 
+							// Note the purpose for this plant is primarily the seeds 
 							Storage.storeAnResource(modifiedHarvest, seedID, inv, sourceName + "::addWork");
-						// Extract Mustard Seed
-						else if (hasSeed)
-							Storage.storeAnResource(modifiedHarvest * massRatio, seedID, inv, sourceName + "addWork");
-//						else
-//							// In case of white mustard, the inedible biomass is used as the seed mass
-//							// thus no crop waste
-//							generateCropWaste(modifiedHarvest);
-						else
+						}
+						else if (hasSeed && modifiedHarvest * massRatio > 0) {
+							// White Mustard has leaves as food. Also extract Mustard Seed
+							Storage.storeAnResource(modifiedHarvest * massRatio, seedID, inv, sourceName + "::addWork");
 							Storage.storeAnResource(modifiedHarvest, cropID, inv, sourceName + "::addWork");
+						}
+						else {
+							Storage.storeAnResource(modifiedHarvest, cropID, inv, sourceName + "::addWork");
+						}
 
-						generateCropWaste(modifiedHarvest);
+						
+						compueteLeavesCropWaste(modifiedHarvest);
 						
 						remainingHarvest -= modifiedHarvest;
 						
@@ -723,17 +729,29 @@ public class Crop implements Serializable {
 	}
 
 	/**
-	 * Compute the amount of crop waste generated
+	 * Computes the amount of leaves and crop waste generated
 	 */
-	public void generateCropWaste(double harvestMass) {
+	public void compueteLeavesCropWaste(double harvestMass) {
 //		double amountCropWaste = harvestMass * inedibleBiomass / (inedibleBiomass + edibleBiomass);
-		double amountCropWaste = harvestMass / edibleBiomass * inedibleBiomass;
-		if (amountCropWaste > 0) {
-			Storage.storeAnResource(amountCropWaste, cropWasteID, inv, "::generateCropWaste");
+		double inedible = harvestMass / edibleBiomass * inedibleBiomass;
+		double cropWaste = inedible * RATIO_LEAVES;
+		if (cropWaste > 0) {
+			Storage.storeAnResource(cropWaste, cropWasteID, inv, "::generateCropWaste");
 //			LogConsolidated.log(Level.INFO, 0, sourceName,
 //					"[" + settlement + "] A total "  
 //							+ Math.round(totalHarvest * 100.0) / 100.0 + " kg of crop waste was generated "
 //							+ capitalizedCropName + " in " + farmName);
+		}
+		
+		if (cropCategoryType != CropCategoryType.LEAVES) {
+			double leaves = inedible - cropWaste;
+			if (leaves > 0) {
+				Storage.storeAnResource(leaves, ResourceUtil.leavesID, inv, "::generateCropWaste");
+	//			LogConsolidated.log(Level.INFO, 0, sourceName,
+	//					"[" + settlement + "] A total "  
+	//							+ Math.round(totalHarvest * 100.0) / 100.0 + " kg of crop waste was generated "
+	//							+ capitalizedCropName + " in " + farmName);
+			}
 		}
 	}
 

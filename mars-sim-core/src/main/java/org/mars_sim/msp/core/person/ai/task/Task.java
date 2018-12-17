@@ -387,8 +387,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected void setPhase(TaskPhase newPhase) {
 		if (newPhase == null) {
-			throw new IllegalArgumentException("newPhase is null");
-		} else if (phases.contains(newPhase)) {
+//			throw new IllegalArgumentException("newPhase is null");
+			endTask();
+		} 
+		
+		else if (phases.contains(newPhase)) {
 			phase = newPhase;
 			if (person != null) {
 				// Note: need to avoid java.lang.StackOverflowError when calling
@@ -400,7 +403,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				robot.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
 			}
 
-		} else {
+		} 
+		
+		else {
 			throw new IllegalStateException("newPhase: " + newPhase + " is not a valid phase for this task.");
 		}
 	}

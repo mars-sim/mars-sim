@@ -12,11 +12,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.Inventory;
@@ -140,21 +142,21 @@ public class Resupply implements Serializable, Transportable {
 
 		// Terminate handling of delivery by
 		// Resupply.java if GUI is in use
-		if (Simulation.getUseGUI()) {
-			// if GUI is in use
-			List<BuildingTemplate> orderedBuildings = orderNewBuildings();
-			if (orderedBuildings.size() > 0) {
-				Building aBuilding = buildingManager.getACopyOfBuildings().get(0);
-				// Fires the unit update below in order to use the version of deliverBuildings()
-				// in TransportWizard.java
-				settlement.fireUnitUpdate(UnitEventType.START_TRANSPORT_WIZARD_EVENT, aBuilding);
-			} else {
-				// Deliver the rest of the supplies and add people.
-				deliverOthers();
-				settlement.fireUnitUpdate(UnitEventType.END_TRANSPORT_WIZARD_EVENT);
-			}
-
-		} else {
+//		if (Simulation.getUseGUI()) {
+//			// if GUI is in use
+//			List<BuildingTemplate> orderedBuildings = orderNewBuildings();
+//			if (orderedBuildings.size() > 0) {
+//				Building aBuilding = buildingManager.getACopyOfBuildings().get(0);
+//				// Fires the unit update below in order to use the version of deliverBuildings()
+//				// in TransportWizard.java
+//				settlement.fireUnitUpdate(UnitEventType.START_TRANSPORT_WIZARD_EVENT, aBuilding);
+//			} else {
+//				// Deliver the rest of the supplies and add people.
+//				deliverOthers();
+//				settlement.fireUnitUpdate(UnitEventType.END_TRANSPORT_WIZARD_EVENT);
+//			}
+//
+//		} else {
 			// if GUI is NOT in use, use the version of deliverBuildings() here in
 			// Resuppply.java
 			// Deliver buildings to the destination settlement.
@@ -162,7 +164,7 @@ public class Resupply implements Serializable, Transportable {
 
 			// Deliver the rest of the supplies and add people.
 			deliverOthers();
-		}
+//		}
 
 	}
 
@@ -170,7 +172,7 @@ public class Resupply implements Serializable, Transportable {
 	 * Delivers new buildings to the settlement
 	 */
 	public void deliverBuildings() {
-		logger.info("deliverBuildings() is in " + Thread.currentThread().getName() + " Thread");
+		logger.config("deliverBuildings() is in " + Thread.currentThread().getName() + " Thread");
 
 		List<BuildingTemplate> orderedBuildings = orderNewBuildings();
 
@@ -569,21 +571,24 @@ public class Resupply implements Serializable, Transportable {
 	 * @return list of new buildings.
 	 */
 	public List<BuildingTemplate> orderNewBuildings() {
-
-		List<BuildingTemplate> result = new ArrayList<BuildingTemplate>(getNewBuildings().size());
-
-//		BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-
-		Iterator<BuildingTemplate> i = getNewBuildings().iterator();
+		List<BuildingTemplate> result = new ArrayList<>();
+		
+		List<BuildingTemplate> list = getNewBuildings().stream()
+//				.sorted(Comparator.reverseOrder())
+//				.sorted((b1, b2)-> b1.getID().compareTo(b2.getID()))
+				.sorted(Comparator.comparing(bt -> bt.getID()))
+				.collect(Collectors.toList());
+		
+		Iterator<BuildingTemplate> i = list.iterator();
 		while (i.hasNext()) {
-			BuildingTemplate newBuilding = i.next();
-			boolean isBuildingConnector = buildingConfig.hasBuildingConnection(newBuilding.getBuildingType());
+			BuildingTemplate b = i.next();
+			boolean isBuildingConnector = buildingConfig.hasBuildingConnection(b.getBuildingType());
 			if (isBuildingConnector) {
-				// Relocate hallway and tunnel to end of new building list.
-				result.add(newBuilding);
+				// Add hallway and tunnel to end of new building list.
+				result.add(b);
 			} else {
 				// Add non-connector to beginning of new building list.
-				result.add(0, newBuilding);
+				result.add(0, b);
 			}
 		}
 

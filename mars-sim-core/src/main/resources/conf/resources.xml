@@ -140,9 +140,12 @@
 	<resource name="white onion" type="crop" phase="solid" edible="true"></resource>
 	<resource name="yam" type="crop" phase="solid" edible="true"></resource>
 
-<!-- Secondary Crop Produce -->
-	<resource name="mustard seed" type="crop" phase="solid" edible="true"></resource>
+<!-- Seeds from Crop Produce -->
+	<resource name="mustard seed" type="crop" phase="solid" edible="true">Seeds from white mustard plant</resource>
 	<resource name="sesame seed" type="crop" phase="solid" edible="true">Seeds from sesame plant.</resource>
+	
+<!-- Secondary Crop Produce -->
+	<resource name="leaves" type="food" phase="solid" edible="true">Edible leaves extracted during harvest. A filler fiber for meal</resource>
 
 
 <!-- Imported food ingredient -->

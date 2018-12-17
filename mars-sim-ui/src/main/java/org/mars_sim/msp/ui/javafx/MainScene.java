@@ -90,10 +90,8 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
@@ -105,7 +103,6 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.javafx.dashboard.DashboardController;
 import org.mars_sim.msp.ui.javafx.dotMatrix.DotMatrix;
 import org.mars_sim.msp.ui.javafx.dotMatrix.DotMatrixBuilder;
@@ -314,8 +311,8 @@ public class MainScene implements ClockListener {
 	private boolean isMainSceneDoneLoading = false;
 	private boolean isFullScreenCache = false;
 	
-	private boolean lastMusicMuteBoxSetting;
-	private boolean lastSoundEffectMuteBoxSetting;
+//	private boolean lastMusicMuteBoxSetting;
+//	private boolean lastSoundEffectMuteBoxSetting;
 
 	private DoubleProperty sceneWidth;// = new SimpleDoubleProperty(DEFAULt_WIDTH);//1366-40;
 	private DoubleProperty sceneHeight;// = new SimpleDoubleProperty(DEFAULt_HEIGHT); //768-40;
@@ -460,20 +457,18 @@ public class MainScene implements ClockListener {
 	private static MasterClock masterClock = sim.getMasterClock();
 	private static EarthClock earthClock;
 	private static MarsClock marsClock;
-
 	private static MarsClock lastNewsClock;
-	
-	private SettlementWindow settlementWindow;
-	private NavigatorWindow navWin;
-	private SettlementMapPanel mapPanel;
+	private static OrbitInfo orbitInfo;
 
 	private static AudioPlayer soundPlayer;
 	private static MarsCalendarDisplay calendarDisplay;
 	private static UpTimer uptimer;
 
-	private AnimationTimer billboardTimer;
+	private SettlementWindow settlementWindow;
+	private NavigatorWindow navWin;
+	private SettlementMapPanel mapPanel;
 
-	private static OrbitInfo orbitInfo;
+	private AnimationTimer billboardTimer;
 
 	private DecimalFormat df = new DecimalFormat("0.000");
 
@@ -1129,8 +1124,8 @@ public class MainScene implements ClockListener {
 			AnchorPane.setTopAnchor(lastSaveLabel, 1.0 + TITLE_HEIGHT);
 			AnchorPane.setTopAnchor(soundBtn, 3.0 + TITLE_HEIGHT);
 			// AnchorPane.setTopAnchor(farmBtn, 3.0);
-			AnchorPane.setTopAnchor(earthTimeBox, 0.0 + TITLE_HEIGHT);
-			AnchorPane.setTopAnchor(marsTimeBox, 2.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(earthTimeBox, -1.0 + TITLE_HEIGHT);
+			AnchorPane.setTopAnchor(marsTimeBox, 1.0 + TITLE_HEIGHT);
 		}
 
 		else if (OS.contains("linux")) {

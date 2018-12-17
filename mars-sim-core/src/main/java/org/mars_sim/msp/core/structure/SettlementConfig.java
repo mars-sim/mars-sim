@@ -311,10 +311,9 @@ public class SettlementConfig implements Serializable {
 				// by appending the settlement id and building id to that building's type.
 				String scenario = getCharForNumber(scenarioID + 1);
 				// NOTE: i = sid + 1 since i must be > 1, if i = 0, s = null
-				// String buildingID = bid + "";
 				// Add buildingTypeID
 				int buildingTypeID = buildingTypeIDMap.get(buildingType);
-				// String buildingNickName = buildingType + " " + scenario + buildingID;
+
 				String buildingNickName = buildingType + " " + buildingTypeID;
 
 				// Add buildingNickName, Changed id to bid

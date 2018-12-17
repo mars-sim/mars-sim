@@ -494,7 +494,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public List<Building> createAdjacentBuildingConnectors(Building building) {
 		List<Building> buildings = new ArrayList<>();
-		// List<String> names = new ArrayList<>();
 		Set<BuildingConnector> connectors = getConnectionsToBuilding(building);
 		for (BuildingConnector c : connectors) {
 			Building b1 = c.getBuilding1();
@@ -504,22 +503,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			} else if (b2 != building) {
 				buildings.add(b2);
 			}
-			/*
-			 * //if (b1.equals(building) { if
-			 * (b1.getNickName().equals(building.getNickName())) { buildings.add(b2);
-			 * //names.add(b2.getNickName()); } else { buildings.add(b1);
-			 * //names.add(b1.getNickName()); }
-			 */
-
 		}
-		/*
-		 * System.out.println("size of " + buildings.size()); if (buildings.size() == 0)
-		 * System.out.println(building.getNickName() + " has no adjacent buildings.");
-		 * else if (buildings.size() == 1) System.out.println(building.getNickName() +
-		 * " <=> " + names.get(0)); else if (buildings.size() == 2)
-		 * System.out.println(names.get(0) + " <=> " + building.getNickName() + " <=> "
-		 * + names.get(1));
-		 */
+
 		return buildings;
 	}
 

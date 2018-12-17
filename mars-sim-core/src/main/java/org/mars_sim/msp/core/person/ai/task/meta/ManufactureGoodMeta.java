@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -123,7 +122,7 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
 
         if (robot.getBotMind().getRobotJob() instanceof Makerbot) {
 
-	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	        if (robot.isInSettlement()) {
 	            // If settlement has manufacturing override, no new
 	            // manufacturing processes can be created.
 	            if (!robot.getSettlement().getManufactureOverride()) {

@@ -16,6 +16,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -172,7 +173,7 @@ public class StructureMapLayer implements SettlementMapLayer {
      */
     private void drawBuildings(Graphics2D g2d, Settlement settlement) {
         if (settlement != null) {
-            Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+            Iterator<Building> i = new ArrayList<>(settlement.getBuildingManager().getBuildings()).iterator();
             while (i.hasNext()) drawBuilding(i.next(), g2d);
         }
     }

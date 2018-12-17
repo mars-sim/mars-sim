@@ -432,29 +432,39 @@ public class TransportWizard {
      * @param template the building template.
      * @return true if building template position is clear.
      */
-    public boolean isTemplatePositionClear(BuildingManager mgr, BuildingTemplate template) {
+    public boolean isTemplatePositionClear(BuildingManager mgr, BuildingTemplate bt) {
 
         boolean result = true;
 
-        // Replace width and length defaults to deal with variable width and length buildings.
-        double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
-        if (template.getWidth() > 0D) {
-            width = template.getWidth();
-        }
-        if (width <= 0D) {
-            width = DEFAULT_VARIABLE_BUILDING_WIDTH;
-        }
+     	double xLoc = bt.getXLoc();
+    	double yLoc = bt.getYLoc();
+    	double w = bt.getWidth();
+		double l = bt.getLength();
+		double f = bt.getFacing();
 
-        double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getBuildingType());
-        if (template.getLength() > 0D) {
-            length = template.getLength();
-        }
-        if (length <= 0D) {
-            length = DEFAULT_VARIABLE_BUILDING_LENGTH;
-        }
+		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 
-        result = mgr.isBuildingLocationOpen(template.getXLoc(),
-                template.getYLoc(), width, length, template.getFacing());
+        result = !LocalAreaUtil.isVehicleBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates(), true);
+        
+//        // Replace width and length defaults to deal with variable width and length buildings.
+//        double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
+//        if (template.getWidth() > 0D) {
+//            width = template.getWidth();
+//        }
+//        if (width <= 0D) {
+//            width = DEFAULT_VARIABLE_BUILDING_WIDTH;
+//        }
+//
+//        double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getBuildingType());
+//        if (template.getLength() > 0D) {
+//            length = template.getLength();
+//        }
+//        if (length <= 0D) {
+//            length = DEFAULT_VARIABLE_BUILDING_LENGTH;
+//        }
+//
+//        result = mgr.isBuildingLocationOpen(template.getXLoc(),
+//                template.getYLoc(), width, length, template.getFacing());
 
         return result;
     }
@@ -468,10 +478,21 @@ public class TransportWizard {
      * @return Updated building template
      */
     public BuildingTemplate clearCollision(BuildingTemplate bt, BuildingManager mgr, int count) {
-    	return resupply.clearCollision(bt, count);
+    	
+      	double xLoc = bt.getXLoc();
+    	double yLoc = bt.getYLoc();
+    	double w = bt.getWidth();
+		double l = bt.getLength();
+		double f = bt.getFacing();
+
+		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
+
+//        boolean isCollided = 
+        LocalAreaUtil.isVehicleBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates(), true);
+        
+        return bt;
+//    	return resupply.clearCollision(bt, count);
     }
-
-
 
     /**
      * Checks for collision and relocate any vehicles if found
@@ -550,6 +571,9 @@ public class TransportWizard {
 		//Building newBuilding = mgr.addOneBuilding(template, mgr.getResupply(), true);
 		Building newBuilding = mgr.prepareToAddBuilding(template, resupply, true);
 
+		// Clear any vehicles that block the location
+		clearCollision(template, mgr, 10);
+				
 		//if (isAtPreDefinedLocation || isNewTemplate) {
 		//	newBuilding = mgr.prepareToAddBuilding(template, resupply, false);
 		//}
@@ -626,7 +650,6 @@ public class TransportWizard {
 	}
 
 
-	@SuppressWarnings("restriction")
 	public synchronized void alertDialog(String title, String header, StringProperty msg, BuildingTemplate template,
 		BuildingManager mgr, Building newBuilding, boolean hasTimer){
 

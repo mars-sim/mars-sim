@@ -324,10 +324,11 @@ public class BuildingManager implements Serializable {
 		if (!buildings.contains(newBuilding)) {
 
 			buildings.add(newBuilding);
-
 			// Insert this new building into buildingFunctionsMap
 			addAllFunctionstoBFMap(newBuilding);
-
+			// Add tracking air composition
+			settlement.getCompositionOfAir().addAirNew(newBuilding);
+			
 			settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
 			// Create new building connections if needed.
 			if (createBuildingConnections) {
@@ -632,20 +633,7 @@ public class BuildingManager implements Serializable {
 		return numBuildings;
 	}
 
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
-	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1) {
-		masterClock = c0;
-		marsClock = c1;
-		buildingConfig = simulationConfig.getBuildingConfiguration();
-		eventManager = sim.getEventManager();
-		relationshipManager = sim.getRelationshipManager();
-	}
-	
+
 	/**
 	 * Time passing for all buildings.
 	 *
@@ -1973,6 +1961,22 @@ public class BuildingManager implements Serializable {
 		return eventManager;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded(MasterClock c0, MarsClock c1, BuildingConfig bc, HistoricalEventManager e, RelationshipManager r) {
+		sim = Simulation.instance();
+		masterClock = c0;
+		marsClock = c1;
+		buildingConfig = bc;
+		eventManager = e;
+		relationshipManager = r;
+	}
+	
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

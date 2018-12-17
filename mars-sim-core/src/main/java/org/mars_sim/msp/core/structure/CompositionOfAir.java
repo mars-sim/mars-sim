@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -329,18 +328,6 @@ public class CompositionOfAir implements Serializable {
 			}
 		}
 	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
-	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1, PersonConfig pc) {
-		masterClock = c0;
-		marsClock = c1;
-		personConfig = pc;
-	}
 	
 	/**
 	 * Time passing for the building.
@@ -353,7 +340,7 @@ public class CompositionOfAir implements Serializable {
 		int num = buildingManager.getLargestInhabitableID() + 1;
 
 		// if adding or subtracting a building in the settlement
-		addAirNew(newList, num);
+//		addAirNew(newList, num);
 
 		// For each time interval
 		calculateGasExchange(time, newList, num);
@@ -640,14 +627,18 @@ public class CompositionOfAir implements Serializable {
 	 * @param buildings a list of {@link Building}
 	 * @param numID     numbers of buildings
 	 */
-	public void addAirNew(List<Building> buildings, int numID) {
+//	public void addAirNew(List<Building> buildings, int numID) {
+	public void addAirNew(Building building) {
 
-		int diff = numID - numIDsCache;
+		int numID = buildingManager.getLargestInhabitableID() + 1;
+		int id = numID - 1;
+		
+		int diff = 1;//numID - numIDsCache;
 
-		if (numID != numIDsCache && diff > 0) {
+//		if (numID != numIDsCache && diff > 0) {
 			// if a building is added from a settlement
 
-			numIDsCache = numID;
+//			numIDsCache = numID;
 			// System.out.println("numBuildings : " + numBuildings + " numBuildingsCache : "
 			// + numBuildingsCache);
 			// System.out.println("percentComposition.length : " +
@@ -690,7 +681,7 @@ public class CompositionOfAir implements Serializable {
 			// System.out.println("new_partialPressure[0].length : " +
 			// new_partialPressure[0].length);
 
-			for (int id = numID; id < numID; id++) {
+//			for (int i = numID; i < numID; i++) {
 				// System.out.println("j : " + j);
 				new_totalPressure[id] = 1.0;
 
@@ -700,21 +691,25 @@ public class CompositionOfAir implements Serializable {
 				new_partialPressure[3][id] = O2_PARTIAL_PRESSURE;
 				new_partialPressure[4][id] = H2O_PARTIAL_PRESSURE;
 
-			}
+//			}
 
-			List<Building> newList = new ArrayList<>();
+//			List<Building> newList = new ArrayList<>();
 
 			// Part 2 : calculate # of moles and mass
 			// Assembled a list of new buildings
-			for (Building b : buildings) {
-				int id = b.getInhabitableID();
-				if (id >= numIDsCache)
-					newList.add(b);
-			}
+//			for (Building b : buildings) {
+//				int id = b.getInhabitableID();
+//				if (id >= numIDsCache)
+//					newList.add(b);
+//			}
 
 			// for (int id = 0; id< num; id++) {
-			for (Building b : newList) {
-				int id = b.getInhabitableID();
+//			for (Building b : newList) {
+			
+			
+			Building b = building;
+			
+//				int id = b.getInhabitableID();
 
 				double t = C_TO_K + b.getCurrentTemperature();
 				double sum_nm = 0, sum_p = 0, sum_mass = 0;// , sum_t = 0;
@@ -756,16 +751,15 @@ public class CompositionOfAir implements Serializable {
 				new_totalMass[id] = sum_mass;
 				// new_buildingTemperature [id] = sum_t/numGases;
 
-			}
+//			}
 
 			// Part 3 : calculate for each building the percent composition
-			for (int id = 0; id < numID; id++) {
+//			for (int j = 0; j < id; j++) {
 				// calculate for each gas the % composition
 				for (int gas = 0; gas < numGases; gas++) {
 					new_percent[gas][id] = new_partialPressure[gas][id] / new_totalPressure[id] * 100D;
-
 				}
-			}
+//			}
 
 			percent = new_percent;
 			fixedVolume = new_volume;
@@ -782,17 +776,8 @@ public class CompositionOfAir implements Serializable {
 			totalMass = new_totalMass;
 			// buildingTemperature = new_buildingTemperature;
 
-			/*
-			 * double [][] new_percentByVolume = new double[numGases][numBuildings]; double
-			 * [] new_volume = new double[numBuildings]; double [][] new_partialPressure =
-			 * new double[numGases][numBuildings]; double [][] new_temperature = new
-			 * double[numGases][numBuildings]; double [][] new_numMoles = new
-			 * double[numGases][numBuildings]; double [] new_totalPressure = new
-			 * double[numBuildings];
-			 */
-
-			numIDsCache = numID;
-		}
+//			numIDsCache = numID;
+//		}
 
 	}
 
@@ -931,6 +916,18 @@ public class CompositionOfAir implements Serializable {
 		return 0.61121 * Math.exp((18.678 - t_C / 234.5) * (t_C / (257.14 + t_C)));
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded(MasterClock c0, MarsClock c1, PersonConfig pc) {
+		masterClock = c0;
+		marsClock = c1;
+		personConfig = pc;
+	}
+	
 	public void destroy() {
 		buildingManager = null;
 		settlement = null;

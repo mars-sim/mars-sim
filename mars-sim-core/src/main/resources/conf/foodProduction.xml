@@ -10,12 +10,12 @@
 	<!-- work-time - The effort time (in millisols) required to perform the process.  Higher skilled workers will produce more effort time than lower skilled workers. -->
 	<!-- process-time - The minimum time (in millisols) required for the process regardless of effort time. -->
 	<!-- power-required - The total amount of power (kW hr) required for the process. -->
-	<process name="Package Cabbage into Preserved Food"
+	<process name="Package Cabbage as Preserved Food"
 			tech="1" skill="0"
 			work-time="50"
 			process-time="50"
 			power-required="0.1">
-		<description>Cut and freeze dry cabbage into packed food.</description>
+		<description>Cut and freeze dry cabbage into package food.</description>
 
 		<!-- List of inputs for the process ( parts and resources). -->
 		<inputs>
@@ -31,12 +31,28 @@
 		</outputs>
 	</process>
 
-	<process name="Package Carrot into Preserved Food"
+	<process name="Package leaves as Preserved Food"
 			tech="1" skill="0"
 			work-time="50"
 			process-time="50"
 			power-required="0.1">
-		<description>Cut and freeze dry carrots into packed food.</description>
+		<description>Cut and freeze dry leaves into package food.</description>
+		<inputs>
+			<part name="refrigerator" number="1" />
+			<resource name="leaves" amount="5.0" />
+		</inputs>
+		<outputs>
+			<part name="refrigerator" number="1" />
+			<resource name="food" amount="3.0" />
+		</outputs>
+	</process>
+	
+	<process name="Package Carrot as Preserved Food"
+			tech="1" skill="0"
+			work-time="50"
+			process-time="50"
+			power-required="0.1">
+		<description>Cut and freeze dry carrots into package food.</description>
 		<inputs>
 			<part name="refrigerator" number="1" />
 			<resource name="Carrot" amount="5.0" />
@@ -47,12 +63,12 @@
 		</outputs>
 	</process>
 
-	<process name="Package Swiss Chard into Preserved Food"
+	<process name="Package Swiss Chard as Preserved Food"
 			tech="1" skill="0"
 			work-time="50"
 			process-time="50"
 			power-required="0.1">
-		<description>Cut and freeze dry swiss chard into packed food.</description>
+		<description>Cut and freeze dry swiss chard into package food.</description>
 		<inputs>
 			<part name="refrigerator" number="1" />
 			<resource name="Swiss Chard" amount="5.0" />
@@ -63,12 +79,12 @@
 		</outputs>
 	</process>
 
-	<process name="Package Potatoes into Preserved Food"
+	<process name="Package Potatoes as Preserved Food"
 			tech="1" skill="0"
 			work-time="50"
 			process-time="50"
 			power-required="0.1">
-		<description>Cut and dry potatoes into packed food.</description>
+		<description>Cut and dry potatoes into package food.</description>
 		<inputs>
 			<resource name="Potato" amount="10.0" />
 		</inputs>
@@ -148,7 +164,8 @@
 			work-time="50"
 			process-time="3000"
 			power-required="0.0">
-		<description>Sanitize soybean seeds with sodium hypochlorite. Wash the seeds and soak them in water and
+		<description>Sanitize soybean seeds with sodium hypochlorite. 
+			Wash the seeds and soak them in water and
 			wait for germination. When germinated, freeze dry them. </description>
 		<inputs>
 			<part name="refrigerator" number="1" />
@@ -168,10 +185,14 @@
 			work-time="50"
 			process-time="2000"
 			power-required="0.0">
-		<description>Rinse the quinoa seeds in a bowl. Wash the quinoa seeds to remove the soapy coating known as saponin.
-			Soak in water and drain the water after 30 minutes. Repeat the rinsing and draining process every 8 hours. Put the tray of quinoa in a dark room. Place the cloth back over the quinoa for protection.
-			The quinoa will sprout into a plate full of spiral-shaped roots that are at least one-quarter inch in length.
-			Dry out sprouts for up to 12 hours after fully germinated. </description>
+		<description>Rinse the quinoa seeds in a bowl. Wash the quinoa seeds 
+			to remove the soapy coating known as saponin. Soak in water and 
+			drain the water after 30 minutes. Repeat the rinsing and draining 
+			process every 8 hours. Put the tray of quinoa in a dark room. 
+			Place the cloth back over the quinoa for protection.The quinoa will 
+			sprout into a plate full of spiral-shaped roots that are at least 
+			one-quarter inch in length. Dry out sprouts for up to 12 hours 
+			after fully germinated. </description>
 		<inputs>
 			<resource name="Quinoa" amount="3.0" />
 			<resource name="Water" amount="3.0" />

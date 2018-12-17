@@ -2932,16 +2932,16 @@ public class GoodsManager implements Serializable {
 	 * @param mgr
 	 * @param um
 	 */
-	public static void justReloaded(MarsClock clock, MissionManager mgr, UnitManager um) {
+	public static void justReloaded(MarsClock clock, MissionManager mgr, UnitManager um, PersonConfig pc) {
+		sim = Simulation.instance();
+		simulationConfig = SimulationConfig.instance();
 		unitManager = um;
 		missionManager = mgr;
 		marsClock = clock;
-		sim = Simulation.instance();
-		simulationConfig = SimulationConfig.instance();
 //		buildingConfig = simulationConfig.getBuildingConfiguration();
 		cropConfig = simulationConfig.getCropConfiguration();
 		mealConfig = simulationConfig.getMealConfiguration();
-		personConfig = simulationConfig.getPersonConfiguration();
+		personConfig = pc;
 		vehicleConfig = simulationConfig.getVehicleConfiguration();
 
 	}

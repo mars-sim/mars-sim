@@ -1338,10 +1338,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1) {
+	public static void justReloaded(MasterClock c0, MarsClock c1, BuildingConfig bc) {
 		masterClock = c0;
 		marsClock = c1;
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		buildingConfig = bc;
 		malfunctionMeteoriteImpact = MalfunctionFactory
 				.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 	}

@@ -335,8 +335,8 @@
 
 			<part-package name="package 2" number="1" />
 			<resupply>
-				<resupply-mission name="Mars Direct Base Resupply 2" arrival-time="668.0" />
-				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="1336.0" />
+				<resupply-mission name="Mars Direct Base Resupply 2" arrival-time="669.0" />
+				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="1337.0" />
 			</resupply>
 		</template>
 
@@ -544,7 +544,7 @@
 
 			<part-package name="package 3" number="1" />
 			<resupply>
-				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="668.0" />
+				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="670.0" />
 			</resupply>
 		</template>
 

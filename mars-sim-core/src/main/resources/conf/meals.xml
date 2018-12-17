@@ -36,6 +36,7 @@
 			<ingredient id="2" name="White Onion" proportion="0.1"/>
 			<ingredient id="3" name="Lettuce" proportion="0.09"/>
 			<ingredient id="4" name="Garlic" proportion="0.01"/>
+			<ingredient id="5" name="Leaves" proportion="0.1"/>
 		</main-dish>
 
 		<main-dish id="3" name="Cabbage Carrot Slaw Plate" oil="0.05" salt="0.01" category="meal">
@@ -104,6 +105,7 @@
 			<ingredient id="1" name="Cucumber" proportion="0.2"/>
 			<ingredient id="2" name="Ginger" proportion="0.05"/>
 			<ingredient id="3" name="Soy Sauce" proportion="0.05"/>
+			<ingredient id="4" name="Leaves" proportion="0.2"/>			
 		</main-dish>
 
 		<main-dish id="12" name="Vegetarian Pho with Bean Sprout" oil="0.05" salt="0.01" category="meal">
@@ -111,14 +113,16 @@
 			<ingredient id="1" name="Ginger" proportion="0.1"/>
 			<ingredient id="2" name="Rice Vinegar" proportion="0.05"/>
 			<ingredient id="3" name="Soy Sprout" proportion="0.2"/>
+			<ingredient id="4" name="Leaves" proportion="0.2"/>
 		</main-dish>
 
 		<main-dish id="13" name="Vegetarian Pizza" oil="0.1" salt="0.01" category="meal">
-			<ingredient id="0" name="Pizza Dough" proportion="0.5"/>
+			<ingredient id="0" name="Pizza Dough" proportion="0.4"/>
 			<ingredient id="1" name="Green Bell Pepper" proportion="0.1"/>
 			<ingredient id="2" name="Tomato" proportion="0.05"/>
 			<ingredient id="3" name="White Onion" proportion="0.1"/>
 			<ingredient id="4" name="Morel Mushroom" proportion="0.05"/>
+			<ingredient id="5" name="Leaves" proportion="0.2"/>
 		</main-dish>
 
 		<main-dish id="14" name="Spring Pasta with Fried Morels" oil="0.05" salt="0.01" category="meal">
@@ -144,8 +148,9 @@
 		</main-dish>
 
 		<main-dish id="17" name="Yam Chips" oil="0.15" salt="0.01" category="meal">
-			<ingredient id="0" name="Yam" proportion="0.475"/>
+			<ingredient id="0" name="Yam" proportion="0.375"/>
 			<ingredient id="1" name="Spring Onion" proportion="0.025"/>
+			<ingredient id="2" name="Leaves" proportion="0.1"/>			
 		</main-dish>
 
 		<main-dish id="18" name="Baked Potatoes" oil="0.05" salt="0.01" category="meal">
@@ -167,6 +172,7 @@
 			<ingredient id="0" name="red beet" proportion="0.25"/>
 			<ingredient id="1" name="Peas" proportion="0.15"/>
 			<ingredient id="2" name="White Onion" proportion="0.1"/>
+			<ingredient id="5" name="Leaves" proportion="0.1"/>			
 		</main-dish>
 
 		<main-dish id="22" name="Roasted Radish with Baby Carrots" oil="0.05" salt="0.005" category="meal">
@@ -194,6 +200,7 @@
 			<ingredient id="2" name="Sesame" proportion="0.015"/>
 			<ingredient id="3" name="Spring Onion" proportion="0.025"/>
 			<ingredient id="4" name="Soy Sauce" proportion="0.010"/>
+			<ingredient id="5" name="Leaves" proportion="0.05"/>
 		</main-dish>
 
 		<main-dish id="26" name="Taro Soup" oil="0.15" salt="0.01" category="meal">

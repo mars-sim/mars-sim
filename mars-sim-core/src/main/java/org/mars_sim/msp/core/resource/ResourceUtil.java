@@ -72,6 +72,8 @@ public class ResourceUtil implements Serializable {
 	public static final String TOILET_TISSUE = "toilet tissue";
 	
 	public static final String SOYMILK = "soymilk";
+	
+	public static final String LEAVES = "leaves";
 
 	// Data members.
 	// private Set<AmountResource> resources;// = new TreeSet<AmountResource>();
@@ -123,6 +125,8 @@ public class ResourceUtil implements Serializable {
 	public static int fertilizerID;
 	public static int NaClOID;
 
+	public static int leavesID;
+	
 	public static AmountResource foodAR;
 	public static AmountResource oxygenAR;
 	public static AmountResource waterAR;
@@ -353,6 +357,8 @@ public class ResourceUtil implements Serializable {
 		soymilkID = findAmountResource(SOYMILK).getID();
 	
 		NaClOID = findAmountResource(SODIUM_HYPOCHLORITE).getID();
+		
+		leavesID = findAmountResource(LEAVES).getID();
 		
 		// in AmountResource
 		

@@ -900,11 +900,11 @@ public class Simulation implements ClockListener, Serializable {
 		Role.justReloaded(marsClock);
 		
 		// Re-initialize Structure related class
-		Building.justReloaded(masterClock, marsClock);
-		BuildingManager.justReloaded(masterClock, marsClock);
+		Building.justReloaded(masterClock, marsClock, bc);
+		BuildingManager.justReloaded(masterClock, marsClock, bc, eventManager, relationshipManager);
 		Settlement.justReloaded(marsClock, w, unitManager);		// loadDefaultValues()
 		ChainOfCommand.justReloaded(marsClock, unitManager);
-		GoodsManager.justReloaded(marsClock, missionManager, unitManager);
+		GoodsManager.justReloaded(marsClock, missionManager, unitManager, pc);
 		
 //		System.out.println("Done with Structure instances");
 		
