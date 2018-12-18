@@ -939,7 +939,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			msolCache = msol1;
 
 			// If Person is dead, then skip
-			if (!condition.isDead()) {// health.getDeathDetails() == null) {
+			if (!condition.isDead() && getLifeSupportType() != null) {// health.getDeathDetails() == null) {
 
 				support = getLifeSupportType();
 
@@ -1130,14 +1130,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		Settlement settlement = getSettlement();
 		if (settlement != null) {
 			lifeSupportUnits.add(settlement);
-		} else {
+		} 
+		
+		else {
 			Vehicle vehicle = getVehicle();
 			if ((vehicle != null) && (vehicle instanceof LifeSupportType)) {
 
 				if (BuildingManager.getBuilding(vehicle) != null) {
 					// if the vehicle is inside a garage
 					lifeSupportUnits.add(vehicle.getSettlement());
-				} else {
+				} 
+				
+				else {
 					lifeSupportUnits.add((LifeSupportType) vehicle);
 				}
 			}
@@ -1162,6 +1166,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			result = lifeSupportUnits.get(0);
 		}
 
+//		System.out.println(name + " in " + getLocationTag().getImmediateLocation() + " is on " + result.toString() + " life support.");
 		return result;
 	}
 

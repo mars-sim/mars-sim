@@ -39,7 +39,7 @@ public class MasterClock implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	private static final double PERIOD_IN_MILLISOLS = 1500D / MarsClock.SECONDS_PER_MILLISOL;
+	private static final double PERIOD_IN_MILLISOLS = 1_000D / MarsClock.SECONDS_PER_MILLISOL;
 
 //	private static final int ONE_THOUSAND = 1000;
 

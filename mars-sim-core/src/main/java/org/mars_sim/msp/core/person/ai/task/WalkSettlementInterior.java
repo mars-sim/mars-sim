@@ -319,16 +319,18 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				}
 
 				distanceMeters -= distanceToLocation;
+				
 				changeBuildings(location);
+				
 				if (!walkingPath.isEndOfPath()) {
 					walkingPath.iteratePathLocation();
 				}
-			} else {
+			} 
+			
+			else {
 				// Walk in direction of next path location.
-
 				// Determine direction
 				double direction = determineDirection(location.getXLocation(), location.getYLocation());
-
 				// Determine person's new location at distance and direction.
 				walkInDirection(direction, distanceMeters);
 
@@ -523,7 +525,9 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				if (!hatch.getBuilding().equals(currentBuilding)) {
 					BuildingManager.addPersonOrRobotToBuilding(person, hatch.getBuilding());
 				}
-			} else if (robot != null) {
+			} 
+			
+			else if (robot != null) {
 				Building currentBuilding = BuildingManager.getBuilding(robot);
 				if (!hatch.getBuilding().equals(currentBuilding)) {
 					BuildingManager.addPersonOrRobotToBuilding(robot, hatch.getBuilding());
@@ -537,22 +541,29 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				Building currentBuilding = null;
 				if (person != null) {
 					currentBuilding = BuildingManager.getBuilding(person);
-				} else if (robot != null) {
+				} 
+				
+				else if (robot != null) {
 					currentBuilding = BuildingManager.getBuilding(robot);
 				}
 
 				Building newBuilding = null;
 				if (connector.getBuilding1().equals(currentBuilding)) {
 					newBuilding = connector.getBuilding2();
-				} else if (connector.getBuilding2().equals(currentBuilding)) {
+				} 
+				
+				else if (connector.getBuilding2().equals(currentBuilding)) {
 					newBuilding = connector.getBuilding1();
-				} else {
+				} 
+				
+				else {
 					logger.severe("Connector from " + connector.getBuilding1() + " to " + connector.getBuilding2()
-							+ " not connected to current building " + currentBuilding);
+							+ " was not connected to current building " + currentBuilding);
 //					throw new IllegalStateException("Connector not connected to " + currentBuilding);
 				}
 
 				if (newBuilding != null) {
+					
 					if (person != null)
 						BuildingManager.addPersonOrRobotToBuilding(person, newBuilding);
 					else if (robot != null)

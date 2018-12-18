@@ -871,7 +871,7 @@ public class ChainOfCommand implements Serializable {
 		
 		if (winner != null) {
 			winner.setRole(role);
-			logger.config(winner + " got elected as the " + role.getName() + " in " + winner.getAssociatedSettlement().getName());
+			logger.config("[" + winner.getLocationTag().getLocale() + "]" + winner + " got elected as the " + role.getName() + ".");
 		}
 	}
 	

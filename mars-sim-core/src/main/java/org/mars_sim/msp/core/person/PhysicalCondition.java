@@ -125,8 +125,8 @@ public class PhysicalCondition implements Serializable {
 	private boolean isDehydrated = false;
 	/** True if person is alive. */
 	private boolean alive;
-	/** True if person is thirsty. */
-	private boolean isThirsty;
+//	/** True if person is thirsty. */
+//	private boolean isThirsty;
 	/** True if person is radiation Poisoned. */
 	private boolean isRadiationPoisoned;
 	/** True if person is doing a task that's considered resting. */
@@ -194,6 +194,18 @@ public class PhysicalCondition implements Serializable {
 
 	private NaturalAttributeManager naturalAttributeManager;
 
+	/** List of medications affecting the person. */
+	private List<Medication> medicationList;
+	/** Injury/Illness effecting person. */
+	private Map<Complaint, HealthProblem> problems;
+	/** Record of Illness frequency. */
+	private Map<ComplaintType, Integer> healthLog;
+	/** Record of illness start time. */
+	private Map<ComplaintType, List<String>> healthHistory;
+
+	/** List of all available medical complaints. */
+	private static List<Complaint> allMedicalComplaints;
+	
 	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -212,18 +224,6 @@ public class PhysicalCondition implements Serializable {
 	private static Complaint decompression;
 	private static Complaint suffocation;
 
-	/** List of medications affecting the person. */
-	private List<Medication> medicationList;
-	/** Injury/Illness effecting person. */
-	private Map<Complaint, HealthProblem> problems;
-	/** Record of Illness frequency. */
-	private Map<ComplaintType, Integer> healthLog;
-	/** Record of illness start time. */
-	private Map<ComplaintType, List<String>> healthHistory;
-
-	/** List of all available medical complaints. */
-	private static List<Complaint> allMedicalComplaints;
-	
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 
 	/**
@@ -241,16 +241,7 @@ public class PhysicalCondition implements Serializable {
 
 		if (medicalManager != null) {
 			// Note that this 'if' above is for maven test, or else NullPointerException
-			panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
-			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
-			highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
-			radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
-			dehydration = medicalManager.getDehydration();
-			starvation = medicalManager.getStarvation();
-			freezing = medicalManager.getFreezing();
-			heatStroke = medicalManager.getHeatStroke();
-			decompression = medicalManager.getDecompression();
-			suffocation = medicalManager.getSuffocation();
+			setInstances();
 		}
 		
 //		initialize();
@@ -314,9 +305,27 @@ public class PhysicalCondition implements Serializable {
 
 		dehydrationStartTime = 1000D * (personConfig.getDehydrationStartTime() * bodyMassDeviation);
 	
-
 	}
 
+	/**
+	 * Sets instances
+	 */
+	public static void setInstances() {
+		allMedicalComplaints = medicalManager.getAllMedicalComplaints();
+		
+		panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
+		depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
+		highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+		radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
+		dehydration = medicalManager.getDehydration();
+		starvation = medicalManager.getStarvation();
+		
+		freezing = medicalManager.getFreezing();
+		heatStroke = medicalManager.getHeatStroke();
+		decompression = medicalManager.getDecompression();
+		suffocation = medicalManager.getSuffocation();
+	}
+	
 	/**
 	 * Loads the values
 	 */
@@ -557,30 +566,27 @@ public class PhysicalCondition implements Serializable {
 	 * @param support
 	 */
 	public void checkLifeSupport(double time, LifeSupportType support) {
-		String loc0 = person.getLocationTag().getLocale();
-		String loc1 = person.getLocationTag().getImmediateLocation();
-		
-		try {
-			if (consumeOxygen(support, o2_consumption * (time / 1000D)))
+		if (time > 0) {
+			String loc0 = person.getLocationTag().getLocale();
+			String loc1 = person.getLocationTag().getImmediateLocation();
+//			System.out.println("tims : " + time + "  o2_consumption : " + o2_consumption);
+			try {
+				if (lackOxygen(support, o2_consumption * (time / 1000D)))
+					LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
+							"[" + loc0 + "] " + name + " in " + loc1 + " reported lack of oxygen.", null);
+				if (badAirPressure(support, minimum_air_pressure))
+					LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
+							"[" + loc0 + "] " + name + " in " + loc1 + " reported non-optimal air pressure.", null);
+				if (badTemperature(support, min_temperature, max_temperature))
+					LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
+							"[" + loc0 + "] " + name + " in " + loc1 + " reported non-optimal temperature.", null);
+				
+			} catch (Exception e) {
+				e.printStackTrace();
 				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
-						"[" + loc0 + "] " + name + " in " + loc1 + " reported lack of oxygen.", null);
-//			 if (consumeWater(support, h2o_consumption * (time / 1000D)))
-//			 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, name + " has
-//			 insufficient water.", null);
-			if (requireAirPressure(support, minimum_air_pressure))
-				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
-						"[" + loc0 + "] " + name + " in " + loc1 + " reported non-optimal air pressure.", null);
-			if (requireTemperature(support, min_temperature, max_temperature))
-				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
-						"[" + loc0 + "] " + name + " in " + loc1 + " reported non-optimal temperature.", null);
-
-			// TODO: how to run to another building/location
-		} catch (Exception e) {
-			e.printStackTrace();
-			LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
-					"[" + loc0 + "] " + name + " in " + loc1 + " reported anomaly in the life support system.", null);
+						"[" + loc0 + "] " + name + " in " + loc1 + " reported anomaly in the life support system.", null);
+			}
 		}
-
 	}
 
 	/**
@@ -1048,8 +1054,8 @@ public class PhysicalCondition implements Serializable {
 
 		List<Complaint> result = new ArrayList<Complaint>(0);
 
-		if (allMedicalComplaints == null)
-			allMedicalComplaints = medicalManager.getAllMedicalComplaints();
+//		if (allMedicalComplaints == null)
+//			allMedicalComplaints = medicalManager.getAllMedicalComplaints();
 
 		for (Complaint complaint : allMedicalComplaints) {
 			// Check each possible medical complaint.
@@ -1320,16 +1326,21 @@ public class PhysicalCondition implements Serializable {
 	 * @return new problem added.
 	 * @throws Exception if error consuming oxygen.
 	 */
-	private boolean consumeOxygen(LifeSupportType support, double amount) {
-		if (support == null)
-			System.out.println(person + " in " + person.getLocationTag().getImmediateLocation() + " has no life support.");
-		double amountRecieved = support.provideOxygen(amount);
-		// Track the amount consumed
-		person.addConsumptionTime(0, amountRecieved);
+	private boolean lackOxygen(LifeSupportType support, double amount) {
+		if (amount > 0) {
+			if (support == null)
+				System.out.println(person + " in " + person.getLocationTag().getImmediateLocation() + " has no life support.");
+			double amountRecieved = support.provideOxygen(amount);
+//			System.out.println("amount : " + amount  + " amountRecieved : " + amountRecieved);
+			// Track the amount consumed
+			person.addConsumptionTime(0, amountRecieved);
+			// TODO: how to model how much oxygen we need properly ?			
+			double required = amount / 2D; 
+
+			return checkResourceConsumption(amountRecieved, required, MIN_VALUE, suffocation);
+		}
 		
-		double required = amount / 2D; 
-		// TODO: how to model how much oxygen we need properly ?
-		return checkResourceConsumption(amountRecieved, required, MIN_VALUE, suffocation);
+		return false;
 	}
 
 	/**
@@ -1345,9 +1356,11 @@ public class PhysicalCondition implements Serializable {
 	private boolean checkResourceConsumption(double actual, double required, int bounds, Complaint complaint) {
 
 		boolean newProblem = false;
-		if ((bounds == MIN_VALUE) && (actual < required))
+		if (actual - required > 0.000_1 || required - actual > 0.000_1)
+			newProblem = false;
+		else if ((bounds == MIN_VALUE) && (actual < required))
 			newProblem = true;
-		if ((bounds == MAX_VALUE) && (actual > required))
+		else if ((bounds == MAX_VALUE) && (actual > required))
 			newProblem = true;
 
 		if (newProblem) {
@@ -1355,9 +1368,11 @@ public class PhysicalCondition implements Serializable {
 			String loc1 = person.getLocationTag().getImmediateLocation();
 			String reading = "";
 			String unit = "";
+			double decimals = 10.0;
 			if (complaint.getType() == ComplaintType.SUFFOCATION) {
 				reading = "Oxygen sensor";
 				unit = " kg";
+				decimals = 10000.0;
 			}
 			else if (complaint.getType() == ComplaintType.DECOMPRESSION) {
 				reading = "Pressure sensor";
@@ -1371,10 +1386,9 @@ public class PhysicalCondition implements Serializable {
 				reading = "High Temperature sensor";
 				unit = " C";
 			}
-			String s = "[" + loc0 + "] " + reading + " triggered.   Affected : " + name + "   Location : " + loc1 
-					+ "   Actual : " + Math.round(actual*100.0)/100.0 + unit + "   Required :" + Math.round(required*100.0)/100.0 + unit + ".";
+			String s = "[" + loc0 + "] " + reading + " triggered.   Affected : " + name + "   Immediate Location : " + loc1 
+					+ "   Actual : " + Math.round(actual*decimals)/decimals + unit + "   Required : " + Math.round(required*decimals)/decimals + unit;
 			LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName, s, null);
-//			System.out.println(s);
 			
 			addMedicalComplaint(complaint);
 			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
@@ -1399,7 +1413,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param pressure minimum air pressure person requires (in Pa)
 	 * @return new problem added.
 	 */
-	private boolean requireAirPressure(LifeSupportType support, double pressure) {
+	private boolean badAirPressure(LifeSupportType support, double pressure) {
 		return checkResourceConsumption(support.getAirPressure(), pressure, MIN_VALUE, decompression);
 	}
 
@@ -1410,7 +1424,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param temperature minimum temperature person requires (in degrees Celsius)
 	 * @return new problem added.
 	 */
-	private boolean requireTemperature(LifeSupportType support, double minTemperature, double maxTemperature) {
+	private boolean badTemperature(LifeSupportType support, double minTemperature, double maxTemperature) {
 		boolean freeze = checkResourceConsumption(support.getTemperature(), minTemperature, MIN_VALUE, freezing);
 		boolean hot = checkResourceConsumption(support.getTemperature(), maxTemperature, MAX_VALUE, heatStroke);
 		return freeze || hot;
@@ -1898,18 +1912,9 @@ public class PhysicalCondition implements Serializable {
 		marsClock = c1;
 		
 		medicalManager = sim.getMedicalManager();
-		panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
-		depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);	
-		highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);	
-		radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
-		dehydration = medicalManager.getDehydration();
-		starvation = medicalManager.getStarvation();
 		
-		freezing = medicalManager.getFreezing();
-		heatStroke = medicalManager.getHeatStroke();
-		decompression = medicalManager.getDecompression();
-		suffocation = medicalManager.getSuffocation();
-		
+		setInstances();
+	
 		loadStaticValues();	
 	}
 	
