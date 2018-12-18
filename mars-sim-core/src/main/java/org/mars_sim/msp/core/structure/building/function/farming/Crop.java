@@ -50,7 +50,6 @@ public class Crop implements Serializable {
 	 */
 	public static final double PHYSIOLOGICAL_LIMIT = 0.9; // 1 is max. if set to 1, a lot of lights will toggle on and
 															// off undesirably.
-	
 	public static final double RATIO_LEAVES = .75;
 	
 	/**
@@ -140,6 +139,8 @@ public class Crop implements Serializable {
 	private boolean hasSeed = false;
 	/** True if this crop is a seeded plant. e.g. the sesame plant */
 	private boolean isSeedPlant = false;
+	/** The total amount of light received by this crop. */	
+	private double effectivePAR;
 	/** The ratio between inedible and edible biomass */
 	private double massRatio;
 	/** The maximum possible harvest for this crop [in kg]. */
@@ -202,7 +203,8 @@ public class Crop implements Serializable {
 	private double edibleBiomass;
 	
 	/** The cache values of the pastor environment factors influencing the crop */
-	private Double[] environment = new Double[] { 1.0, // light
+	private Double[] environmentalFactor = new Double[] { 
+			1.0, // light
 			1.0, // fertilizer
 			1.0, // temperature
 			1.0, // water
@@ -560,7 +562,7 @@ public class Crop implements Serializable {
 	 */
 	public double getHealth() {
 		double env_factor = 0;
-		for (double m : environment) {
+		for (double m : environmentalFactor) {
 			env_factor = env_factor + m;
 		}
 		if (env_factor / 5D > 1.1)
@@ -663,7 +665,7 @@ public class Crop implements Serializable {
 						logger.info(unit.getName() + " closed out the final harvest of " + capitalizedCropName + " in "
 								+ farmName + " at " + settlement.getName());
 					
-					
+					// Calculate the amount of leaves and crop wastes that are generated
 					compueteLeavesCropWaste(lastHarvest);
 					
 					//  Check to see if a botany lab is available
@@ -711,7 +713,7 @@ public class Crop implements Serializable {
 							Storage.storeAnResource(modifiedHarvest, cropID, inv, sourceName + "::addWork");
 						}
 
-						
+						// Calculate the amount of leaves and crop wastes that are generated
 						compueteLeavesCropWaste(modifiedHarvest);
 						
 						remainingHarvest -= modifiedHarvest;
@@ -768,6 +770,32 @@ public class Crop implements Serializable {
 		marsClock = c1;
 	}
 	
+	public void updateUsage() {
+//		if (cumulative_water_usage > 0) {
+			// Records the water usage per crop in the farm
+			farm.addCropUsage(cropName, cumulative_water_usage, currentSol, 0);
+//			System.out.println("cumulative_water_usage : " + cumulative_water_usage);
+			// Reset the water usage
+			cumulative_water_usage = 0;
+//		}
+
+//		if (cumulative_o2 > 0) {
+			// Records the CO2 consumption/generation in the farm
+			farm.addCropUsage(cropName, cumulative_o2, currentSol, 1);
+//			System.out.println("cumulative_o2 : " + cumulative_o2);
+			// Reset the consumption/generation
+			cumulative_o2 = 0;
+//		}
+
+//		if (cumulative_co2 > 0) {
+			// Records the oxygen consumption/generation in the farm
+			farm.addCropUsage(cropName, cumulative_co2, currentSol, 2);
+//			System.out.println("cumulative_co2 : " + cumulative_co2);
+			// Reset the consumption/generation
+			cumulative_co2 = 0;
+//		}
+	}
+	
 	/**
 	 * Time passing for crop.
 	 * 
@@ -782,7 +810,7 @@ public class Crop implements Serializable {
 
 		growingTimeCompleted += time;
 
-		if (current > 1 && current < length - 1) {
+//		if (current > 1 && current < length - 1) {
 			// From phase 2 to harvesting phase
 			if (time > 0D) {
 				// growingTimeCompleted += time;		
@@ -811,26 +839,8 @@ public class Crop implements Serializable {
 					// Resets the daily harvest back to zero
 					dailyHarvest = 0;
 					
-					if (cumulative_water_usage > 0) {
-						// Records the water usage per crop in the farm
-						farm.addCropWaterUsage(cropName, cumulative_water_usage / growingArea);
-						// Reset the water usage
-						cumulative_water_usage = 0;
-					}
-
-					if (cumulative_o2 > 0) {
-						// Records the CO2 consumption/generation in the farm
-						farm.addO2Generated(cropName, cumulative_o2 / growingArea);
-						// Reset the consumption/generation
-						cumulative_o2 = 0;
-					}
-
-					if (cumulative_co2 > 0) {
-						// Records the oxygen consumption/generation in the farm
-						farm.addCO2Consumed(cropName, cumulative_co2 / growingArea);
-						// Reset the consumption/generation
-						cumulative_co2 = 0;
-					}
+					// Update the resource usage
+					updateUsage();
 
 					if (dailyHarvest < 0) {
 						phaseType = PhaseType.FINISHED;
@@ -875,7 +885,7 @@ public class Crop implements Serializable {
 				return;
 			}
 			
-		}
+//		}
 
 		else if (phaseType == PhaseType.FINISHED) {
 			dailyHarvest = 0;
@@ -935,7 +945,8 @@ public class Crop implements Serializable {
 			if (uPAR > 40) { // if sunlight is available
 				turnOffLighting();
 				cumulativeDailyPAR = cumulativeDailyPAR + PAR_interval;
-				
+				// Gets the effectivePAR
+				effectivePAR = PAR_interval;
 //				 logger.info(cropType.getName() + "\tcumulativeDailyPAR : " +
 //				 fmt.format(cumulativeDailyPAR) + "\tdelta_PAR_sunlight : "+
 //				 fmt.format(delta_PAR_sunlight));
@@ -977,6 +988,9 @@ public class Crop implements Serializable {
 				cumulativeDailyPAR = cumulativeDailyPAR + delta_PAR_supplied + PAR_interval;
 				// [mol /m^2 /d]
 				
+				// Gets the effectivePAR
+				effectivePAR = delta_PAR_supplied + PAR_interval;
+						
 //				 logger.info(cropType.getName() + "\tPAR_outstanding_persqm_daily : " +
 //				 fmt.format(PAR_outstanding_persqm_daily) + "\tdelta_PAR_outstanding : " +
 //				 fmt.format(delta_PAR_outstanding) + "\tdelta_kW : "+ fmt.format(delta_kW) +
@@ -1011,12 +1025,12 @@ public class Crop implements Serializable {
 			lightModifier = lightModifier / fractionalGrowingTimeCompleted;
 		}
 
-		environment[0] = .33 + .33 * lightModifier + .33 * environment[0];
+		environmentalFactor[0] = .33 + .33 * lightModifier + .33 * environmentalFactor[0];
 		// use .2 instead of .5 since it's normal for crop to go through day/night cycle
-		if (environment[0] > 1.5)
-			environment[0] = 1.5;
-		else if (environment[0] < 0.5)
-			environment[0] = 0.5;
+		if (environmentalFactor[0] > 1.5)
+			environmentalFactor[0] = 1.5;
+		else if (environmentalFactor[0] < 0.5)
+			environmentalFactor[0] = 0.5;
 
 		return uPAR;
 
@@ -1038,9 +1052,9 @@ public class Crop implements Serializable {
 			// TODO: implement optimal growing temperature for each particular crop
 			temperatureModifier = 1D;
 
-		environment[2] = .5 * temperatureModifier + .5 * environment[2];
-		if (environment[2] > 1.1)
-			environment[2] = 1.1;
+		environmentalFactor[2] = .5 * temperatureModifier + .5 * environmentalFactor[2];
+		if (environmentalFactor[2] > 1.1)
+			environmentalFactor[2] = 1.1;
 
 	}
 
@@ -1051,8 +1065,7 @@ public class Crop implements Serializable {
 	 * @param time
 	 */
 	public void computeWaterFertilizer(double needFactor, double time) {
-
-		// Calculate water usage
+		// Calculate water usage kg per sol
 		double waterRequired =  0.5 * needFactor * (averageWaterNeeded * time / 1_000D) * growingArea; // fractionalGrowingTimeCompleted
 //		System.out.println(getCropType() + "  waterRequired : " + waterRequired);
 		// Determine the amount of grey water available.
@@ -1071,6 +1084,7 @@ public class Crop implements Serializable {
 //			totalWaterUsed = greyWaterUsed;
 			if (greyWaterUsed > MIN)
 				Storage.retrieveAnResource(greyWaterUsed, greywaterID, inv, true);
+			// TODO: track grey water as well ?
 			waterModifier = 1D;
 		}
 
@@ -1079,6 +1093,7 @@ public class Crop implements Serializable {
 			greyWaterUsed = greyWaterAvailable;
 			if (greyWaterUsed > MIN)
 				Storage.retrieveAnResource(greyWaterUsed, greywaterID, inv, true);
+			// TODO: track grey water as well ?
 			waterRequired = waterRequired - greyWaterUsed;
 			double waterAvailable = inv.getAmountResourceStored(waterID, false);
 			
@@ -1104,7 +1119,7 @@ public class Crop implements Serializable {
 
 			double fertilizerAvailable = inv.getAmountResourceStored(fertilizerID, false);
 			// The amount of fertilizer to be used depends on the ratio of the grey water used
-			double fertilizerRequired = FERTILIZER_NEEDED_WATERING * growingArea * time * greyWaterUsed / (greyWaterUsed + waterUsed);
+			double fertilizerRequired = FERTILIZER_NEEDED_WATERING * time * greyWaterUsed / (greyWaterUsed + waterUsed);
 			double fertilizerUsed = fertilizerRequired;
 
 			if (fertilizerUsed > fertilizerAvailable) {
@@ -1119,9 +1134,9 @@ public class Crop implements Serializable {
 				Storage.retrieveAnResource(fertilizerUsed, fertilizerID, inv, true);
 			}
 
-			environment[1] = .5 * fertilizerModifier + .5 * environment[1];
-			if (environment[1] > 1.1)
-				environment[1] = 1.1;
+			environmentalFactor[1] = .5 * fertilizerModifier + .5 * environmentalFactor[1];
+			if (environmentalFactor[1] > 1.1)
+				environmentalFactor[1] = 1.1;
 
 //			totalWaterUsed = greyWaterAvailable + waterUsed;
 
@@ -1139,11 +1154,11 @@ public class Crop implements Serializable {
 		// Assume an universal rate of water vapor evaporation rate of 5%
 		// farm.addMoisture(totalWaterUsed*.05);
 		// Record the amount of water taken up by the crop
-		cumulative_water_usage = cumulative_water_usage + waterUsed * .95;
+		cumulative_water_usage = cumulative_water_usage + waterUsed;// * .95;
 //		System.out.println(getCropType() + " waterUsed : " + waterUsed + "  cumulative_water_usage : " + cumulative_water_usage);
-		environment[3] = .5 * waterModifier + .5 * environment[3];
-		if (environment[3] > 1.1)
-			environment[3] = 1.1;
+		environmentalFactor[3] = .5 * waterModifier + .5 * environmentalFactor[3];
+		if (environmentalFactor[3] > 1.1)
+			environmentalFactor[3] = 1.1;
 
 	}
 
@@ -1156,19 +1171,19 @@ public class Crop implements Serializable {
 	 * @param time
 	 */
 	public void computeGases(double uPAR, double needFactor, double time) {
-
-		// Calculate O2 and CO2 usage
+		
+		// Note: uPAR includes both sunlight and artificial light
+		// Calculate O2 and CO2 usage kg per sol
 		double o2Modifier = 0, co2Modifier = 0;
 		double fudge_factor = 0;
 
 		if (uPAR < 40) {
-			// during the night
 			if (uPAR == 0)
-				fudge_factor = .5;
+				fudge_factor = 5;
 			else if (uPAR == 40)
-				fudge_factor = 0.25;
+				fudge_factor = 2.5;
 			else
-				fudge_factor = .5 - .125 * uPAR / 40;
+				fudge_factor = 5 - 1.25 * uPAR / 40;
 			double o2Required = fractionalGrowingTimeCompleted * fudge_factor * needFactor
 					* (averageOxygenNeeded * time / 1000) * growingArea;
 			double o2Available = inv.getAmountResourceStored(oxygenID, false);
@@ -1184,9 +1199,9 @@ public class Crop implements Serializable {
 
 			o2Modifier = o2Used / o2Required;
 
-			environment[4] = .5 * o2Modifier + .5 * environment[4];
-			if (environment[4] > 1.1)
-				environment[4] = 1.1;
+			environmentalFactor[4] = .5 * o2Modifier + .5 * environmentalFactor[4];
+			if (environmentalFactor[4] > 1.1)
+				environmentalFactor[4] = 1.1;
 
 			// Determine the amount of co2 generated via gas exchange.
 			double cO2Gen = o2Used * CO2_TO_O2_RATIO;
@@ -1204,7 +1219,7 @@ public class Crop implements Serializable {
 
 		else {
 			// during the day
-			fudge_factor = 0.5 + (uPAR - 40) / 100D;
+			fudge_factor = (uPAR - 40) / 10D;
 			// TODO: gives a better modeling of how the amount of light available will
 			// trigger photosynthesis that converts co2 to o2
 			// Determine harvest modifier by amount of carbon dioxide available.
@@ -1228,9 +1243,9 @@ public class Crop implements Serializable {
 
 			co2Modifier = cO2Used / cO2Req;
 
-			environment[5] = .5 * co2Modifier + .5 * environment[5];
-			if (environment[5] > 1.1)
-				environment[5] = 1.1;
+			environmentalFactor[5] = .5 * co2Modifier + .5 * environmentalFactor[5];
+			if (environmentalFactor[5] > 1.1)
+				environmentalFactor[5] = 1.1;
 
 			// 6CO2 + 6H2O + sunlight -> C6H12O6 + 6O2
 			//
@@ -1295,8 +1310,9 @@ public class Crop implements Serializable {
 		double uPAR = 0;
 
 		if (cropCategoryType == CropCategoryType.FUNGI) {// cropName.contains("mushroom")) {
-			environment[0] = 1D;
-			// set uPAR to zero since mushrooms are fungi and consume O2 and release CO2
+			environmentalFactor[0] = 1D;
+			// Set uPAR to zero since mushrooms are fungi, neeed no sunlight
+			// Fungi consumes O2 and release CO2
 			uPAR = 0;
 		} else
 			uPAR = computeLight(time);
@@ -1308,20 +1324,20 @@ public class Crop implements Serializable {
 		computeWaterFertilizer(growthFactor, time);
 
 		// STEP 4 : COMPUTE THE EFFECTS OF GASES (O2 and CO2 USAGE)
-		computeGases(uPAR, growthFactor, time);
+		computeGases(effectivePAR, growthFactor, time);
 		// Note that mushrooms are fungi and consume O2 and release CO2
 
 		// TODO: add air pressure modifier in future
 
 		// Tune harvestModifier
 		if (phaseNum > 2 && phaseNum < length - 2) {
-			harvestModifier = .6 * harvestModifier + .4 * harvestModifier * environment[0];
+			harvestModifier = .6 * harvestModifier + .4 * harvestModifier * environmentalFactor[0];
 		} else if (phaseNum == 2)
-			harvestModifier = .8 * harvestModifier + .2 * harvestModifier * environment[0];
+			harvestModifier = .8 * harvestModifier + .2 * harvestModifier * environmentalFactor[0];
 
-		harvestModifier = .25 * harvestModifier + .15 * harvestModifier * environment[1]
-				+ .15 * harvestModifier * environment[2] + .15 * harvestModifier * environment[3]
-				+ .15 * harvestModifier * environment[4] + .15 * harvestModifier * environment[5];
+		harvestModifier = .25 * harvestModifier + .15 * harvestModifier * environmentalFactor[1]
+				+ .15 * harvestModifier * environmentalFactor[2] + .15 * harvestModifier * environmentalFactor[3]
+				+ .15 * harvestModifier * environmentalFactor[4] + .15 * harvestModifier * environmentalFactor[5];
 
 		// TODO: research how the above 6 factors may affect crop growth for different
 		// crop categories

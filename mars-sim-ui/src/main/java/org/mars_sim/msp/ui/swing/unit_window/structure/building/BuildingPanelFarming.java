@@ -191,7 +191,7 @@ implements MouseListener {
 		waterUsageLabel.setToolTipText(Msg.getString("BuildingPanelFarming.waterUsage.tooltip"));
 		springPanel.add(waterUsageLabel);
 		
-		waterUsageCache = farm.computeWaterUsage();
+		waterUsageCache = farm.computeUsage(0);
 		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		waterUsageTF = new WebTextField(Msg.getString("BuildingPanelFarming.waterUsage", waterUsageCache + ""));
 		waterUsageTF.setEditable(false);
@@ -204,7 +204,7 @@ implements MouseListener {
 		o2Label.setToolTipText(Msg.getString("BuildingPanelFarming.o2.tooltip"));
 		springPanel.add(o2Label);
 		
-		o2Cache = farm.computeTotalO2Generated();
+		o2Cache = farm.computeUsage(1);
 		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		o2TF = new WebTextField(Msg.getString("BuildingPanelFarming.o2", o2Cache + ""));
 		o2TF.setEditable(false);
@@ -217,7 +217,7 @@ implements MouseListener {
 		co2Label.setToolTipText(Msg.getString("BuildingPanelFarming.co2.tooltip"));
 		springPanel.add(co2Label);
 		
-		co2Cache = farm.computeTotalCO2Consumed();
+		co2Cache = farm.computeUsage(2);
 		WebPanel wrapper6 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		co2TF = new WebTextField(Msg.getString("BuildingPanelFarming.co2", co2Cache + ""));
 		co2TF.setEditable(false);
@@ -595,21 +595,21 @@ implements MouseListener {
 		}
 
 		// Update the average water usage
-		double new_water = farm.computeWaterUsage();
+		double new_water = farm.computeUsage(0);
 		if (waterUsageCache != new_water) {
 			waterUsageCache = new_water;
 			waterUsageTF.setText(Msg.getString("BuildingPanelFarming.waterUsage", waterUsageCache));
 		}
 
 		// Update the average O2 generated
-		double new_o2 = farm.computeTotalO2Generated();
+		double new_o2 = farm.computeUsage(1);
 		if (o2Cache != new_o2) {
 			o2Cache = new_o2;
 			o2TF.setText(Msg.getString("BuildingPanelFarming.o2", o2Cache));
 		}
 
 		// Update the average CO2 consumed
-		double new_co2 = farm.computeTotalCO2Consumed();
+		double new_co2 = farm.computeUsage(2);
 		if (co2Cache != new_co2) {
 			co2Cache = new_co2;
 			co2TF.setText(Msg.getString("BuildingPanelFarming.co2", co2Cache));

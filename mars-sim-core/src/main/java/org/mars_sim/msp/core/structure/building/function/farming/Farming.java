@@ -121,15 +121,19 @@ public class Farming extends Function implements Serializable {
 	/** A map of all the crops ever planted in this greenhouse. */
 	private Map<Integer, String> cropHistory;
 	
-	private List<String> inspectionList, cleaningList;
+	private List<String> inspectionList;
+	
+	private List<String> cleaningList;
 
-	private Map<String, Integer> cleaningMap, inspectionMap;
-
-	private Map<String, List<Double>> cropDailyWaterUsage;
-
-	private Map<String, List<Double>> cropDailyO2Generated;
-
-	private Map<String, List<Double>> cropDailyCO2Consumed;
+	private Map<String, Integer> cleaningMap;
+	
+	private Map<String, Integer> inspectionMap;
+	/** The daily water usage on each crop in this facility [kg/sol]. */
+	private Map<String, Map<Integer, Double>> cropDailyWaterUsage;
+	/** The daily O2 generated on each crop in this facility [kg/sol]. */
+	private Map<String, Map<Integer, Double>> cropDailyO2Generated;
+	/** The daily CO2 consumed on each crop in this facility [kg/sol]. */
+	private Map<String, Map<Integer, Double>> cropDailyCO2Consumed;
 	/** The daily water usage in this facility [kg/sol]. */
 	private Map<Integer, Double> dailyWaterUsage;
 	
@@ -173,8 +177,11 @@ public class Farming extends Function implements Serializable {
 //		plantedCrops = new ArrayList<>();
 		cropListInQueue = new ArrayList<>();
 		crops = new CopyOnWriteArrayList<>();
-		dailyWaterUsage = new HashMap<>();
 		cropHistory = new HashMap<>();
+		dailyWaterUsage = new HashMap<>();
+		cropDailyWaterUsage = new HashMap<>();
+		cropDailyO2Generated = new HashMap<>();
+		cropDailyCO2Consumed = new HashMap<>();
 		
 		BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 //		surface = Simulation.instance().getMars().getSurfaceFeatures();
@@ -210,9 +217,7 @@ public class Farming extends Function implements Serializable {
 		// TODO: write codes to incorporate the idea of bee growing
 		// beeGrowing = new BeeGrowing(this);
 
-		cropDailyWaterUsage = new HashMap<>();
-		cropDailyO2Generated = new HashMap<>();
-		cropDailyCO2Consumed = new HashMap<>();
+
 
 	}
 
@@ -860,6 +865,8 @@ public class Farming extends Function implements Serializable {
 			// Limit the size of the dailyWaterUsage to x key value pairs
 			if (dailyWaterUsage.size() > MAX_NUM_SOLS)
 				dailyWaterUsage.remove(solElapsed - MAX_NUM_SOLS);
+			
+			// TODO: will need to limit the size of the other usage maps
 		}
 
 		// Determine the production level.
@@ -1379,93 +1386,118 @@ public class Farming extends Function implements Serializable {
 	 * Records the average water usage on a particular crop
 	 * 
 	 * @param cropName
-	 * @param usage    average water consumption in kg/m^2/sol
+	 * @param usage    average water consumption in kg/sol
 	 */
-	public void addCropWaterUsage(String cropName, double usage) {
-		if (cropDailyWaterUsage.containsKey(cropName)) {
-			List<Double> cropWaterData = cropDailyWaterUsage.get(cropName);
-			cropWaterData.add(usage);
+	public void addCropUsage(String cropName, double usage, int sol, int type) {
+		Map<String, Map<Integer, Double>>  map0 = null;
+		
+		if (type == 0)
+			map0 = cropDailyWaterUsage;
+		else if (type == 1)
+			map0 = cropDailyO2Generated;
+		else if (type == 2)
+			map0 = cropDailyCO2Consumed;
+				
+		if (map0.containsKey(cropName)) {
+			Map<Integer, Double> map = map0.get(cropName);
+			if (map.containsKey(sol)) {
+				double old = map.get(sol);
+				map.put(sol, old + usage);
+			}
+			else {
+				map.put(sol, usage);
+			}
+			map0.put(cropName, map);
 		} else {
-			List<Double> cropWaterData = new ArrayList<>();
-			cropWaterData.add(usage);
-			cropDailyWaterUsage.put(cropName, cropWaterData);
-		}
-	}
-
-	/**
-	 * Records the average O2 generation on a particular crop
-	 * 
-	 * @param cropName
-	 * @param gen      average O2 generated in kg/m^2/sol
-	 */
-	public void addO2Generated(String cropName, double gen) {
-		if (cropDailyO2Generated.containsKey(cropName)) {
-			List<Double> o2Data = cropDailyO2Generated.get(cropName);
-			o2Data.add(gen);
-		} else {
-			List<Double> o2Data = new ArrayList<>();
-			o2Data.add(gen);
-			cropDailyO2Generated.put(cropName, o2Data);
-		}
-	}
-
-	/**
-	 * Records the average CO2 consumption on a particular crop
-	 * 
-	 * @param cropName
-	 * @param used     average CO2 consumed in kg/m^2/sol
-	 */
-	public void addCO2Consumed(String cropName, double used) {
-		if (cropDailyCO2Consumed.containsKey(cropName)) {
-			List<Double> co2Data = cropDailyCO2Consumed.get(cropName);
-			co2Data.add(used);
-		} else {
-			List<Double> co2Data = new ArrayList<>();
-			co2Data.add(used);
-			cropDailyCO2Consumed.put(cropName, co2Data);
+			Map<Integer, Double> map = new HashMap<>();
+			map.put(sol, usage);
+			map0.put(cropName, map);
 		}
 	}
 
 	/**
 	 * Computes the average water usage on a particular crop
 	 * 
-	 * @return average water consumption in kg/m^2/sol
+	 * @return average water consumption in kg/sol
 	 */
-	public double computeCropWaterUsage(String cropName) {
-		if (cropDailyWaterUsage.containsKey(cropName)) {
+	public double computeUsage(int type, String cropName) {
+		// Note: ithe value is kg per square meter per sol
+		Map<String, Map<Integer, Double>>  map0 = null;
+		
+		if (type == 0)
+			map0 = cropDailyWaterUsage;
+		else if (type == 1)
+			map0 = cropDailyO2Generated;
+		else if (type == 2)
+			map0 = cropDailyCO2Consumed;
+		
+		if (map0.containsKey(cropName)) {
+		
+			Map<Integer, Double> map = map0.get(cropName);
+			
+			boolean quit = false;
+			int today = solCache;
+			int sol = solCache;
 			double sum = 0;
-			List<Double> cropWaterData = cropDailyWaterUsage.get(cropName);
-			int size = cropWaterData.size();
-			for (double i : cropWaterData) {
-				sum += i;
+			double numSols = 0;
+			double cumulativeWeight = 0.75;
+			double weight = 1;
+	
+			while (!quit) {
+				if (map.size() == 0) {
+					quit = true;
+					return 0;
+				}
+
+				else if (map.containsKey(sol)) {
+					if (today == sol) {
+						// If it's getting the today's average, one may 
+						// project the full-day usage based on the usage up to this moment 
+						weight = .15;
+						sum = sum + map.get(sol) * 1_000D / marsClock.getMillisol() * weight ;
+					}
+					
+					else {
+						sum = sum + map.get(sol) * weight;
+					}
+					
+					cumulativeWeight = cumulativeWeight + weight;
+					weight = (numSols + 1) / (cumulativeWeight + 1);
+					numSols++;
+					sol--;
+				}
+				
+				else {
+					quit = true;
+				}
+				
+				// Get the last x sols only
+				if (numSols > MAX_NUM_SOLS)
+					quit = true;
+				
+//				System.out.println("Farming.  type "  + type + " - " + cropName + "   sum : " + sum + "   cumulativeWeight : "  + cumulativeWeight);
 			}
-			if (size == 0)
-				return 0;
-			else
-				return Math.round(sum / size * 1000.0) / 1000.0;
+			
+			return sum/cumulativeWeight; 
+		
 		}
+		
 		return 0;
 	}
 	
 	/**
-	 * Computes the average water usage on all crops
+	 * Computes the water usage on all crops
 	 * 
-	 * @return average water consumption in kg/m^2/sol
+	 * @return water consumption in kg/m^2/sol
 	 */
-	public double computeWaterUsage() {
+	public double computeUsage(int type) {
+		// Note: ithe value is kg per square meter per sol
 		double sum = 0;
-		int size = 0;
-		for (CropType ct : CropConfig.getCropTypes()) {
-			String n = ct.getName();
-			Double ave = computeCropWaterUsage(n);
-			if (ave > 0)
-				size++;
-			sum += ave;
+		for (Crop c : crops) {
+			sum += computeUsage(type, c.getCropName());
 		}
-		if (size == 0)
-			return 0;
-		else
-			return Math.round(sum / size * 1000.0) / 1000.0;
+		
+		return Math.round(sum * 1000.0) / 1000.0;
 	}
 
 	/**
@@ -1493,24 +1525,24 @@ public class Farming extends Function implements Serializable {
 				if (today == sol) {
 					// If it's getting the today's average, one may 
 					// project the full-day usage based on the usage up to this moment 
-					weight = .25;
+					weight = .15;
 					sum = sum + dailyWaterUsage.get(sol) * 1_000D / marsClock.getMillisol() * weight ;
 				}
 				
 				else {
 					sum = sum + dailyWaterUsage.get(sol) * weight;
 				}
-			}
-			
-			else if (dailyWaterUsage.containsKey(sol - 1)) {
-				sum = sum + dailyWaterUsage.get(sol - 1) * weight;
+				
+				cumulativeWeight = cumulativeWeight + weight;
+				weight = (numSols + 1) / (cumulativeWeight + 1);
+				numSols++;
 				sol--;
 			}
 			
-			cumulativeWeight = cumulativeWeight + weight;
-			weight = (numSols + 1) / (cumulativeWeight + 1);
-			numSols++;
-			sol--;
+			else {
+				quit = true;
+			}
+			
 			// Get the last x sols only
 			if (numSols > MAX_NUM_SOLS)
 				quit = true;
@@ -1532,90 +1564,6 @@ public class Farming extends Function implements Serializable {
 		else {
 			dailyWaterUsage.put(solCache, waterUssed);
 		}
-	}
-	
-	/**
-	 * Computes the average O2 generated on a particular crop
-	 * 
-	 * @return average O2 generated in kg/m^2/sol
-	 */
-	public double computeCropO2Generated(String cropName) {
-		if (cropDailyO2Generated.containsKey(cropName)) {
-			double sum = 0;
-			List<Double> o2Data = cropDailyO2Generated.get(cropName);
-			int size = o2Data.size();
-			for (double i : o2Data) {
-				sum += i;
-			}
-			if (size == 0)
-				return 0;
-			else
-				return sum / size;// Math.round(sum/size*1000.0)/1000.0;
-		}
-		return 0;
-	}
-
-	/**
-	 * Computes the average O2 generated on all crop
-	 * 
-	 * @return average O2 generated in kg/m^2/sol
-	 */
-	public double computeTotalO2Generated() {
-		double sum = 0;
-		int size = 0;
-		for (CropType ct : CropConfig.getCropTypes()) {
-			String n = ct.getName();
-			Double ave = computeCropO2Generated(n);
-			if (ave > 0)
-				size++;
-			sum += ave;
-		}
-		if (size == 0)
-			return 0;
-		else
-			return Math.round(sum / size * 1000.0) / 1000.0;
-	}
-
-	/**
-	 * Computes the average O2 generated on a particular crop
-	 * 
-	 * @return average O2 generated in kg/m^2/sol
-	 */
-	public double computeCropCO2Consumed(String cropName) {
-		if (cropDailyCO2Consumed.containsKey(cropName)) {
-			double sum = 0;
-			List<Double> o2Data = cropDailyCO2Consumed.get(cropName);
-			int size = o2Data.size();
-			for (double i : o2Data) {
-				sum += i;
-			}
-			if (size == 0)
-				return 0;
-			else
-				return sum / size;// Math.round(sum/size*1000.0)/1000.0;
-		}
-		return 0;
-	}
-
-	/**
-	 * Computes the average O2 generated on all crop
-	 * 
-	 * @return average O2 generated in kg/m^2/sol
-	 */
-	public double computeTotalCO2Consumed() {
-		double sum = 0;
-		int size = 0;
-		for (CropType ct : CropConfig.getCropTypes()) {
-			String n = ct.getName();
-			Double ave = computeCropCO2Consumed(n);
-			if (ave > 0)
-				size++;
-			sum += ave;
-		}
-		if (size == 0)
-			return 0;
-		else
-			return Math.round(sum / size * 1000.0) / 1000.0;
 	}
 
 	@Override

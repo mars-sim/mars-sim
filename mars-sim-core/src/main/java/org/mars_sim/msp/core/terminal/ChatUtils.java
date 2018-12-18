@@ -148,7 +148,10 @@ public class ChatUtils {
 			"dash", "dashboard",
 			"repair", "maintenance", "evasuit", "eva suit", 
 			"mission plan", "mission now",
-			"objective", "water"
+			"objective", 
+			"water",
+			"o2", "oxygen",
+			"co2", "carbon dioxide"
 	};
 	
 	public final static String[] PERSON_KEYS = new String[] {
@@ -889,7 +892,124 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 
-		if (text.equalsIgnoreCase("water")) {
+		if (text.equalsIgnoreCase("co2")
+				|| text.equalsIgnoreCase("carbon dioxide")) {
+			int max = 40;
+			double usage = 0;
+			double reserve = 0;
+			double totalArea = 0;
+			
+			// Prints the current reserve
+			try {
+				reserve = settlementCache.getInventory().getAmountResourceStored(ResourceUtil.co2ID, false);
+			}
+			catch (Exception e) {
+			}
+
+			responseText.append(addhiteSpacesName("--- Greenhouse Farming ---", 50));
+			responseText.append(System.lineSeparator());
+			String s0 = " Current reserve : ";
+			responseText.append(addhiteSpacesName(s0, max));
+			responseText.append(Math.round(reserve* 100.0)/100.0 + " kg");
+			responseText.append(System.lineSeparator());
+			
+			// Prints greenhouse usage
+			List<Building> farms = settlementCache.getBuildingManager().getBuildings(FunctionType.FARMING);
+			for (Building b : farms) {
+				Farming f = b.getFarming();
+				usage += f.computeUsage(2);
+				totalArea += f.getGrowingArea();
+			}
+
+			String s1 = " Total growing area : ";
+			responseText.append(addhiteSpacesName(s1, max));
+			responseText.append(Math.round(totalArea * 100.0)/100.0);
+			responseText.append(System.lineSeparator());
+			String s3 = " Generated daily per unit area : ";
+			responseText.append(addhiteSpacesName(s3, max));
+			responseText.append(Math.round(usage / totalArea * 100.0)/100.0 + " kg/m^2/sol");
+			responseText.append(System.lineSeparator());
+			String s2 = " Total amount generated Daily : ";
+			responseText.append(addhiteSpacesName(s2, max));
+			responseText.append(Math.round(usage * 100.0)/100.0 + " kg/sol");
+			responseText.append(System.lineSeparator());
+			
+		}
+		
+		else if (text.equalsIgnoreCase("o2")
+				|| text.equalsIgnoreCase("oxygen")) {
+			int max = 40;
+			double usage = 0;
+			double reserve = 0;
+			double totalArea = 0;
+
+			// Prints the current reserve
+			try {
+				reserve = settlementCache.getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
+			}
+			catch (Exception e) {
+			}
+
+			responseText.append(addhiteSpacesName("--- Greenhouse Farming ---", 50));
+			responseText.append(System.lineSeparator());
+			String s0 = " Current reserve : ";
+			responseText.append(addhiteSpacesName(s0, max));
+			responseText.append(Math.round(reserve* 100.0)/100.0 + " kg");
+			responseText.append(System.lineSeparator());
+			
+			// Prints greenhouse usage
+			List<Building> farms = settlementCache.getBuildingManager().getBuildings(FunctionType.FARMING);
+			for (Building b : farms) {
+				Farming f = b.getFarming();
+				usage += f.computeUsage(1);
+				totalArea += f.getGrowingArea();
+			}
+			
+
+			String s1 = " Total growing area : ";
+			responseText.append(addhiteSpacesName(s1, max));
+			responseText.append(Math.round(totalArea * 100.0)/100.0);
+			responseText.append(System.lineSeparator());
+			String s3 = " Consumed daily per unit area : ";
+			responseText.append(addhiteSpacesName(s3, max));
+			responseText.append(Math.round(usage / totalArea * 100.0)/100.0 + " kg/m^2/sol");
+			responseText.append(System.lineSeparator());
+			String s2 = " Total amount consumed daily : ";
+			responseText.append(addhiteSpacesName(s2, max));
+			responseText.append(Math.round(usage * 100.0)/100.0 + " kg/sol");
+			responseText.append(System.lineSeparator());
+			
+		}
+		
+		else if (text.equalsIgnoreCase("water")) {
+			int max0 = 40;
+			double usage = 0;
+			double totalArea = 0;
+			
+			// Prints greenhouse usage
+			List<Building> farms = settlementCache.getBuildingManager().getBuildings(FunctionType.FARMING);
+			for (Building b : farms) {
+				Farming f = b.getFarming();
+				usage += f.computeUsage(0);
+				totalArea += f.getGrowingArea();
+			}
+			
+			responseText.append(addhiteSpacesName("--- Greenhouse Farming ---", 50));
+			responseText.append(System.lineSeparator());
+			String s01 = " Total growing area : ";
+			responseText.append(addhiteSpacesName(s01, max0));
+			responseText.append(Math.round(totalArea * 100.0)/100.0);
+			responseText.append(System.lineSeparator());
+			String s03 = " Consumed daily per unit area : ";
+			responseText.append(addhiteSpacesName(s03, max0));
+			responseText.append(Math.round(usage / totalArea * 100.0)/100.0 + " kg/ m^2/sol");
+			responseText.append(System.lineSeparator());
+			String s02 = " Total amount consumed daily : ";
+			responseText.append(addhiteSpacesName(s02, max0));
+			responseText.append(Math.round(usage * 100.0)/100.0 + " kg/sol");
+			responseText.append(System.lineSeparator());		
+			responseText.append(System.lineSeparator());
+			
 			int max = 14;
 			double reserve = 0;
 			double greenhouseUsage = 0;			
@@ -897,11 +1017,11 @@ public class ChatUtils {
 			double livingUsage = 0;
 			double output = 0;
 			double cleaning = 0;
-			double net = 0;
+			double net = 0;			
 			
 			String s = " -------------+-------------------------------------------------------+-----";
 			
-			responseText.append("                            Water - Rate of Change [kg/sol]");
+			responseText.append("                        Water - Rate of Change [kg/sol]");
 			responseText.append(System.lineSeparator());
 			responseText.append(s);
 			responseText.append(System.lineSeparator());
@@ -943,7 +1063,7 @@ public class ChatUtils {
 
 			
 			// Prints greenhouse usage
-			List<Building> farms = settlementCache.getBuildingManager().getBuildings(FunctionType.FARMING);
+//			List<Building> farms = settlementCache.getBuildingManager().getBuildings(FunctionType.FARMING);
 			for (Building b : farms) {
 				Farming f = b.getFarming();
 				greenhouseUsage += f.getDailyAverageWaterUsage();
