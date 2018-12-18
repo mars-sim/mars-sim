@@ -40,8 +40,8 @@ public class AudioPlayer implements ClockListener {
 	private static int num_tracks;
 
 	/** The volume of the audio player (0.0 to 1.0) */
-	private static double currentMusicVol = DEFAULT_VOL;
-	private static double currentSoundVol = DEFAULT_VOL;
+	public static double currentMusicVol = DEFAULT_VOL;
+	public static double currentSoundVol = DEFAULT_VOL;
 
 	private double lastMusicVol = 0;
 	private double lastSoundVol = 0;
@@ -87,7 +87,9 @@ public class AudioPlayer implements ClockListener {
 		}
 
 		else {
-
+			currentMusicVol = MainMenu.music_v / 100D;
+			currentSoundVol = MainMenu.sound_effect_v / 100D;
+		
 			allMusicTracks = new HashMap<>();
 			allSoundClips = new HashMap<>();
 

@@ -128,8 +128,8 @@ public class MainMenu {
 	private double x = 0;
 	private double y = 0;
 
-	public float music_v = 50f;
-	public float sound_effect_v = 50f;
+	public static float music_v = 50f;
+	public static float sound_effect_v = 50f;
 
 	// private Point2D anchorPt;
 	// private Point2D previousLocation;
@@ -1543,7 +1543,10 @@ public class MainMenu {
 			reslabel.setFont(Font.font(null, FontWeight.NORMAL, 16));
 
 			JFXComboBox<Resolution> resCombo = new JFXComboBox<>();
-			resCombo.setStyle("-fx-text-fill: lightgoldenrodyellow;");
+			resCombo.setDisable(true);
+//			resCombo.setTooltip(arg0);
+			MainScene.setQuickToolTip(resCombo, "Not Enable at Present.");
+			resCombo.setStyle("-fx-background-color: black; -fx-text-fill: lightgoldenrodyellow;");
 			resCombo.getStyleClass().add("jfx-combo-box");
 			resCombo.getItems().addAll(resList);
 
@@ -1663,17 +1666,6 @@ public class MainMenu {
 
 		});
 
-		switchSliderTile.setOnSwitchReleased(e -> {
-			if (switchSliderTile.getCurrentValue() < 5 || !switchSliderTile.isActive()) {
-				switchSliderTile.setValue(0);
-				switchSliderTile.setActive(false);
-			} else {
-				switchSliderTile.setActive(true);
-				if (switchSliderTile.getCurrentValue() < 5)
-					switchSliderTile.setValue(80);
-			}
-		});
-
 		return switchSliderTile;
 	}
 
@@ -1726,16 +1718,6 @@ public class MainMenu {
 
 		});
 
-		switchSliderTile.setOnSwitchReleased(e -> {
-			if (switchSliderTile.getCurrentValue() < 5 || !switchSliderTile.isActive()) {
-				switchSliderTile.setValue(0);
-				switchSliderTile.setActive(false);
-			} else {
-				switchSliderTile.setActive(true);
-				if (switchSliderTile.getCurrentValue() < 5)
-					switchSliderTile.setValue(80);
-			}
-		});
 
 		return switchSliderTile;
 	}

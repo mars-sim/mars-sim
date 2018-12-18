@@ -291,8 +291,8 @@ public class MainScene implements ClockListener {
 	private int offset;
 	private int x;
 
-	public double musicSliderValue = AudioPlayer.DEFAULT_VOL * 100;
-	public double soundEffectSliderValue = AudioPlayer.DEFAULT_VOL * 100;
+	public double musicSliderValue = MainMenu.music_v;
+	public double soundEffectSliderValue = MainMenu.sound_effect_v;
 
 	private double musicSliderCache = 0;
 	private double effectSliderCache = 0;
@@ -3935,7 +3935,7 @@ public class MainScene implements ClockListener {
 	 * @param n Node
 	 * @param s tooltip's hint text
 	 */
-	public void setQuickToolTip(Node n, String s) {
+	public static void setQuickToolTip(Node n, String s) {
 		Tooltip tt = new Tooltip(s);
 		tt.getStyleClass().add("ttip");
 		Tooltip.install(n, tt);
