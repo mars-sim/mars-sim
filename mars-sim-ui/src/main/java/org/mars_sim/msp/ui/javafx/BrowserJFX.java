@@ -169,6 +169,7 @@ public class BrowserJFX {
 
     }
 
+	
     public void createTopButtonBar() {
     	
     	String shortcutsURL = getClass().getResource(Msg.getString("doc.shortcuts")).toExternalForm(); //$NON-NLS-1$

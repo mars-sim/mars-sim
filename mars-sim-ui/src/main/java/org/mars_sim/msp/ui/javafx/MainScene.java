@@ -409,7 +409,7 @@ public class MainScene implements ClockListener {
 	private JFXToggleButton minimapToggle;
 	private JFXToggleButton sMapToggle;
 	private JFXSlider zoomSlider;
-	private JFXToolbar toolbar;
+	private HBox toolbar;
 
 	private static JFXSlider musicSlider;
 	private static JFXSlider soundEffectSlider;
@@ -4113,9 +4113,10 @@ public class MainScene implements ClockListener {
 		setQuickToolTip(b5, "Science Tool");
 		setQuickToolTip(b6, "Resupply Tool");
 
-		toolbar = new JFXToolbar();
-		toolbar.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
-		toolbar.getLeftItems().addAll(b1, b2, b3, b4, b5, b6);
+		toolbar = new HBox();
+		toolbar.setPadding(new Insets(5,5,5,5));
+//		toolbar.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
+		toolbar.getChildren().addAll(b1, b2, b3, b4, b5, b6);
 
 //		b0.setOnAction(e -> desktop.openToolWindow(GuideWindow.NAME));
 		b1.setOnAction(e -> desktop.openToolWindow(SearchWindow.NAME));

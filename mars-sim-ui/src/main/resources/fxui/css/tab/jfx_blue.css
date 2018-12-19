@@ -8,13 +8,16 @@
 }
 
 .button {
+/*
     -fx-background-color:
         linear-gradient(#7ebcea, #2f4b8f),
         linear-gradient(#426ab7, #263e75),
         linear-gradient(#395cab, #223768),
         linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+*/
+    -fx-background-color: #065185;        
     -fx-padding: .2em 0.816667em .2em 0.816667em;
-    -fx-text-fill: white;
+    -fx-text-fill: #a2b3db;
     -fx-font-size: 11px;
 }
 

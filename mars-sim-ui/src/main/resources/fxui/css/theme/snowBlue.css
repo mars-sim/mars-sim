@@ -222,6 +222,9 @@
     3291D2 is mid blue; menu item
     065185 is dull dark blue;    
     206982 is dull dark green;     
+    
+    #065185 is cyan blue - tab pane bar
+    #409fe8 is bright blue
 */
 
 .jfx-toggle-button:focused,
@@ -234,13 +237,13 @@
 }
 
 .jfx-toggle-button{
-  	-jfx-toggle-color: #409fe8;
+  	-jfx-toggle-color: #065185;
   	-fx-text-fill: white; /* when the toggle button is off */
   	-fx-background-color: transparent;
 }
 
 .jfx-button {
-	-jfx-toggle-color: #409fe8;
+	-jfx-toggle-color: #065185; 
 }
 
 

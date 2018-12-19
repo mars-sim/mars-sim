@@ -90,8 +90,8 @@ public class MainDesktopPane extends WebDesktopPane
 
 //	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;// 750D / MarsClock.SECONDS_IN_MILLISOL;
 
-	public final static String ORANGE_CSS = MainScene.ORANGE_CSS_THEME; //"/fxui/css/theme/nimrodskin.css";
-	public final static String BLUE_CSS = MainScene.BLUE_CSS_THEME; //"/fxui/css/theme/snowBlue.css";
+	public final static String ORANGE_CSS = MainScene.ORANGE_CSS_THEME; 
+	public final static String BLUE_CSS = MainScene.BLUE_CSS_THEME;
 
 	// Data members
 //	private double timeCache = 0;

@@ -217,6 +217,12 @@
 
 }
 
+ /*	#f8c202 is light mud orange - toggle button
+ 	#654b00 is brown - tab pane
+
+ */
+ 
+ 
 .jfx-toggle-button:focused,
 .jfx-toggle-button:selected,
 .jfx-toggle-button:selected:focused {
@@ -233,7 +239,7 @@
 }
 
 .jfx-button {
-	-jfx-toggle-color: #f8c202; /* f8c202 is mud mid orange */
+	-jfx-toggle-color: #654b00;
 }
 
 

@@ -108,41 +108,12 @@ public class TabPanelDashboard extends TabPanel {
 
 		this.settlement = settlement;
 		objectives = settlement.getObjectives();
-		createButtonPane();
 
 		jfxpanel = new JFXPanel();
 
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				stack = new StackPane();
-				scene = new Scene(stack, width, height);
-				scene.setFill(Color.TRANSPARENT);// .BLACK);
-				jfxpanel.setScene(scene);
-
-				Label title = new Label(Msg.getString("TabPanelDashboard.title").toUpperCase());
-				//Reflection reflection = new Reflection();
-				//title.setEffect(reflection);
-				//reflection.setTopOffset(0.0);
-				title.setPadding(new Insets(5, 5, 0, 5));
-				// title.setFont(new Font("Arial", 20));
-				title.setFont(Font.font("Cambria", FontWeight.BOLD, 18));
-
-				VBox toggleVBox = new VBox();
-				//toggleVBox.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
-				//		+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
-				toggleVBox.getChildren().addAll(mainBox);
-				toggleVBox.setAlignment(Pos.TOP_CENTER);
-				toggleVBox.setPadding(new Insets(5, 5, 5, 5));
-
-				VBox topVBox = new VBox();
-				//topVBox.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
-				//		+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
-				topVBox.setAlignment(Pos.TOP_CENTER);
-				topVBox.getChildren().addAll(title, new Label(), toggleVBox);
-
-				stack.getChildren().add(topVBox);
-			}
+		Platform.runLater(() -> {
+			createButtonPane();	
+			createStackPane();
 		});
 
 		centerContentPanel.add(jfxpanel);
@@ -157,6 +128,38 @@ public class TabPanelDashboard extends TabPanel {
 		return s;
 	}
 
+	public void createStackPane() {
+		stack = new StackPane();
+		scene = new Scene(stack, width, height);
+		scene.setFill(Color.TRANSPARENT);// .BLACK);
+		
+		jfxpanel.setScene(scene);
+
+		Label title = new Label(Msg.getString("TabPanelDashboard.title").toUpperCase());
+		//Reflection reflection = new Reflection();
+		//title.setEffect(reflection);
+		//reflection.setTopOffset(0.0);
+		title.setPadding(new Insets(5, 5, 0, 5));
+		// title.setFont(new Font("Arial", 20));
+		title.setFont(Font.font("Cambria", FontWeight.BOLD, 18));
+
+		VBox toggleVBox = new VBox();
+		//toggleVBox.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
+		//		+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
+		toggleVBox.getChildren().addAll(mainBox);
+		toggleVBox.setAlignment(Pos.TOP_CENTER);
+		toggleVBox.setPadding(new Insets(5, 5, 5, 5));
+
+		VBox topVBox = new VBox();
+		//topVBox.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
+		//		+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
+		topVBox.setAlignment(Pos.TOP_CENTER);
+		topVBox.getChildren().addAll(title, new Label(), toggleVBox);
+
+		stack.getChildren().add(topVBox);
+		
+	}
+	
 	public void createButtonPane() {
 		ToggleGroup group = new ToggleGroup();
 		mainBox = new VBox();
