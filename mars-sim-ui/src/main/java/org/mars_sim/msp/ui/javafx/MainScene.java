@@ -249,11 +249,10 @@ public class MainScene implements ClockListener {
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
 
 	private static final String LAST_SAVED = "Last Saved : ";
-	// private static final String EARTH_DATE_TIME = " ";//EARTH : ";
-	private static final String MARS_DATE_TIME = " ";// MARS : ";
-	// private static final String UMST = " (UMST)";
+
+	private static final String MARS_DATE_TIME = " ";
+
 	private static final String COLON = ":";
-//	private static final String ONE_SPACE = " ";
 	private static final String MONTH = "    Month : ";
 	private static final String ORBIT = "Orbit : ";
 	private static final String ADIR = "Adir";
@@ -310,9 +309,6 @@ public class MainScene implements ClockListener {
 	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
 	private boolean isFullScreenCache = false;
-	
-//	private boolean lastMusicMuteBoxSetting;
-//	private boolean lastSoundEffectMuteBoxSetting;
 
 	private DoubleProperty sceneWidth;// = new SimpleDoubleProperty(DEFAULt_WIDTH);//1366-40;
 	private DoubleProperty sceneHeight;// = new SimpleDoubleProperty(DEFAULt_HEIGHT); //768-40;
@@ -334,15 +330,15 @@ public class MainScene implements ClockListener {
 	private DraggableNode dragNode;
 	private GameScene gameScene;
 	private Parent root;
-//	private StackPane sMapToolPane;
+
 	private StackPane rootStackPane;
 	private StackPane mainStackPane;
-	private StackPane dashboardStackPane; // monPane,
+	private StackPane dashboardStackPane; 
 	private StackPane sMapStackPane;
 	private Group minimapGroup;
 	private StackPane speedPane;
 	private StackPane soundPane;
-	private StackPane calendarPane; // farmPane,
+	private StackPane calendarPane;
 	private StackPane settlementBox;
 	private StackPane chatBoxPane;
 	private StackPane pausePane;
@@ -356,12 +352,11 @@ public class MainScene implements ClockListener {
 	private SwingNode desktopNode;
 	private SwingNode mapNode;
 	private SwingNode minimapNode;
-	// guideNode, monNode, missionNode, resupplyNode, sciNode, guideNode ;
 
-//	private CustomStage customStage;
+
 	private Stage stage;
 	private Stage savingStage;
-//	private SceneManager sceneManager;
+
 	private Scene scene;
 	private Scene savingScene;
 

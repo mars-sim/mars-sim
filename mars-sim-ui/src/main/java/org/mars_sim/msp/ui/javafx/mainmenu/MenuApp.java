@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.javafx.mainmenu;
 
 import javafx.animation.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
@@ -48,7 +49,7 @@ public class MenuApp {
     
     private StackPane titleStackPane;
     
-    private StackPane commanderPane;
+    private BorderPane commanderPane;
     
     private VBox menuBox;
     private VBox modeBox;
@@ -114,11 +115,12 @@ public class MenuApp {
         int y = Y_OFFSET - 25;
 
     	commanderPane = mainMenu.createCommanderPane();
-    	
+		
         clearLineItems();
     	clearModeBoxItems();
     	
         optionMenu.getChildren().add(commanderPane);
+        commanderPane.toFront();
 
         optionMenu.setTranslateX(WIDTH/1.45);//2.6);
         optionMenu.setTranslateY(y);
@@ -152,6 +154,8 @@ public class MenuApp {
 
     	modeBox = new VBox(-5);
 
+		MainMenu.setMouseCursor(modeBox);
+		
         int x = X_OFFSET + 10;
         int y = Y_OFFSET - 25;
 

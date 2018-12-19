@@ -25,10 +25,14 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.animation.AnimationTimer;
 
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.application.Platform;
@@ -42,6 +46,7 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -51,6 +56,9 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import jiconfont.icons.FontAwesome;
+import jiconfont.javafx.IconNode;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -93,6 +101,10 @@ public class MainMenu {
 	private static Logger logger = Logger.getLogger(MainMenu.class.getName());
 
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
+
+	public static final String MAINMENU_CSS = "/fxui/css/mainmenu/mainmenu.css";
+
+	public static final String GLOBE_CSS = "/fxui/css/mainmenu/globe.css";
 
 	private static boolean isExit = false;
 	private static boolean isSoundDisabled = false;
@@ -518,14 +530,14 @@ public class MainMenu {
 																									// 0));
 		// Create a sliver of sun-lit bright orange atmosphere around the Mars globe
 		// when being dragged around
-		scene.getStylesheets().setAll(this.getClass().getResource("/fxui/css/mainmenu/globe.css").toExternalForm());
+		globeSPane.getStylesheets().setAll(this.getClass().getResource(GLOBE_CSS).toExternalForm());
 		// Add CSS styles
-		scene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu/mainmenu.css").toExternalForm());
+		scene.getStylesheets().add(this.getClass().getResource(MAINMENU_CSS).toExternalForm());
 
 		scene.setFill(Color.BLACK); // if using Group, a black border will remain
 		// scene.setFill(Color.TRANSPARENT); // if using Group, a white border will
 		// remain
-		scene.setCursor(Cursor.HAND);
+//		scene.setCursor(Cursor.HAND);
 
 		// Makes the menu option box fades in
 		enteredHandler = new EventHandler<MouseEvent>(){
@@ -1174,7 +1186,7 @@ public class MainMenu {
 	 *
 	 * @param node
 	 */
-	public void setMouseCursor(Node node) {
+	public static void setMouseCursor(Node node) {
 		node.addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
 			node.setCursor(Cursor.DEFAULT);
 		});
@@ -1203,33 +1215,29 @@ public class MainMenu {
 	 * 
 	 * @param pane
 	 */
-	public StackPane createCommanderPane() {
+	public BorderPane createCommanderPane() {
 		if (exitDialog == null || (exitDialog != null && !exitDialog.isVisible())) {
-			StackPane sp = null;
+
+			Commander commander = SimulationConfig.instance().getPersonConfiguration().getCommander();
+
+			final double MAX_FONT_SIZE = 27.0; 
+			final double FONT_SIZE = 18.0; 
+			
+			BorderPane pane = new BorderPane();
 			
 			JFXButton backBtn = new JFXButton("Back");
-			setMouseCursor(backBtn);
-			backBtn.setGraphic(
-					new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/undo_orange.png"))));
-			backBtn.getStyleClass().add("button-mid");
-			backBtn.setId("commitButton");
-			backBtn.setPrefSize(100, 35);
-			backBtn.setAlignment(Pos.CENTER);
-//			backBtn.setDisable(true);
+			backBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/red_undo_32.png"))));
+			backBtn.setPrefSize(95, 25);
 			backBtn.setStyle("-fx-background-color: lightgoldenrodyellow;");// lightgrey;");
 			backBtn.setOnAction(e -> {
 				menuApp.backToSelectMode();
-				return;
+				e.consume();
 			});
+			setMouseCursor(backBtn);
 			
 			JFXButton doneBtn = new JFXButton("Commit");
-			setMouseCursor(doneBtn);
-			doneBtn.setGraphic(
-					new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_32.png"))));
-			doneBtn.getStyleClass().add("button-mid");
-			doneBtn.setId("commitButton");
-			doneBtn.setPrefSize(100, 35);
-			doneBtn.setAlignment(Pos.CENTER);
+			doneBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_32.png"))));
+			doneBtn.setPrefSize(95, 25);
 			doneBtn.setDisable(true);
 			doneBtn.setStyle("-fx-background-color: lightgoldenrodyellow;");// lightgrey;");
 			doneBtn.setOnAction(e -> {
@@ -1239,32 +1247,33 @@ public class MainMenu {
 				}
 				e.consume();
 			});
-
+			setMouseCursor(doneBtn);
+			
 			HBox doneHB = new HBox();
-			doneHB.setPadding(new Insets(20, 15, 15, 25));
+			doneHB.setPadding(new Insets(5));
 			doneHB.setSpacing(20);
 			doneHB.getChildren().addAll(backBtn, doneBtn);
-			doneHB.setAlignment(Pos.CENTER);
+			doneHB.setAlignment(Pos.BOTTOM_CENTER);
 
-//			HBox.setMargin(done_btn, new Insets(10, 10, 10, 10));
+			backBtn.toFront();
+			doneBtn.toFront();
 			
-			Label titleLabel = new Label("Commander Mode");
+			
+			Label titleLabel = new Label("Commander Profile");
 			titleLabel.setAlignment(Pos.TOP_CENTER);
-			titleLabel.setTextAlignment(TextAlignment.CENTER);
+			titleLabel.setAlignment(Pos.CENTER);//.setTextAlignment(TextAlignment.CENTER);
 			titleLabel.setContentDisplay(ContentDisplay.TOP);
-			titleLabel.setPadding(new Insets(10, 10, 10, 10));
+			titleLabel.setPadding(new Insets(5, 5, 5, 55));
 			titleLabel.setStyle("-fx-text-fill: lightgoldenrodyellow;");
-			titleLabel.setFont(Font.loadFont(
-					MenuApp.class.getResource("/fonts/Penumbra-HalfSerif-Std_35114.ttf").toExternalForm(), 15));
-			// titleLabel.setFont(Font.font(null, FontWeight.BOLD, 20));
-
-			Commander commander = SimulationConfig.instance().getPersonConfiguration().getCommander();
+			titleLabel.setFont(new Font(MAX_FONT_SIZE)); 
 
 			// First Name
 			Label fnameLabel = new Label("First Name :   ");
+			fnameLabel.setFont(new Font(FONT_SIZE)); 
 			fnameLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 			JFXTextField fnameTF = new JFXTextField();
-			fnameTF.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");			
+			fnameTF.setFont(new Font(FONT_SIZE)); 
+			fnameTF.setStyle("-fx-font-size: 18.0; -fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");			
  			
 			fnameTF.textProperty().addListener((observable, oldValue, newValue) -> {
 			    String first = newValue;
@@ -1288,15 +1297,18 @@ public class MainMenu {
 				}
 			});
 					
-			HBox fnameBox = new HBox();
-			fnameBox.setPadding(new Insets(10, 10, 10, 10));
-			fnameBox.getChildren().addAll(fnameLabel, fnameTF);
-			fnameBox.setAlignment(Pos.CENTER);
+//			HBox fnameBox = new HBox();
+//			fnameBox.setPadding(new Insets(5));
+//			fnameBox.getChildren().addAll(fnameLabel, fnameTF);
+//			fnameBox.setAlignment(Pos.CENTER);
 
 			// Last Name
 			Label lnameLabel = new Label("Last Name :   ");
+			lnameLabel.setFont(new Font(FONT_SIZE)); 
+			lnameLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 			JFXTextField lnameTF = new JFXTextField();
-			lnameTF.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+			lnameTF.setFont(new Font(FONT_SIZE)); 
+			lnameTF.setStyle("-fx-font-size: 18.0; -fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 		
 			lnameTF.textProperty().addListener((observable, oldValue, newValue) -> {
 			    String last = newValue;
@@ -1320,20 +1332,21 @@ public class MainMenu {
 				}
 			});
 
-			HBox lnameBox = new HBox();
-			lnameBox.setPadding(new Insets(10, 10, 10, 10));
-			lnameLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
-			lnameBox.getChildren().addAll(lnameLabel, lnameTF);
-			lnameBox.setAlignment(Pos.CENTER);
-		
+//			HBox lnameBox = new HBox();
+//			lnameBox.setPadding(new Insets(5));
+//			lnameLabel.setStyle("-fx-background-color: black; -fx-text-fill: lightgoldenrodyellow;");
+//			lnameBox.getChildren().addAll(lnameLabel, lnameTF);
+//			lnameBox.setAlignment(Pos.CENTER);
+//		
 			// Gender
 			Label genderLabel = new Label("Gender :   ");
-			genderLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+			genderLabel.setFont(new Font(FONT_SIZE)); 
+			genderLabel.setStyle("-fx-background-color: black; -fx-text-fill: lightgoldenrodyellow;");
 
         	List<String> genders = Arrays.asList("Male", "Female");
 
 			JFXComboBox<String> genderCombo = new JFXComboBox<>();
-			genderCombo.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+			genderCombo.setStyle("-fx-background-color: black; -fx-text-fill: lightgoldenrodyellow;");
 			genderCombo.getStyleClass().add("jfx-combo-box");
 			genderCombo.getItems().addAll(genders);	
 			genderCombo.setPromptText("Select here");
@@ -1356,19 +1369,21 @@ public class MainMenu {
 				}
 			});
 
-			HBox genderBox = new HBox();
-			genderBox.setPadding(new Insets(10, 10, 10, 10));
-			genderBox.getChildren().addAll(genderLabel, genderCombo);
-			genderBox.setAlignment(Pos.CENTER);
+//			HBox genderBox = new HBox();
+//			genderBox.setPadding(new Insets(5));
+//			genderBox.getChildren().addAll(genderLabel, genderCombo);
+//			genderBox.setAlignment(Pos.CENTER);
 
 			// Age
 			Label ageLabel = new Label("Age :   ");
+			ageLabel.setFont(new Font(FONT_SIZE)); 
 			JFXTextField ageTF = new JFXTextField();
+			ageTF.setFont(new Font(FONT_SIZE)); 
 			ageTF.setPrefColumnCount(5);
 			ageTF.setText("30");
 			commander.setAge(30);
 			goodToGo[3] = true;
-			ageTF.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+			ageTF.setStyle("-fx-font-size: 18.0; -fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 
 			ageTF.textProperty().addListener((observable, oldValue, newValue) -> {
 				String ageString = newValue;
@@ -1406,19 +1421,20 @@ public class MainMenu {
 			});
 
 			HBox ageBox = new HBox();
-			ageBox.setPadding(new Insets(10, 10, 10, 10));
+			ageBox.setPadding(new Insets(5));
 			ageLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 			ageBox.getChildren().addAll(ageLabel, ageTF);
 			ageBox.setAlignment(Pos.CENTER);
 
 			// Job
 			Label jobLabel = new Label("Job :   ");
+			jobLabel.setFont(new Font(FONT_SIZE)); 
 			jobLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
 
         	List<String> jobs = JobType.getEditedList();
 
 			JFXComboBox<String> jobCombo = new JFXComboBox<>();
-			jobCombo.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+			jobCombo.setStyle("-fx-background-color: black; -fx-text-fill: lightgoldenrodyellow;");
 			jobCombo.getStyleClass().add("jfx-combo-box");
 			jobCombo.getItems().addAll(jobs);	
 			jobCombo.setPromptText("Select here");
@@ -1442,19 +1458,20 @@ public class MainMenu {
 				}
 			});
 
-			HBox jobBox = new HBox();
-			jobBox.setPadding(new Insets(10, 10, 10, 10));
-			jobBox.getChildren().addAll(jobLabel, jobCombo);
-			jobBox.setAlignment(Pos.CENTER);
+//			HBox jobBox = new HBox();
+//			jobBox.setPadding(new Insets(5));
+//			jobBox.getChildren().addAll(jobLabel, jobCombo);
+//			jobBox.setAlignment(Pos.CENTER);
 
 			// Country
 			Label countryLabel = new Label("Country :   ");
-			countryLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+			countryLabel.setFont(new Font(FONT_SIZE)); 
+			countryLabel.setStyle("-fx-background-color: black; -fx-text-fill: lightgoldenrodyellow;");
 
         	List<String> countries = UnitManager.getCountryList();
 
 			JFXComboBox<String> countryCombo = new JFXComboBox<>();
-			countryCombo.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
+			countryCombo.setStyle("-fx-background-color: black; -fx-text-fill: lightgoldenrodyellow;");
 			countryCombo.getStyleClass().add("jfx-combo-box");
 			countryCombo.getItems().addAll(countries);	
 			countryCombo.setPromptText("Select here");
@@ -1478,21 +1495,67 @@ public class MainMenu {
 				}
 			});
 
-			HBox countryBox = new HBox();
-			countryBox.setPadding(new Insets(10, 10, 10, 10));
-			countryBox.getChildren().addAll(countryLabel, countryCombo);
-			countryBox.setAlignment(Pos.CENTER);
+//			HBox countryBox = new HBox();
+//			countryBox.setPadding(new Insets(5, 5, 5, 5));
+//			countryBox.getChildren().addAll(countryLabel, countryCombo);
+//			countryBox.setAlignment(Pos.CENTER);
 
-			VBox vb = new VBox();
-			vb.setAlignment(Pos.CENTER);
-			vb.setPadding(new Insets(10, 10, 10, 10));
-			vb.getChildren().addAll(titleLabel, fnameBox, lnameBox, genderBox, ageBox, jobBox, countryBox, doneHB);
+			// Set up grid pane
+			GridPane gridPane = new GridPane();
+			gridPane.getStyleClass().add("jfx-popup-container; -fx-background-color:transparent;");
+			gridPane.setAlignment(Pos.CENTER);
+			gridPane.setPadding(new Insets(15));
+			gridPane.setHgap(5.0);
+			gridPane.setVgap(5.0);
+
+			ColumnConstraints right = new ColumnConstraints();
+			right.setPrefWidth(180);
+			ColumnConstraints left = new ColumnConstraints();
+			left.setPrefWidth(120);
+
+			GridPane.setConstraints(fnameLabel, 0, 0);
+			GridPane.setConstraints(lnameLabel, 0, 1);
+			GridPane.setConstraints(genderLabel, 0, 2);
+			GridPane.setConstraints(ageLabel, 0, 3);
+			GridPane.setConstraints(jobLabel, 0, 4);
+			GridPane.setConstraints(countryLabel, 0, 5);
+
+			GridPane.setConstraints(fnameTF, 1, 0);
+			GridPane.setConstraints(lnameTF, 1, 1);
+			GridPane.setConstraints(genderCombo, 1, 2);
+			GridPane.setConstraints(ageTF, 1, 3);
+			GridPane.setConstraints(jobCombo, 1, 4);
+			GridPane.setConstraints(countryCombo, 1, 5);
+
+			GridPane.setHalignment(fnameLabel, HPos.RIGHT);
+			GridPane.setHalignment(lnameLabel, HPos.RIGHT);
+			GridPane.setHalignment(genderLabel, HPos.RIGHT);
+			GridPane.setHalignment(ageLabel, HPos.RIGHT);
+			GridPane.setHalignment(jobLabel, HPos.RIGHT);
+			GridPane.setHalignment(countryLabel, HPos.RIGHT);
+
+			GridPane.setHalignment(fnameTF, HPos.LEFT);
+			GridPane.setHalignment(lnameTF, HPos.LEFT);
+			GridPane.setHalignment(genderCombo, HPos.LEFT);
+			GridPane.setHalignment(ageTF, HPos.LEFT);
+			GridPane.setHalignment(jobCombo, HPos.LEFT);
+			GridPane.setHalignment(countryCombo, HPos.LEFT);
+
+			gridPane.getColumnConstraints().addAll(left, right);
+			gridPane.getChildren().addAll(
+					fnameLabel, lnameLabel, genderLabel, ageLabel, jobLabel, countryLabel,
+					fnameTF, lnameTF, genderCombo, ageTF, jobCombo, countryCombo);
 			
-			sp = new StackPane(vb);
-			//sp.setStyle("-fx-background-color: transparent; -fx-text-fill: lightgoldenrodyellow;");
-			StackPane.setMargin(vb, new Insets(10, 10, 10, 10));
-
-			return sp;
+//			VBox vb = new VBox();
+//			vb.setAlignment(Pos.CENTER);
+//			vb.setPadding(new Insets(3, 3, 3, 3));
+//			vb.getChildren().addAll(fnameBox, lnameBox, genderBox, ageBox, jobBox, countryBox);
+					
+			pane.setCenter(gridPane);
+			pane.setTop(titleLabel);
+			pane.setBottom(doneHB);
+			
+			return pane;
 		}
 		
 		return null;	

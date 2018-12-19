@@ -32,7 +32,6 @@ import org.mars_sim.msp.ui.javafx.config.controller.MainMenuController;
 /*
  * The SpinningGlobe class creates a spinning Mars Globe for MainMenu
  */
-@SuppressWarnings("restriction")
 public class SpinningGlobe extends Application {
 
 	// ------------------------------ FIELDS ------------------------------
@@ -123,7 +122,6 @@ public class SpinningGlobe extends Application {
    /*
     * Resets the rotational rate back to 500X
     */
-   // 2015-09-27 Added setDefaultRotation()
    public void setDefaultRotation() {
 	   rt.setRate(1.0);
    }
