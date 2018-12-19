@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.tool.Conversion;
 
 public class SimuLoggingFormatter extends Formatter {
@@ -35,11 +36,28 @@ public class SimuLoggingFormatter extends Formatter {
 
 		String msg = formatMessage(record);
 		
-//		msg.replace("[CONTEXT ratelimit_period=\"", "[");
-//		msg.replace("\"]", "]");
-
-		fastReplace(msg, "[CONTEXT ratelimit_period=\"", "[");
-		fastReplace(msg, "]\" ]", "]");
+		if (LogConsolidated.showRateLimit()) {
+			// Remove the rate limit comment from google flogger
+			boolean skip = msg.contains("skipped");
+			if (skip) {
+				msg = fastReplace(msg, "[CONTEXT ratelimit_period=\"", "[");
+//				msg = fastReplace(msg, " MILLISECONDS\" ", "");
+				msg = fastReplace(msg, " MILLISECONDS [skipped:", ",");
+				msg = fastReplace(msg, "]\" ]", "]");
+			}
+			
+			else {
+				int index = msg.indexOf("[CONTEXT");
+				if (index > 0)
+					msg = msg.substring(0, msg.indexOf("[CONTEXT")-1);
+			}
+		}
+		
+		else {
+			int index = msg.indexOf("[CONTEXT");
+			if (index > 0)
+				msg = msg.substring(0, msg.indexOf("[CONTEXT")-1);
+		}
 		
 		sb.delete(0,sb.length());
 		

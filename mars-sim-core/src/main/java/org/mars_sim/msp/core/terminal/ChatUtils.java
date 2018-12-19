@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -179,7 +180,7 @@ public class ChatUtils {
 	
 	public final static String[] SYSTEM_KEYS = new String[] {
 			"score", "settlement", "check size", 
-			"log", "log reset", "log help", "log all", "log fine", "log info", "log severe", "log finer", "log finest", "log warning", "log config",
+			"log", "log rate limit", "log reset", "log help", "log all", "log fine", "log info", "log severe", "log finer", "log finest", "log warning", "log config",
 			"log all walk off", "log all eva off", "log all mission off", "log all airlock off",
 			"vehicle", "rover", 
 			"hi", "hello", "hey",
@@ -3754,6 +3755,43 @@ public class ChatUtils {
 			
 //			responseText.append(System.lineSeparator());	
 			
+			return responseText;
+		}
+		
+		else if (text.contains("log rate limit")) {
+			
+			boolean ans = LogConsolidated.showRateLimit();
+			String now = "";
+			if (ans)
+				now = "enabled";
+			else
+				now = "disabled";
+			String prompt = "Currently, the log rate limit is " +  now + "." 
+					+ System.lineSeparator()
+					+ "Would you like to change it?";
+			
+			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt);
+          
+			if (change) {
+				String s = "";
+				if (ans) {
+					LogConsolidated.setRateLimit(false);
+					s = "The log rate limit has been disabled.";
+				}
+				else {
+					LogConsolidated.setRateLimit(true);
+					s = "The log rate limit has been enabled.";
+				}
+				
+				responseText.append(System.lineSeparator());
+				responseText.append(s);
+				logger.config(s);
+			}
+			else {
+				responseText.append("No change has been made.");
+				responseText.append(System.lineSeparator());
+			}
+
 			return responseText;
 		}
 		

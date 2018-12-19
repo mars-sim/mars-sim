@@ -34,6 +34,7 @@ public class LogConsolidated {
 	private static final String QUESTION = "?";
 	private static final String PERIOD = ".";
 
+	private static boolean showRateLimit = false;
 	// private static Logger logger =
 	// Logger.getLogger(LogConsolidated.class.getName());
 	// private static java.util.logging.Logger logj =
@@ -154,6 +155,14 @@ public class LogConsolidated {
 
 	}
 
+	public static boolean showRateLimit() {
+		return showRateLimit;
+	}
+	
+	public static void setRateLimit(boolean value) {
+		showRateLimit = value;
+	}
+	
 	/**
 	 * TimeAndCount keeps track of the between time and the number of times the message has appeared
 	 */
