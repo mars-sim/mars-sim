@@ -53,12 +53,19 @@ public class TabPanelDashboard extends TabPanel {
 	
 	private static String header = "  Click on a new settlement goal below : ";
 	
-	private static String icon_crop = "/icons/settlement_goals/cropfarm.png";
-	private static String icon_manufacture = "/icons/settlement_goals/manufacture.png";
-	private static String icon_research = "/icons/settlement_goals/research.png";
-	private static String icon_transport = "/icons/settlement_goals//transport.png";
-	private static String icon_trade = "/icons/settlement_goals/trade.png";
-	private static String icon_trip = "/icons/settlement_goals//trip_128.png";
+	private static String cropURL = "/icons/settlement_goals/cropfarm.png";
+	private static String manuURL = "/icons/settlement_goals/manufacture.png";
+	private static String researchURL = "/icons/settlement_goals/research.png";
+	private static String transportURL = "/icons/settlement_goals//transport.png";
+	private static String tradeURL = "/icons/settlement_goals/trade.png";
+	private static String tripURL = "/icons/settlement_goals//trip_128.png";
+	
+	private static ImageView cropIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(cropURL)));
+	private static ImageView manuIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(manuURL)));
+	private static ImageView researchIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(researchURL)));
+	private static ImageView transportIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(transportURL)));
+	private static ImageView tradeIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(tradeURL)));
+	private static ImageView tripIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(tripURL)));
 	
 	private static String CURRENT_GOAL = "    Current Goal : ";
 			
@@ -176,22 +183,23 @@ public class TabPanelDashboard extends TabPanel {
 			//int index = i;
 			ObjectiveType ot = objectives[i];
 			String s = ot.toString();
-			String ss = null;
+			ImageView iv = null;
 			if (i == 0)
-				ss = icon_crop;
+				iv = cropIV;
 			else if (i == 1)
-				ss = icon_manufacture;
+				iv = manuIV;
 			else if (i == 2)
-				ss = icon_research;
+				iv = researchIV;
 			else if (i == 3)
-				ss = icon_transport;
+				iv = transportIV;
 			else if (i == 4)
-				ss = icon_trade;
+				iv = tradeIV;
 			else if (i == 5)
-				ss = icon_trip;
+				iv = tripIV;
 
+//			System.out.println("s : " + s + "   ss : " + ss);
 			toggleBtn = new ToggleButton();
-			toggleBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ss))));
+			toggleBtn.setGraphic(iv);
 			buttons.add(toggleBtn);
 			
 			String sss = addSpace(s);
@@ -255,16 +263,14 @@ public class TabPanelDashboard extends TabPanel {
 		commitButton = new JFXButton("Commit Change");//SubmitButton();
 		commitButton.setOnAction(e -> { //setOnMousePressed(e -> {
 			
-            commitObjective();
-/*            
-        	if (!running) {
-        		timer.start();
-                running = true;
-                commitButton.setDisable(true);
-        	}
-
-        	e.consume();
-*/        	
+            commitObjective();         
+//        	if (!running) {
+//        		timer.start();
+//                running = true;
+//                commitButton.setDisable(true);
+//        	}
+//
+//        	e.consume();       	
 		});
 
 		commitButton.setId("commit-button");
@@ -272,45 +278,45 @@ public class TabPanelDashboard extends TabPanel {
 		commitButton.setAlignment(Pos.CENTER);
 		
 		//commitButton.statusProperty().addListener(o -> System.out.println(commitButton.getStatus()));
-/*
-		progress = 0;
-		lastTimerCall = System.nanoTime();
-		timer = new AnimationTimer() {
-			@Override
-			public void handle(long now) {
-                if (now > lastTimerCall + 2_000l) {
-					progress += 0.005;
-					commitButton.setProgress(progress);
-					lastTimerCall = now;
 
-                    if (toggle) {
-                        if (progress > 0.75) {
-                            progress = 0;
-                            commitButton.setFailed();
-                            timer.stop();
-                            running = false;
-                            toggle ^= true;
-                            commitButton.setDisable(false);
-                            // reset back to the old objective
-                            resetButton();
-                        }
-
-                    } else {
-                        if (progress > 1) {
-                            progress = 0;
-                            commitButton.setSuccess();
-                            timer.stop();
-                            running = false;
-                            toggle ^= true;
-                            commitButton.setDisable(false);
-                            // set to the new objective
-                            commitObjective();
-                        }
-                    }
-				}
-			}
-		};
-*/		
+//		progress = 0;
+//		lastTimerCall = System.nanoTime();
+//		timer = new AnimationTimer() {
+//			@Override
+//			public void handle(long now) {
+//                if (now > lastTimerCall + 2_000l) {
+//					progress += 0.005;
+//					commitButton.setProgress(progress);
+//					lastTimerCall = now;
+//
+//                    if (toggle) {
+//                        if (progress > 0.75) {
+//                            progress = 0;
+//                            commitButton.setFailed();
+//                            timer.stop();
+//                            running = false;
+//                            toggle ^= true;
+//                            commitButton.setDisable(false);
+//                            // reset back to the old objective
+//                            resetButton();
+//                        }
+//
+//                    } else {
+//                        if (progress > 1) {
+//                            progress = 0;
+//                            commitButton.setSuccess();
+//                            timer.stop();
+//                            running = false;
+//                            toggle ^= true;
+//                            commitButton.setDisable(false);
+//                            // set to the new objective
+//                            commitObjective();
+//                        }
+//                    }
+//				}
+//			}
+//		};
+	
 	}
 
 	public void resetButton() {

@@ -751,7 +751,7 @@ public class MarsClock implements Serializable {
 		double result = 0D;
 
 		// Add millisols up to current orbit
-		for (int x = 1; x < time.orbit; x++) {
+		for (int x = 0; x < time.orbit; x++) {
 			if (isLeapOrbit(x))
 				result += SOLS_PER_ORBIT_LEAPYEAR * 1000D;
 			else

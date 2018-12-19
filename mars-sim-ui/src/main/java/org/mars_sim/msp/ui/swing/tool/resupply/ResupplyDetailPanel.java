@@ -654,7 +654,7 @@ implements ClockListener, HistoricalEventListener {
 	private void updateTimeToArrival() {
 		String timeArrival = "---";
 		solsToArrival = -1;
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+//		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		double timeDiff = MarsClock.getTimeDiff(resupply.getArrivalDate(), currentTime);
 		if (timeDiff > 0D) {
 			solsToArrival = (int) Math.abs(timeDiff / 1000D);
