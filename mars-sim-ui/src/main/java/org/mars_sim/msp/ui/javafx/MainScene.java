@@ -129,7 +129,7 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.MarsCalendarDisplay;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
-import jiconfont.icons.FontAwesome;
+import jiconfont.icons.font_awesome.FontAwesome;
 import jiconfont.javafx.IconFontFX;
 import jiconfont.javafx.IconNode;
 
@@ -1074,7 +1074,6 @@ public class MainScene implements ClockListener {
 	 * @return Scene
 	 */
 	public Scene initializeScene() {
-		IconFontFX.register(FontAwesome.getIconFont());
 		// Setup root for embedding key events
 		root = new Pane();
 		// Create marsnet flyout 

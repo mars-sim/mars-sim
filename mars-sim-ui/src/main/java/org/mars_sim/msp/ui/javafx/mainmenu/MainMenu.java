@@ -32,7 +32,6 @@ import javafx.animation.AnimationTimer;
 
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.application.Platform;
@@ -46,7 +45,6 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -56,7 +54,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import jiconfont.icons.FontAwesome;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.javafx.IconFontFX;
 import jiconfont.javafx.IconNode;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -196,6 +195,8 @@ public class MainMenu {
 		// Thread.currentThread().getName());
 		mainMenu = this;
 
+		IconFontFX.register(FontAwesome.getIconFont());
+		
 		// See DPI Scaling at
 		// http://news.kynosarges.org/2015/06/29/javafx-dpi-scaling-fixed/
 		// "I guess we'll have to wait until Java 9 for more flexible DPI support.
@@ -1226,7 +1227,10 @@ public class MainMenu {
 			BorderPane pane = new BorderPane();
 			
 			JFXButton backBtn = new JFXButton("Back");
-			backBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/red_undo_32.png"))));
+			IconNode backIcon = new IconNode(FontAwesome.BACKWARD);
+			backIcon.setIconSize(25);
+			backBtn.setGraphic(backIcon);
+//			backBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/red_undo_32.png"))));
 			backBtn.setPrefSize(95, 25);
 			backBtn.setStyle("-fx-background-color: lightgoldenrodyellow;");// lightgrey;");
 			backBtn.setOnAction(e -> {
@@ -1236,7 +1240,10 @@ public class MainMenu {
 			setMouseCursor(backBtn);
 			
 			JFXButton doneBtn = new JFXButton("Commit");
-			doneBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_32.png"))));
+			IconNode doneIcon = new IconNode(FontAwesome.FORWARD);
+			doneIcon.setIconSize(25);
+			backBtn.setGraphic(doneIcon);
+//			doneBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_32.png"))));
 			doneBtn.setPrefSize(95, 25);
 			doneBtn.setDisable(true);
 			doneBtn.setStyle("-fx-background-color: lightgoldenrodyellow;");// lightgrey;");

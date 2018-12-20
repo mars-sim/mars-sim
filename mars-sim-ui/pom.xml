@@ -309,7 +309,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>tilesfx</artifactId>
-			<version>1.6.4</version>
+			<version>1.6.5</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/eu.hansolo/Medusa : 1018 KB 
 			 see https://github.com/HanSolo/Medusa/wiki -->
@@ -415,7 +415,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 		    <groupId>com.github.jiconfont</groupId>
 		    <artifactId>jiconfont-font_awesome</artifactId>
-		    <version>4.7.0.0</version>
+		    <version>4.7.0.1</version>
+		    <!-- version>4.5.0.3</version-->
 		</dependency>
 	  	<!-- https://mvnrepository.com/artifact/com.github.almasb/fxgl 
 			 https://github.com/AlmasB/FXGL -->

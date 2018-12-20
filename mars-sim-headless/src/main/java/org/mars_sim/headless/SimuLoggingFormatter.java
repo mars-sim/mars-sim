@@ -87,11 +87,11 @@ public class SimuLoggingFormatter extends Formatter {
 		
 		int timeStamp = LogConsolidated.getTimeStampType();
 		
-		if (timeStamp == 1) {
+		if (earthClock != null && timeStamp == 1) {
 			sb.append(earthClock.getTimeStampF0());
 		}
 		
-		else if (timeStamp == 2) {
+		else if (marsClock != null && timeStamp == 2) {
 			sb.append(marsClock.getDateTimeStamp());
 		}
 		

@@ -42,7 +42,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.control.Label;
 
 import javafx.util.Duration;
-import jiconfont.icons.FontAwesome;
+import jiconfont.icons.font_awesome.FontAwesome;
 import jiconfont.javafx.IconNode;
 
 public class DashboardController implements Initializable {
