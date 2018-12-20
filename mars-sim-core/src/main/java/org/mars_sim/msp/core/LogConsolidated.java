@@ -35,10 +35,9 @@ public class LogConsolidated {
 	private static final String PERIOD = ".";
 
 	private static boolean showRateLimit = false;
-	// private static Logger logger =
-	// Logger.getLogger(LogConsolidated.class.getName());
-	// private static java.util.logging.Logger logj =
-	// java.util.logging.Logger.getLogger(LogConsolidated.class.getName());
+	
+	/** 0 = Local time. 1 = Simulation Earth time. 2 = Simulation Martian time. */
+	private static int timeStampType = 1;
 
 	/**
 	 * Logs given <code>message</code> to given <code>logger</code> as long as:
@@ -162,6 +161,15 @@ public class LogConsolidated {
 	public static void setRateLimit(boolean value) {
 		showRateLimit = value;
 	}
+	
+	public static int getTimeStampType() {
+		return timeStampType;
+	}
+
+	public static void setTimeStampChoice(int type) {
+		timeStampType = type;
+	}
+
 	
 	/**
 	 * TimeAndCount keeps track of the between time and the number of times the message has appeared

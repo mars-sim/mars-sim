@@ -13,6 +13,10 @@ import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.EarthClock;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Conversion;
 
 public class SimuLoggingFormatter extends Formatter {
@@ -31,19 +35,43 @@ public class SimuLoggingFormatter extends Formatter {
 //  private Date date = new Date();
     
     private StringBuffer sb = new StringBuffer();
+    
+    private MasterClock masterClock;// = Simulation.instance().getMasterClock();
+    private MarsClock marsClock;// = masterClock.getMarsClock();
+    private EarthClock earthClock;// = masterClock.getEarthClock();
 
     public String format(LogRecord record) {
 
+    	if (masterClock == null) {
+    		masterClock = Simulation.instance().getMasterClock();
+    		if (masterClock != null) {
+		    	if (marsClock == null)
+		    		marsClock = masterClock.getMarsClock();
+		    	if (earthClock == null)
+		    		earthClock = masterClock.getEarthClock();
+    		}
+    	}
+    	
 		String msg = formatMessage(record);
+//		System.out.println(msg);
+		boolean context = msg.contains("[CONTEXT");
 		
-		if (LogConsolidated.showRateLimit()) {
-			// Remove the rate limit comment from google flogger
-			boolean skip = msg.contains("skipped");
-			if (skip) {
-				msg = fastReplace(msg, "[CONTEXT ratelimit_period=\"", "[");
-//				msg = fastReplace(msg, " MILLISECONDS\" ", "");
-				msg = fastReplace(msg, " MILLISECONDS [skipped:", ",");
-				msg = fastReplace(msg, "]\" ]", "]");
+		if (context) {
+			if (LogConsolidated.showRateLimit()) {
+				// Remove the rate limit comment from google flogger
+				boolean skip = msg.contains("skipped");
+				if (skip) {
+					msg = fastReplace(msg, "[CONTEXT ratelimit_period=\"", "[");
+	//				msg = fastReplace(msg, " MILLISECONDS\" ", "");
+					msg = fastReplace(msg, " MILLISECONDS [skipped:", ",");
+					msg = fastReplace(msg, "]\" ]", "]");
+				}
+				
+				else {
+					int index = msg.indexOf("[CONTEXT");
+					if (index > 0)
+						msg = msg.substring(0, msg.indexOf("[CONTEXT")-1);
+				}
 			}
 			
 			else {
@@ -53,23 +81,29 @@ public class SimuLoggingFormatter extends Formatter {
 			}
 		}
 		
-		else {
-			int index = msg.indexOf("[CONTEXT");
-			if (index > 0)
-				msg = msg.substring(0, msg.indexOf("[CONTEXT")-1);
-		}
+//		System.out.println(msg);
 		
 		sb.delete(0,sb.length());
 		
-		//date.setTime(record.getMillis());
-		//String dateTimeStamp = df.format(date);//.replaceAll("AM", "").replaceAll("PM", "");
+		int timeStamp = LogConsolidated.getTimeStampType();
 		
-		String dt = LocalDateTime.now().toString();
+		if (timeStamp == 1) {
+			sb.append(earthClock.getTimeStampF0());
+		}
 		
-		// Show only one decimal place in seconds
-		dt = dt.substring(0, dt.lastIndexOf(".")+2);
+		else if (timeStamp == 2) {
+			sb.append(marsClock.getDateTimeStamp());
+		}
 		
-		sb.append(dt);//(df.format(date).replace(",", "")));
+		else {//if (timeStamp == 0) {
+			// Gets the local time
+			String dt = LocalDateTime.now().toString();
+			// Show only one decimal place in seconds
+			dt = dt.substring(0, dt.lastIndexOf(".")+2);
+			
+			sb.append(dt);
+		}
+		
 
 		// Get the level name and add it to the buffer
 		sb.append(O_PAREN);
@@ -78,6 +112,10 @@ public class SimuLoggingFormatter extends Formatter {
 		
 		String path = null;
 		String source = null;
+		path = record.getSourceClassName();
+		source = path.substring(path.lastIndexOf(PERIOD) + 1, path.length());		
+		sb.append(source);
+		sb.append(COLON);
 		
 		if (msg != null) {
 			
@@ -96,22 +134,14 @@ public class SimuLoggingFormatter extends Formatter {
 			
 			else {
 				msg = msg.substring(msg.indexOf(C_BRAC) + 1, msg.length());
-				path = record.getSourceClassName();
-				source = path.substring(path.lastIndexOf(PERIOD) + 1, path.length());		
-				sb.append(source);
-				sb.append(COLON);
+	
 				sb.append(msg);
 			}
 			
 			sb.append(LINEFEED);
 			
 		}
-		
-//		String newString = sb.toString();
-//		if (!cacheString.equals(newString)) {
-//			cacheString = sb.toString();
-//		}
-		
+	
 		return sb.toString();
 		
     }

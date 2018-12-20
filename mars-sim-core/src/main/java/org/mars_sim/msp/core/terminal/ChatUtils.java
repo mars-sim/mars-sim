@@ -180,7 +180,7 @@ public class ChatUtils {
 	
 	public final static String[] SYSTEM_KEYS = new String[] {
 			"score", "settlement", "check size", 
-			"log", "log rate limit", "log reset", "log help", "log all", "log fine", "log info", "log severe", "log finer", "log finest", "log warning", "log config",
+			"log", "log help", "log timestamp", "log rate limit", "log reset", "log all", "log fine", "log info", "log severe", "log finer", "log finest", "log warning", "log config",
 			"log all walk off", "log all eva off", "log all mission off", "log all airlock off",
 			"vehicle", "rover", 
 			"hi", "hello", "hey",
@@ -3755,6 +3755,68 @@ public class ChatUtils {
 			
 //			responseText.append(System.lineSeparator());	
 			
+			return responseText;
+		}
+		
+		else if (text.contains("log timestamp")) {
+			
+			int ans = LogConsolidated.getTimeStampType();
+			String now = "";
+			if (ans == 0)
+				now = "Local Time";
+			else if (ans == 1)
+				now = "Future Earth Time";
+			else if (ans == 2)
+				now = "Future Martian Time";
+
+			String prompt = "Currently, the log timestamp is " +  now + "." 
+					+ System.lineSeparator()
+					+ "Would you like to change it?";
+			
+			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt);
+          
+			if (change) {
+						
+				String prompt1 = System.lineSeparator()
+						+ "(1) Local Time"
+						+ System.lineSeparator()
+						+ "(2) Earth Simulation Time"
+						+ System.lineSeparator()
+						+ "(3) Mars Simulation Time"
+						+ System.lineSeparator()
+						+ "Which timestamp do you want to use (1, 2 or 3)?";
+				
+				int choice = Simulation.instance().getTerm().getTextIO().newIntInputReader().read(prompt1);
+		          
+				String s = "";
+
+				if (choice == 1) {
+					LogConsolidated.setTimeStampChoice(0);
+					s = "The timestamp has been updated to using Local Time.";
+				}
+				else if (choice == 2) {
+					LogConsolidated.setTimeStampChoice(1);
+					s = "The timestamp has been updated to using Earth Simulation Time.";
+				}
+				else if (choice == 3) {
+					LogConsolidated.setTimeStampChoice(2);
+					s = "The timestamp has been updated to using Mars Simulation Time.";
+				}
+				else {
+					responseText.append("No change has been made.");
+					responseText.append(System.lineSeparator());
+					return responseText;
+				}
+				
+				responseText.append(System.lineSeparator());
+				responseText.append(s);
+				logger.config(s);
+			}
+			else {
+				responseText.append("No change has been made.");
+				responseText.append(System.lineSeparator());
+			}
+
 			return responseText;
 		}
 		

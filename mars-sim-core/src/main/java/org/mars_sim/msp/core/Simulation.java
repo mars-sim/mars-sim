@@ -860,7 +860,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Mars environmental instances
 		Weather.justReloaded(masterClock, marsClock, mars, surface, orbitInfo); // terrain
 		SurfaceFeatures.justReloaded(masterClock, mars, this, w, orbitInfo, missionManager);  // sunDirection, landmarks
-		OrbitInfo.justReloaded(marsClock, earthClock);			
+		OrbitInfo.justReloaded(marsClock, earthClock);		
 
 //		System.out.println("Done with Mars environment instances");
 		
