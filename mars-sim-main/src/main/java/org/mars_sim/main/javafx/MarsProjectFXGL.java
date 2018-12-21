@@ -424,9 +424,18 @@ public class MarsProjectFXGL extends GameApplication {
 	}
 
 	public void prepare() {
+		if (helpPage) {
+			// CASE D //
+			// logger.config("Displaying help instructions in headless mode in " +
+			// Simulation.OS);
+			System.out.println(manpage);
+			Platform.exit();
+			System.exit(1);
+		}
+		
 		// NOTE: NOT supposed to start another instance of the singleton Simulation
 		SimulationConfig.loadConfig();
-
+		
 		if (!headless) {
 			// Using GUI mode
 			if (Simulation.OS.startsWith("Windows")) {
@@ -514,13 +523,6 @@ public class MarsProjectFXGL extends GameApplication {
 					e.printStackTrace();
 					exitWithError("Could not generate help files ", e);
 				}
-			} else if (helpPage) {
-				// CASE D //
-				// logger.config("Displaying help instructions in headless mode in " +
-				// Simulation.OS);
-				System.out.println(manpage);
-				Platform.exit();
-				System.exit(1);
 			}
 		}
 	}

@@ -99,17 +99,14 @@ implements Serializable {
 
 		if (location == null)
 			location = settlement.getCoordinates();
-//        if (mars == null)
-//        	mars = Simulation.instance().getMars();
-//		if (surface == null)
-//			surface = mars.getSurfaceFeatures();
+
 		double tau = surface.getOpticalDepth(location);		
 	
 		// e.g. The Material Adherence Experiement (MAE) on Pathfinder indicate steady dust accumulation on the Martian 
 		// surface at a rate of ~ 0.28% of the surface area per day (Landis and Jenkins, 1999)
 		dust_deposition_rate = .0018 * tau /.5;
 		
-		// during relatively periods of clear sky, typical values for optical depth were between 0.2 and 0.5
+		// during relatively periods of clear sky, typical values for tau (optical depth) were between 0.2 and 0.5
 	}
 	
 	/**
@@ -120,12 +117,10 @@ implements Serializable {
 	@Override
 	public double getCurrentPower(Building building) {
 		BuildingManager manager = building.getBuildingManager();
+		
 		if (location == null)
 			location = manager.getSettlement().getCoordinates();
-//        if (mars == null)
-//        	mars = Simulation.instance().getMars();
-//		if (surface == null)
-//			surface = mars.getSurfaceFeatures();
+
 		double area = AUXILLARY_PANEL_AREA;
 		if (building.getBuildingType().equalsIgnoreCase("Solar Photovoltaic Array")) {
 //	        if (orbitInfo == null)
@@ -151,7 +146,9 @@ implements Serializable {
 			//logger.info("area : " + area);
 		}
 		
-		double available = surface.getSolarIrradiance(location) /1000D * area * efficiency_solar_panel; // add noise with * (.99 + RandomUtil.getRandomDouble(.2));
+		double available = surface.getSolarIrradiance(location) 
+				/1000D * area * efficiency_solar_panel; 
+		// add noise with * (.99 + RandomUtil.getRandomDouble(.2));
 		double capable = getMaxPower();
 		if (available >= capable)
 			return capable;

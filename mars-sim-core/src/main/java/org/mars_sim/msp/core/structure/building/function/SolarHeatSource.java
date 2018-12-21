@@ -70,10 +70,7 @@ implements Serializable {
 
 		if (location == null)
 			location = settlement.getCoordinates();
-//        if (mars == null)
-//        	mars = Simulation.instance().getMars();
-//		if (surface == null)
-//			surface = mars.getSurfaceFeatures();
+
 		double tau = surface.getOpticalDepth(location);		
 	
 		// e.g. The Material Adherence Experiement (MAE) on Pathfinder indicate steady dust accumulation on the Martian 
@@ -84,9 +81,9 @@ implements Serializable {
 	}
 	
 	public double getCollected(Building building) {
-//		if (surface == null)
-//			surface = Simulation.instance().getMars().getSurfaceFeatures();
-		return surface.getSolarIrradiance(building.getCoordinates()) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * building.getFloorArea() / 1000D ;
+
+		return surface.getSolarIrradiance(building.getCoordinates()) 
+				/ SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * building.getFloorArea() / 1000D ;
 	}
 
 	public double getEfficiencySolarHeat() {

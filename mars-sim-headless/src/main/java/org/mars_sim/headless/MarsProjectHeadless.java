@@ -38,9 +38,36 @@ public class MarsProjectHeadless {
 
 	private Simulation sim = Simulation.instance();
 	
-	/** true if displaying graphic user interface. */
-	// private boolean useHeadless = true;
+	private static final String HELP = 
 
+	 "java -jar mars-sim-[$VERSION].jar" + System.lineSeparator()
+	 +"                    (Note : start a new sim)" + System.lineSeparator()
+	 +"   or" + System.lineSeparator()                           
+	 + System.lineSeparator()
+	 +" java -jar jarfile [args...]" + System.lineSeparator()
+	 +"                   (Note : start mars-sim with arguments)" + System.lineSeparator()
+	 + System.lineSeparator()
+	 +"  where args include :" + System.lineSeparator()
+	 + System.lineSeparator()
+	 +"    new             start a new sim (by default" + System.lineSeparator()
+	 +"                    (Note : if 'load' is absent, 'new' is automatically appended.)," + System.lineSeparator()
+	 +"    headless        run in console mode without an user interface (UI)" + System.lineSeparator()
+	 +"    0               256MB Min, 1024MB Max (by default)" + System.lineSeparator()
+	 +"    1               256MB Min, 512MB Max" + System.lineSeparator()
+	 +"    2               256MB Min, 768MB Max" + System.lineSeparator()
+	 +"    3               256MB Min, 1024MB Max" + System.lineSeparator()
+	 +"    4               256MB Min, 1536MB Max" + System.lineSeparator()
+	 +"    5               256MB Min, 2048MB Max" + System.lineSeparator()
+	 +"    load            open the File Chooser at the /.mars-sim/saved/" + System.lineSeparator() 
+	 +"                    and wait for user to choose a saved sim" + System.lineSeparator()
+	 +"    load 123.sim    load the sim with filename '123.sim'" + System.lineSeparator()
+	 +"                    (Note : '123.sim' must be located at the same " + System.lineSeparator()
+	 +"                            folder as the jarfile)" + System.lineSeparator()
+	 +"    noaudio         disable background music and sound effect" + System.lineSeparator()
+	 +"    512x            set time ratio to 512x (for headless edition only)" + System.lineSeparator()		
+	 +"    1024x           set time ratio to 1024x (for headless edition only)" + System.lineSeparator();                   		
+
+	 
 	/**
 	 * Constructor 1.
 	 * 
@@ -105,7 +132,12 @@ public class MarsProjectHeadless {
 		else if (argList.contains("-8192x"))
 			userTimeRatio = 8192;
 
-		if (argList.contains("-new")) {
+		if (argList.contains("-help")) {
+			System.out.println(HELP);
+			System.exit(1);
+		}
+		
+		else if (argList.contains("-new")) {
 			// If new argument, create new simulation.
 			handleNewSimulation(userTimeRatio); // if this fails we always exit, continuing is useless
 			result = true;

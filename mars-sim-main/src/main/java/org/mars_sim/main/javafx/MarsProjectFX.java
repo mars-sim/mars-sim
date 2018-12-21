@@ -382,6 +382,16 @@ public class MarsProjectFX extends Application {
 	}
 
 	public void prepare() {
+		
+		if (helpPage) {
+			// CASE D //
+			// logger.config("Displaying help instructions in headless mode in " +
+			// Simulation.OS);
+			System.out.println(manpage);
+			Platform.exit();
+			System.exit(1);
+		}
+		
 		SimulationConfig.loadConfig();
 
 		if (!headless) {
@@ -487,15 +497,6 @@ public class MarsProjectFX extends Application {
 					exitWithError("Could not generate help files ", e);
 				}
 			} 
-			
-			else if (helpPage) {
-				// CASE D //
-				// logger.config("Displaying help instructions in headless mode in " +
-				// Simulation.OS);
-				System.out.println(manpage);
-				Platform.exit();
-				System.exit(1);
-			}
 		}
 	}
 

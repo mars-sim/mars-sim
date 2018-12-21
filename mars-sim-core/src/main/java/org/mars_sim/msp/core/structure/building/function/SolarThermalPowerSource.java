@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -51,10 +50,10 @@ implements Serializable {
 	@Override
 	public double getCurrentPower(Building building) {
 		BuildingManager manager = building.getBuildingManager();
+		
 		if (location == null)
 			location = manager.getSettlement().getCoordinates();
-//		if (surface == null)
-//			surface = Simulation.instance().getMars().getSurfaceFeatures();
+
 		double sunlight = surface.getSolarIrradiance(location) * efficiency_solar_thermal / 1000D * ARRAY_AREA;
 		double max = getMaxPower(); 
 		if (sunlight <= max)

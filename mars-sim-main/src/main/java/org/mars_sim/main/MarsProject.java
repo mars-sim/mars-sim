@@ -48,6 +48,35 @@ public class MarsProject {
 
 	private Simulation sim = Simulation.instance();
 
+	private static final String HELP = 
+
+			 "java -jar mars-sim-[$VERSION].jar" + System.lineSeparator()
+			 +"                    (Note : start a new sim)" + System.lineSeparator()
+			 +"   or" + System.lineSeparator()                           
+			 + System.lineSeparator()
+			 +" java -jar jarfile [args...]" + System.lineSeparator()
+			 +"                   (Note : start mars-sim with arguments)" + System.lineSeparator()
+			 + System.lineSeparator()
+			 +"  where args include :" + System.lineSeparator()
+			 + System.lineSeparator()
+			 +"    new             start a new sim (by default" + System.lineSeparator()
+			 +"                    (Note : if 'load' is absent, 'new' is automatically appended.)," + System.lineSeparator()
+			 +"    headless        run in console mode without an user interface (UI)" + System.lineSeparator()
+			 +"    0               256MB Min, 1024MB Max (by default)" + System.lineSeparator()
+			 +"    1               256MB Min, 512MB Max" + System.lineSeparator()
+			 +"    2               256MB Min, 768MB Max" + System.lineSeparator()
+			 +"    3               256MB Min, 1024MB Max" + System.lineSeparator()
+			 +"    4               256MB Min, 1536MB Max" + System.lineSeparator()
+			 +"    5               256MB Min, 2048MB Max" + System.lineSeparator()
+			 +"    load            open the File Chooser at the /.mars-sim/saved/" + System.lineSeparator() 
+			 +"                    and wait for user to choose a saved sim" + System.lineSeparator()
+			 +"    load 123.sim    load the sim with filename '123.sim'" + System.lineSeparator()
+			 +"                    (Note : '123.sim' must be located at the same " + System.lineSeparator()
+			 +"                            folder as the jarfile)" + System.lineSeparator()
+			 +"    noaudio         disable background music and sound effect" + System.lineSeparator()
+			 +"    512x            set time ratio to 512x (for headless edition only)" + System.lineSeparator()		
+			 +"    1024x           set time ratio to 1024x (for headless edition only)" + System.lineSeparator();                   		
+
 	/**
 	 * Constructor 1.
 	 * 
@@ -60,9 +89,6 @@ public class MarsProject {
 		sim.getSimExecutor().submit(new SimulationTask());
 	}
 
-	// public void submitWork(Runnable task) {
-	// worker.submit(task);
-	// }
 
 	public class SimulationTask implements Runnable {
 
@@ -75,7 +101,12 @@ public class MarsProject {
 			useGUI = !argList.contains("-headless");
 			generateHelp = argList.contains("-generateHelp");
 
-			if (useGUI) {
+			if (argList.contains("-help")) {
+				System.out.println(HELP);
+				System.exit(1);
+			}
+			
+			else if (useGUI) {
 				// System.setProperty("sun.java2d.opengl", "true"); // not compatible with
 				// SplashWindow and SimulationConfigEditor
 				System.setProperty("sun.java2d.ddforcevram", "true"); // question: is this compatible with opengl in
@@ -298,8 +329,6 @@ public class MarsProject {
 		Logger.getLogger("").setLevel(Level.FINE);
 
 		MarsProject.args = args;
-		// logger.config("MarsProject's main() is on "+Thread.currentThread().getName() +
-		// " Thread");
 
 		/*
 		 * [landrus, 27.11.09]: Read the logging configuration from the classloader, so
@@ -333,15 +362,19 @@ public class MarsProject {
 //        }
 
 		// starting the simulation
-		MarsProject mp = new MarsProject(args);
-		// mp.start(com.jme3.system.JmeContext.Type.Headless);
+		new MarsProject(args);
+		
+//		 mp.start(com.jme3.system.JmeContext.Type.Headless);
 
-		/*
-		 * @Override public void simpleInitApp() { // TODO Auto-generated method stub }
-		 * 
-		 * 
-		 * @Override public void simpleUpdate(float tpf) { // Interact with game events
-		 * in the main loop / }
-		 */
+//		 @Override 
+//		 public void simpleInitApp() { 
+//			 // TODO Auto-generated method stub 
+//		 }
+//		 @Override 
+//		 public void simpleUpdate(float tpf) { 
+//			 // Interact with game events
+//			 //in the main loop 
+//		 }
+
 	}
 }
