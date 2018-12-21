@@ -1576,56 +1576,61 @@ public class ChatUtils {
 				}
 							
 				Map<Integer, List<MissionPlanning>> plannings = missionManager.getHistoricalMissions();
-
+				
 				int size = plannings.size();
 				
-				int min = Math.min(size, max);
-				
+//				int min = Math.min(size, max);
+
+				System.out.println("# of sols : " + size);
+
 				if (size == 0) {
 					responseText.append(System.lineSeparator());
-					responseText.append("No mission plans have been submitted.");
+					responseText.append("              # of plans : 0");
+//					responseText.append("No mission plans have been submitted.");
 				}
 				
 				else {
 					int sol = marsClock.getMissionSol();
-					for (int i=0; i< min; i++) {
-						List<MissionPlanning> plans = plannings.get(sol - i);
-						int approved = 0;
-						int notApproved = 0;
-						int pending = 0;
-						
-						responseText.append(System.lineSeparator());
-						responseText.append(System.lineSeparator());
-						responseText.append("           < Sol " + (sol - i) + " >");
-						responseText.append(System.lineSeparator());
-						responseText.append(" -----------------------------");
-						
-						if (plans != null && !plans.isEmpty()) {
+					for (int i=0; i< max; i++) {
+						if (sol - i > 0) {
+							List<MissionPlanning> plans = plannings.get(sol - i);
+							int approved = 0;
+							int notApproved = 0;
+							int pending = 0;
 							
-							for (MissionPlanning mp : plans) {
-								if (PlanType.PENDING == mp.getStatus())
-									pending++;
-								else if (PlanType.NOT_APPROVED == mp.getStatus())
-									notApproved++;
-								else if (PlanType.APPROVED == mp.getStatus())
-									approved++;	
+							responseText.append(System.lineSeparator());
+							responseText.append(System.lineSeparator());
+							responseText.append("           < Sol " + (sol - i) + " >");
+							responseText.append(System.lineSeparator());
+							responseText.append(" -----------------------------");
+							
+							if (plans != null && !plans.isEmpty()) {
+								
+								for (MissionPlanning mp : plans) {
+									if (PlanType.PENDING == mp.getStatus())
+										pending++;
+									else if (PlanType.NOT_APPROVED == mp.getStatus())
+										notApproved++;
+									else if (PlanType.APPROVED == mp.getStatus())
+										approved++;	
+								}
+								
+								responseText.append(System.lineSeparator());
+								responseText.append("     # of plans approved : " + approved);
+								responseText.append(System.lineSeparator());
+								responseText.append(" # of plans not approved : " + notApproved);
+								responseText.append(System.lineSeparator());
+								responseText.append("      # of plans pending : " + pending);
+								responseText.append(System.lineSeparator());
 							}
 							
-							responseText.append(System.lineSeparator());
-							responseText.append("     # of plans approved : " + approved);
-							responseText.append(System.lineSeparator());
-							responseText.append(" # of plans not approved : " + notApproved);
-							responseText.append(System.lineSeparator());
-							responseText.append("      # of plans pending : " + pending);
-							responseText.append(System.lineSeparator());
-						}
-						
-						else {
-							responseText.append(System.lineSeparator());
-							responseText.append("              # of plans : 0");
-							responseText.append(System.lineSeparator());
-						}
-					}		
+							else {
+								responseText.append(System.lineSeparator());
+								responseText.append("              # of plans : 0");
+								responseText.append(System.lineSeparator());
+							}
+						}		
+					}
 				}
 			}
 			
@@ -1664,7 +1669,8 @@ public class ChatUtils {
 				
 				if (size == 0) {
 					responseText.append(System.lineSeparator());
-					responseText.append("No mission plans have been submitted.");
+					responseText.append("              # of plans : 0");
+//					responseText.append("No mission plans have been submitted.");
 				}
 				
 				else {
@@ -1674,18 +1680,20 @@ public class ChatUtils {
 					int pending = 0;
 					
 					for (int i=0; i< size + 1; i++) {
-						List<MissionPlanning> plans = plannings.get(sol - i);
-						
-						if (plans != null && !plans.isEmpty()) {
+						if (sol - i > 0) {
+							List<MissionPlanning> plans = plannings.get(sol - i);
 							
-							for (MissionPlanning mp : plans) {
-								if (PlanType.PENDING == mp.getStatus())
-									pending++;
-								else if (PlanType.NOT_APPROVED == mp.getStatus())
-									notApproved++;
-								else if (PlanType.APPROVED == mp.getStatus())
-									approved++;	
-							}						
+							if (plans != null && !plans.isEmpty()) {
+								
+								for (MissionPlanning mp : plans) {
+									if (PlanType.PENDING == mp.getStatus())
+										pending++;
+									else if (PlanType.NOT_APPROVED == mp.getStatus())
+										notApproved++;
+									else if (PlanType.APPROVED == mp.getStatus())
+										approved++;	
+								}						
+							}
 						}
 					}		
 					
