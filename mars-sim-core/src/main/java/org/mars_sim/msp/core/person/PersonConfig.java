@@ -112,37 +112,37 @@ public class PersonConfig implements Serializable {
 	private static final String ACTIVITY = "favorite-activity";
 
 	// for 3 types of metabolic loads
-	private double[] o2ConsumptionRate = new double[] { 0, 0, 0 };
+	private static double[] o2ConsumptionRate = new double[] { 0, 0, 0 };
 	// for water, dessert, food
-	private double[] consumptionRates = new double[] { 0, 0, 0 };
+	private static double[] consumptionRates = new double[] { 0, 0, 0 };
 	// for grey2BlackWaterRatio, gender ratio
-	private double[] ratio = new double[] { 0, 0 };
+	private static double[] ratio = new double[] { 0, 0 };
 	// for stress breakdown and high fatigue collapse chance
-	private double[] chance = new double[] { 0, 0 };
+	private static double[] chance = new double[] { 0, 0 };
 	// for various time values
-	private double[] time = new double[] { 0, 0, 0, 0, 0, 0, 0 };
+	private static double[] time = new double[] { 0, 0, 0, 0, 0, 0, 0 };
 	// for min and max temperature
-	private double[] temperature = new double[] { 0, 0 };
+	private static double[] temperature = new double[] { 0, 0 };
 
-	private double waterUsage = 0;
+	private static double waterUsage = 0;
 
-	private double pressure = 0;
+	private static double pressure = 0;
 
-	private Document personDoc;
-	private Element root;
+	private static Document personDoc;
+	private static Element root;
 
-	private Map<String, Double> personalityDistribution;
+	private static Map<String, Double> personalityDistribution;
 
-	private List<String> personNameList;
-	private List<String> countries;
-	private List<String> ESAcountries;
-	private List<String> sponsors;
-	private List<String> longSponsors;
+	private static List<String> personNameList;
+	private static List<String> countries;
+	private static List<String> ESAcountries;
+	private static List<String> sponsors;
+	private static List<String> longSponsors;
 	
-	private List<Map<Integer, List<String>>> lastNames;
-	private List<Map<Integer, List<String>>> firstNames;
+	private static List<Map<Integer, List<String>>> lastNames;
+	private static List<Map<Integer, List<String>>> firstNames;
 
-	private Commander commander;
+	private static Commander commander;
 
 	/**
 	 * Constructor

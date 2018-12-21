@@ -116,23 +116,35 @@ public class Commander implements Serializable {
     	return phase;
     }
     
-    public void setMarsSocietyAffiliated(String value) {
-    	if (value.equalsIgnoreCase("y"))
+    public void setMarsSocietyStr(String value) {
+    	if (value.equalsIgnoreCase("y")) {
     		isMarsSocietyAffiliated = true;
-    	else
-        	isMarsSocietyAffiliated = false;    		
+//    		System.out.println("isMarsSocietyAffiliated : " + isMarsSocietyAffiliated);
+    	}
+    	else {
+        	isMarsSocietyAffiliated = false;   
+//    		System.out.println("isMarsSocietyAffiliated : " + isMarsSocietyAffiliated);
+    	}
+    }
+    
+    public void setMarsSociety(boolean value) {
+    	isMarsSocietyAffiliated = value;   		
     }
     
 //    public boolean isMarsSocietyAffiliated() {
 //    	return isMarsSocietyAffiliated;
 //    }
 
-    public String isMarsSocietyAffiliated() {
+    public String isMarsSocietyStr() {
     	if (isMarsSocietyAffiliated)
     		return "y";
    		return "n";
     }
 
+    public boolean isMarsSociety() {
+    	return isMarsSocietyAffiliated;
+    }
+    
     public String getSponsor() {
     	String s = null;	
     	if (isMarsSocietyAffiliated) {
@@ -166,7 +178,7 @@ public class Commander implements Serializable {
         	   System.lineSeparator() + getFieldName("           Job : ") + getJobStr() +
         	   System.lineSeparator() + getFieldName("       Country : ") + getCountryStr() + 
         	   System.lineSeparator() + getFieldName("       Sponsor : ") + getSponsor() +
-        	   System.lineSeparator() + getFieldName(" MS Affiliated : ") + isMarsSocietyAffiliated() 
+        	   System.lineSeparator() + getFieldName("  Mars Society : ") + isMarsSocietyStr() 
 //        	   System.lineSeparator() + "   Settlement Phase: " + phase
         	   ;
         

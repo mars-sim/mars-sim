@@ -133,7 +133,7 @@ public class InteractiveTerm {
 	    	}
 	    	else {
 	    		try {
-					boolean canLoad = profile.loadProperties();
+					boolean canLoad = CommanderProfile.loadProfile();
 					
 					if (canLoad) {
 			            terminal.println(System.lineSeparator() 

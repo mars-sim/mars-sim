@@ -69,21 +69,23 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.terminal.Commander;
+import org.mars_sim.msp.core.terminal.CommanderProfile;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.config.controller.MainMenuController;
 import org.mars_sim.msp.ui.javafx.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
-
 import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.scene.GameScene;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialog.DialogTransition;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXToggleButton;
 
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.TileBuilder;
@@ -1219,52 +1221,74 @@ public class MainMenu {
 	public BorderPane createCommanderPane() {
 		if (exitDialog == null || (exitDialog != null && !exitDialog.isVisible())) {
 
+			Label msgLabel = new Label();
+			msgLabel.setFont(new Font(18)); 
+			msgLabel.setStyle("-fx-background-color: black; -fx-text-fill: red;");
+			String msg = "Note : Not all fields are filled out.";
+			
 			Commander commander = SimulationConfig.instance().getPersonConfiguration().getCommander();
 
 			final double MAX_FONT_SIZE = 27.0; 
 			final double FONT_SIZE = 18.0; 
 			
 			BorderPane pane = new BorderPane();
+			pane.setPrefSize(350, 460);
 			
-			JFXButton backBtn = new JFXButton("Back");
+			JFXButton backBtn = new JFXButton();//"Back");
+			MainScene.setQuickToolTip(backBtn, "Go back to previous screen");
 			IconNode backIcon = new IconNode(FontAwesome.BACKWARD);
 			backIcon.setIconSize(25);
 			backBtn.setGraphic(backIcon);
+			backIcon.setFill(Color.CORAL);
 //			backBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/red_undo_32.png"))));
-			backBtn.setPrefSize(95, 25);
+//			backBtn.setPrefSize(25, 25);
 			backBtn.setStyle("-fx-background-color: lightgoldenrodyellow;");// lightgrey;");
-			backBtn.setOnAction(e -> {
-				menuApp.backToSelectMode();
-				e.consume();
-			});
 			setMouseCursor(backBtn);
+			backBtn.setAlignment(Pos.CENTER);		
+			
+			JFXButton saveBtn = new JFXButton();//("Save");
+			MainScene.setQuickToolTip(saveBtn, "Save the this profile");
+			IconNode saveIcon = new IconNode(FontAwesome.DOWNLOAD);
+			saveIcon.setIconSize(25);
+			saveBtn.setGraphic(saveIcon);
+			saveIcon.setFill(Color.CORAL);
+//			saveBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_32.png"))));
+//			saveBtn.setPrefSize(25, 25);
+			saveBtn.setStyle("-fx-background-color: lightgoldenrodyellow;");// lightgrey;");
+			setMouseCursor(saveBtn);
+			saveBtn.setAlignment(Pos.CENTER);	
+			
+			JFXButton loadBtn = new JFXButton();//"Load");
+			MainScene.setQuickToolTip(loadBtn, "Load the previously saved profile");
+			IconNode loadIcon = new IconNode(FontAwesome.UPLOAD);
+			loadIcon.setIconSize(25);
+			loadBtn.setGraphic(loadIcon);
+			loadIcon.setFill(Color.CORAL);
+//			loadBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/red_undo_32.png"))));
+//			loadBtn.setPrefSize(25, 25);
+			loadBtn.setStyle("-fx-background-color: lightgoldenrodyellow;");// lightgrey;");
+			setMouseCursor(loadBtn);
+			loadBtn.setAlignment(Pos.CENTER);		
 			
 			JFXButton doneBtn = new JFXButton("Commit");
-			IconNode doneIcon = new IconNode(FontAwesome.FORWARD);
+			MainScene.setQuickToolTip(doneBtn, "Proceed with this profile");
+			IconNode doneIcon = new IconNode(FontAwesome.PLAY);
 			doneIcon.setIconSize(25);
-			backBtn.setGraphic(doneIcon);
+			doneBtn.setGraphic(doneIcon);
+			doneIcon.setFill(Color.CORAL);
 //			doneBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_32.png"))));
-			doneBtn.setPrefSize(95, 25);
-			doneBtn.setDisable(true);
+			doneBtn.setPrefSize(90, 25);
 			doneBtn.setStyle("-fx-background-color: lightgoldenrodyellow;");// lightgrey;");
-			doneBtn.setOnAction(e -> {
-				if (areAllGoodToGo()) {
-					UnitManager.setCommander(true);
-					runNew(isFXGL, true);
-				}
-				e.consume();
-			});
+//			doneBtn.setDisable(false);
 			setMouseCursor(doneBtn);
-			
-			HBox doneHB = new HBox();
-			doneHB.setPadding(new Insets(5));
-			doneHB.setSpacing(20);
-			doneHB.getChildren().addAll(backBtn, doneBtn);
-			doneHB.setAlignment(Pos.BOTTOM_CENTER);
-
-			backBtn.toFront();
-			doneBtn.toFront();
-			
+			doneBtn.setAlignment(Pos.CENTER);		
+						
+			HBox btnHB = new HBox();
+//			btnHB.setPrefSize(300, 30);
+			btnHB.setPadding(new Insets(5,5,5,0));
+			btnHB.setSpacing(5);
+			btnHB.getChildren().addAll(backBtn, loadBtn, saveBtn, doneBtn);
+			btnHB.setAlignment(Pos.CENTER_RIGHT);		
 			
 			Label titleLabel = new Label("Commander Profile");
 			titleLabel.setAlignment(Pos.TOP_CENTER);
@@ -1289,8 +1313,13 @@ public class MainMenu {
 						&& !Conversion.isBlank(first)) {
 					commander.setFirstName(first);
 					goodToGo[0] = true;
-					if (areAllGoodToGo()) 
-						doneBtn.setDisable(false);
+					if (areAllGoodToGo()) {
+//						doneBtn.setDisable(false);
+						msgLabel.setText("");
+					}
+					else {
+						msgLabel.setText(msg);
+					}
 				} 
 				
 				else {
@@ -1299,16 +1328,12 @@ public class MainMenu {
 					alert.setTitle("Invalid Input");
 					alert.showAndWait();
 					goodToGo[0] = false;
-					doneBtn.setDisable(true);
+//					doneBtn.setDisable(true);
 					fnameTF.requestFocus();
+					msgLabel.setText(msg);
 				}
 			});
 					
-//			HBox fnameBox = new HBox();
-//			fnameBox.setPadding(new Insets(5));
-//			fnameBox.getChildren().addAll(fnameLabel, fnameTF);
-//			fnameBox.setAlignment(Pos.CENTER);
-
 			// Last Name
 			Label lnameLabel = new Label("Last Name :   ");
 			lnameLabel.setFont(new Font(FONT_SIZE)); 
@@ -1324,8 +1349,13 @@ public class MainMenu {
 						&& !Conversion.isBlank(last)) {
 					commander.setLastName(last);
 					goodToGo[1] = true;
-					if (areAllGoodToGo()) 
-						doneBtn.setDisable(false);
+					if (areAllGoodToGo()) {
+//						doneBtn.setDisable(false);
+						msgLabel.setText("");
+					}
+					else {
+						msgLabel.setText(msg);
+					}
 				} 
 				
 				else {
@@ -1334,17 +1364,12 @@ public class MainMenu {
 					alert.setTitle("Invalid Input");
 					alert.showAndWait();
 					goodToGo[1] = false;
-					doneBtn.setDisable(true);
+//					doneBtn.setDisable(true);
 					lnameTF.requestFocus();
+					msgLabel.setText(msg);
 				}
 			});
 
-//			HBox lnameBox = new HBox();
-//			lnameBox.setPadding(new Insets(5));
-//			lnameLabel.setStyle("-fx-background-color: black; -fx-text-fill: lightgoldenrodyellow;");
-//			lnameBox.getChildren().addAll(lnameLabel, lnameTF);
-//			lnameBox.setAlignment(Pos.CENTER);
-//		
 			// Gender
 			Label genderLabel = new Label("Gender :   ");
 			genderLabel.setFont(new Font(FONT_SIZE)); 
@@ -1361,25 +1386,26 @@ public class MainMenu {
 				@Override
 				public void changed(ObservableValue ov, String t, String t1) {
 					if (t1.equals("") || t1 == null) {
-						doneBtn.setDisable(true);
+//						doneBtn.setDisable(true);
 						goodToGo[2] = false;
 						genderCombo.requestFocus();
+						msgLabel.setText(msg);
 					}
 					else {
 //					if (!t.equals(t1)) {
 						genderCombo.setValue(t1);
 						commander.setGender(t1);
 						goodToGo[2] = true;
-						if (areAllGoodToGo()) 
-							doneBtn.setDisable(false);
+						if (areAllGoodToGo()) {
+//							doneBtn.setDisable(false);
+							msgLabel.setText("");
+						}
+						else {
+							msgLabel.setText(msg);
+						}
 					}
 				}
 			});
-
-//			HBox genderBox = new HBox();
-//			genderBox.setPadding(new Insets(5));
-//			genderBox.getChildren().addAll(genderLabel, genderCombo);
-//			genderBox.setAlignment(Pos.CENTER);
 
 			// Age
 			Label ageLabel = new Label("Age :   ");
@@ -1402,8 +1428,13 @@ public class MainMenu {
 					if (age >= 18 && age <= 80) {
 						commander.setAge(age);
 						goodToGo[3] = true;
-						if (areAllGoodToGo()) 
-							doneBtn.setDisable(false);
+						if (areAllGoodToGo()) {
+//							doneBtn.setDisable(false);
+							msgLabel.setText("");
+						}
+						else {
+							msgLabel.setText(msg);
+						}
 					}
 					else {
 						Alert alert = new Alert(AlertType.ERROR, "The commander's age must be between 18 and 80.");
@@ -1411,8 +1442,9 @@ public class MainMenu {
 						alert.setTitle("Invalid Input");
 						alert.showAndWait();
 						goodToGo[3] = false;
-						doneBtn.setDisable(true);
+//						doneBtn.setDisable(true);
 						ageTF.requestFocus();
+						msgLabel.setText(msg);
 					}
 				} 
 				
@@ -1422,8 +1454,9 @@ public class MainMenu {
 					alert.setTitle("Invalid Input");
 					alert.showAndWait();
 					goodToGo[3] = false;
-					doneBtn.setDisable(true);
+//					doneBtn.setDisable(true);
 					ageTF.requestFocus();
+					msgLabel.setText(msg);
 				}
 			});
 
@@ -1449,26 +1482,28 @@ public class MainMenu {
 				@Override
 				public void changed(ObservableValue ov, String t, String t1) {
 					if (t1.equals("") || t1 == null) {
-						doneBtn.setDisable(true);
+//						doneBtn.setDisable(true);
 						goodToGo[4] = false;
 						jobCombo.requestFocus();
+						msgLabel.setText(msg);
 					}
 					else {
 //					if (!t.equals(t1)) {
 						jobCombo.setValue(t1);
-						int id = jobs.indexOf(t1);
-						commander.setJob(id + 1);
+//						System.out.println(t1);
+//						int id = jobs.indexOf(t1);
+						commander.setJobStr(t1);
 						goodToGo[4] = true;
-						if (areAllGoodToGo()) 
-							doneBtn.setDisable(false);
+						if (areAllGoodToGo()) {
+//							doneBtn.setDisable(false);
+							msgLabel.setText("");
+						}
+						else {
+							msgLabel.setText(msg);
+						}
 					}
 				}
 			});
-
-//			HBox jobBox = new HBox();
-//			jobBox.setPadding(new Insets(5));
-//			jobBox.getChildren().addAll(jobLabel, jobCombo);
-//			jobBox.setAlignment(Pos.CENTER);
 
 			// Country
 			Label countryLabel = new Label("Country :   ");
@@ -1486,27 +1521,56 @@ public class MainMenu {
 				@Override
 				public void changed(ObservableValue ov, String t, String t1) {
 					if (t1.equals("") || t1 == null) {
-						doneBtn.setDisable(true);
+//						doneBtn.setDisable(true);
 						goodToGo[5] = false;
 						countryCombo.requestFocus();
+						msgLabel.setText(msg);
 					}
 					else {
 //					if (!t.equals(t1)) {
 						countryCombo.setValue(t1);
-						int id = countries.indexOf(t1);
-						commander.setCountryInt(id+1);
+//						int id = countries.indexOf(t1);
+						commander.setCountryStr(t1);
 						goodToGo[5] = true;
-						if (areAllGoodToGo()) 
-							doneBtn.setDisable(false);
+						if (areAllGoodToGo()) {
+//							doneBtn.setDisable(false);
+							msgLabel.setText("");
+						}
+						else {
+							msgLabel.setText(msg);
+						}
 					}
 				}
 			});
 
-//			HBox countryBox = new HBox();
-//			countryBox.setPadding(new Insets(5, 5, 5, 5));
-//			countryBox.getChildren().addAll(countryLabel, countryCombo);
-//			countryBox.setAlignment(Pos.CENTER);
+			// Mars Society Affiliation
+			Label msLabel = new Label("Mars Society :   ");
+			msLabel.setFont(new Font(FONT_SIZE)); 
+			msLabel.setStyle("-fx-background-color: black; -fx-text-fill: lightgoldenrodyellow;");
+			
+			JFXToggleButton msBox = new JFXToggleButton();
+			msBox.setStyle("-fx-background-color: black; -fx-text-fill: lightgoldenrodyellow;");
+			msBox.setSelected(true);
+    		commander.setMarsSociety(true);
+			msBox.setText("Yes. Affiliated");
+			msBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		        public void changed(ObservableValue<? extends Boolean> ov,
+		            Boolean old_val, Boolean new_val) {
+//		        	if (!old_val.equals(new_val)) {
+		        	boolean val = new_val.booleanValue();
+			        	if (val) {
+			    			msBox.setText("  Yes. Affiliated");
+			        		commander.setMarsSociety(true);
+			        	}
+			        	else {
+			    			msBox.setText("  No. Not affiliated");
+			        		commander.setMarsSociety(false);
+			        	}
+//		        	}
 
+		        }
+		    });
+			
 			// Set up grid pane
 			GridPane gridPane = new GridPane();
 			gridPane.getStyleClass().add("jfx-popup-container; -fx-background-color:transparent;");
@@ -1518,7 +1582,7 @@ public class MainMenu {
 			ColumnConstraints right = new ColumnConstraints();
 			right.setPrefWidth(180);
 			ColumnConstraints left = new ColumnConstraints();
-			left.setPrefWidth(120);
+			left.setPrefWidth(140);
 
 			GridPane.setConstraints(fnameLabel, 0, 0);
 			GridPane.setConstraints(lnameLabel, 0, 1);
@@ -1526,6 +1590,7 @@ public class MainMenu {
 			GridPane.setConstraints(ageLabel, 0, 3);
 			GridPane.setConstraints(jobLabel, 0, 4);
 			GridPane.setConstraints(countryLabel, 0, 5);
+			GridPane.setConstraints(msLabel, 0, 6);
 
 			GridPane.setConstraints(fnameTF, 1, 0);
 			GridPane.setConstraints(lnameTF, 1, 1);
@@ -1533,13 +1598,15 @@ public class MainMenu {
 			GridPane.setConstraints(ageTF, 1, 3);
 			GridPane.setConstraints(jobCombo, 1, 4);
 			GridPane.setConstraints(countryCombo, 1, 5);
-
+			GridPane.setConstraints(msBox, 1, 6);
+			
 			GridPane.setHalignment(fnameLabel, HPos.RIGHT);
 			GridPane.setHalignment(lnameLabel, HPos.RIGHT);
 			GridPane.setHalignment(genderLabel, HPos.RIGHT);
 			GridPane.setHalignment(ageLabel, HPos.RIGHT);
 			GridPane.setHalignment(jobLabel, HPos.RIGHT);
 			GridPane.setHalignment(countryLabel, HPos.RIGHT);
+			GridPane.setHalignment(msLabel, HPos.RIGHT);
 
 			GridPane.setHalignment(fnameTF, HPos.LEFT);
 			GridPane.setHalignment(lnameTF, HPos.LEFT);
@@ -1547,20 +1614,81 @@ public class MainMenu {
 			GridPane.setHalignment(ageTF, HPos.LEFT);
 			GridPane.setHalignment(jobCombo, HPos.LEFT);
 			GridPane.setHalignment(countryCombo, HPos.LEFT);
-
+			GridPane.setHalignment(msBox, HPos.LEFT);
+			
 			gridPane.getColumnConstraints().addAll(left, right);
 			gridPane.getChildren().addAll(
-					fnameLabel, lnameLabel, genderLabel, ageLabel, jobLabel, countryLabel,
-					fnameTF, lnameTF, genderCombo, ageTF, jobCombo, countryCombo);
-			
-//			VBox vb = new VBox();
-//			vb.setAlignment(Pos.CENTER);
-//			vb.setPadding(new Insets(3, 3, 3, 3));
-//			vb.getChildren().addAll(fnameBox, lnameBox, genderBox, ageBox, jobBox, countryBox);
+					fnameLabel, lnameLabel, genderLabel, ageLabel, jobLabel, countryLabel, msLabel,
+					fnameTF, lnameTF, genderCombo, ageTF, jobCombo, countryCombo, msBox);
 					
+			VBox msgBox = new VBox();
+			msgBox.setPadding(new Insets(5, 5, 5, 5));
+			msgBox.getChildren().addAll(btnHB, msgLabel);
+			msgBox.setAlignment(Pos.CENTER);
+			
 			pane.setCenter(gridPane);
 			pane.setTop(titleLabel);
-			pane.setBottom(doneHB);
+			pane.setBottom(msgBox);
+			
+			// continue with the buttons' actions 
+			backBtn.setOnAction(e -> {
+				menuApp.backToSelectMode();
+				e.consume();
+			});
+
+			saveBtn.setOnAction(e -> {
+				if (areAllGoodToGo()) {
+					try {
+						CommanderProfile.saveProfile(commander);
+						msgLabel.setText("Note : Profile just saved.");
+					} catch (IOException ei) {
+						// TODO Auto-generated catch block
+						ei.printStackTrace();
+					}
+				}
+				e.consume();
+			});
+
+			loadBtn.setOnAction(e -> {
+				try {
+					Commander cc = CommanderProfile.loadCommander();
+					msgLabel.setText("Note: Profile just loaded.");
+					// Populate the commander profile
+					String g = "Female";
+					if (cc.getGender().equalsIgnoreCase("m")
+							|| cc.getGender().equalsIgnoreCase("male"))
+						g = "Male";			
+					fnameTF.setText(cc.getFirstName());
+					lnameTF.setText(cc.getLastName());
+					ageTF.setText(cc.getAge() + "");
+					countryCombo.getSelectionModel().select(cc.getCountryStr());
+					jobCombo.getSelectionModel().select(cc.getJobStr());
+					genderCombo.getSelectionModel().select(g);
+					msBox.setSelected(cc.isMarsSociety());
+
+				} catch (IOException ei) {
+					// TODO Auto-generated catch block
+					ei.printStackTrace();
+				}
+				e.consume();
+			});
+
+			doneBtn.setOnAction(e -> {
+				if (areAllGoodToGo()) {
+					UnitManager.setCommander(true);
+					runNew(isFXGL, true);
+					msgLabel.setText("");
+				}
+				else {
+					msgLabel.setText(msg);
+				}
+				e.consume();
+			});
+			
+			backBtn.toFront();
+			saveBtn.toFront();
+			loadBtn.toFront();
+			doneBtn.toFront();
 			
 			return pane;
 		}

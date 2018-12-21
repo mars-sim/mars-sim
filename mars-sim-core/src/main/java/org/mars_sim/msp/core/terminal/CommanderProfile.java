@@ -43,9 +43,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     private static final String KEY_STROKE_DOWN = "pressed DOWN";
 
     private static final String ONE_SPACE = " ";
-    
-//	private static ClassLoader loader = InteractiveTerm.class.getClassLoader();
-//	private static final String path = loader.getSystemClassLoader().getResource(".").getPath() + "/commander.properties";
+
     private static final String FILENAME = "/commander.profile";
 	private static final String DIR = Simulation.DEFAULT_DIR;
 	private static final String PATH = DIR + FILENAME;
@@ -65,7 +63,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 			"Mars Society Affiliated",
 			"Country (1-28)"};
 	
-	private Commander commander;
+	private static Commander commander;
     	
 	private SwingTextTerminal terminal;
 	
@@ -113,7 +111,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         addGender(textIO, getFieldName(fields[2]), () -> commander.getGender(), s -> commander.setGender(s));
         addAge(textIO, getFieldName(fields[3]), () -> commander.getAge(), s -> commander.setAge(s));	      
         addJobTask(textIO, getFieldName(fields[4]), () -> commander.getJob(), s -> commander.setJob(s));	
-        addAffiliation(textIO, getFieldName(fields[5]), () -> commander.isMarsSocietyAffiliated(), s -> commander.setMarsSocietyAffiliated(s));
+        addAffiliation(textIO, getFieldName(fields[5]), () -> commander.isMarsSocietyStr(), s -> commander.setMarsSocietyStr(s));
         addCountryTask(textIO, getFieldName(fields[6]), () -> commander.getCountryInt(), s -> commander.setCountryInt(s));
           
         setUpCountryKey();
@@ -421,8 +419,11 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         return newList;    
     }
     
+	public static void saveProfile() throws IOException {
+		saveProfile(commander);
+	}
 
-	public void saveProfile() throws IOException {
+	public static void saveProfile(Commander commander) throws IOException {
 	   	Properties p = new Properties();
 		p.setProperty("commander.lastname", commander.getLastName());
 		p.setProperty("commander.firstname", commander.getFirstName());
@@ -430,19 +431,23 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 		p.setProperty("commander.age", commander.getAge() + "");
 		p.setProperty("commander.job", commander.getJobStr());
 		p.setProperty("commander.country", commander.getCountryStr());
-		p.setProperty("commander.isMarsSocietyAffiliated", commander.isMarsSocietyAffiliated());
+		p.setProperty("commander.MarsSociety", commander.isMarsSocietyStr());
 	    saveProperties(p);
 
 	}
 	
-	public void saveProperties(Properties p) throws IOException {
+	public static void saveProperties(Properties p) throws IOException {
         FileOutputStream fr = new FileOutputStream(PATH);
         p.store(fr, "Commander's Profile");
         fr.close();
         logger.config("Commander's profile saved: " + p);
     }
 
-    public boolean loadProperties() throws IOException {
+    public static boolean loadProfile() throws IOException {
+    	return loadCommander(commander);
+    }
+    
+    public static boolean loadCommander(Commander commander) throws IOException {
     	
 		File f = new File(DIR, FILENAME);
 
@@ -452,13 +457,19 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	        FileInputStream fi = new FileInputStream(PATH);
 	        p.load(fi);
 	        fi.close();
+
+//	        commander.setLastName(p.getProperty("commander.lastname"));
+//	        commander.setFirstName(p.getProperty("commander.firstname"));
+//	        commander.setGender(p.getProperty("commander.gender"));
+//	        commander.setAge(Integer.parseInt(p.getProperty("commander.age")));
+//	        commander.setJobStr(p.getProperty("commander.job"));
+//	        commander.setCountryStr(p.getProperty("commander.country"));  
+//	        commander.setMarsSocietyStr(p.getProperty("commander.MarsSociety"));  
+	        
+	        commander = loadProperties(p, commander);
+	        
 	        logger.config("Commander's profile loaded: " + p);
-	        commander.setLastName(p.getProperty("commander.lastname"));
-	        commander.setFirstName(p.getProperty("commander.firstname"));
-	        commander.setGender(p.getProperty("commander.gender"));
-	        commander.setAge(Integer.parseInt(p.getProperty("commander.age")));
-	        commander.setJobStr(p.getProperty("commander.job"));
-	        commander.setCountryStr(p.getProperty("commander.country"));  
+	        
 	        return true;
 		}
 		else {
@@ -466,6 +477,52 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	        return false;
 		}
     }
+    
+    public static Commander loadCommander() throws IOException {
+    	
+    	Commander cc = new Commander();
+    	
+		File f = new File(DIR, FILENAME);
+
+		if (f.exists() && f.canRead()) {
+	    	
+	    	Properties p = new Properties();
+	        FileInputStream fi = new FileInputStream(PATH);
+	        p.load(fi);
+	        fi.close();
+	        
+//	        cc.setLastName(p.getProperty("commander.lastname"));
+//	        cc.setFirstName(p.getProperty("commander.firstname"));
+//	        cc.setGender(p.getProperty("commander.gender"));
+//	        cc.setAge(Integer.parseInt(p.getProperty("commander.age")));
+//	        cc.setJobStr(p.getProperty("commander.job"));
+//	        cc.setCountryStr(p.getProperty("commander.country"));  
+//	        cc.setMarsSocietyStr(p.getProperty("commander.MarsSociety"));  
+	        
+	        cc = loadProperties(p, cc);
+	        
+	        logger.config("Commander's profile loaded: " + p);
+		}
+		else {
+	        logger.config("Can't find the 'commander.profile' file.");
+		}
+		
+        return cc;
+    }
+    
+    
+    public static Commander loadProperties(Properties p, Commander cc) {
+        cc.setLastName(p.getProperty("commander.lastname"));
+        cc.setFirstName(p.getProperty("commander.firstname"));
+        cc.setGender(p.getProperty("commander.gender"));
+        cc.setAge(Integer.parseInt(p.getProperty("commander.age")));
+        cc.setJobStr(p.getProperty("commander.job"));
+        cc.setCountryStr(p.getProperty("commander.country"));  
+        cc.setMarsSocietyStr(p.getProperty("commander.MarsSociety"));  
+        
+        return cc;
+    }
+    
     
     @Override
     public String toString() {
