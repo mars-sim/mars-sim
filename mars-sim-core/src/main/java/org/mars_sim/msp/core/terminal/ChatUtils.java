@@ -1530,8 +1530,8 @@ public class ChatUtils {
 				|| text.equalsIgnoreCase("excursion")) {
 			responseText.append("What would you like to know about mission ? ");
 			responseText.append(System.lineSeparator());
-			responseText.append("Say 'mission plan' or 'mission now'");
-			responseText.append(System.lineSeparator());
+			responseText.append("Say 'mission plan', 'mission now', etc.");
+//			responseText.append(System.lineSeparator());
 		}
 		
 		else if (text.equalsIgnoreCase("mission plan")) {
@@ -1561,23 +1561,25 @@ public class ChatUtils {
 				int max = 0;
 				if (newObj == 1) {
 					max = 1;
-					responseText.append(System.lineSeparator());
+//					responseText.append(System.lineSeparator());
 					responseText.append("On Sol " + today + ", it shows ");
 				}
 				else if (newObj == 2) {
 					max = 3;
-					responseText.append(System.lineSeparator());
+//					responseText.append(System.lineSeparator());
 					responseText.append("On Sol " + today + ", the last " + max + " sols shows ");
 				}
 				else if (newObj == 3) {
 					max = 7;
-					responseText.append(System.lineSeparator());
+//					responseText.append(System.lineSeparator());
 					responseText.append("On Sol " + today + ", the last " + max + " sols shows ");
 				}
 							
 				Map<Integer, List<MissionPlanning>> plannings = missionManager.getHistoricalMissions();
 
-				int size = Math.min(plannings.size(), max);
+				int size = plannings.size();
+				
+				int min = Math.min(size, max);
 				
 				if (size == 0) {
 					responseText.append(System.lineSeparator());
@@ -1586,7 +1588,7 @@ public class ChatUtils {
 				
 				else {
 					int sol = marsClock.getMissionSol();
-					for (int i=0; i< size + 1; i++) {
+					for (int i=0; i< min; i++) {
 						List<MissionPlanning> plans = plannings.get(sol - i);
 						int approved = 0;
 						int notApproved = 0;

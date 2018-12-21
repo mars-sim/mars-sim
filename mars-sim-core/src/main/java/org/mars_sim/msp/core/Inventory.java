@@ -972,8 +972,11 @@ public class Inventory implements Serializable {
 				}
 
 				if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
-					throw new IllegalStateException(ResourceUtil.findAmountResourceName(resource)
+					LogConsolidated.log(Level.SEVERE, 5000, sourceName,
+							ResourceUtil.findAmountResourceName(resource)
 							+ " could not be totally retrieved. Remaining: " + remainingAmount);
+//					throw new IllegalStateException(ResourceUtil.findAmountResourceName(resource)
+//							+ " could not be totally retrieved. Remaining: " + remainingAmount);
 				}
 
 				// Update caches.

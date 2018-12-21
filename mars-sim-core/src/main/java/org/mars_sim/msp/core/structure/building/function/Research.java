@@ -12,7 +12,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
@@ -33,7 +36,12 @@ implements Lab, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
+    
+	private static transient Logger logger = Logger.getLogger(Research.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+	
     private static final FunctionType FUNCTION = FunctionType.RESEARCH;
 
 	private static final int NUM_INSPECTIONS = 2;
@@ -48,6 +56,8 @@ implements Lab, Serializable {
     /** This map is the log book for tallying the # of daily inspections on the tissue cultures that this lab maintains */
     private Map<String, Integer> tissueCultureMap;
     //private List<String> tissueCultureList;
+    
+    private Building building;
     
     private static BuildingConfig buildingConfig;
     private static MarsClock marsClock;
@@ -208,7 +218,11 @@ implements Lab, Serializable {
         researcherNum --;
         if (researcherNum < 0) {
             researcherNum = 0;
-            throw new IllegalStateException("Lab is already empty of researchers.");
+            Settlement s = building.getSettlement();
+			LogConsolidated.log(Level.SEVERE, 5000, sourceName,
+					"[" + s + "] "
+					+ building + "'s lab has no researchers.");
+//            throw new IllegalStateException("Lab is already empty of researchers.");
         }
     }
 
