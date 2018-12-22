@@ -209,6 +209,14 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		return proposalWorkTime;
 	}
 
+	public boolean isProposalCompleted() {
+		double requiredWorkTime = getTotalProposalWorkTimeRequired();
+		if (proposalWorkTime >= requiredWorkTime)
+			return true;
+		else
+			return false;
+	}
+	
 	/**
 	 * Adds work time to the proposal phase.
 	 * 

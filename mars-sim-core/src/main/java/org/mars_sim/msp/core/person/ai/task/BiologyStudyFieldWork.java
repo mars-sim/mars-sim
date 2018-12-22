@@ -178,21 +178,26 @@ implements Serializable {
 
         // Check if site duration has ended or there is reason to cut the field
         // work phase short and return to the rover.
-        if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+        if (shouldEndEVAOperation()) {
             setPhase(WALK_BACK_INSIDE);
             return time;
         }
 
+        if (addTimeOnSite(time)) {
+    		LogConsolidated.log(Level.INFO, 0, sourceName,
+    				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+    				+ " was done doing biology study field work and going back to the rover.");
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
+        
         // Add research work to the scientific study for lead researcher.
         addResearchWorkTime(time);
 
         // Add experience points
         addExperience(time);
 
-		LogConsolidated.log(Level.FINE, 5000, sourceName,
-				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " was doing "
-				+ person.getTaskDescription() + ".");
-		
+
         return 0D;
     }
 

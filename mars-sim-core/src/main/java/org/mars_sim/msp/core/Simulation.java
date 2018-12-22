@@ -66,6 +66,8 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.ObserveAstronomicalObjects;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
+import org.mars_sim.msp.core.person.ai.task.PlayHoloGame;
+import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
@@ -948,9 +950,11 @@ public class Simulation implements ClockListener, Serializable {
 		LoadVehicleGarage.initializeInstances(pc); 
 		ObserveAstronomicalObjects.setInstances(surface);
 		PerformLaboratoryExperiment.setInstances(scientificStudyManager);
+		PlayHoloGame.setInstances(masterClock, marsClock);
+		ProposeScientificStudy.setInstances(scientificStudyManager);
 		Relax.justReloaded(marsClock);
 		ReviewMissionPlan.justReloaded(relationshipManager, missionManager);
-		Sleep.justReloaded(masterClock, marsClock);
+		Sleep.setInstances(masterClock, marsClock);
 		Task.justReloaded(eventManager, relationshipManager);
 		Walk.justReloaded(unitManager);	
 		

@@ -10,8 +10,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
@@ -41,6 +43,10 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ProposeScientificStudy.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
+
 	/** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.proposeScientificStudy"); //$NON-NLS-1$
@@ -55,6 +61,8 @@ implements Serializable {
 	/** The scientific study to propose. */
 	private ScientificStudy study;
 
+	private static ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
+    
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -63,8 +71,7 @@ implements Serializable {
         super(NAME, person, false, true, STRESS_MODIFIER, 
                 true, 10D + RandomUtil.getRandomDouble(50D));
         
-        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-        study = manager.getOngoingPrimaryStudy(person);
+        study = studyManager.getOngoingPrimaryStudy(person);
         if (study == null) {
             
             // Create new scientific study.
@@ -73,7 +80,7 @@ implements Serializable {
             if (science != null) {
                 SkillType skill = science.getSkill();
                 int level = person.getMind().getSkillManager().getSkillLevel(skill);
-                study = manager.createScientificStudy(person, science, level);
+                study = studyManager.createScientificStudy(person, science, level);
             }
             else {
                 logger.severe("Person's job: " + job.getName(person.getGender()) + " not scientist.");
@@ -156,6 +163,15 @@ implements Serializable {
      */
     private double proposingPhase(double time) {
         
+    	if (study.isProposalCompleted()){
+   			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+					+ person.getName() + " just finished writing a study proposal " 
+					+ " in " + study.getScience().getName() 
+					+ " in " + person.getLocationTag().getImmediateLocation());	
+            endTask();
+        }
+    		
+    		
         if (!study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
             endTask();
         }
@@ -222,6 +238,15 @@ implements Serializable {
         }
     }
     
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {{@link ScientificStudyManager}
+	 */
+	public static void setInstances(ScientificStudyManager s) {
+		studyManager = s;
+	}
+	
     @Override
     public void destroy() {
         super.destroy();

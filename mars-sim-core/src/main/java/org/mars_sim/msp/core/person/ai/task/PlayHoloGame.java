@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
@@ -27,12 +28,10 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
- * This task lowers the stress and may increase or decrease fatigue.
- * The duration of the task is by default chosen randomly, up to 100 millisols.
+ * This task lowers the stress and may increase or decrease fatigue. The
+ * duration of the task is by default chosen randomly, up to 100 millisols.
  */
-public class PlayHoloGame
-extends Task
-implements Serializable {
+public class PlayHoloGame extends Task implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -40,44 +39,44 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(PlayHoloGame.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
 	/** Task name */
-    private static final String NAME = Msg.getString(
-            "Task.description.playHoloGame"); //$NON-NLS-1$
+	private static final String NAME = Msg.getString("Task.description.playHoloGame"); //$NON-NLS-1$
 
-    /** Task phases. */
-    private static final TaskPhase PLAYING_A_HOLO_GAME = new TaskPhase(Msg.getString(
-            "Task.phase.playHoloGame")); //$NON-NLS-1$
+	/** Task phases. */
+	private static final TaskPhase PLAYING_A_HOLO_GAME = new TaskPhase(Msg.getString("Task.phase.playHoloGame")); //$NON-NLS-1$
 
-    private static final TaskPhase SETTING_UP_SCENES = new TaskPhase(Msg.getString(
-            "Task.phase.settingUpScenes")); //$NON-NLS-1$
+	private static final TaskPhase SETTING_UP_SCENES = new TaskPhase(Msg.getString("Task.phase.settingUpScenes")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.3D;
 
-    private static Simulation sim = Simulation.instance();
+	private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock = sim.getMasterClock();
-	private static MarsClock marsClock;// = masterClock.getMarsClock();
+	private static MarsClock marsClock = masterClock.getMarsClock();
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param person the person to perform the task
 	 */
 	public PlayHoloGame(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D +
-				RandomUtil.getRandomDouble(40D));
+		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(40D));
 
-        if (masterClock == null)
-        	masterClock = sim.getMasterClock();
-        
-		if (marsClock == null)
-			marsClock = masterClock.getMarsClock();// needed for loading a saved sim 
-		
+//        if (masterClock == null)
+//        	masterClock = sim.getMasterClock();
+//        
+//		if (marsClock == null)
+//			marsClock = masterClock.getMarsClock();// needed for loading a saved sim 
+
 		// If during person's work shift, only relax for short period.
 		int millisols = marsClock.getMillisolInt();
-        boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+		boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
 		if (isShiftHour) {
-		    setDuration(5D);
+			setDuration(5D);
 		}
 
 		// If person is in a settlement, try to find a place to relax.
@@ -89,41 +88,39 @@ implements Serializable {
 				if (recBuilding != null) {
 					// Walk to recreation building.
 					// Add BuildingFunction.RECREATION
-				    walkToActivitySpotInBuilding(recBuilding, FunctionType.RECREATION, true);
-				    walkSite = true;
+					walkToActivitySpotInBuilding(recBuilding, FunctionType.RECREATION, true);
+					walkSite = true;
 				} else {
-                	// if rec building is not available, go to a gym
-                	Building gym = Workout.getAvailableGym(person);
-                	if (gym != null) {
-	                	walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
-	                	walkSite = true;
-	                } else {
-						//  if gym is not available, go back to his quarters
-		                Building quarters = person.getQuarters();    
-		                if (quarters != null) {
-		                	walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMODATIONS, true);
-						    walkSite = true;
-		                }
-	                }
+					// if rec building is not available, go to a gym
+					Building gym = Workout.getAvailableGym(person);
+					if (gym != null) {
+						walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
+						walkSite = true;
+					} else {
+						// if gym is not available, go back to his quarters
+						Building quarters = person.getQuarters();
+						if (quarters != null) {
+							walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMODATIONS, true);
+							walkSite = true;
+						}
+					}
 				}
-			}
-			catch (Exception e) {
-				logger.log(Level.SEVERE,"ReadingABook's constructor(): " + e.getMessage());
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, "ReadingABook's constructor(): " + e.getMessage());
 				endTask();
 			}
 		}
 
 		if (!walkSite) {
-		    if (person.isInVehicle()) {
-                // If person is in rover, walk to passenger activity spot.
-                if (person.getVehicle() instanceof Rover) {
-                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-                }
-            }
-		    else {
-                // Walk to random location.
-                walkToRandomLocation(true);
-            }
+			if (person.isInVehicle()) {
+				// If person is in rover, walk to passenger activity spot.
+				if (person.getVehicle() instanceof Rover) {
+					walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+				}
+			} else {
+				// Walk to random location.
+				walkToRandomLocation(true);
+			}
 		}
 
 		// Initialize phase
@@ -135,62 +132,70 @@ implements Serializable {
 	}
 
 	public PlayHoloGame(Robot robot) {
-		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D +
-				RandomUtil.getRandomDouble(20D));
+		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(20D));
 	}
 
-    @Override
-    protected FunctionType getLivingFunction() {
-        return FunctionType.LIVING_ACCOMODATIONS;//RECREATION;
-    }
-
+	@Override
+	protected FunctionType getLivingFunction() {
+		return FunctionType.LIVING_ACCOMODATIONS;// RECREATION;
+	}
 
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("PlayHoloGame. Task phase is null");
-		}
-		else if (SETTING_UP_SCENES.equals(getPhase())) {
+		} else if (SETTING_UP_SCENES.equals(getPhase())) {
 			return settingUpPhase(time);
-		}
-		else if (PLAYING_A_HOLO_GAME.equals(getPhase())) {
+		} else if (PLAYING_A_HOLO_GAME.equals(getPhase())) {
 			return playingPhase(time);
-		}
-		else {
+		} else {
 			return time;
 		}
 	}
 
 	/**
 	 * Performs the playing phase of the task.
+	 * 
 	 * @param time the amount of time (millisol) to perform the phase.
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double playingPhase(double time) {
 
+//		if (isDone()) {
+//			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+//					+ person + " was done playing hologames in " + person.getLocationTag().getImmediateLocation());
+//		}
+		
+		// Either +ve or -ve
 		double rand = RandomUtil.getRandomInt(1);
 		if (rand == 0)
-			rand = -rand;
+			rand = -1;
 
 		// Reduce stress but may increase or reduce a person's fatigue level
-        double newFatigue = person.getPhysicalCondition().getFatigue() - (2D * time * rand);
-        if (newFatigue < 0D) {
-            newFatigue = 0D;
-        }
-        person.getPhysicalCondition().setFatigue(newFatigue);
+		double newFatigue = person.getPhysicalCondition().getFatigue() - (2D * time * rand);
+		if (newFatigue < 0D) {
+			newFatigue = 0D;
+		}
+		
+		person.getPhysicalCondition().setFatigue(newFatigue);
 
 		return 0D;
 	}
 
 	/**
 	 * Performs the setting up phase of the task.
+	 * 
 	 * @param time the amount of time (millisol) to perform the phase.
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double settingUpPhase(double time) {
-		// TODO: add codes for selecting a particular type of game		
+		// TODO: add codes for selecting a particular type of game
+		
+		LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+				+ person + " was setting up hologames to play in " + person.getLocationTag().getImmediateLocation());
+		
 		setPhase(PLAYING_A_HOLO_GAME);
-		return time*.9D;
+		return time * .9D;
 	}
 
 	@Override
@@ -199,8 +204,9 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets an available recreation building that the person can use.
-	 * Returns null if no recreation building is currently available.
+	 * Gets an available recreation building that the person can use. Returns null
+	 * if no recreation building is currently available.
+	 * 
 	 * @param person the person
 	 * @return available recreation building
 	 */
@@ -215,8 +221,8 @@ implements Serializable {
 			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
 
 			if (recreationBuildings.size() > 0) {
-				Map<Building, Double> recreationBuildingProbs = BuildingManager.getBestRelationshipBuildings(
-						person, recreationBuildings);
+				Map<Building, Double> recreationBuildingProbs = BuildingManager.getBestRelationshipBuildings(person,
+						recreationBuildings);
 				result = RandomUtil.getWeightedRandomObject(recreationBuildingProbs);
 			}
 		}
@@ -234,4 +240,25 @@ implements Serializable {
 		List<SkillType> results = new ArrayList<SkillType>(0);
 		return results;
 	}
+
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void setInstances(MasterClock c0, MarsClock c1) {
+		masterClock = c0;
+		marsClock = c1;
+	}
+
+	@Override
+	public void destroy() {
+		super.destroy();
+
+		sim = null;
+		marsClock = null;
+		masterClock = null;
+	}
+
 }
