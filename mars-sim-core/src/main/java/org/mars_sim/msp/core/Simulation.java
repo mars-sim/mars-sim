@@ -64,6 +64,8 @@ import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.ObserveAstronomicalObjects;
+import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
@@ -942,13 +944,15 @@ public class Simulation implements ClockListener, Serializable {
 //		System.out.println("Done with Building function instances");
 		
 		// Re-initialize Task related class
-		Task.justReloaded(eventManager, relationshipManager);
-		Walk.justReloaded(unitManager);	
-		EVAOperation.justReloaded(surface); 
+		EVAOperation.setInstances(surface); 
 		LoadVehicleGarage.initializeInstances(pc); 
+		ObserveAstronomicalObjects.setInstances(surface);
+		PerformLaboratoryExperiment.setInstances(scientificStudyManager);
 		Relax.justReloaded(marsClock);
 		ReviewMissionPlan.justReloaded(relationshipManager, missionManager);
 		Sleep.justReloaded(masterClock, marsClock);
+		Task.justReloaded(eventManager, relationshipManager);
+		Walk.justReloaded(unitManager);	
 		
 //		System.out.println("Done with Task instances");
 		

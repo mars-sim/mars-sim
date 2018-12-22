@@ -11,11 +11,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -42,6 +43,9 @@ implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(PeerReviewStudyPaper.class.getName());
+
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			 logger.getName().length());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -74,7 +78,7 @@ implements Serializable {
 
             // If person is in a settlement, try to find an administration building.
             boolean adminWalk = false;
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            if (person.isInSettlement()) {
                 Building adminBuilding = getAvailableAdministrationBuilding(person);
                 if (adminBuilding != null) {
                     // Walk to administration building.
@@ -85,7 +89,7 @@ implements Serializable {
 
             if (!adminWalk) {
 
-                if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                if (person.isInVehicle()) {
                     // If person is in rover, walk to passenger activity spot.
                     if (person.getVehicle() instanceof Rover) {
                         walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
@@ -116,7 +120,7 @@ implements Serializable {
 
         Building result = null;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> administrationBuildings = manager.getBuildings(FunctionType.ADMINISTRATION);
             administrationBuildings = BuildingManager.getNonMalfunctioningBuildings(administrationBuildings);
@@ -230,6 +234,12 @@ implements Serializable {
 
         // Check if peer review phase in study is completed.
         if (study.isCompleted()) {
+			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+					+ person.getName() + " just spent " 
+					+ Math.round(study.getPeerReviewTimeCompleted() *10.0)/10.0
+					+ " millisols to finish peer reviewing a paper "
+					+ " in " + study.getScience().getName() 
+					+ " in " + person.getLocationTag().getImmediateLocation());	
             endTask();
         }
 

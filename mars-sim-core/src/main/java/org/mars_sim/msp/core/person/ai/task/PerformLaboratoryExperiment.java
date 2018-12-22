@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -48,6 +50,9 @@ implements ResearchScientificStudy, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(PerformLaboratoryExperiment.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			 logger.getName().length());
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.performLaboratoryExperiment"); //$NON-NLS-1$
@@ -71,7 +76,7 @@ implements ResearchScientificStudy, Serializable {
     /** The research assistant. */
     private Person researchAssistant;
 
-    private static ScientificStudyManager studyManager;
+    private static ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
     
     /**
      * Constructor.
@@ -169,9 +174,6 @@ implements ResearchScientificStudy, Serializable {
         List<ScienceType> experimentalSciences = getExperimentalSciences();
 
         // Add primary study if appropriate science and in research phase.
-        //ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-        if (studyManager == null)
-        	studyManager = Simulation.instance().getScientificStudyManager();
         ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
         if (primaryStudy != null) {
             if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
@@ -478,11 +480,23 @@ implements ResearchScientificStudy, Serializable {
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
         if (isPrimary) {
             if (study.isPrimaryResearchCompleted()) {
+    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    					+ person.getName() + " just spent " 
+    					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
+    					+ " millisols in performing lab experiments " 
+    					+ " for a primary research study in " + study.getScience().getName() 
+    					+ " in " + person.getLocationTag().getImmediateLocation());	
                 endTask();
             }
         }
         else {
             if (study.isCollaborativeResearchCompleted(person)) {
+    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    					+ person.getName() + " just spent " 
+    					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
+    					+ " millisols in performing lab experiments " 
+    					+ " for a collaborative research study in " + study.getScience().getName() 
+    					+ " in " + person.getLocationTag().getImmediateLocation());	           		
                 endTask();
             }
         }
@@ -624,6 +638,15 @@ implements ResearchScientificStudy, Serializable {
     public void setResearchAssistant(Person researchAssistant) {
         this.researchAssistant = researchAssistant;
     }
+    
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {{@link ScientificStudyManager}
+	 */
+	public static void setInstances(ScientificStudyManager s) {
+		studyManager = s;
+	}
 
     @Override
     public void destroy() {

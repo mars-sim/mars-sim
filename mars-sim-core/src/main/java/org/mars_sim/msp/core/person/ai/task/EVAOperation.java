@@ -624,7 +624,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * 
 	 * @param s
 	 */
-	public static void justReloaded(SurfaceFeatures s) {
+	public static void setInstances(SurfaceFeatures s) {
 		surface = s;
 	}
 	

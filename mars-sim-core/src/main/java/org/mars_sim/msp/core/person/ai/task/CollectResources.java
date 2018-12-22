@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -43,7 +42,10 @@ public class CollectResources extends EVAOperation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(CollectResources.class.getName());
-	
+
+//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+//			 logger.getName().length());
+
     private static String sourceName = logger.getName();
     
 	/** Task phases. */
@@ -350,15 +352,19 @@ public class CollectResources extends EVAOperation implements Serializable {
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
 				return false;
 
-			Mars mars = Simulation.instance().getMars();
-			if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
-				LogConsolidated.log(logger, Level.FINE, 5000, sourceName, 
-		        		"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-		        			+ " ended collecting resources: night time",   null);
-				if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
-					return false;
-			}
+//			Mars mars = Simulation.instance().getMars();
+//			if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
+//				LogConsolidated.log(logger, Level.FINE, 5000, sourceName, 
+//		        		"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//		        			+ " ended collecting resources: night time",   null);
+//				if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+//					return false;
+//			}
 
+			if (EVAOperation.isGettingDark(person)) {
+				return false;
+			}
+			
 			// Check if person's medical condition will not allow task.
 			if (person.getPerformanceRating() < .5D)
 				return false;

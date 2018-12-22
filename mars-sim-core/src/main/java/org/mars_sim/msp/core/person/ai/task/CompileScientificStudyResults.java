@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.location.LocationSituation;
@@ -41,6 +43,9 @@ implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(CompileScientificStudyResults.class.getName());
+
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			 logger.getName().length());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -117,7 +122,7 @@ implements Serializable {
 
         Building result = null;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> administrationBuildings = manager.getBuildings(FunctionType.ADMINISTRATION);
             administrationBuildings = BuildingManager.getNonMalfunctioningBuildings(administrationBuildings);
@@ -271,10 +276,26 @@ implements Serializable {
         // Check if data results compilation in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
         if (isPrimary) {
-            if (study.isPrimaryPaperCompleted()) endTask();
+            if (study.isPrimaryPaperCompleted()) {
+    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    					+ person.getName() + " just spent " 
+    					+ Math.round(study.getPrimaryPaperWorkTimeCompleted() *10.0)/10.0
+    					+ " millisols in compiling data " 
+    					+ " for a primary research study in " + study.getScience().getName() 
+    					+ " in " + person.getLocationTag().getImmediateLocation());	
+            	endTask();
+            }
         }
         else {
-            if (study.isCollaborativePaperCompleted(person)) endTask();
+            if (study.isCollaborativePaperCompleted(person)) {
+    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    					+ person.getName() + " just spent " 
+    					+ Math.round(study.getCollaborativePaperWorkTimeCompleted(person) *10.0)/10.0
+    					+ " millisols in performing lab experiments " 
+    					+ " for a collaborative research study in " + study.getScience().getName() 
+    					+ " in " + person.getLocationTag().getImmediateLocation());	
+            	endTask();
+            }
         }
 
         if (isDone()) {

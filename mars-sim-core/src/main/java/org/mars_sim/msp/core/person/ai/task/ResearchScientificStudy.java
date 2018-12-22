@@ -14,29 +14,32 @@ import org.mars_sim.msp.core.science.ScienceType;
 /**
  * Interface for tasks the add research credit to scientific studies.
  */
-public interface ResearchScientificStudy
-extends Serializable{
+public interface ResearchScientificStudy extends Serializable {
 
 	/**
 	 * Gets the scientific field that is being researched for the study.
+	 * 
 	 * @return scientific field.
 	 */
 	public ScienceType getResearchScience();
 
 	/**
 	 * Gets the researcher who is being assisted.
+	 * 
 	 * @return researcher.
 	 */
 	public Person getResearcher();
 
 	/**
 	 * Checks if there is a research assistant.
+	 * 
 	 * @return research assistant.
 	 */
 	public boolean hasResearchAssistant();
 
 	/**
 	 * Gets the research assistant.
+	 * 
 	 * @return research assistant or null if none.
 	 */
 	public Person getResearchAssistant();

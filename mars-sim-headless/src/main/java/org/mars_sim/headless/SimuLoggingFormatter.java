@@ -110,12 +110,16 @@ public class SimuLoggingFormatter extends Formatter {
 		sb.append(Conversion.capitalize(record.getLevel().getName().toLowerCase()));
 		sb.append(C_PAREN);
 		
+		// If not using LogConsolidated class to generate the log statement
+		// do the following to extract the source class name
 		String path = null;
 		String source = null;
 		path = record.getSourceClassName();
-		source = path.substring(path.lastIndexOf(PERIOD) + 1, path.length());		
-		sb.append(source);
-		sb.append(COLON);
+		source = path.substring(path.lastIndexOf(PERIOD) + 1, path.length());
+		if (!source.equalsIgnoreCase("logconsolidated")) {
+			sb.append(source);
+			sb.append(COLON);
+		}
 		
 		if (msg != null) {
 			

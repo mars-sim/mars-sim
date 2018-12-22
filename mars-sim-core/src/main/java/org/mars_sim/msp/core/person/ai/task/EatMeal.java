@@ -50,8 +50,9 @@ public class EatMeal extends Task implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(EatMeal.class.getName());
 
-	private static String sourceName = logger.getName();
-	
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			 logger.getName().length());
+
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.00001;
 	

@@ -93,7 +93,7 @@ public enum ScienceType {
 	);
 
 	/** used to keep track of collaborative sciences. */
-	private static Map<ScienceType,Science> collabSciences;
+	private static Map<ScienceType, Science> collabSciences;
 
 	private String name;
 	private Class<? extends Job> jobClass;

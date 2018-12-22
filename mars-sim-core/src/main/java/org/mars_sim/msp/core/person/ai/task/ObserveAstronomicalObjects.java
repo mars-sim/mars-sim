@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -40,6 +42,9 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ObserveAstronomicalObjects.class.getName());
+
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			 logger.getName().length());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.observeAstronomicalObjects"); //$NON-NLS-1$
@@ -69,7 +74,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	 */
 	public ObserveAstronomicalObjects(Person person) {
 		// Use task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(300D));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 100D + RandomUtil.getRandomDouble(100D));
 
 		// Determine study.
 		study = determineStudy();
@@ -83,7 +88,8 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 				observatory.addObserver();
 				isActiveObserver = true;
 			} else {
-				logger.info("observatory could not be determined.");
+				LogConsolidated.log(Level.SEVERE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+						+ person.getName() + " could not find the observatory.");
 				endTask();
 			}
 		}
@@ -273,8 +279,6 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		}
 
 		// Check sunlight and end the task if sunrise
-		// SurfaceFeatures surface =
-		// Simulation.instance().getMars().getSurfaceFeatures();
 		double sunlight = surface.getSolarIrradiance(person.getCoordinates());
 		if (sunlight > 0) {
 			endTask();
@@ -284,10 +288,18 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		boolean isPrimary = study.getPrimaryResearcher().equals(person);
 		if (isPrimary) {
 			if (study.isPrimaryResearchCompleted()) {
+				LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+						+ person.getName() + " just spent " 
+						+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
+						+ " millisols to complete a primary research using " + person.getLocationTag().getImmediateLocation());				
 				endTask();
 			}
 		} else {
 			if (study.isCollaborativeResearchCompleted(person)) {
+				LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+						+ person.getName() + " just spent " 
+						+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
+						+ " millisols to complete a collaborative research using " + person.getLocationTag().getImmediateLocation());
 				endTask();
 			}
 		}
@@ -428,6 +440,15 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		this.researchAssistant = researchAssistant;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param s
+	 */
+	public static void setInstances(SurfaceFeatures s) {
+		surface = s;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

@@ -39,7 +39,8 @@ implements Serializable {
 
     private static Logger logger = Logger.getLogger(BiologyStudyFieldWork.class.getName());
 
-	private static String sourceName = logger.getName();
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			 logger.getName().length());
 
     /** Task name */
     private static final String NAME = Msg.getString(

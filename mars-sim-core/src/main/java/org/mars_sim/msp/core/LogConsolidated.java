@@ -95,14 +95,14 @@ public class LogConsolidated {
 //	}
 	
 	public static void log(Level level, int timeBetweenLogs, String sourceName, String message) {
-		if (sourceName.contains("."))
-			sourceName = sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length());
+//		if (sourceName.contains("."))
+//			sourceName = sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length());
 		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.MILLISECONDS).log(sourceName + COLON + message);
 	}
 	
 	public static void log(Level level, int timeBetweenLogs, String sourceName, String message, Throwable t) {
-		if (sourceName.contains("."))
-			sourceName = sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length());
+//		if (sourceName.contains("."))
+//			sourceName = sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length());
 		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.MILLISECONDS).log(sourceName + COLON + message, t);
 	}
 	

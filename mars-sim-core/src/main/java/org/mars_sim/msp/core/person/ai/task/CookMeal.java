@@ -43,7 +43,8 @@ public class CookMeal extends Task implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(CookMeal.class.getName());
 
-	private static String sourceName = logger.getName();
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			 logger.getName().length());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.cookMeal"); //$NON-NLS-1$

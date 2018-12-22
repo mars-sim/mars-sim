@@ -10,8 +10,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.location.LocationSituation;
@@ -43,6 +45,9 @@ public class TreatMedicalPatient extends Task implements Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(TreatMedicalPatient.class.getName());
+
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -138,10 +143,10 @@ public class TreatMedicalPatient extends Task implements Serializable {
 
         MedicalAid result = null;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             result = determineMedicalAidAtSettlement();
         }
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
             result = determineMedicalAidInVehicle();
         }
 
@@ -311,8 +316,10 @@ public class TreatMedicalPatient extends Task implements Serializable {
         if (healthProblem.getAwaitingTreatment()) {
 
             medicalAid.startTreatment(healthProblem, duration);
-            logger.info(person.getName() + " is treating " + patient + " for " + healthProblem.getIllness().getType().toString());
-
+//            logger.info(person.getName() + " is treating " + patient + " for " + healthProblem.getIllness().getType().toString());
+    		LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "				
+					+ person.getName() + " is treating " + patient + " for " + healthProblem.getIllness().getType().toString());
+    		
             // Create starting task event if needed.
             if (getCreateEvents()) {
                 TaskEvent startingEvent = new TaskEvent(person, 
