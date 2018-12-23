@@ -172,7 +172,7 @@ public final class MalfunctionFactory implements Serializable {
 		Collection<Unit> inventoryUnits = person.getInventory().getContainedUnits();
 		if (inventoryUnits.size() > 0) {
 			for (Unit unit : inventoryUnits) {
-				if ((unit instanceof Malfunctionable) && !entities.contains(unit)) {
+				if ((unit instanceof Malfunctionable) && !entities.contains((Malfunctionable)unit)) {
 					entities.add((Malfunctionable) unit);
 				}
 			}
@@ -196,7 +196,7 @@ public final class MalfunctionFactory implements Serializable {
 		Collection<Unit> inventoryUnits = robot.getInventory().getContainedUnits();
 		if (inventoryUnits.size() > 0) {
 			for (Unit unit : inventoryUnits) {
-				if ((unit instanceof Malfunctionable) && !entities.contains(unit)) {
+				if ((unit instanceof Malfunctionable) && !entities.contains((Malfunctionable) unit)) {
 					entities.add((Malfunctionable) unit);
 				}
 			}
@@ -212,24 +212,13 @@ public final class MalfunctionFactory implements Serializable {
 	 * @return collection of malfunctionables.
 	 */
 	public static Collection<Malfunctionable> getMalfunctionables(Settlement settlement) {
-		/*
-		 * Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
-		 * 
-		 * // Add all buildings within the settlement. Iterator<Building> i =
-		 * settlement.getBuildingManager().getBuildings().iterator();//
-		 * getACopyOfBuildings().iterator(); while (i.hasNext()) {
-		 * entities.add(i.next()); }
-		 * 
-		 * for (Building b : settlement.getBuildingManager().getBuildings()) {
-		 * entities.add(b); }
-		 */
 		Collection<Malfunctionable> entities = new ArrayList<>(settlement.getBuildingManager().getBuildings());
 
 		// Add all malfunctionable entities in settlement inventory.
 		Collection<Unit> inventoryUnits = settlement.getInventory().getContainedUnits();
 		if (inventoryUnits.size() > 0) {
 			for (Unit unit : inventoryUnits) {
-				if ((unit instanceof Malfunctionable) && (!entities.contains(unit))) {
+				if ((unit instanceof Malfunctionable) && (!entities.contains((Malfunctionable)unit))) {
 					entities.add((Malfunctionable) unit);
 				}
 			}

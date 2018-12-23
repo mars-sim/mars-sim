@@ -40,13 +40,13 @@ Player may create numerous settlements spreading across the surface of Mars. Eac
 ---
 
 ## Economics
-In terms of [economic](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements a value point (VP) system, which keeps track of the supply and demand on each resource. There is no standard currency established yet. Traders barter trades with neighboring settlements and the surplus/ deficit based on the 
-VPs of the resources in exchanged would be computed in each trading session.
+In terms of [economic](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements a value point (VP) system, which keeps track of the supply and demand on each resource. There is no standard currency established on Mars yet. 
+Traders barter trades with neighboring settlements and the surplus/ deficit based on the VPs of the resources in exchange in each trading session.
 
 ---
 
 ## Jobs and Missions
-Settlers spend much of their time learning to **live off the land**. Assigning meaningful [jobs](https://github.com/mars-sim/mars-sim/wiki/Jobs) to the settlers are vital to the health of the economy of the settlements. Settlers engage in various [tasks](https://github.com/mars-sim/mars-sim/wiki/Tasks) such as maintenance, ensuring life support resources are well balanced, growing crops in [greenhouses](https://github.com/mars-sim/mars-sim/wiki/Greenhouse-Operation), making secondary [food products](https://github.com/mars-sim/mars-sim/wiki/Food-Production), and manufacturing needed parts and equipment in workshops.
+Settlers spend much of their time learning to *live off the land*. Assigning meaningful [jobs](https://github.com/mars-sim/mars-sim/wiki/Jobs) to the settlers are vital to the health of the economy of the settlements. Settlers engage in various [tasks](https://github.com/mars-sim/mars-sim/wiki/Tasks) such as maintenance, ensuring life support resources are well balanced, growing crops in [greenhouses](https://github.com/mars-sim/mars-sim/wiki/Greenhouse-Operation), making secondary [food products](https://github.com/mars-sim/mars-sim/wiki/Food-Production), and manufacturing needed parts and equipment in workshops.
 
 Settlers will also go out on field [Missions](https://github.com/mars-sim/mars-sim/wiki/Missions) to explore and study the surrounding landscapes, to prospect and mine minerals, and to trade with neighboring settlements, etc. They may even decide to migrate from one settlement to another.
 
@@ -87,23 +87,28 @@ For a more detail description of this project, see our [project website](https:/
 * Require Java 8 (u77 or above) for binaries compiled under Java 8 
 * Require Java 9/10 for binaries compiled under Java 9
 
-> Note 1 : Beginning Java 11, the JDK has been decoupled from the graphic JavaFX API. If you use OpenJDK 11, make sure you **also download OpenJFK 11 separately**. At this junction, Java 11 is not officially supported yet.
+```
+Note 1 : Beginning Java 11, the JRE/JDK has been decoupled from the graphic JavaFX API. If you use OpenJDK 11, make sure you also download OpenJFK 11 **separately**. 
+Feel free to discuss how to set up mars-sim to run it under Java 11. See also #156.
+```
 
 * For Windows OS, one should manually set up the following : 
-  - Edit the `JAVA_HOME` and `PATH` in the System's **Environment Variables** in Control Panel 
+  - Edit the `JAVA_HOME` and `PATH` in the *Environment Variables* in Control Panel 
   - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-10.0.2` or `C:\Program Files\Java\jre-10.0.2`
   - Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`         
   - Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can interfere with the correct version of 
     Java that you would like to use. 
   - Check if the correct version of Java is being enabled in the **Java Control Panel** in Windows's Control Panel. 
 
-> Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java executable inside will be the one to be loaded  by Windows OS. 
+```
+Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java executable inside will be the one to be loaded  by Windows OS. 
 
-> Note 3 : The BEST approach is to enable only one Java build (such as Java 10.0.2) inside `PATH` and remove all other folders referencing other java versions/builds.
+Note 3 : The BEST approach is to enable only one Java build (such as Java 10.0.2) inside `PATH` and remove all other folders referencing other java versions/builds.
 
-> Note 4 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
+Note 4 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
 
-> Note 5 : Remove all Java related executables inside the folder `C:\ProgramData\Oracle\Java\javapath` in order to avoid loading the undesired version of jre/jdk.
+Note 5 : Remove all Java related executables inside the folder `C:\ProgramData\Oracle\Java\javapath` in order to avoid loading the undesired version of jre/jdk.
+```
 
 ---
 

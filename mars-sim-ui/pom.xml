@@ -270,6 +270,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<groupId>com.jidesoft</groupId>
 			<artifactId>jide-oss</artifactId>
 			<version>3.6.18</version>
+			<!--version>3.7.4</version-->
 		</dependency>
 		
 		<!-- For Java 8, use fontawesomefx

@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -180,6 +181,28 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		return result;
 	}
 
+	public static boolean requiresEVA(Malfunctionable entity) {
+
+		boolean result = false;
+
+		if (entity instanceof Vehicle) {
+			// Requires EVA repair on outside vehicles that the person isn't inside.
+			Vehicle vehicle = (Vehicle) entity;
+			boolean outsideVehicle = BuildingManager.getBuilding(vehicle) == null;
+			if (outsideVehicle) {
+				result = true;
+			}
+		} else if (entity instanceof Building) {
+			// Requires EVA repair on uninhabitable buildings.
+			Building building = (Building) entity;
+			if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+				result = true;
+			}
+		}
+
+		return result;
+	}
+	
 	/**
 	 * Gets a reparable malfunction requiring an EVA for a given entity.
 	 * 
@@ -260,6 +283,10 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		return hasRepairParts(containerUnit, malfunction);
 	}
 
+	public static boolean hasRepairPartsForMalfunction(Settlement settlement, Malfunction malfunction) {
+
+		return hasRepairParts(settlement, malfunction);
+	}
 
 	public static boolean hasRepairParts(Unit containerUnit, Malfunction malfunction) {
 

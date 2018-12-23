@@ -12,11 +12,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -38,14 +36,14 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(MaintenanceEVAMeta.class.getName());
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.maintenanceEVA"); //$NON-NLS-1$
 
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(MaintenanceEVAMeta.class.getName());
-
-    private SurfaceFeatures surface;
+	private static final double FACTOR = 5D;
 
     @Override
     public String getName() {
@@ -77,10 +75,8 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
 	    		return 0;
 
             // Check if it is night time.
-            surface = Simulation.instance().getMars().getSurfaceFeatures();
-            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
-                if (!surface.inDarkPolarRegion(person.getCoordinates()))
-                    return 0;
+            if (EVAOperation.isGettingDark(person))
+            	return 0;
 
             if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
                 result *= 2D;
@@ -106,7 +102,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
                         if (entityProb > 100D) {
                             entityProb = 100D;
                         }
-                        result += entityProb;
+                        result += entityProb * FACTOR;
                     }
                 }
             }
@@ -147,66 +143,48 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
         return result;
     }
 
+	public double getProbability(Settlement settlement) {
+		double result = 0D;
+
+        try {
+            // Total probabilities for all malfunctionable entities in person's local.
+            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(settlement).iterator();
+
+            while (i.hasNext()) {
+                Malfunctionable entity = i.next();
+                boolean isStructure = (entity instanceof Structure);
+                boolean uninhabitableBuilding = false;
+                if (entity instanceof Building)
+                    uninhabitableBuilding = !((Building) entity).hasFunction(FunctionType.LIFE_SUPPORT);
+
+                MalfunctionManager manager = entity.getMalfunctionManager();
+                boolean hasMalfunction = manager.hasMalfunction();
+                boolean hasParts = Maintenance.hasMaintenanceParts(settlement, entity);
+                double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+                boolean minTime = (effectiveTime >= 1000D);
+                if ((isStructure || uninhabitableBuilding) && !hasMalfunction && minTime && hasParts) {
+                    double entityProb = manager.getEffectiveTimeSinceLastMaintenance() / 1000D;
+                    if (entityProb > 100D) {
+                        entityProb = 100D;
+                    }
+                    result += entityProb;
+                }
+            }
+        }
+        catch (Exception e) {
+            logger.log(Level.SEVERE,"getProbability()",e);
+        }
+
+		return result;
+	}
+	
 	@Override
 	public Task constructInstance(Robot robot) {
-        return null;//new MaintenanceEVA(robot);
+        return null;
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-
-        double result = 0D;
-/*
-        if (robot.getBotMind().getRobotJob() instanceof Repairbot) {
-
-	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-		        try {
-		            // Total probabilities for all malfunctionable entities in robot's local.
-		            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-		            while (i.hasNext()) {
-		                Malfunctionable entity = i.next();
-		                boolean isStructure = (entity instanceof Structure);
-		                boolean uninhabitableBuilding = false;
-		                if (entity instanceof Building) {
-		                    uninhabitableBuilding = !((Building) entity).hasFunction(BuildingFunction.LIFE_SUPPORT);
-		                }
-		                MalfunctionManager manager = entity.getMalfunctionManager();
-		                boolean hasMalfunction = manager.hasMalfunction();
-		                boolean hasParts = Maintenance.hasMaintenanceParts(robot, entity);
-		                double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-		                boolean minTime = (effectiveTime >= 1000D);
-		                if ((isStructure || uninhabitableBuilding) && !hasMalfunction && minTime && hasParts) {
-		                    double entityProb = manager.getEffectiveTimeSinceLastMaintenance() / 1000D;
-		                    if (entityProb > 100D) {
-		                        entityProb = 100D;
-		                    }
-		                    result += entityProb;
-		                }
-		            }
-
-		            // Effort-driven task modifier.
-		            result *= robot.getPerformanceRating();
-
-		            // Check if it is night time.
-		            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		            if (surface.getSolarIrradiance(robot.getCoordinates()) == 0D) {
-		                if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
-		                    result = 0D;
-		                }
-		            }
-
-		            // Check if an airlock is available
-	                if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
-	                    result = 0D;
-	                }
-		        }
-		        catch (Exception e) {
-		            logger.log(Level.SEVERE,"getProbability()",e);
-		        }
-	        }
-        }
-*/
-        return result;
+        return 0;
 	}
 }

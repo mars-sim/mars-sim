@@ -33,6 +33,8 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.repairEVAMalfunction"); //$NON-NLS-1$
 
+	private static final double WEIGHT = 300D;
+	
 	@Override
 	public String getName() {
 		return NAME;
@@ -72,11 +74,9 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 					return 0;
 
 			// Check if it is night time.
-//			SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-//			if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
-//				if (!surface.inDarkPolarRegion(person.getCoordinates()))
-//					return 0;
-
+			// Even if it's night time, technicians/engineers are assigned to man that work shift 
+			// to take care of the the repair.
+			
 			// Add probability for all malfunctionable entities in person's local.
 			Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
 			while (i.hasNext()) {
@@ -90,7 +90,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 					try {
 						if (RepairEVAMalfunction.hasRepairPartsForMalfunction(person, person.getTopContainerUnit(),
 								malfunction)) {
-							result += 400D;
+							result += WEIGHT;
 						}
 					} catch (Exception e) {
 						e.printStackTrace(System.err);
@@ -104,7 +104,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 						Malfunction malfunction = k.next();
 						try {
 							if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
-								result += 400D;
+								result += WEIGHT;
 							}
 						} catch (Exception e) {
 							e.printStackTrace(System.err);
@@ -149,6 +149,46 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 		return result;
 	}
 
+	public double getProbability(Settlement settlement) {
+		double result = 0D;
+
+		// Add probability for all malfunctionable entities in person's local.
+		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(settlement).iterator();
+		while (i.hasNext()) {
+			Malfunctionable entity = i.next();
+			MalfunctionManager manager = entity.getMalfunctionManager();
+
+			// Check if entity has any EVA malfunctions.
+			Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
+			while (j.hasNext()) {
+				Malfunction malfunction = j.next();
+				try {
+					if (RepairEVAMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+						result += WEIGHT;
+					}
+				} catch (Exception e) {
+					e.printStackTrace(System.err);
+				}
+			}
+
+			// Check if entity requires an EVA and has any normal malfunctions.
+			if (RepairEVAMalfunction.requiresEVA(entity)) {
+				Iterator<Malfunction> k = manager.getNormalMalfunctions().iterator();
+				while (k.hasNext()) {
+					Malfunction malfunction = k.next();
+					try {
+						if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+							result += WEIGHT;
+						}
+					} catch (Exception e) {
+						e.printStackTrace(System.err);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
 	@Override
 	public Task constructInstance(Robot robot) {
 		return null;// new RepairEVAMalfunction(robot);
@@ -157,68 +197,5 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 	@Override
 	public double getProbability(Robot robot) {
 		return 0;
-
-//		double result = 0D;
-//        if (robot.getBotMind().getRobotJob() instanceof Repairbot) {
-//
-//            // Add probability for all malfunctionable entities in person's local.
-//            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-//            while (i.hasNext()) {
-//                Malfunctionable entity = i.next();
-//                MalfunctionManager manager = entity.getMalfunctionManager();
-//
-//                // Check if entity has any EVA malfunctions.
-//                Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
-//                while (j.hasNext()) {
-//                    Malfunction malfunction = j.next();
-//                    try {
-//                        if (RepairEVAMalfunction.hasRepairPartsForMalfunction(robot, robot.getTopContainerUnit(),
-//                                malfunction)) {
-//                            result += 100D;
-//                        }
-//                    }
-//                    catch (Exception e) {
-//                        e.printStackTrace(System.err);
-//                    }
-//                }
-//
-//                // Check if entity requires an EVA and has any normal malfunctions.
-//                if (RepairEVAMalfunction.requiresEVA(robot, entity)) {
-//                    Iterator<Malfunction> k = manager.getNormalMalfunctions().iterator();
-//                    while (k.hasNext()) {
-//                        Malfunction malfunction = k.next();
-//                        try {
-//                            if (RepairMalfunction.hasRepairPartsForMalfunction(robot, malfunction)) {
-//                                result += 100D;
-//                            }
-//                        }
-//                        catch (Exception e) {
-//                            e.printStackTrace(System.err);
-//                        }
-//                    }
-//                }
-//            }
-//
-//            // Check if it is night time.
-//            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-//            if (surface.getSolarIrradiance(robot.getCoordinates()) == 0D) {
-//                if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
-//                    result = 0D;
-//                }
-//            }
-//
-//            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-//                // Check if an airlock is available
-//                if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
-//                    result = 0D;
-//                }
-//            }
-//
-//            // Effort-driven task modifier.
-//            result *= robot.getPerformanceRating();
-//        }
-//
-//		return result;
-
 	}
 }

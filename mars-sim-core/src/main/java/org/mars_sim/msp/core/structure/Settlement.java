@@ -53,6 +53,10 @@ import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.Workout;
+import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceEVAMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.RepairEVAMalfunctionMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -311,6 +315,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static MarsClock marsClock;
 	private static MarsSurface marsSurface;
 	
+	private static MaintenanceMeta maintenanceMeta;	
+	private static MaintenanceEVAMeta maintenanceEVAMeta;
+	private static RepairMalfunctionMeta repairMalfunctionMeta;
+	private static RepairEVAMalfunctionMeta repairEVAMalfunctionMeta;
+	
 	/** 
 	 * Constructor 1 called by ConstructionStageTest for maven testing.
 	 */
@@ -375,7 +384,15 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		unitManager = sim.getUnitManager();
 		// Set the container unit of the settlement to the MarsSurface
 		marsSurface = Simulation.instance().getMars().getMarsSurface();
+		
 		setContainerUnit(marsSurface);
+		
+		// Create Task instances
+		maintenanceMeta = new MaintenanceMeta();	
+		maintenanceEVAMeta = new MaintenanceEVAMeta();
+		repairMalfunctionMeta = new RepairMalfunctionMeta();
+		repairEVAMalfunctionMeta = new RepairEVAMalfunctionMeta();
+		
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);// 
 
@@ -1038,7 +1055,24 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		loadDefaultValues();
 	}
 	
-	
+	/**
+	 * Prints the raw scores of certain tasks 
+	 */
+	public void printTaskProbability() {
+		double maintScore = maintenanceMeta.getProbability(this);
+		double maintEVAScore = maintenanceEVAMeta.getProbability(this);
+		double repairScore = repairMalfunctionMeta.getProbability(this);
+		double repairEVAScore = repairEVAMalfunctionMeta.getProbability(this);
+		LogConsolidated.log(Level.INFO, 0, sourceName,
+				"[" + name + "] Maintenance Task score : "+  Math.round(maintScore*10.0)/10.0 + ".");
+		LogConsolidated.log(Level.INFO,0, sourceName,
+				"[" + name + "] MaintenanceEVA Task score : "+  Math.round(maintEVAScore*10.0)/10.0 + ".");
+		LogConsolidated.log(Level.INFO, 0, sourceName,
+				"[" + name + "] RepairMalfunction Task score : "+  Math.round(repairScore*10.0)/10.0 + ".");
+		LogConsolidated.log(Level.INFO,0, sourceName,
+				"[" + name + "] RepairEVAMalfunction Task score : "+  Math.round(repairEVAScore*10.0)/10.0 + ".");
+	}
+
 	/**
 	 * Perform time-related processes
 	 *
@@ -1057,6 +1091,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			if (consumption.size() > MAX_NUM_SOLS)
 				consumption.remove(solElapsed - MAX_NUM_SOLS);
 			
+			printTaskProbability();
 		}
 		
 		// If settlement is overcrowded, increase inhabitant's stress.

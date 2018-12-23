@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -176,6 +177,35 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		return result;
 	}
 
+	/**
+	 * Check if a malfunctionable entity requires an EVA to repair.
+	 * 
+	 * @param settlement the settlement that needs the repair.
+	 * @param entity the entity with a malfunction.
+	 * @return true if entity requires an EVA repair.
+	 */
+	public static boolean requiresEVA(Malfunctionable entity) {
+
+		boolean result = false;
+
+		if (entity instanceof Vehicle) {
+			// Requires EVA repair on outside vehicles that the person isn't inside.
+			Vehicle vehicle = (Vehicle) entity;
+			boolean outsideVehicle = BuildingManager.getBuilding(vehicle) == null;
+			if (outsideVehicle) {
+				result = true;
+			}
+		} else if (entity instanceof Building) {
+			// Requires EVA repair on uninhabitable buildings.
+			Building building = (Building) entity;
+			if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+				result = true;
+			}
+		}
+
+		return result;
+	}
+	
 	public static boolean requiresEVA(Robot robot, Malfunctionable entity) {
 
 		boolean result = false;
@@ -272,6 +302,34 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		return result;
 	}
 
+	/**
+	 * Checks if there are enough repair parts at person's location to fix the
+	 * malfunction.
+	 * 
+	 * @param settlement      the settlement checking.
+	 * @param malfunction the malfunction.
+	 * @return true if enough repair parts to fix malfunction.
+	 */
+	public static boolean hasRepairPartsForMalfunction(Settlement settlement, Malfunction malfunction) {
+		if (malfunction == null) {
+			throw new IllegalArgumentException("malfunction is null");
+		}
+
+		boolean result = false;
+	
+		Map<Integer, Integer> repairParts = malfunction.getRepairParts();
+		Iterator<Integer> i = repairParts.keySet().iterator();
+		while (i.hasNext() && result) {
+			Integer part = i.next();
+			int number = repairParts.get(part);
+			if (settlement.getInventory().getItemResourceNum(part) < number) {
+				result = false;
+			}
+		}
+
+		return result;
+	}
+	
 	public static boolean hasRepairPartsForMalfunction(Robot robot, Malfunction malfunction) {
 		if (robot == null) {
 			throw new IllegalArgumentException("robot is null");

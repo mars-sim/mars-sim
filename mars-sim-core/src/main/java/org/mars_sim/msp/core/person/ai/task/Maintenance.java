@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -438,6 +439,10 @@ public class Maintenance extends Task implements Serializable {
 		return hasMaintenanceParts(inv, malfunctionable);
 	}
 
+	public static boolean hasMaintenanceParts(Settlement settlement, Malfunctionable malfunctionable) {
+		return hasMaintenanceParts(settlement.getInventory(), malfunctionable);
+	}
+	
 	/**
 	 * Checks if there are enough local parts to perform maintenance.
 	 * 
