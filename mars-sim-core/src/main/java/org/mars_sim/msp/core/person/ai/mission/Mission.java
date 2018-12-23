@@ -285,7 +285,7 @@ public abstract class Mission implements Serializable {
 	 * @param updateType the update type.
 	 */
 	protected final void fireMissionUpdate(MissionEventType updateType) {
-		fireMissionUpdate(updateType, null);
+		fireMissionUpdate(updateType, this);
 	}
 
 	/**

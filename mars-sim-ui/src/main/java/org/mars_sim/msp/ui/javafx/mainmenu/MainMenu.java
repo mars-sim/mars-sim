@@ -64,6 +64,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -1641,9 +1642,10 @@ public class MainMenu {
 					try {
 						CommanderProfile.saveProfile(commander);
 						msgLabel.setText("Note : Profile just saved.");
-					} catch (IOException ei) {
+					} catch (Exception ei) {
 						// TODO Auto-generated catch block
 						ei.printStackTrace();
+						logger.severe("Sorry. The profile cannot be saved.");
 					}
 				}
 				e.consume();
@@ -1666,9 +1668,10 @@ public class MainMenu {
 					genderCombo.getSelectionModel().select(g);
 					msBox.setSelected(cc.isMarsSociety());
 
-				} catch (IOException ei) {
+				} catch (Exception ei) {
 					// TODO Auto-generated catch block
-					ei.printStackTrace();
+//					ei.printStackTrace();
+					logger.severe("Sorry. The saved profile was invalid or outdated.");
 				}
 				e.consume();
 			});

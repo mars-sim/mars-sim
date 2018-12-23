@@ -46,6 +46,9 @@ import org.mars_sim.msp.core.person.ai.job.Astronomer;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.mission.meta.BuildingConstructionMissionMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.CollectIceMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.CollectRegolithMeta;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Read;
@@ -53,6 +56,7 @@ import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.Workout;
+import org.mars_sim.msp.core.person.ai.task.meta.ConstructBuildingMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceEVAMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairEVAMalfunctionMeta;
@@ -320,6 +324,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static RepairMalfunctionMeta repairMalfunctionMeta;
 	private static RepairEVAMalfunctionMeta repairEVAMalfunctionMeta;
 	
+	private static ConstructBuildingMeta constructBuildingMeta;
+	
+	private static BuildingConstructionMissionMeta buildingConstructionMissionMeta;
+	private static CollectRegolithMeta collectRegolithMeta;
+	private static CollectIceMeta collectIceMeta;
+	
 	/** 
 	 * Constructor 1 called by ConstructionStageTest for maven testing.
 	 */
@@ -392,6 +402,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		maintenanceEVAMeta = new MaintenanceEVAMeta();
 		repairMalfunctionMeta = new RepairMalfunctionMeta();
 		repairEVAMalfunctionMeta = new RepairEVAMalfunctionMeta();
+		constructBuildingMeta = new ConstructBuildingMeta();
+		
+		buildingConstructionMissionMeta = new BuildingConstructionMissionMeta();
+		collectRegolithMeta = new CollectRegolithMeta();
+		collectIceMeta = new CollectIceMeta();
 		
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);// 
@@ -1063,16 +1078,36 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		double maintEVAScore = maintenanceEVAMeta.getProbability(this);
 		double repairScore = repairMalfunctionMeta.getProbability(this);
 		double repairEVAScore = repairEVAMalfunctionMeta.getProbability(this);
+//		double buildingScore = constructBuildingMeta.getProbability(this);
+		
 		LogConsolidated.log(Level.INFO, 0, sourceName,
-				"[" + name + "] Maintenance Task score : "+  Math.round(maintScore*10.0)/10.0 + ".");
+				"[" + name + "] MaintenanceMeta Task score : "+  Math.round(maintScore*10.0)/10.0 + ".");
 		LogConsolidated.log(Level.INFO,0, sourceName,
-				"[" + name + "] MaintenanceEVA Task score : "+  Math.round(maintEVAScore*10.0)/10.0 + ".");
+				"[" + name + "] MaintenanceEVAMeta Task score : "+  Math.round(maintEVAScore*10.0)/10.0 + ".");
 		LogConsolidated.log(Level.INFO, 0, sourceName,
-				"[" + name + "] RepairMalfunction Task score : "+  Math.round(repairScore*10.0)/10.0 + ".");
+				"[" + name + "] RepairMalfunctionMeta Task score : "+  Math.round(repairScore*10.0)/10.0 + ".");
 		LogConsolidated.log(Level.INFO,0, sourceName,
-				"[" + name + "] RepairEVAMalfunction Task score : "+  Math.round(repairEVAScore*10.0)/10.0 + ".");
+				"[" + name + "] RepairEVAMalfunctionMeta Task score : "+  Math.round(repairEVAScore*10.0)/10.0 + ".");
+//		LogConsolidated.log(Level.INFO,0, sourceName,
+//				"[" + name + "] ConstructBuildingMeta Task score : "+  Math.round(buildingScore*10.0)/10.0 + ".");
+		
 	}
 
+	/**
+	 * Prints the raw scores of certain tasks 
+	 */
+	public void printMissionProbability() {
+		double bConstScore = buildingConstructionMissionMeta.getSettlementProbability(this);
+		double regolithScore = collectRegolithMeta.getProbability(this);
+		double iceScore = collectIceMeta.getProbability(this);
+		
+		LogConsolidated.log(Level.INFO, 0, sourceName,
+				"[" + name + "] BuildingConstructionMissionMeta Task score : "+  Math.round(bConstScore*10.0)/10.0 + ".");
+		LogConsolidated.log(Level.INFO, 0, sourceName,
+				"[" + name + "] CollectRegolithMeta Task score : "+  Math.round(regolithScore*10.0)/10.0 + ".");
+		LogConsolidated.log(Level.INFO, 0, sourceName,
+				"[" + name + "] CollectIceMeta Task score : "+  Math.round(iceScore*10.0)/10.0 + ".");
+	}
 	/**
 	 * Perform time-related processes
 	 *
@@ -1092,6 +1127,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				consumption.remove(solElapsed - MAX_NUM_SOLS);
 			
 			printTaskProbability();
+			printMissionProbability();
 		}
 		
 		// If settlement is overcrowded, increase inhabitant's stress.

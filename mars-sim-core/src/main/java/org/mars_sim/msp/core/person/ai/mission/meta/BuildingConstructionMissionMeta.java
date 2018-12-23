@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -58,23 +57,17 @@ public class BuildingConstructionMissionMeta implements MetaMission {
         
         if (marsClock == null)
         	marsClock = Simulation.instance().getMasterClock().getMarsClock();
-        
+//        
         // No construction until after the x sols of the simulation.
         if (marsClock.getMissionSol() < BuildingConstructionMission.FIRST_AVAILABLE_SOL)
         	return 0;
-
+        
         // Check if person is in a settlement.
         if (person.isInSettlement()) {
             Settlement settlement = person.getSettlement();
 
             int availablePeopleNum = 0;
-/*
-            // No construction until after the first ten sols of the simulation.
-            MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
-            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-            double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
-            double totalTimeSols = totalTimeMillisols / 1000D;
-*/
+
             Collection<Person> list = settlement.getIndoorPeople();
             for (Person member : list) {
                 boolean noMission = !member.getMind().hasActiveMission();
@@ -96,16 +89,14 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             	return 0;
 
             // Check if min number of EVA suits at settlement.
-        	else if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) <
+        	else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) <
                     BuildingConstructionMission.MIN_PEOPLE) {
         		return 0;
             }
-
-            ConstructionManager manager = settlement.getConstructionManager();
             
             try {
                 int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-                ConstructionValues values =  manager.getConstructionValues();
+                ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
 
                 // Add construction profit for existing or new construction sites.
                 double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
@@ -120,14 +111,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                         result *= 1.1D;
 
                     if (newSiteProfit > existingSiteProfit) {
-                        // Divide profit by 10 to the power of the number of existing construction sites.
-                        int numSites = manager.getConstructionSites().size();
-
-                        // 2016-06-06 Added considering the size of the settlement population
-                        int numPeople = settlement.getIndoorPeopleCount();
-                        int limit = (int)(2D * numSites - numPeople/24D);
-
-                        result = result/Math.pow(10, 2 + limit) /5D;
+                        result = getProbability(settlement);
                     }
                 }
             }
@@ -147,6 +131,66 @@ public class BuildingConstructionMissionMeta implements MetaMission {
         return result;
     }
 
+    public double getProbability(Settlement settlement) {
+
+        double result = 0D;
+        
+        int numSites = settlement.getConstructionManager().getConstructionSites().size();
+
+        // Consider the size of the settlement population
+        int numPeople = settlement.getNumCitizens();//.getIndoorPeopleCount();
+        int limit = (int)(2D * numSites - numPeople/24D);
+
+        result = result/Math.pow(10, 2 + limit);// /5D;
+
+        //if (result > 1.1) logger.info("probability : "+ result);
+        return result;
+    }
+    
+    public double getSettlementProbability(Settlement settlement) {
+
+        double result = 0D;
+        
+        if (marsClock == null)
+        	marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//        
+        // No construction until after the x sols of the simulation.
+        if (marsClock.getMissionSol() < BuildingConstructionMission.FIRST_AVAILABLE_SOL)
+        	return 0;
+        
+        int availablePeopleNum = 0;
+
+        Collection<Person> list = settlement.getIndoorPeople();
+        for (Person member : list) {
+            boolean noMission = !member.getMind().hasActiveMission();
+            boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
+            if (noMission && isFit)
+            	availablePeopleNum++;
+        }
+
+        // Check if available light utility vehicles.
+        if (!BuildingConstructionMission.isLUVAvailable(settlement))
+        	return 0;
+
+        // Check if enough available people at settlement for mission.
+        else if (!(availablePeopleNum >= BuildingConstructionMission.MIN_PEOPLE))
+        	return 0;
+
+        // Check if settlement has construction override flag set.
+        else if (settlement.getConstructionOverride())
+        	return 0;
+
+        // Check if min number of EVA suits at settlement.
+    	else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) <
+                BuildingConstructionMission.MIN_PEOPLE) {
+    		return 0;
+        }
+            
+        result = getProbability(settlement);
+        
+        return result;
+    }
+    
 	@Override
 	public Mission constructInstance(Robot robot) {
         return null;//new BuildingConstructionMission(robot);
@@ -154,7 +198,11 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 
 	@Override
 	public double getProbability(Robot robot) {
-
         return 0;
     }
+	
+	public static void setInstances(MarsClock c) {
+		marsClock = c;
+	}
+	
 }

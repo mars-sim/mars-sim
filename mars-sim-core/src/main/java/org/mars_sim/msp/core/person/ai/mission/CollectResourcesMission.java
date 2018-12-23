@@ -255,12 +255,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @param missionType   the mission class.
 	 * @return the weighted probability
 	 */
-	public static double getNewMissionProbability(Person person, Class<? extends Unit> containerType, int containerNum,
+	public static double getNewMissionProbability(Settlement settlement, Class<? extends Unit> containerType, int containerNum,
 			int minPeople) {
 		double result = 1;
-
-		Settlement settlement = person.getSettlement();
-
+		
 		if (settlement == null) {
 			return 0;
 		}

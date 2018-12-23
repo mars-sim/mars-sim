@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,32 +46,32 @@ public class MissionManager implements Serializable {
 	private static final int MAX_NUM_PLANS = 100;
 	
 	private static final double PERCENT_PER_SCORE = 20D;
-	
+	/** static mission identifier */
+	private static int missionIdentifer;
+
 	/** Mission listeners. */
 	private transient List<MissionManagerListener> listeners;
 
 	// Cache variables.
 	private transient double totalProbCache;
-
-	// Transient members
-	private transient MarsClock personTimeCache;
-	private static MarsClock marsClock;
-	// Note that mission manager is instantiated before master/mars clock
-	
-	private transient Map<MetaMission, Double> missionProbCache;
-	private transient Map<MetaMission, Double> robotMissionProbCache;
-	
-	private static List<String> missionNames;
-
-	private static Map<String, Integer> settlementID;
-	
-	// static mission identifier
-	private static int missionIdentifer;
 	
 	/** Current missions in the simulation. */
 	private List<Mission> missions;
 
 	private Map<Integer, List<MissionPlanning>> historicalMissions;
+	
+	// Transient members
+	private transient MarsClock personTimeCache;
+	private transient Map<MetaMission, Double> missionProbCache;
+	private transient Map<MetaMission, Double> robotMissionProbCache;
+	
+	private static List<String> missionNames;
+	private static Map<String, Integer> settlementID;
+	
+	// Note : MissionManager is instantiated before MarsClock
+	// Need to call setMarsClock() right after MarsClock is initialized
+	private static MarsClock marsClock;
+
 	
 	/**
 	 * Constructor.
@@ -84,7 +85,7 @@ public class MissionManager implements Serializable {
 		
 		// Initialize data members
 		missionIdentifer = 0;
-		missions = new ArrayList<Mission>(0);
+		missions = new CopyOnWriteArrayList<>();
 		historicalMissions = new HashMap<>();
 		settlementID = new HashMap<>();
 		listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
@@ -323,6 +324,8 @@ public class MissionManager implements Serializable {
 		if (missions.contains(oldMission)) {
 			missions.remove(oldMission);
 
+			oldMission.fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
+					
 			// Update listeners.
 			if (listeners == null) {
 				listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>());
@@ -604,19 +607,28 @@ public class MissionManager implements Serializable {
 	 * Remove missions that are already completed.
 	 */
 	private void cleanMissions() {
-		int index = 0;
-		
+		int index = 0;		
 		if (missions != null) { // for passing maven test
 			while (index < missions.size()) {
-				Mission tempMission = missions.get(index);
-				if ((tempMission == null) || tempMission.isDone() 
-						|| (tempMission.getPlan() != null && tempMission.getPlan().getStatus() == PlanType.NOT_APPROVED)) {
-					removeMission(tempMission);
+				Mission m = missions.get(index);
+				if (m == null || m.isDone() 
+						|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)) {
+					removeMission(m);
 				} else {
 					index++;
 				}
 			}
 		}
+//		if (missions != null) {
+//			int size = missions.size();
+//			for (int i=0; i<size; i++) {
+//				Mission m = missions.get(i);
+//				if (m == null || m.isDone() 
+//						|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)) {
+//					removeMission(m);
+//				}
+//			}
+//		}
 	}
 
 	/**

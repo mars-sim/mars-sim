@@ -12,8 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -32,15 +30,15 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(ConstructBuildingMeta.class.getName());
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.constructBuilding"); //$NON-NLS-1$
 
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(ConstructBuildingMeta.class.getName());
-
-    private SurfaceFeatures surface;
-
+	private static final double WEIGHT = 100D;
+	
     @Override
     public String getName() {
         return NAME;
@@ -62,31 +60,14 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
         }
 
         // Check if it is night time.
-        surface = Simulation.instance().getMars().getSurfaceFeatures();
-
-        if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
-            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                return 0;
-            }
+        if (EVAOperation.isGettingDark(person)) {
+        	return 0;
         }
 
         if (person.isInSettlement()) {
-
-            try {
-                // Check all building construction missions occurring at the settlement.
-                List<BuildingConstructionMission> missions = ConstructBuilding.
-                        getAllMissionsNeedingAssistance(person.getSettlement());
-                result = 100D * missions.size();
-
-                // Crowded settlement modifier
-                Settlement settlement = person.getSettlement();
-                if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity()) {
-                    result *= 2D;
-                }
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error finding building construction missions.", e);
-            }
+            Settlement settlement = person.getSettlement();
+            
+            result = getProbability(settlement);
         }
 
 
@@ -116,6 +97,45 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
         return result;
     }
 
+    
+    public double getProbability(Settlement settlement) {
+
+        double result = 0D;
+
+        try {
+            // Crowded settlement modifier
+            int associated = settlement.getNumCitizens();
+            int cap = settlement.getPopulationCapacity();
+            if (associated >= cap) {
+                result = WEIGHT * associated/cap * associated;
+            }
+            
+            // Check all building construction missions occurring at the settlement.
+            List<BuildingConstructionMission> missions = ConstructBuilding.
+                    getAllMissionsNeedingAssistance(settlement);
+            
+            int size = missions.size();
+            
+//            double factor = 0;
+//            if (size == 0)
+//            	factor = 1;
+//            else if (size == 1)
+//            	factor = Math.pow(1.5, 2);
+//            else 
+//            	factor = Math.pow(size, 2);
+//            
+//            result /= factor;
+            
+            result *= size;
+            
+        }
+        catch (Exception e) {
+            logger.log(Level.SEVERE, "Error finding building construction missions.", e);
+        }
+        
+        return result;
+    }
+        
 	public Task constructInstance(Robot robot) {
         return null;
 	}
