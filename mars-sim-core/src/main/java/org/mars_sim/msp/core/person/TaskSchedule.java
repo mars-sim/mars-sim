@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 //import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -48,6 +49,8 @@ public class TaskSchedule implements Serializable {
 	public static final int Z_START = 666;
 	public static final int Z_END = 999;
 
+	public static final int MISSION_WINDOW = 100;
+	
 	// Data members
 	private int solCache;
 	private int startTime;
@@ -79,7 +82,7 @@ public class TaskSchedule implements Serializable {
 
 	private List<OneActivity> todayActivities;
 
-	private MarsClock marsClock;
+	private static MarsClock marsClock;
 
 	/**
 	 * Constructor for TaskSchedule
@@ -143,7 +146,7 @@ public class TaskSchedule implements Serializable {
 	 */
 	public void recordTask(String task, String description, String phase, String mission) {
 
-		int startTime = marsClock.getMillisolInt();
+		startTime = marsClock.getMillisolInt();
 		int solElapsed = marsClock.getMissionSol();
 		if (solElapsed != solCache) {
 			// Removed the sol log from LAST_SOL ago
@@ -627,6 +630,78 @@ public class TaskSchedule implements Serializable {
 		return result;
 	}
 
+	/*
+	 * Checks if a person is on shift
+	 * 
+	 * @param time in millisols
+	 * 
+	 * @return true or false
+	 */
+	public boolean isAtStartOfWorkShift() {
+		boolean result = false;
+		int millisols = startTime;
+
+		if (shiftType == ShiftType.ON_CALL) {
+			return isAtStartOfAShift();
+		}
+		
+		else if (shiftType == ShiftType.A) {
+			if (millisols == 1000 || (millisols >= A_START && millisols <= A_START + MISSION_WINDOW))
+				result = true;
+		}
+
+		else if (shiftType == ShiftType.B) {
+			if (millisols >= B_START && millisols <= B_START + MISSION_WINDOW)
+				result = true;
+		}
+
+		else if (shiftType == ShiftType.X) {
+			if (millisols == 1000 || (millisols >= X_START && millisols <= X_START + MISSION_WINDOW))
+				result = true;
+		}
+
+		else if (shiftType == ShiftType.Y) {
+			if (millisols >= Y_START && millisols <= Y_START + MISSION_WINDOW)
+				result = true;
+		}
+
+		else if (shiftType == ShiftType.Z) {
+			if (millisols >= Z_START && millisols <= Z_START + MISSION_WINDOW)
+				result = true;
+		}
+
+		return result;
+	}
+	
+	/*
+	 * Checks if a person is on shift
+	 * 
+	 * @param time in millisols
+	 * 
+	 * @return true or false
+	 */
+	public boolean isAtStartOfAShift() {
+		int millisols = startTime;
+		boolean result = false;
+	
+		if ((millisols == 1000 || millisols >= A_START) && millisols <= A_START + MISSION_WINDOW)
+			result = true;
+
+		else if (millisols >= B_START && millisols <= B_START + MISSION_WINDOW)
+				result = true;
+
+		else if ((millisols == 1000 || millisols >= X_START) && millisols <= X_START + MISSION_WINDOW)
+				result = true;
+
+		else if (millisols >= Y_START && millisols <= Y_START + MISSION_WINDOW)
+				result = true;
+
+		else if (millisols >= Z_START && millisols <= Z_START + MISSION_WINDOW)
+				result = true;
+
+		return result;
+	}
+	
 	public int getShiftChoice(ShiftType st) {
 		return shiftChoice.get(st);
 	}
@@ -648,8 +723,7 @@ public class TaskSchedule implements Serializable {
 		private int startTime;
 		// private int function;
 
-		public OneActivity(int startTime, int taskName, int description, int phase, int missionName) {// , int function)
-																										// {
+		public OneActivity(int startTime, int taskName, int description, int phase, int missionName) {
 			this.taskName = taskName;
 			this.missionName = missionName;
 			this.description = description;
@@ -699,6 +773,15 @@ public class TaskSchedule implements Serializable {
 		}
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void justReloaded(MarsClock clock) {
+		marsClock = clock;
+	}
+	
 	public void destroy() {
 		person = null;
 		marsClock = null;

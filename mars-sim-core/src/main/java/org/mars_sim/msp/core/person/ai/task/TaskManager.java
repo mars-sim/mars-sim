@@ -76,13 +76,10 @@ public class TaskManager implements Serializable {
 	private CircadianClock circadian;
 
 	private TaskSchedule ts;
-	
-//	private MarsClock timeCache;
 
 	private ShiftType shiftTypeCache;
 	
 	private transient Map<MetaTask, Double> taskProbCache;
-
 	private transient List<MetaTask> mtListCache;
 
 	private static MarsClock marsClock;
@@ -113,8 +110,10 @@ public class TaskManager implements Serializable {
 		taskProbCache = new HashMap<MetaTask, Double>();
 		totalProbCache = 0D;
 
+		// Ensure no NULLPOiNTEREXCEPTION in maven test
+		// since marsClock won't be initiated in maven test
 		if (Simulation.instance().getMasterClock() != null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // marsClock won't pass maven test
+			marsClock = Simulation.instance().getMasterClock().getMarsClock(); 
 	}
 
 	/**
@@ -162,14 +161,13 @@ public class TaskManager implements Serializable {
 	 * 
 	 * @return task name
 	 */
-	// 2016-12-01 Added getFilteredTaskName()
 	public String getFilteredTaskName() {
 		String s = getTaskName();
-		if (s.toLowerCase().contains("walk")) {
+		if (s.toLowerCase().contains(WALK)) {
 			// check if the last task is walking related
 			if (lastTask != null) {
 				s = lastTask.getName();
-				if (lastTask != null && !s.toLowerCase().contains("walk")) {
+				if (lastTask != null && !s.toLowerCase().contains(WALK)) {
 					return s;
 				} else
 					return "";
@@ -409,8 +407,8 @@ public class TaskManager implements Serializable {
 			double energyTime = time - remainingTime;
 
 			// Double energy expenditure if performing effort-driven task.
-			if (currentTask != null && currentTask.isEffortDriven()) { // why java.lang.NullPointerException at TR =
-																		// 2048 ?
+			if (currentTask != null && currentTask.isEffortDriven()) { 
+				// why java.lang.NullPointerException at TR = 2048 ?
 				energyTime *= 2D;
 			}
 
@@ -616,31 +614,29 @@ public class TaskManager implements Serializable {
 		return totalProbCache;
 	}
 
+	public static boolean isInMissionWindow(double time) {
+		boolean result = false;
+		
+		
+		return result;
+	}
+	
+	
 	/**
 	 * Calculates and caches the probabilities.
 	 */
 	private void calculateProbability() {
-
-//		if (timeCache == null)
-//			timeCache = marsClock;
-		
+	
 		double msol1 = marsClock.getMillisolOneDecimal();
 
-		int retval = Double.compare(msolCache, msol1);
-	    
-		if(retval > 0 || retval < 0) {    
-//		if (msolCache != msol1) {
+		int diff = Double.compare(msolCache, msol1);    
+		if (diff < 0 || diff > 0) {    
 			msolCache = msol1;
 			
-			// Set the time cache to the current time.
-//			timeCache = (MarsClock) marsClock.clone();
-
-//			if (ts == null)
-//				ts = person.getTaskSchedule();
-
 			ShiftType st = ts.getShiftType();
 
 			if (shiftTypeCache != st) {
+				shiftTypeCache = st;
 				
 				List<MetaTask> mtList = null;
 
@@ -653,18 +649,11 @@ public class TaskManager implements Serializable {
 					mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
 				}
 
-				//if (mtListCache != mtList) {// && mtList != null) {
-					// TODO: is there a better way to compare them this way ?
-//					mtListCache = mtList;
-//					taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
-//				}
-				
 				// Use new mtList
 				mtListCache = mtList;
 				// Create new taskProbCache
 				taskProbCache = new HashMap<MetaTask, Double>(mtList.size());		
 			}
-
 
 			// Clear total probabilities.
 			totalProbCache = 0D;
@@ -701,7 +690,10 @@ public class TaskManager implements Serializable {
 //		return marsClock.equals(timeCache);
 	}
 
-
+	public TaskSchedule getTaskSchedule() {
+		return ts;
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 

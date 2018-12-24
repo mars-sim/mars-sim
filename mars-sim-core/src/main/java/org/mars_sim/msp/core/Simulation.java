@@ -57,6 +57,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Role;
+import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -911,6 +912,7 @@ public class Simulation implements ClockListener, Serializable {
 		PhysicalCondition.justReloaded(masterClock, marsClock);
 		RadiationExposure.justReloaded(masterClock, marsClock);
 		Role.justReloaded(marsClock);
+		TaskSchedule.justReloaded(marsClock);
 		
 		// Re-initialize Structure related class
 		Building.justReloaded(masterClock, marsClock, bc);

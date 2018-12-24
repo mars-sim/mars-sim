@@ -26,9 +26,6 @@ import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.person.ai.task.EatMeal;
-import org.mars_sim.msp.core.person.ai.task.Relax;
-import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -172,7 +169,7 @@ public class Mind implements Serializable {
 					// the next day
 					// check for the passing of each day
 					int solElapsed = marsClock.getMissionSol();
-					if (solElapsed != solCache) {
+					if (solCache != solElapsed) {
 						solCache = solElapsed;
 						jobLock = false;
 					}
@@ -237,12 +234,14 @@ public class Mind implements Serializable {
 				// Call takeAction recursively until time = 0
 				takeAction(remainingTime);
 			}
-		} else {
+		} 
+		
+		else {
 			if ((mission != null) && mission.isDone()) {
 				mission = null;
 			}
 
-			boolean hasActiveMission = hasActiveMission();// (mission != null);
+			boolean hasActiveMission = hasActiveMission();
 			// Check if mission creation at settlement (if any) is overridden.
 			boolean overrideMission = false;
 
@@ -250,27 +249,25 @@ public class Mind implements Serializable {
 				overrideMission = person.getSettlement().getMissionCreationOverride();
 			}
 
+			// Check if it's within the mission request window 
+			// Within 50 millisols at the start of the work shift
+			boolean isInMissionWindow = taskManager.getTaskSchedule().isAtStartOfWorkShift();
+		
 			if (hasActiveMission) {
 				mission.performMission(person);
 			}
-
+			// See if this person can ask for a mission
+			boolean needMission = !hasActiveMission && !overrideMission && isInMissionWindow;
 			// A person has no active task
 			if (!taskManager.hasActiveTask()) {
 				try {
-					getNewAction(true, (!hasActiveMission && !overrideMission));
+					getNewAction(true, needMission);
 				} catch (Exception e) {
 					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 							person.getName() + " could not get new action", e);
 					e.printStackTrace(System.err);
 				}
 			}
-
-//			 if (hasActiveTask || hasActiveMission) {
-//				 takeAction(time);
-//			 Recursive calling causing Exception in thread "pool-4-thread-217"
-//			 java.lang.StackOverflowError
-//			 org.mars_sim.msp.core.person.ai.Mind.takeAction(Mind.java:242)
-//			 }
 		}
 	}
 
