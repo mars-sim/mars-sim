@@ -755,23 +755,15 @@ public abstract class Mission implements Serializable {
 	/**
 	 * Finalizes the mission. String reason Reason for ending mission. Mission can
 	 * override this to perform necessary finalizing operations.
+	 * 
+	 * @param reason
 	 */
 	public void endMission(String reason) {
-//		 if (!(this instanceof RescueSalvageVehicle)) {
-//		 returnHome();
-//		 goToNearestSettlement();
-//		 }
-
 		// Add mission experience score
 		addMissionScore(reason);
 		
 		// Note: !done is very important to keep !
 		if (!done) {
-			// !reason.equals(USER_ABORTED_MISSION)
-			// reason.equals(SUCCESSFULLY_ENDED_CONSTRUCTION) 
-			// reason.equals(SUCCESSFULLY_DISEMBARKED)
-			// reason.equals(USER_ABORTED_MISSION)
-
 			// TODO : there can be custom reason such as "Equipment EVA Suit 12 cannot be
 			// loaded in rover Rahu" with mission name 'Trade With Camp Bradbury'
 
@@ -780,10 +772,10 @@ public abstract class Mission implements Serializable {
 							+ " ended the " + missionName + " mission. Reason : " + reason);
 
 			done = true; // Note: done = true is very important to keep !
-			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
+//			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
 			// logger.info("done firing End_Mission_Event");
 
-			// Deregister the vehicle
+			// Unregister the vehicle
 			if (startingMember.getVehicle() != null)
 				startingMember.getVehicle().correctVehicleReservation();
 			
@@ -799,10 +791,9 @@ public abstract class Mission implements Serializable {
 					}
 				}
 			}
-			
-
-
-		} else
+		} 
+		
+		else
 			LogConsolidated.log(Level.INFO, 1000, sourceName,
 					"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
 							+ " is ending the " + missionName + ". Reason : '" + reason + "'");

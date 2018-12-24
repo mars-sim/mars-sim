@@ -10,10 +10,8 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -38,8 +36,6 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 
     /** default logger. */
     //private static Logger logger = Logger.getLogger(DigLocalRegolithMeta.class.getName());
-
-    private static SurfaceFeatures surface;
 
     @Override
     public String getName() {
@@ -94,6 +90,11 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	        result = settlement.getRegolithProbabilityValue() * 5000D;
 	        //logger.info("DigLocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
 	
+            // Stress modifier
+            result -= person.getStress() * 1D;
+            // fatigue modifier
+            result -= (person.getFatigue()-100) / 50D;
+            
 	        if (result < 1)
 	        	return 0;
 	

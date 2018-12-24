@@ -40,7 +40,7 @@ public class AutosaveMenu implements BiConsumer<TextIO, RunnerData> {
         Interval interval = new Interval();
         SwingHandler handler = new SwingHandler(textIO, "console", interval);
 
-        printCurrentMin();
+        printCurrentSetting();
         
         handler.addIntTask("interval", "Enter the new time interval [in mins]", false)
     	.withInputReaderConfigurator(r -> r.withMinVal(0).withMaxVal(360));
@@ -77,11 +77,11 @@ public class AutosaveMenu implements BiConsumer<TextIO, RunnerData> {
     /**
      * Prints the current autosave setting
      */
-    public void printCurrentMin() {
+    public void printCurrentSetting() {
     	int m =  SimulationConfig.instance().getAutosaveInterval();
         terminal.println("The current autosave time interval is once every " + m + " minutes."
         		+ System.lineSeparator());
-        double sec = Math.round(AutosaveScheduler.getRemainingSeconds()/60.0 *10.0)*10.0;
+        double sec = Math.round(AutosaveScheduler.getRemainingSeconds()/60.0 *10.0)/10.0;
         terminal.println("You have " + sec + " remaining minutes before the next autosave"
         		+ System.lineSeparator());
         

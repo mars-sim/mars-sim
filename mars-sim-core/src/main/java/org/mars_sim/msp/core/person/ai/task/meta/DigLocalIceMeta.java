@@ -11,10 +11,8 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Inventory;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -95,6 +93,11 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
 
             result = settlement.getIceProbabilityValue() * 4000D;
 
+            // Stress modifier
+            result -= person.getStress() * 1D;
+            // fatigue modifier
+            result -= (person.getFatigue()-100) / 50D;
+
             if (result < 1)
             	return 0;
 
@@ -107,7 +110,7 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
 
             // Effort-driven task modifier.
             result *= person.getPerformanceRating();
-
+     
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null)

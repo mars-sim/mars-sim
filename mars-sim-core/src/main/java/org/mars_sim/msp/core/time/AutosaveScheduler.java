@@ -105,10 +105,10 @@ public class AutosaveScheduler {
     		int secs = minutes * 60;
     		
     		// Resets the remaining seconds to the new input value
-    		if (lastRemainingSeconds < secs)
+    		if (lastRemainingSeconds > secs)
     			lastRemainingSeconds = secs;
     		
-    		t = autosaveService.scheduleAtFixedRate(new MyTask(), secs,
+    		t = autosaveService.scheduleAtFixedRate(new MyTask(), lastRemainingSeconds,
     				secs, TimeUnit.SECONDS);
     	}
     }
