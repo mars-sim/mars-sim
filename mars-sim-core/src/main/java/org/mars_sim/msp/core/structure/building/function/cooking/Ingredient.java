@@ -9,66 +9,63 @@ package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 
 public class Ingredient implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private boolean isItAvailable;	
+	private boolean isItAvailable;
 
 	private int id;
 
 	private double proportion;
 	private double ingredientDryMass;
 
-	private AmountResource amountResource;
+	private int amountResource;
 
-	Ingredient(int id, AmountResource amountResource, double proportion) {
+	Ingredient(int id, int amountResource, double proportion) {
 		this.id = id;
 		this.amountResource = amountResource;
 		this.proportion = proportion;
 	}
-	
-    public String getName() {
-		return amountResource.getName();
+
+	public String getName() {
+		return ResourceUtil.findAmountResourceName(id);
 	}
-    
-    public AmountResource getAR() {
-    	return amountResource;
-    }
-    
-    public double getProportion() {
-    		return proportion;
-    }
-    
-    public int getID() {
+
+	public int getAmountResourceID() {
+		return amountResource;
+	}
+
+	public double getProportion() {
+		return proportion;
+	}
+
+	public int getID() {
 		return id;
 	}
 
-    public boolean getIsItAvailable() {
-    	return isItAvailable;
-    }
-    
-    public void setIsItAvailable(boolean value) {
-    	isItAvailable = value;
-    }
-    
-    public void setDryMass(double ingredientDryWeight) {
-    	this.ingredientDryMass = ingredientDryWeight;
-    }
-    
-    public double getDryMass() {
+	public boolean getIsItAvailable() {
+		return isItAvailable;
+	}
 
-    	return ingredientDryMass;
-    }
-    
-    public String toString() {
-		return amountResource.getName();
+	public void setIsItAvailable(boolean value) {
+		isItAvailable = value;
 	}
-    
-    public AmountResource toAR() {
-    	return amountResource;
+
+	public void setDryMass(double ingredientDryWeight) {
+		this.ingredientDryMass = ingredientDryWeight;
 	}
+
+	public double getDryMass() {
+
+		return ingredientDryMass;
+	}
+
+	public String toString() {
+		return getName();
+	}
+
 }

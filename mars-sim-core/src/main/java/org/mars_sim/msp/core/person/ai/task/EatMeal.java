@@ -292,7 +292,10 @@ public class EatMeal extends Task implements Serializable {
 			// Pick up a meal at kitchen if one is available.
 			cookedMeal = kitchen.chooseAMeal(person);
 			if (cookedMeal != null) {
-				logger.fine(person + " picked up a cooked meal to eat: " + cookedMeal.getName());
+				LogConsolidated.log(Level.FINE, 0, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person
+								+ " picked up a cooked meal '" + cookedMeal.getName() 
+								+ "' to eat in " + person.getLocationTag().getImmediateLocation() + ".");
 			}
 		}
 
@@ -388,7 +391,10 @@ public class EatMeal extends Task implements Serializable {
 			// Pick up a dessert at kitchen if one is available.
 			nameOfDessert = dessertKitchen.chooseADessert(person);
 			if (nameOfDessert != null) {
-				logger.fine(person + " picking up a prepared dessert to eat: " + nameOfDessert.getName());
+				LogConsolidated.log(Level.FINE, 0, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person
+								+ " picked up prepared dessert '" + nameOfDessert.getName() 
+								+ "' to eat/drink in " + person.getLocationTag().getImmediateLocation() + ".");
 			}
 		}
 

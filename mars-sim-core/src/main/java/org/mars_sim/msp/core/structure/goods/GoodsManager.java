@@ -1128,13 +1128,16 @@ public class GoodsManager implements Serializable {
 		double demand = 0D;
 
 		String r = resource.getName().toLowerCase();
+		int id = ResourceUtil.findIDbyAmountResourceName(r);
 
-		if (r.equals(ResourceUtil.TABLE_SALT)) {
+		if (id == ResourceUtil.tableSaltID) {
 			// Assuming a person takes 2.5 meals per sol
 			demand = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_SALT_PER_MEAL;
-		} else {
-			for (AmountResource ar : Cooking.getOilMenuARList()) {
-				if (r.equals(ar.getName().toLowerCase())) {
+		} 
+		
+		else {
+			for (int oilID : Cooking.getOilMenu()) {
+				if (id == oilID) {
 					// Assuming a person takes 2.5 meals per sol
 					demand = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_OIL_PER_MEAL;
 				}
@@ -1142,8 +1145,6 @@ public class GoodsManager implements Serializable {
 		}
 
 		// Determine total demand for cooked meal mass for the settlement.
-		// PersonConfig personConfig =
-		// SimulationConfig.instance().getPersonConfiguration();
 		double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
 		double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 		int numPeople = settlement.getNumCitizens();
@@ -1151,15 +1152,14 @@ public class GoodsManager implements Serializable {
 
 		// Determine demand for the resource as an ingredient for each cooked meal
 		// recipe.
-		// MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
-		int numMeals = mealConfig.getMealList().size();
-		Iterator<HotMeal> i = mealConfig.getMealList().iterator();
+		int numMeals = MealConfig.getMealList().size();
+		Iterator<HotMeal> i = MealConfig.getMealList().iterator();
 		while (i.hasNext()) {
 			HotMeal meal = i.next();
 			Iterator<Ingredient> j = meal.getIngredientList().iterator();
 			while (j.hasNext()) {
 				Ingredient ingredient = j.next();
-				if (ingredient.getName().equalsIgnoreCase(r)) {
+				if (ingredient.getAmountResourceID() == id) {
 					demand += ingredient.getProportion() * cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
 				}
 			}
@@ -1190,8 +1190,6 @@ public class GoodsManager implements Serializable {
 			}
 
 			if (hasDessert) {
-				// PersonConfig personConfig =
-				// SimulationConfig.instance().getPersonConfiguration();
 				double amountNeededSol = personConfig.getDessertConsumptionRate() / dessert.length;
 				double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 				int numPeople = settlement.getNumCitizens();

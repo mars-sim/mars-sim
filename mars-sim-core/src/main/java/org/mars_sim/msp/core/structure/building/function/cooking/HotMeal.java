@@ -13,7 +13,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.building.function.cooking.Ingredient;
 
-// 2014-11-29 Created HotMeal()
 public class HotMeal implements Serializable {
 
 	/** default serial id. */
@@ -42,12 +41,17 @@ public class HotMeal implements Serializable {
 	}
 
 
-	// called by constructor in Cooking.java
-	public void addIngredient(int ingredientID, AmountResource resource, double proportion) { // String name
+	/**
+	 * Adds an ingredient
+	 * 
+	 * @param ingredientID
+	 * @param resource
+	 * @param proportion
+	 */
+	public void addIngredient(int ingredientID, int resource, double proportion) {
 		ingredientList.add(new Ingredient(ingredientID, resource, proportion));
 	}
 
-	//2014-12-11 Added setIngredient
 	public void setIngredient(List<Ingredient> ingredientList, Ingredient ingredient) {
 	    int ingredientIndex = ingredientList.indexOf(ingredient);
 	    if (ingredientIndex != -1) {

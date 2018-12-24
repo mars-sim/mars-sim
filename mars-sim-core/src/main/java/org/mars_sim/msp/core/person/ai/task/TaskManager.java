@@ -635,7 +635,8 @@ public class TaskManager implements Serializable {
 			
 			ShiftType st = ts.getShiftType();
 
-			if (shiftTypeCache != st) {
+			// Note : mtListCache is null when loading from a saved sim
+			if (shiftTypeCache != st || mtListCache == null) {
 				shiftTypeCache = st;
 				
 				List<MetaTask> mtList = null;

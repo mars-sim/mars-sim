@@ -1126,8 +1126,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			if (consumption.size() > MAX_NUM_SOLS)
 				consumption.remove(solElapsed - MAX_NUM_SOLS);
 			
-			printTaskProbability();
-			printMissionProbability();
+//			printTaskProbability();
+//			printMissionProbability();
 		}
 		
 		// If settlement is overcrowded, increase inhabitant's stress.

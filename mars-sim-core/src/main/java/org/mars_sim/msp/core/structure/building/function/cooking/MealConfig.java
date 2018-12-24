@@ -166,12 +166,12 @@ implements Serializable {
 					// Get name.
 					String ingredientName = "";
 					ingredientName = ingredient.getAttributeValue(INGREDIENT_NAME).toLowerCase();
-					AmountResource ingredientAR = ResourceUtil.findAmountResource(ingredientName);
+					int ingredientID = ResourceUtil.findIDbyAmountResourceName(ingredientName);
 					// Get proportion
 					String proportionStr = ingredient.getAttributeValue(PROPORTION);
 					double proportion = Double.parseDouble(proportionStr);
 
-					aMeal.addIngredient(ingredientId, ingredientAR, proportion);//, isItAvailable);
+					aMeal.addIngredient(ingredientId, ingredientID, proportion);//, isItAvailable);
 
 				}
 

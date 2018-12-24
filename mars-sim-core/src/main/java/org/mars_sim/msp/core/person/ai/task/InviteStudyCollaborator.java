@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.location.LocationSituation;
@@ -45,6 +47,9 @@ implements Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(InviteStudyCollaborator.class.getName());
+    
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			 logger.getName().length());
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -235,8 +240,9 @@ implements Serializable {
             Relationship relationship = relationshipManager.getRelationship(invitee, person);
             double currentOpinion = relationship.getPersonOpinion(invitee);
             relationship.setPersonOpinion(invitee, currentOpinion + 10D);
-
-            logger.fine(person.getName() + " inviting " + invitee.getName() +
+            LogConsolidated.log(Level.FINE, 0, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person
+					+ " was inviting " + invitee.getName() +
                     " to collaborate in " + study.toString());
         }
 

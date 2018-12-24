@@ -13,8 +13,7 @@ import java.io.Serializable;
 /**
  * This class represents a cooked meal from a kitchen.
  */
-public class CookedMeal
-implements Serializable, Cloneable {
+public class CookedMeal implements Serializable, Cloneable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -24,21 +23,23 @@ implements Serializable, Cloneable {
 
 	// Data members
 	private double quality;
-	private MarsClock expirationTime;
-	// 2014-11-28 Added name
-	private String mealName;
+	private double dryMass;
 
+	private String mealName;
 	private String producerName;
 	private String consumerName;
+
 	private Cooking kitchen;
-	private double dryMass;
+	private MarsClock expirationTime;
 
 	/**
 	 * Constructor.
-	 * @param quality the quality of the food
+	 * 
+	 * @param quality      the quality of the food
 	 * @param creationTime the time the food was cooked.
 	 */
-	public CookedMeal(String mealName, double quality, double dryMass, MarsClock creationTime, String producerName, Cooking kitchen) {
+	public CookedMeal(String mealName, double quality, double dryMass, MarsClock creationTime, String producerName,
+			Cooking kitchen) {
 		this.quality = quality;
 		this.mealName = mealName;
 		this.dryMass = dryMass;
@@ -47,27 +48,29 @@ implements Serializable, Cloneable {
 		this.producerName = producerName;
 		this.kitchen = kitchen;
 	}
-	// 2014-12-07 Added this constructor
+
+	// constructor
 	public CookedMeal(CookedMeal cookedMeal, String consumerName) {
 		this.quality = cookedMeal.quality;
 		this.mealName = cookedMeal.mealName;
 		this.expirationTime = cookedMeal.expirationTime;
 		this.consumerName = consumerName;
 	}
-	// 2014-12-07 Added this copy constructor
+
+	// copy constructor
 	public CookedMeal(CookedMeal cookedMeal) {
 		this.quality = cookedMeal.quality;
 		this.mealName = cookedMeal.mealName;
 		this.expirationTime = cookedMeal.expirationTime;
 	}
 
-	// 2014-11-28 Added getName()
 	public String getName() {
 		return mealName;
 	}
 
 	/**
 	 * Gets the quality of the meal.
+	 * 
 	 * @return quality
 	 */
 	public double getQuality() {
@@ -76,6 +79,7 @@ implements Serializable, Cloneable {
 
 	/**
 	 * Gets the dry mass of the meal.
+	 * 
 	 * @return dry mass
 	 */
 	public double getDryMass() {
@@ -84,6 +88,7 @@ implements Serializable, Cloneable {
 
 	/**
 	 * Gets the expiration time of the meal.
+	 * 
 	 * @return expiration time
 	 */
 	public MarsClock getExpirationTime() {

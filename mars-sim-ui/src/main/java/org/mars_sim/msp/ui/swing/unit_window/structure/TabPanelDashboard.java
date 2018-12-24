@@ -60,12 +60,12 @@ public class TabPanelDashboard extends TabPanel {
 	private static String tradeURL = "/icons/settlement_goals/trade.png";
 	private static String tripURL = "/icons/settlement_goals//trip_128.png";
 	
-	private static ImageView cropIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(cropURL)));
-	private static ImageView manuIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(manuURL)));
-	private static ImageView researchIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(researchURL)));
-	private static ImageView transportIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(transportURL)));
-	private static ImageView tradeIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(tradeURL)));
-	private static ImageView tripIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(tripURL)));
+	private ImageView cropIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(cropURL)));
+	private ImageView manuIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(manuURL)));
+	private ImageView researchIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(researchURL)));
+	private ImageView transportIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(transportURL)));
+	private ImageView tradeIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(tradeURL)));
+	private ImageView tripIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(tripURL)));
 	
 	private static String CURRENT_GOAL = "    Current Goal : ";
 			

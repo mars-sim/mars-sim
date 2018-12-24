@@ -127,6 +127,13 @@ public class ResourceUtil implements Serializable {
 
 	public static int leavesID;
 	
+	public static int soybeanOilID;
+	public static int garlicOilID;
+	public static int sesameOilID;
+	public static int peanutOilID;
+	
+	public static int tableSaltID;
+    
 	public static AmountResource foodAR;
 	public static AmountResource oxygenAR;
 	public static AmountResource waterAR;
@@ -145,7 +152,7 @@ public class ResourceUtil implements Serializable {
 
 	public static AmountResource regolithAR;
 
-	public static AmountResource tableSaltAR;
+//	public static AmountResource tableSaltAR;
 	public static AmountResource NaClOAR;
 	public static AmountResource greyWaterAR;
 	public static AmountResource blackWaterAR;
@@ -165,10 +172,10 @@ public class ResourceUtil implements Serializable {
 	public static AmountResource cropWasteAR;
 	public static AmountResource toiletTissueAR;
 
-	public static AmountResource soybeanOilAR;
-	public static AmountResource garlicOilAR;
-	public static AmountResource peanutOilAR;
-	public static AmountResource sesameOilAR;
+//	public static AmountResource soybeanOilAR;
+//	public static AmountResource garlicOilAR;
+//	public static AmountResource peanutOilAR;
+//	public static AmountResource sesameOilAR;
 
 	private static AmountResource[] ARs = new AmountResource[33];
 
@@ -323,7 +330,7 @@ public class ResourceUtil implements Serializable {
 
 	public static void mapARs() {
 
-		// in Integer
+		// AmountResource instances as Integer
 		
 		foodID = findAmountResource(LifeSupportType.FOOD).getID(); // 1
 		waterID = findAmountResource(LifeSupportType.WATER).getID(); // 2
@@ -360,9 +367,14 @@ public class ResourceUtil implements Serializable {
 		
 		leavesID = findAmountResource(LEAVES).getID();
 		
-		// in AmountResource
+		soybeanOilID = findAmountResource(SOYBEAN_OIL).getID(); // 27
+		garlicOilID = findAmountResource(GARLIC_OIL).getID(); // 41
+		sesameOilID = findAmountResource(SESAME_OIL).getID(); // 53
+		peanutOilID = findAmountResource(PEANUT_OIL).getID(); // 46
 		
+		tableSaltID = findAmountResource(TABLE_SALT).getID(); // 23
 		
+		// AmountResource instances as objects
 		foodAR = findAmountResource(LifeSupportType.FOOD); // 1
 		waterAR = findAmountResource(LifeSupportType.WATER); // 2
 		oxygenAR = findAmountResource(LifeSupportType.OXYGEN); // 3
@@ -388,7 +400,7 @@ public class ResourceUtil implements Serializable {
 		greyWaterAR = findAmountResource(GREY_WATER); // 20
 		blackWaterAR = findAmountResource(BLACK_WATER); // 21
 
-		tableSaltAR = findAmountResource(TABLE_SALT); // 23
+//		tableSaltAR = findAmountResource(TABLE_SALT); // 23
 
 		fertilizerAR = findAmountResource(FERTILIZER); // 139
 
@@ -401,10 +413,10 @@ public class ResourceUtil implements Serializable {
 		napkinAR = findAmountResource(NAPKIN); // 161
 		toiletTissueAR = findAmountResource(TOILET_TISSUE); // 164
 
-		soybeanOilAR = findAmountResource(SOYBEAN_OIL); // 27
-		garlicOilAR = findAmountResource(GARLIC_OIL); // 41
-		sesameOilAR = findAmountResource(SESAME_OIL); // 53
-		peanutOilAR = findAmountResource(PEANUT_OIL); // 46
+//		soybeanOilAR = findAmountResource(SOYBEAN_OIL); // 27
+//		garlicOilAR = findAmountResource(GARLIC_OIL); // 41
+//		sesameOilAR = findAmountResource(SESAME_OIL); // 53
+//		peanutOilAR = findAmountResource(PEANUT_OIL); // 46
 
 	}
 
@@ -416,9 +428,11 @@ public class ResourceUtil implements Serializable {
 				cropWasteAR, foodWasteAR, solidWasteAR, eWasteAR, foodWasteAR,
 				solidWasteAR, toxicWasteAR, compostAR, greyWaterAR, blackWaterAR,
 				soilAR, regolithAR, rockSamplesAR, sandAR,
-				tableSaltAR, NaClOAR, napkinAR,
+//				tableSaltAR, 
+				NaClOAR, napkinAR,
 				toiletTissueAR, fertilizerAR,
-				soybeanOilAR, garlicOilAR, peanutOilAR, sesameOilAR };
+//				soybeanOilAR, garlicOilAR, peanutOilAR, sesameOilAR 
+				};
 //        for (int i=0; i< 33; i++) {
 //        	//System.out.println(ARs[i].getName());
 //        	//for (AmountResource ar : ARs) {
