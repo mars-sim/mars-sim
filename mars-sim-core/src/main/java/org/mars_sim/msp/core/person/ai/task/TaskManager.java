@@ -50,6 +50,8 @@ public class TaskManager implements Serializable {
 
 	private static final String WALK = "walk";
 	
+	private static final int MAX_TASK_PROBABILITY = 2000;
+	
 	// Data members
 	/** The cache for msolInt */
 	private double msolCache = -1.0;
@@ -662,6 +664,12 @@ public class TaskManager implements Serializable {
 			for (MetaTask mt : mtListCache) {
 				double probability = mt.getProbability(person);
 				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
+					if (probability > MAX_TASK_PROBABILITY) {
+//						LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+//								mind.getPerson().getName() + " - " + mt.getName() 
+//									+ " : Probability is " + Math.round(probability*10.0)/10.0 + ".");
+						probability = MAX_TASK_PROBABILITY;
+					}
 					taskProbCache.put(mt, probability);
 					totalProbCache += probability;
 				} 

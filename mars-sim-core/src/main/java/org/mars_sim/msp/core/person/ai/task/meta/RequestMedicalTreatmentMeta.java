@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
@@ -37,6 +38,11 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
+	private static Logger logger = Logger.getLogger(RequestMedicalTreatmentMeta.class.getName());
+
+//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+//			logger.getName().length());
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.requestMedicalTreatment"); //$NON-NLS-1$
@@ -81,6 +87,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
                     // Can other person with best medical skill treat health problem.
                     boolean canTreat = false;
                     if (bestMedicalSkill >= treatment.getSkill()) {
+                        result += 150D;
                         canTreat = true;
                     }
 
@@ -88,6 +95,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
                     boolean selfTreat = false;
                     if (treatment.getSelfAdminister()) {
                         if (personMedicalSkill >= treatment.getSkill()) {
+                            result += 150D;
                             selfTreat = true;
                         }
                     }
@@ -114,6 +122,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
                     HealthProblem problem = k.next();
                     if (aid.canTreatProblem(problem)) {
                         canTreatProblems = true;
+                        result += 150D;
                     }
                 }
 
@@ -124,11 +133,9 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
 
             // If any useful medical aids for treating person's health problems, return probability.
             if (usefulMedicalAids) {
-                result = 300D;
+                result += 150D;
             }
 
-
-	        // 2015-06-07 Added Preference modifier
             if (result > 0)
             	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 

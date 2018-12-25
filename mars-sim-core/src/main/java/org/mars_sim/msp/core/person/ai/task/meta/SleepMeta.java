@@ -133,12 +133,13 @@ public class SleepMeta implements MetaTask, Serializable {
 	            	maxNumSleep = 3;
 
 	            if (circadian.getNumSleep() <= maxNumSleep) {
-	            	// 2015-12-05 checks the current time against the sleep habit heat map
+	            	// Checks the current time against the sleep habit heat map
 	    	    	int bestSleepTime[] = person.getPreferredSleepHours();
 	    	    	// is now falling two of the best sleep time ?
 	    	    	for (int time : bestSleepTime) {
 	    		    	int diff = time - now;
 	    		    	if (diff < 20 || diff > -20) {
+	    		    		result += 300;
 	    		    		proceed = true;
 	    		    		break;
 	    		    	}

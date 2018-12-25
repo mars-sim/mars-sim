@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -104,7 +106,10 @@ public class MedicalAssistance extends Task implements Serializable {
 			// Start the treatment
 			try {
 				medical.startTreatment(problem, duration);
-				logger.info(person.getName() + " was treating " + problem.getIllness().getType().toString());
+				
+				LogConsolidated.log(Level.INFO, 0, sourceName, 
+						"[" + person.getLocationTag().getLocale() + "] " + person
+					+ " was treating " + problem.getIllness().getType().toString());
 
 				// Add person to medical care building if necessary.
 				if (medical instanceof MedicalCare) {

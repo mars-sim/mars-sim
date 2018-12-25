@@ -572,19 +572,19 @@ public class PhysicalCondition implements Serializable {
 //			System.out.println("tims : " + time + "  o2_consumption : " + o2_consumption);
 			try {
 				if (lackOxygen(support, o2_consumption * (time / 1000D)))
-					LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
-							"[" + loc0 + "] " + name + " in " + loc1 + " reported lack of oxygen.", null);
+					LogConsolidated.log(Level.SEVERE, 1000, sourceName,
+							"[" + loc0 + "] " + name + " in " + loc1 + " reported lack of oxygen.");
 				if (badAirPressure(support, minimum_air_pressure))
-					LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
-							"[" + loc0 + "] " + name + " in " + loc1 + " reported non-optimal air pressure.", null);
+					LogConsolidated.log(Level.SEVERE, 1000, sourceName,
+							"[" + loc0 + "] " + name + " in " + loc1 + " reported non-optimal air pressure.");
 				if (badTemperature(support, min_temperature, max_temperature))
-					LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
-							"[" + loc0 + "] " + name + " in " + loc1 + " reported non-optimal temperature.", null);
+					LogConsolidated.log(Level.SEVERE, 1000, sourceName,
+							"[" + loc0 + "] " + name + " in " + loc1 + " reported non-optimal temperature.");
 				
 			} catch (Exception e) {
 				e.printStackTrace();
-				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
-						"[" + loc0 + "] " + name + " in " + loc1 + " reported anomaly in the life support system.", null);
+				LogConsolidated.log(Level.SEVERE, 1000, sourceName,
+						"[" + loc0 + "] " + name + " in " + loc1 + " reported anomaly in the life support system.");
 			}
 		}
 	}
@@ -884,12 +884,6 @@ public class PhysicalCondition implements Serializable {
 		// Expanded Anxiety Attack into either Panic Attack or Depression
 
 		// a person is limited to have only one of them at a time
-//		if (panicAttack == null)
-//			panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
-//
-//		if (depression == null)
-//			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
-
 		if (!problems.containsKey(panicAttack) && !problems.containsKey(depression)) {
 
 			// Determine stress resilience modifier (0D - 2D).
@@ -915,13 +909,11 @@ public class PhysicalCondition implements Serializable {
 							inclination_factor = inclination_factor - .05;
 						addMedicalComplaint(panicAttack);
 						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-						LogConsolidated.log(logger, Level.INFO, 500, sourceName,
+						LogConsolidated.log(Level.INFO, 500, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + name
-										+ " suffers from a panic attack.",
-								null);
+										+ " suffers from a panic attack.");
 
 						// the person should be carried to the sickbay at this point
-//						person.getMind().getTaskManager().clearTask();
 						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 
 					} else
@@ -935,11 +927,10 @@ public class PhysicalCondition implements Serializable {
 							inclination_factor = inclination_factor + .05;
 						addMedicalComplaint(depression);
 						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-						LogConsolidated.log(logger, Level.INFO, 500, sourceName,
+						LogConsolidated.log(Level.INFO, 500, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + name
-										+ " has an episode of depression.",
-								null);
-
+										+ " has an episode of depression.");
+						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 					} else
 						logger.log(Level.SEVERE, "Could not find 'Depression' medical complaint in 'conf/medical.xml'");
 				}
@@ -949,7 +940,6 @@ public class PhysicalCondition implements Serializable {
 		
 		else {
 			// the person should be carried to the sickbay at this point
-//			person.getMind().getTaskManager().clearTask();
 			person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 		}
 	}
@@ -976,11 +966,10 @@ public class PhysicalCondition implements Serializable {
 				if (highFatigue != null) {
 					addMedicalComplaint(highFatigue);
 					person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-					LogConsolidated.log(logger, Level.INFO, 500, sourceName,
+					LogConsolidated.log(Level.INFO, 500, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + name
-									+ " collapsed because of high fatigue exhaustion.",
-							null);
-
+									+ " collapsed because of high fatigue exhaustion.");
+					person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 				} else
 					logger.log(Level.SEVERE,
 							"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
@@ -989,7 +978,6 @@ public class PhysicalCondition implements Serializable {
 		
 		else {
 			// the person should be carried to the sickbay at this point
-//			person.getMind().getTaskManager().clearTask();
 			person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 		}
 	}
@@ -1013,32 +1001,21 @@ public class PhysicalCondition implements Serializable {
 				addMedicalComplaint(radiationPoisoning);
 				isRadiationPoisoned = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-				LogConsolidated.log(logger, Level.INFO, 500, sourceName,
+				LogConsolidated.log(Level.INFO, 500, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + name
-								+ " collapses because of radiation poisoning.",
-						null);
-
-
-			} else
+								+ " collapses because of radiation poisoning.");
+				person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
+			} 
+			
+			else
 				logger.log(Level.SEVERE, "Could not find 'Radiation Sickness' medical complaint in 'conf/medical.xml'");
-			/*
-			 * // a person with high endurance will be less likely to be collapse double
-			 * modifier = (double) (100 - endurance * .6 - strength * .4) / 100D;
-			 * 
-			 * double value = highFatigueCollapseChance / 5D * modifier;
-			 * 
-			 * if (RandomUtil.lessThanRandPercent(value)) {
-			 * 
-			 * }
-			 * 
-			 * else {
-			 * 
-			 * }
-			 */
+			
+			// a person with high endurance will be less likely to be collapse double
+//			double modifier = (double) (100 - endurance * .6 - strength * .4) / 100D;
 		}
+		
 		else {
 			// the person should be carried to the sickbay at this point
-//			person.getMind().getTaskManager().clearTask();
 			person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 		}
 	}
@@ -1053,9 +1030,6 @@ public class PhysicalCondition implements Serializable {
 	private List<Complaint> checkForRandomAilments(double time) {
 
 		List<Complaint> result = new ArrayList<Complaint>(0);
-
-//		if (allMedicalComplaints == null)
-//			allMedicalComplaints = medicalManager.getAllMedicalComplaints();
 
 		for (Complaint complaint : allMedicalComplaints) {
 			// Check each possible medical complaint.
@@ -1255,7 +1229,7 @@ public class PhysicalCondition implements Serializable {
 			else
 				phrase = " is complaining about the " + n;
 
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName, prefix + person + phrase + suffix, null);
+			LogConsolidated.log(Level.INFO, 0, sourceName, prefix + person + phrase + suffix);
 
 			recalculatePerformance();
 			
@@ -1298,11 +1272,10 @@ public class PhysicalCondition implements Serializable {
 		if (foodAvailable < 0.01D) {
 			// throw new IllegalStateException("Warning: less than 0.01 kg dried food
 			// remaining!");
-			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
+			LogConsolidated.log(Level.WARNING, 10_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "]" + " only " + foodAvailable
-							+ " kg preserved food remaining.",
-					null);
-		}
+							+ " kg preserved food remaining.");
+			}
 
 		// if container has less than enough food, finish up all food in the container
 		else {
@@ -1388,7 +1361,7 @@ public class PhysicalCondition implements Serializable {
 			}
 			String s = "[" + loc0 + "] " + reading + " triggered.   Affected : " + name + "   Immediate Location : " + loc1 
 					+ "   Actual : " + Math.round(actual*decimals)/decimals + unit + "   Required : " + Math.round(required*decimals)/decimals + unit;
-			LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName, s, null);
+			LogConsolidated.log(Level.SEVERE, 1000, sourceName, s);
 			
 			addMedicalComplaint(complaint);
 			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
