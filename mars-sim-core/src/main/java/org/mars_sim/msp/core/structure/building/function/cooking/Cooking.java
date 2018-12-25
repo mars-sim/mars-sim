@@ -7,6 +7,8 @@
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -65,20 +67,18 @@ public class Cooking extends Function implements Serializable {
 	public static final String DISCARDED = " is expired and discarded at ";
 	public static final String PRESERVED = "into preserved food at ";
 
+	public static final int MAX_NUM_SOLS = 14;
 	public static final int RECHECKING_FREQ = 250; // in millisols
 	public static final int NUMBER_OF_MEAL_PER_SOL = 4;
-	// The average amount of cleaning agent (kg) used per sol for clean-up
-	// public static final double CLEANING_AGENT_PER_SOL = 0.1D;
-	// the average amount of water in kg per cooked meal during meal preparation and
-	// clean-up
-	// public static final double WATER_USAGE_PER_MEAL = 0.8D;
+//	/** The average amount of cleaning agent (kg) used per sol for clean-up. */
+//	public static final double CLEANING_AGENT_PER_SOL = 0.1D;
+//	/** The average amount of water in kg per cooked meal during meal preparation and clean-up. */
+//	public static final double WATER_USAGE_PER_MEAL = 0.8D;
 	public static final double AMOUNT_OF_SALT_PER_MEAL = 0.005D;
 	public static final double AMOUNT_OF_OIL_PER_MEAL = 0.01D;
-	/**
-	 * The base amount of work time (cooking skill 0) to produce one single cooked
-	 * meal.
-	 */
-	public static final double COOKED_MEAL_WORK_REQUIRED = 8D; // 10 milli-sols is 15 mins
+	/**  The base amount of work time (cooking skill 0) to produce one single cooked meal.*/
+	public static final double COOKED_MEAL_WORK_REQUIRED = 8D; 
+	// Note : 10 millisols is 15 mins
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.00001;
 
@@ -107,10 +107,15 @@ public class Cooking extends Function implements Serializable {
 	private String producerName;
 
 	// Data members
+	/** The list of cooked meals. */
 	private List<CookedMeal> cookedMeals;
+	/** The ingredient map of each meal.  */
 	private Map<Integer, Double> ingredientMap;
-
+//	/** The daily water usage in this facility [kg/sol]. */
+//	private Map<Integer, Double> dailyWaterUsage;
+	/** The quality history of each meal.  */	
 	private Multimap<String, Double> qualityMap;
+	/** The creation time of each meal.  */
 	private Multimap<String, MarsClock> timeMap;
 
 	private Inventory inv;
@@ -154,6 +159,7 @@ public class Cooking extends Function implements Serializable {
 
 		cookedMeals = new CopyOnWriteArrayList<>();
 		ingredientMap = new ConcurrentHashMap<>();
+//		dailyWaterUsage = new HashMap<>();
 
 		inv = getBuilding().getBuildingManager().getSettlement().getInventory();
 
@@ -180,7 +186,6 @@ public class Cooking extends Function implements Serializable {
 
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration(); // need this to pass maven
 																							// test
-
 		dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) NUMBER_OF_MEAL_PER_SOL;
 
 		computeDryMass();
@@ -206,15 +211,15 @@ public class Cooking extends Function implements Serializable {
 	/**
 	 * Computes the dry mass of all ingredients
 	 */
-	// Note : called out once only in Cooking.java's constructor
+	// Note : called out once only in Cooking's constructor
 	public void computeDryMass() {
 		Iterator<HotMeal> i = mealConfigMealList.iterator();
 
 		while (i.hasNext()) {
 
 			HotMeal aMeal = i.next();
-			List<Double> proportionList = new CopyOnWriteArrayList<>(); // <Double>();
-			List<Double> waterContentList = new CopyOnWriteArrayList<>(); // ArrayList<Double>();
+			List<Double> proportionList = new ArrayList<>(); // <Double>();
+			List<Double> waterContentList = new ArrayList<>(); // ArrayList<Double>();
 
 			List<Ingredient> ingredientList = aMeal.getIngredientList();
 			Iterator<Ingredient> j = ingredientList.iterator();
@@ -517,7 +522,7 @@ public class Cooking extends Function implements Serializable {
 	 * 
 	 * @param workTime work time (millisols)
 	 */
-	// Called by CookMeal.java
+	// Called by CookMeal
 	public String addWork(double workTime, Unit theCook) {
 		if (theCook instanceof Person)
 			this.person = (Person) theCook;
@@ -900,8 +905,10 @@ public class Cooking extends Function implements Serializable {
 		int level = settlement.getWaterRation();
 		if (level != 0)
 			usage = usage / 1.5D / level;
-
-		retrieveAnIngredientFromMap(usage, ResourceUtil.waterID, true);
+		if (usage > MIN) {
+			retrieveAnIngredientFromMap(usage, ResourceUtil.waterID, true);
+			settlement.addWaterConsumption(0, usage);
+		}
 		double wasteWaterAmount = usage * .75;
 		if (wasteWaterAmount > 0)
 			Storage.storeAnResource(wasteWaterAmount, ResourceUtil.greyWaterID, inv, sourceName + "::consumeWater");
@@ -1029,10 +1036,10 @@ public class Cooking extends Function implements Serializable {
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // needed for loading a saved sim
 		// Sanity check for the passing of each day
-		int newSol = marsClock.getSolOfMonth();// getSolElapsedFromStart();
-		if (newSol != solCache) {
+		int solElapsed = marsClock.getMissionSol();
+		if (solCache != solElapsed) {
 			// Adjust the rate to go up automatically by default
-			solCache = newSol;
+			solCache = solElapsed;
 			double rate = settlement.getMealsReplenishmentRate();
 			rate += UP;
 			settlement.setMealsReplenishmentRate(rate);
@@ -1049,6 +1056,10 @@ public class Cooking extends Function implements Serializable {
 
 			cleanUpKitchen();
 
+			// Limit the size of the dailyWaterUsage to x key value pairs
+//			if (dailyWaterUsage.size() > MAX_NUM_SOLS)
+//				dailyWaterUsage.remove(solElapsed - MAX_NUM_SOLS);
+			
 			// oil_count = 0;
 		}
 	}
@@ -1063,7 +1074,7 @@ public class Cooking extends Function implements Serializable {
 		boolean cleaning1 = false;
 		if (cleaningAgentPerSol > MIN) {
 			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol * 5, waterID, inv, true);
-			settlement.addConsumptionTime(2, cleaningAgentPerSol * 5);
+			settlement.addWaterConsumption(2, cleaningAgentPerSol * 5);
 		}
 
 		if (cleaning0)
@@ -1128,6 +1139,21 @@ public class Cooking extends Function implements Serializable {
 	public static List<Integer> getOilMenu() {
 		return oilMenu;
 	}
+
+//	/**
+//	 * Adds to the daily water usage
+//	 * 
+//	 * @param waterUssed
+//	 * @param solElapsed
+//	 */
+//	public void addDailyWaterUsage(double waterUssed) {
+//		if (dailyWaterUsage.containsKey(solCache)) {
+//			dailyWaterUsage.put(solCache, waterUssed + dailyWaterUsage.get(solCache));
+//		}
+//		else {
+//			dailyWaterUsage.put(solCache, waterUssed);
+//		}
+//	}
 
 	/**
 	 * Reloads instances after loading from a saved sim

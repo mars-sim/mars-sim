@@ -300,7 +300,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
 	/** The settlement's map of adjacent buildings. */
 	private Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
-	/** The person's water/oxygen consumption */
+	/** The settlement's water consumption in kitchen when preparing/cleaning meal and dessert. */
 	private Map<Integer, Map<Integer, Double>> consumption;
 	
 
@@ -3711,14 +3711,16 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 	
 	/**
-	 * Adds the amount consumed.
+	 * Adds the amount of water consumed.
 	 * 
 	 * @param type
 	 * @param amount
 	 */
-	public void addConsumptionTime(int type, double amount) {
+	public void addWaterConsumption(int type, double amount) {
+		// type = 0 : preparing meal
 		// type = 1 : preparing dessert
-		// type = 2 : cleaning kitchen
+		// type = 2 : cleaning kitchen for meal
+		// type = 3 : cleaning kitchen for dessert	
 		Map<Integer, Double> map = null;
 		
 		if (consumption.containsKey(solCache)) {

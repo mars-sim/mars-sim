@@ -483,7 +483,7 @@ implements Serializable {
 		boolean cleaning1 = false;
 		if (cleaningAgentPerSol > MIN) {
 			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol*5, waterID, inv, true);
-        	settlement.addConsumptionTime(2, cleaningAgentPerSol*5);
+        	settlement.addWaterConsumption(3, cleaningAgentPerSol*5);
 		}
 
 		if (cleaning0)
@@ -644,7 +644,7 @@ implements Serializable {
         	
 	        if (dessertMassPerServing - dryMass > MIN) {
 	        	Storage.retrieveAnResource(dessertMassPerServing-dryMass, waterID, inv, true);
-	        	settlement.addConsumptionTime(1, dessertMassPerServing-dryMass);
+	        	settlement.addWaterConsumption(1, dessertMassPerServing-dryMass);
 	        }
 	        
 	        double dessertQuality = 0;
@@ -683,27 +683,27 @@ implements Serializable {
 
     }
 
-    /**
-     * Consumes a certain amount of water for each dessert
-     */
-    public void consumeWater() {
-    	int sign = RandomUtil.getRandomInt(0, 1);
-    	double rand = RandomUtil.getRandomDouble(0.2);
-    	double usage = WATER_USAGE_PER_DESSERT;
-    	//TODO: need to move the hardcoded amount to a xml file
-    	if (sign == 0)
-    		usage = 1 + rand;
-    	else
-    		usage = 1 - rand;
-    	if (usage > MIN) {
-    		Storage.retrieveAnResource(usage, waterID, inv, true);
-        	settlement.addConsumptionTime(1, usage);	
-    	}
-    	
-		double wasteWaterAmount = usage * .5;
-		if (wasteWaterAmount > MIN)
-			Storage.storeAnResource(wasteWaterAmount, greyWaterID, inv, sourceName + "::consumeWater");
-    }
+//    /**
+//     * Consumes a certain amount of water for each dessert
+//     */
+//    public void consumeWater() {
+//    	int sign = RandomUtil.getRandomInt(0, 1);
+//    	double rand = RandomUtil.getRandomDouble(0.2);
+//    	double usage = WATER_USAGE_PER_DESSERT;
+//    	//TODO: need to move the hardcoded amount to a xml file
+//    	if (sign == 0)
+//    		usage = 1 + rand;
+//    	else
+//    		usage = 1 - rand;
+//    	if (usage > MIN) {
+//    		Storage.retrieveAnResource(usage, waterID, inv, true);
+//        	settlement.addWaterConsumption(1, usage);	
+//    	}
+//    	
+//		double wasteWaterAmount = usage * .5;
+//		if (wasteWaterAmount > MIN)
+//			Storage.storeAnResource(wasteWaterAmount, greyWaterID, inv, sourceName + "::consumeWater");
+//    }
 
 
     /**

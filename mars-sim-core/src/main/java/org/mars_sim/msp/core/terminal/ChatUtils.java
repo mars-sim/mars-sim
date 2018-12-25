@@ -1003,9 +1003,9 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			String s03 = " Consumed daily per unit area : ";
 			responseText.append(addhiteSpacesName(s03, max0));
-			responseText.append(Math.round(usage / totalArea * 100.0)/100.0 + " kg/ m^2/sol");
+			responseText.append(Math.round(usage / totalArea * 100.0)/100.0 + " kg/m^2/sol");
 			responseText.append(System.lineSeparator());
-			String s02 = " Total amount consumed daily : ";
+			String s02 = " Projected daily amount consumed : ";
 			responseText.append(addhiteSpacesName(s02, max0));
 			responseText.append(Math.round(usage * 100.0)/100.0 + " kg/sol");
 			responseText.append(System.lineSeparator());		
@@ -1080,8 +1080,8 @@ public class ChatUtils {
 			for (Person p : ppl) {
 				consumption += p.getDailyUsage(1);
 			}
-			// Add water usage from making dessert
-			consumption += settlementCache.getDailyUsage(1);
+			// Add water usage from making meal and dessert
+			consumption += settlementCache.getDailyUsage(0) + settlementCache.getDailyUsage(1);
 			String s2 = "    -" + Math.round(consumption * 100.0)/100.0;
 			responseText.append(addNameFirstWhiteSpaces(s2, max-1));
 			net = net - consumption;
@@ -1100,7 +1100,7 @@ public class ChatUtils {
 
 			
 			// Prints cleaning usage
-			cleaning = settlementCache.getDailyUsage(2);			
+			cleaning = settlementCache.getDailyUsage(2) + settlementCache.getDailyUsage(3);			
 			String s4 = "  -" + Math.round(cleaning * 100.0)/100.0;
 			responseText.append(addNameFirstWhiteSpaces(s4, max-3));
 			net = net - cleaning;
