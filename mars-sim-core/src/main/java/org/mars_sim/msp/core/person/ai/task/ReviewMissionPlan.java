@@ -251,7 +251,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								obj += 10D * person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
 							}				
 							
-							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRADE_TOWN
+							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRADE_CENTER
 									&& m instanceof Trade) {
 								obj += 10D * person.getAssociatedSettlement().getGoodsManager().getTradeFactor();
 							}	
@@ -262,7 +262,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								obj += 10D * person.getAssociatedSettlement().getGoodsManager().getTransportationFactor();
 							}	
 							
-							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.MANUFACTURING
+							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.MANUFACTURING_DEPOT
 									&& (m instanceof Mining
 									|| m instanceof CollectRegolith)) {
 								obj += 10D * person.getAssociatedSettlement().getGoodsManager().getManufacturingFactor();

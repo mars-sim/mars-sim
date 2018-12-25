@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -19,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -26,6 +28,9 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  */
 public class ScientificStudyUtil {
 
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	private static RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+    
 	/**
 	 * Private constructor for utility class.
 	 */
@@ -39,7 +44,7 @@ public class ScientificStudyUtil {
 	public static List<Person> getAvailableCollaboratorsForInvite(ScientificStudy study) {
 		List<Person> result = new ArrayList<Person>();
 
-        Collection<Person> allPeople = Simulation.instance().getUnitManager().getPeople();
+        Collection<Person> allPeople = unitManager.getPeople();
         Iterator<Person> i = allPeople.iterator();
         while (i.hasNext()) {
             Person person = i.next();
@@ -83,9 +88,9 @@ public class ScientificStudyUtil {
         double academicAptitudeModifier = (academicAptitude - 50) / 2D;
         baseChance += academicAptitudeModifier;
         
-        Iterator<Person> i = study.getCollaborativeResearchers().keySet().iterator();
+        Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
         while (i.hasNext()) {
-            Person researcher = i.next();
+            Person researcher = (Person)unitManager.getUnitByID(i.next());
             double collaboratorModifier = 10D;
             
             // Modify based on collaborative researcher skill in their science.
@@ -130,9 +135,9 @@ public class ScientificStudyUtil {
         
         // Add achievement credit to collaborative researchers.
         double collaborativeAchievement = baseAchievement / 3D;
-        Iterator<Person> i = study.getCollaborativeResearchers().keySet().iterator();
+        Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
         while (i.hasNext()) {
-            Person researcher = i.next();
+            Person researcher = (Person)unitManager.getUnitByID(i.next());
             ScienceType collaborativeScience = study.getCollaborativeResearchers().get(researcher);
             researcher.addScientificAchievement(collaborativeAchievement, collaborativeScience);
             study.setCollaborativeResearcherEarnedScientificAchievement(researcher, collaborativeAchievement);
@@ -154,12 +159,11 @@ public class ScientificStudyUtil {
     private static void modifyScientistRelationshipsFromAchievement(Person researcher, 
             ScienceType science, double achievement) {
         
-        RelationshipManager manager = Simulation.instance().getRelationshipManager();
-        Iterator<Person> i = manager.getAllKnownPeople(researcher).iterator();
+        Iterator<Person> i = relationshipManager.getAllKnownPeople(researcher).iterator();
         while (i.hasNext()) {
             Person person = i.next();
             if (science == ScienceType.getJobScience(person.getMind().getJob())) {
-                Relationship relationship = manager.getRelationship(researcher, person);
+                Relationship relationship = relationshipManager.getRelationship(researcher, person);
                 if (relationship != null) {
                     double currentOpinion = relationship.getPersonOpinion(person);
                     relationship.setPersonOpinion(person, currentOpinion + achievement);
@@ -167,4 +171,14 @@ public class ScientificStudyUtil {
             }
         }
     }
+    
+	/**
+	 * initializes instances after loading from a saved sim
+	 * 
+	 * @param {{@link MarsClock}
+	 */
+	public static void initializeInstances(RelationshipManager r, UnitManager u) {
+		unitManager = u;		
+		relationshipManager = r;
+	}
 }

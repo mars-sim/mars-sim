@@ -11,13 +11,13 @@ import org.mars_sim.msp.core.Msg;
 
 public enum ObjectiveType {
 
-	CROP_FARM 			(Msg.getString("ObjectiveType.crop")), //$NON-NLS-1$
-	MANUFACTURING		(Msg.getString("ObjectiveType.manu")), //$NON-NLS-1$
-	RESEARCH_CENTER		(Msg.getString("ObjectiveType.research")), //$NON-NLS-1$
-	TRANSPORTATION_HUB	(Msg.getString("ObjectiveType.transportation")), //$NON-NLS-1$
-	TRADE_TOWN			(Msg.getString("ObjectiveType.trade")), //$NON-NLS-1$
+	CROP_FARM 				(Msg.getString("ObjectiveType.crop")), //$NON-NLS-1$
+	MANUFACTURING_DEPOT		(Msg.getString("ObjectiveType.manu")), //$NON-NLS-1$
+	RESEARCH_CAMPUS			(Msg.getString("ObjectiveType.research")), //$NON-NLS-1$
+	TRANSPORTATION_HUB		(Msg.getString("ObjectiveType.transportation")), //$NON-NLS-1$
+	TRADE_CENTER			(Msg.getString("ObjectiveType.trade")), //$NON-NLS-1$
+	TOURISM					(Msg.getString("ObjectiveType.tourism")), //$NON-NLS-1$
 	//FREE_MARKET			(Msg.getString("ObjectiveType.freeMarket")), //$NON-NLS-1$
-	TOURISM				(Msg.getString("ObjectiveType.tourism")), //$NON-NLS-1$
 	;
 
 	private String name;

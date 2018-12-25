@@ -86,6 +86,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.core.science.ScientificStudyUtil;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -885,8 +886,9 @@ public class Simulation implements ClockListener, Serializable {
 		RelationshipManager.setInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock);
 		TransportManager.initializeInstances(marsClock, eventManager);
-		ScientificStudyManager.initializeInstances(marsClock);
+		ScientificStudyManager.initializeInstances(marsClock, unitManager);
 		ScientificStudy.initializeInstances(marsClock, unitManager);
+		ScientificStudyUtil.initializeInstances(relationshipManager, unitManager);
 		
 //		System.out.println("Done with Serialized Object instances");
 		

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -33,7 +34,8 @@ implements Serializable {
     private List<ScientificStudy> studies;
     
 	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	
     /**
      * Constructor.
      */
@@ -378,9 +380,9 @@ implements Serializable {
                 }
                 
                 // Check if collaborators have died.
-                Iterator<Person> j = study.getCollaborativeResearchers().keySet().iterator();
+                Iterator<Integer> j = study.getCollaborativeResearchers().keySet().iterator();
                 while (j.hasNext()) {
-                    Person collaborator = j.next();
+                    Person collaborator = (Person)unitManager.getUnitByID(j.next());
                     if (collaborator.getPhysicalCondition().isDead()) {
                         study.removeCollaborativeResearcher(collaborator);
                         logger.fine(collaborator.getName() + " removed as collaborator in " + study.toString() + 
@@ -420,8 +422,8 @@ implements Serializable {
                         
                         // Set initial research work time for primary and all collaborative researchers.
                         study.addPrimaryResearchWorkTime(0D);
-                        Iterator<Person> k = study.getCollaborativeResearchers().keySet().iterator();
-                        while (k.hasNext()) study.addCollaborativeResearchWorkTime(k.next(), 0D);
+                        Iterator<Integer> k = study.getCollaborativeResearchers().keySet().iterator();
+                        while (k.hasNext()) study.addCollaborativeResearchWorkTime(((Person)unitManager.getUnitByID(k.next())), 0D);
                         
                         continue;
                     }
@@ -447,9 +449,9 @@ implements Serializable {
                         }
                                 
                         // Check each collaborator for downtime.
-                        Iterator<Person> l = study.getCollaborativeResearchers().keySet().iterator();
+                        Iterator<Integer> l = study.getCollaborativeResearchers().keySet().iterator();
                         while (l.hasNext()) {
-                            Person researcher = l.next();
+                            Person researcher = ((Person)unitManager.getUnitByID(l.next()));
                             if (!study.isCollaborativeResearchCompleted(researcher)) {
                                 MarsClock lastCollaborativeWork = study.getLastCollaborativeResearchWorkTime(researcher);
                                 if ((lastCollaborativeWork != null) && MarsClock.getTimeDiff(marsClock, lastCollaborativeWork) 
@@ -576,7 +578,8 @@ implements Serializable {
 	 * 
 	 * @param {{@link MarsClock}
 	 */
-	public static void initializeInstances(MarsClock c) {
+	public static void initializeInstances(MarsClock c, UnitManager u) {
+		unitManager = u;		
 		marsClock = c;
 	}
 	

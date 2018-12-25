@@ -67,7 +67,7 @@ public class TabPanelDashboard extends TabPanel {
 	private ImageView tradeIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(tradeURL)));
 	private ImageView tripIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(tripURL)));
 	
-	private static String CURRENT_GOAL = "    Current Goal : ";
+	private static String CURRENT_GOAL = "    Current Objective : ";
 			
 	private static ObjectiveType[] objectives;
 	
@@ -115,7 +115,8 @@ public class TabPanelDashboard extends TabPanel {
 
 		this.settlement = settlement;
 		objectives = settlement.getObjectives();
-
+		objectiveTypeCache = settlement.getObjective();
+		
 		jfxpanel = new JFXPanel();
 
 		Platform.runLater(() -> {
@@ -215,18 +216,16 @@ public class TabPanelDashboard extends TabPanel {
 			
 			group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
 			    public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
-
-			    	if (new_toggle != null && toggleBtn.isSelected()) {
-						// set the objective at the beginning of the sim to the default value
-						if (settlement.getObjective() == ot) {
-							objectiveTypeCache = ot;
-						}
-
-			        }
+//			    	if (new_toggle != null && toggleBtn.isSelected()) {
+//						// set the objective at the beginning of the sim to the default value
+//						if (settlement.getObjective() == ot) {
+//							objectiveTypeCache = ot;
+//							if (choiceLabel != null)
+//								choiceLabel.setText(ot.toString());
+//						}
+//			        }
 			     }
 			});
-
-
 		}
 
 		row0 = new HBox();
@@ -245,7 +244,8 @@ public class TabPanelDashboard extends TabPanel {
 		
 		choiceHeader = new Label(CURRENT_GOAL);
 		choiceHeader.setMinWidth(140);
-		choiceLabel = new Label(settlement.getObjective().toString());
+		
+		choiceLabel = new Label(objectiveTypeCache.toString());
 		choiceLabel.setAlignment(Pos.CENTER);
 		choiceLabel.setMinWidth(280);
 		
@@ -345,13 +345,13 @@ public class TabPanelDashboard extends TabPanel {
 			if (index == 0)
 				type = ObjectiveType.CROP_FARM;
 			else if (index == 1)
-				type = ObjectiveType.MANUFACTURING;
+				type = ObjectiveType.MANUFACTURING_DEPOT;
 			else if (index == 2)
-				type = ObjectiveType.RESEARCH_CENTER;
+				type = ObjectiveType.RESEARCH_CAMPUS;
 			else if (index == 3)
 				type = ObjectiveType.TRANSPORTATION_HUB;
 			else if (index == 4)
-				type = ObjectiveType.TRADE_TOWN;
+				type = ObjectiveType.TRADE_CENTER;
 			else if (index == 5)
 				type = ObjectiveType.TOURISM;
 
@@ -371,14 +371,22 @@ public class TabPanelDashboard extends TabPanel {
 	/*
 	 * Display the initial system greeting and update the css style
 	 */
-	// 2016-10-31 Added update()
 	@Override
 	public void update() {
+		
+		ObjectiveType ot = settlement.getObjective();
+		System.out.println(settlement + " - objectiveTypeCache : " + objectiveTypeCache + "   ot : "  + ot);
+		if (ot != null && objectiveTypeCache != ot) {
+			objectiveTypeCache = ot;
+		}
+		
 		Platform.runLater(() -> {
-			if (settlement.getObjective() != null && objectiveTypeCache != settlement.getObjective()) {
-				objectiveTypeCache = settlement.getObjective();
-				if (choiceLabel != null) choiceLabel.setText(objectiveTypeCache.toString());
-			}
+			
+			if (choiceLabel != null) 
+				choiceLabel.setText(ot.toString());
+			
+			System.out.println(settlement + " - objectiveTypeCache : " + objectiveTypeCache + "   ot : "  + ot);
+			
 			int theme = MainScene.getTheme();
 			if (themeCache != theme) {
 				themeCache = theme;

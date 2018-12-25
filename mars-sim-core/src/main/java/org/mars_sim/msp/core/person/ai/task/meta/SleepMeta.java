@@ -14,9 +14,7 @@ import org.mars_sim.msp.core.Simulation;
 
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.job.Astronomer;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -49,10 +47,6 @@ public class SleepMeta implements MetaTask, Serializable {
 	private static MasterClock masterClock;// = sim.getMasterClock();
 	private static MarsClock marsClock;// = masterClock.getMarsClock();
 
-	private TaskSchedule ts;// = person.getTaskSchedule();
-	private PhysicalCondition pc;// = person.getPhysicalCondition();
-	private CircadianClock circadian;// = person.getCircadianClock();
-	
 	public SleepMeta() {
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
@@ -97,17 +91,17 @@ public class SleepMeta implements MetaTask, Serializable {
         	// each millisol generates 1 fatigue point
         	// 500 millisols is 12 hours
 
-           	ts = person.getTaskSchedule();
-        	pc = person.getPhysicalCondition();
-        	circadian = person.getCircadianClock();
+//           	ts = person.getTaskSchedule();
+//        	pc = person.getPhysicalCondition();
+//        	circadian = person.getCircadianClock();
 
         	int now = marsClock.getMillisolInt();
            // boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
             
-            double fatigue = pc.getFatigue();
-        	double stress = pc.getStress();
-        	double ghrelin = circadian.getSurplusGhrelin();
-        	double leptin = circadian.getSurplusLeptin();
+            double fatigue = person.getPhysicalCondition().getFatigue();
+        	double stress = person.getPhysicalCondition().getStress();
+        	double ghrelin = person.getCircadianClock().getSurplusGhrelin();
+        	double leptin = person.getCircadianClock().getSurplusLeptin();
         	//str = person + " GS " + Math.round(ghrelin*10.0)/10.0  + " LS " + Math.round(leptin*10.0)/10.0  + " "; 
         			
         	// When we are sleep deprived. The 2 hormones (Leptin and Ghrelin) are "out of sync" and that is 
@@ -127,12 +121,12 @@ public class SleepMeta implements MetaTask, Serializable {
 
 	        	int maxNumSleep = 0;
 
-	        	if (ts.getShiftType() == ShiftType.ON_CALL)
+	        	if (person.getTaskSchedule().getShiftType() == ShiftType.ON_CALL)
 	            	maxNumSleep = 7;
 	            else
 	            	maxNumSleep = 3;
 
-	            if (circadian.getNumSleep() <= maxNumSleep) {
+	            if (person.getCircadianClock().getNumSleep() <= maxNumSleep) {
 	            	// Checks the current time against the sleep habit heat map
 	    	    	int bestSleepTime[] = person.getPreferredSleepHours();
 	    	    	// is now falling two of the best sleep time ?
@@ -279,10 +273,10 @@ public class SleepMeta implements MetaTask, Serializable {
         //boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
 
         // if a person is NOT on-call
-        if (ts.getShiftType() != ShiftType.ON_CALL) {
+        if (person.getTaskSchedule().getShiftType() != ShiftType.ON_CALL) {
 	        // if a person is on shift right now
-           	if (ts.isShiftHour(now)){
-
+           	if (person.getTaskSchedule().isShiftHour(now)){
+           		CircadianClock circadian = person.getCircadianClock();
            		int habit = circadian.getSuppressHabit();
            		int spaceOut = circadian.getSpaceOut();
 	           	// limit adjustment to 10 times and space it out to at least 50 millisols apart
@@ -309,7 +303,7 @@ public class SleepMeta implements MetaTask, Serializable {
 	            if (future > 1000)
 	            	future -= 1000;
 
-	            boolean willBeShiftHour = ts.isShiftHour(future);
+	            boolean willBeShiftHour = person.getTaskSchedule().isShiftHour(future);
 	            if (willBeShiftHour) {
 	            	//if work shift is slated to begin in the next 50 millisols, probability of sleep reduces to one quarter of its value
 	                result = result / 20D;
@@ -390,9 +384,5 @@ public class SleepMeta implements MetaTask, Serializable {
     	sim = null;
     	masterClock = null;
     	marsClock = null;
-    	ts = null;
-    	pc = null;
-    	circadian = null;
-
     }
 }

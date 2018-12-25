@@ -254,8 +254,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			Msg.getString("ObjectiveType.tourism") };
 	/** The settlement objective type array. */
 	private final static ObjectiveType[] objectives = new ObjectiveType[] { ObjectiveType.CROP_FARM,
-			ObjectiveType.MANUFACTURING, ObjectiveType.RESEARCH_CENTER, ObjectiveType.TRANSPORTATION_HUB,
-			ObjectiveType.TRADE_TOWN, ObjectiveType.TOURISM };
+			ObjectiveType.MANUFACTURING_DEPOT, ObjectiveType.RESEARCH_CAMPUS, ObjectiveType.TRANSPORTATION_HUB,
+			ObjectiveType.TRADE_CENTER, ObjectiveType.TOURISM };
 
 	/** The settlement's building manager. */
 	@JsonIgnore
@@ -447,9 +447,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		// Set objective()
 		if (template.equals("Trading Outpost"))
-			setObjective(ObjectiveType.TRADE_TOWN, 2);
+			setObjective(ObjectiveType.TRADE_CENTER, 2);
 		else if (template.equals("Mining Outpost"))
-			setObjective(ObjectiveType.MANUFACTURING, 2);
+			setObjective(ObjectiveType.MANUFACTURING_DEPOT, 2);
 		else
 			setObjective(ObjectiveType.CROP_FARM, 2);
 
@@ -3368,11 +3368,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			goodsManager.setCropFarmFactor(lvl);
 		}
 
-		else if (objectiveType == ObjectiveType.MANUFACTURING) {
+		else if (objectiveType == ObjectiveType.MANUFACTURING_DEPOT) {
 			goodsManager.setManufacturingFactor(lvl);
 		}
 
-		else if (objectiveType == ObjectiveType.RESEARCH_CENTER) {
+		else if (objectiveType == ObjectiveType.RESEARCH_CAMPUS) {
 			goodsManager.setResearchFactor(lvl);
 		}
 
@@ -3380,7 +3380,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			goodsManager.setTransportationFactor(lvl);
 		}
 
-		else if (objectiveType == ObjectiveType.TRADE_TOWN) {
+		else if (objectiveType == ObjectiveType.TRADE_CENTER) {
 			goodsManager.setTradeFactor(lvl);
 		}
 
@@ -3409,16 +3409,16 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		if (objectiveType == ObjectiveType.CROP_FARM)
 			return "inflatable greenhouse";// "inground greenhouse";//"Inflatable Greenhouse";
 		// alternatives : "Large Greenhouse"
-		else if (objectiveType == ObjectiveType.MANUFACTURING)
+		else if (objectiveType == ObjectiveType.MANUFACTURING_DEPOT)
 			return "manufacturing shed";// "Workshop";
 		// alternatives : "Manufacturing Shed", MD1, MD4
-		else if (objectiveType == ObjectiveType.RESEARCH_CENTER)
+		else if (objectiveType == ObjectiveType.RESEARCH_CAMPUS)
 			return "mining lab"; // Laboratory";
 		// alternatives : "Mining Lab", "Astronomy Observatory"
 		else if (objectiveType == ObjectiveType.TRANSPORTATION_HUB)
 			return "loading dock garage";
 		// alternatives :"Garage";
-		else if (objectiveType == ObjectiveType.TRADE_TOWN)
+		else if (objectiveType == ObjectiveType.TRADE_CENTER)
 			return "storage shed";
 		else if (objectiveType == ObjectiveType.TOURISM)
 			return "loading dock garage";

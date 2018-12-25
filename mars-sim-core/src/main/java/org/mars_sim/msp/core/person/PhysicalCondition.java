@@ -911,7 +911,7 @@ public class PhysicalCondition implements Serializable {
 						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 						LogConsolidated.log(Level.INFO, 500, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + name
-										+ " suffers from a panic attack.");
+										+ " had a panic attack.");
 
 						// the person should be carried to the sickbay at this point
 						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
@@ -929,7 +929,7 @@ public class PhysicalCondition implements Serializable {
 						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 						LogConsolidated.log(Level.INFO, 500, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + name
-										+ " has an episode of depression.");
+										+ " had an episode of depression.");
 						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 					} else
 						logger.log(Level.SEVERE, "Could not find 'Depression' medical complaint in 'conf/medical.xml'");
@@ -966,9 +966,9 @@ public class PhysicalCondition implements Serializable {
 				if (highFatigue != null) {
 					addMedicalComplaint(highFatigue);
 					person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-					LogConsolidated.log(Level.INFO, 500, sourceName,
-							"[" + person.getLocationTag().getLocale() + "] " + name
-									+ " collapsed because of high fatigue exhaustion.");
+//					LogConsolidated.log(Level.INFO, 500, sourceName,
+//							"[" + person.getLocationTag().getLocale() + "] " + name
+//									+ " collapsed because of high fatigue exhaustion.");
 					person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 				} else
 					logger.log(Level.SEVERE,
@@ -1003,7 +1003,7 @@ public class PhysicalCondition implements Serializable {
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 				LogConsolidated.log(Level.INFO, 500, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + name
-								+ " collapses because of radiation poisoning.");
+								+ " collapsed because of radiation poisoning.");
 				person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 			} 
 			
@@ -1205,29 +1205,31 @@ public class PhysicalCondition implements Serializable {
 			}
 
 			if (type == ComplaintType.STARVATION)// .equalsIgnoreCase("starvation"))
-				phrase = " is starving";
+				phrase = " was starving";
 			else if (type == ComplaintType.COLD)
 				phrase = " caught a cold";
 			else if (type == ComplaintType.FLU)
 				phrase = " caught the flu";
 			else if (type == ComplaintType.FEVER)
-				phrase = " is having a fever";
-			else if (type == ComplaintType.DECOMPRESSION)// n.equalsIgnoreCase("decompression"))
-				phrase = " is suffering from decompression";
-			else if (type == ComplaintType.DEHYDRATION)// n.equalsIgnoreCase("dehydration"))
+				phrase = " was having a fever";
+			else if (type == ComplaintType.DECOMPRESSION)
+				phrase = " was suffering from decompression";
+			else if (type == ComplaintType.DEHYDRATION)
 				phrase = " was dehydrated";
-			else if (type == ComplaintType.FREEZING)// n.equalsIgnoreCase("freezing"))
-				phrase = " is freezing";
-			else if (type == ComplaintType.HEAT_STROKE)// n.equalsIgnoreCase("heat stroke"))
-				phrase = " is suffering from a heat stroke";
-			else if (type == ComplaintType.SUFFOCATION)// n.equalsIgnoreCase("suffocation"))
-				phrase = " is suffocating";
-			else if (type == ComplaintType.LACERATION)// n.equalsIgnoreCase("laceration"))
+			else if (type == ComplaintType.FREEZING)
+				phrase = " was freezing";
+			else if (type == ComplaintType.HEAT_STROKE)
+				phrase = " was suffering from heat stroke";
+			else if (type == ComplaintType.SUFFOCATION)
+				phrase = " was suffocating";
+			else if (type == ComplaintType.LACERATION)
 				phrase = " had a laceration";
-			else if (type == ComplaintType.PULL_MUSCLE_TENDON)// n.equalsIgnoreCase("laceration"))
+			else if (type == ComplaintType.PULL_MUSCLE_TENDON)
 				phrase = " had a pulled muscle";
-			else
-				phrase = " is complaining about the " + n;
+			else if (type == ComplaintType.HIGH_FATIGUE_COLLAPSE)
+				phrase = " had a high fatigue collapse";
+//			else
+//				phrase = " was complaining about " + n;
 
 			LogConsolidated.log(Level.INFO, 0, sourceName, prefix + person + phrase + suffix);
 

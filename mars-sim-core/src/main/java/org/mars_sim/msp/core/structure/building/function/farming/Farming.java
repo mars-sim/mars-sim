@@ -1488,7 +1488,7 @@ public class Farming extends Function implements Serializable {
 	/**
 	 * Computes the water usage on all crops
 	 * 
-	 * @return water consumption in kg/m^2/sol
+	 * @return water consumption in kg/sol
 	 */
 	public double computeUsage(int type) {
 		// Note: ithe value is kg per square meter per sol

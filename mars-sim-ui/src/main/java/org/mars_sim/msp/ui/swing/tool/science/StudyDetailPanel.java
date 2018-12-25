@@ -18,6 +18,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -39,6 +41,8 @@ extends JPanel {
 	private ResearcherPanel[] collabResearcherPanes;
 	private ScientificStudy study;
 
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	
 	/**
 	 * Constructor
 	 */
@@ -94,10 +98,10 @@ extends JPanel {
 			statusLabel.setText(Msg.getString("StudyDetailPanel.status", getStatusString(study))); //$NON-NLS-1$
 
 			// Update any changes to the displayed collaborative researcher panels.
-			Iterator<Person> i = study.getCollaborativeResearchers().keySet().iterator();
+			Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
 			int count = 0;
 			while (i.hasNext()) {
-				Person researcher = i.next();
+				Person researcher = (Person)unitManager.getUnitByID(i.next());
 				if (!researcher.equals(collabResearcherPanes[count].getStudyResearcher()))
 					collabResearcherPanes[count].setStudyResearcher(study, researcher);
 				count++;
@@ -126,10 +130,10 @@ extends JPanel {
 			statusLabel.setText(Msg.getString("StudyDetailPanel.status", getStatusString(study)) + " "); //$NON-NLS-1$
 
 			primaryResearcherPane.setStudyResearcher(study, study.getPrimaryResearcher());
-			Iterator<Person> i = study.getCollaborativeResearchers().keySet().iterator();
+			Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
 			int count = 0;
 			while (i.hasNext()) {
-				collabResearcherPanes[count].setStudyResearcher(study, i.next());
+				collabResearcherPanes[count].setStudyResearcher(study, (Person)unitManager.getUnitByID(i.next()));
 				count++;
 			}
 			for (int x = count; x < collabResearcherPanes.length; x++)

@@ -23,6 +23,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -44,6 +46,8 @@ extends WizardPanel {
     private JTable researcherTable;
     private JLabel errorMessageLabel;
     
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	
     /**
      * Constructor
      * @param wizard the create mission wizard.
@@ -230,8 +234,8 @@ extends WizardPanel {
             ScientificStudy study = getWizard().getMissionData().getStudy();
             units.add(study.getPrimaryResearcher());
             
-            Iterator<Person> i = study.getCollaborativeResearchers().keySet().iterator();
-            while (i.hasNext()) units.add(i.next());
+            Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
+            while (i.hasNext()) units.add(((Person)unitManager.getUnitByID(i.next())));
             
             fireTableDataChanged();
         }
