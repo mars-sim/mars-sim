@@ -390,17 +390,22 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 	public void update() {
 		// Update each of the tab panels.
 		for (TabPanel tabPanel : tabPanels) {
-			tabPanel.update();
-			// tabPanel.validate();
+			if (this.isVisible())// || this.isShowing())
+				tabPanel.update();
+//			 tabPanel.validate();
 		}
 
 		if (unit instanceof Person) {
 			statusUpdate();
-
 		}
 
 	}
-
+	
+	@Override
+    public String getName() {
+    	return unit.getName() +"'s unit window";
+    }
+    
 	/**
 	 * Prepares unit window for deletion.
 	 */

@@ -375,7 +375,7 @@ public class TabPanelDashboard extends TabPanel {
 	public void update() {
 		
 		ObjectiveType ot = settlement.getObjective();
-		System.out.println(settlement + " - objectiveTypeCache : " + objectiveTypeCache + "   ot : "  + ot);
+//		System.out.println(settlement + " - objectiveTypeCache : " + objectiveTypeCache + "   ot : "  + ot);
 		if (ot != null && objectiveTypeCache != ot) {
 			objectiveTypeCache = ot;
 		}
@@ -385,7 +385,7 @@ public class TabPanelDashboard extends TabPanel {
 			if (choiceLabel != null) 
 				choiceLabel.setText(ot.toString());
 			
-			System.out.println(settlement + " - objectiveTypeCache : " + objectiveTypeCache + "   ot : "  + ot);
+//			System.out.println(settlement + " - objectiveTypeCache : " + objectiveTypeCache + "   ot : "  + ot);
 			
 			int theme = MainScene.getTheme();
 			if (themeCache != theme) {

@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -39,7 +40,7 @@ public class MasterClock implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	private static final double PERIOD_IN_MILLISOLS = 1_000D / MarsClock.SECONDS_PER_MILLISOL;
+	private static final double MAX_PERIOD = 1;
 
 //	private static final int ONE_THOUSAND = 1000;
 
@@ -78,7 +79,7 @@ public class MasterClock implements Serializable {
 	/** Is FXGL is in use. */
 	public boolean isFXGL = false;
 	/** The time between two ui pulses. */	
-	private float pulseTime;
+	private float pulseTime = .5F;
 	/** The maximum number of counts allowed in waiting for other threads to execute. */
 	private int noDelaysPerYield = 0;
 	/** The measure of tolerance of the maximum number of lost frames for saving a simulation. */
@@ -89,8 +90,8 @@ public class MasterClock implements Serializable {
 	private long t01;
 	/** Mode for saving a simulation. */
 	private double tpfCache = 0;
-	/** The UI refresh cycle. */
-	private double refresh;
+//	/** The UI refresh cycle. */
+//	private double refresh;
 
 	/** The file to save or load the simulation. */
 	private transient volatile File file;
@@ -101,7 +102,10 @@ public class MasterClock implements Serializable {
 	private transient List<ClockListener> clockListeners;
 	/** A list of clock listener tasks. */
 	private transient List<ClockListenerTask> clockListenerTasks = new CopyOnWriteArrayList<>();
-
+	/** A list of past UI refresh rate. */
+	private transient List<Float> refreshRates = new ArrayList<>();
+	
+	
 	/** The martian Clock. */
 	private MarsClock marsClock;
 	/** A copy of the initial martian clock at the start of the sim. */
@@ -821,6 +825,8 @@ public class MasterClock implements Serializable {
 	/**
 	 * Checks if it is on pause or a saving process has been requested. Keeps track
 	 * of the time pulse
+	 * 
+	 * @return true if it's saving
 	 */
 	private boolean checkSave() {
 		if (saveType != 0) {
@@ -859,11 +865,27 @@ public class MasterClock implements Serializable {
 		});
 	}
 
-	public double getRefresh() {
-		return refresh;
+	/**
+	 * Returns the refresh rate
+	 * 
+	 * @return the refresh rate
+	 */
+	public float getRefresh() {
+		float sum = 0;
+		int size = refreshRates.size();
+		for (float r : refreshRates) {
+			sum += r;
+//			System.out.println("sum : " + sum);
+		}
+		
+		return sum/size;
 	}
 
-	/** Gets the time between two ui pulses. */
+	/** 
+	 * Gets the time between two ui pulses.
+	 * 
+	 * @return the pulse time
+	 */
 	public float getPulseTime( ) {
 		return pulseTime;
 	}
@@ -893,23 +915,45 @@ public class MasterClock implements Serializable {
 			try {
 
 				// The most important job for CLockListener is to send a clock pulse to
-				// Simulation's clockPulse()
-				// so that UpTimer, Mars, UnitManager, ScientificStudyManager, TransportManager
+				// 0. Simulation
+				// so that 
+				// 1. UpTimer,
+				// 2. Mars, 
+				// 3. MissionManager,
+				// 4. UnitManager, 
+				// 5. ScientificStudyManager, 
+				// 6. TransportManager
 				// gets updated.
 				listener.clockPulse(time);
 				timeCache += time;
 
-				if (timeCache > refresh) {
-					// Set refresh to the new value
-					refresh = PERIOD_IN_MILLISOLS * time;
+				// period is in seconds
+				double period = timeCache / currentTR * MarsClock.SECONDS_PER_MILLISOL;
+						
+				if (period > MAX_PERIOD) {
+					
+					// Find new refresh rate
+					float r = 1/pulseTime;
+					if (r > 60)
+						r = 60;
+					
+					refreshRates.add(r);
+					if (refreshRates.size() > 10)
+						refreshRates.remove(0);
+					
 					long t02 = System.nanoTime();
 					pulseTime = (t02-t01)/1_000_000_000F;
-//					System.out.println("time : " + time + "   refresh : " + refresh + "   Rate : " + pulseTime + " s");
+//					System.out.println("time : " + Math.round(time*100.0)/100.0 
+//							+ "   timeCache : " + Math.round(timeCache*100.0)/100.0 
+//							+ "   r : " + Math.round(r*100.0)/100.0 
+//							+ "   refresh : " + Math.round(getRefresh()*100.0)/100.0 
+//							+ "   time between pulse : " + pulseTime
+//							+ "   Period : " + Math.round(period*1000.0)/1000.0);
 					t01 = t02;
 					// at the start of the sim, delta is ~.18 s
 					
 					// The secondary job of CLockListener is to send uiPulse() out to
-					// MainDesktopPane,
+					// 0. MainDesktopPane,
 					// which in terms sends a clock pulse out to update all unit windows and tool
 					// windows
 					//
@@ -923,7 +967,7 @@ public class MasterClock implements Serializable {
 					// 7. TimeWindow
 					// 8. EventTableModel
 					// 9. NotificationWindow
-					listener.uiPulse(time);
+					listener.uiPulse(timeCache);
 					timeCache = 0;
 				}
 
@@ -935,6 +979,8 @@ public class MasterClock implements Serializable {
 
 	/**
 	 * Fires the clock pulse to each clock listener
+	 * 
+	 * @param time
 	 */
 	public void fireClockPulse(double time) {
 		for (ClockListenerTask task : clockListenerTasks) {
@@ -955,6 +1001,9 @@ public class MasterClock implements Serializable {
 		keepRunning = false;
 	}
 
+	/**
+	 * Restarts the clock
+	 */
 	public void restart() {
 		keepRunning = true;
 	}
@@ -963,6 +1012,7 @@ public class MasterClock implements Serializable {
 	 * Set if the simulation is paused or not.
 	 *
 	 * @param isPaused true if simulation is paused.
+	 * @param showPane
 	 */
 	public void setPaused(boolean isPaused, boolean showPane) {
 		if (this.isPaused != isPaused) {
@@ -996,6 +1046,9 @@ public class MasterClock implements Serializable {
 
 	/**
 	 * Send a pulse change event to all clock listeners.
+	 * 
+	 * @param isPaused
+	 * @param showPane
 	 */
 	public void firePauseChange(boolean isPaused, boolean showPane) {
 
@@ -1015,6 +1068,11 @@ public class MasterClock implements Serializable {
 		 
 	}
 
+	/**
+	 * Gets the pulse per second
+	 * 
+	 * @return
+	 */
 	public double getPulsesPerSecond() {
 		return 1000.0 / tLast * totalPulses;
 	}
@@ -1075,6 +1133,8 @@ public class MasterClock implements Serializable {
 
 	/**
 	 * Sends out a clock pulse if using FXGL
+	 * 
+	 * @param tpf
 	 */
 	public void onUpdate(double tpf) {
 		if (!isPaused) {

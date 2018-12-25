@@ -13,6 +13,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
+import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelDeath;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelFoodProduction;
 
@@ -88,4 +89,13 @@ public class SettlementUnitWindow extends UnitWindow {
         // 2015-06-20 Added tab sorting
 		sortTabPanels();
     }
+    
+	/**
+	 * Updates this window.
+	 */
+	@Override
+	public void update() {
+		super.update();
+	}
+	
 }

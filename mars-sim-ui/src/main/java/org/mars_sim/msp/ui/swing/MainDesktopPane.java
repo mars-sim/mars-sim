@@ -800,6 +800,7 @@ public class MainDesktopPane extends WebDesktopPane
 
 			// Add unit window to unit windows
 			unitWindows.add(tempWindow);
+//			System.out.println(unitWindows : "  + unitWindows.size() + " - " + tempWindow.getName() );
 
 			// Create new unit button in tool bar if necessary
 			if (mainWindow != null)
@@ -986,37 +987,51 @@ public class MainDesktopPane extends WebDesktopPane
 
 		@Override
 		public void run() {
-			// SwingUtilities.invokeLater(() -> {
-			if (unitWindow.isVisible() && unitWindow.isShowing())
+//			 SwingUtilities.invokeLater(() -> {
+//			if (unitWindow.isVisible() && unitWindow.isShowing())
 				unitWindow.update();
-			// });
+//			 });
 		}
 	}
 
-	private void setupUnitWindowExecutor() {
-		// set up unitWindowExecutor
-		unitWindowExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
-
-	}
+//	private void setupUnitWindowExecutor() {
+//		// set up unitWindowExecutor
+//		unitWindowExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
+//		
+////		toolWindows.forEach(t -> {
+////			toolWindowTask = new ToolWindowTask(t);
+////			toolWindowTaskList.add(toolWindowTask);
+////		});
+//		
+////		unitWindows.forEach(u -> {
+////			unitWindowsTask = new UnitWindowTask(u);
+////			unitWindows.add(unitWindowsTask);
+////		});
+//	}
 
 	private void runUnitWindowExecutor() {
-
-		if (!unitWindows.isEmpty()) {
-
-			// set up unitWindowExecutor
-			setupUnitWindowExecutor();
-
+//		System.out.println("unitWindows : " + unitWindows.size());
+		// set up unitWindowExecutor
+//		if (unitWindowExecutor == null)
+//			setupUnitWindowExecutor();
+		
 			// Update all unit windows.
+		if (!unitWindows.isEmpty()) {
 			unitWindows.forEach(u -> {
-				if (isUnitWindowOpen(u))
-					if (!unitWindowExecutor.isTerminated() || !unitWindowExecutor.isShutdown())
-						unitWindowExecutor.execute(new UnitWindowTask(u));
+//				System.out.println(u.getName());
+				if (u.isVisible()) {// && u.isShowing()) { // isUnitWindowOpen(u) &&
+					u.update();
+				}
 			});
-
-			if (!unitWindowExecutor.isShutdown())
-				unitWindowExecutor.shutdown();
-
 		}
+		
+//			unitWindows.forEach(u -> {
+//				if (isUnitWindowOpen(u))
+//					if (!unitWindowExecutor.isTerminated() || !unitWindowExecutor.isShutdown()) {	
+//						unitWindowExecutor.execute(new UnitWindowTask(u));
+//					}
+//			});
+//		}
 	}
 
 	class ToolWindowTask implements Runnable {
@@ -1041,10 +1056,6 @@ public class MainDesktopPane extends WebDesktopPane
 	}
 
 	private void setupToolWindowTasks() {
-		// set up toolWindowExecutor even though it is not used right now inside this
-		// method
-		toolWindowExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
-
 		toolWindowTaskList = new ArrayList<>();
 		toolWindows.forEach(t -> {
 			toolWindowTask = new ToolWindowTask(t);
@@ -1052,17 +1063,30 @@ public class MainDesktopPane extends WebDesktopPane
 		});
 	}
 
+	private void setupToolWindowExecutor() {
+		// set up toolWindowExecutor even though it is not used right now inside this
+		// method
+		toolWindowExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
+	}
+	
 	private void runToolWindowExecutor() {
 
-		if (toolWindowTaskList.isEmpty())
+		if (toolWindowExecutor == null) {
+			setupToolWindowExecutor();
+		}
+		
+		if (toolWindowTaskList.isEmpty()) {
 			setupToolWindowTasks();
+		}
 
-		toolWindowTaskList.forEach(t -> {
-			// if a tool window is opened, run its executor
-			if (isToolWindowOpen(t.getToolWindow().getToolName()))
-				if (!toolWindowExecutor.isTerminated() || !toolWindowExecutor.isShutdown())
-					toolWindowExecutor.execute(t);
-		});
+		else {
+			toolWindowTaskList.forEach(t -> {
+				// if a tool window is opened, run its executor
+				if (isToolWindowOpen(t.getToolWindow().getToolName()))
+					if (!toolWindowExecutor.isTerminated() || !toolWindowExecutor.isShutdown())
+						toolWindowExecutor.execute(t);
+			});
+		}
 	}
 
 	/**
@@ -1070,10 +1094,9 @@ public class MainDesktopPane extends WebDesktopPane
 	 */
 	private void updateWindows() {
 		// long SLEEP_TIME = 450;
-
+//		System.out.println("updateWindows");
 		// Update all unit windows.
 		runUnitWindowExecutor();
-
 		// Update all tool windows.
 		runToolWindowExecutor();
 
@@ -1249,7 +1272,6 @@ public class MainDesktopPane extends WebDesktopPane
 	public void updateToolWindowLF() {
 
 		for (ToolWindow toolWindow : toolWindows) {
-
 			toolWindow.update();
 
 			// Note : Call updateComponentTreeUI() below is must-have or else Monitor Tool
@@ -1262,8 +1284,7 @@ public class MainDesktopPane extends WebDesktopPane
 
 	public void updateUnitWindowLF() {
 
-		for (UnitWindow window : unitWindows) {// = i.next();
-
+		for (UnitWindow window : unitWindows) {
 			window.update();
 			// });
 			// SwingUtilities.updateComponentTreeUI(window);
@@ -1495,18 +1516,18 @@ public class MainDesktopPane extends WebDesktopPane
 
 	@Override
 	public void uiPulse(double time) {
-
 		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && !isEmpty()) {
+			if (mainScene.isMainTabOpen() && !mainScene.isMinimized()) {// && !isEmpty()) {
 //				timeCache = timeCache + time;
 //				double freq = PERIOD_IN_MILLISOLS * Math.sqrt(masterClock.getTimeRatio());
 //				if (timeCache > PERIOD_IN_MILLISOLS * time) {
 //					System.out.println(masterClock.getTimeRatio() + " > " + Math.round(freq*100.0)/100.0);
 				updateWindows();
 //					timeCache = 0;
-//				}
 			}
-		} else if (!isEmpty()) {
+		} 
+		
+		else {//if (!isEmpty()) {
 //			timeCache = timeCache + time;
 //			if (timeCache > PERIOD_IN_MILLISOLS * Math.sqrt(masterClock.getTimeRatio())) {
 			updateWindows();

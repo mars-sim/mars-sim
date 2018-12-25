@@ -3110,17 +3110,12 @@ public class MainScene implements ClockListener {
 				upTimeLabel.setText(upt);
 			}
 
-			double refresh = 1.0/masterClock.getPulseTime();
-			if (refresh > 0 && refresh < 30) {
-				double rate = Math.round(50*(refreshCache + refresh))/100.0;
+			float refresh = masterClock.getRefresh();
+			if (refresh > 0 && refresh < 60) {
+				double rate = Math.round((refreshCache + refresh)*50.0)/100.0;
 				refreshLabel.setText(rate + HZ);
 				refreshCache = rate;
 			}
-//			else {
-//				rate = refreshCache;
-//				refreshLabel.setText(rate + HZ);
-//			}
-			
 		}
 
 		int solOfMonth = marsClock.getSolOfMonth();
