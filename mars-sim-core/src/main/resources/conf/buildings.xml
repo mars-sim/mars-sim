@@ -359,7 +359,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- 33.6g imported from outside. 6g from storage 
 					<input resource="carbon dioxide" rate="33.6" ambient="true" />
 					<input resource="carbon dioxide" rate="6" ambient="false" /-->	
-
 					<input resource="carbon dioxide" rate="39.6" ambient="true" />							
 					<input resource="hydrogen" rate="3.6" ambient="false" />
 					<output resource="methane" rate="4.8" ambient="false" />

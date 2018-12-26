@@ -103,9 +103,9 @@ public class BuildingAirlock extends Airlock {
                     air.releaseOrRecaptureAir(building.getInhabitableID(), true, building);
 
                     // Enter a settlement
-//                    person.enter(LocationCodeType.SETTLEMENT);               
+//                  person.enter(LocationCodeType.SETTLEMENT);               
                     // Put the person into the settlement
-                	inv.storeUnit(person);
+                    inv.storeUnit(person);
                     BuildingManager.addPersonOrRobotToBuilding(person, building);
                     
            			LogConsolidated.log(Level.FINER, 0, sourceName,
@@ -168,6 +168,7 @@ public class BuildingAirlock extends Airlock {
                 			+ " and stepped outside.");
           			
                 }
+            	
                 else {
                 	//if (LocationSituation.BURIED != person.getLocationSituation()) {
 //                    throw new IllegalStateException(

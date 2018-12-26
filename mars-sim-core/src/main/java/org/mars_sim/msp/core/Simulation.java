@@ -978,7 +978,7 @@ public class Simulation implements ClockListener, Serializable {
 		CollectIceMeta.setInstances(missionManager);
 		
 		// Re-initialize Mission related class
-		Mission.justReloaded(marsClock, eventManager, missionManager, surface, pc);  // ScientificStudyManager
+		Mission.justReloaded(marsClock, eventManager, missionManager, surface, pc, unitManager, scientificStudyManager);
 //		RoverMission.justReloaded(eventManager);  // eventManager
 //		VehicleMission.justReloaded(missionManager); // missionmgr
 //		RescueSalvageVehicle.justReloaded(eventManager);  // eventManager

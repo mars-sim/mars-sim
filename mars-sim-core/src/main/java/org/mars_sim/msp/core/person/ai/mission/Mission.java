@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -151,6 +152,7 @@ public abstract class Mission implements Serializable {
 	// Static members
 	protected static Simulation sim = Simulation.instance();
 	
+	protected static UnitManager unitManager;
 	protected static HistoricalEventManager eventManager;
 	protected static MissionManager missionManager;
 	protected static ScientificStudyManager scientificManager;
@@ -918,7 +920,7 @@ public abstract class Mission implements Serializable {
 
 		// Get all people qualified for the mission.
 		Collection<Person> qualifiedPeople = new ConcurrentLinkedQueue<Person>();
-		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (isCapableOfMission(person)) {
@@ -1005,10 +1007,12 @@ public abstract class Mission implements Serializable {
 			if (RandomUtil.lessThanRandPercent(recruitmentChance)) {
 				recruitee.setMission(this);
 
-				if (recruitee instanceof Person) {
-					((Person) recruitee).setShiftType(ShiftType.ON_CALL);
-				}
-				// robot cannot be a recruitee
+				// NOTE: do not set his shift to ON_CALL until after the mission plan has been approved
+//				if (recruitee instanceof Person) {
+//					((Person) recruitee).setShiftType(ShiftType.ON_CALL);
+//				}
+				
+				// Note : robot cannot be a recruitee
 				// else if (recruitee instanceof Robot) {
 				// ((Robot) recruitee).getTaskSchedule().setShiftType("None");
 				// }
@@ -1303,6 +1307,11 @@ public abstract class Mission implements Serializable {
 					+ " was getting"// the rover " + startingMember.getVehicle() 
 					+ " ready to embark on " + getDescription());
 
+//			for (MissionMember m : members) {
+//				Person pp = (Person) m;
+//				pp.setShiftType(ShiftType.ON_CALL);
+//			}
+			
 			setPhaseEnded(true);
 		}
 	}
@@ -1352,14 +1361,12 @@ public abstract class Mission implements Serializable {
 	}
 	
 	public static void initializeInstances() {
+		unitManager = sim.getUnitManager();
 		eventManager = sim.getEventManager();
 		missionManager = sim.getMissionManager();
 		scientificManager = sim.getScientificStudyManager();
-		
-		surface = sim.getMars().getSurfaceFeatures();
-		
+		surface = sim.getMars().getSurfaceFeatures();	
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
-		
 		marsClock = sim.getMasterClock().getMarsClock();
 	}
 	
@@ -1369,14 +1376,15 @@ public abstract class Mission implements Serializable {
 	 * @param {{@link HistoricalEventManager}
 	 * @param {{@link MissionManager}
 	 */
-	public static void justReloaded(MarsClock c, HistoricalEventManager e, MissionManager m, SurfaceFeatures s, PersonConfig pc) {
+	public static void justReloaded(MarsClock c, HistoricalEventManager e, MissionManager m, SurfaceFeatures s, PersonConfig pc, UnitManager u, ScientificStudyManager ss) {
 		sim = Simulation.instance();
 		marsClock = c;
 		eventManager = e;
 		missionManager = m;		
-		scientificManager = sim.getScientificStudyManager();		
+		scientificManager = ss;		
 		surface = s;		
 		personConfig = pc;
+		unitManager = u;
 	}
 	
 	/**

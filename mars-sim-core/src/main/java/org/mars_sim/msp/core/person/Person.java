@@ -955,7 +955,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 						ex.printStackTrace();
 						LogConsolidated.log(Level.SEVERE, 2000, sourceName,
 								"[" + getLocationTag().getLocale() + "] "
-								+ getName() + "'s Mind was having trouble.", ex);
+								+ getName() + "'s Mind was having trouble processing task selection.", ex);
 					}
 
 					// check for the passing of each day

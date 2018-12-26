@@ -1673,8 +1673,8 @@ public class Inventory implements Serializable {
 
 		else {
 			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName +
-					 "::retrieveUnit", "Unit: " + unit + " could not be retrieved.");
-			throw new IllegalStateException("Unit: " + unit + " could not be retrieved by " + owner.getName()); // needed for maven test
+					 "::retrieveUnit", "'" + unit + "' could not be retrieved.");
+			throw new IllegalStateException("'" + unit + "' could not be retrieved by " + owner.getName()); // needed for maven test
 		}
 	}
 
