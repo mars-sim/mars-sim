@@ -43,6 +43,8 @@ public class Crop implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
+	public static final double TUNING_FACTOR = 0.2;
+	
 	public static final int CHECK_HEALTH_FREQUENCY = 55;
 	/**
 	 * The limiting factor that determines how fast and how much PAR can be absorbed
@@ -1066,7 +1068,7 @@ public class Crop implements Serializable {
 	 */
 	public void computeWaterFertilizer(double needFactor, double time) {
 		// Calculate water usage kg per sol
-		double waterRequired =  0.5 * needFactor * (averageWaterNeeded * time / 1_000D) * growingArea; // fractionalGrowingTimeCompleted
+		double waterRequired =  TUNING_FACTOR * needFactor * (averageWaterNeeded * time / 1_000D) * growingArea; // fractionalGrowingTimeCompleted
 //		System.out.println(getCropType() + "  waterRequired : " + waterRequired);
 		// Determine the amount of grey water available.
 		double gw = inv.getAmountResourceStored(greywaterID, false);
@@ -1171,19 +1173,24 @@ public class Crop implements Serializable {
 	 * @param time
 	 */
 	public void computeGases(double uPAR, double needFactor, double time) {
-		
+		double watt = uPAR / time / conversion_factor * growingArea * 1000; 
+//		System.out.println("uPAR : " + uPAR + "  Watt : " + watt);
 		// Note: uPAR includes both sunlight and artificial light
 		// Calculate O2 and CO2 usage kg per sol
 		double o2Modifier = 0, co2Modifier = 0;
 		double fudge_factor = 0;
 
-		if (uPAR < 40) {
-			if (uPAR == 0)
-				fudge_factor = 5;
-			else if (uPAR == 40)
+		if (watt < 40) {
+//			if (uPAR == 0)
 				fudge_factor = 2.5;
-			else
-				fudge_factor = 5 - 1.25 * uPAR / 40;
+//			else if (uPAR == 40)
+//				fudge_factor = 2.5;
+//			else
+//				fudge_factor = 5 - 2.5 * uPAR / 40;
+//			
+//			if (fudge_factor < 0)
+//				fudge_factor = 0;
+			
 			double o2Required = fractionalGrowingTimeCompleted * fudge_factor * needFactor
 					* (averageOxygenNeeded * time / 1000) * growingArea;
 			double o2Available = inv.getAmountResourceStored(oxygenID, false);
@@ -1219,7 +1226,7 @@ public class Crop implements Serializable {
 
 		else {
 			// during the day
-			fudge_factor = (uPAR - 40) / 10D;
+			fudge_factor = .0185 * watt + 1.76;
 			// TODO: gives a better modeling of how the amount of light available will
 			// trigger photosynthesis that converts co2 to o2
 			// Determine harvest modifier by amount of carbon dioxide available.
@@ -1252,10 +1259,11 @@ public class Crop implements Serializable {
 			// Determine the amount of oxygen generated during the day when photosynthesis
 			// is taking place .
 			double o2Gen = cO2Used * O2_TO_CO2_RATIO;
+//			System.out.println("cO2Used : " + cO2Used);
 			if (o2Gen > 0) {
 				Storage.storeAnResource(o2Gen, oxygenID, inv, sourceName + "::computeGases");
 				// farm.addO2Cache(o2Gen);
-				cumulative_o2 = cumulative_co2 + o2Gen;
+				cumulative_o2 = cumulative_o2 + o2Gen;
 			}
 
 //			if (cO2Used != 0) 

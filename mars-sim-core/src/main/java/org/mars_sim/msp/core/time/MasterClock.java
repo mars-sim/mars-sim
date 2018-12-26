@@ -937,11 +937,6 @@ public class MasterClock implements Serializable {
 					float r = 1/pulseTime;
 					if (r > 60)
 						r = 60;
-					
-					if (refreshRates.isEmpty())
-						System.out.println("is empty");
-					if (refreshRates == null)
-						System.out.println("is null");
 
 					refreshRates.add(r);
 					if (refreshRates.size() > 10)

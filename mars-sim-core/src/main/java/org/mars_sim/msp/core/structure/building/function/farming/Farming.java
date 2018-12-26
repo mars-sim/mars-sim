@@ -1461,6 +1461,7 @@ public class Farming extends Function implements Serializable {
 //				System.out.println("Farming.  type "  + type + " - " + cropName + "   sum : " + sum + "   cumulativeWeight : "  + cumulativeWeight);
 			}
 			
+			System.out.println(type + " : sum/cumulativeWeight : " + sum/cumulativeWeight);
 			return sum/cumulativeWeight; 
 		
 		}
