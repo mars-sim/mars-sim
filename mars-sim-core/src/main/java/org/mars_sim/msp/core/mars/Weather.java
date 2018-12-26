@@ -862,10 +862,9 @@ public class Weather implements Serializable {
 					s.setDustStorm(ds);
 					newStormID++;
 
-					LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+					LogConsolidated.log(Level.INFO, 1000, sourceName,
 							"[" + ds.getSettlements().get(0).getName() + "] On L_s = " + Math.round(L_s * 100.0) / 100.0
-									+ ", " + ds.getName() + " was first spotted near " + s + ".",
-							null);
+									+ ", " + ds.getName() + " was first spotted near " + s + "."); 
 
 				}
 			}
@@ -883,7 +882,9 @@ public class Weather implements Serializable {
 				dustDevils.remove(ds);
 				// Set the dust storm instance in that settlement to null
 				ds.getSettlements().get(0).setDustStorm(null);
-			} else if (ds.computeNewSize() > 20) {
+			} 
+			
+			else if (ds.computeNewSize() > 20) {
 				int id = ds.getID();
 				// if the size of this dust devil grows to 21 km, upgrade it to local storm
 				ds.setName("Local Storm-" + id);
@@ -895,11 +896,10 @@ public class Weather implements Serializable {
 			}
 
 			if (ds.getSize() != 0)
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+				LogConsolidated.log(Level.INFO, 1000, sourceName,
 						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
 								+ " (size " + ds.getSize() + " with windspeed "
-								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.",
-						null);
+								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
 		}
 	}
 
@@ -919,12 +919,16 @@ public class Weather implements Serializable {
 				regionalDustStorms.add(ds);
 				// remove this oversized local storm
 				localDustStorms.remove(ds);
-			} else if (ds.computeNewSize() == 0) {
+			} 
+			
+			else if (ds.computeNewSize() == 0) {
 				// remove this local storm
 				localDustStorms.remove(ds);
 				// Set the dust storm instance in that settlement to null
 				ds.getSettlements().get(0).setDustStorm(null);
-			} else if (ds.computeNewSize() <= 20) {
+			} 
+			
+			else if (ds.computeNewSize() <= 20) {
 				int id = ds.getID();
 				// if the size of a regional shrink below 2000km, downgrade it to dust devil
 				ds.setName("Dust Devil-" + id);
@@ -936,11 +940,10 @@ public class Weather implements Serializable {
 			}
 
 			if (ds.getSize() != 0)
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+				LogConsolidated.log(Level.INFO, 1000, sourceName,
 						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
 								+ " (size " + ds.getSize() + " with windspeed "
-								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.",
-						null);
+								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
 		}
 	}
 
@@ -962,12 +965,16 @@ public class Weather implements Serializable {
 				planetEncirclingDustStorms.add(ds);
 				// remove this oversize regional storm
 				regionalDustStorms.remove(ds);
-			} else if (ds.computeNewSize() == 0) {
+			} 
+			
+			else if (ds.computeNewSize() == 0) {
 				// remove this local storm
 				regionalDustStorms.remove(ds);
 				// Set the dust storm instance in that settlement to null
 				ds.getSettlements().get(0).setDustStorm(null);
-			} else if (ds.computeNewSize() <= 2000) {
+			} 
+			
+			else if (ds.computeNewSize() <= 2000) {
 				int id = ds.getID();
 				// if the size of a regional shrink below 2000km, downgrade it to local storm
 				ds.setName("Local Storm-" + id);
@@ -979,11 +986,10 @@ public class Weather implements Serializable {
 			}
 
 			if (ds.getSize() != 0)
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+				LogConsolidated.log(Level.INFO, 1000, sourceName,
 						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
 								+ " (size " + ds.getSize() + " with windspeed "
-								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.",
-						null);
+								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
 		}
 	}
 
@@ -1004,7 +1010,9 @@ public class Weather implements Serializable {
 				regionalDustStorms.add(ds);
 				// remove this undersized storm
 				planetEncirclingDustStorms.remove(ds);
-			} else if (ds.computeNewSize() == 0) {
+			} 
+			
+			else if (ds.computeNewSize() == 0) {
 				// remove this local storm
 				planetEncirclingDustStorms.remove(ds);
 				// Set the dust storm instance in that settlement to null
@@ -1012,11 +1020,10 @@ public class Weather implements Serializable {
 			}
 
 			if (ds.getSize() != 0)
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+				LogConsolidated.log(Level.INFO, 1000, sourceName,
 						"[" + ds.getSettlements().get(0) + "] On Sol " + (solCache + 1) + ", " + ds.getName()
 								+ " (size " + ds.getSize() + " with windspeed "
-								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.",
-						null);
+								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
 		}
 	}
 

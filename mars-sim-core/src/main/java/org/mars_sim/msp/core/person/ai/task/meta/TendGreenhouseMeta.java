@@ -53,10 +53,9 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                 // See if there is an available greenhouse.
                 Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(person);
                 if (farmingBuilding != null) {
-                    result += 10D;
 
                     int needyCropsNum = person.getSettlement().getCropsNeedingTending();
-                    result += needyCropsNum * 15D;
+                    result += needyCropsNum * 10D;
 
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, farmingBuilding);
@@ -76,7 +75,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
 
                     // Modify if tending plants is the person's favorite activity.
                     if (person.getFavorite().getFavoriteActivity() == FavoriteType.TENDING_PLANTS) {
-                        result *= 2D;
+                        result *= 1.5D;
                     }
                 
         	        // Add Preference modifier
@@ -112,7 +111,6 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                 // See if there is an available greenhouse.
                 Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(robot);
                 if (farmingBuilding != null) {
-                    result += 10D;
  
                     int needyCropsNum = robot.getSettlement().getCropsNeedingTending();
 

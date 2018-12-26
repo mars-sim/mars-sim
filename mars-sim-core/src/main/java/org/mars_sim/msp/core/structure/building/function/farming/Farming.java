@@ -809,7 +809,7 @@ public class Farming extends Function implements Serializable {
 
 		if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 			try {
-				LifeSupport lifeSupport = (LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+				LifeSupport lifeSupport = building.getLifeSupport();
 				Iterator<Person> i = lifeSupport.getOccupants().iterator();
 				while (i.hasNext()) {
 					Task task = i.next().getMind().getTaskManager().getTask();

@@ -666,7 +666,7 @@ public class Crop implements Serializable {
 								+ farmName + " at " + settlement.getName());
 					
 					// Calculate the amount of leaves and crop wastes that are generated
-					compueteLeavesCropWaste(lastHarvest);
+					computeLeavesNCropWaste(lastHarvest);
 					
 					//  Check to see if a botany lab is available
 					if (!farm.checkBotanyLab(cropTypeID))
@@ -714,7 +714,7 @@ public class Crop implements Serializable {
 						}
 
 						// Calculate the amount of leaves and crop wastes that are generated
-						compueteLeavesCropWaste(modifiedHarvest);
+						computeLeavesNCropWaste(modifiedHarvest);
 						
 						remainingHarvest -= modifiedHarvest;
 						
@@ -733,7 +733,7 @@ public class Crop implements Serializable {
 	/**
 	 * Computes the amount of leaves and crop waste generated
 	 */
-	public void compueteLeavesCropWaste(double harvestMass) {
+	public void computeLeavesNCropWaste(double harvestMass) {
 //		double amountCropWaste = harvestMass * inedibleBiomass / (inedibleBiomass + edibleBiomass);
 		double inedible = harvestMass / edibleBiomass * inedibleBiomass;
 		double cropWaste = inedible * RATIO_LEAVES;

@@ -1426,7 +1426,7 @@ public class ChatUtils {
 				|| text.toLowerCase().contains("action")) {
 			questionText = YOU_PROMPT + "What is everybody doing at this moment? ";
 			responseText.append(settlementCache + " : ");
-			responseText.append("Here are the task rosters.");
+			responseText.append("Here is the task roster : ");
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			responseText.append("(A). Settlers");
@@ -1439,7 +1439,7 @@ public class ChatUtils {
 				String task = entry.getKey();
 				List<Person> plist = entry.getValue();
 			
-				if (task != null) {
+				if (task != null  && !task.replaceAll(" ", "").equals("")) {
 					responseText.append(System.lineSeparator());
 					responseText.append("  ");
 					responseText.append(task);

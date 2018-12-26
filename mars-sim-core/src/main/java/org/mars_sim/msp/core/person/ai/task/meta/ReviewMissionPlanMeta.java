@@ -108,7 +108,7 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 	                    PlanType status = m.getPlan().getStatus();
 
 	                    if (status != null && status == PlanType.PENDING) {
-	                    	result += 200D;                    	
+	                    	result += 100D;                    	
 	                    	// Add adjustment based on how many sol the request has since been submitted
                             if (marsClock == null)
                                marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -116,13 +116,13 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
                             int sol = marsClock.getMissionSol();
                             int solRequest = m.getPlan().getMissionSol();
                             if (sol - solRequest == 1)
-                                result += 500D;
+                                result += 100D;
                             else if (sol - solRequest == 2)
-                                result += 1000D;
-                            else if (sol - solRequest == 3)
-                                result += 1500D;
-                            else if (sol - solRequest > 3)
                                 result += 2000D;
+                            else if (sol - solRequest == 3)
+                                result += 300D;
+                            else if (sol - solRequest > 3)
+                                result += 400D;
 	                    }
                 	}
                 }
@@ -138,7 +138,6 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
                     // Get an available office space.
                     Building building = Administration.getAvailableOffice(person);
                     if (building != null) {
-                        result += 200D;
                         result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                         result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
                     }

@@ -806,15 +806,21 @@ public class PhysicalCondition implements Serializable {
 
 		}
 
-		else if (isStarving && hunger < 500D && kJoules > 800D) {
-			if (starved == null)
-				starved = problems.get(starvation);
-			if (starved != null) {
-				starved.startRecovery();
-				// isStarving = false;
+		else if (isStarving) {
+			
+			taskMgr.addTask(new EatMeal(person));
+			
+			if (hunger < 500D && kJoules > 800D) {
+		
+				if (starved == null)
+					starved = problems.get(starvation);
+				if (starved != null) {
+					starved.startRecovery();
+					// Set to not starving
+					isStarving = false;
+				}
 			}
 		}
-
 	}
 
 	/**
@@ -843,17 +849,21 @@ public class PhysicalCondition implements Serializable {
 
 		}
 
-		if (isDehydrated && thirst < 500D) {
+		if (isDehydrated) {
 			
-			if (dehydrated == null)
-				dehydrated = problems.get(dehydration);
+			taskMgr.addTask(new EatMeal(person));
 			
-			if (dehydrated != null) {
-				dehydrated.startRecovery();
-				// isDehydrated = false;
+			if (thirst < 500D) {
+			
+				if (dehydrated == null)
+					dehydrated = problems.get(dehydration);
+				
+				if (dehydrated != null) {
+					dehydrated.startRecovery();
+					// Set to not dehydrated
+					isDehydrated = false;
+				}			
 			}
-			// Set to not dehydrated
-			isDehydrated = false;
 		}
 	}
 

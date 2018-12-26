@@ -61,26 +61,24 @@ implements Serializable {
         super("Walking inside a rover", person, false, false, STRESS_MODIFIER, false, 0D);
 
         // Check that the person is currently inside a rover.
-        LocationSituation location = person.getLocationSituation();
-
-        if (location == LocationSituation.IN_SETTLEMENT) {
-        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+        if (person.isInSettlement()) {
+        	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
         			person + " is in " + person.getSettlement() + " now but is calling WalkRoverInterior "
-           			+ "task and NOT in rover " + rover.getName() + ".", null); 
+           			+ "task and NOT in rover " + rover.getName() + "."); 
     	}
         
-        else if (location == LocationSituation.OUTSIDE) {
-        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+        else if (person.isOutside()) {
+        	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
         			person + " is outside but is calling WalkRoverInterior task and NOT in rover " 
-        			+ rover.getName() + ".", null); 
+        			+ rover.getName() + "."); 
             //throw new IllegalStateException(
             //        "WalkRoverInterior task started when " + person + " is not in a rover.");
         }
 
-        else if (location != LocationSituation.IN_VEHICLE) {
-        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+        else if (person.isInVehicle()) {
+        	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
         		"WalkRoverInterior task started when " + person + " is not in rover " 
-        			+ rover.getName() + ".", null);
+        			+ rover.getName() + ".");
         }
    
         // Initialize data members.
@@ -107,9 +105,9 @@ implements Serializable {
         LocationSituation location = robot.getLocationSituation();
         if (location != LocationSituation.IN_VEHICLE) {
 //            throw new IllegalStateException(
-            	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
+            	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
                     robot + " is not in a vheicle but doing WalkRoverInterior task in rover "
-                    		+ rover.getName() + ".", null); 
+                    		+ rover.getName() + "."); 
         }
 
         // Initialize data members.
@@ -180,7 +178,7 @@ implements Serializable {
                     person.setXLocation(destXLoc);
                     person.setYLocation(destYLoc);
 //                    logger.finer(person.getName() + " walked to new location in " + rover.getName());
-        			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+        			LogConsolidated.log(Level.FINER, 5000, sourceName,
         					"[" + person.getLocationTag().getLocale() + "] "
               						+ person + " was in " + person.getLocationTag().getImmediateLocation()
         					+ " and walked to new location in " + rover.getName() + ".", null);
@@ -190,7 +188,7 @@ implements Serializable {
                     robot.setXLocation(destXLoc);
                     robot.setYLocation(destYLoc);
 //                    logger.finer(robot.getName() + " walked to new location in " + rover.getName());
-        			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+        			LogConsolidated.log(Level.FINER, 5000, sourceName,
         					"[" + robot.getLocationTag().getLocale() + "] "
               						+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
         					+ " and walked to new location in " + rover.getName() + ".", null);
@@ -208,7 +206,7 @@ implements Serializable {
                 person.setXLocation(destXLoc);
                 person.setYLocation(destYLoc);
 //                logger.finer(person.getName() + " walked to new location in " + rover.getName());
-    			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+    			LogConsolidated.log(Level.FINER, 5000, sourceName,
     					"[" + person.getLocationTag().getLocale() + "] "
           						+ person + " was in " + person.getLocationTag().getImmediateLocation()
     					+ " and walked to new location in " + rover.getName() + ".", null);
@@ -218,7 +216,7 @@ implements Serializable {
                 robot.setXLocation(destXLoc);
                 robot.setYLocation(destYLoc);
 //              logger.finer(robot.getName() + " walked to new location in " + rover.getName());
-    			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+    			LogConsolidated.log(Level.FINER, 5000, sourceName,
     					"[" + robot.getLocationTag().getLocale() + "] "
           						+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
     					+ " and walked to new location in " + rover.getName() + ".", null);

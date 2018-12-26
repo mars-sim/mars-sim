@@ -78,12 +78,12 @@ public class DustStorm implements Serializable {
 
 	private DustStormType type;
 
-	private Weather weather;
-//	private static MarsClock marsClock;
-//	private static SurfaceFeatures surface;
-
 	private List<Settlement> settlements;
 
+	private static Weather weather;
+//	private static MarsClock marsClock;
+//	private static SurfaceFeatures surface;
+	
 	public DustStorm(String name, DustStormType type, int id, MarsClock marsClock, Weather weather,
 			List<Settlement> settlements) {
 //		this.marsClock = marsClock;
@@ -263,8 +263,8 @@ public class DustStorm implements Serializable {
 		this.type = type;
 	}
 
-	public void setWeather(Weather weather) {
-		this.weather = weather;
+	public static void setInstances(Weather w) {
+		weather = w;
 	}
 
 	public void setCoordinates(Coordinates location) {

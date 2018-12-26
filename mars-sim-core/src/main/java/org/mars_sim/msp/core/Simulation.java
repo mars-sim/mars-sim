@@ -47,6 +47,7 @@ import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.mars.DustStorm;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.mars.OrbitInfo;
@@ -866,12 +867,14 @@ public class Simulation implements ClockListener, Serializable {
 		OrbitInfo orbitInfo = mars.getOrbitInfo();
 		// Gets MarsSurface instance
 		MarsSurface marsSurface = mars.getMarsSurface();
+
 		
 		// Re-initialize Mars environmental instances
 		Weather.justReloaded(masterClock, marsClock, mars, surface, orbitInfo); // terrain
 		SurfaceFeatures.justReloaded(masterClock, mars, this, w, orbitInfo, missionManager);  // sunDirection, landmarks
 		OrbitInfo.justReloaded(marsClock, earthClock);		
-
+		DustStorm.setInstances(w);
+		
 //		System.out.println("Done with Mars environment instances");
 		
 		// Gets config file instances
@@ -1150,7 +1153,7 @@ public class Simulation implements ClockListener, Serializable {
 			oos.writeObject(SimulationConfig.instance());
 			oos.writeObject(ResourceUtil.getInstance());
 			oos.writeObject(malfunctionFactory);
-			oos.writeObject(mars);
+			oos.writeObject(mars); // has infinite ObjectOutputStream.java:1510)
 			oos.writeObject(missionManager);
 			oos.writeObject(medicalManager);
 			oos.writeObject(scientificStudyManager);

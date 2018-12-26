@@ -10,8 +10,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
@@ -42,20 +44,22 @@ public class TendGreenhouse extends Task implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TendGreenhouse.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.tendGreenhouse"); //$NON-NLS-1$
-
 	/** Task phases. */
 	private static final TaskPhase TENDING = new TaskPhase(Msg.getString("Task.phase.tending")); //$NON-NLS-1$
-
 	/** Task phases. */
 	private static final TaskPhase INSPECTING = new TaskPhase(Msg.getString("Task.phase.inspecting")); //$NON-NLS-1$
-
 	/** Task phases. */
 	private static final TaskPhase CLEANING = new TaskPhase(Msg.getString("Task.phase.cleaning")); //$NON-NLS-1$
-
 	/** Task phases. */
 	private static final TaskPhase SAMPLING = new TaskPhase(Msg.getString("Task.phase.sampling")); //$NON-NLS-1$
+	/** Task phases. */
+	private static final TaskPhase GROWING_TISSUE = new TaskPhase(Msg.getString("Task.phase.growingTissue")); //$NON-NLS-1$
+
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -96,6 +100,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		addPhase(INSPECTING);
 		addPhase(CLEANING);
 		addPhase(SAMPLING);
+		addPhase(GROWING_TISSUE);
 		setPhase(TENDING);
 	}
 
@@ -150,6 +155,8 @@ public class TendGreenhouse extends Task implements Serializable {
 			return cleaningPhase(time);
 		} else if (SAMPLING.equals(getPhase())) {
 			return samplingPhase(time);
+		} else if (GROWING_TISSUE.equals(getPhase())) {
+			return growingTissue(time);	
 		} else {
 			return time;
 		}
@@ -209,23 +216,31 @@ public class TendGreenhouse extends Task implements Serializable {
 
 			int rand = RandomUtil.getRandomInt(9);
 
-			if (rand == 1) {
-				// addPhase(INSPECTING);
-				setPhase(INSPECTING);
-				// System.out.println(" remainingTime : 0");
-				return workTime;
-			} else if (rand == 2) {
-				// addPhase(CLEANING);
-				setPhase(CLEANING);
-				// System.out.println(" remainingTime : 0");
-				return workTime;
-			} else if (rand == 3) {
+//			if (rand == 1) {
+//				// addPhase(INSPECTING);
+//				setPhase(INSPECTING);
+//				// System.out.println(" remainingTime : 0");
+//				return workTime;
+//			} else if (rand == 2) {
+//				// addPhase(CLEANING);
+//				setPhase(CLEANING);
+//				// System.out.println(" remainingTime : 0");
+//				return workTime;
+			
+			if (rand < 3) {
 				// addPhase(SAMPLING);
 				setPhase(SAMPLING);
 				// System.out.println(" remainingTime : 0");
 				return workTime;
 			}
 
+			else if (rand < 6) {
+			
+				setPhase(GROWING_TISSUE);
+				
+				return workTime;
+			}
+			
 			else {
 
 				// System.out.println("tendingPhase: workTime is " + workTime);
@@ -239,7 +254,7 @@ public class TendGreenhouse extends Task implements Serializable {
 
 			workTime = greenhouse.addWork(workTime, this, robot);
 
-			return workTime *.5;
+			return workTime;
 		}
 	}
 
@@ -249,6 +264,25 @@ public class TendGreenhouse extends Task implements Serializable {
 
 	}
 
+	private double growingTissue(double time) {
+		// Obtain the crop with the highest VP to work on in the lab
+		CropType type = greenhouse.selectVPCrop();
+		
+		if (greenhouse.checkBotanyLab(type.getID()))  {
+		
+			if (person != null) {
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+						+ " worked in the botany lab in " 
+						+ farmBuilding.getNickName()
+						+ " for " + type.getName() + ".");
+				return 0;
+			}
+		}
+	
+		return time;
+	}
+	
 	/**
 	 * Performs the inspecting phase.
 	 * 
