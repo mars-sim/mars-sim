@@ -642,7 +642,7 @@ public class Crop implements Serializable {
 				// Modify parameter list to include crop name
 				double lastHarvest = multiplier * dailyHarvest * (workTime - overWorkTime) / w;
 
-				if (lastHarvest > 0) {
+				if (totalHarvest > 0) {
 					
 					if (isSeedPlant) {
 						// Extract Sesame Seed. 

@@ -101,9 +101,9 @@ public class MasterClock implements Serializable {
 	/** A list of clock listeners. */
 	private transient List<ClockListener> clockListeners;
 	/** A list of clock listener tasks. */
-	private transient List<ClockListenerTask> clockListenerTasks = new CopyOnWriteArrayList<>();
+	private transient List<ClockListenerTask> clockListenerTasks;
 	/** A list of past UI refresh rate. */
-	private transient List<Float> refreshRates = new ArrayList<>();
+	private static List<Float> refreshRates;
 	
 	
 	/** The martian Clock. */
@@ -154,6 +154,7 @@ public class MasterClock implements Serializable {
 
 		// Create listener list.
 		clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
+		refreshRates = new ArrayList<>();
 		
 		// Calculate elapsedLast
 		tLast = uptimer.getUptimeMillis();
@@ -937,6 +938,11 @@ public class MasterClock implements Serializable {
 					if (r > 60)
 						r = 60;
 					
+					if (refreshRates.isEmpty())
+						System.out.println("is empty");
+					if (refreshRates == null)
+						System.out.println("is null");
+
 					refreshRates.add(r);
 					if (refreshRates.size() > 10)
 						refreshRates.remove(0);
@@ -1202,6 +1208,7 @@ public class MasterClock implements Serializable {
 	 */
 	public static void justReloaded(Simulation s) {
 		sim = s;
+		refreshRates = new ArrayList<>();
 	}
 	
 	/**
