@@ -232,8 +232,8 @@ public abstract class Mission implements Serializable {
 			// Temporarily set the shift type to none during the mission
 			startingMember.setMission(this);
 
-			if (startingMember instanceof Person)
-				startingMember.setShiftType(ShiftType.ON_CALL);
+//			if (startingMember instanceof Person)
+//				startingMember.setShiftType(ShiftType.ON_CALL);
 
 		}
 
@@ -1307,10 +1307,10 @@ public abstract class Mission implements Serializable {
 					+ " was getting"// the rover " + startingMember.getVehicle() 
 					+ " ready to embark on " + getDescription());
 
-//			for (MissionMember m : members) {
-//				Person pp = (Person) m;
-//				pp.setShiftType(ShiftType.ON_CALL);
-//			}
+			for (MissionMember m : members) {
+				Person pp = (Person) m;
+				pp.setShiftType(ShiftType.ON_CALL);
+			}
 			
 			setPhaseEnded(true);
 		}
