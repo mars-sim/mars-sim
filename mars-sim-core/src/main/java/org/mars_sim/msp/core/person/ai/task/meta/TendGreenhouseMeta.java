@@ -55,7 +55,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                 if (farmingBuilding != null) {
 
                     int needyCropsNum = person.getSettlement().getCropsNeedingTending();
-                    result += needyCropsNum * 10D;
+                    result = needyCropsNum * 7.5D;
 
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, farmingBuilding);

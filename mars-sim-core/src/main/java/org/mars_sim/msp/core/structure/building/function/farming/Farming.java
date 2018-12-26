@@ -202,7 +202,6 @@ public class Farming extends Function implements Serializable {
 		loadActivitySpots(buildingConfig.getFarmingActivitySpots(building.getBuildingType()));
 
 		for (int x = 0; x < defaultCropNum; x++) {
-			// Add cropInQueue and chang method name to getNewCrop()
 			CropType cropType = pickACrop(true, false);
 			if (cropType == null) {
 				break;// for avoiding NullPointerException during maven test
@@ -880,8 +879,8 @@ public class Farming extends Function implements Serializable {
 
 		// Call timePassing on each crop.
 		Iterator<Crop> i = crops.iterator();
-		List<Crop> harvestedCrops = null;
-		numCrops2Plant = 0;
+//		List<Crop> harvestedCrops = null;
+
 		while (i.hasNext()) {
 			Crop crop = i.next();
 			
@@ -898,16 +897,14 @@ public class Farming extends Function implements Serializable {
 			if (crop.getPhaseType() == PhaseType.FINISHED) {
 				// Take back the growing area
 				remainingGrowingArea = remainingGrowingArea + crop.getGrowingArea();
-				if (harvestedCrops == null)
-					harvestedCrops = new ArrayList<>();
-				harvestedCrops.add(crop);
+//				if (harvestedCrops == null)
+//					harvestedCrops = new ArrayList<>();
+//				harvestedCrops.add(crop);
 //				i.remove();
 				crops.remove(crop);
 				numCrops2Plant++;
 			}
 		}
-
-
 
 		// Add beeGrowing.timePassing()
 		// beeGrowing.timePassing(time);
@@ -918,17 +915,9 @@ public class Farming extends Function implements Serializable {
 			
 		// Add any new crops.
 		for (int x = 0; x < numCrops2Plant; x++) {
-			// Add cropInQueue and change method name to getNewCrop()
 			String n = null;
 			int size = cropListInQueue.size();
 			if (size > 0) {
-				// Safer to remove using iterator than just cropListInQueue.remove(0);
-//				Iterator<String> j = cropListInQueue.iterator();
-//				while (j.hasNext()) {
-//					String c = j.next();
-//					n = c;
-//					cropInQueue = n;
-//				}
 				n = cropListInQueue.get(0);
 				cropListInQueue.remove(0);
 				cropInQueue = n;
@@ -939,8 +928,6 @@ public class Farming extends Function implements Serializable {
 				n = ct.getName();
 			}
 
-			// TODO: need to specify the person who is doing it using the work time in the
-			// lab
 			if (n != null && !n.equals("")) {
 				Crop crop = plantACrop(CropConfig.getCropTypeByName(n), false, 0);
 				crops.add(crop);

@@ -274,7 +274,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	private double transferringSeedling(double time) {
 		greenhouse.transferSeedling(time, person);
 		
-		return 0;		
+		return time *.5;		
 	}
 
 	private double growingTissue(double time) {
@@ -450,12 +450,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			// Obtain a crop type randomly
 			type = CropConfig.getRandomCropType();
 		}
-		
-		else if (rand == 1) {
-			// Obtain a needy crop to work on
-			type = CropConfig.getCropTypeByID(greenhouse.getNeedyCrop(null).getCropTypeID());
-		}
-		
+			
 		else {
 			// Obtain the crop type with the highest VP to work on in the lab
 			type = greenhouse.selectVPCrop();		

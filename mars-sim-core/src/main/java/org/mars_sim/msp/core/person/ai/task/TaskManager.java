@@ -665,11 +665,19 @@ public class TaskManager implements Serializable {
 				double probability = mt.getProbability(person);
 				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 					if (probability > MAX_TASK_PROBABILITY) {
+						
 						LogConsolidated.log(Level.INFO, 5_000, sourceName,
 								mind.getPerson().getName() + " - " + mt.getName() 
 									+ " : Probability is " + Math.round(probability*10.0)/10.0 + ".");
-						probability = MAX_TASK_PROBABILITY;
+										
+						if (mt.getName().contains("eat")) 
+							addTask(new EatMeal(person));
+						else if (mt.getName().contains("sleep")) 
+							addTask(new Sleep(person));	
+						else 
+							probability = MAX_TASK_PROBABILITY;
 					}
+					
 					taskProbCache.put(mt, probability);
 					totalProbCache += probability;
 				} 
