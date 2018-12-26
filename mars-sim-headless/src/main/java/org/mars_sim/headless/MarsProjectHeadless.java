@@ -218,7 +218,7 @@ public class MarsProjectHeadless {
 
 		} catch (Exception e) {
 			// logger.log(Level.WARNING, "Could not load default simulation", e);
-			// throw e;
+//			 throw e;
 			exitWithError("Problem loading the default simulation.", e);
 		}
 

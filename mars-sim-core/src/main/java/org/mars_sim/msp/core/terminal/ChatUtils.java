@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
@@ -167,7 +168,8 @@ public class ChatUtils {
 			"garage", "vehicle top container", "vehicle container",  "vehicle park", "vehicle settlement", "vehicle outside", "vehicle inside",			
 			"bed time", "sleep hour", 
 			"trip", "excursion", "mission",
-			"eva time", "airlock time"
+			"eva time", "airlock time",
+			"shift", "work shift"
 	};
 	
 	public final static String[] ALL_PARTIES_KEYS = new String[] {
@@ -2439,7 +2441,42 @@ public class ChatUtils {
 		responseText.append(name);
 		responseText.append(": ");
 		
-		if (text.toLowerCase().contains("airlock time")) {
+		if (text.toLowerCase().contains("shift")
+				|| text.toLowerCase().contains("work shift")) {
+			questionText = YOU_PROMPT + "What is your work shift ?"; 
+
+			ShiftType st0 = personCache.getTaskSchedule().getShiftType();
+			responseText.append("My current work shift is ");
+			responseText.append(st0);
+			responseText.append(". ");
+			
+			ShiftType[] st = personCache.getTaskSchedule().getPreferredShift();
+			if (st[1] != null) {
+				responseText.append(System.lineSeparator());
+				responseText.append("My preference is as follows : ");
+				responseText.append(System.lineSeparator());
+				responseText.append("   - 1st most favorite : " + st[0]);
+				responseText.append(System.lineSeparator());
+				responseText.append("   - 2nd most favorite : " + st[1]);
+//				responseText.append(System.lineSeparator());
+			}
+			else {
+				if (st0 == st[1]) {
+					responseText.append("And this is also my preferred work shift.");
+					responseText.append(". ");
+//					responseText.append(System.lineSeparator());
+				}
+				else {
+					responseText.append("But my preference is work shift " + st[0]);
+					responseText.append(". ");
+//					responseText.append(System.lineSeparator());
+				}
+			}
+
+			
+		}
+		
+		else if (text.toLowerCase().contains("airlock time")) {
 			questionText = YOU_PROMPT + "How long have you spent inside the airlock ?"; 
 			
 			responseText.append("See my records as follows :");
@@ -2538,6 +2575,7 @@ public class ChatUtils {
 				}
 				
 			}
+			
 			else if (robotCache != null) {
 				RoboticAttributeManager r_manager = robotCache.getRoboticAttributeManager();	
 				Hashtable<RoboticAttributeType, Integer> r_attributes = r_manager.getAttributeTable();

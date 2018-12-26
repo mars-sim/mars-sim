@@ -537,14 +537,14 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param file the file to be loaded from.
 	 */
 	public void loadSimulation(final File file) {
-		// logger.config("Simulation's loadSimulation() is on " +
-		// Thread.currentThread().getName());
+//		logger.config("Simulation's loadSimulation() is on " + Thread.currentThread().getName());
 		isUpdating = true;
 
 		File f = file;
-
+		
 		Simulation sim = instance();
-		sim.stop();
+		if (file != null)
+			sim.stop();
 
 //		try {
 //			sim.readJSON();
@@ -558,13 +558,13 @@ public class Simulation implements ClockListener, Serializable {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-		
+
 		// Use default file path if file is null.
 		if (f == null) {
 			// logger.config("Yes file is null");
 			// [landrus, 27.11.09]: use the home dir instead of unknown relative paths.
 			f = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
-			// logger.config("file is " + f);
+//			 logger.config("file is " + f);
 			sim.defaultLoad = true;
 		} else {
 			sim.defaultLoad = false;
@@ -1429,7 +1429,9 @@ public class Simulation implements ClockListener, Serializable {
 		if (masterClock != null) {
 			// simExecutor.shutdown();
 			masterClock.stop();
+//			 logger.config("just called stop()");
 			masterClock.removeClockListener(this);
+//			 logger.config("just called removeClockListener()");
 		}
 	}
 

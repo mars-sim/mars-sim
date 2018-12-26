@@ -675,9 +675,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public boolean isOutside() {
 		if (LocationStateType.OUTSIDE_ON_MARS == currentStateType
-				|| LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType)
-			return true;
-		else if (isBuried)
+				|| LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType
+				|| isBuried)
 			return true;
 		return false;	
 //		if (getContainerUnit() instanceof MarsSurface)
@@ -693,7 +692,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return true if the person is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
-		if (LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType)
+		if (LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType
+				|| isBuried)
 			return true;
 		return false;
 	}
@@ -721,9 +721,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return true if the person is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
-		if (isBuried)
-			return false;
-		else if (getContainerUnit() instanceof Vehicle) {
+		if (getContainerUnit() instanceof Vehicle) {
 			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
 			if (b != null)
 				// still inside the garage
@@ -757,9 +755,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return true if the person is inside a settlement or a vehicle
 	 */
 	public boolean isInside() {
-		if (isBuried)
-			return false;
-		else if (LocationStateType.INSIDE_SETTLEMENT == currentStateType
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType
 				|| LocationStateType.INSIDE_VEHICLE == currentStateType)
 			return true;
 		
@@ -851,7 +847,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 
 		else if (c instanceof Vehicle) {
-			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+			Building b = BuildingManager.getBuilding((Vehicle) c);
 			if (b != null)
 				// still inside the garage
 				return b.getSettlement();

@@ -1503,7 +1503,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 						// if a person's shift is saturated, he will need to change shift
 						ShiftType newShift = getAnEmptyWorkShift(pop);
 
-						int tendency = p.getTaskSchedule().getShiftChoice(newShift);
+						int tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
 						// TODO: should find the person with the highest tendency to take this shift
 
 						if (oldShift == ShiftType.ON_CALL) {

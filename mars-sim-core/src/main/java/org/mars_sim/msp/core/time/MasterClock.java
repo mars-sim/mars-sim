@@ -365,9 +365,11 @@ public class MasterClock implements Serializable {
 //			clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
 		if (clockListeners != null && clockListeners.contains(oldListener))
 			clockListeners.remove(oldListener);
+//		 logger.config("just called clockListeners.remove(oldListener)");
 		// Check if clockListenerTaskList contain the newListener's task, if it does,
 		// delete it
 		ClockListenerTask task = retrieveClockListenerTask(oldListener);
+//		 logger.config("just get task");
 		if (task != null)
 			clockListenerTasks.remove(task);
 	}

@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 //import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -60,9 +59,7 @@ public class TaskSchedule implements Serializable {
 	private String doAction;
 	private String phase;
 
-	// private FunctionType functionType;
-
-	private ShiftType shiftType;
+	private ShiftType currentShiftType;
 	private ShiftType shiftTypeCache;
 
 	private Person person;
@@ -109,8 +106,8 @@ public class TaskSchedule implements Serializable {
 		shiftChoice.put(ShiftType.Z, 51);
 		shiftChoice.put(ShiftType.A, 51);
 		shiftChoice.put(ShiftType.B, 51);
-		shiftChoice.put(ShiftType.ON_CALL, 51);
-		shiftChoice.put(ShiftType.OFF, 51);
+		shiftChoice.put(ShiftType.ON_CALL, 50);
+		shiftChoice.put(ShiftType.OFF, 50);
 
 		if (Simulation.instance().getMasterClock() != null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -181,6 +178,13 @@ public class TaskSchedule implements Serializable {
 
 	}
 
+	/**
+	 * Gets the ID of a map
+	 * 
+	 * @param map
+	 * @param key
+	 * @return
+	 */
 	public int getID(Map<String, Integer> map, String key) {
 		if (map.containsKey(key)) {
 			return map.get(key);
@@ -191,6 +195,13 @@ public class TaskSchedule implements Serializable {
 		}
 	}
 
+	/**
+	 * Gets the string of a map
+	 * 
+	 * @param map
+	 * @param id
+	 * @return
+	 */
 	public String getString(Map<String, Integer> map, Integer id) {
 		for (String key : map.keySet()) {
 			if (map.get(key).equals(id)) {
@@ -217,7 +228,7 @@ public class TaskSchedule implements Serializable {
 	}
 
 	/**
-	 * Normalize the score of shiftChoice toward the center score of 50.
+	 * Normalize the score of the shift choice toward the center score of 50.
 	 */
 	public void normalizeShiftChoice() {
 		for (ShiftType key : shiftChoice.keySet()) {
@@ -229,6 +240,9 @@ public class TaskSchedule implements Serializable {
 		}
 	}
 
+	/**
+	 * Increments the score of the shift choice .
+	 */
 	public void incrementShiftChoice() {
 		for (ShiftType key : shiftChoice.keySet()) {
 			int score = shiftChoice.get(key);
@@ -238,6 +252,11 @@ public class TaskSchedule implements Serializable {
 		}
 	}
 
+	/**
+	 * Adjusts the work shift choice
+	 * 
+	 * @param hours array
+	 */
 	public void adjustShiftChoice(int[] hours) {
 
 		ShiftType st0 = determineShiftType(hours[0]);
@@ -249,7 +268,7 @@ public class TaskSchedule implements Serializable {
 				// increment the score
 				int score = shiftChoice.get(key);
 				if (score < 100) {
-					shiftChoice.put(key, score + 1);
+					shiftChoice.put(key, score - 1);
 				}
 			}
 
@@ -257,12 +276,18 @@ public class TaskSchedule implements Serializable {
 				// decrement the score
 				int score = shiftChoice.get(key);
 				if (score > 0) {
-					shiftChoice.put(key, score - 1);
+					shiftChoice.put(key, score + 1);
 				}
 			}
 		}
 	}
 
+	/**
+	 * Determines the work shift type
+	 * 
+	 * @param hour
+	 * @return {@link ShiftType}
+	 */
 	public ShiftType determineShiftType(int hour) {
 		ShiftType st = null;
 		int numShift = person.getAssociatedSettlement().getNumShift();
@@ -354,7 +379,12 @@ public class TaskSchedule implements Serializable {
 		return time;
 	}
 
-	
+	/**
+	 * Asks if it is a task name
+	 * 
+	 * @param taskName
+	 * @return
+	 */
 	public boolean isEVATask(String taskName) {
 		return (taskName.toLowerCase().contains("eva")
 				|| taskName.toLowerCase().contains("dig")
@@ -369,6 +399,12 @@ public class TaskSchedule implements Serializable {
 	}
 	
 	
+	/**
+	 * Gets the EVA task time of a sol
+	 * 
+	 * @param sol
+	 * @return
+	 */
 	public double getEVATasksTime(int sol) {
 		double time = 0;
 		if (allActivities.containsKey(sol)) {
@@ -393,10 +429,22 @@ public class TaskSchedule implements Serializable {
 		return time;
 	}
 
+	/**
+	 * Checks if it is an airlock task
+	 * 
+	 * @param taskName
+	 * @return
+	 */
 	public boolean isAirlockTask(String taskName) {
 		return (taskName.toLowerCase().contains("airlock"));
 	}
 	
+	/**
+	 * Gets the airlock task time of a sol
+	 * 
+	 * @param sol
+	 * @return
+	 */
 	public double getAirlockTasksTime(int sol) {
 		double time = 0;
 		if (allActivities.containsKey(sol)) {
@@ -466,17 +514,17 @@ public class TaskSchedule implements Serializable {
 	 */
 	public int getShiftStart() {
 		int start = -1;
-		if (shiftType.equals(ShiftType.A))
+		if (currentShiftType.equals(ShiftType.A))
 			start = A_START;
-		else if (shiftType.equals(ShiftType.B))
+		else if (currentShiftType.equals(ShiftType.B))
 			start = B_START;
-		else if (shiftType.equals(ShiftType.X))
+		else if (currentShiftType.equals(ShiftType.X))
 			start = X_START;
-		else if (shiftType.equals(ShiftType.Y))
+		else if (currentShiftType.equals(ShiftType.Y))
 			start = Y_START;
-		else if (shiftType.equals(ShiftType.Z))
+		else if (currentShiftType.equals(ShiftType.Z))
 			start = Z_START;
-		else if (shiftType.equals(ShiftType.ON_CALL))
+		else if (currentShiftType.equals(ShiftType.ON_CALL))
 			start = ON_CALL_START;
 		return start;
 	}
@@ -488,17 +536,17 @@ public class TaskSchedule implements Serializable {
 	 */
 	public int getShiftEnd() {
 		int end = -1;
-		if (shiftType.equals(ShiftType.A))
+		if (currentShiftType.equals(ShiftType.A))
 			end = A_END;
-		else if (shiftType.equals(ShiftType.B))
+		else if (currentShiftType.equals(ShiftType.B))
 			end = B_END;
-		else if (shiftType.equals(ShiftType.X))
+		else if (currentShiftType.equals(ShiftType.X))
 			end = X_END;
-		else if (shiftType.equals(ShiftType.Y))
+		else if (currentShiftType.equals(ShiftType.Y))
 			end = Y_END;
-		else if (shiftType.equals(ShiftType.Z))
+		else if (currentShiftType.equals(ShiftType.Z))
 			end = Z_END;
-		else if (shiftType.equals(ShiftType.ON_CALL))
+		else if (currentShiftType.equals(ShiftType.ON_CALL))
 			end = ON_CALL_END;
 		return end;
 	}
@@ -509,7 +557,7 @@ public class TaskSchedule implements Serializable {
 	 * @return shift type
 	 */
 	public ShiftType getShiftType() {
-		return shiftType;
+		return currentShiftType;
 	}
 
 	/*
@@ -530,10 +578,10 @@ public class TaskSchedule implements Serializable {
 			}
 
 			// Back up the previous shift type
-			shiftTypeCache = this.shiftType;
+			shiftTypeCache = currentShiftType;
 
 			// Update the new shift type
-			this.shiftType = newShift;
+			currentShiftType = newShift;
 
 			if (person != null) {
 
@@ -598,32 +646,32 @@ public class TaskSchedule implements Serializable {
 	public boolean isShiftHour(int millisols) {
 		boolean result = false;
 
-		if (shiftType == ShiftType.A) {
+		if (currentShiftType == ShiftType.A) {
 			if (millisols == 1000 || (millisols >= A_START && millisols <= A_END))
 				result = true;
 		}
 
-		else if (shiftType == ShiftType.B) {
+		else if (currentShiftType == ShiftType.B) {
 			if (millisols >= B_START && millisols <= B_END)
 				result = true;
 		}
 
-		else if (shiftType == ShiftType.X) {
+		else if (currentShiftType == ShiftType.X) {
 			if (millisols == 1000 || (millisols >= X_START && millisols <= X_END))
 				result = true;
 		}
 
-		else if (shiftType == ShiftType.Y) {
+		else if (currentShiftType == ShiftType.Y) {
 			if (millisols >= Y_START && millisols <= Y_END)
 				result = true;
 		}
 
-		else if (shiftType == ShiftType.Z) {
+		else if (currentShiftType == ShiftType.Z) {
 			if (millisols >= Z_START && millisols <= Z_END)
 				result = true;
 		}
 
-		else if (shiftType == ShiftType.ON_CALL) {
+		else if (currentShiftType == ShiftType.ON_CALL) {
 			result = true;
 		}
 
@@ -641,31 +689,31 @@ public class TaskSchedule implements Serializable {
 		boolean result = false;
 		int millisols = startTime;
 
-		if (shiftType == ShiftType.ON_CALL) {
+		if (currentShiftType == ShiftType.ON_CALL) {
 			return isAtStartOfAShift();
 		}
 		
-		else if (shiftType == ShiftType.A) {
+		else if (currentShiftType == ShiftType.A) {
 			if (millisols == 1000 || (millisols >= A_START && millisols <= A_START + MISSION_WINDOW))
 				result = true;
 		}
 
-		else if (shiftType == ShiftType.B) {
+		else if (currentShiftType == ShiftType.B) {
 			if (millisols >= B_START && millisols <= B_START + MISSION_WINDOW)
 				result = true;
 		}
 
-		else if (shiftType == ShiftType.X) {
+		else if (currentShiftType == ShiftType.X) {
 			if (millisols == 1000 || (millisols >= X_START && millisols <= X_START + MISSION_WINDOW))
 				result = true;
 		}
 
-		else if (shiftType == ShiftType.Y) {
+		else if (currentShiftType == ShiftType.Y) {
 			if (millisols >= Y_START && millisols <= Y_START + MISSION_WINDOW)
 				result = true;
 		}
 
-		else if (shiftType == ShiftType.Z) {
+		else if (currentShiftType == ShiftType.Z) {
 			if (millisols >= Z_START && millisols <= Z_START + MISSION_WINDOW)
 				result = true;
 		}
@@ -702,10 +750,66 @@ public class TaskSchedule implements Serializable {
 		return result;
 	}
 	
-	public int getShiftChoice(ShiftType st) {
+	/**
+	 * Gets the score of a work shift
+	 * 
+	 * @param st
+	 * @return score
+	 */
+	public int getWorkShiftScore(ShiftType st) {
 		return shiftChoice.get(st);
 	}
 
+	/**
+	 * Gets the preferred work shift 
+	 * 
+	 * @return
+	 */
+	public ShiftType[] getPreferredShift() {
+		int i1 = 0;
+		ShiftType st1 = null;
+		int i2 = 0;
+		ShiftType st2 = null;
+		
+		Map<ShiftType, Integer> map = new HashMap<>(shiftChoice);
+		
+		int numShift = person.getAssociatedSettlement().getNumShift();
+		
+		if (numShift == 3) {
+			map.remove(ShiftType.A);
+			map.remove(ShiftType.B);
+			map.remove(ShiftType.OFF);
+		}
+		else {
+			map.remove(ShiftType.X);
+			map.remove(ShiftType.Y);
+			map.remove(ShiftType.Z);
+			map.remove(ShiftType.OFF);
+		}
+	
+//		if (currentShiftType == ShiftType.X
+//		 || currentShiftType == ShiftType.Y
+//		 || currentShiftType == ShiftType.Z) {
+//			map.remove(ShiftType.A);
+//			map.remove(ShiftType.B);
+//			map.remove(ShiftType.OFF);
+//		}
+//		else if (currentShiftType == ShiftType.ON_CALL) {	
+//		}
+
+		for (ShiftType s : map.keySet()) {
+			int score = map.get(s);
+		    if (i1 < score) {
+		    	i2 = i1;
+		    	st2 = st1;
+		        i1 = score;
+		        st1 = s;
+		    }
+		}
+		
+		return new ShiftType[] {st1, st2};
+	}
+	
 	/*
 	 * This class represents a record of a given activity (task or mission)
 	 * undertaken by a person
@@ -790,7 +894,7 @@ public class TaskSchedule implements Serializable {
 		// schedules = null;
 		allActivities = null;
 		todayActivities = null;
-		shiftType = null;
+		currentShiftType = null;
 		shiftTypeCache = null;
 	}
 }
