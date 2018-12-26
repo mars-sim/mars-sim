@@ -356,9 +356,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 -->
 				
 				<process name="Sabatier RWGS Reactor" power-required="0.47" default="on">
-				<!-- 33.6g imported from outside. 6g from storage -->
+				<!-- 33.6g imported from outside. 6g from storage 
 					<input resource="carbon dioxide" rate="33.6" ambient="true" />
-					<input resource="carbon dioxide" rate="6" ambient="false" />					
+					<input resource="carbon dioxide" rate="6" ambient="false" /-->	
+
+					<input resource="carbon dioxide" rate="39.6" ambient="true" />							
 					<input resource="hydrogen" rate="3.6" ambient="false" />
 					<output resource="methane" rate="4.8" ambient="false" />
 					<output resource="carbon monoxide" rate="16.8" ambient="false" />
@@ -601,7 +603,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<resource-processing power-down-level=".5">
-				<process name="Carbon Dioxide Pump" power-required="2.0" default="on">
+			<!-- CO2 pump will make use of Solid Oxide Electrolysis Cell: Yttria-Stabilized Zirconia (YSZ) -->
+				<process name="Carbon Dioxide Pump" power-required="0.2" default="on">
 					<input resource="carbon dioxide" rate="20.0" ambient="true" />
 					<output resource="carbon dioxide" rate="20.0" ambient="false" />
 				</process>
@@ -699,9 +702,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level=".5">
-				<process name="Carbon Dioxide Pump" power-required="5.0" default="on">
-					<input resource="carbon dioxide" rate="50.0" ambient="true" />
-					<output resource="carbon dioxide" rate="50.0" ambient="false" />
+				<process name="Carbon Dioxide Pump" power-required="0.8" default="on">
+					<input resource="carbon dioxide" rate="80.0" ambient="true" />
+					<output resource="carbon dioxide" rate="80.0" ambient="false" />
 				</process>
 				<activity>
 					<activity-spot xloc="-4.5" yloc="8.25" />
@@ -2392,8 +2395,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 
 				<process name="Sabatier RWGS Reactor" power-required="0.47" default="on">
-					<input resource="carbon dioxide" rate="33.6" ambient="true" />
-					<input resource="carbon dioxide" rate="6" ambient="false" />
+					<input resource="carbon dioxide" rate="39.6" ambient="true" />
 					<input resource="hydrogen" rate="3.6" ambient="false" />
 					<output resource="methane" rate="4.8" ambient="false" />
 					<output resource="carbon monoxide" rate="16.8" ambient="false" />
@@ -2684,7 +2686,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level=".5">
-				<process name="Carbon Dioxide Pump" power-required="2.0" default="on">
+				<process name="Carbon Dioxide Pump" power-required="0.2" default="on">
 					<input resource="carbon dioxide" rate="20.0" ambient="true" />
 					<output resource="carbon dioxide" rate="20.0" ambient="false" />
 				</process>

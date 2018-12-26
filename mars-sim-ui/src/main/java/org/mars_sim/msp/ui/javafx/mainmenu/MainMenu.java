@@ -46,7 +46,6 @@ import javafx.scene.SceneAntialiasing;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -64,7 +63,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 
-import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -81,7 +79,6 @@ import com.almasb.fxgl.app.FXGL;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.scene.GameScene;
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialog.DialogTransition;
@@ -758,7 +755,7 @@ public class MainMenu {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			exitWithError("Error : could not create a new simulation ", e);
+//			exitWithError("Error : could not create a new simulation ", e);
 		}
 
 	}
@@ -861,7 +858,7 @@ public class MainMenu {
 
 			Platform.runLater(() -> {
 				mainScene = new MainScene(mainscene_width, mainscene_height, gameScene);
-
+				logger.config("mainScene instance created");
 				// if (isSoundDisabled)
 				// MainScene.setSoundDisabled();
 
@@ -910,10 +907,11 @@ public class MainMenu {
 			try {
 				// Loading settlement data from the default saved simulation
 				sim.loadSimulation(fileLocn); // null means loading "default.sim"
-
+				logger.config("Done calling loadSimulation(fileLocn)");
+				
 			} catch (Exception e) {
 				// e.printStackTrace();
-				exitWithError("Error : could not create a new simulation ", e);
+				exitWithError("Error : could not load the saved simulation.", e);
 			}
 
 			sim.start(autosaveDefaultName);

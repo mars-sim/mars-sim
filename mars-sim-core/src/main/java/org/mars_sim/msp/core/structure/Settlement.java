@@ -1510,8 +1510,25 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 							// TODO: check a person's sleep habit map and request changing his work shift
 							// to avoid taking a work shift that overlaps his sleep hour
 
-							if (newShift != oldShift && tendency > 50) { // sanity check
-								p.setShiftType(newShift);
+							if (newShift != oldShift) {// sanity check
+								
+								if (tendency > 50) {
+									p.setShiftType(newShift);
+								}
+								
+								else {
+									ShiftType anotherShift = getAnEmptyWorkShift(pop);
+									if (anotherShift == newShift) {
+										anotherShift = getAnEmptyWorkShift(pop);
+									}
+									
+									tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
+									
+									if (newShift != oldShift && tendency > 50) { // sanity check
+										p.setShiftType(newShift);
+									}
+								}
+								
 							}
 						}
 
@@ -1522,7 +1539,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 							// TODO: check a person's sleep habit map and request changing his work shift
 							// to avoid taking a work shift that overlaps his sleep hour
 
-							if (!oldShift_ok) {
+							if (oldShift_ok) {
 
 								if (newShift != oldShift && tendency > 50) { // sanity check
 									p.setShiftType(newShift);

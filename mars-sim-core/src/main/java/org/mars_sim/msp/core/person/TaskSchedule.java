@@ -227,6 +227,10 @@ public class TaskSchedule implements Serializable {
 		return getString(taskPhases, id);
 	}
 
+	public Map<ShiftType, Integer> getShiftChoice() {
+		return shiftChoice;
+	}
+	
 	/**
 	 * Normalize the score of the shift choice toward the center score of 50.
 	 */

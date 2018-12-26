@@ -543,8 +543,8 @@ public class Simulation implements ClockListener, Serializable {
 		File f = file;
 		
 		Simulation sim = instance();
-		if (file != null)
-			sim.stop();
+//		if (file != null)
+//			sim.stop();
 
 //		try {
 //			sim.readJSON();
@@ -1147,7 +1147,7 @@ public class Simulation implements ClockListener, Serializable {
 		try {
 	
 			// Set a delay for 200 millis to avoid java.util.ConcurrentModificationException
-			delay(200L);
+			delay(500L);
 			
 			// Store the in-transient objects.
 			oos.writeObject(SimulationConfig.instance());

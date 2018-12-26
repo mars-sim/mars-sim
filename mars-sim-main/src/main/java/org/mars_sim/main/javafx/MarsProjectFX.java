@@ -453,7 +453,7 @@ public class MarsProjectFX extends Application {
 					try {
 						// try to see if user enter his own saved sim after the "load" argument
 						handleLoadSimulation(loadFile);
-
+						logger.config("Done calling handleLoadSimulation()");
 					} catch (Exception e) {
 						e.printStackTrace();
 						showError("Could not load the user's saved sim.", e);
@@ -465,7 +465,7 @@ public class MarsProjectFX extends Application {
 					try {
 						// try loading default.sim instead
 						handleLoadDefaultSimulation();
-
+						logger.config("Done calling handleLoadDefaultSimulation().");
 					} catch (Exception e2) {
 						e2.printStackTrace();
 						exitWithError("Could not load the default saved sim.", e2);
@@ -563,6 +563,7 @@ public class MarsProjectFX extends Application {
 					try {
 						// load FileChooser instead
 						mainMenu.loadSim(null);
+						logger.config("Done calling loadSim(null)");
 						// Then wait for user to select a saved sim to load in loadSim();
 
 					} catch (Exception e2) {

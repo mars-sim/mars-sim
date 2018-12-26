@@ -2446,18 +2446,21 @@ public class ChatUtils {
 			questionText = YOU_PROMPT + "What is your work shift ?"; 
 
 			ShiftType st0 = personCache.getTaskSchedule().getShiftType();
+			int score = personCache.getTaskSchedule().getShiftChoice().get(st0);
 			responseText.append("My current work shift is ");
 			responseText.append(st0);
-			responseText.append(". ");
+			responseText.append(" (score : " + score + ")");
 			
 			ShiftType[] st = personCache.getTaskSchedule().getPreferredShift();
 			if (st[1] != null) {
+				int score0 = personCache.getTaskSchedule().getShiftChoice().get(st[0]);
+				int score1 = personCache.getTaskSchedule().getShiftChoice().get(st[1]);
 				responseText.append(System.lineSeparator());
 				responseText.append("My preference is as follows : ");
 				responseText.append(System.lineSeparator());
-				responseText.append("   - 1st most favorite : " + st[0]);
+				responseText.append("   - 1st most favorite : " + st[0] + " (score : " + score0 + ")");
 				responseText.append(System.lineSeparator());
-				responseText.append("   - 2nd most favorite : " + st[1]);
+				responseText.append("   - 2nd most favorite : " + st[1] + " (score : " + score1 + ")");
 //				responseText.append(System.lineSeparator());
 			}
 			else {
@@ -2467,7 +2470,8 @@ public class ChatUtils {
 //					responseText.append(System.lineSeparator());
 				}
 				else {
-					responseText.append("But my preference is work shift " + st[0]);
+					score = personCache.getTaskSchedule().getShiftChoice().get(st[0]);
+					responseText.append("But my preference is work shift " + st[0] + " (score : " + score + ")");
 					responseText.append(". ");
 //					responseText.append(System.lineSeparator());
 				}

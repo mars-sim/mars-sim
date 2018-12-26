@@ -1106,7 +1106,7 @@ public class MainDesktopPane extends WebDesktopPane
 
 		logger.config(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
 
-		if (!toolWindowExecutor.isShutdown())
+		if (toolWindowExecutor != null && !toolWindowExecutor.isShutdown())
 			toolWindowExecutor.shutdown();
 //		if (unitWindowExecutor != null)
 //			if (!unitWindowExecutor.isShutdown())
