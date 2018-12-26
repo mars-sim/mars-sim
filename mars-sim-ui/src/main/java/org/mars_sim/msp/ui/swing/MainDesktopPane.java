@@ -110,7 +110,7 @@ public class MainDesktopPane extends WebDesktopPane
 	private ToolWindowTask toolWindowTask;
 
 	private transient ExecutorService toolWindowExecutor;
-	private transient ExecutorService unitWindowExecutor;
+//	private transient ExecutorService unitWindowExecutor;
 
 	private List<ToolWindowTask> toolWindowTaskList = new ArrayList<>();
 
@@ -1108,9 +1108,9 @@ public class MainDesktopPane extends WebDesktopPane
 
 		if (!toolWindowExecutor.isShutdown())
 			toolWindowExecutor.shutdown();
-		if (unitWindowExecutor != null)
-			if (!unitWindowExecutor.isShutdown())
-				unitWindowExecutor.shutdown();
+//		if (unitWindowExecutor != null)
+//			if (!unitWindowExecutor.isShutdown())
+//				unitWindowExecutor.shutdown();
 		// logger.config(Msg.getString("MainDesktopPane.desktop.thread.shutdown"));
 		// //$NON-NLS-1$
 		toolWindowTaskList.clear();
@@ -1141,9 +1141,9 @@ public class MainDesktopPane extends WebDesktopPane
 
 		if (!toolWindowExecutor.isShutdown())
 			toolWindowExecutor.shutdown();
-		if (unitWindowExecutor != null)
-			if (!unitWindowExecutor.isShutdown())
-				unitWindowExecutor.shutdown();
+//		if (unitWindowExecutor != null)
+//			if (!unitWindowExecutor.isShutdown())
+//				unitWindowExecutor.shutdown();
 
 		// Restart update threads.
 		setupToolWindowTasks();
@@ -1566,7 +1566,7 @@ public class MainDesktopPane extends WebDesktopPane
 		backgroundLabel = null;
 		toolWindowTask = null;
 		toolWindowExecutor = null;
-		unitWindowExecutor = null;
+//		unitWindowExecutor = null;
 		toolWindowTaskList = null;
 		soundPlayer = null;
 		announcementWindow = null;

@@ -214,7 +214,7 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		if (person != null) {
 
-			int rand = RandomUtil.getRandomInt(9);
+			int rand = RandomUtil.getRandomInt(6);
 
 //			if (rand == 1) {
 //				// addPhase(INSPECTING);
@@ -227,24 +227,30 @@ public class TendGreenhouse extends Task implements Serializable {
 //				// System.out.println(" remainingTime : 0");
 //				return workTime;
 			
-			if (rand < 3) {
+			if (rand == 0) {
 				// addPhase(SAMPLING);
 				setPhase(SAMPLING);
 				// System.out.println(" remainingTime : 0");
 				return workTime;
 			}
 
-			else if (rand < 6) {
-			
-				setPhase(GROWING_TISSUE);
-				
-				return workTime;
-			}
+//			else if (rand < 6) {
+//			
+//				setPhase(GROWING_TISSUE);
+//				
+//				return workTime;
+//			}
 			
 			else {
 
-				// System.out.println("tendingPhase: workTime is " + workTime);
-				workTime = greenhouse.addWork(workTime, this, person);
+				if (greenhouse.getNumCrops2Plant() > 0) {
+					return transferringSeedling(time);
+				}
+				
+				else {
+					// System.out.println("tendingPhase: workTime is " + workTime);
+					workTime = greenhouse.addWork(workTime, this, person);
+				}
 
 				return workTime;
 			}
@@ -264,6 +270,13 @@ public class TendGreenhouse extends Task implements Serializable {
 
 	}
 
+	
+	private double transferringSeedling(double time) {
+		greenhouse.transferSeedling(time, person);
+		
+		return 0;		
+	}
+
 	private double growingTissue(double time) {
 		// Obtain the crop with the highest VP to work on in the lab
 		CropType type = greenhouse.selectVPCrop();
@@ -271,11 +284,11 @@ public class TendGreenhouse extends Task implements Serializable {
 		if (greenhouse.checkBotanyLab(type.getID()))  {
 		
 			if (person != null) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.log(Level.INFO, 30_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-						+ " worked in the botany lab in " 
+						+ " was growing " + type.getName() + " tissue culture in the botany lab in " 
 						+ farmBuilding.getNickName()
-						+ " for " + type.getName() + ".");
+						+ ".");
 				return 0;
 			}
 		}
@@ -428,27 +441,39 @@ public class TendGreenhouse extends Task implements Serializable {
 	private double samplingPhase(double time) {
 		// double remainingTime = 0, workTime = 0;
 
-		// Obtain the crop with the highest VP to work on in the lab
-		CropType type = greenhouse.selectVPCrop();
 
-		if (type == null) {
+		CropType type = null;
+		
+		int rand = RandomUtil.getRandomInt(5);
+
+		if (rand == 0) {
+			// Obtain a crop type randomly
+			type = CropConfig.getRandomCropType();
+		}
+		
+		else if (rand == 1) {
 			// Obtain a needy crop to work on
-			// if (person != null) {
 			type = CropConfig.getCropTypeByID(greenhouse.getNeedyCrop(null).getCropTypeID());
-			// }
-
-			// else {
-			// type = greenhouse.getNeedyCrop(null).getCropType();
-			// }
+		}
+		
+		else {
+			// Obtain the crop type with the highest VP to work on in the lab
+			type = greenhouse.selectVPCrop();		
 		}
 
 		if (type != null) {
 			// System.out.println("type is " + type);
-			boolean hasLab = greenhouse.checkBotanyLab(type.getID());
+			boolean hasWork = greenhouse.checkBotanyLab(type.getID());
 
-			if (hasLab) {
+			if (hasWork) {
 				setDescription(Msg.getString("Task.description.tendGreenhouse.sample",
-						Conversion.capitalize(type.getName()) + " Tissues for Lab Work"));
+						Conversion.capitalize(type.getName()) + " Tissues Culture for Lab Work"));
+
+				LogConsolidated.log(Level.INFO, 30_000, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+						+ " was growing and sampling " + type.getName() + " tissue culture in the botany lab in " 
+						+ farmBuilding.getNickName()
+						+ ".");
 
 				// System.out.println("samplingPhase: hasLab is " + hasLab);
 				// System.out.println("hasLab is " + hasLab);
@@ -491,7 +516,7 @@ public class TendGreenhouse extends Task implements Serializable {
 //        
 //    	return remainingTime;
 
-		return time *.5;
+		return 0;
 	}
 
 	@Override

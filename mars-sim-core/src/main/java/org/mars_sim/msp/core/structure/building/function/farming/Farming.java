@@ -96,7 +96,9 @@ public class Farming extends Function implements Serializable {
 	private int solCache = 1;
 	/** The unique identifier. */
 	private int identifer;
-
+	/** The number of crops to plant. */
+	private int numCrops2Plant;
+	
 	private double powerGrowingCrop;
 	private double powerSustainingCrop;
 	private double maxGrowingArea;
@@ -879,7 +881,7 @@ public class Farming extends Function implements Serializable {
 		// Call timePassing on each crop.
 		Iterator<Crop> i = crops.iterator();
 		List<Crop> harvestedCrops = null;
-		int numCrops2Plant = 0;
+		numCrops2Plant = 0;
 		while (i.hasNext()) {
 			Crop crop = i.next();
 			
@@ -905,6 +907,15 @@ public class Farming extends Function implements Serializable {
 			}
 		}
 
+
+
+		// Add beeGrowing.timePassing()
+		// beeGrowing.timePassing(time);
+
+	}
+
+	public void transferSeedling(double time, Person p) {
+			
 		// Add any new crops.
 		for (int x = 0; x < numCrops2Plant; x++) {
 			// Add cropInQueue and change method name to getNewCrop()
@@ -912,38 +923,20 @@ public class Farming extends Function implements Serializable {
 			int size = cropListInQueue.size();
 			if (size > 0) {
 				// Safer to remove using iterator than just cropListInQueue.remove(0);
-				Iterator<String> j = cropListInQueue.iterator();
-				while (j.hasNext()) {
-					String c = j.next();
-					n = c;
-					cropInQueue = n;
-
-					Iterator<Crop> k = harvestedCrops.iterator();
-					while (k.hasNext()) {
-						Crop cc = k.next();
-						// if the harvest crops contain corn, one cannot plant corn again
-						// since corn depletes nitrogen quickly in the soil.
-						if (cc.getCropName().equalsIgnoreCase(CORN) 
-								&& !c.equalsIgnoreCase(CORN)) {
-							j.remove();
-							break;
-						}
-					}
-				}
+//				Iterator<String> j = cropListInQueue.iterator();
+//				while (j.hasNext()) {
+//					String c = j.next();
+//					n = c;
+//					cropInQueue = n;
+//				}
+				n = cropListInQueue.get(0);
+				cropListInQueue.remove(0);
+				cropInQueue = n;
 			}
 
 			else {
-				for (Crop c : harvestedCrops) {
-					// if the harvest crops contain corn, one cannot plant corn again
-					// since corn depletes nitrogen quickly in the soil.
-					if (c.getCropName().equalsIgnoreCase(CORN)) {
-						n = pickACrop(false, true).getName();
-						break;
-					} else {
-						n = pickACrop(false, false).getName();
-						break;
-					}
-				}
+				CropType ct = selectVPCrop();
+				n = ct.getName();
 			}
 
 			// TODO: need to specify the person who is doing it using the work time in the
@@ -954,14 +947,16 @@ public class Farming extends Function implements Serializable {
 //				System.out.println(crop.getIdentifier() + ", " + n);
 				cropHistory.put(crop.getIdentifier(), n);
 				settlement.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+				
+				LogConsolidated.log(Level.INFO, 3_000, sourceName,
+						"[" + settlement.getName() + "] " + p + " planted a new crop of " + n 
+						+ " in " + building.getNickName() + ".");
+				
+				numCrops2Plant--;
+				break;
 			}
 		}
-
-		// Add beeGrowing.timePassing()
-		// beeGrowing.timePassing(time);
-
 	}
-
 	
 	/**
 	 * Gets the amount of power required when function is at full power.
@@ -1064,6 +1059,7 @@ public class Farming extends Function implements Serializable {
 	 * performs cell tissue extraction
 	 * 
 	 * @param cropTypeID
+	 * @return true if work has been done
 	 */
 	public boolean checkBotanyLab(int cropTypeID) {
 		// Check to see if a botany lab is available
@@ -1084,11 +1080,10 @@ public class Farming extends Function implements Serializable {
 			hasEmptySpace = lab.addResearcher();
 
 			if (hasEmptySpace) {
-				growCropTissue(lab, cropTypeID);// , true);
+				boolean workDone = growCropTissue(lab, cropTypeID);// , true);
 				lab.removeResearcher();
+				return workDone;
 			}
-
-			done = true;
 		}
 
 		else {
@@ -1103,25 +1098,26 @@ public class Farming extends Function implements Serializable {
 					if (hasEmptySpace) {
 						hasEmptySpace = lab1.addResearcher();
 						if (hasEmptySpace) {
-							growCropTissue(lab1, cropTypeID);// true);
+							boolean workDone = growCropTissue(lab1, cropTypeID);// true);
 							lab.removeResearcher();
+							return workDone;
 						}
 
 						// TODO: compute research ooints to determine if it can be carried out.
 						// int points += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) /
 						// 2D;
-						done = true;
 					}
 				}
 			}
 		}
 
-		// check to see if a person can still "squeeze into" this busy lab to get lab
+		// Check to see if a person can still "squeeze into" this busy lab to get lab
 		// time
 		if (!hasEmptySpace && (lab.getLaboratorySize() == lab.getResearcherNum())) {
-			growCropTissue(lab, cropTypeID);// , false);
-			done = true;
-		} else {
+			return growCropTissue(lab, cropTypeID);// , false);
+		} 
+		
+		else {
 
 			// Check available research slot in another lab located in another greenhouse
 			List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
@@ -1132,8 +1128,8 @@ public class Farming extends Function implements Serializable {
 				if (lab2.hasSpecialty(ScienceType.BOTANY)) {
 					hasEmptySpace = lab2.checkAvailability();
 					if (lab2.getLaboratorySize() == lab2.getResearcherNum()) {
-						growCropTissue(lab2, cropTypeID);// , false);
-						done = true;
+						boolean workDone = growCropTissue(lab2, cropTypeID);// , false);
+						return workDone;
 					}
 				}
 			}
@@ -1179,7 +1175,7 @@ public class Farming extends Function implements Serializable {
 					if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
 						Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, inv,
 								sourceName + "::growCropTissue");
-						LogConsolidated.log(Level.INFO, 1000, sourceName,
+						LogConsolidated.log(Level.INFO, 3_000, sourceName,
 								"[" + settlement.getName() + "] During sampling, " + cropName + TISSUE_CULTURE
 										+ " is not in stock. " + "Extract " + STANDARD_AMOUNT_TISSUE_CULTURE
 										+ " kg from " + cropName + " and restock in " + lab.getBuilding().getNickName()
@@ -1206,11 +1202,11 @@ public class Farming extends Function implements Serializable {
 					// store the tissues
 					if (amountExtracted > 0) {
 						Storage.storeAnResource(amountExtracted, tissueID, inv, sourceName + "::growCropTissue");
-						// LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-						// "[" + settlement.getName() + "] During sampling, " +
-						// Math.round(amountExtracted*1000.0)/1000.0D + " kg "
-						// + cropName + TISSUE_CULTURE + " is cloned and restocked in "
-						// + lab.getBuilding().getNickName() + ".", null);
+						LogConsolidated.log(Level.INFO, 3_000, sourceName,
+							"[" + settlement.getName() + "] During sampling, "
+							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
+							+ cropName + TISSUE_CULTURE + " is cloned and restocked in "
+							+ lab.getBuilding().getNickName() + ".");
 
 						isDone = true;
 					}
@@ -1566,6 +1562,10 @@ public class Farming extends Function implements Serializable {
 		}
 	}
 
+	public int getNumCrops2Plant() {
+		return numCrops2Plant;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

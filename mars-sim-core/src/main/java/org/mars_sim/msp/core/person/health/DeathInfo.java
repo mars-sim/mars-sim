@@ -424,7 +424,7 @@ public class DeathInfo implements Serializable {
 
 	public String getRobotJob() {
 		if (robotJob != null)
-			return robotJob.getName(robotType);
+			return RobotJob.getName(robotType);
 		else
 			return "   --";
 	}
