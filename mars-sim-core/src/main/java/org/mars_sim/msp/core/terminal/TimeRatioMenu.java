@@ -12,6 +12,7 @@ import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.terminal.AppUtil;
 import org.mars_sim.msp.core.terminal.RunnerData;
+import org.mars_sim.msp.core.time.MasterClock;
 
 import java.util.function.BiConsumer;
 
@@ -21,6 +22,8 @@ import java.util.function.BiConsumer;
 public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
 	   
 	private SwingTextTerminal terminal;
+	
+	private MasterClock masterClock = Simulation.instance().getMasterClock();
 	
     public static void main(String[] args) {
         TextIO textIO = TextIoFactory.getTextIO();
@@ -36,7 +39,7 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
         Speed s = new Speed();
         SwingHandler handler = new SwingHandler(textIO, "console", s);
         
-        int currentSpeed = getCurrentSpeed();
+        int currentSpeed = masterClock.getCurrentSpeed();
         terminal.println("The current simulation speed is " + currentSpeed 
         		+ System.lineSeparator());
         
@@ -55,7 +58,8 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
         
 		if (speedInt >= 0 && speedInt <= 14) {
         	double ratio = Math.pow(2, speedInt);
-        	Simulation.instance().getMasterClock().setTimeRatio(ratio);   
+        	masterClock.setTimeRatio(ratio);   
+        	
             terminal.printf(System.lineSeparator() 
             		+ "The new simulation speed becomes %d"//  -->  New Time-Ratio = 2^speed = %dx" 
             		+ System.lineSeparator(),
@@ -71,23 +75,23 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
   
     }
 
-    /**
-     * Gets the simulation speed
-     * 
-     * @return
-     */
-    public int getCurrentSpeed() {
-    	int speed = 0;
-    	int tr = (int)Simulation.instance().getMasterClock().getTimeRatio();	
-        int base = 2;
-
-        while (tr != 1) {
-            tr = tr/base;
-            --speed;
-        }
-        
-    	return -speed;
-    }
+//    /**
+//     * Gets the simulation speed
+//     * 
+//     * @return
+//     */
+//    public int getCurrentSpeed() {
+//    	int speed = 0;
+//    	int tr = (int)Simulation.instance().getMasterClock().getTimeRatio();	
+//        int base = 2;
+//
+//        while (tr != 1) {
+//            tr = tr/base;
+//            --speed;
+//        }
+//        
+//    	return -speed;
+//    }
 
     public boolean isInteger(String string) {
         try {

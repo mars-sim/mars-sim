@@ -40,7 +40,7 @@ public class MasterClock implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	private static final double MAX_PERIOD = 1;
+	private static final float MAX_PERIOD = .4F;
 
 //	private static final int ONE_THOUSAND = 1000;
 
@@ -930,29 +930,35 @@ public class MasterClock implements Serializable {
 				listener.clockPulse(time);
 				timeCache += time;
 
+//				int speed = getCurrentSpeed();
 				// period is in seconds
 				double period = timeCache / currentTR * MarsClock.SECONDS_PER_MILLISOL;
-						
+				
+
 				if (period > MAX_PERIOD) {
+					long t02 = System.nanoTime();	
+					pulseTime = (t02-t01)/1_000_000_000F;
+					t01 = t02;
 					
 					// Find new refresh rate
 					float r = 1/pulseTime;
-					if (r > 60)
-						r = 60;
+					if (r > 2F/MAX_PERIOD)
+						r = 2F/MAX_PERIOD;
 
 					refreshRates.add(r);
 					if (refreshRates.size() > 10)
 						refreshRates.remove(0);
-					
-					long t02 = System.nanoTime();
-					pulseTime = (t02-t01)/1_000_000_000F;
-//					System.out.println("time : " + Math.round(time*100.0)/100.0 
+
+//					System.out.println(
+//							"time : " + Math.round(time*100.0)/100.0 
 //							+ "   timeCache : " + Math.round(timeCache*100.0)/100.0 
-//							+ "   r : " + Math.round(r*100.0)/100.0 
+//							  "   r : " + Math.round(r*100.0)/100.0 
 //							+ "   refresh : " + Math.round(getRefresh()*100.0)/100.0 
-//							+ "   time between pulse : " + pulseTime
-//							+ "   Period : " + Math.round(period*1000.0)/1000.0);
-					t01 = t02;
+//							"   time between pulses : " + pulseTime
+//							+ "   currentTR : " + currentTR
+//							+ "   Period : " + Math.round(period*1000.0)/1000.0
+//							);
+
 					// at the start of the sim, delta is ~.18 s
 					
 					// The secondary job of CLockListener is to send uiPulse() out to
@@ -972,6 +978,7 @@ public class MasterClock implements Serializable {
 					// 9. NotificationWindow
 					listener.uiPulse(timeCache);
 					timeCache = 0;
+
 				}
 
 			} catch (ConcurrentModificationException e) {
@@ -980,6 +987,24 @@ public class MasterClock implements Serializable {
 		}
 	}
 
+	   /**
+     * Gets the simulation speed
+     * 
+     * @return
+     */
+    public int getCurrentSpeed() {
+    	int speed = 0;
+    	int tr = (int) currentTR;	
+        int base = 2;
+
+        while (tr != 1) {
+            tr = tr/base;
+            --speed;
+        }
+        
+    	return -speed;
+    }
+    
 	/**
 	 * Fires the clock pulse to each clock listener
 	 * 
