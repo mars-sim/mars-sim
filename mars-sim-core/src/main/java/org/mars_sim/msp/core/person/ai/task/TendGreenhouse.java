@@ -182,24 +182,23 @@ public class TendGreenhouse extends Task implements Serializable {
 			return time;
 		}
 
-		double factor = .3D;
 		double mod = 0;
 
 		if (person != null) {
-			mod = 1;
+			mod = 1.5;
 		}
 
 		else if (robot != null) {
 			// TODO: how to lengthen the work time for a robot even though it moves slower
 			// than a person
 			// should it incurs penalty on workTime?
-			mod = factor;
+			mod = 1;
 		}
 
 		// Determine amount of effective work time based on "Botany" skill
 		int greenhouseSkill = getEffectiveSkillLevel();
 		if (greenhouseSkill == 0) {
-			mod /= 2;
+			mod += workTime * 0.5;
 		} else {
 			mod += workTime * RandomUtil.getRandomDouble(.5 + .5 * (double) greenhouseSkill);
 		}

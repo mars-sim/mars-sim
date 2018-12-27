@@ -3491,6 +3491,13 @@ public class MainScene implements ClockListener {
 		return stage;
 	}
 
+	public void exit() {
+		endSim();
+		exitSimulation();
+		Platform.exit();
+		System.exit(0);
+	}
+	
 	/**
 	 * Create the desktop swing node
 	 */

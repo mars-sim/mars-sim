@@ -20,8 +20,8 @@ public class ScientificStudyEvent extends EventObject {
     public static final String STUDY_COMPLETION_EVENT = "study completion event";
     public static final String PHASE_CHANGE_EVENT = "study phase change event";
     public static final String PROPOSAL_WORK_EVENT = "study proposal work event";
-    public static final String ADD_COLLABORATOR_EVENT = "add study collorator event";
-    public static final String REMOVE_COLLABORATOR_EVENT = "remove study collorator event";
+    public static final String ADD_COLLABORATOR_EVENT = "add study collaborator event";
+    public static final String REMOVE_COLLABORATOR_EVENT = "remove study collaborator event";
     public static final String PRIMARY_RESEARCH_WORK_EVENT = "study primary research work event";
     public static final String COLLABORATION_RESEARCH_WORK_EVENT = "study collaboration research work event";
     public static final String PRIMARY_PAPER_WORK_EVENT = "study primary paper work event";

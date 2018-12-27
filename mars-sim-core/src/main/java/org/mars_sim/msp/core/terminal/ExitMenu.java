@@ -45,6 +45,8 @@ public class ExitMenu implements BiConsumer<TextIO, RunnerData> {
     		Simulation.instance().getMasterClock().exitProgram();
     		logger.info("Exiting the Simulation.");
 			System.exit(0);
+			
+			// TODO: how to detect if JavaFX mode is used and call MainScene.exit()
         }
         else
             terminal.printf("You don't want to exit the Simulation." + System.lineSeparator());

@@ -603,9 +603,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<resource-processing power-down-level=".5">
 			<!-- CO2 pump will make use of Solid Oxide Electrolysis Cell: Yttria-Stabilized Zirconia (YSZ) -->
-				<process name="Carbon Dioxide Pump" power-required="0.2" default="on">
-					<input resource="carbon dioxide" rate="20.0" ambient="true" />
-					<output resource="carbon dioxide" rate="20.0" ambient="false" />
+				<process name="Carbon Dioxide Pump" power-required="0.8" default="on">
+					<input resource="carbon dioxide" rate="80.0" ambient="true" />
+					<output resource="carbon dioxide" rate="80.0" ambient="false" />
 				</process>
 				<activity>
 					<activity-spot xloc="-1.47" yloc="3.68" />
@@ -701,9 +701,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level=".5">
-				<process name="Carbon Dioxide Pump" power-required="0.8" default="on">
-					<input resource="carbon dioxide" rate="80.0" ambient="true" />
-					<output resource="carbon dioxide" rate="80.0" ambient="false" />
+				<process name="Carbon Dioxide Pump" power-required="2.4" default="on">
+					<input resource="carbon dioxide" rate="240.0" ambient="true" />
+					<output resource="carbon dioxide" rate="240.0" ambient="false" />
 				</process>
 				<activity>
 					<activity-spot xloc="-4.5" yloc="8.25" />
@@ -2685,9 +2685,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level=".5">
-				<process name="Carbon Dioxide Pump" power-required="0.2" default="on">
-					<input resource="carbon dioxide" rate="20.0" ambient="true" />
-					<output resource="carbon dioxide" rate="20.0" ambient="false" />
+				<process name="Carbon Dioxide Pump" power-required="0.6" default="on">
+					<input resource="carbon dioxide" rate="60.0" ambient="true" />
+					<output resource="carbon dioxide" rate="60.0" ambient="false" />
 				</process>
 				<activity>
 					<activity-spot xloc="2.0" yloc="4.5" />

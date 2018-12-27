@@ -116,13 +116,13 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private double waterConsumedPerServing;
 	/** True if person is starving. */
-	private boolean isStarving = false;
+	private boolean isStarving;
 	/** True if person is stressed out. */
-	private boolean isStressedOut = false;
+	private boolean isStressedOut;
 	/** True if person is collapsed under fatigue. */
-	private boolean isCollapsed = false;
+	private boolean isCollapsed;
 	/** True if person is dehydrated. */
-	private boolean isDehydrated = false;
+	private boolean isDehydrated;
 	/** True if person is alive. */
 	private boolean alive;
 //	/** True if person is thirsty. */
@@ -305,6 +305,10 @@ public class PhysicalCondition implements Serializable {
 
 		dehydrationStartTime = 1000D * (personConfig.getDehydrationStartTime() * bodyMassDeviation);
 	
+		isStarving = false;
+		isStressedOut = false;
+		isCollapsed = false;
+		isDehydrated = false;
 	}
 
 	/**
@@ -1433,10 +1437,10 @@ public class PhysicalCondition implements Serializable {
 	public void setDead(HealthProblem problem, Boolean causedByUser, String lastWord) {
 		alive = false;
 		String cause = "(To be determined)";
-		setFatigue(0D);
-		setHunger(0D);
-		setPerformanceFactor(0D);
-		setStress(0D);
+//		setFatigue(0D);
+//		setHunger(0D);
+//		setPerformanceFactor(0D);
+//		setStress(0D);
 		if (causedByUser) {
 			cause = "Suicide";
 			logger.warning(person + " committed suicide as instructed.");
