@@ -121,9 +121,9 @@ implements Serializable {
 		Iterator<Building> i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
+			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.MEDICINE)) {
-				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D);
+				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2.5D);
 			}
 		}
 
@@ -132,8 +132,8 @@ implements Serializable {
 		Iterator<Building> j = medicalBuildings.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			MedicalCare infirmary = (MedicalCare) building.getFunction(FunctionType.MEDICAL_CARE);
-			result+= (double) infirmary.getTechLevel() / 2D;
+			MedicalCare infirmary = building.getMedical();
+			result+= (double) infirmary.getTechLevel() / 2.5D;
 		}
 
 		return result;

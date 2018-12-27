@@ -138,7 +138,7 @@ implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			Farming farm = building.getFarming();
-			result += (farm.getGrowingArea() / 25D);
+			result += (farm.getGrowingArea() / 75D);
 		}
 
 		// Multiply by food value at settlement.

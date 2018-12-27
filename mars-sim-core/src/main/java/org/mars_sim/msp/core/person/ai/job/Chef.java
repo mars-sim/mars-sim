@@ -101,7 +101,7 @@ implements Serializable {
 		Iterator<Building> i = kitchenBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Cooking kitchen = (Cooking) building.getFunction(FunctionType.COOKING);
+			Cooking kitchen = building.getCooking();
 			result += (double) kitchen.getCookCapacity();
 		}
 

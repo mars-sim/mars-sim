@@ -110,10 +110,10 @@ implements Serializable {
 		double result = 0D;
 
 		// Add number of buildings in settlement.
-		result+= settlement.getBuildingManager().getNumBuilding() / 3D;
+		result+= settlement.getBuildingManager().getNumBuilding() / 2D;
 
 		// Add number of vehicles parked at settlement.
-		result+= settlement.getParkedVehicleNum() / 3D;
+		result+= settlement.getParkedVehicleNum() / 2D;
 
 		return result;
 	}

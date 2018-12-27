@@ -103,7 +103,7 @@ implements Serializable {
 		Iterator<Building> i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
+			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.PHYSICS)) {
 				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
 			}

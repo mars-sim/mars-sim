@@ -121,7 +121,7 @@ implements Serializable {
 		while (i.hasNext()) {
 			Building building = i.next();
 			Manufacture workshop = building.getManufacture();
-			result += workshop.getTechLevel() * workshop.getSupportingProcesses() / 2D;
+			result += workshop.getTechLevel() * workshop.getSupportingProcesses() / 1.2D;
 		}
 
 		return result;

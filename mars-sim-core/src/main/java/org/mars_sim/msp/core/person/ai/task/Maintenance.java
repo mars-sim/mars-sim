@@ -182,7 +182,7 @@ public class Maintenance extends Task implements Serializable {
 			workTime /= 2;
 		}
 		if (mechanicSkill > 1) {
-			workTime += workTime * (.2D * mechanicSkill);
+			workTime += workTime * (.4D * mechanicSkill);
 		}
 
 		// Add repair parts if necessary.

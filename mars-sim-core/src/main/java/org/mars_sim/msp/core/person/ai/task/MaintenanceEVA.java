@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
@@ -99,30 +98,28 @@ implements Serializable {
 	public MaintenanceEVA(Robot robot) {
 		super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-/*
-		settlement = robot.getSettlement();
-
-		try {
-			entity = getMaintenanceMalfunctionable();
-			if (entity == null) {
-			    endTask();
-			    return;
-			}
-		}
-		catch (Exception e) {
-		    logger.log(Level.SEVERE,"MaintenanceEVA.constructor()",e);
-			endTask();
-		}
-
-        // Determine location for maintenance.
-        Point2D maintenanceLoc = determineMaintenanceLocation();
-        setOutsideSiteLocation(maintenanceLoc.getX(), maintenanceLoc.getY());
-
-		// Initialize phase
-		addPhase(MAINTAIN);
-
-		logger.finest(robot.getName() + " is starting " + getDescription());
-*/
+//		settlement = robot.getSettlement();
+//
+//		try {
+//			entity = getMaintenanceMalfunctionable();
+//			if (entity == null) {
+//			    endTask();
+//			    return;
+//			}
+//		}
+//		catch (Exception e) {
+//		    logger.log(Level.SEVERE,"MaintenanceEVA.constructor()",e);
+//			endTask();
+//		}
+//
+//        // Determine location for maintenance.
+//        Point2D maintenanceLoc = determineMaintenanceLocation();
+//        setOutsideSiteLocation(maintenanceLoc.getX(), maintenanceLoc.getY());
+//
+//		// Initialize phase
+//		addPhase(MAINTAIN);
+//
+//		logger.finest(robot.getName() + " is starting " + getDescription());
 	}
 
     /**
@@ -248,7 +245,7 @@ implements Serializable {
 		    workTime /= 2;
 		}
 		if (mechanicSkill > 1) {
-		    workTime += workTime * (.2D * mechanicSkill);
+		    workTime += workTime * (.4D * mechanicSkill);
 		}
 
         // Add repair parts if necessary.

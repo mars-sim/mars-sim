@@ -109,7 +109,7 @@ implements Serializable {
 		Iterator<Building> i = manager.getBuildings(FunctionType.RESEARCH).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
+			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.ASTRONOMY))
 				result += lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D;
 		}
@@ -118,8 +118,7 @@ implements Serializable {
 		Iterator<Building> j = manager.getBuildings(FunctionType.ASTRONOMICAL_OBSERVATIONS).iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			AstronomicalObservation observatory = (AstronomicalObservation)
-					building.getFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS);
+			AstronomicalObservation observatory = building.getAstronomicalObservation();
 			result += observatory.getObservatoryCapacity() * observatory.getTechnologyLevel() * 2D;
 		}
 

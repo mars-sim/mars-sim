@@ -122,7 +122,7 @@ implements Serializable {
 		Iterator<Building> i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
+			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.BIOLOGY)) {
 				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
 			}
@@ -137,7 +137,7 @@ implements Serializable {
 				if (rover.hasLab()) {
 					Lab lab = rover.getLab();
 					if (lab.hasSpecialty(ScienceType.BIOLOGY)) {
-						result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
+						result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 3D);
 					}
 				}
 			}
@@ -154,7 +154,7 @@ implements Serializable {
 					if (rover.hasLab()) {
 						Lab lab = rover.getLab();
 						if (lab.hasSpecialty(ScienceType.BIOLOGY)) {
-							result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
+							result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 3D);
 						}
 					}
 				}

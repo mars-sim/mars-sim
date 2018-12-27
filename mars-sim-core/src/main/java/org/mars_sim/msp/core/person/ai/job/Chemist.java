@@ -114,7 +114,7 @@ implements Serializable {
 			Building building = i.next();
 			Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
 			if (lab.hasSpecialty(ScienceType.CHEMISTRY)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 3D);
 			}
 		}
 
