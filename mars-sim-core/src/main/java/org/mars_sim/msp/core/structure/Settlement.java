@@ -37,12 +37,17 @@ import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.DustStorm;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.mars.Weather;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.job.Astronomer;
+import org.mars_sim.msp.core.person.ai.job.Engineer;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
+import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -1114,22 +1119,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @param time the amount of time passing (in millisols)
 	 * @throws Exception error during time passing.
 	 */
-	public void timePassing(double time) {
-
-		// check for the passing of each day
-		int solElapsed = marsClock.getMissionSol();
-
-		if (solCache != solElapsed) {
-			solCache = solElapsed;
-
-			// Limit the size of the dailyWaterUsage to x key value pairs
-			if (consumption.size() > MAX_NUM_SOLS)
-				consumption.remove(solElapsed - MAX_NUM_SOLS);
-			
-//			printTaskProbability();
-//			printMissionProbability();
-		}
-		
+	public void timePassing(double time) {	
 		// If settlement is overcrowded, increase inhabitant's stress.
 		// TODO: should the number of robots be accounted for here?
 
@@ -1382,9 +1372,21 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// check for the passing of each day
 		int solElapsed = marsClock.getMissionSol();
 		if (solCache != solElapsed) {
+			
+			// Limit the size of the dailyWaterUsage to x key value pairs
+			if (consumption.size() > MAX_NUM_SOLS)
+				consumption.remove(solElapsed - MAX_NUM_SOLS);
+			
+//			printTaskProbability();
+//			printMissionProbability();
+			
 			// getFoodEnergyIntakeReport();
 			reassignWorkShift();
+
+			tuneJobDeficit();
+			
 			refreshResourceStat();
+			
 			refreshSleepMap(solElapsed);
 			// getSupplyDemandSampleReport(solElapsed);
 			refreshDataMap(solElapsed);
@@ -3830,6 +3832,35 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		}
 		
 		return sum/cumulativeWeight; 
+	}
+	
+	public static void assignBestCandidate(Settlement settlement, String jobName) {
+		Job job = JobManager.getJob(jobName);
+		Person p0 = JobManager.findBestFit(settlement, job);
+		// Designate a specific job to a person
+		p0.getMind().setJob(job, true, JobManager.SETTLEMENT, JobAssignmentType.APPROVED,
+					JobManager.SETTLEMENT);
+	}
+	
+	
+	public void tuneJobDeficit() {
+		Settlement settlement = this;
+//		Collection<Settlement> col = CollectionUtils.getSettlement(units);
+//		for (Settlement settlement : col) {
+	//		int pop = settlement.getNumCitizens();
+		
+			int numEngs = JobManager.numJobs(Engineer.class, settlement);
+		
+			if (numEngs == 0) {
+				assignBestCandidate(settlement, "Engineer");
+			}
+				
+			int numTechs = JobManager.numJobs(Engineer.class, settlement);
+	
+			if (numTechs == 0) {
+				assignBestCandidate(settlement, "Technician");
+			}
+//		}
 	}
 	
 	@Override

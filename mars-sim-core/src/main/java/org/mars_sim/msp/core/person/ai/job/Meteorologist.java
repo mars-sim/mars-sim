@@ -38,14 +38,13 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 /**
  * The Meteorologist class represents a job for a meteorologist.
  */
-public class Meteorologist
-extends Job
-implements Serializable {
+public class Meteorologist extends Job implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	//private static Logger logger = Logger.getLogger(Meteorologist.class.getName());
+	// private static Logger logger =
+	// Logger.getLogger(Meteorologist.class.getName());
 
 	/** Constructor. */
 	public Meteorologist() {
@@ -88,9 +87,10 @@ implements Serializable {
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		result+= result * ((academicAptitude - 50D) / 100D);
+		result += result * ((academicAptitude - 50D) / 100D);
 
-		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
+			result = 0D;
 
 		return result;
 	}
@@ -112,6 +112,5 @@ implements Serializable {
 
 		return result;
 	}
-
 
 }

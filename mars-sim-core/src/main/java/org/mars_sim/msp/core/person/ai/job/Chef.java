@@ -31,14 +31,12 @@ import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 /**
  * The Chef class represents a job for a chef.
  */
-public class Chef
-extends Job
-implements Serializable {
+public class Chef extends Job implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	//	private static Logger logger = Logger.getLogger(Chef.class.getName());
+	// private static Logger logger = Logger.getLogger(Chef.class.getName());
 
 	/** constructor. */
 	public Chef() {
@@ -66,6 +64,7 @@ implements Serializable {
 
 	/**
 	 * Gets a person's capability to perform this job.
+	 * 
 	 * @param person the person to check.
 	 * @return capability (min 0.0).
 	 */
@@ -76,20 +75,23 @@ implements Serializable {
 		int cookingSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.COOKING);
 		result = cookingSkill;
 
-		//int foodProcessingSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.FOODPROCESSING);
-		//result = foodProcessingSkill;
+		// int foodProcessingSkill =
+		// person.getMind().getSkillManager().getSkillLevel(SkillType.FOODPROCESSING);
+		// result = foodProcessingSkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		result+= result * ((experienceAptitude - 50D) / 100D);
+		result += result * ((experienceAptitude - 50D) / 100D);
 
-		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
+			result = 0D;
 
 		return result;
 	}
 
 	/**
 	 * Gets the base settlement need for this job.
+	 * 
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
 	 */
@@ -107,7 +109,7 @@ implements Serializable {
 
 		// Add total population / 10.
 		int population = settlement.getIndoorPeopleCount();
-		result+= ((double) population / 10D);
+		result += ((double) population / 12D);
 
 		return result;
 	}

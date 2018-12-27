@@ -38,17 +38,15 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 
 /**
- * The Engineer class represents an engineer job focusing on repair and maintenance of buildings and
- * vehicles.
+ * The Engineer class represents an engineer job focusing on repair and
+ * maintenance of buildings and vehicles.
  */
-public class Engineer
-extends Job
-implements Serializable {
+public class Engineer extends Job implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	//	private static Logger logger = Logger.getLogger(Engineer.class.getName());
+	// private static Logger logger = Logger.getLogger(Engineer.class.getName());
 
 	/** Constructor. */
 	public Engineer() {
@@ -85,6 +83,7 @@ implements Serializable {
 
 	/**
 	 * Gets a person's capability to perform this job.
+	 * 
 	 * @param person the person to check.
 	 * @return capability (min 0.0).
 	 */
@@ -93,21 +92,26 @@ implements Serializable {
 		double result = 0D;
 
 		int materialsScienceSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
-		result = materialsScienceSkill;
+		result = materialsScienceSkill * .75;
+
+		int mechSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
+		result += mechSkill / 4D;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
-		result+= result * ((averageAptitude - 50D) / 100D);
+		double averageAptitude = (academicAptitude + experienceAptitude) / 1.2D;
+		result += result * ((averageAptitude - 50D) / 100D);
 
-		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
+			result = 0D;
 
-		return result;
+		return result * 3;
 	}
 
 	/**
 	 * Gets the base settlement need for this job.
+	 * 
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
 	 */
@@ -121,7 +125,7 @@ implements Serializable {
 		while (i.hasNext()) {
 			Building building = i.next();
 			Manufacture workshop = building.getManufacture();
-			result += workshop.getTechLevel() * workshop.getSupportingProcesses() / 1.2D;
+			result += workshop.getTechLevel() * workshop.getSupportingProcesses() / 4D;
 		}
 
 		return result;

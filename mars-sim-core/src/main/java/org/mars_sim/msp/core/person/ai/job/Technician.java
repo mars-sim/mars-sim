@@ -34,9 +34,7 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.structure.Settlement;
 
-public class Technician
-extends Job
-implements Serializable {
+public class Technician extends Job implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -49,9 +47,9 @@ implements Serializable {
 		super(Technician.class);
 
 		// Add technician-related tasks.
-		//jobTasks.add(ConsolidateContainers.class);
+		// jobTasks.add(ConsolidateContainers.class);
 		jobTasks.add(LoadVehicleEVA.class);
-        jobTasks.add(LoadVehicleGarage.class);
+		jobTasks.add(LoadVehicleGarage.class);
 		jobTasks.add(Maintenance.class);
 		jobTasks.add(MaintenanceEVA.class);
 		jobTasks.add(MaintainGroundVehicleGarage.class);
@@ -81,6 +79,7 @@ implements Serializable {
 
 	/**
 	 * Gets a person's capability to perform this job.
+	 * 
 	 * @param person the person to check.
 	 * @return capability (min 0.0).
 	 */
@@ -88,20 +87,25 @@ implements Serializable {
 
 		double result = 0D;
 
+		int materialsScienceSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
+		result = materialsScienceSkill / 4D;
+		
 		int mechanicSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
-		result = mechanicSkill;
+		result += mechanicSkill * .75;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		result+= result * ((experienceAptitude - 50D) / 100D);
+		result += result * ((experienceAptitude - 50D) / 100D);
 
-		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
+			result = 0D;
 
-		return result;
+		return result * 2.5;
 	}
 
 	/**
 	 * Gets the base settlement need for this job.
+	 * 
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
 	 */
@@ -110,10 +114,10 @@ implements Serializable {
 		double result = 0D;
 
 		// Add number of buildings in settlement.
-		result+= settlement.getBuildingManager().getNumBuilding() / 2D;
+		result += settlement.getBuildingManager().getNumBuilding() / 2.5D;
 
 		// Add number of vehicles parked at settlement.
-		result+= settlement.getParkedVehicleNum() / 2D;
+		result += settlement.getParkedVehicleNum() / 3D;
 
 		return result;
 	}

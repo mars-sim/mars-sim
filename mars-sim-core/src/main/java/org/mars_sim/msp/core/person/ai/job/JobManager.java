@@ -10,9 +10,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
@@ -35,6 +38,9 @@ public final class JobManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(JobManager.class.getName());
+
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
 
 	public static final String SETTLEMENT = "Settlement";
 	public static final String MISSION_CONTROL = "Mission Control";
@@ -138,7 +144,7 @@ public final class JobManager implements Serializable {
 		if (jobs == null)
 			loadJobs();
 		for (Job job : jobs) {
-			if (job.getClass().getSimpleName().compareTo(jobClassName) == 0) {
+			if (job.getClass().getSimpleName().compareToIgnoreCase(jobClassName) == 0) {
 				return job;
 			}
 		}
@@ -179,6 +185,9 @@ public final class JobManager implements Serializable {
 
 		result = result / 2D;
 
+		if (result < 0)
+			result = 0;
+		
 		return result;
 	}
 
@@ -213,14 +222,10 @@ public final class JobManager implements Serializable {
 		Job originalJob = person.getMind().getJob();
 		// Determine person's associated settlement.
 		Settlement settlement = person.getAssociatedSettlement();
-//		if (person.isInSettlement())
-//			settlement = person.getSettlement();
-//		else if (person.getMind().hasActiveMission())
-//			settlement = person.getMind().getMission().getAssociatedSettlement();
 
 		// Find new job for person.
 		double newJobProspect = Integer.MIN_VALUE;
-//		System.out.println("JobManager's getNewJob : settlement is " + settlement);
+
 		if (settlement != null) {
 			Iterator<Job> i = getJobs().iterator();
 			while (i.hasNext()) {
@@ -235,19 +240,39 @@ public final class JobManager implements Serializable {
 				}
 			}
 
-			if (logger.isLoggable(Level.FINE)) {
-				if ((newJob != null) && (newJob != originalJob))
-					logger.fine(person.getName() + " had changed the job to " + newJob.getName(person.getGender()));
-//				else
-//					logger.fine(person.getName() + " keeping old job of " + originalJob.getName(person.getGender()));
-
-			}
-		} else
+//			if (logger.isLoggable(Level.CONFIG)) {
+//				if ((newJob != null) && (newJob != originalJob))
+//					LogConsolidated.log(Level.CONFIG, 0, sourceName,
+//							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+//							+ " took the " +  newJob.getName(person.getGender()) + " job position.");
+//			}
+		} 
+		
+		else
 			newJob = originalJob;
 
 		return newJob;
 	}
 
+	public static Person findBestFit(Settlement settlement, Job job) {
+		Person person = null;
+		double bestScore = 0;
+
+		List<Person> ppl = new ArrayList<>(settlement.getAllAssociatedPeople());
+		for (Person p : ppl) {
+			double score = Math.round(job.getCapability(p) * 10.0)/10.0;
+//			System.out.println("score : " + score);
+			if (score > bestScore) {
+				bestScore = score;
+				person = p;
+			}
+		}
+		
+//		person.setBestJobScore(bestScore);
+//		System.out.println("person : " + person);
+		return person;
+	}
+	
 	/**
 	 * Gets a new job for the Robot. Might be the Robot's current job.
 	 * 
@@ -321,15 +346,15 @@ public final class JobManager implements Serializable {
 		return (jobCapability + 1D) * remainingNeed;
 	}
 
-	/**
-	 * Get the job prospect value for a robot and a particular job at a settlement.
-	 * 
-	 * @param unit             the robot to check for
-	 * @param robotJob         the job to check for
-	 * @param settlement       the settlement to do the job in.
-	 * @param isHomeSettlement is this the robot home settlement?
-	 * @return job prospect value (0.0 min)
-	 */
+//	/**
+//	 * Get the job prospect value for a robot and a particular job at a settlement.
+//	 * 
+//	 * @param unit             the robot to check for
+//	 * @param robotJob         the job to check for
+//	 * @param settlement       the settlement to do the job in.
+//	 * @param isHomeSettlement is this the robot home settlement?
+//	 * @return job prospect value (0.0 min)
+//	 */
 //	public static double getRobotJobProspect(Unit unit, RobotJob robotJob, Settlement settlement,
 //			boolean isHomeSettlement) {
 //		Robot robot = null;
@@ -376,13 +401,23 @@ public final class JobManager implements Serializable {
 	 */
 	public static int numJobs(Class<?> job, Settlement s) {
 		int num = 0;
-		for (Person p: s.getAllAssociatedPeople()) {
+		for (Person p : s.getAllAssociatedPeople()) {
 			if (p.getMind().getJob().getClass().equals(job))
 				num++;
 		}
 		return num;
 	}
-	
+
+	/**
+	 * Returns a map of job with a list of person occupying that position
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static Map<String, List<Person>> getJobMap(Settlement s)	{
+		return 	s.getAllAssociatedPeople().stream().collect(Collectors.groupingBy(Person::getJobName));		
+	}
+
 //	public static double getBestRobotJobProspect(Robot robot, Settlement settlement, boolean isHomeSettlement) {
 //		double bestProspect = Double.MIN_VALUE;
 //		Iterator<RobotJob> i = getRobotJobs().iterator();
@@ -394,5 +429,5 @@ public final class JobManager implements Serializable {
 //		}
 //		return bestProspect;
 //	}
-	
+
 }

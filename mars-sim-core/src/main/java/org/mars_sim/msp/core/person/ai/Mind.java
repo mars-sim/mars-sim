@@ -353,6 +353,9 @@ public class Mind implements Serializable {
 						// approved by a Senior Official");
 					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
 				}
+				LogConsolidated.log(Level.CONFIG, 0, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+						+ " took the " + newJobStr + " job position.");
 
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 

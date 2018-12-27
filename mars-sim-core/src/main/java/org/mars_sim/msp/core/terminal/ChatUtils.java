@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.terminal;
 import java.awt.geom.Point2D;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,6 +47,8 @@ import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
@@ -153,7 +156,8 @@ public class ChatUtils {
 			"objective", 
 			"water",
 			"o2", "oxygen",
-			"co2", "carbon dioxide"
+			"co2", "carbon dioxide",
+			"job roster", "job demand"
 	};
 	
 	public final static String[] PERSON_KEYS = new String[] {
@@ -329,6 +333,11 @@ public class ChatUtils {
 	public static String getKeywordList(String[] keywords) {
 		String text = "";
 		int last = keywords.length;
+		if (last == 1)
+			return keywords[0];
+
+		Arrays.sort(keywords);
+		
 		for (int i=0 ; i <last; i++) {
 			if (i == last -1)
 				text = text + "and " + keywords[i] + ".";
@@ -895,7 +904,67 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 
-		if (text.equalsIgnoreCase("co2")
+		if (text.equalsIgnoreCase("job roster")) {
+//			responseText.append(" Job Roster");
+//			responseText.append(System.lineSeparator());
+			
+			Map<String, List<Person>> map = JobManager.getJobMap(settlementCache);
+			
+			List<String> jobList = new ArrayList<>(map.keySet());
+			Collections.sort(jobList);
+			
+			for (String jobStr : jobList) {
+				responseText.append(System.lineSeparator());
+				responseText.append(" " + jobStr);
+				responseText.append(System.lineSeparator());
+				responseText.append(" -------------");
+				responseText.append(System.lineSeparator());	
+				
+				List<Person> plist = map.get(jobStr);
+				Collections.sort(plist);
+				
+				for (Person p: plist) {
+					responseText.append(" - " + p.getName());
+					responseText.append(System.lineSeparator());
+				}
+			}
+		}
+		
+		else if (text.equalsIgnoreCase("job demand")) {
+			responseText.append(addhiteSpacesName(" Job", 20));
+			responseText.append(addhiteSpacesName(" Demand", 10));
+			responseText.append(addhiteSpacesName(" Deficit", 10));
+			responseText.append(addhiteSpacesName(" Filled", 10));
+
+			responseText.append(System.lineSeparator());
+			
+			Map<String, List<Person>> map = JobManager.getJobMap(settlementCache);
+			
+			List<Job> jobs = JobManager.getJobs();
+			for (Job job : jobs) {
+				String jobName = job.getName(GenderType.MALE);
+				String n = " " + jobName;
+				responseText.append(addhiteSpacesName(n, 20));
+				
+				String demand = "" + Math.round(job.getSettlementNeed(settlementCache) * 10.0)/10.0;
+				responseText.append(addhiteSpacesName(demand, 9));
+				
+				String deficit = "" + Math.round(JobManager.getRemainingSettlementNeed(settlementCache, job) * 10.0)/10.0;
+				responseText.append(addhiteSpacesName(deficit, 9));
+				
+				int num = 0;
+				if (map.get(jobName) != null)
+					num = map.get(jobName).size();
+				
+				String positions = "" + num;
+				responseText.append(addhiteSpacesName(positions, 9));
+				
+				responseText.append(System.lineSeparator());
+			}
+			
+		}
+		
+		else if (text.equalsIgnoreCase("co2")
 				|| text.equalsIgnoreCase("carbon dioxide")) {
 			int max = 40;
 			double usage = 0;
@@ -1348,8 +1417,10 @@ public class ChatUtils {
 	        
 			if (change) {
 //        	if (Input.change.equalsIgnoreCase("y")) {   		      		
-        		double range = Simulation.instance().getTerm().getTextIO().newDoubleInputReader().withMinVal(50.0).withMaxVal(2000.0).read("Enter a number between 50 and 2000 [km]");
-//        		handler.addIntTask("range", "Enter a number between 50 and 2000 (km)" , false).withInputReaderConfigurator(r -> r.withMinVal(50).withMaxVal(2000));
+        		double range = Simulation.instance().getTerm().getTextIO().newDoubleInputReader()
+        				.withMinVal(50.0).withMaxVal(2000.0).read("Enter a number between 50 and 2000 [km]");
+//        		handler.addIntTask("range", "Enter a number between 50 and 2000 (km)" , false)
+//        		.withInputReaderConfigurator(r -> r.withMinVal(50).withMaxVal(2000));
 //    	        handler.executeOneTask();
     	        String s = "";
     	        
@@ -2641,8 +2712,8 @@ public class ChatUtils {
 				}
 //				responseText.append(space + "(" + (i+1) + ") ");
 				responseText.append(n);
-				responseText.append(" : ");
-				responseText.append(skills.get(n));
+//				responseText.append(" : ");
+				responseText.append(addhiteSpacesName("" + skills.get(n), 5));
 				responseText.append(System.lineSeparator());			
 			}
 			

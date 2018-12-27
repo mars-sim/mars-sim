@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Engineer;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
@@ -199,7 +200,6 @@ public class UnitManager implements Serializable {
 		initializeSettlementNames();
 		initializeVehicleNames();
 
-		
 		if (!loadSaveSim) {
 			// Create initial units.
 			createInitialSettlements();
@@ -220,6 +220,8 @@ public class UnitManager implements Serializable {
 			createPreconfiguredPeople();
 			// Create more settlers to fill the settlement(s)
 			createInitialPeople();
+			
+			tuneJobDeficit();
 		}
 
 	}
@@ -1098,7 +1100,7 @@ public class UnitManager implements Serializable {
 
 				// Establish a system of governance at settlement.
 				settlement.getChainOfCommand().establishSettlementGovernance(settlement);
-
+				
 			}
 
 		} catch (Exception e) {
@@ -1107,8 +1109,35 @@ public class UnitManager implements Serializable {
 			// e.getMessage(), e);
 		}
 	}
-
-
+	
+	public static void assignBestCandidate(Settlement settlement, String jobName) {
+		Job job = JobManager.getJob(jobName);
+		Person p0 = JobManager.findBestFit(settlement, job);
+		// Designate a specific job to a person
+		p0.getMind().setJob(job, true, JobManager.MISSION_CONTROL, JobAssignmentType.APPROVED,
+					JobManager.MISSION_CONTROL);
+	}
+	
+	public void tuneJobDeficit() {
+		Collection<Settlement> col = CollectionUtils.getSettlement(units);
+		for (Settlement settlement : col) {
+	//		int pop = settlement.getNumCitizens();
+		
+			int numEngs = JobManager.numJobs(Engineer.class, settlement);
+		
+			if (numEngs == 0) {
+				Settlement.assignBestCandidate(settlement, "Engineer");
+			}
+				
+			int numTechs = JobManager.numJobs(Engineer.class, settlement);
+	
+			if (numTechs == 0) {
+				Settlement.assignBestCandidate(settlement, "Technician");
+			}
+		}
+	}
+	
+	
 	/**
 	 * Update the commander's profile
 	 * 

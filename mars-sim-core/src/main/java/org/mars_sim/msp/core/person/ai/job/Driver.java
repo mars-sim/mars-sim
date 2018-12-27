@@ -40,9 +40,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * The Driver class represents a rover driver job.
  */
-public class Driver
-extends Job
-implements Serializable {
+public class Driver extends Job implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -87,6 +85,7 @@ implements Serializable {
 
 	/**
 	 * Gets a person's capability to perform this job.
+	 * 
 	 * @param person the person to check.
 	 * @return capability (min 0.0).
 	 */
@@ -99,15 +98,17 @@ implements Serializable {
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		result+= result * ((experienceAptitude - 50D) / 100D);
+		result += result * ((experienceAptitude - 50D) / 100D);
 
-		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
+			result = 0D;
 
 		return result;
 	}
 
 	/**
 	 * Gets the base settlement need for this job.
+	 * 
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
 	 */

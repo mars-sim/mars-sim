@@ -56,12 +56,21 @@ public class SkillManager implements Serializable {
 		if (person != null) {
 			// Add starting skills randomly for a person.
 			for (SkillType startingSkill : SkillType.values()) {
-				int skillLevel = getInitialSkillLevel(0, 50);
-				// int skillLevel = 1;
+				int skillLevel = 0;
+				if (startingSkill == SkillType.MATERIALS_SCIENCE
+					 || startingSkill == SkillType.MECHANICS) {
+					skillLevel = getInitialSkillLevel(1, 50);
+				}
+				else {
+					skillLevel = getInitialSkillLevel(0, 50);
+				}
+				
 				Skill newSkill = new Skill(startingSkill);
 				newSkill.setLevel(skillLevel);
 				addNewSkill(newSkill);
 			}
+			
+			
 		}
 		else {		
 			// Add starting skills randomly for a bot.

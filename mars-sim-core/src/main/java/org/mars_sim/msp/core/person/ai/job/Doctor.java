@@ -40,14 +40,12 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 /**
  * The Doctor class represents a job for an medical treatment expert.
  */
-public class Doctor
-extends Job
-implements Serializable {
+public class Doctor extends Job implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	//	private static Logger logger = Logger.getLogger(Doctor.class.getName());
+	// private static Logger logger = Logger.getLogger(Doctor.class.getName());
 
 	/** Constructor. */
 	public Doctor() {
@@ -58,7 +56,7 @@ implements Serializable {
 		jobTasks.add(PrescribeMedication.class);
 		jobTasks.add(TreatMedicalPatient.class);
 		jobTasks.add(ExamineBody.class);
-		
+
 		// Research related tasks
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);
@@ -84,6 +82,7 @@ implements Serializable {
 
 	/**
 	 * Gets a person's capability to perform this job.
+	 * 
 	 * @param person the person to check.
 	 * @return capability (min 0.0).
 	 */
@@ -96,15 +95,17 @@ implements Serializable {
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		result+= result * ((academicAptitude - 50D) / 100D);
+		result += result * ((academicAptitude - 50D) / 100D);
 
-		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
+			result = 0D;
 
 		return result;
 	}
 
 	/**
 	 * Gets the base settlement need for this job.
+	 * 
 	 * @param settlement the settlement in need.
 	 * @return the base need >= 0
 	 */
@@ -114,7 +115,7 @@ implements Serializable {
 
 		// Add total population / 10
 		int population = settlement.getNumCitizens();
-		result+= population / 10D;
+		result += population / 10D;
 
 		// Add (labspace * tech level) / 2 for all labs with medical specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
@@ -123,7 +124,7 @@ implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.MEDICINE)) {
-				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2.5D);
+				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 3D);
 			}
 		}
 
@@ -133,7 +134,7 @@ implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			MedicalCare infirmary = building.getMedical();
-			result+= (double) infirmary.getTechLevel() / 2.5D;
+			result += (double) infirmary.getTechLevel() / 3D;
 		}
 
 		return result;

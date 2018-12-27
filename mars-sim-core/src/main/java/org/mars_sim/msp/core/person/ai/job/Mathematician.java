@@ -108,7 +108,7 @@ implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.MATHEMATICS)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 6D);
 			}
 		}
 

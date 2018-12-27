@@ -1068,6 +1068,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
+	 * Returns the person's job name
+	 *
+	 * @return the person's job name
+	 */
+	public String getJobName() {
+		return mind.getJob().getName(gender);
+	}
+
+	
+	/**
 	 * Updates and returns the person's age
 	 *
 	 * @return the person's age
@@ -1846,7 +1856,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		
 		return sum/cumulativeWeight; 
 	}
-	
 	
 	/**
 	 * Reloads instances after loading from a saved sim

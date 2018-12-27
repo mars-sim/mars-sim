@@ -39,14 +39,12 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 /**
  * The Astronomer class represents a job for an astronomer.
  */
-public class Astronomer
-extends Job
-implements Serializable {
+public class Astronomer extends Job implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	//	private static Logger logger = Logger.getLogger(Astronomer.class.getName());
+	// private static Logger logger = Logger.getLogger(Astronomer.class.getName());
 
 	/** Constructor. */
 	public Astronomer() {
@@ -54,7 +52,7 @@ implements Serializable {
 		super(Astronomer.class);
 
 		// 2015-01-03 Added PrepareDessert
-		//jobTasks.add(PrepareDessert.class);
+		// jobTasks.add(PrepareDessert.class);
 
 		// Add astronomer-related tasks.
 		jobTasks.add(ObserveAstronomicalObjects.class);
@@ -92,9 +90,10 @@ implements Serializable {
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		result+= result * ((academicAptitude - 50D) / 100D);
+		result += result * ((academicAptitude - 50D) / 100D);
 
-		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
+			result = 0D;
 
 		return result;
 	}

@@ -41,14 +41,12 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 /**
  * The Chemist class represents a job for a chemist.
  */
-public class Chemist
-extends Job
-implements Serializable {
+public class Chemist extends Job implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	//	private static Logger logger = Logger.getLogger(Chemist.class.getName());
+	// private static Logger logger = Logger.getLogger(Chemist.class.getName());
 
 	/**
 	 * Constructor.
@@ -96,9 +94,10 @@ implements Serializable {
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		result+= result * ((academicAptitude - 50D) / 100D);
+		result += result * ((academicAptitude - 50D) / 100D);
 
-		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
+			result = 0D;
 
 		return result;
 	}
@@ -112,9 +111,9 @@ implements Serializable {
 		Iterator<Building> i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Research lab = (Research) building.getFunction(FunctionType.RESEARCH);
+			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.CHEMISTRY)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 3D);
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
 			}
 		}
 

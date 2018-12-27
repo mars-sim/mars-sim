@@ -121,6 +121,8 @@ implements Serializable {
 	public double getSettlementNeed(Settlement settlement) {
 		double result = 0D;
 
+		int pop = settlement.getNumCitizens();
+		
 		// Add (labspace * tech level) / 2 for all labs with botany specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
 		Iterator<Building> i = laboratoryBuildings.iterator();
@@ -128,7 +130,7 @@ implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.BOTANY)) {
-				result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D;
+				result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 5D;
 			}
 		}
 
@@ -147,6 +149,7 @@ implements Serializable {
 		//result *= foodValue;
 		//System.out.println("getSettlementNeed() : result is " + result);
 
+		result += pop/4D;
 		return result;
 	}
 
