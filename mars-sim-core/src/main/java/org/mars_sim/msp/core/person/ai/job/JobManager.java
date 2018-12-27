@@ -251,6 +251,7 @@ public final class JobManager implements Serializable {
 		else
 			newJob = originalJob;
 
+//		System.out.println(newJob + " : " + newJobProspect);
 		return newJob;
 	}
 

@@ -116,7 +116,7 @@ public class Driver extends Job implements Serializable {
 		// Get number of vehicles parked at a settlement.
 		Collection<Vehicle> vehicles = settlement.getAllAssociatedVehicles();
 		if (!vehicles.isEmpty())
-			return vehicles.size();
+			return vehicles.size()/1.5;
 		else
 			return 0;
 	}

@@ -889,7 +889,7 @@ public class EatMeal extends Task implements Serializable {
 			BuildingManager manager = settlement.getBuildingManager();
 			List<Building> diningBuildings = manager.getBuildings(FunctionType.DINING);
 			diningBuildings = BuildingManager.getWalkableBuildings(person, diningBuildings);
-			diningBuildings = BuildingManager.getNonMalfunctioningBuildings(diningBuildings);
+//			diningBuildings = BuildingManager.getNonMalfunctioningBuildings(diningBuildings);
 			if (canChat)
 				// Choose between the most crowded or the least crowded dining hall
 				diningBuildings = BuildingManager.getChattyBuildings(diningBuildings);

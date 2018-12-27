@@ -89,7 +89,8 @@ implements Serializable {
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		result+= result * ((academicAptitude - 50D) / 100D);
 
-		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) 
+			result = 0D;
 
 		return result;
 	}
@@ -105,7 +106,7 @@ implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.PHYSICS)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 3D);
 			}
 		}
 

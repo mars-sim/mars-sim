@@ -104,7 +104,7 @@ public class Chef extends Job implements Serializable {
 		while (i.hasNext()) {
 			Building building = i.next();
 			Cooking kitchen = building.getCooking();
-			result += (double) kitchen.getCookCapacity()/2.5D;
+			result += (double) kitchen.getCookCapacity()/2D;
 		}
 
 		// Add total population / 10.

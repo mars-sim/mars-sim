@@ -157,7 +157,8 @@ public class ChatUtils {
 			"water",
 			"o2", "oxygen",
 			"co2", "carbon dioxide",
-			"job roster", "job demand"
+			"job roster", "job demand",
+			"job prospect"
 	};
 	
 	public final static String[] PERSON_KEYS = new String[] {
@@ -904,10 +905,40 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 
-		if (text.equalsIgnoreCase("job")
-				|| text.equalsIgnoreCase("career")) {
-			responseText.append(settlementCache + " : please specify if you want to see 'job roster' or 'job demand'.");
+		String text0 = text;
+		String jobStrName = text0.replace("job prospect ", "");
+
+		if (text.contains("job prospect") 
+				&& JobManager.getJob(jobStrName) != null) {
+			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
+//					.sorted((p1, p2)-> p1.getMind().getJob().getName(p1.getGender()).compareTo(p2.getMind().getJob().getName(p2.getGender())))
+					.sorted((p1, p2)-> p1.getName().compareTo(p2.getName()))
+					.collect(Collectors.toList());
+			
+			Job job = JobManager.getJob(jobStrName);
+			responseText.append(" --- " + Conversion.capitalize(jobStrName) + " Job Prospect Scores --- ");
 //			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			for (Person p : list) {
+				double jobProspect = Math.round(JobManager.getJobProspect(p, job, settlementCache, true)*10.0)/10.0;
+				responseText.append(addhiteSpacesName(" " + p, 20));
+				responseText.append(addhiteSpacesName(" " + jobProspect, 6));
+				responseText.append(System.lineSeparator());
+			}
+		}
+		
+		else if (text.equalsIgnoreCase("job")
+				|| text.equalsIgnoreCase("career")) {
+			responseText.append(settlementCache + " : please specify if you want to see 'job roster', 'job demand'");// or the individual's job prospect score of a particular job.");
+			responseText.append(System.lineSeparator());
+			responseText.append("Note : to see job prospect scores, specify the job position such as 'job prospect engineer', or 'job prospect botanist'");
+//			responseText.append(System.lineSeparator());
+		}
+		
+		else if (text.equalsIgnoreCase("job prospect")) {
+			responseText.append(settlementCache + " : please specify which job you would like to see the prospect scores "
+					+ "such as 'job prospect engineer', or 'job prospect botanist'");
+
 		}
 		
 		else if (text.equalsIgnoreCase("job roster")) {
@@ -997,7 +1028,7 @@ public class ChatUtils {
 			responseText.append(addhiteSpacesName(" Job", 20));
 			responseText.append(addhiteSpacesName(" Demand", 10));
 			responseText.append(addhiteSpacesName(" Deficit", 10));
-			responseText.append(addhiteSpacesName(" Filled", 10));
+			responseText.append(addhiteSpacesName(" Filled", 8));
 
 			responseText.append(System.lineSeparator());
 			
@@ -1020,7 +1051,7 @@ public class ChatUtils {
 					num = map.get(jobName).size();
 				
 				String positions = "" + num;
-				responseText.append(addhiteSpacesName(positions, 9));
+				responseText.append(addhiteSpacesName(positions, 8));
 				
 				responseText.append(System.lineSeparator());
 			}

@@ -99,14 +99,20 @@ public class Engineer extends Job implements Serializable {
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		double averageAptitude = (academicAptitude + experienceAptitude) / 1.2D;
-		result += result * ((averageAptitude - 50D) / 100D);
+		result += result * ((academicAptitude - 50D) / 100D);
 
+		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+		result += result * ((experienceAptitude - 50D) / 100D);
+
+//		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
+//		result += result * ((averageAptitude - 50D) / 100D);
+
+		result = result/2D;		
+		
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
 
-		return result * 3;
+		return result;
 	}
 
 	/**
@@ -125,7 +131,7 @@ public class Engineer extends Job implements Serializable {
 		while (i.hasNext()) {
 			Building building = i.next();
 			Manufacture workshop = building.getManufacture();
-			result += workshop.getTechLevel() * workshop.getSupportingProcesses() / 4D;
+			result += workshop.getTechLevel() * workshop.getSupportingProcesses() / 6D;
 		}
 
 		return result;

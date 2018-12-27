@@ -102,10 +102,15 @@ implements Serializable {
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
+		result += result * ((academicAptitude - 50D) / 100D);
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
-		result+= result * ((averageAptitude - 50D) / 100D);
+		result += result * ((experienceAptitude - 50D) / 100D);
+		
+//		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
+//		result+= result * ((averageAptitude - 50D) / 100D);
 
+		result = result/2D;
+		
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) 
 			result = result/2D;
 

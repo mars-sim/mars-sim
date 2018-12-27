@@ -100,7 +100,7 @@ public class Technician extends Job implements Serializable {
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
 
-		return result * 2.5;
+		return result;
 	}
 
 	/**
