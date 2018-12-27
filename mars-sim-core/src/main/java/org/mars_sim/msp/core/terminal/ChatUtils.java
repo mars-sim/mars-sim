@@ -166,21 +166,21 @@ public class ChatUtils {
 			"friend",
 			"country", "nationality", 
 			"space agency", "sponsor", 
-			"specialty",
+			"specialty", "job",
 			"outside", "inside", "container", 
 			"building", "associated", "association", "home", "home town",		
 			"garage", "vehicle top container", "vehicle container",  "vehicle park", "vehicle settlement", "vehicle outside", "vehicle inside",			
 			"bed time", "sleep hour", 
 			"trip", "excursion", "mission",
 			"eva time", "airlock time",
-			"shift", "work shift"
+			"shift", "work shift",	
 	};
 	
 	public final static String[] ALL_PARTIES_KEYS = new String[] {
 			"relationship", "social", "relation",
 			"bed", "sleep", "lodging", "quarters", "time", "date",
 			"where", "location", "located",	
-			"job", "role", "career",
+			"role",
 			"task", "activity", "action", "doing"
 	};
 	
@@ -904,27 +904,90 @@ public class ChatUtils {
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 
-		if (text.equalsIgnoreCase("job roster")) {
+		if (text.equalsIgnoreCase("job")
+				|| text.equalsIgnoreCase("career")) {
+			responseText.append(settlementCache + " : please specify if you want to see 'job roster' or 'job demand'.");
+//			responseText.append(System.lineSeparator());
+		}
+		
+		else if (text.equalsIgnoreCase("job roster")) {
 //			responseText.append(" Job Roster");
 //			responseText.append(System.lineSeparator());
+			
+			questionText = YOU_PROMPT + "What is everybody's job ?";
+			responseText.append(System.lineSeparator());
+			responseText.append(settlementCache + " : ");
+			responseText.append("See the job roster below :");
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			responseText.append("          --- Sort by Name ---");
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			
+			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
+//					.sorted((p1, p2)-> p1.getMind().getJob().getName(p1.getGender()).compareTo(p2.getMind().getJob().getName(p2.getGender())))
+					.sorted((p1, p2)-> p1.getName().compareTo(p2.getName()))
+					.collect(Collectors.toList());
+			
+			int length = 0;
+			for (Person p : list) {
+				int l = p.getName().length();
+				if (l > length)
+					length = l;
+			}
+			
+			int num = 1;
+			for (Person p : list) {
+				String job = p.getMind().getJob().getName(p.getGender());
+				if (num < 10)					
+					responseText.append("  " + num + ". ");
+				else
+					responseText.append(" " + num + ". ");
+				num++;
+				responseText.append(p);
+				int size = length + 2 - p.getName().length();// - job.length();
+				if (size > 0) {
+					for (int i=0; i<size; i++) {
+						responseText.append(" ");
+					}
+				}
+				responseText.append(" - " + job);
+				responseText.append(System.lineSeparator());
+			}
+			
+			responseText.append(System.lineSeparator());
+			responseText.append("  --- Sort by Job ---");
+			responseText.append(System.lineSeparator());
 			
 			Map<String, List<Person>> map = JobManager.getJobMap(settlementCache);
 			
 			List<String> jobList = new ArrayList<>(map.keySet());
 			Collections.sort(jobList);
 			
+			int num1 = 1;
+
 			for (String jobStr : jobList) {
 				responseText.append(System.lineSeparator());
-				responseText.append(" " + jobStr);
+				if (num1 < 10)					
+					responseText.append("  " + num1 + ". ");
+				else
+					responseText.append(" " + num1 + ". ");
+				num1++;
+					
+				responseText.append(jobStr);
 				responseText.append(System.lineSeparator());
-				responseText.append(" -------------");
+				responseText.append(" ");
+				for (int i=0; i<length; i++) {
+					responseText.append("-");
+				}
+//				responseText.append(" -------------");
 				responseText.append(System.lineSeparator());	
 				
 				List<Person> plist = map.get(jobStr);
 				Collections.sort(plist);
 				
 				for (Person p: plist) {
-					responseText.append(" - " + p.getName());
+					responseText.append("  - " + p.getName());
 					responseText.append(System.lineSeparator());
 				}
 			}
@@ -2021,34 +2084,6 @@ public class ChatUtils {
 				responseText.append(role);
 				responseText.append(System.lineSeparator());
 			} 
-		}
-		
-		else if (text.contains("job")
-				|| text.contains("career")) {
-			questionText = YOU_PROMPT + "What is everybody's job ?";
-			responseText.append(System.lineSeparator());
-			responseText.append(settlementCache + " : ");
-			responseText.append("See below.");
-			responseText.append(System.lineSeparator());
-			responseText.append(System.lineSeparator());
-
-			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
-					.sorted((p1, p2)-> p1.getMind().getJob().getName(p1.getGender()).compareTo(p2.getMind().getJob().getName(p2.getGender())))
-					.collect(Collectors.toList());
-			
-			for (Person p : list) {
-				String job = p.getMind().getJob().getName(p.getGender());
-				responseText.append(p);
-				int num = 30 - p.getName().length();// - job.length();
-				if (num > 0) {
-					for (int i=0; i<num; i++) {
-						responseText.append(" ");
-					}
-				}
-				responseText.append(job);
-				responseText.append(System.lineSeparator());
-			}
-			
 		}
 		
 		else if (text.toLowerCase().contains("weather")) {
