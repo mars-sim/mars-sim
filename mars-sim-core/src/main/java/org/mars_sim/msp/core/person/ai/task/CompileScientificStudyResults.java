@@ -192,8 +192,8 @@ implements Serializable {
         if (study.getPrimaryResearcher().equals(person)) {
             result = study.getScience();
         }
-        else if (study.getCollaborativeResearchers().containsKey(person)) {
-            result = study.getCollaborativeResearchers().get(person);
+        else if (study.getCollaborativeResearchers().containsKey(person.getIdentifier())) {
+            result = study.getCollaborativeResearchers().get(person.getIdentifier());
         }
 
         return result;

@@ -182,7 +182,7 @@ implements Serializable {
         Iterator<ScientificStudy> i = studies.iterator();
         while (i.hasNext()) {
             ScientificStudy study = i.next();
-            if (!study.isCompleted() && (study.getCollaborativeResearchers().containsKey(researcher)))
+            if (!study.isCompleted() && (study.getCollaborativeResearchers().containsKey(researcher.getIdentifier())))
                 result.add(study);
         }
         return result;
@@ -202,7 +202,7 @@ implements Serializable {
 	        Iterator<ScientificStudy> i = studies.iterator();
 	        while (i.hasNext()) {
 	            ScientificStudy study = i.next();
-	            if (!study.isCompleted() && (study.getCollaborativeResearchers().containsKey(p)))
+	            if (!study.isCompleted() && (study.getCollaborativeResearchers().containsKey(p.getIdentifier())))
 	                result.add(study);
 	        }
 		}
@@ -219,7 +219,7 @@ implements Serializable {
         Iterator<ScientificStudy> i = studies.iterator();
         while (i.hasNext()) {
             ScientificStudy study = i.next();
-            if (study.isCompleted() && (study.getCollaborativeResearchers().containsKey(researcher)))
+            if (study.isCompleted() && (study.getCollaborativeResearchers().containsKey(researcher.getIdentifier())))
                 result.add(study);
         }
         return result;
@@ -239,7 +239,7 @@ implements Serializable {
 	        Iterator<ScientificStudy> i = studies.iterator();
 	        while (i.hasNext()) {
 	            ScientificStudy study = i.next();
-	            if (study.isCompleted() && (study.getCollaborativeResearchers().containsKey(p)))
+	            if (study.isCompleted() && (study.getCollaborativeResearchers().containsKey(p.getIdentifier())))
 	                result.add(study);
 	        }
 		}
@@ -382,7 +382,8 @@ implements Serializable {
                 // Check if collaborators have died.
                 Iterator<Integer> j = study.getCollaborativeResearchers().keySet().iterator();
                 while (j.hasNext()) {
-                    Person collaborator = (Person)unitManager.getUnitByID(j.next());
+                	int id = j.next();
+                    Person collaborator = (Person)unitManager.getUnitByID(id);
                     if (collaborator.getPhysicalCondition().isDead()) {
                         study.removeCollaborativeResearcher(collaborator);
                         logger.fine(collaborator.getName() + " removed as collaborator in " + study.toString() + 

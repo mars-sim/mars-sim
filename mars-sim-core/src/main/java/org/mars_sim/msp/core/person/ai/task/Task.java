@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
@@ -33,6 +34,7 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -112,12 +114,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private Collection<TaskPhase> phases;
 
 	
-	private static Simulation sim = Simulation.instance();
+	public static Simulation sim = Simulation.instance();
 	/** An instance of the event manager */
-	private static HistoricalEventManager eventManager;
+	public static HistoricalEventManager eventManager;
 	/** An instance of the relationship manager */
-	private static RelationshipManager relationshipManager;
-
+	public static RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+	
+	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
+	
+	protected static ScientificStudyManager scientificStudyManager = Simulation.instance().getScientificStudyManager();
 
 	/**
 	 * Constructs a Task object.
@@ -1272,10 +1277,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param {{@link HistoricalEventManager}
 	 */
-	public static void justReloaded(HistoricalEventManager event, RelationshipManager r) {
+	public static void setInstances(HistoricalEventManager event, RelationshipManager r, UnitManager u, ScientificStudyManager s) {
 		sim = Simulation.instance();
 		eventManager = event;
 		relationshipManager = r;
+		unitManager = u;
+		scientificStudyManager = s;
 	}
 	
 	/**

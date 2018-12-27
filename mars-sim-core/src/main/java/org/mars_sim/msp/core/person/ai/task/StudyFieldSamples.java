@@ -216,7 +216,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 			ScientificStudy collabStudy = i.next();
 			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
 					&& !collabStudy.isCollaborativeResearchCompleted(person)) {
-				ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
+				ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person.getIdentifier());
 				if (fieldSciences.contains(collabScience)) {
 					possibleStudies.add(collabStudy);
 				}
@@ -245,8 +245,8 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 
 		if (study.getPrimaryResearcher().equals(researcher)) {
 			result = study.getScience();
-		} else if (study.getCollaborativeResearchers().containsKey(researcher)) {
-			result = study.getCollaborativeResearchers().get(researcher);
+		} else if (study.getCollaborativeResearchers().containsKey(researcher.getIdentifier())) {
+			result = study.getCollaborativeResearchers().get(researcher.getIdentifier());
 		}
 
 		return result;

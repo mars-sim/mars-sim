@@ -147,7 +147,7 @@ extends JPanel {
 			}
 			else {
 				titleLabel.setText(Msg.getString("ResearcherPanel.collaborativeResearcher")); //$NON-NLS-1$
-				ScienceType collabScience = study.getCollaborativeResearchers().get(researcher);
+				ScienceType collabScience = study.getCollaborativeResearchers().get(researcher.getIdentifier());
 				scienceLabel.setText(Msg.getString("ResearcherPanel.scientificField", collabScience.getName())); //$NON-NLS-1$
 			}
 

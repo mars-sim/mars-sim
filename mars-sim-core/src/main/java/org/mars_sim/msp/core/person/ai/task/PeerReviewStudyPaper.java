@@ -159,7 +159,7 @@ implements Serializable {
 
                 // Check that person isn't a researcher in the study.
                 if (!person.equals(study.getPrimaryResearcher()) &&
-                        !study.getCollaborativeResearchers().keySet().contains(person)) {
+                        !study.getCollaborativeResearchers().keySet().contains(person.getIdentifier())) {
 
                     // Check if person's current job is related to study primary science.
                     Job job = person.getMind().getJob();

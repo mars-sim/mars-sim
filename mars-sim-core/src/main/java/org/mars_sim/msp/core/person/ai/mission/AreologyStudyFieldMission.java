@@ -241,7 +241,7 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 			ScientificStudy collabStudy = i.next();
 			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
 					&& !collabStudy.isCollaborativeResearchCompleted(researcher)) {
-				if (areology == collabStudy.getCollaborativeResearchers().get(researcher)) {
+				if (areology == collabStudy.getCollaborativeResearchers().get(researcher.getIdentifier())) {
 					possibleStudies.add(collabStudy);
 				}
 			}
@@ -374,11 +374,11 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 					if (areology.equals(study.getScience())) {
 						result += 1D;
 					}
-				} else if (study.getCollaborativeResearchers().containsKey(person)) {
+				} else if (study.getCollaborativeResearchers().containsKey(person.getIdentifier())) {
 					result += 1D;
 
 					// Check if study collaboration science is in areology.
-					ScienceType collabScience = study.getCollaborativeResearchers().get(person);
+					ScienceType collabScience = study.getCollaborativeResearchers().get(person.getIdentifier());
 					if (areology == collabScience) {
 						result += 1D;
 					}

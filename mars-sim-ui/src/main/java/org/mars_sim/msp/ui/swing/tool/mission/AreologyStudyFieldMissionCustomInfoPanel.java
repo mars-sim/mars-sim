@@ -178,7 +178,7 @@ implements ScientificStudyListener {
 	private boolean isStudyCollaborativeResearcher(Person researcher, ScientificStudy study) {
 		boolean result = false;
 
-		if (study.getCollaborativeResearchers().containsKey(researcher)) result = true;
+		if (study.getCollaborativeResearchers().containsKey(researcher.getIdentifier())) result = true;
 
 		return result;
 	}

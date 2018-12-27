@@ -174,7 +174,7 @@ implements ResearchScientificStudy, Serializable {
         for (ScientificStudy collabStudy :  manager.getOngoingCollaborativeStudies(person)) {
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) &&
                     !collabStudy.isCollaborativeResearchCompleted(person)) {
-                ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
+                ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person.getIdentifier());
                 if (mathematics == collabScience) {
                     possibleStudies.add(collabStudy);
                 }

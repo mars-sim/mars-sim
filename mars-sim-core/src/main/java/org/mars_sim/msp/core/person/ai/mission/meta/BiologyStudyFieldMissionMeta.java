@@ -110,7 +110,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
                     ScientificStudy collabStudy = i.next();
                     if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                         if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-                            if (biology == collabStudy.getCollaborativeResearchers().get(person))
+                            if (biology == collabStudy.getCollaborativeResearchers().get(person.getIdentifier()))
                                 result += 1D;
                         }
                     }

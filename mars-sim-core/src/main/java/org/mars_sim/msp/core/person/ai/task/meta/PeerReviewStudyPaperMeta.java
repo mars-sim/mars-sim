@@ -62,7 +62,7 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
 
 	                // Check that person isn't a researcher in the study.
 	                if (!person.equals(study.getPrimaryResearcher()) &&
-	                        !study.getCollaborativeResearchers().keySet().contains(person)) {
+	                        !study.getCollaborativeResearchers().keySet().contains(person.getIdentifier())) {
 
 	                    // If person's current job is related to study primary science,
 	                    // add chance to review.

@@ -11,20 +11,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -45,6 +43,9 @@ implements Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(RespondToStudyInvitation.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.respondToStudyInvitation"); //$NON-NLS-1$
@@ -61,8 +62,6 @@ implements Serializable {
 
     /** The scientific study. */
     private ScientificStudy study;
-
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
     /**
      * Constructor
@@ -71,8 +70,8 @@ implements Serializable {
     public RespondToStudyInvitation(Person person) {
         super(NAME, person, false, true, STRESS_MODIFIER, true, DURATION);
 
-        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-        List<ScientificStudy> invitedStudies = manager.getOpenInvitationStudies(person);
+//        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+        List<ScientificStudy> invitedStudies = scientificStudyManager.getOpenInvitationStudies(person);
         if (invitedStudies.size() > 0) {
             study = invitedStudies.get(0);
 
@@ -160,7 +159,7 @@ implements Serializable {
 
             // Get relationship between invitee and primary researcher.
             Person primaryResearcher = study.getPrimaryResearcher();
-            RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+//            RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
             Relationship relationship = relationshipManager.getRelationship(person, primaryResearcher);
 
             // Decide response to invitation.
@@ -174,8 +173,10 @@ implements Serializable {
                     relationship.setPersonOpinion(primaryResearcher, currentOpinion + 10D);
                 }
 
-                logger.fine(job.getName(person.getGender()) + " " + person.getName() + 
-                        " accepting invitation from " + primaryResearcher.getName() + 
+                LogConsolidated.log(Level.INFO, 0, sourceName,
+    					"[" + person.getLocationTag().getLocale() + "] " 
+    					+ person.getName() + 
+                        " accepted invitation from " + primaryResearcher.getName() + 
                         " to collaborate on " + study.toString());
             }
             else {
@@ -186,8 +187,10 @@ implements Serializable {
                     relationship.setPersonOpinion(primaryResearcher, currentOpinion - 10D);
                 }
 
-                logger.fine(job.getName(person.getGender()) + " " + person.getName() + 
-                        " rejecting invitation from " + primaryResearcher.getName() + 
+                LogConsolidated.log(Level.INFO, 0, sourceName,
+    					"[" + person.getLocationTag().getLocale() + "] " 
+    						+ person.getName() + 
+                        " rejected invitation from " + primaryResearcher.getName() + 
                         " to collaborate on " + study.toString());
             }
         }
@@ -217,8 +220,9 @@ implements Serializable {
                 // Modify based on study collaborative researchers' achievements.
                 Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
                 while (i.hasNext()) {
-                    Person collaborator = (Person)unitManager.getUnitByID(i.next());
-                    ScienceType collaborativeScience = study.getCollaborativeResearchers().get(collaborator);
+                	int id = i.next();
+                    Person collaborator = (Person)unitManager.getUnitByID(id);
+                    ScienceType collaborativeScience = study.getCollaborativeResearchers().get(id);
                     acceptChance += (collaborator.getScientificAchievement(collaborativeScience) / 2D);
                 }
 
@@ -228,8 +232,8 @@ implements Serializable {
                 }
 
                 // Modify by how many studies researcher is already collaborating on.
-                ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-                int numCollabStudies = manager.getOngoingCollaborativeStudies(person).size();
+//                ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+                int numCollabStudies = scientificStudyManager.getOngoingCollaborativeStudies(person).size();
                 acceptChance /= (numCollabStudies + 1D);
 
                 // Modify based on difficulty level of study vs researcher's skill.
@@ -245,7 +249,7 @@ implements Serializable {
                 acceptChance *= ((double) difficultyLevel / (double) skillLevel);
 
                 // Modify based on researchers opinion of primary researcher.
-                RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+//                RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
                 double researcherOpinion = relationshipManager.getOpinionOfPerson(person, 
                         study.getPrimaryResearcher());
                 acceptChance *= (researcherOpinion / 50D);

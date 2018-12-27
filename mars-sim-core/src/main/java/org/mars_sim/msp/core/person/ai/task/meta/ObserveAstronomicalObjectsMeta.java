@@ -106,7 +106,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
                     ScientificStudy collabStudy = i.next();
                     if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                         if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-                            if (astronomy == collabStudy.getCollaborativeResearchers().get(person)) {
+                            if (astronomy == collabStudy.getCollaborativeResearchers().get(person.getIdentifier())) {
                                 try {
                                     double collabResult = 50D;
 

@@ -219,8 +219,8 @@ extends WizardPanel {
             if (study.getPrimaryResearcher().equals(person)) {
                 result = study.getScience();
             }
-            else if (study.getCollaborativeResearchers().keySet().contains(person)) {
-                result = study.getCollaborativeResearchers().get(person);
+            else if (study.getCollaborativeResearchers().keySet().contains(person.getIdentifier())) {
+                result = study.getCollaborativeResearchers().get(person.getIdentifier());
             }
             
             return result;
@@ -265,32 +265,31 @@ extends WizardPanel {
             return result;
         }
 
-        /*
-         * Adds researchers to the table.
-         * @param people the collection of researchers to add.
-         *
-        void addResearchers(Collection<Person> researchers) {
-            Iterator<Person> i = researchers.iterator();
-            while (i.hasNext()) {
-                Person researcher = i.next();
-                if (!units.contains(researcher)) units.add(researcher);
-            }
-            units = CollectionUtils.sortByName(units);
-            fireTableDataChanged();
-        }
-        */
-        /*
-         * Removes researchers from the table.
-         * @param researchers the collection of researchers to remove.
-         *
-        void removeResearchers(Collection<Person> researchers) {
-            Iterator<Person> i = researchers.iterator();
-            while (i.hasNext()) {
-                Person researcher = i.next();
-                if (units.contains(researcher)) units.remove(researcher);
-            }
-            fireTableDataChanged();
-        }
-        */
+//        /*
+//         * Adds researchers to the table.
+//         * @param people the collection of researchers to add.
+//         *
+//        void addResearchers(Collection<Person> researchers) {
+//            Iterator<Person> i = researchers.iterator();
+//            while (i.hasNext()) {
+//                Person researcher = i.next();
+//                if (!units.contains(researcher)) units.add(researcher);
+//            }
+//            units = CollectionUtils.sortByName(units);
+//            fireTableDataChanged();
+//        }
+//        */
+//        /*
+//         * Removes researchers from the table.
+//         * @param researchers the collection of researchers to remove.
+//         *
+//        void removeResearchers(Collection<Person> researchers) {
+//            Iterator<Person> i = researchers.iterator();
+//            while (i.hasNext()) {
+//                Person researcher = i.next();
+//                if (units.contains(researcher)) units.remove(researcher);
+//            }
+//            fireTableDataChanged();
+//        }
     }
 }

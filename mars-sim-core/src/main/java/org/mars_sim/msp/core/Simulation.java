@@ -967,7 +967,7 @@ public class Simulation implements ClockListener, Serializable {
 		Relax.justReloaded(marsClock);
 		ReviewMissionPlan.justReloaded(relationshipManager, missionManager);
 		Sleep.setInstances(masterClock, marsClock);
-		Task.justReloaded(eventManager, relationshipManager);
+		Task.setInstances(eventManager, relationshipManager, unitManager, scientificStudyManager);
 		Walk.justReloaded(unitManager);	
 
 //		System.out.println("Done with Task instances");

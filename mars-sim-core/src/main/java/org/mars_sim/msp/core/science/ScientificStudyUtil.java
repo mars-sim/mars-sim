@@ -90,11 +90,12 @@ public class ScientificStudyUtil {
         
         Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
         while (i.hasNext()) {
-            Person researcher = (Person)unitManager.getUnitByID(i.next());
+        	int id = i.next();
+            Person researcher = (Person)unitManager.getUnitByID(id);
             double collaboratorModifier = 10D;
             
             // Modify based on collaborative researcher skill in their science.
-            ScienceType collaborativeScience = study.getCollaborativeResearchers().get(researcher);
+            ScienceType collaborativeScience = study.getCollaborativeResearchers().get(id);
             SkillType skill = collaborativeScience.getSkill();
             int skillLevel = researcher.getMind().getSkillManager().getSkillLevel(skill);
             collaboratorModifier *= (double) skillLevel / (double) study.getDifficultyLevel();
@@ -137,8 +138,9 @@ public class ScientificStudyUtil {
         double collaborativeAchievement = baseAchievement / 3D;
         Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
         while (i.hasNext()) {
-            Person researcher = (Person)unitManager.getUnitByID(i.next());
-            ScienceType collaborativeScience = study.getCollaborativeResearchers().get(researcher);
+        	int id = i.next();
+            Person researcher = (Person)unitManager.getUnitByID(id);
+            ScienceType collaborativeScience = study.getCollaborativeResearchers().get(id);
             researcher.addScientificAchievement(collaborativeAchievement, collaborativeScience);
             study.setCollaborativeResearcherEarnedScientificAchievement(researcher, collaborativeAchievement);
             modifyScientistRelationshipsFromAchievement(researcher, collaborativeScience, collaborativeAchievement);
