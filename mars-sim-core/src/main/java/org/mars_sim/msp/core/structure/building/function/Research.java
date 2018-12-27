@@ -275,13 +275,13 @@ implements Lab, Serializable {
 
     public void setupTissueCultures() {
        	tissueCultureMap = new HashMap<>();
-/*
-        Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
-        for (AmountResource ar : tissues) {
-        	String s = ar.getName();
-        	tissueCultureMap.put(s, 0);
-        }	
-*/        
+
+//        Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
+//        for (AmountResource ar : tissues) {
+//        	String s = ar.getName();
+//        	tissueCultureMap.put(s, 0);
+//        }	
+        
     }
     
 	public List<String> getUncheckedTissues() {
@@ -297,12 +297,19 @@ implements Lab, Serializable {
     	tissueCultureMap.put(s, tissueCultureMap.get(s) + 1);
     }
     
-    public boolean addTissueCulture(String tissueName) {
+    
+    /**
+     * Checks if the lab has tissue culture in stock
+     * 
+     * @param tissueName
+     * @return true if the lab has it
+     */
+    public boolean hasTissueCulture(String tissueName) {
     	if (!tissueCultureMap.containsKey(tissueName)) {
     		tissueCultureMap.put(tissueName, 0);
-    		return true;
+    		return false;
     	}
-    	return false;
+    	return true;
     }
     
     @Override

@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -81,9 +80,9 @@ public class PlayHoloGame extends Task implements Serializable {
 
 		// If person is in a settlement, try to find a place to relax.
 		boolean walkSite = false;
+		
 		if (person.isInSettlement()) {
 			try {
-
 				Building recBuilding = getAvailableRecreationBuilding(person);
 				if (recBuilding != null) {
 					// Walk to recreation building.
@@ -131,9 +130,9 @@ public class PlayHoloGame extends Task implements Serializable {
 
 	}
 
-	public PlayHoloGame(Robot robot) {
-		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(20D));
-	}
+//	public PlayHoloGame(Robot robot) {
+//		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(20D));
+//	}
 
 	@Override
 	protected FunctionType getLivingFunction() {
@@ -191,11 +190,11 @@ public class PlayHoloGame extends Task implements Serializable {
 	private double settingUpPhase(double time) {
 		// TODO: add codes for selecting a particular type of game
 		
-		LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+		LogConsolidated.log(Level.INFO, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 				+ person + " was setting up hologames to play in " + person.getLocationTag().getImmediateLocation());
 		
 		setPhase(PLAYING_A_HOLO_GAME);
-		return time * .9D;
+		return time * .8D;
 	}
 
 	@Override

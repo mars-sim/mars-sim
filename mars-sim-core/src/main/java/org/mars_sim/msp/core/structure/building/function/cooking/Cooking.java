@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -745,13 +744,13 @@ public class Cooking extends Function implements Serializable {
 		List<Ingredient> ingredientList = hotMeal.getIngredientList();
 		for (Ingredient oneIngredient : ingredientList) {
 			// String ingredientName = oneIngredient.getName();
-			int ingredientAR = oneIngredient.getAmountResourceID();
+			int ingredientID = oneIngredient.getAmountResourceID();
 
 			int id = oneIngredient.getID();
 			// Update to using dry weight
 			double dryMass = oneIngredient.getDryMass();
 
-			boolean hasIt = retrieveAnIngredientFromMap(dryMass, ingredientAR, true);
+			boolean hasIt = retrieveAnIngredientFromMap(dryMass, ingredientID, true);
 
 			// Add the effect of the presence of ingredients on meal quality
 			if (hasIt) {
@@ -829,9 +828,8 @@ public class Cooking extends Function implements Serializable {
 		// Reduce a tiny bit of kitchen's cleanliness upon every meal made
 		cleanliness = cleanliness - .0075;
 
-		LogConsolidated.log(logger, Level.FINEST, 5000, sourceName,
-				"[" + settlement + "] " + producerName + " just cooked '" + nameOfMeal + "' in " + building + ".",
-				null);
+		LogConsolidated.log(Level.FINE, 10_000, sourceName,
+				"[" + settlement + "] " + producerName + " just cooked '" + nameOfMeal + "' in " + building + ".");
 
 		return nameOfMeal;
 	}
@@ -930,7 +928,7 @@ public class Cooking extends Function implements Serializable {
 		}
 		// oil is not available
 		else if (logger.isLoggable(Level.FINE)) {
-			LogConsolidated.log(Level.FINE, 20_000, sourceName, "[" + settlement + "] No oil is available.");
+			LogConsolidated.log(Level.FINE, 30_000, sourceName, "[" + settlement + "] No oil is available.");
 		}
 
 		return false;
@@ -994,7 +992,7 @@ public class Cooking extends Function implements Serializable {
 									.append(" kg ").append(meal.getName().toLowerCase()).append(DISCARDED)
 									.append(getBuilding().getNickName()).append(".");
 
-							LogConsolidated.log(logger, Level.INFO, 10000, sourceName, log.toString(), null);
+							LogConsolidated.log(Level.FINE, 10_000, sourceName, log.toString());
 
 						} else {
 							// Convert the meal into preserved food.
@@ -1004,7 +1002,7 @@ public class Cooking extends Function implements Serializable {
 									.append(dryMassPerServing).append(" kg ").append(meal.getName().toLowerCase())
 									.append(PRESERVED).append(getBuilding().getNickName()).append(".");
 
-							LogConsolidated.log(logger, Level.INFO, 10000, sourceName, log.toString(), null);
+							LogConsolidated.log(Level.FINE, 10_000, sourceName, log.toString());
 						}
 
 						// Adjust the rate to go down for each meal that wasn't eaten.

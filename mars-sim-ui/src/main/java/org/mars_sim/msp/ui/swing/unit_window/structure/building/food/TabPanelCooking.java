@@ -109,6 +109,8 @@ extends TabPanel {
 
 	private Settlement settlement;
 
+	private static MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+	
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -132,7 +134,7 @@ extends TabPanel {
         	Building building = i.next();
     		//System.out.println("Building is " + building.getNickName());
         	if (building.hasFunction(COOKING)) {
-				Cooking kitchen = (Cooking) building.getFunction(COOKING);
+				Cooking kitchen = building.getCooking();
 
 				availableMealsCache += kitchen.getNumberOfAvailableCookedMeals();
 				mealsTodayCache += kitchen.getTotalNumberOfCookedMealsToday();
@@ -145,9 +147,8 @@ extends TabPanel {
         while (j.hasNext()) {
         	// for each building's kitchen in the settlement
         	Building building = j.next();
-    		//System.out.println("Building is " + building.getNickName());
         	if (building.hasFunction(PREPARING_DESSERT)) {
-				PreparingDessert kitchen = (PreparingDessert) building.getFunction(PREPARING_DESSERT);
+				PreparingDessert kitchen = building.getPreparingDessert();
 
 				availableDessertsCache += kitchen.getAvailableServingsDesserts();
 				dessertsTodayCache += kitchen.getTotalServingsOfDessertsToday();
@@ -181,14 +182,13 @@ extends TabPanel {
 		JPanel splitPanel = new JPanel(new GridLayout(1,2,0,0));
 		cookingLabelPanel.add(splitPanel, BorderLayout.CENTER);
 
-		// 2015-01-10 Added TitledBorder
+		// Add TitledBorder
 		JPanel d = new JPanel(new GridLayout(3,1,0,0));
 		TitledBorder dessertBorder = BorderFactory.createTitledBorder(
 				null, "Desserts", javax.swing.border.
 			      TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.
 			      TitledBorder.DEFAULT_POSITION, new Font("Serif", Font.BOLD, 14), java.awt.Color.darkGray);
 		d.setBorder(dessertBorder);
-		//dessertBorder.setTitleColor(Color.orange);
 
 		// Prepare # of available Desserts label
 		availableDessertsLabel = new JLabel(Msg.getString("TabPanelCooking.availableDesserts", availableDessertsCache), JLabel.LEFT); //$NON-NLS-1$
@@ -206,7 +206,6 @@ extends TabPanel {
 			      TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.
 			      TitledBorder.DEFAULT_POSITION, new Font("Serif", Font.BOLD, 14), java.awt.Color.darkGray);
 		m.setBorder(mealBorder);
-		//mealBorder.setTitleColor(Color.orange);
 
 		// Prepare # of available meals label
 		availableMealsLabel = new JLabel(Msg.getString("TabPanelCooking.availableMeals", availableMealsCache), JLabel.LEFT); //$NON-NLS-1$
@@ -220,9 +219,6 @@ extends TabPanel {
 
 		// Create scroll panel for the outer table panel.
 		WebScrollPane scrollPane = new WebScrollPane();
-		//scrollPane.setOpaque(false);
-		//scrollPane.setBackground(new Color(0,0,0,128));
-		//scrollPane.setForeground(Color.orange);
 		scrollPane.setPreferredSize(new Dimension(257, 230));
 		// increase vertical mousewheel scrolling speed for this one
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -260,7 +256,6 @@ extends TabPanel {
 
 		};
 
-		// 2015-12-10 Added ZebraJTable()
 		table = new ZebraJTable(table);
 
 		scrollPane.setViewportView(table);
@@ -270,25 +265,20 @@ extends TabPanel {
 		table.getColumnModel().getColumn(1).setPreferredWidth(47);
 		table.getColumnModel().getColumn(2).setPreferredWidth(45);
 		table.getColumnModel().getColumn(3).setPreferredWidth(45);
-		// 2014-12-03 Added the two methods below to make all heatTable columns
+		//  Add the two methods below to make all heatTable columns
 		//resizable automatically when its Panel resizes
 		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
-		// 2015-09-28 Align the preference score to the center of the cell
+		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		table.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		table.getColumnModel().getColumn(3).setCellRenderer(renderer);
 
-		// 2015-06-08 Added sorting
 		table.setAutoCreateRowSorter(true);
-		//if (!MainScene.OS.equals("linux")) {
-		//	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		//}
 
-		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(table);
 
 		repaint();
@@ -300,18 +290,15 @@ extends TabPanel {
 	 */
 	// Called by TabPanel whenever the Cooking tab is opened
 	public void update() {
-		//System.out.println("TabPanelCooking.java : update()");
 		// Update cooking table.
 		TableStyle.setTableStyle(table);
+		
 		cookingTableModel.update();
-
 		updateMeals();
 		updateDesserts();
 	}
 
 
-
-	// 2015-01-06 Added updateMeals()
 	public void updateMeals() {
 		int numCooks = 0;
 		int cookCapacity = 0;
@@ -322,9 +309,8 @@ extends TabPanel {
         while (i.hasNext()) {
         	// for each building's kitchen in the settlement
         	Building building = i.next();
-    		//System.out.println("Building is " + building.getNickName());
         	if (building.hasFunction(COOKING)) {
-				Cooking kitchen = (Cooking) building.getFunction(COOKING);
+				Cooking kitchen = building.getCooking();
 
 				availableMeals += kitchen.getNumberOfAvailableCookedMeals();
 				mealsToday += kitchen.getTotalNumberOfCookedMealsToday();
@@ -367,7 +353,6 @@ extends TabPanel {
 		}
 	}
 
-	// 2015-01-06 Added updateDesserts()
 	public void updateDesserts() {
 
 		int availableDesserts = 0;
@@ -377,9 +362,8 @@ extends TabPanel {
         while (i.hasNext()) {
         	// for each building's kitchen in the settlement
         	Building building = i.next();
-    		//System.out.println("Building is " + building.getNickName());
         	if (building.hasFunction(PREPARING_DESSERT)) {
-				PreparingDessert kitchen = (PreparingDessert) building.getFunction(PREPARING_DESSERT);
+				PreparingDessert kitchen = building.getPreparingDessert();
 
 				availableDesserts += kitchen.getAvailableServingsDesserts();
 				dessertsToday += kitchen.getTotalServingsOfDessertsToday();
@@ -594,7 +578,7 @@ extends TabPanel {
 	    		//System.out.println("Building is " + building.getNickName());
 
 	        	if (building.hasFunction(COOKING)) {
-					Cooking kitchen = (Cooking) building.getFunction(COOKING);
+					Cooking kitchen = building.getCooking();
 
 					qualityMap = kitchen.getQualityMap();
 					timeMap = kitchen.getTimeMap();
@@ -627,7 +611,7 @@ extends TabPanel {
 			// 3. call cookingTableModel.update()
 
 			// TODO: optimize it so that it doesn't have to check it on every update
-			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+//			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 			int currentDay  = currentTime.getSolOfMonth();
 			//logger.info
 			//System.out.println("cleanUpTable() : Today is sol " + currentDay);
@@ -644,16 +628,16 @@ extends TabPanel {
 				if (!allServingsSet.isEmpty())
 					allServingsSet.clear();
 				//System.out.println("cleanUpTable() : all maps deleted");
-				/*
+				
 				// TODO: is it better to use .remove() to remove entries and when?
-					timeMap.remove(key, value);
-					timeMapE.remove(key);
-					bestQualityMap.remove(key, value);
-					bestQualityMapE.remove(key);
-					worstQualityMap.remove(key, value);
-					worstQualityMapE.remove(key);
-					servingsSet.remove(key);
-		*/
+//					timeMap.remove(key, value);
+//					timeMapE.remove(key);
+//					bestQualityMap.remove(key, value);
+//					bestQualityMapE.remove(key);
+//					worstQualityMap.remove(key, value);
+//					worstQualityMapE.remove(key);
+//					servingsSet.remove(key);
+
 				dayCache = currentDay;
 
 			}

@@ -1048,7 +1048,7 @@ public class Farming extends Function implements Serializable {
 	 * @param cropTypeID
 	 * @return true if work has been done
 	 */
-	public boolean checkBotanyLab(int cropTypeID) {
+	public boolean checkBotanyLab(int cropTypeID, Person p) {
 		// Check to see if a botany lab is available
 		boolean hasEmptySpace = false;
 		boolean done = false;
@@ -1067,7 +1067,7 @@ public class Farming extends Function implements Serializable {
 			hasEmptySpace = lab.addResearcher();
 
 			if (hasEmptySpace) {
-				boolean workDone = growCropTissue(lab, cropTypeID);// , true);
+				boolean workDone = growCropTissue(lab, cropTypeID, p);// , true);
 				lab.removeResearcher();
 				return workDone;
 			}
@@ -1085,7 +1085,7 @@ public class Farming extends Function implements Serializable {
 					if (hasEmptySpace) {
 						hasEmptySpace = lab1.addResearcher();
 						if (hasEmptySpace) {
-							boolean workDone = growCropTissue(lab1, cropTypeID);// true);
+							boolean workDone = growCropTissue(lab1, cropTypeID, p);// true);
 							lab.removeResearcher();
 							return workDone;
 						}
@@ -1101,7 +1101,7 @@ public class Farming extends Function implements Serializable {
 		// Check to see if a person can still "squeeze into" this busy lab to get lab
 		// time
 		if (!hasEmptySpace && (lab.getLaboratorySize() == lab.getResearcherNum())) {
-			return growCropTissue(lab, cropTypeID);// , false);
+			return growCropTissue(lab, cropTypeID, p);// , false);
 		} 
 		
 		else {
@@ -1115,7 +1115,7 @@ public class Farming extends Function implements Serializable {
 				if (lab2.hasSpecialty(ScienceType.BOTANY)) {
 					hasEmptySpace = lab2.checkAvailability();
 					if (lab2.getLaboratorySize() == lab2.getResearcherNum()) {
-						boolean workDone = growCropTissue(lab2, cropTypeID);// , false);
+						boolean workDone = growCropTissue(lab2, cropTypeID, p);// , false);
 						return workDone;
 					}
 				}
@@ -1131,7 +1131,7 @@ public class Farming extends Function implements Serializable {
 	 * @param lab
 	 * @param croptype
 	 */
-	public boolean growCropTissue(Research lab, int cropTypeID) {
+	public boolean growCropTissue(Research lab, int cropTypeID, Person p) {
 		String cropName = CropConfig.getCropTypeNameByID(cropTypeID);
 		String tissueName = cropName + TISSUE_CULTURE;
 		// TODO: re-tune the amount of tissue culture not just based on the edible
@@ -1144,8 +1144,8 @@ public class Farming extends Function implements Serializable {
 		double amountExtracted = 0;
 
 		// Add the chosen tissue culture entry to the lab if it hasn't done it today.
-		boolean justAdded = lab.addTissueCulture(tissueName);
-		if (justAdded) {
+		boolean hasIt = lab.hasTissueCulture(tissueName);
+		if (!hasIt) {
 			lab.markChecked(tissueName);
 
 			if (amountAvailable == 0) {
@@ -1163,9 +1163,10 @@ public class Farming extends Function implements Serializable {
 						Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, inv,
 								sourceName + "::growCropTissue");
 						LogConsolidated.log(Level.INFO, 3_000, sourceName,
-								"[" + settlement.getName() + "] During sampling, " + cropName + TISSUE_CULTURE
-										+ " is not in stock. " + "Extract " + STANDARD_AMOUNT_TISSUE_CULTURE
-										+ " kg from " + cropName + " and restock in " + lab.getBuilding().getNickName()
+							"[" + settlement.getName() + "] During sampling analysis, " + p
+								+ " could not find any " + cropName + TISSUE_CULTURE
+								+ " in stock and produced " + STANDARD_AMOUNT_TISSUE_CULTURE
+										+ " kg from " + cropName + " in " + lab.getBuilding().getNickName()
 										+ ".");
 						isDone = true;
 					}
@@ -1190,9 +1191,9 @@ public class Farming extends Function implements Serializable {
 					if (amountExtracted > 0) {
 						Storage.storeAnResource(amountExtracted, tissueID, inv, sourceName + "::growCropTissue");
 						LogConsolidated.log(Level.INFO, 3_000, sourceName,
-							"[" + settlement.getName() + "] During sampling, "
+							"[" + settlement.getName() + "] During sampling analysis, " + p + " cloned and restocked "
 							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
-							+ cropName + TISSUE_CULTURE + " is cloned and restocked in "
+							+ cropName + TISSUE_CULTURE + " in "
 							+ lab.getBuilding().getNickName() + ".");
 
 						isDone = true;

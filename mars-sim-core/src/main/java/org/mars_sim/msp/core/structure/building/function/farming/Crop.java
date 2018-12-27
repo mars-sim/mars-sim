@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -671,7 +672,7 @@ public class Crop implements Serializable {
 					computeLeavesNCropWaste(lastHarvest);
 					
 					//  Check to see if a botany lab is available
-					if (!farm.checkBotanyLab(cropTypeID))
+					if (unit instanceof Person && !farm.checkBotanyLab(cropTypeID, (Person)unit))
 						logger.info("Can't find an available lab bench to work on the tissue culture for " + cropName);
 
 					remainingHarvest -= lastHarvest;

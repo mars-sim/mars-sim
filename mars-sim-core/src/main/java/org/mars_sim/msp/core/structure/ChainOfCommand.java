@@ -638,12 +638,12 @@ public class ChainOfCommand implements Serializable {
 		// Check if this settlement is the designated one for the user proposed commander
 		if (settlement.isCommanderMode()) {
 			unitManager.updateCommander(cc);
-			logger.config(cc + " will be assigned to " + settlement + " as its commander.");
+			logger.config("[" + cc.getLocationTag().getLocale() + "] " + cc + " will be assigned as the settlement's commander.");
 		}
 		
 		else {
 			cc.setRole(RoleType.COMMANDER);
-			logger.config(cc + " got elected as the " + RoleType.COMMANDER.getName() + " in " + cc.getAssociatedSettlement().getName());
+			logger.config("[" + cc.getLocationTag().getLocale() + "] " + cc + " got elected as the " + RoleType.COMMANDER.getName() + ".");
 		}
 		
 //		if (isProfileRetrieved) {
@@ -677,7 +677,7 @@ public class ChainOfCommand implements Serializable {
 		
 		if (pop >= POPULATION_WITH_SUB_COMMANDER) {
 			cv.setRole(RoleType.SUB_COMMANDER);
-			logger.config(cv + " got elected as the " + RoleType.SUB_COMMANDER.getName() + " in " + cv.getAssociatedSettlement().getName());
+			logger.config("[" + cv.getLocationTag().getLocale() + "] " + cv + " got elected as the " + RoleType.SUB_COMMANDER.getName() + ".");
 		}
 	}
 	
@@ -766,7 +766,7 @@ public class ChainOfCommand implements Serializable {
 
 		if (mayorCandidate != null) {
 			mayorCandidate.setRole(RoleType.MAYOR);
-			logger.config(mayorCandidate + " got elected as the " + role.getName() + " in " + mayorCandidate.getSettlement().getName());
+			logger.config("[" + mayorCandidate.getLocationTag().getLocale() + "] " + mayorCandidate + " got elected as the " + role.getName() + ".");
 		}
 	}
 
@@ -871,7 +871,7 @@ public class ChainOfCommand implements Serializable {
 		
 		if (winner != null) {
 			winner.setRole(role);
-			logger.config("[" + winner.getLocationTag().getLocale() + "]" + winner + " got elected as the " + role.getName() + ".");
+			logger.config("[" + winner.getLocationTag().getLocale() + "] " + winner + " got elected as the " + role.getName() + ".");
 		}
 	}
 	

@@ -278,12 +278,14 @@ public class TendGreenhouse extends Task implements Serializable {
 	}
 
 	private double growingTissue(double time) {
-		// Obtain the crop with the highest VP to work on in the lab
-		CropType type = greenhouse.selectVPCrop();
-		
-		if (greenhouse.checkBotanyLab(type.getID()))  {
-		
-			if (person != null) {
+
+		if (person != null) {
+				
+			// Obtain the crop with the highest VP to work on in the lab
+			CropType type = greenhouse.selectVPCrop();
+				
+			if (greenhouse.checkBotanyLab(type.getID(), person))  {
+				
 				LogConsolidated.log(Level.INFO, 30_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 						+ " was growing " + type.getName() + " tissue culture in the botany lab in " 
@@ -440,8 +442,6 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	private double samplingPhase(double time) {
 		// double remainingTime = 0, workTime = 0;
-
-
 		CropType type = null;
 		
 		int rand = RandomUtil.getRandomInt(5);
@@ -458,18 +458,19 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		if (type != null) {
 			// System.out.println("type is " + type);
-			boolean hasWork = greenhouse.checkBotanyLab(type.getID());
-
-			if (hasWork) {
-				setDescription(Msg.getString("Task.description.tendGreenhouse.sample",
+			if (person != null) {
+				boolean hasWork = greenhouse.checkBotanyLab(type.getID(), person);
+	
+				if (hasWork) {
+					setDescription(Msg.getString("Task.description.tendGreenhouse.sample",
 						Conversion.capitalize(type.getName()) + " Tissues Culture for Lab Work"));
 
-				LogConsolidated.log(Level.INFO, 30_000, sourceName,
+					LogConsolidated.log(Level.INFO, 30_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 						+ " was growing and sampling " + type.getName() + " tissue culture in the botany lab in " 
 						+ farmBuilding.getNickName()
 						+ ".");
-
+			}
 				// System.out.println("samplingPhase: hasLab is " + hasLab);
 				// System.out.println("hasLab is " + hasLab);
 
