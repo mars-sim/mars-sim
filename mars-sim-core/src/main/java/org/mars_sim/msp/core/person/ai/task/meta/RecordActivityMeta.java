@@ -45,22 +45,30 @@ public class RecordActivityMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-         double result = 0D;
+    	double result = 0D;
       
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
+        double fatigue = condition.getFatigue();
+        double stress = condition.getStress();
+        double hunger = condition.getHunger();
         
-        if (JobType.getJobType(person.getMind().getJob().getName(person.getGender())) == JobType.getJobType(REPORTER)) {
+        if (fatigue > 1500)
+        	return 0;
         
+        if (JobType.getJobType(person.getMind().getJob().getName(person.getGender())) == JobType.getJobType(REPORTER)) {      
         	result += 300D;
-        	
         }
+        
+        double pref = person.getPreference().getPreferenceScore(this);
+         
+      	result += pref * 5D;
         
         if (person.isInside()) {
                     
-            if (condition.getFatigue() < 1200D || condition.getStress() < 75D || condition.getHunger() < 750D) {
+            if (fatigue < 1200D || stress < 75D || hunger < 750D) {
             	
-            	result -= (condition.getFatigue()/150D + condition.getStress()/15D + condition.getHunger()/150);
+            	result -= (fatigue/150D + stress/15D + hunger/150);
             }
             
             // TODO: what drives a person go to a particular building ? 
@@ -68,8 +76,8 @@ public class RecordActivityMeta implements MetaTask, Serializable {
     	}
         
         else {
-            if (condition.getFatigue() < 600D && condition.getStress() < 25D|| condition.getHunger() < 500D) {
-            	result -= (condition.getFatigue()/100D + condition.getStress()/10D + condition.getHunger()/100);
+            if (fatigue < 600D && stress< 25D|| hunger < 500D) {
+            	result -= (fatigue/100D + stress/10D + hunger/100);
             }
             else
             	result = 0;
@@ -110,9 +118,6 @@ public class RecordActivityMeta implements MetaTask, Serializable {
             }
         }
         
-        if (result > 0)
-         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
         result *= person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
         
         if (result < 0) result = 0;

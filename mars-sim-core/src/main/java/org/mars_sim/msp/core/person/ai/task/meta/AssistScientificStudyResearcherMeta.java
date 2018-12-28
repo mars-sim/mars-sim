@@ -12,6 +12,7 @@ import java.util.Collection;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -47,6 +48,15 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
     public double getProbability(Person person) {
 
         double result = 0D;
+        
+        // Probability affected by the person's stress and fatigue.
+        PhysicalCondition condition = person.getPhysicalCondition();
+        double fatigue = condition.getFatigue();
+        double stress = condition.getStress();
+        double hunger = condition.getHunger();
+        
+        if (fatigue > 1000 || stress > 50 || hunger > 500)
+        	return 0;
         
         if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.

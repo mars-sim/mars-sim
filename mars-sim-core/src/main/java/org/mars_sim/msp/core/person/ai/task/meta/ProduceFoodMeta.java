@@ -11,6 +11,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -51,6 +52,15 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
         if (person.isInSettlement() && !person.getSettlement().getFoodProductionOverride()) {
 	        // If settlement has foodProduction override, no new foodProduction processes can be created.
         	
+            // Probability affected by the person's stress and fatigue.
+            PhysicalCondition condition = person.getPhysicalCondition();
+            double fatigue = condition.getFatigue();
+            double stress = condition.getStress();
+            double hunger = condition.getHunger();
+            
+            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            	return 0;
+            
             // See if there is an available foodProduction building.
             Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(person);
             

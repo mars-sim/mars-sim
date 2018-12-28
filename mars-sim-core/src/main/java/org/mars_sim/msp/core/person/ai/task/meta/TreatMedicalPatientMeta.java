@@ -12,6 +12,7 @@ import java.util.Iterator;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -55,11 +56,19 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
 
         double result = 0D;
       
+        // Probability affected by the person's stress and fatigue.
+        PhysicalCondition condition = person.getPhysicalCondition();
+        double fatigue = condition.getFatigue();
+        double stress = condition.getStress();
+        double hunger = condition.getHunger();
+        
+        if (fatigue > 1000 || stress > 50 || hunger > 500)
+        	return 0;
+        
         if (person.isInside()) {
 	        // Get the local medical aids to use.
 	        if (hasNeedyMedicalAids(person)) {
-	            result = 300D;
-	
+	            result = 300D;	
 	        }
 	
 	        // Effort-driven task modifier.

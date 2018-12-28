@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.ListenToMusic;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -55,15 +56,26 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
 
-//        // TODO: listening to music is driven by boredom, not so much fatigue
-//        // Fatigue modifier.
-//        double fatigue = person.getPhysicalCondition().getFatigue();
-//    	result = fatigue;
-//
-//        if (fatigue > 800D) {
-//            result += (fatigue - 800D) / 4D;
-//        }
+        double pref = person.getPreference().getPreferenceScore(this);
+        
+     	result = pref * 5D;
+     	
+        // Probability affected by the person's stress and fatigue.
+        PhysicalCondition condition = person.getPhysicalCondition();
+        double stress = condition.getStress();
+        
+        if (pref > 0) {
+         	if (stress > 45D)
+         		result*=1.5;
+         	else if (stress > 65D)
+         		result*=2D;
+         	else if (stress > 85D)
+         		result*=3D;
+         	else
+         		result*=4D;
+        }
 
+        
         // Crowding modifier
         if (person.isInSettlement()) {
         	
@@ -71,12 +83,8 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
         	   result *= RandomUtil.getRandomDouble(2); // more likely to listen to music than not if on a vehicle
             }
             
-        	// Stress modifier
-            double stress = person.getPhysicalCondition().getStress();
-            result += stress * 3D; // 0 to 100%
-            
             try {
-            	// 2016-01-10 Added checking if a person has a designated bed
+            	// Check if a person has a designated bed
                 Building quarters = person.getQuarters();    
                 if (quarters == null) {
                 	quarters = Sleep.getBestAvailableQuarters(person, true);
@@ -104,11 +112,6 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
             boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
             if (isShiftHour) {
                 result*= WORK_SHIFT_MODIFIER;
-            }
-
-            // 2015-06-07 Added Preference modifier
-            if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this)/2D;
             }
             
             if (result < 0) result = 0;

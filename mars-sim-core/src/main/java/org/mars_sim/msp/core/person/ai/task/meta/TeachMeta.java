@@ -11,6 +11,7 @@ import java.util.Collection;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.Teach;
 import org.mars_sim.msp.core.robot.Robot;
@@ -46,6 +47,15 @@ public class TeachMeta implements MetaTask, Serializable {
 
         if (person.isInside()) {
 
+            // Probability affected by the person's stress and fatigue.
+            PhysicalCondition condition = person.getPhysicalCondition();
+            double fatigue = condition.getFatigue();
+            double stress = condition.getStress();
+            double hunger = condition.getHunger();
+            
+            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            	return 0;
+            
 	        // Find potential students.
 	        Collection<Person> potentialStudents = Teach.getBestStudents(person);
 	        if (potentialStudents.size() > 0) {

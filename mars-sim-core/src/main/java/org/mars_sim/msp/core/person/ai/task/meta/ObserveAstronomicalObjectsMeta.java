@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.ObserveAstronomicalObjects;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -58,8 +59,18 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
 
         // Get local observatory if available.
         AstronomicalObservation observatory = ObserveAstronomicalObjects.determineObservatory(person);
+        
         if (null != observatory && person.isInSettlement()) {
 
+            // Probability affected by the person's stress and fatigue.
+            PhysicalCondition condition = person.getPhysicalCondition();
+            double fatigue = condition.getFatigue();
+            double stress = condition.getStress();
+            double hunger = condition.getHunger();
+            
+            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            	return 0;
+            
             // Check if it is completely dark outside.
             if (surface == null)
             	surface = Simulation.instance().getMars().getSurfaceFeatures();

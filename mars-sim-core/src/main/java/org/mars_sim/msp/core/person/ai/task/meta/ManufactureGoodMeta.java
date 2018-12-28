@@ -11,6 +11,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -50,6 +51,15 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
         if (person.isInSettlement() && !person.getSettlement().getManufactureOverride()) {
             // the person has to be inside the settlement to check for manufacture override
 
+            // Probability affected by the person's stress and fatigue.
+            PhysicalCondition condition = person.getPhysicalCondition();
+            double fatigue = condition.getFatigue();
+            double stress = condition.getStress();
+            double hunger = condition.getHunger();
+            
+            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            	return 0;
+            
             // See if there is an available manufacturing building.
             Building manufacturingBuilding = ManufactureGood.getAvailableManufacturingBuilding(person);
             if (manufacturingBuilding != null) {

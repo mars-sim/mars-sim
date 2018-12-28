@@ -113,7 +113,7 @@ public class SleepMeta implements MetaTask, Serializable {
         	// People who don't sleep enough end up with too much ghrelin in their system, so the body thinks 
         	// it's hungry and it needs more calories, and it stops burning those calories because it thinks 
         	// there's a shortage.
-            
+         	
         	// 1000 millisols is 24 hours, if a person hasn't slept for 24 hours,
             // he is supposed to want to sleep right away.
         	if (fatigue > 500D || stress > 50D || ghrelin-leptin > 300) {
@@ -121,7 +121,7 @@ public class SleepMeta implements MetaTask, Serializable {
         	}
 
         	else {
-
+     	
 	        	int maxNumSleep = 0;
 
 	        	if (person.getTaskSchedule().getShiftType() == ShiftType.ON_CALL)
@@ -149,8 +149,12 @@ public class SleepMeta implements MetaTask, Serializable {
             if (proceed) {
     	         		
 	        	// the desire to go to bed increase linearly after 12 hours of wake time
-	            result += (fatigue - 50) / 2D + stress * 5D + (ghrelin-leptin - 300)/10D;
-
+	            result += (fatigue - 100) * 2D + stress * 5D + (ghrelin-leptin - 300)/10D;
+	            
+                double pref = person.getPreference().getPreferenceScore(this);
+                
+             	result += pref * 10D;
+             	
 	            // Add the influence from the sleep habit of the person
             	result += refreshSleepHabit(person);                         	
             	
@@ -190,10 +194,10 @@ public class SleepMeta implements MetaTask, Serializable {
 	                if (quarters != null) {
                 		result = modifyProbability(result, person, quarters);
 	                }
-	                else {
+//	                else {
 	                   	//logger.fine("SleepMeta : " + person + " couldn't find an empty bed at all. Falling asleep at any spot if being too tired.");
 	                	// TODO: should allow him/her to go sleep in gym or medical station.
-		            }
+//		            }
 				}
 
 				else {
@@ -236,10 +240,6 @@ public class SleepMeta implements MetaTask, Serializable {
 		                }
 	                }
 				}
-
-	        	if (result > 0)
-	        		result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
 
 	    	    if (result < 0)
 	    	    	result = 0;

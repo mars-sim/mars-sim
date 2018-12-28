@@ -46,7 +46,7 @@ public class Sleep extends Task implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Sleep.class.getName());
 
-	private static final int MAX_FATIGUE = 2000;
+	private static final int MAX_FATIGUE = 1500;
 	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$

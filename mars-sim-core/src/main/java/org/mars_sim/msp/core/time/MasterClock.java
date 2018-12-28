@@ -76,6 +76,7 @@ public class MasterClock implements Serializable {
 	/** The cache for accumulating millisols up to a limit before sending out a clock pulse. */
 	private transient double timeCache;
 
+	private static boolean justReloaded = false;
 	/** Is FXGL is in use. */
 	public boolean isFXGL = false;
 	/** The time between two ui pulses. */	
@@ -719,7 +720,9 @@ public class MasterClock implements Serializable {
 
 					int skips = 0;
 
-					while ((excess > currentTBU_ns) && (skips < maxFrameSkips)) {
+					while (!justReloaded && (excess > currentTBU_ns) && (skips < maxFrameSkips)) {
+						System.out.println("excess : " + excess);
+						justReloaded = false;
 						excess -= currentTBU_ns;
 						// Make up lost frames
 						skips++;
@@ -1231,6 +1234,7 @@ public class MasterClock implements Serializable {
 	public static void justReloaded(Simulation s) {
 		sim = s;
 		refreshRates = new ArrayList<>();
+		justReloaded = true;
 	}
 	
 	/**

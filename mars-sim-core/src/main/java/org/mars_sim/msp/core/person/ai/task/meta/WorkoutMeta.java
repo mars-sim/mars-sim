@@ -54,30 +54,38 @@ public class WorkoutMeta implements MetaTask, Serializable {
             double kJ = condition.getEnergy();
             double[] muscle = condition.getMusculoskeletal();
 
-            result = fatigue/50D + stress/15D - (muscle[2] - muscle[0])/5D;
-
-            if (kJ < 200)
+            if (kJ < 200 || fatigue > 1000)
+            	return 0;
+ 
+            result = stress - (muscle[2] - muscle[0])/5D - fatigue/100D ;
+            if (result < 0) 
             	return 0;
             
-            if (fatigue > 1000)
-            	result *= 1.8D;
-            else if (fatigue > 900)
-            	result *= 1.6D;
-            else if (fatigue > 800)
-            	result *= 1.4D;
-            else if (fatigue > 700)
-            	result *= 1.2D;
-
-            if (stress > 80)
-            	result *= 2D;
-            else if (stress > 60)
-            	result *= 1.8D;
-            else if (stress > 40)
-            	result *= 1.6D;
-            else if (stress > 20)
-            	result *= 1.4D;
-            	
+            double pref = person.getPreference().getPreferenceScore(this);
             
+         	result += pref * 5D;
+            
+//            if (fatigue > 1000)
+//            	result *= 1.8D;
+//            else if (fatigue > 900)
+//            	result *= 1.6D;
+//            else if (fatigue > 800)
+//            	result *= 1.4D;
+//            else if (fatigue > 700)
+//            	result *= 1.2D;
+
+            if (pref > 0) {
+             	if (stress > 45D)
+             		result*=1.5;
+             	else if (stress > 65D)
+             		result*=2D;
+             	else if (stress > 85D)
+             		result*=3D;
+             	else
+             		result*=4D;
+            }
+
+            	            
             // Get an available gym.
             Building building = Workout.getAvailableGym(person);
             if (building != null) {
@@ -92,10 +100,6 @@ public class WorkoutMeta implements MetaTask, Serializable {
             if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
                 result *= 2D;
             }
-
-            // 2015-06-07 Added Preference modifier
-            if (result > 0)
-             	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
             if (result < 0) result = 0;
 

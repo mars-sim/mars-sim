@@ -56,6 +56,15 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 
         if (person.isInside()) {
 
+            // Probability affected by the person's stress and fatigue.
+            PhysicalCondition condition = person.getPhysicalCondition();
+            double fatigue = condition.getFatigue();
+            double stress = condition.getStress();
+            double hunger = condition.getHunger();
+            
+            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            	return 0;
+            
         	//if (roleType == null)
         	//NOTE: sometimes enum is null. sometimes it is NOT. why?
         	RoleType roleType = person.getRole().getType();
@@ -74,11 +83,6 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 //            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
 //            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY) )
 //            	result += 100D;
-
-            	
-	            // Probability affected by the person's stress and fatigue.
-	            PhysicalCondition condition = person.getPhysicalCondition();
-	            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
 
 		            result += 10D;
 
@@ -155,9 +159,6 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
                     if (result < 0) {
                         result = 0;
                     }
-
-//                    if (result > 0) System.out.println("ReviewJobReassignmentMeta : probability is " + result);
-	            }
             }
         }
 

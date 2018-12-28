@@ -44,20 +44,40 @@ public class YogaMeta implements MetaTask, Serializable {
 
         if (!person.getPreference().isTaskDue(this) && person.isInSettlement()) {
 	
-            // Stress modifier
-        	PhysicalCondition condition = person.getPhysicalCondition();
+            double pref = person.getPreference().getPreferenceScore(this);
+            
+         	result = pref * 5D;
+         	
+            // Probability affected by the person's stress and fatigue.
+            PhysicalCondition condition = person.getPhysicalCondition();
+            double stress = condition.getStress();
+            double fatigue = condition.getFatigue();
+            
+            if (fatigue > 1000)
+            	return 0;
+            
+            if (pref > 0) {
+             	if (stress > 45D)
+             		result*=1.5;
+             	else if (stress > 65D)
+             		result*=2D;
+             	else if (stress > 85D)
+             		result*=3D;
+             	else
+             		result*=4D;
+            }
+            else {
+            	return 0;
+            }
+
         	// doing yoga is less popular than doing regular workout
-            result = condition.getStress() * 1.5D + (condition.getFatigue() / 20D);
+            result = condition.getFatigue() / 20D;
             if (result < 0D) {
                 result = 0D;
             }
             
             // Effort-driven task modifier.
             result *= person.getPerformanceRating();
-
-	        // 2015-06-07 Added Preference modifier
-         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-	        if (result < 0) result = 0;
 
 
         }

@@ -70,29 +70,34 @@ public class ReadMeta implements MetaTask, Serializable {
             double fatigue = condition.getFatigue();
             double stress = condition.getStress();
             
-         	if (fatigue > 750D)
-         		result/=1.5;
-         	else if (fatigue > 1500D)
-         		result/=2D;
-         	else if (fatigue > 2000D)
-         		result/=3D;
-         	else
-         		result/=4D;
-         	
-         	if (stress > 45D)
-         		result/=1.5;
-         	else if (stress > 65D)
-         		result/=2D;
-         	else if (stress > 85D)
-         		result/=3D;
-         	else
-         		result/=4D;
-         	
-            // 2015-06-07 Added Preference modifier
-            if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this)/2D;
-            }
+            if (fatigue > 1000)
+            	return 0;
             
+//         	if (fatigue > 750D)
+//         		result/=1.5;
+//         	else if (fatigue > 1500D)
+//         		result/=2D;
+//         	else if (fatigue > 2000D)
+//         		result/=3D;
+//         	else
+//         		result/=4D;
+         	
+            result -= fatigue/100;           
+            
+            double pref = person.getPreference().getPreferenceScore(this);
+            
+        	result = pref * 5D;
+
+            if (pref > 0) {
+             	if (stress > 45D)
+             		result*=1.5;
+             	else if (stress > 65D)
+             		result*=2D;
+             	else if (stress > 85D)
+             		result*=3D;
+             	else
+             		result*=4D;
+            }
             
 	        if (result < 0) result = 0;
 

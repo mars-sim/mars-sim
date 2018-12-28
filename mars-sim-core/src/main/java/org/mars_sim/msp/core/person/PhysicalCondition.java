@@ -391,7 +391,8 @@ public class PhysicalCondition implements Serializable {
 	 * @return True still alive.
 	 */
 	public void timePassing(double time, LifeSupportType support) {
-
+//		if (time > 10)
+//			System.out.println("time : " + time);
 		if (alive) {
 			
 			int solElapsed = marsClock.getMissionSol();
@@ -436,9 +437,13 @@ public class PhysicalCondition implements Serializable {
 			radiation.timePassing(time);
 			// Update the existing health problems
 			checkHealth(time);
+			
+
 			// Build up fatigue & hunger for given time passing.
 			setThirst(thirst + time * bodyMassDeviation);
+			System.out.println(person + " fatigue : " + fatigue);
 			setFatigue(fatigue + time);
+			System.out.println(person + " fatigue : " + fatigue);
 			setHunger(hunger + time * bodyMassDeviation);
 
 			// normal bodily function consume a minute amount of energy
@@ -1851,16 +1856,16 @@ public class PhysicalCondition implements Serializable {
 		return radiation;
 	}
 
-	/**
-	 * Gets the medical manager.
-	 * 
-	 * @return medical manager.
-	 */
-	private MedicalManager getMedicalManager() {
-		if (medicalManager == null)
-			medicalManager = Simulation.instance().getMedicalManager();
-		return medicalManager;
-	}
+//	/**
+//	 * Gets the medical manager.
+//	 * 
+//	 * @return medical manager.
+//	 */
+//	private MedicalManager getMedicalManager() {
+//		if (medicalManager == null)
+//			medicalManager = Simulation.instance().getMedicalManager();
+//		return medicalManager;
+//	}
 
 	public double getBodyMassDeviation() {
 		return bodyMassDeviation;
@@ -1899,11 +1904,8 @@ public class PhysicalCondition implements Serializable {
 	public static void justReloaded(MasterClock c0, MarsClock c1) {
 		masterClock = c0;
 		marsClock = c1;
-		
 		medicalManager = sim.getMedicalManager();
-		
 		setInstances();
-	
 		loadStaticValues();	
 	}
 	

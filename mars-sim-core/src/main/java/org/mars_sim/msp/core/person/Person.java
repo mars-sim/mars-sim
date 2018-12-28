@@ -933,7 +933,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		if (msolCache != msol1) {
 			msolCache = msol1;
-
+//			if (time > 10)
+//			System.out.println("msolCache : " + msolCache);
 			// If Person is dead, then skip
 			if (!condition.isDead() && getLifeSupportType() != null) {// health.getDeathDetails() == null) {
 

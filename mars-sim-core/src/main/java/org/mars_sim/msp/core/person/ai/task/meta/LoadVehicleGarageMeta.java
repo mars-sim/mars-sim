@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
@@ -54,6 +55,15 @@ public class LoadVehicleGarageMeta implements MetaTask, Serializable {
 
         if (person.isInSettlement()) {
 
+            // Probability affected by the person's stress and fatigue.
+            PhysicalCondition condition = person.getPhysicalCondition();
+            double fatigue = condition.getFatigue();
+            double stress = condition.getStress();
+            double hunger = condition.getHunger();
+            
+            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            	return 0;
+            
             // Check all vehicle missions occurring at the settlement.
             try {
                 List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(person.getSettlement());

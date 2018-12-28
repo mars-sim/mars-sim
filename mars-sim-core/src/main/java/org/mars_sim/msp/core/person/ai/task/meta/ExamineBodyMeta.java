@@ -12,6 +12,7 @@ import java.util.Iterator;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Doctor;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -59,6 +60,16 @@ public class ExamineBodyMeta implements MetaTask, Serializable {
 		double result = 0D;
 
 		if (person.isInSettlement()) {
+			
+	        // Probability affected by the person's stress and fatigue.
+	        PhysicalCondition condition = person.getPhysicalCondition();
+	        double fatigue = condition.getFatigue();
+	        double stress = condition.getStress();
+	        double hunger = condition.getHunger();
+	        
+	        if (fatigue > 1000 || stress > 50 || hunger > 500)
+	        	return 0;
+	                
 			int num = medicalManager.getPostmortemExams(person.getSettlement()).size();
 //			System.out.print(" num : " + num);
 			// Get the local medical aids to use.

@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -89,8 +90,16 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	
 	        result = settlement.getRegolithProbabilityValue() * 500D;
 	
+            // Probability affected by the person's stress and fatigue.
+            PhysicalCondition condition = person.getPhysicalCondition();
+            double stress = condition.getStress();
+            double fatigue = condition.getFatigue();
+            
+            if (fatigue > 1000)
+            	return 0;
+            
             // Stress modifier
-            result -= person.getStress() * 1D;
+            result -= stress * 1D;
             // fatigue modifier
             result -= (person.getFatigue()-100) / 50D;
             

@@ -77,6 +77,9 @@ public class RelaxMeta implements MetaTask, Serializable {
         // Crowding modifier
         if (person.isInside()) {
 
+        	if (person.getFatigue() > 1000)
+        		return 0;
+        	
             // Stress modifier
             result += person.getStress() * 5D;
             // fatigue modifier

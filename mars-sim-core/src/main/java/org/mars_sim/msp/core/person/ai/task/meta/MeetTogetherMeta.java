@@ -11,6 +11,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.task.MeetTogether;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -45,6 +46,13 @@ public class MeetTogetherMeta implements MetaTask, Serializable {
         double result = 0D;
         
         RoleType roleType = person.getRole().getType();
+        
+        // Probability affected by the person's stress and fatigue.
+        PhysicalCondition condition = person.getPhysicalCondition();
+        double fatigue = condition.getFatigue();
+        
+        if (fatigue > 1000)
+        	return 0;
         
         if (person.isInSettlement() && roleType != null) {
 	

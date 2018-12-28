@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.PlayHoloGame;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -68,13 +69,30 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
 
         if (person.isInside()) {
 
-            // Stress modifier
-        	double stress = person.getPhysicalCondition().getStress(); //0.0 to 100.0
-
-            if (stress > 20D) {
-                result += (stress - 20D) * 2;
+            // Probability affected by the person's stress and fatigue.
+            PhysicalCondition condition = person.getPhysicalCondition();
+            double fatigue = condition.getFatigue();
+            double stress = condition.getStress();
+            
+            if (fatigue > 1000)
+            	return 0;
+            
+        	double pref = person.getPreference().getPreferenceScore(this);
+            
+        	result = pref * 5D;
+            
+            if (pref > 0) {
+             	if (stress > 45D)
+             		result*=1.5;
+             	else if (stress > 65D)
+             		result*=2D;
+             	else if (stress > 85D)
+             		result*=3D;
+             	else
+             		result*=4D;
             }
 
+            
             if (person.isInVehicle()) {
             	result *= RandomUtil.getRandomDouble(1.5);
             }
@@ -118,11 +136,6 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
             }
 
             result *= person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
-
-            // Add Preference modifier
-            if (result > 0)
-            	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
-
             		
             if (result < 0) result = 0;
 

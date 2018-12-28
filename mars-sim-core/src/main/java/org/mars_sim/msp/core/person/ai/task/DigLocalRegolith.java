@@ -305,7 +305,7 @@ implements Serializable {
         int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
         int eva = person.getMind().getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
         
-        double regolithCollected = RandomUtil.getRandomDouble(.5) * time * COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1)/ 3D ;
+        double regolithCollected = .25 + RandomUtil.getRandomDouble(.25) * time * COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
         totalCollected += regolithCollected;
         
         boolean finishedCollecting = false;
@@ -315,7 +315,12 @@ implements Serializable {
         }
         
         person.getInventory().storeAmountResource(regolithID, regolithCollected, true);
-
+        
+        // Add penalty to the fatigue
+        double factor = 1 - (agility + strength) / 400D;
+        double fatigue = person.getPhysicalCondition().getFatigue();
+        person.getPhysicalCondition().setFatigue(fatigue + time * factor);
+        
         if (finishedCollecting) {
             setPhase(WALK_BACK_INSIDE);
 
