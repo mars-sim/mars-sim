@@ -3534,8 +3534,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		int pop = numCitizens;//getAllAssociatedPeople().size();// getCurrentPopulationNum();
 
-		double regolith_available = getInventory().getAmountResourceStored(ResourceUtil.regolithAR, false);
-		double sand_available = getInventory().getAmountResourceStored(ResourceUtil.sandAR, false);
+		double regolith_available = getInventory().getAmountResourceStored(ResourceUtil.regolithID, false);
+		double sand_available = getInventory().getAmountResourceStored(ResourceUtil.sandID, false);
 
 		if (regolith_available < MIN_REGOLITH_RESERVE * pop + regolith_value / 10
 				&& sand_available < MIN_SAND_RESERVE * pop + sand_value / 10) {

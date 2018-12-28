@@ -31,7 +31,7 @@ public class CollectRegolithMeta implements MetaMission {
 	/** Mission name */
 	private static final String NAME = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
 
-	private static final int VALUE = 200;
+	private static final int VALUE = 2000;
 
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 1;

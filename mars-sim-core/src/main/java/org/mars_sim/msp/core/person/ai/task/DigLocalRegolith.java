@@ -319,10 +319,10 @@ implements Serializable {
         if (finishedCollecting) {
             setPhase(WALK_BACK_INSIDE);
 
-            LogConsolidated.log(logger, Level.FINE, 0, logger.getName(), 
+            LogConsolidated.log(Level.INFO, 0, logger.getName(), 
         		"[" + person.getLocationTag().getLocale() +  "] " +
         		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
-        		+ " kg of regolith outside " + person.getAssociatedSettlement(), null);
+        		+ " kg of regolith outside " + person.getAssociatedSettlement());
  
     	}
         

@@ -225,10 +225,10 @@ public class ChatUtils {
 
 	public final static String SYSTEM_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "  For MarsNet : " + System.lineSeparator()
-			+ "  Type in the NAME of a person, bot, vehicle or settlement to connect with." + System.lineSeparator()
+			+ "(A). For MarsNet : " + System.lineSeparator()
+			+ "Type in the NAME of a person, bot, vehicle or settlement to connect with." + System.lineSeparator()
 			+ getKeywordList(SYSTEM_KEYS) + System.lineSeparator() 
-			+ "  For all Parties : "  + System.lineSeparator()
+			+ "(B). For all Parties : "  + System.lineSeparator()
 			+ getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
 //			+ " 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
 //			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
@@ -236,9 +236,9 @@ public class ChatUtils {
 	
 	public final static String VEHICLE_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "  For Vehicles : "  + System.lineSeparator()
+			+ "(A). For Vehicles : "  + System.lineSeparator()
 			+ getKeywordList(VEHICLE_KEYS) + System.lineSeparator()
-			+ "  For all Parties : "  + System.lineSeparator()
+			+ "(B). For all Parties : "  + System.lineSeparator()
 			+ getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
 //			+ "(2) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
 //			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
@@ -246,9 +246,9 @@ public class ChatUtils {
 	
 	public final static String PERSON_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "  For Settlers : "  + System.lineSeparator()
+			+ "(A). For Settlers : "  + System.lineSeparator()
 			+ getKeywordList(PERSON_KEYS) + System.lineSeparator()
-			+ "  For all Parties : "  + System.lineSeparator()
+			+ "(B). For all Parties : "  + System.lineSeparator()
 			+ getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
 //			+ "(2) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
 //			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
@@ -256,9 +256,9 @@ public class ChatUtils {
 	
 	public final static String SETTLEMENT_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "  For Settlements : "  + System.lineSeparator()
+			+ "(A). For Settlements : "  + System.lineSeparator()
 			+ getKeywordList(SETTLEMENT_KEYS) + System.lineSeparator()
-			+ "  For all Parties : "  + System.lineSeparator()
+			+ "(B). For all Parties : "  + System.lineSeparator()
 			+ getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
 //			+ "(4)  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator()
 //			+ "(5) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator() 

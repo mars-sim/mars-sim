@@ -15,6 +15,8 @@
 		<!-- type: the type of part (see parts.xml) -->
 		<!-- number: the number of parts. -->
 
+		<part type="fiberglass" number="3"/>		
+		<part type="fiberglass cloth" number="10"/>
 		<part type="logic board" number="25"/>
 		<part type="solid oxide fuel cell" number="100"/>
 		<part type="fuel cell stack" number="10"/>
@@ -123,6 +125,8 @@
 
 	<part-package name="package 2" >
 	
+		<part type="fiberglass" number="6"/>		
+		<part type="fiberglass cloth" number="20"/>
 		<part type="logic board" number="50"/>
 	    <part type="solid oxide fuel cell" number="200"/>
 		<part type="fuel cell stack" number="20"/>
@@ -231,6 +235,8 @@
 	</part-package>
 
 	<part-package name="package 3">
+		<part type="fiberglass" number="12"/>		
+		<part type="fiberglass cloth" number="40"/>
 		<part type="logic board" number="100"/>	
 		<part type="solid oxide fuel cell" number="300"/>
 		<part type="fuel cell stack" number="30"/>
@@ -339,6 +345,8 @@
 	</part-package>
 
 	<part-package name="package 4">
+		<part type="fiberglass" number="24"/>		
+		<part type="fiberglass cloth" number="80"/>
 		<part type="logic board" number="200"/>
 		<part type="solid oxide fuel cell" number="500"/>
 		<part type="fuel cell stack" number="50"/>

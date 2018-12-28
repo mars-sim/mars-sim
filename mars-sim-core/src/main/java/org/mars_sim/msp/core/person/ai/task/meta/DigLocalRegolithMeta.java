@@ -87,8 +87,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	            return 0;
 	        }
 	
-	        result = settlement.getRegolithProbabilityValue() * 5000D;
-	        //logger.info("DigLocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+	        result = settlement.getRegolithProbabilityValue() * 500D;
 	
             // Stress modifier
             result -= person.getStress() * 1D;
@@ -132,10 +131,11 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	    	
 	        if (result <= 0)
 	            return 0;
-	        else if (result > 1D)
-	        	result = 1;
         }
 
+//        if (result > 0)
+//        	System.out.println("DigLocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
+        
         return result;
     }
 
