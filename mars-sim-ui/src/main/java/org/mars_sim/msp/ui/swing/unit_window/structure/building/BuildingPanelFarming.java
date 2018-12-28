@@ -293,12 +293,12 @@ implements MouseListener {
 //                String name = null;
                 java.awt.Point p = e.getPoint();
                 int rowIndex = rowAtPoint(p);
-                //int colIndex = columnAtPoint(p);
+                int colIndex = columnAtPoint(p);
     			StringBuilder result = new StringBuilder("");
 
                 try {
                 	//if (colIndex == 1)
-                		result.append(buildCropToolTip(rowIndex, null)).append("</html>");
+                		result.append(buildCropToolTip(rowIndex, colIndex, null));
                 	} catch (RuntimeException e1) {//catch null pointer exception if mouse is over an empty line
                 }
     			return result.toString();
@@ -372,7 +372,7 @@ implements MouseListener {
 			String n = i.next();
 	    	comboBoxModel.addElement(n);
 			//tooltipArray[j] = buildCropToolTip(j, c).toString();
-	    	tooltipArray.add(buildCropToolTip(j, n).toString());
+	    	tooltipArray.add(buildCropToolTip(j, -1, n).toString());
 	    	j++;
 		}
 
@@ -429,13 +429,15 @@ implements MouseListener {
 	/*
 	 * Builds an tooltip for displaying the growth parameters of a crop
 	 */
-	public StringBuilder buildCropToolTip(int row, String n) {
+	public StringBuilder buildCropToolTip(int row, int col, String n) {
 
 		StringBuilder result = new StringBuilder("");
 		String cropName, cat;
 		double time;
 		double mass0, mass1;
 		double water, PAR;
+		double sols = 0;
+		double health = 0;
 
         if (n == null || n.equals("")) {
     		List<Crop> crops = farm.getCrops();
@@ -449,8 +451,34 @@ implements MouseListener {
         	mass1 = ct.getInedibleBiomass();
         	time = ct.getGrowingTime() /1000;
         	PAR = ct.getDailyPAR();
+        	health =  Math.round(crop.getHealthCondition()*1000.0)/10.0;
+        	sols = Math.round(crop.getGrowingTimeCompleted()/100.0)/10.0;
+        	
+//        	result.append("<html><p width=\"500\">Crop Name: ").append(cropName).append(System.lineSeparator())
+//        		.append("Category: ").append(cat).append(System.lineSeparator())
+//        		.append("Growing Days: ").append(time);
+        	
+        	if (col == 0) {
+	        	result.append("Health: ").append(health).append(" %");
+        	}
+        	
+        	else if (col == 1) {
+	            result.append("<html>").append("&emsp;&nbsp;Crop Name:&emsp;").append(cropName);
+	        	result.append("<br>&emsp;&emsp;&nbsp;&nbsp;Category:&emsp;").append(cat);
+	           	result.append("<br>&nbsp;Growing Days:&emsp;").append(time);
+	        	result.append("<br>&emsp;Edible Mass:&emsp;").append(mass0).append(" g/m2/day");
+	        	result.append("<br>&nbsp;Inedible Mass:&emsp;").append(mass1).append(" g/m2/day");
+	        	result.append("<br>&nbsp;Water Content:&emsp;").append(water).append(" %");
+	        	result.append("<br>&nbsp;&nbsp;PAR required:&emsp;").append(PAR).append(" mol/m2/day").append("</html>");
+        	}
+        	
+        	else {
+	        	result.append("# of Sols since planted: ").append(sols);
+        	}
+        	
         }
-        else {
+        
+        if (col == -1) {
         	cropName = Conversion.capitalize(n);
         	CropType cType = CropConfig.getCropTypeByName(n);
             cat = cType.getCropCategoryType().getName();
@@ -460,15 +488,14 @@ implements MouseListener {
         	time = cType.getGrowingTime() /1000;
         	PAR = cType.getDailyPAR();
 
+            result.append("<html>").append("&emsp;&nbsp;Crop Name:&emsp;").append(cropName);
+        	result.append("<br>&emsp;&emsp;&nbsp;&nbsp;Category:&emsp;").append(cat);
+           	result.append("<br>&nbsp;Growing Days:&emsp;").append(time);
+        	result.append("<br>&emsp;Edible Mass:&emsp;").append(mass0).append(" g/m2/day");
+        	result.append("<br>&nbsp;Inedible Mass:&emsp;").append(mass1).append(" g/m2/day");
+        	result.append("<br>&nbsp;Water Content:&emsp;").append(water).append(" %");
+        	result.append("<br>&nbsp;&nbsp;PAR required:&emsp;").append(PAR).append(" mol/m2/day").append("</p></html>");
         }
-
-        result.append("<html>").append("&emsp;&nbsp;Crop Name:&emsp;").append(cropName);
-    	result.append("<br>&emsp;&emsp;&nbsp;&nbsp;Category:&emsp;").append(cat);
-    	result.append("<br>&nbsp;Growing Days:&emsp;").append(time);
-    	result.append("<br>&emsp;Edible Mass:&emsp;").append(mass0).append(" g/m2/day");
-    	result.append("<br>&nbsp;Inedible Mass:&emsp;").append(mass1).append(" g/m2/day");
-    	result.append("<br>&nbsp;Water Content:&emsp;").append(water).append(" %");
-    	result.append("<br>&nbsp;&nbsp;PAR required:&emsp;").append(PAR).append(" mol/m2/day");
 
     	return result;
 	}

@@ -104,6 +104,9 @@ public class SleepMeta implements MetaTask, Serializable {
         	double leptin = person.getCircadianClock().getSurplusLeptin();
         	//str = person + " GS " + Math.round(ghrelin*10.0)/10.0  + " LS " + Math.round(leptin*10.0)/10.0  + " "; 
         			
+//        	System.out.println("ghrelin : " + ghrelin);
+//        	System.out.println("leptin : " + leptin);
+//           	System.out.println("fatigue : " + fatigue);      	
         	// When we are sleep deprived. The 2 hormones (Leptin and Ghrelin) are "out of sync" and that is 
         	// when we eat more than we should without even realizing.
         	
