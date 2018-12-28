@@ -174,7 +174,8 @@ public class ChatUtils {
 			"bed time", "sleep hour", 
 			"trip", "excursion", "mission",
 			"eva time", "airlock time",
-			"shift", "work shift",	
+			"shift", "work shift",
+			"job score"
 	};
 	
 	public final static String[] ALL_PARTIES_KEYS = new String[] {
@@ -1035,6 +1036,8 @@ public class ChatUtils {
 			Map<String, List<Person>> map = JobManager.getJobMap(settlementCache);
 			
 			List<Job> jobs = JobManager.getJobs();
+//			List<String> jobs = JobManager.getJobs();
+			
 			for (Job job : jobs) {
 				String jobName = job.getName(GenderType.MALE);
 				String n = " " + jobName;
@@ -2578,7 +2581,62 @@ public class ChatUtils {
 		responseText.append(name);
 		responseText.append(": ");
 		
-		if (text.toLowerCase().contains("shift")
+		if (text.toLowerCase().contains("job score")) {
+			questionText = YOU_PROMPT + "What is your job capability and job prospect scores ?"; 
+			responseText.append("See below : ");
+			responseText.append(System.lineSeparator());
+			
+//			Map<String, List<Person>> map = JobManager.getJobMap(personCache.getAssociatedSettlement());
+					
+			List<String> jobList = JobManager.getJobList();
+			//new ArrayList<>(map.keySet());
+			Collections.sort(jobList);
+			
+			int length = 0;
+			for (String jobStr : jobList) {
+				int l = jobStr.length();
+				if (l > length)
+					length = l;
+			}
+			
+			int num1 = 1;
+			
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesName(" Job   ", 14));
+			responseText.append(addhiteSpacesName(" Capability Score", 22));
+			responseText.append(addhiteSpacesName(" Prospect Score", 18));
+			responseText.append(System.lineSeparator());
+			responseText.append(" ------------------------------------------------------- ");
+			responseText.append(System.lineSeparator());
+			
+			for (String jobStr : jobList) {
+				if (num1 < 10)					
+					responseText.append("  " + num1 + ". ");
+				else
+					responseText.append(" " + num1 + ". ");
+				num1++;
+					
+				responseText.append(addNameFirstWhiteSpaces(jobStr, 20));
+				
+//				responseText.append(System.lineSeparator());
+//				responseText.append(" ");
+//				for (int i=0; i<length; i++) {
+//					responseText.append("-");
+//				}	
+				Job job = JobManager.getJob(jobStr);
+				
+				double capScore = Math.round(job.getCapability(personCache) * 10.0)/10.0;					
+				responseText.append(addNameFirstWhiteSpaces(" " + capScore, 18));
+				
+
+				double prospectScore = Math.round(JobManager.getJobProspect(personCache, job, personCache.getAssociatedSettlement(), true) * 10.0)/10.0;					
+				responseText.append(addNameFirstWhiteSpaces(" " + prospectScore, 5));
+				responseText.append(System.lineSeparator());
+				
+			}
+		}
+		
+		else if (text.toLowerCase().contains("shift")
 				|| text.toLowerCase().contains("work shift")) {
 			questionText = YOU_PROMPT + "What is your work shift ?"; 
 
@@ -4463,7 +4521,7 @@ public class ChatUtils {
 			return processLogChange(text, responseText).toString();
 		}
 		
-		else if (text.toLowerCase().contains("score")) {
+		else if (text.equalsIgnoreCase("score")) {
 			
 //			double aveSocial = 0;
 //			double aveSci = 0;

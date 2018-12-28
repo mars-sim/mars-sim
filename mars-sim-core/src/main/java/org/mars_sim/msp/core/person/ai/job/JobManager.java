@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
@@ -51,6 +52,7 @@ public final class JobManager implements Serializable {
 	/** List of the jobs in the simulation. */
 	private static List<Job> jobs;
 	private static List<RobotJob> robotJobs;
+	private static List<String> jobList;
 
 	/**
 	 * Private constructor for static utility class.
@@ -111,6 +113,20 @@ public final class JobManager implements Serializable {
 		return new ArrayList<Job>(jobs);
 	}
 
+	public static List<String> getJobList() {
+		if (jobList == null) {
+			loadJobs();
+			jobList = new ArrayList<>();
+			for (Job job : jobs) {
+				String j = job.getName(GenderType.MALE);
+				jobList.add(j);
+			}
+		}
+		return jobList;
+	}
+
+	
+	
 	/**
 	 * Gets the Job object.
 	 * 
