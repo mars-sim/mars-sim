@@ -129,14 +129,16 @@ public class SleepMeta implements MetaTask, Serializable {
 	            else
 	            	maxNumSleep = 3;
 
-	            if (person.getCircadianClock().getNumSleep() <= maxNumSleep) {
+	        	int sol = marsClock.getMissionSol();
+	        	
+	        	// Skip the first sol since the sleep time pattern has not been established
+	            if (sol != 1 && person.getCircadianClock().getNumSleep() <= maxNumSleep) {
 	            	// Checks the current time against the sleep habit heat map
 	    	    	int bestSleepTime[] = person.getPreferredSleepHours();
 	    	    	// is now falling two of the best sleep time ?
 	    	    	for (int time : bestSleepTime) {
 	    		    	int diff = time - now;
-	    		    	if (diff < 20 || diff > -20) {
-	    		    		result += 300;
+	    		    	if (diff < 50 || diff > -50) {
 	    		    		proceed = true;
 	    		    		break;
 	    		    	}
@@ -145,17 +147,16 @@ public class SleepMeta implements MetaTask, Serializable {
         	}
 
             if (proceed) {
-    	
+    	         		
 	        	// the desire to go to bed increase linearly after 12 hours of wake time
 	            result += (fatigue - 50) / 2D + stress * 5D + (ghrelin-leptin - 300)/10D;
 
-            	result += refreshSleepHabit(person);
-                         	
+	            // Add the influence from the sleep habit of the person
+            	result += refreshSleepHabit(person);                         	
+            	
 	    	    if (result < 0)
 	    	    	return 0;
-   	    	            
-	            //str += Math.round(result*10.0)/10.0 + " -> ";
-	            
+   	            
 	            // Check if person is an astronomer.
 	            boolean isAstronomer = (person.getMind().getJob() instanceof Astronomer);
 
@@ -265,6 +266,7 @@ public class SleepMeta implements MetaTask, Serializable {
 
     /***
      * Refreshes a person's sleep habit based on his/her latest work shift 
+     * 
      * @param person
      * @return
      */
@@ -278,7 +280,7 @@ public class SleepMeta implements MetaTask, Serializable {
         // if a person is NOT on-call
         if (person.getTaskSchedule().getShiftType() != ShiftType.ON_CALL) {
 	        // if a person is on shift right now
-           	if (person.getTaskSchedule().isShiftHour(now)){
+           	if (person.getTaskSchedule().isShiftHour(now)) {
            		CircadianClock circadian = person.getCircadianClock();
            		int habit = circadian.getSuppressHabit();
            		int spaceOut = circadian.getSpaceOut();
@@ -304,17 +306,18 @@ public class SleepMeta implements MetaTask, Serializable {
                 // Check if person's work shift will begin within the next 50 millisols.
            		future += 50;
 	            if (future > 1000)
-	            	future -= 1000;
+	            	future = future - 1000;
 
 	            boolean willBeShiftHour = person.getTaskSchedule().isShiftHour(future);
 	            if (willBeShiftHour) {
-	            	//if work shift is slated to begin in the next 50 millisols, probability of sleep reduces to one quarter of its value
-	                result = result / 20D;
+	            	//if work shift is slated to begin in the next 50 millisols, probability of sleep reduces to one tenth of its value
+	                result = result / 10D;
 	            }
 	            //else
 	            	//result = result * 2D;
            	}
 	    }
+        
         else {
         	// if he's on-call
         	result = result * 1.1D;

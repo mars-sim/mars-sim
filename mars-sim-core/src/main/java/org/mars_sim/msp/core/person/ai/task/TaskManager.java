@@ -595,6 +595,7 @@ public class TaskManager implements Serializable {
 		} else {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			result = selectedMetaTask.constructInstance(mind.getPerson());
+//			System.out.println(person + " is going to " + selectedMetaTask.getName());
 		}
 
 		// Clear time cache.
@@ -665,9 +666,9 @@ public class TaskManager implements Serializable {
 				double probability = mt.getProbability(person);
 				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 					if (probability > MAX_TASK_PROBABILITY) {
-//						LogConsolidated.log(Level.INFO, 5_000, sourceName,
-//								mind.getPerson().getName() + " - " + mt.getName() 
-//									+ " : Probability is " + Math.round(probability*10.0)/10.0 + ".");										
+						LogConsolidated.log(Level.FINER, 5_000, sourceName,
+								mind.getPerson().getName() + " - " + mt.getName() 
+									+ " : Probability is " + Math.round(probability*10.0)/10.0 + ".");										
 						if (mt.getName().contains("eat")) 
 							addTask(new EatMeal(person));
 						else if (mt.getName().contains("sleep")) 
@@ -675,7 +676,7 @@ public class TaskManager implements Serializable {
 						else 
 							probability = MAX_TASK_PROBABILITY;
 					}
-					
+//					System.out.println(person + " " + mt.getName() + " " + probability);
 					taskProbCache.put(mt, probability);
 					totalProbCache += probability;
 				} 

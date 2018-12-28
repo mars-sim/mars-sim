@@ -146,7 +146,7 @@ public class Mind implements Serializable {
 
 			int msol = marsClock.getMillisolInt();
 
-			if (msol % 3 == 0) {
+			if (msol % 5 == 0) {
 //				msolCache = msol;
 
 				// Update stress based on personality.
@@ -178,8 +178,9 @@ public class Mind implements Serializable {
 			}
 
 			// Take action as necessary.
-			if (taskManager != null)
+			if (taskManager != null) {
 				takeAction(time);
+			}
 		}
 
 	}
@@ -225,7 +226,6 @@ public class Mind implements Serializable {
 	 * @throws Exception if error during action.
 	 */
 	public void takeAction(double time) {
-
 		boolean hasActiveTask = taskManager.hasActiveTask();
 		// Perform a task if the person has one, or determine a new task/mission.
 		if (hasActiveTask) {
@@ -428,7 +428,6 @@ public class Mind implements Serializable {
 	 * @param missions can the action be a new mission?
 	 */
 	public void getNewAction(boolean tasks, boolean missions) {
-
 		// If this Person is too weak then they can not do Missions
 		if (person.getPerformanceRating() < MINIMUM_MISSION_PERFORMANCE) {
 			missions = false;
@@ -498,9 +497,7 @@ public class Mind implements Serializable {
 		// If reached this point, no task or mission has been found.
 		LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
 					person.getName() + " couldn't determine new action - taskWeights: " + taskWeights
-				+ ", missionWeights: " + missionWeights);
-		
-			
+				+ ", missionWeights: " + missionWeights);	
 	}
 
 	/**

@@ -209,8 +209,8 @@ public class Walk extends Task implements Serializable {
 					person.getMind().getTaskManager().addTask(new EatMeal(person));
 				else if (rand1 < 3)
 					person.getMind().getTaskManager().addTask(new Relax(person));
-				else 
-					person.getMind().getTaskManager().addTask(new Sleep(person));
+//				else 
+//					person.getMind().getTaskManager().addTask(new Sleep(person));
 			}
 		} 
 		
@@ -227,8 +227,8 @@ public class Walk extends Task implements Serializable {
 					person.getMind().getTaskManager().addTask(new EatMeal(person));
 				else if (rand1 < 3)
 					person.getMind().getTaskManager().addTask(new Relax(person));
-				else 
-					person.getMind().getTaskManager().addTask(new Sleep(person));
+//				else 
+//					person.getMind().getTaskManager().addTask(new Sleep(person));
 			}
 		}
 

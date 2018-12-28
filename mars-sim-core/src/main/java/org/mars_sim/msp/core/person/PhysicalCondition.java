@@ -283,10 +283,10 @@ public class PhysicalCondition implements Serializable {
 
 		performance = 1.0D;
 		thirst = RandomUtil.getRandomRegressionInteger(100);
-		fatigue = RandomUtil.getRandomRegressionInteger(100) * .5;
-		stress = RandomUtil.getRandomRegressionInteger(100);
+		fatigue = RandomUtil.getRandomRegressionInteger(50);
+		stress = RandomUtil.getRandomRegressionInteger(50);
 		hunger = RandomUtil.getRandomRegressionInteger(100);
-		kJoules = 500 + RandomUtil.getRandomDouble(1500);
+		kJoules = 1000 + RandomUtil.getRandomDouble(1500);
 
 		personalMaxEnergy = MAX_DAILY_ENERGY_INTAKE;
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
