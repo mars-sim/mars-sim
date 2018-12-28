@@ -402,30 +402,32 @@ public class GoodsManager implements Serializable {
 			// }
 			else
 				throw new IllegalArgumentException("Good: " + resourceGood + " not valid.");
-		} else {
-			int id = ResourceUtil.findIDbyAmountResourceName(resource.getName());
+		} 
+		
+		else {
+			int id = resource.getID();//ResourceUtil.findIDbyAmountResourceName(resource.getName());
 
 			// Create getAllSupplyAmount()
 			totalSupply = getTotalSupplyAmount(resource, supply, solElapsed);
 			// goodsSupplyCache.put(resourceGood, totalSupply);
 
 			// Tune life support demand if applicable.
-			projectedDemand += getLifeSupportDemand(resource);
+			projectedDemand += getLifeSupportDemand(id);
 
 			// Tune fuel demand if applicable.
-			projectedDemand += getFuelDemand(resource);
+			projectedDemand += getFuelDemand(id);
 
 			// Tune potable water usage demand if applicable.
-			projectedDemand += getPotableWaterUsageDemand(resource);
+			projectedDemand += getPotableWaterUsageDemand(id);
 
 			// Tune toiletry usage demand if applicable.
-			projectedDemand += getToiletryUsageDemand(resource);
+			projectedDemand += getToiletryUsageDemand(id);
 
 			// Tune vehicle demand if applicable.
-			projectedDemand += getVehicleDemand(resource);
+			projectedDemand += getVehicleDemand(id);
 
 			// Tune farming demand.
-			projectedDemand += getFarmingDemand(resource);
+			projectedDemand += getFarmingDemand(id);
 
 			// Tune resource processing demand.
 			projectedDemand += getResourceProcessingDemand(id);
@@ -449,7 +451,7 @@ public class GoodsManager implements Serializable {
 			projectedDemand += getResourceConstructionSiteDemand(resource);
 
 			// Adjust the demand on various waste products with the disposal cost.
-			projectedDemand = getWasteDisposalSinkCost(resource, projectedDemand);
+			projectedDemand = getWasteDisposalSinkCost(id, projectedDemand);
 
 			// Revert back to projectedDemand per sol for calculating totalDemand
 			// This demand never gets changed back to per orbit, so I'm commenting
@@ -458,6 +460,7 @@ public class GoodsManager implements Serializable {
 
 			totalDemand = .33 * (previousDemand + projectedDemand + getNewDemandAmount(resource, numSol));
 
+			// Adjust VP for the inflation
 			adjustVPInflation();
 
 			// Add trade value.
@@ -500,8 +503,8 @@ public class GoodsManager implements Serializable {
 		return value;
 	}
 
-	/***
-	 * Adjust the inflation rate of the value pointn (VP)
+	/**
+	 * Adjust the inflation rate of the value point (VP)
 	 * 
 	 * @return
 	 */
@@ -533,6 +536,14 @@ public class GoodsManager implements Serializable {
 		vp_cache = vp;
 	}
 
+	/**
+	 * Gets the total supply amount
+	 * 
+	 * @param resource
+	 * @param supplyStored
+	 * @param solElapsed
+	 * @return
+	 */
 	public double getTotalSupplyAmount(AmountResource resource, double supplyStored, int solElapsed) {
 		double totalSupplyAmount = 0;
 		String r = resource.getName().toLowerCase();
@@ -563,7 +574,8 @@ public class GoodsManager implements Serializable {
 		return totalSupplyAmount;
 	}
 
-	/***
+	/**
+	 * Gets the new demand
 	 * 
 	 * @param resource
 	 * @param projectedDemand
@@ -601,20 +613,20 @@ public class GoodsManager implements Serializable {
 	 * @param resource the resource to check.
 	 * @return demand (kg)
 	 */
-	private double getLifeSupportDemand(AmountResource resource) {
+	private double getLifeSupportDemand(int resource) {
 
-		if (resource.isLifeSupport()) {
+		if (ResourceUtil.isLifeSupport(resource)) {
 			double amountNeededSol = 0D;
 			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getNumCitizens();
 			
-			if (resource.equals(ResourceUtil.oxygenAR)) {
+			if (resource == ResourceUtil.oxygenID) {
 				amountNeededSol = personConfig.getNominalO2ConsumptionRate();
 			}
-			else if (resource.equals(ResourceUtil.waterAR)) {
+			else if (resource == ResourceUtil.waterID) {
 				amountNeededSol = personConfig.getWaterConsumptionRate();
 			}
-			else if (resource.equals(ResourceUtil.foodAR)) {
+			else if (resource == ResourceUtil.foodID) {
 				amountNeededSol = personConfig.getFoodConsumptionRate();// * FOOD_FACTOR;
 				return 8*Math.log(numPeople) * amountNeededOrbit * LIFE_SUPPORT_FACTOR * trade_factor;
 			}
@@ -631,8 +643,8 @@ public class GoodsManager implements Serializable {
 	 * @param resource the resource to check.
 	 * @return demand (kg)
 	 */
-	private double getFuelDemand(AmountResource resource) {
-		if (resource.equals(ResourceUtil.methaneAR)) {
+	private double getFuelDemand(int resource) {
+		if (resource == ResourceUtil.methaneID) {
 			double amountNeededOrbit = METHANE_AVERAGE_DEMAND * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getNumCitizens();
 			return 10* Math.log(numPeople) * amountNeededOrbit * FUEL_FACTOR * trade_factor;
@@ -648,22 +660,22 @@ public class GoodsManager implements Serializable {
 	 * @param resource the resource to check.
 	 * @return demand (kg)
 	 */
-	private double getWasteDisposalSinkCost(AmountResource resource, double demand) {
-		if (resource.equals(ResourceUtil.greyWaterAR)) {
+	private double getWasteDisposalSinkCost(int resource, double demand) {
+		if (resource == ResourceUtil.greyWaterID) {
 			return demand * .1;// computeWaste(resource)*.00000001D;
-		} else if (resource.equals(ResourceUtil.blackWaterAR)) {
+		} else if (resource == ResourceUtil.blackWaterID) {
 			return demand * .05;// computeWaste(resource)*.000000001D;
-		} else if (resource.equals(ResourceUtil.toxicWasteAR)) {
+		} else if (resource == ResourceUtil.toxicWasteID) {
 			return demand * .01;// computeWaste(resource)*.00001D;
-		} else if (resource.equals(ResourceUtil.coAR)) {
+		} else if (resource == ResourceUtil.coID) {
 			return demand * 0.5;// computeWaste(resource)*.000001D;
-		} else if (resource.equals(ResourceUtil.foodWasteAR)) {
+		} else if (resource == ResourceUtil.foodWasteID) {
 			return demand * 0.001;// computeWaste(resource);
-		} else if (resource.equals(ResourceUtil.cropWasteAR)) {
+		} else if (resource == ResourceUtil.cropWasteID) {
 			return demand * 0.001;// computeWaste(resource)*.0001D;
-		} else if (resource.equals(ResourceUtil.eWasteAR)) {
+		} else if (resource == ResourceUtil.eWasteID) {
 			return demand * 0.01;// computeWaste(resource)*.1D;
-		} else if (resource.equals(ResourceUtil.carbonDioxideAR)) {
+		} else if (resource == ResourceUtil.co2ID) {
 			return demand * 0.01;// computeWaste(resource)*.0001D;
 		} else
 			return demand * inflation_rate; // adjust for the inflation of VP over time
@@ -684,8 +696,8 @@ public class GoodsManager implements Serializable {
 	 * @param resource the resource to check.
 	 * @return demand (kg)
 	 */
-	private double getPotableWaterUsageDemand(AmountResource resource) {
-		if (resource.equals(ResourceUtil.waterAR)) {
+	private double getPotableWaterUsageDemand(int resource) {
+		if (resource == ResourceUtil.waterID) {
 			// Add the awareness of the water ration level in adjusting the water demand
 			double waterRationLevel = settlement.getWaterRation();
 			double amountNeededSol = personConfig.getWaterUsageRate();
@@ -702,8 +714,8 @@ public class GoodsManager implements Serializable {
 	 * @param resource the resource to check.
 	 * @return demand (kg)
 	 */
-	private double getToiletryUsageDemand(AmountResource resource) {
-		if (resource.equals(ResourceUtil.toiletTissueAR)) {
+	private double getToiletryUsageDemand(int resource) {
+		if (resource == ResourceUtil.toiletTissueID) {
 			double amountNeededSol = LivingAccommodations.TOILET_WASTE_PERSON_SOL;
 			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getIndoorPeopleCount();
@@ -718,10 +730,9 @@ public class GoodsManager implements Serializable {
 	 * @param resource the resource to check.
 	 * @return demand (kg) for the resource.
 	 */
-	private double getVehicleDemand(AmountResource resource) {
+	private double getVehicleDemand(int resource) {
 		double demand = 0D;
-		// AmountResource methane = AmountResource.findAmountResource("methane");
-		if (resource.isLifeSupport() || resource.equals(ResourceUtil.methaneAR)) {
+		if (ResourceUtil.isLifeSupport(resource) || resource == ResourceUtil.methaneID) {
 			Iterator<Vehicle> i = getAssociatedVehicles().iterator();
 			while (i.hasNext()) {
 				double fuelDemand = i.next().getInventory().getAmountResourceCapacity(resource, false);
@@ -760,7 +771,7 @@ public class GoodsManager implements Serializable {
 	 * @param resource the resource to check.
 	 * @return demand (kg) for the resource.
 	 */
-	private double getFarmingDemand(AmountResource resource) {
+	private double getFarmingDemand(int resource) {
 		double demand = 0D;
 
 		// Determine demand for resource at each farming building at settlement.
@@ -802,7 +813,7 @@ public class GoodsManager implements Serializable {
 	// }
 
 	public void setTourismFactor(double value) {
-		tourism_factor = value * tourism_factor;
+		tourism_factor = value * TOURISM_BASE;
 	}
 
 	public double getCropFarmFactor() {
@@ -833,7 +844,7 @@ public class GoodsManager implements Serializable {
 		return tourism_factor;
 	}
 
-	private double getIndividualFarmDemand(AmountResource resource, Farming farm) {
+	private double getIndividualFarmDemand(int resource, Farming farm) {
 
 		double demand = 0D;
 
@@ -841,26 +852,26 @@ public class GoodsManager implements Serializable {
 		double totalCropArea = farm.getGrowingArea();
 		int solsInOrbit = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
-		if (resource.equals(ResourceUtil.waterAR)) {
+		if (resource == ResourceUtil.waterID) {
 			// Average water consumption rate of crops per orbit using total growing area.
 			demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
-		} else if (resource.equals(ResourceUtil.carbonDioxideAR)) {
+		} else if (resource == ResourceUtil.co2ID) {
 			// Average co2 consumption rate of crops per orbit using total growing area.
 			demand = cropConfig.getCarbonDioxideConsumptionRate() * totalCropArea * solsInOrbit;
-		} else if (resource.equals(ResourceUtil.oxygenAR)) {
+		} else if (resource == ResourceUtil.oxygenID) {
 			// Average oxygen consumption rate of crops per orbit using total growing area.
 			demand = cropConfig.getOxygenConsumptionRate() * totalCropArea * solsInOrbit;
-		} else if (resource.equals(ResourceUtil.soilAR)) {
+		} else if (resource == ResourceUtil.soilID) {
 			// Estimate soil needed for average number of crop plantings for total growing
 			// area.
 			demand = Crop.NEW_SOIL_NEEDED_PER_SQM * totalCropArea * averageGrowingCyclesPerOrbit;
-		} else if (resource.equals(ResourceUtil.fertilizerAR)) {
+		} else if (resource == ResourceUtil.fertilizerID) {
 			// Estimate fertilizer needed for average number of crop plantings for total
 			// growing area.
 			demand = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * totalCropArea * averageGrowingCyclesPerOrbit;
 			// Estimate fertilizer needed when grey water not available.
 			demand += Crop.FERTILIZER_NEEDED_WATERING * totalCropArea * 1000D * solsInOrbit;
-		} else if (resource.equals(ResourceUtil.greyWaterAR)) {
+		} else if (resource == ResourceUtil.greyWaterID) {
 			// TODO: how to properly get rid of grey water? it should NOT be considered an
 			// economically vital resource
 			// Average grey water consumption rate of crops per orbit using total growing
@@ -868,10 +879,10 @@ public class GoodsManager implements Serializable {
 			// demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
 			demand = demand * 1D;
 		}
-		else if (Farming.TISSUE_CULTURE.equalsIgnoreCase(resource.getType())) {
+//		else if (Farming.TISSUE_CULTURE.equalsIgnoreCase(resource.getType())) {
+		else if (ResourceUtil.findAmountResourceName(resource).contains(Farming.TISSUE_CULTURE)) {			
 			// Average use of tissue culture at greenhouse each orbit.
-			// CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-			int numCropTypes = cropConfig.getNumCropTypes();
+			int numCropTypes = CropConfig.getNumCropTypes();
 			demand = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR * (totalCropArea / numCropTypes)
 					* averageGrowingCyclesPerOrbit;
 		}

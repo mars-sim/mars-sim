@@ -59,11 +59,11 @@ public class MalfunctionConfig implements Serializable {
 	private static final String NUMBER = "number";
 	private static final String VALUE = "value";
 
-	private Document malfunctionDoc;
+	private static Document malfunctionDoc;
 
-	private List<Malfunction> malfunctionList;
+	private static List<Malfunction> malfunctionList;
 
-	private Map<String, List<RepairPart>> repairParts;
+	private static Map<String, List<RepairPart>> repairParts;
 
 	/**
 	 * Constructor
@@ -83,7 +83,7 @@ public class MalfunctionConfig implements Serializable {
 	 * @throws Exception when malfunctions can not be resolved.
 	 */
 	// @SuppressWarnings("unchecked")
-	public List<Malfunction> getMalfunctionList() {
+	public static List<Malfunction> getMalfunctionList() {
 
 		if (malfunctionList == null) {
 			malfunctionList = new ArrayList<Malfunction>();
@@ -277,6 +277,19 @@ public class MalfunctionConfig implements Serializable {
 		return malfunctionList;
 	}
 
+//	public void setRepairPartProbability(String malfunctionName, String partName, double probability) {
+//	List<RepairPart> partList = repairParts.get(malfunctionName);
+//	if (partList != null) {
+//		Iterator<RepairPart> i = partList.iterator();
+//		while (i.hasNext()) {
+//			RepairPart part = i.next();
+//			if (part.name.equalsIgnoreCase(partName)) {
+//				part.setProbability(probability);
+//			}
+//		}
+//	}
+//}
+	
 	/**
 	 * Adds a repair part for a malfunction.
 	 * 
@@ -285,7 +298,7 @@ public class MalfunctionConfig implements Serializable {
 	 * @param number          the maximum number of parts required (min 1).
 	 * @param probability     the probability the part will be needed (0 - 100).
 	 */
-	private void addMalfunctionRepairPart(String malfunctionName, String partName, int number, int probability) {
+	private static void addMalfunctionRepairPart(String malfunctionName, String partName, int number, int probability) {
 		List<RepairPart> partList = repairParts.get(malfunctionName);
 		if (partList == null) {
 			partList = new ArrayList<RepairPart>();
@@ -360,20 +373,7 @@ public class MalfunctionConfig implements Serializable {
 		return result;
 	}
 
-	public void setRepairPartProbability(String malfunctionName, String partName, double probability) {
-		List<RepairPart> partList = repairParts.get(malfunctionName);
-		if (partList != null) {
-			Iterator<RepairPart> i = partList.iterator();
-			while (i.hasNext()) {
-				RepairPart part = i.next();
-				if (part.name.equalsIgnoreCase(partName)) {
-					part.setProbability(probability);
-				}
-			}
-		}
-	}
-
-	public Map<String, List<RepairPart>> getRepairParts() {
+	public static Map<String, List<RepairPart>> getRepairParts() {
 		return repairParts;
 	}
 

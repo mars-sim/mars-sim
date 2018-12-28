@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -53,7 +54,7 @@ public final class MalfunctionFactory implements Serializable {
 	private int newIncidentNum = 0;
 
 	/** The possible malfunctions in the simulation. */
-	private Collection<Malfunction> malfunctions;
+//	private Collection<Malfunction> malfunctions;
 	/** The map for storing Part name and its instance. */
 	private Map<String, Part> namePartMap;
 	/** The map for storing the MTBF of Parts. */
@@ -62,14 +63,21 @@ public final class MalfunctionFactory implements Serializable {
 	private Map<Integer, Double> reliability_map;
 	/** The map for storing the failure rate of Parts. */
 	private Map<Integer, Integer> failure_map;
+	/** The repair part probabilities per malfunction for a set of entity scope strings. */
+	private static Map<Integer, Double> repairPartProbabilities;
+	/** The probabilities of parts per maintenance for a set of entity scope strings. */
+	private static Map<Integer, Double> maintenancePartProbabilities;
 	
 	private static MalfunctionConfig malfunctionConfig;
 	private static PartConfig partConfig;
 	
+	private static Simulation sim = Simulation.instance();
+	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static Malfunction meteoriteImpactMalfunction;
 	private static MissionManager missionManager;
 	private static MarsClock marsClock;
-
+	private static UnitManager unitManager;
+	
 	/**
 	 * Constructs a MalfunctionFactory object.
 	 * 
@@ -77,11 +85,12 @@ public final class MalfunctionFactory implements Serializable {
 	 * @throws Exception when malfunction list could not be found.
 	 */
 	public MalfunctionFactory() {
-		malfunctionConfig = SimulationConfig.instance().getMalfunctionConfiguration();
-		partConfig = SimulationConfig.instance().getPartConfiguration();
-		malfunctions = malfunctionConfig.getMalfunctionList();
-		missionManager = Simulation.instance().getMissionManager();
+		malfunctionConfig = simulationConfig.getMalfunctionConfiguration();
+		partConfig = simulationConfig.getPartConfiguration();
+//		malfunctions = malfunctionConfig.getMalfunctionList();
+		missionManager = sim.getMissionManager();
 //		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//		unitManager = sim.getUnitManager();
 		
 		// Initialize maps 
 		namePartMap = new HashMap<String, Part>();
@@ -102,6 +111,7 @@ public final class MalfunctionFactory implements Serializable {
 	public Malfunction pickAMalfunction(Collection<String> scopes) {
 		Malfunction mal = null;
 
+		Collection<Malfunction> malfunctions = malfunctionConfig.getMalfunctionList();
 		double totalProbability = 0D;
 		if (malfunctions.size() > 0) {
 			for (Malfunction m : malfunctions) {
@@ -301,29 +311,30 @@ public final class MalfunctionFactory implements Serializable {
 	 * @throws Exception if error finding repair part probabilities.
 	 */
 	Map<Integer, Double> getRepairPartProbabilities(Collection<String> scope) {
-		Map<Integer, Double> result = new HashMap<Integer, Double>();
-
-		for (Malfunction m : malfunctions) {
-			if (m.isMatched(scope)) {
-				double malfunctionProbability = m.getProbability() / 100D;
-
-				String[] partNames = malfunctionConfig.getRepairPartNamesForMalfunction(m.getName());
-				for (String partName : partNames) {
-					double partProbability = malfunctionConfig.getRepairPartProbability(m.getName(), partName) / 100D;
-					int partNumber = malfunctionConfig.getRepairPartNumber(m.getName(), partName);
-					double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
-					double totalNumber = averageNumber * partProbability * malfunctionProbability;
-//					Part part = (Part) ItemResource.findItemResource(partName);
-//					int id = part.getID();
-					Integer id = ItemResourceUtil.findIDbyItemResourceName(partName);
-					if (result.containsKey(id))
-						totalNumber += result.get(id);
-					result.put(id, totalNumber);
+		if (repairPartProbabilities == null) {
+			repairPartProbabilities = new HashMap<Integer, Double>();
+	
+			for (Malfunction m : MalfunctionConfig.getMalfunctionList()) {
+				if (m.isMatched(scope)) {
+					double malfunctionProbability = m.getProbability() / 100D;
+	
+					String[] partNames = malfunctionConfig.getRepairPartNamesForMalfunction(m.getName());
+					for (String partName : partNames) {
+						double partProbability = malfunctionConfig.getRepairPartProbability(m.getName(), partName) / 100D;
+						int partNumber = malfunctionConfig.getRepairPartNumber(m.getName(), partName);
+						double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
+						double totalNumber = averageNumber * partProbability * malfunctionProbability;
+	//					Part part = (Part) ItemResource.findItemResource(partName);
+	//					int id = part.getID();
+						Integer id = ItemResourceUtil.findIDbyItemResourceName(partName);
+						if (repairPartProbabilities.containsKey(id))
+							totalNumber += repairPartProbabilities.get(id);
+						repairPartProbabilities.put(id, totalNumber);
+					}
 				}
 			}
 		}
-
-		return result;
+		return repairPartProbabilities;
 	}
 
 	/**
@@ -336,28 +347,29 @@ public final class MalfunctionFactory implements Serializable {
 	 * @throws Exception if error finding maintenance part probabilities.
 	 */
 	Map<Integer, Double> getMaintenancePartProbabilities(Collection<String> scope) {
-		Map<Integer, Double> result = new HashMap<Integer, Double>();
-
-		for (String entity : scope) {
-			for (Part part : ItemResourceUtil.getItemResources()) {
-				if (part.hasMaintenanceEntity(entity)) {
-					double prob = part.getMaintenanceProbability(entity) / 100D;
-					int partNumber = part.getMaintenanceMaximumNumber(entity);
-					double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
-					double totalNumber = averageNumber * prob;
-//					if (result.containsKey(part)) 
-//						totalNumber += result.get(part);
-//					result.put(part, totalNumber);
-					Integer id = ItemResourceUtil.findIDbyItemResourceName(part.getName());
-					if (result.containsKey(id))
-						totalNumber += result.get(id);
-					result.put(id, totalNumber);
-
+		if (maintenancePartProbabilities == null) {
+			maintenancePartProbabilities = new HashMap<Integer, Double>();
+	
+			for (String entity : scope) {
+				for (Part part : ItemResourceUtil.getItemResources()) {
+					if (part.hasMaintenanceEntity(entity)) {
+						double prob = part.getMaintenanceProbability(entity) / 100D;
+						int partNumber = part.getMaintenanceMaximumNumber(entity);
+						double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
+						double totalNumber = averageNumber * prob;
+	//					if (result.containsKey(part)) 
+	//						totalNumber += result.get(part);
+	//					result.put(part, totalNumber);
+						Integer id = part.getID();//ItemResourceUtil.findIDbyItemResourceName(part.getName());
+						if (maintenancePartProbabilities.containsKey(id))
+							totalNumber += maintenancePartProbabilities.get(id);
+						maintenancePartProbabilities.put(id, totalNumber);
+	
+					}
 				}
 			}
 		}
-
-		return result;
+		return maintenancePartProbabilities;
 	}
 
 	/**
@@ -461,10 +473,8 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	public double computeMTBF(double numSols, int numFailures, Part p) {
 		int numItem = 0;
-		// obtain the total # of this part in used from all settlements
-//		if (unitManager == null)
-//			unitManager = Simulation.instance().getUnitManager();
-		Collection<Settlement> ss = Simulation.instance().getUnitManager().getSettlements();
+		// Obtain the total # of this part in used from all settlements
+		Collection<Settlement> ss = unitManager.getSettlements();
 		for (Settlement s : ss) {
 			Inventory inv = s.getInventory();
 			int num = inv.getItemResourceNum(p);
@@ -475,16 +485,31 @@ public final class MalfunctionFactory implements Serializable {
 		return (numItem * numSols / numFailures + MAX_MTBF) / 2D;
 	}
 
+	/**
+	 * Computes the reliability of a part
+	 */
 	public void computeReliability() {
 		for (Part p : partConfig.getPartSet()) {
 			computeReliability(p);
 		}
 	}
 
+	/**
+	 * Gets the failure rate of a part
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public int getFailure(int id) {
 		return failure_map.get(id);
 	}
 
+	/**
+	 * Gets the reliability of a part
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public double getReliability(int id) {
 		return reliability_map.get(id);
 	}
@@ -509,6 +534,7 @@ public final class MalfunctionFactory implements Serializable {
 		return namePartMap;
 	}
 	
+	
 	/**
 	 * Set instances
 	 * 
@@ -516,13 +542,31 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	public static void setMarsClock(MarsClock clock) {
 		marsClock = clock;
+		unitManager = sim.getUnitManager();
 	}
+	
+	/**
+	 * Set instances
+	 * 
+	 * @param clock
+	 */
+	public static void initializeInstances(MarsClock clock, UnitManager u) {
+		marsClock = clock;
+		sim = Simulation.instance();
+		simulationConfig = SimulationConfig.instance();
+		malfunctionConfig = simulationConfig.getMalfunctionConfiguration();
+		partConfig = simulationConfig.getPartConfiguration();
+		missionManager = sim.getMissionManager();
+		unitManager = u;
+	}
+	
 	
 	/**
 	 * Prepares the object for garbage collection.
 	 */
 	public void destroy() {
-		malfunctions = null;
+//		malfunctions = null;
+		marsClock = null;
 		malfunctionConfig = null;
 		meteoriteImpactMalfunction = null;
 		missionManager = null;

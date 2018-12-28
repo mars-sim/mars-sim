@@ -441,9 +441,9 @@ public class PhysicalCondition implements Serializable {
 
 			// Build up fatigue & hunger for given time passing.
 			setThirst(thirst + time * bodyMassDeviation);
-			System.out.println(person + " fatigue : " + fatigue);
+//			System.out.println(person + " fatigue : " + fatigue);
 			setFatigue(fatigue + time);
-			System.out.println(person + " fatigue : " + fatigue);
+//			System.out.println(person + " fatigue : " + fatigue);
 			setHunger(hunger + time * bodyMassDeviation);
 
 			// normal bodily function consume a minute amount of energy

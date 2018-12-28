@@ -54,6 +54,7 @@ public class ResourceUtil implements Serializable {
 	public static final String SOLID_WASTE = "solid waste";
 	public static final String TOXIC_WASTE = "toxic waste";
 	
+	
 //	public static final String TOILET_WASTE = "toilet waste";
 
 	public static final String GREY_WATER = "grey water";
@@ -108,6 +109,7 @@ public class ResourceUtil implements Serializable {
 
 	public static int iceID;
 	public static int regolithID;
+	public static int soilID;
 	public static int sandID;
 	public static int soymilkID;
 
@@ -134,6 +136,8 @@ public class ResourceUtil implements Serializable {
 	
 	public static int tableSaltID;
     
+	public static int eWasteID;
+	
 	public static AmountResource foodAR;
 	public static AmountResource oxygenAR;
 	public static AmountResource waterAR;
@@ -146,7 +150,7 @@ public class ResourceUtil implements Serializable {
 
 	public static AmountResource coAR;
 
-	public static AmountResource soilAR;
+//	public static AmountResource soilAR;
 	public static AmountResource iceAR;
 	public static AmountResource compostAR;
 
@@ -157,7 +161,7 @@ public class ResourceUtil implements Serializable {
 	public static AmountResource greyWaterAR;
 	public static AmountResource blackWaterAR;
 
-	public static AmountResource eWasteAR;
+//	public static AmountResource eWasteAR;
 	public static AmountResource foodWasteAR;
 	public static AmountResource solidWasteAR;
 	public static AmountResource toxicWasteAR;
@@ -359,6 +363,7 @@ public class ResourceUtil implements Serializable {
 		fertilizerID = findAmountResource(FERTILIZER).getID(); // 139
 
 		regolithID = findAmountResource(REGOLITH).getID(); // 156
+		soilID = findAmountResource(REGOLITH).getID();  // 12
 		sandID = findAmountResource(SAND).getID();
 
 		soymilkID = findAmountResource(SOYMILK).getID();
@@ -374,6 +379,8 @@ public class ResourceUtil implements Serializable {
 		
 		tableSaltID = findAmountResource(TABLE_SALT).getID(); // 23
 		
+		eWasteID = findAmountResource(ELECTRONIC_WASTE).getID(); // 16
+		
 		// AmountResource instances as objects
 		foodAR = findAmountResource(LifeSupportType.FOOD); // 1
 		waterAR = findAmountResource(LifeSupportType.WATER); // 2
@@ -387,12 +394,12 @@ public class ResourceUtil implements Serializable {
 
 		hydrogenAR = findAmountResource(HYDROGEN); // 8
 		methaneAR = findAmountResource(METHANE); // 9
-		soilAR = findAmountResource(SOIL); // 12
+//		soilAR = findAmountResource(SOIL); // 12
 		iceAR = findAmountResource(ICE); // 13
 		compostAR = findAmountResource(COMPOST); // 14
 
 		cropWasteAR = findAmountResource(CROP_WASTE); // 15
-		eWasteAR = findAmountResource(ELECTRONIC_WASTE); // 16
+//		eWasteAR = findAmountResource(ELECTRONIC_WASTE); // 16
 		foodWasteAR = findAmountResource(FOOD_WASTE); // 17
 		solidWasteAR = findAmountResource(SOLID_WASTE); // 18
 		toxicWasteAR = findAmountResource(TOXIC_WASTE); // 19
@@ -425,9 +432,12 @@ public class ResourceUtil implements Serializable {
 		ARs = new AmountResource[] { 
 				foodAR, waterAR, oxygenAR, carbonDioxideAR, 
 				argonAR, nitrogenAR, coAR, hydrogenAR, methaneAR, iceAR,
-				cropWasteAR, foodWasteAR, solidWasteAR, eWasteAR, foodWasteAR,
+				cropWasteAR, foodWasteAR, solidWasteAR, 
+//				eWasteAR, 
+				foodWasteAR,
 				solidWasteAR, toxicWasteAR, compostAR, greyWaterAR, blackWaterAR,
-				soilAR, regolithAR, rockSamplesAR, sandAR,
+//				soilAR, 
+				regolithAR, rockSamplesAR, sandAR,
 //				tableSaltAR, 
 				NaClOAR, napkinAR,
 				toiletTissueAR, fertilizerAR,
@@ -597,6 +607,10 @@ public class ResourceUtil implements Serializable {
 		return sortedResources;
 	}
 
+	public static boolean isLifeSupport(int id) {
+		return findAmountResource(id).isLifeSupport();
+	}
+	
 //	/**
 //	 * Gets the hash code value.
 //	 */

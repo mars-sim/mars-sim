@@ -883,6 +883,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Re-initialize static class
 		MalfunctionFactory.setMarsClock(marsClock);
+		MalfunctionFactory.initializeInstances(marsClock, unitManager);
 		MissionManager.setMarsClock(marsClock);
 //		MedicalManager.justReloaded();
 		unitManager.justReloaded(marsClock);

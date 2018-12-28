@@ -47,7 +47,7 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(DigLocalRegolith.class.getName());
 
-    //private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
 	/** Task name */
     private static final String NAME = Msg.getString(
@@ -324,7 +324,7 @@ implements Serializable {
         if (finishedCollecting) {
             setPhase(WALK_BACK_INSIDE);
 
-            LogConsolidated.log(Level.INFO, 0, logger.getName(), 
+            LogConsolidated.log(Level.INFO, 0, sourceName, 
         		"[" + person.getLocationTag().getLocale() +  "] " +
         		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
         		+ " kg of regolith outside " + person.getAssociatedSettlement());

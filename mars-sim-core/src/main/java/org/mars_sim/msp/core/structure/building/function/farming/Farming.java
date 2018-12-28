@@ -504,10 +504,10 @@ public class Farming extends Function implements Serializable {
 		double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea * rand;
 
 		// TODO: adjust how much old soil should be turned to crop waste
-		Storage.storeAnResource(amount, ResourceUtil.cropWasteAR, inv, sourceName + "::provideNewSoil");
+		Storage.storeAnResource(amount, ResourceUtil.cropWasteID, inv, sourceName + "::provideNewSoil");
 
 		// TODO: adjust how much new soil is needed to replenish the soil bed
-		Storage.retrieveAnResource(amount, ResourceUtil.soilAR, inv, true);
+		Storage.retrieveAnResource(amount, ResourceUtil.soilID, inv, true);
 
 	}
 
