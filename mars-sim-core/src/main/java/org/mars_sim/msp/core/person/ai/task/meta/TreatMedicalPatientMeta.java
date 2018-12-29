@@ -57,13 +57,13 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
         double result = 0D;
       
         // Probability affected by the person's stress and fatigue.
-        PhysicalCondition condition = person.getPhysicalCondition();
-        double fatigue = condition.getFatigue();
-        double stress = condition.getStress();
-        double hunger = condition.getHunger();
-        
-        if (fatigue > 1000 || stress > 50 || hunger > 500)
-        	return 0;
+//        PhysicalCondition condition = person.getPhysicalCondition();
+//        double fatigue = condition.getFatigue();
+//        double stress = condition.getStress();
+//        double hunger = condition.getHunger();
+//        
+//        if (fatigue > 1000 || stress > 50 || hunger > 500)
+//        	return 0;
         
         if (person.isInside()) {
 	        // Get the local medical aids to use.
@@ -80,8 +80,10 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
 	            result *= job.getStartTaskProbabilityModifier(TreatMedicalPatient.class);
 	        }
 	
-            // 2015-06-07 Added Preference modifier
-            result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
+	        double pref = person.getPreference().getPreferenceScore(this);
+	        
+	        if (pref > 0)
+	        	result = result * 3D;
 
 	        if (result < 0) result = 0;
 	        

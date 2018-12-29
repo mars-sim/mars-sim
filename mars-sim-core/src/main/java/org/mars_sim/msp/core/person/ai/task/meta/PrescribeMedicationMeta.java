@@ -73,11 +73,6 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
         
         if (job instanceof Doctor) {
             result = numPatients * 300D;
-            // 2015-06-07 Added Preference modifier
-            if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-            }
-
         }
         
         else {
@@ -87,14 +82,14 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
             }
             else {
                 result = numPatients * 150D;
-                // 2015-06-07 Added Preference modifier
-                if (result > 0D) {
-                    result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-                }
-
             }
         }
             
+        double pref = person.getPreference().getPreferenceScore(this);
+        
+        if (pref > 0)
+        	result = result * 3D;
+        
         if (result < 0) result = 0;
         
         // Effort-driven task modifier.

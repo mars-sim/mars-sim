@@ -928,12 +928,12 @@ public class PhysicalCondition implements Serializable {
 							inclination_factor = inclination_factor - .05;
 						addMedicalComplaint(panicAttack);
 						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-						LogConsolidated.log(Level.INFO, 500, sourceName,
+						LogConsolidated.log(Level.INFO, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + name
 										+ " had a panic attack.");
 
 						// the person should be carried to the sickbay at this point
-						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
+//						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 
 					} else
 						logger.log(Level.SEVERE,
@@ -946,20 +946,14 @@ public class PhysicalCondition implements Serializable {
 							inclination_factor = inclination_factor + .05;
 						addMedicalComplaint(depression);
 						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-						LogConsolidated.log(Level.INFO, 500, sourceName,
+						LogConsolidated.log(Level.INFO, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + name
 										+ " had an episode of depression.");
-						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
+//						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 					} else
 						logger.log(Level.SEVERE, "Could not find 'Depression' medical complaint in 'conf/medical.xml'");
 				}
 			}
-
-		}
-		
-		else {
-			// the person should be carried to the sickbay at this point
-			person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 		}
 	}
 
@@ -988,16 +982,11 @@ public class PhysicalCondition implements Serializable {
 //					LogConsolidated.log(Level.INFO, 500, sourceName,
 //							"[" + person.getLocationTag().getLocale() + "] " + name
 //									+ " collapsed because of high fatigue exhaustion.");
-					person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
+//					person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 				} else
 					logger.log(Level.SEVERE,
 							"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
 			}
-		}
-		
-		else {
-			// the person should be carried to the sickbay at this point
-			person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 		}
 	}
 
@@ -1020,10 +1009,10 @@ public class PhysicalCondition implements Serializable {
 				addMedicalComplaint(radiationPoisoning);
 				isRadiationPoisoned = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-				LogConsolidated.log(Level.INFO, 500, sourceName,
+				LogConsolidated.log(Level.INFO, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + name
 								+ " collapsed because of radiation poisoning.");
-				person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
+//				person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 			} 
 			
 			else
@@ -1031,11 +1020,6 @@ public class PhysicalCondition implements Serializable {
 			
 			// a person with high endurance will be less likely to be collapse double
 //			double modifier = (double) (100 - endurance * .6 - strength * .4) / 100D;
-		}
-		
-		else {
-			// the person should be carried to the sickbay at this point
-			person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
 		}
 	}
 
