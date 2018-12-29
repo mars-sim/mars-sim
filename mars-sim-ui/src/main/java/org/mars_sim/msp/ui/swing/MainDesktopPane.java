@@ -264,12 +264,12 @@ public class MainDesktopPane extends WebDesktopPane
 
 	@Override
 	public void componentShown(ComponentEvent e) {
-//		logger.config("componentShown()");
+		logger.config("componentShown()");
 		if (mainScene == null) {
 			SwingUtilities.invokeLater(() -> {
 				JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
 				for (JInternalFrame f : frames) {
-					// ((ToolWindow)f).update();
+					 ((ToolWindow)f).update();
 					f.updateUI();
 					// SwingUtilities.updateComponentTreeUI(f);
 					f.validate();
@@ -1019,9 +1019,8 @@ public class MainDesktopPane extends WebDesktopPane
 		if (!unitWindows.isEmpty()) {
 			unitWindows.forEach(u -> {
 //				System.out.println(u.getName());
-				if (u.isVisible()) {// && u.isShowing()) { // isUnitWindowOpen(u) &&
+				if (u.isVisible())// && u.isShowing()) { // isUnitWindowOpen(u) &&
 					u.update();
-				}
 			});
 		}
 		

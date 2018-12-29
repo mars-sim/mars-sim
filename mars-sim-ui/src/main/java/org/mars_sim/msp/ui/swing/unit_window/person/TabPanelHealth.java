@@ -358,8 +358,9 @@ extends TabPanel {
 	/**
 	 * Updates the info on this panel.
 	 */
+	@Override
 	public void update() {
-
+//		System.out.println("TabPanelHealth update()");
 		int t = MainScene.getTheme();		
 		if (theme != t) {
 			theme = t;

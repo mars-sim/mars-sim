@@ -37,7 +37,7 @@ public class LogConsolidated {
 	private static boolean showRateLimit = false;
 	
 	/** 0 = Local time. 1 = Simulation Earth time. 2 = Simulation Martian time. */
-	private static int timeStampType = 1;
+	private static int timeStampType = 2;
 
 	/**
 	 * Logs given <code>message</code> to given <code>logger</code> as long as:

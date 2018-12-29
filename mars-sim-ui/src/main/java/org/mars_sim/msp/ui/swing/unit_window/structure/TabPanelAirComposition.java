@@ -331,18 +331,17 @@ extends TabPanel {
 
 	}
 
-	/**
-	 * Sets .
-	 * @param value true or false.
-
-	private void setMetric(boolean value) {
-		if (value)
-			buildings = manager.getSortedBuildings();
-		else
-			buildings = manager.getBuildingsWithThermal();
-		tableModel.update();
-	}
-	 */
+//	/**
+//	 * Sets .
+//	 * @param value true or false.
+//
+//	private void setMetric(boolean value) {
+//		if (value)
+//			buildings = manager.getSortedBuildings();
+//		else
+//			buildings = manager.getBuildingsWithThermal();
+//		tableModel.update();
+//	}
 	
 	public double getOverallComposition(int gas) {
 		double result = 0;

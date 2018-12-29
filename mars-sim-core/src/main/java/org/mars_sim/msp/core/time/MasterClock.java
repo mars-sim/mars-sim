@@ -40,7 +40,7 @@ public class MasterClock implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	private static final float MAX_PERIOD = .4F;
+	private static final int MAX_COUNT = 320;
 
 //	private static final int ONE_THOUSAND = 1000;
 
@@ -79,8 +79,12 @@ public class MasterClock implements Serializable {
 	private static boolean justReloaded = false;
 	/** Is FXGL is in use. */
 	public boolean isFXGL = false;
-	/** The time between two ui pulses. */	
-	private float pulseTime = .5F;
+//	/** The time between two ui pulses. */	
+//	private float pulseTime = .5F;
+	/** The counts for ui pulses. */	
+	private transient int count;
+	/** The total number of counts between two ui pulses. */
+	private transient int totalCount = 80;
 	/** The maximum number of counts allowed in waiting for other threads to execute. */
 	private int noDelaysPerYield = 0;
 	/** The measure of tolerance of the maximum number of lost frames for saving a simulation. */
@@ -88,7 +92,7 @@ public class MasterClock implements Serializable {
 	/** The total number of pulses cumulated. */
 	private long totalPulses = 1;
 	/** The cache for the last nano time of an ui pulse. */	
-	private long t01;
+	private long t01 = 0;
 	/** Mode for saving a simulation. */
 	private double tpfCache = 0;
 //	/** The UI refresh cycle. */
@@ -810,23 +814,23 @@ public class MasterClock implements Serializable {
 		}
 	}
 
-	private void shutdownAndAwaitTermination(ExecutorService pool) {
-		pool.shutdown(); // Disable new tasks from being submitted
-		try {
-		// Wait a while for existing tasks to terminate
-		if (!pool.awaitTermination(2, TimeUnit.SECONDS)) {
-			pool.shutdownNow(); // Cancel currently executing tasks
-		// Wait a while for tasks to respond to being cancelled
-			if (!pool.awaitTermination(2, TimeUnit.SECONDS))
-				System.err.println("Pool did not terminate");
-			}
-		} catch (InterruptedException ie) {
-			// (Re-)Cancel if current thread also interrupted
-			pool.shutdownNow();
-			// Preserve interrupt status
-			Thread.currentThread().interrupt();
-		}
-	}
+//	private void shutdownAndAwaitTermination(ExecutorService pool) {
+//		pool.shutdown(); // Disable new tasks from being submitted
+//		try {
+//		// Wait a while for existing tasks to terminate
+//		if (!pool.awaitTermination(2, TimeUnit.SECONDS)) {
+//			pool.shutdownNow(); // Cancel currently executing tasks
+//		// Wait a while for tasks to respond to being cancelled
+//			if (!pool.awaitTermination(2, TimeUnit.SECONDS))
+//				System.err.println("Pool did not terminate");
+//			}
+//		} catch (InterruptedException ie) {
+//			// (Re-)Cancel if current thread also interrupted
+//			pool.shutdownNow();
+//			// Preserve interrupt status
+//			Thread.currentThread().interrupt();
+//		}
+//	}
 		   
 	/**
 	 * Checks if it is on pause or a saving process has been requested. Keeps track
@@ -883,18 +887,18 @@ public class MasterClock implements Serializable {
 			sum += r;
 //			System.out.println("sum : " + sum);
 		}
-		
-		return sum/size;
+//		System.out.println("sum/size : " + sum/size);		
+		return size/sum;
 	}
 
-	/** 
-	 * Gets the time between two ui pulses.
-	 * 
-	 * @return the pulse time
-	 */
-	public float getPulseTime( ) {
-		return pulseTime;
-	}
+//	/** 
+//	 * Gets the time between two ui pulses.
+//	 * 
+//	 * @return the pulse time
+//	 */
+//	public float getPulseTime( ) {
+//		return pulseTime;
+//	}
 	
 	/**
 	 * Prepares clock listener tasks for setting up threads.
@@ -932,23 +936,26 @@ public class MasterClock implements Serializable {
 				// gets updated.
 				listener.clockPulse(time);
 				timeCache += time;
-
-//				int speed = getCurrentSpeed();
+				count++;
+		 
 				// period is in seconds
-				double period = timeCache / currentTR * MarsClock.SECONDS_PER_MILLISOL;
-				
+//				double period = timeCache / currentTR * MarsClock.SECONDS_PER_MILLISOL;
 
-				if (period > MAX_PERIOD) {
-					long t02 = System.nanoTime();	
-					pulseTime = (t02-t01)/1_000_000_000F;
+				if (count >= totalCount) {
+					int speed = getCurrentSpeed();
+					if (speed == 0)
+						speed = 1;
+					totalCount = MAX_COUNT/speed;
+
+					count = 0;
+					long t02 = System.nanoTime();
+					// Discard the very first pulseTime since it's not invalid
+					// at the start of the sim
+					if (t01 != 0) {
+						refreshRates.add((t02-t01)/1_000_000_000F);
+					}
 					t01 = t02;
-					
-					// Find new refresh rate
-					float r = 1/pulseTime;
-					if (r > 2F/MAX_PERIOD)
-						r = 2F/MAX_PERIOD;
 
-					refreshRates.add(r);
 					if (refreshRates.size() > 10)
 						refreshRates.remove(0);
 
@@ -962,8 +969,6 @@ public class MasterClock implements Serializable {
 //							+ "   Period : " + Math.round(period*1000.0)/1000.0
 //							);
 
-					// at the start of the sim, delta is ~.18 s
-					
 					// The secondary job of CLockListener is to send uiPulse() out to
 					// 0. MainDesktopPane,
 					// which in terms sends a clock pulse out to update all unit windows and tool

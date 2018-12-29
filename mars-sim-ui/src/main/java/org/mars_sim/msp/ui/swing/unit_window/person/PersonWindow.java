@@ -37,7 +37,7 @@ extends UnitWindow {
 		addTabPanel(new TabPanelActivity(person, desktop));
 
 		addTabPanel(new TabPanelAttribute(person, desktop));
-		// 2015-03-31  Added TabPanelCareer
+
 		addTabPanel(new TabPanelCareer(person, desktop));
 
 		// Add death tab panel if person is dead.
@@ -48,7 +48,6 @@ extends UnitWindow {
 		else
 			deadCache = false;
 
-		// 2015-02-27  Added TabPanelFavorite
 		addTabPanel(new TabPanelFavorite(person, desktop));
 
 		addTabPanel(new TabPanelGeneral(person, desktop));
@@ -58,9 +57,9 @@ extends UnitWindow {
 		addTabPanel(new InventoryTabPanel(person, desktop));
 
 		addTopPanel(new LocationTabPanel(person, desktop));
-		// 2016-11-06 Added TabPanelPersonality
+
 		addTabPanel(new TabPanelPersonality(person, desktop));
-		// 2015-03-20  Added TabPanelSchedule
+
 		addTabPanel(new TabPanelSchedule(person, desktop));
 
 		addTabPanel(new TabPanelScience(person, desktop));

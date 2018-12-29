@@ -15,8 +15,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 /**
  * The RobotWindow is the window for displaying a robot.
  */
-public class RobotWindow
-extends UnitWindow {
+public class RobotWindow extends UnitWindow {
 
 	/** Is robot inoperable? */
 	private boolean inoperableCache = false;
@@ -25,8 +24,9 @@ extends UnitWindow {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param desktop the main desktop panel.
-	 * @param robot the robot for this window.
+	 * @param robot   the robot for this window.
 	 */
 	public RobotWindow(MainDesktopPane desktop, Robot robot) {
 		// Use UnitWindow constructor
@@ -41,19 +41,17 @@ extends UnitWindow {
 		if (robot.getSystemCondition().isInoperable()) {
 			inoperableCache = true;
 			addTabPanel(new TabPanelDeath(robot, desktop));
-		}
-		else
+		} else
 			inoperableCache = false;
 
 		addTabPanel(new InventoryTabPanel(robot, desktop));
 		addTopPanel(new LocationTabPanel(robot, desktop));
-		// 2015-03-20  Added TabPanelSchedule
 		addTabPanel(new TabPanelSchedule(robot, desktop));
-		//addTabPanel(new TabPanelSkill(robot, desktop));
-		//addTabPanel(new TabPanelHealth(robot, desktop));
-		//addTabPanel(new TabPanelGeneral(robot, desktop));
+		addTabPanel(new TabPanelSkill(robot, desktop));
+		// addTabPanel(new TabPanelHealth(robot, desktop));
+		// addTabPanel(new TabPanelGeneral(robot, desktop));
 
-		// 2015-06-20 Added tab sorting
+		// Add tab sorting
 		sortTabPanels();
 
 	}
@@ -64,7 +62,7 @@ extends UnitWindow {
 	@Override
 	public void update() {
 		super.update();
-		//Robot robot = (Robot) unit;
+		// Robot robot = (Robot) unit;
 		if (!inoperableCache) {
 			if (robot.getSystemCondition().isInoperable()) {
 				inoperableCache = true;

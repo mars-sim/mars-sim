@@ -858,7 +858,7 @@ public class MainMenu {
 
 			Platform.runLater(() -> {
 				mainScene = new MainScene(mainscene_width, mainscene_height, gameScene);
-				logger.config("mainScene instance created");
+//				logger.config("mainScene instance created");
 				// if (isSoundDisabled)
 				// MainScene.setSoundDisabled();
 
@@ -907,7 +907,7 @@ public class MainMenu {
 			try {
 				// Loading settlement data from the default saved simulation
 				sim.loadSimulation(fileLocn); // null means loading "default.sim"
-				logger.config("Done calling loadSimulation(fileLocn)");
+//				logger.config("Done calling loadSimulation(fileLocn)");
 				
 			} catch (Exception e) {
 				// e.printStackTrace();
