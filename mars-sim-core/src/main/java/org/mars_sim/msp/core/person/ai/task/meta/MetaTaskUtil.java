@@ -46,7 +46,7 @@ public class MetaTaskUtil {
 	private static void initializeMetaTasks() {
 
 		if (allMetaTasks == null) {
-
+			// 55 tasks in total as of 2016-10-04
 			allMetaTasks = new ArrayList<MetaTask>();
 
 			// should initialize any-hour tasks first before other tasks
@@ -55,27 +55,18 @@ public class MetaTaskUtil {
 			initWorkHourTasks();
 			initNonWorkHourTasks();
 
-			Set<MetaTask> allTasksSet = new HashSet<>();
-			// Note: Using Set for adding tasks should prevent duplicate tasks when creating
-			// the task list
-			// However, each instance of the tasks must be explicitedly stated
-
-			allTasksSet.addAll(workHourMetaTasks);
-			allTasksSet.addAll(nonWorkHourMetaTasks);
-			allTasksSet.addAll(anyHourMetaTasks);
-
-			allMetaTasks.addAll(allTasksSet); // 55 tasks in total as of 2016-10-04
-
-			// Note: anyHourTasks are supposed to be the union of workHourTasks and
-			// nonWorkHourTasks.
-			// Therefore, add anyHourTasks into the other two sets
-
-			// Incorporate anyHourTasks into workHourTasks
-			workHourMetaTasks.addAll(anyHourMetaTasks);
-
-			// Incorporate anyHourTasks into nonWorkHourTasks
-			nonWorkHourMetaTasks.addAll(anyHourMetaTasks);
-
+//			Set<MetaTask> allTasksSet = new HashSet<>();
+//			// Note: Using Set for adding tasks should prevent duplicate tasks when creating
+//			// the task list
+//			// However, each instance of the tasks must be explicitly stated
+//			allTasksSet.addAll(workHourMetaTasks);
+//			allTasksSet.addAll(nonWorkHourMetaTasks);
+//			allTasksSet.addAll(anyHourMetaTasks);
+//			allMetaTasks.addAll(allTasksSet);
+			
+			allMetaTasks.addAll(workHourMetaTasks); 
+			allMetaTasks.addAll(nonWorkHourMetaTasks); 
+			allMetaTasks.addAll(anyHourMetaTasks); 
 		}
 	}
 
