@@ -85,10 +85,13 @@ public class UnitManager implements Serializable {
 	public static final String VEHICLE_NAME = "Vehicle";
 	public static final String SETTLEMENT_NAME = "Settlement";
 	
+	/** Is it running in Commander's Mode */
+	public static boolean isCommanderMode = false;	
+	
 	// Data members
 	private int solCache = 0;
 
-	public static boolean isCommanderMode = false;	
+	public String originalBuild;
 	
 	/** A list of all units. */
 	private List<Unit> units;

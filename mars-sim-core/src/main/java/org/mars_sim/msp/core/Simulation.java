@@ -245,12 +245,11 @@ public class Simulation implements ClockListener, Serializable {
 	private String lastSaveTimeStampMod;
 	/** The time stamp of the last saved sim. */
 	private String lastSaveTimeStamp = null;
-	/** The build version of the SimulationConfig of the loading .sim */
-	private String loadBuild;// = "unknown";
-	
-	// Note: Transient data members aren't stored in save file
-	private transient ExecutorService clockThreadExecutor;
 
+	// Note: Transient data members aren't stored in save file
+	/** The clock thread executor service. */
+	private transient ExecutorService clockThreadExecutor;
+	/** The simulation thread executor service. */
 	private transient ExecutorService simExecutor;
 
 	// Intransient data members (stored in save file)
@@ -280,9 +279,7 @@ public class Simulation implements ClockListener, Serializable {
 	// private GameWorld gameWorld;
 
 	private UpTimer ut;
-	
 	private static ObjectMapper objectMapper;
-	
 	private static InteractiveTerm interactiveTerm;
 	
 	/**
@@ -401,8 +398,10 @@ public class Simulation implements ClockListener, Serializable {
 
 		isUpdating = false;
 
-		// Copy build version. Usable for comparison when loading a saved sim
-		SimulationConfig.instance().build = Simulation.BUILD;
+		// Preserve the build version tag for future build 
+		// comparison when loading a saved sim
+		unitManager.originalBuild = Simulation.BUILD;
+
 	}
 
 //	/**
@@ -669,8 +668,8 @@ public class Simulation implements ClockListener, Serializable {
 			ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
 
 			// Load intransient objects.
-			SimulationConfig.setInstance((SimulationConfig) ois.readObject());		
-			ResourceUtil.setInstance((ResourceUtil) ois.readObject());
+//			SimulationConfig.setInstance((SimulationConfig) ois.readObject());	
+//			ResourceUtil.setInstance((ResourceUtil) ois.readObject());
 
 			// Load remaining serialized objects
 			malfunctionFactory = (MalfunctionFactory) ois.readObject();
@@ -685,19 +684,7 @@ public class Simulation implements ClockListener, Serializable {
 			relationshipManager = (RelationshipManager) ois.readObject();
 			unitManager = (UnitManager) ois.readObject();
 			masterClock = (MasterClock) ois.readObject();
-		
-			logger.config("    Martian Date/Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
-			logger.config(" --------------------------------------------------------------------");			
-			if (Simulation.BUILD.equals(loadBuild)) {
-				logger.config(" Note : Both Builds are matched.");
-			} else {
-				logger.config(" Note : The Builds are NOT matched.");
-				logger.warning("Attempting to load the saved sim made in build " + loadBuild
-					+ " while running mars-sim build " + Simulation.BUILD);
-			}		
-			logger.config("  - - - - - - - - - Sol " + masterClock.getMarsClock().getMissionSol() 
-					+ " (Cont') - - - - - - - - - - - ");
-
+			
 		// Note: see https://docs.oracle.com/javase/7/docs/platform/serialization/spec/exceptions.html
 		} catch (WriteAbortedException e) {
 			// Thrown when reading a stream terminated by an exception that occurred while the stream was being written.
@@ -815,13 +802,18 @@ public class Simulation implements ClockListener, Serializable {
 //		// Compute the size of the saved sim
 //		String sizeStr = computeFileSize(file);
 
-		loadBuild = SimulationConfig.instance().build;
-		if (loadBuild == null)
-			loadBuild = "unknown";
 		
 //		logger.config("Proceed to loading the saved sim.");
 		String filename = file.getName();
 		String path = file.getPath().replace(filename, "");
+		
+		// Deserialize the file
+		deserialize(file);
+		
+		String loadBuild = unitManager.originalBuild;
+		if (loadBuild == null)
+			loadBuild = "unknown";
+		
 		logger.config(" --------------------------------------------------------------------");
 		logger.config("                      Saved Simulation                               ");
 		logger.config(" --------------------------------------------------------------------");
@@ -831,11 +823,20 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("              Made in Build : " + loadBuild);
 		logger.config("  Current Core Engine Build : " + Simulation.BUILD);
 		
-		// Deserialize the file
-		deserialize(file);
-
+		logger.config("    Martian Date/Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
+		logger.config(" --------------------------------------------------------------------");			
+		if (Simulation.BUILD.equals(loadBuild)) {
+			logger.config(" Note : Both Builds are matched.");
+		} else {
+			logger.config(" Note : The Builds are NOT matched.");
+			logger.warning("Attempting to load a simulation made in build " + loadBuild
+				+ " (older) under core engine build " + Simulation.BUILD + " (newer).");
+		}		
+		logger.config("  - - - - - - - - - Sol " + masterClock.getMarsClock().getMissionSol() 
+				+ " (Cont') - - - - - - - - - - - ");
+		
 		// Initialize transient data.
-//	        instance().initializeTransientData();
+//	    instance().initializeTransientData();
 		instance().initialSimulationCreated = true;
 		isUpdating = false;
 		
@@ -843,7 +844,6 @@ public class Simulation implements ClockListener, Serializable {
 		reinitializeInstances();
 
 	}
-
 	
 	/**
 	 *  Re-initialize instances after loading from a saved sim
@@ -1155,8 +1155,8 @@ public class Simulation implements ClockListener, Serializable {
 			delay(500L);
 			
 			// Store the in-transient objects.
-			oos.writeObject(SimulationConfig.instance());
-			oos.writeObject(ResourceUtil.getInstance());
+//			oos.writeObject(SimulationConfig.instance());
+//			oos.writeObject(ResourceUtil.getInstance());
 			oos.writeObject(malfunctionFactory);
 			oos.writeObject(mars); // has infinite ObjectOutputStream.java:1510)
 			oos.writeObject(missionManager);

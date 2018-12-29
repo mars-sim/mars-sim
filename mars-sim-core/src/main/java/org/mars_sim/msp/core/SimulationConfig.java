@@ -89,12 +89,9 @@ public class SimulationConfig implements Serializable {
 	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
 
 	private double tbu = 0;
-
 	private double tr = 0;
 
 	private int[] data = new int[] { 0, 0, 0, 0 };
-
-	public String build;
 
 	public String marsStartDate = null;
 	public String earthStartDate = null;

@@ -165,8 +165,8 @@ implements Serializable {
         
     	if (study.isProposalCompleted()){
    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-					+ person.getName() + " just finished writing a study proposal " 
-					+ " in " + study.getScience().getName() 
+					+ person.getName() + " just finished writing a study proposal in " 
+   					+ study.getScience().getName() 
 					+ " in " + person.getLocationTag().getImmediateLocation());	
             endTask();
         }

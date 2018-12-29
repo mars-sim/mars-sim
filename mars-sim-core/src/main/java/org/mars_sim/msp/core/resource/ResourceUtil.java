@@ -254,27 +254,30 @@ public class ResourceUtil implements Serializable {
 	}
 
 	public void initializeNewSim() {
+		// Create maps
 		createMaps();
-		mapARs();
-		// make a copy of ARs references
-		savedARs();
+		// Map the static instances
+		mapInstances();
+		// Create the Amount Resource array
+		createInstancesArray();
 	}
 
 	/**
 	 * Remaps the Amount Resource instances in all map
 	 */
 	public void justReloaded() {
-		// Restores the saved ARs references
-		restoreSavedARs();
-		mapARs();
+		// Restores the Amount Resource array
+		restoreInstancesArray();
+		// Map the static instances
+		mapInstances();
+		// Create maps
 		createMaps();
-		// restoreInventory();
 	}
 
 	/**
 	 * Restores the Amount Resource addresses
 	 */
-	public void restoreSavedARs() {
+	public void restoreInstancesArray() {
 		for (AmountResource r : resources) {
 			for (AmountResource ar : ARs) {
 				if (r.getName().equals(ar.getName())) {
@@ -332,7 +335,7 @@ public class ResourceUtil implements Serializable {
 		arIDNameMap.put(ar.getID(), ar.getName());
 	}
 
-	public static void mapARs() {
+	public static void mapInstances() {
 
 		// AmountResource instances as Integer
 		
@@ -427,7 +430,7 @@ public class ResourceUtil implements Serializable {
 
 	}
 
-	public static void savedARs() {
+	public static void createInstancesArray() {
 
 		ARs = new AmountResource[] { 
 				foodAR, waterAR, oxygenAR, carbonDioxideAR, 

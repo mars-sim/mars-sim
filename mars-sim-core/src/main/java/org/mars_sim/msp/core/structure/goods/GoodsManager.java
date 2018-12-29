@@ -1665,10 +1665,11 @@ public class GoodsManager implements Serializable {
 			if (resource instanceof Part) {
 
 				Part part = (Part) resource;
+				int id = part.getID();
 				if (partsDemandCache.size() == 0)
 					determinePartsDemand();
-				if (partsDemandCache.containsKey(part))
-					demand = partsDemandCache.get(part);
+				if (partsDemandCache.containsKey(id))
+					demand = partsDemandCache.get(id);
 
 				// Add eva related parts demand.
 				demand += getEVADemand(demand, part);
