@@ -43,6 +43,15 @@ public class ReadMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+        // Probability affected by the person's stress and fatigue.
+        PhysicalCondition condition = person.getPhysicalCondition();
+        double fatigue = condition.getFatigue();
+        double stress = condition.getStress();
+        double hunger = condition.getHunger();
+        
+        if (fatigue > 1000 || stress > 75 || hunger > 750)
+        	return 0;
+        
         if (person.isInside()) {
         	result += 10D;
 
@@ -65,13 +74,6 @@ public class ReadMeta implements MetaTask, Serializable {
             }
 
 
-            // Probability affected by the person's stress and fatigue.
-            PhysicalCondition condition = person.getPhysicalCondition();
-            double fatigue = condition.getFatigue();
-            double stress = condition.getStress();
-            
-            if (fatigue > 1000)
-            	return 0;
             
 //         	if (fatigue > 750D)
 //         		result/=1.5;

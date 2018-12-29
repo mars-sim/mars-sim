@@ -84,7 +84,7 @@ public class MasterClock implements Serializable {
 	/** The counts for ui pulses. */	
 	private transient int count;
 	/** The total number of counts between two ui pulses. */
-	private transient int totalCount = 80;
+	private transient int totalCount = 40;
 	/** The maximum number of counts allowed in waiting for other threads to execute. */
 	private int noDelaysPerYield = 0;
 	/** The measure of tolerance of the maximum number of lost frames for saving a simulation. */

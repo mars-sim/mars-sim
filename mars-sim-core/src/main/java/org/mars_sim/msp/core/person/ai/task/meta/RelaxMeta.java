@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
@@ -77,15 +78,25 @@ public class RelaxMeta implements MetaTask, Serializable {
         // Crowding modifier
         if (person.isInside()) {
 
-        	if (person.getFatigue() > 1000)
-        		return 0;
-        	
-            // Stress modifier
-            result += person.getStress() * 5D;
-            // fatigue modifier
-            result += (person.getFatigue()-100) / 50D;
-
-            if (result < 0) result = 0;
+            // Probability affected by the person's stress and fatigue.
+            PhysicalCondition condition = person.getPhysicalCondition();
+            double fatigue = condition.getFatigue();
+            double stress = condition.getStress();
+            double hunger = condition.getHunger();
+            
+            double pref = person.getPreference().getPreferenceScore(this);
+            
+          	result += pref;
+          	
+            if (fatigue > 1500 || stress > 75 || hunger > 750)
+            	return result;
+            
+//            // Stress modifier
+//            result += person.getStress() * 5D;
+//            // fatigue modifier
+//            result += (person.getFatigue()-100) / 50D;
+//
+//            if (result < 0) result = 0;
             
             try {
                 Building recBuilding = Relax.getAvailableRecreationBuilding(person);
@@ -105,11 +116,6 @@ public class RelaxMeta implements MetaTask, Serializable {
         boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
         if (isShiftHour) {
             result*= WORK_SHIFT_MODIFIER;
-        }
-
-        // 2015-06-07 Added Preference modifier
-        if (result > 0D) {
-            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
         }
 
         if (result < 0) result = 0;

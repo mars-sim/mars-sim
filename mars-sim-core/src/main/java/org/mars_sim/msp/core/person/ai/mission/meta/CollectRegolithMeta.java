@@ -31,7 +31,7 @@ public class CollectRegolithMeta implements MetaMission {
 	/** Mission name */
 	private static final String NAME = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
 
-	private static final int VALUE = 4000;
+	private static final int VALUE = 8000;
 
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 1;
@@ -130,6 +130,9 @@ public class CollectRegolithMeta implements MetaMission {
 		else if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
 			return 0;
 		}
+		
+		else if (numThisMission > 1)
+			return 0;
 		
 		else {
 			result = settlement.getRegolithProbabilityValue() / VALUE;

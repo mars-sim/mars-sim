@@ -53,7 +53,7 @@ public class TeachMeta implements MetaTask, Serializable {
             double stress = condition.getStress();
             double hunger = condition.getHunger();
             
-            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            if (fatigue > 1000 || stress > 75 || hunger > 750)
             	return 0;
             
 	        // Find potential students.

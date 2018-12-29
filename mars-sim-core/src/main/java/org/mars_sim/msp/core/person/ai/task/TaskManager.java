@@ -629,7 +629,7 @@ public class TaskManager implements Serializable {
 	 * Calculates and caches the probabilities.
 	 */
 	private void calculateProbability() {
-	
+//	System.out.println("TaskManager : calculateProbability()");
 		double msol1 = marsClock.getMillisolOneDecimal();
 
 		int diff = Double.compare(msolCache, msol1);    
@@ -641,15 +641,17 @@ public class TaskManager implements Serializable {
 			// Note : mtListCache is null when loading from a saved sim
 			if (shiftTypeCache != st || mtListCache == null) {
 				shiftTypeCache = st;
-				
+//				System.out.println(person + " st : " + st);
 				List<MetaTask> mtList = null;
 
 				// NOTE: any need to use getAnyHourTasks()
 				if (st == ShiftType.ON_CALL) {
 					mtList = MetaTaskUtil.getAllMetaTasks();
 				} else if (ts.isShiftHour(marsClock.getMillisolInt())) {
+//					System.out.println(person + " isShiftHour");
 					mtList = MetaTaskUtil.getWorkHourMetaTasks();
 				} else {
+//					System.out.println(person + " is not ShiftHour");
 					mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
 				}
 
@@ -679,7 +681,8 @@ public class TaskManager implements Serializable {
 //					System.out.println(person + " " + mt.getName() + " " + probability);
 					taskProbCache.put(mt, probability);
 					totalProbCache += probability;
-				} 
+//					System.out.println(person + " totalProbCache : " + totalProbCache);
+				}
 				
 				else {
 					taskProbCache.put(mt, 0D);

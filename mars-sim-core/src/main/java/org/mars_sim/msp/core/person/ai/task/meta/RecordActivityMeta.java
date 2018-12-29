@@ -53,7 +53,7 @@ public class RecordActivityMeta implements MetaTask, Serializable {
         double stress = condition.getStress();
         double hunger = condition.getHunger();
         
-        if (fatigue > 1500)
+        if (fatigue > 1500 || stress > 75 || hunger > 750)
         	return 0;
         
         if (JobType.getJobType(person.getMind().getJob().getName(person.getGender())) == JobType.getJobType(REPORTER)) {      

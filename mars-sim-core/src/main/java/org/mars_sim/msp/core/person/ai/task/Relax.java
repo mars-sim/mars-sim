@@ -52,7 +52,7 @@ implements Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.4D;
 
-    private double timeFactor;
+//    private double timeFactor;
 
     private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock = sim.getMasterClock();
@@ -67,7 +67,7 @@ implements Serializable {
 		
         marsClock = masterClock.getMarsClock();
         
-        timeFactor = 1D; // TODO: should vary this factor by person
+//        timeFactor = 1D; // TODO: should vary this factor by person
 
 		compute();
 	}

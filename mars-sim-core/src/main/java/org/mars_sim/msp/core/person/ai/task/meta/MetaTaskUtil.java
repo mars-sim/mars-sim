@@ -51,76 +51,16 @@ public class MetaTaskUtil {
 			initWorkHourTasks();
 			initNonWorkHourTasks();
 
-			Set<MetaTask> tasks = new HashSet<>();
+			Set<MetaTask> allTasksSet = new HashSet<>();
 			// Note: Using Set for adding tasks should prevent duplicate tasks when creating
 			// the task list
 			// However, each instance of the tasks must be explicitedly stated
 
-			tasks.addAll(workHourMetaTasks);
-			tasks.addAll(nonWorkHourMetaTasks);
-			tasks.addAll(anyHourMetaTasks);
+			allTasksSet.addAll(workHourMetaTasks);
+			allTasksSet.addAll(nonWorkHourMetaTasks);
+			allTasksSet.addAll(anyHourMetaTasks);
 
-			allMetaTasks.addAll(tasks); // 55 tasks in total as of 2016-10-04
-
-//	        List<MetaTask> tasks = new ArrayList<MetaTask>();
-//	        
-//	        tasks.add(new AssistScientificStudyResearcherMeta());
-//	        tasks.add(new CompileScientificStudyResultsMeta());
-//	    	tasks.add(new ConnectWithEarthMeta());
-//	        tasks.add(new ConsolidateContainersMeta());
-//	        tasks.add(new ConstructBuildingMeta());
-//	        tasks.add(new CookMealMeta());
-//	        tasks.add(new DigLocalIceMeta());
-//	        tasks.add(new DigLocalRegolithMeta());
-//	        tasks.add(new EatMealMeta());
-//	        tasks.add(new HaveConversationMeta());
-//	        tasks.add(new InviteStudyCollaboratorMeta());
-//	        tasks.add(new ListenToMusicMeta());
-//	        tasks.add(new LoadVehicleEVAMeta());
-//	        tasks.add(new LoadVehicleGarageMeta());
-//	        tasks.add(new MaintainGroundVehicleEVAMeta());
-//	        tasks.add(new MaintainGroundVehicleGarageMeta());
-//	        tasks.add(new MaintenanceEVAMeta());
-//	        tasks.add(new MaintenanceMeta());
-//	        tasks.add(new ManufactureConstructionMaterialsMeta());
-//	        tasks.add(new ManufactureGoodMeta());
-//	        tasks.add(new ObserveAstronomicalObjectsMeta());
-//	        tasks.add(new PeerReviewStudyPaperMeta());
-//	        tasks.add(new PerformLaboratoryExperimentMeta());
-//	        tasks.add(new PerformLaboratoryResearchMeta());
-//	        tasks.add(new PerformMathematicalModelingMeta());
-//	    	tasks.add(new PlayHoloGameMeta());
-//	        tasks.add(new PrepareDessertMeta());
-//	        tasks.add(new PrescribeMedicationMeta());
-//	        tasks.add(new ProduceFoodMeta());
-//	        tasks.add(new ProposeScientificStudyMeta());
-//	    	tasks.add(new ReadMeta());
-//	        tasks.add(new RelaxMeta());
-//	        tasks.add(new RepairEVAMalfunctionMeta());
-//	        tasks.add(new RepairMalfunctionMeta());
-//	        tasks.add(new RequestMedicalTreatmentMeta());
-//	        tasks.add(new RespondToStudyInvitationMeta());
-//	        tasks.add(new RestingMedicalRecoveryMeta());
-//	        tasks.add(new ReturnLightUtilityVehicleMeta());
-//	        tasks.add(new ReviewJobReassignmentMeta());
-//	        tasks.add(new SalvageBuildingMeta());
-//	        tasks.add(new SalvageGoodMeta());
-//	        tasks.add(new SelfTreatHealthProblemMeta());
-//	        tasks.add(new SleepMeta()); // if a person is having high fatigue, he/she may fall asleep at work
-//	        tasks.add(new StudyFieldSamplesMeta());
-//	        tasks.add(new TeachMeta());
-//	        tasks.add(new TendGreenhouseMeta());
-//	        tasks.add(new ToggleFuelPowerSourceMeta());
-//	        tasks.add(new ToggleResourceProcessMeta());
-//	        tasks.add(new TreatMedicalPatientMeta());
-//	        tasks.add(new UnloadVehicleEVAMeta());
-//	        tasks.add(new UnloadVehicleGarageMeta());
-//	        tasks.add(new WalkMeta());
-//	        tasks.add(new WorkoutMeta());
-//	        tasks.add(new WriteReportMeta());
-//	        tasks.add(new YogaMeta());	        
-//	        
-//	        metaTasks.addAll(tasks);     
+			allMetaTasks.addAll(allTasksSet); // 55 tasks in total as of 2016-10-04
 
 			// Note: anyHourTasks are supposed to be the union of workHourTasks and
 			// nonWorkHourTasks.
@@ -179,6 +119,10 @@ public class MetaTaskUtil {
 
 			List<MetaTask> tasks = new ArrayList<MetaTask>();
 
+			// Use set to ensure non-duplicate tasks
+			// TODO: how to get around the need of comparing the new instance of the same class
+//			Set<MetaTask> tasks = new HashSet<>();
+			
 			tasks.add(new AssistScientificStudyResearcherMeta());
 			tasks.add(new CompileScientificStudyResultsMeta());
 			tasks.add(new ConsolidateContainersMeta());
@@ -221,17 +165,16 @@ public class MetaTaskUtil {
 			tasks.add(new UnloadVehicleEVAMeta());
 			tasks.add(new UnloadVehicleGarageMeta());
 			tasks.add(new WriteReportMeta());
-
-			// Set<MetaTask> s = new HashSet<>();
-			// TODO: NOT WORKING: fix the use of set to avoid duplicate tasks
-			// Using Set for adding below should prevent duplicate tasks when creating the
-			// task list
-			// s.addAll(tasks);
-			// s.addAll(anyHourTasks);
+		
+//			taskList.addAll(tasks);
 
 			workHourMetaTasks.addAll(tasks);
-			// Note: do NOT add anyHourTasks to workHourTasks at this point
-			// workHourTasks.addAll(anyHourTasks);
+
+			// Init anyHourTasks if not done so
+			initAnyHourTasks();
+			
+			// Incorporate anyHourTasks into workHourTasks
+			workHourMetaTasks.addAll(anyHourMetaTasks);
 		}
 	}
 
@@ -263,8 +206,12 @@ public class MetaTaskUtil {
 			// s.addAll(anyHourTasks);
 
 			nonWorkHourMetaTasks.addAll(tasks);
-			// Note: do NOT add anyHourTasks to nonWorkHourTasks at this point
-			// nonWorkHourTasks.addAll(anyHourTasks);
+
+			// Init anyHourTasks if not done so
+			initAnyHourTasks();
+			
+			// Incorporate anyHourTasks into nonWorkHourTasks
+			nonWorkHourMetaTasks.addAll(anyHourMetaTasks);
 		}
 	}
 
@@ -330,8 +277,8 @@ public class MetaTaskUtil {
 		}
 
 		// Return copy of work hour meta task list.
-		// return new ArrayList<MetaTask>(workHourTasks);
-		return workHourMetaTasks;
+		return new ArrayList<MetaTask>(workHourMetaTasks);
+//		return workHourMetaTasks;
 	}
 
 	/**
@@ -347,8 +294,8 @@ public class MetaTaskUtil {
 		}
 
 		// Return copy of non work hour meta task list.
-		// return new ArrayList<MetaTask>(nonWorkHourTasks);
-		return nonWorkHourMetaTasks;
+		return new ArrayList<MetaTask>(nonWorkHourMetaTasks);
+//		return nonWorkHourMetaTasks;
 	}
 
 	/**
