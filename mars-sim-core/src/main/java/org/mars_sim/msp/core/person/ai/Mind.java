@@ -457,7 +457,8 @@ public class Mind implements Serializable {
 				e.printStackTrace();
 			}
 			LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
-					person.getName() + " has invalid weight sum : " + weightSum + ". tasks is " + tasks + ". missions is " + missions);
+					person.getName() + " has an ninvalid weight sum of " + weightSum 
+					+ ". (tasks is " + tasks + ". missions is " + missions + ".)");
 //			throw new IllegalStateException("Mind.getNewAction(): " + person + " weight sum: " + weightSum);
 		}
 

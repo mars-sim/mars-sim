@@ -53,7 +53,7 @@ public class EatMeal extends Task implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			 logger.getName().length());
 
-	private static final int MAX_HUNGER = 2000;
+	private static final int MAX_HUNGER = 1000;
 	
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.00001;
@@ -420,12 +420,12 @@ public class EatMeal extends Task implements Serializable {
 
 		// Reduce person's hunger by proportion of meal eaten.
 		// Entire meal will reduce person's hunger to 0.
-		if (currentHunger > MAX_HUNGER)
-			currentHunger = MAX_HUNGER;
 		currentHunger -= (startingHunger * mealProportion);
 		if (currentHunger < 0D) {
 			currentHunger = 0D;
 		}
+		if (currentHunger > MAX_HUNGER)
+			currentHunger = MAX_HUNGER;
 		condition.setHunger(currentHunger);
 
 		// Reduce person's stress over time from eating a cooked meal.
@@ -471,12 +471,12 @@ public class EatMeal extends Task implements Serializable {
 
 				// Note : Reduce person's hunger by proportion of meal eaten.
 				// Entire meal will reduce person's hunger to 0.
-				if (currentHunger > MAX_HUNGER)
-					currentHunger = MAX_HUNGER;
 				currentHunger -= (startingHunger * mealProportion);
 				if (currentHunger < 0D) {
 					currentHunger = 0D;
 				}
+				if (currentHunger > MAX_HUNGER)
+					currentHunger = MAX_HUNGER;
 				condition.setHunger(currentHunger);
 
 				// Add caloric energy from meal.

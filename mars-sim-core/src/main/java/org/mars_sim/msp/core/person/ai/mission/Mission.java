@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -194,7 +195,7 @@ public abstract class Mission implements Serializable {
 		this.minMembers = minMembers;
 		missionCapacity = Integer.MAX_VALUE;
 				
-		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
+		listeners = new CopyOnWriteArrayList<>(); //Collections.synchronizedList(new ArrayList<MissionListener>());
 		
 		Person person = (Person) startingMember;
 		String loc0 = null;
@@ -260,7 +261,7 @@ public abstract class Mission implements Serializable {
 	 */
 	public final void addMissionListener(MissionListener newListener) {
 		if (listeners == null) {
-			listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
+			listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionListener>());
 		}
 		if (!listeners.contains(newListener)) {
 			listeners.add(newListener);
@@ -274,7 +275,7 @@ public abstract class Mission implements Serializable {
 	 */
 	public final void removeMissionListener(MissionListener oldListener) {
 		if (listeners == null) {
-			listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
+			listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionListener>());
 		}
 		if (listeners.contains(oldListener)) {
 			listeners.remove(oldListener);
@@ -298,12 +299,12 @@ public abstract class Mission implements Serializable {
 	 */
 	protected final void fireMissionUpdate(MissionEventType addMemberEvent, Object target) {
 		if (listeners == null)
-			listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
-		synchronized (listeners) {
+			listeners = new CopyOnWriteArrayList<>();// Collections.synchronizedList(new ArrayList<MissionListener>());
+//		synchronized (listeners) {
 			Iterator<MissionListener> i = listeners.iterator();
 			while (i.hasNext())
 				i.next().missionUpdate(new MissionEvent(this, addMemberEvent, target));
-		}
+//		}
 	}
 
 	/**

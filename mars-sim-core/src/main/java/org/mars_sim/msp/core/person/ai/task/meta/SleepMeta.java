@@ -140,6 +140,7 @@ public class SleepMeta implements MetaTask, Serializable {
 	    		    	int diff = time - now;
 	    		    	if (diff < 50 || diff > -50) {
 	    		    		proceed = true;
+	    		    		result = 1000;
 	    		    		break;
 	    		    	}
 	    	    	}

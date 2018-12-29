@@ -88,7 +88,7 @@ public class MissionManager implements Serializable {
 		missions = new CopyOnWriteArrayList<>();
 		historicalMissions = new HashMap<>();
 		settlementID = new HashMap<>();
-		listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
+		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
 		missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getMetaMissions().size());
 		robotMissionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getRobotMetaMissions().size());
 	}
@@ -168,7 +168,7 @@ public class MissionManager implements Serializable {
 	public void addListener(MissionManagerListener newListener) {
 
 		if (listeners == null) {
-			listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>());
+			listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>());
 		}
 
 		if (!listeners.contains(newListener)) {
@@ -184,7 +184,7 @@ public class MissionManager implements Serializable {
 	public void removeListener(MissionManagerListener oldListener) {
 
 		if (listeners == null) {
-			listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>());
+			listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>());
 		}
 
 		if (listeners.contains(oldListener)) {
@@ -298,7 +298,7 @@ public class MissionManager implements Serializable {
 
 			// Update listeners.
 			if (listeners == null) {
-				listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>());
+				listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>());
 			}
 
 			synchronized (listeners) {
@@ -328,7 +328,7 @@ public class MissionManager implements Serializable {
 					
 			// Update listeners.
 			if (listeners == null) {
-				listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>());
+				listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>());
 			}
 
 			synchronized (listeners) {

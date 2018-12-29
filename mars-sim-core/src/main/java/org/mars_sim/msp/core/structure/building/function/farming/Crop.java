@@ -339,7 +339,7 @@ public class Crop implements Serializable {
 				phaseType = PhaseType.INCUBATION;
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 						"[" + settlement + "] " + " No " + capitalizedCropName + " tissue culture left in " + farmName
-								+ " Will need to restock via incubation in " + farmName + ".");
+								+ ". Will take time to incubate and restock in " + farmName + ".");
 			}
 
 			else if (tissuePercent >= 100) {
