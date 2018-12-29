@@ -24,16 +24,20 @@ public class MetaTaskUtil {
 	private static List<MetaTask> nonWorkHourMetaTasks = null;
 	private static List<MetaTask> anyHourMetaTasks = null;
 
+	private static List<MetaTask> dutyHourTasks = null;
+	private static List<MetaTask> nonDutyHourTasks = null;
+	
 	private static List<MetaTask> robotMetaTasks = null;
 
 	/**
 	 * Private constructor for utility class.
 	 */
-	private MetaTaskUtil() {
+	public MetaTaskUtil() {
 		initAnyHourTasks();
 		initWorkHourTasks();
 		initNonWorkHourTasks();
-
+		initDutyHourTasks();
+		initNonDutyHourTasks();
 	};
 
 	/**
@@ -109,6 +113,20 @@ public class MetaTaskUtil {
 	}
 
 	/**
+	 * Lazy initialization of duty hour tasks list.
+	 */
+	private static void initDutyHourTasks() {
+
+		if (dutyHourTasks == null) {
+
+			dutyHourTasks = new ArrayList<MetaTask>();
+
+			dutyHourTasks.addAll(anyHourMetaTasks);
+			dutyHourTasks.addAll(workHourMetaTasks);
+		}
+	}
+	
+	/**
 	 * Lazy initialization of work-hour metaTasks list.
 	 */
 	private static void initWorkHourTasks() {
@@ -169,15 +187,23 @@ public class MetaTaskUtil {
 //			taskList.addAll(tasks);
 
 			workHourMetaTasks.addAll(tasks);
-
-			// Init anyHourTasks if not done so
-			initAnyHourTasks();
-			
-			// Incorporate anyHourTasks into workHourTasks
-			workHourMetaTasks.addAll(anyHourMetaTasks);
 		}
 	}
 
+	/**
+	 * Lazy initialization of duty hour tasks list.
+	 */
+	private static void initNonDutyHourTasks() {
+
+		if (nonDutyHourTasks == null) {
+
+			nonDutyHourTasks = new ArrayList<MetaTask>();
+
+			nonDutyHourTasks.addAll(anyHourMetaTasks);
+			nonDutyHourTasks.addAll(nonWorkHourMetaTasks);
+		}
+	}
+	
 	/**
 	 * Lazy initialization of non-work hour metaTasks list.
 	 */
@@ -206,12 +232,6 @@ public class MetaTaskUtil {
 			// s.addAll(anyHourTasks);
 
 			nonWorkHourMetaTasks.addAll(tasks);
-
-			// Init anyHourTasks if not done so
-			initAnyHourTasks();
-			
-			// Incorporate anyHourTasks into nonWorkHourTasks
-			nonWorkHourMetaTasks.addAll(anyHourMetaTasks);
 		}
 	}
 
@@ -277,8 +297,8 @@ public class MetaTaskUtil {
 		}
 
 		// Return copy of work hour meta task list.
-		return new ArrayList<MetaTask>(workHourMetaTasks);
-//		return workHourMetaTasks;
+//		return new ArrayList<MetaTask>(workHourMetaTasks);
+		return workHourMetaTasks;
 	}
 
 	/**
@@ -294,8 +314,8 @@ public class MetaTaskUtil {
 		}
 
 		// Return copy of non work hour meta task list.
-		return new ArrayList<MetaTask>(nonWorkHourMetaTasks);
-//		return nonWorkHourMetaTasks;
+//		return new ArrayList<MetaTask>(nonWorkHourMetaTasks);
+		return nonWorkHourMetaTasks;
 	}
 
 	/**
@@ -313,9 +333,34 @@ public class MetaTaskUtil {
 		// Return copy of all hour meta task list.
 		// return new ArrayList<MetaTask>(anyHourTasks);
 		return anyHourMetaTasks;
-
 	}
 
+	/**
+	 * Gets a list of duty meta tasks.
+	 * 
+	 * @return list of duty meta tasks.
+	 */
+	public static List<MetaTask> getDutyHourTasks() {
+		// Lazy initialize all hour meta tasks list if necessary.
+		if (dutyHourTasks == null) {
+			initDutyHourTasks();
+		}
+		return dutyHourTasks;
+	}
+	
+	/**
+	 * Gets a list of non-duty meta tasks.
+	 * 
+	 * @return list of non-duty meta tasks.
+	 */
+	public static List<MetaTask> getNonDutyHourTasks() {
+		// Lazy initialize all hour meta tasks list if necessary.
+		if (nonDutyHourTasks == null) {
+			initNonDutyHourTasks();
+		}
+		return nonDutyHourTasks;
+	}
+	
 	/**
 	 * Converts a task name in String to Metatask
 	 * 

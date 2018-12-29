@@ -24,6 +24,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.DoubleStream;
 
 /**
  * The MasterClock represents the simulated time clock on virtual Mars and
@@ -40,9 +41,7 @@ public class MasterClock implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	private static final int MAX_COUNT = 320;
-
-//	private static final int ONE_THOUSAND = 1000;
+	private static final int MAX_COUNT = 500;
 
 	// Data members
 	/** Runnable flag. */
@@ -108,7 +107,7 @@ public class MasterClock implements Serializable {
 	/** A list of clock listener tasks. */
 	private transient List<ClockListenerTask> clockListenerTasks;
 	/** A list of past UI refresh rate. */
-	private static List<Float> refreshRates;
+	private static List<Float> timeIntervals;
 	
 	
 	/** The martian Clock. */
@@ -159,7 +158,7 @@ public class MasterClock implements Serializable {
 
 		// Create listener list.
 		clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
-		refreshRates = new ArrayList<>();
+		timeIntervals = new ArrayList<>();
 		
 		// Calculate elapsedLast
 		tLast = uptimer.getUptimeMillis();
@@ -869,8 +868,8 @@ public class MasterClock implements Serializable {
 	 */
 	public void setupClockListenerTask() {
 		clockListeners.forEach(t -> {
-			// Check if it has a corresponding task or not, if it doesn't, create a task for
-			// t
+			// Check if it has a corresponding task or not, 
+			// if it doesn't, create a task for t
 			addClockListenerTask(t);
 		});
 	}
@@ -881,13 +880,13 @@ public class MasterClock implements Serializable {
 	 * @return the refresh rate
 	 */
 	public float getRefresh() {
+//		return 1/(DoubleStream.of(refreshRates).average().orElse(0d));
 		float sum = 0;
-		int size = refreshRates.size();
-		for (float r : refreshRates) {
+		int size = timeIntervals.size();
+		for (float r : timeIntervals) {
 			sum += r;
-//			System.out.println("sum : " + sum);
-		}
-//		System.out.println("sum/size : " + sum/size);		
+		}	
+		// Note: average refresh rate = 1/timeInterval
 		return size/sum;
 	}
 
@@ -945,19 +944,21 @@ public class MasterClock implements Serializable {
 					int speed = getCurrentSpeed();
 					if (speed == 0)
 						speed = 1;
+					speed = speed * speed;
 					totalCount = MAX_COUNT/speed;
 
 					count = 0;
-					long t02 = System.nanoTime();
+//					long t02 = System.nanoTime();
+					long t02 = System.currentTimeMillis();//.nanoTime();
 					// Discard the very first pulseTime since it's not invalid
 					// at the start of the sim
 					if (t01 != 0) {
-						refreshRates.add((t02-t01)/1_000_000_000F);
+						timeIntervals.add((t02-t01)/1_000F);
 					}
 					t01 = t02;
 
-					if (refreshRates.size() > 10)
-						refreshRates.remove(0);
+					if (timeIntervals.size() > 15)
+						timeIntervals.remove(0);
 
 //					System.out.println(
 //							"time : " + Math.round(time*100.0)/100.0 
@@ -1238,7 +1239,7 @@ public class MasterClock implements Serializable {
 	 */
 	public static void justReloaded(Simulation s) {
 		sim = s;
-		refreshRates = new ArrayList<>();
+		timeIntervals = new ArrayList<>();
 		justReloaded = true;
 	}
 	

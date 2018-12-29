@@ -977,22 +977,22 @@ public class MainDesktopPane extends WebDesktopPane
 		}
 	}
 	
-	class UnitWindowTask implements Runnable {
-		// long SLEEP_TIME = 1000;
-		UnitWindow unitWindow;
-
-		private UnitWindowTask(UnitWindow unitWindow) {
-			this.unitWindow = unitWindow;
-		}
-
-		@Override
-		public void run() {
-//			 SwingUtilities.invokeLater(() -> {
-//			if (unitWindow.isVisible() && unitWindow.isShowing())
-				unitWindow.update();
-//			 });
-		}
-	}
+//	class UnitWindowTask implements Runnable {
+//		// long SLEEP_TIME = 1000;
+//		UnitWindow unitWindow;
+//
+//		private UnitWindowTask(UnitWindow unitWindow) {
+//			this.unitWindow = unitWindow;
+//		}
+//
+//		@Override
+//		public void run() {
+////			 SwingUtilities.invokeLater(() -> {
+////			if (unitWindow.isVisible() && unitWindow.isShowing())
+//				unitWindow.update();
+////			 });
+//		}
+//	}
 
 //	private void setupUnitWindowExecutor() {
 //		// set up unitWindowExecutor
@@ -1017,11 +1017,15 @@ public class MainDesktopPane extends WebDesktopPane
 		
 			// Update all unit windows.
 		if (!unitWindows.isEmpty()) {
-			unitWindows.forEach(u -> {
-//				System.out.println(u.getName());
-				if (u.isVisible())// && u.isShowing()) { // isUnitWindowOpen(u) &&
+			for (UnitWindow u : unitWindows) {
+//				if (u.isVisible())
 					u.update();
-			});
+			}
+//			unitWindows.forEach(u -> {
+////				System.out.println(u.getName());
+//				if (u.isVisible())// && u.isShowing()) { // isUnitWindowOpen(u) &&
+//					u.update();
+//			});
 		}
 		
 //			unitWindows.forEach(u -> {

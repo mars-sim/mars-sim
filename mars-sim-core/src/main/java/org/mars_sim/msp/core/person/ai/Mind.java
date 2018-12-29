@@ -57,7 +57,7 @@ public class Mind implements Serializable {
 	/** The cache for sol. */
 	private int solCache = 1;
 	/** The cache for msol. */
-	private int msolCache = -1;
+//	private int msolCache = -1;
 	/** The cache for msol1. */
 	private double msolCache1 = -1D;
 	/** The person owning this mind. */

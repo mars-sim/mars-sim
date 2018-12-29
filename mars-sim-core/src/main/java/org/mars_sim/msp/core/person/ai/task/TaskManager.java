@@ -649,10 +649,10 @@ public class TaskManager implements Serializable {
 					mtList = MetaTaskUtil.getAllMetaTasks();
 				} else if (ts.isShiftHour(marsClock.getMillisolInt())) {
 //					System.out.println(person + " isShiftHour");
-					mtList = MetaTaskUtil.getWorkHourMetaTasks();
+					mtList = MetaTaskUtil.getDutyHourTasks();
 				} else {
 //					System.out.println(person + " is not ShiftHour");
-					mtList = MetaTaskUtil.getNonWorkHourMetaTasks();
+					mtList = MetaTaskUtil.getNonDutyHourTasks();
 				}
 
 				// Use new mtList

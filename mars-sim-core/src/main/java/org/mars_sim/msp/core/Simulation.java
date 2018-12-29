@@ -80,6 +80,7 @@ import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -429,10 +430,11 @@ public class Simulation implements ClockListener, Serializable {
 		scientificStudyManager = new ScientificStudyManager();
 		transportManager = new TransportManager();
 
+
+		// Initialization
+		new MetaTaskUtil();
 		// ResourceUtil.getInstance().initializeNewSim();
 		// ResourceUtil.printID();
-		
-		// Initialize mars clock
 		MarsClock marsClock = masterClock.getMarsClock();
 		MalfunctionFactory.setMarsClock(marsClock);
 		MissionManager.setMarsClock(marsClock);
@@ -847,6 +849,8 @@ public class Simulation implements ClockListener, Serializable {
 	 *  Re-initialize instances after loading from a saved sim
 	 */
 	private void reinitializeInstances() {
+		// Re-initialize the utility class for getting lists of meta tasks.
+		new MetaTaskUtil();
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().justReloaded();
 		// Re-initialize the MarsSurface instance
