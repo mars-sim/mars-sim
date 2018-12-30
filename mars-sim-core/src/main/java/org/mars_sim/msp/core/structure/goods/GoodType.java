@@ -1,10 +1,11 @@
+/**
+ * Mars Simulation Project
+ * GoodType.java
+ * @version 3.1.0 2018-12-29
+ * @author stpa
+ */
 package org.mars_sim.msp.core.structure.goods;
 
-/**
- * Good categories.
- * @author stpa
- * 2014-03-02
- */
 public enum GoodType {
 
 	AMOUNT_RESOURCE ("GoodType.amountResource"), //$NON-NLS-1$

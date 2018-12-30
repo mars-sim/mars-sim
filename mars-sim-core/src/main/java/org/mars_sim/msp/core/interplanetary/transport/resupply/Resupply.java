@@ -490,7 +490,7 @@ public class Resupply implements Serializable, Transportable {
 		while (partsI.hasNext()) {
 			Part part = partsI.next();
 			int number = getNewParts().get(part);
-			inv.storeItemResources(part, number);
+			inv.storeItemResources(part.getID(), number);
 		}
 
 		// Deliver Robots.

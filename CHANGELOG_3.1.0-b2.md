@@ -5,7 +5,7 @@ Copyright (C) 2018 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-beta2 (build 4736) - 2018-12-29
+## v3.1.0-beta2 (build 4737) - 2018-12-29
 
 ### KNOWN LIMITATIONS :
 
@@ -18,8 +18,8 @@ Copyright (C) 2018 Scott Davis
    websites such as GitHub pages
 
 4. When clicking on a combobox to pick an option, the option list would pop up
-   at the far edge of the main window, unless the main window has been dragged
-   around the screen and repainted.
+   outside the main window, unless the main window has been dragged
+   around the screen.
 
 
 ### CORE ENGINE IMPROVEMENTS :

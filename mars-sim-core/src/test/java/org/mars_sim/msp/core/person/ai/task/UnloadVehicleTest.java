@@ -67,7 +67,7 @@ extends TestCase {
 		vehicleInv.addAmountResourceTypeCapacity(methane, 100D);
 		vehicleInv.storeAmountResource(methane, 100D, true);
 		vehicleInv.addGeneralCapacity(100D);
-		vehicleInv.storeItemResources(hammer, 5);
+		vehicleInv.storeItemResources(hammer.getID(), 5);
 		for (int x = 0; x < 5; x++) {
 			vehicleInv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureProcessInfo.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2018-12-29
  * @author Scott Davis
  */
 
@@ -53,6 +52,7 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 
 	/**
 	 * Sets the process description.
+	 * 
 	 * @param description {@link String}
 	 */
 	public void setDescription(String description) {
@@ -202,14 +202,14 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	public String toString() {
 		return name;
 	}
-	
+
 	/**
 	 * Compares this object with the specified object for order.
+	 * 
 	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is less than,
-	 * equal to, or greater than the specified object.
+	 * @return a negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
 	 */
-	// 2015-10-15 Added compareTo()
 	public int compareTo(ManufactureProcessInfo p) {
 		return name.compareToIgnoreCase(p.name);
 	}

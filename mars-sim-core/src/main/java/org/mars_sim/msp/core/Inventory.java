@@ -67,7 +67,7 @@ public class Inventory implements Serializable {
 	/** Collection of units in inventory. */
 	private Collection<Unit> containedUnits = null;
 	/** Map of item resources. */
-	private Map<ItemResource, Integer> containedItemResources = null;
+	private Map<Integer, Integer> containedItemResources = null;
 	
 	// Cache capacity variables.
 	private transient Map<Integer, Double> capacityCache = null;
@@ -374,6 +374,21 @@ public class Inventory implements Serializable {
 		addItemDemandMetRequest(resource, number);
 	}
 
+	public void addItemDemand(int resource, int number) {
+		String r = ResourceUtil.findAmountResource(resource).getName();
+
+		if (itemDemandMap.containsKey(r)) {
+
+			int oldNumber = itemDemandMap.get(r);
+			itemDemandMap.put(r, number + oldNumber);
+
+		} else {
+			itemDemandMap.put(r, number);
+		}
+
+		addItemDemandMetRequest(resource, number);
+	}
+	
 	public void addAmountDemandMetRequest(AmountResource resource, double amount) {
 		String r = resource.getName();
 
@@ -413,6 +428,19 @@ public class Inventory implements Serializable {
 		}
 	}
 
+	public void addItemDemandMetRequest(int id, double number) {
+		String r = ItemResourceUtil.findItemResource(id).getName();
+		
+		if (itemDemandMetRequestMap.containsKey(r)) {
+			int oldNum = itemDemandMetRequestMap.get(r);
+			itemDemandMetRequestMap.put(r, oldNum + 1);
+		}
+
+		else {
+			itemDemandMetRequestMap.put(r, 1);
+		}
+	}
+	
 	/**
 	 * Adds capacity for a resource type.
 	 * 
@@ -1132,31 +1160,45 @@ public class Inventory implements Serializable {
 	}
 
 	public boolean hasItemResource(int id) {
-		return hasItemResource(ItemResourceUtil.findItemResource(id));
-	}
-
-	/**
-	 * Checks if storage has an item resource.
-	 * 
-	 * @param resource the resource.
-	 * @return true if has resource.
-	 */
-	public boolean hasItemResource(ItemResource resource) {
+//		return hasItemResource(ItemResourceUtil.findItemResource(id));
 		boolean result = false;
-		if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
-			if (containedItemResources.get(resource) > 0) {
+		if ((containedItemResources != null) && containedItemResources.containsKey(id)) {
+			if (containedItemResources.get(id) > 0) {
 				result = true;
 			}
 		} else if (containedUnits != null) {
 			Iterator<Unit> i = containedUnits.iterator();
 			while (!result && i.hasNext()) {
-				if (i.next().getInventory().hasItemResource(resource)) {
+				if (i.next().getInventory().hasItemResource(id)) {
 					result = true;
 				}
 			}
 		}
 		return result;
 	}
+
+//	/**
+//	 * Checks if storage has an item resource.
+//	 * 
+//	 * @param resource the resource.
+//	 * @return true if has resource.
+//	 */
+//	public boolean hasItemResource(ItemResource resource) {
+//		boolean result = false;
+//		if ((containedItemResources != null) && containedItemResources.containsKey(resource.getID())) {
+//			if (containedItemResources.get(resource.getID()) > 0) {
+//				result = true;
+//			}
+//		} else if (containedUnits != null) {
+//			Iterator<Unit> i = containedUnits.iterator();
+//			while (!result && i.hasNext()) {
+//				if (i.next().getInventory().hasItemResource(resource.getID())) {
+//					result = true;
+//				}
+//			}
+//		}
+//		return result;
+//	}
 
 	/**
 	 * Gets the number of an item resource in storage.
@@ -1165,10 +1207,9 @@ public class Inventory implements Serializable {
 	 * @return number of resources.
 	 */
 	public int getItemResourceNum(int id) {
-		ItemResource resource = ItemResourceUtil.findItemResource(id);
 		int result = 0;
-		if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
-			result += containedItemResources.get(resource);
+		if ((containedItemResources != null) && containedItemResources.containsKey(id)) {
+			result += containedItemResources.get(id);
 		}
 		return result;
 	}
@@ -1181,37 +1222,35 @@ public class Inventory implements Serializable {
 	 */
 	public int getItemResourceNum(ItemResource resource) {
 		int result = 0;
-		if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
-			result += containedItemResources.get(resource);
+		if ((containedItemResources != null) && containedItemResources.containsKey(resource.getID())) {
+			result += containedItemResources.get(resource.getID());
 		}
 		return result;
 	}
 
-//    /**
-//     * Gets a set of all the item resources in storage.
-//     * @return set of item resources.
-//     */
-//    public Set<Integer> getAllItemIDsStored() {
-//        Set<Integer> result = null;
-//        if (containedItemResources != null) {
-//            result = containedItemResources.keySet();
-//        } else {
-//            result = new HashSet<Integer>();
-//        }
-//        return result;
-//    }
+    /**
+     * Gets a set of all the item resources in storage.
+     * @return set of item resources.
+     */
+    public Set<ItemResource> getAllItemRsStored() {
+		Set<ItemResource> set = new HashSet<>();
+		for (int ir : containedItemResources.keySet()) {
+			set.add(ItemResourceUtil.findItemResource(ir));
+		}
+		return set;
+    }
 
 	/**
 	 * Gets a set of all the item resources in storage.
 	 * 
 	 * @return set of item resources.
 	 */
-	public Set<ItemResource> getAllItemResourcesStored() {
-		Set<ItemResource> result = null;
+	public Set<Integer> getAllItemResourcesStored() {
+		Set<Integer> result = null;
 		if (containedItemResources != null) {
 			result = containedItemResources.keySet();
 		} else {
-			result = new HashSet<ItemResource>();
+			result = new HashSet<Integer>();
 		}
 		return result;
 	}
@@ -1226,15 +1265,15 @@ public class Inventory implements Serializable {
 		return getItemResourceTotalMassCache(allowDirty);
 	}
 
-	/**
-	 * Stores item resources.
-	 * 
-	 * @param resource the resource to store.
-	 * @param number   the number of resources to store.
-	 */
-	public void storeItemResources(int id, int number) {
-		storeItemResources(ItemResourceUtil.findItemResource(id), number);
-	}
+//	/**
+//	 * Stores item resources.
+//	 * 
+//	 * @param resource the resource to store.
+//	 * @param number   the number of resources to store.
+//	 */
+//	public void storeItemResources(int id, int number) {
+//		storeItemResources(ItemResourceUtil.findItemResource(id), number);
+//	}
 
 	/**
 	 * Stores item resources.
@@ -1242,13 +1281,13 @@ public class Inventory implements Serializable {
 	 * @param resource the resource to store.
 	 * @param number   the number of resources to store.
 	 */
-	public void storeItemResources(ItemResource resource, int number) {
+	public void storeItemResources(int resource, int number) {
 
 		if (number < 0) {
 			throw new IllegalStateException("Cannot store negative number of resources.");
 		}
 
-		double totalMass = resource.getMassPerItem() * number;
+		double totalMass = ItemResourceUtil.findItemResource(resource).getMassPerItem() * number;
 
 		if (number > 0) {
 			if (totalMass <= getRemainingGeneralCapacity(false)) {
@@ -1259,7 +1298,7 @@ public class Inventory implements Serializable {
 
 				// Initialize contained item resources if necessary.
 				if (containedItemResources == null) {
-					containedItemResources = new ConcurrentHashMap<ItemResource, Integer>();
+					containedItemResources = new ConcurrentHashMap<Integer, Integer>();
 				}
 
 				int totalNum = number + getItemResourceNum(resource);
@@ -1277,6 +1316,16 @@ public class Inventory implements Serializable {
 		}
 	}
 
+//	/**
+//	 * Retrieves item resources.
+//	 * 
+//	 * @param resource the resource to retrieve.
+//	 * @param number   the number of resources to retrieve.
+//	 */
+//	public void retrieveItemResources(int resource, int number) {
+//		retrieveItemResources(ItemResourceUtil.findItemResource(resource), number);
+//	}
+
 	/**
 	 * Retrieves item resources.
 	 * 
@@ -1284,23 +1333,16 @@ public class Inventory implements Serializable {
 	 * @param number   the number of resources to retrieve.
 	 */
 	public void retrieveItemResources(int resource, int number) {
-		retrieveItemResources(ItemResourceUtil.findItemResource(resource), number);
-	}
-
-	/**
-	 * Retrieves item resources.
-	 * 
-	 * @param resource the resource to retrieve.
-	 * @param number   the number of resources to retrieve.
-	 */
-	public void retrieveItemResources(ItemResource resource, int number) {
 
 		if (number < 0) {
 			throw new IllegalStateException("Cannot retrieve negative number of resources.");
 		}
-
+		
+		String name = ItemResourceUtil.findItemResource(resource).getName();
+		
 		if (number > 0) {
 			if (number <= getItemResourceNum(resource)) {
+
 				int remainingNum = number;
 
 				// Mark caches as dirty.
@@ -1330,10 +1372,10 @@ public class Inventory implements Serializable {
 
 				if (remainingNum > 0) {
 					throw new IllegalStateException(
-							resource.getName() + " could not be totally retrieved. Remaining: " + remainingNum);
+							name + " could not be totally retrieved. Remaining: " + remainingNum);
 				}
 			} else {
-				throw new IllegalStateException("Insufficient stored number to retrieve " + resource.getName()
+				throw new IllegalStateException("Insufficient stored number to retrieve " + name
 						+ ", stored: " + getItemResourceNum(resource) + ", attempted: " + number);
 			}
 		}
@@ -1616,7 +1658,7 @@ public class Inventory implements Serializable {
 					updateAmountResourceStoredCache(resource);
 					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
-				for (ItemResource itemResource : unit.getInventory().getAllItemResourcesStored()) {
+				for (Integer itemResource : unit.getInventory().getAllItemResourcesStored()) {
 					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
 				}
 			}
@@ -1653,12 +1695,12 @@ public class Inventory implements Serializable {
 				if (owner != null) {
 					owner.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, unit);
 
-					for (int resource : unit.getInventory().getAllARStored(false)) {
+					for (Integer resource : unit.getInventory().getAllARStored(false)) {
 						updateAmountResourceCapacityCache(resource);
 						updateAmountResourceStoredCache(resource);
 						owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 					}
-					for (ItemResource itemResource : unit.getInventory().getAllItemResourcesStored()) {
+					for (Integer itemResource : unit.getInventory().getAllItemResourcesStored()) {
 						owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
 					}
 				}
@@ -2413,9 +2455,9 @@ public class Inventory implements Serializable {
 		double tempMass = 0D;
 
 		if (containedItemResources != null) {
-			Set<Entry<ItemResource, Integer>> es = containedItemResources.entrySet();
-			for (Entry<ItemResource, Integer> e : es) {
-				tempMass += e.getValue() * e.getKey().getMassPerItem();
+			Set<Entry<Integer, Integer>> es = containedItemResources.entrySet();
+			for (Entry<Integer, Integer> e : es) {
+				tempMass += e.getValue() * ItemResourceUtil.findItemResource(e.getKey()).getMassPerItem();
 			}
 		}
 

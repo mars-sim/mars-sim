@@ -251,8 +251,9 @@ public class FoodProduction extends Function implements Serializable {
 				inv.addAmountDemandTotalRequest(resource);
 				inv.addAmountDemand(resource, item.getAmount());
 			} else if (ItemType.PART.equals(item.getType())) {
-				Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
-				inv.retrieveItemResources(part, (int) item.getAmount());
+//				Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
+				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
+				inv.retrieveItemResources(id, (int) item.getAmount());
 			} else
 				throw new IllegalStateException(
 						"FoodProduction process input: " + item.getType() + " not a valid type.");
@@ -374,10 +375,11 @@ public class FoodProduction extends Function implements Serializable {
 					} else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
 						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
+						int id = part.getID();//ItemResourceUtil.findIDbyItemResourceName(item.getName());
 						double mass = item.getAmount() * part.getMassPerItem();
 						double capacity = inv.getGeneralCapacity();
 						if (mass <= capacity) {
-							inv.storeItemResources(part, (int) item.getAmount());
+							inv.storeItemResources(id, (int) item.getAmount());
 						}
 					} else if (ItemType.EQUIPMENT.equals(item.getType())) {
 						// Produce equipment.
@@ -444,10 +446,11 @@ public class FoodProduction extends Function implements Serializable {
 					} else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
 						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
+						int id = part.getID();
 						double mass = item.getAmount() * part.getMassPerItem();
 						double capacity = inv.getGeneralCapacity();
 						if (mass <= capacity) {
-							inv.storeItemResources(part, (int) item.getAmount());
+							inv.storeItemResources(id, (int) item.getAmount());
 						}
 					} else if (ItemType.EQUIPMENT.equals(item.getType())) {
 						// Produce equipment.

@@ -1004,9 +1004,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				vehicle.determinedSettlementParkedLocationAndFacing();
 
 				// Store all construction vehicle attachments in settlement.
-				Iterator<ItemResource> j = vInv.getAllItemResourcesStored().iterator();
+				Iterator<Integer> j = vInv.getAllItemResourcesStored().iterator();
 				while (j.hasNext()) {
-					ItemResource attachmentPart = j.next();
+					Integer attachmentPart = j.next();
 					int num = vInv.getItemResourceNum(attachmentPart);
 					vInv.retrieveItemResources(attachmentPart, num);
 					sInv.storeItemResources(attachmentPart, num);

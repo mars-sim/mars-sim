@@ -21,6 +21,8 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -267,16 +269,17 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 		}
 
 		// Unload all parts.
-		Iterator<ItemResource> i = luvInv.getAllItemResourcesStored().iterator();
+		Iterator<Integer> i = luvInv.getAllItemResourcesStored().iterator();
 		while (i.hasNext()) {
-			ItemResource item = i.next();
+			Integer item = i.next();
 			int num = luvInv.getItemResourceNum(item);
-			double mass = item.getMassPerItem() * num;
+			Part part= (Part)(ItemResourceUtil.findItemResource(item));
+			double mass = part.getMassPerItem() * num;
 			if (rcInv.getRemainingGeneralCapacity(false) >= mass) {
 				luvInv.retrieveItemResources(item, num);
 				rcInv.storeItemResources(item, num);
 			} else {
-				logger.severe(item.getName() + " numbered " + num + " cannot be stored in " + returnContainer.getName()
+				logger.severe(part.getName() + " numbered " + num + " cannot be stored in " + returnContainer.getName()
 						+ " due to insufficient remaining general capacity.");
 			}
 		}

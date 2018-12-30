@@ -944,7 +944,7 @@ public class Simulation implements ClockListener, Serializable {
 		GroundVehicleMaintenance.justReloaded(bc);
 		Heating.justReloaded(masterClock, marsClock, mars);
 		LivingAccommodations.justReloaded(marsClock);
-		Manufacture.justReloaded(marsClock);
+		Manufacture.justReloaded(marsClock, bc);
 		ResourceProcessing.justReloaded(bc);
 		ResourceProcess.justReloaded(marsClock);
 		RoboticStation.justReloaded(bc);

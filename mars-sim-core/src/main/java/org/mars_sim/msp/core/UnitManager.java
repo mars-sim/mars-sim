@@ -674,7 +674,7 @@ public class UnitManager implements Serializable {
 					Part part = j.next();
 					Integer number = partMap.get(part);
 					Inventory inv = settlement.getInventory();
-					inv.storeItemResources(part, number);
+					inv.storeItemResources(part.getID(), number);
 				}
 			}
 		} catch (Exception e) {

@@ -211,7 +211,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
                 capacity.put(resource, inventory.getAmountResourceCapacity(resource, false));
             }
 
-            Set<ItemResource> itemResources = inventory.getAllItemResourcesStored();
+            Set<ItemResource> itemResources = inventory.getAllItemRsStored();
             keys.addAll(itemResources);
             Iterator<ItemResource> iItem = itemResources.iterator();
             while (iItem.hasNext()) {
@@ -283,7 +283,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         			newCapacity.put(resource, inventory.getAmountResourceCapacity(resource, false));
         		}
 
-        		Set<ItemResource> itemResources = inventory.getAllItemResourcesStored();
+        		Set<ItemResource> itemResources = inventory.getAllItemRsStored();
         		newResourceKeys.addAll(itemResources);
             	//Iterator<ItemResource> iItem = itemResources.iterator();
             	//while (iItem.hasNext()) {

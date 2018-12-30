@@ -360,10 +360,11 @@ public class TestInventory extends TestCase {
 
     public void testInventoryItemResourceStoreGood() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        int id = pipeWrench.getID();
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(50D);
-        inventory.storeItemResources(pipeWrench, 20);
-        int storedResource = inventory.getItemResourceNum(pipeWrench);
+        inventory.storeItemResources(id, 20);
+        int storedResource = inventory.getItemResourceNum(id);
         assertEquals(20, storedResource);
         double storedMass = inventory.getGeneralStoredMass(false);
         assertEquals(50D, storedMass, 0D);
@@ -371,13 +372,14 @@ public class TestInventory extends TestCase {
 
     public void testInventoryItemResourceStoreDeep() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        int id = pipeWrench.getID();
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(60D);
         Unit testUnit = new MockUnit1();
         testUnit.getInventory().addGeneralCapacity(50D);
         inventory.storeUnit(testUnit);
-        testUnit.getInventory().storeItemResources(pipeWrench, 20);
-        int storedResource = inventory.getItemResourceNum(pipeWrench);
+        testUnit.getInventory().storeItemResources(id, 20);
+        int storedResource = inventory.getItemResourceNum(id);
         assertEquals(0, storedResource);
         double storedMass = inventory.getGeneralStoredMass(false);
         assertEquals(60D, storedMass, 0D);
@@ -385,10 +387,11 @@ public class TestInventory extends TestCase {
 
     public void testInventoryItemResourceStoreOverload() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        int id = pipeWrench.getID();
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(50D);
         try {
-            inventory.storeItemResources(pipeWrench, 21);
+            inventory.storeItemResources(id, 21);
             fail("Throws exception if overloaded");
         } catch (Exception e) {
             //expected
@@ -397,10 +400,11 @@ public class TestInventory extends TestCase {
 
     public void testInventoryItemResourceStoreNegativeNumber() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        int id = pipeWrench.getID();
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(50D);
         try {
-            inventory.storeItemResources(pipeWrench, -1);
+            inventory.storeItemResources(id, -1);
             fail("Throws exception if negative number");
         } catch (Exception e) {
             //expected
@@ -409,9 +413,10 @@ public class TestInventory extends TestCase {
 
     public void testInventoryItemResourceStoreNoCapacity() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        int id = pipeWrench.getID();
         Inventory inventory = new MockUnit1().getInventory();
         try {
-            inventory.storeItemResources(pipeWrench, 1);
+            inventory.storeItemResources(id, 1);
             fail("Throws exception if capacity not set (overloaded)");
         } catch (Exception e) {
             //expected
@@ -420,13 +425,14 @@ public class TestInventory extends TestCase {
 
     public void testInventoryItemResourceStoreDeepOverload() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        int id = pipeWrench.getID();
         Unit testUnit1 = new MockUnit1();
         testUnit1.getInventory().addGeneralCapacity(50D);
         Unit testUnit2 = new MockUnit2();
         testUnit2.getInventory().addGeneralCapacity(100D);
         testUnit1.getInventory().storeUnit(testUnit2);
         try {
-            testUnit2.getInventory().storeItemResources(pipeWrench, 21);
+            testUnit2.getInventory().storeItemResources(id, 21);
             fail("Fails properly when parent unit's general capacity is overloaded.");
         } catch (Exception e) {
             //expected
@@ -435,9 +441,10 @@ public class TestInventory extends TestCase {
 
     public void testInventoryItemResourceRemainingCapacityGood() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        int id = pipeWrench.getID();
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(50D);
-        inventory.storeItemResources(pipeWrench, 10);
+        inventory.storeItemResources(id, 10);
         double remainingCapacity = inventory.getRemainingGeneralCapacity(false);
         assertEquals(25D, remainingCapacity, 0D);
     }
@@ -450,39 +457,42 @@ public class TestInventory extends TestCase {
 
     public void testInventoryItemResourceRetrieveGood() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        int id = pipeWrench.getID();
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(50D);
-        inventory.storeItemResources(pipeWrench, 10);
-        inventory.retrieveItemResources(pipeWrench, 5);
-        int remainingNum = inventory.getItemResourceNum(pipeWrench);
+        inventory.storeItemResources(id, 10);
+        inventory.retrieveItemResources(id, 5);
+        int remainingNum = inventory.getItemResourceNum(id);
         assertEquals(5, remainingNum);
     }
 
     public void testInventoryItemResourceRetrieveDeep() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        int id = pipeWrench.getID();
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(60D);
         Unit testUnit = new MockUnit1();
         inventory.storeUnit(testUnit);
         testUnit.getInventory().addGeneralCapacity(50D);
-        testUnit.getInventory().storeItemResources(pipeWrench, 10);
+        testUnit.getInventory().storeItemResources(id, 10);
         try {
-            inventory.retrieveItemResources(pipeWrench, 5);
+            inventory.retrieveItemResources(id, 5);
             fail("pipewrenches should not be retrievable");
         } catch (Exception e) {
             //expected
         }
-        int remainingNum = inventory.getItemResourceNum(pipeWrench);
+        int remainingNum = inventory.getItemResourceNum(id);
         assertEquals(0, remainingNum);
     }
 
     public void testInventoryItemResourceRetrieveTooMuch() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        int id = pipeWrench.getID();
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(50D);
-        inventory.storeItemResources(pipeWrench, 10);
+        inventory.storeItemResources(id, 10);
         try {
-            inventory.retrieveItemResources(pipeWrench, 11);
+            inventory.retrieveItemResources(id, 11);
             fail("Item resource retrieved fails correctly.");
         } catch (Exception e) {
             //expected
@@ -491,11 +501,12 @@ public class TestInventory extends TestCase {
 
     public void testInventoryItemResourceRetrieveNegative() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        int id = pipeWrench.getID();
         Inventory inventory = new MockUnit1().getInventory();
         inventory.addGeneralCapacity(50D);
-        inventory.storeItemResources(pipeWrench, 10);
+        inventory.storeItemResources(id, 10);
         try {
-            inventory.retrieveItemResources(pipeWrench, -1);
+            inventory.retrieveItemResources(id, -1);
             fail("Item resource retrieved fails correctly.");
         } catch (Exception e) {
             //expected
@@ -504,9 +515,10 @@ public class TestInventory extends TestCase {
 
     public void testInventoryItemResourceRetrieveNoItem() throws Exception {
         ItemResource pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 1, "a tool", 2.5D, 1);
+        int id = pipeWrench.getID();
         Inventory inventory = new MockUnit1().getInventory();
         try {
-            inventory.retrieveItemResources(pipeWrench, 1);
+            inventory.retrieveItemResources(id, 1);
             fail("Item resource retrieved fails correctly.");
         } catch (Exception e) {
             //expected

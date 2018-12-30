@@ -212,7 +212,7 @@ extends TestCase {
         Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
 		int hammerID = hammer.getID();
 		
-		inv.storeItemResources(hammer, 5);
+		inv.storeItemResources(hammerID, 5);
 
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
@@ -378,10 +378,12 @@ extends TestCase {
 		Vehicle vehicle = new MockVehicle(settlement);
 //        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
         Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
-		Inventory inv = vehicle.getInventory();
+		int hammerID = hammer.getID();
+		
+        Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
 
-		inv.storeItemResources(hammer, 5);
+		inv.storeItemResources(hammerID, 5);
 
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
@@ -392,8 +394,7 @@ extends TestCase {
 //		AmountResource water = AmountResource.findAmountResource(WATER);
 //		AmountResource methane = AmountResource.findAmountResource(METHANE);
 
-		int hammerID = hammer.getID();
-		
+
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
 		requiredResourcesMap.put(oxygenID, 100D);
 		requiredResourcesMap.put(foodID, 100D);

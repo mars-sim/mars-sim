@@ -31,6 +31,8 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -450,19 +452,21 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		int totalItems = 0;
 		// Unload item resources.
 		if (amountUnloading > 0D) {
-			Iterator<ItemResource> j = vehicleInv.getAllItemResourcesStored().iterator();
+			Iterator<Integer> j = vehicleInv.getAllItemResourcesStored().iterator();
 			while (j.hasNext() && (amountUnloading > 0D)) {
-				ItemResource resource = j.next();
+				Integer resource = j.next();
+				Part part= (Part)(ItemResourceUtil.findItemResource(resource));
+				double mass = part.getMassPerItem();
 				int num = vehicleInv.getItemResourceNum(resource);
-				if ((num * resource.getMassPerItem()) > amountUnloading) {
-					num = (int) Math.round(amountUnloading / resource.getMassPerItem());
+				if ((num * mass) > amountUnloading) {
+					num = (int) Math.round(amountUnloading / mass);
 					if (num == 0) {
 						num = 1;
 					}
 				}
 				vehicleInv.retrieveItemResources(resource, num);
 				settlementInv.storeItemResources(resource, num);
-				amountUnloading -= (num * resource.getMassPerItem());
+				amountUnloading -= (num * mass);
 				
 				totalItems += num;
 			}

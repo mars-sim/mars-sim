@@ -422,7 +422,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		while (partsI.hasNext()) {
 			Part part = partsI.next();
 			int number = template.getParts().get(part);
-			newSettlement.getInventory().storeItemResources(part, number);
+			newSettlement.getInventory().storeItemResources(part.getID(), number);
 		}
 	}
 

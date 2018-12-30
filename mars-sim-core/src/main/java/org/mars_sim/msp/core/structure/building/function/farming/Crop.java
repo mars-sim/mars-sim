@@ -239,8 +239,8 @@ public class Crop implements Serializable {
 	private static int greywaterID = ResourceUtil.greyWaterID;
 	private static int cropWasteID = ResourceUtil.cropWasteID;
 	private static int fertilizerID = ResourceUtil.fertilizerID;
-
-	private static Part mushroomBoxAR = ItemResourceUtil.mushroomBoxAR;
+	
+	private static int mushroomBoxID = ItemResourceUtil.mushroomBoxID;
 
 	private static MasterClock masterClock;
 	private static MarsClock marsClock;
@@ -400,9 +400,9 @@ public class Crop implements Serializable {
 
 	public void setupMushroom() {
 		if (cropName.toLowerCase().contains(MUSHROOM)) {
-			if (inv.hasItemResource(mushroomBoxAR)) {
-				inv.retrieveItemResources(mushroomBoxAR, 1);
-				inv.addItemDemand(mushroomBoxAR, 2);
+			if (inv.hasItemResource(mushroomBoxID)) {
+				inv.retrieveItemResources(mushroomBoxID, 1);
+				inv.addItemDemand(mushroomBoxID, 2);
 			}
 			// Require some dead matter for fungi to decompose
 			if (growingArea * .5 > MIN)

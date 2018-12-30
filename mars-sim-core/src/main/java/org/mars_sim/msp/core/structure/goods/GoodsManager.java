@@ -1681,10 +1681,10 @@ public class GoodsManager implements Serializable {
 				demand += getPartFoodProductionDemand(part);
 
 				// Add construction demand.
-				demand += getPartConstructionDemand(part.getID());
+				demand += getPartConstructionDemand(id);
 
 				// Add construction site demand.
-				demand += getPartConstructionSiteDemand(part);
+				demand += getPartConstructionSiteDemand(id);
 			}
 
 			// Add trade demand.
@@ -2029,7 +2029,7 @@ public class GoodsManager implements Serializable {
 	 * @param part the part.
 	 * @return demand (# of parts).
 	 */
-	private double getPartConstructionSiteDemand(Part part) {
+	private double getPartConstructionSiteDemand(int id) {
 
 		double demand = 0D;
 
@@ -2040,8 +2040,8 @@ public class GoodsManager implements Serializable {
 			ConstructionSite site = i.next();
 			if (site.hasUnfinishedStage() && !site.getCurrentConstructionStage().isSalvaging()) {
 				ConstructionStage stage = site.getCurrentConstructionStage();
-				if (stage.getRemainingParts().containsKey(part)) {
-					int requiredNum = stage.getRemainingParts().get(part);
+				if (stage.getRemainingParts().containsKey(id)) {
+					int requiredNum = stage.getRemainingParts().get(id);
 					demand += requiredNum * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
 				}
 			}
@@ -2056,7 +2056,7 @@ public class GoodsManager implements Serializable {
 	 * @param part the part.
 	 * @return demand (# of parts).
 	 */
-	private double getPartConstructionDemand(Integer part) {
+	private double getPartConstructionDemand(int id) {
 		double demand = 0D;
 
 		ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
@@ -2068,7 +2068,7 @@ public class GoodsManager implements Serializable {
 			double stageValue = stageValues.get(stage);
 			if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType())
 					&& isLocallyConstructable(stage)) {
-				double constructionStageDemand = getPartConstructionStageDemand(part, stage, stageValue);
+				double constructionStageDemand = getPartConstructionStageDemand(id, stage, stageValue);
 				if (constructionStageDemand > 0D) {
 					demand += constructionStageDemand;
 				}
@@ -2087,7 +2087,7 @@ public class GoodsManager implements Serializable {
 	 * @param stageValue the building construction stage value (VP).
 	 * @return demand (# of parts).
 	 */
-	private double getPartConstructionStageDemand(Integer part, ConstructionStageInfo stage, double stageValue) {
+	private double getPartConstructionStageDemand(int part, ConstructionStageInfo stage, double stageValue) {
 		double demand = 0D;
 
 		int partNumber = getPrerequisiteConstructionPartNum(part, stage);

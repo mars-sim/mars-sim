@@ -368,11 +368,11 @@ public class Mining extends RoverMission {
 				settlementInv.retrieveUnit(luv);
 
 				// Load light utility vehicle with attachment parts.
-				settlementInv.retrieveItemResources(ItemResourceUtil.pneumaticDrillAR, 1);
-				luvInv.storeItemResources(ItemResourceUtil.pneumaticDrillAR, 1);
+				settlementInv.retrieveItemResources(ItemResourceUtil.pneumaticDrillID, 1);
+				luvInv.storeItemResources(ItemResourceUtil.pneumaticDrillID, 1);
 
-				settlementInv.retrieveItemResources(ItemResourceUtil.backhoeAR, 1);
-				luvInv.storeItemResources(ItemResourceUtil.backhoeAR, 1);
+				settlementInv.retrieveItemResources(ItemResourceUtil.backhoeID, 1);
+				luvInv.storeItemResources(ItemResourceUtil.backhoeID, 1);
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "Error loading light utility vehicle and attachment parts.");
 				endMission("Light utility vehicle and attachment parts could not be loaded.");
@@ -404,11 +404,11 @@ public class Mining extends RoverMission {
 				luv.determinedSettlementParkedLocationAndFacing();
 
 				// Unload attachment parts.
-				luvInv.retrieveItemResources(ItemResourceUtil.pneumaticDrillAR, 1);
-				settlementInv.storeItemResources(ItemResourceUtil.pneumaticDrillAR, 1);
+				luvInv.retrieveItemResources(ItemResourceUtil.pneumaticDrillID, 1);
+				settlementInv.storeItemResources(ItemResourceUtil.pneumaticDrillID, 1);
 
-				luvInv.retrieveItemResources(ItemResourceUtil.backhoeAR, 1);
-				settlementInv.storeItemResources(ItemResourceUtil.backhoeAR, 1);
+				luvInv.retrieveItemResources(ItemResourceUtil.backhoeID, 1);
+				settlementInv.storeItemResources(ItemResourceUtil.backhoeID, 1);
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "Error unloading light utility vehicle and attachment parts.");
 				endMission("Light utility vehicle and attachment parts could not be unloaded.");
