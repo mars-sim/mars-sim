@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -391,9 +392,11 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 		// Update each of the tab panels.
 		for (TabPanel tabPanel : tabPanels) {
 			if (tabPanel.isVisible()) {// && isShowing()) {
-				tabPanel.update();
+				SwingUtilities.invokeLater(() -> 
+					tabPanel.update()
+				);
 //				tabPanel.updateUI();
-//			 tabPanel.validate();
+//			tabPanel.validate();
 			}
 		}
 

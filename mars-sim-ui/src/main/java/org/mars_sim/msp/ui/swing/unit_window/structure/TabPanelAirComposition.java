@@ -648,71 +648,68 @@ extends TabPanel {
 			else
 				return 0;
 		}
-		
-/*		
-		public double getMole(int gas) {
-			double mole = 0;
-			Iterator<Building> k = buildings.iterator();
-			while (k.hasNext()) {
-				Building b = k.next();
-				int id = b.getInhabitableID();
-				double [][] numMoles = air.getNumMoles();
+			
+//		public double getMole(int gas) {
+//			double mole = 0;
+//			Iterator<Building> k = buildings.iterator();
+//			while (k.hasNext()) {
+//				Building b = k.next();
+//				int id = b.getInhabitableID();
+//				double [][] numMoles = air.getNumMoles();
+//
+//				if (id < numMoles[0].length)
+//					mole = numMoles[gas][id];
+//				else
+//					mole = 0;
+//			}
+//			return mole;
+//		}	
+//		
+//		public double getMass(int gas) {
+//			double kg = 0;
+//			double moles = getMole(gas);
+//			if (gas == 0)
+//				kg = CompositionOfAir.CO2_MOLAR_MASS * moles;
+//			else if (gas == 1)
+//				kg = CompositionOfAir.ARGON_MOLAR_MASS * moles;
+//			else if (gas == 2)
+//				kg = CompositionOfAir.N2_MOLAR_MASS * moles;
+//			else if (gas == 3)
+//				kg = CompositionOfAir.O2_MOLAR_MASS * moles;
+//			else if (gas == 4)
+//				kg = 0;
+//							
+//			return kg;
+//		}
+	
+//		public double getComposition(int gas) {
+//			double percent = 0;
+//			Iterator<Building> k = buildings.iterator();
+//			while (k.hasNext()) {
+//				Building b = k.next();
+//				int id = b.getInhabitableID();
+//				double [][] comp = air.getPercentComposition();
+//
+//				if (id < comp[0].length)
+//					percent = comp[gas][id];
+//				else
+//					percent = 0;
+//
+//			}
+//			return percent;
+//		}
 
-				if (id < numMoles[0].length)
-					mole = numMoles[gas][id];
-				else
-					mole = 0;
-			}
-			return mole;
-		}	
-		
-		public double getMass(int gas) {
-			double kg = 0;
-			double moles = getMole(gas);
-			if (gas == 0)
-				kg = CompositionOfAir.CO2_MOLAR_MASS * moles;
-			else if (gas == 1)
-				kg = CompositionOfAir.ARGON_MOLAR_MASS * moles;
-			else if (gas == 2)
-				kg = CompositionOfAir.N2_MOLAR_MASS * moles;
-			else if (gas == 3)
-				kg = CompositionOfAir.O2_MOLAR_MASS * moles;
-			else if (gas == 4)
-				kg = 0;
-							
-			return kg;
-		}
-*/		
-/*		
-		public double getComposition(int gas) {
-			double percent = 0;
-			Iterator<Building> k = buildings.iterator();
-			while (k.hasNext()) {
-				Building b = k.next();
-				int id = b.getInhabitableID();
-				double [][] comp = air.getPercentComposition();
+//		public double getTotalPressure(int row) {
+//			double [] tp = air.getTotalPressure();
+//			double p = 0;
+//			if (row < tp.length)
+//				p = tp[row];
+//			else
+//				p = 0;
+//			// convert from atm to kPascal
+//			return p * CompositionOfAir.kPASCAL_PER_ATM;
+//		}
 
-				if (id < comp[0].length)
-					percent = comp[gas][id];
-				else
-					percent = 0;
-
-			}
-			return percent;
-		}
-*/
-/*
-		public double getTotalPressure(int row) {
-			double [] tp = air.getTotalPressure();
-			double p = 0;
-			if (row < tp.length)
-				p = tp[row];
-			else
-				p = 0;
-			// convert from atm to kPascal
-			return p * CompositionOfAir.kPASCAL_PER_ATM;
-		}
-*/
 		public void update() {
 			//int newSize = buildings.size();
 			//if (size != newSize) {

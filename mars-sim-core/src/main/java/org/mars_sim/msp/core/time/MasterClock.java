@@ -41,7 +41,7 @@ public class MasterClock implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	private static final int MAX_COUNT = 500;
+	private static final int FACTOR = 4;
 
 	// Data members
 	/** Runnable flag. */
@@ -69,6 +69,8 @@ public class MasterClock implements Serializable {
 	private volatile double adjustedTBU_s = 0;
 	/** Adjusted frame per sec */
 	private volatile double adjustedFPS = 0;
+	/** The pulse per seconds */
+	private volatile double pps = 0;
 	
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
@@ -919,6 +921,10 @@ public class MasterClock implements Serializable {
 			this.time = time;
 		}
 
+		public double getTime() {
+			return time;
+		}
+		
 		@Override
 		public void run() {
 			try {
@@ -936,18 +942,30 @@ public class MasterClock implements Serializable {
 				listener.clockPulse(time);
 				timeCache += time;
 				count++;
-		 
+//				long t02 = System.currentTimeMillis();//.nanoTime();
+//				// Discard the very first pulseTime since it's not invalid
+//				// at the start of the sim
+//				if (t01 != 0) {
+//					timeIntervals.add((t02-t01)/1_000F);
+//				}
+//				t01 = t02;
+//				if (timeIntervals.size() > 15)
+//					timeIntervals.remove(0);
+				
 				// period is in seconds
 //				double period = timeCache / currentTR * MarsClock.SECONDS_PER_MILLISOL;
 
-				if (count >= totalCount) {
-					int speed = getCurrentSpeed();
-					if (speed == 0)
-						speed = 1;
-					speed = speed * speed;
-					totalCount = MAX_COUNT/speed;
-
+				if (count > FACTOR) {
+//					int speed = getCurrentSpeed();
+//					if (speed == 0)
+//						speed = 1;
+//					totalCount = speed * speed / FACTOR ;
+//					System.out.println(totalCount);
+//					if (totalCount < 4)
+//						totalCount = 4;
+//					totalCount = (int) (3D/computePulsesPerSecond());
 					count = 0;
+					
 //					long t02 = System.nanoTime();
 					long t02 = System.currentTimeMillis();//.nanoTime();
 					// Discard the very first pulseTime since it's not invalid
@@ -957,7 +975,7 @@ public class MasterClock implements Serializable {
 					}
 					t01 = t02;
 
-					if (timeIntervals.size() > 15)
+					if (timeIntervals.size() > 30)
 						timeIntervals.remove(0);
 
 //					System.out.println(
@@ -1113,7 +1131,7 @@ public class MasterClock implements Serializable {
 	public double getPulsesPerSecond() {
 		return 1000.0 / tLast * totalPulses;
 	}
-
+	
 	/**
 	 * Update the milliseconds elapsed since last time pulse.
 	 */
@@ -1232,6 +1250,10 @@ public class MasterClock implements Serializable {
 
 	}
 
+	public double getTime() {
+		return clockListenerTasks.get(0).getTime();
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 

@@ -236,7 +236,7 @@ public class HealthProblem implements Serializable {
 		Simulation.instance().getEventManager().registerNewEvent(treatedEvent);
 
 		LogConsolidated.log(Level.INFO, 0, sourceName, "[" + getSufferer().getLocationTag().getLocale() + "] "
-						+ getSufferer().getName() + " begans to receive treatment for " + toString().toLowerCase());
+						+ getSufferer().getName() + " began to receive treatment for " + toString().toLowerCase());
 	}
 
 	/**
@@ -378,11 +378,13 @@ public class HealthProblem implements Serializable {
 					}
 
 					if (nextPhase == null) {
-						logger.info(sufferer + " is suffering from " + illness);
+						logger.info(sufferer + " has been suffering from " 
+								+ illness + " long enough and is now dead.");
 						setState(DEAD);
 						condition.setDead(this, false, "");
 					} else {
-						logger.info(sufferer + " is suffering from " + illness + ". Degrading to " + nextPhase);
+						logger.info(sufferer + " had been suffering from " 
+								+ illness + ", which was just degraded to " + nextPhase + ".");
 						result = nextPhase;
 					}
 				}

@@ -265,7 +265,8 @@ public class MainScene implements ClockListener {
 	private static final String DTR = "Default TR :";
 	private static final String HZ = " Hz";
 	private static final String REFRESH = "Refresh Rate :";
-
+	private static final String MILLISOLS = " # Millisols :";
+			
 	private static final String SOLAR_LONGITUDE = "Areocentric Ls : ";//"Solar Longitude : ";
 	private static final String NOTE_MARS = " Note : Mars's now at ";
 	private static final String APHELION = "aphelion ";
@@ -380,7 +381,8 @@ public class MainScene implements ClockListener {
 	private Label upTimeLabel;
 	private Label noteLabel;
 	private Label refreshLabel;
-
+	private Label millisolsLabel;
+	
 	private Button marsTimeButton;
 
 	private Text LSText;
@@ -1393,9 +1395,11 @@ public class MainScene implements ClockListener {
 		if (uptimer != null)
 			upTimeLabel.setText(uptimer.getUptime());
 
-		Label refreshLabel0 = createLabelLeft(REFRESH, "The frequency the graphic is refreshed");
+		Label refreshLabel0 = createLabelLeft(REFRESH, "The frequency the graphic is refreshed.");
 		refreshLabel = createLabelRight("e.g. 1 Hz means once per second.");
 
+		Label millisolsLabel0 = createLabelLeft(MILLISOLS, "The millisols per clock pulse.");
+		millisolsLabel = createLabelRight("e.g. 4.5 means each clock pulse sends 4.5 millisols.");
 
 		GridPane gridPane = new GridPane();
 		gridPane.getStyleClass().add("jfx-popup-container; -fx-background-color:transparent;");
@@ -1407,7 +1411,7 @@ public class MainScene implements ClockListener {
 		ColumnConstraints right = new ColumnConstraints();
 		right.setPrefWidth(120);// earthTimeButton.getPrefWidth() * .6);
 		ColumnConstraints left = new ColumnConstraints();
-		left.setPrefWidth(80);// earthTimeButton.getPrefWidth() * .4);
+		left.setPrefWidth(90);// earthTimeButton.getPrefWidth() * .4);
 
 		GridPane.setConstraints(timeRatioSpinner, 1, 0);
 		GridPane.setConstraints(defaultRatioLabel, 1, 1);
@@ -1415,32 +1419,36 @@ public class MainScene implements ClockListener {
 		GridPane.setConstraints(tpsLabel, 1, 3);
 		GridPane.setConstraints(upTimeLabel, 1, 4);
 		GridPane.setConstraints(refreshLabel, 1, 5);
-
+		GridPane.setConstraints(millisolsLabel, 1, 6);
+		
 		GridPane.setConstraints(spinnerLabel0, 0, 0);
 		GridPane.setConstraints(defaultRatioLabel0, 0, 1);
 		GridPane.setConstraints(realTimeLabel0, 0, 2);
 		GridPane.setConstraints(tpsLabel0, 0, 3);
 		GridPane.setConstraints(upTimeLabel0, 0, 4);
 		GridPane.setConstraints(refreshLabel0, 0, 5);
-
+		GridPane.setConstraints(millisolsLabel0, 0, 6);
+		
 		GridPane.setHalignment(timeRatioSpinner, HPos.CENTER);
 		GridPane.setHalignment(defaultRatioLabel, HPos.CENTER);
 		GridPane.setHalignment(realTimeLabel, HPos.CENTER);
 		GridPane.setHalignment(tpsLabel, HPos.CENTER);
 		GridPane.setHalignment(upTimeLabel, HPos.CENTER);
 		GridPane.setHalignment(refreshLabel, HPos.CENTER);
-
+		GridPane.setHalignment(millisolsLabel, HPos.CENTER);
+		
 		GridPane.setHalignment(spinnerLabel0, HPos.RIGHT);
 		GridPane.setHalignment(defaultRatioLabel0, HPos.RIGHT);
 		GridPane.setHalignment(realTimeLabel0, HPos.RIGHT);
 		GridPane.setHalignment(tpsLabel0, HPos.RIGHT);
 		GridPane.setHalignment(upTimeLabel0, HPos.RIGHT);
 		GridPane.setHalignment(refreshLabel0, HPos.RIGHT);
-
+		GridPane.setHalignment(millisolsLabel0, HPos.RIGHT);
+		
 		gridPane.getColumnConstraints().addAll(left, right);
 		gridPane.getChildren().addAll(spinnerLabel0, timeRatioSpinner, defaultRatioLabel0, defaultRatioLabel,
 				realTimeLabel0, realTimeLabel, tpsLabel0, tpsLabel, upTimeLabel0, upTimeLabel, refreshLabel0,
-				refreshLabel);
+				refreshLabel, millisolsLabel0, millisolsLabel);
 
 		speedVBox = new VBox();
 		speedVBox.getStyleClass().add(PANE_CSS);
@@ -3111,11 +3119,14 @@ public class MainScene implements ClockListener {
 			}
 
 			float refresh = masterClock.getRefresh();
-			if (refresh > 0 && refresh < 60) {
+			if (refresh > 0) {// && refresh < 10_000) {
 				double rate = Math.round((refreshCache + refresh)*50.0)/100.0;
 				refreshLabel.setText(rate + HZ);
 				refreshCache = rate;
 			}
+			
+			double millisols = Math.round(masterClock.getTime()*10_000.0)/10_000.0;
+			millisolsLabel.setText(millisols + "");
 		}
 
 		int solOfMonth = marsClock.getSolOfMonth();

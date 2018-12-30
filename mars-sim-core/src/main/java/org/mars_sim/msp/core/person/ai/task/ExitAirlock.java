@@ -705,8 +705,8 @@ public class ExitAirlock extends Task implements Serializable {
 			EVASuit suit = (EVASuit) u;
 			boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
 			if (malfunction) 
-				LogConsolidated.log(Level.SEVERE, 5_000, sourceName, "[" + p.getLocationTag().getLocale()
-					+ "] " + p + " spotted a malfunction when examining " + suit.getName() + ".");
+				LogConsolidated.log(Level.SEVERE, 50_000, sourceName, "[" + p.getLocationTag().getLocale()
+					+ "] " + p + " spotted the malfunction with " + suit.getName() + " when examining it.");
 			try {
 				boolean hasEnoughResources = hasEnoughResourcesForSuit(inv, suit);
 				if (!malfunction && hasEnoughResources) {
@@ -717,7 +717,7 @@ public class ExitAirlock extends Task implements Serializable {
 				}
 			} catch (Exception e) {
 //				e.printStackTrace(System.err);
-				LogConsolidated.log(Level.SEVERE, 5_000, sourceName, "[" + p.getLocationTag().getLocale()
+				LogConsolidated.log(Level.SEVERE, 50_000, sourceName, "[" + p.getLocationTag().getLocale()
 						+ "] " + p + " could not find enough resources for " + suit.getName() + ".", e);
 			}
 		}
