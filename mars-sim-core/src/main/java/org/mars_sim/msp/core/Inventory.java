@@ -53,16 +53,8 @@ public class Inventory implements Serializable {
 	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
 	// Data members
-//	/** Map of item resources. */
-//    private Map<Integer, Integer> containedItemIDs = null;
-	
 	/** General mass capacity of inventory. */
-	private double generalCapacity = 0D;
-	
-	/** The unit that owns this inventory. */
-	private Unit owner;
-	/** Resource storage. */
-	private AmountResourceStorage resourceStorage = new AmountResourceStorage();
+	private double generalCapacity = 0D;	
 
 	/** Collection of units in inventory. */
 	private Collection<Unit> containedUnits = null;
@@ -108,8 +100,12 @@ public class Inventory implements Serializable {
 	private Map<String, Integer> itemDemandMap = new HashMap<String, Integer>();
 	// Add 2 item resource supply maps
 	// private Map<String, Integer> itemSupplyMap = new HashMap<String, Integer>();
-	// private Map<String, Integer> itemSupplyRequestMap = new HashMap<String,
-	// Integer>();
+	// private Map<String, Integer> itemSupplyRequestMap = new HashMap<String, Integer>();
+	
+	/** The unit that owns this inventory. */
+	private Unit owner;
+	/** Resource storage. */
+	private AmountResourceStorage resourceStorage = new AmountResourceStorage();
 
 	private static MarsSurface marsSurface;
 
@@ -1234,8 +1230,11 @@ public class Inventory implements Serializable {
      */
     public Set<ItemResource> getAllItemRsStored() {
 		Set<ItemResource> set = new HashSet<>();
-		for (int ir : containedItemResources.keySet()) {
-			set.add(ItemResourceUtil.findItemResource(ir));
+		if (containedItemResources != null
+				&& !containedItemResources.isEmpty()) {
+			for (int ir : containedItemResources.keySet()) {
+				set.add(ItemResourceUtil.findItemResource(ir));
+			}
 		}
 		return set;
     }

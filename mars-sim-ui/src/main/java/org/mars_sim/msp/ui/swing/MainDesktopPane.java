@@ -1519,6 +1519,7 @@ public class MainDesktopPane extends WebDesktopPane
 
 	@Override
 	public void uiPulse(double time) {
+		super.updateUI();
 		if (mainScene != null) {
 			if (mainScene.isMainTabOpen() && !mainScene.isMinimized()) {// && !isEmpty()) {
 //				timeCache = timeCache + time;

@@ -160,7 +160,7 @@ public class MasterClock implements Serializable {
 
 		// Create listener list.
 		clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
-		timeIntervals = new ArrayList<>();
+		timeIntervals = new CopyOnWriteArrayList<>();
 		
 		// Calculate elapsedLast
 		tLast = uptimer.getUptimeMillis();

@@ -201,8 +201,7 @@ extends TabPanel {
 		// Prepare radiation label
 		WebLabel radiationLabel = new WebLabel(Msg.getString("TabPanelHealth.rad"), WebLabel.CENTER); //$NON-NLS-1$
 		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
-		//radiationLabel.setToolTipText(Msg.getString("TabPanelHealth.tooltip")); //$NON-NLS-1$
-		TooltipManager.setTooltip (radiationLabel, Msg.getString("TabPanelHealth.tooltip"), TooltipWay.down);
+		TooltipManager.setTooltip (radiationLabel, Msg.getString("TabPanelHealth.radiation.tooltip"), TooltipWay.down); //$NON-NLS-1$
 			 
 		// Prepare radiation scroll panel
 		WebScrollPane radiationScrollPanel = new WebScrollPane();
@@ -239,12 +238,11 @@ extends TabPanel {
 		radiationTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		radiationTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		radiationTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
-		
-		//balloonToolTip.createBalloonTip(radiationTable, Msg.getString("TabPanelHealth.tooltip")); //$NON-NLS-1$
+
 		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 55));
 		radiationTable.setCellSelectionEnabled(false);
 		radiationScrollPanel.setViewportView(radiationTable);
-		//radiationTable.setToolTipText(Msg.getString("TabPanelHealth.tooltip")); //$NON-NLS-1$
+
 		// Added sorting
 		radiationTable.setAutoCreateRowSorter(true);
         //if (!MainScene.OS.equals("linux")) {

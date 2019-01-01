@@ -482,6 +482,55 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		}
 	}
 
+//	public void createRadioButton() {
+//		
+//		label1 = new JLabel(new ImageIcon("Grapes1.png"));
+//		radio1 = new JRadioButton("");
+//		radio1.setName("Grapes");
+//		
+//		label2 = new JLabel(new ImageIcon("Mango.jpg"));
+//		radio2 = new JRadioButton("");
+//		radio2.setName("Mango");
+//		
+//		label3 = new JLabel(new ImageIcon("Apple.jpg"));
+//		radio3 = new JRadioButton("");
+//		radio3.setName("Apple");
+//		
+//		label4= new JLabel();
+//		
+//		jf.add(radio1);
+//		jf.add(label1);
+//		jf.add(radio2);
+//		jf.add(label2);
+//		jf.add(radio3);
+//		jf.add(label3);
+//		
+//		radio1.addActionListener(this);
+//		radio2.addActionListener(this);
+//		radio3.addActionListener(this);
+//		
+//		jf.setLayout(new FlowLayout());
+//		jf.setSize(400,200);
+//		jf.setVisible(true);
+//	}
+//
+//
+//	public void actionPerformed(ActionEvent ae) {
+//		JRadioButton rd = (JRadioButton)ae.getSource();
+//		
+//		if (rd.isSelected()) {
+//			label4.setText(rd.getName()+ " is checked");
+//			jf.add(label4);
+//			jf.setVisible(true);
+//		}
+//		else {
+//			label4.setText(rd.getName()+ " is unchecked");
+//			jf.add(label4);
+//			jf.setVisible(true);
+//		}
+//		
+//	}
+
 	@Override
 	public void tableChanged(TableModelEvent e) {
 		if (e.getType() != TableModelEvent.UPDATE) {
