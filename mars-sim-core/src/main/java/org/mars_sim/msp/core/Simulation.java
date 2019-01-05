@@ -432,9 +432,9 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialization
 		new MetaTaskUtil();
-		// ResourceUtil.getInstance().initializeNewSim();
-		// ResourceUtil.printID();
 		MarsClock marsClock = masterClock.getMarsClock();
+		LogConsolidated.initializeInstances(marsClock, masterClock.getEarthClock());
+		
 		MalfunctionFactory.setMarsClock(marsClock);
 		MissionManager.setMarsClock(marsClock);
 		MalfunctionManager.initializeInstances(masterClock, marsClock);
@@ -450,6 +450,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		ut = masterClock.getUpTimer();
 		
+
 		logger.config("Done initializing intransient data.");
 	}
 
@@ -863,6 +864,10 @@ public class Simulation implements ClockListener, Serializable {
 		MarsClock marsClock = masterClock.getMarsClock();
 		// Gets he MarsClock instance
 		EarthClock earthClock = masterClock.getEarthClock();
+		
+		// Re-initialize the instances in LogConsolidated
+		LogConsolidated.initializeInstances(marsClock, earthClock);
+		
 		// Re-initialize the SurfaceFeatures instance
 		SurfaceFeatures surface = mars.getSurfaceFeatures();
 		// Gets the Weather instance

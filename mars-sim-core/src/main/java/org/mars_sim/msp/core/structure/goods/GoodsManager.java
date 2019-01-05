@@ -366,7 +366,7 @@ public class GoodsManager implements Serializable {
 	 * @return value (value points / kg)
 	 */
 	private double determineAmountResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
-		// System.out.println( "entering determineAmountResourceGoodValue() ");
+
 		double value = 0D;
 //        double demand = 0D;
 		double totalDemand = 0D;
@@ -377,8 +377,6 @@ public class GoodsManager implements Serializable {
 	
 		// needed for loading a saved sim
 		int solElapsed = marsClock.getMissionSol();
-		// System.out.println("GoodManager : solElapsed : "+ solElapsed);
-		
 		// Compact and/or clear supply and demand maps every 5 days
 		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
@@ -389,12 +387,13 @@ public class GoodsManager implements Serializable {
 			supply = MINIMUM_STORED_SUPPLY;
 
 		AmountResource resource = (AmountResource) resourceGood.getObject();
-
+		int id = resource.getID();//ResourceUtil.findIDbyAmountResourceName(resource.getName());
+		
 		if (useCache) {
 			if (goodsDemandCache.containsKey(resourceGood)) {
 				previousDemand = goodsDemandCache.get(resourceGood);
 
-				totalSupply = getTotalSupplyAmount(resource, supply, solElapsed);
+				totalSupply = getTotalSupplyAmount(id, supply, solElapsed);
 			}
 
 			// if (goodsSupplyCache.containsKey(resourceGood)) {
@@ -405,10 +404,8 @@ public class GoodsManager implements Serializable {
 		} 
 		
 		else {
-			int id = resource.getID();//ResourceUtil.findIDbyAmountResourceName(resource.getName());
-
 			// Create getAllSupplyAmount()
-			totalSupply = getTotalSupplyAmount(resource, supply, solElapsed);
+			totalSupply = getTotalSupplyAmount(id, supply, solElapsed);
 			// goodsSupplyCache.put(resourceGood, totalSupply);
 
 			// Tune life support demand if applicable.
@@ -458,7 +455,7 @@ public class GoodsManager implements Serializable {
 			// this out for now. - Scott
 			// projectedDemand = projectedDemand / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 
-			totalDemand = .33 * (previousDemand + projectedDemand + getNewDemandAmount(resource, numSol));
+			totalDemand = .33 * (previousDemand + projectedDemand + getNewDemandAmount(id, numSol));
 
 			// Adjust VP for the inflation
 			adjustVPInflation();
@@ -544,11 +541,11 @@ public class GoodsManager implements Serializable {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getTotalSupplyAmount(AmountResource resource, double supplyStored, int solElapsed) {
+	public double getTotalSupplyAmount(int resource, double supplyStored, int solElapsed) {
 		double totalSupplyAmount = 0;
-		String r = resource.getName().toLowerCase();
+//		String r = resource.getName().toLowerCase();
 
-		double supplyAmount = inv.getAmountSupplyAmount(r);
+		double supplyAmount = inv.getAmountSupplyAmount(resource);
 		supplyAmount = Math.round(supplyAmount * 1000000.0) / 1000000.0;
 //        int supplyRequest = inv.getAmountSupplyRequest(r);
 
@@ -582,13 +579,13 @@ public class GoodsManager implements Serializable {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getNewDemandAmount(AmountResource resource, int solElapsed) {
-		String r = resource.getName().toLowerCase();
+	public double getNewDemandAmount(int resource, int solElapsed) {
+//		String r = resource.getName().toLowerCase();
 
 		// sDemand is the amount of successful demand
-		double sDemand = inv.getAmountDemandAmount(r);
+		double sDemand = inv.getAmountDemandAmount(resource);
 		// sDemand = Math.round(sDemand * 1000000.0) / 1000000.0;
-		int requests = inv.getAmountDemandTotalRequest(r);
+		int requests = inv.getAmountDemandTotalRequest(resource);
 
 		// Get the average demand per orbit
 		// total average demand = projected demand + real demand usage

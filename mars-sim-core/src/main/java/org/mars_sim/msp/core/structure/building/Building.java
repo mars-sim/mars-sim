@@ -240,7 +240,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	// private DecimalFormat fmt = new DecimalFormat("###.####");
 
-	private static Set<AmountResource> tissues = SimulationConfig.instance().getResourceConfiguration()
+	private static Set<Integer> tissues = SimulationConfig.instance().getResourceConfiguration()
 			.getTissueCultures();
 
 	/**
@@ -475,7 +475,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			lab = getResearch();
 			// Set<AmountResource> tissues =
 			// SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
-			for (AmountResource ar : tissues) {
+			for (Integer ar : tissues) {
 				getInventory().addAmountResourceTypeCapacity(ar, TISSUE_CAPACITY);
 				getInventory().storeAmountResource(ar, .1, false);
 				getInventory().addAmountDemand(ar, .1);

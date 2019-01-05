@@ -36,20 +36,20 @@ public class SimuLoggingFormatter extends Formatter {
     
     private StringBuffer sb = new StringBuffer();
     
-    private MasterClock masterClock;// = Simulation.instance().getMasterClock();
-    private MarsClock marsClock;// = masterClock.getMarsClock();
-    private EarthClock earthClock;// = masterClock.getEarthClock();
+    private static MasterClock masterClock;// = Simulation.instance().getMasterClock();
+//    private static MarsClock marsClock;// = masterClock.getMarsClock();
+//    private static EarthClock earthClock;// = masterClock.getEarthClock();
 
     public String format(LogRecord record) {
 
     	if (masterClock == null) {
     		masterClock = Simulation.instance().getMasterClock();
-    		if (masterClock != null) {
-		    	if (marsClock == null)
-		    		marsClock = masterClock.getMarsClock();
-		    	if (earthClock == null)
-		    		earthClock = masterClock.getEarthClock();
-    		}
+//    		if (masterClock != null) {
+//		    	if (marsClock == null)
+//		    		marsClock = masterClock.getMarsClock();
+//		    	if (earthClock == null)
+//		    		earthClock = masterClock.getEarthClock();
+//    		}
     	}
     	
 		String msg = formatMessage(record);
@@ -87,23 +87,27 @@ public class SimuLoggingFormatter extends Formatter {
 		
 		int timeStamp = LogConsolidated.getTimeStampType();
 		
-		if (earthClock != null && timeStamp == 1) {
-			sb.append(earthClock.getTimeStampF0());
+		if (masterClock == null || timeStamp == 0) {
+			useLocalTime();
 		}
 		
-		else if (marsClock != null && timeStamp == 2) {
-			sb.append(marsClock.getDateTimeStamp());
+		else if (timeStamp == 1 && LogConsolidated.getEarthClock() != null) {
+//			if (earthClock == null) {
+//				earthClock = LogConsolidated.getEarthClock();
+//			}
+			sb.append(LogConsolidated.getEarthClock().getTimeStampF0());
 		}
 		
-		else {//if (timeStamp == 0) {
-			// Gets the local time
-			String dt = LocalDateTime.now().toString();
-			// Show only one decimal place in seconds
-			dt = dt.substring(0, dt.lastIndexOf(".")+2);
-			
-			sb.append(dt);
+		else if (timeStamp == 2 && LogConsolidated.getMarsClock() != null && isMarsClockValid()) {
+//			if (marsClock == null) {
+//				marsClock = LogConsolidated.getMarsClock();	
+//			}
+			sb.append(MarsClock.getDateTimeStamp(LogConsolidated.getMarsClock()));
 		}
 		
+		else {
+			useLocalTime();
+		}
 
 		// Get the level name and add it to the buffer
 		sb.append(O_PAREN);
@@ -148,6 +152,19 @@ public class SimuLoggingFormatter extends Formatter {
 	
 		return sb.toString();
 		
+    }
+    
+    private boolean isMarsClockValid() {
+    	return !MarsClock.getDateTimeStamp(LogConsolidated.getMarsClock()).equalsIgnoreCase("0000-Adir-01:000.000");
+    }
+    
+    private void useLocalTime() {
+		// Gets the local time
+		String dt = LocalDateTime.now().toString();
+		// Show only one decimal place in seconds
+		dt = dt.substring(0, dt.lastIndexOf(".")+2);
+		// Append the local time to the log
+		sb.append(dt);
     }
     
     static String fastReplace(String str, String target, String replacement) {

@@ -458,10 +458,11 @@ public final class ManufactureUtil {
         while (result && i.hasNext()) {
             ManufactureProcessItem item = i.next();
             if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-                AmountResource resource = ResourceUtil.findAmountResource(item.getName());
-                result = (inv.getAmountResourceStored(resource, false) >= item.getAmount());
-            	// 2015-01-09 Added addDemandTotalRequest()
-                inv.addAmountDemandTotalRequest(resource);
+//                AmountResource resource = ResourceUtil.findAmountResource(item.getName());
+                int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
+                result = (inv.getAmountResourceStored(id, false) >= item.getAmount());
+            	// Add demand tracking
+                inv.addAmountDemandTotalRequest(id);
             }
             else if (ItemType.PART.equals(item.getType())) {
                 Part part = (Part) ItemResourceUtil.findItemResource(item.getName());

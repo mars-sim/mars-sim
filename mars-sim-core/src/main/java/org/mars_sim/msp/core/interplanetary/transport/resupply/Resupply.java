@@ -477,12 +477,13 @@ public class Resupply implements Serializable, Transportable {
 		Iterator<AmountResource> resourcesI = getNewResources().keySet().iterator();
 		while (resourcesI.hasNext()) {
 			AmountResource resource = resourcesI.next();
+			int id = resource.getID();
 			double amount = getNewResources().get(resource);
-			double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
+			double capacity = inv.getAmountResourceRemainingCapacity(id, true, false);
 			if (amount > capacity)
 				amount = capacity;
-			inv.storeAmountResource(resource, amount, true);
-			inv.addAmountSupplyAmount(resource, amount);
+			inv.storeAmountResource(id, amount, true);
+			inv.addAmountSupplyAmount(id, amount);
 		}
 
 		// Deliver parts.
@@ -491,6 +492,7 @@ public class Resupply implements Serializable, Transportable {
 			Part part = partsI.next();
 			int number = getNewParts().get(part);
 			inv.storeItemResources(part.getID(), number);
+//			inv.addItemSupplyAmount(part.getID(), number);
 		}
 
 		// Deliver Robots.

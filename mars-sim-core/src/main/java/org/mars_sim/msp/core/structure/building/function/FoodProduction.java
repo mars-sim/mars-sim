@@ -246,10 +246,12 @@ public class FoodProduction extends Function implements Serializable {
 		Inventory inv = getBuilding().getSettlementInventory();
 		for (FoodProductionProcessItem item : process.getInfo().getInputList()) {
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-				AmountResource resource = ResourceUtil.findAmountResource(item.getName());
-				inv.retrieveAmountResource(resource, item.getAmount());
-				inv.addAmountDemandTotalRequest(resource);
-				inv.addAmountDemand(resource, item.getAmount());
+//				AmountResource resource = ResourceUtil.findAmountResource(item.getName());
+				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
+				inv.retrieveAmountResource(id, item.getAmount());
+				// Add tracking demand
+				inv.addAmountDemandTotalRequest(id);
+				inv.addAmountDemand(id, item.getAmount());
 			} else if (ItemType.PART.equals(item.getType())) {
 //				Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
@@ -360,18 +362,19 @@ public class FoodProduction extends Function implements Serializable {
 				if (FoodProductionUtil.getFoodProductionProcessItemValue(item, settlement, true) > 0D) {
 					if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 						// Produce amount resources.
-						AmountResource resource = ResourceUtil.findAmountResource(item.getName());
+//						AmountResource resource = ResourceUtil.findAmountResource(item.getName());
+						int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 						double amount = item.getAmount();
-						double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
+						double capacity = inv.getAmountResourceRemainingCapacity(id, true, false);
 						if (item.getAmount() > capacity) {
 							double overAmount = item.getAmount() - capacity;
 							logger.fine("Not enough storage capacity to store " + overAmount + " of " + item.getName()
 									+ " from " + process.getInfo().getName() + " at " + settlement.getName());
 							amount = capacity;
 						}
-						inv.storeAmountResource(resource, amount, true);
-						// Add addSupplyAmount()
-						inv.addAmountSupplyAmount(resource, amount);
+						inv.storeAmountResource(id, amount, true);
+						// Add tracking supply
+						inv.addAmountSupplyAmount(id, amount);
 					} else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
 						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
@@ -432,17 +435,19 @@ public class FoodProduction extends Function implements Serializable {
 				if (FoodProductionUtil.getFoodProductionProcessItemValue(item, settlement, false) > 0D) {
 					if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 						// Produce amount resources.
-						AmountResource resource = ResourceUtil.findAmountResource(item.getName());
+//						AmountResource resource = ResourceUtil.findAmountResource(item.getName());
+						int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 						double amount = item.getAmount();
-						double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
+						double capacity = inv.getAmountResourceRemainingCapacity(id, true, false);
 						if (item.getAmount() > capacity) {
 							double overAmount = item.getAmount() - capacity;
 							logger.severe("Not enough storage capacity to store " + overAmount + " of " + item.getName()
 									+ " from " + process.getInfo().getName() + " at " + settlement.getName());
 							amount = capacity;
 						}
-						inv.storeAmountResource(resource, amount, true);
-						inv.addAmountSupplyAmount(resource, amount);
+						inv.storeAmountResource(id, amount, true);
+						// Add tracking supply
+						inv.addAmountSupplyAmount(id, amount);
 					} else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
 						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());

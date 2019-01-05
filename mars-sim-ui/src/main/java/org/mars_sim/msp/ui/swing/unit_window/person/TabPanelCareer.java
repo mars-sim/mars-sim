@@ -255,7 +255,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					if (starRater.isEnabled()) {
 	
 						int sol = marsClock.getMissionSol();
-						dateTimeRatingSubmitted = MarsClock.getDateTimeStamp(marsClock);
+						dateTimeRatingSubmitted = MarsClock.getTruncatedDateTimeStamp(marsClock);
 						printLog = true;
 						ratingLabel.setText("Job rating submitted on " + dateTimeRatingSubmitted);
 						logger.info(person + "'s job rating was submitted on " + dateTimeRatingSubmitted);
@@ -659,7 +659,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	
 						jobChangeLabel.setForeground(Color.BLUE);
 						
-						String s = person + "'s job reassignment submitted on " + MarsClock.getDateTimeStamp(marsClock);
+						String s = person + "'s job reassignment submitted on " + MarsClock.getTruncatedDateTimeStamp(marsClock);
 						jobChangeLabel.setText(s);
 						logger.info(s);
 						firstNotification = true;

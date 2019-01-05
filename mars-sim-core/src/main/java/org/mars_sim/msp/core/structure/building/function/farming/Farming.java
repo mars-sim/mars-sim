@@ -62,6 +62,7 @@ public class Farming extends Function implements Serializable {
 	
 	public static final int MAX_NUM_SOLS = 14;
 
+	public static final String MUSHROOM = "mushroom";
 	public static final String FERTILIZER = "fertilizer";
 	public static final String SOIL = "soil";
 	public static final String CROP_WASTE = "crop waste";
@@ -342,7 +343,6 @@ public class Farming extends Function implements Serializable {
 		boolean compareVP = false;
 
 		int size = cropHistory.size();
-//		System.out.println("size : " + size);
 		if (size > 1) {
 			// get the last two planted crops
 			last2CT = cropHistory.get(size - 2);
@@ -351,12 +351,12 @@ public class Farming extends Function implements Serializable {
 //			System.out.println("1 : " + cropHistory.get(1));
 //			System.out.println("last2CT : " + last2CT);
 //			System.out.println("lastCT : " + lastCT);
-			
+	
 			if (no_1_crop.getName().equalsIgnoreCase(last2CT) || no_1_crop.getName().equalsIgnoreCase(lastCT)) {
 				// if highestCrop has already been selected once
 
-				if (last2CT.equals(lastCT)) {
-					// since the highestCrop has already been chosen twice,
+				if (last2CT != null && lastCT != null && last2CT.equals(lastCT)) {
+					// Note : since the highestCrop has already been chosen previously,
 					// should not choose the same crop type again
 					// compareVP = false;
 					chosen = no_2_crop;
@@ -369,7 +369,7 @@ public class Farming extends Function implements Serializable {
 			else if (no_2_crop.getName().equalsIgnoreCase(last2CT) || no_2_crop.getName().equalsIgnoreCase(lastCT)) {
 				// if secondCrop has already been selected once
 
-				if (last2CT.equals(lastCT)) {
+				if (last2CT != null && lastCT != null && last2CT.equals(lastCT)) {
 					// since the secondCrop has already been chosen twice,
 					// should not choose the same crop type again
 					// compareVP = false;
@@ -421,8 +421,8 @@ public class Farming extends Function implements Serializable {
 
 		// if it's a mushroom, add increases the item demand of the mushroom containment
 		// kit before the crop is planted
-		if (chosen.getName().toLowerCase().contains("mushroom"))
-			inv.addItemDemand(ItemResourceUtil.mushroomBoxAR, 2);
+		if (chosen.getName().toLowerCase().contains(MUSHROOM))
+			inv.addItemDemand(ItemResourceUtil.mushroomBoxID, 1);
 
 		return chosen;
 	}

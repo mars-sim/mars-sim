@@ -12,6 +12,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.time.EarthClock;
+import org.mars_sim.msp.core.time.MarsClock;
+
 import com.google.common.flogger.FluentLogger;
 //  See https://stackoverflow.com/questions/9132193/log4j-standard-way-to-prevent-repetitive-log-messages#37619797
 //	Do
@@ -38,6 +41,10 @@ public class LogConsolidated {
 	
 	/** 0 = Local time. 1 = Simulation Earth time. 2 = Simulation Martian time. */
 	private static int timeStampType = 2;
+	
+	private static EarthClock earthClock;// = Simulation.instance().getMasterClock().getEarthClock();
+	private static MarsClock marsClock;// = Simulation.instance().getMasterClock().getMarsClock();
+	
 
 	/**
 	 * Logs given <code>message</code> to given <code>logger</code> as long as:
@@ -170,6 +177,26 @@ public class LogConsolidated {
 		timeStampType = type;
 	}
 
+	public static MarsClock getMarsClock() {
+		return marsClock;
+	}
+	
+	public static EarthClock getEarthClock() {
+		return earthClock;
+	}
+	
+	public static void initializeInstances(MarsClock m, EarthClock e) {
+		marsClock = m;
+		earthClock = e;
+	}
+	
+	public static void setMarsClock(MarsClock m) {
+		marsClock = m;
+	}
+	
+	public static void setEarthClock(EarthClock e) {
+		earthClock = e;
+	}
 	
 	/**
 	 * TimeAndCount keeps track of the between time and the number of times the message has appeared

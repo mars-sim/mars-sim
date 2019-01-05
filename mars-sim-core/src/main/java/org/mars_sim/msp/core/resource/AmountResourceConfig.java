@@ -42,7 +42,7 @@ public class AmountResourceConfig implements Serializable {
 
 	// Data members.
 	private static Set<AmountResource> resourceSet;
-	private static Set<AmountResource> tissueCultureSet;
+	private static Set<Integer> tissueCultureSet;
 
 	/**
 	 * Constructor
@@ -51,8 +51,8 @@ public class AmountResourceConfig implements Serializable {
 	 * @throws Exception if error reading XML document
 	 */
 	public AmountResourceConfig(Document amountResourceDoc) {
-		resourceSet = new TreeSet<AmountResource>();
-		tissueCultureSet = new TreeSet<AmountResource>();
+		resourceSet = new TreeSet<>();
+		tissueCultureSet = new TreeSet<>();
 		loadAmountResources(amountResourceDoc);
 	}
 
@@ -91,7 +91,7 @@ public class AmountResourceConfig implements Serializable {
 				// Create the tissue culture for each crop.
 				AmountResource tissue = new AmountResource(nextID, name + " " + TISSUE_CULTURE, TISSUE_CULTURE,
 						description, phaseType, lifeSupport, false);
-				tissueCultureSet.add(tissue);
+				tissueCultureSet.add(nextID);
 				resourceSet.add(tissue);
 				// TODO: may set edible to true
 			}
@@ -108,10 +108,14 @@ public class AmountResourceConfig implements Serializable {
 		return resourceSet;
 	}
 
-	public Set<AmountResource> getTissueCultures() {
+//	public Set<AmountResource> getTissueCultures() {
+//		return tissueCultureSet;
+//	}
+
+	public Set<Integer> getTissueCultures() {
 		return tissueCultureSet;
 	}
-
+	
 	public int getNextID() {
 		return nextID;
 	}

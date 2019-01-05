@@ -308,8 +308,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/** The settlement's water consumption in kitchen when preparing/cleaning meal and dessert. */
 	private Map<Integer, Map<Integer, Double>> consumption;
 	
-
 	// Static members
+	private static int sample1 = ResourceUtil.findIDbyAmountResourceName("polyethylene");
+	private static int sample2 = ResourceUtil.findIDbyAmountResourceName("concrete");
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 	private static int co2ID = ResourceUtil.co2ID;
@@ -1388,7 +1389,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			refreshResourceStat();
 			
 			refreshSleepMap(solElapsed);
+			
 			// getSupplyDemandSampleReport(solElapsed);
+			
 			refreshDataMap(solElapsed);
 
 			solCache = solElapsed;
@@ -1574,9 +1577,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public void getSupplyDemandSampleReport(int solElapsed) {
 		logger.info("<<< Sol " + solElapsed + " at " + this.getName()
 				+ " End of Day Report of Amount Resource Supply and Demand Statistics >>>");
-
-		String sample1 = "polyethylene";
-		String sample2 = "concrete";
 
 		// Sample supply and demand data on Potato and Water
 

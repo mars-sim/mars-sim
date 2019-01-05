@@ -561,18 +561,26 @@ public class MarsClock implements Serializable {
 	 * @return formatted time stamp string
 	 */
 	public String getDateTimeStamp() {
-		// TODO: are the "two" whitespace intentional? or should we use colon as the
-		// separator ?
 		return new StringBuilder(getDateString()).append(COLON).append(getDecimalTimeString()).toString();
 	}
 
 	/**
-	 * Returns formatted time stamp string in the format of "0013-Adir-05:056"
+	 * Returns formatted time stamp string in the format of "0013-Adir-05:056.434"
 	 * 
 	 * @param time {@link MarsClock} instance
 	 * @return formatted String
 	 */
 	public static String getDateTimeStamp(MarsClock time) {
+		return new StringBuilder(getDateString(time)).append(COLON).append(getDecimalTimeString(time)).toString();
+	}
+	
+	/**
+	 * Returns a truncated time stamp string in the format of "0013-Adir-05:056"
+	 * 
+	 * @param time {@link MarsClock} instance
+	 * @return formatted String
+	 */
+	public static String getTruncatedDateTimeStamp(MarsClock time) {
 		return new StringBuilder(getDateString(time)).append(COLON).append(getTruncatedTimeString(time)).toString();
 	}
 	
@@ -697,10 +705,11 @@ public class MarsClock implements Serializable {
 			b.insert(0, ONE_ZERO);
 			// result = "0" + result;
 		}
-		if (millisol < 1) {
-			b.insert(0, ONE_ZERO);
-			// result = "0" + result;
-		}
+//		if (millisol < 1) {
+//			b.insert(0, ONE_ZERO);
+//			// result = "0" + result;
+//		}
+		
 		while (b.length() < 7) {
 			b.append(ONE_ZERO);
 			// result += "0";
@@ -709,6 +718,39 @@ public class MarsClock implements Serializable {
 		return b.toString();
 	}
 
+	/**
+	 * Returns the time string in the format of e.g. "056"
+	 * 
+	 * @param time {@link MarsClock} instance
+	 * @return String in millisols
+	 */
+	public static String getDecimalTimeString(MarsClock time) {
+		StringBuilder b = new StringBuilder();
+		double millisol = time.getMillisol();
+		double tb = Math.floor(millisol * 1000D) / 1000D;
+
+		// String result = "" + tb;
+		b.append(tb);
+		if (millisol < 100) {
+			b.insert(0, ONE_ZERO);
+			// result = "0" + result;
+		}
+		if (millisol < 10) {
+			b.insert(0, ONE_ZERO);
+			// result = "0" + result;
+		}
+//		if (millisol < 1) {
+//			b.insert(0, ONE_ZERO);
+//			// result = "0" + result;
+//		}
+		while (b.length() < 7) {
+			b.append(ONE_ZERO);
+			// result += "0";
+		}
+
+		return b.toString();
+	}
+	
 	/**
 	 * Returns the time string in the format of e.g. "056"
 	 * 

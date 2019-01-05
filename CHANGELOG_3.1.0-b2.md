@@ -5,7 +5,7 @@ Copyright (C) 2018 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-beta2 (build 4740) - 2019-01-04
+## v3.1.0-beta2 (build 4741) - 2019-01-05
 
 ### KNOWN LIMITATIONS :
 
@@ -14,12 +14,12 @@ Copyright (C) 2018 Scott Davis
 
 2. In Linux, text fields do not allow text input.
 
-3. A JavaFX WebEngine's issue cripples the full UI loading of certain secure 
-   websites such as GitHub pages
+3. JavaFX WebEngine uses older version of webkit, crippling the full UI loading of 
+   certain modern websites such as GitHub pages.
 
 4. When clicking on a combobox to pick an option, the option list would pop up
    outside the main window, unless the main window has been dragged
-   around the screen.
+   around the screen once.
 
 
 ### CORE ENGINE IMPROVEMENTS :
