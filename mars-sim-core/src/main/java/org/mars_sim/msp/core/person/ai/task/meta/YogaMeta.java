@@ -12,8 +12,10 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.person.ai.task.Workout;
 import org.mars_sim.msp.core.person.ai.task.Yoga;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.building.Building;
 
 /**
  * Meta task for the Yoga task.
@@ -45,6 +47,9 @@ public class YogaMeta implements MetaTask, Serializable {
         if (!person.getPreference().isTaskDue(this) && person.isInSettlement()) {
 	
             double pref = person.getPreference().getPreferenceScore(this);
+            if (pref < 0D) {
+                return 0;
+            }
             
          	result = pref * 5D;
          	
@@ -52,8 +57,9 @@ public class YogaMeta implements MetaTask, Serializable {
             PhysicalCondition condition = person.getPhysicalCondition();
             double stress = condition.getStress();
             double fatigue = condition.getFatigue();
+            double hunger = condition.getHunger();
             
-            if (fatigue > 1000)
+            if (fatigue > 1000 || hunger > 750)
             	return 0;
             
             if (pref > 0) {
@@ -70,16 +76,18 @@ public class YogaMeta implements MetaTask, Serializable {
             	return 0;
             }
 
+            // Get an available gym.
+            Building building = Workout.getAvailableGym(person);
+            if (building != null) {
+                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+            } // a person can still have workout on his own without a gym in MDP Phase 1-3
+
         	// doing yoga is less popular than doing regular workout
-            result = condition.getFatigue() / 20D;
+            result += condition.getFatigue() / 20D;
             if (result < 0D) {
                 result = 0D;
             }
-            
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-
-
         }
         
         return result;

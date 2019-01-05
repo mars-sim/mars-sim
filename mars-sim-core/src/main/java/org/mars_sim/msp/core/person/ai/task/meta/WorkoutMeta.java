@@ -52,9 +52,10 @@ public class WorkoutMeta implements MetaTask, Serializable {
             double stress = condition.getStress();
             double fatigue = condition.getFatigue();
             double kJ = condition.getEnergy();
+            double hunger = condition.getHunger();
             double[] muscle = condition.getMusculoskeletal();
 
-            if (kJ < 200 || fatigue > 1000)
+            if (kJ < 500 || fatigue > 1000 || hunger > 750)
             	return 0;
  
             result = stress - (muscle[2] - muscle[0])/5D - fatigue/100D ;
@@ -65,15 +66,6 @@ public class WorkoutMeta implements MetaTask, Serializable {
             
          	result += pref * 5D;
             
-//            if (fatigue > 1000)
-//            	result *= 1.8D;
-//            else if (fatigue > 900)
-//            	result *= 1.6D;
-//            else if (fatigue > 800)
-//            	result *= 1.4D;
-//            else if (fatigue > 700)
-//            	result *= 1.2D;
-
             if (pref > 0) {
              	if (stress > 45D)
              		result*=1.5;
@@ -92,9 +84,6 @@ public class WorkoutMeta implements MetaTask, Serializable {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
             } // a person can still have workout on his own without a gym in MDP Phase 1-3
-
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
 
             // Modify if working out is the person's favorite activity.
             if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
