@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -72,8 +73,6 @@ public class Weather implements Serializable {
 
 	private int L_s_cache = 0;
 
-	// private double sum;
-
 	private double dx = 255D * Math.PI / 180D - Math.PI;
 
 	private double viking_dt;
@@ -111,7 +110,7 @@ public class Weather implements Serializable {
 	
 	private static MasterClock masterClock;
 	private static MarsClock marsClock;
-	
+	private static UnitManager unitManager;
 
 
 	/** Constructs a Weather object */
@@ -162,6 +161,9 @@ public class Weather implements Serializable {
 		if (terrainElevation == null)
 			terrainElevation = surfaceFeatures.getTerrainElevation();
 
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+		
 	}
 	
 	/**
@@ -229,7 +231,7 @@ public class Weather implements Serializable {
 				// solCache = newSol;
 				double ds_speed = 0;
 
-				List<Settlement> settlements = new ArrayList<>(Simulation.instance().getUnitManager().getSettlements());
+				List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
 				for (Settlement s : settlements) {
 					if (s.getCoordinates().equals(location)) {
 						DustStorm ds = s.getDustStorm();
@@ -307,10 +309,20 @@ public class Weather implements Serializable {
 		return computeWindSpeed(location);
 	}
 
+	/**
+	 * Gets the wind direction at a given location.
+	 * 
+	 * @return wind direction in degree.
+	 */
 	public int getWindDirection(Coordinates location) {
 		return computeWindDirection(location);
 	}
 
+	/**
+	 * Computes the wind direction at a given location.
+	 * 
+	 * @return wind direction in degree.
+	 */
 	public int computeWindDirection(Coordinates location) {
 		int result = 0;
 
@@ -365,24 +377,14 @@ public class Weather implements Serializable {
 	public double getCachedAirPressure(Coordinates location) {
 		checkLocation(location);
 
-//		if (masterClock == null)
-//			masterClock = Simulation.instance().getMasterClock();
-//		if (marsClock == null)
-//			marsClock = masterClock.getMarsClock();
-//	    millisols =  (int) marsClock.getMillisol() ;
-//		//System.out.println("oneTenthmillisols : " + oneTenthmillisols);
-
 		// Lazy instantiation of airPressureCacheMap.
 		if (airPressureCacheMap == null) {
 			airPressureCacheMap = new ConcurrentHashMap<Coordinates, Double>();
 		}
 
 		if (msols % MILLISOLS_PER_UPDATE == 1) {
-			// System.out.println("marsClock : "+ marsClock);
-			// System.out.println("millisols : "+ millisols);
 			double newP = calculateAirPressure(location, 0);
 			airPressureCacheMap.put(location, newP);
-			// System.out.println("air pressure : "+cache);
 			return newP;
 		} else {
 			return getCachedReading(airPressureCacheMap, location);// , AIR_PRESSURE);
@@ -448,12 +450,6 @@ public class Weather implements Serializable {
 	public double getCachedTemperature(Coordinates location) {
 		checkLocation(location);
 
-//		if (masterClock == null)
-//			masterClock = Simulation.instance().getMasterClock();
-//		if (marsClock == null)
-//			marsClock = masterClock.getMarsClock();
-//	    millisols =  (int) marsClock.getMillisol() ;
-
 		// Lazy instantiation of temperatureCacheMap.
 		if (temperatureCacheMap == null) {
 			temperatureCacheMap = new ConcurrentHashMap<Coordinates, Double>();
@@ -462,7 +458,6 @@ public class Weather implements Serializable {
 		if (msols % MILLISOLS_PER_UPDATE == 0) {
 			double newT = calculateTemperature(location);
 			temperatureCacheMap.put(location, newT);
-			// System.out.println("Weather.java: temperatureCache is " + temperatureCache);
 			return newT;
 		} else {
 			return getCachedReading(temperatureCacheMap, location);// , TEMPERATURE);
@@ -505,12 +500,6 @@ public class Weather implements Serializable {
 
 		double t = 0;
 
-//		if (surfaceFeatures == null)
-//			surfaceFeatures = sim.getMars().getSurfaceFeatures();
-//
-//		if (terrainElevation == null)
-//			terrainElevation = surfaceFeatures.getTerrainElevation();
-
 		if (surfaceFeatures.inDarkPolarRegion(location)) {
 
 			// vs. just in inPolarRegion()
@@ -534,11 +523,6 @@ public class Weather implements Serializable {
 			// Based on Surface brightness temperatures at 32 µm retrieved from the MCS data
 			// for
 			// over five Mars Years (MY), at the “Tleilax” site.
-
-//			if (mars == null)
-//				mars = sim.getMars();
-//			if (orbitInfo == null)
-//				orbitInfo = mars.getOrbitInfo();
 
 			double L_s = orbitInfo.getL_s();
 
@@ -571,11 +555,6 @@ public class Weather implements Serializable {
 			// 5. Randomness
 			// 6. Wind speed
 
-//			if (masterClock == null)
-//				masterClock = Simulation.instance().getMasterClock();
-//
-//			marsClock = masterClock.getMarsClock();
-//
 //			// (1). Time of day, longitude (included inside in solar irradiance)
 //			double theta = location.getTheta() / Math.PI * 500D; // convert theta in longitude in radian to millisols;
 //			//System.out.println(" theta: " + theta);
@@ -752,11 +731,6 @@ public class Weather implements Serializable {
 		int newSol = marsClock.getMissionSol();
 		if (newSol != solCache) {
 
-//			if (mars == null)
-//				mars = sim.getMars();
-//			if (orbitInfo == null)
-//				orbitInfo = mars.getOrbitInfo();
-
 			dailyVariationAirPressure += RandomUtil.getRandomDouble(.01) - RandomUtil.getRandomDouble(.01);
 			if (dailyVariationAirPressure > .05)
 				dailyVariationAirPressure = .05;
@@ -839,7 +813,7 @@ public class Weather implements Serializable {
 	 * @param L_s_int
 	 */
 	public void createDustDevils(double probability, double L_s) {
-		List<Settlement> settlements = new ArrayList<>(Simulation.instance().getUnitManager().getSettlements());
+		List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
 		for (Settlement s : settlements) {
 			if (s.getDustStorm() == null) {
 				// if settlement doesn't have a dust storm formed near it yet
@@ -1043,13 +1017,14 @@ public class Weather implements Serializable {
 	 * @param {@link Mars}
 	 * @param {@link SurfaceFeatures}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1, Mars m, SurfaceFeatures s, OrbitInfo o) {
+	public static void justReloaded(MasterClock c0, MarsClock c1, Mars m, SurfaceFeatures s, OrbitInfo o, UnitManager u) {
 		masterClock = c0;
 		marsClock = c1;
 		mars = m;	
 		surfaceFeatures = s;
 		terrainElevation = s.getTerrainElevation();
 		orbitInfo = o;
+		unitManager = u;
 	}
 	
 	/**

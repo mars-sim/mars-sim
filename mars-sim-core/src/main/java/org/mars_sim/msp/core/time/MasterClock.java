@@ -709,7 +709,8 @@ public class MasterClock implements Serializable {
 					}
 
 					else { // last frame went beyond the PERIOD
-						logger.config("sleepTime : " + sleepTime); // e.g. sleepTime : -28277033488
+						logger.config("overSleepTime : " + overSleepTime); 
+						// e.g. sleepTime : -118289082
 						
 						excess -= sleepTime;
 						overSleepTime = 0L;
@@ -726,7 +727,8 @@ public class MasterClock implements Serializable {
 					int skips = 0;
 
 					while (!justReloaded && (excess > currentTBU_ns) && (skips < maxFrameSkips)) {
-						System.out.println("excess : " + excess);
+						logger.config("excess : " + excess);
+						// e.g. excess : -118289082
 						justReloaded = false;
 						excess -= currentTBU_ns;
 						// Make up lost frames

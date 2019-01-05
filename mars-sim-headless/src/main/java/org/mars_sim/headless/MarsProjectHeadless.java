@@ -234,7 +234,7 @@ public class MarsProjectHeadless {
 			// Load xml files
 			SimulationConfig.loadConfig();
 			// Alert the user to see the interactive terminal 
-			logger.config("Please proceed to selecting the Game Mode in the popped-up console.");
+			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 			// Start interactive terminal 
 			sim.getTerm().startCommanderMode(); 
 			

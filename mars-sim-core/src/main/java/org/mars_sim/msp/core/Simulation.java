@@ -874,7 +874,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		
 		// Re-initialize Mars environmental instances
-		Weather.justReloaded(masterClock, marsClock, mars, surface, orbitInfo); // terrain
+		Weather.justReloaded(masterClock, marsClock, mars, surface, orbitInfo, unitManager); // terrain
 		SurfaceFeatures.justReloaded(masterClock, mars, this, w, orbitInfo, missionManager);  // sunDirection, landmarks
 		OrbitInfo.justReloaded(marsClock, earthClock);		
 		DustStorm.setInstances(w);
