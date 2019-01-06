@@ -34,7 +34,6 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
@@ -378,8 +377,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				diameter = 12;
 
 			wall_thickness_inflatable = diameter * safety_factor * design_pressure / (2 * kevlar_tensile_strength);
-			// System.out.println("wall_thickness_inflatable : " +
-			// wall_thickness_inflatable);
 			// inflatable greenhouse : 4.815E-4 or 0.0004815
 			// large greenhouse : 9.63E-4 or 0.000963
 		}
@@ -390,34 +387,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		powerModeCache = PowerMode.FULL_POWER;
 		heatModeCache = HeatMode.HALF_HEAT;
 
-//		// Get building's dimensions.
-//		if (width != -1D) {
-//			this.width = width;
-//		}
-//		else {
-//			this.width = buildingConfig.getWidth(buildingType);
-//		}
-//		
-//		if (this.width <= 0D) {
-//			throw new IllegalStateException("Invalid building width: " + this.width + " m. for new building " + buildingType);
-//		}
-//
-//		if (length != -1D) {
-//			this.length = length;
-//		}
-//		else {
-//			this.length = buildingConfig.getLength(buildingType);
-//		}
-//		
-//		if (this.length <= 0D) {
-//			throw new IllegalStateException("Invalid building length: " + this.length + " m. for new building " + buildingType);
-//		}
-
 		if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel")) {
 			length = l;
 			width = buildingConfig.getWidth(buildingType);
-			// logger.info(nickName + "'s length and width : " + length + " x " + width);
-		} else {
+		} 
+		
+		else {
 			width = buildingConfig.getWidth(buildingType);
 			length = buildingConfig.getLength(buildingType);
 		}
@@ -471,16 +446,17 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		
 
 		// Initialize lab space for storing crop tissue cultures
-		if (hasFunction(FunctionType.RESEARCH) && getResearch().hasSpecialty(ScienceType.BOTANY)) {
-			lab = getResearch();
-			// Set<AmountResource> tissues =
-			// SimulationConfig.instance().getResourceConfiguration().getTissueCultures();
-			for (Integer ar : tissues) {
-				getInventory().addAmountResourceTypeCapacity(ar, TISSUE_CAPACITY);
-				getInventory().storeAmountResource(ar, .1, false);
-				getInventory().addAmountDemand(ar, .1);
-			}
-		}
+//		if (hasFunction(FunctionType.RESEARCH) && getResearch().hasSpecialty(ScienceType.BOTANY)) {
+//			lab = getResearch();
+//			// Add .1 kg of tissues for each food crop
+//			for (Integer ar : tissues) {
+////				System.out.println("ar : " + ar);
+//				// Warning : cannot add capacity this way because a new tissue instance will be created
+////				getInventory().addAmountResourceTypeCapacity(ar, TISSUE_CAPACITY); 
+//				getInventory().storeAmountResource(ar, .1, false);
+//				getInventory().addAmountDemand(ar, .1);
+//			}
+//		}
 	}
 
 	/** Constructor 3 (for use by Mock Building in Unit testing) */

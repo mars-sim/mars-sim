@@ -123,11 +123,13 @@
 	<resource name="peanut" type="crop" phase="solid" edible="true"></resource>
 	<resource name="peas" type="crop" phase="solid" edible="true"></resource>
 	<resource name="potato" type="crop" phase="solid" edible="true"></resource>
-	<resource name="quinoa" type="crop" phase="solid" edible="true">A nutritious grain having most amino acids</resource>
+	<resource name="quinoa" type="crop" phase="solid" edible="true">A nutritious grain 
+		having most amino acids</resource>
 	<resource name="radish" type="crop" phase="solid" edible="true"></resource>
 	<resource name="red beet" type="crop" phase="solid" edible="true"></resource>
 	<resource name="rice" type="crop" phase="solid" edible="true"></resource>
-	<resource name="sesame" type="crop" phase="solid" edible="true">A flowering plant--source of sesame seeds</resource>
+	<resource name="sesame" type="crop" phase="solid" edible="true">A flowering plant--
+		source of sesame seeds</resource>
 	<resource name="soybean" type="crop" phase="solid" edible="true">Soybean seeds.</resource>
 	<resource name="strawberry" type="crop" phase="solid" edible="true"></resource>
 	<resource name="sugarcane" type="crop" phase="solid" edible="true"></resource>
@@ -135,21 +137,24 @@
 	<resource name="swiss chard" type="crop" phase="solid" edible="true"></resource>
 	<resource name="taro" type="crop" phase="solid" edible="true"></resource>
 	<resource name="tomato" type="crop" phase="solid" edible="true"></resource>
-	<resource name="wheat" type="crop" phase="solid" edible="true">Wheat Kernels are seeds harvested from wheat crop.
-	The kernel is the whole grain, made up of 3 edible parts – bran, germ, and endosperm – protected by an inedible husk </resource>
+	<resource name="wheat" type="crop" phase="solid" edible="true">Wheat Kernels are 
+		seeds harvested from wheat crop. The kernel is the whole grain, made up of 3 
+		edible parts – bran, germ, and endosperm – protected by an inedible husk </resource>
 	<resource name="white onion" type="crop" phase="solid" edible="true"></resource>
 	<resource name="yam" type="crop" phase="solid" edible="true"></resource>
 
 <!-- Seeds from Crop Produce -->
-	<resource name="mustard seed" type="crop" phase="solid" edible="true">Seeds from white mustard plant</resource>
-	<resource name="sesame seed" type="crop" phase="solid" edible="true">Seeds from sesame plant.</resource>
+	<resource name="mustard seed" type="crop" phase="solid" edible="true">Seeds from 
+		white mustard plant</resource>
+	<resource name="sesame seed" type="crop" phase="solid" edible="true">Seeds from 
+		sesame plant.</resource>
 	
 <!-- Secondary Crop Produce -->
-	<resource name="leaves" type="food" phase="solid" edible="true">Edible leaves extracted during harvest. A filler fiber for meal</resource>
+	<resource name="leaves" type="food" phase="solid" edible="true">Edible leaves 
+		extracted during harvest. A filler fiber for meal</resource>
 
 
 <!-- Imported food ingredient -->
-	<resource name="honey" phase="liquid" />
 	<resource name="propolis" phase="liquid"> Propolis or bee glue is a resinous 
 		mixture collected by honey bees from tree buds,	sap flows, or other 
 		botanical sources. Used as a sealant for unwanted open spaces in the 
@@ -166,23 +171,23 @@
 
 <!-- Chemicals -->
 	<resource name="beeswax" phase="solid" />
-	<resource name="epsom salt" phase="solid">Magnesium Sulfate as bath salt to soothe sore muscles or for gardeners to improve crops. </resource>
+	<resource name="epsom salt" phase="solid">Magnesium Sulfate as bath salt to 
+		soothe sore muscles or for gardeners to improve crops. </resource>
 	<resource name="fertilizer" phase="solid">Inorganic nutrients for crop growth </resource>
 	<resource name="lime" phase="solid">Lime is a calcium-containing inorganic 
 		material in which carbonates, oxides, and hydroxides predominate. In the 
 		strict sense of the term, lime is CaO or Ca(OH)2.</resource> 
 	<resource name="polycarbonate resin" phase="liquid" />
 	<resource name="polyester resin" phase="liquid" />
-	<resource name="polyethylene" phase="solid">Polyethylene pellets or flakes.
-	</resource>
-	<resource name="styrene" phase="solid" />
-	<resource name="bisphenol-a" phase="solid"> The chemical used for reinforcing plastic and for making polycarbonate</resource>
-	
+	<resource name="polyethylene" phase="solid">Polyethylene pellets or flakes.</resource>
+	<resource name="styrene" phase="solid"/>
+	<resource name="bisphenol-a" phase="solid"> The chemical used for reinforcing 
+		plastic and for making polycarbonate</resource>
 	<resource name="sodium hypochlorite" phase="liquid">Sodium Hypochlorite is 
 		one of the bleaching chemical for sanitization of Soybean as well as pulp 
 		bleaching during paper making </resource>
 	<resource name="sodium carbonate" phase="solid">Na2CO3, also called washing soda,
-	soda ash and soda crystals, is the water-soluble sodium salt of carbonic acid
+		soda ash and soda crystals, is the water-soluble sodium salt of carbonic acid
 	</resource>	
 
 
@@ -354,20 +359,26 @@
 	<resource name="immune booster" phase="solid" >A Drug.</resource>
 
 <!-- Bio-organisms -->
-	<resource name="acetic acid bacteria" phase="solid">This bacteria has the ability to oxidize many types of sugars and alcohols to organic acids as end products during fermentation process. Useful for making vinegar.</resource>
-	<resource name="nitrospira spp" phase="solid">Used in the oxidation of nitrite to nitrate (NO3−) in the nitrification of waste water.</resource>
-	<resource name="nitrosomonas spp" phase="solid"> Used in the oxidation of ammonia (NH3) to nitrite (NO2−) in the nitrification of waste water.</resource>
-	<resource name="rhizobia" phase="solid"> Seen as organic fertilizer, the nitrogen fixing bacteria that colonize the roots of their preferred plant
-	 partner and take nitrogen from the air and convert it into ammonia, a form of nitrogen
-	 that plants can use. In return, legumes feed the bacteria a steady diet of plant sugars. </resource>
+	<resource name="acetic acid bacteria" phase="solid">This bacteria has the ability to oxidize 
+		many types of sugars and alcohols to organic acids as end products during fermentation 
+		process. Useful for making vinegar.</resource>
+	<resource name="nitrospira spp" phase="solid">Used in the oxidation of nitrite to nitrate 
+		(NO3−) in the nitrification of waste water.</resource>
+	<resource name="nitrosomonas spp" phase="solid"> Used in the oxidation of ammonia (NH3) 
+		to nitrite (NO2−) in the nitrification of waste water.</resource>
+	<resource name="rhizobia" phase="solid"> Seen as organic fertilizer, the nitrogen fixing 
+		bacteria that colonize the roots of their preferred plant partner and take nitrogen 
+		from the air and convert it into ammonia, a form of nitrogen that plants can use. 
+		In return, legumes feed the bacteria a steady diet of plant sugars. 
+	 </resource>
     <!--
     http://en.wiki2.org/wiki/Sewage_treatment : Nitrification itself is a two-step aerobic process, each step facilitated by a different type of bacteria. The oxidation of ammonia (NH3) to nitrite (NO2−) is most often facilitated by Nitrosomonas spp. ("nitroso" referring to the formation of a nitroso functional group). Nitrite oxidation to nitrate (NO3−), though traditionally believed to be facilitated by Nitrobacter spp. (nitro referring the formation of a nitro functional group), is now known to be facilitated in the environment almost exclusively by Nitrospira spp.
 	http://www.the-compost-gardener.com/nitrogen-fixing-bacteria.html
 	-->
 
 <!-- Misc. -->
-	<resource name="glass" phase="solid" >For making vessels</resource>
-	<resource name="quartz" phase="solid" >For making electronic components</resource>
+	<resource name="glass" phase="solid">For making vessels</resource>
+	<resource name="quartz" phase="solid">For making electronic components</resource>
 
 
 </resource-list>

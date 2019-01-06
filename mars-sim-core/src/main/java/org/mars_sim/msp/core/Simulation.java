@@ -416,6 +416,10 @@ public class Simulation implements ClockListener, Serializable {
 	 * Initialize intransient data in the simulation.
 	 */
 	private void initializeIntransientData(int timeRatio, boolean loadSaveSim) {
+		// Initialize resources
+		ResourceUtil.getInstance();
+		
+		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
 		mars = new Mars();
 		missionManager = new MissionManager();
@@ -430,7 +434,7 @@ public class Simulation implements ClockListener, Serializable {
 		transportManager = new TransportManager();
 
 
-		// Initialization
+		// Initialize eta tasks
 		new MetaTaskUtil();
 		MarsClock marsClock = masterClock.getMarsClock();
 		LogConsolidated.initializeInstances(marsClock, masterClock.getEarthClock());

@@ -30,14 +30,9 @@ public class AmountResourceConfig implements Serializable {
 	private static final String NAME = "name";
 	private static final String PHASE = "phase";
 	private static final String LIFE_SUPPORT = "life-support";
-
-	// 2014-11-25 Added EDIBLE
 	private static final String EDIBLE = "edible";
-	// 2016-06-28 Added TYPE
 	private static final String TYPE = "type";
-
 	private static final String CROP = "crop";
-
 	private static int nextID = 0;
 
 	// Data members.
@@ -62,40 +57,61 @@ public class AmountResourceConfig implements Serializable {
 	 * @param amountResourceDoc the configuration XML document.
 	 * @throws Exception if error loading amount resources.
 	 */
-	@SuppressWarnings("unchecked")
 	private void loadAmountResources(Document amountResourceDoc) {
-		Element root = amountResourceDoc.getRootElement();
-		List<Element> resourceNodes = root.getChildren(RESOURCE);
-		for (Element resourceElement : resourceNodes) {
-			nextID++;
-			String name = resourceElement.getAttributeValue(NAME).toLowerCase();
-
-			String type = resourceElement.getAttributeValue(TYPE);
-
-			String description = resourceElement.getText();
-			// Get phase.
-			String phaseString = resourceElement.getAttributeValue(PHASE).toLowerCase();
-
-			// PhaseType phase = PhaseType.valueOf(phaseString);
-			PhaseType phaseType = PhaseType.fromString(phaseString);
-
-			// Get life support
-			Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
-
-			Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
-
-			resourceSet.add(new AmountResource(nextID, name, type, description, phaseType, lifeSupport, edible));
-
-			if (type != null && type.toLowerCase().equals(CROP)) {
+		if (resourceSet == null || resourceSet.isEmpty()) {
+			Element root = amountResourceDoc.getRootElement();
+			List<Element> resourceNodes = root.getChildren(RESOURCE);
+			for (Element resourceElement : resourceNodes) {
 				nextID++;
-				// Create the tissue culture for each crop.
-				AmountResource tissue = new AmountResource(nextID, name + " " + TISSUE_CULTURE, TISSUE_CULTURE,
-						description, phaseType, lifeSupport, false);
-				tissueCultureSet.add(nextID);
-				resourceSet.add(tissue);
-				// TODO: may set edible to true
+				String name = resourceElement.getAttributeValue(NAME).toLowerCase();
+	
+				String type = resourceElement.getAttributeValue(TYPE);
+	
+				String description = resourceElement.getText();
+				// Get phase.
+				String phaseString = resourceElement.getAttributeValue(PHASE).toLowerCase();
+	
+				// PhaseType phase = PhaseType.valueOf(phaseString);
+				PhaseType phaseType = PhaseType.fromString(phaseString);
+	
+				// Get life support
+				Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
+	
+				Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
+	
+				AmountResource resource = new AmountResource(nextID, name, type, description, phaseType, lifeSupport, edible);
+				
+				if (phaseString == null || phaseType == null)
+					throw new IllegalStateException(
+							"AmountResourceConfig detected invalid PhaseType in resources.xml : " + resource.getName());
+				
+				for (AmountResource r: resourceSet) {
+					if (r.getName().equalsIgnoreCase(resource.getName()))
+						throw new IllegalStateException(
+								"AmountResourceConfig detected an duplicated resource entry in resources.xml : " + resource.getName());
+				}
+				
+				resourceSet.add(resource);
+	//			System.out.println("resource " + nextID + " " + resource.getName());
+				
+				if (type != null && type.toLowerCase().equals(CROP)) {
+					nextID++;
+					// Create the tissue culture for each crop.
+					// TODO: may set edible to true
+					AmountResource tissue = new AmountResource(nextID, name + " " + TISSUE_CULTURE, TISSUE_CULTURE,
+							description, phaseType, lifeSupport, false);
+					tissueCultureSet.add(nextID);
+					
+					for (AmountResource r: resourceSet) {
+						if (r.getName().equalsIgnoreCase(tissue.getName()))
+							throw new IllegalStateException(
+									"AmountResourceConfig detected an duplicated resource entry in resources.xml : " + tissue.getName());
+					}
+					
+					resourceSet.add(tissue);
+//					System.out.println("tissue " + nextID + " " + tissue.getName());
+				}
 			}
-
 		}
 	}
 

@@ -220,6 +220,11 @@ public class AmountResourceStorage implements Serializable {
 	 */
 	public double getAmountResourceCapacity(int resource) {
 		AmountResource ar = ResourceUtil.findAmountResource(resource);
+//		if (ar == null)
+//			System.out.println("resource : " + resource);
+//		if (resource == 281)
+//			System.out.println("resource : " + ar.getName());
+//		System.out.println("resource " + resource + " " + ar.getName());
 		PhaseType pt = ar.getPhase();
 		double result = 0D;
 
@@ -330,17 +335,20 @@ public class AmountResourceStorage implements Serializable {
 	 * Update the all stored resources values.
 	 */
 	private void updateAllAmountResourcesStored() {
-		/*
-		 * Set<AmountResource> tempResources = new HashSet<AmountResource>();
-		 * 
-		 * // Add type storage resources. if (typeStorage != null) {
-		 * tempResources.addAll(typeStorage.getAllAmountResourcesStored()); }
-		 * 
-		 * // Add phase storage resources. if (phaseStorage != null) { for (PhaseType
-		 * phase : PhaseType.values()) { if
-		 * (phaseStorage.getAmountResourcePhaseStored(phase) > 0D) {
-		 * tempResources.add(phaseStorage.getAmountResourcePhaseType(phase)); } } }
-		 */
+//		 Set<AmountResource> tempResources = new HashSet<AmountResource>();
+//		 // Add type storage resources. 
+//		 if (typeStorage != null) {
+//			 tempResources.addAll(typeStorage.getAllAmountResourcesStored()); 
+//		 }
+//		 // Add phase storage resources. 
+//		 if (phaseStorage != null) { 
+//			 for (PhaseType phase : PhaseType.values()) { 
+//				 if (phaseStorage.getAmountResourcePhaseStored(phase) > 0D) {
+//					 tempResources.add(phaseStorage.getAmountResourcePhaseType(phase)); 
+//				} 
+//			} 
+//		}
+	 
 		Set<Integer> tempResources = new HashSet<Integer>();
 
 		// Add type storage resources.
