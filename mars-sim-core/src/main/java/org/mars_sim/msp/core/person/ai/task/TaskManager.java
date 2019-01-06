@@ -79,7 +79,7 @@ public class TaskManager implements Serializable {
 
 	private TaskSchedule ts;
 
-	private ShiftType shiftTypeCache;
+	private int shiftCache;
 	
 	private transient Map<MetaTask, Double> taskProbCache;
 	private transient List<MetaTask> mtListCache;
@@ -629,29 +629,43 @@ public class TaskManager implements Serializable {
 	 * Calculates and caches the probabilities.
 	 */
 	private void calculateProbability() {
-//	System.out.println("TaskManager : calculateProbability()");
+
 		double msol1 = marsClock.getMillisolOneDecimal();
 
 		int diff = Double.compare(msolCache, msol1);    
 		if (diff < 0 || diff > 0) {    
 			msolCache = msol1;
+
+			int shift = 0;
 			
-			ShiftType st = ts.getShiftType();
+			if (ts.getShiftType() == ShiftType.ON_CALL) {
+				shift = 0;
+			} 
+			
+			else if (ts.isShiftHour(marsClock.getMillisolInt())) {
+				shift = 1;
+			} 
+			
+			else {
+				shift = 2;
+			}			
 
 			// Note : mtListCache is null when loading from a saved sim
-			if (shiftTypeCache != st || mtListCache == null) {
-				shiftTypeCache = st;
-//				System.out.println(person + " st : " + st);
+			if (shiftCache != shift || mtListCache == null) {
+				shiftCache = shift;
+
 				List<MetaTask> mtList = null;
 
 				// NOTE: any need to use getAnyHourTasks()
-				if (st == ShiftType.ON_CALL) {
+				if (shift == 0) {
 					mtList = MetaTaskUtil.getAllMetaTasks();
-				} else if (ts.isShiftHour(marsClock.getMillisolInt())) {
-//					System.out.println(person + " isShiftHour");
+				} 
+				
+				else if (shift == 1) {
 					mtList = MetaTaskUtil.getDutyHourTasks();
-				} else {
-//					System.out.println(person + " is not ShiftHour");
+				} 
+				
+				else if (shift == 2) {
 					mtList = MetaTaskUtil.getNonDutyHourTasks();
 				}
 
@@ -678,10 +692,11 @@ public class TaskManager implements Serializable {
 						else 
 							probability = MAX_TASK_PROBABILITY;
 					}
-//					System.out.println(person + " " + mt.getName() + " " + probability);
+//					if (person.getName().contains("Enrique")) // && mt.getName().contains("Review"))
+//						System.out.println(person + " " + mt.getName() + " " + Math.round(probability*10.0)/10.0);
 					taskProbCache.put(mt, probability);
 					totalProbCache += probability;
-//					System.out.println(person + " totalProbCache : " + totalProbCache);
+//					System.out.println(person + " totalProbCache : " + Math.round(totalProbCache*10.0)/10.0);
 				}
 				
 				else {
@@ -705,8 +720,6 @@ public class TaskManager implements Serializable {
 			return false;
 		}
 		return true;
-//		return (msolCache == marsClock.getMillisolOneDecimal());
-//		return marsClock.equals(timeCache);
 	}
 
 	public TaskSchedule getTaskSchedule() {

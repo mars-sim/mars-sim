@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -64,49 +65,18 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
             double stress = condition.getStress();
             double hunger = condition.getHunger();
             
-            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            if (fatigue > 1000 || stress > 75 || hunger > 500)
             	return 0;
             
         	//if (roleType == null)
         	//NOTE: sometimes enum is null. sometimes it is NOT. why?
         	RoleType roleType = person.getRole().getType();
 
-            if (roleType == RoleType.PRESIDENT
-                	|| roleType == RoleType.MAYOR
-            		|| roleType == RoleType.COMMANDER
-        			|| roleType == RoleType.SUB_COMMANDER
-        			|| roleType == RoleType.CHIEF_OF_MISSION_PLANNING
-        			|| (roleType == RoleType.MISSION_SPECIALIST && person.getAssociatedSettlement().getNumCitizens() <= 8)) {
+        	int pop = person.getAssociatedSettlement().getNumCitizens();
+			if (pop <= 4		
+				|| (pop <= 8 && roleType == RoleType.RESOURCE_SPECIALIST)
+				|| ReviewMissionPlan.isRoleValid(roleType)) {
 
-//		            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
-//		            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
-//		            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-//		            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-//		            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
-//		            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-//		            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY) )
-//		            	result += 100D;
-
-	       	    // Get highest person skill level.
-//	        	    Iterator<Person> i = person.getSettlement().getAllAssociatedPeople().iterator();
-//	                while (i.hasNext()) {
-//	                    Person p = i.next();
-//
-//	                    if (roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-//	                    	&& p.getRole().getType().equals(RoleType.CHIEF_OF_MISSION_PLANNING)) {
-//	                    	result -= 50D;
-//	                    }
-//	                    // TODO: should commander and sub-commander approve his/her own job reassignment ?
-//	                    else if (roleType.equals(RoleType.SUB_COMMANDER)
-//		                    && p.getRole().getType().equals(RoleType.SUB_COMMANDER))
-//	    		            result -= 50D;
-//
-//	                    else if (roleType.equals(RoleType.COMMANDER)
-//			                    && p.getRole().getType().equals(RoleType.COMMANDER))
-//	    		            result -= 50D;
-//
-//	                }
-                
                 if (missionManager == null)
                 	missionManager = Simulation.instance().getMissionManager();
                 
@@ -115,10 +85,26 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
                 for (Mission m : missions) {
                 	
                 	if (m.getPlan() != null) {
-	                    PlanType status = m.getPlan().getStatus();
+                		
+                		MissionPlanning mp = m.getPlan();
+                		
+	                    PlanType status = mp.getStatus();
 
-	                    if (status != null && status == PlanType.PENDING) {
-	                    	result += 100D;                    	
+	                    if (status != null 
+	                    		&& status == PlanType.PENDING 
+	                    		&& mp.getPercentComplete() < 100D) {
+	    		            	
+	    						String reviewedBy = person.getName();
+	    						
+	    						Person p = m.getStartingMember();
+	    						String requestedBy = p.getName();
+						
+	    						if (reviewedBy.equals(requestedBy)
+	    								|| !mp.isValidReview(reviewedBy, pop)) {
+	    							return 0;
+	    						}
+	                    	
+	                    	result += 200D;                    	
 	                    	// Add adjustment based on how many sol the request has since been submitted
                             if (marsClock == null)
                                marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -138,13 +124,7 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
                 }
                 
                 if (result > 0D) {
-                	
-    	            // Probability affected by the person's stress and fatigue.
-//	    	            PhysicalCondition condition = person.getPhysicalCondition();
-//	    	            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
-//	    		            result += 50D;
-//	    	            }
-    	            
+                	 
                     // Get an available office space.
                     Building building = Administration.getAvailableOffice(person);
                     if (building != null) {
@@ -169,7 +149,7 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
                     result = 0;
                 }
 
-//                    if (result > 0) System.out.println("ReviewJobReassignmentMeta : probability is " + result);
+//                if (result > 0) System.out.println(person + " ReviewMissionPlanMeta : probability is " + result);
             }
         }
 

@@ -74,6 +74,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	/** The role of the person who is reviewing the mission plan. */
 	public RoleType roleType;
 	
+	private int pop = 0;
+	
 	private static Simulation sim = Simulation.instance();
 	private static MissionManager missionManager = sim.getMissionManager();
 	private static RelationshipManager relationshipManager = sim.getRelationshipManager();
@@ -91,10 +93,10 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		
 		if (person.isInside() && roleType != null) {
 
-			int pop = person.getAssociatedSettlement().getNumCitizens();
+			pop = person.getAssociatedSettlement().getNumCitizens();
 			if (pop <= 4		
-				|| (pop <= 8 && roleType == RoleType.MISSION_SPECIALIST)
-				|| isRoleValid(roleType)) {
+				|| (pop <= 8 && roleType == RoleType.RESOURCE_SPECIALIST)
+				|| ReviewMissionPlan.isRoleValid(roleType)) {
 
 				// If person is in a settlement, try to find an office building.
 				Building officeBuilding = Administration.getAvailableOffice(person);
@@ -129,7 +131,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	}
 
 	
-	public boolean isRoleValid(RoleType roleType) {
+	public static boolean isRoleValid(RoleType roleType) {
 		return roleType == RoleType.PRESIDENT || roleType == RoleType.MAYOR
 				|| roleType == RoleType.COMMANDER || roleType == RoleType.SUB_COMMANDER
 				|| roleType == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
@@ -198,7 +200,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 						String s = person.getAssociatedSettlement().getName();
 						
 						if (!reviewedBy.equals(requestedBy)
-								&& mp.isValidReview(reviewedBy, person.getAssociatedSettlement().getNumCitizens())) {
+								&& mp.isValidReview(reviewedBy, pop)) {
 							
 							List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
 							int last = list.size() - 1;

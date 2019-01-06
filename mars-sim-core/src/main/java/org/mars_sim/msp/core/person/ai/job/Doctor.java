@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
+import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
 import org.mars_sim.msp.core.person.ai.task.TreatMedicalPatient;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -68,6 +69,7 @@ public class Doctor extends Job implements Serializable {
 
 		// Add side tasks
 		jobTasks.add(ConsolidateContainers.class);
+		jobTasks.add(ReviewMissionPlan.class);
 
 		// Add doctor-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

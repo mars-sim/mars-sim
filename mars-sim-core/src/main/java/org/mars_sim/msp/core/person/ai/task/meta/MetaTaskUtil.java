@@ -7,10 +7,8 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * A utility task for getting the list of meta tasks.
@@ -33,9 +31,12 @@ public class MetaTaskUtil {
 	 * Private constructor for utility class.
 	 */
 	public MetaTaskUtil() {
-		initAnyHourTasks();
-		initWorkHourTasks();
-		initNonWorkHourTasks();
+//		initAnyHourTasks();
+//		initWorkHourTasks();
+//		initNonWorkHourTasks();
+		
+		initializeMetaTasks();
+		
 		initDutyHourTasks();
 		initNonDutyHourTasks();
 	};
@@ -378,7 +379,8 @@ public class MetaTaskUtil {
 		}
 
 		// Return copy of meta task list.
-		return new ArrayList<MetaTask>(robotMetaTasks);
+//		return new ArrayList<MetaTask>(robotMetaTasks);
+		return robotMetaTasks;
 	}
 
 	public void destroy() {

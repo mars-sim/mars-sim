@@ -451,11 +451,11 @@ public class Mind implements Serializable {
 		}
 
 		if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || (Double.isInfinite(weightSum))) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(100L);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				TimeUnit.MILLISECONDS.sleep(100L);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
 			LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
 					person.getName() + " has an invalid weight sum of " + weightSum 
 					+ ". (tasks is " + tasks + ". missions is " + missions + "). Clearing all tasks...");

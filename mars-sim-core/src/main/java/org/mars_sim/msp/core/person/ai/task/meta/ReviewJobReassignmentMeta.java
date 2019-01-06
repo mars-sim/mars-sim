@@ -73,48 +73,46 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
                 	|| roleType == RoleType.MAYOR
             		|| roleType == RoleType.COMMANDER
         			|| roleType == RoleType.SUB_COMMANDER
+        			|| roleType == RoleType.CHIEF_OF_AGRICULTURE
+           			|| roleType == RoleType.CHIEF_OF_ENGINEERING
+           			|| roleType == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
+           			|| roleType == RoleType.CHIEF_OF_MISSION_PLANNING
+           			|| roleType == RoleType.CHIEF_OF_SAFETY_N_HEALTH
+           			|| roleType == RoleType.CHIEF_OF_SCIENCE
+           			|| roleType == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES        			
         			|| (roleType == RoleType.MISSION_SPECIALIST && person.getAssociatedSettlement().getNumCitizens() <= 4)) {
-
-//	            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
-//            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
-//            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-//            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-//            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
-//            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-//            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY) )
-//            	result += 100D;
-
-		            result += 10D;
 
 	        	    Iterator<Person> i = person.getAssociatedSettlement().getAllAssociatedPeople().iterator();
 	                while (i.hasNext()) {
 	                    Person p = i.next();
-
-	                    RoleType role2 = p.getRole().getType();
+	                    List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
+	                    JobAssignment ja = list.get(list.size()-1);
 	                    
-	                    // TODO: should commander and sub-commander approve his/her own job reassignment ?
-	                    if (roleType == RoleType.SUB_COMMANDER
-		                    && role2 != null && role2 == RoleType.SUB_COMMANDER)
-	    		            result -= 25D;
-
-	                    else if (roleType == RoleType.COMMANDER
-			                    && role2 != null && role2 == RoleType.COMMANDER)
-	    		            result -= 50D;
-
-	                    else if (roleType == RoleType.MAYOR
-			                    && role2 != null && role2 == RoleType.MAYOR)
-	                    	result -= 25D;
-
-		                else if (roleType == RoleType.PRESIDENT
-				                 && role2 != null && role2 == RoleType.PRESIDENT)
-		    		        result -= 50D;
-	                    
-	                    List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
-	                    JobAssignmentType status = list.get(list.size()-1).getStatus();
+	                    JobAssignmentType status = ja.getStatus();
 
 	                    if (status != null && status == JobAssignmentType.PENDING) {
 
-	                    	result += 500D;
+	                    	result += 100D;
+	                    	
+		                    RoleType role2 = p.getRole().getType();
+		                    
+		                    // Adjust the probability with penalty if approving his/her own job reassignment 
+		                    if (roleType == RoleType.SUB_COMMANDER
+			                    && role2 != null && role2 == RoleType.SUB_COMMANDER)
+		    		            result /= 2D;
+
+		                    else if (roleType == RoleType.COMMANDER
+				                    && role2 != null && role2 == RoleType.COMMANDER)
+		    		            result /= 2.5D;
+
+		                    else if (roleType == RoleType.MAYOR
+				                    && role2 != null && role2 == RoleType.MAYOR)
+		                    	result /= 3D;
+
+			                else if (roleType == RoleType.PRESIDENT
+					                 && role2 != null && role2 == RoleType.PRESIDENT)
+			    		        result /= 4D;
+		                    
 	                    	//result = result + result * preference / 10D ;
 	                    	
 	                    	// Add adjustment based on how many sol the request has since been submitted
@@ -122,15 +120,15 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
                                marsClock = Simulation.instance().getMasterClock().getMarsClock();
                             // if the job assignment submitted date is > 1 sol
                             int sol = marsClock.getMissionSol();
-                            int solRequest = list.get(list.size()-1).getSolSubmitted();
+                            int solRequest = ja.getSolSubmitted();
                             if (sol - solRequest == 1)
-                                result += 500D;
+                                result += 50D;
                             else if (sol - solRequest == 2)
-                                result += 1000D;
+                                result += 100D;
                             else if (sol - solRequest == 3)
-                                result += 1500D;
+                                result += 150D;
                             else if (sol - solRequest > 3)
-                                result += 2000D;
+                                result += 200D;
 	                    }
 	                }
 	                
@@ -138,7 +136,7 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 	                    // Get an available office space.
 	                    Building building = Administration.getAvailableOffice(person);
 	                    if (building != null) {
-	                        result += 200D;
+	                        result += 100D;
 	                        result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
 	                        result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 	                    }

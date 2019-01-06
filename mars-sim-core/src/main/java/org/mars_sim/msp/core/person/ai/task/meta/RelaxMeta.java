@@ -73,7 +73,7 @@ public class RelaxMeta implements MetaTask, Serializable {
 
     @Override
     public double getProbability(Person person) {
-        double result = 5D;
+        double result = 1D;
 
         // Crowding modifier
         if (person.isInside()) {
@@ -86,10 +86,10 @@ public class RelaxMeta implements MetaTask, Serializable {
             
             double pref = person.getPreference().getPreferenceScore(this);
             
-          	result += pref;
+          	result *= pref/2D;
           	
             if (fatigue > 1500 || stress > 75 || hunger > 750)
-            	return result;
+            	return 0;
             
 //            // Stress modifier
 //            result += person.getStress() * 5D;
@@ -125,37 +125,11 @@ public class RelaxMeta implements MetaTask, Serializable {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-    	return new Relax(robot);
-//		Relax relax = robot.getRelax();
-//    	if (relax == null) {
-//    		relax = new Relax(robot);
-//    		robot.setRelax(relax);
-//    	}
-//    	//else {
-//    	//  relax.taskCompute();
-//    	//	relax.botCompute();
-//    	//}	
-//    	return relax;
-    	
+    	return null;
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-        //double result = 0D;
-        // TODO: in what case should a bot "relax" or slow down its pace?
-        // result += robot.getPhysicalCondition().getStress();
-//        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-//            try {
-//                Building recBuilding = Relax.getAvailableRecreationBuilding(robot);
-//                if (recBuilding != null) {
-//                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, recBuilding);
-//                    result *= TaskProbabilityUtil.getRelationshipModifier(robot, recBuilding);
-//                }
-//            }
-//            catch (Exception e) {
-//                logger.log(Level.SEVERE, e.getMessage());
-//            }
-//        }
         return 0;
 	}
 	

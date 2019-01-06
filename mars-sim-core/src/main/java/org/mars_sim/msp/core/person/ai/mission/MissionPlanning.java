@@ -73,6 +73,15 @@ public class MissionPlanning implements Serializable {
 		}
 	}
 	
+	/**
+	 * Checks if the person can review this mission plan
+	 * Note: the maximum number of reviews are limited with the size
+	 * of the settlement.
+	 * 
+	 * @param name
+	 * @param pop
+	 * @return
+	 */
 	public boolean isValidReview(String name, int pop) {
 		if (reviewers.containsKey(name)) {
 			int num = reviewers.get(name);
