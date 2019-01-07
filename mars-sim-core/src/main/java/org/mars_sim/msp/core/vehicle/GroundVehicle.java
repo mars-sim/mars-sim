@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.vehicle;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Direction;
@@ -20,7 +19,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**

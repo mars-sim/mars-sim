@@ -67,20 +67,31 @@ public class Driver extends Job implements Serializable {
 
 		// Add driver-related mission joins.
 		jobMissionJoins.add(Exploration.class);
+		
 		jobMissionJoins.add(CollectIce.class);
+		
 		jobMissionJoins.add(CollectRegolith.class);
+		
 		jobMissionJoins.add(Trade.class);
+		
 		jobMissionJoins.add(Mining.class);
+		
 		jobMissionJoins.add(AreologyStudyFieldMission.class);
+		
 		jobMissionJoins.add(BiologyStudyFieldMission.class);
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
-		jobMissionStarts.add(EmergencySupplyMission.class);
-		jobMissionJoins.add(EmergencySupplyMission.class);
+		
+//		jobMissionStarts.add(TravelToSettlement.class);
+//		jobMissionJoins.add(TravelToSettlement.class);
+//		
+//		jobMissionStarts.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(RescueSalvageVehicle.class);
+//		
+//		jobMissionJoins.add(BuildingConstructionMission.class);
+//		
+//		jobMissionJoins.add(BuildingSalvageMission.class);
+//		
+//		jobMissionStarts.add(EmergencySupplyMission.class);
+//		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	/**
@@ -102,6 +113,8 @@ public class Driver extends Job implements Serializable {
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
+
+//		System.out.println(person + " driver : " + Math.round(result*100.0)/100.0);
 
 		return result;
 	}

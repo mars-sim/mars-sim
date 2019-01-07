@@ -13,9 +13,14 @@ import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.CollectIce;
+import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
+import org.mars_sim.msp.core.person.ai.mission.Exploration;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
@@ -71,14 +76,27 @@ public class Astronomer extends Job implements Serializable {
 		jobTasks.add(ConsolidateContainers.class);
 
 		// Add astronomer-related missions.
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
-		jobMissionStarts.add(EmergencySupplyMission.class);
-		jobMissionJoins.add(EmergencySupplyMission.class);
+		jobMissionStarts.add(Exploration.class);
+		jobMissionJoins.add(Exploration.class);
+		
+		jobMissionStarts.add(AreologyStudyFieldMission.class);
+		jobMissionJoins.add(AreologyStudyFieldMission.class);
+		
+		jobMissionStarts.add(Mining.class);
+		jobMissionJoins.add(Mining.class);
+		
+//		jobMissionStarts.add(TravelToSettlement.class);
+//		jobMissionJoins.add(TravelToSettlement.class);
+		
+//		jobMissionStarts.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(RescueSalvageVehicle.class);
+		
+//		jobMissionJoins.add(BuildingConstructionMission.class);
+//		
+//		jobMissionJoins.add(BuildingSalvageMission.class);
+		
+//		jobMissionStarts.add(EmergencySupplyMission.class);
+//		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	@Override
@@ -95,6 +113,8 @@ public class Astronomer extends Job implements Serializable {
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
 
+//		System.out.println(person + " astro : " + Math.round(result*100.0)/100.0);
+
 		return result;
 	}
 
@@ -110,7 +130,7 @@ public class Astronomer extends Job implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.ASTRONOMY))
-				result += lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D;
+				result += lab.getLaboratorySize() * lab.getTechnologyLevel() / 3.5D;
 		}
 
 		// Add astronomical observatories (observer capacity * tech level * 2).
@@ -118,7 +138,7 @@ public class Astronomer extends Job implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			AstronomicalObservation observatory = building.getAstronomicalObservation();
-			result += observatory.getObservatoryCapacity() * observatory.getTechnologyLevel() * 2D;
+			result += observatory.getObservatoryCapacity() * observatory.getTechnologyLevel() * 1.5D;
 		}
 
 		return result;

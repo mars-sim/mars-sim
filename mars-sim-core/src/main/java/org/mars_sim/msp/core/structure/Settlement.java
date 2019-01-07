@@ -1104,8 +1104,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public void printMissionProbability() {
 		double bConstScore = buildingConstructionMissionMeta.getSettlementProbability(this);
-		double regolithScore = collectRegolithMeta.getProbability(this);
-		double iceScore = collectIceMeta.getProbability(this);
+		double regolithScore = collectRegolithMeta.getSettlementProbability(this);
+		double iceScore = collectIceMeta.getSettlementProbability(this);
 		
 		LogConsolidated.log(Level.INFO, 0, sourceName,
 				"[" + name + "] BuildingConstructionMissionMeta Task score : "+  Math.round(bConstScore*10.0)/10.0 + ".");

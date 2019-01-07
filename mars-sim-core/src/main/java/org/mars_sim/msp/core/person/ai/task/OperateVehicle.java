@@ -283,7 +283,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         	fuelConsumed = remainingFuel;
         }
         try {
-        	vInv.retrieveAmountResource(vehicle.getFuelType(), fuelConsumed);
+        	vInv.retrieveAmountResource(fuelType, fuelConsumed);
         }
         catch (Exception e) {}
 

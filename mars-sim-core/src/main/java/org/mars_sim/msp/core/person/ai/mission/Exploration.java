@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.mars.ExploredLocation;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MineralMap;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
@@ -232,7 +231,7 @@ public class Exploration extends RoverMission implements Serializable {
 		if (tripRange < range)
 			range = tripRange;
 
-		MineralMap map = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
+		MineralMap map = surface.getMineralMap();
 		Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
 		boolean result = (mineralLocation != null);
 
@@ -331,13 +330,13 @@ public class Exploration extends RoverMission implements Serializable {
 		// Add new explored site if just starting exploring.
 		if (currentSite == null) {
 			createNewExploredSite();
-			explorationSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+			explorationSiteStartTime = (MarsClock) marsClock.clone();
 		}
 
 		// Check if crew has been at site for more than one sol.
 		boolean timeExpired = false;
-		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		double timeDiff = MarsClock.getTimeDiff(currentTime, explorationSiteStartTime);
+		MarsClock ms = (MarsClock) marsClock.clone();
+		double timeDiff = MarsClock.getTimeDiff(ms, explorationSiteStartTime);
 		if (timeDiff >= EXPLORING_SITE_TIME) {
 			timeExpired = true;
 		}
@@ -375,9 +374,8 @@ public class Exploration extends RoverMission implements Serializable {
 
 			// If no one can explore the site and this is not due to it just being
 			// night time, end the exploring phase.
-			Mars mars = Simulation.instance().getMars();
-			boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(getCurrentMissionLocation());
-			double sunlight = mars.getSurfaceFeatures().getSolarIrradiance(getCurrentMissionLocation());
+			boolean inDarkPolarRegion = surface.inDarkPolarRegion(getCurrentMissionLocation());
+			double sunlight = surface.getSolarIrradiance(getCurrentMissionLocation());
 			if (nobodyExplore && ((sunlight > 0D) || inDarkPolarRegion))
 				setPhaseEnded(true);
 
@@ -435,8 +433,8 @@ public class Exploration extends RoverMission implements Serializable {
 	 * @throws MissionException if error creating explored site.
 	 */
 	private void createNewExploredSite() {
-		SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
-		MineralMap mineralMap = surfaceFeatures.getMineralMap();
+//		SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+		MineralMap mineralMap = surface.getMineralMap();
 		String[] mineralTypes = mineralMap.getMineralTypeNames();
 		Map<String, Double> initialMineralEstimations = new HashMap<String, Double>(mineralTypes.length);
 		for (String mineralType : mineralTypes) {
@@ -450,7 +448,7 @@ public class Exploration extends RoverMission implements Serializable {
 				estimation = 100D - estimation;
 			initialMineralEstimations.put(mineralType, estimation);
 		}
-		currentSite = surfaceFeatures.addExploredLocation(new Coordinates(getCurrentMissionLocation()),
+		currentSite = surface.addExploredLocation(new Coordinates(getCurrentMissionLocation()),
 				initialMineralEstimations, getAssociatedSettlement());
 		exploredSites.add(currentSite);
 	}
@@ -490,8 +488,8 @@ public class Exploration extends RoverMission implements Serializable {
 
 		// Add estimated remaining exploration time at current site if still there.
 		if (EXPLORE_SITE.equals(getPhase())) {
-			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-			double timeSpentAtExplorationSite = MarsClock.getTimeDiff(currentTime, explorationSiteStartTime);
+//			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+			double timeSpentAtExplorationSite = MarsClock.getTimeDiff(marsClock, explorationSiteStartTime);
 			double remainingTime = EXPLORING_SITE_TIME - timeSpentAtExplorationSite;
 			if (remainingTime > 0D)
 				result += remainingTime;
@@ -514,37 +512,23 @@ public class Exploration extends RoverMission implements Serializable {
 		int crewNum = getPeopleNumber();
 
 		// Determine life support supplies needed for trip.
-		// AmountResource oxygen =
-		// AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()// * Mission.OXYGEN_MARGIN
 				* timeSols * crewNum;
 		if (result.containsKey(oxygenID))
 			oxygenAmount += (Double) result.get(oxygenID);
 		result.put(oxygenID, oxygenAmount);
 
-		// AmountResource water =
-		// AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate()// * Mission.WATER_MARGIN
 				* timeSols * crewNum;
 		if (result.containsKey(waterID))
 			waterAmount += (Double) result.get(waterID);
 		result.put(waterID, waterAmount);
 
-		// AmountResource food =
-		// AmountResource.findAmountResource(LifeSupportType.FOOD);
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate()// * Mission.FOOD_MARGIN
 				* timeSols * crewNum;
 		if (result.containsKey(foodID))
 			foodAmount += (Double) result.get(foodID);
 		result.put(foodID, foodAmount);
-
-		// Added Soymilk
-//        AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
-//        double dessert1Amount = PhysicalCondition.getFoodConsumptionRate() / 6D
-//                * timeSols * crewNum;
-//        if (result.containsKey(dessert1))
-//            dessert1Amount += (Double) result.get(dessert1);
-//        result.put(dessert1, dessert1Amount);
 
 		return result;
 	}
@@ -636,14 +620,7 @@ public class Exploration extends RoverMission implements Serializable {
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit)
 			timeLimit = foodTimeLimit;
-		/*
-		 * // Added Soymilk // Check dessert1 capacity as time limit. AmountResource
-		 * dessert1 = AmountResource.findAmountResource("Soymilk"); double
-		 * dessert1ConsumptionRate = config.getFoodConsumptionRate() / 6D; double
-		 * dessert1Capacity = vInv.getAmountResourceCapacity(dessert1, false); double
-		 * dessert1TimeLimit = dessert1Capacity / (dessert1ConsumptionRate * memberNum);
-		 * if (dessert1TimeLimit < timeLimit) timeLimit = dessert1TimeLimit;
-		 */
+
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
 		double waterCapacity = vInv.getARCapacity(waterID, false);
@@ -793,7 +770,7 @@ public class Exploration extends RoverMission implements Serializable {
 		Coordinates result = null;
 
 		Coordinates startingLocation = getCurrentMissionLocation();
-		MineralMap map = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
+		MineralMap map = surface.getMineralMap();
 		Coordinates randomLocation = map.findRandomMineralLocation(startingLocation, range);
 		if (randomLocation != null) {
 			Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));

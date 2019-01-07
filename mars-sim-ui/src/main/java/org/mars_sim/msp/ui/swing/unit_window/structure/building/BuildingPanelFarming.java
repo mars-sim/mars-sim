@@ -451,8 +451,8 @@ implements MouseListener {
         	mass1 = ct.getInedibleBiomass();
         	time = ct.getGrowingTime() /1000;
         	PAR = ct.getDailyPAR();
-        	health =  Math.round(crop.getHealthCondition()*1000.0)/10.0;
-        	sols = Math.round(crop.getGrowingTimeCompleted()/100.0)/10.0;
+        	health =  Math.round(crop.getHealthCondition()*10.0 * 100.0)/10.0;
+        	sols = Math.round(crop.getGrowingTimeCompleted()*10.0 /1_000.0)/10.0;
         	
 //        	result.append("<html><p width=\"500\">Crop Name: ").append(cropName).append(System.lineSeparator())
 //        		.append("Category: ").append(cat).append(System.lineSeparator())
@@ -724,15 +724,23 @@ implements MouseListener {
 		private Farming farm;
 		private java.util.List<Crop> crops;
 		private ImageIcon redDot;
+		private ImageIcon redHalfDot;
 		private ImageIcon yellowDot;
+		private ImageIcon yellowHalfDot;
 		private ImageIcon greenDot;
+		private ImageIcon greenHalfDot;
 
 		private CropTableModel(Farming farm) {
 			this.farm = farm;
 			crops = farm.getCrops();
 			redDot = ImageLoader.getIcon("RedDot");
+			redHalfDot = ImageLoader.getIcon("dot_red_half");
 			yellowDot = ImageLoader.getIcon("YellowDot");
+			yellowHalfDot = ImageLoader.getIcon("dot_yellow_half");
 			greenDot = ImageLoader.getIcon("GreenDot");
+			greenHalfDot = ImageLoader.getIcon("dot_green_half");
+			
+
 		}
 
 		public int getRowCount() {
@@ -771,14 +779,17 @@ implements MouseListener {
 			//String phase = crop.getPhase();
 			PhaseType currentPhase = crop.getPhaseType();
             int id = crop.getCropTypeID();
-            CropType ct = CropConfig.getCropTypeByID(id);
+//            CropType ct = CropConfig.getCropTypeByID(id);
 			String category = CropConfig.getCropCategoryType(id).getName();
 
 			if (column == 0) {
 				double condition = crop.getHealthCondition();
-				if (condition > ((double) 2 / (double) 3)) return greenDot;
-				else if (condition > ((double) 1 / (double) 3)) return yellowDot;
-				else return redDot;
+				if (condition > .9) return greenDot;
+				else if (condition > .75) return greenHalfDot;
+				else if (condition > .5 ) return yellowDot;
+				else if (condition > .25 ) return yellowHalfDot;
+				else if (condition > .1 ) return redDot;
+				else return redHalfDot;
 			}
 			else if (column == 1) return Conversion.capitalize(crop.getCropName());
 			else if (column == 2) return currentPhase.getName();

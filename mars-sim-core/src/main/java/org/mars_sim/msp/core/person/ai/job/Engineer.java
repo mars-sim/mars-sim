@@ -73,10 +73,14 @@ public class Engineer extends Job implements Serializable {
 		// Add engineer-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
+		
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
+		
 		jobMissionJoins.add(BuildingConstructionMission.class);
+		
 		jobMissionJoins.add(BuildingSalvageMission.class);
+		
 		jobMissionStarts.add(EmergencySupplyMission.class);
 		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
@@ -92,27 +96,21 @@ public class Engineer extends Job implements Serializable {
 		double result = 0D;
 
 		int materialsScienceSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
-		result = materialsScienceSkill * .75;
-
-		int mechSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
-		result += mechSkill / 4D;
-
+		int mechanicSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
+		result = mechanicSkill *.25 + materialsScienceSkill * .75;
+		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		result += result * ((academicAptitude - 50D) / 100D);
 
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		result += result * ((experienceAptitude - 50D) / 100D);
-
-//		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
-//		result += result * ((averageAptitude - 50D) / 100D);
-
-		result = result/2D;		
-		
+		result += result * ((academicAptitude + experienceAptitude - 100) / 200D);
+	
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
 
-		return result;
+//		System.out.println(person + " engineer : " + Math.round(result*100.0)/100.0);
+		
+		return result/2D;
 	}
 
 	/**

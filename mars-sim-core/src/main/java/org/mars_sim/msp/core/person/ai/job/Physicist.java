@@ -14,11 +14,6 @@ import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
@@ -68,14 +63,14 @@ implements Serializable {
 		jobTasks.add(ConsolidateContainers.class);
 
 		// Add physicist-related missions.
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
-		jobMissionStarts.add(EmergencySupplyMission.class);
-		jobMissionJoins.add(EmergencySupplyMission.class);
+//		jobMissionStarts.add(TravelToSettlement.class);
+//		jobMissionJoins.add(TravelToSettlement.class);
+//		jobMissionStarts.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(BuildingConstructionMission.class);
+//		jobMissionJoins.add(BuildingSalvageMission.class);
+//		jobMissionStarts.add(EmergencySupplyMission.class);
+//		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	@Override
@@ -106,7 +101,7 @@ implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.PHYSICS)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 3D);
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 3.5D);
 			}
 		}
 

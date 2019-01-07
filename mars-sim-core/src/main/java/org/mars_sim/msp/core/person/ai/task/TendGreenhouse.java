@@ -192,15 +192,15 @@ public class TendGreenhouse extends Task implements Serializable {
 			// TODO: how to lengthen the work time for a robot even though it moves slower
 			// than a person
 			// should it incurs penalty on workTime?
-			mod = 3D;
+			mod = 2.5D;
 		}
 
 		// Determine amount of effective work time based on "Botany" skill
 		int greenhouseSkill = getEffectiveSkillLevel();
 		if (greenhouseSkill == 0) {
-			mod += RandomUtil.getRandomDouble(.25) + 0.5;
+			mod += RandomUtil.getRandomDouble(.25);
 		} else {
-			mod += RandomUtil.getRandomDouble(.25) + 0.5 + 0.5 * greenhouseSkill;
+			mod += RandomUtil.getRandomDouble(.25) + 1.25 * greenhouseSkill;
 		}
 
 		workTime *= mod;
@@ -230,7 +230,7 @@ public class TendGreenhouse extends Task implements Serializable {
 				// addPhase(SAMPLING);
 				setPhase(SAMPLING);
 				// System.out.println(" remainingTime : 0");
-				return workTime;
+				return time;
 			}
 
 //			else if (rand < 6) {
@@ -248,18 +248,14 @@ public class TendGreenhouse extends Task implements Serializable {
 				
 				else {
 					// System.out.println("tendingPhase: workTime is " + workTime);
-					workTime = greenhouse.addWork(workTime, this, person);
+					return greenhouse.addWork(workTime, this, person) / mod;
 				}
-
-				return workTime;
 			}
 		}
 
 		else {
 
-			workTime = greenhouse.addWork(workTime, this, robot);
-
-			return workTime;
+			return greenhouse.addWork(workTime, this, robot) / mod;
 		}
 	}
 
@@ -273,7 +269,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	private double transferringSeedling(double time) {
 		greenhouse.transferSeedling(time, person);
 		
-		return time *.5;		
+		return time *.75;		
 	}
 
 	private double growingTissue(double time) {
@@ -290,7 +286,7 @@ public class TendGreenhouse extends Task implements Serializable {
 						+ " was growing " + type.getName() + " tissue culture in the botany lab in " 
 						+ farmBuilding.getNickName()
 						+ ".");
-				return 0;
+				return time * .75;
 			}
 		}
 	

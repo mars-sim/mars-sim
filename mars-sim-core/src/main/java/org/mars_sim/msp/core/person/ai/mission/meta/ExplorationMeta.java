@@ -77,12 +77,8 @@ public class ExplorationMeta implements MetaMission {
 			}
 			// Check if there are enough specimen containers at the settlement for
 			// collecting rock samples.
-			// boolean enoughContainers = false;
-			// int numContainers =
-			// settlement.getSettlementInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class,
-			// false);
-			else if (!(settlement.getInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class,
-					false) >= Exploration.REQUIRED_SPECIMEN_CONTAINERS)) {
+			else if (settlement.getInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class,
+					false) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) {
 				return 0;
 			}
 
@@ -110,7 +106,7 @@ public class ExplorationMeta implements MetaMission {
 				if (rover != null) {
 					// Check if any mineral locations within rover range.
 					if (Exploration.hasNearbyMineralLocations(rover, settlement)) {
-						result = 1D;
+						result = 2D;
 					}
 				}
 			} catch (Exception e) {
@@ -118,9 +114,9 @@ public class ExplorationMeta implements MetaMission {
 			}
 
 			// Crowding modifier
-			int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
-			if (crowding > 0)
-				result *= (crowding + 1);
+//			int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
+//			if (crowding > 0)
+//				result *= (crowding + 1);
 
 			int f1 = numEmbarked;
 			int f2 = numThisMission;
@@ -140,6 +136,10 @@ public class ExplorationMeta implements MetaMission {
                		 + settlement.getGoodsManager().getResearchFactor())/1.5;
 		}
 
+        if (result > 0)
+        	logger.info("ExplorationMeta's probability : " +
+				 Math.round(result*100D)/100D);
+		
 		return result;
 	}
 

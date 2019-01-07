@@ -71,14 +71,14 @@ implements Serializable {
 		jobTasks.add(ConsolidateContainers.class);
 
 		// Add mathematician-related missions.
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
-		jobMissionStarts.add(EmergencySupplyMission.class);
-		jobMissionJoins.add(EmergencySupplyMission.class);
+//		jobMissionStarts.add(TravelToSettlement.class);
+//		jobMissionJoins.add(TravelToSettlement.class);
+//		jobMissionStarts.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(BuildingConstructionMission.class);
+//		jobMissionJoins.add(BuildingSalvageMission.class);
+//		jobMissionStarts.add(EmergencySupplyMission.class);
+//		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.MATHEMATICS)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 6D);
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 4.5D);
 			}
 		}
 

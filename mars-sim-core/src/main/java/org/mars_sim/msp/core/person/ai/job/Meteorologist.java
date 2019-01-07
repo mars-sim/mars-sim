@@ -14,9 +14,12 @@ import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
+import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
@@ -68,14 +71,22 @@ public class Meteorologist extends Job implements Serializable {
 		jobTasks.add(ConsolidateContainers.class);
 
 		// Add meteorologist-related missions.
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
-		jobMissionStarts.add(EmergencySupplyMission.class);
-		jobMissionJoins.add(EmergencySupplyMission.class);
+		jobMissionStarts.add(AreologyStudyFieldMission.class);		
+		jobMissionJoins.add(AreologyStudyFieldMission.class);
+		
+		jobMissionJoins.add(BiologyStudyFieldMission.class);
+		
+		jobMissionStarts.add(Exploration.class);
+		jobMissionJoins.add(Exploration.class);
+		
+//		jobMissionStarts.add(TravelToSettlement.class);
+//		jobMissionJoins.add(TravelToSettlement.class);
+//		jobMissionStarts.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(BuildingConstructionMission.class);
+//		jobMissionJoins.add(BuildingSalvageMission.class);
+//		jobMissionStarts.add(EmergencySupplyMission.class);
+//		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	@Override

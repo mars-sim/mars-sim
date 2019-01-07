@@ -5,7 +5,7 @@ Copyright (C) 2018 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-beta2 (build 4743) - 2019-01-06
+## v3.1.0-beta2 (build 4744) - 2019-01-06
 
 ### KNOWN LIMITATIONS :
 
@@ -30,7 +30,7 @@ Copyright (C) 2018 Scott Davis
 
 3. Enable the use of Java 11 SE for running mars-sim (experimental).
 
-4. Add mission planning phase and seek approving a mission.
+4. Add mission approval phase and score mission plans.
 
 5. Track/record settler's sleep time on each sol.
 

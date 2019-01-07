@@ -105,13 +105,12 @@ public class TravelToSettlementMeta implements MetaMission {
         }
 
         // Check for embarking missions.
-        if (VehicleMission.hasEmbarkingMissions(settlement)) {
-        	return 0;
-        }
+//        if (VehicleMission.hasEmbarkingMissions(settlement)) {
+//        	return 0;
+//        }
 
         // Check if starting settlement has minimum amount of methane fuel.
-        //AmountResource methane = AmountResource.findAmountResource("methane");
-        if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneAR, false) <
+        else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneID, false) <
                 RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
         	return 0;
         }

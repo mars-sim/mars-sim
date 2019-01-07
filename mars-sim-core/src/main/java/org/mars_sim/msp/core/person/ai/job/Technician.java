@@ -67,14 +67,14 @@ public class Technician extends Job implements Serializable {
 		// None
 
 		// Add engineer-related missions.
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
-		jobMissionStarts.add(EmergencySupplyMission.class);
-		jobMissionJoins.add(EmergencySupplyMission.class);
+//		jobMissionStarts.add(TravelToSettlement.class);
+//		jobMissionJoins.add(TravelToSettlement.class);
+//		jobMissionStarts.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(BuildingConstructionMission.class);
+//		jobMissionJoins.add(BuildingSalvageMission.class);
+//		jobMissionStarts.add(EmergencySupplyMission.class);
+//		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	/**
@@ -85,14 +85,12 @@ public class Technician extends Job implements Serializable {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 0D;
+		double result = 1D;
 
 		int materialsScienceSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
-		result = materialsScienceSkill / 4D;
-		
 		int mechanicSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
-		result += mechanicSkill * .75;
-
+		result = mechanicSkill *.75 + materialsScienceSkill * .25;
+		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		result += result * ((experienceAptitude - 50D) / 100D);
@@ -100,6 +98,7 @@ public class Technician extends Job implements Serializable {
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
 
+//		System.out.println(person + " tech : " + Math.round(result*100.0)/100.0);
 		return result;
 	}
 
@@ -114,10 +113,10 @@ public class Technician extends Job implements Serializable {
 		double result = 0D;
 
 		// Add number of buildings in settlement.
-		result += settlement.getBuildingManager().getNumBuilding() / 2.5D;
+		result += settlement.getBuildingManager().getNumBuilding() / 3D;
 
 		// Add number of vehicles parked at settlement.
-		result += settlement.getParkedVehicleNum() / 3D;
+		result += settlement.getParkedVehicleNum() / 4D;
 
 		return result;
 	}

@@ -213,7 +213,7 @@ implements Serializable {
 	 public double getAveragePower(Settlement settlement) {
 		 double fuelPower = getMaxPower();
 		 //AmountResource fuelResource = getFuelResource();
-		 Good fuelGood = GoodsUtil.getResourceGood(ResourceUtil.methaneAR);
+		 Good fuelGood = GoodsUtil.getResourceGood(ResourceUtil.methaneID);
 		 GoodsManager goodsManager = settlement.getGoodsManager();
 		 double fuelValue = goodsManager.getGoodValuePerItem(fuelGood);
 		 fuelValue *= getFuelConsumptionRate();

@@ -717,7 +717,9 @@ public class ChatUtils {
 			
 			String fuel = "Electrical Battery";
 			if (vehicleCache instanceof Rover) {
-				fuel = Conversion.capitalize(((Rover)vehicleCache).getFuelTypeAR().getName()) + " (Solid Oxide Fuel Cell)";
+				int id = ((Rover)vehicleCache).getFuelType();
+				String fuelName = ResourceUtil.findAmountResourceName(id);
+				fuel = Conversion.capitalize(fuelName) + " (Solid Oxide Fuel Cell)";
 				
 				responseText.append(addhiteSpacesName("Power Source : ", max) + fuel);
 				responseText.append(System.lineSeparator());
@@ -1751,7 +1753,7 @@ public class ChatUtils {
 				
 //				int min = Math.min(size, max);
 
-				System.out.println("# of sols : " + size);
+//				System.out.println("# of sols : " + size);
 
 				if (size == 0) {
 					responseText.append(System.lineSeparator());

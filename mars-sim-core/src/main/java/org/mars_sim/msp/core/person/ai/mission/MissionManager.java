@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -57,7 +56,7 @@ public class MissionManager implements Serializable {
 	
 	/** Current missions in the simulation. */
 	private List<Mission> missions;
-
+	/** A history of mission plans by sol. */
 	private Map<Integer, List<MissionPlanning>> historicalMissions;
 	
 	// Transient members
@@ -338,7 +337,7 @@ public class MissionManager implements Serializable {
 				}
 			}
 
-			logger.finest("Removed old mission : " + oldMission.getName());
+			logger.info("Removing old mission : " + oldMission.getName());
 		}
 	}
 

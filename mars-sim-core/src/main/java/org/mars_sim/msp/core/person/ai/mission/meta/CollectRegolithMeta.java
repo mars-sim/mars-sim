@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -26,12 +28,12 @@ import org.mars_sim.msp.core.structure.Settlement;
 public class CollectRegolithMeta implements MetaMission {
 
 	// private static Logger logger =
-	// Logger.getLogger(CollectRegolithMeta.class.getName());
+	private static Logger logger = Logger.getLogger(CollectRegolithMeta.class.getName());
 
 	/** Mission name */
 	private static final String NAME = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
 
-	private static final int VALUE = 8000;
+	private static final double VALUE = 1000D;
 
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 1;
@@ -57,7 +59,7 @@ public class CollectRegolithMeta implements MetaMission {
 
 			Settlement settlement = person.getSettlement();
 
-			result = getProbability(settlement);
+			result = getSettlementProbability(settlement);
 
 			// Job modifier.
 			Job job = person.getMind().getJob();
@@ -67,10 +69,11 @@ public class CollectRegolithMeta implements MetaMission {
 				result = result / settlement.getGoodsManager().getTourismFactor();
 			}
 
+//	        if (result > 0)
 //			 logger.info("CollectRegolithMeta's probability : " +
-//			 Math.round(result*100D)/100D);
+//					 Math.round(result*100D)/100D);
 
-			if (result < 0.5)
+			if (result < 0)
 				return 0;
 			else if (result > 1D)
 				result = 1;
@@ -80,7 +83,7 @@ public class CollectRegolithMeta implements MetaMission {
 		return result;
 	}
 
-  public double getProbability(Settlement settlement) {
+  public double getSettlementProbability(Settlement settlement) {
 
         double result = 0D;
         
@@ -112,9 +115,9 @@ public class CollectRegolithMeta implements MetaMission {
 		}
 
 //        // Check for embarking missions.
-//        else if (VehicleMission.hasEmbarkingMissions(settlement)) {
-//            return 0;
-//        }
+        else if (VehicleMission.hasEmbarkingMissions(settlement)) {
+            return 0;
+        }
 
 		// Check if minimum number of people are available at the settlement.
 		else if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_STAYING_MEMBERS)) {
@@ -141,13 +144,13 @@ public class CollectRegolithMeta implements MetaMission {
 		if (result <= 0)
 			return 0;
 
-		result += CollectResourcesMission.getNewMissionProbability(settlement, Bag.class,
-				CollectRegolith.REQUIRED_BAGS, CollectRegolith.MIN_PEOPLE);
+//		result += CollectResourcesMission.getNewMissionProbability(settlement, Bag.class,
+//				CollectRegolith.REQUIRED_BAGS, CollectRegolith.MIN_PEOPLE);
 		
 		// Crowding modifier
-		int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
-		if (crowding > 0)
-			result *= (crowding + 1);
+//		int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
+//		if (crowding > 0)
+//			result *= (crowding + 1);
 
 		int f1 = numEmbarked;
 		int f2 = numThisMission;

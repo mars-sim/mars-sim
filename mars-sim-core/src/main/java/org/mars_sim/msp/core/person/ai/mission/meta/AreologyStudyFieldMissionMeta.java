@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -77,9 +76,9 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
     	    }
 
             // Check for embarking missions.
-            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
-            	return 0;
-            }
+//            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
+//            	return 0;
+//            }
 
             // Check if settlement has enough basic resources for a rover mission.
             else if (!RoverMission.hasEnoughBasicResources(settlement, true)) {
@@ -88,8 +87,8 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
 
             // Check if starting settlement has minimum amount of methane fuel.
             //AmountResource methane = AmountResource.findAmountResource("methane");
-            else if (!(settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneAR, false) >=
-                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE)) {
+            else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneID, false) <
+                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
             	return 0;
             }
 
@@ -106,7 +105,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
                     if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
                         if (!primaryStudy.isPrimaryResearchCompleted()) {
                             if (areology == primaryStudy.getScience()) {
-                                result += 2D;
+                                result += 4D;
                             }
                         }
                     }
@@ -118,7 +117,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
                         if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                             if (!collabStudy.isCollaborativeResearchCompleted(person)) {
                                 if (areology == collabStudy.getCollaborativeResearchers().get(person.getIdentifier())) {
-                                    result += 1D;
+                                    result += 2D;
                                 }
                             }
                         }
@@ -145,7 +144,11 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
                        		 + settlement.getGoodsManager().getResearchFactor())/1.5;
             }
         }
-
+        
+        if (result > 0)
+        	logger.info("AreologyStudyFieldMissionMeta's probability : " +
+				 Math.round(result*100D)/100D);
+		
         return result;
     }
 

@@ -53,14 +53,18 @@ implements Serializable {
 		// Add architect-related missions.
 		jobMissionStarts.add(BuildingConstructionMission.class);
 		jobMissionJoins.add(BuildingConstructionMission.class);
+		
 		jobMissionStarts.add(BuildingSalvageMission.class);
 		jobMissionJoins.add(BuildingSalvageMission.class);
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionStarts.add(EmergencySupplyMission.class);
-		jobMissionJoins.add(EmergencySupplyMission.class);
+		
+//		jobMissionStarts.add(TravelToSettlement.class);
+//		jobMissionJoins.add(TravelToSettlement.class);
+//		
+//		jobMissionStarts.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(RescueSalvageVehicle.class);
+//		
+//		jobMissionStarts.add(EmergencySupplyMission.class);
+//		jobMissionJoins.add(EmergencySupplyMission.class);
 
 	}
 
@@ -80,6 +84,8 @@ implements Serializable {
 		result+= result * ((averageAptitude - 50D) / 100D);
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0;
+
+//		System.out.println(person + " arch : " + Math.round(result*100.0)/100.0);
 
 		return result;
 	}

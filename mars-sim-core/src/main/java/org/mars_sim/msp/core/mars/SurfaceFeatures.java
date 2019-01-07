@@ -288,17 +288,16 @@ public class SurfaceFeatures implements Serializable {
 //			}
 			
 			double diff = 0;
-			for (int i=0; i < size - 1; ++i)
-			{
-			    diff = sequence.get(i+1) - sequence.get(i);
-			    if (diff > 0)
-			    {
-			       trend++;
-			    }
-			    else if (diff < 0)
-			    {
-			       trend--;
-			    }
+			if (!sequence.isEmpty() && size > 1) {
+				for (int i=0; i < size - 1; ++i) {
+				    diff = sequence.get(i+1) - sequence.get(i);
+				    if (diff > 0) {
+				       trend++;
+				    }
+				    else if (diff < 0) {
+				       trend--;
+				    }
+				}
 			}
 			
 //			trend = (int)(trend/2D);

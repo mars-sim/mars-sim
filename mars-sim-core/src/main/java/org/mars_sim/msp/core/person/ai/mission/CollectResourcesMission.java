@@ -283,8 +283,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				return 0;
 
 			// Check for embarking missions.
-			if (VehicleMission.hasEmbarkingMissions(settlement))
-				return 0;
+//			if (VehicleMission.hasEmbarkingMissions(settlement))
+//				return 0;
 
 			// Check if settlement has enough basic resources for a rover mission.
 //			 if (!RoverMission.hasEnoughBasicResources(settlement))

@@ -434,7 +434,9 @@ public class ResourceUtil implements Serializable {
 
 		ARs = new AmountResource[] { 
 				foodAR, waterAR, oxygenAR, carbonDioxideAR, 
-				argonAR, nitrogenAR, coAR, hydrogenAR, methaneAR, iceAR,
+				argonAR, nitrogenAR, coAR, hydrogenAR, 
+				methaneAR, 
+				iceAR,
 				cropWasteAR, foodWasteAR, solidWasteAR, 
 //				eWasteAR, 
 				foodWasteAR,

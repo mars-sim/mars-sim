@@ -69,17 +69,21 @@ public class Doctor extends Job implements Serializable {
 
 		// Add side tasks
 		jobTasks.add(ConsolidateContainers.class);
-		jobTasks.add(ReviewMissionPlan.class);
+//		jobTasks.add(ReviewMissionP lan.class);
 
 		// Add doctor-related missions.
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
-		jobMissionStarts.add(EmergencySupplyMission.class);
-		jobMissionJoins.add(EmergencySupplyMission.class);
+//		jobMissionStarts.add(TravelToSettlement.class);
+//		jobMissionJoins.add(TravelToSettlement.class);
+//		
+//		jobMissionStarts.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(RescueSalvageVehicle.class);
+//		
+//		jobMissionJoins.add(BuildingConstructionMission.class);
+//		
+//		jobMissionJoins.add(BuildingSalvageMission.class);
+//		
+//		jobMissionStarts.add(EmergencySupplyMission.class);
+//		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	/**
@@ -101,6 +105,8 @@ public class Doctor extends Job implements Serializable {
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
+
+//		System.out.println(person + " doctor : " + Math.round(result*100.0)/100.0);
 
 		return result;
 	}
@@ -126,7 +132,7 @@ public class Doctor extends Job implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.MEDICINE)) {
-				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 3D);
+				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 3.5D);
 			}
 		}
 
@@ -136,7 +142,7 @@ public class Doctor extends Job implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			MedicalCare infirmary = building.getMedical();
-			result += (double) infirmary.getTechLevel() / 3D;
+			result += (double) infirmary.getTechLevel() / 3.5D;
 		}
 
 		return result;

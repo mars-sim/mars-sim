@@ -14,9 +14,12 @@ import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
+import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
@@ -78,14 +81,24 @@ implements Serializable {
 		// None
 
 		// Add botanist-related missions.
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
-		jobMissionStarts.add(EmergencySupplyMission.class);
-		jobMissionJoins.add(EmergencySupplyMission.class);
+		jobMissionJoins.add(AreologyStudyFieldMission.class);
+		
+		jobMissionStarts.add(BiologyStudyFieldMission.class);
+		jobMissionJoins.add(BiologyStudyFieldMission.class);
+		
+		jobMissionJoins.add(Exploration.class);
+		
+//		jobMissionStarts.add(TravelToSettlement.class);
+//		jobMissionJoins.add(TravelToSettlement.class);
+//		
+//		jobMissionStarts.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(RescueSalvageVehicle.class);
+//		
+//		jobMissionJoins.add(BuildingConstructionMission.class);
+//		jobMissionJoins.add(BuildingSalvageMission.class);
+//		
+//		jobMissionStarts.add(EmergencySupplyMission.class);
+//		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	/**
@@ -102,18 +115,18 @@ implements Serializable {
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		result += result * ((academicAptitude - 50D) / 100D);
+//		result += result * ((academicAptitude - 50D) / 100D);
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		result += result * ((experienceAptitude - 50D) / 100D);
+		result += result * ((academicAptitude + experienceAptitude - 100) / 100D);
 		
 //		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
 //		result+= result * ((averageAptitude - 50D) / 100D);
 
-		result = result/2D;
-		
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) 
 			result = result/2D;
 
+//		System.out.println(person + " botanist : " + Math.round(result*100.0)/100.0);
+		
 		return result;
 	}
 
@@ -135,7 +148,7 @@ implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.BOTANY)) {
-				result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 5D;
+				result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 4D;
 			}
 		}
 
@@ -145,7 +158,7 @@ implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			Farming farm = building.getFarming();
-			result += (farm.getGrowingArea() / 75D);
+			result += (farm.getGrowingArea() / 90D);
 		}
 
 		// Multiply by food value at settlement.

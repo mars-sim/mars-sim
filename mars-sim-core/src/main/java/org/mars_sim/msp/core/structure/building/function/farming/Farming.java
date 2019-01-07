@@ -736,14 +736,14 @@ public class Farming extends Function implements Serializable {
 	 * @throws Exception if error adding work.
 	 */
 	public double addWork(double workTime, TendGreenhouse h, Unit unit) {
-		double timeRemaining = workTime;
+		double t = workTime;
 		Crop needyCropCache = null;
 		Crop needyCrop = getNeedyCrop(needyCropCache);
 		// TODO: redesign addWork() to check on each food crop
-		while (needyCrop != null && timeRemaining > MIN) {
+		while (needyCrop != null && t > MIN) {
 			// WARNING : ensure timeRemaining gets smaller
 			// or else creating an infinite loop
-			timeRemaining = needyCrop.addWork(unit, timeRemaining) * .9999;
+			t = needyCrop.addWork(unit, t) * .9999;
 			
 			needyCropCache = needyCrop;
 			// Get a new needy crop
@@ -756,7 +756,7 @@ public class Farming extends Function implements Serializable {
 			}
 		}
 
-		return timeRemaining;
+		return t;
 	}
 
 	/**

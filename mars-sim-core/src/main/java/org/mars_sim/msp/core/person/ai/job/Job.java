@@ -13,7 +13,14 @@ import java.util.List;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.CollectIce;
+import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
@@ -75,6 +82,22 @@ public abstract class Job implements Serializable {
 		jobTasks.add(ReviewMissionPlan.class);
 		jobTasks.add(WriteReport.class);
 		
+		jobMissionStarts.add(TravelToSettlement.class);
+		jobMissionJoins.add(TravelToSettlement.class);
+		
+		jobMissionStarts.add(RescueSalvageVehicle.class);
+		jobMissionJoins.add(RescueSalvageVehicle.class);
+		
+		jobMissionStarts.add(EmergencySupplyMission.class);
+		jobMissionJoins.add(EmergencySupplyMission.class);
+		
+		jobMissionJoins.add(BuildingConstructionMission.class);
+		
+		jobMissionJoins.add(BuildingSalvageMission.class);
+		
+		jobMissionJoins.add(CollectIce.class);
+
+		jobMissionJoins.add(CollectRegolith.class);
 	}
 
 	/**

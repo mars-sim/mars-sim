@@ -90,8 +90,7 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
                 		
 	                    PlanType status = mp.getStatus();
 
-	                    if (status != null 
-	                    		&& status == PlanType.PENDING 
+	                    if (status != null && status == PlanType.PENDING 
 	                    		&& mp.getPercentComplete() < 100D) {
 	    		            	
 	    						String reviewedBy = person.getName();
@@ -99,11 +98,15 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 	    						Person p = m.getStartingMember();
 	    						String requestedBy = p.getName();
 						
-	    						if (reviewedBy.equals(requestedBy)
-	    								|| !mp.isValidReview(reviewedBy, pop)) {
+	    						if (!mp.isValidReview(reviewedBy, pop)) {
 	    							return 0;
 	    						}
-	                    	
+	    						
+	    						if (reviewedBy.equals(requestedBy)) {
+	    							// Add penalty to the probability score if reviewer is the same as requester
+	    							result -= 50D;;
+	    						}
+	    						
 	                    	result += 200D;                    	
 	                    	// Add adjustment based on how many sol the request has since been submitted
                             if (marsClock == null)

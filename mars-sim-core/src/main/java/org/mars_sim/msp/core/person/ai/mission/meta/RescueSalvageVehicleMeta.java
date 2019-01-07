@@ -88,9 +88,9 @@ public class RescueSalvageVehicleMeta implements MetaMission {
     	    }
 
             // Check for embarking missions.
-            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
-                return 0;
-            }
+//            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
+//                return 0;
+//            }
 
             // Check if person is last remaining person at settlement (for salvage mission but not rescue mission).
             // Also check for backup rover for salvage mission.

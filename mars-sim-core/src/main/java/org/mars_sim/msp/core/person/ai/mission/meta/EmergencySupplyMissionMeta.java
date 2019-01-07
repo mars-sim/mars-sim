@@ -91,9 +91,9 @@ public class EmergencySupplyMissionMeta implements MetaMission {
 	    	    }
 	
 	            // Check for embarking missions.
-	            if (VehicleMission.hasEmbarkingMissions(settlement)) {
-	                return 0;
-	            }
+//	            if (VehicleMission.hasEmbarkingMissions(settlement)) {
+//	                return 0;
+//	            }
 	
 	            // Check if settlement has enough basic resources for a rover mission.
 	            if (!RoverMission.hasEnoughBasicResources(settlement, false)) {

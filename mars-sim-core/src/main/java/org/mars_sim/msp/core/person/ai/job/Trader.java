@@ -13,12 +13,7 @@ import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
@@ -31,7 +26,7 @@ public class Trader extends Job implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static double TRADING_RANGE = 1500D;
+	private static double TRADING_RANGE = 500D;
 	private static double SETTLEMENT_MULTIPLIER = 3D;
 
 	/**
@@ -54,14 +49,14 @@ public class Trader extends Job implements Serializable {
 		// Add trader-related missions.
 		jobMissionStarts.add(Trade.class);
 		jobMissionJoins.add(Trade.class);
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
-		jobMissionStarts.add(EmergencySupplyMission.class);
-		jobMissionJoins.add(EmergencySupplyMission.class);
+//		jobMissionStarts.add(TravelToSettlement.class);
+//		jobMissionJoins.add(TravelToSettlement.class);
+//		jobMissionStarts.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(BuildingConstructionMission.class);
+//		jobMissionJoins.add(BuildingSalvageMission.class);
+//		jobMissionStarts.add(EmergencySupplyMission.class);
+//		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	/**
@@ -86,8 +81,8 @@ public class Trader extends Job implements Serializable {
 		int conversation = attributes.getAttribute(NaturalAttributeType.CONVERSATION);
 //		result += result * ((conversation - 50D) / 100D);
 
-		double averageAptitude = (experienceAptitude + conversation) / 2D;
-		result += result * ((averageAptitude - 50D) / 100D);
+		double averageAptitude = experienceAptitude + conversation;
+		result += result * ((averageAptitude - 100D) / 100D);
 		
 		return result;
 	}
@@ -101,18 +96,22 @@ public class Trader extends Job implements Serializable {
 	public double getSettlementNeed(Settlement settlement) {
 
 		double result = 0D;
-
+		
+		int pop = settlement.getNumCitizens();
+				
 		Iterator<Settlement> i = settlement.getUnitManager().getSettlements().iterator();
 		while (i.hasNext()) {
 			Settlement otherSettlement = i.next();
 			if (otherSettlement != settlement) {
 				double distance = settlement.getCoordinates().getDistance(otherSettlement.getCoordinates());
-				if (distance <= TRADING_RANGE)
-					result += SETTLEMENT_MULTIPLIER;
+				result += TRADING_RANGE / distance * SETTLEMENT_MULTIPLIER;
+//				if (distance <= TRADING_RANGE) {
+//					result += SETTLEMENT_MULTIPLIER;
+//				}
 			}
 		}
 
-		return result;
+		return result * pop / 12D;
 	}
 
 }

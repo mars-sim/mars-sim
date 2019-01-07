@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -15,7 +16,6 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -28,6 +28,9 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * A meta mission for the BiologyStudyFieldMission mission.
  */
 public class BiologyStudyFieldMissionMeta implements MetaMission {
+
+    /** default logger. */
+	private static Logger logger = Logger.getLogger(BiologyStudyFieldMissionMeta.class.getName());
 
     /** Mission name */
     private static final String NAME = Msg.getString(
@@ -72,9 +75,9 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
     	    }
 
             // Check for embarking missions.
-            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
-            	return 0;
-            }
+//            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
+//            	return 0;
+//            }
 
             // Check if settlement has enough basic resources for a rover mission.
             else if (!RoverMission.hasEnoughBasicResources(settlement, true)) {
@@ -83,7 +86,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
 
             // Check if starting settlement has minimum amount of methane fuel.
             //AmountResource methane = AmountResource.findAmountResource("methane");
-            else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneAR, false) <
+            else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneID, false) <
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
             	return 0;
             }
@@ -100,7 +103,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
                 if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
                     if (!primaryStudy.isPrimaryResearchCompleted()) {
                         if (biology == primaryStudy.getScience())
-                            result += 2D;
+                            result += 4D;
                     }
                 }
 
@@ -111,7 +114,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
                     if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                         if (!collabStudy.isCollaborativeResearchCompleted(person)) {
                             if (biology == collabStudy.getCollaborativeResearchers().get(person.getIdentifier()))
-                                result += 1D;
+                                result += 2D;
                         }
                     }
                 }
@@ -131,6 +134,10 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
                 		 + settlement.getGoodsManager().getResearchFactor())/1.5;
             }
         }
+
+        if (result > 0)
+        	logger.info("BiologyStudyFieldMissionMeta's probability : " +
+				 Math.round(result*100D)/100D);
 
         return result;
     }

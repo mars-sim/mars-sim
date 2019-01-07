@@ -12,6 +12,7 @@ import java.util.Iterator;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
@@ -28,7 +29,7 @@ public class Reporter extends Job implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static double TRADING_RANGE = 1500D;
-	private static double SETTLEMENT_MULTIPLIER = 3D;
+	private static double SETTLEMENT_MULTIPLIER = 1D;
 
 	/**
 	 * Constructor.
@@ -52,9 +53,9 @@ public class Reporter extends Job implements Serializable {
 		jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
 
-		// Should mayor be heroic in this frontier world? Yes
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
+		// Add missions
+//		jobMissionStarts.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(RescueSalvageVehicle.class);
 
 	}
 
@@ -67,7 +68,10 @@ public class Reporter extends Job implements Serializable {
 	public double getCapability(Person person) {
 
 		double result = 0D;
-
+		
+		int reportSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.REPORTING);
+		result = reportSkill;
+		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 
 //		if (attributes == null)
@@ -78,12 +82,12 @@ public class Reporter extends Job implements Serializable {
 		result += result * ((experienceAptitude - 50D) / 100D);
 
 		// Add leadership aptitude.
-		int leadershipAptitude = attributes.getAttribute(NaturalAttributeType.LEADERSHIP);
-		result += result * ((leadershipAptitude - 50D) / 100D) / 2D;
+//		int leadershipAptitude = attributes.getAttribute(NaturalAttributeType.LEADERSHIP);
+//		result += result * ((leadershipAptitude - 50D) / 100D);
 
 		// Add conversation.
 		int conversation = attributes.getAttribute(NaturalAttributeType.CONVERSATION);
-		result += 2D * result * ((conversation - 50D) / 100D);
+		result += result * ((conversation - 50D) / 100D);
 
 		// Add artistry aptitude.
 		int artistry = attributes.getAttribute(NaturalAttributeType.ARTISTRY);
@@ -91,7 +95,7 @@ public class Reporter extends Job implements Serializable {
 
 		// Add attractiveness.
 		int attractiveness = attributes.getAttribute(NaturalAttributeType.ATTRACTIVENESS);
-		result += 2D * result * ((attractiveness - 50D) / 100D);
+		result += result * ((attractiveness - 50D) / 100D);
 
 		return result;
 	}

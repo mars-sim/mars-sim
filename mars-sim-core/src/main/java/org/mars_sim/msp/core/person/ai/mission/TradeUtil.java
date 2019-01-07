@@ -742,7 +742,7 @@ public final class TradeUtil {
 		Map<Good, Integer> neededResources = new HashMap<Good, Integer>(4);
 
 		// Get required fuel.
-		Good fuelGood = GoodsUtil.getResourceGood(rover.getFuelTypeAR());
+		Good fuelGood = GoodsUtil.getResourceGood(rover.getFuelType());
 		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(distance, 1D, true));
 
 		// Get estimated trip time.

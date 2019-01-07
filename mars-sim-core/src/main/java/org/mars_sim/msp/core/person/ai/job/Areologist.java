@@ -87,25 +87,35 @@ public class Areologist extends Job implements Serializable {
 		jobTasks.add(ConsolidateContainers.class);
 
 		// Add areologist-related missions.
-		jobMissionStarts.add(Exploration.class);
-		jobMissionJoins.add(Exploration.class);
-		jobMissionStarts.add(CollectIce.class);
-		jobMissionJoins.add(CollectIce.class);
-		jobMissionStarts.add(CollectRegolith.class);
-		jobMissionJoins.add(CollectRegolith.class);
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionStarts.add(Mining.class);
-		jobMissionJoins.add(Mining.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
 		jobMissionStarts.add(AreologyStudyFieldMission.class);
 		jobMissionJoins.add(AreologyStudyFieldMission.class);
+		
 		jobMissionJoins.add(BiologyStudyFieldMission.class);
-		jobMissionStarts.add(EmergencySupplyMission.class);
-		jobMissionJoins.add(EmergencySupplyMission.class);
+		
+		jobMissionStarts.add(Exploration.class);
+		jobMissionJoins.add(Exploration.class);
+		
+		jobMissionStarts.add(CollectIce.class);
+		jobMissionJoins.add(CollectIce.class);
+		
+		jobMissionStarts.add(CollectRegolith.class);
+		jobMissionJoins.add(CollectRegolith.class);
+		
+//		jobMissionStarts.add(TravelToSettlement.class);
+//		jobMissionJoins.add(TravelToSettlement.class);
+//		
+//		jobMissionStarts.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(RescueSalvageVehicle.class);
+		
+		jobMissionStarts.add(Mining.class);
+		jobMissionJoins.add(Mining.class);
+		
+//		jobMissionJoins.add(BuildingConstructionMission.class);
+//		
+//		jobMissionJoins.add(BuildingSalvageMission.class);
+
+//		jobMissionStarts.add(EmergencySupplyMission.class);
+//		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	/**
@@ -116,7 +126,7 @@ public class Areologist extends Job implements Serializable {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 0D;
+		double result = 1D;
 
 		int areologySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.AREOLOGY);
 		result = areologySkill;
@@ -129,6 +139,8 @@ public class Areologist extends Job implements Serializable {
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
+
+//		System.out.println(person + " areology : " + Math.round(result*100.0)/100.0);
 
 		return result;
 	}
@@ -149,7 +161,7 @@ public class Areologist extends Job implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.AREOLOGY)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 3D);
 			}
 		}
 
@@ -163,7 +175,7 @@ public class Areologist extends Job implements Serializable {
 				if (rover.hasLab()) {
 					Lab lab = rover.getLab();
 					if (lab.hasSpecialty(ScienceType.AREOLOGY)) {
-						result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
+						result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 3D);
 					}
 				}
 			}
@@ -181,7 +193,7 @@ public class Areologist extends Job implements Serializable {
 					if (rover.hasLab()) {
 						Lab lab = rover.getLab();
 						if (lab.hasSpecialty(ScienceType.AREOLOGY)) {
-							result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
+							result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 3D);
 						}
 					}
 				}

@@ -55,8 +55,8 @@ public class Politician extends Job implements Serializable {
 		jobMissionJoins.add(TravelToSettlement.class);
 
 		// Should mayor be heroic in this frontier world? Yes
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
+//		jobMissionStarts.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(RescueSalvageVehicle.class);
 
 	}
 

@@ -84,17 +84,24 @@ implements Serializable {
 
 		// Add biologist-related missions.
 		jobMissionJoins.add(AreologyStudyFieldMission.class);
+		
 		jobMissionStarts.add(BiologyStudyFieldMission.class);
 		jobMissionJoins.add(BiologyStudyFieldMission.class);
+		
 		jobMissionJoins.add(Exploration.class);
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
-		jobMissionStarts.add(EmergencySupplyMission.class);
-		jobMissionJoins.add(EmergencySupplyMission.class);
+		
+//		jobMissionStarts.add(TravelToSettlement.class);
+//		jobMissionJoins.add(TravelToSettlement.class);
+//		
+//		jobMissionStarts.add(RescueSalvageVehicle.class);
+//		jobMissionJoins.add(RescueSalvageVehicle.class);
+		
+//		jobMissionJoins.add(BuildingConstructionMission.class);
+//		
+//		jobMissionJoins.add(BuildingSalvageMission.class);
+		
+//		jobMissionStarts.add(EmergencySupplyMission.class);
+//		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	@Override
@@ -110,6 +117,8 @@ implements Serializable {
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
 
+//		System.out.println(person + " bio : " + Math.round(result*100.0)/100.0);
+		
 		return result;
 	}
 

@@ -118,9 +118,9 @@ public class TradeMeta implements MetaMission {
 		}
 
 		// Check for embarking missions.
-		if (VehicleMission.hasEmbarkingMissions(settlement)) {
-			return 0;
-		}
+//		if (VehicleMission.hasEmbarkingMissions(settlement)) {
+//			return 0;
+//		}
 
 		// Check if settlement has enough basic resources for a rover mission.
 		if (!RoverMission.hasEnoughBasicResources(settlement, true)) {
@@ -128,9 +128,8 @@ public class TradeMeta implements MetaMission {
 		}
 
 		// Check if starting settlement has minimum amount of methane fuel.
-		// AmountResource methane = AmountResource.findAmountResource("methane");
-		if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneAR,
-				false) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
+        if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneID, false) <
+                RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
 			return 0;
 		}
 

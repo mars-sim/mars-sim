@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -174,7 +173,7 @@ public class Crop implements Serializable {
 	private double cumulativeDailyPAR = 0;
 	/** The required power for lighting [in kW]. */
 	private double lightingPower = 0;
-	/** The health condition factor of the crop. */
+	/** The health condition factor of the crop. 1 = excellent. 0 = worst*/
 	private double healthCondition = 0;
 	/** The average water needed [in kg] */
 	private double averageWaterNeeded;
@@ -394,8 +393,6 @@ public class Crop implements Serializable {
 			remainingHarvest = maxHarvest * fractionalGrowingTimeCompleted;
 		}
 
-		computeHealth();
-
 	}
 
 	public void setupMushroom() {
@@ -480,56 +477,56 @@ public class Crop implements Serializable {
 	}
 
 	/**
-	 * Compute the overall health condition of the crop.
+	 * Tracks the overall health condition of the crop.
 	 * 
 	 * @return condition as value from 0 (poor) to 1 (healthy)
 	 */
-	public double computeHealth() {
+	public double trackHealth() {
 		// 0:bad, 1:good
 		double health = 0D;
 
 		// fractionalGrowingTimeCompleted = growingTimeCompleted/growingTime;
 
 		int current = getCurrentPhaseNum();
-		int length = phases.size();
+//		int length = phases.size();
 
 		if (current < 2) {
 			health = 1D;
 		}
 
 		else if (current == 2) {
-			if (fractionalGrowingTimeCompleted <= .02) {
+			if (fractionalGrowingTimeCompleted <= .05) {
 				// avoid initial spurious data at the start of the sim
 				health = 1D;
 			} else {
-				health = getHealth();
+				health = calculateHealth();
 			}
 		}
 
-		else if (current > 2 && current < length - 1) {
-			// Including the harvesting phase
-			// Note : the crop will spend most of the time here
-			health = getHealth();
-		}
+//		else if (current > 3 && current < length - 1) {
+//			// Including the harvesting phase
+//			// Note : the crop will spend most of the time here
+//			health = getHealth();
+//		}
 
 		else
-			health = getHealth();
+			health = calculateHealth();
 
 		if (health > 1D)
 			health = 1D;
 		else if (health < 0D)
 			health = 0D;
 
-		if (fractionalGrowingTimeCompleted >= .1) {
+		if (fractionalGrowingTimeCompleted > .1) {
 			// Check on the health of a >10% growing crop
-			if (health < .07) {
+			if (health < .05) {
 				logger.warning("Crop " + capitalizedCropName + " at " + settlement.getName()
 						+ " died of very poor health (" + Math.round(health * 100D) / 100D + " %) in "
 						+ settlement.getName() + " and didn't survive.");
 				// Add Crop Waste
 				double amt = fractionalGrowingTimeCompleted * remainingHarvest * RandomUtil.getRandomDouble(.5);
 				if (amt > 0) {
-					Storage.storeAnResource(amt, cropWasteID, inv, "::computeHealth");
+					Storage.storeAnResource(amt, cropWasteID, inv, "::trackHealth");
 					logger.warning(amt + " kg Crop Waste generated from the dead " + capitalizedCropName);
 				}
 				phaseType = PhaseType.FINISHED;
@@ -545,7 +542,7 @@ public class Crop implements Serializable {
 				// Add Crop Waste
 				double amt = fractionalGrowingTimeCompleted * remainingHarvest * RandomUtil.getRandomDouble(.5);
 				if (amt > 0) {
-					Storage.storeAnResource(amt, cropWasteID, inv, "::computeHealth");
+					Storage.storeAnResource(amt, cropWasteID, inv, "::trackHealth");
 					logger.warning(amt + " kg Crop Waste generated from the dead " + capitalizedCropName);
 				}
 				phaseType = PhaseType.FINISHED;
@@ -563,21 +560,30 @@ public class Crop implements Serializable {
 	/*
 	 * Computes the health of a crop
 	 */
-	public double getHealth() {
-		double env_factor = 0;
-		for (double m : environmentalFactor) {
-			env_factor = env_factor + m;
+	public double calculateHealth() {
+		double health = 0;
+		double total = 0;
+		int size = environmentalFactor.length;
+		for (int i=0; i< size; i++) {		
+			if (cropCategoryType == CropCategoryType.FUNGI) {
+				if (i == 0)
+					total = total + 1;
+				else
+					total = total + environmentalFactor[i];
+			}
+			
+			else {
+				total = total + environmentalFactor[i];
+			}
 		}
-		if (env_factor / 5D > 1.1)
-			env_factor = 1.1;
-		else
-			env_factor = env_factor / 5D;
-		// logger.info(capitalizedCropName + "'s fractionalGrowingTimeCompleted : " +
-		// Math.round(fractionalGrowingTimeCompleted*100D)/100D + " env memory : " +
-		// Math.round(env_factor*100D)/100D + " actualHarvest/maxHarvest : " +
-		// Math.round(actualHarvest*100D)/100D + "/" + Math.round(maxHarvest*100D)/100D
-		// + " = " + Math.round(actualHarvest/maxHarvest*100D)/100D);
-		return (1 - diseaseIndex) * env_factor;// * actualHarvest / maxHarvest / fractionalGrowingTimeCompleted ;
+		
+		// TODO: will need to model diseaseIndex
+		health = (1 - diseaseIndex) * total / size;
+		
+		if (health > 1)
+			health = 1;
+		
+		return health;
 	}
 
 	/**
@@ -862,7 +868,7 @@ public class Crop implements Serializable {
 				if (msolCache != msol && msol % CHECK_HEALTH_FREQUENCY == 0) {
 					msolCache = msol;
 					// Checks on crop health
-					computeHealth();
+					trackHealth();
 				}
 
 				// max possible harvest within this period of time
@@ -1018,22 +1024,16 @@ public class Crop implements Serializable {
 		// check for the passing of each day
 		int newSol = marsClock.getMissionSol();
 		// the crop has memory of the past lighting condition
-		lightModifier = cumulativeDailyPAR / dailyPARRequired;
+		lightModifier = cumulativeDailyPAR / dailyPARRequired * 1000D / msols;
 		// TODO: If too much light, the crop's health may suffer unless a person comes
 		// to intervene
 		if (isStartup && newSol == 1) {
-			// if this crop is generated at the start of the sim, lightModifier will be
-			// artificially lower
-			// need to add adjustment
-			lightModifier = lightModifier / fractionalGrowingTimeCompleted;
+			// if this crop is generated at the start of the sim, 
+			// lightModifier should start from 1, rather than 0
+			lightModifier = 1;
 		}
-
-		environmentalFactor[0] = .33 + .33 * lightModifier + .33 * environmentalFactor[0];
-		// use .2 instead of .5 since it's normal for crop to go through day/night cycle
-		if (environmentalFactor[0] > 1.5)
-			environmentalFactor[0] = 1.5;
-		else if (environmentalFactor[0] < 0.5)
-			environmentalFactor[0] = 0.5;
+		
+		adjustEnvironmentFactor(lightModifier, 0);
 
 		return uPAR;
 
@@ -1055,9 +1055,7 @@ public class Crop implements Serializable {
 			// TODO: implement optimal growing temperature for each particular crop
 			temperatureModifier = 1D;
 
-		environmentalFactor[2] = .5 * temperatureModifier + .5 * environmentalFactor[2];
-		if (environmentalFactor[2] > 1.1)
-			environmentalFactor[2] = 1.1;
+		adjustEnvironmentFactor(temperatureModifier, 2);
 
 	}
 
@@ -1137,9 +1135,7 @@ public class Crop implements Serializable {
 				Storage.retrieveAnResource(fertilizerUsed, fertilizerID, inv, true);
 			}
 
-			environmentalFactor[1] = .5 * fertilizerModifier + .5 * environmentalFactor[1];
-			if (environmentalFactor[1] > 1.1)
-				environmentalFactor[1] = 1.1;
+			adjustEnvironmentFactor(fertilizerModifier, 1);
 
 //			totalWaterUsed = greyWaterAvailable + waterUsed;
 
@@ -1158,10 +1154,8 @@ public class Crop implements Serializable {
 		// farm.addMoisture(totalWaterUsed*.05);
 		// Record the amount of water taken up by the crop
 		cumulative_water_usage = cumulative_water_usage + waterUsed;// * .95;
-//		System.out.println(getCropType() + " waterUsed : " + waterUsed + "  cumulative_water_usage : " + cumulative_water_usage);
-		environmentalFactor[3] = .5 * waterModifier + .5 * environmentalFactor[3];
-		if (environmentalFactor[3] > 1.1)
-			environmentalFactor[3] = 1.1;
+
+		adjustEnvironmentFactor(waterModifier, 3);
 
 	}
 
@@ -1207,9 +1201,7 @@ public class Crop implements Serializable {
 
 			o2Modifier = o2Used / o2Required;
 
-			environmentalFactor[4] = .5 * o2Modifier + .5 * environmentalFactor[4];
-			if (environmentalFactor[4] > 1.1)
-				environmentalFactor[4] = 1.1;
+			adjustEnvironmentFactor(o2Modifier, 4);
 
 			// Determine the amount of co2 generated via gas exchange.
 			double cO2Gen = o2Used * CO2_TO_O2_RATIO;
@@ -1251,9 +1243,7 @@ public class Crop implements Serializable {
 
 			co2Modifier = cO2Used / cO2Req;
 
-			environmentalFactor[5] = .5 * co2Modifier + .5 * environmentalFactor[5];
-			if (environmentalFactor[5] > 1.1)
-				environmentalFactor[5] = 1.1;
+			adjustEnvironmentFactor(co2Modifier, 5);
 
 			// 6CO2 + 6H2O + sunlight -> C6H12O6 + 6O2
 			//
@@ -1275,6 +1265,20 @@ public class Crop implements Serializable {
 
 	}
 
+	/**
+	 * Adjust the environmental factors
+	 * 
+	 * @param mod the modifier of interest
+	 * @param type the 
+	 */
+	public void adjustEnvironmentFactor(double mod, int type) {
+		environmentalFactor[type] = 0.1 * mod + 0.9 * environmentalFactor[type];
+		if (environmentalFactor[type] > 1.25)
+			environmentalFactor[type] = 1.25;	
+		else if (environmentalFactor[type] < 0.1)
+			environmentalFactor[type] = 0.1;
+	}
+	
 	/**
 	 * Computes each input and output constituent for a crop for the specified
 	 * period of time and return the overall harvest modifier
