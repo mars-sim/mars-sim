@@ -57,7 +57,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
             double stress = condition.getStress();
             double hunger = condition.getHunger();
             
-            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            if (fatigue > 1000 || stress > 80 || hunger > 500)
             	return 0;
             
             try {
@@ -66,12 +66,11 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                 if (farmingBuilding != null) {
 
                     int needyCropsNum = person.getSettlement().getCropsNeedingTending();
-                    result = needyCropsNum * 7.5D;
+                    result = needyCropsNum * 20D;
 
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, farmingBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, farmingBuilding);
-
 
                     // Effort-driven task modifier.
                     result *= person.getPerformanceRating();
@@ -90,8 +89,9 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                     }
                 
         	        // Add Preference modifier
-        	        if (result > 0)
-         	         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+                    double pref = person.getPreference().getPreferenceScore(this);
+                   
+       	         	result = result + result * pref/5D;        	        	
 
         	        if (result < 0) result = 0;
                 }
@@ -125,7 +125,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
  
                     int needyCropsNum = robot.getSettlement().getCropsNeedingTending();
 
-                    result += needyCropsNum * 100D;
+                    result += needyCropsNum * 50D;
     	            // Effort-driven task modifier.
     	            result *= robot.getPerformanceRating();
                 }

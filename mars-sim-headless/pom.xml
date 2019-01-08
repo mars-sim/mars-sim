@@ -19,6 +19,21 @@
 	<build>
 		<plugins>
 			<plugin>
+		        <groupId>org.codehaus.mojo</groupId>
+		        <artifactId>exec-maven-plugin</artifactId>
+		        <version>1.6.0</version>
+		        <executions>
+		            <execution>
+		                <goals>
+		                    <goal>java</goal>
+		                </goals>
+		            </execution>
+		        </executions>
+		        <configuration>
+		            <mainClass>org.mars_sim.headless.MarsProjectHeadlessStarter</mainClass>
+		        </configuration>
+		    </plugin>		
+			<plugin>
 				<!-- https://mvnrepository.com/artifact/org.vafer/jdeb : 1.7 MB -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -62,7 +77,7 @@
 				<!-- see https://github.com/tcurdt/jdeb -->
 				<groupId>org.vafer</groupId>
 				<artifactId>jdeb</artifactId>
-				<version>1.6</version>
+				<version>1.7</version>
 				<executions>
 					<execution>
 						<phase>package</phase>

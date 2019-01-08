@@ -381,7 +381,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		Unit oldContainer = this.containerUnit;
 
 		if (newContainer == null)
-			System.out.println("updatePersonRobotState(): " + getName() + " has an null newContainer");
+			logger.severe("updatePersonRobotState(): " + getName() + " has an null newContainer");
 		
 		// Case 1a : exiting a settlement
 		if (oldContainer instanceof Settlement && newContainer instanceof MarsSurface)
@@ -428,7 +428,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	public void updateEquipmentState(Unit newContainer) {
 		Unit oldContainer = this.containerUnit;
 		if (newContainer == null)
-			System.out.println("updateEquipmentState(): " + getName() + " has an null newContainer");
+			logger.severe("updateEquipmentState(): " + getName() + " has an null newContainer");
 		// Note : a person or a robot must be the carrier of an equipment
 
 		// Case 1a
@@ -474,7 +474,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	public void updateVehicleState(Unit newContainer) {
 //		Unit oldContainer = this.containerUnit;
 		if (newContainer == null)
-			System.out.println("updateVehicleState(): " + getName() + " has an null newContainer");
+			logger.severe("updateVehicleState(): " + getName() + " has an null newContainer");
 		// Note : "within a settlement vicinity" is the intermediate state between being
 		// "in a settlement" and being "outside on Mars"
 		// Case 1

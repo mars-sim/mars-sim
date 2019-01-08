@@ -551,8 +551,8 @@ public class Crop implements Serializable {
 
 		// set healthCondition so that it can be accessed outside of this class
 		healthCondition = health;
-		// logger.info(capitalizedCropName + "'s health : " +
-		// Math.round(health*100D)/100D);
+//		logger.info(capitalizedCropName + "'s health : " +
+//				Math.round(health*100D)/100D);
 
 		return health;
 	}
@@ -1191,6 +1191,8 @@ public class Crop implements Serializable {
 			double o2Available = inv.getAmountResourceStored(oxygenID, false);
 			double o2Used = o2Required;
 
+			o2Modifier = o2Available / o2Required;
+
 			if (o2Used > o2Available)
 				o2Used = o2Available;
 			if (o2Used >  MIN) {
@@ -1199,7 +1201,7 @@ public class Crop implements Serializable {
 				cumulative_o2 = cumulative_o2 - o2Used;
 			}
 
-			o2Modifier = o2Used / o2Required;
+//			o2Modifier = o2Used / o2Required;
 
 			adjustEnvironmentFactor(o2Modifier, 4);
 
@@ -1231,6 +1233,8 @@ public class Crop implements Serializable {
 			// TODO: allow higher concentration of co2 to be pumped to increase the harvest
 			// modifier to the harvest.
 
+			co2Modifier = cO2Available / cO2Req;
+			
 			if (cO2Used > cO2Available)
 				cO2Used = cO2Available;
 			if (cO2Used > MIN) {
@@ -1241,7 +1245,7 @@ public class Crop implements Serializable {
 			// TODO: research how much high amount of CO2 may facilitate the crop growth and
 			// reverse past bad health
 
-			co2Modifier = cO2Used / cO2Req;
+//			co2Modifier = cO2Used / cO2Req;
 
 			adjustEnvironmentFactor(co2Modifier, 5);
 
@@ -1272,9 +1276,9 @@ public class Crop implements Serializable {
 	 * @param type the 
 	 */
 	public void adjustEnvironmentFactor(double mod, int type) {
-		environmentalFactor[type] = 0.1 * mod + 0.9 * environmentalFactor[type];
-		if (environmentalFactor[type] > 1.25)
-			environmentalFactor[type] = 1.25;	
+		environmentalFactor[type] = 0.05 * mod + 0.95 * environmentalFactor[type];
+		if (environmentalFactor[type] > 1.5)
+			environmentalFactor[type] = 1.5;	
 		else if (environmentalFactor[type] < 0.1)
 			environmentalFactor[type] = 0.1;
 	}
