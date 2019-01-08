@@ -4,7 +4,6 @@
  * @version 3.1.0 2018-09-30
  * @author Manny Kung
  */
-
 package org.mars_sim.msp.core.terminal;
 
 import java.awt.geom.Point2D;
