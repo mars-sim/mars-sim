@@ -11,22 +11,26 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 @SuppressWarnings("serial")
 public class MockBuilding extends Building {
 
+//	private BuildingManager manager;
+	
     public MockBuilding() {
         this(null);
     }
+    
     public MockBuilding(BuildingManager manager)  {
 		super(manager);
 		buildingType = "Mock Building";
-		this.manager = manager;
+//		this.manager = manager;
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
 		functions = new ArrayList<Function>();
 		//functions = new HashSet<Function>();
 		functions.add(new LifeSupport(this, 10, 1));
 	}
+    
 	public MockBuilding(BuildingTemplate template, BuildingManager manager)  {
 		super(template, manager);
 		buildingType = "Mock Building";
-		this.manager = manager;
+//		this.manager = manager;
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
 		functions = new ArrayList<Function>();
 		//functions = new HashSet<Function>();

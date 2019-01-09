@@ -240,8 +240,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	// private DecimalFormat fmt = new DecimalFormat("###.####");
 
-	private static Set<Integer> tissues = SimulationConfig.instance().getResourceConfiguration()
-			.getTissueCultures();
+//	private static Set<Integer> tissues = SimulationConfig.instance().getResourceConfiguration()
+//			.getTissueCultures();
 
 	/**
 	 * Constructor 1. Constructs a Building object.

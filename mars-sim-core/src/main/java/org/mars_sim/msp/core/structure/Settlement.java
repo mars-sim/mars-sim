@@ -387,6 +387,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			int initialNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
+		
+		if (unitManager == null)
+			unitManager = sim.getUnitManager();
+		
+		unitManager.addSettlementID(this);
+		
 		this.name = name;
 		this.template = template;
 		this.sponsor = sponsor;

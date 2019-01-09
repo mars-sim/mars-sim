@@ -9,12 +9,17 @@ package org.mars_sim.msp.core.structure.construction;
 
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -73,7 +78,8 @@ implements Serializable, LocalBoundedObject {
     private Settlement settlement;
     private ConstructionStageInfo stageInfo;
 
- 
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+
     /**
      * Constructor
      */
@@ -352,20 +358,21 @@ implements Serializable, LocalBoundedObject {
      * @return newly constructed building.
      * @throws Exception if error constructing building.
      */
-    public Building createBuilding(BuildingManager manager) {
+    public Building createBuilding(int settlementID) {
         if (buildingStage == null) throw new IllegalStateException("Building stage doesn't exist");
 
-        // 2014-10-27 Added uniqueName
+        Settlement settlement = unitManager.getSettlementByID(settlementID);
+        BuildingManager manager = settlement.getBuildingManager();
         int id = manager.getNextTemplateID();
         String buildingType = buildingStage.getInfo().getName();
         String uniqueName = manager.getBuildingNickName(buildingType);
 
         Building newBuilding = new Building(id, buildingType, uniqueName, width, length,
-                xLocation, yLocation, facing, manager);
+                xLocation, yLocation, facing, settlement.getBuildingManager());
         manager.addBuilding(newBuilding, true);
 
         // Record completed building name.
-        constructionManager = manager.getSettlement().getConstructionManager();
+        constructionManager = settlement.getConstructionManager();
         MarsClock timeStamp = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
         constructionManager.addConstructedBuildingLogEntry(buildingStage.getInfo().getName(), timeStamp);
 
@@ -540,4 +547,14 @@ implements Serializable, LocalBoundedObject {
 		isMousePickedUp = value;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded(UnitManager u) {
+		unitManager = u;
+	}
+	
 }

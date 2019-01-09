@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.mars.Meteorite;
@@ -100,10 +101,12 @@ public class BuildingManager implements Serializable {
 	private int numBuildings;
 	private int solCache = 0;
 	private int millisolCache = -5;
+	private int settlementID;
+	
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
-	private Settlement settlement;
+//	private Settlement settlement;
 	private MarsClock lastBuildingValuesUpdateTime;
 
 	private Resupply resupply;
@@ -115,7 +118,6 @@ public class BuildingManager implements Serializable {
 	private Map<FunctionType, List<Building>> buildingFunctionsMap;
 	private Map<String, Integer> buildingTypeIDMap;
 
-
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static HistoricalEventManager eventManager;
@@ -123,6 +125,7 @@ public class BuildingManager implements Serializable {
 	private static MasterClock masterClock;
 	private static BuildingConfig buildingConfig;
 	private static RelationshipManager relationshipManager;
+	private static UnitManager unitManager = sim.getUnitManager();
 	
 
 	/**
@@ -135,7 +138,6 @@ public class BuildingManager implements Serializable {
 	public BuildingManager(Settlement settlement) {
 		this(settlement, simulationConfig.getSettlementConfiguration()
 				.getSettlementTemplate(settlement.getTemplate()).getBuildingTemplates());
-
 	}
 
 	/**
@@ -147,8 +149,9 @@ public class BuildingManager implements Serializable {
 	 * @throws Exception if buildings cannot be constructed.
 	 */
 	public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
-		this.settlement = settlement;
-
+//		this.settlement = settlement;
+		settlementID = settlement.getIdentifier();
+		
 		masterClock = sim.getMasterClock();
 		marsClock = masterClock.getMarsClock();
 
@@ -195,8 +198,9 @@ public class BuildingManager implements Serializable {
 	 * @throws Exception if buildings cannot be constructed.
 	 */
 	public BuildingManager(Settlement settlement, boolean isTest) {
-		this.settlement = settlement;
-
+//		this.settlement = settlement;
+		settlementID = settlement.getIdentifier();
+		
 		if (isTest)
 			logger.info("Loading BuildingManager's constructor 2 for " + settlement.getName() + " on "
 					+ Thread.currentThread().getName());
@@ -238,7 +242,7 @@ public class BuildingManager implements Serializable {
 
 		if (buildings.contains(oldBuilding)) {
 			// Remove building connections (hatches) to old building.
-			settlement.getBuildingConnectorManager().removeAllConnectionsToBuilding(oldBuilding);
+			unitManager.getSettlementByID(settlementID).getBuildingConnectorManager().removeAllConnectionsToBuilding(oldBuilding);
 			// Remove the building's functions from the settlement.
 			oldBuilding.removeFunctionsFromSettlement();
 
@@ -247,7 +251,7 @@ public class BuildingManager implements Serializable {
 			// Call to remove all references of this building in all functions
 			removeAllFunctionsfromBFMap(oldBuilding);
 
-			settlement.fireUnitUpdate(UnitEventType.REMOVE_BUILDING_EVENT, oldBuilding);
+			unitManager.getSettlementByID(settlementID).fireUnitUpdate(UnitEventType.REMOVE_BUILDING_EVENT, oldBuilding);
 		}
 	}
 
@@ -322,7 +326,9 @@ public class BuildingManager implements Serializable {
 	 */
 	public void addBuilding(Building newBuilding, boolean createBuildingConnections) {
 		if (!buildings.contains(newBuilding)) {
-
+			
+			Settlement settlement = unitManager.getSettlementByID(settlementID);
+			
 			buildings.add(newBuilding);
 			// Add tracking air composition
 			if (settlement.getCompositionOfAir() != null)
@@ -346,8 +352,7 @@ public class BuildingManager implements Serializable {
 	 *                                  connections.
 	 */
 	public void addBuilding(BuildingTemplate template, boolean createBuildingConnections) {
-		Building newBuilding = new Building(template, this);
-		addBuilding(newBuilding, createBuildingConnections);
+		addBuilding(new Building(template, this), createBuildingConnections);
 	}
 
 	/**
@@ -1534,11 +1539,15 @@ public class BuildingManager implements Serializable {
 
 		if (newBuilding && buildingValuesNewCache.containsKey(buildingType)) {
 			return buildingValuesNewCache.get(buildingType);
-		} else if (!newBuilding && buildingValuesOldCache.containsKey(buildingType)) {
+		} 
+		
+		else if (!newBuilding && buildingValuesOldCache.containsKey(buildingType)) {
 			return buildingValuesOldCache.get(buildingType);
-		} else {
+		} 
+		
+		else {
 			double result = 0D;
-
+			Settlement settlement = unitManager.getSettlementByID(settlementID);
 			// Determine value of all building functions.
 			if (buildingConfig.hasCommunication(buildingType))
 				result += Communication.getFunctionValue(buildingType, newBuilding, settlement);
@@ -1689,7 +1698,7 @@ public class BuildingManager implements Serializable {
 		boolean goodLocation = true;
 
 		goodLocation = LocalAreaUtil.isObjectCollisionFree(site, width, length, xLoc, yLoc, facing,
-				settlement.getCoordinates());
+				unitManager.getSettlementByID(settlementID).getCoordinates());
 
 		return goodLocation;
 	}
@@ -1725,7 +1734,7 @@ public class BuildingManager implements Serializable {
 		if (!result) {
 			ConstructionStageInfo frameStageInfo = ConstructionUtil.getConstructionStageInfo(frameName);
 			if (frameStageInfo != null) {
-				ConstructionManager constManager = settlement.getConstructionManager();
+				ConstructionManager constManager = unitManager.getSettlementByID(settlementID).getConstructionManager();
 				Iterator<ConstructionSite> j = constManager.getConstructionSites().iterator();
 				while (j.hasNext()) {
 					ConstructionSite site = j.next();
@@ -1950,7 +1959,7 @@ public class BuildingManager implements Serializable {
 	 * @return settlement
 	 */
 	public Settlement getSettlement() {
-		return settlement;
+		return unitManager.getSettlementByID(settlementID);
 	}
 
 	/**
@@ -1968,13 +1977,14 @@ public class BuildingManager implements Serializable {
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1, BuildingConfig bc, HistoricalEventManager e, RelationshipManager r) {
+	public static void justReloaded(MasterClock c0, MarsClock c1, BuildingConfig bc, HistoricalEventManager e, RelationshipManager r, UnitManager u) {
 		sim = Simulation.instance();
 		masterClock = c0;
 		marsClock = c1;
 		buildingConfig = bc;
 		eventManager = e;
 		relationshipManager = r;
+		unitManager = u;
 	}
 	
 	
@@ -1988,7 +1998,7 @@ public class BuildingManager implements Serializable {
 		}
 		// buildings.clear();
 		buildings = null;
-		settlement = null;
+//		settlement = null;
 		// buildingValuesNewCache.clear();
 		buildingValuesNewCache = null;
 		// buildingValuesOldCache.clear();

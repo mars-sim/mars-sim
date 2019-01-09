@@ -369,11 +369,10 @@ public class UnitManager implements Serializable {
 		if (!units.contains(unit)) {
 			units.add(unit);
 			// Track the unit's id
-			if (unit instanceof Settlement)
-				addSettlementID((Settlement)unit);
-			else
+			if (!(unit instanceof Settlement))
 				addUnitID(unit);
-			
+			// Note: Already called addSettlementID() inside Settlement
+		
 			Iterator<Unit> i = unit.getInventory().getContainedUnits().iterator();
 			while (i.hasNext()) {
 				addUnit(i.next());
@@ -554,6 +553,7 @@ public class UnitManager implements Serializable {
 				// Get settlement latitude
 				double latitude = 0D;
 				String latitudeStr = settlementConfig.getInitialSettlementLatitude(x);
+				
 				if (latitudeStr.equals(SettlementConfig.RANDOM)) {
 					latitude = Coordinates.getRandomLatitude();
 				} else {
@@ -2185,6 +2185,9 @@ public class UnitManager implements Serializable {
 		}
 		units.clear();
 		units = null;
+		
+		lookupID = null;
+		lookupSettlements = null;
 
 		settlementNames.clear();
 		settlementNames = null;

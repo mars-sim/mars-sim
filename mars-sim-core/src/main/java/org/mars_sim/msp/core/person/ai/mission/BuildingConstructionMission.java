@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -881,7 +882,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			// Construct building if all site construction complete.
 			if (site.isAllConstructionComplete()) {
 
-				Building building = site.createBuilding(settlement.getBuildingManager());
+				Building building = site.createBuilding(((Unit)settlement).getIdentifier());
 				settlement.getConstructionManager().removeConstructionSite(site);
 				settlement.fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, building);
 				logger.log(Level.FINE,
