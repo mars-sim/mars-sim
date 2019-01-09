@@ -114,6 +114,7 @@ import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.WindPowerSource;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
@@ -934,7 +935,7 @@ public class Simulation implements ClockListener, Serializable {
 		TaskSchedule.justReloaded(marsClock);
 		
 		// Re-initialize Structure related class
-		Building.justReloaded(masterClock, marsClock, bc);
+		Building.justReloaded(masterClock, marsClock, bc, unitManager);
 		BuildingManager.justReloaded(masterClock, marsClock, bc, eventManager, relationshipManager, unitManager);
 		Settlement.justReloaded(marsClock, w, unitManager);		// loadDefaultValues()
 		ChainOfCommand.justReloaded(marsClock, unitManager);
@@ -946,6 +947,7 @@ public class Simulation implements ClockListener, Serializable {
 //		Administration.initializeInstances(bc);
 		CircadianClock.justReloaded(marsClock);
 		Cooking.justReloaded(marsClock, bc);
+		PreparingDessert.justReloaded(marsClock, bc);
 		Crop.justReloaded(masterClock, marsClock);
 		CompositionOfAir.justReloaded(masterClock, marsClock, pc);
 		EVA.justReloaded(bc);

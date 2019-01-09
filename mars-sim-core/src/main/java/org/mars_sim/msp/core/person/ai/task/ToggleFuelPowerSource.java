@@ -11,9 +11,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
@@ -21,7 +23,6 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -48,6 +49,9 @@ implements Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(ToggleFuelPowerSource.class.getName());
+
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			 logger.getName().length());
 
     /** Task name */
     private static final String NAME_ON = Msg.getString(
@@ -204,7 +208,7 @@ implements Serializable {
     public static FuelPowerSource getFuelPowerSource(Building building) {
         FuelPowerSource result = null;
 
-        Settlement settlement = building.getBuildingManager().getSettlement();
+        Settlement settlement = building.getSettlement();
         if (building.hasFunction(FunctionType.POWER_GENERATION)) {
             double bestDiff = 0D;
             PowerGeneration powerGeneration = building.getPowerGeneration();
@@ -431,10 +435,12 @@ implements Serializable {
                 endTask();
             }
 
-            Settlement settlement = building.getBuildingManager().getSettlement();
+            Settlement settlement = building.getSettlement();
             String toggle = "off";
             if (toggleOn) toggle = "on";
-            logger.fine(person.getName() + " turning " + toggle + " " + powerSource.getType() +
+            
+            LogConsolidated.log(Level.FINE, 3_000, sourceName,
+    				"[" + settlement + "] " + person.getName() + " was turning " + toggle + " " + powerSource.getType() +
                     " at " + settlement.getName() + ": " + building.getNickName());
         }
 

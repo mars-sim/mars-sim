@@ -448,7 +448,7 @@ implements Serializable {
 			ManufactureProcessInfo process = i.next();
 			if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction) ||
 					isProcessRunning(process, manufacturingFunction)) {
-				Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
+				Settlement settlement = manufacturingBuilding.getSettlement();
 				double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
 				if (processValue > highestProcessValue) {
 					highestProcessValue = processValue;
@@ -474,7 +474,7 @@ implements Serializable {
 			ManufactureProcessInfo process = i.next();
 			if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction) ||
 					isProcessRunning(process, manufacturingFunction)) {
-				Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
+				Settlement settlement = manufacturingBuilding.getSettlement();
 				double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
 				if (processValue > highestProcessValue) {
 					highestProcessValue = processValue;

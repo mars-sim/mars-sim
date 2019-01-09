@@ -412,7 +412,7 @@ extends TabPanel {
 			if (foodProductionBuilding != null) {
 
 			    // Determine highest materials science skill level at settlement.
-	            Settlement settlement = foodProductionBuilding.getBuildingManager().getSettlement();
+	            Settlement settlement = foodProductionBuilding.getSettlement();
 	            int highestSkillLevel = 0;
 	            Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 	            while (i.hasNext()) {

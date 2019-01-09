@@ -192,7 +192,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 							SalvageProcessInfo selectedSalvage = (SalvageProcessInfo) selectedItem;
 							if (ManufactureUtil.canSalvageProcessBeStarted(selectedSalvage, getWorkshop())) {
 								Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedSalvage,
-										getWorkshop().getBuilding().getBuildingManager().getSettlement());
+										getWorkshop().getBuilding().getSettlement());
 								getWorkshop().addSalvageProcess(
 										new SalvageProcess(selectedSalvage, getWorkshop(), salvagedUnit));
 								update();
@@ -381,7 +381,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		if (workshop.getProcesses().size() < workshop.getSupportingProcesses()) {
 
 			// Determine highest materials science skill level at settlement.
-			Settlement settlement = workshop.getBuilding().getBuildingManager().getSettlement();
+			Settlement settlement = workshop.getBuilding().getSettlement();
 			int highestSkillLevel = 0;
 			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 			while (i.hasNext()) {

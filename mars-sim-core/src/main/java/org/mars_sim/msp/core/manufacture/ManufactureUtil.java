@@ -348,7 +348,7 @@ public final class ManufactureUtil {
     public static boolean canProcessBeStarted(ManufactureProcessInfo process,
             Manufacture workshop) {
         // settlement's inventory
-        Inventory inv = workshop.getBuilding().getBuildingManager().getSettlement().getInventory();
+        Inventory inv = workshop.getBuilding().getInventory();
 
         // Check to see if workshop is full of processes.
         if (workshop.getTotalProcessNumber() >= workshop.getSupportingProcesses()) {
@@ -438,7 +438,7 @@ public final class ManufactureUtil {
         if (workshop.getTechLevel() < process.getTechLevelRequired()) result = false;
 
         // Check to see if a salvagable unit is available at the settlement.
-        Settlement settlement = workshop.getBuilding().getBuildingManager().getSettlement();
+        Settlement settlement = workshop.getBuilding().getSettlement();
         if (findUnitForSalvage(process, settlement) == null) result = false;
 
         return result;

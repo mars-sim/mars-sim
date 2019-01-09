@@ -385,7 +385,7 @@ implements Serializable {
 		int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(
 				SkillType.MATERIALS_SCIENCE);
 
-		Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(FunctionType.MANUFACTURE);
+		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();
 		int techLevel = manufacturingFunction.getTechLevel();
 
 		Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageProcessesForTechSkillLevel(
@@ -394,7 +394,7 @@ implements Serializable {
 			SalvageProcessInfo process = i.next();
 			if (ManufactureUtil.canSalvageProcessBeStarted(process, manufacturingFunction) ||
 					isSalvageProcessRunning(process, manufacturingFunction)) {
-				Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
+				Settlement settlement = manufacturingBuilding.getSettlement();
 				double processValue = ManufactureUtil.getSalvageProcessValue(process, settlement,
 						person);
 				if (processValue > highestProcessValue) {

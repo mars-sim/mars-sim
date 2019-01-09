@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,6 +23,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -159,14 +159,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	// Data members
 	/** The cache for msols */
 	private int msolCache;
-	/**
-	 * Unique template id assigned for the settlement template that this building
-	 * belong
-	 */
+	/** Unique template id assigned for the settlement template of this building belong. */
 	protected int templateID;
 	protected int inhabitableID = -1;
 	protected int baseLevel;
 	private int solCache = 0;
+	private int settlementID;
 
 	protected double width;
 	protected double length;
@@ -197,11 +195,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/** Unit location coordinates. */
 	private Coordinates location;
 	
-	protected BuildingManager manager;
+//	protected BuildingManager manager;
 	protected MalfunctionManager malfunctionManager;
 
 	private Inventory inv;
-	private Settlement settlement;
+//	private Settlement settlement;
 	
 	private transient Communication comm;
 	private transient ThermalGeneration furnace;
@@ -238,11 +236,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected PowerMode powerModeCache;
 	protected HeatMode heatModeCache;
 
-	// private DecimalFormat fmt = new DecimalFormat("###.####");
-
-//	private static Set<Integer> tissues = SimulationConfig.instance().getResourceConfiguration()
-//			.getTissueCultures();
-
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	
 	/**
 	 * Constructor 1. Constructs a Building object.
 	 * 
@@ -253,14 +248,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public Building(BuildingTemplate template, BuildingManager manager) {
 		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getWidth(),
 				template.getLength(), template.getXLoc(), template.getYLoc(), template.getFacing(), manager);
-		// logger.info("Building's constructor 1 is on " +
-		// Thread.currentThread().getName() + " Thread");
 
-		this.manager = manager;
-		this.settlement = manager.getSettlement();
-		this.location = manager.getSettlement().getCoordinates();
-		this.buildingType = template.getBuildingType();
-		inv = settlement.getInventory();
+//		this.manager = manager;
+		location = manager.getSettlement().getCoordinates();
+		buildingType = template.getBuildingType();
+		inv = manager.getSettlement().getInventory();
+		settlementID = manager.getSettlement().getIdentifier();
 
 		// Set the instance of life support
 		// NOTE: needed for setting inhabitable id
@@ -338,10 +331,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this.templateID = id;
 		this.buildingType = buildingType;
 		this.nickName = nickName;
-		this.manager = manager;
-		this.settlement = manager.getSettlement();
-		inv = settlement.getInventory();
-
+//		this.manager = manager;
+		inv = manager.getSettlement().getInventory();
+		settlementID = manager.getSettlement().getIdentifier();
+		
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
 		this.facing = facing;
@@ -900,7 +893,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		if (functions.contains(function)) {
 			functions.remove(function);
 			// Call removeOneFunctionfromBFMap()
-			manager.removeOneFunctionfromBFMap(this, function);
+			unitManager.getSettlementByID(settlementID).getBuildingManager().removeOneFunctionfromBFMap(this, function);
 		}
 	}
 
@@ -910,7 +903,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return building manager
 	 */
 	public BuildingManager getBuildingManager() {
-		return manager;
+		return unitManager.getSettlementByID(settlementID).getBuildingManager();
 	}
 
 	/**
@@ -1210,19 +1203,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return person collection
 	 */
 	public Collection<Person> getAffectedPeople() {
-		/*
-		 * Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-		 * 
-		 * // If building has life support, add all occupants of the building. if
-		 * (hasFunction(BuildingFunction.LIFE_SUPPORT)) { LifeSupport lifeSupport =
-		 * (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT); Iterator<Person> i
-		 * = lifeSupport.getOccupants().iterator(); while (i.hasNext()) { Person
-		 * occupant = i.next(); if (!people.contains(occupant)) people.add(occupant); }
-		 * }
-		 */
+		
 		Collection<Person> people = getInhabitants();
 		// Check all people in settlement.
-		Iterator<Person> i = manager.getSettlement().getIndoorPeople().iterator();
+		Iterator<Person> i = unitManager.getSettlementByID(settlementID).getIndoorPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			Task task = person.getMind().getTaskManager().getTask();
@@ -1257,15 +1241,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			}
 		}
 		
-//		 if (hasFunction(BuildingFunction.ROBOTIC_STATION)) { RoboticStation
-//		 roboticStation = (RoboticStation)
-//		 getFunction(BuildingFunction.ROBOTIC_STATION); Iterator<Robot> i =
-//		 roboticStation.getRobotOccupants().iterator(); while (i.hasNext()) { Robot
-//		 occupant = i.next(); if (!robots.contains(occupant)) robots.add(occupant); }
-//		 }
-		 
 		// Check all robots in settlement.
-		Iterator<Robot> i = manager.getSettlement().getRobots().iterator();
+		Iterator<Robot> i = unitManager.getSettlementByID(settlementID).getRobots().iterator();
 		while (i.hasNext()) {
 			Robot robot = i.next();
 			Task task = robot.getBotMind().getBotTaskManager().getTask();
@@ -1321,10 +1298,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1, BuildingConfig bc) {
+	public static void justReloaded(MasterClock c0, MarsClock c1, BuildingConfig bc, UnitManager u) {
 		masterClock = c0;
 		marsClock = c1;
 		buildingConfig = bc;
+		unitManager = u;
 		malfunctionMeteoriteImpact = MalfunctionFactory
 				.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 	}
@@ -1379,8 +1357,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		int solElapsed = marsClock.getMissionSol();
 		int moment_of_impact = 0;
 
+		Settlement settlement = unitManager.getSettlementByID(settlementID);
+		BuildingManager manager = settlement.getBuildingManager();
+
 		if (solCache != solElapsed) {
 			solCache = solElapsed;
+					
 			// Assume a gauissan profile
 			double probability = floorArea * manager.getProbabilityOfImpactPerSQMPerSol() * (.5 + RandomUtil.getGaussianDouble());
 //			System.out.println("Meteorite : " + probability);
@@ -1519,7 +1501,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	public Settlement getSettlement() {
-		return manager.getSettlement();
+		return unitManager.getSettlementByID(settlementID);
 	}
 
 	public void extractHeat(double heat) {
@@ -1548,12 +1530,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-
 		functions = null;
-//		itemMap = null;
 		location = null;
-		manager = null;
-		settlement = null;
 		furnace = null;
 		lifeSupport = null;
 		roboticStation = null;
@@ -1562,16 +1540,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		masterClock = null;
 		buildingConfig = null;
 		heatModeCache = null;
-		// fmt = null;
 		buildingType = null;
-		manager = null;
 		powerModeCache = null;
 		heatModeCache = null;
 		malfunctionManager.destroy();
 		malfunctionManager = null;
-		
-//		Iterator<Function> i = functions.iterator(); while (i.hasNext()) {
-//		i.next().destroy(); }
 		
 	}
 

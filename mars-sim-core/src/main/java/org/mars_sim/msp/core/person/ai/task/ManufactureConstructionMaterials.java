@@ -366,7 +366,7 @@ implements Serializable {
                     || isProcessRunning(process, manufacturingFunction)) {
                 if (producesConstructionMaterials(process)) {
                     Settlement settlement = manufacturingBuilding
-                            .getBuildingManager().getSettlement();
+                            .getSettlement();
                     double processValue = ManufactureUtil
                             .getManufactureProcessValue(process, settlement);
                     if (processValue > highestProcessValue) {
@@ -406,7 +406,7 @@ implements Serializable {
                     || isProcessRunning(process, manufacturingFunction)) {
                 if (producesConstructionMaterials(process)) {
                     Settlement settlement = manufacturingBuilding
-                            .getBuildingManager().getSettlement();
+                            .getSettlement();
                     double processValue = ManufactureUtil
                             .getManufactureProcessValue(process, settlement);
                     if (processValue > highestProcessValue) {

@@ -37,7 +37,7 @@ public class Potting extends Function implements Serializable {
 
         this.building = building;
         this.inv = building.getSettlementInventory();
-        this.settlement = building.getBuildingManager().getSettlement();
+        this.settlement = building.getSettlement();
 
         BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
  

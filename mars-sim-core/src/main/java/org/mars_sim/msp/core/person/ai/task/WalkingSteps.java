@@ -566,7 +566,7 @@ implements Serializable {
 
         Building initialBuilding = initialWalkState.building;
         Building destinationBuilding = destinationWalkState.building;
-        Settlement settlement = initialBuilding.getBuildingManager().getSettlement();
+        Settlement settlement = initialBuilding.getSettlement();
 
         // Check if two buildings have walkable path.
         if (settlement.getBuildingConnectorManager().hasValidPath(initialBuilding, destinationBuilding)) {
@@ -625,7 +625,7 @@ implements Serializable {
 
         Building initialBuilding = initialWalkState.building;
         Building destinationBuilding = destinationWalkState.building;
-        Settlement settlement = initialBuilding.getBuildingManager().getSettlement();
+        Settlement settlement = initialBuilding.getSettlement();
 
         // Check if two buildings have walkable path.
         if (settlement.getBuildingConnectorManager().hasValidPath(initialBuilding, destinationBuilding)) {
@@ -646,7 +646,7 @@ implements Serializable {
 
         Building initialBuilding = initialWalkState.building;
         Rover destinationRover = destinationWalkState.rover;
-        Settlement settlement = initialBuilding.getBuildingManager().getSettlement();
+        Settlement settlement = initialBuilding.getSettlement();
 
         // Check if rover is parked in garage or outside.
         Building garageBuilding = BuildingManager.getBuilding(destinationRover);
@@ -716,7 +716,7 @@ implements Serializable {
             WalkState destinationWalkState) {
 
         Building initialBuilding = initialWalkState.building;
-        Settlement settlement = initialBuilding.getBuildingManager().getSettlement();
+        Settlement settlement = initialBuilding.getSettlement();
 
         // Find closest walkable airlock to destination.
         Airlock airlock = settlement.getClosestWalkableAvailableAirlock(initialBuilding,
@@ -979,7 +979,7 @@ implements Serializable {
 
         Airlock airlock = initialWalkState.airlock;
         Building destinationBuilding = destinationWalkState.building;
-        Settlement settlement = destinationBuilding.getBuildingManager().getSettlement();
+        Settlement settlement = destinationBuilding.getSettlement();
 
         // Check if airlock is for a building or a rover.
         if (airlock.getEntity() instanceof Building) {
@@ -1048,7 +1048,7 @@ implements Serializable {
             if (garageBuilding != null) {
 
                 // Check if garage building has a walkable interior path from airlock building.
-                Settlement settlement = airlockBuilding.getBuildingManager().getSettlement();
+                Settlement settlement = airlockBuilding.getSettlement();
                 if (settlement.getBuildingConnectorManager().hasValidPath(airlockBuilding, garageBuilding)) {
 
                     // Add settlement interior walk step.
@@ -1188,7 +1188,7 @@ implements Serializable {
             Building airlockBuilding = (Building) airlock.getEntity();
 
             // Check if valid interior walking path between airlock building and destination building.
-            Settlement settlement = airlockBuilding.getBuildingManager().getSettlement();
+            Settlement settlement = airlockBuilding.getSettlement();
             if (settlement.getBuildingConnectorManager().hasValidPath(airlockBuilding, destinationBuilding)) {
 
                 // Create enter airlock walk step.
@@ -1245,7 +1245,7 @@ implements Serializable {
         }
         else if (airlock.getEntity() instanceof Rover) {
 
-            Settlement settlement = destinationBuilding.getBuildingManager().getSettlement();
+            Settlement settlement = destinationBuilding.getSettlement();
 
             // Determine closest airlock to destination building.
             Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(destinationBuilding,
@@ -1303,7 +1303,7 @@ implements Serializable {
         Building garageBuilding = BuildingManager.getBuilding(destinationRover);
         if (garageBuilding != null) {
 
-            Settlement settlement = garageBuilding.getBuildingManager().getSettlement();
+            Settlement settlement = garageBuilding.getSettlement();
             Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(garageBuilding,
                     initialWalkState.xLoc, initialWalkState.yLoc);
             if (destinationAirlock != null) {
@@ -1440,7 +1440,7 @@ implements Serializable {
             WalkState destinationWalkState) {
 
         Building destinationBuilding = destinationWalkState.building;
-        Settlement settlement = destinationBuilding.getBuildingManager().getSettlement();
+        Settlement settlement = destinationBuilding.getSettlement();
 
         // Determine closest airlock to destination building.
         Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(destinationBuilding,
@@ -1495,7 +1495,7 @@ implements Serializable {
         Building garageBuilding = BuildingManager.getBuilding(destinationRover);
         if (garageBuilding != null) {
 
-            Settlement settlement = garageBuilding.getBuildingManager().getSettlement();
+            Settlement settlement = garageBuilding.getSettlement();
             Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(garageBuilding,
                     initialWalkState.xLoc, initialWalkState.yLoc);
             if (destinationAirlock != null) {

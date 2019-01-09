@@ -60,8 +60,8 @@ public class Storage extends Function implements Serializable {
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 		// Inventory inventory = building.getSettlementInventory();
-		settlement = building.getBuildingManager().getSettlement();
-		Inventory inv = settlement.getInventory();
+		settlement = building.getSettlement();
+		Inventory inv = building.getInventory();
 		// Get capacity for each resource.
 		resourceCapacities = buildingConfig.getStorageCapacities(building.getBuildingType());
 

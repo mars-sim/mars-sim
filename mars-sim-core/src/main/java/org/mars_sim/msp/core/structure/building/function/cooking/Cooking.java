@@ -160,9 +160,9 @@ public class Cooking extends Function implements Serializable {
 		ingredientMap = new ConcurrentHashMap<>();
 //		dailyWaterUsage = new HashMap<>();
 
-		inv = getBuilding().getBuildingManager().getSettlement().getInventory();
+		inv = building.getInventory();
 
-		settlement = getBuilding().getBuildingManager().getSettlement();
+		settlement = building.getSettlement();
 
 		cookingWorkTime = 0D;
 
@@ -512,7 +512,7 @@ public class Cooking extends Function implements Serializable {
 	}
 
 	public int getPopulation() {
-		return getBuilding().getBuildingManager().getSettlement().getIndoorPeopleCount();
+		return building.getSettlement().getIndoorPeopleCount();
 	}
 
 	/**
@@ -1018,7 +1018,7 @@ public class Cooking extends Function implements Serializable {
 		}
 
 		// Check if not meal time, clean up.
-		Coordinates location = getBuilding().getBuildingManager().getSettlement().getCoordinates();
+		Coordinates location = building.getSettlement().getCoordinates();
 		if (!CookMeal.isMealTime(location)) {
 			finishUp();
 		}

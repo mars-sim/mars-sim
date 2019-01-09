@@ -175,7 +175,7 @@ public class BuildingPanel extends WebPanel {
 		// Add SVG Image loading for the building
 		Dimension expectedDimension = new Dimension(100, 100);
 		// GraphicsNode node = SVGMapUtil.getSVGGraphicsNode("building", buildingType);
-		Settlement settlement = building.getBuildingManager().getSettlement();
+		Settlement settlement = building.getSettlement();
 		// Conclusion: this panel is called only once per opening the unit window
 		// session.
 		SettlementMapPanel svgPanel = new SettlementMapPanel(settlement, building);

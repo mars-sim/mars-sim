@@ -1316,7 +1316,7 @@ public class MalfunctionManager implements Serializable {
 		if (entity instanceof Unit)
 			return (Unit) entity;
 		else if (entity instanceof Building)
-			return ((Building) entity).getBuildingManager().getSettlement();
+			return ((Building) entity).getSettlement();
 		else
 			throw new IllegalStateException("Could not find unit associated with malfunctionable.");
 	}

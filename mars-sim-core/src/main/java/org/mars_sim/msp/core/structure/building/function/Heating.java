@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -196,7 +195,6 @@ implements Serializable {
 	private Building building;
 	private Coordinates location;
 	private Settlement settlement;
-	private BuildingManager manager;
 	private Farming farm;
 	
 	private static Weather weather;
@@ -221,8 +219,7 @@ implements Serializable {
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
 		this.building = building;
-		this.manager = building.getBuildingManager();
-		this.settlement = manager.getSettlement();
+		this.settlement = building.getSettlement();
 
 		buildingType =  building.getBuildingType();
 		
@@ -1342,7 +1339,6 @@ implements Serializable {
 		marsClock = null;
 		surfaceFeatures = null;
 		settlement = null;
-		manager = null;
 		farm = null;
 		adjacentBuildings = null;
 	}

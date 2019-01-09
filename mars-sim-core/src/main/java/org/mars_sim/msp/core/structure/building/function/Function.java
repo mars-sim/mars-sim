@@ -159,7 +159,7 @@ public abstract class Function implements Serializable {
 
 				// Check if spot is unoccupied.
 				boolean available = true;
-				Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+				Settlement settlement = getBuilding().getSettlement();
 				Iterator<Person> j = settlement.getIndoorPeople().iterator();
 				while (j.hasNext() && available) {
 					Person tempPerson = j.next();
@@ -215,7 +215,7 @@ public abstract class Function implements Serializable {
 
 					// Check if spot is unoccupied.
 					boolean available = true;
-					Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+					Settlement settlement = getBuilding().getSettlement();
 					Iterator<Robot> j = settlement.getRobots().iterator();
 					while (j.hasNext() && available) {
 						Robot tempRobot = j.next();

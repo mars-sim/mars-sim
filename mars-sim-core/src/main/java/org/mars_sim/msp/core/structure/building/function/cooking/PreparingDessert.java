@@ -156,7 +156,8 @@ implements Serializable {
 
     private List<PreparedDessert> servingsOfDessert;
 
-	private MarsClock marsClock;// = Simulation.instance().getMasterClock().getMarsClock();
+    private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+	private static MarsClock marsClock;// = Simulation.instance().getMasterClock().getMarsClock();
 
     /**
      * Constructor.
@@ -167,14 +168,12 @@ implements Serializable {
         // Use Function constructor.
         super(FUNCTION, building);
         this.building = building;
-
-        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
-        
+   
         marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-        inv = getBuilding().getBuildingManager().getSettlement().getInventory();
+        inv = building.getInventory();
 
-        settlement = getBuilding().getBuildingManager().getSettlement();
+        settlement = building.getSettlement();
 
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         dessertMassPerServing = personConfig.getDessertConsumptionRate() / (double) NUM_OF_DESSERT_PER_SOL * DESSERT_SERVING_FRACTION;
@@ -186,8 +185,6 @@ implements Serializable {
 
         preparingWorkTime = 0D;
         servingsOfDessert = new CopyOnWriteArrayList<>();
-
-        BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
         this.cookCapacity = buildingConfig.getCookCapacity(building.getBuildingType());
 
@@ -276,8 +273,7 @@ implements Serializable {
 
         double preparingDessertCapacityValue = demand / (supply + 1D);
 
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        double preparingDessertCapacity = config.getCookCapacity(buildingType);
+        double preparingDessertCapacity = buildingConfig.getCookCapacity(buildingType);
 
         return preparingDessertCapacity * preparingDessertCapacityValue;
     }
@@ -462,7 +458,7 @@ implements Serializable {
     }
 
  	public int getPopulation() {
-        return getBuilding().getBuildingManager().getSettlement().getIndoorPeopleCount();
+        return building.getSettlement().getIndoorPeopleCount();
  	}
 
     /**
@@ -575,7 +571,7 @@ implements Serializable {
     	if ((preparingWorkTime >= PREPARE_DESSERT_WORK_REQUIRED) && !makeNoMoreDessert) {
 
     	    // max allowable # of dessert servings per meal time.
-	        double population = building.getBuildingManager().getSettlement().getIndoorPeopleCount();
+	        double population = building.getSettlement().getIndoorPeopleCount();
 	        double maxServings = population * settlement.getDessertsReplenishmentRate();
 
 	        int numServings = getTotalAvailablePreparedDessertsAtSettlement(settlement);
@@ -788,7 +784,7 @@ implements Serializable {
 	        }
 	
 	        // Check if not meal time, clean up.
-	        Coordinates location = getBuilding().getBuildingManager().getSettlement().getCoordinates();
+	        Coordinates location = building.getSettlement().getCoordinates();
 	        if (!CookMeal.isMealTime(location)) {
 	            finishUp();
 	        }
@@ -893,6 +889,18 @@ implements Serializable {
 		return 0;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 * @param pc
+	 * @param bc
+	 */
+	public static void justReloaded(MarsClock clock, BuildingConfig bc) {
+		marsClock = clock;
+		buildingConfig = bc;
+	}
+			
     @Override
     public void destroy() {
         super.destroy();

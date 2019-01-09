@@ -62,7 +62,7 @@ public class BuildingAirlock extends Airlock {
 
         this.building = building;
         
-        settlement = building.getBuildingManager().getSettlement();
+        settlement = building.getSettlement();
 
         inv = settlement.getInventory();
         
@@ -111,7 +111,7 @@ public class BuildingAirlock extends Airlock {
            			LogConsolidated.log(Level.FINER, 0, sourceName,
         	  				"[" + person.getLocationTag().getLocale() + "] "
         					+ person + " had just exited the airlock at " + building + " and went inside " 
-                			+ building.getBuildingManager().getSettlement()
+                			+ building.getSettlement()
                 			+ ".");
 
                 }
@@ -138,7 +138,7 @@ public class BuildingAirlock extends Airlock {
         	  				"[" + person.getLocationTag().getLocale() + "] "
         					+ person
                 			+ " was about to leave the airlock at " + building + " in " 
-                			+ building.getBuildingManager().getSettlement()
+                			+ building.getSettlement()
                 			+ " to step outside.");
           			
           			
@@ -164,7 +164,7 @@ public class BuildingAirlock extends Airlock {
         	  				"[" + person.getLocationTag().getLocale() + "] "
         					+ person
                 			+ " had just left the airlock at " + building + " in " 
-                			+ building.getBuildingManager().getSettlement()
+                			+ building.getSettlement()
                 			+ " and stepped outside.");
           			
                 }

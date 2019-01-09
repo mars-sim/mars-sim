@@ -34,16 +34,16 @@ extends PowerSource {
 
 	@Override
 	public double getCurrentPower(Building building) {
-		Coordinates location = building.getBuildingManager().getSettlement().getCoordinates();
-		double areothermalHeat = surface.getAreothermalPotential(location);
+//		Coordinates location = building.getSettlement().getCoordinates();
+		double areothermalHeat = surface.getAreothermalPotential(building.getSettlement().getCoordinates());
 
 		return getMaxPower() * (areothermalHeat / 100D);
 	}
 
 	@Override
 	public double getAveragePower(Settlement settlement) {
-		Coordinates location = settlement.getCoordinates();
-		double areothermalHeat =surface.getAreothermalPotential(location);
+//		Coordinates location = settlement.getCoordinates();
+		double areothermalHeat =surface.getAreothermalPotential(settlement.getCoordinates());
 
 		return getMaxPower() * (areothermalHeat / 100D);
 	}

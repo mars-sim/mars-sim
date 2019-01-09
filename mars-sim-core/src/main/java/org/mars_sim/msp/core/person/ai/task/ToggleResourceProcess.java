@@ -270,7 +270,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 	public static ResourceProcess getResourceProcess(Building building) {
 		ResourceProcess result = null;
 
-		Settlement settlement = building.getBuildingManager().getSettlement();
+		Settlement settlement = building.getSettlement();
 		if (building.hasFunction(FunctionType.RESOURCE_PROCESSING)) {
 			double bestDiff = 0D;
 			ResourceProcessing processing = building.getResourceProcessing();

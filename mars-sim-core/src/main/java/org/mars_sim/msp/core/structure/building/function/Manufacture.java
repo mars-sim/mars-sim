@@ -82,8 +82,6 @@ public class Manufacture extends Function implements Serializable {
 	private Building building;
 	private Settlement settlement;
 	private Inventory inv;
-	
-	private BuildingManager buildingManager;
 
 	private static MarsClock marsClock;
 //	private static UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -102,8 +100,7 @@ public class Manufacture extends Function implements Serializable {
 		super(FUNCTION, building);
 
 		this.building = building;
-		buildingManager = building.getBuildingManager();
-		settlement = buildingManager.getSettlement();
+		settlement = building.getSettlement();
 
 		inv = building.getSettlementInventory();
 

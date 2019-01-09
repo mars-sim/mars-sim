@@ -99,7 +99,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
 		this.building = building;
 
-		settlement = building.getBuildingManager().getSettlement();
+		settlement = building.getSettlement();
 		
 		inv = settlement.getInventory();
 		
@@ -295,7 +295,7 @@ public class LivingAccommodations extends Function implements Serializable {
 			// Designate a bed for each inhabitant
 			if (sleepers < maxNumBeds) {
 				if (settlement == null)
-					settlement = building.getBuildingManager().getSettlement();
+					settlement = building.getSettlement();
 				for (Person p : settlement.getIndoorPeople()) {
 					if (p.getBed() == null) {
 						registerSleeper(p, false);

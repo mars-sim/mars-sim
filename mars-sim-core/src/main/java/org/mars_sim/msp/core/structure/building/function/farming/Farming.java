@@ -166,7 +166,7 @@ public class Farming extends Function implements Serializable {
 		// HPS_Item = ItemResource.findItemResource(HPS_LAMP);
 
 		this.building = building;
-		this.settlement = building.getBuildingManager().getSettlement();
+		this.settlement = building.getSettlement();
 
 		// this.b_inv = building.getBuildingInventory();
 		this.inv = settlement.getInventory();

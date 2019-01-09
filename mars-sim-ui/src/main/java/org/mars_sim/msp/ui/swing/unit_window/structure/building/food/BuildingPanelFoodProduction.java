@@ -279,7 +279,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 		if (foodFactory.getProcesses().size() < foodFactory.getConcurrentProcesses()) {
 
 			// Determine highest materials science skill level at settlement.
-			Settlement settlement = foodFactory.getBuilding().getBuildingManager().getSettlement();
+			Settlement settlement = foodFactory.getBuilding().getSettlement();
 			int highestSkillLevel = 0;
 			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 			while (i.hasNext()) {

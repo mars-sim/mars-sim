@@ -457,7 +457,7 @@ implements Serializable {
 		//	FoodProductionProcessInfo process = i.next();
 			if (FoodProductionUtil.canProcessBeStarted(process, foodProductionFunction) ||
 					isProcessRunning(process, foodProductionFunction)) {
-				Settlement settlement = foodProductionBuilding.getBuildingManager().getSettlement();
+				Settlement settlement = foodProductionBuilding.getSettlement();
 				double processValue = FoodProductionUtil.getFoodProductionProcessValue(process, settlement);
 				if (processValue > highestProcessValue) {
 					highestProcessValue = processValue;

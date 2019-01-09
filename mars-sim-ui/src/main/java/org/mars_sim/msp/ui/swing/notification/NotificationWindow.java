@@ -411,7 +411,7 @@ public class NotificationWindow extends JDialog implements ClockListener {
 			else if (source instanceof Building) {
 			    
 			    Building building = (Building) source;
-			    Settlement settlement = building.getBuildingManager().getSettlement();
+			    Settlement settlement = building.getSettlement();
 			    locationName = "in " + settlement.getName();
 			    
 			    message = building.getNickName() + " " + action + " " + formatMsg(message) + " " + locationName;

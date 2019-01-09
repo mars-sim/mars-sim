@@ -418,7 +418,7 @@ public class FoodProduction extends Function implements Serializable {
 								"FoodProduction.addProcess(): output: " + item.getType() + " not a valid type.");
 
 					// Recalculate settlement good value for output item.
-					getBuilding().getBuildingManager().getSettlement().getGoodsManager()
+					getBuilding().getSettlement().getGoodsManager()
 							.updateGoodValue(FoodProductionUtil.getGood(item), false);
 				}
 			}
