@@ -164,7 +164,7 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	            result *= 1.2D;
 	        }
 
-            // 2015-06-07 Added Preference modifier
+            // Add Preference modifier
             if (result > 0)
             	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
 

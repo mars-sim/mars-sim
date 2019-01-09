@@ -97,6 +97,8 @@ public class UnitManager implements Serializable {
 	private List<Unit> units;
 	/** A map of all units with its unit identifier. */
 	private Map<Integer, Unit> lookupID;
+	/** A map of settlements with its unit identifier. */
+	private Map<Integer, Settlement> lookupSettlements;
 
 	// Transient members
 	/** Flag true if the class has just been loaded */
@@ -160,6 +162,7 @@ public class UnitManager implements Serializable {
 
 		// Initialize unit collection
 		lookupID = new HashMap<>();
+		lookupSettlements = new HashMap<>();
 		units = new CopyOnWriteArrayList<>();//ConcurrentLinkedQueue<Unit>();
 		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		equipmentNumberMap = new HashMap<String, Integer>();
@@ -348,6 +351,14 @@ public class UnitManager implements Serializable {
 	public void addUnitID(Unit unit) {
 		lookupID.put(unit.getIdentifier(), unit);
 	}
+
+	public Settlement getSettlementByID(int id) {
+		return lookupSettlements.get(id);
+	}
+	
+	public void addSettlementID(Settlement s) {
+		lookupSettlements.put(s.getIdentifier(), s);
+	}
 	
 	/**
 	 * Adds a unit to the unit manager if it doesn't already have it.
@@ -358,7 +369,10 @@ public class UnitManager implements Serializable {
 		if (!units.contains(unit)) {
 			units.add(unit);
 			// Track the unit's id
-			addUnitID(unit);
+			if (unit instanceof Settlement)
+				addSettlementID((Settlement)unit);
+			else
+				addUnitID(unit);
 			
 			Iterator<Unit> i = unit.getInventory().getContainedUnits().iterator();
 			while (i.hasNext()) {

@@ -203,6 +203,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private Inventory inv;
 	private Settlement settlement;
 	
+	private transient Communication comm;
 	private transient ThermalGeneration furnace;
 	private transient PowerGeneration powerGen;
 	private transient PowerStorage powerStorage;
@@ -536,6 +537,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return farm;
 	}
 
+	public Communication getComm() {
+		if (comm == null)
+			comm = (Communication) getFunction(FunctionType.COMMUNICATION);
+		return comm;
+	}
+	
 	public EVA getEVA() {
 		// if (hasFunction(BuildingFunction.EVA))
 		// eva = (EVA) getFunction(BuildingFunction.EVA);

@@ -3006,8 +3006,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<!-- Sebatier process converting co2 and hydrogen into water and methane. -->
-	<process name="do sebatier processing" tech="1" skill="1" work-time="10" process-time="100" power-required="2.0">
+	<!-- Sabatier process converting co2 and hydrogen into water and methane. -->
+	<process name="do sabatier processing" tech="1" skill="1" work-time="10" process-time="100" power-required="2.0">
 		<inputs>
 			<resource name="carbon dioxide" amount="10.0" />
 			<resource name="hydrogen" amount="1.7" />

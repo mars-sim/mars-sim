@@ -721,7 +721,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return settlement.
 	 */
 	public Settlement getPrimarySettlement() {
-		return (Settlement) (unitManager.getUnitByID(primarySettlement));
+		return unitManager.getSettlementByID(primarySettlement);
 	}
 
 	/**

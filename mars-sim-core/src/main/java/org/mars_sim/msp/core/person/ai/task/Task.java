@@ -113,16 +113,15 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** A collection of the task's phases. */
 	private Collection<TaskPhase> phases;
 
-	
 	public static Simulation sim = Simulation.instance();
 	/** An instance of the event manager */
 	public static HistoricalEventManager eventManager;
 	/** An instance of the relationship manager */
-	public static RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-	
-	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
-	
-	protected static ScientificStudyManager scientificStudyManager = Simulation.instance().getScientificStudyManager();
+	public static RelationshipManager relationshipManager = sim.getRelationshipManager();
+	/** An instance of the UnitManager */	
+	protected static UnitManager unitManager = sim.getUnitManager();
+	/** An instance of the ScientificStudyManager */
+	protected static ScientificStudyManager scientificStudyManager = sim.getScientificStudyManager();
 
 	/**
 	 * Constructs a Task object.
@@ -1277,9 +1276,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param {{@link HistoricalEventManager}
 	 */
-	public static void setInstances(HistoricalEventManager event, RelationshipManager r, UnitManager u, ScientificStudyManager s) {
+	public static void setInstances(HistoricalEventManager e, RelationshipManager r, UnitManager u, ScientificStudyManager s) {
 		sim = Simulation.instance();
-		eventManager = event;
+		eventManager = e;
 		relationshipManager = r;
 		unitManager = u;
 		scientificStudyManager = s;

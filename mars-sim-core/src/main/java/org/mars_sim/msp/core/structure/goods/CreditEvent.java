@@ -46,7 +46,7 @@ public class CreditEvent extends EventObject implements Serializable {
 	 * @return settlement.
 	 */
 	public Settlement getSettlement1() {
-		return (Settlement)(Simulation.instance().getUnitManager().getUnitByID(settlement1));
+		return Simulation.instance().getUnitManager().getSettlementByID(settlement1);
 	}
 	
 	/**
@@ -54,7 +54,7 @@ public class CreditEvent extends EventObject implements Serializable {
 	 * @return settlement.
 	 */
 	public Settlement getSettlement2() {
-		return (Settlement)(Simulation.instance().getUnitManager().getUnitByID(settlement2));
+		return Simulation.instance().getUnitManager().getSettlementByID(settlement2);
 	}
 	
 	/**

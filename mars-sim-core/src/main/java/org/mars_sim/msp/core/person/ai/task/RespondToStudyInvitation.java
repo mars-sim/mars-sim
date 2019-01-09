@@ -221,7 +221,7 @@ implements Serializable {
                 Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
                 while (i.hasNext()) {
                 	int id = i.next();
-                    Person collaborator = (Person)unitManager.getUnitByID(id);
+                    Person collaborator = (Person)(unitManager.getUnitByID(id));
                     ScienceType collaborativeScience = study.getCollaborativeResearchers().get(id);
                     acceptChance += (collaborator.getScientificAchievement(collaborativeScience) / 2D);
                 }
@@ -249,7 +249,6 @@ implements Serializable {
                 acceptChance *= ((double) difficultyLevel / (double) skillLevel);
 
                 // Modify based on researchers opinion of primary researcher.
-//                RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
                 double researcherOpinion = relationshipManager.getOpinionOfPerson(person, 
                         study.getPrimaryResearcher());
                 acceptChance *= (researcherOpinion / 50D);

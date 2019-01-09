@@ -26,6 +26,10 @@ public class ArrivingSettlementUtil {
 	/** Average transit time for arriving settlements from Earth to Mars (sols). */
 	public static int AVG_TRANSIT_TIME = 250;
 
+	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
+	private static MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	
 	/**
 	 * Private constructor for utility class.
 	 */
@@ -40,14 +44,10 @@ public class ArrivingSettlementUtil {
 
 		List<ArrivingSettlement> arrivingSettlements = new ArrayList<ArrivingSettlement>();
 
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-
-		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 		int arrivingSettlementNum = settlementConfig.getNumberOfNewArrivingSettlements();
 		for (int x = 0; x < arrivingSettlementNum; x++) {
 			String name = settlementConfig.getNewArrivingSettlementName(x);
 			if (name.equals(SettlementConfig.RANDOM)) {
-				UnitManager unitManager = Simulation.instance().getUnitManager();
 				name = unitManager.getNewName(UnitType.SETTLEMENT, null, null, null);
 			}
 
@@ -83,7 +83,7 @@ public class ArrivingSettlementUtil {
 			// Create arriving settlement.
 			ArrivingSettlement arrivingSettlement = new ArrivingSettlement(name, template, 
 					arrivalDate, location, population, numOfRobots);
-			// 2015-01-17 Added scenarioID 
+			// Add scenarioID 
 			int scenarioID = settlementConfig.getNewArrivingSettlementScenarioID(x);
 			arrivingSettlement.setScenarioID(scenarioID);
 			

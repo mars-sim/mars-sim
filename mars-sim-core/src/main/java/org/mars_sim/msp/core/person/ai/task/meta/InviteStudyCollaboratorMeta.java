@@ -61,8 +61,8 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
             if (fatigue > 1000 || stress > 50 || hunger > 500)
             	return 0;
             
-	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-	        ScientificStudy study = manager.getOngoingPrimaryStudy(person);
+//	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+	        ScientificStudy study = Simulation.instance().getScientificStudyManager().getOngoingPrimaryStudy(person);
 
             // Check if study is in invitation phase.
             if (study != null && study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {

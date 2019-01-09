@@ -128,6 +128,9 @@ public class PlayHoloGame extends Task implements Serializable {
 
 		setPhase(SETTING_UP_SCENES);
 
+		LogConsolidated.log(Level.INFO, 3_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+				+ person + " was setting up hologames to play in " + person.getLocationTag().getImmediateLocation());
+		
 	}
 
 //	public PlayHoloGame(Robot robot) {
@@ -190,9 +193,9 @@ public class PlayHoloGame extends Task implements Serializable {
 	private double settingUpPhase(double time) {
 		// TODO: add codes for selecting a particular type of game
 		
-		LogConsolidated.log(Level.INFO, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-				+ person + " was setting up hologames to play in " + person.getLocationTag().getImmediateLocation());
-		
+//		LogConsolidated.log(Level.INFO, 3_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+//				+ person + " was setting up hologames to play in " + person.getLocationTag().getImmediateLocation());
+//		
 		setPhase(PLAYING_A_HOLO_GAME);
 		return time * .8D;
 	}

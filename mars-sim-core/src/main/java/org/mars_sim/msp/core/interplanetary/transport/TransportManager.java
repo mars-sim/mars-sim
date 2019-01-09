@@ -39,7 +39,6 @@ public class TransportManager extends Thread implements Serializable {
 	private Collection<Transportable> transportItems;
 
 	private static MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-
 	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
 
 	/**
@@ -163,14 +162,6 @@ public class TransportManager extends Thread implements Serializable {
 			}
 		}
 	}
-
-	// public boolean isTransportingBuilding() {
-	// return isTransportingBuilding;
-	// }
-
-	// public synchronized void setIsTransportingBuilding(boolean value) {
-	// isTransportingBuilding = value;
-	// }
 
 	/**
 	 * initializes instances after loading from a saved sim

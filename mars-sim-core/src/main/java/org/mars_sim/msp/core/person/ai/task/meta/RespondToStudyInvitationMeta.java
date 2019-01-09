@@ -62,7 +62,6 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
         if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
 	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
-	            result = 0D;
 	            return 0;
 	        }
 	        else
@@ -73,10 +72,10 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
         if (person.isInside()) {
 
             // Check if person has been invited to collaborate on any scientific studies.
-	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-	        List<ScientificStudy> invitedStudies = manager.getOpenInvitationStudies(person);
+//	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+	        List<ScientificStudy> invitedStudies = Simulation.instance().getScientificStudyManager().getOpenInvitationStudies(person);
 	        if (invitedStudies.size() > 0) {
-	            result = 50D;
+	            result += invitedStudies.size() * 100D;
 	        }
 
 	        // Crowding modifier
@@ -98,9 +97,9 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
 	            result *= 2D;
 	        }
 
-	        // 2015-06-07 Added Preference modifier
-	           if (result > 0)
-	            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+	        // Add Preference modifier
+	        if (result > 0)
+	           	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
         }
 

@@ -909,7 +909,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 //		System.out.println("Done with Serialized Object instances");
 		
-		Resupply.initializeInstances(bc);
+		Resupply.initializeInstances(bc, unitManager);
 		
 		// Re-initialize Unit related class
 		Inventory.initializeInstances(mars.getMarsSurface());

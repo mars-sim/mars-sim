@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
@@ -23,18 +24,25 @@ import org.mars_sim.msp.core.time.MarsClock;
 public final class ResupplyUtil {
 
     // Average transit time for resupply missions from Earth to Mars [in sols]
-    public static int AVG_TRANSIT_TIME = SimulationConfig.instance().getAverageTransitTime();
+    public static int AVG_TRANSIT_TIME;
     // TODO: implement calculation of transit time at http://www.jpl.nasa.gov/edu/teach/activity/lets-go-to-mars-calculating-launch-windows/
 
     public static int MAX_NUM_SOLS_PLANNED = 2007; // 669 * 3 = 2007
 
     public static List<Resupply> resupplies;
 
+    private static SimulationConfig simulationConfig = SimulationConfig.instance();
+	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
+	private static ResupplyConfig resupplyConfig = simulationConfig.getResupplyConfiguration();
+	private static MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+    
 	/**
 	 * Private constructor for utility class.
 	 */
 	private ResupplyUtil() {
 		// Do nothing
+		AVG_TRANSIT_TIME = simulationConfig.getAverageTransitTime();
 	}
 
 	/**
@@ -45,14 +53,10 @@ public final class ResupplyUtil {
 		if (resupplies == null)  {
 			resupplies = new ArrayList<Resupply>();
 
-			//List<Resupply> resupplyMissions = new ArrayList<Resupply>();
-
-		    SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
-	        Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
+	        Iterator<Settlement> i = unitManager.getSettlements().iterator();
 	        while (i.hasNext()) {
 	            Settlement settlement = i.next();
 	            String templateName = settlement.getTemplate();
-	            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 
 	            Iterator<ResupplyMissionTemplate> j =
 	                settlementConfig.getSettlementTemplate(templateName).getResupplyMissionTemplates().iterator();
@@ -77,8 +81,6 @@ public final class ResupplyUtil {
 	                }
 	                resupply.setTransitState(state);
 
-	                // Get resupply info from the config file.
-	                ResupplyConfig resupplyConfig = SimulationConfig.instance().getResupplyConfiguration();
 	                String resupplyName = template.getName();
 
 	                // Get new building types.
