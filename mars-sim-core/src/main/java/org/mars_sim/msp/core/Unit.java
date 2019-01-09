@@ -24,6 +24,9 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.time.EarthClock;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -88,7 +91,15 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	/** Unit listeners. */
 	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());
 
-	private static Mars mars;
+	protected static Simulation sim = Simulation.instance();
+	protected static Mars mars;
+	protected static MarsClock marsClock;
+	protected static EarthClock earthClock;
+	protected static MasterClock masterClock;
+	protected static MarsSurface marsSurface;
+	protected static UnitManager unitManager;
+	
+	
 //	private static MarsSurface marsSurface;
 	
 	/**
@@ -142,8 +153,12 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		else if (this instanceof Settlement)
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 		
-		mars = Simulation.instance().getMars();
+		mars = sim.getMars();
+//		masterClock = sim.getMasterClock();
+//		marsClock = masterClock.getMarsClock();
+//		earthClock = masterClock.getEarthClock();
 //		marsSurface = mars.getMarsSurface();
+//		unitManager = sim.getUnitManager();
 	}
 
 	/**
@@ -752,9 +767,14 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * 
 	 * @param m
 	 */
-	public static void setInstances(Mars m) {
+	public static void setInstances(MasterClock c0, MarsClock c1, Simulation s, Mars m, MarsSurface ms, EarthClock e, UnitManager u) {
+		masterClock = c0;
+		marsClock = c1;
+		sim = s;
 		mars = m;
-//		marsSurface = mars.getMarsSurface();
+		marsSurface = ms;
+		earthClock = e;
+		unitManager = u;
 	}
 	
 	/**

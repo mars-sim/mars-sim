@@ -1200,7 +1200,7 @@ public abstract class Mission implements Serializable {
 		Iterator<MissionMember> i = members.iterator();
 		while (i.hasNext()) {
 			MissionMember member = i.next();
-			member.setAssociatedSettlement(settlement);
+			member.setAssociatedSettlement(settlement.getIdentifier());
 		}
 	}
 

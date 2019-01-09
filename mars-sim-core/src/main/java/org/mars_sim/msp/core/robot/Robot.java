@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -125,21 +124,9 @@ public class Robot
 	private RobotConfig config;
 
 	/** The settlement the robot is currently associated with. */
-	private Settlement associatedSettlement;
+	private int associatedSettlement = -1;
 
 	private Building currentBuilding;
-
-	private Relax relax;
-
-	private Sleep sleep;
-
-	private Walk walk;
-
-	private static MarsClock marsClock;
-	private static EarthClock earthClock;
-	private static MasterClock masterClock;
-
-	// private Vehicle vehicle;
 
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
 		super(name, settlement.getCoordinates()); // if extending equipment
@@ -152,7 +139,7 @@ public class Robot
 //		enter(LocationCodeType.BUILDING);
 		// Initialize data members.
 		this.name = name;
-		this.associatedSettlement = settlement;
+		this.associatedSettlement = settlement.getIdentifier();
 		this.robotType = robotType;
 	}
 
@@ -220,7 +207,7 @@ public class Robot
 		getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
 
 		// Put robot into the settlement.
-		associatedSettlement.getInventory().storeUnit(this);
+		unitManager.getSettlementByID(associatedSettlement).getInventory().storeUnit(this);
 		// Put robot in proper building.
 		BuildingManager.addToRandomBuilding(this, associatedSettlement);
 	}
@@ -511,7 +498,7 @@ public class Robot
 			containerUnit.getInventory().retrieveUnit(this);
 		}
 		isInoperable = true;
-		setAssociatedSettlement(null);
+		setAssociatedSettlement(-1);
 	}
 
 	// TODO: allow robot parts to be stowed in storage
@@ -725,7 +712,7 @@ public class Robot
 	 * @return associated settlement or null if none.
 	 */
 	public Settlement getAssociatedSettlement() {
-		return associatedSettlement;
+		return unitManager.getSettlementByID(associatedSettlement);
 	}
 
 	/**
@@ -733,25 +720,25 @@ public class Robot
 	 * 
 	 * @param newSettlement the new associated settlement or null if none.
 	 */
-	public void setAssociatedSettlement(Settlement newSettlement) {
+	public void setAssociatedSettlement(int newSettlement) {
 		if (associatedSettlement != newSettlement) {
-			Settlement oldSettlement = associatedSettlement;
+			int oldSettlement = associatedSettlement;
 			associatedSettlement = newSettlement;
-			fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT, associatedSettlement);
-			if (oldSettlement != null) {
-				oldSettlement.removeRobot(this);
-				oldSettlement.fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
+			fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT, unitManager.getSettlementByID(associatedSettlement));
+			if (oldSettlement != -1) {
+				unitManager.getSettlementByID(oldSettlement).removeRobot(this);
+				unitManager.getSettlementByID(oldSettlement).fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
 			}
-			if (newSettlement != null) {
-				newSettlement.addRobot(this);
-				newSettlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
+			if (newSettlement != -1) {
+				unitManager.getSettlementByID(newSettlement).addRobot(this);
+				unitManager.getSettlementByID(newSettlement).fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
 			}
 
 			// set description for this robot
-			if (associatedSettlement == null) {
+			if (associatedSettlement == -1) {
 				super.setDescription("Inoperable");
 			} else
-				super.setDescription(associatedSettlement.getName());
+				super.setDescription(unitManager.getSettlementByID(associatedSettlement).getName());
 		}
 	}
 
@@ -944,29 +931,29 @@ public class Robot
 		return getLocationTag().getLocale();
 	}
 
-	public Relax getRelax() {
-		return relax;
-	}
-
-	public void setRelax(Relax relax) {
-		this.relax = relax;
-	}
-
-	public Sleep getSleep() {
-		return sleep;
-	}
-
-	public void setSleep(Sleep sleep) {
-		this.sleep = sleep;
-	}
-
-	public Walk getWalk() {
-		return walk;
-	}
-
-	public void setWalk(Walk walk) {
-		this.walk = walk;
-	}
+//	public Relax getRelax() {
+//		return relax;
+//	}
+//
+//	public void setRelax(Relax relax) {
+//		this.relax = relax;
+//	}
+//
+//	public Sleep getSleep() {
+//		return sleep;
+//	}
+//
+//	public void setSleep(Sleep sleep) {
+//		this.sleep = sleep;
+//	}
+//
+//	public Walk getWalk() {
+//		return walk;
+//	}
+//
+//	public void setWalk(Walk walk) {
+//		this.walk = walk;
+//	}
 
 //	public Settlement getBuriedSettlement() {
 //		return this.getAssociatedSettlement();
@@ -994,10 +981,6 @@ public class Robot
 	@Override
 	public void destroy() {
 		super.destroy();
-		relax = null;
-		sleep = null;
-		walk = null;
-		// vehicle = null;
 		if (salvageInfo != null)
 			salvageInfo.destroy();
 		salvageInfo = null;
@@ -1008,8 +991,5 @@ public class Robot
 		health.destroy();
 		health = null;
 		birthTimeStamp = null;
-		associatedSettlement = null;
-		// scientificAchievement.clear();
-		// scientificAchievement = null;
 	}
 }

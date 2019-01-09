@@ -49,7 +49,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	private Unit lastOwner;
 
 	private static Simulation sim;
-	private static UnitManager unitManager;
+	protected static UnitManager unitManager;
 	private static MarsSurface marsSurface;
 	private static Mars mars;
 	

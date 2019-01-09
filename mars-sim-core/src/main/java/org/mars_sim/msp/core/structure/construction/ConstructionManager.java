@@ -238,24 +238,24 @@ implements Serializable {
 
 		// Move any people in building to somewhere else in the settlement.
 		if (salvagedBuilding.hasFunction(FunctionType.LIFE_SUPPORT)) {
-			LifeSupport lifeSupport = (LifeSupport) salvagedBuilding.getFunction(FunctionType.LIFE_SUPPORT);
+			LifeSupport lifeSupport = salvagedBuilding.getLifeSupport();
 			Iterator<Person> i = lifeSupport.getOccupants().iterator();
 			while (i.hasNext()) {
 				Person occupant = i.next();
 				BuildingManager.removePersonOrRobotFromBuilding(occupant, salvagedBuilding);
-				BuildingManager.addToRandomBuilding(occupant, buildingManager.getSettlement());
+				BuildingManager.addToRandomBuilding(occupant, buildingManager.getSettlement().getIdentifier());
 			}
 		}
 
 		// 2015-12-23 Added handling robots
 		// Move any robot in building to somewhere else in the settlement.
 		if (salvagedBuilding.hasFunction(FunctionType.ROBOTIC_STATION)) {
-			RoboticStation station = (RoboticStation) salvagedBuilding.getFunction(FunctionType.ROBOTIC_STATION);
+			RoboticStation station = salvagedBuilding.getRoboticStation();
 			Iterator<Robot> i = station.getRobotOccupants().iterator();
 			while (i.hasNext()) {
 				Robot occupant = i.next();
 				BuildingManager.removePersonOrRobotFromBuilding(occupant, salvagedBuilding);
-				BuildingManager.addToRandomBuilding(occupant, buildingManager.getSettlement());
+				BuildingManager.addToRandomBuilding(occupant, buildingManager.getSettlement().getIdentifier());
 			}
 		}
 
@@ -264,7 +264,7 @@ implements Serializable {
 		site.setXLocation(salvagedBuilding.getXLocation());
 		site.setYLocation(salvagedBuilding.getYLocation());
 		site.setFacing(salvagedBuilding.getFacing());
-		ConstructionStageInfo buildingStageInfo = ConstructionUtil.getConstructionStageInfo(salvagedBuilding.getName());
+		ConstructionStageInfo buildingStageInfo = ConstructionUtil.getConstructionStageInfo(salvagedBuilding.getBuildingType());
 		if (buildingStageInfo != null) {
 			String frameName = buildingStageInfo.getPrerequisiteStage();
 			ConstructionStageInfo frameStageInfo = ConstructionUtil.getConstructionStageInfo(frameName);

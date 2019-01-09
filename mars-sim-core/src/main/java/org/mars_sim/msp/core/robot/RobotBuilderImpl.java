@@ -36,7 +36,7 @@ public class RobotBuilderImpl implements RobotBuilder<Robot>{
 		return this;
 	}
 
-	public RobotBuilder<Robot> setAssociatedSettlement(Settlement s) {
+	public RobotBuilder<Robot> setAssociatedSettlement(int s) {
 		robot.setAssociatedSettlement(s);
 		return this;
 	}

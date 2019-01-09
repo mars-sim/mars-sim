@@ -41,7 +41,7 @@ public interface MissionMember extends Indoor {
 	 * 
 	 * @param newSettlement the new associated settlement or null if none.
 	 */
-	public void setAssociatedSettlement(Settlement settlement);
+	public void setAssociatedSettlement(int settlement);
 
 	/**
 	 * Gets the member's location.

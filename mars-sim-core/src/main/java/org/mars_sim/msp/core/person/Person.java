@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.Mars;
@@ -35,9 +36,6 @@ import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
-import org.mars_sim.msp.core.person.ai.task.Relax;
-import org.mars_sim.msp.core.person.ai.task.Sleep;
-import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.CSAMissionControl;
@@ -117,6 +115,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private int age;
 	/** The cache for sol. */
 	private int solCache = 1;
+	/** The settlement the person is currently associated with. */
+	private int associatedSettlement = -1;
+	/** The buried settlement if the person has been deceased. */
+	private int buriedSettlement = -1;
 	/** The cache for msol1 */
 	private double msolCache = -1D;
 	// private int[] emotional_states;
@@ -150,10 +152,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private GenderType gender;
 	/** The birth time of the person. */
 	private EarthClock birthTimeStamp;
-	/** The settlement the person is currently associated with. */
-	private Settlement associatedSettlement;
-	/** The buried settlement if the person has been deceased. */
-	private Settlement buriedSettlement;
 	/** Manager for Person's natural attributes. */
 	private NaturalAttributeManager attributes;
 	/** Person's mind. */
@@ -185,17 +183,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	private Building quarters;
 
-	private Building diningBuilding;
-
 	private Building currentBuilding;
 
 	private Vehicle vehicle;
-
-	private Relax relax;
-
-	private Sleep sleep;
-
-	private Walk walk;
 
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
@@ -210,12 +200,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The person's water/oxygen consumption */
 	private Map<Integer, Map<Integer, Double>> consumption;
 	
-	private static Simulation sim = Simulation.instance();
-	private static MarsClock marsClock;
-	private static EarthClock earthClock;
-	private static MasterClock masterClock;
-	private static Mars mars;
-	private static MarsSurface marsSurface;
+//	private static Simulation sim = Simulation.instance();
+//	private static MarsClock marsClock;
+//	private static EarthClock earthClock;
+//	private static MasterClock masterClock;
+//	private static Mars mars;
+//	private static MarsSurface marsSurface;
+//	private static UnitManager unitManager = sim.getUnitManager();
 	
 	// private PersonConfig config;
 
@@ -253,7 +244,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		lastName = name.substring(name.indexOf(" ")+1, name.length());
 		this.xLoc = 0D;
 		this.yLoc = 0D;
-		this.associatedSettlement = settlement;		
+		this.associatedSettlement = settlement.getIdentifier();		
 //		System.out.println("first name : " + firstName);
 //		System.out.println("last name : " + lastName);
 	}
@@ -277,6 +268,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			earthClock = masterClock.getEarthClock();
 			mars = sim.getMars();
 			marsSurface = mars.getMarsSurface();
+			unitManager = sim.getUnitManager();
 			// TODO : avoid declaring a birth clock for each person
 			// Find a way to use existing EarthClock inside MasterClock, plus the difference
 			// in date
@@ -285,7 +277,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		
 		isBuried = false;
 		// Put person in proper building.
-		associatedSettlement.getInventory().storeUnit(this);
+		unitManager.getSettlementByID(associatedSettlement).getInventory().storeUnit(this);
 		// Note: setAssociatedSettlement(settlement) will cause suffocation when  reloading from a saved sim
 		BuildingManager.addToRandomBuilding(this, associatedSettlement); // why failed ?
 		// testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
@@ -884,7 +876,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// Set his/her buried settlement
 		setBuriedSettlement(associatedSettlement);
 		// Remove the person from being a member of the associated settlement
-		setAssociatedSettlement(null);
+		setAssociatedSettlement(-1);
 		// Throw unit event.
 		fireUnitUpdate(UnitEventType.BURIAL_EVENT);
 	}
@@ -1272,10 +1264,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void setName(String newName) {
 		if (!name.equals(newName))
-			logger.info("Replace the previous commander '" + name + "' with '" + newName + "' in " + associatedSettlement + ".");
+			logger.info("Replace the previous commander '" + name + "' with '" 
+					+ newName + "' in " + unitManager.getSettlementByID(associatedSettlement) + ".");
 		this.name = newName;
 		super.setName(newName);
-		super.setDescription(associatedSettlement.getName());
+		super.setDescription(unitManager.getSettlementByID(associatedSettlement).getName());
 	}
 	
 	/**
@@ -1284,7 +1277,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return associated settlement or null if none.
 	 */
 	public Settlement getAssociatedSettlement() {
-		return associatedSettlement;
+		return unitManager.getSettlementByID(associatedSettlement);
 	}
 
 	/**
@@ -1292,23 +1285,23 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *
 	 * @param newSettlement the new associated settlement or null if none.
 	 */
-	public void setAssociatedSettlement(Settlement newSettlement) {
+	public void setAssociatedSettlement(int newSettlement) {
 		
 		if (associatedSettlement != newSettlement) {
 			
-			Settlement oldSettlement = associatedSettlement;
+			int oldSettlement = associatedSettlement;
 			associatedSettlement = newSettlement;
 			
-			fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT, associatedSettlement);
+			fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT, unitManager.getSettlementByID(associatedSettlement));
 			
-			if (oldSettlement != null) {
-				oldSettlement.removePerson(this);				
-				oldSettlement.fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
+			if (oldSettlement != -1) {
+				unitManager.getSettlementByID(oldSettlement).removePerson(this);				
+				unitManager.getSettlementByID(oldSettlement).fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
 			}
 			
-			if (newSettlement != null) {
-				newSettlement.addPerson(this);
-				newSettlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
+			if (newSettlement != -1) {
+				unitManager.getSettlementByID(newSettlement).addPerson(this);
+				unitManager.getSettlementByID(newSettlement).fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
 			}
 		}
 	}
@@ -1318,12 +1311,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *
 	 * @param settlement
 	 */
-	public void setBuriedSettlement(Settlement settlement) {
+	public void setBuriedSettlement(int settlement) {
 		buriedSettlement = settlement;
 	}
 
 	public Settlement getBuriedSettlement() {
-		return buriedSettlement;
+		return unitManager.getSettlementByID(buriedSettlement);
 	}
 
 	/**
@@ -1366,13 +1359,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		scientificAchievement.put(science, achievementCredit);
 	}
 
-	public void setDiningBuilding(Building diningBuilding) {
-		this.diningBuilding = diningBuilding;
-	}
-
-	public Building getDiningBuilding() {
-		return diningBuilding;
-	}
+//	public void setDiningBuilding(Building diningBuilding) {
+//		this.diningBuilding = diningBuilding;
+//	}
+//
+//	public Building getDiningBuilding() {
+//		return diningBuilding;
+//	}
 
 	public void setKitchenWithMeal(Cooking kitchen) {
 		this.kitchenWithMeal = kitchen;
@@ -1528,29 +1521,29 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		return waterRation;
 //	}
 
-	public Relax getRelax() {
-		return relax;
-	}
+//	public Relax getRelax() {
+//		return relax;
+//	}
+//
+//	public void setRelax(Relax relax) {
+//		this.relax = relax;
+//	}
 
-	public void setRelax(Relax relax) {
-		this.relax = relax;
-	}
+//	public Sleep getSleep() {
+//		return sleep;
+//	}
+//
+//	public void setSleep(Sleep sleep) {
+//		this.sleep = sleep;
+//	}
 
-	public Sleep getSleep() {
-		return sleep;
-	}
-
-	public void setSleep(Sleep sleep) {
-		this.sleep = sleep;
-	}
-
-	public Walk getWalk() {
-		return walk;
-	}
-
-	public void setWalk(Walk walk) {
-		this.walk = walk;
-	}
+//	public Walk getWalk() {
+//		return walk;
+//	}
+//
+//	public void setWalk(Walk walk) {
+//		this.walk = walk;
+//	}
 
 	/**
 	 * Get the unique person id for this unit
@@ -1864,29 +1857,30 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1, Simulation s, Mars m, MarsSurface ms, EarthClock e) {
+	public static void justReloaded(MasterClock c0, MarsClock c1, Simulation s, Mars m, MarsSurface ms, EarthClock e, UnitManager u) {
 		masterClock = c0;
 		marsClock = c1;
 		sim = s;
 		mars = m;
 		marsSurface = ms;
 		earthClock = e;
+		unitManager = u;
 	}
 
 	
 	@Override
 	public void destroy() {
 		super.destroy();
-		relax = null;
-		sleep = null;
-		walk = null;
+//		relax = null;
+//		sleep = null;
+//		walk = null;
 		circadian = null;
 		vehicle = null;
 //		associatedVehicle = null;
-		associatedSettlement = null;
-		buriedSettlement = null;
+//		associatedSettlement = null;
+//		buriedSettlement = null;
 		quarters = null;
-		diningBuilding = null;
+//		diningBuilding = null;
 		currentBuilding = null;
 		condition = null;
 		favorite = null;

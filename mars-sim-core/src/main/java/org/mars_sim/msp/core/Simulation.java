@@ -435,23 +435,23 @@ public class Simulation implements ClockListener, Serializable {
 		transportManager = new TransportManager();
 
 
-		// Initialize eta tasks
+		// Initialize meta tasks
 		new MetaTaskUtil();
 		MarsClock marsClock = masterClock.getMarsClock();
-		LogConsolidated.initializeInstances(marsClock, masterClock.getEarthClock());
 		
+		// Initialize instances
+		LogConsolidated.initializeInstances(marsClock, masterClock.getEarthClock());
 		MalfunctionFactory.setMarsClock(marsClock);
 		MissionManager.setMarsClock(marsClock);
 		MalfunctionManager.initializeInstances(masterClock, marsClock);
 		RelationshipManager.setInstances(unitManager);
-		
-		// Initialize instances
 //		MedicalManager.initializeInstances();
 		mars.initializeTransientData();
 		mars.getOrbitInfo().initializeTransientData();
 		mars.getWeather().initializeTransientData();
 		Inventory.initializeInstances(mars.getMarsSurface());
 		Mission.initializeInstances();
+		Unit.setInstances(masterClock, marsClock, this, mars, mars.getMarsSurface(), masterClock.getEarthClock(), unitManager);
 		
 		ut = masterClock.getUpTimer();
 		
@@ -914,10 +914,9 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Re-initialize Unit related class
 		Inventory.initializeInstances(mars.getMarsSurface());
-		Unit.setInstances(mars);
 		Equipment.justReloaded(unitManager);
 		EVASuit.justReloaded(w);				
-		Person.justReloaded(masterClock, marsClock, this, mars, marsSurface, earthClock);
+		Unit.setInstances(masterClock, marsClock, this, mars, marsSurface, earthClock, unitManager);
 		Robot.justReloaded(masterClock, marsClock);
 		Vehicle.justReloaded(missionManager);				//  vehicleconfig 
 		GroundVehicle.justReloaded(surface);				//  terrain

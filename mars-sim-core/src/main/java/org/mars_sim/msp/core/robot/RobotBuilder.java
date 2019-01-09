@@ -17,7 +17,7 @@ public interface RobotBuilder<T> {
 
 	public RobotBuilder<Robot> setCountry(String c);
 
-	public RobotBuilder<Robot> setAssociatedSettlement(Settlement s);
+	public RobotBuilder<Robot> setAssociatedSettlement(int s);
 
 	public RobotBuilder<Robot> setSponsor(String sponsor);
 

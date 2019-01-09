@@ -688,13 +688,13 @@ public class BuildingManager implements Serializable {
 	 * Adds a person to a random medical building within a settlement.
 	 *
 	 * @param unit       the person/robot to add.
-	 * @param settlement the settlement to find a building.
+	 * @param settlementID the settlement to find a building.
 	 * @throws BuildingException if person/robot cannot be added to any building.
 	 */
-	public static void addToMedicalBuilding(Person p, Settlement settlement) {
+	public static void addToMedicalBuilding(Person p, int settlementID) {
 	
 		Building building = getLeastCrowdedBuildings(
-				settlement.getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT)).stream()
+				unitManager.getSettlementByID(settlementID).getBuildingManager().getBuildings(FunctionType.MEDICAL_CARE, FunctionType.LIFE_SUPPORT)).stream()
 						.findAny().orElse(null);
 
 		if (building != null) {
@@ -705,7 +705,7 @@ public class BuildingManager implements Serializable {
 			LogConsolidated.log(Level.WARNING, 2000, sourceName,
 					"[" + p.getLocationTag().getLocale() + "] No medical facility available for "
 							+ p.getName() + ". Go to a random building.");
-			addToRandomBuilding(p, settlement);
+			addToRandomBuilding(p, settlementID);
 		}
 	}
 
@@ -713,17 +713,18 @@ public class BuildingManager implements Serializable {
 	 * Adds a person/robot to a random inhabitable building within a settlement.
 	 *
 	 * @param unit       the person/robot to add.
-	 * @param settlement the settlement to find a building.
+	 * @param settlementID the settlement to find a building.
 	 * @throws BuildingException if person/robot cannot be added to any building.
 	 */
-	public static void addToRandomBuilding(Unit unit, Settlement settlement) {
+	public static void addToRandomBuilding(Unit unit, int settlementID) {
 		Person person = null;
 		Robot robot = null;
+		BuildingManager manager = unitManager.getSettlementByID(settlementID).getBuildingManager();
 		if (unit instanceof Person) {
 			person = (Person) unit;
 
 			Building building = getLeastCrowdedBuildings(
-					settlement.getBuildingManager().getBuildings(FunctionType.EVA, FunctionType.LIFE_SUPPORT)).stream()
+					manager.getBuildings(FunctionType.EVA, FunctionType.LIFE_SUPPORT)).stream()
 							.findAny().orElse(null);
 
 			if (building != null) {
@@ -761,7 +762,7 @@ public class BuildingManager implements Serializable {
 				// TODO: create another building function to house repairbot ?
 			}
 
-			List<Building> functionBuildings = settlement.getBuildingManager().getBuildings(function);
+			List<Building> functionBuildings = manager.getBuildings(function);
 
 			Building destination = null;
 
@@ -816,7 +817,7 @@ public class BuildingManager implements Serializable {
 
 			else {
 				List<Building> validBuildings1 = new ArrayList<Building>();
-				List<Building> stations = settlement.getBuildingManager().getBuildings(FunctionType.ROBOTIC_STATION);
+				List<Building> stations = manager.getBuildings(FunctionType.ROBOTIC_STATION);
 				for (Building bldg : stations) {
 					// remove hallway, tunnel, observatory
 					if (bldg.getBuildingType().toLowerCase().contains("hallway")

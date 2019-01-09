@@ -503,9 +503,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 						// Place this person within a settlement
 //						p.enter(LocationCodeType.SETTLEMENT);
 						disembarkSettlement.getInventory().storeUnit(p);
-						
-						BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
-						p.setAssociatedSettlement(disembarkSettlement);
+						int id = disembarkSettlement.getIdentifier();
+						BuildingManager.addToMedicalBuilding(p, id);
+						p.setAssociatedSettlement(id);
 
 						HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, this,
 								p.getPhysicalCondition().getHealthSituation(), p.getTaskDescription(), p.getName(),

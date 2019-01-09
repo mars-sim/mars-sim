@@ -476,9 +476,9 @@ public abstract class RoverMission extends VehicleMission {
 					// Place this person within a settlement
 //					p.enter(LocationCodeType.SETTLEMENT);
 					disembarkSettlement.getInventory().storeUnit(p);
-					
-					BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
-					p.setAssociatedSettlement(disembarkSettlement);
+					int id = disembarkSettlement.getIdentifier();
+					BuildingManager.addToMedicalBuilding(p, id);
+					p.setAssociatedSettlement(id);
 
 					HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, this,
 							p.getPhysicalCondition().getHealthSituation(), p.getTaskDescription(), p.getName(),
@@ -520,7 +520,7 @@ public abstract class RoverMission extends VehicleMission {
 								
 								disembarkSettlement.getInventory().storeUnit(p);
 	
-								BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
+								BuildingManager.addToMedicalBuilding(p, disembarkSettlement.getIdentifier());
 	
 							}
 	
@@ -549,7 +549,7 @@ public abstract class RoverMission extends VehicleMission {
 					Person p = i.next(); 
 					rover.getInventory().retrieveUnit(p);
 					disembarkSettlement.getInventory().storeUnit(p);
-					BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
+					BuildingManager.addToMedicalBuilding(p, disembarkSettlement.getIdentifier());
 				
 					LogConsolidated.log(Level.FINER, 0, sourceName,
 							"[" + p.getLocationTag().getLocale() + "] " 

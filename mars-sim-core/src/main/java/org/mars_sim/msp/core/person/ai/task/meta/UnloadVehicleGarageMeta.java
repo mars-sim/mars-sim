@@ -115,7 +115,7 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
         double result = 0D;
 
         if (robot.getBotMind().getRobotJob() instanceof Deliverybot)
-	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	        if (robot.isInSettlement()) {
 
 	            // Check all vehicle missions occurring at the settlement.
 	            try {

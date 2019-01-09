@@ -516,9 +516,9 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 					// Place this person within a settlement
 //					p.enter(LocationCodeType.SETTLEMENT);
 					settlementInv.storeUnit(p);
-					BuildingManager.addToMedicalBuilding(p, settlement);			
+					BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());			
 					
-					p.setAssociatedSettlement(settlement);
+					p.setAssociatedSettlement(settlement.getIdentifier());
 //					p.getMind().getTaskManager().clearTask();
 
 				}

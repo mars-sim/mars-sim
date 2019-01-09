@@ -17,7 +17,7 @@ public interface PersonBuilder<T> {
 
 	public PersonBuilder<Person> setCountry(String c);
 
-	public PersonBuilder<Person> setAssociatedSettlement(Settlement s);
+	public PersonBuilder<Person> setAssociatedSettlement(int s);
 
 	public PersonBuilder<Person> setSponsor(String sponsor);
 

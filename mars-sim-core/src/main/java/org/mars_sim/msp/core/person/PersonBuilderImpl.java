@@ -36,7 +36,7 @@ public class PersonBuilderImpl implements PersonBuilder<Person>{
 		return this;
 	}
 
-	public PersonBuilder<Person> setAssociatedSettlement(Settlement s) {
+	public PersonBuilder<Person> setAssociatedSettlement(int s) {
 		person.setAssociatedSettlement(s);
 		return this;
 	}
