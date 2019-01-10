@@ -111,7 +111,7 @@ public final class MalfunctionFactory implements Serializable {
 	public Malfunction pickAMalfunction(Collection<String> scopes) {
 		Malfunction mal = null;
 
-		Collection<Malfunction> malfunctions = malfunctionConfig.getMalfunctionList();
+		Collection<Malfunction> malfunctions = MalfunctionConfig.getMalfunctionList();
 		double totalProbability = 0D;
 		if (malfunctions.size() > 0) {
 			for (Malfunction m : malfunctions) {

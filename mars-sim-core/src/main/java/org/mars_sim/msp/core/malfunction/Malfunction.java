@@ -86,9 +86,9 @@ public class Malfunction implements Serializable {
 		this.incidentNum = incidentNum;
 		this.severity = severity;
 		this.probability = probability;
-		this.emergencyWorkTime = emergencyWorkTime;
-		this.workTime = workTime;
-		this.EVAWorkTime = EVAWorkTime;
+		this.emergencyWorkTime = computeWorkTime(emergencyWorkTime);
+		this.workTime = computeWorkTime(workTime);
+		this.EVAWorkTime = computeWorkTime(EVAWorkTime);
 		this.systems = entities;
 		this.resourceEffects = resourceEffects;
 		this.lifeSupportEffects = lifeSupportEffects;
@@ -105,6 +105,15 @@ public class Malfunction implements Serializable {
 
 	}
 
+	public double computeWorkTime(double time) {
+		int rand = RandomUtil.getRandomInt(1);
+		if (rand == 0)
+			return RandomUtil.getRandomDouble(time);
+		else
+			// Set it to be at least a quarter of its value to its full value
+			return RandomUtil.getRandomRegressionInteger((int)(time/4D), (int)time);
+	}
+	
 	/**
 	 * Returns the name of the malfunction.
 	 * 

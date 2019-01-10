@@ -941,9 +941,7 @@
 		<emergency-repair-time value="100.0" />
 		<eva-repair-time value="100.0" />
 		<system-list>
-			<system name="Building" />
-			<system name="Vehicle" />
-			<system name="EVA suit" />			
+			<system name="Building" />		
 		</system-list>
 		<effect-list>
 			<effect type="life-support" name="Oxygen" change-rate="-.02" />

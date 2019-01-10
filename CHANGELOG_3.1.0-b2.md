@@ -5,7 +5,7 @@ Copyright (C) 2019 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-beta2 (build 4752) - 2019-01-09
+## v3.1.0-beta2 (build 4753) - 2019-01-10
 
 ### KNOWN LIMITATIONS :
 
@@ -14,7 +14,7 @@ Copyright (C) 2019 Scott Davis
 
 2. In Linux, text fields do not allow text input.
 
-3. JavaFX WebEngine uses older version of webkit, crippling the full UI loading of 
+3. JavaFX WebEngine uses older version of WebKit, crippling the UI rendering of 
    certain modern websites such as GitHub pages.
 
 4. When clicking on a combobox to pick an option, the option list would pop up

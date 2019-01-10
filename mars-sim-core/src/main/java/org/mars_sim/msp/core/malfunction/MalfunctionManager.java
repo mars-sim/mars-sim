@@ -121,7 +121,7 @@ public class MalfunctionManager implements Serializable {
 	/** The owning entity. */
 	private Malfunctionable entity;
 
-	/** The scope strings of the unit. */
+	/** The collection of affected scopes. */
 	private Collection<String> scopes;
 	/** The current malfunctions in the unit. */
 	private Collection<Malfunction> malfunctions;
@@ -391,7 +391,7 @@ public class MalfunctionManager implements Serializable {
 	}
 
 	/**
-	 * Select a malfunction randomly to the unit (if possible).
+	 * Select a malfunction randomly to the unit, based on the affected scope.
 	 * 
 	 * @param actor
 	 */
@@ -429,30 +429,8 @@ public class MalfunctionManager implements Serializable {
 	 * @param actor
 	 */
 	public void addMalfunction(Malfunction malfunction, boolean registerEvent, Unit actor) {
-		Person person = null;
-		Robot robot = null;
-
-		String offender = PARTS_FAILURE;
-		String task = "N/A";
-
 		malfunctions.add(malfunction);
-
-		if (actor != null) {
-			if (actor instanceof Person) {
-				person = (Person) actor;
-				task = person.getTaskDescription();
-			} else if (actor instanceof Robot) {
-				robot = (Robot) actor;
-				task = robot.getTaskDescription();
-			}
-//			else if (actor instanceof Building) {
-//				;
-//			}
-		}
-
-		if (actor != null)
-			offender = actor.getName();
-
+		
 		String malfunctionName = malfunction.getName();
 
 		try {
@@ -463,165 +441,14 @@ public class MalfunctionManager implements Serializable {
 
 		if (registerEvent) {
 
-			if (!malfunctionName.contains("Meteorite")) {
+			if (!malfunction.getName().toLowerCase().contains("meteorite")) {
 				// if it has NOTHING to do with meteorite impact
-
-				String loc0 = null;
-				String loc1 = null;
-
-				// TODO: determine what happens to each entity
-//				entity instanceof EVASuit	
-//				entity instanceof Building
-//				entity instanceof Robot
-//				entity instanceof BuildingKit)
-
-				String object = entity.getNickName();
-
-				if (entity.getUnit() instanceof Vehicle) {
-					loc0 = entity.getNickName();
-					loc1 = entity.getLocale();
-				}
-
-				else if (entity.getUnit() instanceof EVASuit) {// object.toLowerCase().contains("eva")) {
-//						Unit unit = entity.getUnit();
-//						EVASuit suit = (EVASuit)entity.getUnit();
-					// TODO: for a eva suit malfunction,
-					loc0 = ((EVASuit) entity).getImmediateLocation();
-					loc1 = ((EVASuit) entity).getLastOwner().getLocationTag().getLocale();
-				}
-
-				else if (object.toLowerCase().contains("bot")) {
-					loc0 = entity.getImmediateLocation();
-					loc1 = entity.getLocale();
-				}
-
-				else {
-					loc0 = entity.getImmediateLocation();
-					loc1 = entity.getLocale();
-				}
-
-				if (object.equals(loc0)) {
-					if (actor == null) {
-						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
-								malfunction, malfunctionName, "N/A", "None", loc0, loc1);
-						eventManager.registerNewEvent(newEvent);
-						
-						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-								"[" + loc1 + "] " + object + " has " 
-								+ malfunction.getName() + ". Cause : Parts Fatigue.", null);
-					} else {
-						if (person != null) {
-							HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
-									malfunction, malfunctionName, task, offender, loc0, loc1);
-							eventManager.registerNewEvent(newEvent);
-							
-							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-									"[" + loc1 + "] " + object + " has "
-									+ malfunction.getName() + " as reported by " 
-									+ offender + ". Cause : Human Factors.", null);
-						} else if (robot != null) {
-							HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
-									malfunction, malfunctionName, task, offender, loc0, loc1);
-							eventManager.registerNewEvent(newEvent);
-							
-							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-									"[" + loc1 + "] " + object + " has "
-									+ malfunction.getName() + " as reported by " 
-									+ offender + ". Cause : Software Quality Control.", null);
-						}
-					}
-				} 
-				
-				else {
-					if (actor == null) {
-						HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
-								malfunction, malfunctionName + " on " + object, "N/A", "None", loc0, loc1);
-						eventManager.registerNewEvent(newEvent);
-						
-						LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-								"[" + loc1 + "] " + object + " has " 
-								+ malfunction.getName() + " in " + loc0 + ". Cause : Parts Fatigue.", null);					
-					} 
-					
-					else {
-						if (person != null) {
-							HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
-									malfunction, malfunctionName + " on " + object, task, offender, loc0, loc1);
-							eventManager.registerNewEvent(newEvent);
-							
-							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-									"[" + loc1 + "] " + object + " has "
-									+ malfunction.getName() + " in " + loc0 + " as reported by " 
-									+ offender + ". Cause : Human Factors.", null);
-						} 
-						
-						else if (robot != null) {
-							HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
-									malfunction, malfunctionName, task, offender, loc0, loc1);
-							eventManager.registerNewEvent(newEvent);
-							
-							LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-									"[" + loc1 + "] " + object + " has "
-									+ malfunction.getName() + " in " + loc0 + " as reported by " 
-									+ offender + ". Cause : Software Quality Control.", null);
-						}
-					}
-				}
+				registerAMalfunction(malfunction, actor);
 			}
 
 			else {
 				// due to meteorite impact
-				
-				// Note : Unit actor is null
-				String loc0 = null;
-				String loc1 = null;
-
-				String object = entity.getNickName();
-
-				// TODO: determine what happens to each entity
-//				entity instanceof EVASuit	
-//				entity instanceof Building
-//				entity instanceof Robot
-//				entity instanceof BuildingKit)
-
-				if (entity.getUnit() instanceof Vehicle) {
-					loc0 = entity.getNickName();
-					loc1 = entity.getLocale();
-				}
-
-				else if (object.toLowerCase().contains("eva")) {
-//						Unit unit = entity.getUnit();
-//						EVASuit suit = (EVASuit)entity.getUnit();
-					// TODO: for a eva suit malfunction,
-					loc0 = ((EVASuit) entity).getImmediateLocation();
-					loc1 = ((EVASuit) entity).getLastOwner().getLocationTag().getLocale();
-				}
-
-				else if (object.toLowerCase().contains("bot")) {
-					loc0 = entity.getImmediateLocation();
-					loc1 = entity.getLocale();
-				}
-
-				else {
-					loc0 = entity.getImmediateLocation();
-					loc1 = entity.getLocale();
-				}
-
-				String name = malfunction.getTraumatized();
-
-				// if it is a meteorite impact
-				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_ACT_OF_GOD, malfunction,
-						malfunctionName, task, name, loc0, loc1);
-				eventManager.registerNewEvent(newEvent);
-				
-				if (object.equals(loc0)) {
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						"[" + loc1 + "] " + object + " was damaged by " +  malfunction.getName(), null);
-				}
-				else {
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-							"[" + loc1 + "] " + object + " was damaged by " +  malfunction.getName() + " in " + loc0, null);
-				}
+				registerMeteoriteMalfunction(malfunction);
 			}
 			
 		} 
@@ -649,7 +476,7 @@ public class MalfunctionManager implements Serializable {
 			}
 
 			double old_rel = factory.getReliability(id);
-			double old_prob = malfunctionConfig.getRepairPartProbability(malfunction.getName(), part_name);
+			double old_prob = malfunctionConfig.getRepairPartProbability(malfunctionName, part_name);
 			double old_failure = (100 - old_rel) * old_prob / 100D;
 			double old_mal_probl_failure = malfunction.getProbability();
 			double old_MTBF = factory.getMTBFs().get(id);
@@ -661,7 +488,7 @@ public class MalfunctionManager implements Serializable {
 
 			// String name = p.getName();
 			double new_rel = factory.getReliability(id);
-			double new_prob = malfunctionConfig.getRepairPartProbability(malfunction.getName(), part_name);
+			double new_prob = malfunctionConfig.getRepairPartProbability(malfunctionName, part_name);
 			double new_failure = (100 - new_rel) * new_prob / 100D;
 			double new_mal_prob_failure = 0;
 			double new_MTBF = factory.getMTBFs().get(id);
@@ -689,6 +516,188 @@ public class MalfunctionManager implements Serializable {
 
 	}
 
+	public void registerAMalfunction(Malfunction malfunction, Unit actor) {
+		String malfunctionName = malfunction.getName();
+
+		Person person = null;
+		Robot robot = null;
+
+		String offender = PARTS_FAILURE;
+		String task = "N/A";
+
+		malfunctions.add(malfunction);
+
+		if (actor != null) {
+			if (actor instanceof Person) {
+				person = (Person) actor;
+				task = person.getTaskDescription();
+			} else if (actor instanceof Robot) {
+				robot = (Robot) actor;
+				task = robot.getTaskDescription();
+			}
+			
+			offender = actor.getName();
+		}
+	
+		String loc0 = null;
+		String loc1 = null;
+
+		// TODO: determine what happens to each entity
+//		EVASuit, Building, Robot, BuildingKit
+
+		String object = entity.getNickName();
+
+		if (entity.getUnit() instanceof Vehicle) {
+			loc0 = entity.getNickName();
+			loc1 = entity.getLocale();
+		}
+
+		else if (entity.getUnit() instanceof EVASuit) {// object.toLowerCase().contains("eva")) {
+//				Unit unit = entity.getUnit();
+//				EVASuit suit = (EVASuit)entity.getUnit();
+			loc0 = ((EVASuit) entity).getImmediateLocation();
+			loc1 = ((EVASuit) entity).getLastOwner().getLocationTag().getLocale();
+		}
+
+		else if (entity.getUnit() instanceof Robot) {// object.toLowerCase().contains("bot")) {
+			loc0 = entity.getImmediateLocation();
+			loc1 = entity.getLocale();
+		}
+
+		else {
+			loc0 = entity.getImmediateLocation();
+			loc1 = entity.getLocale();
+		}
+
+		if (object.equals(loc0)) {
+			if (actor == null) {
+				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
+						malfunction, malfunctionName, "N/A", "None", loc0, loc1);
+				eventManager.registerNewEvent(newEvent);
+				
+				LogConsolidated.log(Level.WARNING, 0, sourceName,
+						"[" + loc1 + "] " + object + " has " 
+						+ malfunction.getName() + ". Cause : Parts Fatigue.");
+			} 
+			
+			else {
+				if (person != null) {
+					HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
+							malfunction, malfunctionName, task, offender, loc0, loc1);
+					eventManager.registerNewEvent(newEvent);
+					
+					LogConsolidated.log(Level.WARNING, 0, sourceName, 
+							"[" + loc1 + "] " + object + " has "
+							+ malfunction.getName() + " as reported by " 
+							+ offender + ". Cause : Human Factors.");
+				} else if (robot != null) {
+					HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
+							malfunction, malfunctionName, task, offender, loc0, loc1);
+					eventManager.registerNewEvent(newEvent);
+					
+					LogConsolidated.log(Level.WARNING, 0, sourceName, 
+							"[" + loc1 + "] " + object + " has "
+							+ malfunction.getName() + " as reported by " 
+							+ offender + ". Cause : Software Quality Control.");
+				}
+			}
+		} 
+		
+		else {
+			if (actor == null) {
+				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
+						malfunction, malfunctionName + " on " + object, "N/A", "None", loc0, loc1);
+				eventManager.registerNewEvent(newEvent);
+				
+				LogConsolidated.log(Level.WARNING, 0, sourceName,
+						"[" + loc1 + "] " + object + " has " 
+						+ malfunction.getName() + " in " + loc0 + ". Cause : Parts Fatigue.");					
+			} 
+			
+			else {
+				if (person != null) {
+					HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
+							malfunction, malfunctionName + " on " + object, task, offender, loc0, loc1);
+					eventManager.registerNewEvent(newEvent);
+					
+					LogConsolidated.log(Level.WARNING, 0, sourceName, 
+							"[" + loc1 + "] " + object + " has "
+							+ malfunction.getName() + " in " + loc0 + " as reported by " 
+							+ offender + ". Cause : Human Factors.");
+				} 
+				
+				else if (robot != null) {
+					HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
+							malfunction, malfunctionName, task, offender, loc0, loc1);
+					eventManager.registerNewEvent(newEvent);
+					
+					LogConsolidated.log(Level.WARNING, 0, sourceName, 
+							"[" + loc1 + "] " + object + " has "
+							+ malfunction.getName() + " in " + loc0 + " as reported by " 
+							+ offender + ". Cause : Software Quality Control.");
+				}
+			}
+		}
+	}
+		
+	
+	public void registerMeteoriteMalfunction(Malfunction malfunction) {
+		String malfunctionName = malfunction.getName();
+		
+		String task = "N/A";
+		
+		// Note : Unit actor is null
+		String loc0 = null;
+		String loc1 = null;
+
+		String object = entity.getNickName();
+
+		// TODO: determine what happens to each entity
+//		entity instanceof EVASuit	
+//		entity instanceof Building
+//		entity instanceof Robot
+//		entity instanceof BuildingKit)
+
+		if (entity.getUnit() instanceof Vehicle) {
+			loc0 = entity.getNickName();
+			loc1 = entity.getLocale();
+		}
+
+		else if (entity.getUnit() instanceof EVASuit) {//object.toLowerCase().contains("eva")) {
+//				Unit unit = entity.getUnit();
+//				EVASuit suit = (EVASuit)entity.getUnit();
+			// TODO: for a eva suit malfunction,
+			loc0 = ((EVASuit) entity).getImmediateLocation();
+			loc1 = ((EVASuit) entity).getLastOwner().getLocationTag().getLocale();
+		}
+
+		else if (entity.getUnit() instanceof Robot) {// object.toLowerCase().contains("bot")) {
+			loc0 = entity.getImmediateLocation();
+			loc1 = entity.getLocale();
+		}
+
+		else {
+			loc0 = entity.getImmediateLocation();
+			loc1 = entity.getLocale();
+		}
+
+		String name = malfunction.getTraumatized();
+
+		// if it is a meteorite impact
+		HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_ACT_OF_GOD, malfunction,
+				malfunctionName, task, name, loc0, loc1);
+		eventManager.registerNewEvent(newEvent);
+		
+		if (object.equals(loc0)) {
+			LogConsolidated.log(Level.WARNING, 0, sourceName,
+				"[" + loc1 + "] " + object + " was damaged by " +  malfunctionName);
+		}
+		else {
+			LogConsolidated.log(Level.WARNING, 0, sourceName,
+				"[" + loc1 + "] " + object + " was damaged by " +  malfunctionName + " in " + loc0);
+		}
+	}
+	
 	/**
 	 * Adds whitespaces
 	 * 
@@ -763,13 +772,13 @@ public class MalfunctionManager implements Serializable {
 			int solsLastMaint = (int) (effectiveTimeSinceLastMaintenance / 1000D);
 			// Reduce the max possible health condition
 //			maxCondition = (wearCondition + 400D)/500D; 
-			LogConsolidated.log(logger, Level.WARNING, 1000, sourceName,
-					"[" + entity.getImmediateLocation() + "] " + entity.getNickName() + " is behind on maintenance.  "
-							+ "Time since last check-up: " + solsLastMaint + " sols.  Condition: " + Math.round(wearCondition*10.0)/10.0
-							+ " %.",
-					null);
+			LogConsolidated.log(Level.WARNING, 1000, sourceName,
+					"[" + entity.getImmediateLocation() + "] " + entity.getNickName() 
+					+ " experienced a malfunction due to wear-and-tear.  "
+					+ "# of sols since last check-up: " + solsLastMaint + ".   Condition: " + Math.round(wearCondition*10.0)/10.0
+					+ " %.");
 
-			// TODO: does it use field reliability statistics to select a malfunction ?
+			// TODO: how to connect maintenance to field reliability statistics when selecting a malfunction ?
 			selectMalfunction(null);
 		}
 	}
@@ -807,28 +816,28 @@ public class MalfunctionManager implements Serializable {
 //		System.out.println("MalfunctionManager : Calling resetModifiers type " + type );
 //		if (type == 0) {
 //			oxygenFlowModifier = 100D;
-//			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+//			LogConsolidated.log(Level.WARNING, 0, sourceName,
 //					"[" + entity.getLocale() + "] The oxygen flow retrictor has been fixed in "
 //					+ entity.getImmediateLocation(), null);
 //		}
 //		
 //		else if (type == 1) {
 //			waterFlowModifier = 100D;
-//			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+//			LogConsolidated.log(Level.WARNING, 0, sourceName,
 //					"[" + entity.getLocale() + "] The water flow retrictor has been fixed in "
 //					+ entity.getImmediateLocation(), null);
 //		}
 //		
 //		else if (type == 2) {
 //			airPressureModifier = 100D;
-//			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+//			LogConsolidated.log(Level.WARNING, 0, sourceName,
 //				"[" + entity.getLocale() + "] The air pressure regulator has been fixed in "
 //				+ entity.getImmediateLocation(), null);
 //		}
 //		
 //		else if (type == 3) {
 //			temperatureModifier = 100D;
-//			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+//			LogConsolidated.log(Level.WARNING, 0, sourceName,
 //					"[" + entity.getLocale() + "] The temperature regulator has been fixed in "
 //					+ entity.getImmediateLocation(), null);
 //			
@@ -885,9 +894,9 @@ public class MalfunctionManager implements Serializable {
 
 				eventManager.registerNewEvent(newEvent);
 				
-				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+				LogConsolidated.log(Level.WARNING, 0, sourceName,
 						"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' has been fixed in "
-						+ entity.getImmediateLocation(), null);
+						+ entity.getImmediateLocation());
 			
 				// Remove the malfunction
 				malfunctions.remove(m);				
@@ -927,7 +936,7 @@ public class MalfunctionManager implements Serializable {
 //				oxygenFlowModifier += tempOxygenFlowModifier * time ;
 //				if (oxygenFlowModifier < 0)
 //					oxygenFlowModifier = 0;
-//				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+//				LogConsolidated.log(Level.WARNING, 20_000, sourceName,
 //						"[" + getUnit().getLocationTag().getLocale() + "] Oxygen flow restricted to "
 //								+ Math.round(oxygenFlowModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation()+ ".", null);
 //			} 
@@ -936,7 +945,7 @@ public class MalfunctionManager implements Serializable {
 //				waterFlowModifier += tempWaterFlowModifier * time;
 //				if (waterFlowModifier < 0)
 //					waterFlowModifier = 0;
-//				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+//				LogConsolidated.log(Level.WARNING, 20_000, sourceName,
 //						"[" + getUnit().getLocationTag().getLocale() + "] Water flow restricted to "
 //								+ Math.round(waterFlowModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
 //			} 
@@ -945,7 +954,7 @@ public class MalfunctionManager implements Serializable {
 //				airPressureModifier += tempAirPressureModifier * time;
 //				if (airPressureModifier < 0)
 //					airPressureModifier = 0;
-//				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+//				LogConsolidated.log(Level.WARNING, 20_000, sourceName,
 //						"[" + getUnit().getLocationTag().getLocale() + "] Air pressure regulator malfunctioned at "
 //								+ Math.round(airPressureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
 //			} 
@@ -955,7 +964,7 @@ public class MalfunctionManager implements Serializable {
 //				temperatureModifier += tempTemperatureModifier * time;
 //				if (temperatureModifier < 0)
 //					temperatureModifier = 0;
-//				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+//				LogConsolidated.log(Level.WARNING, 20_000, sourceName,
 //						"[" + getUnit().getLocationTag().getLocale() + "] Temperature regulator malfunctioned at "
 //								+ Math.round(temperatureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
 //			}
@@ -987,10 +996,11 @@ public class MalfunctionManager implements Serializable {
 						}
 						if (amountDepleted >= 0) {
 							inv.retrieveAmountResource(resource, amountDepleted);
-							LogConsolidated.log(logger, Level.WARNING, 15_000, sourceName,
+							LogConsolidated.log(Level.WARNING, 15_000, sourceName,
 									"[" + getUnit().getLocationTag().getLocale() + "] Leaking "
-											+ Math.round(amountDepleted*100.0)/100.0 + " of  " + ResourceUtil.findAmountResource(resource) 
-											+ " in " + getUnit().getLocationTag().getImmediateLocation()+ ".", null);
+											+ Math.round(amountDepleted*100.0)/100.0 + " of  " 
+											+ ResourceUtil.findAmountResource(resource) 
+											+ " in " + getUnit().getLocationTag().getImmediateLocation()+ ".");
 						}
 					}
 				}
@@ -1050,10 +1060,9 @@ public class MalfunctionManager implements Serializable {
 //				 sb.insert(0, "in an "); else sb.insert(0, "in a "); 
 //		 }
 
-		LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
+		LogConsolidated.log(Level.WARNING, 3000, sourceName,
 				"[" + u.getLocationTag().getLocale() + "] A Type-I accident occurred " 
-				+ sb.toString() + " in " + u.getLocationTag().getImmediateLocation() + ".",
-				null);
+				+ sb.toString() + " in " + u.getLocationTag().getImmediateLocation() + ".");
 
 	}
 
@@ -1098,10 +1107,10 @@ public class MalfunctionManager implements Serializable {
 //					.replace(" in ", "");
 //		}
 
-		LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
+		LogConsolidated.log(Level.WARNING, 3000, sourceName,
 				// "[" + locationName + "] An accident occurs " + sb.toString() + ".", null);
 				"[" + entity.getLocale() + "] A Type-II accident occurred in " 
-						+ Conversion.capitalize(n) + ".", null);
+						+ Conversion.capitalize(n) + ".");
 	}
 
 	/**
@@ -1336,6 +1345,7 @@ public class MalfunctionManager implements Serializable {
 			while (j.hasNext()) {
 				Integer id = j.next();
 				Part part = ItemResourceUtil.findItemResource(id);
+				// Pick the part that is related to the entity
 				if (part.hasMaintenanceEntity(entity)) {
 					if (RandomUtil.lessThanRandPercent(part.getMaintenanceProbability(entity))) {
 						int number = RandomUtil.getRandomRegressionInteger(part.getMaintenanceMaximumNumber(entity));
