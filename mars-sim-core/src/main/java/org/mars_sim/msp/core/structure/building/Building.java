@@ -35,7 +35,6 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
@@ -199,8 +198,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected MalfunctionManager malfunctionManager;
 
 	private Inventory inv;
-//	private Settlement settlement;
-	
+
 	private transient Communication comm;
 	private transient ThermalGeneration furnace;
 	private transient PowerGeneration powerGen;
@@ -456,6 +454,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/** Constructor 3 (for use by Mock Building in Unit testing) */
 	protected Building(BuildingManager manager) {
 		super("Mock Building", new Coordinates(0D, 0D));
+		
+//		settlementID = manager.getSettlement().getIdentifier();
+
 		// Place it in a settlement
 //		enter(LocationCodeType.SETTLEMENT);
 	}
@@ -893,7 +894,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		if (functions.contains(function)) {
 			functions.remove(function);
 			// Call removeOneFunctionfromBFMap()
-			unitManager.getSettlementByID(settlementID).getBuildingManager().removeOneFunctionfromBFMap(this, function);
+			getBuildingManager().removeOneFunctionfromBFMap(this, function);
 		}
 	}
 
@@ -1185,14 +1186,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 					people.add(occupant);
 			}
 		}
-		/*
-		 * // If building has life support, add all occupants of the building. if
-		 * (hasFunction(BuildingFunction.LIFE_SUPPORT)) { LifeSupport lifeSupport =
-		 * (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT); Iterator<Person> i
-		 * = lifeSupport.getOccupants().iterator(); while (i.hasNext()) { Person
-		 * occupant = i.next(); if (!people.contains(occupant)) people.add(occupant); }
-		 * }
-		 */
+
 		return people;
 	}
 
@@ -1365,13 +1359,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 					
 			// Assume a gauissan profile
 			double probability = floorArea * manager.getProbabilityOfImpactPerSQMPerSol() * (.5 + RandomUtil.getGaussianDouble());
-//			System.out.println("Meteorite : " + probability);
 			// probability is in percentage unit between 0% and 100%
 			if (probability > 0 && RandomUtil.getRandomDouble(100D) <= probability) {
 				// 		logger.info("Sensors just picked up the new probability
 				// 		of a meteorite impact for " + nickName
 				// 		+ " in " + settlement + " to be " + Math.round(probability*100D)/100D + " %.");
-
 				isImpactImminent = true;
 				// set a time for the impact to happen any time between 0 and 1000 milisols
 				moment_of_impact = RandomUtil.getRandomInt(1000);
@@ -1403,9 +1395,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 				if (penetrated_length >= wallThickness) {
 					// Yes it's breached !
-//					if (malfunctionMeteoriteImpact == null)
-//					malfunctionMeteoriteImpact = MalfunctionFactory
-//								.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
 					// Simulate the meteorite impact as a malfunction event for now
 					try {
 						malfunctionManager.activateMalfunction(MalfunctionFactory
@@ -1427,15 +1416,13 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 							// TODO: delineate the accidents from those listed in malfunction.xml
 							// currently, malfunction whether a person gets hurt is handled by Malfunction
 							// above
-
-							PhysicalCondition pc = person.getPhysicalCondition();
 							int resilience = person.getNaturalAttributeManager()
 									.getAttribute(NaturalAttributeType.STRESS_RESILIENCE);
 							int courage = person.getNaturalAttributeManager()
 									.getAttribute(NaturalAttributeType.COURAGE);
 							double factor = 1 + RandomUtil.getRandomDouble(1) - resilience / 100 - courage / 100D;
 							if (factor > 1)
-								pc.setStress(person.getStress() * factor);
+								person.getPhysicalCondition().setStress(person.getStress() * factor);
 
 							victimName = person.getName();
 							task = person.getTaskDescription();
@@ -1449,12 +1436,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 						// in " + this + " at " + settlement);
 						// }
 					}
-
-//					HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_METEORITE_IMPACT, malfunctionMeteoriteImpact,
-//							"Meteorite Impact", //"Natural Cause",
-//							task, victimName, this.getNickName(), settlement.getName());
-//					Simulation.instance().getEventManager().registerNewEvent(hEvent);
-
 				}
 			}
 		}
@@ -1501,7 +1482,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	public Settlement getSettlement() {
-		return unitManager.getSettlementByID(settlementID);
+		return unitManager.getSettlementByID(settlementID); // manager.getSettlement();//
 	}
 
 	public void extractHeat(double heat) {
@@ -1555,7 +1536,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	@Override
 	public Settlement getAssociatedSettlement() {
-		return this.getAssociatedSettlement();
+		return getSettlement(); 
 	}
 
 	@Override

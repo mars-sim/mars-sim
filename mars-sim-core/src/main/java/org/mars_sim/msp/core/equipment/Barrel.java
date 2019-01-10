@@ -63,12 +63,11 @@ implements Container, Serializable {
 
 	@Override
 	public Building getBuildingLocation() {
-		// TODO Auto-generated method stub
-		return null;
+		return getContainerUnit().getBuildingLocation();
 	}
 
 	@Override
 	public Settlement getAssociatedSettlement() {
-		return this.getAssociatedSettlement();
+		return getContainerUnit().getAssociatedSettlement();
 	}
 }

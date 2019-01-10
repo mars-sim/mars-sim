@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.DustStorm;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.mars.Weather;
-import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -364,10 +363,15 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		this.name = name;
 		this.scenarioID = scenarioID;
 		this.location = location;
-		if (unitManager == null) // for passing maven test
-			unitManager = sim.getUnitManager();
-		if (missionManager == null) // for passing maven test
-			missionManager = sim.getMissionManager();
+		
+		if (unitManager == null)  {// for passing maven test
+			unitManager = Simulation.instance().getUnitManager();
+			unitManager.addSettlementID(this);
+		}
+		
+		if (missionManager == null) {// for passing maven test
+			missionManager = Simulation.instance().getMissionManager();
+		}
 	}
 
 	/**

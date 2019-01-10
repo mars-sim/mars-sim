@@ -219,7 +219,7 @@ public class RelationshipManager implements Serializable {
 		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
 		Traverser traverser = relationshipGraph.traverser(person.getIdentifier(), GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
 		while (traverser.hasNext()) {
-			Person knownPerson = (Person) (unitManager.getUnitByID((Integer)traverser.next()));
+			Person knownPerson = unitManager.getPersonID((Integer)traverser.next());
 			result.add(knownPerson);
 		}
 		return result;

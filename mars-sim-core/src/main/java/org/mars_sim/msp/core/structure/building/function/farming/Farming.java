@@ -141,7 +141,7 @@ public class Farming extends Function implements Serializable {
 	private Map<Integer, Double> dailyWaterUsage;
 	
 	private Inventory inv;
-	private Settlement settlement;
+//	private Settlement settlement;
 	private Building building;
 	private Research lab;
 	
@@ -166,10 +166,8 @@ public class Farming extends Function implements Serializable {
 		// HPS_Item = ItemResource.findItemResource(HPS_LAMP);
 
 		this.building = building;
-		this.settlement = building.getSettlement();
 
-		// this.b_inv = building.getBuildingInventory();
-		this.inv = settlement.getInventory();
+		this.inv = building.getSettlement().getInventory();
 		// this.goodsManager = settlement.getGoodsManager();
 
 		identifer = 0;
@@ -211,7 +209,7 @@ public class Farming extends Function implements Serializable {
 				Crop crop = plantACrop(cropType, true, 0);
 				crops.add(crop);
 				cropHistory.put(crop.getIdentifier(), cropType.getName());//crop.getCropName());
-				settlement.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+				building.getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 			}
 		}
 
@@ -437,7 +435,7 @@ public class Farming extends Function implements Serializable {
 	}
 
 	public double getCropValue(AmountResource resource) {
-		return settlement.getGoodsManager().getGoodValuePerItem(
+		return building.getSettlement().getGoodsManager().getGoodValuePerItem(
 				GoodsUtil.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName())));
 	}
 
@@ -488,7 +486,8 @@ public class Farming extends Function implements Serializable {
 
 		}
 
-		Crop crop = new Crop(getNextIdentifier(), cropType, cropArea, dailyMaxHarvest, this, settlement, isStartup, percentAvailable);
+		Crop crop = new Crop(getNextIdentifier(), cropType, cropArea, dailyMaxHarvest, 
+				this, building.getSettlement(), isStartup, percentAvailable);
 		
 		return crop;
 	}
@@ -551,7 +550,7 @@ public class Farming extends Function implements Serializable {
 
 			if (amountStored < MIN) {
 				LogConsolidated.log(Level.INFO, 1000, sourceName,
-						"[" + settlement + "]" + "Ran out of " + tissueName);
+						"[" + building.getSettlement() + "]" + "Ran out of " + tissueName);
 				percent = 0;
 			}
 
@@ -560,14 +559,14 @@ public class Farming extends Function implements Serializable {
 				percent = amountStored / requestedAmount * 100D;
 				requestedAmount = amountStored;
 				LogConsolidated.log(Level.INFO, 1000, sourceName,
-						"[" + settlement + "] " + Math.round(requestedAmount * 100.0) / 100.0 + " kg " + tissueName
+						"[" + building.getSettlement() + "] " + Math.round(requestedAmount * 100.0) / 100.0 + " kg " + tissueName
 								+ " was partially available.");
 			}
 
 			else {
 				available = true;
 				percent = 100D;
-				LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + settlement + "] "
+				LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + building.getSettlement() + "] "
 						+ Math.round(requestedAmount * 100.0) / 100.0 + " kg " + tissueName + " was fully available.");
 			}
 
@@ -889,7 +888,7 @@ public class Farming extends Function implements Serializable {
 			
 			} catch (Exception e) {
 				LogConsolidated.log(Level.WARNING, 1000, sourceName,
-						"[" + settlement.getName() + "] " + crop.getCropName() + " ran into issues in " + building , e);
+						"[" + building.getSettlement().getName() + "] " + crop.getCropName() + " ran into issues in " + building , e);
 				e.printStackTrace();
 			}
 			
@@ -933,10 +932,10 @@ public class Farming extends Function implements Serializable {
 				crops.add(crop);
 //				System.out.println(crop.getIdentifier() + ", " + n);
 				cropHistory.put(crop.getIdentifier(), n);
-				settlement.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+				building.getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 				
 				LogConsolidated.log(Level.INFO, 3_000, sourceName,
-						"[" + settlement.getName() + "] " + p + " planted a new crop of " + n 
+						"[" + building.getSettlement().getName() + "] " + p + " planted a new crop of " + n 
 						+ " in " + building.getNickName() + ".");
 				
 				numCrops2Plant--;
@@ -1075,7 +1074,7 @@ public class Farming extends Function implements Serializable {
 
 		else {
 			// Check available research slot in another lab located in another greenhouse
-			List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
+			List<Building> laboratoryBuildings = building.getSettlement().getBuildingManager().getBuildings(FunctionType.RESEARCH);
 			Iterator<Building> i = laboratoryBuildings.iterator();
 			while (i.hasNext() && !hasEmptySpace) {
 				Building building = i.next();
@@ -1107,7 +1106,7 @@ public class Farming extends Function implements Serializable {
 		else {
 
 			// Check available research slot in another lab located in another greenhouse
-			List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
+			List<Building> laboratoryBuildings = building.getSettlement().getBuildingManager().getBuildings(FunctionType.RESEARCH);
 			Iterator<Building> i = laboratoryBuildings.iterator();
 			while (i.hasNext() && !hasEmptySpace) {
 				Building building = i.next();
@@ -1163,7 +1162,7 @@ public class Farming extends Function implements Serializable {
 						Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, inv,
 								sourceName + "::growCropTissue");
 						LogConsolidated.log(Level.INFO, 3_000, sourceName,
-							"[" + settlement.getName() + "] During sampling analysis, " + p
+							"[" + building.getSettlement().getName() + "] During sampling analysis, " + p
 								+ " could not find any " + cropName + TISSUE_CULTURE
 								+ " in stock and produced " + STANDARD_AMOUNT_TISSUE_CULTURE
 										+ " kg from " + cropName + " in " + lab.getBuilding().getNickName()
@@ -1191,7 +1190,7 @@ public class Farming extends Function implements Serializable {
 					if (amountExtracted > 0) {
 						Storage.storeAnResource(amountExtracted, tissueID, inv, sourceName + "::growCropTissue");
 						LogConsolidated.log(Level.INFO, 3_000, sourceName,
-							"[" + settlement.getName() + "] During sampling analysis, " + p + " cloned and restocked "
+							"[" + building.getSettlement().getName() + "] During sampling analysis, " + p + " cloned and restocked "
 							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
 							+ cropName + TISSUE_CULTURE + " in "
 							+ lab.getBuilding().getNickName() + ".");
@@ -1559,8 +1558,6 @@ public class Farming extends Function implements Serializable {
 	public void destroy() {
 		super.destroy();
 
-//		plantedCrops = null;
-
 		cleaningMap = null;
 		inspectionMap = null;
 		inspectionList = null;
@@ -1573,7 +1570,6 @@ public class Farming extends Function implements Serializable {
 		marsClock = null;
 		inv = null;
 		lab = null;
-		settlement = null;
 		building = null;
 
 //		Iterator<CropType> i = cropListInQueue.iterator();

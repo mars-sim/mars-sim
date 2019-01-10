@@ -38,7 +38,7 @@ extends TestCase {
 
 		// Create new simulation instance.
 		SimulationConfig.loadConfig();
-		Simulation.createNewSimulation(-1, false);
+		Simulation.createNewSimulation(-1, true);
 
 		// Clear out existing settlements in simulation.
 		UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -58,21 +58,21 @@ extends TestCase {
 		building.setXLocation(0D);
 		building.setYLocation(0D);
 		building.setFacing(0D);
-		settlement.getBuildingManager().addBuilding(building, false);
+		settlement.getBuildingManager().addMockBuilding(building);
 
 		BuildingAirlock airlock0 = new BuildingAirlock(building, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building.addFunction(new EVA(building, airlock0));
 
 		// Create test person.
-		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+		// Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+		// Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
 								.build();
-		person.initialize();
-
+		person.initializeMock();
+		settlement.getInventory().storeUnit(person);
 		settlement.getInventory().retrieveUnit(person);
 		person.setXLocation(10D);
 		person.setYLocation(0D);
@@ -113,7 +113,7 @@ extends TestCase {
 
 		// Create new simulation instance.
 		SimulationConfig.loadConfig();
-		Simulation.createNewSimulation(-1, false);
+		Simulation.createNewSimulation(-1, true);
 
 		// Clear out existing settlements in simulation.
 		UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -133,7 +133,7 @@ extends TestCase {
 		building1.setXLocation(0D);
 		building1.setYLocation(0D);
 		building1.setFacing(0D);
-		settlement.getBuildingManager().addBuilding(building1, false);
+		settlement.getBuildingManager().addMockBuilding(building1);
 
 		BuildingAirlock airlock0 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building1.addFunction(new EVA(building1, airlock0));
@@ -146,7 +146,8 @@ extends TestCase {
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
 								.build();
-		person.initialize();
+		person.initializeMock();
+		settlement.getInventory().storeUnit(person);
 		settlement.getInventory().retrieveUnit(person);
 		person.setXLocation(10D);
 		person.setYLocation(0D);
@@ -185,7 +186,7 @@ extends TestCase {
 		building2.setXLocation(-12D);
 		building2.setYLocation(4D);
 		building2.setFacing(22D);
-		settlement.getBuildingManager().addBuilding(building2, false);
+		settlement.getBuildingManager().addMockBuilding(building2);
 
 		// Clear obstacle cache.
 		LocalAreaUtil.clearObstacleCache();
@@ -220,7 +221,7 @@ extends TestCase {
 
 		// Create new simulation instance.
 		SimulationConfig.loadConfig();
-		Simulation.createNewSimulation(-1, false);
+		Simulation.createNewSimulation(-1, true);
 
 		// Clear out existing settlements in simulation.
 		UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -240,7 +241,7 @@ extends TestCase {
 		building1.setXLocation(0D);
 		building1.setYLocation(0D);
 		building1.setFacing(0D);
-		settlement.getBuildingManager().addBuilding(building1, false);
+		settlement.getBuildingManager().addMockBuilding(building1);
 
 		BuildingAirlock airlock0 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building1.addFunction(new EVA(building1, airlock0));
@@ -253,7 +254,8 @@ extends TestCase {
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
 								.build();
-		person.initialize();
+		person.initializeMock();
+		settlement.getInventory().storeUnit(person);
 		settlement.getInventory().retrieveUnit(person);
 		person.setXLocation(10D);
 		person.setYLocation(0D);
@@ -327,7 +329,7 @@ extends TestCase {
 		building1.setXLocation(0D);
 		building1.setYLocation(0D);
 		building1.setFacing(0D);
-		settlement.getBuildingManager().addBuilding(building1, false);
+		settlement.getBuildingManager().addMockBuilding(building1);
 
 		BuildingAirlock airlock0 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building1.addFunction(new EVA(building1, airlock0));
@@ -340,7 +342,8 @@ extends TestCase {
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
 								.build();
-		person.initialize();
+		person.initializeMock();
+		settlement.getInventory().storeUnit(person);
 		settlement.getInventory().retrieveUnit(person);
 		person.setXLocation(10D);
 		person.setYLocation(0D);
@@ -382,7 +385,7 @@ extends TestCase {
 		building2.setXLocation(-12D);
 		building2.setYLocation(4D);
 		building2.setFacing(0D);
-		settlement.getBuildingManager().addBuilding(building2, false);
+		settlement.getBuildingManager().addMockBuilding(building2);
 
 		// Clear obstacle cache.
 		LocalAreaUtil.clearObstacleCache();

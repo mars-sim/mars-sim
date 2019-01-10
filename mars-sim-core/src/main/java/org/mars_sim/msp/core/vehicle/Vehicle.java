@@ -88,6 +88,20 @@ public abstract class Vehicle extends Unit
 	// Toyota Mirai Fuel cell - 90 kW
 	
 	// Data members
+	/** True if vehicle is currently reserved for a mission. */
+	private boolean isReservedMission;
+	/** True if vehicle is due for maintenance. */
+	private boolean distanceMark;
+	/** True if vehicle is currently reserved for periodic maintenance. */
+	private boolean reservedForMaintenance;
+	/** The emergency beacon for the vehicle. True if beacon is turned on. */
+	private boolean emergencyBeacon;
+	/** True if vehicle is salvaged. */
+	private boolean isSalvaged;
+	
+	/** Vehicle's associated Settlement. */
+	private int associatedSettlement;
+	
 	/** Current speed of vehicle in kph. */
 	private double speed = 0; // 
 	/** Base speed of vehicle in kph (can be set in child class). */
@@ -106,45 +120,44 @@ public abstract class Vehicle extends Unit
 	private double totalEnergy = 100D;
 	/** The base fuel consumption of the vehicle [km/kg]. */
 	private double baseFuelConsumption;
+	/** Width of vehicle (meters). */
+	private double width;
+	/** Length of vehicle (meters). */
+	private double length;
+	/** Parked X location (meters) from center of settlement. */
+	private double xLocParked;
+	/** Parked Y location (meters) from center of settlement. */
+	private double yLocParked;
+	/** Parked facing (degrees clockwise from North). */
+	private double facingParked;
 	
-	
-	private double width; // Width of vehicle (meters).
-	private double length; // Length of vehicle (meters).
-	private double xLocParked; // Parked X location (meters) from center of settlement.
-	private double yLocParked; // Parked Y location (meters) from center of settlement.
-	private double facingParked; // Parked facing (degrees clockwise from North).
-	/**
-	 * True if vehicle is currently reserved for a mission and cannot be taken by
-	 * another.
-	 */
-	private boolean isReservedMission;
-	/** True if vehicle is due for maintenance. */
-	private boolean distanceMark;
-	/** True if vehicle is currently reserved for periodic maintenance. */
-	private boolean reservedForMaintenance;
-	/** The emergency beacon for the vehicle. True if beacon is turned on.. */
-	private boolean emergencyBeacon;
-	/** True if vehicle is salvaged. */
-	private boolean isSalvaged;
-
-	private ArrayList<Coordinates> trail; // A collection of locations that make up the vehicle's trail.
-	private List<Point2D> operatorActivitySpots; // List of operator activity spots.
-	private List<Point2D> passengerActivitySpots; // List of passenger activity spots
-
-	private StatusType status; // The vehicle's status.
+	/** The vehicle type. */	
 	private String vehicleType;
+	/** The type of dessert loaded. */	
 	private String typeOfDessertLoaded;
-
-	protected MalfunctionManager malfunctionManager; // The malfunction manager for the vehicle.
-
-	private Direction direction; // Direction vehicle is traveling in
-	private VehicleOperator vehicleOperator; // The operator of the vehicle
-	private Vehicle towingVehicle; // The vehicle that is currently towing this vehicle.
-	private SalvageInfo salvageInfo; // The vehicle's salvage info.
-	private Settlement associatedSettlement;
+	
+	/** A collection of locations that make up the vehicle's trail. */
+	private ArrayList<Coordinates> trail;
+	/** List of operator activity spots. */
+	private List<Point2D> operatorActivitySpots;
+	/** List of passenger activity spots. */
+	private List<Point2D> passengerActivitySpots;
+	
+	/** The vehicle's status. */
+	private StatusType status; 
+	/** The malfunction manager for the vehicle. */
+	protected MalfunctionManager malfunctionManager; 
+	/** Direction vehicle is traveling */
+	private Direction direction;
+	/** The operator of the vehicle. */
+	private VehicleOperator vehicleOperator;
+	/** he vehicle that is currently towing this vehicle. */
+	private Vehicle towingVehicle;
+	/** The The vehicle's salvage info. */
+	private SalvageInfo salvageInfo; 
 
 	// Static members
-	private static VehicleConfig vehicleConfig;
+	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 	private static MissionManager missionManager;
 
 	/**
@@ -161,15 +174,18 @@ public abstract class Vehicle extends Unit
 		
 		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
-
+			
 		this.vehicleType = vehicleType;
-		associatedSettlement = settlement;
+		associatedSettlement = settlement.getIdentifier();
 		containerUnit = settlement;
 		settlement.getInventory().storeUnit(this);
 
 		missionManager = Simulation.instance().getMissionManager();
 		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-
+		if (unitManager == null)
+			unitManager = sim.getUnitManager();
+		unitManager.addVehicleID(this);
+	
 		// Initialize vehicle data
 		vehicleType = vehicleType.toLowerCase();
 
@@ -248,12 +264,17 @@ public abstract class Vehicle extends Unit
 		this.vehicleType = vehicleType;
 
 		missionManager = Simulation.instance().getMissionManager();
-
+		
+		if (unitManager == null)
+			unitManager = sim.getUnitManager();
+		if (unitManager != null) // for passing maven test
+			unitManager.addVehicleID(this);
+		
 		life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration()
 				.loadMissionControl()[0];
 		fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
-		associatedSettlement = settlement;
+		associatedSettlement = settlement.getIdentifier();
 		containerUnit = settlement;
 		settlement.getInventory().storeUnit(this);
 
@@ -1066,7 +1087,7 @@ public abstract class Vehicle extends Unit
 	 * @param info       the salvage process info.
 	 * @param settlement the settlement where the salvage is taking place.
 	 */
-	public void startSalvage(SalvageProcessInfo info, Settlement settlement) {
+	public void startSalvage(SalvageProcessInfo info, int settlement) {
 		salvageInfo = new SalvageInfo(this, info, settlement);
 		isSalvaged = true;
 	}
@@ -1102,7 +1123,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	public Settlement getAssociatedSettlement() {
-		return associatedSettlement;
+		return unitManager.getSettlementByID(associatedSettlement);
 	}
 
 	@Override

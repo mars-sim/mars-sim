@@ -10,6 +10,7 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -186,5 +187,4 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 			return (Vehicle) getContainerUnit();
 		return null;
 	}
-    
 }

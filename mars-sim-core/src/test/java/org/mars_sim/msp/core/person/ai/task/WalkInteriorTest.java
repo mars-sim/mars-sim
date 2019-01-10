@@ -30,7 +30,7 @@ public class WalkInteriorTest extends TestCase {
         MockBuilding building = new MockBuilding(settlement.getBuildingManager());
         building.setWidth(10D);
         building.setLength(10D);
-        settlement.getBuildingManager().addBuilding(building, false);
+        settlement.getBuildingManager().addMockBuilding(building);
 
         BuildingAirlock airlock0 = new BuildingAirlock(building, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building.addFunction(new EVA(building, airlock0));
@@ -42,7 +42,8 @@ public class WalkInteriorTest extends TestCase {
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
 								.build();
-		person.initialize();
+		person.initializeMock();
+		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building);
@@ -65,7 +66,7 @@ public class WalkInteriorTest extends TestCase {
         MockBuilding building = new MockBuilding(settlement.getBuildingManager());
         building.setWidth(10D);
         building.setLength(10D);
-        settlement.getBuildingManager().addBuilding(building, false);
+        settlement.getBuildingManager().addMockBuilding(building);
 
         BuildingAirlock airlock0 = new BuildingAirlock(building, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building.addFunction(new EVA(building, airlock0));
@@ -77,7 +78,8 @@ public class WalkInteriorTest extends TestCase {
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
 								.build();
-		person.initialize();
+		person.initializeMock();
+		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building);
@@ -123,7 +125,7 @@ public class WalkInteriorTest extends TestCase {
         building0.setXLocation(0D);
         building0.setYLocation(0D);
         building0.setFacing(0D);
-        buildingManager.addBuilding(building0, false);
+        buildingManager.addMockBuilding(building0);
 
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
@@ -136,7 +138,7 @@ public class WalkInteriorTest extends TestCase {
         building1.setXLocation(-12D);
         building1.setYLocation(0D);
         building1.setFacing(270D);
-        buildingManager.addBuilding(building1, false);
+        buildingManager.addMockBuilding(building1);
 
         MockBuilding building2 = new MockBuilding(buildingManager);
         building2.setTemplateID(2);
@@ -146,7 +148,7 @@ public class WalkInteriorTest extends TestCase {
         building2.setXLocation(-6D);
         building2.setYLocation(0D);
         building2.setFacing(270D);
-        buildingManager.addBuilding(building2, false);
+        buildingManager.addMockBuilding(building2);
 
         connectorManager.addBuildingConnection(new BuildingConnector(building0, -4.5D, 0D, 90D, building2, -4.5D, 0D, 270D));
         connectorManager.addBuildingConnection(new BuildingConnector(building1, -7.5D, 0D, 270D, building2, -7.5D, 0D, 90D));
@@ -158,7 +160,8 @@ public class WalkInteriorTest extends TestCase {
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
 								.build();
-		person.initialize();
+		person.initializeMock();
+		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);

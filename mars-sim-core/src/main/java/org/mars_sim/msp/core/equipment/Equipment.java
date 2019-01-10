@@ -46,7 +46,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	private SalvageInfo salvageInfo;
 
-	private Unit lastOwner;
+	private int lastOwner = -1;
 
 	private static Simulation sim;
 	protected static UnitManager unitManager;
@@ -70,11 +70,15 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		unitManager = sim.getUnitManager();
 		mars = sim.getMars();
 		
+		
 		if (mars != null) {// For passing maven test
 			marsSurface = mars.getMarsSurface();
 			// Initially set container unit to the mars surface
 			setContainerUnit(marsSurface);
+			// Add this equipment to the equipment lookup map		
+			unitManager.addEquipmentID(this);
 		}
+
 		
 //		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
@@ -102,8 +106,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
 		Person owner = null;
-		if (lastOwner != null && lastOwner instanceof Person) {
-			owner = (Person) lastOwner;
+		if (lastOwner != -1) {// && lastOwner instanceof Person) {
+			owner = unitManager.getPersonID(lastOwner);
 			people.add(owner);
 		}
 
@@ -152,7 +156,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @param info       the salvage process info.
 	 * @param settlement the settlement where the salvage is taking place.
 	 */
-	public void startSalvage(SalvageProcessInfo info, Settlement settlement) {
+	public void startSalvage(SalvageProcessInfo info, int settlement) {
 		salvageInfo = new SalvageInfo(this, info, settlement);
 		isSalvaged = true;
 	}
@@ -363,11 +367,14 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	public void setLastOwner(Unit unit) {
-		lastOwner = unit;
+		if (unit != null)
+			lastOwner = unit.getIdentifier();
+		else
+			lastOwner = -1;
 	}
 
 	public Unit getLastOwner() {
-		return lastOwner;
+		return unitManager.getPersonID(lastOwner);
 	}
 
 	@Override

@@ -101,7 +101,7 @@ extends JPanel {
 			Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
 			int count = 0;
 			while (i.hasNext()) {
-				Person researcher = (Person)unitManager.getUnitByID(i.next());
+				Person researcher = unitManager.getPersonID(i.next());
 				if (!researcher.equals(collabResearcherPanes[count].getStudyResearcher()))
 					collabResearcherPanes[count].setStudyResearcher(study, researcher);
 				count++;
@@ -133,7 +133,7 @@ extends JPanel {
 			Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
 			int count = 0;
 			while (i.hasNext()) {
-				collabResearcherPanes[count].setStudyResearcher(study, (Person)unitManager.getUnitByID(i.next()));
+				collabResearcherPanes[count].setStudyResearcher(study, unitManager.getPersonID(i.next()));
 				count++;
 			}
 			for (int x = count; x < collabResearcherPanes.length; x++)

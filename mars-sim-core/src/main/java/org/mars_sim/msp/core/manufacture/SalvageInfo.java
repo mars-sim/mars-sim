@@ -9,6 +9,7 @@
 package org.mars_sim.msp.core.manufacture;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -23,22 +24,26 @@ import java.util.Map;
 public class SalvageInfo implements Serializable {
 
     // Data members
-    private Salvagable item;
+    private int settlementID;
+
+	private Salvagable item;
     private SalvageProcessInfo processInfo;
     private MarsClock startTime;
     private MarsClock finishTime;
+
     private Map<Integer, Integer> partsSalvaged;
-    private Settlement settlement;
     
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+
     /**
      * Constructor
      * @param item the salvaged item.
      * @param processInfo the salvage process info.
      */
-    public SalvageInfo(Salvagable item,  SalvageProcessInfo processInfo, Settlement settlement) {
+    public SalvageInfo(Salvagable item,  SalvageProcessInfo processInfo, int settlementID) {
         this.item = item;
         this.processInfo = processInfo;
-        this.settlement = settlement;
+        this.settlementID = settlementID;
         startTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
         finishTime = null;
         partsSalvaged = new HashMap<>(processInfo.getPartSalvageList().size());
@@ -98,7 +103,7 @@ public class SalvageInfo implements Serializable {
      * @return settlement
      */
     public Settlement getSettlement() {
-        return settlement;
+        return unitManager.getSettlementByID(settlementID);
     }
 	
     /**
@@ -112,6 +117,5 @@ public class SalvageInfo implements Serializable {
         finishTime = null;
         partsSalvaged.clear();
         partsSalvaged = null;
-        settlement = null;
     }
 }

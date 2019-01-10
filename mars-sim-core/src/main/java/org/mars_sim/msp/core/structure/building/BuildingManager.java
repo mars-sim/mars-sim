@@ -200,10 +200,10 @@ public class BuildingManager implements Serializable {
 	public BuildingManager(Settlement settlement, boolean isTest) {
 //		this.settlement = settlement;
 		settlementID = settlement.getIdentifier();
-		
+		System.out.println("BuildingManager's settlementID : " + settlementID);
 		if (isTest)
 			logger.info("Loading BuildingManager's constructor 2 for " + settlement.getName() + " on "
-					+ Thread.currentThread().getName());
+					+ Thread.currentThread().getName() + " thread.");
 
 		buildingConfig = simulationConfig.getBuildingConfiguration();
 		relationshipManager = sim.getRelationshipManager();
@@ -344,6 +344,20 @@ public class BuildingManager implements Serializable {
 		}
 	}
 
+	/**
+	 * Adds a new mock building to the settlement.
+	 * 
+	 * @param newBuilding               the building to add.
+	 * @param createBuildingConnections true if automatically create building
+	 *                                  connections.
+	 */
+	public void addMockBuilding(Building newBuilding) {
+		if (!buildings.contains(newBuilding)) {
+			buildings.add(newBuilding);
+			addAllFunctionstoBFMap(newBuilding);
+		}
+	}
+	
 	/**
 	 * Adds a building with a template to the settlement.
 	 * 
@@ -1960,6 +1974,7 @@ public class BuildingManager implements Serializable {
 	 * @return settlement
 	 */
 	public Settlement getSettlement() {
+		System.out.println("BuildingManager's getSettlement() settlementID : " + settlementID);
 		return unitManager.getSettlementByID(settlementID);
 	}
 

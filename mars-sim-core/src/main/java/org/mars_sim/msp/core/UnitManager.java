@@ -96,10 +96,16 @@ public class UnitManager implements Serializable {
 	/** A list of all units. */
 	private List<Unit> units;
 	/** A map of all units with its unit identifier. */
-	private Map<Integer, Unit> lookupID;
+	private volatile Map<Integer, Unit> lookupUnit;
 	/** A map of settlements with its unit identifier. */
-	private Map<Integer, Settlement> lookupSettlements;
-
+	private volatile Map<Integer, Settlement> lookupSettlement;
+	/** A map of persons with its unit identifier. */
+	private volatile Map<Integer, Person> lookupPerson;
+	/** A map of equipment with its unit identifier. */
+	private volatile Map<Integer, Equipment> lookupEquipment;
+	/** A map of vehicle with its unit identifier. */
+	private volatile Map<Integer, Vehicle> lookupVehicle;
+	
 	// Transient members
 	/** Flag true if the class has just been loaded */
 	public transient boolean justLoaded = true;
@@ -161,8 +167,11 @@ public class UnitManager implements Serializable {
 		marsClock = sim.getMasterClock().getMarsClock();
 
 		// Initialize unit collection
-		lookupID = new HashMap<>();
-		lookupSettlements = new HashMap<>();
+		lookupUnit = new HashMap<>();
+		lookupSettlement = new HashMap<>();
+		lookupPerson = new HashMap<>();
+		lookupEquipment = new HashMap<>();
+		lookupVehicle = new HashMap<>();
 		units = new CopyOnWriteArrayList<>();//ConcurrentLinkedQueue<Unit>();
 		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		equipmentNumberMap = new HashMap<String, Integer>();
@@ -345,21 +354,53 @@ public class UnitManager implements Serializable {
 
 	
 	public Unit getUnitByID(int id) {
-		return lookupID.get(id);
+		return lookupUnit.get(id);
 	}
 	
 	public void addUnitID(Unit unit) {
-		lookupID.put(unit.getIdentifier(), unit);
+		if (!lookupUnit.containsKey(unit.getIdentifier()))
+			lookupUnit.put(unit.getIdentifier(), unit);
 	}
 
 	public Settlement getSettlementByID(int id) {
-		return lookupSettlements.get(id);
+		System.out.println("UnitManager's getSettlementByID() id : " + id);
+		if (lookupSettlement == null)
+			System.out.println("UnitManager : lookupSettlement == null");
+		return lookupSettlement.get(id);
 	}
 	
 	public void addSettlementID(Settlement s) {
-		lookupSettlements.put(s.getIdentifier(), s);
+		if (!lookupSettlement.containsKey(s.getIdentifier()))
+			lookupSettlement.put(s.getIdentifier(), s);
+	}
+
+	public Person getPersonID(int id) {
+		return lookupPerson.get(id);
+	}
+
+	public void addPersonID(Person p) {
+		if (!lookupPerson.containsKey(p.getIdentifier()))
+			lookupPerson.put(p.getIdentifier(), p);
 	}
 	
+	public Equipment getEquipmentID(int id) {
+		return lookupEquipment.get(id);
+	}
+
+	public void addEquipmentID(Equipment e) {
+		if (!lookupEquipment.containsKey(e.getIdentifier()))
+			lookupEquipment.put(e.getIdentifier(), e);
+	}
+
+	public Vehicle getVehicleID(int id) {
+		return lookupVehicle.get(id);
+	}
+
+	public void addVehicleID(Vehicle v) {
+		if (!lookupVehicle.containsKey(v.getIdentifier()))
+			lookupVehicle.put(v.getIdentifier(), v);
+	}
+
 	/**
 	 * Adds a unit to the unit manager if it doesn't already have it.
 	 *
@@ -368,11 +409,19 @@ public class UnitManager implements Serializable {
 	public void addUnit(Unit unit) {
 		if (!units.contains(unit)) {
 			units.add(unit);
+			
 			// Track the unit's id
-			if (!(unit instanceof Settlement))
+			if (unit instanceof Settlement)
+				addSettlementID((Settlement)unit);
+			else if (unit instanceof Person)
+				addPersonID((Person)unit);
+			else if (unit instanceof Equipment)
+				addEquipmentID((Equipment)unit);
+			else if (unit instanceof Vehicle)
+				addVehicleID((Vehicle)unit);
+			else 
 				addUnitID(unit);
-			// Note: Already called addSettlementID() inside Settlement
-		
+
 			Iterator<Unit> i = unit.getInventory().getContainedUnits().iterator();
 			while (i.hasNext()) {
 				addUnit(i.next());
@@ -2186,8 +2235,8 @@ public class UnitManager implements Serializable {
 		units.clear();
 		units = null;
 		
-		lookupID = null;
-		lookupSettlements = null;
+		lookupUnit = null;
+		lookupSettlement = null;
 
 		settlementNames.clear();
 		settlementNames = null;

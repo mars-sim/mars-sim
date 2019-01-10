@@ -119,6 +119,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private int associatedSettlement = -1;
 	/** The buried settlement if the person has been deceased. */
 	private int buriedSettlement = -1;
+	/** The vehicle the person is on. */	
+	private int vehicle;
 	/** The cache for msol1 */
 	private double msolCache = -1D;
 	// private int[] emotional_states;
@@ -185,8 +187,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	private Building currentBuilding;
 
-	private Vehicle vehicle;
-
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
 	/** The person's paternal chromosome. */
@@ -199,16 +199,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private Map<Integer, Map<String, Double>> eVATaskTime;
 	/** The person's water/oxygen consumption */
 	private Map<Integer, Map<Integer, Double>> consumption;
-	
-//	private static Simulation sim = Simulation.instance();
-//	private static MarsClock marsClock;
-//	private static EarthClock earthClock;
-//	private static MasterClock masterClock;
-//	private static Mars mars;
-//	private static MarsSurface marsSurface;
-//	private static UnitManager unitManager = sim.getUnitManager();
-	
-	// private PersonConfig config;
 
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -232,6 +222,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		super(name, settlement.getCoordinates());
 		super.setDescription(settlement.getName());
 
+		if (unitManager == null)
+			unitManager = sim.getUnitManager();
+		if (unitManager != null) // for passing maven test
+			unitManager.addPersonID(this);
+		
 		this.pid = getNextCount();
 //		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
@@ -245,8 +240,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.xLoc = 0D;
 		this.yLoc = 0D;
 		this.associatedSettlement = settlement.getIdentifier();		
-//		System.out.println("first name : " + firstName);
-//		System.out.println("last name : " + lastName);
 	}
 
 	/*
@@ -277,10 +270,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		
 		isBuried = false;
 		// Put person in proper building.
-		unitManager.getSettlementByID(associatedSettlement).getInventory().storeUnit(this);
-		// Note: setAssociatedSettlement(settlement) will cause suffocation when  reloading from a saved sim
-		BuildingManager.addToRandomBuilding(this, associatedSettlement); // why failed ?
-		// testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
+		if (unitManager != null)  {// for passing maven test
+			unitManager.getSettlementByID(associatedSettlement).getInventory().storeUnit(this);
+			// Note: setAssociatedSettlement(settlement) will cause suffocation when reloading from a saved sim
+			BuildingManager.addToRandomBuilding(this, associatedSettlement); 
+		}
+		// why failed in testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
 		attributes = new NaturalAttributeManager(this);
 		// Set up genetic make-up. Notes it requires attributes.
 		setupChromosomeMap();
@@ -317,6 +312,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	}
 
+	/**
+	 * Initialize field data, class and maps
+	 */
+	public void initializeMock() {
+		isBuried = false;
+		attributes = new NaturalAttributeManager(this);
+		mind = new Mind(this);
+		mind.getTaskManager().initialize();
+	}
+	
 	/**
 	 * Compute a person's chromosome map
 	 */
@@ -855,7 +860,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void setContainerUnit(Unit containerUnit) {
 		super.setContainerUnit(containerUnit);
 		if (containerUnit instanceof Vehicle) {
-			vehicle = (Vehicle) containerUnit;
+			vehicle = containerUnit.getIdentifier();
 		}
 	}
 
@@ -1489,7 +1494,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	// @Override
 	public void setVehicle(Vehicle vehicle) {
-		this.vehicle = vehicle;
+		this.vehicle = vehicle.getIdentifier();
 	}
 
 	/**
@@ -1498,7 +1503,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return the person's vehicle
 	 */
 	public Vehicle getVehicle() {
-		return vehicle;
+		return unitManager.getVehicleID(vehicle);
 	}
 
 //	public Vehicle getAssociatedVehicle() {
@@ -1875,7 +1880,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		sleep = null;
 //		walk = null;
 		circadian = null;
-		vehicle = null;
+//		vehicle = null;
 //		associatedVehicle = null;
 //		associatedSettlement = null;
 //		buriedSettlement = null;

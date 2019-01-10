@@ -91,7 +91,7 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	private static double minimum_air_pressure;
 
 	// Data members
-	private Person person;
+//	private Person person;
 
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
@@ -356,14 +356,14 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		if (container instanceof Person) {
 			Person person = (Person) container;
 			if (!person.getPhysicalCondition().isDead()) {
-				this.person = person;
+				setLastOwner(person);
 				malfunctionManager.activeTimePassing(time);	
 			}
 			
 			malfunctionManager.timePassing(time);
 		}
-		else
-			this.person = null;
+//		else
+//			this.person = null;
 	}
 
 	@Override
@@ -392,6 +392,22 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		return getLocationTag().getLocale();
 	}
 
+	@Override
+	public Building getBuildingLocation() {
+		// TODO Auto-generated method stub
+		return getContainerUnit().getBuildingLocation();
+	}
+
+	@Override
+	public Settlement getAssociatedSettlement() {
+		return getContainerUnit().getAssociatedSettlement();
+	}
+
+	@Override
+	public Unit getUnit() {
+		return this;
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
@@ -405,21 +421,4 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		malfunctionManager = null;
 		weather = null;
 	}
-
-	@Override
-	public Building getBuildingLocation() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return this.getAssociatedSettlement();
-	}
-
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
-
 }

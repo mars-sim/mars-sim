@@ -3,6 +3,8 @@ package org.mars_sim.msp.core.structure;
 import java.util.ArrayList;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
@@ -17,12 +19,15 @@ public class MockSettlement extends Settlement {
 		// Use Settlement constructor.
 		super("Mock Settlement", 0, new Coordinates(0, 0));
 
+		Simulation.instance().getUnitManager().addUnit(this);
+		
         // Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE);
 
         // Initialize building manager
         buildingManager = new BuildingManager(this, true);
-        buildingManager.addBuilding(new MockBuilding(buildingManager), false);
+        Building b = new MockBuilding(buildingManager);
+        buildingManager.addMockBuilding(b);
 
         // Initialize building connector manager.
         buildingConnectorManager = new BuildingConnectorManager(this,

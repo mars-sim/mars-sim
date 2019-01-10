@@ -30,7 +30,15 @@
 		            </execution>
 		        </executions>
 		        <configuration>
-		            <mainClass>org.mars_sim.headless.MarsProjectHeadlessStarter</mainClass>
+		            <executable>java</executable>
+		            <!--mainClass>org.mars_sim.headless.MarsProjectHeadless</mainClass-->
+		            <arguments>
+               			<argument>-Djava.util.logging.config.file=logging.properties -cp .;*;jars\*</argument>
+               			<argument>-classpath</argument>
+            			<classpath/>
+            			<argument>org.mars_sim.headless.MarsProjectHeadless</argument>           			
+               			<argument>-Xms256m -Xmx1024m -new</argument>
+              		</arguments>
 		        </configuration>
 		    </plugin>		
 			<plugin>

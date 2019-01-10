@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 
@@ -39,10 +38,8 @@ public class BuildingAirlock extends Airlock {
 	public static final double AIRLOCK_VOLUME_IN_CM = 12D; //3 * 2 * 2; //in m^3
 	
     // Data members.
-	private Settlement settlement;
     private Building building; // The building this airlock is for.
-    private Inventory inv;
-    
+  
     private CompositionOfAir air;
     private Heating heating;
     
@@ -61,11 +58,7 @@ public class BuildingAirlock extends Airlock {
         super(capacity);
 
         this.building = building;
-        
-        settlement = building.getSettlement();
 
-        inv = settlement.getInventory();
-        
         // Determine airlock interior position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc, interiorYLoc, building);
 
@@ -105,7 +98,7 @@ public class BuildingAirlock extends Airlock {
                     // Enter a settlement
 //                  person.enter(LocationCodeType.SETTLEMENT);               
                     // Put the person into the settlement
-                    inv.storeUnit(person);
+                    building.getInventory().storeUnit(person);
                     BuildingManager.addPersonOrRobotToBuilding(person, building);
                     
            			LogConsolidated.log(Level.FINER, 0, sourceName,
@@ -157,7 +150,7 @@ public class BuildingAirlock extends Airlock {
                     // Exit the settlement into its vicinity
 //                    person.exit(LocationCodeType.SETTLEMENT);
                     // Take the person out of the settlement
-                    inv.retrieveUnit(person);
+                    building.getInventory().retrieveUnit(person);
                     BuildingManager.removePersonOrRobotFromBuilding(person, building);
                                      
           			LogConsolidated.log(Level.FINER, 0, sourceName,
@@ -189,13 +182,13 @@ public class BuildingAirlock extends Airlock {
  
     @Override
     public String getEntityName() {
-        return building.getNickName() + " in " + settlement.getName();
+        return building.getNickName() + " in " + building.getSettlement().getName();
 
     }
 
     @Override
     public Inventory getEntityInventory() {
-        return inv;
+        return building.getInventory();
     }
 
     @Override
@@ -219,9 +212,7 @@ public class BuildingAirlock extends Airlock {
     }
 
 	public void destroy() {
-		settlement = null;
 	    building = null;
-	    inv = null;
 	    air = null;
 	    heating = null; 
 	    airlockInsidePos = null;

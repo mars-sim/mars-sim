@@ -13,13 +13,14 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.GenderType;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -35,9 +36,20 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class LoadVehicleTest
 extends TestCase {
 
+	private Settlement settlement = null;
+	
 	@Override
     public void setUp() throws Exception {
         SimulationConfig.loadConfig();
+        Simulation.createNewSimulation(-1, true);
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+//		Iterator<Settlement> i = unitManager.getSettlements().iterator();
+//		while (i.hasNext()) {
+//			unitManager.removeUnit(i.next());
+//		}
+		// Create test settlement.
+		settlement = new MockSettlement();
+		unitManager.addUnit(settlement);
     }
 
 //    private static final String OXYGEN = LifeSupportType.OXYGEN;
@@ -62,7 +74,7 @@ extends TestCase {
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
 	public void testLoadingPhase() throws Exception {
-		Settlement settlement = new MockSettlement();
+//		Settlement settlement = new MockSettlement();
 
 		BuildingManager buildingManager = settlement.getBuildingManager();
 		MockBuilding building0 = new MockBuilding(buildingManager);
@@ -73,7 +85,7 @@ extends TestCase {
         building0.setXLocation(0D);
         building0.setYLocation(0D);
         building0.setFacing(0D);
-        buildingManager.addBuilding(building0, false);
+        buildingManager.addMockBuilding(building0);
 
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
@@ -85,8 +97,10 @@ extends TestCase {
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
 								.build();
-		person.initialize();
+		person.initializeMock();
+		settlement.getInventory().storeUnit(person);
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 100);
+
 		Vehicle vehicle = new MockVehicle(settlement);
         Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
         
@@ -156,57 +170,56 @@ extends TestCase {
 		assertEquals("Vehicle loaded correctly.", 5, vehicle.getInventory().findNumUnitsOfClass(SpecimenContainer.class));
 	}
 
-	/*
-	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.hasEnoughSupplies(Settlement, Map, Map)'
-
-	public void testHasEnoughSuppliesGood() throws Exception {
-		Settlement settlement = new MockSettlement();
-		Inventory inv = settlement.getInventory();
-        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
-
-		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
-		AmountResource food = AmountResource.findAmountResource(FOOD);
-		AmountResource water = AmountResource.findAmountResource(WATER);
-		AmountResource methane = AmountResource.findAmountResource(METHANE);
-		AmountResource soymilk = AmountResource.findAmountResource(SOYMILK);
-
-		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
-		inv.storeAmountResource(oxygenID, 100D, true);
-		inv.addAmountResourceTypeCapacity(foodID, 200D);
-		inv.storeAmountResource(foodID, 200D, true);
-		inv.addAmountResourceTypeCapacity(waterID, waterAmount);
-		inv.storeAmountResource(waterID, waterAmount, true);
-		inv.addAmountResourceTypeCapacity(methaneID, 100D);
-		inv.storeAmountResource(methaneID, 100D, true);
-		inv.addAmountResourceTypeCapacity(soymilk, 20D);
-		inv.storeAmountResource(soymilk, 20D, true);
-		
-		inv.storeItemResources(hammerID, 5);
-
-		for (int x = 0; x < 5; x++) {
-			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
-		}
-
-		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(oxygenID, new Double(100D));
-		resourcesMap.put(foodID, new Double(200D));
-		resourcesMap.put(waterID, new Double(waterAmount));
-		resourcesMap.put(methaneID, new Double(100D));
-		resourcesMap.put(soymilk, new Double(20D));
-		resourcesMap.put(hammerID, Integer.valueOf(5));
-
-		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
-
-		Vehicle vehicle = new MockVehicle(settlement);
-
-		assertTrue("Enough supplies at settlement for trip.",
-				LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 2, 1D));
-	}
-*/
+//	/*
+//	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.hasEnoughSupplies(Settlement, Map, Map)'
+//   
+//	public void testHasEnoughSuppliesGood() throws Exception {
+//		Settlement settlement = new MockSettlement();
+//		Inventory inv = settlement.getInventory();
+//        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
+//
+//		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
+//		AmountResource food = AmountResource.findAmountResource(FOOD);
+//		AmountResource water = AmountResource.findAmountResource(WATER);
+//		AmountResource methane = AmountResource.findAmountResource(METHANE);
+//		AmountResource soymilk = AmountResource.findAmountResource(SOYMILK);
+//
+//		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
+//		inv.storeAmountResource(oxygenID, 100D, true);
+//		inv.addAmountResourceTypeCapacity(foodID, 200D);
+//		inv.storeAmountResource(foodID, 200D, true);
+//		inv.addAmountResourceTypeCapacity(waterID, waterAmount);
+//		inv.storeAmountResource(waterID, waterAmount, true);
+//		inv.addAmountResourceTypeCapacity(methaneID, 100D);
+//		inv.storeAmountResource(methaneID, 100D, true);
+//		inv.addAmountResourceTypeCapacity(soymilk, 20D);
+//		inv.storeAmountResource(soymilk, 20D, true);
+//		
+//		inv.storeItemResources(hammerID, 5);
+//
+//		for (int x = 0; x < 5; x++) {
+//			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
+//		}
+//
+//		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
+//		resourcesMap.put(oxygenID, new Double(100D));
+//		resourcesMap.put(foodID, new Double(200D));
+//		resourcesMap.put(waterID, new Double(waterAmount));
+//		resourcesMap.put(methaneID, new Double(100D));
+//		resourcesMap.put(soymilk, new Double(20D));
+//		resourcesMap.put(hammerID, Integer.valueOf(5));
+//
+//		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
+//		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
+//
+//		Vehicle vehicle = new MockVehicle(settlement);
+//
+//		assertTrue("Enough supplies at settlement for trip.",
+//				LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 2, 1D));
+//	}
 	
 	public void testHasEnoughSuppliesNoAmountResources() throws Exception {
-		Settlement settlement = new MockSettlement();
+//		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
 //        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
         Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
@@ -217,11 +230,6 @@ extends TestCase {
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
-
-//		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
-//		AmountResource food = AmountResource.findAmountResource(FOOD);
-//		AmountResource water = AmountResource.findAmountResource(WATER);
-//		AmountResource methane = AmountResource.findAmountResource(METHANE);
 
 		Map<Integer, Number> resourcesMap = new HashMap<Integer, Number>();
 		resourcesMap.put(oxygenID, 100D);
@@ -240,16 +248,11 @@ extends TestCase {
 	}
 
 	public void testHasEnoughSuppliesNoItemResources() throws Exception {
-		Settlement settlement = new MockSettlement();
+//		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
 //        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
         Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
 		int hammerID = hammer.getID();
-		
-//		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
-//		AmountResource food = AmountResource.findAmountResource(FOOD);
-//		AmountResource water = AmountResource.findAmountResource(WATER);
-//		AmountResource methane = AmountResource.findAmountResource(METHANE);
 
 		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
 		inv.storeAmountResource(oxygenID, 100D, true);
@@ -281,16 +284,11 @@ extends TestCase {
 	}
 
 	public void testHasEnoughSuppliesNoEquipment() throws Exception {
-		Settlement settlement = new MockSettlement();
+//		Settlement settlement = new MockSettlement();
 		Inventory inv = settlement.getInventory();
 //        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
         Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
         
-//		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
-//		AmountResource food = AmountResource.findAmountResource(FOOD);
-//		AmountResource water = AmountResource.findAmountResource(WATER);
-//		AmountResource methane = AmountResource.findAmountResource(METHANE);
-
         int hammerID = hammer.getID();
         
 		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
@@ -324,17 +322,12 @@ extends TestCase {
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	public void testIsFullyLoadedGood() throws Exception {
-		Settlement settlement = new MockSettlement();
+//		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
 //        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
         Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
-
-//		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
-//		AmountResource food = AmountResource.findAmountResource(FOOD);
-//		AmountResource water = AmountResource.findAmountResource(WATER);
-//		AmountResource methane = AmountResource.findAmountResource(METHANE);
 
 		int hammerID = hammer.getID();
 		
@@ -374,7 +367,7 @@ extends TestCase {
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	public void testIsFullyLoadedNoAmountResources() throws Exception {
-		Settlement settlement = new MockSettlement();
+//		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
 //        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
         Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
@@ -388,12 +381,6 @@ extends TestCase {
 		for (int x = 0; x < 5; x++) {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
-
-//		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
-//		AmountResource food = AmountResource.findAmountResource(FOOD);
-//		AmountResource water = AmountResource.findAmountResource(WATER);
-//		AmountResource methane = AmountResource.findAmountResource(METHANE);
-
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
 		requiredResourcesMap.put(oxygenID, 100D);
@@ -417,16 +404,11 @@ extends TestCase {
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	public void testIsFullyLoadedNoItemResources() throws Exception {
-		Settlement settlement = new MockSettlement();
+//		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
         Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
 		Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
-
-//		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
-//		AmountResource food = AmountResource.findAmountResource(FOOD);
-//		AmountResource water = AmountResource.findAmountResource(WATER);
-//		AmountResource methane = AmountResource.findAmountResource(METHANE);
 
 		int hammerID = hammer.getID();
 		
@@ -465,17 +447,12 @@ extends TestCase {
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	public void testIsFullyLoadedNoEquipment() throws Exception {
-		Settlement settlement = new MockSettlement();
+//		Settlement settlement = new MockSettlement();
 		Vehicle vehicle = new MockVehicle(settlement);
 //        ItemResource hammer = ItemResourceUtil.createBrandNewItemResource(resourceName,id,description,massPerItem, 1);
         Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
         Inventory inv = vehicle.getInventory();
 		inv.addGeneralCapacity(100D);
-
-//		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
-//		AmountResource food = AmountResource.findAmountResource(FOOD);
-//		AmountResource water = AmountResource.findAmountResource(WATER);
-//		AmountResource methane = AmountResource.findAmountResource(METHANE);
 
 		int hammerID = hammer.getID();
 		

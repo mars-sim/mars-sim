@@ -1,14 +1,11 @@
 /**
  * Mars Simulation Project
  * Salvagable.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2019-01-09
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.manufacture;
-
-import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * An interface for salvagable items.
@@ -26,7 +23,7 @@ public interface Salvagable {
      * @param info the salvage process info.
      * @param settlement the settlement where the salvage is taking place.
      */
-    public void startSalvage(SalvageProcessInfo info, Settlement settlement);
+    public void startSalvage(SalvageProcessInfo info, int settlement);
     
     /**
      * Gets the salvage info.

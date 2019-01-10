@@ -81,7 +81,7 @@ extends TestCase {
         building0.setXLocation(0D);
         building0.setYLocation(0D);
         building0.setFacing(0D);
-        buildingManager.addBuilding(building0, false);
+        buildingManager.addMockBuilding(building0);
 
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
@@ -93,7 +93,8 @@ extends TestCase {
 								.setCountry(null)
 								.setSponsor("Mars Society (MS)")
 								.build();
-		person.initialize();
+		person.initializeMock();
+		settlement.getInventory().storeUnit(person);
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 100);
 
 		UnloadVehicleGarage unloadVehicle = new UnloadVehicleGarage(person, vehicle);

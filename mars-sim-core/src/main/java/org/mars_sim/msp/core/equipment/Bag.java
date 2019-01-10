@@ -63,15 +63,12 @@ public class Bag extends Equipment implements Container, Serializable {
 
 	@Override
 	public Building getBuildingLocation() {
-		// TODO : how to determine which building this equipment be stored inside a
-		// settlement ?
-		return null;
+		return getContainerUnit().getBuildingLocation();
 	}
 
 	@Override
 	public Settlement getAssociatedSettlement() {
-		this.getAssociatedSettlement();
-		return null;
+		return getContainerUnit().getAssociatedSettlement();
 	}
 
 }

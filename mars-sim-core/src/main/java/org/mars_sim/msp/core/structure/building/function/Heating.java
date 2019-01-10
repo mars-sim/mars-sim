@@ -194,7 +194,6 @@ implements Serializable {
   	
 	private Building building;
 	private Coordinates location;
-	private Settlement settlement;
 	private Farming farm;
 	
 	private static Weather weather;
@@ -219,7 +218,6 @@ implements Serializable {
         sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
         
 		this.building = building;
-		this.settlement = building.getSettlement();
 
 		buildingType =  building.getBuildingType();
 		
@@ -439,7 +437,7 @@ implements Serializable {
 	public double determineDeltaTemperature(double t_in_C, double delta_time) {
 
 		// THIS IS A THREE-PART CALCULATION
-		double t_out_C = settlement.getOutsideTemperature();
+		double t_out_C = building.getSettlement().getOutsideTemperature();
 		// heatGain and heatLoss are to be converted from kJ to BTU below
 		double d_t =  t_in_C - t_out_C; //1.8 =  9D / 5D;
 		double t_in_K = t_in_C + C_TO_K;
@@ -894,7 +892,7 @@ implements Serializable {
 			// Note : time = .121 at x128
 			
 			if (adjacentBuildings == null) {
-				adjacentBuildings = settlement.getBuildingConnectors(building);
+				adjacentBuildings = building.getSettlement().getBuildingConnectors(building);
 			}
 			
 			int size = adjacentBuildings.size();
@@ -1166,7 +1164,7 @@ implements Serializable {
 		// Detect temperatures
 		double old_t = currentTemperature;
 		double new_t = 0;
-		double t_out = settlement.getOutsideTemperature();
+		double t_out = building.getSettlement().getOutsideTemperature();
 
 		if (mass == 0) {
 			int id = building.getInhabitableID();
@@ -1330,15 +1328,12 @@ implements Serializable {
 		super.destroy();
 
 		building = null;
-	 	//thermalSystem = null;
 		building = null;
 		weather = null;
 		location = null;
-		//emissivityMap = null;
 		masterClock = null;
 		marsClock = null;
 		surfaceFeatures = null;
-		settlement = null;
 		farm = null;
 		adjacentBuildings = null;
 	}

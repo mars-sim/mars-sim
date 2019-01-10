@@ -346,7 +346,7 @@ public class Manufacture extends Function implements Serializable {
 
 		// Set the salvage process info for the salvaged unit.
 		// Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-		((Salvagable) salvagedUnit).startSalvage(process.getInfo(), settlement);
+		((Salvagable) salvagedUnit).startSalvage(process.getInfo(), settlement.getIdentifier());
 
 		// Recalculate settlement good value for salvaged unit.
 		// GoodsManager goodsManager = settlement.getGoodsManager();

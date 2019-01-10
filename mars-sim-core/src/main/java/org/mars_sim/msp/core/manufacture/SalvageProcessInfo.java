@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageProcessInfo.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2019-01-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.manufacture;
@@ -13,7 +12,7 @@ import java.util.List;
 /**
  * Information about a type of salvage.
  */
-public class SalvageProcessInfo implements Serializable , Comparable<SalvageProcessInfo> {
+public class SalvageProcessInfo implements Serializable, Comparable<SalvageProcessInfo> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -28,6 +27,7 @@ public class SalvageProcessInfo implements Serializable , Comparable<SalvageProc
 
 	/**
 	 * Gets the salvage item name.
+	 * 
 	 * @return item name.
 	 */
 	public String getItemName() {
@@ -36,6 +36,7 @@ public class SalvageProcessInfo implements Serializable , Comparable<SalvageProc
 
 	/**
 	 * Sets the salvage item name.
+	 * 
 	 * @param itemName the item name.
 	 */
 	public void setItemName(String itemName) {
@@ -44,6 +45,7 @@ public class SalvageProcessInfo implements Serializable , Comparable<SalvageProc
 
 	/**
 	 * Gets the salvage item type.
+	 * 
 	 * @return item type.
 	 */
 	public String getType() {
@@ -52,6 +54,7 @@ public class SalvageProcessInfo implements Serializable , Comparable<SalvageProc
 
 	/**
 	 * Sets the salvage item type.
+	 * 
 	 * @param type the item type.
 	 */
 	public void setType(String type) {
@@ -60,6 +63,7 @@ public class SalvageProcessInfo implements Serializable , Comparable<SalvageProc
 
 	/**
 	 * Gets the manufacturing tech level required for the salvage process.
+	 * 
 	 * @return tech level.
 	 */
 	public int getTechLevelRequired() {
@@ -68,6 +72,7 @@ public class SalvageProcessInfo implements Serializable , Comparable<SalvageProc
 
 	/**
 	 * Sets the manufacturing tech level required for the salvate process.
+	 * 
 	 * @param techLevelRequired the required tech level.
 	 */
 	public void setTechLevelRequired(int techLevelRequired) {
@@ -75,7 +80,9 @@ public class SalvageProcessInfo implements Serializable , Comparable<SalvageProc
 	}
 
 	/**
-	 * Gets the material science skill level required to work on the salvage process.
+	 * Gets the material science skill level required to work on the salvage
+	 * process.
+	 * 
 	 * @return skill level.
 	 */
 	public int getSkillLevelRequired() {
@@ -83,7 +90,9 @@ public class SalvageProcessInfo implements Serializable , Comparable<SalvageProc
 	}
 
 	/**
-	 * Sets the material science skill level required to work on the salvage process.
+	 * Sets the material science skill level required to work on the salvage
+	 * process.
+	 * 
 	 * @param skillLevelRequired skill level.
 	 */
 	public void setSkillLevelRequired(int skillLevelRequired) {
@@ -92,6 +101,7 @@ public class SalvageProcessInfo implements Serializable , Comparable<SalvageProc
 
 	/**
 	 * Gets the work time required to complete the salvage process.
+	 * 
 	 * @return work time (millisols).
 	 */
 	public double getWorkTimeRequired() {
@@ -100,6 +110,7 @@ public class SalvageProcessInfo implements Serializable , Comparable<SalvageProc
 
 	/**
 	 * Sets the work time required to complete the salvage process.
+	 * 
 	 * @param workTimeRequired work time (millisols).
 	 */
 	public void setWorkTimeRequired(double workTimeRequired) {
@@ -108,6 +119,7 @@ public class SalvageProcessInfo implements Serializable , Comparable<SalvageProc
 
 	/**
 	 * Gets a list of the parts that can be salvaged.
+	 * 
 	 * @return salvage parts.
 	 */
 	public List<PartSalvage> getPartSalvageList() {
@@ -116,31 +128,32 @@ public class SalvageProcessInfo implements Serializable , Comparable<SalvageProc
 
 	/**
 	 * Sets the list of the parts that can be salvaged.
+	 * 
 	 * @param partSalvageList the list of salvage parts.
 	 */
 	public void setPartSalvageList(List<PartSalvage> partSalvageList) {
 		this.partSalvageList = partSalvageList;
 	}
 
-	
 	/**
 	 * Compares this object with the specified object for order.
+	 * 
 	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is less than,
-	 * equal to, or greater than the specified object.
+	 * @return a negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
 	 */
-	// 2015-10-15 Added compareTo()
 	public int compareTo(SalvageProcessInfo p) {
 		return itemName.compareToIgnoreCase(p.itemName);
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
 		itemName = null;
 		type = null;
-		if (partSalvageList != null) partSalvageList.clear();
+		if (partSalvageList != null)
+			partSalvageList.clear();
 		partSalvageList = null;
 	}
 

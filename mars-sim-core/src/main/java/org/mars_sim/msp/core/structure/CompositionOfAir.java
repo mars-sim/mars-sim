@@ -184,7 +184,6 @@ public class CompositionOfAir implements Serializable {
 
 	private double[][] standardMoles;
 
-	private Settlement settlement;
 	private BuildingManager buildingManager;
 
 	private static MasterClock masterClock;
@@ -199,7 +198,7 @@ public class CompositionOfAir implements Serializable {
 	 * @throws BuildingException if error in constructing function.
 	 */
 	public CompositionOfAir(Settlement settlement) {
-		this.settlement = settlement;
+
 		this.buildingManager = settlement.getBuildingManager();
 
 		masterClock = Simulation.instance().getMasterClock();
@@ -930,7 +929,6 @@ public class CompositionOfAir implements Serializable {
 	
 	public void destroy() {
 		buildingManager = null;
-		settlement = null;
 		masterClock = null;
 		marsClock = null;
 		personConfig = null;

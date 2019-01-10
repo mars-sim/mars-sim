@@ -383,7 +383,7 @@ implements Serializable {
                 Iterator<Integer> j = study.getCollaborativeResearchers().keySet().iterator();
                 while (j.hasNext()) {
                 	int id = j.next();
-                    Person collaborator = (Person)unitManager.getUnitByID(id);
+                    Person collaborator = unitManager.getPersonID(id);
                     if (collaborator.getPhysicalCondition().isDead()) {
                         study.removeCollaborativeResearcher(collaborator);
                         logger.fine(collaborator.getName() + " removed as collaborator in " + study.toString() + 
@@ -424,7 +424,7 @@ implements Serializable {
                         // Set initial research work time for primary and all collaborative researchers.
                         study.addPrimaryResearchWorkTime(0D);
                         Iterator<Integer> k = study.getCollaborativeResearchers().keySet().iterator();
-                        while (k.hasNext()) study.addCollaborativeResearchWorkTime(((Person)unitManager.getUnitByID(k.next())), 0D);
+                        while (k.hasNext()) study.addCollaborativeResearchWorkTime(unitManager.getPersonID(k.next()), 0D);
                         
                         continue;
                     }
@@ -452,7 +452,7 @@ implements Serializable {
                         // Check each collaborator for downtime.
                         Iterator<Integer> l = study.getCollaborativeResearchers().keySet().iterator();
                         while (l.hasNext()) {
-                            Person researcher = ((Person)unitManager.getUnitByID(l.next()));
+                            Person researcher = unitManager.getPersonID(l.next());
                             if (!study.isCollaborativeResearchCompleted(researcher)) {
                                 MarsClock lastCollaborativeWork = study.getLastCollaborativeResearchWorkTime(researcher);
                                 if ((lastCollaborativeWork != null) && MarsClock.getTimeDiff(marsClock, lastCollaborativeWork) 

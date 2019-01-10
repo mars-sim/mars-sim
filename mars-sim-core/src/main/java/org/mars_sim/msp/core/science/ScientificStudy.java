@@ -185,7 +185,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return primary researcher
 	 */
 	public Person getPrimaryResearcher() {
-		return (Person) (unitManager.getUnitByID(primaryResearcher));
+		return unitManager.getPersonID(primaryResearcher);
 	}
 
 	/**
@@ -327,7 +327,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	void cleanResearchInvitations() {
 		Iterator<Integer> i = invitedResearchers.keySet().iterator();
 		while (i.hasNext()) {
-			if (((Person)unitManager.getUnitByID(i.next())).getPhysicalCondition().isDead())
+			if (unitManager.getPersonID(i.next()).getPhysicalCondition().isDead())
 				i.remove();
 		}
 	}
@@ -480,7 +480,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		boolean result = true;
 		Iterator<Integer> i = collaborativeResearchWorkTime.keySet().iterator();
 		while (i.hasNext()) {
-			if (!isCollaborativeResearchCompleted((Person)(unitManager.getUnitByID(i.next()))))
+			if (!isCollaborativeResearchCompleted(unitManager.getPersonID(i.next())))
 				result = false;
 		}
 		return result;
@@ -622,7 +622,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		boolean result = true;
 		Iterator<Integer> i = collaborativePaperWorkTime.keySet().iterator();
 		while (i.hasNext()) {
-			if (!isCollaborativePaperCompleted((Person)(unitManager.getUnitByID(i.next()))))
+			if (!isCollaborativePaperCompleted(unitManager.getPersonID(i.next())))
 				result = false;
 		}
 		return result;

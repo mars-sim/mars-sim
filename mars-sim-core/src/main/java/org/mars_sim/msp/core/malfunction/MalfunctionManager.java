@@ -482,7 +482,7 @@ public class MalfunctionManager implements Serializable {
 					loc1 = entity.getLocale();
 				}
 
-				else if (object.toLowerCase().contains("eva")) {
+				else if (entity.getUnit() instanceof EVASuit) {// object.toLowerCase().contains("eva")) {
 //						Unit unit = entity.getUnit();
 //						EVASuit suit = (EVASuit)entity.getUnit();
 					// TODO: for a eva suit malfunction,
