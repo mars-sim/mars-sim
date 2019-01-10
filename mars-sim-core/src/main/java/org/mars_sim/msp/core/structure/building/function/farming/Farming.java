@@ -140,8 +140,6 @@ public class Farming extends Function implements Serializable {
 	/** The daily water usage in this facility [kg/sol]. */
 	private Map<Integer, Double> dailyWaterUsage;
 	
-	private Inventory inv;
-//	private Settlement settlement;
 	private Building building;
 	private Research lab;
 	
@@ -166,9 +164,6 @@ public class Farming extends Function implements Serializable {
 		// HPS_Item = ItemResource.findItemResource(HPS_LAMP);
 
 		this.building = building;
-
-		this.inv = building.getSettlement().getInventory();
-		// this.goodsManager = settlement.getGoodsManager();
 
 		identifer = 0;
 		
@@ -420,7 +415,7 @@ public class Farming extends Function implements Serializable {
 		// if it's a mushroom, add increases the item demand of the mushroom containment
 		// kit before the crop is planted
 		if (chosen.getName().toLowerCase().contains(MUSHROOM))
-			inv.addItemDemand(ItemResourceUtil.mushroomBoxID, 1);
+			building.getInventory().addItemDemand(ItemResourceUtil.mushroomBoxID, 1);
 
 		return chosen;
 	}
@@ -503,10 +498,11 @@ public class Farming extends Function implements Serializable {
 		double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea * rand;
 
 		// TODO: adjust how much old soil should be turned to crop waste
-		Storage.storeAnResource(amount, ResourceUtil.cropWasteID, inv, sourceName + "::provideNewSoil");
+		store(amount, ResourceUtil.cropWasteID, sourceName + "::provideNewSoil");
 
 		// TODO: adjust how much new soil is needed to replenish the soil bed
-		Storage.retrieveAnResource(amount, ResourceUtil.soilID, inv, true);
+		if (amount > MIN)
+			retrieve(amount, ResourceUtil.soilID, true);
 
 	}
 
@@ -521,7 +517,8 @@ public class Farming extends Function implements Serializable {
 	public void provideFertilizer(double cropArea) {
 		double rand = RandomUtil.getRandomDouble(2);
 		double amount = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * cropArea / 10D * rand;
-		Storage.retrieveAnResource(amount, ResourceUtil.fertilizerAR, inv, true);
+		if (amount > MIN)
+			retrieve(amount, ResourceUtil.fertilizerID, true);
 	}
 
 	/**
@@ -545,6 +542,8 @@ public class Farming extends Function implements Serializable {
 
 		try {
 
+			Inventory inv = building.getInventory();
+			
 			double amountStored = inv.getAmountResourceStored(tissueID, false);
 			inv.addAmountDemandTotalRequest(tissueID);
 
@@ -1139,7 +1138,7 @@ public class Farming extends Function implements Serializable {
 		boolean isDone = false;
 		int cropID = ResourceUtil.findIDbyAmountResourceName(cropName);
 		int tissueID = ResourceUtil.findIDbyAmountResourceName(tissueName);
-		double amountAvailable = inv.getAmountResourceStored(tissueID, false);
+		double amountAvailable = building.getInventory().getAmountResourceStored(tissueID, false);
 		double amountExtracted = 0;
 
 		// Add the chosen tissue culture entry to the lab if it hasn't done it today.
@@ -1149,18 +1148,17 @@ public class Farming extends Function implements Serializable {
 
 			if (amountAvailable == 0) {
 				// if no tissue culture is available, go extract some tissues from the crop
-				double amount = inv.getAmountResourceStored(cropID, false);
+				double amount = building.getInventory().getAmountResourceStored(cropID, false);
 				// TODO : Check for the health condition
 				amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE * RandomUtil.getRandomInt(5, 15);
 
 				if (amount > amountExtracted) {
 					// assume extracting an arbitrary 5 to 15% of the mass of crop will be developed
 					// into tissue culture
-					Storage.retrieveAnResource(amountExtracted, cropID, inv, true);
+					retrieve(amountExtracted, cropID, true);
 					// store the tissues
 					if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
-						Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, inv,
-								sourceName + "::growCropTissue");
+						store(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, sourceName + "::growCropTissue");
 						LogConsolidated.log(Level.INFO, 3_000, sourceName,
 							"[" + building.getSettlement().getName() + "] During sampling analysis, " + p
 								+ " could not find any " + cropName + TISSUE_CULTURE
@@ -1188,7 +1186,7 @@ public class Farming extends Function implements Serializable {
 					amountExtracted = amountAvailable * 0.2;
 					// store the tissues
 					if (amountExtracted > 0) {
-						Storage.storeAnResource(amountExtracted, tissueID, inv, sourceName + "::growCropTissue");
+						store(amountExtracted, tissueID, sourceName + "::growCropTissue");
 						LogConsolidated.log(Level.INFO, 3_000, sourceName,
 							"[" + building.getSettlement().getName() + "] During sampling analysis, " + p + " cloned and restocked "
 							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
@@ -1554,6 +1552,14 @@ public class Farming extends Function implements Serializable {
 		return numCrops2Plant;
 	}
 	
+	public boolean retrieve(double amount, int resource, boolean value) {
+		return Storage.retrieveAnResource(amount, resource, building.getInventory(), value);
+	}
+	
+	public void store(double amount, int resource, String source) {
+		Storage.storeAnResource(amount, resource, building.getInventory(), source);
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();
@@ -1568,7 +1574,7 @@ public class Farming extends Function implements Serializable {
 		cropDailyCO2Consumed = null;
 
 		marsClock = null;
-		inv = null;
+
 		lab = null;
 		building = null;
 

@@ -13,11 +13,11 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -126,6 +126,8 @@ public class Crop implements Serializable {
 	// SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217
 
 	// Data members
+	/** The settlement's unique identifier */
+	private int settlementID;
 	/** The unique identifier */
 	private int identifier;
 	/** The cache for msols */
@@ -221,9 +223,8 @@ public class Crop implements Serializable {
 	private PhaseType phaseType;
 	private CropCategoryType cropCategoryType;
 
-	private Inventory inv;
+//	private Inventory inv;
 	private Farming farm;
-	private Settlement settlement;
 	private Building building;
 
 	private int cropTypeID;
@@ -245,6 +246,8 @@ public class Crop implements Serializable {
 	private static MarsClock marsClock;
 	private static SurfaceFeatures surface;
 	private static CropConfig cropConfig;
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	
 
 	/**
 	 * Constructor.
@@ -267,7 +270,7 @@ public class Crop implements Serializable {
 		this.growingArea = growingArea;
 		this.dailyMaxHarvest = dailyMaxHarvest;
 		this.farm = farm;
-		this.settlement = settlement;
+		this.settlementID = settlement.getIdentifier();
 		this.isStartup = isStartup;
 
 		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
@@ -278,8 +281,6 @@ public class Crop implements Serializable {
 		building = farm.getBuilding();
 		farmName = building.getNickName();
 		phases = cropType.getPhases();
-
-		inv = settlement.getInventory();
 
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
 		surface = Simulation.instance().getMars().getSurfaceFeatures();
@@ -397,13 +398,14 @@ public class Crop implements Serializable {
 
 	public void setupMushroom() {
 		if (cropName.toLowerCase().contains(MUSHROOM)) {
-			if (inv.hasItemResource(mushroomBoxID)) {
-				inv.retrieveItemResources(mushroomBoxID, 1);
-				inv.addItemDemand(mushroomBoxID, 2);
+			
+			if (building.getInventory().hasItemResource(mushroomBoxID)) {
+				building.getInventory().retrieveItemResources(mushroomBoxID, 1);
+				building.getInventory().addItemDemand(mushroomBoxID, 2);
 			}
 			// Require some dead matter for fungi to decompose
 			if (growingArea * .5 > MIN)
-				Storage.retrieveAnResource(growingArea * .5, cropWasteID, inv, true);
+				retrieve(growingArea * .5, cropWasteID, true);
 		}
 	}
 
@@ -520,13 +522,14 @@ public class Crop implements Serializable {
 		if (fractionalGrowingTimeCompleted > .1) {
 			// Check on the health of a >10% growing crop
 			if (health < .05) {
-				logger.warning("Crop " + capitalizedCropName + " at " + settlement.getName()
+				String name = unitManager.getSettlementByID(settlementID).getName();
+				logger.warning("Crop " + capitalizedCropName + " at " + name
 						+ " died of very poor health (" + Math.round(health * 100D) / 100D + " %) in "
-						+ settlement.getName() + " and didn't survive.");
+						+ name + " and didn't survive.");
 				// Add Crop Waste
 				double amt = fractionalGrowingTimeCompleted * remainingHarvest * RandomUtil.getRandomDouble(.5);
 				if (amt > 0) {
-					Storage.storeAnResource(amt, cropWasteID, inv, "::trackHealth");
+					store(amt, cropWasteID, sourceName + "::trackHealth");
 					logger.warning(amt + " kg Crop Waste generated from the dead " + capitalizedCropName);
 				}
 				phaseType = PhaseType.FINISHED;
@@ -538,11 +541,11 @@ public class Crop implements Serializable {
 				// factors
 			if (health < .2) {
 				logger.warning("The seedlings of " + capitalizedCropName + " had poor health ("
-						+ Math.round(health * 100D) / 100D + " %) in " + settlement.getName() + " and didn't survive.");
+						+ Math.round(health * 100D) / 100D + " %) in " + unitManager.getSettlementByID(settlementID).getName() + " and didn't survive.");
 				// Add Crop Waste
 				double amt = fractionalGrowingTimeCompleted * remainingHarvest * RandomUtil.getRandomDouble(.5);
 				if (amt > 0) {
-					Storage.storeAnResource(amt, cropWasteID, inv, "::trackHealth");
+					store(amt, cropWasteID, sourceName + "::trackHealth");
 					logger.warning(amt + " kg Crop Waste generated from the dead " + capitalizedCropName);
 				}
 				phaseType = PhaseType.FINISHED;
@@ -656,23 +659,25 @@ public class Crop implements Serializable {
 					if (isSeedPlant) {
 						// Extract Sesame Seed. 
 						// Note the purpose for this plant is primarily the seeds 
-						Storage.storeAnResource(lastHarvest, seedID, inv, sourceName + "::addWork");
+						store(lastHarvest, seedID, sourceName + "::addWork");
 					}
 					else if (hasSeed && lastHarvest * massRatio > 0) {
 						// White Mustard has leaves as food. Also extract Mustard Seed
-						Storage.storeAnResource(lastHarvest * massRatio, seedID, inv, sourceName + "::addWork");
-						Storage.storeAnResource(lastHarvest, cropID, inv, sourceName + "::addWork");
+						store(lastHarvest * massRatio, seedID, sourceName + "::addWork");
+						store(lastHarvest, cropID, sourceName + "::addWork");
 					}
 					else {
-						Storage.storeAnResource(lastHarvest, cropID, inv, sourceName + "::addWork");
+						store(lastHarvest, cropID, sourceName + "::addWork");
 					}
 
+					String name = unitManager.getSettlementByID(settlementID).getName();
+					
 					if (current == length - 3)
 						logger.info(unit.getName() + " closed out the initial harvest of " + capitalizedCropName + " in "
-							+ farmName + " at " + settlement.getName());
+							+ farmName + " at " + name);
 					else if (current == length - 2)
 						logger.info(unit.getName() + " closed out the final harvest of " + capitalizedCropName + " in "
-								+ farmName + " at " + settlement.getName());
+								+ farmName + " at " + name);
 					
 					// Calculate the amount of leaves and crop wastes that are generated
 					computeLeavesNCropWaste(lastHarvest);
@@ -689,7 +694,7 @@ public class Crop implements Serializable {
 
 					if (totalHarvest > 0)
 						LogConsolidated.log(Level.INFO, 0, sourceName,
-							"[" + settlement + "] " + unit.getName() + " harvested a total of "
+							"[" + name + "] " + unit.getName() + " harvested a total of "
 									+ Math.round(totalHarvest * 100.0) / 100.0 + " kg "
 									+ capitalizedCropName + " in " + farmName);
 					
@@ -711,15 +716,15 @@ public class Crop implements Serializable {
 						if (isSeedPlant) {
 							// Extract Sesame Seed. 
 							// Note the purpose for this plant is primarily the seeds 
-							Storage.storeAnResource(modifiedHarvest, seedID, inv, sourceName + "::addWork");
+							store(modifiedHarvest, seedID, sourceName + "::addWork");
 						}
 						else if (hasSeed && modifiedHarvest * massRatio > 0) {
 							// White Mustard has leaves as food. Also extract Mustard Seed
-							Storage.storeAnResource(modifiedHarvest * massRatio, seedID, inv, sourceName + "::addWork");
-							Storage.storeAnResource(modifiedHarvest, cropID, inv, sourceName + "::addWork");
+							store(modifiedHarvest * massRatio, seedID, sourceName + "::addWork");
+							store(modifiedHarvest, cropID, sourceName + "::addWork");
 						}
 						else {
-							Storage.storeAnResource(modifiedHarvest, cropID, inv, sourceName + "::addWork");
+							store(modifiedHarvest, cropID, sourceName + "::addWork");
 						}
 
 						// Calculate the amount of leaves and crop wastes that are generated
@@ -747,7 +752,7 @@ public class Crop implements Serializable {
 		double inedible = harvestMass / edibleBiomass * inedibleBiomass;
 		double cropWaste = inedible * RATIO_LEAVES;
 		if (cropWaste > 0) {
-			Storage.storeAnResource(cropWaste, cropWasteID, inv, "::generateCropWaste");
+			store(cropWaste, cropWasteID, sourceName + "::generateCropWaste");
 //			LogConsolidated.log(Level.INFO, 0, sourceName,
 //					"[" + settlement + "] A total "  
 //							+ Math.round(totalHarvest * 100.0) / 100.0 + " kg of crop waste was generated "
@@ -757,26 +762,13 @@ public class Crop implements Serializable {
 		if (cropCategoryType != CropCategoryType.LEAVES) {
 			double leaves = inedible - cropWaste;
 			if (leaves > 0) {
-				Storage.storeAnResource(leaves, ResourceUtil.leavesID, inv, "::generateCropWaste");
+				store(leaves, ResourceUtil.leavesID, sourceName + "::generateCropWaste");
 	//			LogConsolidated.log(Level.INFO, 0, sourceName,
 	//					"[" + settlement + "] A total "  
 	//							+ Math.round(totalHarvest * 100.0) / 100.0 + " kg of crop waste was generated "
 	//							+ capitalizedCropName + " in " + farmName);
 			}
 		}
-	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
-	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1) {
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
-		cropConfig = SimulationConfig.instance().getCropConfiguration();
-		masterClock = c0;
-		marsClock = c1;
 	}
 	
 	public void updateUsage() {
@@ -924,7 +916,8 @@ public class Crop implements Serializable {
 		int msols = marsClock.getMillisolInt();
 		// Note : The average PAR is estimated to be 20.8 mol/(m² day) (Gertner, 1999)
 		// Calculate instantaneous PAR from solar irradiance
-		double uPAR = wattToPhotonConversionRatio * surface.getSolarIrradiance(settlement.getCoordinates());
+		double uPAR = wattToPhotonConversionRatio 
+				* surface.getSolarIrradiance(unitManager.getSettlementByID(settlementID).getCoordinates());
 		// [umol /m^2 /s] = [u mol /m^2 /s /(Wm^-2)] * [Wm^-2]
 		double PAR_interval = uPAR / 1_000_000D * time * MarsClock.SECONDS_PER_MILLISOL; // in mol / m^2 within this
 																							// period of time
@@ -1070,8 +1063,8 @@ public class Crop implements Serializable {
 		double waterRequired =  TUNING_FACTOR * needFactor * (averageWaterNeeded * time / 1_000D) * growingArea; // fractionalGrowingTimeCompleted
 //		System.out.println(getCropType() + "  waterRequired : " + waterRequired);
 		// Determine the amount of grey water available.
-		double gw = inv.getAmountResourceStored(greywaterID, false);
-		double greyWaterAvailable = Math.min(gw * settlement.getGreyWaterFilteringRate() * time, gw);
+		double gw = building.getInventory().getAmountResourceStored(greywaterID, false);
+		double greyWaterAvailable = Math.min(gw * unitManager.getSettlementByID(settlementID).getGreyWaterFilteringRate() * time, gw);
 		double waterUsed = 0;
 		double greyWaterUsed = 0;
 //		double totalWaterUsed = 0;
@@ -1084,7 +1077,7 @@ public class Crop implements Serializable {
 			greyWaterUsed = waterRequired;
 //			totalWaterUsed = greyWaterUsed;
 			if (greyWaterUsed > MIN)
-				Storage.retrieveAnResource(greyWaterUsed, greywaterID, inv, true);
+				retrieve(greyWaterUsed, greywaterID, true);
 			// TODO: track grey water as well ?
 			waterModifier = 1D;
 		}
@@ -1093,15 +1086,15 @@ public class Crop implements Serializable {
 			// If not enough grey water, use water
 			greyWaterUsed = greyWaterAvailable;
 			if (greyWaterUsed > MIN)
-				Storage.retrieveAnResource(greyWaterUsed, greywaterID, inv, true);
+				retrieve(greyWaterUsed, greywaterID, true);
 			// TODO: track grey water as well ?
 			waterRequired = waterRequired - greyWaterUsed;
-			double waterAvailable = inv.getAmountResourceStored(waterID, false);
+			double waterAvailable = building.getInventory().getAmountResourceStored(waterID, false);
 			
 			if (waterAvailable >= waterRequired) {
 				waterUsed = waterRequired;
 				if (waterUsed > MIN) {
-					Storage.retrieveAnResource(waterUsed, waterID, inv, true);
+					retrieve(waterUsed, waterID, true);
 					//  Records the daily water usage in the farm
 					farm.addDailyWaterUsage(waterUsed);
 				}
@@ -1110,7 +1103,7 @@ public class Crop implements Serializable {
 				// not enough water
 				waterUsed = waterAvailable;
 				if (waterUsed > MIN) {
-					Storage.retrieveAnResource(waterUsed, waterID, inv, true);
+					retrieve(waterUsed, waterID, true);
 					//  Records the daily water usage in the farm
 					farm.addDailyWaterUsage(waterUsed);
 				}
@@ -1118,7 +1111,7 @@ public class Crop implements Serializable {
 				waterModifier = (greyWaterAvailable + waterUsed) / waterRequired;
 			}
 
-			double fertilizerAvailable = inv.getAmountResourceStored(fertilizerID, false);
+			double fertilizerAvailable = building.getInventory().getAmountResourceStored(fertilizerID, false);
 			// The amount of fertilizer to be used depends on the ratio of the grey water used
 			double fertilizerRequired = FERTILIZER_NEEDED_WATERING * time * greyWaterUsed / (greyWaterUsed + waterUsed);
 			double fertilizerUsed = fertilizerRequired;
@@ -1132,7 +1125,7 @@ public class Crop implements Serializable {
 			}
 
 			if (fertilizerUsed > MIN) {
-				Storage.retrieveAnResource(fertilizerUsed, fertilizerID, inv, true);
+				retrieve(fertilizerUsed, fertilizerID, true);
 			}
 
 			adjustEnvironmentFactor(fertilizerModifier, 1);
@@ -1188,15 +1181,15 @@ public class Crop implements Serializable {
 			
 			double o2Required = fractionalGrowingTimeCompleted * fudge_factor * needFactor
 					* (averageOxygenNeeded * time / 1000) * growingArea;
-			double o2Available = inv.getAmountResourceStored(oxygenID, false);
+			double o2Available = building.getInventory().getAmountResourceStored(oxygenID, false);
 			double o2Used = o2Required;
 
 			o2Modifier = o2Available / o2Required;
 
 			if (o2Used > o2Available)
 				o2Used = o2Available;
-			if (o2Used >  MIN) {
-				Storage.retrieveAnResource(o2Used, oxygenID, inv, true);
+			if (o2Used > MIN) {
+				retrieve(o2Used, oxygenID, true);
 				// farm.addO2Cache(-o2Used);
 				cumulative_o2 = cumulative_o2 - o2Used;
 			}
@@ -1208,7 +1201,7 @@ public class Crop implements Serializable {
 			// Determine the amount of co2 generated via gas exchange.
 			double cO2Gen = o2Used * CO2_TO_O2_RATIO;
 			if (cO2Gen > MIN) {
-				Storage.storeAnResource(cO2Gen, carbonDioxideID, inv, sourceName + "::computeGases");
+				store(cO2Gen, carbonDioxideID, sourceName + "::computeGases");
 				// farm.addCO2Cache(cO2Gen);
 				cumulative_co2 = cumulative_co2 + cO2Gen;
 			}
@@ -1227,7 +1220,7 @@ public class Crop implements Serializable {
 			// Determine harvest modifier by amount of carbon dioxide available.
 			double cO2Req = fractionalGrowingTimeCompleted * fudge_factor * needFactor
 					* (averageCarbonDioxideNeeded * time / 1000) * growingArea;
-			double cO2Available = inv.getAmountResourceStored(carbonDioxideID, false);
+			double cO2Available = building.getInventory().getAmountResourceStored(carbonDioxideID, false);
 			double cO2Used = cO2Req;
 
 			// TODO: allow higher concentration of co2 to be pumped to increase the harvest
@@ -1238,7 +1231,7 @@ public class Crop implements Serializable {
 			if (cO2Used > cO2Available)
 				cO2Used = cO2Available;
 			if (cO2Used > MIN) {
-				Storage.retrieveAnResource(cO2Used, carbonDioxideID, inv, true);
+				retrieve(cO2Used, carbonDioxideID, true);
 				// farm.addCO2Cache(-cO2Used);
 				cumulative_co2 = cumulative_co2 - cO2Used;
 			}
@@ -1256,7 +1249,7 @@ public class Crop implements Serializable {
 			double o2Gen = cO2Used * O2_TO_CO2_RATIO;
 //			System.out.println("cO2Used : " + cO2Used);
 			if (o2Gen > 0) {
-				Storage.storeAnResource(o2Gen, oxygenID, inv, sourceName + "::computeGases");
+				store(o2Gen, oxygenID, sourceName + "::computeGases");
 				// farm.addO2Cache(o2Gen);
 				cumulative_o2 = cumulative_o2 + o2Gen;
 			}
@@ -1416,19 +1409,35 @@ public class Crop implements Serializable {
 		return identifier;
 	}
 	
+	public boolean retrieve(double amount, int resource, boolean value) {
+		return Storage.retrieveAnResource(amount, resource, building.getInventory(), value);
+	}
+	
+	public void store(double amount, int resource, String source) {
+		Storage.storeAnResource(amount, resource, building.getInventory(), source);
+	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link MasterClock}
+	 * @param {{@link MarsClock}
+	 */
+	public static void justReloaded(MasterClock c0, MarsClock c1, SurfaceFeatures sf, UnitManager u) {
+		masterClock = c0;
+		marsClock = c1;
+		surface = sf;
+		cropConfig = SimulationConfig.instance().getCropConfiguration();
+		unitManager = u;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
 		phaseType = null;
 		cropCategoryType = null;
-
-//		cropAR = null;
-//		cropType = null;
 		farm = null;
-		inv = null;
-		settlement = null;
-
 		surface = null;
 		marsClock = null;
 		masterClock = null;

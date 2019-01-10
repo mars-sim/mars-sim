@@ -11,13 +11,8 @@ import java.util.ArrayList;
 //import java.util.HashSet;
 import java.util.List;
 //import java.util.Set;
-
-
-
-
 import org.jdom.Document;
 import org.jdom.Element;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**

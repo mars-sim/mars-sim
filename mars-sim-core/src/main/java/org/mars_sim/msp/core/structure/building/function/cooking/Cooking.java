@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -117,9 +116,9 @@ public class Cooking extends Function implements Serializable {
 	/** The creation time of each meal.  */
 	private Multimap<String, MarsClock> timeMap;
 
-	private Inventory inv;
+//	private Inventory inv;
 	private HotMeal aMeal;
-	private Settlement settlement;
+
 	private Person person;
 	private Robot robot;
 
@@ -158,11 +157,6 @@ public class Cooking extends Function implements Serializable {
 
 		cookedMeals = new CopyOnWriteArrayList<>();
 		ingredientMap = new ConcurrentHashMap<>();
-//		dailyWaterUsage = new HashMap<>();
-
-		inv = building.getInventory();
-
-		settlement = building.getSettlement();
 
 		cookingWorkTime = 0D;
 
@@ -324,7 +318,7 @@ public class Cooking extends Function implements Serializable {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				Cooking cookingFunction = (Cooking) building.getFunction(FUNCTION);
+				Cooking cookingFunction = building.getCooking();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += cookingFunction.cookCapacity * wearModifier;
 			}
@@ -535,9 +529,9 @@ public class Cooking extends Function implements Serializable {
 		if ((cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) && (!cookNoMore)) {
 
 			double population = getPopulation();
-			double maxServings = population * settlement.getMealsReplenishmentRate();
+			double maxServings = population * building.getSettlement().getMealsReplenishmentRate();
 
-			int numSettlementCookedMeals = getTotalAvailableCookedMealsAtSettlement(settlement);
+			int numSettlementCookedMeals = getTotalAvailableCookedMealsAtSettlement(building.getSettlement());
 			if (numSettlementCookedMeals >= maxServings) {
 				cookNoMore = true;
 			}
@@ -701,7 +695,7 @@ public class Cooking extends Function implements Serializable {
 	 */
 	public Integer pickOneOil(double amount) {
 
-		return oilMenu.stream().filter(oil -> inv.getAmountResourceStored(oil, false) > amount).findFirst().orElse(-1);// .get();;
+		return oilMenu.stream().filter(oil -> building.getInventory().getAmountResourceStored(oil, false) > amount).findFirst().orElse(-1);// .get();;
 
 //	    	List<AmountResource> available_oils = new CopyOnWriteArrayList<>();
 //	    	int size = oilMenuAR.size();
@@ -725,7 +719,7 @@ public class Cooking extends Function implements Serializable {
 //		    	inv.addAmountDemand(oilMenuAR.get(rand), amount);
 //	    		oil_count++;
 //	    		if (oil_count < 1)
-//	    			logger.info("Running out of oil in " + getBuilding().getNickName() + " at "+ settlement.getName());
+//	    			logger.info("Running out of oil in " + getBuilding().getNickName() + " at "+ building.getSettlement().getName());
 //	    	}
 //
 //	    	//logger.info("oil index : "+ index);
@@ -829,7 +823,7 @@ public class Cooking extends Function implements Serializable {
 		cleanliness = cleanliness - .0075;
 
 		LogConsolidated.log(Level.FINE, 10_000, sourceName,
-				"[" + settlement + "] " + producerName + " just cooked '" + nameOfMeal + "' in " + building + ".");
+				"[" + building.getSettlement() + "] " + producerName + " just cooked '" + nameOfMeal + "' in " + building + ".");
 
 		return nameOfMeal;
 	}
@@ -869,7 +863,7 @@ public class Cooking extends Function implements Serializable {
 		// retrieveAnResource()
 		boolean hasFive = false;
 		if (amount * 5 > MIN)
-			hasFive = Storage.retrieveAnResource(amount * 5, resource, inv, isRetrieving);
+			hasFive = Storage.retrieveAnResource(amount * 5, resource, building.getInventory(), isRetrieving);
 		// 2b1. if inv has it, save it to local map cache
 		if (hasFive) {
 			// take 5 out, put 4 into resourceMap, use 1 right now
@@ -879,7 +873,7 @@ public class Cooking extends Function implements Serializable {
 		} else { // 2b2.
 			boolean hasOne = false;
 			if (amount > MIN)
-				hasOne = Storage.retrieveAnResource(amount, resource, inv, isRetrieving);
+				hasOne = Storage.retrieveAnResource(amount, resource, building.getInventory(), isRetrieving);
 			if (!hasOne)
 				result = false;
 		}
@@ -900,16 +894,16 @@ public class Cooking extends Function implements Serializable {
 			usage = 1 - rand;
 
 		// If settlement is rationing water, reduce water usage according to its level
-		int level = settlement.getWaterRation();
+		int level = building.getSettlement().getWaterRation();
 		if (level != 0)
 			usage = usage / 1.5D / level;
 		if (usage > MIN) {
 			retrieveAnIngredientFromMap(usage, ResourceUtil.waterID, true);
-			settlement.addWaterConsumption(0, usage);
+			building.getSettlement().addWaterConsumption(0, usage);
 		}
 		double wasteWaterAmount = usage * .75;
 		if (wasteWaterAmount > 0)
-			Storage.storeAnResource(wasteWaterAmount, ResourceUtil.greyWaterID, inv, sourceName + "::consumeWater");
+			store(wasteWaterAmount, ResourceUtil.greyWaterID, sourceName + "::consumeWater");
 	}
 
 	/**
@@ -921,14 +915,14 @@ public class Cooking extends Function implements Serializable {
 	public boolean consumeOil(double oilRequired) {
 		Integer oil = pickOneOil(oilRequired);
 		if (oil != -1) {
-			inv.addAmountDemand(oil, oilRequired);
+			building.getInventory().addAmountDemand(oil, oilRequired);
 			// may use the default amount of AMOUNT_OF_OIL_PER_MEAL;
 			retrieveAnIngredientFromMap(oilRequired, oil, true);
 			return true;
 		}
 		// oil is not available
 		else if (logger.isLoggable(Level.FINE)) {
-			LogConsolidated.log(Level.FINE, 30_000, sourceName, "[" + settlement + "] No oil is available.");
+			LogConsolidated.log(Level.FINE, 30_000, sourceName, "[" + building.getSettlement() + "] No oil is available.");
 		}
 
 		return false;
@@ -967,7 +961,7 @@ public class Cooking extends Function implements Serializable {
 		}
 
 		if (hasCookedMeal()) {
-			double rate = settlement.getMealsReplenishmentRate();
+			double rate = building.getSettlement().getMealsReplenishmentRate();
 
 			// Handle expired cooked meals.
 			for (CookedMeal meal : cookedMeals) {
@@ -985,10 +979,9 @@ public class Cooking extends Function implements Serializable {
 						if (qNum < 1) {
 							if (dryMassPerServing > 0)
 								// Turn into food waste
-								Storage.storeAnResource(dryMassPerServing, ResourceUtil.foodWasteID, inv,
-										"::timePassing");
+								store(dryMassPerServing, ResourceUtil.foodWasteID, sourceName + "::timePassing");
 
-							log.append("[").append(settlement.getName()).append("] ").append(dryMassPerServing)
+							log.append("[").append(building.getSettlement().getName()).append("] ").append(dryMassPerServing)
 									.append(" kg ").append(meal.getName().toLowerCase()).append(DISCARDED)
 									.append(getBuilding().getNickName()).append(".");
 
@@ -998,7 +991,7 @@ public class Cooking extends Function implements Serializable {
 							// Convert the meal into preserved food.
 							preserveFood();
 
-							log.append("[").append(settlement.getName()).append("] ").append(CONVERTING)
+							log.append("[").append(building.getSettlement().getName()).append("] ").append(CONVERTING)
 									.append(dryMassPerServing).append(" kg ").append(meal.getName().toLowerCase())
 									.append(PRESERVED).append(getBuilding().getNickName()).append(".");
 
@@ -1009,7 +1002,7 @@ public class Cooking extends Function implements Serializable {
 						if (rate > 0) {
 							rate -= DOWN;
 						}
-						settlement.setMealsReplenishmentRate(rate);
+						building.getSettlement().setMealsReplenishmentRate(rate);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -1038,9 +1031,9 @@ public class Cooking extends Function implements Serializable {
 		if (solCache != solElapsed) {
 			// Adjust the rate to go up automatically by default
 			solCache = solElapsed;
-			double rate = settlement.getMealsReplenishmentRate();
+			double rate = building.getSettlement().getMealsReplenishmentRate();
 			rate += UP;
-			settlement.setMealsReplenishmentRate(rate);
+			building.getSettlement().setMealsReplenishmentRate(rate);
 			// reset back to zero at the beginning of a new day.
 			mealCounterPerSol = 0;
 			if (!timeMap.isEmpty())
@@ -1068,11 +1061,11 @@ public class Cooking extends Function implements Serializable {
 	public void cleanUpKitchen() {
 		boolean cleaning0 = false;
 		if (cleaningAgentPerSol * .1 > MIN)
-			cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol * .1, NaClOID, inv, true);
+			cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol * .1, NaClOID, building.getInventory(), true);
 		boolean cleaning1 = false;
 		if (cleaningAgentPerSol > MIN) {
-			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol * 5, waterID, inv, true);
-			settlement.addWaterConsumption(2, cleaningAgentPerSol * 5);
+			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol * 5, waterID, building.getInventory(), true);
+			building.getSettlement().addWaterConsumption(2, cleaningAgentPerSol * 5);
 		}
 
 		if (cleaning0)
@@ -1098,7 +1091,7 @@ public class Cooking extends Function implements Serializable {
 	public void preserveFood() {
 		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.tableSaltID, true); // TABLE_SALT, true);//
 		if (dryMassPerServing > 0)
-			Storage.storeAnResource(dryMassPerServing, foodID, inv, sourceName + "::preserveFood");
+			store(dryMassPerServing, foodID, sourceName + "::preserveFood");
 	}
 
 	/**
@@ -1153,6 +1146,10 @@ public class Cooking extends Function implements Serializable {
 //		}
 //	}
 
+	public void store(double amount, int resource, String source) {
+		Storage.storeAnResource(amount, resource, building.getInventory(), source);
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
@@ -1176,10 +1173,8 @@ public class Cooking extends Function implements Serializable {
 	@Override
 	public void destroy() {
 		super.destroy();
-		inv = null;
 		oilMenu = null;
 		cookedMeals = null;
-		settlement = null;
 		aMeal = null;
 		mealConfigMealList = null;
 		qualityMap = null;

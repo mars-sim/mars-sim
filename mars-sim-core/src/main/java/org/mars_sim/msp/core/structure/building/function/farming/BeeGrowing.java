@@ -31,8 +31,7 @@ implements Serializable {
     // The bigger the number, the more erratic (and the less frequent) the update
     private static final int TICKS_PER_UPDATE = 50; 
     
-    private Inventory inv;
-    private Settlement settlement;
+//    private Inventory inv;
     private Building building;
     private Farming farm;
     private BeeHive hive;
@@ -43,8 +42,8 @@ implements Serializable {
 		
         this.farm = farm;      
         this.building = farm.getBuilding();		
-        this.inv = building.getSettlementInventory();
-        this.settlement = building.getSettlement();
+//        this.inv = building.getSettlementInventory();
+//        this.settlement = building.getSettlement();
         		
         hive = new BeeHive(this, "Honey Bee");
         

@@ -1974,7 +1974,7 @@ public class BuildingManager implements Serializable {
 	 * @return settlement
 	 */
 	public Settlement getSettlement() {
-		System.out.println("BuildingManager's getSettlement() settlementID : " + settlementID);
+//		System.out.println("BuildingManager's getSettlement() settlementID : " + settlementID);
 		return unitManager.getSettlementByID(settlementID);
 	}
 

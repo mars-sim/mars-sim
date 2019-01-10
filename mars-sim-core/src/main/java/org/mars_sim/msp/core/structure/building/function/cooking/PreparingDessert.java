@@ -44,7 +44,6 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * The PreparingDessert class is a building function for making dessert.
  */
-//2014-11-28 Changed Class name from MakingSoy to PreparingDessert
 public class PreparingDessert
 extends Function
 implements Serializable {
@@ -149,8 +148,8 @@ implements Serializable {
     private String producerName;
 
     private Building building;
-    private Settlement settlement;
-    private Inventory inv;
+//    private Settlement settlement;
+//    private Inventory inv;
     private Person person;
     private Robot robot;
 
@@ -170,10 +169,6 @@ implements Serializable {
         this.building = building;
    
         marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
-        inv = building.getInventory();
-
-        settlement = building.getSettlement();
 
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         dessertMassPerServing = personConfig.getDessertConsumptionRate() / (double) NUM_OF_DESSERT_PER_SOL * DESSERT_SERVING_FRACTION;
@@ -198,7 +193,7 @@ implements Serializable {
     }
 
     public Inventory getInventory() {
-    	return inv;
+    	return building.getInventory();
     }
 
 
@@ -295,7 +290,7 @@ implements Serializable {
 
         if (getBuilding().hasFunction(FunctionType.LIFE_SUPPORT)) {
             try {
-                LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(FunctionType.LIFE_SUPPORT);
+                LifeSupport lifeSupport = building.getLifeSupport();
                 Iterator<Person> i = lifeSupport.getOccupants().iterator();
                 while (i.hasNext()) {
                     Task task = i.next().getMind().getTaskManager().getTask();
@@ -312,36 +307,36 @@ implements Serializable {
         return result;
     }
 
-    /**
-     * Gets the skill level of the best cook using this facility.
-     * @return skill level.
-
-    public int getBestDessertSkill() {
-        int result = 0;
-
-        if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-            try {
-                LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(BuildingFunction.LIFE_SUPPORT);
-                Iterator<Person> i = lifeSupport.getOccupants().iterator();
-                while (i.hasNext()) {
-                    Person person = i.next();
-                    Task task = person.getMind().getTaskManager().getTask();
-                    if (task instanceof CookMeal) {
-                        int preparingDessertSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
-                        if (preparingDessertSkill > result) {
-                            result = preparingDessertSkill;
-                        }
-                    }
-                }
-            }
-            catch (Exception e) {
-            	e.printStackTrace();
-            }
-        }
-
-        return result;
-    }
-     */
+//    /**
+//     * Gets the skill level of the best cook using this facility.
+//     * @return skill level.
+//
+//    public int getBestDessertSkill() {
+//        int result = 0;
+//
+//        if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+//            try {
+//                LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(BuildingFunction.LIFE_SUPPORT);
+//                Iterator<Person> i = lifeSupport.getOccupants().iterator();
+//                while (i.hasNext()) {
+//                    Person person = i.next();
+//                    Task task = person.getMind().getTaskManager().getTask();
+//                    if (task instanceof CookMeal) {
+//                        int preparingDessertSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+//                        if (preparingDessertSkill > result) {
+//                            result = preparingDessertSkill;
+//                        }
+//                    }
+//                }
+//            }
+//            catch (Exception e) {
+//            	e.printStackTrace();
+//            }
+//        }
+//
+//        return result;
+//    }
+//     */
 
 
     /**
@@ -475,11 +470,11 @@ implements Serializable {
 	public void cleanUpKitchen() {
 		boolean cleaning0 = false;
 		if (cleaningAgentPerSol*.1 > MIN)
-			cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol*.1, NaClOID, inv, true); 
+			cleaning0 = retrieve(cleaningAgentPerSol*.1, NaClOID, true); 
 		boolean cleaning1 = false;
 		if (cleaningAgentPerSol > MIN) {
-			cleaning1 = Storage.retrieveAnResource(cleaningAgentPerSol*5, waterID, inv, true);
-        	settlement.addWaterConsumption(3, cleaningAgentPerSol*5);
+			cleaning1 = retrieve(cleaningAgentPerSol*5, waterID, true);
+			building.getSettlement().addWaterConsumption(3, cleaningAgentPerSol*5);
 		}
 
 		if (cleaning0)
@@ -523,10 +518,10 @@ implements Serializable {
             ///System.out.println("PreparingDessert : it's " + availableDesserts[i]);
         	boolean isAvailable = false;
         	if (amount > MIN)
-        		isAvailable = Storage.retrieveAnResource(amount, availableDessertsAR[i], inv, false);
+        		isAvailable = retrieve(amount, availableDessertsAR[i].getID(), false);
         	boolean isWater_av = false;
         	if (dessertMassPerServing - amount > MIN)
-        		isWater_av = Storage.retrieveAnResource(dessertMassPerServing-amount, waterID, inv, false);
+        		isWater_av = retrieve(dessertMassPerServing-amount, waterID, false);
         	
         	if (isAvailable && isWater_av) {
             	//System.out.println("n is available");
@@ -572,9 +567,9 @@ implements Serializable {
 
     	    // max allowable # of dessert servings per meal time.
 	        double population = building.getSettlement().getIndoorPeopleCount();
-	        double maxServings = population * settlement.getDessertsReplenishmentRate();
+	        double maxServings = population * building.getSettlement().getDessertsReplenishmentRate();
 
-	        int numServings = getTotalAvailablePreparedDessertsAtSettlement(settlement);
+	        int numServings = getTotalAvailablePreparedDessertsAtSettlement(building.getSettlement());
 
 	        if (numServings >= maxServings) {
 	        	makeNoMoreDessert = true;
@@ -601,7 +596,7 @@ implements Serializable {
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            PreparingDessert kitchen = (PreparingDessert) building.getFunction(FunctionType.PREPARING_DESSERT);
+            PreparingDessert kitchen = building.getPreparingDessert();
             result += kitchen.getAvailableServingsDesserts();
         }
 
@@ -635,12 +630,12 @@ implements Serializable {
 
         else {
         	if (dryMass > MIN) {
-        		Storage.retrieveAnResource(dryMass, selectedDessert, inv, true);
+        		retrieve(dryMass, ResourceUtil.findIDbyAmountResourceName(selectedDessert), true);
         	}
         	
 	        if (dessertMassPerServing - dryMass > MIN) {
-	        	Storage.retrieveAnResource(dessertMassPerServing-dryMass, waterID, inv, true);
-	        	settlement.addWaterConsumption(1, dessertMassPerServing-dryMass);
+	        	retrieve(dessertMassPerServing-dryMass, waterID, true);
+	        	building.getSettlement().addWaterConsumption(1, dessertMassPerServing-dryMass);
 	        }
 	        
 	        double dessertQuality = 0;
@@ -716,7 +711,7 @@ implements Serializable {
 	    	msolCache = msol;
 	    	
 	        if (hasFreshDessert()) {
-	            double rate = settlement.getDessertsReplenishmentRate();
+	            double rate = building.getSettlement().getDessertsReplenishmentRate();
 	
 	            // Handle expired prepared desserts.
 	            Iterator<PreparedDessert> i = servingsOfDessert.iterator();
@@ -738,9 +733,9 @@ implements Serializable {
 	                            // Throw out bad dessert as food waste.
 	                        	double m = getDryMass(dessert.getName());
 	                            if (m > MIN)
-	                            	Storage.storeAnResource(m, foodWasteID, inv, "::timePassing");
+	                            	store(m, foodWasteID, sourceName + "::timePassing");
 	                            
-	            				log.append("[").append(settlement.getName()).append("] ")
+	            				log.append("[").append(building.getSettlement().getName()).append("] ")
 	                            		.append(getDryMass(dessert.getName()))
 	                            		.append(" kg ")
 	                            		.append(dessert.getName().toLowerCase())
@@ -755,7 +750,7 @@ implements Serializable {
 	                            // Refrigerate prepared dessert.
 	                            refrigerateFood(dessert);
 	                            
-	            				log.append("[").append(settlement.getName()).append("] ")
+	            				log.append("[").append(building.getSettlement().getName()).append("] ")
 	                            		.append(REFRIGERATE)
 	                            		.append(getDryMass(dessert.getName()))
 	                            		.append(" kg ")
@@ -774,7 +769,7 @@ implements Serializable {
 	                        if (rate > 0 ) {
 	                            rate -= DOWN;
 	                        }
-	                        settlement.setDessertsReplenishmentRate(rate);
+	                        building.getSettlement().setDessertsReplenishmentRate(rate);
 	                    }
 	                    catch (Exception e) {
 	                    	e.printStackTrace();
@@ -799,7 +794,7 @@ implements Serializable {
 			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // needed for loading a saved sim
 		// Sanity check for the passing of each day
 		int newSol = marsClock.getSolOfMonth();
-	    double rate = settlement.getDessertsReplenishmentRate();
+	    double rate = building.getSettlement().getDessertsReplenishmentRate();
 
 		if (newSol != solCache) {
 			solCache = newSol;
@@ -807,7 +802,7 @@ implements Serializable {
 	    	dessertCounterPerSol = 0;
 			// Adjust this rate to go up automatically by default
 	    	rate += UP;
-	      	settlement.setDessertsReplenishmentRate(rate);
+	    	building.getSettlement().setDessertsReplenishmentRate(rate);
 
 	        cleanUpKitchen();
 		}
@@ -821,7 +816,7 @@ implements Serializable {
 		try {
 			String dessertName = dessert.getName();
 		    double mass = getDryMass(dessertName)  ;
-            Storage.storeAnResource(mass, dessertName , inv);
+            store(mass, ResourceUtil.findIDbyAmountResourceName(dessertName), sourceName + "::refrigerateFood");
 
 		} catch (Exception e) {
         	e.printStackTrace();
@@ -889,6 +884,14 @@ implements Serializable {
 		return 0;
 	}
 
+	public boolean retrieve(double amount, int resource, boolean value) {
+		return Storage.retrieveAnResource(amount, resource, building.getInventory(), value);
+	}
+	
+	public void store(double amount, int resource, String source) {
+		Storage.storeAnResource(amount, resource, building.getInventory(), source);
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
@@ -909,9 +912,6 @@ implements Serializable {
         robot = null;
     	marsClock = null;
         building = null;
-        inv = null;
-        settlement = null;
-        //servingsOfDessertList.clear();
         servingsOfDessert = null;
         availableDessertsAR = null;
     }

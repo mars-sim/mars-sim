@@ -363,9 +363,9 @@ public class UnitManager implements Serializable {
 	}
 
 	public Settlement getSettlementByID(int id) {
-		System.out.println("UnitManager's getSettlementByID() id : " + id);
-		if (lookupSettlement == null)
-			System.out.println("UnitManager : lookupSettlement == null");
+//		System.out.println("UnitManager's getSettlementByID() id : " + id);
+//		if (lookupSettlement == null)
+//			System.out.println("UnitManager : lookupSettlement == null");
 		return lookupSettlement.get(id);
 	}
 	

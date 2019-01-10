@@ -10,9 +10,7 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -27,8 +25,8 @@ public class Potting extends Function implements Serializable {
 
     private static final FunctionType FUNCTION = FunctionType.FARMING;
 
-    private Inventory inv;
-    private Settlement settlement;
+//    private Inventory inv;
+//    private Settlement settlement;
     private Building building;
 	    
 	public Potting(Building building) {
@@ -36,8 +34,8 @@ public class Potting extends Function implements Serializable {
         super(FUNCTION, building);
 
         this.building = building;
-        this.inv = building.getSettlementInventory();
-        this.settlement = building.getSettlement();
+//        this.inv = building.getSettlementInventory();
+//        this.settlement = building.getSettlement();
 
         BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
  
