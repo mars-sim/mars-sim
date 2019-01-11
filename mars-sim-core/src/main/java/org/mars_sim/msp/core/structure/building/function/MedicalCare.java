@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.MedicalAssistance;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -21,7 +20,6 @@ import org.mars_sim.msp.core.person.health.MedicalStation;
 import org.mars_sim.msp.core.person.health.Treatment;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 
 /**
@@ -38,8 +36,6 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	private MedicalStation medicalStation;
 
 	private Building building;
-
-	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 	/**
 	 * Constructor.

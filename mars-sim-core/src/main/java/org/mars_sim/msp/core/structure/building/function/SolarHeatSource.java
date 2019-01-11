@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -26,7 +24,14 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 	// Tentatively set to 0.14% or (.0014) efficiency degradation per sol as reported by NASA MER
 	public static double DEGRADATION_RATE_PER_SOL = .0014;
-
+	
+	public static double MEAN_SOLAR_IRRADIANCE = SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+	/**
+	 * The dust deposition rates is proportional to the dust loading. Here we use MER program's extended the analysis 
+	 * to account for variations in the atmospheric columnar dust amount.
+	 */
+	private double dust_deposition_rate = 0;
+	
 	private double efficiency_solar_to_heat = .58;
 	
 	private double efficiency_solar_to_electricity = .58;
@@ -36,17 +41,7 @@ implements Serializable {
 	private double factor = 1;
 
 	private Coordinates location ;
-	
-	private static SurfaceFeatures surface ;
-	private static Mars mars;
 
-	/**
-	 * The dust deposition rates is proportional to the dust loading. Here we use MER program's extended the analysis 
-	 * to account for variations in the atmospheric columnar dust amount.
-	 */
-	private double dust_deposition_rate = 0;
-	
-	
 	/**
 	 * Constructor.
 	 * @param maxHeat the maximum generated power.
@@ -56,10 +51,6 @@ implements Serializable {
 		super(HeatSourceType.SOLAR_HEATING, maxHeat);
 		this.maxHeat = maxHeat;
 		
-        if (mars == null)
-        	mars = Simulation.instance().getMars();
-		if (surface == null)
-			surface = mars.getSurfaceFeatures();
 	}
 	
 	/***
@@ -83,7 +74,7 @@ implements Serializable {
 	public double getCollected(Building building) {
 
 		return surface.getSolarIrradiance(building.getCoordinates()) 
-				/ SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * building.getFloorArea() / 1000D ;
+				/ MEAN_SOLAR_IRRADIANCE * building.getFloorArea() / 1000D ;
 	}
 
 	public double getEfficiencySolarHeat() {
@@ -151,26 +142,10 @@ implements Serializable {
 		factor = 1D;
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 * @param s
-	 */
-	public static void justReloaded(Mars m, SurfaceFeatures s) {
-		mars = m;
-		surface = s;
-	}
-	
 	@Override
 	public void destroy() {
 		super.destroy();
-		surface = null;
 		location = null;
-		mars = null;
-//		orbitInfo = null;
 	}
 
-
-	 
 }

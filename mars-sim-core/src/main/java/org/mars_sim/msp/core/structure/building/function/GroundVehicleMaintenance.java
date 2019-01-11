@@ -6,10 +6,8 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
@@ -28,8 +26,6 @@ implements Serializable {
 
 	private static final FunctionType FUNCTION = FunctionType.GROUND_VEHICLE_MAINTENANCE;
 
-	private static BuildingConfig buildingConfig;
-	
 	/**
 	 * Constructor.
 	 * @param building the building the function is for.
@@ -37,8 +33,6 @@ implements Serializable {
 	public GroundVehicleMaintenance(Building building) {
 		// Call VehicleMaintenance constructor.
 		super(FUNCTION, building);
-
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 		vehicleCapacity = buildingConfig.getVehicleCapacity(building.getBuildingType());
 
@@ -65,8 +59,6 @@ implements Serializable {
 
 		this.vehicleCapacity = vehicleCapacity;
 		
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-
 		for (int x = 0; x < parkingLocations.length; x++) {
 			addParkingLocation(parkingLocations[x].getX(), parkingLocations[x].getY());
 		}
@@ -81,7 +73,7 @@ implements Serializable {
 	 * @throws Exception if error getting function value.
 	 */
 	public static double getFunctionValue(String buildingName, boolean newBuilding,
-			Settlement settlement, BuildingConfig buildingConfig) {
+			Settlement settlement) {
 
 		// Demand is one ground vehicle capacity for every ground vehicles.
 		double demand = settlement.getAllAssociatedVehicles().size();
@@ -118,15 +110,6 @@ implements Serializable {
 	public double getPoweredDownHeatRequired() {
 		// TODO Auto-generated method stub
 		return 0;
-	}
-	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param bc
-	 */
-	public static void justReloaded(BuildingConfig bc) {
-		buildingConfig = bc;
 	}
 	
 }

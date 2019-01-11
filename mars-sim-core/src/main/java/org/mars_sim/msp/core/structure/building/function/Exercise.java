@@ -39,12 +39,10 @@ public class Exercise extends Function implements Serializable {
 		// Use Function constructor.
 		super(FUNCTION, building);
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-
-		this.exerciserCapacity = config.getExerciseCapacity(building.getBuildingType());
+		this.exerciserCapacity = buildingConfig.getExerciseCapacity(building.getBuildingType());
 
 		// Load activity spots
-		loadActivitySpots(config.getExerciseActivitySpots(building.getBuildingType()));
+		loadActivitySpots(buildingConfig.getExerciseActivitySpots(building.getBuildingType()));
 	}
 
 	/**

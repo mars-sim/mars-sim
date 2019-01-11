@@ -1,9 +1,12 @@
+/**
+ * Mars Simulation Project
+ * ThermalGeneration.java
+ * @version 3.1.0 2019-01-10
+ * @author stpa
+ */
+
 package org.mars_sim.msp.core.structure.building.function;
 
-/**
- * @author stpa
- * 2014-03-04
- */
 public enum PowerSourceType {
 
 	SOLAR_POWER ("Solar Power Source"),

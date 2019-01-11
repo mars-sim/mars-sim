@@ -14,11 +14,21 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -33,6 +43,15 @@ public abstract class Function implements Serializable {
 	protected Building building;
 	private List<Point2D> activitySpots;
 
+	protected static BuildingConfig buildingConfig;
+	protected static MasterClock masterClock;
+	protected static MarsClock marsClock;
+	protected static PersonConfig personConfig;
+	protected static Weather weather;
+	protected static SurfaceFeatures surface;
+	protected static Mars mars;
+	protected static UnitManager unitManager;
+
 	/**
 	 * Constructor.
 	 * 
@@ -42,6 +61,17 @@ public abstract class Function implements Serializable {
 	public Function(FunctionType type, Building building) {
 		this.type = type;
 		this.building = building;
+		
+		Simulation sim = Simulation.instance();
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		masterClock = sim.getMasterClock();
+		marsClock = masterClock.getMarsClock();
+		personConfig = SimulationConfig.instance().getPersonConfiguration();
+		mars = sim.getMars();
+		weather = mars.getWeather();
+		surface = mars.getSurfaceFeatures();
+		unitManager = sim.getUnitManager();
+
 	}
 
 	/**
@@ -353,6 +383,26 @@ public abstract class Function implements Serializable {
 		return activitySpots;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param bc {@link BuildingConfig}
+	 * @param c0 {@link MasterClock}
+	 * @param c1 {@link MarsClock}
+	 * @param pc {@link PersonConfig}
+	 */
+	public static void setInstances(BuildingConfig bc, MasterClock c0, MarsClock c1, PersonConfig pc,
+			Mars m, SurfaceFeatures sf, Weather w, UnitManager u) {
+		masterClock = c0;
+		marsClock = c1;
+		personConfig = pc;
+		buildingConfig = bc;
+		mars = m;
+		weather = w;
+		surface = sf;
+		unitManager = u;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

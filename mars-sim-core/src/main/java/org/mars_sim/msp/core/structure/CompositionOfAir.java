@@ -918,10 +918,11 @@ public class CompositionOfAir implements Serializable {
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
+	 * @param c0 {@link MasterClock}
+	 * @param c1 {@link MarsClock}
+	 * @param pc {@link PersonConfig}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1, PersonConfig pc) {
+	public static void setInstances(MasterClock c0, MarsClock c1, PersonConfig pc) {
 		masterClock = c0;
 		marsClock = c1;
 		personConfig = pc;

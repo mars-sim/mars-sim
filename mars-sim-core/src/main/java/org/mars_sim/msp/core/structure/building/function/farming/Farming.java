@@ -142,11 +142,9 @@ public class Farming extends Function implements Serializable {
 	
 	private Building building;
 	private Research lab;
-	
-	private static MarsClock marsClock;
+
 	private static CropConfig cropConfig;
 //	private static SurfaceFeatures surface;
-
 
 	/**
 	 * Constructor.
@@ -179,9 +177,7 @@ public class Farming extends Function implements Serializable {
 		cropDailyO2Generated = new HashMap<>();
 		cropDailyCO2Consumed = new HashMap<>();
 		
-		BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 //		surface = Simulation.instance().getMars().getSurfaceFeatures();
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
 
 		defaultCropNum = buildingConfig.getCropNum(building.getBuildingType());	
@@ -190,7 +186,6 @@ public class Farming extends Function implements Serializable {
 		powerSustainingCrop = buildingConfig.getPowerForSustainingCrop(building.getBuildingType());
 		maxGrowingArea = buildingConfig.getCropGrowingArea(building.getBuildingType());
 		remainingGrowingArea = maxGrowingArea;
-
 
 		// Load activity spots
 		loadActivitySpots(buildingConfig.getFarmingActivitySpots(building.getBuildingType()));
@@ -211,9 +206,6 @@ public class Farming extends Function implements Serializable {
 		// Create BeeGrowing
 		// TODO: write codes to incorporate the idea of bee growing
 		// beeGrowing = new BeeGrowing(this);
-
-
-
 	}
 
 	/**
@@ -829,16 +821,6 @@ public class Farming extends Function implements Serializable {
 			sum += crop.getPercentGrowth();
 		}
 		return sum;
-	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void justReloaded(MarsClock clock) {
-		marsClock = clock;
-		cropConfig = SimulationConfig.instance().getCropConfiguration();
 	}
 	
 	/**
@@ -1558,6 +1540,13 @@ public class Farming extends Function implements Serializable {
 	
 	public void store(double amount, int resource, String source) {
 		Storage.storeAnResource(amount, resource, building.getInventory(), source);
+	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 */
+	public static void setInstances() {
+		cropConfig = SimulationConfig.instance().getCropConfiguration();
 	}
 	
 	@Override

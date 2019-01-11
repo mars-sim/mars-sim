@@ -11,11 +11,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
@@ -38,8 +36,6 @@ public class ResourceProcessing extends Function implements Serializable {
 	
 	private List<ResourceProcess> resourceProcesses;
 
-	private static BuildingConfig buildingConfig;
-
 	/**
 	 * Constructor.
 	 * 
@@ -49,8 +45,6 @@ public class ResourceProcessing extends Function implements Serializable {
 	public ResourceProcessing(Building building) {
 		// Use Function constructor
 		super(FUNCTION, building);
-
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 		powerDownProcessingLevel = buildingConfig.getResourceProcessingPowerDown(building.getBuildingType());
 		resourceProcesses = buildingConfig.getResourceProcesses(building.getBuildingType());
@@ -143,15 +137,6 @@ public class ResourceProcessing extends Function implements Serializable {
 	 */
 	public double getPowerDownResourceProcessingLevel() {
 		return powerDownProcessingLevel;
-	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param bc
-	 */
-	public static void justReloaded(BuildingConfig bc) {
-		buildingConfig = bc;
 	}
 	
 	/**

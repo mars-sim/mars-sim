@@ -40,8 +40,6 @@ public class PowerGeneration extends Function implements Serializable {
 
 	private ThermalGeneration thermalGeneration;
 	private Building building;
-
-	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 	
 	/**
 	 * Constructor.
@@ -319,15 +317,6 @@ public class PowerGeneration extends Function implements Serializable {
 
 	public double getGeneratedPower() {
 		return powerGeneratedCache;
-	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param bc
-	 */
-	public static void justReloaded(BuildingConfig bc) {
-		buildingConfig = bc;
 	}
 	
 	@Override

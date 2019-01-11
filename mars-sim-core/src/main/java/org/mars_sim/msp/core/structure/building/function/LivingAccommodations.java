@@ -6,17 +6,11 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 import java.awt.geom.Point2D;
@@ -64,8 +58,8 @@ public class LivingAccommodations extends Function implements Serializable {
 	/** percent portion of grey water generated from waste water.*/
 	private double greyWaterFraction; 
 
-	private Settlement settlement;
-	private Inventory inv;
+//	private Settlement settlement;
+//	private Inventory inv;
 	private Building building;
 
 	/** The bed registry in this facility. */
@@ -73,11 +67,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
 	/** The daily water usage in this facility [kg/sol]. */
 	private Map<Integer, Double> dailyWaterUsage;
-	
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-	private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
-	private static MarsClock marsClock;
-	
+
 //	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 //	private static int co2ID = ResourceUtil.co2ID;
@@ -98,23 +88,15 @@ public class LivingAccommodations extends Function implements Serializable {
 		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
 		this.building = building;
-
-		settlement = building.getSettlement();
-		
-		inv = settlement.getInventory();
-		
+	
 		dailyWaterUsage = new HashMap<>();
-		
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration(); // need this to pass maven test
-		PersonConfig personconfig = simulationConfig.getPersonConfiguration();
 		
 		// Loads the max # of beds available 
 		maxNumBeds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
 		// Loads the wash water usage kg/sol
-		washWaterUsage = personconfig.getWaterUsageRate();
+		washWaterUsage = personConfig.getWaterUsageRate();
 		// Loads the grey to black water ratio
-		double grey2BlackWaterRatio = personconfig.getGrey2BlackWaterRatio();
+		double grey2BlackWaterRatio = personConfig.getGrey2BlackWaterRatio();
 		// Calculate the grey water fraction
 		greyWaterFraction = grey2BlackWaterRatio / (grey2BlackWaterRatio + 1);
 		// Load activity spots
@@ -188,7 +170,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	public void registerSleeper(Person person, boolean isAGuest) {
 		if (sleepers > maxNumBeds) {		 
 			 LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
-					 "[" + settlement.getName() + "] Too many sleepers and not enough beds "
+					 "[" + building.getSettlement().getName() + "] Too many sleepers and not enough beds "
 					 		+ " (# sleepers : " + sleepers 
 					 + "  # beds : " + maxNumBeds + ").", null);
 			 
@@ -212,7 +194,7 @@ public class LivingAccommodations extends Function implements Serializable {
 					sleepers++;
 				} else {
 					LogConsolidated.log(logger, Level.FINE, 2000, sourceName,
-							"[" + settlement.getName() + "] " + person + " did not have a bed assigned yet.", null);
+							"[" + building.getSettlement().getName() + "] " + person + " did not have a bed assigned yet.", null);
 				}
 			}
 		}
@@ -265,15 +247,6 @@ public class LivingAccommodations extends Function implements Serializable {
 			// bedMap.remove(bedMap.get(person));
 		}
 	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void justReloaded(MarsClock clock) {
-		marsClock = clock;
-	}
 	
 	/**
 	 * Time passing for the building.
@@ -294,9 +267,7 @@ public class LivingAccommodations extends Function implements Serializable {
 			solCache = solElapsed;
 			// Designate a bed for each inhabitant
 			if (sleepers < maxNumBeds) {
-				if (settlement == null)
-					settlement = building.getSettlement();
-				for (Person p : settlement.getIndoorPeople()) {
+				for (Person p : building.getSettlement().getIndoorPeople()) {
 					if (p.getBed() == null) {
 						registerSleeper(p, false);
 					}
@@ -386,7 +357,8 @@ public class LivingAccommodations extends Function implements Serializable {
 		// int pop = settlement.getNumCurrentPopulation();
 		// Total average wash water used at the settlement over this time period.
 		// This includes showering, washing hands, washing dishes, etc.
-	
+		Settlement settlement = building.getSettlement();
+		
 		double ration = 1;
 		// If settlement is rationing water, reduce water usage according to its level
 		int level = settlement.getWaterRation();
@@ -404,11 +376,9 @@ public class LivingAccommodations extends Function implements Serializable {
 		double wasteWaterProduced = waterUsed * WASH_AND_WASTE_WATER_RATIO;
 
 		// Remove wash water from settlement.
-		if (inv == null)
-			inv = settlement.getInventory();
-		
+	
 		if (waterUsed> MIN) {
-			Storage.retrieveAnResource(waterUsed, waterID, inv, true);
+			retrieve(waterUsed, waterID, true);
 			// Track daily average
 			addDailyWaterUsage(waterUsed);
 		}
@@ -419,9 +389,9 @@ public class LivingAccommodations extends Function implements Serializable {
 		double blackWaterProduced = wasteWaterProduced * (1 - greyWaterFraction);
 
 		if (greyWaterProduced > MIN)
-			Storage.storeAnResource(greyWaterProduced, greyWaterID, inv, sourceName + "::generateWaste");
+			store(greyWaterProduced, greyWaterID, sourceName + "::generateWaste");
 		if (blackWaterProduced > MIN)
-			Storage.storeAnResource(blackWaterProduced, blackWaterID, inv, sourceName + "::generateWaste");
+			store(blackWaterProduced, blackWaterID, sourceName + "::generateWaste");
 
 		// Use toilet paper and generate toxic waste (used toilet paper).
 		double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000D;
@@ -429,11 +399,10 @@ public class LivingAccommodations extends Function implements Serializable {
 		double toiletPaperUsageBuilding = toiletPaperUsagePerMillisol * time * numBed * random_factor;// toiletPaperUsageSettlement
 																										// *																									// buildingProportionCap;
 		if (toiletPaperUsageBuilding > MIN)
-			Storage.retrieveAnResource(toiletPaperUsageBuilding, ResourceUtil.toiletTissueID, inv, true);
+			retrieve(toiletPaperUsageBuilding, ResourceUtil.toiletTissueID, true);
 
 		if (toiletPaperUsageBuilding > MIN)
-			Storage.storeAnResource(toiletPaperUsageBuilding, ResourceUtil.toxicWasteID, inv,
-					sourceName + "::generateWaste");
+			store(toiletPaperUsageBuilding, ResourceUtil.toxicWasteID, sourceName + "::generateWaste");
 	}
 
 	public Building getBuilding() {
@@ -493,13 +462,17 @@ public class LivingAccommodations extends Function implements Serializable {
 		return 0;
 	}
 
+	public boolean retrieve(double amount, int resource, boolean value) {
+		return Storage.retrieveAnResource(amount, resource, building.getInventory(), value);
+	}
+	
+	public void store(double amount, int resource, String source) {
+		Storage.storeAnResource(amount, resource, building.getInventory(), source);
+	}
+	
+	
 	public void destroy() {
-		settlement = null;
-		inv = null;
 		building = null;
 		assignedBeds = null;
-		simulationConfig = null;
-		buildingConfig = null;
-		marsClock = null;
 	}
 }

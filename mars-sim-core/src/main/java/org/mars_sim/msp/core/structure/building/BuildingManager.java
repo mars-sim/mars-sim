@@ -1581,7 +1581,7 @@ public class BuildingManager implements Serializable {
 			if (buildingConfig.hasFoodProduction(buildingType))
 				result += FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
 			if (buildingConfig.hasGroundVehicleMaintenance(buildingType))
-				result += GroundVehicleMaintenance.getFunctionValue(buildingType, newBuilding, settlement, buildingConfig);
+				result += GroundVehicleMaintenance.getFunctionValue(buildingType, newBuilding, settlement);
 			if (buildingConfig.hasThermalGeneration(buildingType))
 				result += ThermalGeneration.getFunctionValue(buildingType, newBuilding, settlement);
 //			if (config.hasThermalStorage(buildingType))
@@ -1993,8 +1993,10 @@ public class BuildingManager implements Serializable {
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1, BuildingConfig bc, HistoricalEventManager e, RelationshipManager r, UnitManager u) {
+	public static void justReloaded(MasterClock c0, MarsClock c1, BuildingConfig bc, 
+			HistoricalEventManager e, RelationshipManager r, UnitManager u) {
 		sim = Simulation.instance();
+		simulationConfig = SimulationConfig.instance();
 		masterClock = c0;
 		marsClock = c1;
 		buildingConfig = bc;
@@ -2002,7 +2004,6 @@ public class BuildingManager implements Serializable {
 		relationshipManager = r;
 		unitManager = u;
 	}
-	
 	
 	/**
 	 * Prepare object for garbage collection.

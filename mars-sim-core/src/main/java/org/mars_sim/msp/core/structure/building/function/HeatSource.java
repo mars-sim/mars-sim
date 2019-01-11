@@ -7,6 +7,12 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.mars.OrbitInfo;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -23,10 +29,15 @@ implements Serializable {
 	//private static Logger logger = Logger.getLogger(HeatSource.class.getName());
 
 	// Data members
-	private HeatSourceType type;
-	
 	private double maxHeat;
+	
+	private HeatSourceType type;
 
+	protected static SurfaceFeatures surface ;
+	protected static Mars mars;
+	protected static OrbitInfo orbitInfo;
+	protected static Weather weather;
+	
 	/**
 	 * Constructor.
 	 * @param type the type of Heat source.
@@ -35,6 +46,16 @@ implements Serializable {
 	public HeatSource(HeatSourceType type, double maxHeat) {
 		this.type = type;
 		this.maxHeat = maxHeat;
+		
+        if (mars == null)
+        	mars = Simulation.instance().getMars();
+		if (surface == null)
+			surface = mars.getSurfaceFeatures();
+        if (orbitInfo == null)
+            orbitInfo = mars.getOrbitInfo();
+        if (weather == null)
+        	weather = mars.getWeather();
+
 
 	}
 
@@ -109,6 +130,20 @@ implements Serializable {
 	 */
 	public abstract void switch2Quarter();
 	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param {@link Mars}
+	 * @param {@link SurfaceFeatures}
+	 * @param {@link OrbitInfo}
+	 * @param {@link Weather}
+	 */
+	public static void setInstances(Mars m, SurfaceFeatures s, OrbitInfo o, Weather w) {
+		mars = m;
+		surface = s;
+		orbitInfo = o;
+		weather = w;
+	}
 	
 	/**
 	 * Prepare object for garbage collection.

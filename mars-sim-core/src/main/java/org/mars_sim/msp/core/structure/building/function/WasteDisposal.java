@@ -10,12 +10,10 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 
 /**
@@ -42,14 +40,12 @@ public class WasteDisposal extends Function implements Serializable {
 		// Use Function constructor
 		super(FUNCTION, building);
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-
-		techLevel = config.getWasteDisposalTechLevel(building.getBuildingType());
-		peopleCapacity = config.getWasteDisposalCapacity(building.getBuildingType());
-		wasteSpecialties = config.getWasteSpecialties(building.getBuildingType());
+		techLevel = buildingConfig.getWasteDisposalTechLevel(building.getBuildingType());
+		peopleCapacity = buildingConfig.getWasteDisposalCapacity(building.getBuildingType());
+		wasteSpecialties = buildingConfig.getWasteSpecialties(building.getBuildingType());
 
 		// Load activity spots
-		loadActivitySpots(config.getWasteDisposalActivitySpots(building.getBuildingType()));
+		loadActivitySpots(buildingConfig.getWasteDisposalActivitySpots(building.getBuildingType()));
 	}
 
 	/**
@@ -64,8 +60,7 @@ public class WasteDisposal extends Function implements Serializable {
 
 		double result = 0D;
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		List<ScienceType> specialties = config.getWasteSpecialties(buildingName);
+		List<ScienceType> specialties = buildingConfig.getWasteSpecialties(buildingName);
 
 		for (ScienceType specialty : specialties) {
 			double wasteDisposalDemand = 0D;
@@ -96,8 +91,8 @@ public class WasteDisposal extends Function implements Serializable {
 
 			double existingWasteDisposalValue = wasteDisposalDemand / (wasteDisposalSupply + 1D);
 
-			int techLevel = config.getWasteDisposalTechLevel(buildingName);
-			int labSize = config.getWasteDisposalCapacity(buildingName);
+			int techLevel = buildingConfig.getWasteDisposalTechLevel(buildingName);
+			int labSize = buildingConfig.getWasteDisposalCapacity(buildingName);
 			double buildingWasteDisposalSupply = techLevel * labSize;
 
 			result += buildingWasteDisposalSupply * existingWasteDisposalValue;

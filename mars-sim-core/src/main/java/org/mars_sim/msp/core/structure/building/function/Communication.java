@@ -6,10 +6,8 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -31,8 +29,6 @@ implements Serializable {
     private int user;
     private int userCapacity;
 
-    private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-    
     /**
      * Constructor.
      * @param building the building this function is for.

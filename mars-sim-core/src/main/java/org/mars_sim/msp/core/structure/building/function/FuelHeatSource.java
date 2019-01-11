@@ -63,29 +63,25 @@ implements Serializable {
 		toggle = _toggle;
 	}
 
-/*
-     Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
-	 CH4(g) + 2O2(g) --> CO2(g) + 2 H2O(g), deltaH = -890 kJ 
-	 
- 	 CnH2n+2 + (3n + 1)O2 -> nCO2 + (n + 1)H2O + (6n + 2)e- 
-
-	 Assume thermal efficiency at 41%,
-	 364.9 kW needs 16 g/s 
-	 1 kW_t <- 3.8926 g/millisol or 3.8926 kg/sol	 
-	 
-	 Assume thermal efficiency at 100%,
-	 1 kW_t <- 1.5960 g/millisol or kg/sol
-	 
-	 SOFC uses methane with 1100 W-hr/kg, 
-	 This translate to 71.25 % efficiency
-	
- 	 Use of heat will push it up to 85%
-	 see http://www.nfcrc.uci.edu/3/FUEL_CELL_INFORMATION/FCexplained/FC_benefits.aspx
-	 
-	 or 90% see https://phys.org/news/2017-07-hydrocarbon-fuel-cells-high-efficiency.html
-	
-*/
-	 
+//     Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
+//	 CH4(g) + 2O2(g) --> CO2(g) + 2 H2O(g), deltaH = -890 kJ 
+//	 
+// 	 CnH2n+2 + (3n + 1)O2 -> nCO2 + (n + 1)H2O + (6n + 2)e- 
+//
+//	 Assume thermal efficiency at 41%,
+//	 364.9 kW needs 16 g/s 
+//	 1 kW_t <- 3.8926 g/millisol or 3.8926 kg/sol	 
+//	 
+//	 Assume thermal efficiency at 100%,
+//	 1 kW_t <- 1.5960 g/millisol or kg/sol
+//	 
+//	 SOFC uses methane with 1100 W-hr/kg, 
+//	 This translate to 71.25 % efficiency
+//	
+// 	 Use of heat will push it up to 85%
+//	 see http://www.nfcrc.uci.edu/3/FUEL_CELL_INFORMATION/FCexplained/FC_benefits.aspx
+//	 
+//	 or 90% see https://phys.org/news/2017-07-hydrocarbon-fuel-cells-high-efficiency.html 
 	 
 	public double consumeFuel(double time, Inventory inv) {
 
@@ -100,23 +96,22 @@ implements Serializable {
 
 		// Note that 16 g of methane requires 64 g of oxygen, a 1 to 4 ratio
 		consumed = Math.min(maxFuel, Math.min(fuelStored, o2Stored/4D));
-/*		
-		boolean a = (fuelStored >= maxFuel);
-		boolean b = (o2Stored >= 4D * maxFuel);
-		
-		if (a && b) {
-			consumed = maxFuel;
-		}
-		else if (a && !b) {
-			consumed = o2Stored/4D;
-		}
-		else if (!a && b) {
-			consumed = maxFuel;
-		}	
-		else if (!a && !b) {
-			consumed = Math.min(fuelStored, o2Stored/4D);
-		}				
-*/		
+	
+//		boolean a = (fuelStored >= maxFuel);
+//		boolean b = (o2Stored >= 4D * maxFuel);
+//		
+//		if (a && b) {
+//			consumed = maxFuel;
+//		}
+//		else if (a && !b) {
+//			consumed = o2Stored/4D;
+//		}
+//		else if (!a && b) {
+//			consumed = maxFuel;
+//		}	
+//		else if (!a && !b) {
+//			consumed = Math.min(fuelStored, o2Stored/4D);
+//		}				
 
 		inv.retrieveAmountResource(methaneID, consumed);
 		inv.retrieveAmountResource(oxygenID, 4D*consumed);
@@ -254,7 +249,4 @@ implements Serializable {
 	public void destroy() {
 		 super.destroy();	 
 	}
-
-
-
 }

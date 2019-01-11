@@ -195,12 +195,6 @@ implements Serializable {
 	private Building building;
 	private Coordinates location;
 	private Farming farm;
-	
-	private static Weather weather;
-	private static MasterClock masterClock;
-	private static MarsClock marsClock;
-	private static SurfaceFeatures surfaceFeatures;
-	private static Mars mars;
 
 	/** THe emissivity of the greenhouse canopy per millisol */
 	//private static Map<Integer, Double> emissivityMap;
@@ -221,12 +215,6 @@ implements Serializable {
 
 		buildingType =  building.getBuildingType();
 		
-		masterClock = Simulation.instance().getMasterClock();
-		marsClock = masterClock.getMarsClock();
-		mars = Simulation.instance().getMars();
-		weather = mars.getWeather();
-		surfaceFeatures = mars.getSurfaceFeatures();
-
 		location = building.getLocation();
 
 		double length = building.getLength();
@@ -472,10 +460,7 @@ implements Serializable {
 		// Note : Assuming EVA heater requires .5kW of power for heating up the air for each person in an airlock during EVA ingress.
 
 		// (1d) CALCULATE SOLAR HEAT GAIN
-		if (surfaceFeatures == null)
-			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
-
-		double I = surfaceFeatures.getSolarIrradiance(location) / 1000 ; // in kW after divided by 1000
+		double I = surface.getSolarIrradiance(location) / 1000 ; // in kW after divided by 1000
 		double solarHeatGain =  0;
 
 		if (isGreenhouse) {
@@ -1309,31 +1294,11 @@ implements Serializable {
 		return 0;
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
-	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1, Mars m) {
-		masterClock = c0;
-		marsClock = c1;
-		mars = m;
-		weather = mars.getWeather();
-		surfaceFeatures = mars.getSurfaceFeatures();
-	}
-	
 	@Override
 	public void destroy() {
 		super.destroy();
-
 		building = null;
-		building = null;
-		weather = null;
 		location = null;
-		masterClock = null;
-		marsClock = null;
-		surfaceFeatures = null;
 		farm = null;
 		adjacentBuildings = null;
 	}

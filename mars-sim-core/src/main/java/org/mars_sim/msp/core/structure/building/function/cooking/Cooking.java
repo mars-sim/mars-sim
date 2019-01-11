@@ -122,15 +122,7 @@ public class Cooking extends Function implements Serializable {
 	private Person person;
 	private Robot robot;
 
-	private static Simulation sim = Simulation.instance();
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-	private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
-//    private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
-//    private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
-//    private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
-	private static MarsClock marsClock;
-
-	private static List<HotMeal> mealConfigMealList;
+	private static List<HotMeal> mealConfigMealList = MealConfig.getMealList();
 	private static List<Integer> oilMenu;
 
 //	private static int oxygenID = ResourceUtil.oxygenID;
@@ -160,16 +152,13 @@ public class Cooking extends Function implements Serializable {
 
 		cookingWorkTime = 0D;
 
-		marsClock = sim.getMasterClock().getMarsClock();
-
-		BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration(); // need this to pass maven test
 		this.cookCapacity = buildingConfig.getCookCapacity(building.getBuildingType());
 
 		// Load activity spots
 		loadActivitySpots(buildingConfig.getCookingActivitySpots(building.getBuildingType()));
 
-		MealConfig mealConfig = simulationConfig.getMealConfiguration(); // need this to pass maven test
-		mealConfigMealList = MealConfig.getMealList();
+		MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); // need this to pass maven test
+//		mealConfigMealList = MealConfig.getMealList();
 
 		cleaningAgentPerSol = mealConfig.getCleaningAgentPerSol();
 		waterUsagePerMeal = mealConfig.getWaterConsumptionRate();
@@ -177,8 +166,6 @@ public class Cooking extends Function implements Serializable {
 		qualityMap = ArrayListMultimap.create();
 		timeMap = ArrayListMultimap.create();
 
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration(); // need this to pass maven
-																							// test
 		dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) NUMBER_OF_MEAL_PER_SOL;
 
 		computeDryMass();
@@ -1153,20 +1140,9 @@ public class Cooking extends Function implements Serializable {
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
-	 * @param clock
-	 * @param pc
-	 * @param bc
 	 */
-	public static void justReloaded(MarsClock clock, BuildingConfig bc) {
-		marsClock = clock;
-		buildingConfig = bc;
-//	    personConfig = pc;
-		sim = Simulation.instance();
-		simulationConfig = SimulationConfig.instance();
-//	    cropConfig = simulationConfig.getCropConfiguration();
-//	    mealConfig = simulationConfig.getMealConfiguration();
-		mealConfigMealList = MealConfig.getMealList();
-
+	public static void setInstances() {
+//		mealConfigMealList = MealConfig.getMealList();
 		prepareOilMenu();
 	}
 
@@ -1182,13 +1158,6 @@ public class Cooking extends Function implements Serializable {
 		person = null;
 		robot = null;
 		ingredientMap = null;
-		sim = null;
-		simulationConfig = null;
-		buildingConfig = null;
-//        cropConfig = null;
-//        mealConfig = null;
-//        personConfig = null;
-		marsClock = null;
 	}
 
 }

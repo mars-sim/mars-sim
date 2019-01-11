@@ -10,13 +10,11 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -39,8 +37,6 @@ public class AstronomicalObservation extends Function {
 	private int observatoryCapacity;
 	private int observerNum;
 
-	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-	
 	/**
 	 * Constructor.
 	 * 

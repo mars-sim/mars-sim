@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -49,8 +48,6 @@ public class LifeSupport extends Function implements Serializable {
 
 	private Building building;
 
-	private Inventory inv;
-
 	private Collection<Person> occupants;
 
 	/**
@@ -66,14 +63,10 @@ public class LifeSupport extends Function implements Serializable {
 
 		occupants = new ConcurrentLinkedQueue<Person>();
 
-		inv = building.getSettlementInventory();
-
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-
 		// Set occupant capacity.
-		occupantCapacity = config.getLifeSupportCapacity(building.getBuildingType());
+		occupantCapacity = buildingConfig.getLifeSupportCapacity(building.getBuildingType());
 
-		powerRequired = config.getLifeSupportPowerRequirement(building.getBuildingType());
+		powerRequired = buildingConfig.getLifeSupportPowerRequirement(building.getBuildingType());
 
 		length = building.getLength();
 		width = building.getWidth();
@@ -252,15 +245,12 @@ public class LifeSupport extends Function implements Serializable {
 
 		// TODO: Skip calling for thermal control for Hallway ?
 
-		if (inv == null)
-			inv = building.getSettlementInventory();
-
 		if (occupants != null && occupants.size() > 0) {
 			// Make sure all occupants are actually in settlement inventory.
 			// If not, remove them as occupants.
 			Iterator<Person> i = occupants.iterator();
 			while (i.hasNext()) {
-				if (!inv.containsUnit(i.next()))
+				if (!building.getInventory().containsUnit(i.next()))
 					i.remove();
 			}
 		}
@@ -325,7 +315,6 @@ public class LifeSupport extends Function implements Serializable {
 		super.destroy();
 
 		building = null;
-		inv = null;
 		occupants.clear();
 		occupants = null;
 	}

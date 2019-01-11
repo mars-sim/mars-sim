@@ -9,10 +9,8 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 
 /**
@@ -30,7 +28,6 @@ implements Serializable {
     // Data members
     private int populationSupport;
 
-    private static BuildingConfig buildingConfig;
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -40,7 +37,6 @@ implements Serializable {
         super(FUNCTION, building);
 
         // Populate data members.
-        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
         populationSupport = buildingConfig.getRecreationPopulationSupport(building.getBuildingType());
 
         // Load activity spots
@@ -128,19 +124,9 @@ implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param bc
-	 */
-	public static void justReloaded(BuildingConfig bc) {
-		buildingConfig = bc;
-	}
 
 	@Override
 	public void destroy() {
-		buildingConfig = null;
 	}
 	
 }

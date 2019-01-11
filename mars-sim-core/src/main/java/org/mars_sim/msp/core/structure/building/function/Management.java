@@ -9,10 +9,8 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 
 /**
  * A management building function.  The building facilitates management
@@ -29,8 +27,6 @@ implements Serializable {
 
     // Data members
     private int populationSupport;
-
-	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
     /**
      * Constructor.

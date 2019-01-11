@@ -80,12 +80,6 @@ public class Manufacture extends Function implements Serializable {
 	private List<SalvageProcess> salvages;
 
 	private Building building;
-	private Settlement settlement;
-	private Inventory inv;
-
-	private static MarsClock marsClock;
-//	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-	private static BuildingConfig buildingConfig;
 
 	private static int printerID = ItemResourceUtil.printerID;
 	
@@ -100,12 +94,6 @@ public class Manufacture extends Function implements Serializable {
 		super(FUNCTION, building);
 
 		this.building = building;
-		settlement = building.getSettlement();
-
-		inv = building.getSettlementInventory();
-
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 		techLevel = buildingConfig.getManufactureTechLevel(building.getBuildingType());
 		maxProcesses = buildingConfig.getManufactureConcurrentProcesses(building.getBuildingType());
@@ -284,6 +272,8 @@ public class Manufacture extends Function implements Serializable {
 		}
 		processes.add(process);
 
+		Inventory inv = building.getInventory();
+		
 		// Consume inputs.
 		for (ManufactureProcessItem item : process.getInfo().getInputList()) {
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
@@ -300,14 +290,15 @@ public class Manufacture extends Function implements Serializable {
 				throw new IllegalStateException("Manufacture process input: " + item.getType() + " not a valid type.");
 
 			// Recalculate settlement good value for input item.
-			settlement.getGoodsManager().updateGoodValue(ManufactureUtil.getGood(item), false);
+			building.getSettlement().getGoodsManager().updateGoodValue(ManufactureUtil.getGood(item), false);
 		}
 
 		// Log manufacturing process starting.
 		if (logger.isLoggable(Level.FINEST)) {
 			// Settlement settlement = getBuilding().getBuildingManager().getSettlement();
 			logger.finest(
-					building + " at " + settlement + " starting manufacturing process: " + process.getInfo().getName());
+					building + " at " + building.getSettlement() 
+					+ " starting manufacturing process: " + process.getInfo().getName());
 		}
 	}
 
@@ -340,10 +331,12 @@ public class Manufacture extends Function implements Serializable {
 		Unit salvagedUnit = process.getSalvagedUnit();
 		if (salvagedUnit != null) {
 			// s_inv
-			inv.retrieveUnit(salvagedUnit);
+			building.getInventory().retrieveUnit(salvagedUnit);
 		} else
 			throw new IllegalStateException("Salvaged unit is null");
 
+		Settlement settlement = building.getSettlement();
+		
 		// Set the salvage process info for the salvaged unit.
 		// Settlement settlement = getBuilding().getBuildingManager().getSettlement();
 		((Salvagable) salvagedUnit).startSalvage(process.getInfo(), settlement.getIdentifier());
@@ -365,7 +358,7 @@ public class Manufacture extends Function implements Serializable {
 		// Log salvage process starting.
 		if (logger.isLoggable(Level.FINEST)) {
 			// Settlement stl = getBuilding().getBuildingManager().getSettlement();
-			logger.finest(getBuilding() + " at " + settlement + " starting salvage process: " + process.toString());
+			logger.finest(getBuilding() + " at " + building.getSettlement() + " starting salvage process: " + process.toString());
 		}
 	}
 
@@ -486,14 +479,15 @@ public class Manufacture extends Function implements Serializable {
 	 * @throws BuildingException if error ending process.
 	 */
 	public void endManufacturingProcess(ManufactureProcess process, boolean premature) {
-
+		Settlement settlement = building.getSettlement();
+		Inventory inv = building.getInventory();
+		
 		if (!premature) {
 			// Produce outputs.
 			// WARNING : The UnitManager instance will be stale after loading from a saved
 			// sim
 			// It will fail to run methods in Settlement and without any warning as to why
 			// that it fails.
-			UnitManager unitManager = Simulation.instance().getUnitManager();
 
 			Iterator<ManufactureProcessItem> j = process.getInfo().getOutputList().iterator();
 			while (j.hasNext()) {
@@ -564,7 +558,7 @@ public class Manufacture extends Function implements Serializable {
 			// sim
 			// It will fail to run methods in Settlement and without any warning as to why
 			// that it fails.
-			UnitManager unitManager = Simulation.instance().getUnitManager();
+//			UnitManager unitManager = Simulation.instance().getUnitManager();
 
 			Iterator<ManufactureProcessItem> j = process.getInfo().getInputList().iterator();
 			while (j.hasNext()) {
@@ -648,7 +642,8 @@ public class Manufacture extends Function implements Serializable {
 	 * @throws BuildingException if error ending process.
 	 */
 	public void endSalvageProcess(SalvageProcess process, boolean premature) {
-
+		Settlement settlement = building.getSettlement();
+	
 		Map<Integer, Integer> partsSalvaged = new HashMap<>(0);
 
 		if (!premature) {
@@ -682,7 +677,8 @@ public class Manufacture extends Function implements Serializable {
 
 				if (totalNumber > 0) {
 					partsSalvaged.put(id, totalNumber);
-
+					Inventory inv = building.getInventory();
+					
 					double mass = totalNumber * part.getMassPerItem();
 					double capacity = inv.getGeneralCapacity();
 					if (mass <= capacity)
@@ -732,7 +728,7 @@ public class Manufacture extends Function implements Serializable {
 		int solElapsed = marsClock.getMissionSol();
 		if (solElapsed != solCache) {
 			solCache = solElapsed;
-			supportingProcesses = inv.getItemResourceNum(printerID); // b_inv
+			supportingProcesses = building.getInventory().getItemResourceNum(printerID); // b_inv
 			if (supportingProcesses < maxProcesses) {
 				distributePrinters();
 			}
@@ -747,7 +743,9 @@ public class Manufacture extends Function implements Serializable {
 	 * building's inventory
 	 */
 	public void distributePrinters() {
-
+		Settlement settlement = building.getSettlement();
+		Inventory inv = building.getInventory();
+		
 		int s_available = inv.getItemResourceNum(printerID);
 		int s_needed = settlement.getSumOfManuProcesses();
 		int surplus = s_available - s_needed;

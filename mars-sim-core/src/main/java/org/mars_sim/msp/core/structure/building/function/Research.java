@@ -59,9 +59,7 @@ implements Lab, Serializable {
     
     private Building building;
     
-    private static BuildingConfig buildingConfig;
-    private static MarsClock marsClock;
-    
+
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -70,10 +68,6 @@ implements Lab, Serializable {
         // Use Function constructor
         super(FUNCTION, building);
 
-        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-
-        marsClock = Simulation.instance().getMasterClock().getMarsClock();
-        
         setupTissueCultures();
         
         String type = building.getBuildingType();
@@ -225,17 +219,6 @@ implements Lab, Serializable {
 //            throw new IllegalStateException("Lab is already empty of researchers.");
         }
     }
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 * @param bc
-	 */
-	public static void justReloaded(MarsClock clock, BuildingConfig bc) {
-		marsClock = clock;
-		buildingConfig = bc;
-	}
 	
     /**
      * Time passing for the building.

@@ -8,11 +8,8 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 
 /**
  * This class explains the power source behind the Wind Turbine Farm. 
@@ -44,9 +41,7 @@ implements Serializable {
 	private static final double HEIGHT_FACTOR = 1.2D;
 	// Note : for the height of 0.5–10 m from the surface of Mars the wind speed vary from 15–26.5 m/s.
 	private int numModules = 0;
-	
-	private static Weather weather;
-	
+
 	/**
 	 * Constructor.
 	 * @param maxPower the maximum generated power.
@@ -54,9 +49,7 @@ implements Serializable {
 	public WindPowerSource(double maxPower) {
 		// Call PowerSource constructor.
 		super(PowerSourceType.WIND_POWER, maxPower);
-		
-        weather = Simulation.instance().getMars().getWeather();
-		
+				
 		if (maxPower == 18)
 			numModules = 9;
 		else
@@ -66,12 +59,9 @@ implements Serializable {
 	@Override
 	public double getCurrentPower(Building building) {
 		// TODO: Make power generated to be based on current wind speed at location.
-		
-
 		double speed = Math.min(HEIGHT_FACTOR * weather.getWindSpeed(building.getCoordinates()), WIND_SPEED_THRESHOLD); 
 
-		return Math.min(getMaxPower(), numModules * getPowerOutput(speed));
-			
+		return Math.min(getMaxPower(), numModules * getPowerOutput(speed));			
 	}
 
 	public double getPowerOutput(double velocity) {
@@ -100,19 +90,8 @@ implements Serializable {
 		
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param bc
-	 */
-	public static void justReloaded(Weather w) {
-		weather = w;
-	}
-	
 	@Override
 	public void destroy() {
 		super.destroy();
-		
-		weather = null;
 	}
 }

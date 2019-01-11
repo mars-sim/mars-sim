@@ -12,13 +12,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 
 /**
@@ -33,7 +30,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ThermalGeneration.class.getName());
+//	private static Logger logger = Logger.getLogger(ThermalGeneration.class.getName());
 
 	DecimalFormat fmt = new DecimalFormat("#.#######");
 
@@ -53,11 +50,7 @@ implements Serializable {
 	
 	private HeatSource heatSource;
 	
-	//private PowerMode powerMode;
-	
 	private List<HeatSource> heatSources;
-	
-	private static BuildingConfig buildingConfig;
 	
 	/**
 	 * Constructor
@@ -70,10 +63,7 @@ implements Serializable {
 		heating = new Heating(building);
 
 		// Determine heat sources.
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 		heatSources = buildingConfig.getHeatSources(building.getBuildingType());
-
-		//powerMode = building.getPowerMode();
 	}
 
 	/**
@@ -584,15 +574,6 @@ implements Serializable {
 		return 0;
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param bc
-	 */
-	public static void justReloaded(BuildingConfig bc) {
-		buildingConfig = bc;
-	}
-	
 	@Override
 	public void destroy() {
 		super.destroy();
@@ -601,13 +582,13 @@ implements Serializable {
 		building = null;
 		heatSource = null;
 		heatSources = null;
-/*		
-		Iterator<HeatSource> i = heatSources.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
-		heatSources.clear();
-*/		
+	
+//		Iterator<HeatSource> i = heatSources.iterator();
+//		while (i.hasNext()) {
+//			i.next().destroy();
+//		}
+//		heatSources.clear();
+	
 	}
 
 }

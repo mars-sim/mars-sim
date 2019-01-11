@@ -28,9 +28,6 @@ implements Serializable {
 	private double factor = 1;
 	
 	//private double area = 5 ;
-	//private Coordinates location ;
-	//private SurfaceFeatures surface ;
-	//private BuildingManager manager;
 
 	/**
 	 * Constructor.

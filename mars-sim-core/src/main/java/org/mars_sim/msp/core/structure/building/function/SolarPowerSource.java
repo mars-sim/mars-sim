@@ -7,13 +7,8 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.Mars;
-import org.mars_sim.msp.core.mars.OrbitInfo;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -29,10 +24,9 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(SolarPowerSource.class.getName());
+//	private static Logger logger = Logger.getLogger(SolarPowerSource.class.getName());
 	
-	private static final double MAINTENANCE_FACTOR = 2.5D;
-	
+	private static final double MAINTENANCE_FACTOR = 2.5D;	
 	/** NASA MER has an observable solar cell degradation rate of 0.14% per sol, 
 	 	Here we tentatively set to 0.04% per sol instead of 0.14%, since that in 10 earth years,
 	 	the efficiency will	drop down to 23.21% of the initial 100%
@@ -48,6 +42,8 @@ implements Serializable {
 		
 	public static double PI = Math.PI;
 	public static double HALF_PI = PI / 2D;
+
+	private static final String SOLAR_PHOTOVOLTAIC_ARRAY = "Solar Photovoltaic Array";
 
 	// Notes :
 	// 1. The solar Panel is made of triple-junction solar cells with theoretical max eff of 68%  
@@ -72,10 +68,6 @@ implements Serializable {
 	
 	private Coordinates location ;
 	
-	private static SurfaceFeatures surface ;
-	private static Mars mars;
-	private static OrbitInfo orbitInfo;
-	
 	/**
 	 * Constructor.
 	 * @param maxPower the maximum generated power (kW).
@@ -83,12 +75,7 @@ implements Serializable {
 	public SolarPowerSource(double maxPower) {
 		// Call PowerSource constructor.
 		super(PowerSourceType.SOLAR_POWER, maxPower);
-        if (mars == null)
-        	mars = Simulation.instance().getMars();
-		if (surface == null)
-			surface = mars.getSurfaceFeatures();
-        if (orbitInfo == null)
-            orbitInfo = mars.getOrbitInfo();
+
 	}
 
 	/***
@@ -122,7 +109,7 @@ implements Serializable {
 			location = manager.getSettlement().getCoordinates();
 
 		double area = AUXILLARY_PANEL_AREA;
-		if (building.getBuildingType().equalsIgnoreCase("Solar Photovoltaic Array")) {
+		if (building.getBuildingType().equalsIgnoreCase(SOLAR_PHOTOVOLTAIC_ARRAY)) {
 //	        if (orbitInfo == null)
 //	            orbitInfo = mars.getOrbitInfo();
 			double angle = orbitInfo.getSolarZenithAngle(location);
@@ -186,26 +173,10 @@ implements Serializable {
 		
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 * @param s
-	 */
-	public static void justReloaded(Mars m, SurfaceFeatures s) {
-		mars = m;
-		surface = s;
-		orbitInfo = m.getOrbitInfo();
-	}
-	
 	@Override
 	public void destroy() {
 		super.destroy();
-		location = null;
-		surface = null;
-		mars = null;
-		orbitInfo = null;
-		
+		location = null;	
 	}
 
 

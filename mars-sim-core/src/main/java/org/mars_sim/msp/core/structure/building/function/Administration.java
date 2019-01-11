@@ -12,11 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -41,8 +39,6 @@ public class Administration extends Function implements Serializable {
 	private String buildingType;
 	private Building building;
 
-	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-	
 	/**
 	 * Constructor.
 	 * 
@@ -219,14 +215,4 @@ public class Administration extends Function implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param bc
-	 */
-	public static void initializeInstances(BuildingConfig bc) {
-		buildingConfig = bc;
-	}
-
 }

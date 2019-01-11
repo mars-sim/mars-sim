@@ -9,13 +9,10 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * This class is a building function for extra vehicular activity.
@@ -30,9 +27,6 @@ implements Serializable {
 	private static final FunctionType FUNCTION = FunctionType.EVA;
 
 	private Airlock airlock;
-	
-	private static BuildingConfig buildingConfig;
-	
 
 	/**
 	 * Constructor
@@ -41,8 +35,6 @@ implements Serializable {
 	public EVA(Building building) {
 		// Use Function constructor.
 		super(FUNCTION, building);
-
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 		String buildingType = building.getBuildingType();
 		// Add a building airlock.
@@ -158,16 +150,6 @@ implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param bc
-	 */
-	public static void justReloaded(BuildingConfig bc) {
-		buildingConfig = bc;
-	}
-
 	
 	@Override
 	public void destroy() {

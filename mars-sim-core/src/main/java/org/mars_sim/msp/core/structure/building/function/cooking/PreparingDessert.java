@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
@@ -31,7 +30,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Function;
@@ -143,20 +141,13 @@ implements Serializable {
 	
 	private double cleaningAgentPerSol;
 	
-	//private double waterUsagePerMeal;
-
     private String producerName;
 
     private Building building;
-//    private Settlement settlement;
-//    private Inventory inv;
     private Person person;
     private Robot robot;
 
     private List<PreparedDessert> servingsOfDessert;
-
-    private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-	private static MarsClock marsClock;// = Simulation.instance().getMasterClock().getMarsClock();
 
     /**
      * Constructor.
@@ -168,9 +159,6 @@ implements Serializable {
         super(FUNCTION, building);
         this.building = building;
    
-        marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
-        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         dessertMassPerServing = personConfig.getDessertConsumptionRate() / (double) NUM_OF_DESSERT_PER_SOL * DESSERT_SERVING_FRACTION;
 
     	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); // need this to pass maven test
@@ -890,18 +878,6 @@ implements Serializable {
 	
 	public void store(double amount, int resource, String source) {
 		Storage.storeAnResource(amount, resource, building.getInventory(), source);
-	}
-	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 * @param pc
-	 * @param bc
-	 */
-	public static void justReloaded(MarsClock clock, BuildingConfig bc) {
-		marsClock = clock;
-		buildingConfig = bc;
 	}
 			
     @Override

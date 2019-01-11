@@ -6,12 +6,9 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 import java.io.Serializable;
@@ -44,10 +41,8 @@ public class RoboticStation extends Function implements Serializable {
 	private double powerRequired;
 
 	private Building building;
-	private Inventory inv;
+//	private Inventory inv;
 	private Collection<Robot> robotOccupants;
-
-	private static BuildingConfig buildingConfig;
 
 	/**
 	 * Constructor
@@ -59,12 +54,7 @@ public class RoboticStation extends Function implements Serializable {
 		// Call Function constructor.
 		super(FUNCTION, building);
 		// Each building has its own instance of LifeSupport
-		// System.out.println("Calling RoboticStation's constructor");
 		this.building = building;
-
-		inv = building.getSettlementInventory();
-
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 		robotOccupants = new ConcurrentLinkedQueue<Robot>();
 		// Set occupant capacity.
@@ -198,16 +188,13 @@ public class RoboticStation extends Function implements Serializable {
 	 */
 	public void timePassing(double time) {
 
-		if (inv == null)
-			inv = building.getSettlementInventory();
-
 		// Make sure all occupants are actually in settlement inventory.
 		// If not, remove them as occupants.
 		if (robotOccupants != null)
 			if (robotOccupants.size() > 0) {
 				Iterator<Robot> ii = robotOccupants.iterator();
 				while (ii.hasNext()) {
-					if (!inv.containsUnit(ii.next()))
+					if (!building.getInventory().containsUnit(ii.next()))
 						ii.remove();
 				}
 			}
@@ -340,21 +327,11 @@ public class RoboticStation extends Function implements Serializable {
 	}
 
 	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param bc
-	 */
-	public static void justReloaded(BuildingConfig bc) {
-		buildingConfig = bc;
-	}
-
-	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
 		super.destroy();
 		robotOccupants.clear();
-		;
 		robotOccupants = null;
 	}
 }

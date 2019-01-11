@@ -49,13 +49,11 @@ implements Serializable {
 	
 	private boolean toggle = false;
 	
-	private double _maxPower;
+//	private double maxPower;
 	
 	//private ItemResource cellStack;
-	private Building building;
+//	private Building building;
 
-//	private AmountResource methaneAR;// = ResourceUtil.methaneAR;
-//	private AmountResource oxygenAR = ResourceUtil.oxygenAR;
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int methaneID = ResourceUtil.methaneID;
 
@@ -77,25 +75,21 @@ implements Serializable {
 		//installed = false;
 	}
 	
-/*
-	 Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
-	 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ 
-	 
-	 CnH2n+2 + (3n + 1)O2 -> nCO2 + (n + 1)H2O + (6n + 2)e- 
-
-	 Assume electric efficiency at 40%,
-	 356kW needs 16 g/s 
-	 60kW needs 2.6966 g/s or 239.3939 g/millisol or kg/sol
-	 1 kW_e <- 3.9899 g/millisol
-	 
-	 Assume electric efficiency at 100%,
-	 1 kW_e <- 1.5960 g/millisol
-	 
-	 SOFC uses methane with 1100 W-hr/kg, 
-	 This translate to 71.25 % efficiency
-	 
-
-*/
+//	 Note : every mole of methane (16 g) releases 810 KJ of energy if burning with 2 moles of oxygen (64 g)
+//	 CH4(g) + 2O2(g) -> CO2(g) + 2 H2O(g), deltaH = -890 kJ 
+//	 
+//	 CnH2n+2 + (3n + 1)O2 -> nCO2 + (n + 1)H2O + (6n + 2)e- 
+//
+//	 Assume electric efficiency at 40%,
+//	 356kW needs 16 g/s 
+//	 60kW needs 2.6966 g/s or 239.3939 g/millisol or kg/sol
+//	 1 kW_e <- 3.9899 g/millisol
+//	 
+//	 Assume electric efficiency at 100%,
+//	 1 kW_e <- 1.5960 g/millisol
+//	 
+//	 SOFC uses methane with 1100 W-hr/kg, 
+//	 This translate to 71.25 % efficiency
 
 	/**
 	 * Consumes the fuel
@@ -136,18 +130,16 @@ implements Serializable {
 	 @Override
 	 public double getCurrentPower(Building building) {
 
-		 /*
-			// 2015-09-28 Retrieved of 3 fuel cell stacks
-			if (!installed) {
-				double numCellStack = building.getSettlementInventory().getItemResourceNum(cellStack);
-				numFuelCellStackinUse = (int)Math.round(this._maxPower/kW_PER_FUEL_CELL_STACK); //
-				if (numCellStack >= numFuelCellStackinUse) {
-					building.getSettlementInventory().retrieveItemResources(cellStack, numFuelCellStackinUse);
-					installed = true;
-					logger.info("getCurrentPower() : just installed " + numFuelCellStackinUse + " fuel cell stack(s) on the Methane Power Generator Building");
-				}
-			}
-	*/
+			// Retrieve of 3 fuel cell stacks
+//			if (!installed) {
+//				double numCellStack = building.getSettlementInventory().getItemResourceNum(cellStack);
+//				numFuelCellStackinUse = (int)Math.round(this._maxPower/kW_PER_FUEL_CELL_STACK); //
+//				if (numCellStack >= numFuelCellStackinUse) {
+//					building.getSettlementInventory().retrieveItemResources(cellStack, numFuelCellStackinUse);
+//					installed = true;
+//					logger.info("getCurrentPower() : just installed " + numFuelCellStackinUse + " fuel cell stack(s) on the Methane Power Generator Building");
+//				}
+//			}
 		 
 		 if (toggle) {
 			 double spentFuel = consumeFuel(time, building.getInventory());
@@ -227,23 +219,19 @@ implements Serializable {
 	     return getMaxPower() * MAINTENANCE_FACTOR;
 	 }
 
-	 // 2015-09-28 Added removeFromSettlement() to return the fuel cell stacks to the inventory
+	 // Return the fuel cell stacks to the inventory
 	 public void removeFromSettlement() {
-/*
-		//if (installed) {
-			//double numCellStack = building.getSettlementInventory().getItemResourceNum(cellStack);
-			building.getSettlementInventory().storeItemResources(cellStack, numFuelCellStackinUse);
-			installed = false;
-			logger.info("getCurrentPower() : just returned the " + numFuelCellStackinUse + " fuel cell stack(s) used by the Methane Power Generator Building");
-		//}
-*/
+//		//if (installed) {
+//			//double numCellStack = building.getSettlementInventory().getItemResourceNum(cellStack);
+//			building.getSettlementInventory().storeItemResources(cellStack, numFuelCellStackinUse);
+//			installed = false;
+//			logger.info("getCurrentPower() : just returned the " + numFuelCellStackinUse + " fuel cell stack(s) used by the Methane Power Generator Building");
+//		//}
 	 }
 
 	 @Override
 	 public void destroy() {
 		 super.destroy();
-		 //cellStack = null;
-		 building = null;
 	 }
 
 }

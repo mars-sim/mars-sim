@@ -15,12 +15,10 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
@@ -38,14 +36,9 @@ public class Storage extends Function implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-
 	private Map<AmountResource, Double> resourceCapacities;
 	
-	private Settlement settlement;
-	
 	private static final FunctionType FUNCTION = FunctionType.STORAGE;
-
-	private static BuildingConfig buildingConfig;
 
 	/**
 	 * Constructor.
@@ -57,10 +50,6 @@ public class Storage extends Function implements Serializable {
 		// Use Function constructor.
 		super(FUNCTION, building);
 
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-
-		// Inventory inventory = building.getSettlementInventory();
-		settlement = building.getSettlement();
 		Inventory inv = building.getInventory();
 		// Get capacity for each resource.
 		resourceCapacities = buildingConfig.getStorageCapacities(building.getBuildingType());
@@ -169,16 +158,6 @@ public class Storage extends Function implements Serializable {
 		return resourceCapacities;
 	}
 
-	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param bc
-	 */
-	public static void justReloaded(BuildingConfig bc) {
-		buildingConfig = bc;
-	}
-	
 	/**
 	 * Time passing for the building.
 	 * 
@@ -488,7 +467,6 @@ public class Storage extends Function implements Serializable {
 	@Override
 	public void destroy() {
 		super.destroy();
-		buildingConfig = null;
 		resourceCapacities = null;
 	}
 }

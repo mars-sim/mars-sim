@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -31,8 +30,6 @@ implements Serializable {
 	public static double ARRAY_AREA = 100D;		// in square feet
 	
 	private Coordinates location;
-	
-	private static SurfaceFeatures surface;
 	
 	/**
 	 * Constructor.
@@ -85,19 +82,9 @@ implements Serializable {
 		
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param s
-	 */
-	public static void justReloaded(SurfaceFeatures s) {
-		surface = s;
-	}
-	
 	@Override
 	public void destroy() {
 		super.destroy();
-		surface = null;
 		location = null;
 
 	}

@@ -123,10 +123,6 @@ implements Serializable {
 	
 	private Building building;
 	
-	private static BuildingConfig buildingConfig;
-	
-	private static MarsClock marsClock;
-
 	/**
 	 * Constructor.
 	 * @param building the building with the function.
@@ -137,11 +133,6 @@ implements Serializable {
 		super(FUNCTION, building);
 		
 		this.building = building;
-
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
-
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
 		max_kWh_nameplate = buildingConfig.getPowerStorageCapacity(building.getBuildingType());
 		
@@ -393,20 +384,8 @@ implements Serializable {
 		return r_total;
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 * @param bc
-	 */
-	public static void justReloaded(MarsClock clock, BuildingConfig bc) {
-		marsClock = clock;
-		buildingConfig = bc;
-	}
 
 	@Override
 	public void destroy() {
-		marsClock = null;
-		buildingConfig = null;
 	}
 }

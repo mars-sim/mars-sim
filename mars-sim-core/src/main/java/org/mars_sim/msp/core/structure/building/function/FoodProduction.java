@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
@@ -24,17 +23,14 @@ import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
 import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
-import org.mars_sim.msp.core.location.LocationCodeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 
 /**
@@ -55,14 +51,8 @@ public class FoodProduction extends Function implements Serializable {
 	// Data members.
 	private int techLevel;
 	private int concurrentProcesses;
-
-	private Settlement settlement;
-
-	private Inventory inv;
-
+	
 	private List<FoodProductionProcess> processes;
-
-	private static BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 	/**
 	 * Constructor.
@@ -73,12 +63,6 @@ public class FoodProduction extends Function implements Serializable {
 	public FoodProduction(Building building) {
 		// Use Function constructor.
 		super(FUNCTION, building);
-
-		settlement = building.getSettlement();
-
-		inv = building.getInventory();
-
-//		config = SimulationConfig.instance().getBuildingConfiguration();
 
 		techLevel = buildingConfig.getFoodProductionTechLevel(building.getBuildingType());
 		concurrentProcesses = buildingConfig.getFoodProductionConcurrentProcesses(building.getBuildingType());
@@ -269,7 +253,7 @@ public class FoodProduction extends Function implements Serializable {
 		// Log foodProduction process starting.
 		if (logger.isLoggable(Level.FINEST)) {
 
-			logger.finest(getBuilding() + " at " + settlement + " starting food production process: "
+			logger.finest(getBuilding() + " at " + building.getSettlement() + " starting food production process: "
 					+ process.getInfo().getName());
 		}
 	}
@@ -353,7 +337,9 @@ public class FoodProduction extends Function implements Serializable {
 	 * @throws BuildingException if error ending process.
 	 */
 	public void endFoodProductionProcess(FoodProductionProcess process, boolean premature) {
-
+		Settlement settlement = building.getSettlement();
+		Inventory inv = building.getInventory();
+		
 		if (!premature) {
 			// Produce outputs.
 			Iterator<FoodProductionProcessItem> j = process.getInfo().getOutputList().iterator();
@@ -503,7 +489,6 @@ public class FoodProduction extends Function implements Serializable {
 
 		// Log process ending.
 		if (logger.isLoggable(Level.FINEST)) {
-			Settlement settlement = getBuilding().getBuildingManager().getSettlement();
 			logger.finest(getBuilding() + " at " + settlement + " ending foodProduction process: "
 					+ process.getInfo().getName());
 		}
