@@ -407,7 +407,7 @@ implements Serializable {
 
 		if (!(containerUnit instanceof MarsSurface)) {
             Inventory inv = containerUnit.getInventory();
-            Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, ResourceUtil.toxicWasteAR, inv, 
+            Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, ResourceUtil.toxicWasteID, inv, 
             		sourceName + "::produceMedicalWaste");
         }
 	}

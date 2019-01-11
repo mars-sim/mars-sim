@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.DustStorm;
@@ -955,6 +956,7 @@ public class Simulation implements ClockListener, Serializable {
 		CompositionOfAir.setInstances(masterClock, marsClock, pc);
 		Crop.justReloaded(masterClock, marsClock, surface, unitManager);
 		HeatSource.setInstances(mars, surface, orbit, weather);
+		Malfunction.setInstances();
 		PowerSource.setInstances(mars, surface, orbit, weather);
 		ResourceProcess.setInstances(marsClock);
 

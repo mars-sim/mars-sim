@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -26,12 +27,15 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonalityTraitType;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
+import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.MedicalManager;
@@ -39,6 +43,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -216,8 +221,8 @@ public class MalfunctionManager implements Serializable {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if ((malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime()) > 0D)
-					result = true;
+				if (!malfunction.isEmergencyRepairDone())
+					return true;
 			}
 		}
 
@@ -225,17 +230,17 @@ public class MalfunctionManager implements Serializable {
 	}
 
 	/**
-	 * Checks if entity has any normal malfunctions.
+	 * Checks if entity has any general malfunctions.
 	 * 
-	 * @return true if normal malfunction
+	 * @return true if general malfunction
 	 */
-	public boolean hasNormalMalfunction() {
+	public boolean hasGeneralMalfunction() {
 		boolean result = false;
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D)
-					result = true;
+				if (!malfunction.isGeneralRepairDone())
+					return true;
 			}
 		}
 
@@ -252,8 +257,8 @@ public class MalfunctionManager implements Serializable {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D)
-					result = true;
+				if (!malfunction.isEVARepairDone())
+					return true;
 			}
 		}
 
@@ -303,7 +308,7 @@ public class MalfunctionManager implements Serializable {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if ((malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime()) > 0D
+				if (!malfunction.isEmergencyRepairDone()
 						&& malfunction.getSeverity() > highestSeverity) {
 					highestSeverity = malfunction.getSeverity();
 					result = malfunction;
@@ -315,18 +320,18 @@ public class MalfunctionManager implements Serializable {
 	}
 
 	/**
-	 * Gets the most serious normal malfunction the entity has.
+	 * Gets the most serious general malfunction the entity has.
 	 * 
 	 * @return malfunction
 	 */
-	public Malfunction getMostSeriousNormalMalfunction() {
+	public Malfunction getMostSeriousGeneralMalfunction() {
 
 		Malfunction result = null;
 		double highestSeverity = 0D;
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D
+				if (!malfunction.isGeneralRepairDone()
 						&& malfunction.getSeverity() > highestSeverity) {
 					highestSeverity = malfunction.getSeverity();
 					result = malfunction;
@@ -338,14 +343,14 @@ public class MalfunctionManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of all normal malfunctions sorted by highest severity first.
+	 * Gets a list of all general malfunctions sorted by highest severity first.
 	 * 
 	 * @return list of malfunctions.
 	 */
-	public List<Malfunction> getNormalMalfunctions() {
+	public List<Malfunction> getGeneralMalfunctions() {
 		List<Malfunction> result = new ArrayList<Malfunction>();
 		for (Malfunction malfunction : malfunctions) {
-			if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime()) > 0D)
+			if (!malfunction.isGeneralRepairDone())
 				result.add(malfunction);
 		}
 		Collections.sort(result, new MalfunctionSeverityComparator());
@@ -364,7 +369,7 @@ public class MalfunctionManager implements Serializable {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D
+				if (!malfunction.isEVARepairDone()
 						&& malfunction.getSeverity() > highestSeverity) {
 					highestSeverity = malfunction.getSeverity();
 					result = malfunction;
@@ -383,7 +388,7 @@ public class MalfunctionManager implements Serializable {
 	public List<Malfunction> getEVAMalfunctions() {
 		List<Malfunction> result = new ArrayList<Malfunction>();
 		for (Malfunction malfunction : malfunctions) {
-			if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D)
+			if (!malfunction.isEVARepairDone())
 				result.add(malfunction);
 		}
 		Collections.sort(result, new MalfunctionSeverityComparator());
@@ -855,8 +860,46 @@ public class MalfunctionManager implements Serializable {
 		// Check if any malfunctions are fixed.
 		if (hasMalfunction()) {
 			for (Malfunction m : malfunctions) {
+				if (!m.isEmergencyRepairDone()) {
+					
+					Settlement settlement = null;
+					
+					if (entity.getUnit() instanceof EVASuit) {
+						settlement = ((EVASuit)(entity.getUnit())).getSettlement();
+					}
+					else {
+						settlement = entity.getUnit().getSettlement();
+					}		
+					
+					Collection<Person> people = settlement.getAffectedPeople();
+					
+					if (people.isEmpty()) {
+						people.stream()
+							.filter(p -> p.getJobName().toLowerCase().contains("engineer")
+									|| p.getJobName().toLowerCase().contains("technician"))
+							.collect(Collectors.toList());
+					}
+					
+					if (people.isEmpty()) {
+						people = settlement.getIndoorPeople();			
+					}
+					
+					Person chosen = null;
+					int highestScore = 0;
+
+					for (Person p : people) {
+						int score = p.getPreference().getPreferenceScore(new RepairMalfunctionMeta());
+						if (highestScore < score) {
+							highestScore = score;
+							chosen = p;
+						}
+					}
+					
+					if (highestScore > 0 && chosen != null) 
+						chosen.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(chosen));	
+				}
+				
 				if (m.isFixed()) {
-					System.out.println(m.getName() + " is fixed.");
 					fixedMalfunctions.add(m);
 				}
 			}
@@ -981,7 +1024,7 @@ public class MalfunctionManager implements Serializable {
 
 		if (hasMalfunction()) {
 			for (Malfunction malfunction : malfunctions) {
-				if (!malfunction.isFixed() && malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
+				if (!malfunction.isFixed() && !malfunction.isEmergencyRepairDone()) {
 					Map<Integer, Double> effects = malfunction.getResourceEffects();
 					Iterator<Integer> i2 = effects.keySet().iterator();
 					while (i2.hasNext()) {

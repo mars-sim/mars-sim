@@ -91,7 +91,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	}
 
 	public RepairMalfunction(Robot robot) {
-		super(NAME, robot, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(50D));
+		super(NAME, robot, true, false, STRESS_MODIFIER, true, 50D);
 
 		// Get the malfunctioning entity.
 		entity = getMalfunctionEntity(robot);
@@ -110,10 +110,10 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	}
 
 	/**
-	 * Gets a malfunctional entity with a normal malfunction for a user.
+	 * Gets a malfunctionable entity with a normal malfunction for a user.
 	 * 
 	 * @param person the person.
-	 * @return malfunctional entity.
+	 * @return malfunctionable entity.
 	 */
 	private static Malfunctionable getMalfunctionEntity(Person person) {
 		Malfunctionable result = null;
@@ -121,26 +121,30 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
 		while (i.hasNext() && (result == null)) {
 			Malfunctionable entity = i.next();
-			if (!requiresEVA(person, entity)) {
-				if (hasMalfunction(person, entity)) {
+			if (!requiresEVA(person, entity)
+				&& hasMalfunction(person, entity)) {
 					result = entity;
-				}
 			}
 		}
-
+		
 		return result;
 	}
-
+	
+	/**
+	 * Gets a malfunctionable entity with a normal malfunction for a user.
+	 * 
+	 * @param robot the robot.
+	 * @return malfunctionable entity.
+	 */
 	private static Malfunctionable getMalfunctionEntity(Robot robot) {
 		Malfunctionable result = null;
 
 		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
 		while (i.hasNext() && (result == null)) {
 			Malfunctionable entity = i.next();
-			if (!requiresEVA(robot, entity)) {
-				if (hasMalfunction(robot, entity)) {
+			if (!requiresEVA(robot, entity)
+				&& hasMalfunction(robot, entity)) {
 					result = entity;
-				}
 			}
 		}
 
@@ -240,28 +244,42 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	private static boolean hasMalfunction(Person person, Malfunctionable entity) {
 		boolean result = false;
 
-		MalfunctionManager manager = entity.getMalfunctionManager();
-		Iterator<Malfunction> i = manager.getNormalMalfunctions().iterator();
-		while (i.hasNext() && !result) {
-			if (hasRepairPartsForMalfunction(person, i.next())) {
-				result = true;
-			}
-		}
-
+		if (entity.getMalfunctionManager().hasMalfunction())
+			return true;
+		
+//		MalfunctionManager manager = entity.getMalfunctionManager();
+//		Iterator<Malfunction> i = manager.getGeneralMalfunctions().iterator();
+//		while (i.hasNext() && !result) {
+//			if (hasRepairPartsForMalfunction(person, i.next())) {
+//				return true;
+//			}
+//		}
+//		
+//		if (manager.getMostSeriousEmergencyMalfunction() != null
+//				&& hasRepairPartsForMalfunction(person, manager.getMostSeriousEmergencyMalfunction()))
+//			return true;
+		
 		return result;
 	}
 
 	private static boolean hasMalfunction(Robot robot, Malfunctionable entity) {
 		boolean result = false;
 
-		MalfunctionManager manager = entity.getMalfunctionManager();
-		Iterator<Malfunction> i = manager.getNormalMalfunctions().iterator();
-		while (i.hasNext() && !result) {
-			if (hasRepairPartsForMalfunction(robot, i.next())) {
-				result = true;
-			}
-		}
-
+		if (entity.getMalfunctionManager().hasMalfunction())
+			return true;
+		
+//		MalfunctionManager manager = entity.getMalfunctionManager();
+//		Iterator<Malfunction> i = manager.getGeneralMalfunctions().iterator();
+//		while (i.hasNext() && !result) {
+//			if (hasRepairPartsForMalfunction(robot, i.next())) {
+//				return true;
+//			}
+//		}
+//
+//		if (manager.getMostSeriousEmergencyMalfunction() != null
+//				&& hasRepairPartsForMalfunction(robot, manager.getMostSeriousEmergencyMalfunction()))
+//			return true;
+	
 		return result;
 	}
 
@@ -419,60 +437,76 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		}
 
 		// Get a local malfunction.
-		Malfunction malfunction = null;
-		Iterator<Malfunction> i = entity.getMalfunctionManager().getNormalMalfunctions().iterator();
-		while (i.hasNext() && (malfunction == null)) {
-			Malfunction tempMalfunction = i.next();
-
-			if (person != null) {
-				if (hasRepairPartsForMalfunction(person, tempMalfunction)) {
-					malfunction = tempMalfunction;
-					setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
-							entity.getNickName())); // $NON-NLS-1$
-				}
-			} else if (robot != null) {
-				if (hasRepairPartsForMalfunction(robot, tempMalfunction)) {
-					malfunction = tempMalfunction;
-					setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
-							entity.getNickName())); // $NON-NLS-1$
-				}
+		Malfunction malfunction = entity.getMalfunctionManager().getMostSeriousEmergencyMalfunction();
+		if (person != null) {
+			if (hasRepairPartsForMalfunction(person, malfunction)) {
+				setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
+						entity.getNickName())); // $NON-NLS-1$
+			}
+		} else if (robot != null) {
+			if (hasRepairPartsForMalfunction(robot, malfunction)) {
+				setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
+						entity.getNickName())); // $NON-NLS-1$
 			}
 		}
-
-		if (person != null) {
-			// Add repair parts if necessary.
-			if (hasRepairPartsForMalfunction(person, malfunction)) {
-				
-				Unit containerUnit = person.getTopContainerUnit();
-				if (!(containerUnit instanceof MarsSurface)) {
-					Inventory inv = containerUnit.getInventory();
-
-					Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
-					Iterator<Integer> j = parts.keySet().iterator();
-					while (j.hasNext()) {
-						Integer id = j.next();
-						int number = parts.get(id);
-						inv.retrieveItemResources(id, number);
-						malfunction.repairWithParts(id, number, inv);
+		
+		if (malfunction == null) {
+			Iterator<Malfunction> i = entity.getMalfunctionManager().getGeneralMalfunctions().iterator();
+			while (i.hasNext() && (malfunction == null)) {
+				Malfunction tempMalfunction = i.next();
+				if (person != null) {
+					if (hasRepairPartsForMalfunction(person, tempMalfunction)) {
+						malfunction = tempMalfunction;
+						setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
+								entity.getNickName())); // $NON-NLS-1$
+					}
+				} else if (robot != null) {
+					if (hasRepairPartsForMalfunction(robot, tempMalfunction)) {
+						malfunction = tempMalfunction;
+						setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
+								entity.getNickName())); // $NON-NLS-1$
 					}
 				}
 			}
 
-		} else if (robot != null) {
-			// Add repair parts if necessary.
-			if (hasRepairPartsForMalfunction(robot, malfunction)) {
-				
-				Unit containerUnit = robot.getTopContainerUnit();
-				if (!(containerUnit instanceof MarsSurface)) {
-					Inventory inv = containerUnit.getInventory();
+		}
+		
+		if (malfunction != null) {
+			if (person != null) {
+				// Add repair parts if necessary.
+				if (hasRepairPartsForMalfunction(person, malfunction)) {
 					
-					Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
-					Iterator<Integer> j = parts.keySet().iterator();
-					while (j.hasNext()) {
-						Integer id = j.next();
-						int number = parts.get(id);
-						inv.retrieveItemResources(id, number);
-						malfunction.repairWithParts(id, number, inv);
+					Unit containerUnit = person.getTopContainerUnit();
+					if (!(containerUnit instanceof MarsSurface)) {
+						Inventory inv = containerUnit.getInventory();
+	
+						Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
+						Iterator<Integer> j = parts.keySet().iterator();
+						while (j.hasNext()) {
+							Integer id = j.next();
+							int number = parts.get(id);
+							inv.retrieveItemResources(id, number);
+							malfunction.repairWithParts(id, number, inv);
+						}
+					}
+				}
+	
+			} else if (robot != null) {
+				// Add repair parts if necessary.
+				if (hasRepairPartsForMalfunction(robot, malfunction)) {
+					
+					Unit containerUnit = robot.getTopContainerUnit();
+					if (!(containerUnit instanceof MarsSurface)) {
+						Inventory inv = containerUnit.getInventory();
+						
+						Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
+						Iterator<Integer> j = parts.keySet().iterator();
+						while (j.hasNext()) {
+							Integer id = j.next();
+							int number = parts.get(id);
+							inv.retrieveItemResources(id, number);
+							malfunction.repairWithParts(id, number, inv);
+						}
 					}
 				}
 			}
@@ -487,22 +521,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		// logger.info(description);
 		double workTimeLeft = 0;
 		if (person != null) {
-			malfunction.addWorkTime(workTime, person.getName());
+			workTimeLeft = malfunction.addGeneralWorkTime(workTime, person.getName());
 		} else {
-			malfunction.addWorkTime(workTime, robot.getName());
-		}
-
-		if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime() <= 0D)) {
-			if (person != null) {
-				LogConsolidated.log(Level.INFO, 5000, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " had completed the regular repair of " + malfunction.getName() + " in "+ entity + ".");
-			}
-			else {
-				LogConsolidated.log(Level.INFO, 5000, sourceName,
-					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
-						+ " had completed the regular repair of "  + malfunction.getName() + " in "+ entity + ".");
-			}
+			workTimeLeft = malfunction.addGeneralWorkTime(workTime, robot.getName());
 		}
 		
 		// Add experience
@@ -514,11 +535,19 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		if (person != null) {
 			// Check if there are no more malfunctions.
 			if (!hasMalfunction(person, entity)) {
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+						+ " had completed the repair of " + malfunction.getName() + " in "+ entity + ".");
 				endTask();
 			}
-		} else if (robot != null) {
+		} 
+		
+		else if (robot != null) {
 			// Check if there are no more malfunctions.
 			if (!hasMalfunction(robot, entity)) {
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
+						+ " had completed the repair of " + malfunction.getName() + " in "+ entity + ".");
 				endTask();
 			}
 		}

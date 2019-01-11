@@ -7,7 +7,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -38,6 +37,7 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.managers.tooltip.TooltipWay;
+import com.alee.laf.panel.WebPanel;
 //import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 
@@ -194,7 +194,7 @@ public class TabPanelMaintenance extends TabPanel {
 			populateMalfunctionsList();
 			malfunctionsListPanel.validate();
 			malfunctionsScrollPane.validate();
-		} else {
+//		} else {
 			// Update all building malfunction panels.
 			Component[] components = malfunctionsListPanel.getComponents();
 			for (Component component : components)
@@ -404,6 +404,7 @@ public class TabPanelMaintenance extends TabPanel {
 		// Data members.
 		private Malfunction malfunction;
 		private JLabel malfunctionLabel;
+		private JLabel workLabel;
 		private BoundedRangeModel progressBarModel;
 		private JLabel partsLabel;
 
@@ -421,23 +422,23 @@ public class TabPanelMaintenance extends TabPanel {
 			this.malfunction = malfunction;
 
 			// Set layout and border.
-			setLayout(new GridLayout(4, 1, 0, 0));
+			setLayout(new GridLayout(5, 1, 0, 0));
 			setBorder(new MarsPanelBorder());
 
 			// Prepare the building label.
 			JLabel buildingLabel = new JLabel(building.getNickName(), JLabel.LEFT);
+			buildingLabel.setFont(new Font("Serif", Font.BOLD, 16));
 			add(buildingLabel);
 
 			// Prepare the malfunction label.
 			malfunctionLabel = new JLabel(malfunction.getName(), JLabel.LEFT);
-			if (malfunction.getCompletedEmergencyWorkTime() < malfunction.getEmergencyWorkTime()) {
-				malfunctionLabel.setText(malfunction.getName() + " - Emergency");
-				malfunctionLabel.setForeground(Color.red);
-			}
 			add(malfunctionLabel);
 
+			workLabel = new JLabel("", JLabel.LEFT);
+			add(workLabel);
+			
 			// Progress bar panel.
-			JPanel progressBarPanel = new JPanel(new BorderLayout(0, 0));
+			WebPanel progressBarPanel = new WebPanel(new BorderLayout(0, 0));
 			add(progressBarPanel, BorderLayout.CENTER);
 
 			// Prepare progress bar.
@@ -447,14 +448,7 @@ public class TabPanelMaintenance extends TabPanel {
 			progressBarPanel.add(progressBar, BorderLayout.CENTER);
 
 			// Set initial value for repair progress bar.
-			double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime()
-					+ malfunction.getEVAWorkTime();
-			double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() + malfunction.getCompletedWorkTime()
-					+ malfunction.getCompletedEVAWorkTime();
-			int percentComplete = 0;
-			if (totalRequiredWork > 0D)
-				percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
-			progressBarModel.setValue(percentComplete);
+			progressBarModel.setValue(0);
 
 			// Prepare parts label.
 			partsLabel = new JLabel(getPartsString(malfunction.getRepairParts(), false), JLabel.CENTER);
@@ -462,8 +456,10 @@ public class TabPanelMaintenance extends TabPanel {
 			add(partsLabel);
 
 			// Add tooltip.
-			// setToolTipText(getToolTipString());
-			TooltipManager.setTooltip(this, getToolTipString(), TooltipWay.down);
+//			setToolTipText(getToolTipString());
+//			TooltipManager.setTooltip(this, getToolTipString(), TooltipWay.up);
+			
+			update();
 		}
 
 		/**
@@ -471,22 +467,31 @@ public class TabPanelMaintenance extends TabPanel {
 		 */
 		void update() {
 			// Update name label.
-			if (malfunction.getCompletedEmergencyWorkTime() < malfunction.getEmergencyWorkTime()) {
-				malfunctionLabel.setText(malfunction.getName() + " - Emergency");
-				malfunctionLabel.setForeground(Color.red);
-			} else {
-				malfunctionLabel.setText(malfunction.getName());
-				malfunctionLabel.setForeground(Color.black);
-			}
+//			if (malfunction.getCompletedEmergencyWorkTime() < malfunction.getEmergencyWorkTime()) {
+//				malfunctionLabel.setText(malfunction.getName() + " - Emergency");
+//				malfunctionLabel.setForeground(Color.red);
+//			} else {
+//				malfunctionLabel.setText(malfunction.getName());
+//				malfunctionLabel.setForeground(Color.black);
+//			}
 
+			String work = "Repair Work Required :";
+
+			if (malfunction.getGeneralWorkTime() > 0) {
+				work += "  General";
+			}
+			if (malfunction.getEmergencyWorkTime() > 0) {
+				work += "  Emergency";
+			}
+			if (malfunction.getEVAWorkTime() > 0) {
+				work += "  EVA";
+			}
+			
+			workLabel.setText(work);
+//			malfunctionLabel.setForeground(Color.red);
+			
 			// Update progress bar.
-			double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime()
-					+ malfunction.getEVAWorkTime();
-			double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() + malfunction.getCompletedWorkTime()
-					+ malfunction.getCompletedEVAWorkTime();
-			int percentComplete = 0;
-			if (totalRequiredWork > 0D)
-				percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
+			int percentComplete = (int)malfunction.getPercentageFixed();
 			progressBarModel.setValue(percentComplete);
 
 			// Update parts label.
@@ -494,7 +499,7 @@ public class TabPanelMaintenance extends TabPanel {
 
 			// Update tool tip.
 			// setToolTipText(getToolTipString());
-			// TooltipManager.setTooltip (this, getToolTipString(), TooltipWay.down);
+			TooltipManager.setTooltip (this, getToolTipString(), TooltipWay.up);
 		}
 
 		/**
@@ -503,10 +508,12 @@ public class TabPanelMaintenance extends TabPanel {
 		private String getToolTipString() {
 			StringBuilder result = new StringBuilder("<html>");
 			result.append(malfunction.getName()).append("<br>");
-			result.append("General Repair Time: ").append((int) malfunction.getWorkTime()).append(" millisols<br>");
-			result.append("EVA Repair Time: ").append((int) malfunction.getEVAWorkTime()).append(" millisols<br>");
-			result.append("Emergency Repair Time: ").append((int) malfunction.getEmergencyWorkTime())
-					.append(" millisols<br>");
+			result.append("General Repair Time: ").append((int) malfunction.getCompletedGeneralWorkTime()).append(" / ")
+				.append((int) malfunction.getGeneralWorkTime()).append(" millisols<br>");
+			result.append("EVA Repair Time: ").append((int) malfunction.getCompletedEVAWorkTime()).append(" / ")
+				.append((int) malfunction.getEVAWorkTime()).append(" millisols<br>");
+			result.append("Emergency Repair Time: ").append((int) malfunction.getCompletedEmergencyWorkTime()).append(" / ")
+				.append((int) malfunction.getEmergencyWorkTime()).append(" millisols<br>");
 			result.append("Repair ").append(getPartsString(malfunction.getRepairParts(), false).toLowerCase());
 			result.append("</html>");
 

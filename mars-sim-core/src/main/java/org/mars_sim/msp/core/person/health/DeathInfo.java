@@ -235,8 +235,8 @@ public class DeathInfo implements Serializable {
 				}
 			}
 
-			else if (malfunctionMgr.hasNormalMalfunction()) {
-				Malfunction m = malfunctionMgr.getMostSeriousNormalMalfunction();
+			else if (malfunctionMgr.hasGeneralMalfunction()) {
+				Malfunction m = malfunctionMgr.getMostSeriousGeneralMalfunction();
 				if (m != null && m.getSeverity() > severity) {
 					mostSerious = m;
 					severity = m.getSeverity();
@@ -306,8 +306,8 @@ public class DeathInfo implements Serializable {
 				}
 			}
 
-			else if (malfunctionMgr.hasNormalMalfunction()) {
-				Malfunction m = malfunctionMgr.getMostSeriousNormalMalfunction();
+			else if (malfunctionMgr.hasGeneralMalfunction()) {
+				Malfunction m = malfunctionMgr.getMostSeriousGeneralMalfunction();
 				if (m.getSeverity() > severity) {
 					mostSerious = m;
 					severity = m.getSeverity();

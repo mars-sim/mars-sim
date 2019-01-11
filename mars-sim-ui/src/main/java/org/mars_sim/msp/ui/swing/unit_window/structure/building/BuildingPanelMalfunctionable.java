@@ -29,13 +29,11 @@ import java.util.Iterator;
 
 import javax.swing.BoxLayout;
 
-
 /**
- * The BuildingPanelMalfunctionable class is a building function panel representing
- * the malfunctions of a settlement building.
+ * The BuildingPanelMalfunctionable class is a building function panel
+ * representing the malfunctions of a settlement building.
  */
-public class BuildingPanelMalfunctionable
-extends BuildingFunctionPanel {
+public class BuildingPanelMalfunctionable extends BuildingFunctionPanel {
 
 	/** The malfunctionable building. */
 	private Malfunctionable malfunctionable;
@@ -48,8 +46,9 @@ extends BuildingFunctionPanel {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param malfunctionable the malfunctionable building the panel is for.
-	 * @param desktop The main desktop.
+	 * @param desktop         The main desktop.
 	 */
 	public BuildingPanelMalfunctionable(Malfunctionable malfunctionable, MainDesktopPane desktop) {
 
@@ -63,35 +62,29 @@ extends BuildingFunctionPanel {
 		setLayout(new BorderLayout());
 
 		// Create malfunctions label
-		// 2014-11-21 Changed font type, size and color and label text
-		// 2014-11-21 Added internationalization for labels
 		WebLabel malfunctionsLabel = new WebLabel(Msg.getString("BuildingPanelMalfunctionable.title"), WebLabel.CENTER);
 		malfunctionsLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//malfunctionsLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		// malfunctionsLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		add(malfunctionsLabel, BorderLayout.NORTH);
 
 		// Create scroll panel for malfunction list
 		WebScrollPane scrollPanel = new WebScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 90));
 		add(scrollPanel, BorderLayout.CENTER);
-        scrollPanel.setOpaque(false);
-        scrollPanel.setBackground(new Color(0,0,0,128));
-        scrollPanel.getViewport().setOpaque(false);
-        scrollPanel.getViewport().setBackground(new Color(0, 0, 0, 128));//0, 0, 0, 0));
-        //scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
+		scrollPanel.setOpaque(false);
+		scrollPanel.setBackground(new Color(0, 0, 0, 128));
+		scrollPanel.getViewport().setOpaque(false);
+		scrollPanel.getViewport().setBackground(new Color(0, 0, 0, 128));// 0, 0, 0, 0));
+		// scrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 
 		// Create malfunction list main panel.
 		WebPanel malfunctionListMainPanel = new WebPanel(new BorderLayout(0, 0));
 		scrollPanel.setViewportView(malfunctionListMainPanel);
-		//malfunctionListMainPanel.setOpaque(false);
-		//malfunctionListMainPanel.setBackground(new Color(0,0,0,128));
 
 		// Create malfunction list panel
 		malfunctionListPanel = new WebPanel();
 		malfunctionListPanel.setLayout(new BoxLayout(malfunctionListPanel, BoxLayout.Y_AXIS));
 		malfunctionListMainPanel.add(malfunctionListPanel, BorderLayout.NORTH);
-		//malfunctionListPanel.setOpaque(false);
-		//malfunctionListPanel.setBackground(new Color(0,0,0,128));
 
 		// Create malfunction panels
 		malfunctionCache = new ArrayList<Malfunction>(malfunctionable.getMalfunctionManager().getMalfunctions());
@@ -100,11 +93,7 @@ extends BuildingFunctionPanel {
 		while (i.hasNext()) {
 			MalfunctionPanel panel = new MalfunctionPanel(i.next());
 			malfunctionListPanel.add(panel);
-			//malfunctionListPanel.setOpaque(false);
-			//malfunctionListPanel.setBackground(new Color(0,0,0,128));
 			malfunctionPanels.add(panel);
-			//panel.setOpaque(false);
-			//panel.setBackground(new Color(0,0,0,128));
 		}
 	}
 
@@ -123,10 +112,6 @@ extends BuildingFunctionPanel {
 					MalfunctionPanel panel = new MalfunctionPanel(malfunction);
 					malfunctionPanels.add(panel);
 					malfunctionListPanel.add(panel);
-					//malfunctionListPanel.setOpaque(false);
-					//malfunctionListPanel.setBackground(new Color(0,0,0,128));
-					//panel.setOpaque(false);
-					//panel.setBackground(new Color(0,0,0,128));
 				}
 			}
 
@@ -149,11 +134,13 @@ extends BuildingFunctionPanel {
 
 		// Have each malfunction panel update.
 		Iterator<MalfunctionPanel> i = malfunctionPanels.iterator();
-		while (i.hasNext()) i.next().update();
+		while (i.hasNext())
+			i.next().update();
 	}
 
 	/**
 	 * Gets an existing malfunction panel for a given malfunction.
+	 * 
 	 * @param malfunction the given malfunction
 	 * @return malfunction panel or null if none.
 	 */
@@ -163,7 +150,8 @@ extends BuildingFunctionPanel {
 		Iterator<MalfunctionPanel> i = malfunctionPanels.iterator();
 		while (i.hasNext()) {
 			MalfunctionPanel panel = i.next();
-			if (panel.getMalfunction() == malfunction) result = panel;
+			if (panel.getMalfunction() == malfunction)
+				result = panel;
 		}
 
 		return result;

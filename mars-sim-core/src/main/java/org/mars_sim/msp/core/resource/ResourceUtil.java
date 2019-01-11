@@ -121,6 +121,7 @@ public class ResourceUtil implements Serializable {
 	public static int cropWasteID;
 	public static int foodWasteID;
 	public static int toxicWasteID;
+	public static int solidWasteID;
 	
 	public static int toiletTissueID;
 	
@@ -152,7 +153,7 @@ public class ResourceUtil implements Serializable {
 
 //	public static AmountResource soilAR;
 	public static AmountResource iceAR;
-	public static AmountResource compostAR;
+//	public static AmountResource compostAR;
 
 	public static AmountResource regolithAR;
 
@@ -162,19 +163,18 @@ public class ResourceUtil implements Serializable {
 	public static AmountResource blackWaterAR;
 
 //	public static AmountResource eWasteAR;
-	public static AmountResource foodWasteAR;
-	public static AmountResource solidWasteAR;
-	public static AmountResource toxicWasteAR;
+//	public static AmountResource foodWasteAR;
+//	public static AmountResource solidWasteAR;
+//	public static AmountResource toxicWasteAR;
+//	public static AmountResource cropWasteAR;
+//	public static AmountResource toiletTissueAR;
 
 	public static AmountResource napkinAR;
 
 	public static AmountResource rockSamplesAR;
 	public static AmountResource sandAR;
 
-	public static AmountResource fertilizerAR;
-
-	public static AmountResource cropWasteAR;
-	public static AmountResource toiletTissueAR;
+//	public static AmountResource fertilizerAR;
 
 //	public static AmountResource soybeanOilAR;
 //	public static AmountResource garlicOilAR;
@@ -360,6 +360,8 @@ public class ResourceUtil implements Serializable {
 		cropWasteID = findAmountResource(CROP_WASTE).getID(); // 15
 		foodWasteID = findAmountResource(FOOD_WASTE).getID();
 		toxicWasteID = findAmountResource(TOXIC_WASTE).getID();
+		solidWasteID = findAmountResource(SOLID_WASTE).getID();
+		eWasteID = findAmountResource(ELECTRONIC_WASTE).getID(); // 16
 		
 		toiletTissueID = findAmountResource(TOILET_TISSUE).getID();
 		
@@ -382,8 +384,6 @@ public class ResourceUtil implements Serializable {
 		
 		tableSaltID = findAmountResource(TABLE_SALT).getID(); // 23
 		
-		eWasteID = findAmountResource(ELECTRONIC_WASTE).getID(); // 16
-		
 		// AmountResource instances as objects
 		foodAR = findAmountResource(LifeSupportType.FOOD); // 1
 		waterAR = findAmountResource(LifeSupportType.WATER); // 2
@@ -399,20 +399,20 @@ public class ResourceUtil implements Serializable {
 		methaneAR = findAmountResource(METHANE); // 9
 //		soilAR = findAmountResource(SOIL); // 12
 		iceAR = findAmountResource(ICE); // 13
-		compostAR = findAmountResource(COMPOST); // 14
+//		compostAR = findAmountResource(COMPOST); // 14
 
-		cropWasteAR = findAmountResource(CROP_WASTE); // 15
+//		cropWasteAR = findAmountResource(CROP_WASTE); // 15
 //		eWasteAR = findAmountResource(ELECTRONIC_WASTE); // 16
-		foodWasteAR = findAmountResource(FOOD_WASTE); // 17
-		solidWasteAR = findAmountResource(SOLID_WASTE); // 18
-		toxicWasteAR = findAmountResource(TOXIC_WASTE); // 19
+//		foodWasteAR = findAmountResource(FOOD_WASTE); // 17
+//		solidWasteAR = findAmountResource(SOLID_WASTE); // 18
+//		toxicWasteAR = findAmountResource(TOXIC_WASTE); // 19
 
 		greyWaterAR = findAmountResource(GREY_WATER); // 20
 		blackWaterAR = findAmountResource(BLACK_WATER); // 21
 
 //		tableSaltAR = findAmountResource(TABLE_SALT); // 23
 
-		fertilizerAR = findAmountResource(FERTILIZER); // 139
+//		fertilizerAR = findAmountResource(FERTILIZER); // 139
 
 		regolithAR = findAmountResource(REGOLITH); // 156
 
@@ -421,7 +421,7 @@ public class ResourceUtil implements Serializable {
 
 		NaClOAR = findAmountResource(SODIUM_HYPOCHLORITE); // 146
 		napkinAR = findAmountResource(NAPKIN); // 161
-		toiletTissueAR = findAmountResource(TOILET_TISSUE); // 164
+//		toiletTissueAR = findAmountResource(TOILET_TISSUE); // 164
 
 //		soybeanOilAR = findAmountResource(SOYBEAN_OIL); // 27
 //		garlicOilAR = findAmountResource(GARLIC_OIL); // 41
@@ -437,15 +437,19 @@ public class ResourceUtil implements Serializable {
 				argonAR, nitrogenAR, coAR, hydrogenAR, 
 				methaneAR, 
 				iceAR,
-				cropWasteAR, foodWasteAR, solidWasteAR, 
+//				cropWasteAR, foodWasteAR, 
+//				solidWasteAR, 
 //				eWasteAR, 
-				foodWasteAR,
-				solidWasteAR, toxicWasteAR, compostAR, greyWaterAR, blackWaterAR,
+//				foodWasteAR,
+//				toxicWasteAR, 
+//				compostAR, 
+				greyWaterAR, blackWaterAR,
 //				soilAR, 
 				regolithAR, rockSamplesAR, sandAR,
 //				tableSaltAR, 
 				NaClOAR, napkinAR,
-				toiletTissueAR, fertilizerAR,
+//				toiletTissueAR, 
+//				fertilizerAR,
 //				soybeanOilAR, garlicOilAR, peanutOilAR, sesameOilAR 
 				};
 //        for (int i=0; i< 33; i++) {

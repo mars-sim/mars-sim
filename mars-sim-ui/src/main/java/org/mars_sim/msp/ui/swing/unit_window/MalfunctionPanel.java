@@ -66,7 +66,7 @@ extends WebPanel {
 
 		// Prepare name label.
 		nameLabel = new WebLabel(malfunction.getName(), WebLabel.CENTER);
-		if (malfunction.getCompletedEmergencyWorkTime() < malfunction.getEmergencyWorkTime()) {
+		if (!malfunction.isEmergencyRepairDone()) {
 			nameLabel.setText(malfunction.getName() + " - Emergency");
 			nameLabel.setForeground(Color.red);
 		}
@@ -83,13 +83,13 @@ extends WebPanel {
 		repairPane.add(repairBar);
 
 		// Set initial value for repair progress bar.
-		double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime()
-				+ malfunction.getEVAWorkTime();
-		double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() +
-				malfunction.getCompletedWorkTime() + malfunction.getCompletedEVAWorkTime();
-		int percentComplete = 0;
-		if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
-		repairBarModel.setValue(percentComplete);
+//		double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getGeneralWorkTime()
+//				+ malfunction.getEVAWorkTime();
+//		double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() +
+//				malfunction.getCompletedGeneralWorkTime() + malfunction.getCompletedEVAWorkTime();
+//		int percentComplete = 0;
+//		if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
+		repairBarModel.setValue((int)malfunction.getPercentageFixed());
 
 		// Prepare repair parts label.
 		partsLabel = new WebLabel(getPartsString(), WebLabel.CENTER);
@@ -108,11 +108,11 @@ extends WebPanel {
 		// Update name label.
 		int eva = 0;
 		int emer = 0;
-		if (malfunction.getCompletedEmergencyWorkTime() < malfunction.getEmergencyWorkTime()) {
+		if (!malfunction.isEmergencyRepairDone()) {
 			emer = 1;		
 		}
 		
-		if (malfunction.getCompletedEVAWorkTime() < malfunction.getEVAWorkTime()) {
+		if (!malfunction.isEVARepairDone()) {
 			eva = 1;
 		}
 		
@@ -134,19 +134,19 @@ extends WebPanel {
 		}
 
 		// Update progress bar.
-		double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime()
-				+ malfunction.getEVAWorkTime();
-		double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() +
-				malfunction.getCompletedWorkTime() + malfunction.getCompletedEVAWorkTime();
-		int percentComplete = 0;
+//		double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getGeneralWorkTime()
+//				+ malfunction.getEVAWorkTime();
+//		double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() +
+//				malfunction.getCompletedGeneralWorkTime() + malfunction.getCompletedEVAWorkTime();
+//		int percentComplete = 0;
+//		
+//		if (totalRequiredWork > 0D) 
+//			percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
+//		
+//		if (percentComplete > 100)
+//			percentComplete = 100;
 		
-		if (totalRequiredWork > 0D) 
-			percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
-		
-		if (percentComplete > 100)
-			percentComplete = 100;
-		
-		repairBarModel.setValue(percentComplete);
+		repairBarModel.setValue((int)malfunction.getPercentageFixed());
 
 		// Update parts label.
 		partsLabel.setText(getPartsString());
@@ -190,7 +190,7 @@ extends WebPanel {
 	private String getToolTipString() {
 		StringBuilder result = new StringBuilder("<html>");
 		result.append(malfunction.getName()).append("<br>");
-		result.append("General repair time: ").append((int) malfunction.getWorkTime()).append(" milliols<br>");
+		result.append("General repair time: ").append((int) malfunction.getGeneralWorkTime()).append(" milliols<br>");
 		result.append("EVA repair time: ").append((int) malfunction.getEVAWorkTime()).append(" milliols<br>");
 		result.append("Emergency repair time: ").append((int) malfunction.getEmergencyWorkTime()).append(" milliols<br>");
 		result.append("Repair ").append(getPartsString().toLowerCase());

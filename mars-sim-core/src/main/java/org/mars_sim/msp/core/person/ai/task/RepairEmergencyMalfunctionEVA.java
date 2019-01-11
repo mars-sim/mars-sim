@@ -129,15 +129,24 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		Malfunction malfunction = null;
 		Malfunctionable entity = null;
 		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+//		while (i.hasNext() && (malfunction == null)) {
+//			Malfunctionable e = i.next();
+//			MalfunctionManager manager = e.getMalfunctionManager();
+//			if (manager.hasEmergencyMalfunction()) {
+//				malfunction = manager.getMostSeriousEmergencyMalfunction();
+//				entity = e;
+//			}
+//		}
+		
 		while (i.hasNext() && (malfunction == null)) {
 			Malfunctionable e = i.next();
 			MalfunctionManager manager = e.getMalfunctionManager();
-			if (manager.hasEmergencyMalfunction()) {
-				malfunction = manager.getMostSeriousEmergencyMalfunction();
+			if (manager.hasEVAMalfunction()) {
+				malfunction = manager.getMostSeriousEVAMalfunction();
 				entity = e;
 			}
 		}
-
+		
 		if (entity != null) {
 			if (entity instanceof Vehicle) {
 				// Perform EVA emergency repair on outside vehicles that the person isn't
@@ -203,11 +212,21 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		malfunction = null;
 
 		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+//		while (i.hasNext() && (malfunction == null)) {
+//			Malfunctionable e = i.next();
+//			MalfunctionManager manager = e.getMalfunctionManager();
+//			if (manager.hasEmergencyMalfunction()) {
+//				malfunction = manager.getMostSeriousEmergencyMalfunction();
+//				entity = e;
+//				setDescription(Msg.getString("Task.description.repairEmergencyMalfunctionEVA.detail",
+//						malfunction.getName(), entity.getNickName())); // $NON-NLS-1$
+//			}
+//		}
 		while (i.hasNext() && (malfunction == null)) {
 			Malfunctionable e = i.next();
 			MalfunctionManager manager = e.getMalfunctionManager();
-			if (manager.hasEmergencyMalfunction()) {
-				malfunction = manager.getMostSeriousEmergencyMalfunction();
+			if (manager.hasEVAMalfunction()) {
+				malfunction = manager.getMostSeriousEVAMalfunction();
 				entity = e;
 				setDescription(Msg.getString("Task.description.repairEmergencyMalfunctionEVA.detail",
 						malfunction.getName(), entity.getNickName())); // $NON-NLS-1$
@@ -285,14 +304,16 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		double workTimeLeft = malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime();
 		if (workTimeLeft <= 0) {
 			if (person != null) {
-				LogConsolidated.log(Level.INFO, 5000, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " had completed the emergency EVA repair on malfunction: " 
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+						+ " had completed the emergency EVA repair on malfunction: " 
 				+ malfunction.getName() + " in "+ entity + ".");
 //				+ "@"+ Integer.toHexString(malfunction.hashCode()));
 			}
         	else if (robot != null) {
-				LogConsolidated.log(Level.INFO, 5000, sourceName,
-						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " had completed the emergency EVA repair on malfunction: " 
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
+						+ " had completed the emergency EVA repair on malfunction: " 
 				+ malfunction.getName() + " in "+ entity + ".");
 //				+ "@" + Integer.toHexString(malfunction.hashCode()));
         	}

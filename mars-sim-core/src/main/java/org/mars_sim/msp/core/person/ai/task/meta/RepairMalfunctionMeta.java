@@ -36,7 +36,7 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.repairMalfunction"); //$NON-NLS-1$
 
-	private static final double WEIGHT = 300D;
+	private static final double WEIGHT = 200D;
 	
     @Override
     public String getName() {
@@ -64,26 +64,8 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
             if (fatigue > 1000 || stress > 50 || hunger > 500)
             	return 0;
             
-	        // Add probability for all malfunctionable entities in person's local.
-	        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
-	        while (i.hasNext()) {
-	            Malfunctionable entity = i.next();
-	            if (!RepairMalfunction.requiresEVA(person, entity)) {
-	                MalfunctionManager manager = entity.getMalfunctionManager();
-	                Iterator<Malfunction> j = manager.getNormalMalfunctions().iterator();
-	                while (j.hasNext()) {
-	                    Malfunction malfunction = j.next();
-	                    try {
-	                        if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
-	                            result += WEIGHT;
-	                        }
-	                    }
-	                    catch (Exception e) {
-	                        e.printStackTrace(System.err);
-	                    }
-	                }
-	            }
-	        }
+            if (person.isInSettlement()) 
+            	result = getSettlementProbability(person.getSettlement());
 	
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();
@@ -109,6 +91,36 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
         return result;
     }
 
+
+    public double getSettlementProbability(Settlement settlement) {
+
+        double result = 0D;
+        // Add probability for all malfunctionable entities in person's local.
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(settlement).iterator();
+        while (i.hasNext()) {
+            Malfunctionable entity = i.next();
+            if (!RepairMalfunction.requiresEVA(entity)) {
+                MalfunctionManager manager = entity.getMalfunctionManager();
+                Iterator<Malfunction> j = manager.getGeneralMalfunctions().iterator();
+                while (j.hasNext()) {
+                    Malfunction malfunction = j.next();
+                    if (malfunction.isGeneralRepairDone())
+                    	result += WEIGHT;
+                    try {
+                        if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+                            result += WEIGHT;
+                        }
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace(System.err);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+    
 	@Override
 	public Task constructInstance(Robot robot) {
         return new RepairMalfunction(robot);
@@ -126,7 +138,7 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 	            Malfunctionable entity = i.next();
 	            if (!RepairMalfunction.requiresEVA(robot, entity)) {
 	                MalfunctionManager manager = entity.getMalfunctionManager();
-	                Iterator<Malfunction> j = manager.getNormalMalfunctions().iterator();
+	                Iterator<Malfunction> j = manager.getGeneralMalfunctions().iterator();
 	                while (j.hasNext()) {
 	                    Malfunction malfunction = j.next();
 	                    try {
@@ -149,35 +161,4 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 
         return result;
 	}
-	
-
-	public double getProbability(Settlement settlement) {
-
-        double result = 0D;
-
-        
-        // Add probability for all malfunctionable entities in robot's local.
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(settlement).iterator();
-        while (i.hasNext()) {
-            Malfunctionable entity = i.next();
-            if (!RepairMalfunction.requiresEVA(entity)) {
-                MalfunctionManager manager = entity.getMalfunctionManager();
-                Iterator<Malfunction> j = manager.getNormalMalfunctions().iterator();
-                while (j.hasNext()) {
-                    Malfunction malfunction = j.next();
-                    try {
-                        if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
-                            result += WEIGHT;
-                        }
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace(System.err);
-                    }
-                }
-            }
-        }
-
-        return result;
-	}
-	
 }

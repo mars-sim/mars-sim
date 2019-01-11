@@ -1090,10 +1090,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * Prints the raw scores of certain tasks 
 	 */
 	public void printTaskProbability() {
-		double maintScore = maintenanceMeta.getProbability(this);
-		double maintEVAScore = maintenanceEVAMeta.getProbability(this);
-		double repairScore = repairMalfunctionMeta.getProbability(this);
-		double repairEVAScore = repairEVAMalfunctionMeta.getProbability(this);
+		double maintScore = maintenanceMeta.getSettlementProbability(this);
+		double maintEVAScore = maintenanceEVAMeta.getSettlementProbability(this);
+		double repairScore = repairMalfunctionMeta.getSettlementProbability(this);
+		double repairEVAScore = repairEVAMalfunctionMeta.getSettlementProbability(this);
 //		double buildingScore = constructBuildingMeta.getProbability(this);
 		
 		LogConsolidated.log(Level.INFO, 0, sourceName,

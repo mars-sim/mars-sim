@@ -125,7 +125,7 @@ public class MaintenanceMeta implements MetaTask, Serializable {
 	}
 
 
-	public double getProbability(Settlement settlement) {
+	public double getSettlementProbability(Settlement settlement) {
 		double result = 0D;
 
 		try {

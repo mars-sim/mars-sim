@@ -79,7 +79,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		super(NAME, person, true, RandomUtil.getRandomDouble(10D) + 25D);
 
 		containerUnit = person.getTopContainerUnit();
-		
+
 		if (!(containerUnit instanceof MarsSurface)) {
 			// Get the malfunctioning entity.
 			entity = getEVAMalfunctionEntity(person);
@@ -134,7 +134,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 			// Check if entity requires an EVA and has any normal malfunctions.
 			if ((result == null) && requiresEVA(person, entity)) {
-				Iterator<Malfunction> k = manager.getNormalMalfunctions().iterator();
+				Iterator<Malfunction> k = manager.getGeneralMalfunctions().iterator();
 				while (k.hasNext() && (result == null)) {
 					Malfunction malfunction = k.next();
 					try {
@@ -232,7 +232,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		// Check if entity requires an EVA and has any normal malfunctions.
 		if ((result == null) && requiresEVA(person, entity)) {
-			Iterator<Malfunction> k = manager.getNormalMalfunctions().iterator();
+			Iterator<Malfunction> k = manager.getGeneralMalfunctions().iterator();
 			while (k.hasNext() && (result == null)) {
 				Malfunction malfunction = k.next();
 				try {
@@ -259,7 +259,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		boolean result = false;
 
-		if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) > 0D) {
+		if (!malfunction.isEVARepairDone()) {
 			result = true;
 		}
 
@@ -419,18 +419,18 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		boolean finishedRepair = false;
 		if (isEVAMalfunction) {
-			if ((malfunction.getEVAWorkTime() - malfunction.getCompletedEVAWorkTime()) <= 0D) {
-				LogConsolidated.log(Level.INFO, 5000, sourceName,
+			if (malfunction.isEVARepairDone()) {
+				LogConsolidated.log(Level.INFO, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " had completed the EVA repair of " + malfunction.getName() + " in "+ entity + ".");
 				finishedRepair = true;
 			}
 		} 
 		
-		else if ((malfunction.getWorkTime() - malfunction.getCompletedWorkTime() <= 0D)) {
-				LogConsolidated.log(Level.INFO, 5000, sourceName,
+		else if (malfunction.isGeneralRepairDone()) {
+				LogConsolidated.log(Level.INFO, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " had completed the regular repair of " + malfunction.getName() + " in "+ entity + ".");
+						+ " had completed the General repair of " + malfunction.getName() + " in "+ entity + ".");
 				finishedRepair = true;
 		}
 
@@ -487,7 +487,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		if (isEVAMalfunction) {
 			workTimeLeft = malfunction.addEVAWorkTime(workTime, person.getName());
 		} else {
-			workTimeLeft = malfunction.addWorkTime(workTime, person.getName());
+			workTimeLeft = malfunction.addGeneralWorkTime(workTime, person.getName());
 		}
 
 		// Add experience points

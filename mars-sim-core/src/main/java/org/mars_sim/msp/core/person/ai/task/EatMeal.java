@@ -999,7 +999,7 @@ public class EatMeal extends Task implements Serializable {
 			if (person.isInside()) {//!(containerUnit instanceof MarsSurface)) {
 				Inventory inv = containerUnit.getInventory();
 				if (NAPKIN_MASS > 0)
-					Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteAR, inv, sourceName + "::endTask");
+					Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteID, inv, sourceName + "::endTask");
 			}
 		}
 	}

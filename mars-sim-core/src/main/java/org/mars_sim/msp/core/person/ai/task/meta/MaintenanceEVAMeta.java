@@ -153,7 +153,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
         return result;
     }
 
-	public double getProbability(Settlement settlement) {
+	public double getSettlementProbability(Settlement settlement) {
 		double result = 0D;
 
         try {
