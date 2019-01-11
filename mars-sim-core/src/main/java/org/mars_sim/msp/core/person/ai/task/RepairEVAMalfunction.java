@@ -133,19 +133,19 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			}
 
 			// Check if entity requires an EVA and has any normal malfunctions.
-			if ((result == null) && requiresEVA(person, entity)) {
-				Iterator<Malfunction> k = manager.getGeneralMalfunctions().iterator();
-				while (k.hasNext() && (result == null)) {
-					Malfunction malfunction = k.next();
-					try {
-						if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
-							result = entity;
-						}
-					} catch (Exception e) {
-						e.printStackTrace(System.err);
-					}
-				}
-			}
+//			if ((result == null) && requiresEVA(person, entity)) {
+//				Iterator<Malfunction> k = manager.getGeneralMalfunctions().iterator();
+//				while (k.hasNext() && (result == null)) {
+//					Malfunction malfunction = k.next();
+//					try {
+//						if (RepairMalfunction.hasRepairPartsForMalfunction(person, malfunction)) {
+//							result = entity;
+//						}
+//					} catch (Exception e) {
+//						e.printStackTrace(System.err);
+//					}
+//				}
+//			}
 		}
 
 		return result;
@@ -158,7 +158,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	 * @param entity the entity with a malfunction.
 	 * @return true if entity requires an EVA repair.
 	 */
-	public static boolean requiresEVA(Person person, Malfunctionable entity) {
+	public static boolean hasEVA(Person person, Malfunctionable entity) {
 
 		boolean result = false;
 
@@ -181,7 +181,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		return result;
 	}
 
-	public static boolean requiresEVA(Malfunctionable entity) {
+	public static boolean hasEVA(Malfunctionable entity) {
 
 		boolean result = false;
 
@@ -231,7 +231,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		}
 
 		// Check if entity requires an EVA and has any normal malfunctions.
-		if ((result == null) && requiresEVA(person, entity)) {
+		if ((result == null) && hasEVA(person, entity)) {
 			Iterator<Malfunction> k = manager.getGeneralMalfunctions().iterator();
 			while (k.hasNext() && (result == null)) {
 				Malfunction malfunction = k.next();

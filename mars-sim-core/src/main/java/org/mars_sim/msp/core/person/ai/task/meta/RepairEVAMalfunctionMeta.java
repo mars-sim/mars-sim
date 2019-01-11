@@ -133,29 +133,15 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 		while (i.hasNext()) {
 			Malfunctionable entity = i.next();
 			MalfunctionManager manager = entity.getMalfunctionManager();
-
-			// Check if entity has any EVA malfunctions.
-			Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
-			while (j.hasNext()) {
-				Malfunction malfunction = j.next();
-				if (!malfunction.isEVARepairDone())
-					result += WEIGHT;
-				try {
-					if (RepairEVAMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+			if (RepairEVAMalfunction.hasEVA(entity)) {
+				// Check if entity has any EVA malfunctions.
+				Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
+				while (j.hasNext()) {
+					Malfunction malfunction = j.next();
+					if (!malfunction.isEVARepairDone())
 						result += WEIGHT;
-					}
-				} catch (Exception e) {
-					e.printStackTrace(System.err);
-				}
-			}
-
-			// Check if entity requires an EVA and has any normal malfunctions.
-			if (RepairEVAMalfunction.requiresEVA(entity)) {
-				Iterator<Malfunction> k = manager.getGeneralMalfunctions().iterator();
-				while (k.hasNext()) {
-					Malfunction malfunction = k.next();
 					try {
-						if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+						if (RepairEVAMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
 							result += WEIGHT;
 						}
 					} catch (Exception e) {
@@ -163,6 +149,21 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 					}
 				}
 			}
+
+			// Check if entity requires an EVA and has any normal malfunctions.
+//			if (RepairEVAMalfunction.requiresEVA(entity)) {
+//				Iterator<Malfunction> k = manager.getEVAMalfunctions().iterator();
+//				while (k.hasNext()) {
+//					Malfunction malfunction = k.next();
+//					try {
+//						if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+//							result += WEIGHT;
+//						}
+//					} catch (Exception e) {
+//						e.printStackTrace(System.err);
+//					}
+//				}
+//			}
 		}
 
 		return result;

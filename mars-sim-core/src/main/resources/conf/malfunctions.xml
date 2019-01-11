@@ -271,7 +271,7 @@
 		
 	<!-- Damaged wheel on rover. -->
 	<malfunction name="Damaged Wheel">
-		<severity value="20" />
+		<severity value="65" />
 		<probability value="3.0" />
 		<eva-repair-time value="50.0" />
 		<system-list>
@@ -373,7 +373,7 @@
 	
 	<!-- Communication system failure. -->
 	<malfunction name="Communication System Failure">
-		<severity value="20" />
+		<severity value="35" />
 		<probability value="5.0" />
 		<repair-time value="50.0" />
 		<eva-repair-time value="50.0" />
@@ -605,7 +605,7 @@
 	<malfunction name="Electrical Short">
 		<severity value="20" />
 		<probability value="3.0" />
-		<repair-time value="10.0" />
+		<repair-time value="50.0" />
 		<system-list>
 			<system name="robot" />			
 			<system name="vehicle" />
@@ -682,7 +682,7 @@
 
 	<!-- 2014-11-19 Added Carbon Dioxide Pump Failure. -->
 	<malfunction name="Carbon Dioxide Pump Failure">
-		<severity value="40" />
+		<severity value="15" />
 		<probability value="2.0" />
 		<repair-time value="80.0" />
 		<emergency-repair-time value="40.0" />
@@ -700,7 +700,7 @@
 
 	<!-- 2014-11-19 Added Kitchen Oven Failure. -->
 	<malfunction name="Kitchen Oven Failure">
-		<severity value="40" />
+		<severity value="35" />
 		<probability value=".5" />
 		<repair-time value="80.0" />
 		<emergency-repair-time value="40.0" />
@@ -777,7 +777,7 @@
 
 	<!-- 2014-11-19 Added Kitchen Refrigerator Failure. -->
 	<malfunction name="Kitchen Refrigerator Failure">
-		<severity value="40" />
+		<severity value="45" />
 		<probability value=".5" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="100.0" />
@@ -818,7 +818,7 @@
 
 	<!-- 2015-02-16 Added solar parabolic mirror failure. -->
 	<malfunction name="Solar Parabolic Mirror Failure">
-		<severity value="40" />
+		<severity value="30" />
 		<probability value="1.0" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="100.0" />
@@ -882,7 +882,7 @@
 
 	<!-- 2015-05-31 Added ls 3d printer failure. -->
 	<malfunction name="Laser Sintering 3D Printer Failure">
-		<severity value="30" />
+		<severity value="50" />
 		<probability value="3.0" />
 		<repair-time value="200.0" />
 		<emergency-repair-time value="100" />

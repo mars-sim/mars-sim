@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -222,7 +223,7 @@ public class TabPanelMaintenance extends TabPanel {
 //		else buf.append("None.");
 //		return buf.toString();
 
-		StringBuilder buf = new StringBuilder("Needed Parts: ");
+		StringBuilder buf = new StringBuilder("Parts needed : ");
 		// Map<Part, Integer> parts =
 		// malfunctionable.getMalfunctionManager().getMaintenanceParts();
 		if (parts.size() > 0) {
@@ -280,21 +281,19 @@ public class TabPanelMaintenance extends TabPanel {
 			setBorder(new MarsPanelBorder());
 
 			JLabel buildingLabel = new JLabel(building.getNickName(), JLabel.LEFT);
-			buildingLabel.setFont(new Font("Serif", Font.BOLD, 16));
+			buildingLabel.setFont(new Font("Serif", Font.BOLD, 14));
 			add(buildingLabel);
 
 			// Add wear condition cache and label.
 			wearConditionCache = (int) Math.round(manager.getWearCondition());
-			wearConditionLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
+			wearConditionLabel = new JLabel(
+					Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
 					JLabel.CENTER);
-			// wearConditionLabel.setToolTipText(Msg.getString("BuildingPanelMaintenance.toolTip"));
-			// WebLabel tip = new WebLabel
-			// (Msg.getString("BuildingPanelMaintenance.toolTip"));
-			TooltipManager.setTooltip(wearConditionLabel, Msg.getString("BuildingPanelMaintenance.toolTip"),
+			TooltipManager.setTooltip(wearConditionLabel, 
+					Msg.getString("BuildingPanelMaintenance.wear.toolTip"),
 					TooltipWay.down);
 			// wearConditionLabel.setMargin (4);
-
-			add(wearConditionLabel);
+//			add(wearConditionLabel);
 
 			JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
 			add(mainPanel);
@@ -307,13 +306,16 @@ public class TabPanelMaintenance extends TabPanel {
 
 			// Prepare progress bar panel.
 			JPanel progressBarPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-			mainPanel.add(progressBarPanel, BorderLayout.CENTER);
-
+//			mainPanel.add(progressBarPanel, BorderLayout.CENTER);
+			add(progressBarPanel);
+			
+			mainPanel.add(wearConditionLabel, BorderLayout.CENTER);
+			
 			// Prepare progress bar.
 			JProgressBar progressBar = new JProgressBar();
 			progressBarModel = progressBar.getModel();
 			progressBar.setStringPainted(true);
-			progressBar.setPreferredSize(new Dimension(80, 15));
+			progressBar.setPreferredSize(new Dimension(240, 15));
 			progressBarPanel.add(progressBar);
 
 			// Set initial value for progress bar.
@@ -387,7 +389,8 @@ public class TabPanelMaintenance extends TabPanel {
 
 		private String getToolTipString() {
 			StringBuilder result = new StringBuilder("<html>");
-			result.append("The Last Complete Maintenance Was Done ").append(lastCompletedCache).append(" Sols Ago");
+			result.append("The last completed maintenance was done ")
+				.append(lastCompletedCache).append(" sols ago.");
 			result.append("</html>");
 			return result.toString();
 		}
@@ -427,14 +430,18 @@ public class TabPanelMaintenance extends TabPanel {
 
 			// Prepare the building label.
 			JLabel buildingLabel = new JLabel(building.getNickName(), JLabel.LEFT);
-			buildingLabel.setFont(new Font("Serif", Font.BOLD, 16));
+			buildingLabel.setFont(new Font("Serif", Font.BOLD, 14));
 			add(buildingLabel);
 
 			// Prepare the malfunction label.
 			malfunctionLabel = new JLabel(malfunction.getName(), JLabel.LEFT);
+			malfunctionLabel.setForeground(Color.red);
 			add(malfunctionLabel);
 
 			workLabel = new JLabel("", JLabel.LEFT);
+//			workLabel.setFont(new Font("Serif", Font.ITALIC, 12));
+//			workLabel.setForeground(Color.LIGHT_GRAY);
+//			workLabel.setBackground(Color.DARK_GRAY);
 			add(workLabel);
 			
 			// Progress bar panel.
@@ -478,17 +485,16 @@ public class TabPanelMaintenance extends TabPanel {
 			String work = "Repair Work Required :";
 
 			if (malfunction.getGeneralWorkTime() > 0) {
-				work += "  General";
+				work += "  [General]";
 			}
 			if (malfunction.getEmergencyWorkTime() > 0) {
-				work += "  Emergency";
+				work += "  [Emergency]";
 			}
 			if (malfunction.getEVAWorkTime() > 0) {
-				work += "  EVA";
+				work += "  [EVA]";
 			}
 			
 			workLabel.setText(work);
-//			malfunctionLabel.setForeground(Color.red);
 			
 			// Update progress bar.
 			int percentComplete = (int)malfunction.getPercentageFixed();

@@ -358,6 +358,21 @@ public class MalfunctionManager implements Serializable {
 	}
 
 	/**
+	 * Gets a list of all emergency malfunctions sorted by highest severity first.
+	 * 
+	 * @return list of malfunctions.
+	 */
+	public List<Malfunction> getEmergencyMalfunctions() {
+		List<Malfunction> result = new ArrayList<Malfunction>();
+		for (Malfunction malfunction : malfunctions) {
+			if (!malfunction.isEmergencyRepairDone())
+				result.add(malfunction);
+		}
+		Collections.sort(result, new MalfunctionSeverityComparator());
+		return result;
+	}
+	
+	/**
 	 * Gets the most serious EVA malfunction the entity has.
 	 * 
 	 * @return malfunction
@@ -860,44 +875,48 @@ public class MalfunctionManager implements Serializable {
 		// Check if any malfunctions are fixed.
 		if (hasMalfunction()) {
 			for (Malfunction m : malfunctions) {
-				if (!m.isEmergencyRepairDone()) {
-					
-					Settlement settlement = null;
-					
-					if (entity.getUnit() instanceof EVASuit) {
-						settlement = ((EVASuit)(entity.getUnit())).getSettlement();
-					}
-					else {
-						settlement = entity.getUnit().getSettlement();
-					}		
-					
-					Collection<Person> people = settlement.getAffectedPeople();
-					
-					if (people.isEmpty()) {
-						people.stream()
-							.filter(p -> p.getJobName().toLowerCase().contains("engineer")
-									|| p.getJobName().toLowerCase().contains("technician"))
-							.collect(Collectors.toList());
-					}
-					
-					if (people.isEmpty()) {
-						people = settlement.getIndoorPeople();			
-					}
-					
-					Person chosen = null;
-					int highestScore = 0;
-
-					for (Person p : people) {
-						int score = p.getPreference().getPreferenceScore(new RepairMalfunctionMeta());
-						if (highestScore < score) {
-							highestScore = score;
-							chosen = p;
-						}
-					}
-					
-					if (highestScore > 0 && chosen != null) 
-						chosen.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(chosen));	
-				}
+//				if (!m.isEmergencyRepairDone()) {
+//					
+//					Settlement settlement = null;
+//					
+//					if (entity.getUnit() instanceof EVASuit) {
+//						settlement = ((EVASuit)(entity.getUnit())).getSettlement();
+//					}
+//					else {
+//						settlement = entity.getUnit().getSettlement();
+//					}		
+//					
+//					if (settlement != null) {
+//						Collection<Person> people = settlement.getAffectedPeople();
+//						
+//						if (people.isEmpty()) {
+//							people.stream()
+//								.filter(p -> p.getJobName().toLowerCase().contains("engineer")
+//										|| p.getJobName().toLowerCase().contains("technician"))
+//								.collect(Collectors.toList());
+//						}
+//						
+//						if (people.isEmpty()) {
+//							people = settlement.getIndoorPeople();			
+//						}
+//						
+//						Person chosen = null;
+//						int highestScore = 0;
+//	
+//						for (Person p : people) {
+//							int score = p.getPreference().getPreferenceScore(new RepairMalfunctionMeta());
+//							if (highestScore < score) {
+//								highestScore = score;
+//								chosen = p;
+//							}
+//						}
+//						
+//						if (highestScore > 0 && chosen != null && chosen.isInside()) {
+//							System.out.println(chosen + " has been selected to perform RepairEmergencyMalfunction.");
+//							chosen.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(chosen));	
+//						}
+//					}
+//				}
 				
 				if (m.isFixed()) {
 					fixedMalfunctions.add(m);

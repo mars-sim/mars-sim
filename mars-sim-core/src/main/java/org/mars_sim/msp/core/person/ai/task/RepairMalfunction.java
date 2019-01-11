@@ -121,8 +121,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
 		while (i.hasNext() && (result == null)) {
 			Malfunctionable entity = i.next();
-			if (!requiresEVA(person, entity)
-				&& hasMalfunction(person, entity)) {
+			if (entity.getMalfunctionManager().getMostSeriousEmergencyMalfunction() != null) { 
+//				!requiresEVA(person, entity) && 
+//				&& hasMalfunction(person, entity)) {
 					result = entity;
 			}
 		}
@@ -142,8 +143,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
 		while (i.hasNext() && (result == null)) {
 			Malfunctionable entity = i.next();
-			if (!requiresEVA(robot, entity)
-				&& hasMalfunction(robot, entity)) {
+			if (entity.getMalfunctionManager().getMostSeriousEmergencyMalfunction() != null) {
+//				!requiresEVA(robot, entity) && 
+//				hasMalfunction(robot, entity)) {
 					result = entity;
 			}
 		}
@@ -158,7 +160,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	 * @param entity the entity with a malfunction.
 	 * @return true if entity requires an EVA repair.
 	 */
-	public static boolean requiresEVA(Person person, Malfunctionable entity) {
+	public static boolean hasEVA(Person person, Malfunctionable entity) {
 
 		boolean result = false;
 
@@ -188,7 +190,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	 * @param entity the entity with a malfunction.
 	 * @return true if entity requires an EVA repair.
 	 */
-	public static boolean requiresEVA(Malfunctionable entity) {
+	public static boolean hasEVA(Malfunctionable entity) {
 
 		boolean result = false;
 
@@ -210,7 +212,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		return result;
 	}
 	
-	public static boolean requiresEVA(Robot robot, Malfunctionable entity) {
+	public static boolean hasEVA(Robot robot, Malfunctionable entity) {
 
 		boolean result = false;
 
@@ -333,7 +335,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			throw new IllegalArgumentException("malfunction is null");
 		}
 
-		boolean result = false;
+		boolean result = true;
 	
 		Map<Integer, Integer> repairParts = malfunction.getRepairParts();
 		Iterator<Integer> i = repairParts.keySet().iterator();
@@ -521,9 +523,16 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		// logger.info(description);
 		double workTimeLeft = 0;
 		if (person != null) {
-			workTimeLeft = malfunction.addGeneralWorkTime(workTime, person.getName());
+			if (!malfunction.isEmergencyRepairDone())
+				workTimeLeft = malfunction.addEmergencyWorkTime(workTime, person.getName());
+			if (!malfunction.isGeneralRepairDone())
+				workTimeLeft = malfunction.addGeneralWorkTime(workTime, person.getName());
+			
 		} else {
-			workTimeLeft = malfunction.addGeneralWorkTime(workTime, robot.getName());
+			if (!malfunction.isEmergencyRepairDone())
+				workTimeLeft = malfunction.addEmergencyWorkTime(workTime, robot.getName());
+			if (!malfunction.isGeneralRepairDone())
+				workTimeLeft = malfunction.addGeneralWorkTime(workTime, robot.getName());
 		}
 		
 		// Add experience

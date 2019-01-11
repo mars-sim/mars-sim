@@ -280,7 +280,6 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		} 
 		
 		else if (robot != null) {
-
             Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
             while (i.hasNext() && (malfunction == null)) {
                 Malfunctionable e = i.next();
@@ -292,9 +291,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
                             malfunction.getName(), entity.getNickName())); //$NON-NLS-1$
                 }
             }
-
 		}
-
 	}
 
 	/**

@@ -10,7 +10,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -72,7 +71,7 @@ extends BuildingFunctionPanel {
 		int wearConditionCache = (int) Math.round(manager.getWearCondition());
 		wearConditionLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.wearCondition",
 				wearConditionCache), JLabel.CENTER);
-		wearConditionLabel.setToolTipText(Msg.getString("BuildingPanelMaintenance.toolTip"));
+		wearConditionLabel.setToolTipText(Msg.getString("BuildingPanelMaintenance.wear.toolTip"));
 		add(wearConditionLabel);
 
 		// Create lastCompletedLabel.

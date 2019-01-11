@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -99,13 +100,28 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(settlement).iterator();
         while (i.hasNext()) {
             Malfunctionable entity = i.next();
-            if (!RepairMalfunction.requiresEVA(entity)) {
+//            if (!RepairMalfunction.requiresEVA(entity)) { // do NOT use requiresEVA() since it will filter out Emergency work repair
                 MalfunctionManager manager = entity.getMalfunctionManager();
                 Iterator<Malfunction> j = manager.getGeneralMalfunctions().iterator();
                 while (j.hasNext()) {
                     Malfunction malfunction = j.next();
-                    if (malfunction.isGeneralRepairDone())
-                    	result += WEIGHT;
+                    if (!malfunction.isGeneralRepairDone())
+                    	result += WEIGHT/4D;
+                    try {
+                        if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+                            result += WEIGHT/2D;
+                        }
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace(System.err);
+                    }
+                }
+                
+                Iterator<Malfunction> k = manager.getEmergencyMalfunctions().iterator();
+                while (k.hasNext()) {
+                    Malfunction malfunction = k.next();
+                    if (!malfunction.isEmergencyRepairDone())
+                    	result += WEIGHT/2D;
                     try {
                         if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
                             result += WEIGHT;
@@ -115,9 +131,8 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
                         e.printStackTrace(System.err);
                     }
                 }
-            }
+//            }
         }
-
         return result;
     }
     
@@ -136,7 +151,7 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 	        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
 	        while (i.hasNext()) {
 	            Malfunctionable entity = i.next();
-	            if (!RepairMalfunction.requiresEVA(robot, entity)) {
+//	            if (!RepairMalfunction.requiresEVA(robot, entity)) {
 	                MalfunctionManager manager = entity.getMalfunctionManager();
 	                Iterator<Malfunction> j = manager.getGeneralMalfunctions().iterator();
 	                while (j.hasNext()) {
@@ -150,8 +165,7 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 	                        e.printStackTrace(System.err);
 	                    }
 	                }
-	            }
-
+//	            }
 	        }
 
 	        // Effort-driven task modifier.
