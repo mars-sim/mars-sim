@@ -48,11 +48,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	private int lastOwner = -1;
 
-	private static Simulation sim;
-	protected static UnitManager unitManager;
-	private static MarsSurface marsSurface;
-	private static Mars mars;
-	
 	/**
 	 * Constructs an Equipment object
 	 * 
@@ -64,12 +59,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		// Initialize data members.
 		isSalvaged = false;
 		salvageInfo = null;
-		// this.name = name;
-
-		sim = Simulation.instance();
-		unitManager = sim.getUnitManager();
-		mars = sim.getMars();
-		
 		
 		if (mars != null) {// For passing maven test
 			marsSurface = mars.getMarsSurface();
@@ -86,15 +75,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 //		enter(LocationCodeType.BUILDING);
 
 		
-	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param um
-	 */
-	public static void justReloaded(UnitManager um) {
-		unitManager = um;
 	}
 	
 	/**

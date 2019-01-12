@@ -263,9 +263,9 @@ public class ResourceUtil implements Serializable {
 	}
 
 	/**
-	 * Remaps the Amount Resource instances in all map
+	 * Recreates the Amount Resource instances in all map
 	 */
-	public void justReloaded() {
+	public void initializeInstances() {
 		// Restores the Amount Resource array
 		restoreInstancesArray();
 		// Map the static instances

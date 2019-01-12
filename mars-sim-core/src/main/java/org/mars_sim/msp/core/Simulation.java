@@ -41,7 +41,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -55,7 +54,6 @@ import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.CircadianClock;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Role;
@@ -96,29 +94,11 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.Function;
-import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.HeatSource;
-import org.mars_sim.msp.core.structure.building.function.Heating;
-import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
-import org.mars_sim.msp.core.structure.building.function.Manufacture;
-import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
-import org.mars_sim.msp.core.structure.building.function.PowerStorage;
-import org.mars_sim.msp.core.structure.building.function.Recreation;
-import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
-import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
-import org.mars_sim.msp.core.structure.building.function.RoboticStation;
-import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
-import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
-import org.mars_sim.msp.core.structure.building.function.SolarThermalPowerSource;
-import org.mars_sim.msp.core.structure.building.function.Storage;
-import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
-import org.mars_sim.msp.core.structure.building.function.WindPowerSource;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
-import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
@@ -862,13 +842,13 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize the utility class for getting lists of meta tasks.
 		new MetaTaskUtil();
 		// Re-initialize the resources for the saved sim
-		ResourceUtil.getInstance().justReloaded();
+		ResourceUtil.getInstance().initializeInstances();
 		// Re-initialize the MarsSurface instance
 		unitManager.setMarsSurface();
 		// Re-initialize the Simulation instance
-		MasterClock.justReloaded(this);					
+		MasterClock.setInstances(this);					
 		// Re-initialize the Mars instance
-		MarsClock.justReloaded(mars);	
+		MarsClock.setInstances(mars);	
 		// Gets he MarsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();
 		// Gets he MarsClock instance
@@ -885,12 +865,11 @@ public class Simulation implements ClockListener, Serializable {
 		OrbitInfo orbit = mars.getOrbitInfo();
 		// Gets MarsSurface instance
 		MarsSurface marsSurface = mars.getMarsSurface();
-
-		
+	
 		// Re-initialize Mars environmental instances
-		Weather.justReloaded(masterClock, marsClock, mars, surface, orbit, unitManager); // terrain
-		SurfaceFeatures.justReloaded(masterClock, mars, this, weather, orbit, missionManager);  // sunDirection, landmarks
-		OrbitInfo.justReloaded(marsClock, earthClock);		
+		Weather.setInstances(masterClock, marsClock, mars, surface, orbit, unitManager); // terrain
+		SurfaceFeatures.setInstances(masterClock, mars, this, weather, orbit, missionManager);  // sunDirection, landmarks
+		OrbitInfo.setInstances(marsClock, earthClock);		
 		DustStorm.setInstances(weather);
 		
 //		System.out.println("Done with Mars environment instances");
@@ -904,7 +883,7 @@ public class Simulation implements ClockListener, Serializable {
 		MalfunctionFactory.initializeInstances(marsClock, unitManager);
 		MissionManager.setMarsClock(marsClock);
 //		MedicalManager.justReloaded();
-		unitManager.justReloaded(marsClock);
+		unitManager.setInstances(marsClock);
 		RelationshipManager.setInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock);
 		TransportManager.initializeInstances(marsClock, eventManager);
@@ -917,33 +896,32 @@ public class Simulation implements ClockListener, Serializable {
 		Resupply.initializeInstances(bc, unitManager);
 		
 		// Re-initialize Unit related class
-		Inventory.initializeInstances(mars.getMarsSurface());
-		Equipment.justReloaded(unitManager);
-		EVASuit.justReloaded(weather);				
+		EVASuit.setInstances(weather);				
+		GroundVehicle.setInstances(surface);				//  terrain
+		Inventory.initializeInstances(marsSurface);
+		Robot.setInstances(earthClock);
+		Rover.setInstances(pc);					
 		Unit.setInstances(masterClock, marsClock, this, mars, marsSurface, earthClock, unitManager);
-		Robot.justReloaded(masterClock, marsClock);
-		Vehicle.justReloaded(missionManager);				//  vehicleconfig 
-		GroundVehicle.justReloaded(surface);				//  terrain
-		Rover.justReloaded(pc);					
+		Vehicle.setInstances(missionManager);				//  vehicleconfig 
 		
 //		System.out.println("Done with Unit Object instances");
 		
 		// Re-initialize Person/Robot related class
-		BotMind.justReloaded(marsClock);
-		CircadianClock.justReloaded(marsClock);
-		Mind.justReloaded(marsClock, this, missionManager, relationshipManager);		
-		PhysicalCondition.justReloaded(masterClock, marsClock);
-		RadiationExposure.justReloaded(masterClock, marsClock);
-		Role.justReloaded(marsClock);
-		TaskManager.justReloaded(marsClock, missionManager);
-		TaskSchedule.justReloaded(marsClock);
+		BotMind.setInstances(marsClock);
+		CircadianClock.setInstances(marsClock);
+		Mind.setInstances(marsClock, this, missionManager, relationshipManager);		
+		PhysicalCondition.setInstances(masterClock, marsClock);
+		RadiationExposure.setInstances(masterClock, marsClock);
+		Role.setInstances(marsClock);
+		TaskManager.setInstances(marsClock, missionManager);
+		TaskSchedule.setInstances(marsClock);
 		
 		// Re-initialize Structure related class
-		Building.justReloaded(masterClock, marsClock, bc, unitManager);
-		BuildingManager.justReloaded(masterClock, marsClock, bc, eventManager, relationshipManager, unitManager);
-		Settlement.justReloaded(marsClock, weather, unitManager);		// loadDefaultValues()
-		ChainOfCommand.justReloaded(marsClock, unitManager);
-		GoodsManager.justReloaded(marsClock, missionManager, unitManager, pc);
+		Building.setInstances(masterClock, marsClock, bc, unitManager);
+		BuildingManager.setInstances(masterClock, marsClock, bc, eventManager, relationshipManager, unitManager);
+		Settlement.setInstances(marsClock, weather, unitManager);		// loadDefaultValues()
+		ChainOfCommand.setInstances(marsClock, unitManager);
+		GoodsManager.setInstances(marsClock, missionManager, unitManager, pc);
 		
 //		System.out.println("Done with Structure instances");
 		
@@ -954,7 +932,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Miscs.
 		CompositionOfAir.setInstances(masterClock, marsClock, pc);
-		Crop.justReloaded(masterClock, marsClock, surface, unitManager);
+		Crop.setInstances(masterClock, marsClock, surface, unitManager);
 		HeatSource.setInstances(mars, surface, orbit, weather);
 		Malfunction.setInstances();
 		PowerSource.setInstances(mars, surface, orbit, weather);
@@ -970,11 +948,11 @@ public class Simulation implements ClockListener, Serializable {
 		PerformLaboratoryExperiment.setInstances(scientificStudyManager);
 		PlayHoloGame.setInstances(masterClock, marsClock);
 		ProposeScientificStudy.setInstances(scientificStudyManager);
-		Relax.justReloaded(marsClock);
-		ReviewMissionPlan.justReloaded(relationshipManager, missionManager);
+		Relax.setInstances(marsClock);
+		ReviewMissionPlan.setInstances(relationshipManager, missionManager);
 		Sleep.setInstances(masterClock, marsClock);
 		Task.setInstances(eventManager, relationshipManager, unitManager, scientificStudyManager);
-		Walk.justReloaded(unitManager);	
+		Walk.setInstances(unitManager);	
 
 //		System.out.println("Done with Task instances");
 		

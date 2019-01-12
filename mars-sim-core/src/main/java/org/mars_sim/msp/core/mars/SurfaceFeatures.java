@@ -722,7 +722,7 @@ public class SurfaceFeatures implements Serializable {
 	 * @param m
 	 * @param {@link Weather}
 	 */
-	public static void justReloaded(MasterClock ms, Mars m, Simulation s, Weather w, OrbitInfo o, MissionManager mmgr) {
+	public static void setInstances(MasterClock ms, Mars m, Simulation s, Weather w, OrbitInfo o, MissionManager mmgr) {
 		masterClock = ms;
 		mars = m;
 		orbitInfo = o;

@@ -342,6 +342,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		super(null, null);
 		location = getCoordinates();
 		unitManager = Simulation.instance().getUnitManager();
+		unitManager.addSettlementID(this);
 //		updateAllAssociatedPeople();
 //		updateAllAssociatedRobots();
 	}
@@ -368,6 +369,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			unitManager = Simulation.instance().getUnitManager();
 			unitManager.addSettlementID(this);
 		}
+		
+//		if (unitManager != null)  {// for passing maven test
+//			unitManager.addSettlementID(this);
+//		}
 		
 		if (missionManager == null) {// for passing maven test
 			missionManager = Simulation.instance().getMissionManager();
@@ -1079,7 +1084,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @param clock
 	 * @param w
 	 */
-	public static void justReloaded(MarsClock clock, Weather w, UnitManager u) {
+	public static void setInstances(MarsClock clock, Weather w, UnitManager u) {
 		marsClock = clock;
 		weather = w;
 		unitManager = u;

@@ -118,7 +118,7 @@ public class CircadianClock implements Serializable {
 	 * 
 	 * @param clock
 	 */
-	public static void justReloaded(MarsClock clock) {
+	public static void setInstances(MarsClock clock) {
 		marsClock = clock;
 	}
 	

@@ -99,9 +99,6 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	protected static MarsSurface marsSurface;
 	protected static UnitManager unitManager;
 	
-	
-//	private static MarsSurface marsSurface;
-	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
 	 * threads.
@@ -153,7 +150,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		else if (this instanceof Settlement)
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 		
-		mars = sim.getMars();
+//		mars = sim.getMars();
 //		masterClock = sim.getMasterClock();
 //		marsClock = masterClock.getMarsClock();
 //		earthClock = masterClock.getEarthClock();

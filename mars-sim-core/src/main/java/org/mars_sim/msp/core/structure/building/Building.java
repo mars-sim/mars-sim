@@ -193,7 +193,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/** Unit location coordinates. */
 	private Coordinates location;
 	
-//	protected BuildingManager manager;
+	protected BuildingManager manager;
 	protected MalfunctionManager malfunctionManager;
 
 	private Inventory inv;
@@ -246,7 +246,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getWidth(),
 				template.getLength(), template.getXLoc(), template.getYLoc(), template.getFacing(), manager);
 
-//		this.manager = manager;
+		this.manager = manager;
 		location = manager.getSettlement().getCoordinates();
 		buildingType = template.getBuildingType();
 		inv = manager.getSettlement().getInventory();
@@ -328,7 +328,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this.templateID = id;
 		this.buildingType = buildingType;
 		this.nickName = nickName;
-//		this.manager = manager;
+		this.manager = manager;
 		inv = manager.getSettlement().getInventory();
 		settlementID = manager.getSettlement().getIdentifier();
 		
@@ -453,7 +453,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/** Constructor 3 (for use by Mock Building in Unit testing) */
 	protected Building(BuildingManager manager) {
 		super("Mock Building", new Coordinates(0D, 0D));
-		
+
+		this.manager = manager;
 //		settlementID = manager.getSettlement().getIdentifier();
 
 		// Place it in a settlement
@@ -892,7 +893,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public void removeFunction(Function function) {
 		if (functions.contains(function)) {
 			functions.remove(function);
-			// Call removeOneFunctionfromBFMap()
+			// Need to remove the function from the building function map 
 			getBuildingManager().removeOneFunctionfromBFMap(this, function);
 		}
 	}
@@ -903,7 +904,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return building manager
 	 */
 	public BuildingManager getBuildingManager() {
-		return unitManager.getSettlementByID(settlementID).getBuildingManager();
+		return manager;//unitManager.getSettlementByID(settlementID).getBuildingManager();
 	}
 
 	/**
@@ -1291,7 +1292,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1, BuildingConfig bc, UnitManager u) {
+	public static void setInstances(MasterClock c0, MarsClock c1, BuildingConfig bc, UnitManager u) {
 		masterClock = c0;
 		marsClock = c1;
 		buildingConfig = bc;
@@ -1481,7 +1482,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	public Settlement getSettlement() {
-		return unitManager.getSettlementByID(settlementID); // manager.getSettlement();//
+		return manager.getSettlement();//unitManager.getSettlementByID(settlementID); // 
 	}
 
 	public void extractHeat(double heat) {

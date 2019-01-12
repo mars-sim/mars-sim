@@ -1885,7 +1885,7 @@ public class PhysicalCondition implements Serializable {
 		return dehydrationStartTime;
 	}
 	
-	public static void justReloaded(MasterClock c0, MarsClock c1) {
+	public static void setInstances(MasterClock c0, MarsClock c1) {
 		masterClock = c0;
 		marsClock = c1;
 		medicalManager = sim.getMedicalManager();

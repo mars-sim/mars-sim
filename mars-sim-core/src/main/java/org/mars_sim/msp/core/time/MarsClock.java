@@ -1077,7 +1077,7 @@ public class MarsClock implements Serializable {
 	 * 
 	 * @param mars
 	 */
-	public static void justReloaded(Mars mars) {
+	public static void setInstances(Mars mars) {
 		sim = Simulation.instance();
 		orbitInfo = mars.getOrbitInfo();
 	}

@@ -26,14 +26,14 @@ public class TestLocalAreaUtil extends TestCase {
         
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, false);
+        Simulation.createNewSimulation(-1, true);
         
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
-        Iterator<Settlement> i = unitManager.getSettlements().iterator();
-        while (i.hasNext()) {
-            unitManager.removeUnit(i.next());
-        }
+//        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+//        while (i.hasNext()) {
+//            unitManager.removeUnit(i.next());
+//        }
         
         // Create test settlement.
         Settlement settlement = new MockSettlement();

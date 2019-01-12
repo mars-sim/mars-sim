@@ -1017,7 +1017,7 @@ public class Weather implements Serializable {
 	 * @param {@link Mars}
 	 * @param {@link SurfaceFeatures}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1, Mars m, SurfaceFeatures s, OrbitInfo o, UnitManager u) {
+	public static void setInstances(MasterClock c0, MarsClock c1, Mars m, SurfaceFeatures s, OrbitInfo o, UnitManager u) {
 		masterClock = c0;
 		marsClock = c1;
 		mars = m;	

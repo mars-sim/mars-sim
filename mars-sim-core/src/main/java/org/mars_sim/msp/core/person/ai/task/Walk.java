@@ -1363,7 +1363,7 @@ public class Walk extends Task implements Serializable {
 	 * 
 	 * @param mgr
 	 */
-	public static void justReloaded(UnitManager mgr) {
+	public static void setInstances(UnitManager mgr) {
 		unitManager = mgr;
 	}
 	

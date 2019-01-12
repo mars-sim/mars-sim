@@ -1163,7 +1163,7 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @param mgr
 	 */
-	public static void justReloaded(MissionManager mgr) {
+	public static void setInstances(MissionManager mgr) {
 		missionManager = mgr;
 		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 	}

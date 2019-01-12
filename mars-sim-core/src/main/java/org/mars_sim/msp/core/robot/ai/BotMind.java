@@ -54,7 +54,7 @@ public class BotMind implements Serializable {
 	/** The robot's skill manager. */
 	private SkillManager skillManager;
 
-	private static MissionManager missionManager;
+//	private static MissionManager missionManager;
 	private static Simulation sim;
 	private static MarsClock marsClock;
 
@@ -73,7 +73,7 @@ public class BotMind implements Serializable {
 		jobLock = false;
 
 		sim = Simulation.instance();
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		marsClock = sim.getMasterClock().getMarsClock();
 
 		// Define the boundary in Sense-Act-Plan (Robot control methodology
 		// 1. Sense - gather information using the sensors
@@ -90,19 +90,10 @@ public class BotMind implements Serializable {
 		// Construct a task manager
 		botTaskManager = new BotTaskManager(this);
 
-		missionManager = sim.getMissionManager();
+//		missionManager = sim.getMissionManager();
 
 	}
 
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void justReloaded(MarsClock clock) {
-		marsClock = clock;
-	}
-	
 	/**
 	 * Time passing.
 	 * 
@@ -398,6 +389,15 @@ public class BotMind implements Serializable {
 		return skillManager;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void setInstances(MarsClock clock) {
+		marsClock = clock;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

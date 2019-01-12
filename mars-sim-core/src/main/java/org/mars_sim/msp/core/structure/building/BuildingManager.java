@@ -158,7 +158,8 @@ public class BuildingManager implements Serializable {
 		buildingConfig = simulationConfig.getBuildingConfiguration();
 		eventManager = sim.getEventManager();
 		relationshipManager = sim.getRelationshipManager();
-
+		unitManager = sim.getUnitManager();
+		
 		// Construct all buildings in the settlement.
 		buildings = new ArrayList<Building>();
 		if (buildingTemplates != null) {
@@ -198,16 +199,17 @@ public class BuildingManager implements Serializable {
 	 * @throws Exception if buildings cannot be constructed.
 	 */
 	public BuildingManager(Settlement settlement, boolean isTest) {
-//		this.settlement = settlement;
+//		this.settlement = settlement;	
 		settlementID = settlement.getIdentifier();
-		System.out.println("BuildingManager's settlementID : " + settlementID);
+		logger.config("BuildingManager's settlementID : " + settlementID);
 		if (isTest)
 			logger.info("Loading BuildingManager's constructor 2 for " + settlement.getName() + " on "
 					+ Thread.currentThread().getName() + " thread.");
 
 		buildingConfig = simulationConfig.getBuildingConfiguration();
 		relationshipManager = sim.getRelationshipManager();
-
+		unitManager = sim.getUnitManager();
+		
 		// Construct all buildings in the settlement.
 		buildings = new ArrayList<Building>();
 
@@ -1993,7 +1995,7 @@ public class BuildingManager implements Serializable {
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1, BuildingConfig bc, 
+	public static void setInstances(MasterClock c0, MarsClock c1, BuildingConfig bc, 
 			HistoricalEventManager e, RelationshipManager r, UnitManager u) {
 		sim = Simulation.instance();
 		simulationConfig = SimulationConfig.instance();

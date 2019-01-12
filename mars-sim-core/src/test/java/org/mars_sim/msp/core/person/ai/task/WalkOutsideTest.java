@@ -309,7 +309,7 @@ extends TestCase {
 
 		// Create new simulation instance.
 		SimulationConfig.loadConfig();
-		Simulation.createNewSimulation(-1, false);
+		Simulation.createNewSimulation(-1, true);
 
 		// Clear out existing settlements in simulation.
 		UnitManager unitManager = Simulation.instance().getUnitManager();

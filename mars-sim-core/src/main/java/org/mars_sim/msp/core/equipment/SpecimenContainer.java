@@ -38,7 +38,7 @@ implements Container, Serializable {
 		setBaseMass(EMPTY_MASS);
 
 		// Set the capacity of the container.
-		getInventory().addAmountResourceTypeCapacity(ResourceUtil.rockSamplesAR, CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(ResourceUtil.rockSamplesID, CAPACITY);
 	}
 
 	/**

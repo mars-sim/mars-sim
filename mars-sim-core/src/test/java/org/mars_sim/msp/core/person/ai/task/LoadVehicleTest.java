@@ -69,6 +69,7 @@ extends TestCase {
 	private static int foodID = ResourceUtil.foodID;
 	private static int methaneID = ResourceUtil.methaneID;
 //	private static int hammerID = ItemResourceUtil.hammerID;
+	private static int soymilkID = ResourceUtil.soymilkID;
 	
 	/*
 	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
@@ -172,17 +173,18 @@ extends TestCase {
 
 //	/*
 //	 * Test method for 'org.mars_sim.msp.simulation.person.ai.task.LoadVehicle.hasEnoughSupplies(Settlement, Map, Map)'
-//   
+//	 */
 //	public void testHasEnoughSuppliesGood() throws Exception {
 //		Settlement settlement = new MockSettlement();
 //		Inventory inv = settlement.getInventory();
-//        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
-//
-//		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
-//		AmountResource food = AmountResource.findAmountResource(FOOD);
-//		AmountResource water = AmountResource.findAmountResource(WATER);
-//		AmountResource methane = AmountResource.findAmountResource(METHANE);
-//		AmountResource soymilk = AmountResource.findAmountResource(SOYMILK);
+////        ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
+//        Part hammer = ItemResourceUtil.createItemResource(resourceName, id, description, massPerItem, 1);
+//        
+////		AmountResource oxygen = AmountResource.findAmountResource(OXYGEN);
+////		AmountResource food = AmountResource.findAmountResource(FOOD);
+////		AmountResource water = AmountResource.findAmountResource(WATER);
+////		AmountResource methane = AmountResource.findAmountResource(METHANE);
+////		AmountResource soymilk = AmountResource.findAmountResource(SOYMILK);
 //
 //		inv.addAmountResourceTypeCapacity(oxygenID, 100D);
 //		inv.storeAmountResource(oxygenID, 100D, true);
@@ -192,26 +194,27 @@ extends TestCase {
 //		inv.storeAmountResource(waterID, waterAmount, true);
 //		inv.addAmountResourceTypeCapacity(methaneID, 100D);
 //		inv.storeAmountResource(methaneID, 100D, true);
-//		inv.addAmountResourceTypeCapacity(soymilk, 20D);
-//		inv.storeAmountResource(soymilk, 20D, true);
+//		inv.addAmountResourceTypeCapacity(soymilkID, 20D);
+//		inv.storeAmountResource(soymilkID, 20D, true);
 //		
-//		inv.storeItemResources(hammerID, 5);
+//		inv.storeItemResources(hammer.getID(), 5);
 //
 //		for (int x = 0; x < 5; x++) {
 //			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 //		}
 //
-//		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-//		resourcesMap.put(oxygenID, new Double(100D));
-//		resourcesMap.put(foodID, new Double(200D));
-//		resourcesMap.put(waterID, new Double(waterAmount));
-//		resourcesMap.put(methaneID, new Double(100D));
-//		resourcesMap.put(soymilk, new Double(20D));
-//		resourcesMap.put(hammerID, Integer.valueOf(5));
+//		Map<Integer, Number> resourcesMap = new HashMap<Integer, Number>();
+//		resourcesMap.put(oxygenID, 100D);
+//		resourcesMap.put(foodID, 200D);
+//		resourcesMap.put(waterID, waterAmount);
+//		resourcesMap.put(methaneID, 100D);
+//		resourcesMap.put(soymilkID, 20D);
+//		resourcesMap.put(hammer.getID(), Integer.valueOf(5));
 //
-//		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-//		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
-//
+//		Map<Integer, Integer> equipmentMap = new HashMap<>();
+////		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
+//		equipmentMap.put(EquipmentType.str2int(SpecimenContainer.TYPE), Integer.valueOf(5));
+//		
 //		Vehicle vehicle = new MockVehicle(settlement);
 //
 //		assertTrue("Enough supplies at settlement for trip.",

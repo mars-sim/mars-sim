@@ -1260,7 +1260,7 @@ public class MasterClock implements Serializable {
 	 * 
 	 * @param clock
 	 */
-	public static void justReloaded(Simulation s) {
+	public static void setInstances(Simulation s) {
 		sim = s;
 		timeIntervals = new ArrayList<>();
 		justReloaded = true;

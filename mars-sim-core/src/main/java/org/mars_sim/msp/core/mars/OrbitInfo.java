@@ -639,7 +639,7 @@ public class OrbitInfo implements Serializable {
 	 * @param {{@link MarsClock}
 	 * @param {{@link Mars}
 	 */
-	public static void justReloaded(MarsClock c1, EarthClock c) {
+	public static void setInstances(MarsClock c1, EarthClock c) {
 		marsClock = c1;
 		earthClock = c;
 	}

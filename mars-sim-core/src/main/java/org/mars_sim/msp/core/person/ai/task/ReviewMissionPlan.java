@@ -429,7 +429,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 * @param {{@link RelationshipManager}
 	 * @param {{@link MissionManager}
 	 */
-	public static void justReloaded(RelationshipManager r, MissionManager m) {
+	public static void setInstances(RelationshipManager r, MissionManager m) {
 		sim = Simulation.instance();
 		relationshipManager = r;
 		missionManager = m;

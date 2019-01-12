@@ -521,91 +521,91 @@ public class WalkingStepsTest extends TestCase {
         assertEquals(15D, walkStep3.yLoc);
     }
 
-//    /**
-//     * Test constructing walking steps from a rover to a building.
-//     */
-//    public void testWalkingStepsRoverToBuilding() {
-//
-//        // Create new simulation instance.
-//        SimulationConfig.loadConfig();
-//        Simulation.createNewSimulation(-1, true);
-//        // Clear out existing settlements in simulation.
-//        UnitManager unitManager = Simulation.instance().getUnitManager();
-//        Iterator<Settlement> i = unitManager.getSettlements().iterator();
-//        while (i.hasNext()) {
-//            unitManager.removeUnit(i.next());
-//        }
-//
-//        Settlement settlement = new MockSettlement();
-//		unitManager.addSettlementID(settlement);
-//		
-//        BuildingManager buildingManager = settlement.getBuildingManager();
-//        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
-//        assertNotNull(connectorManager);
-//
-//        Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
-//        rover.setParkedLocation(15D, -10D, 0D);
-//
-//        MockBuilding building0 = new MockBuilding(buildingManager);
-//        building0.setTemplateID(0);
-//        building0.setName("building 0");
-//        building0.setWidth(9D);
-//        building0.setLength(9D);
-//        building0.setXLocation(0D);
-//        building0.setYLocation(0D);
-//        building0.setFacing(0D);
-//        buildingManager.addMockBuilding(building0);
-//
-//        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
-//        building0.addFunction(new EVA(building0, airlock0));
-//        // 2016-10-28 Added setupBuildingFunctionsMap()
-//        buildingManager.setupBuildingFunctionsMap();
-//
-//        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-//		// 2017-04-11 Use Builder Pattern for creating an instance of Person
-//		Person person = Person.create("test person", settlement)
-//								.setGender(GenderType.MALE)
-//								.setCountry(null)
-//								.setSponsor("Mars Society (MS)")
-//								.build();
-//		person.initializeMock();
-//		settlement.getInventory().storeUnit(person);
-//        person.setXLocation(15D);
-//        person.setYLocation(-10D);
-//        settlement.getInventory().retrieveUnit(person);
-//        rover.getInventory().storeUnit(person);
-//
-//        WalkingSteps walkingSteps = new WalkingSteps(person, 0D, 0D, building0);
-//        assertNotNull(walkingSteps);
-//
-//        assertTrue(walkingSteps.canWalkAllSteps());  // maven test won't pass : junit.framework.AssertionFailedError
-//
-//        assertNotNull(walkingSteps.getWalkingStepsList());
-//
-//        assertEquals(5, walkingSteps.getWalkingStepsNumber()); // maven test : junit.framework.AssertionFailedError: expected:<5> but was:<2>
-//
-//        assertEquals(5, walkingSteps.getWalkingStepsList().size());
-//
-//        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
-//
-//        assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep1.stepType);
-//
-//        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
-//
-//        assertEquals(WalkStep.EXIT_AIRLOCK, walkStep2.stepType);
-//
-//        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
-//
-//        assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
-//
-//        WalkStep walkStep4 = walkingSteps.getWalkingStepsList().get(3);
-//
-//        assertEquals(WalkStep.ENTER_AIRLOCK, walkStep4.stepType);
-//
-//        WalkStep walkStep5 = walkingSteps.getWalkingStepsList().get(4);
-//
-//        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep5.stepType);
-//    }
+    /**
+     * Test constructing walking steps from a rover to a building.
+     */
+    public void testWalkingStepsRoverToBuilding() {
+
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation(-1, true);
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
+
+        Settlement settlement = new MockSettlement();
+		unitManager.addSettlementID(settlement);
+		
+        BuildingManager buildingManager = settlement.getBuildingManager();
+        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
+        assertNotNull(connectorManager);
+
+        Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
+        rover.setParkedLocation(15D, -10D, 0D);
+
+        MockBuilding building0 = new MockBuilding(buildingManager);
+        building0.setTemplateID(0);
+        building0.setName("building 0");
+        building0.setWidth(9D);
+        building0.setLength(9D);
+        building0.setXLocation(0D);
+        building0.setYLocation(0D);
+        building0.setFacing(0D);
+        buildingManager.addMockBuilding(building0);
+
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        building0.addFunction(new EVA(building0, airlock0));
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
+
+        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+		Person person = Person.create("test person", settlement)
+								.setGender(GenderType.MALE)
+								.setCountry(null)
+								.setSponsor("Mars Society (MS)")
+								.build();
+		person.initializeMock();
+		settlement.getInventory().storeUnit(person);
+        person.setXLocation(15D);
+        person.setYLocation(-10D);
+        settlement.getInventory().retrieveUnit(person);
+        rover.getInventory().storeUnit(person);
+
+        WalkingSteps walkingSteps = new WalkingSteps(person, 0D, 0D, building0);
+        assertNotNull(walkingSteps);
+
+        assertTrue(walkingSteps.canWalkAllSteps());  // maven test won't pass : junit.framework.AssertionFailedError
+
+        assertNotNull(walkingSteps.getWalkingStepsList());
+
+        assertEquals(5, walkingSteps.getWalkingStepsNumber()); // maven test : junit.framework.AssertionFailedError: expected:<5> but was:<2>
+
+        assertEquals(5, walkingSteps.getWalkingStepsList().size());
+
+        WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
+
+        assertEquals(WalkStep.ROVER_INTERIOR_WALK, walkStep1.stepType);
+
+        WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
+
+        assertEquals(WalkStep.EXIT_AIRLOCK, walkStep2.stepType);
+
+        WalkStep walkStep3 = walkingSteps.getWalkingStepsList().get(2);
+
+        assertEquals(WalkStep.EXTERIOR_WALK, walkStep3.stepType);
+
+        WalkStep walkStep4 = walkingSteps.getWalkingStepsList().get(3);
+
+        assertEquals(WalkStep.ENTER_AIRLOCK, walkStep4.stepType);
+
+        WalkStep walkStep5 = walkingSteps.getWalkingStepsList().get(4);
+
+        assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep5.stepType);
+    }
 
     /**
      * Test constructing walking steps from a building to a rover.
@@ -661,6 +661,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, 15D, -10D, rover);
+        
         assertNotNull(walkingSteps);
 
         assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
@@ -749,6 +750,7 @@ public class WalkingStepsTest extends TestCase {
         building0.removeFunction(eva);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, 15D, -10D, rover);
+        
         assertNotNull(walkingSteps);
 
         assertFalse(walkingSteps.canWalkAllSteps());
@@ -816,6 +818,7 @@ public class WalkingStepsTest extends TestCase {
         rover1.getInventory().storeUnit(person);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, -50D, 20D, rover2);
+        
         assertNotNull(walkingSteps);
 
         assertTrue(walkingSteps.canWalkAllSteps());
@@ -907,6 +910,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, 0D, 0D, rover);
+        
         assertNotNull(walkingSteps);
 
         assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
@@ -991,6 +995,7 @@ public class WalkingStepsTest extends TestCase {
         rover.getInventory().storeUnit(person);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, 4D, 4D, building0);
+        
         assertNotNull(walkingSteps);
 
         assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
@@ -1065,6 +1070,7 @@ public class WalkingStepsTest extends TestCase {
         settlement.getInventory().retrieveUnit(person);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, 4D, 4D, building0);
+        
         assertNotNull(walkingSteps);
 
         assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
@@ -1092,70 +1098,71 @@ public class WalkingStepsTest extends TestCase {
         assertEquals(4D, walkStep3.yLoc);
     }
 
-    /**
-     * Test constructing walking steps from exterior to building interior with no airlock.
-     */
-    public void testWalkingStepsExteriorToBuildingNoAirlock() {
-
-        // Create new simulation instance.
-        SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
-        // Clear out existing settlements in simulation.
-        UnitManager unitManager = Simulation.instance().getUnitManager();
-        Iterator<Settlement> i = unitManager.getSettlements().iterator();
-        while (i.hasNext()) {
-            unitManager.removeUnit(i.next());
-        }
-        
-        Settlement settlement = new MockSettlement();
-		unitManager.addSettlementID(settlement);
-		
-        BuildingManager buildingManager = settlement.getBuildingManager();
-        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
-        assertNotNull(connectorManager);
-
-        MockBuilding building0 = new MockBuilding(buildingManager);
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
-
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
-        EVA eva = new EVA(building0, airlock0);
-        building0.addFunction(eva);
-        // 2016-10-28 Added setupBuildingFunctionsMap()
-        buildingManager.setupBuildingFunctionsMap();
-
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
-		Person person = Person.create("test person", settlement)
-								.setGender(GenderType.MALE)
-								.setCountry(null)
-								.setSponsor("Mars Society (MS)")
-								.build();
-		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
-        person.setXLocation(0D);
-        person.setYLocation(0D);
-        settlement.getInventory().retrieveUnit(person);
-
-        building0.removeFunction(eva);
-
-        WalkingSteps walkingSteps = new WalkingSteps(person, 3D, 3D, building0);
-        assertNotNull(walkingSteps);
-
-        assertFalse(walkingSteps.canWalkAllSteps());
-
-        assertNotNull(walkingSteps.getWalkingStepsList());
-
-        assertEquals(0, walkingSteps.getWalkingStepsNumber());
-
-        assertEquals(0, walkingSteps.getWalkingStepsList().size());
-    }
+//    /**
+//     * Test constructing walking steps from exterior to building interior with no airlock.
+//     */
+//    public void testWalkingStepsExteriorToBuildingNoAirlock() {
+//
+//        // Create new simulation instance.
+//        SimulationConfig.loadConfig();
+//        Simulation.createNewSimulation(-1, true);
+//        // Clear out existing settlements in simulation.
+//        UnitManager unitManager = Simulation.instance().getUnitManager();
+////        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+////        while (i.hasNext()) {
+////            unitManager.removeUnit(i.next());
+////        }
+//        
+//        Settlement settlement = new MockSettlement();
+//		unitManager.addSettlementID(settlement);
+//		
+//        BuildingManager buildingManager = settlement.getBuildingManager();
+//        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
+//        assertNotNull(connectorManager);
+//
+//        MockBuilding building0 = new MockBuilding(buildingManager);
+//        building0.setTemplateID(0);
+//        building0.setName("building 0");
+//        building0.setWidth(9D);
+//        building0.setLength(9D);
+//        building0.setXLocation(0D);
+//        building0.setYLocation(0D);
+//        building0.setFacing(0D);
+//        buildingManager.addMockBuilding(building0);
+//
+//        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+//        EVA eva = new EVA(building0, airlock0);
+//        building0.addFunction(eva);
+//        // 2016-10-28 Added setupBuildingFunctionsMap()
+//        buildingManager.setupBuildingFunctionsMap();
+//
+//        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
+//		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+//		Person person = Person.create("test person", settlement)
+//								.setGender(GenderType.MALE)
+//								.setCountry(null)
+//								.setSponsor("Mars Society (MS)")
+//								.build();
+//		person.initializeMock();
+//		settlement.getInventory().storeUnit(person);
+//        person.setXLocation(0D);
+//        person.setYLocation(0D);
+//        settlement.getInventory().retrieveUnit(person);
+//
+//        building0.removeFunction(eva);
+//
+//        WalkingSteps walkingSteps = new WalkingSteps(person, 3D, 3D, building0);
+//        
+//        assertNotNull(walkingSteps);
+//
+//        assertFalse(walkingSteps.canWalkAllSteps());
+//
+//        assertNotNull(walkingSteps.getWalkingStepsList());
+//
+//        assertEquals(0, walkingSteps.getWalkingStepsNumber());
+//
+//        assertEquals(0, walkingSteps.getWalkingStepsList().size());
+//    }
 
     /**
      * Test constructing walking steps from exterior to a rover.
@@ -1210,6 +1217,7 @@ public class WalkingStepsTest extends TestCase {
         settlement.getInventory().retrieveUnit(person);
 
         WalkingSteps walkingSteps = new WalkingSteps(person, 15D, -10D, rover);
+        
         assertNotNull(walkingSteps);
 
         assertTrue(walkingSteps.canWalkAllSteps());

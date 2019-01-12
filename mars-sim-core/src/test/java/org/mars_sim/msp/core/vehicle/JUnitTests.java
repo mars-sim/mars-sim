@@ -66,7 +66,7 @@ public class JUnitTests extends TestCase {
 
     public void testLightUtilityVehicle() {
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, false);
+        Simulation.createNewSimulation(-1, true);
         
         LightUtilityVehicle vehicle = new LightUtilityVehicle("Subaru", "Light Utility Vehicle", new MockSettlement());
         int crewCapacity = vehicle.getCrewCapacity();

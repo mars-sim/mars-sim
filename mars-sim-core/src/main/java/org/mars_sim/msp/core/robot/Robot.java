@@ -36,11 +36,8 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
-import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Repair;
-import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -51,8 +48,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.time.EarthClock;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -61,9 +56,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The robot class represents a robot on Mars. It keeps track of everything
  * related to that robot
  */
-public class Robot
-//extends Unit
-		extends Equipment implements Salvagable, Malfunctionable, MissionMember, Serializable {
+public class Robot extends Equipment implements Salvagable, Malfunctionable, MissionMember, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -85,18 +78,20 @@ public class Robot
 	private static final double MAINTENANCE_TIME = 100D;
 
 	// Data members
-	/** The cache for msol */
-	private double msolCache = -1D;
+	/** Is therobot is inoperable. */
+	private boolean isInoperable;
+	/** Is the robot is salvaged. */
+	private boolean isSalvaged;
+	/** The settlement the robot is currently associated with. */
+	private int associatedSettlement = -1;
 	/** The height of the robot (in cm). */
 	private int height;
 	/** Settlement X location (meters) from settlement center. */
 	private double xLoc;
 	/** Settlement Y location (meters) from settlement center. */
 	private double yLoc;
-	/** True if robot is dead and buried. */
-	private boolean isInoperable;
-
-	private boolean isSalvaged;
+	/** The cache for msol */
+	private double msolCache = -1D;
 
 	private String name;
 	private String country;
@@ -121,18 +116,13 @@ public class Robot
 
 	private RobotType robotType;
 
-	private RobotConfig config;
-
-	/** The settlement the robot is currently associated with. */
-	private int associatedSettlement = -1;
-
 	private Building currentBuilding;
 
+	private static EarthClock earthClock;
+	private static RobotConfig robotConfig;
+	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
 		super(name, settlement.getCoordinates()); // if extending equipment
-		// super(name, settlement.getCoordinates()); // if extending Unit
-		// super(name, null, birthplace, settlement); // if extending Person
-		
 //		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
 //		// Place this person within a building
@@ -150,26 +140,6 @@ public class Robot
 		return new RobotBuilderImpl(name, settlement, robotType);
 	}
 
-//    /**
-//     * Constructs a robot object at a given settlement.
-//     * @param name the robot's name
-//     * @param gender {@link robotGender} the robot's gender
-//     * @param birthplace the location of the robot's birth
-//     * @param settlement {@link Settlement} the settlement the robot is at
-//     * @throws Exception if no inhabitable building available at settlement.
-//
-//    public Robot(String name, RobotType robotType, String birthplace, Settlement settlement, Coordinates location) {
-//        super(name, location); // if extending equipment
-//    	//super(name, settlement.getCoordinates()); // if extending Unit
-//        //super(name, null, birthplace, settlement); // if extending Person
-//
-//		// Initialize data members.
-//        this.name = name;
-//        this.associatedSettlement = settlement;
-//        this.robotType = robotType;
-//        this.birthplace = birthplace;
-//    }
-
 	public void initialize() {
 
 		xLoc = 0D;
@@ -178,12 +148,8 @@ public class Robot
 		salvageInfo = null;
 		isInoperable = false;
 
-		masterClock = Simulation.instance().getMasterClock();
-		marsClock = masterClock.getMarsClock();
-		earthClock = masterClock.getEarthClock();
-
-		config = SimulationConfig.instance().getRobotConfiguration();
-		// support = getLifeSupportType();
+		earthClock = Simulation.instance().getMasterClock().getEarthClock();
+		robotConfig = SimulationConfig.instance().getRobotConfiguration();
 
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
@@ -540,7 +506,7 @@ public class Robot
 				// support = getLifeSupportType();
 				// Pass the time in the physical condition first as this may
 				// result in death.
-				if (health.timePassing(time, config)) {
+				if (health.timePassing(time, robotConfig)) {
 
 					// Mental changes with time passing.
 					botMind.timePassing(time);
@@ -967,16 +933,13 @@ public class Robot
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
+	 * @param c {@link EarthClock}
 	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1) {
-		masterClock = c0;
-		marsClock = c1;
-		earthClock = masterClock.getEarthClock();
-//		config = SimulationConfig.instance().getRobotConfiguration();
+	public static void setInstances(EarthClock c) {
+		earthClock = c;
+		robotConfig = SimulationConfig.instance().getRobotConfiguration();
 	}
-	
+//	
 	
 	@Override
 	public void destroy() {
