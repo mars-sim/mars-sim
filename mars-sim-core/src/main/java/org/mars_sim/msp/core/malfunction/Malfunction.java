@@ -104,7 +104,7 @@ public class Malfunction implements Serializable {
 	}
 
 	public double computeWorkTime(double time) {
-		if (time == 0)
+		if (time < 1)
 			return 0;
 		if (RandomUtil.getRandomInt(3) == 0)
 			return time/8D + RandomUtil.getRandomDouble(time *.875);

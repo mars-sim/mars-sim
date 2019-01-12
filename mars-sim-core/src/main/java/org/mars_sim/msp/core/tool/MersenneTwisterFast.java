@@ -1,9 +1,10 @@
 /**
  * Mars Simulation Project
  * MersenneTwisterFast.java
- * @version 3.1.0 2017-11-06
- * @author Manny Kung
+ * @version 3.1.0 2019-01-12
+ * @author Scott Davis
  */
+
 package org.mars_sim.msp.core.tool;
 
 import java.io.DataInputStream;
@@ -14,7 +15,7 @@ import java.util.Random;
 
 /** 
  * <h3>MersenneTwister and MersenneTwisterFast</h3>
- * <p><b>Version 20</b>, based on version MT199937(99/10/29)
+ * <p><b>Version 22</b>, based on version MT199937(99/10/29)
  * of the Mersenne Twister algorithm found at 
  * <a href="http://www.math.keio.ac.jp/matumoto/emt.html">
  * The Mersenne Twister Home Page</a>, with the initialization
@@ -52,13 +53,21 @@ import java.util.Random;
  *
  * <h3>About this Version</h3>
  *
+ * <p><b>Changes since V21:</b> Minor documentation HTML fixes. 
+ *
+ * <p><b>Changes since V20:</b> Added clearGuassian().  Modified stateEquals()
+ * to be synchronizd on both objects for MersenneTwister, and changed its 
+ * documentation.  Added synchronization to both setSeed() methods, to 
+ * writeState(), and to readState() in MersenneTwister.  Removed synchronization
+ * from readObject() in MersenneTwister. 
+ *
  * <p><b>Changes since V19:</b> nextFloat(boolean, boolean) now returns float,
  * not double.
  *
  * <p><b>Changes since V18:</b> Removed old final declarations, which used to
  * potentially speed up the code, but no longer.
  *
- * <p><b>Changes since V17:</b> Removed vestigial references to &= 0xffffffff
+ * <p><b>Changes since V17:</b> Removed vestigial references to &amp;= 0xffffffff
  * which stemmed from the original C code.  The C code could not guarantee that
  * ints were 32 bit, hence the masks.  The vestigial references in the Java
  * code were likely optimized out anyway.
@@ -115,7 +124,7 @@ import java.util.Random;
  * milliseconds.
  *
  * <p><b>Changes Since V4:</b> New initialization algorithms.  See
- * (see <a href="http://www.math.keio.ac.jp/matumoto/MT2002/emt19937ar.html"</a>
+ * (see <a href="http://www.math.keio.ac.jp/matumoto/MT2002/emt19937ar.html">
  * http://www.math.keio.ac.jp/matumoto/MT2002/emt19937ar.html</a>)
  *
  * <p>The MersenneTwister code is based on standard MT19937 C/C++ 
@@ -175,7 +184,7 @@ import java.util.Random;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  *
- @version 20
+ @version 22
 */
 
 
@@ -225,12 +234,18 @@ public strictfp class MersenneTwisterFast implements Serializable, Cloneable
         catch (CloneNotSupportedException e) { throw new InternalError(); } // should never happen
         }
     
-    public boolean stateEquals(Object o)
+    /** Returns true if the MersenneTwisterFast's current internal state is equal to another MersenneTwisterFast. 
+        This is roughly the same as equals(other), except that it compares based on value but does not
+        guarantee the contract of immutability (obviously random number generators are immutable).
+        Note that this does NOT check to see if the internal gaussian storage is the same
+        for both.  You can guarantee that the internal gaussian storage is the same (and so the
+        nextGaussian() methods will return the same values) by calling clearGaussian() on both
+        objects. */
+    public boolean stateEquals(MersenneTwisterFast other)
         {
-        if (o==this) return true;
-        if (o == null || !(o instanceof MersenneTwisterFast))
-            return false;
-        MersenneTwisterFast other = (MersenneTwisterFast) o;
+        if (other == this) return true;
+        if (other == null)return false;
+
         if (mti != other.mti) return false;
         for(int x=0;x<mag01.length;x++)
             if (mag01[x] != other.mag01[x]) return false;
@@ -304,7 +319,7 @@ public strictfp class MersenneTwisterFast implements Serializable, Cloneable
      * only uses the first 32 bits for its seed).   
      */
 
-    synchronized public void setSeed(long seed)
+    public void setSeed(long seed)
         {
         // Due to a bug in java.util.Random clear up to 1.2, we're
         // doing our own Gaussian variable.
@@ -338,7 +353,7 @@ public strictfp class MersenneTwisterFast implements Serializable, Cloneable
      * integers are repeatedly used in a wrap-around fashion.
      */
 
-    synchronized public void setSeed(int[] array)
+    public void setSeed(int[] array)
         {
         if (array.length == 0)
             throw new IllegalArgumentException("Array length must be greater than zero");
@@ -711,6 +726,9 @@ public strictfp class MersenneTwisterFast implements Serializable, Cloneable
         }
 
 
+    /** Returns a long drawn uniformly from 0 to n-1.  Suffice it to say,
+        n must be greater than 0, or an IllegalArgumentException is raised. */
+    
     public long nextLong()
         {
         int y;
@@ -778,7 +796,7 @@ public strictfp class MersenneTwisterFast implements Serializable, Cloneable
 
 
     /** Returns a long drawn uniformly from 0 to n-1.  Suffice it to say,
-        n must be > 0, or an IllegalArgumentException is raised. */
+        n must be &gt; 0, or an IllegalArgumentException is raised. */
     public long nextLong(long n)
         {
         if (n<=0)
@@ -923,12 +941,13 @@ public strictfp class MersenneTwisterFast implements Serializable, Cloneable
 
     /** Returns a double in the range from 0.0 to 1.0, possibly inclusive of 0.0 and 1.0 themselves.  Thus:
 
-        <p><table border=0>
-        <th><td>Expression<td>Interval
-        <tr><td>nextDouble(false, false)<td>(0.0, 1.0)
-        <tr><td>nextDouble(true, false)<td>[0.0, 1.0)
-        <tr><td>nextDouble(false, true)<td>(0.0, 1.0]
-        <tr><td>nextDouble(true, true)<td>[0.0, 1.0]
+        <table border=0>
+        <tr><th>Expression</th><th>Interval</th></tr>
+        <tr><td>nextDouble(false, false)</td><td>(0.0, 1.0)</td></tr>
+        <tr><td>nextDouble(true, false)</td><td>[0.0, 1.0)</td></tr>
+        <tr><td>nextDouble(false, true)</td><td>(0.0, 1.0]</td></tr>
+        <tr><td>nextDouble(true, true)</td><td>[0.0, 1.0]</td></tr>
+        <caption>Table of intervals</caption>
         </table>
         
         <p>This version preserves all possible random values in the double range.
@@ -946,6 +965,13 @@ public strictfp class MersenneTwisterFast implements Serializable, Cloneable
         return d;
         }
 
+
+    /** 
+        Clears the internal gaussian variable from the RNG.  You only need to do this
+        in the rare case that you need to guarantee that two RNGs have identical internal
+        state.  Otherwise, disregard this method.  See stateEquals(other).
+    */
+    public void clearGaussian() { __haveNextNextGaussian = false; }
 
 
     public double nextGaussian()
@@ -1136,12 +1162,13 @@ public strictfp class MersenneTwisterFast implements Serializable, Cloneable
 
     /** Returns a float in the range from 0.0f to 1.0f, possibly inclusive of 0.0f and 1.0f themselves.  Thus:
 
-        <p><table border=0>
-        <th><td>Expression<td>Interval
-        <tr><td>nextFloat(false, false)<td>(0.0f, 1.0f)
-        <tr><td>nextFloat(true, false)<td>[0.0f, 1.0f)
-        <tr><td>nextFloat(false, true)<td>(0.0f, 1.0f]
-        <tr><td>nextFloat(true, true)<td>[0.0f, 1.0f]
+        <table border=0>
+        <tr><th>Expression</th><th>Interval</th></tr>
+        <tr><td>nextFloat(false, false)</td><td>(0.0f, 1.0f)</td></tr>
+        <tr><td>nextFloat(true, false)</td><td>[0.0f, 1.0f)</td></tr>
+        <tr><td>nextFloat(false, true)</td><td>(0.0f, 1.0f]</td></tr>
+        <tr><td>nextFloat(true, true)</td><td>[0.0f, 1.0f]</td></tr>
+        <caption>Table of intervals</caption>
         </table>
         
         <p>This version preserves all possible random values in the float range.
@@ -1162,7 +1189,7 @@ public strictfp class MersenneTwisterFast implements Serializable, Cloneable
 
 
     /** Returns an integer drawn uniformly from 0 to n-1.  Suffice it to say,
-        n must be > 0, or an IllegalArgumentException is raised. */
+        n must be &gt; 0, or an IllegalArgumentException is raised. */
     public int nextInt(int n)
         {
         if (n<=0)

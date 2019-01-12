@@ -35,7 +35,7 @@ public final class RandomUtil {
 	// XorShift1024StarRandom();
 
 	// Add two implementation of SIMD-oriented Fast Mersenne Twister PNRG in java.
-	// Note 1: they are not compatible with standard java.util.Randrom's methods,
+	// Note 1: they are not compatible with standard java.util.Random's methods,
 	// require seeding and re-mapping of methods
 	// Note 2: other PRNG in the MT family can be found at
 	// https://github.com/zwxadz/SFMT-for-Java

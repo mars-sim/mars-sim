@@ -22,13 +22,13 @@
 		<!-- Values: 0.0 to 100.0 (100.0 = most likely) -->
 		<probability value="5.0" />
 
-		<!-- Normal (non-EVA) repair time to fix. (millisols) (optional) -->
+		<!-- The max possible general (non-EVA) repair time. (millisols) (optional) -->
 		<repair-time value="20.0" />
 
-		<!-- Emergency repair time to fix. (millisols) (optional) -->
+		<!-- The max possible emergency repair time. (millisols) (optional) -->
 		<emergency-repair-time value="10.0" />
 
-		<!-- EVA repair time to fix. (millisols) (optional) -->
+		<!-- The max possible EVA repair time. (millisols) (optional) -->
 		<eva-repair-time value="0.0" />
 
 		<!-- List of systems (or functions of a building) that are susceptible 

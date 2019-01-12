@@ -20,10 +20,7 @@ import java.util.Map;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -38,7 +35,9 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.managers.tooltip.TooltipWay;
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.scroll.WebScrollPane;
 //import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 
@@ -46,11 +45,11 @@ public class TabPanelMaintenance extends TabPanel {
 
 	private Settlement settlement;
 	private List<Building> buildingsList;
-	private JScrollPane maintenanceScrollPane;
-	private JPanel maintenanceListPanel;
+	private WebScrollPane maintenanceScrollPane;
+	private WebPanel maintenanceListPanel;
 	private List<Malfunction> malfunctionsList;
-	private JScrollPane malfunctionsScrollPane;
-	private JPanel malfunctionsListPanel;
+	private WebScrollPane malfunctionsScrollPane;
+	private WebPanel malfunctionsListPanel;
 
 	/**
 	 * Constructor.
@@ -65,56 +64,56 @@ public class TabPanelMaintenance extends TabPanel {
 		settlement = (Settlement) unit;
 
 		// Create topPanel.
-		JPanel topPanel = new JPanel(new GridLayout(2, 1));
+		WebPanel topPanel = new WebPanel(new GridLayout(2, 1));
 		centerContentPanel.add(topPanel);
 
 		// Create maintenance panel.
-		JPanel maintenancePanel = new JPanel(new BorderLayout());
+		WebPanel maintenancePanel = new WebPanel(new BorderLayout());
 		topPanel.add(maintenancePanel);
 
 		// Create maintenance label.
-		JLabel titleLabel = new JLabel("Building Maintenance", JLabel.CENTER);
+		WebLabel titleLabel = new WebLabel("Building Maintenance", WebLabel.CENTER);
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		// titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		maintenancePanel.add(titleLabel, BorderLayout.NORTH);
 
 		// Create scroll pane for maintenance list panel.
-		maintenanceScrollPane = new JScrollPane();
+		maintenanceScrollPane = new WebScrollPane();
 		// increase vertical mousewheel scrolling speed for this one
 		maintenanceScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		maintenanceScrollPane.setPreferredSize(new Dimension(200, 75));
 		maintenancePanel.add(maintenanceScrollPane, BorderLayout.CENTER);
 
 		// Prepare maintenance list panel.
-		maintenanceListPanel = new JPanel(new GridLayout(0, 1, 0, 0));
+		maintenanceListPanel = new WebPanel(new GridLayout(0, 1, 0, 0));
 		maintenanceListPanel.setBorder(new MarsPanelBorder());
 		maintenanceScrollPane.setViewportView(maintenanceListPanel);
 		populateMaintenanceList();
 
 		// Create malfunctions panel.
-		JPanel malfunctionsPanel = new JPanel(new BorderLayout());
+		WebPanel malfunctionsPanel = new WebPanel(new BorderLayout());
 		topPanel.add(malfunctionsPanel);
 
 		// Create malfunctions label.
-		JLabel malfunctionsLabel = new JLabel("Building Malfunctions", JLabel.CENTER);
+		WebLabel malfunctionsLabel = new WebLabel("Building Malfunctions", WebLabel.CENTER);
 		malfunctionsLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		// malfunctionsLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		malfunctionsPanel.add(malfunctionsLabel, BorderLayout.NORTH);
 
 		// Create scroll panel for malfunctions list panel.
-		malfunctionsScrollPane = new JScrollPane();
+		malfunctionsScrollPane = new WebScrollPane();
 		// increase vertical mousewheel scrolling speed for this one
 		malfunctionsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		malfunctionsScrollPane.setPreferredSize(new Dimension(200, 75));
 		malfunctionsPanel.add(malfunctionsScrollPane, BorderLayout.CENTER);
 
 		// Prepare malfunctions outer list panel.
-		JPanel malfunctionsOuterListPanel = new JPanel(new BorderLayout(0, 0));
+		WebPanel malfunctionsOuterListPanel = new WebPanel(new BorderLayout(0, 0));
 		malfunctionsOuterListPanel.setBorder(new MarsPanelBorder());
 		malfunctionsScrollPane.setViewportView(malfunctionsOuterListPanel);
 
 		// Prepare malfunctions list panel.
-		malfunctionsListPanel = new JPanel();
+		malfunctionsListPanel = new WebPanel();
 		malfunctionsListPanel.setLayout(new BoxLayout(malfunctionsListPanel, BoxLayout.Y_AXIS));
 		malfunctionsOuterListPanel.add(malfunctionsListPanel, BorderLayout.NORTH);
 
@@ -132,7 +131,7 @@ public class TabPanelMaintenance extends TabPanel {
 		buildingsList = settlement.getBuildingManager().getSortedBuildings();// getACopyOfBuildings()
 		Iterator<Building> i = buildingsList.iterator();
 		while (i.hasNext()) {
-			JPanel panel = new BuildingMaintenancePanel(i.next());
+			WebPanel panel = new BuildingMaintenancePanel(i.next());
 			maintenanceListPanel.add(panel);
 		}
 	}
@@ -156,7 +155,7 @@ public class TabPanelMaintenance extends TabPanel {
 			while (j.hasNext()) {
 				Malfunction malfunction = j.next();
 				malfunctionsList.add(malfunction);
-				JPanel panel = new BuildingMalfunctionPanel(malfunction, building);
+				WebPanel panel = new BuildingMalfunctionPanel(malfunction, building);
 				malfunctionsListPanel.add(panel);
 			}
 		}
@@ -252,7 +251,7 @@ public class TabPanelMaintenance extends TabPanel {
 	/**
 	 * Inner class for the building maintenance panel.
 	 */
-	private class BuildingMaintenancePanel extends JPanel {
+	private class BuildingMaintenancePanel extends WebPanel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -262,9 +261,9 @@ public class TabPanelMaintenance extends TabPanel {
 		private int lastCompletedCache;
 		private int wearConditionCache;
 		private BoundedRangeModel progressBarModel;
-		private JLabel lastLabel;
-		private JLabel partsLabel;
-		private JLabel wearConditionLabel;
+		private WebLabel lastLabel;
+		private WebLabel partsLabel;
+		private WebLabel wearConditionLabel;
 
 		/**
 		 * Constructor.
@@ -272,7 +271,7 @@ public class TabPanelMaintenance extends TabPanel {
 		 * @param building the building to display.
 		 */
 		public BuildingMaintenancePanel(Building building) {
-			// User JPanel constructor.
+			// User WebPanel constructor.
 			super();
 
 			manager = building.getMalfunctionManager();
@@ -280,32 +279,32 @@ public class TabPanelMaintenance extends TabPanel {
 			setLayout(new GridLayout(4, 1, 0, 0));
 			setBorder(new MarsPanelBorder());
 
-			JLabel buildingLabel = new JLabel(building.getNickName(), JLabel.LEFT);
+			WebLabel buildingLabel = new WebLabel(building.getNickName(), WebLabel.LEFT);
 			buildingLabel.setFont(new Font("Serif", Font.BOLD, 14));
 			add(buildingLabel);
 
 			// Add wear condition cache and label.
 			wearConditionCache = (int) Math.round(manager.getWearCondition());
-			wearConditionLabel = new JLabel(
+			wearConditionLabel = new WebLabel(
 					Msg.getString("BuildingPanelMaintenance.wearCondition", wearConditionCache),
-					JLabel.CENTER);
+					WebLabel.CENTER);
 			TooltipManager.setTooltip(wearConditionLabel, 
 					Msg.getString("BuildingPanelMaintenance.wear.toolTip"),
 					TooltipWay.down);
 			// wearConditionLabel.setMargin (4);
 //			add(wearConditionLabel);
 
-			JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
+			WebPanel mainPanel = new WebPanel(new BorderLayout(0, 0));
 			add(mainPanel);
 
 			lastCompletedCache = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-			lastLabel = new JLabel("Last completed : " + lastCompletedCache + " sols ago", JLabel.LEFT);
+			lastLabel = new WebLabel("Last completed : " + lastCompletedCache + " sols ago", WebLabel.LEFT);
 			mainPanel.add(lastLabel, BorderLayout.WEST);
 			// lastLabel.setToolTipText(getToolTipString());
 			TooltipManager.setTooltip(lastLabel, getToolTipString(), TooltipWay.down);
 
 			// Prepare progress bar panel.
-			JPanel progressBarPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+			WebPanel progressBarPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 //			mainPanel.add(progressBarPanel, BorderLayout.CENTER);
 			add(progressBarPanel);
 			
@@ -326,7 +325,7 @@ public class TabPanelMaintenance extends TabPanel {
 
 			// Prepare parts label.
 			Map<Integer, Integer> parts = manager.getMaintenanceParts();
-			partsLabel = new JLabel(getPartsString(parts, false), JLabel.CENTER);
+			partsLabel = new WebLabel(getPartsString(parts, false), WebLabel.CENTER);
 			partsLabel.setPreferredSize(new Dimension(-1, -1));
 			add(partsLabel);
 
@@ -399,17 +398,17 @@ public class TabPanelMaintenance extends TabPanel {
 	/**
 	 * Inner class for building malfunction panel.
 	 */
-	private class BuildingMalfunctionPanel extends JPanel {
+	private class BuildingMalfunctionPanel extends WebPanel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
 		// Data members.
 		private Malfunction malfunction;
-		private JLabel malfunctionLabel;
-		private JLabel workLabel;
+		private WebLabel malfunctionLabel;
+		private WebLabel workLabel;
 		private BoundedRangeModel progressBarModel;
-		private JLabel partsLabel;
+		private WebLabel partsLabel;
 
 		/**
 		 * Constructor.
@@ -418,7 +417,7 @@ public class TabPanelMaintenance extends TabPanel {
 		 * @param building    the building the malfunction is in.
 		 */
 		public BuildingMalfunctionPanel(Malfunction malfunction, Building building) {
-			// Use JPanel constructor
+			// Use WebPanel constructor
 			super();
 
 			// Initialize data members
@@ -429,16 +428,16 @@ public class TabPanelMaintenance extends TabPanel {
 			setBorder(new MarsPanelBorder());
 
 			// Prepare the building label.
-			JLabel buildingLabel = new JLabel(building.getNickName(), JLabel.LEFT);
+			WebLabel buildingLabel = new WebLabel(building.getNickName(), WebLabel.LEFT);
 			buildingLabel.setFont(new Font("Serif", Font.BOLD, 14));
 			add(buildingLabel);
 
 			// Prepare the malfunction label.
-			malfunctionLabel = new JLabel(malfunction.getName(), JLabel.LEFT);
+			malfunctionLabel = new WebLabel(malfunction.getName(), WebLabel.LEFT);
 			malfunctionLabel.setForeground(Color.red);
 			add(malfunctionLabel);
 
-			workLabel = new JLabel("", JLabel.LEFT);
+			workLabel = new WebLabel("", WebLabel.LEFT);
 //			workLabel.setFont(new Font("Serif", Font.ITALIC, 12));
 //			workLabel.setForeground(Color.LIGHT_GRAY);
 //			workLabel.setBackground(Color.DARK_GRAY);
@@ -458,7 +457,7 @@ public class TabPanelMaintenance extends TabPanel {
 			progressBarModel.setValue(0);
 
 			// Prepare parts label.
-			partsLabel = new JLabel(getPartsString(malfunction.getRepairParts(), false), JLabel.CENTER);
+			partsLabel = new WebLabel(getPartsString(malfunction.getRepairParts(), false), WebLabel.CENTER);
 			partsLabel.setPreferredSize(new Dimension(-1, -1));
 			add(partsLabel);
 
@@ -514,12 +513,18 @@ public class TabPanelMaintenance extends TabPanel {
 		private String getToolTipString() {
 			StringBuilder result = new StringBuilder("<html>");
 			result.append(malfunction.getName()).append("<br>");
-			result.append("General Repair Time: ").append((int) malfunction.getCompletedGeneralWorkTime()).append(" / ")
+			if (malfunction.getGeneralWorkTime() > 0) {
+				result.append("General Repair Time: ").append((int) malfunction.getCompletedGeneralWorkTime()).append(" / ")
 				.append((int) malfunction.getGeneralWorkTime()).append(" millisols<br>");
-			result.append("EVA Repair Time: ").append((int) malfunction.getCompletedEVAWorkTime()).append(" / ")
+			}
+			if (malfunction.getEVAWorkTime() > 0) {
+				result.append("EVA Repair Time: ").append((int) malfunction.getCompletedEVAWorkTime()).append(" / ")
 				.append((int) malfunction.getEVAWorkTime()).append(" millisols<br>");
-			result.append("Emergency Repair Time: ").append((int) malfunction.getCompletedEmergencyWorkTime()).append(" / ")
+			}
+			if (malfunction.getEmergencyWorkTime() > 0) {	
+				result.append("Emergency Repair Time: ").append((int) malfunction.getCompletedEmergencyWorkTime()).append(" / ")
 				.append((int) malfunction.getEmergencyWorkTime()).append(" millisols<br>");
+			}
 			result.append("Repair ").append(getPartsString(malfunction.getRepairParts(), false).toLowerCase());
 			result.append("</html>");
 

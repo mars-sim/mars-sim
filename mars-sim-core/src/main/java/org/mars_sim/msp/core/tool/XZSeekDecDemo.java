@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.tool;
  * You can do whatever you want with this file.
  */
 
-import java.io.*;
 import org.tukaani.xz.*;
 
 /**
