@@ -157,7 +157,9 @@ public class ChatUtils {
 			"o2", "oxygen",
 			"co2", "carbon dioxide",
 			"job roster", "job demand",
-			"job prospect"
+			"job prospect",
+			"bed",
+			"social"
 	};
 	
 	public final static String[] PERSON_KEYS = new String[] {
@@ -171,18 +173,19 @@ public class ChatUtils {
 			"building", "associated", "association", "home", "home town",		
 			"garage", "vehicle top container", "vehicle container",  "vehicle park", "vehicle settlement", "vehicle outside", "vehicle inside",			
 			"bed time", "sleep hour", 
-			"trip", "excursion", "mission",
 			"eva time", "airlock time",
 			"shift", "work shift",
-			"job score"
+			"job score",
+			"bed",
+			"social"
 	};
 	
 	public final static String[] ALL_PARTIES_KEYS = new String[] {
-			"relationship", "social", "relation",
-			"bed", "sleep", "lodging", "quarters", "time", "date",
+			"time", "date",
 			"where", "location", "located",	
 			"role",
-			"task", "activity", "action", "doing"
+			"task",
+			"mission"
 	};
 	
 	public final static String[] SYSTEM_KEYS = new String[] {
@@ -192,7 +195,8 @@ public class ChatUtils {
 			"vehicle", "rover", 
 			"hi", "hello", "hey",
 			"proposal",
-			"reset clock thread", "reset clock pulse", "reset clock listener"
+			"reset clock thread", "reset clock pulse", "reset clock listener",
+			"social"
 	};
 
 	public final static String SWITCHES = 
@@ -224,11 +228,12 @@ public class ChatUtils {
 
 	public final static String SYSTEM_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "(A). For MarsNet : " + System.lineSeparator()
-			+ "Type in the NAME of a person, bot, vehicle or settlement to connect with." + System.lineSeparator()
-			+ getKeywordList(SYSTEM_KEYS) + System.lineSeparator() 
-			+ "(B). For all Parties : "  + System.lineSeparator()
-			+ getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
+			+ "(A). For MarsNet : " 
+			+ "Type in the NAME of a person, bot, vehicle or settlement to connect with OR keywords below : " + System.lineSeparator()
+			+ System.lineSeparator()
+			+ getKeywordList(SYSTEM_KEYS) + System.lineSeparator();
+//			+ "(B). For all Parties : "  + System.lineSeparator()
+//			+ getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
 //			+ " 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
 //			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
 //			+ SWITCHES;
@@ -1348,10 +1353,10 @@ public class ChatUtils {
 
 			String prompt = System.lineSeparator() + "Current Outstanding Maintenance Priority Level is " + level 
 					+ System.lineSeparator() + System.lineSeparator() + "Would you like to change it?";
-			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
+			boolean change = sim.getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
         	        
 			if (change) {
-        		int newLevel = Simulation.instance().getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(9).read("Enter the Priority Level (1 = lowest; 9 = highest)");
+        		int newLevel = sim.getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(9).read("Enter the Priority Level (1 = lowest; 9 = highest)");
     	        String s = "";
     	        
     	        if (newLevel > 0  && newLevel < 10) {
@@ -1384,10 +1389,10 @@ public class ChatUtils {
 
 			String prompt = System.lineSeparator() + "Current EVA Suit Production Priority Level is " + level 
 					+ System.lineSeparator() + System.lineSeparator() + "Would you like to change it?";
-			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
+			boolean change = sim.getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
         	        
 			if (change) {
-        		int newLevel = Simulation.instance().getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(9).read("Enter the Priority Level (1 = lowest; 9 = highest)");
+        		int newLevel = sim.getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(9).read("Enter the Priority Level (1 = lowest; 9 = highest)");
     	        String s = "";
     	        
     	        if (newLevel > 0  && newLevel < 10) {
@@ -1420,7 +1425,7 @@ public class ChatUtils {
 			String prompt = YOU_PROMPT + "Commander's Dashboard" + System.lineSeparator()
 					+ System.lineSeparator() + "Current Development Objective : " + obj 
 					+ System.lineSeparator() + System.lineSeparator() + "Would you like to change it?";
-			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
+			boolean change = sim.getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
         	        
 			if (change) {
 				String prompt2 =  " 1. " + Msg.getString("ObjectiveType.crop") + System.lineSeparator() 
@@ -1430,13 +1435,13 @@ public class ChatUtils {
 								+ " 5. " + Msg.getString("ObjectiveType.trade") + System.lineSeparator() 
 								+ " 6. " + Msg.getString("ObjectiveType.tourism") + System.lineSeparator() 
 								+ "Enter your choice (1-6)";
-        		int newObj = Simulation.instance().getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(6).read(prompt2);
+        		int newObj = sim.getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(6).read(prompt2);
     	        String s = "";
     	        
     	        if (newObj > 0  && newObj < 7) {
 
     	        	String prompt3 =  "Enter the level choice (1-3)";
-    	        	int newLevel = Simulation.instance().getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(3).read(prompt3);
+    	        	int newLevel = sim.getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(3).read(prompt3);
     	        	
     	        	if (newLevel > 0 && newLevel < 4) {
 	    	        	String newObjStr = settlementCache.getObjectiveArray()[newObj - 1];
@@ -1504,10 +1509,10 @@ public class ChatUtils {
 			double oldRange = settlementCache.getMaxMssionRange();
 			
 //			Input input = new Input();		
-//			SwingHandler handler = new SwingHandler(Simulation.instance().getTerm().getTextIO(), input);
+//			SwingHandler handler = new SwingHandler(sim.getTerm().getTextIO(), input);
 	        
 			String prompt = System.lineSeparator() + "Current Vehicle Range Limit is " + oldRange + " km. Would you like to change it?";
-			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
+			boolean change = sim.getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
         
 //	        handler.addStringTask("change", System.lineSeparator() + "Current Vehicle Range Limit is " + oldRange + " km. Would you like to change it? (y/n)", false)
 //	        		.addChoices("y", "n").constrainInputToChoices();
@@ -1515,7 +1520,7 @@ public class ChatUtils {
 	        
 			if (change) {
 //        	if (Input.change.equalsIgnoreCase("y")) {   		      		
-        		double range = Simulation.instance().getTerm().getTextIO().newDoubleInputReader()
+        		double range = sim.getTerm().getTextIO().newDoubleInputReader()
         				.withMinVal(50.0).withMaxVal(2000.0).read("Enter a number between 50 and 2000 [km]");
 //        		handler.addIntTask("range", "Enter a number between 50 and 2000 (km)" , false)
 //        		.withInputReaderConfigurator(r -> r.withMinVal(50).withMaxVal(2000));
@@ -1567,9 +1572,10 @@ public class ChatUtils {
 
 		}
 		
-		else if (text.toLowerCase().contains("relationship")
-				|| text.toLowerCase().contains("relation")
-				|| text.toLowerCase().contains("social")) {
+		else if (text.toLowerCase().contains("social")) {
+//			text.toLowerCase().contains("relationship")
+//			|| text.toLowerCase().contains("relation")
+			
 			questionText = YOU_PROMPT + "How is the overall social score in this settlement ?"; 
 
 			double score = relationshipManager.getRelationshipScore(settlementCache);
@@ -1591,10 +1597,10 @@ public class ChatUtils {
 			
 		}
 		
-		else if (text.toLowerCase().contains("task") 
-				|| text.toLowerCase().contains("activity")
-				|| text.toLowerCase().contains("doing")
-				|| text.toLowerCase().contains("action")) {
+		else if (text.toLowerCase().contains("task")) { 
+//				|| text.toLowerCase().contains("activity")
+//				|| text.toLowerCase().contains("doing")
+//				|| text.toLowerCase().contains("action")) {
 			questionText = YOU_PROMPT + "What is everybody doing at this moment? ";
 			responseText.append(settlementCache + " : ");
 			responseText.append("Here is the task roster : ");
@@ -1697,8 +1703,9 @@ public class ChatUtils {
 			}
 		}
 
-		else if (text.equalsIgnoreCase("mission") || text.equalsIgnoreCase("trip")
-				|| text.equalsIgnoreCase("excursion")) {
+		else if (text.equalsIgnoreCase("mission")) {
+//			|| text.equalsIgnoreCase("trip")
+//				|| text.equalsIgnoreCase("excursion")) {
 			responseText.append("What would you like to know about mission ? ");
 			responseText.append(System.lineSeparator());
 			responseText.append("Say 'mission plan', 'mission now', etc.");
@@ -1723,7 +1730,7 @@ public class ChatUtils {
 					+ System.lineSeparator()
 					+ "Enter your choice (1-8)";
 
-			int newObj = Simulation.instance().getTerm().getTextIO()
+			int newObj = sim.getTerm().getTextIO()
 					.newIntInputReader().withMinVal(1).withMaxVal(8).read(prompt2);
 	
 			if (newObj > 0  && newObj <= 3) {
@@ -2130,8 +2137,8 @@ public class ChatUtils {
 			responseText.append(addhiteSpacesName("Name : ", max));
 			responseText.append(settlementCache);
 			
-			if (marsClock == null) marsClock = Simulation.instance().getMasterClock().getMarsClock();
-			if (mars == null) mars = Simulation.instance().getMars();
+			if (marsClock == null) marsClock = sim.getMasterClock().getMarsClock();
+			if (mars == null) mars = sim.getMars();
 			if (weather == null) weather = mars.getWeather();
 			if (surfaceFeatures == null) surfaceFeatures = mars.getSurfaceFeatures();
 			if (orbitInfo == null) orbitInfo = mars.getOrbitInfo();
@@ -2309,9 +2316,10 @@ public class ChatUtils {
 		
 		}
 		
-		else if (text.toLowerCase().contains("bed") || text.toLowerCase().contains("sleep") 
-				|| text.equalsIgnoreCase("lodging")
-				|| text.toLowerCase().contains("quarters")) {
+		else if (text.toLowerCase().contains("bed")) {
+//				|| text.toLowerCase().contains("sleep") 
+//				|| text.equalsIgnoreCase("lodging")
+//				|| text.toLowerCase().contains("quarters")) 
 
 			questionText = YOU_PROMPT + "how well are the beds utilized ? ";
 			responseText.append(System.lineSeparator());
@@ -2877,7 +2885,7 @@ public class ChatUtils {
 			questionText = YOU_PROMPT + "Who's your best friend ?";
 
 			if (relationshipManager == null)
-				relationshipManager = Simulation.instance().getRelationshipManager();
+				relationshipManager = sim.getRelationshipManager();
 			
 			Map<Person, Double> bestFriends = relationshipManager.getBestFriends(personCache);
 			if (bestFriends.isEmpty()) {
@@ -2929,13 +2937,14 @@ public class ChatUtils {
 			}
 		}
 		
-		else if (text.toLowerCase().contains("relationship")
-				|| text.toLowerCase().contains("relation")
-				|| text.toLowerCase().contains("social")) {
+		else if (text.toLowerCase().contains("social")) {
+//				text.toLowerCase().contains("relationship")
+//				|| text.toLowerCase().contains("relation")
+
 			questionText = YOU_PROMPT + "How are your relationship with others ?"; 
 
 			if (relationshipManager == null)
-				relationshipManager = Simulation.instance().getRelationshipManager();
+				relationshipManager = sim.getRelationshipManager();
 			
 			// My opinions of them
 			Map<Person, Double> friends = relationshipManager.getMyOpinionsOfThem(personCache);
@@ -3239,10 +3248,10 @@ public class ChatUtils {
 
 		}
 
-		else if (num == 7 || text.toLowerCase().contains("task") 
-				|| text.toLowerCase().contains("activity")
-				|| text.toLowerCase().contains("doing")
-				|| text.toLowerCase().contains("action")) {
+		else if (num == 7 || text.toLowerCase().contains("task")) { 
+//				|| text.toLowerCase().contains("activity")
+//				|| text.toLowerCase().contains("doing")
+//				|| text.toLowerCase().contains("action")) {
 			questionText = YOU_PROMPT + "What are you doing ?";
 			if (personCache != null) {
 				responseText.append(personCache.getTaskDescription());
@@ -3252,8 +3261,9 @@ public class ChatUtils {
 
 		}
 
-		else if (num == 8 || text.toLowerCase().contains("mission") || text.toLowerCase().contains("trip")
-				|| text.toLowerCase().contains("excursion")) {
+		else if (num == 8 || text.toLowerCase().contains("mission")) { 
+//			|| text.toLowerCase().contains("trip")
+//				|| text.toLowerCase().contains("excursion")) {
 			// sys = name;
 			questionText = YOU_PROMPT + "Are you involved in a particular mission at this moment?";
 			Mission mission = null;
@@ -3412,8 +3422,9 @@ public class ChatUtils {
 				responseText.append("I'm not on a vehicle.");
 		}
 
-		else if (num == 17 || text.equalsIgnoreCase("bed") 
-				|| text.contains("quarters")) {
+		else if (num == 17 || text.equalsIgnoreCase("bed")) {
+//				|| text.contains("quarters")) 
+
 			questionText = YOU_PROMPT + "Where is your designated quarters ? ";
 			Point2D bed = personCache.getBed();
 			if (bed == null) {
@@ -4021,7 +4032,7 @@ public class ChatUtils {
 					+ System.lineSeparator()
 					+ "Would you like to change it?";
 			
-			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt);
+			boolean change = sim.getTerm().getTextIO().newBooleanInputReader().read(prompt);
           
 			if (change) {
 						
@@ -4034,7 +4045,7 @@ public class ChatUtils {
 						+ System.lineSeparator()
 						+ "Which timestamp do you want to use (1, 2 or 3)?";
 				
-				int choice = Simulation.instance().getTerm().getTextIO().newIntInputReader().read(prompt1);
+				int choice = sim.getTerm().getTextIO().newIntInputReader().read(prompt1);
 		          
 				String s = "";
 
@@ -4080,7 +4091,7 @@ public class ChatUtils {
 					+ System.lineSeparator()
 					+ "Would you like to change it?";
 			
-			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt);
+			boolean change = sim.getTerm().getTextIO().newBooleanInputReader().read(prompt);
           
 			if (change) {
 				String s = "";
@@ -4675,9 +4686,9 @@ public class ChatUtils {
 			return responseText.toString();
 		}
 		
-		else if (text.toLowerCase().contains("relationship")
-				|| text.toLowerCase().contains("relation")
-				|| text.toLowerCase().contains("social")) {
+		else if (text.toLowerCase().contains("social")) {
+//			text.toLowerCase().contains("relationship")
+//				|| text.toLowerCase().contains("relation")
 
 			double ave = 0;
 			Map<Double, String> map = new HashMap<>();

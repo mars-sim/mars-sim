@@ -163,12 +163,8 @@ public class MineSite extends EVAOperation implements Serializable {
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
 				return false;
 
-			Mars mars = Simulation.instance().getMars();
-			if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
-				logger.fine(person.getName() + " end mining the site: night time");
-				if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
-					return false;
-			}
+			if (EVAOperation.isGettingDark(person))
+				return false;
 
 			// Check if person's medical condition will not allow task.
 			if (person.getPerformanceRating() < .5D)

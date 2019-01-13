@@ -213,9 +213,9 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * Returns the probability of this malfunction occurring.
+	 * Returns the probability of failure of the malfunction
 	 * 
-	 * @return probability
+	 * @return probability in %
 	 */
 	public double getProbability() {
 		return probability;

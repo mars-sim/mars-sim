@@ -25,8 +25,6 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
@@ -82,8 +80,6 @@ implements SettlementMapLayer {
 	// Data members
 	private SettlementMapPanel mapPanel;
 	
-	private static UnitManager unitMgr;
-	
 	private Map<String, BufferedImage> labelImageCache;
 
 	/**
@@ -93,7 +89,6 @@ implements SettlementMapLayer {
 	public LabelMapLayer(SettlementMapPanel mapPanel) {
 		// Initialize data members.
 		this.mapPanel = mapPanel;
-		unitMgr = Simulation.instance().getUnitManager();
 		labelImageCache = new HashMap<String, BufferedImage>(30);
 	}
 
@@ -334,7 +329,7 @@ implements SettlementMapLayer {
 	private void drawVehicleLabels(Graphics2D g2d, Settlement settlement) {
 		if (settlement != null) {
 			// Draw all vehicles that are at the settlement location.
-			Iterator<Vehicle> i = unitMgr.getVehicles().iterator();
+			Iterator<Vehicle> i = unitManager.getVehicles().iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				// Draw vehicles that are at the settlement location.

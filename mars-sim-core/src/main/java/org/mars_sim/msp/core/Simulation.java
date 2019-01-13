@@ -941,8 +941,8 @@ public class Simulation implements ClockListener, Serializable {
 //		System.out.println("Done with Building function instances");
 		
 		// Re-initialize Task related class
-		ConstructBuilding.setInstances(missionManager);
-		EVAOperation.setInstances(surface); 
+//		ConstructBuilding.setInstances(missionManager);
+//		EVAOperation.setInstances(surface); 
 		LoadVehicleGarage.initializeInstances(pc); 
 		ObserveAstronomicalObjects.setInstances(surface);
 		PerformLaboratoryExperiment.setInstances(scientificStudyManager);
@@ -951,7 +951,7 @@ public class Simulation implements ClockListener, Serializable {
 		Relax.setInstances(marsClock);
 		ReviewMissionPlan.setInstances(relationshipManager, missionManager);
 		Sleep.setInstances(masterClock, marsClock);
-		Task.setInstances(eventManager, relationshipManager, unitManager, scientificStudyManager);
+		Task.setInstances(eventManager, relationshipManager, unitManager, scientificStudyManager, surface, missionManager);
 		Walk.setInstances(unitManager);	
 
 //		System.out.println("Done with Task instances");

@@ -566,12 +566,7 @@ public class Weather implements Serializable {
 			// System.out.print("Time: " + Math.round (time) + " T: " +
 			// standard_temperature);
 
-			double light_factor = 0;
-			double sunlight = 0;
-			sunlight = surfaceFeatures.getSolarIrradiance(location);
-
-			// light_factor = 2D * ( sunlight / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE - .5);
-			light_factor = sunlight / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+			double light_factor = surfaceFeatures.getSunlight(location);
 
 			// Equation below is modeled after Viking's data.
 			double equatorial_temperature = 27.5D * light_factor - 58.5D;

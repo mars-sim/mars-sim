@@ -72,8 +72,6 @@ public abstract class EVAOperation extends Task implements Serializable {
 	private LocalBoundedObject interiorObject;
 	private Point2D returnInsideLoc;
 	
-	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-
 	/**
 	 * Constructor.
 	 * 
@@ -617,15 +615,6 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	protected void setStressModifier(double newStressModifier) {
 		super.setStressModifier(stressModifier);
-	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param s
-	 */
-	public static void setInstances(SurfaceFeatures s) {
-		surface = s;
 	}
 	
 	@Override

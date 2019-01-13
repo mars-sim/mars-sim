@@ -10,9 +10,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -36,8 +34,6 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.maintainGroundVehicleEVA"); //$NON-NLS-1$
-
-    private static SurfaceFeatures surface;
 
     @Override
     public String getName() {
@@ -82,13 +78,9 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
 		    		return 0;
 	
 	            // Check if it is night time.
-	            surface = Simulation.instance().getMars().getSurfaceFeatures();
-	
-	            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
-	                if (!surface.inDarkPolarRegion(person.getCoordinates()))
-	                    return 0;
-	
-	
+				if (EVAOperation.isGettingDark(person))
+					return 0;
+				
 	            if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
 	                result *= 2D;
 	

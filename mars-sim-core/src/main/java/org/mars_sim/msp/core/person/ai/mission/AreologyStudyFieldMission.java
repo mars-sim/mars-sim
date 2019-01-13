@@ -22,16 +22,13 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.location.LocationSituation;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.AreologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -516,9 +513,8 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 
 			// If no one can research the site and this is not due to it just being
 			// night time, end the field work phase.
-			Mars mars = Simulation.instance().getMars();
-			boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(getCurrentMissionLocation());
-			double sunlight = mars.getSurfaceFeatures().getSolarIrradiance(getCurrentMissionLocation());
+			boolean inDarkPolarRegion = surface.inDarkPolarRegion(getCurrentMissionLocation());
+			double sunlight = surface.getSolarIrradiance(getCurrentMissionLocation());
 			if (nobodyFieldWork && ((sunlight > 0D) || inDarkPolarRegion)) {
 				setPhaseEnded(true);
 			}

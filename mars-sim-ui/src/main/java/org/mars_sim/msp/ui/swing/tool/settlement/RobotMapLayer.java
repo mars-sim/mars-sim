@@ -14,8 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -33,9 +31,6 @@ public class RobotMapLayer implements SettlementMapLayer {
 
 	// Data members
 	private SettlementMapPanel mapPanel;
-	
-	private static UnitManager unitMgr;
-
 
 	/**
 	 * Constructor
@@ -43,9 +38,7 @@ public class RobotMapLayer implements SettlementMapLayer {
 	 */
 	public RobotMapLayer(SettlementMapPanel mapPanel) {
 		// Initialize data members.
-		this.mapPanel = mapPanel;
-		unitMgr = Simulation.instance().getUnitManager();
-		
+		this.mapPanel = mapPanel;		
 	}
 
 	@Override
@@ -87,7 +80,7 @@ public class RobotMapLayer implements SettlementMapLayer {
 		List<Robot> result = new ArrayList<Robot>();
 
 		if (settlement != null) {
-			Iterator<Robot> i = unitMgr.getRobots().iterator();
+			Iterator<Robot> i = unitManager.getRobots().iterator();
 			while (i.hasNext()) {
 				Robot robot = i.next();
 

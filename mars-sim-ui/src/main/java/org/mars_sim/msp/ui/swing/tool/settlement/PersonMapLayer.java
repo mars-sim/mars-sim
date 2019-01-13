@@ -14,8 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -34,8 +32,6 @@ public class PersonMapLayer implements SettlementMapLayer {
 	// Data members
 	private SettlementMapPanel mapPanel;
 
-	private static UnitManager unitMgr;
-
 	/**
 	 * Constructor
 	 * @param mapPanel the settlement map panel.
@@ -43,7 +39,6 @@ public class PersonMapLayer implements SettlementMapLayer {
 	public PersonMapLayer(SettlementMapPanel mapPanel) {
 		// Initialize data members.
 		this.mapPanel = mapPanel;
-		unitMgr = Simulation.instance().getUnitManager();	
 	}
 	
 	@Override
@@ -85,7 +80,7 @@ public class PersonMapLayer implements SettlementMapLayer {
 		List<Person> result = new ArrayList<Person>();
 
 		if (settlement != null) {
-			Iterator<Person> i = unitMgr.getPeople().iterator();
+			Iterator<Person> i = unitManager.getPeople().iterator();
 			while (i.hasNext()) {
 				Person person = i.next();
 

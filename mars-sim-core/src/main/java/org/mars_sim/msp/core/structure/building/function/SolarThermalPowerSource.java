@@ -46,10 +46,9 @@ implements Serializable {
 
 	@Override
 	public double getCurrentPower(Building building) {
-		BuildingManager manager = building.getBuildingManager();
-		
+//		BuildingManager manager = building.getBuildingManager();
 		if (location == null)
-			location = manager.getSettlement().getCoordinates();
+			location = building.getBuildingManager().getSettlement().getCoordinates();
 
 		double sunlight = surface.getSolarIrradiance(location) * efficiency_solar_thermal / 1000D * ARRAY_AREA;
 		double max = getMaxPower(); 

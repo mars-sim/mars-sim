@@ -56,26 +56,26 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
-/*
-import com.jfoenix.controls.JFXPopup;
-import com.jfoenix.controls.JFXPopup.PopupHPosition;
-import com.jfoenix.controls.JFXPopup.PopupVPosition;
 
-import javafx.application.Application;
-import javafx.scene.shape.Circle;
-import javafx.embed.swing.SwingNode;
-import javafx.geometry.Rectangle2D;
-import javafx.stage.Screen;
-import javafx.scene.SnapshotParameters;
-import javafx.stage.Popup;
-import javafx.scene.Group;
-import javafx.scene.ImageCursor;
-import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.shape.Rectangle;
-*/
+//import com.jfoenix.controls.JFXPopup;
+//import com.jfoenix.controls.JFXPopup.PopupHPosition;
+//import com.jfoenix.controls.JFXPopup.PopupVPosition;
+//
+//import javafx.application.Application;
+//import javafx.scene.shape.Circle;
+//import javafx.embed.swing.SwingNode;
+//import javafx.geometry.Rectangle2D;
+//import javafx.stage.Screen;
+//import javafx.scene.SnapshotParameters;
+//import javafx.stage.Popup;
+//import javafx.scene.Group;
+//import javafx.scene.ImageCursor;
+//import javafx.application.Platform;
+//import javafx.scene.control.Alert;
+//import javafx.scene.control.Alert.AlertType;
+//import javafx.scene.effect.DropShadow;
+//import javafx.scene.shape.Rectangle;
+
 
 // TODO: is extending to JInternalFrame better?
 public class PopUpUnitMenu extends JPopupMenu {

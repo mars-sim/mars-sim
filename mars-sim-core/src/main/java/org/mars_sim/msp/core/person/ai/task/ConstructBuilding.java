@@ -15,8 +15,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -24,7 +22,6 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
@@ -61,8 +58,6 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	private LightUtilityVehicle luv;
 
 	private List<GroundVehicle> vehicles;
-
-	public static MissionManager missionManager = Simulation.instance().getMissionManager();
 
 	/**
 	 * Constructor.
@@ -174,12 +169,14 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 				return false;
 		}
 
-		Mars mars = Simulation.instance().getMars();
-		if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
-			logger.fine(person.getName() + " end constructing building : night time");
-			if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
-				return false;
-		}
+		if (EVAOperation.isGettingDark(person))
+			return false;
+		
+//		if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
+//			logger.fine(person.getName() + " end constructing building : night time");
+//			if (!surface.inDarkPolarRegion(person.getCoordinates()))
+//				return false;
+//		}
 
 		// Check if person's medical condition will not allow task.
 		if (person.getPerformanceRating() < .5D)
@@ -565,15 +562,6 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	 */
 	public ConstructionStage getConstructionStage() {
 		return stage;
-	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {{@link MissionManager}
-	 */
-	public static void setInstances(MissionManager m) {
-		missionManager = m;
 	}
 
 	@Override

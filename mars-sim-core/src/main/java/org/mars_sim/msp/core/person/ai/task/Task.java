@@ -24,12 +24,14 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -114,14 +116,18 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private Collection<TaskPhase> phases;
 
 	public static Simulation sim = Simulation.instance();
-	/** An instance of the event manager */
+	/** The static instance of the event manager */
 	public static HistoricalEventManager eventManager;
-	/** An instance of the relationship manager */
+	/** The static instance of the relationship manager */
 	public static RelationshipManager relationshipManager = sim.getRelationshipManager();
-	/** An instance of the UnitManager */	
+	/** The static instance of the UnitManager */	
 	protected static UnitManager unitManager = sim.getUnitManager();
-	/** An instance of the ScientificStudyManager */
+	/** The static instance of the ScientificStudyManager */
 	protected static ScientificStudyManager scientificStudyManager = sim.getScientificStudyManager();
+	/** The static instance of the SurfaceFeatures */
+	protected static SurfaceFeatures surface = sim.getMars().getSurfaceFeatures();
+	/** The static instance of the MissionManager */
+	protected static MissionManager missionManager = sim.getMissionManager();
 
 	/**
 	 * Constructs a Task object.
@@ -1274,14 +1280,22 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
-	 * @param {{@link HistoricalEventManager}
+	 * @param e {@link HistoricalEventManager}
+	 * @param r {@link RelationshipManager}
+	 * @param u {@link UnitManager}
+	 * @param s {@link UnitManager}
+	 * @param sf {@link SurfaceFeatures}
+	 * @param m {@link MissionManager}
 	 */
-	public static void setInstances(HistoricalEventManager e, RelationshipManager r, UnitManager u, ScientificStudyManager s) {
+	public static void setInstances(HistoricalEventManager e, RelationshipManager r, 
+			UnitManager u, ScientificStudyManager s, SurfaceFeatures sf, MissionManager m) {
 		sim = Simulation.instance();
 		eventManager = e;
 		relationshipManager = r;
 		unitManager = u;
 		scientificStudyManager = s;
+		surface = sf;
+		missionManager = m;
 	}
 	
 	/**

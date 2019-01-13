@@ -19,11 +19,9 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -49,7 +47,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	private static Logger logger = Logger.getLogger(CollectMinedMinerals.class.getName());
 
     private static String sourceName = logger.getName();
-    
+ 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.collectMinedMinerals"); //$NON-NLS-1$
 
@@ -92,9 +90,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 
 			// If bags are not available, end task.
 			if (!hasBags()) {
-				LogConsolidated.log(logger, Level.FINE, 5000, sourceName, 
+				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
 		        		"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-		        		+ " was not able to find bags to collect mined minerals.", null);
+		        		+ " was not able to find more bags to collect mined minerals.", null);
 				endTask();
 			}
 		}
@@ -334,12 +332,11 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
 				return false;
 
-			Mars mars = Simulation.instance().getMars();
-			if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
+			if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
 				LogConsolidated.log(logger, Level.FINE, 5000, sourceName, 
 		        		"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 		        			+ " ended collecting minerals: night time",   null);
-				if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
+				if (!surface.inDarkPolarRegion(person.getCoordinates()))
 					return false;
 			}
 

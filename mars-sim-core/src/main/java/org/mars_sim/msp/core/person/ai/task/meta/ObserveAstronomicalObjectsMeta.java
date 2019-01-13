@@ -40,8 +40,6 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(ObserveAstronomicalObjectsMeta.class.getName());
 
-    private SurfaceFeatures surface;
-
     @Override
     public String getName() {
         return NAME;
@@ -72,9 +70,8 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
             	return 0;
             
             // Check if it is completely dark outside.
-            if (surface == null)
-            	surface = Simulation.instance().getMars().getSurfaceFeatures();
-
+//            if (surface == null)
+//            	surface = Simulation.instance().getMars().getSurfaceFeatures();
             double sunlight = surface.getSolarIrradiance(person.getCoordinates());
 
             if (sunlight == 0D) {

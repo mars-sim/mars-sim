@@ -166,7 +166,7 @@ public class SleepMeta implements MetaTask, Serializable {
 	            boolean isAstronomer = (person.getMind().getJob() instanceof Astronomer);
 
 	            // Dark outside modifier.
-	            boolean isDark = (sim.getMars().getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0);
+	            boolean isDark = (surface.getSolarIrradiance(person.getCoordinates()) == 0);
 	            
 	            if (isDark && !isAstronomer) {
 	                // Non-astronomers more likely to sleep when it's dark out.

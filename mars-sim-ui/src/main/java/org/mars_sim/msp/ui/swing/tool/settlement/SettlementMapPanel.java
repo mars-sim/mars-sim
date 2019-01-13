@@ -27,12 +27,14 @@ import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -87,6 +89,10 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	private Map<Settlement, Person> selectedPerson;
 	private Map<Settlement, Robot> selectedRobot;
 
+	private static Simulation sim;
+	private static UnitManager unitManager;
+	private static MasterClock masterClock;
+	
 //	private FXGraphics2D fxg2;
 
 	/**
@@ -104,7 +110,13 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 //			fxg2 = new FXGraphics2D(MainScene.getCanvas().getGraphicsContext2D());
 //		}
 
-		settlement = (Settlement) Simulation.instance().getUnitManager().getSettlements().toArray()[0];
+		if (sim == null)
+			sim = Simulation.instance();
+		
+		if (unitManager == null)
+			unitManager = sim.getUnitManager();
+		
+		settlement = (Settlement) unitManager.getSettlements().toArray()[0];
 
 		setLayout(new BorderLayout());
 
@@ -125,16 +137,19 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		selectedRobot = new HashMap<Settlement, Robot>();
 
 		// logger.info("PERIOD_IN_MILLISOLS : " + PERIOD_IN_MILLISOLS);
-		SwingUtilities.invokeLater(() -> {
+//		SwingUtilities.invokeLater(() -> {
 			initLayers(desktop);
-		});
+//		});
 
 		// Set foreground and background colors.
 		setOpaque(false);
 		setBackground(MAP_BACKGROUND);
 		setForeground(Color.ORANGE);
 
-		Simulation.instance().getMasterClock().addClockListener(this);
+		if (masterClock == null)
+			masterClock = sim.getMasterClock();
+		
+		masterClock.addClockListener(this);
 
 		// Add detectMouseMovement() after refactoring
 		SwingUtilities.invokeLater(() -> {

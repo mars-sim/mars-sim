@@ -367,12 +367,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		
 		if (unitManager == null)  {// for passing maven test
 			unitManager = Simulation.instance().getUnitManager();
-			unitManager.addSettlementID(this);
 		}
 		
-//		if (unitManager != null)  {// for passing maven test
-//			unitManager.addSettlementID(this);
-//		}
+		if (unitManager != null)  {// for passing maven test
+			unitManager.addSettlementID(this);
+		}
 		
 		if (missionManager == null) {// for passing maven test
 			missionManager = Simulation.instance().getMissionManager();

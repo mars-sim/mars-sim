@@ -18,7 +18,6 @@ import java.util.Map;
 
 import javax.swing.ImageIcon;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -225,7 +224,7 @@ implements SettlementMapLayer {
 		}
 		else if (settlement != null) {
 			int count = 1;
-			Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
+			Iterator<Settlement> i = unitManager.getSettlements().iterator();
 			while (i.hasNext()) {
 				if (i.next().equals(settlement)) {
 					String backgroundImageName = "settlement_map_tile" + count;

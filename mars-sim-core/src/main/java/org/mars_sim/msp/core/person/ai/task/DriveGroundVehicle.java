@@ -404,8 +404,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 */
 	protected double getSpeedLightConditionModifier() {
 		// Ground vehicles travel at 30% speed at night.
-		double lightConditions = surface.getSolarIrradiance(getVehicle().getCoordinates());
-		double result = ((lightConditions / 600D) * .7D) + .3D;
+		double lightConditions = surface.getSunlight(getVehicle().getCoordinates());
+		double result = (lightConditions * .7D) + .3D;
 		return result;
 	}
 
@@ -464,8 +464,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		// Light condition modification.
 		// SurfaceFeatures surface =
 		// Simulation.instance().getMars().getSurfaceFeatures();
-		double lightConditions = surface.getSolarIrradiance(vehicle.getCoordinates());
-		lightConditions /= 600D;
+		double lightConditions = surface.getSunlight(vehicle.getCoordinates());
 		chance *= (5D * (1D - lightConditions)) + 1D;
 		if (chance < 0D) {
 			chance = 0D;

@@ -73,8 +73,8 @@ implements Serializable {
 	
 	public double getCollected(Building building) {
 
-		return surface.getSolarIrradiance(building.getCoordinates()) 
-				/ MEAN_SOLAR_IRRADIANCE * building.getFloorArea() / 1000D ;
+		return surface.getSunlight(building.getCoordinates()) 
+				* building.getFloorArea() / 1000D ;
 	}
 
 	public double getEfficiencySolarHeat() {

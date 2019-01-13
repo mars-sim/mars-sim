@@ -6,15 +6,36 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.science.ScientificStudyManager;
 
 /**
  * Interface for a meta task, responsible for determining task probability and
  * constructing task instances.
  */
 public interface MetaTask {
+
+	static Simulation sim = Simulation.instance();
+	/** The static instance of the event manager */
+	static HistoricalEventManager eventManager = sim.getEventManager();
+	/** The static instance of the relationship manager */
+	static RelationshipManager relationshipManager = sim.getRelationshipManager();
+	/** The static instance of the UnitManager */	
+	static UnitManager unitManager = sim.getUnitManager();
+	/** The static instance of the ScientificStudyManager */
+	static ScientificStudyManager scientificStudyManager = sim.getScientificStudyManager();
+	/** The static instance of the SurfaceFeatures */
+	static SurfaceFeatures surface = sim.getMars().getSurfaceFeatures();
+	/** The static instance of the MissionManager */
+	static MissionManager missionManager = sim.getMissionManager();
 
 	/**
 	 * Gets the associated task name.

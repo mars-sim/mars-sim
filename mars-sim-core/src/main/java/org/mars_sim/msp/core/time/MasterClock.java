@@ -514,9 +514,9 @@ public class MasterClock implements Serializable {
 	 */
 	public void resetTotalPulses() {
 		long old = totalPulses;
-		totalPulses = (long) (1D / adjustedTBU_ms * uptimer.getLastUptime());
+		totalPulses = 1;// (long) (1D / adjustedTBU_ms * uptimer.getLastUptime());
 		// At the start of the sim, totalPulses is zero
-		if (totalPulses > 0)
+		if (totalPulses > 1)
 			logger.config("Resetting the pulse count from " + old + " to " + totalPulses + ".");
 	}
 
@@ -540,9 +540,9 @@ public class MasterClock implements Serializable {
 //		sim.restartClockExecutor();
 	}
 	
-	public long getDefaultTotalPulses() {
-		return (long)(1D / adjustedTBU_ms * uptimer.getLastUptime());
-	}
+//	public long getDefaultTotalPulses() {
+//		return (long)(1D / adjustedTBU_ms * uptimer.getLastUptime());
+//	}
 	
 	/**
 	 * Sets the simulation time ratio and adjust the value of time between update
@@ -708,8 +708,24 @@ public class MasterClock implements Serializable {
 					}
 
 					else { // last frame went beyond the PERIOD
-						logger.config("overSleepTime : " + overSleepTime); 
-						// e.g. sleepTime : -118289082
+						int secs = 0;
+						int overSleepSeconds = (int) (overSleepTime/1_000_000_000);
+						int mins = 0;
+						String s = "";
+						if (overSleepSeconds > 60) {
+							mins = overSleepSeconds / 60;
+							secs = overSleepSeconds % 60;
+						}
+
+						if (mins > 0) {
+							s = mins + " mins " + secs + " secs";
+						}
+						else {
+							s = secs + " secs";
+						}
+						
+						logger.config("On power saving for " + s); 
+						// e.g. overSleepTime : 598_216_631_335
 						
 						excess -= sleepTime;
 						overSleepTime = 0L;
@@ -725,15 +741,15 @@ public class MasterClock implements Serializable {
 
 					int skips = 0;
 
-					while (!justReloaded && (excess > currentTBU_ns) && (skips < maxFrameSkips)) {
-						logger.config("excess : " + excess);
+					while (!justReloaded && (Math.abs(excess) > currentTBU_ns) && (skips < maxFrameSkips)) {
+						logger.config("excess : " + excess/1_000_000_000 + " secs");
 						// e.g. excess : -118289082
 						justReloaded = false;
 						excess -= currentTBU_ns;
 						// Make up lost frames
 						skips++;
 
-						if (skips >= maxFrameSkips) {
+						if (skips > maxFrameSkips) {
 							logger.config("# of skips (" + skips + ") exceeds the max skips (" + maxFrameSkips + ")."); 
 							// Reset the pulse count
 							resetTotalPulses();
@@ -1197,24 +1213,12 @@ public class MasterClock implements Serializable {
 			tpfCache += tpf;
 			if (tpfCache >= adjustedTBU_s) {
 				
-//				 TPFList.add(tpfCache); // Remove the first 5 if (TPFList.size() > 20) {
-//				 List<Double> list = new ArrayList<>(TPFList); for (int i = 0; i < 5; i++) {
-//				 list.remove(i); } TPFList = list; }
-				 
-				// elapsedLast = uptimer.getUptimeMillis();
-				// if (isPaused) {
-				// resetTotalPulses();
-				// }
-				// else {
 				double t = tpfCache * currentTR;
 				// Get the time pulse length in millisols.
 				double timePulse = t / MarsClock.SECONDS_PER_MILLISOL;
 				// tpfCache : 0.117 tpfCache * timeRatio : 14.933 elapsedLast : 9315.0(inc)
 				// timePulse : 0.168
 
-				// Incrementing total time pulse number.
-				// totalPulses++;
-				// if (totalPulses > 100_000) resetTotalPulses();
 				if (timePulse > 0 && keepRunning && !isPaused
 				// || !clockListenerExecutor.isTerminating()
 						&& clockListenerExecutor != null && !clockListenerExecutor.isTerminated()

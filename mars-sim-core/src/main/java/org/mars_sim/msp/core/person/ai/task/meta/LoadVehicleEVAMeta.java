@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
@@ -40,8 +39,6 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(LoadVehicleEVAMeta.class.getName());
-
-    private static SurfaceFeatures surface;
 
     @Override
     public String getName() {
@@ -82,10 +79,8 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	    		return 0;
 	
 	        // Check if it is night time.
-	        surface = Simulation.instance().getMars().getSurfaceFeatures();
-	        if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
-	            if (!surface.inDarkPolarRegion(person.getCoordinates()))
-	                return 0;
+			if (EVAOperation.isGettingDark(person))
+				return 0;
 	
 	        // Check all vehicle missions occurring at the settlement.
 	        try {
@@ -152,46 +147,45 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-/*
-        if (robot.getBotMind().getRobotJob() instanceof Deliverybot)  {
+//        if (robot.getBotMind().getRobotJob() instanceof Deliverybot)  {
+//
+//            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+//
+//                // Check all vehicle missions occurring at the settlement.
+//                try {
+//                    List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(robot.getSettlement());
+//                    result += 100D * missions.size();
+//                }
+//                catch (Exception e) {
+//                    logger.log(Level.SEVERE, "Error finding loading missions.", e);
+//                }
+//
+//                if (LoadVehicleEVA.getRoversNeedingEVASuits(robot.getSettlement()).size() > 0) {
+//                    int numEVASuits = robot.getSettlement().getSettlementInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
+//                    if (numEVASuits >= 2) {
+//                        result += 100D;
+//                    }
+//                }
+//            }
+//
+//            // Effort-driven task modifier.
+//            result *= robot.getPerformanceRating();
+//
+//            // Check if an airlock is available
+//            if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
+//                result = 0D;
+//            }
+//
+//            // Check if it is night time.
+//            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+//            if (surface.getSolarIrradiance(robot.getCoordinates()) == 0) {
+//                if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
+//                    result = 0D;
+//                }
+//            }
+//
+//        }
 
-            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-                // Check all vehicle missions occurring at the settlement.
-                try {
-                    List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(robot.getSettlement());
-                    result += 100D * missions.size();
-                }
-                catch (Exception e) {
-                    logger.log(Level.SEVERE, "Error finding loading missions.", e);
-                }
-
-                if (LoadVehicleEVA.getRoversNeedingEVASuits(robot.getSettlement()).size() > 0) {
-                    int numEVASuits = robot.getSettlement().getSettlementInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
-                    if (numEVASuits >= 2) {
-                        result += 100D;
-                    }
-                }
-            }
-
-            // Effort-driven task modifier.
-            result *= robot.getPerformanceRating();
-
-            // Check if an airlock is available
-            if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
-                result = 0D;
-            }
-
-            // Check if it is night time.
-            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            if (surface.getSolarIrradiance(robot.getCoordinates()) == 0) {
-                if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
-                    result = 0D;
-                }
-            }
-
-        }
-*/
         return result;
     }
 }

@@ -16,8 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -36,7 +34,6 @@ public class DayNightMapLayer implements SettlementMapLayer {
     private int[] shadingArray;
     private int[] darkArray;
     
-    private SurfaceFeatures surfaceFeatures;
 	private SettlementMapPanel mapPanel;
 	private Coordinates location;
 	private BufferedImage shadingImage, darkImage;
@@ -44,7 +41,6 @@ public class DayNightMapLayer implements SettlementMapLayer {
     public DayNightMapLayer(SettlementMapPanel mapPanel) {
 		// Initialize data members.
 		this.mapPanel = mapPanel;
-        surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
     }
 
 	@Override
@@ -63,7 +59,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 			location = settlement.getCoordinates(); // new Coordinates(0D, 0D);
 
 	        // normalized to  590 W/m2
-	        double sunlight = Math.round(surfaceFeatures.getSolarIrradiance(location) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 100D)/100D;
+	        double sunlight = surfaceFeatures.getSunlight(location);
             int sunlightInt = (int) (LIGHT_THRESHOLD * sunlight);
  
             if (sunlightCache != sunlight || heightCache != height || widthCache != width) {
@@ -199,19 +195,15 @@ public class DayNightMapLayer implements SettlementMapLayer {
             	// Draw the shading image
             	g2d.drawImage(shadingMap, 0, 0, mapPanel);
                 
-
 	        //g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0));
             //g2d.fillRect(0, 0, width, height);
 	        //g2d.drawImage(shadingImage, 0, 0, mapPanel);
-            
 		}
-
 	}
 
 	@Override
 	public void destroy() {
 	    shadingArray = null;
-	    surfaceFeatures = null;
 		mapPanel = null;
 		location = null;
 	}

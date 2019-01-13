@@ -16,17 +16,13 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.mars.ExploredLocation;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CollectMinedMinerals;
 import org.mars_sim.msp.core.person.ai.task.MineSite;
@@ -471,9 +467,8 @@ public class Mining extends RoverMission {
 			// If no one can mine or collect minerals at the site and this is not due to it
 			// just being
 			// night time, end the mining phase.
-			Mars mars = Simulation.instance().getMars();
-			boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(getCurrentMissionLocation());
-			double sunlight = mars.getSurfaceFeatures().getSolarIrradiance(getCurrentMissionLocation());
+			boolean inDarkPolarRegion = surface.inDarkPolarRegion(getCurrentMissionLocation());
+			double sunlight = surface.getSolarIrradiance(getCurrentMissionLocation());
 			if (nobodyMineOrCollect && ((sunlight > 0D) || inDarkPolarRegion)) {
 				setPhaseEnded(true);
 			}

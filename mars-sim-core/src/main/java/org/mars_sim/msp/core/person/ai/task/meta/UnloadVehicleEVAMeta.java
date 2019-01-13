@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -37,8 +36,6 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(UnloadVehicleEVAMeta.class.getName());
-
-    private static SurfaceFeatures surface;
 
     @Override
     public String getName() {
@@ -79,11 +76,9 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 	    		return 0;
 	
 	        // Check if it is night time.
-	        surface = Simulation.instance().getMars().getSurfaceFeatures();
-	        if (surface.getSolarIrradiance(person.getCoordinates()) == 0D)
-	            if (!surface.inDarkPolarRegion(person.getCoordinates()))
-	                return 0;
-	
+			if (EVAOperation.isGettingDark(person))
+				return 0;
+	        		
 	        // Check all vehicle missions occurring at the settlement.
 	        try {
 	            int numVehicles = 0;

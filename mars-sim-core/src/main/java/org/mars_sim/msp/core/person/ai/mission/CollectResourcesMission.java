@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.location.LocationSituation;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CollectResources;
@@ -431,9 +430,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 			// If no one can collect resources and this is not due to it just being
 			// night time, end the collecting phase.
-			Mars mars = Simulation.instance().getMars();
-			boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(getCurrentMissionLocation());
-			double sunlight = mars.getSurfaceFeatures().getSolarIrradiance(getCurrentMissionLocation());
+			boolean inDarkPolarRegion = surface.inDarkPolarRegion(getCurrentMissionLocation());
+			double sunlight = surface.getSolarIrradiance(getCurrentMissionLocation());
 			if (nobodyCollect && ((sunlight > 0D) || inDarkPolarRegion)) {
 				setPhaseEnded(true);
 			}

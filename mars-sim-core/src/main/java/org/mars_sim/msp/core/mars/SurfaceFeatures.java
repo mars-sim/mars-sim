@@ -94,16 +94,12 @@ public class SurfaceFeatures implements Serializable {
 	 * @throws Exception when error in creating surface features.
 	 */
 	public SurfaceFeatures() {
-//		sim = Simulation.instance();
-//		simulationConfig = SimulationConfig.instance();
-		
 		// Initialize instances.
 		terrainElevation = new TerrainElevation();
 		mineralMap = new RandomMineralMap();
 		exploredLocations = new CopyOnWriteArrayList<>(); // will need to make sure explored locations are serialized
 		areothermalMap = new AreothermalMap();
 //		terrainElevation = new TerrainElevation();
-			
 		missionManager = sim.getMissionManager();
 
 //		try {
@@ -225,9 +221,7 @@ public class SurfaceFeatures implements Serializable {
 		double tau = 0;
 
 		double newTau = 0.2237 * weather.getDailyVariationAirPressure(location);
-		// System.out.println("DailyVariationAirPressure : " +
-		// weather.getDailyVariationAirPressure(location));
-
+		
 		// Equation: tau = 0.2342 + 0.2247 * yestersolAirPressureVariation;
 		// the starting value for opticalDepth is 0.2342. See Ref below
 		if (opticalDepthMap.containsKey(location))
@@ -305,6 +299,11 @@ public class SurfaceFeatures implements Serializable {
 		}
 		
 		return trend;
+	}
+	
+	public double getSunlight(Coordinates location) {
+		  return Math.round(getSolarIrradiance(location) 
+				  / MEAN_SOLAR_IRRADIANCE * 100D)/100D;
 	}
 	
 	/**
@@ -677,14 +676,8 @@ public class SurfaceFeatures implements Serializable {
 
 		// TODO: clear the total solar irradiance map and save data in DailyWeather.
 		// check for the passing of each day
-//		if (masterClock == null)
-//			masterClock = sim.getMasterClock();
-//		marsClock = masterClock.getMarsClock();
-//
 //	    int newSol = MarsClock.getSolOfYear(marsClock);
 //		if (newSol != solCache) {
-//
-//
 //			totalSolarIrradianceMap.clear();
 //			solCache = newSol;
 //		}
@@ -742,7 +735,6 @@ public class SurfaceFeatures implements Serializable {
 		orbitInfo = null;
 		mars = null;
 		missionManager = null;
-		;
 		sunDirection = null;
 		landmarks.clear();
 		landmarks = null;
