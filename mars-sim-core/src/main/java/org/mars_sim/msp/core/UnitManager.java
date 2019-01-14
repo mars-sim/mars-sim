@@ -363,13 +363,12 @@ public class UnitManager implements Serializable {
 	}
 
 	public Settlement getSettlementByID(int id) {
-//		System.out.println("UnitManager's getSettlementByID() id : " + id);
-//		if (lookupSettlement == null)
-//			System.out.println("UnitManager : lookupSettlement == null");
 		return lookupSettlement.get(id);
 	}
 	
 	public void addSettlementID(Settlement s) {
+		if (lookupSettlement == null)
+			lookupSettlement = new HashMap<>();
 		if (!lookupSettlement.containsKey(s.getIdentifier()))
 			lookupSettlement.put(s.getIdentifier(), s);
 	}
