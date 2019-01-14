@@ -8,7 +8,9 @@
 
 package org.mars_sim.msp.core.structure.construction;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -27,6 +29,9 @@ public class ConstructionManagerTest extends TestCase {
         super.setUp();
         
         SimulationConfig.loadConfig();
+        Simulation.createNewSimulation(-1, true);
+//        UnitManager unitManager = Simulation.instance().getUnitManager();
+//		Iterator<Settlement> i = unitManager.getSettlements().iterator();
         Settlement settlement = new MockSettlement();
         manager = new ConstructionManager(settlement);
     }
