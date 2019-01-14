@@ -11,6 +11,7 @@ package org.mars_sim.msp.core.person.ai.mission;
  */
 public class MissionException extends Exception {
 
+	private static final long serialVersionUID = 1L;
 	// Domain members
 	private String phase;
 

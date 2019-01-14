@@ -6,15 +6,11 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
-import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -28,7 +24,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 public class CollectRegolithMeta implements MetaMission {
 
 	// private static Logger logger =
-	private static Logger logger = Logger.getLogger(CollectRegolithMeta.class.getName());
+//	private static Logger logger = Logger.getLogger(CollectRegolithMeta.class.getName());
 
 	/** Mission name */
 	private static final String NAME = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$

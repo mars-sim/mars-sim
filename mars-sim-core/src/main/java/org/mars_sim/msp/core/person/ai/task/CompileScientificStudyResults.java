@@ -80,7 +80,7 @@ implements Serializable {
 
             // If person is in a settlement, try to find an administration building.
             boolean adminWalk = false;
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            if (person.isInSettlement()) {
                 Building adminBuilding = getAvailableAdministrationBuilding(person);
                 if (adminBuilding != null) {
                     // Walk to administration building.
@@ -91,7 +91,7 @@ implements Serializable {
 
             if (!adminWalk) {
 
-                if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                if (person.isInVehicle()) {
                     // If person is in rover, walk to passenger activity spot.
                     if (person.getVehicle() instanceof Rover) {
                         walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
@@ -153,8 +153,8 @@ implements Serializable {
         List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
         // Add primary study if in paper phase.
-        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-        ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(person);
+//        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager(); ?
+        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
         if (primaryStudy != null) {
             if (ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase()) &&
                     !primaryStudy.isPrimaryPaperCompleted()) {
@@ -165,7 +165,7 @@ implements Serializable {
         }
 
         // Add all collaborative studies in research phase.
-        Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(person).iterator();
+        Iterator<ScientificStudy> i = scientificStudyManager.getOngoingCollaborativeStudies(person).iterator();
         while (i.hasNext()) {
             ScientificStudy collabStudy = i.next();
             if (ScientificStudy.PAPER_PHASE.equals(collabStudy.getPhase()) &&

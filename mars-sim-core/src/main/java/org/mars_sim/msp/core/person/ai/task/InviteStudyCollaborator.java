@@ -16,17 +16,13 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.science.ScientificStudyUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -77,8 +73,8 @@ implements Serializable {
     public InviteStudyCollaborator(Person person) {
         super(NAME, person, false, true, STRESS_MODIFIER, true, DURATION);
 
-        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-        study = manager.getOngoingPrimaryStudy(person);
+//        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+        study = scientificStudyManager.getOngoingPrimaryStudy(person);
         if (study != null) {
 
             // Determine best invitee.
@@ -88,7 +84,7 @@ implements Serializable {
 
                 // If person is in a settlement, try to find an administration building.
                 boolean adminWalk = false;
-                if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                if (person.isInSettlement()) {
                     Building adminBuilding = getAvailableAdministrationBuilding(person);
                     if (adminBuilding != null) {
                         // Walk to administration building.
@@ -99,7 +95,7 @@ implements Serializable {
 
                 if (!adminWalk) {
 
-                    if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                    if (person.isInVehicle()) {
                         // If person is in rover, walk to passenger activity spot.
                         if (person.getVehicle() instanceof Rover) {
                             walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
@@ -135,7 +131,7 @@ implements Serializable {
 
         Building result = null;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> administrationBuildings = manager.getBuildings(FunctionType.ADMINISTRATION);
             administrationBuildings = BuildingManager.getNonMalfunctioningBuildings(administrationBuildings);
@@ -188,13 +184,13 @@ implements Serializable {
             inviteeValue += (totalAchievement / 10D);
 
             // Modify based on study researcher's personal opinion of invitee.
-            RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+//            RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
             double opinion = relationshipManager.getOpinionOfPerson(study.getPrimaryResearcher(), invitee);
             inviteeValue *= (opinion / 100D);
 
             // Modify based on current number of studies researcher is currently collaborating on.
-            ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-            int numCollaborativeStudies = studyManager.getOngoingCollaborativeStudies(invitee).size();
+//            ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
+            int numCollaborativeStudies = scientificStudyManager.getOngoingCollaborativeStudies(invitee).size();
             inviteeValue /= (numCollaborativeStudies + 1D);
 
             // Modify based on if researcher and primary researcher are at same settlement.
@@ -230,7 +226,7 @@ implements Serializable {
             study.addInvitedResearcher(invitee);
 
             // Check if existing relationship between primary researcher and invitee.
-            RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+//            RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
             if (!relationshipManager.hasRelationship(person, invitee)) {
                 // Add new communication meeting relationship.
                 relationshipManager.addRelationship(person, invitee, Relationship.COMMUNICATION_MEETING);
@@ -240,7 +236,7 @@ implements Serializable {
             Relationship relationship = relationshipManager.getRelationship(invitee, person);
             double currentOpinion = relationship.getPersonOpinion(invitee);
             relationship.setPersonOpinion(invitee, currentOpinion + 10D);
-            LogConsolidated.log(Level.FINE, 0, sourceName,
+            LogConsolidated.log(Level.INFO, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person
 					+ " was inviting " + invitee.getName() +
                     " to collaborate in " + study.toString());

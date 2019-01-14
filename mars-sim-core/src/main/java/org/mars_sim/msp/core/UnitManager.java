@@ -45,7 +45,6 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -149,7 +148,7 @@ public class UnitManager implements Serializable {
 	private static SettlementConfig settlementConfig;
 	private static VehicleConfig vehicleConfig;
 	private static RobotConfig robotConfig;
-	private static PartConfig partConfig;
+//	private static PartConfig partConfig;
 
 	private static RelationshipManager relationshipManager;
 	private static MalfunctionFactory factory;
@@ -177,7 +176,7 @@ public class UnitManager implements Serializable {
 		equipmentNumberMap = new HashMap<String, Integer>();
 		vehicleNumberMap = new HashMap<String, Integer>();
 		
-		partConfig = simulationConfig.getPartConfiguration();
+//		partConfig = simulationConfig.getPartConfiguration();
 		personConfig = simulationConfig.getPersonConfiguration();
 		robotConfig = simulationConfig.getRobotConfiguration();
 		settlementConfig = simulationConfig.getSettlementConfiguration();

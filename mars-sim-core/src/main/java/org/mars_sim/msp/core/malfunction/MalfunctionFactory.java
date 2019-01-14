@@ -380,7 +380,7 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	public static Malfunction getMeteoriteImpactMalfunction(String malfunctionName) {
 		if (meteoriteImpactMalfunction == null) {
-			for (Malfunction m : malfunctionConfig.getMalfunctionList()) {
+			for (Malfunction m : MalfunctionConfig.getMalfunctionList()) {
 				if (m.getName().equals(malfunctionName))
 					meteoriteImpactMalfunction = m;
 			}

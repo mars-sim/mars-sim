@@ -71,7 +71,7 @@ public class MalfunctionConfig implements Serializable {
 	 * @param malfunctionDoc DOM document containing malfunction configuration.
 	 */
 	public MalfunctionConfig(Document malfunctionDoc) {
-		this.malfunctionDoc = malfunctionDoc;
+		MalfunctionConfig.malfunctionDoc = malfunctionDoc;
 		repairParts = new HashMap<String, List<RepairPart>>();
 
 	}
@@ -187,7 +187,7 @@ public class MalfunctionConfig implements Serializable {
 						for (Element effectElement : effectNodes) {
 							String type = effectElement.getAttributeValue(TYPE);
 							String resourceName = effectElement.getAttributeValue(NAME);
-							Double changeRate = new Double(effectElement.getAttributeValue(CHANGE_RATE));
+							double changeRate = Double.parseDouble(effectElement.getAttributeValue(CHANGE_RATE));
 
 							if (type.equals("life-support")) {
 
@@ -224,7 +224,7 @@ public class MalfunctionConfig implements Serializable {
 
 						for (Element medicalComplaintElement : medicalComplaintNodes) {
 							String complaintName = medicalComplaintElement.getAttributeValue(NAME);
-							Double complaintProbability = new Double(
+							double complaintProbability = Double.parseDouble(
 									medicalComplaintElement.getAttributeValue(PROBABILITY));
 							medicalComplaints.put(ComplaintType.fromString(complaintName), complaintProbability);
 
@@ -422,8 +422,8 @@ public class MalfunctionConfig implements Serializable {
 			this.probability = probability;
 		}
 
-		public void setProbability(double probability) {
-			this.probability = probability;
-		}
+//		public void setProbability(double probability) {
+//			this.probability = probability;
+//		}
 	}
 }

@@ -40,10 +40,10 @@ public class FoodProductionConfig implements Serializable {
 	private static final String EQUIPMENT = "equipment";
 	
 	//private static final String VEHICLE = "vehicle";
-	private static final String SALVAGE = "salvage";
-	private static final String ITEM_NAME = "item-name";
-	private static final String TYPE = "type";
-	private static final String PART_SALVAGE = "part-salvage";
+//	private static final String SALVAGE = "salvage";
+//	private static final String ITEM_NAME = "item-name";
+//	private static final String TYPE = "type";
+//	private static final String PART_SALVAGE = "part-salvage";
 
 	private Document foodProductionDoc;
 	private List<FoodProductionProcessInfo> foodproductionProcessList;

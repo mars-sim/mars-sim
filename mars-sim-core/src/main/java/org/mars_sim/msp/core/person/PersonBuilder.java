@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.core.person;
 
-import org.mars_sim.msp.core.structure.Settlement;
-
 public interface PersonBuilder<T> {
 
 	public PersonBuilder<Person> setGender(GenderType g);

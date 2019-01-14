@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -19,7 +18,6 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.science.ScientificStudyUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 
@@ -62,7 +60,7 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
             	return 0;
             
 //	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-	        ScientificStudy study = Simulation.instance().getScientificStudyManager().getOngoingPrimaryStudy(person);
+	        ScientificStudy study = scientificStudyManager.getOngoingPrimaryStudy(person);
 
             // Check if study is in invitation phase.
             if (study != null && study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
@@ -100,7 +98,7 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
 
                         // Modify if research is the person's favorite activity.
                         if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-                            result *= 2D;
+                            result *= 1.5D;
                         }
 
                         // Add Preference modifier

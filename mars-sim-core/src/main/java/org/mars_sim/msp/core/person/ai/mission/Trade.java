@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationSituation;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -765,10 +764,11 @@ public class Trade extends RoverMission implements Serializable {
 			if (good.getCategory().equals(GoodType.EQUIPMENT)) {
 				Class<?> equipmentClass = good.getClassType();
 				int num = load.get(good);
-				if (result.containsKey(equipmentClass)) {
-					num += (Integer) result.get(equipmentClass);
+				int id = EquipmentType.getEquipmentID(equipmentClass);
+				if (result.containsKey(id)) {
+					num += (Integer) result.get(id);
 				}
-				result.put(EquipmentType.getEquipmentID(equipmentClass), num);
+				result.put(id, num);
 //                result.put(ResourceUtil.findIDbyAmountResourceName(equipmentClass.getName()), num);
 			}
 		}
@@ -795,15 +795,15 @@ public class Trade extends RoverMission implements Serializable {
 			if (good.getCategory().equals(GoodType.AMOUNT_RESOURCE)) {
 				AmountResource resource = (AmountResource) good.getObject();
 				double amount = load.get(good).doubleValue();
-				if (result.containsKey(resource)) {
-					amount += (Double) result.get(resource);
+				if (result.containsKey(resource.getID())) {
+					amount += (Double) result.get(resource.getID());
 				}
 				result.put(ResourceUtil.findIDbyAmountResourceName(resource.getName()), amount);
 			} else if (good.getCategory().equals(GoodType.ITEM_RESOURCE)) {
 				ItemResource resource = (ItemResource) good.getObject();
 				int num = load.get(good);
-				if (result.containsKey(resource)) {
-					num += (Integer) result.get(resource);
+				if (result.containsKey(resource.getID())) {
+					num += (Integer) result.get(resource.getID());
 				}
 				result.put(ResourceUtil.findIDbyAmountResourceName(resource.getName()), num);
 			}

@@ -102,6 +102,8 @@ public class PlayHoloGame extends Task implements Serializable {
 							walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMODATIONS, true);
 							walkSite = true;
 						}
+						else
+							endTask();
 					}
 				}
 			} catch (Exception e) {
@@ -128,7 +130,7 @@ public class PlayHoloGame extends Task implements Serializable {
 
 		setPhase(SETTING_UP_SCENES);
 
-		LogConsolidated.log(Level.INFO, 3_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+		LogConsolidated.log(Level.FINE, 3_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 				+ person + " was setting up hologames to play in " + person.getLocationTag().getImmediateLocation());
 		
 	}

@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -386,7 +385,6 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 		return result;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
 		if (equipmentNeededCache != null) {
@@ -478,13 +476,13 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 
 		// Check if field site research has just started.
 		if (fieldSiteStartTime == null) {
-			fieldSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+			fieldSiteStartTime = (MarsClock) marsClock.clone();
 		}
 
 		// Check if crew has been at site for more than required length of time.
 		boolean timeExpired = false;
-		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		if (MarsClock.getTimeDiff(currentTime, fieldSiteStartTime) >= FIELD_SITE_TIME) {
+//		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		if (MarsClock.getTimeDiff((MarsClock) marsClock.clone(), fieldSiteStartTime) >= FIELD_SITE_TIME) {
 			timeExpired = true;
 		}
 
@@ -599,8 +597,8 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 
 		// Add estimated remaining field work time at field site if still there.
 		if (RESEARCH_SITE.equals(getPhase())) {
-			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-			double timeSpentAtExplorationSite = MarsClock.getTimeDiff(currentTime, fieldSiteStartTime);
+//			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+			double timeSpentAtExplorationSite = MarsClock.getTimeDiff(marsClock, fieldSiteStartTime);
 			double remainingTime = FIELD_SITE_TIME - timeSpentAtExplorationSite;
 			if (remainingTime > 0D) {
 				result += remainingTime;

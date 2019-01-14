@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -196,8 +195,8 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		List<ScienceType> fieldSciences = getFieldSciences();
 
 		// Add primary study if appropriate science and in research phase.
-		ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-		ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(person);
+//		ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+		ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
 					&& !primaryStudy.isPrimaryResearchCompleted()) {
@@ -211,7 +210,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 
 		// Add all collaborative studies with appropriate sciences and in research
 		// phase.
-		Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(person).iterator();
+		Iterator<ScientificStudy> i = scientificStudyManager.getOngoingCollaborativeStudies(person).iterator();
 		while (i.hasNext()) {
 			ScientificStudy collabStudy = i.next();
 			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())

@@ -6,14 +6,14 @@
  */
 package org.mars_sim.msp.core.mars;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Provides configuration information about landmarks. Uses a DOM document to

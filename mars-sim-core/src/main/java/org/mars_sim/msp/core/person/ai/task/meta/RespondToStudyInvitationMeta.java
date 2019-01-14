@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -20,7 +19,6 @@ import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
@@ -73,7 +71,7 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
 
             // Check if person has been invited to collaborate on any scientific studies.
 //	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-	        List<ScientificStudy> invitedStudies = Simulation.instance().getScientificStudyManager().getOpenInvitationStudies(person);
+	        List<ScientificStudy> invitedStudies = scientificStudyManager.getOpenInvitationStudies(person);
 	        if (invitedStudies.size() > 0) {
 	            result += invitedStudies.size() * 100D;
 	        }

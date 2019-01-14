@@ -17,7 +17,8 @@ import java.io.Serializable;
  */
 public class SalvageProcess implements Serializable {
 
-    // Data members.
+	private static final long serialVersionUID = 1L;
+	// Data members.
     private Manufacture workshop;
     private SalvageProcessInfo info;
     private double workTimeRemaining;

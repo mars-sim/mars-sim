@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.manufacture;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -23,6 +22,7 @@ import java.util.Map;
  */
 public class SalvageInfo implements Serializable {
 
+	private static final long serialVersionUID = 1L;
     // Data members
     private int settlementID;
 

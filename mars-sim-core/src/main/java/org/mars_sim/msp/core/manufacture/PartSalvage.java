@@ -14,7 +14,9 @@ import java.io.Serializable;
  */
 public class PartSalvage implements Serializable {
 
-    // Data members
+	private static final long serialVersionUID = 1L;
+	
+	// Data members
     private String name;
     private int number;
     

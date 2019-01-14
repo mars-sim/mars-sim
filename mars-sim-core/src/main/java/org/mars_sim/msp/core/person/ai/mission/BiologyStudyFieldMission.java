@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -281,14 +280,14 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = vInv.getARCapacity(ResourceUtil.waterID, false);
+		double waterCapacity = vInv.getARCapacity(waterID, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit)
 			timeLimit = waterTimeLimit;
 
 		// Check oxygen capacity as time limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = vInv.getARCapacity(ResourceUtil.oxygenID, false);
+		double oxygenCapacity = vInv.getARCapacity(oxygenID, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit)
 			timeLimit = oxygenTimeLimit;
@@ -476,13 +475,13 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 
 		// Check if field site research has just started.
 		if (fieldSiteStartTime == null) {
-			fieldSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+			fieldSiteStartTime = (MarsClock) marsClock.clone();
 		}
 
 		// Check if crew has been at site for more than required length of time.
 		boolean timeExpired = false;
-		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		if (MarsClock.getTimeDiff(currentTime, fieldSiteStartTime) >= FIELD_SITE_TIME) {
+//		MarsClock currentTime = (MarsClock) marsClock.clone();
+		if (MarsClock.getTimeDiff((MarsClock) marsClock.clone(), fieldSiteStartTime) >= FIELD_SITE_TIME) {
 			timeExpired = true;
 		}
 
@@ -597,8 +596,7 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 
 		// Add estimated remaining field work time at field site if still there.
 		if (RESEARCH_SITE.equals(getPhase())) {
-			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-			double timeSpentAtExplorationSite = MarsClock.getTimeDiff(currentTime, fieldSiteStartTime);
+			double timeSpentAtExplorationSite = MarsClock.getTimeDiff(marsClock, fieldSiteStartTime);
 			double remainingTime = FIELD_SITE_TIME - timeSpentAtExplorationSite;
 			if (remainingTime > 0D)
 				result += remainingTime;
@@ -624,23 +622,23 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 		// AmountResource oxygen =
 		// AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(ResourceUtil.oxygenID))
-			oxygenAmount += (Double) result.get(ResourceUtil.oxygenID);
-		result.put(ResourceUtil.oxygenID, oxygenAmount);
+		if (result.containsKey(oxygenID))
+			oxygenAmount += (Double) result.get(oxygenID);
+		result.put(oxygenID, oxygenAmount);
 
 		// AmountResource waterID =
 		// AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(ResourceUtil.waterID))
-			waterAmount += (Double) result.get(ResourceUtil.waterID);
-		result.put(ResourceUtil.waterID, waterAmount);
+		if (result.containsKey(waterID))
+			waterAmount += (Double) result.get(waterID);
+		result.put(waterID, waterAmount);
 
 		// AmountResource foodID =
 		// AmountResource.findAmountResource(LifeSupportType.FOOD);
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(ResourceUtil.foodID))
-			foodAmount += (Double) result.get(ResourceUtil.foodID);
-		result.put(ResourceUtil.foodID, foodAmount);
+		if (result.containsKey(foodID))
+			foodAmount += (Double) result.get(foodID);
+		result.put(foodID, foodAmount);
 
 //	     AmountResource dessert1 = AmountResource.findAmountResource("Soymilk");
 //	     double dessert1Amount = PhysicalCondition.getFoodConsumptionRate() / 6D * timeSols * crewNum;

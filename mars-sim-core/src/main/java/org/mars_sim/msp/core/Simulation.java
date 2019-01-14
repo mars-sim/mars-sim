@@ -66,8 +66,6 @@ import org.mars_sim.msp.core.person.ai.mission.meta.BuildingConstructionMissionM
 import org.mars_sim.msp.core.person.ai.mission.meta.CollectIceMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.CollectRegolithMeta;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.ObserveAstronomicalObjects;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
@@ -121,7 +119,6 @@ import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -206,7 +203,7 @@ public class Simulation implements ClockListener, Serializable {
 			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_THREADS
 			+ ((NUM_THREADS == 1) ? " CPU thread" : " CPU threads")); // $NON-NLS-1$
 
-	private static final boolean debug = false; // logger.isLoggable(Level.FINE);
+//	private static final boolean debug = false; // logger.isLoggable(Level.FINE);
 	/** true if displaying graphic user interface. */
 	private static boolean useGUI = true;
 	/** Flag to indicate that a new simulation is being created or loaded. */
@@ -556,9 +553,9 @@ public class Simulation implements ClockListener, Serializable {
 			// [landrus, 27.11.09]: use the home dir instead of unknown relative paths.
 			f = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
 //			 logger.config("file is " + f);
-			sim.defaultLoad = true;
+			Simulation.defaultLoad = true;
 		} else {
-			sim.defaultLoad = false;
+			Simulation.defaultLoad = false;
 		}
 
 		if (f.exists() && f.canRead()) {
@@ -601,24 +598,24 @@ public class Simulation implements ClockListener, Serializable {
 		}
 	}
 
-	private synchronized void readJSON() throws JsonParseException, JsonMappingException, IOException {
-
-		String name = mars.getClass().getSimpleName();
-		File file = new File(DEFAULT_DIR, name + JSON_EXTENSION);
-			
-		if (file.exists() && file.canRead()) {
-			// Use Jackson json to read json file data to String
-			byte[] jsonData = Files.readAllBytes(file.toPath());//Paths.get("Mars.json"));
-			System.out.println(new String(jsonData));
-			
-//	        mars = objectMapper.readValue(FileUtils.readFileToByteArray(file, Mars.class);
-//	        System.out.println(mars);
-	        
-			// Use Jackson json to read
-//			mars = objectMapper.readValue(file, Mars.class);
-//			System.out.println(mars);
-		}
-	}
+//	private synchronized void readJSON() throws JsonParseException, JsonMappingException, IOException {
+//
+//		String name = mars.getClass().getSimpleName();
+//		File file = new File(DEFAULT_DIR, name + JSON_EXTENSION);
+//			
+//		if (file.exists() && file.canRead()) {
+//			// Use Jackson json to read json file data to String
+//			byte[] jsonData = Files.readAllBytes(file.toPath());//Paths.get("Mars.json"));
+//			System.out.println(new String(jsonData));
+//			
+////	        mars = objectMapper.readValue(FileUtils.readFileToByteArray(file, Mars.class);
+////	        System.out.println(mars);
+//	        
+//			// Use Jackson json to read
+////			mars = objectMapper.readValue(file, Mars.class);
+////			System.out.println(mars);
+//		}
+//	}
 	
     /**
      * Deserialize to Object from given file.
@@ -1395,7 +1392,7 @@ public class Simulation implements ClockListener, Serializable {
 	public void endSimulation() {
 		interactiveTerm.setKeepRunning(false);
 		interactiveTerm.disposeTerminal();
-		instance().defaultLoad = false;
+		Simulation.defaultLoad = false;
 		instance().stop();
 		masterClock.endClockListenerExecutor();
 		if (clockThreadExecutor != null)

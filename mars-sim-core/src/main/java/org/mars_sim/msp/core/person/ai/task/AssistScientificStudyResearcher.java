@@ -153,8 +153,8 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		// If assistant is in a settlement, best researchers are in least crowded
 		// buildings.
 		Collection<Person> leastCrowded = new ConcurrentLinkedQueue<Person>();
+		
 		if (assistant.isInSettlement()) {
-
 			// Find the least crowded buildings that researchers are in.
 			int crowding = Integer.MAX_VALUE;
 			Iterator<Person> i = researchers.iterator();
@@ -189,7 +189,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 			leastCrowded = researchers;
 
 		// Get the assistant's favorite researchers.
-		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+//		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		Collection<Person> favoriteResearchers = new ConcurrentLinkedQueue<Person>();
 
 		// Find favorite opinion.
@@ -328,9 +328,9 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		}
 
 		// Check if researcher is in a different location situation than the assistant.
-		if (!researcher.getLocationSituation().equals(person.getLocationSituation())) {
-			endTask();
-		}
+//		if (!researcher.getLocationSituation().equals(person.getLocationSituation())) {
+//			endTask();
+//		}
 
 		// Add experience
 		addExperience(time);
@@ -347,10 +347,10 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	 * @param time the time assisting.
 	 */
 	private void addRelationshipModifier(double time) {
-		RelationshipManager manager = Simulation.instance().getRelationshipManager();
-		double currentOpinion = manager.getOpinionOfPerson(researcher, person);
+//		RelationshipManager manager = Simulation.instance().getRelationshipManager();
+		double currentOpinion = relationshipManager.getOpinionOfPerson(researcher, person);
 		double newOpinion = currentOpinion + (BASE_RELATIONSHIP_MODIFIER * time);
-		Relationship relationship = manager.getRelationship(researcher, person);
+		Relationship relationship = relationshipManager.getRelationship(researcher, person);
 		if (relationship != null) {
 			relationship.setPersonOpinion(researcher, newOpinion);
 		}

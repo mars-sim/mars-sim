@@ -79,7 +79,7 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
             
         	double pref = person.getPreference().getPreferenceScore(this);
             
-        	result = pref * 5D;
+        	result = pref * 3D;
             
             if (pref > 0) {
              	if (stress > 45D)

@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

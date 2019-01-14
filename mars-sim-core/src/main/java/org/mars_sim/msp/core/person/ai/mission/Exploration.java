@@ -19,18 +19,15 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.MineralMap;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ExploreSite;
 import org.mars_sim.msp.core.person.ai.task.Task;
-
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -335,8 +332,8 @@ public class Exploration extends RoverMission implements Serializable {
 
 		// Check if crew has been at site for more than one sol.
 		boolean timeExpired = false;
-		MarsClock ms = (MarsClock) marsClock.clone();
-		double timeDiff = MarsClock.getTimeDiff(ms, explorationSiteStartTime);
+//		MarsClock ms = (MarsClock) marsClock.clone();
+		double timeDiff = MarsClock.getTimeDiff((MarsClock) marsClock.clone(), explorationSiteStartTime);
 		if (timeDiff >= EXPLORING_SITE_TIME) {
 			timeExpired = true;
 		}

@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.person;
 import java.io.Serializable;
 import java.util.List;
 
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
@@ -43,8 +42,8 @@ public class Favorite implements Serializable {
 
 	
 	public Favorite(Person person) {
-    	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
-        mealConfigMealList = mealConfig.getMealList();
+//    	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
+        mealConfigMealList = MealConfig.getMealList();
         availableDesserts = PreparingDessert.getArrayOfDesserts();
 	}
 
@@ -121,8 +120,4 @@ public class Favorite implements Serializable {
 	public void setFavoriteActivity(FavoriteType name) {
 		favoriteActivity = name;
 	}
-
-
 }
-
-

@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -24,7 +23,6 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -151,8 +149,8 @@ implements Serializable {
         List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
         // Get all studies in the peer review phase.
-        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-        Iterator<ScientificStudy> i = studyManager.getOngoingStudies().iterator();
+//        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
+        Iterator<ScientificStudy> i = scientificStudyManager.getOngoingStudies().iterator();
         while (i.hasNext()) {
             ScientificStudy study = i.next();
             if (ScientificStudy.PEER_REVIEW_PHASE.equals(study.getPhase())) {

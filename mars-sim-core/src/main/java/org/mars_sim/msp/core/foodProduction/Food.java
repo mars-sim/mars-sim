@@ -8,8 +8,6 @@ package org.mars_sim.msp.core.foodProduction;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.equipment.Equipment;
-
 //import org.mars_sim.msp.core.equipment.Equipment;
 
 /**

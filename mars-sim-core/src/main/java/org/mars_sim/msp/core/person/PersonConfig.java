@@ -155,7 +155,7 @@ public class PersonConfig implements Serializable {
 
 		commander = new Commander();
 
-		this.personDoc = personDoc;
+		PersonConfig.personDoc = personDoc;
 
 		root = personDoc.getRootElement();
 
@@ -1419,8 +1419,10 @@ public class PersonConfig implements Serializable {
 			for (int x = 0; x < attributeNum; x++) {
 				Element naturalAttributeElement = (Element) naturalAttributeList.getChildren(NATURAL_ATTRIBUTE).get(x);
 				String name = naturalAttributeElement.getAttributeValue(NAME);
-				Integer value = new Integer(naturalAttributeElement.getAttributeValue(VALUE));
-				result.put(name, value);
+//				Integer value = new Integer(naturalAttributeElement.getAttributeValue(VALUE));
+				String value = naturalAttributeElement.getAttributeValue(VALUE);
+				int intValue = Integer.parseInt(value);
+				result.put(name, intValue);
 			}
 		}
 		return result;
@@ -1447,9 +1449,10 @@ public class PersonConfig implements Serializable {
 			for (int x = 0; x < attributeNum; x++) {
 				Element naturalAttributeElement = (Element) list.getChildren(PERSONALITY_TRAIT).get(x);
 				String name = naturalAttributeElement.getAttributeValue(NAME);
-				Integer value = new Integer(naturalAttributeElement.getAttributeValue(VALUE));
+				String value = naturalAttributeElement.getAttributeValue(VALUE);
+				int intValue = Integer.parseInt(value);
 				// System.out.println(name + " : " + value);
-				result.put(name, value);
+				result.put(name, intValue);
 			}
 		}
 		return result;
@@ -1506,8 +1509,10 @@ public class PersonConfig implements Serializable {
 			for (int x = 0; x < skillNum; x++) {
 				Element skillElement = (Element) skillList.getChildren(SKILL).get(x);
 				String name = skillElement.getAttributeValue(NAME);
-				Integer level = new Integer(skillElement.getAttributeValue(LEVEL));
-				result.put(name, level);
+//				Integer level = new Integer(skillElement.getAttributeValue(LEVEL));
+				String level = skillElement.getAttributeValue(LEVEL);
+				int intLevel = Integer.parseInt(level);
+				result.put(name, intLevel);
 			}
 		}
 		return result;
@@ -1533,8 +1538,10 @@ public class PersonConfig implements Serializable {
 			for (int x = 0; x < relationshipNum; x++) {
 				Element relationshipElement = (Element) relationshipList.getChildren(RELATIONSHIP).get(x);
 				String personName = relationshipElement.getAttributeValue(PERSON_NAME);
-				Integer opinion = new Integer(relationshipElement.getAttributeValue(OPINION));
-				result.put(personName, opinion);
+//				Integer opinion = new Integer(relationshipElement.getAttributeValue(OPINION));
+				String opinion = relationshipElement.getAttributeValue(OPINION);
+				int intOpinion = Integer.parseInt(opinion);
+				result.put(personName, intOpinion);
 			}
 		}
 		return result;

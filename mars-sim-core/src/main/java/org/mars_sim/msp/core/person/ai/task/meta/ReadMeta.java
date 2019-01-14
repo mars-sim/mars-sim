@@ -72,9 +72,7 @@ public class ReadMeta implements MetaTask, Serializable {
             else if (fav == FavoriteType.LAB_EXPERIMENTATION) {
                 result *= 1.2D;
             }
-
-
-            
+          
 //         	if (fatigue > 750D)
 //         		result/=1.5;
 //         	else if (fatigue > 1500D)

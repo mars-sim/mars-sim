@@ -17,6 +17,8 @@ import java.io.Serializable;
  */
 public class ManufactureProcess implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	// Data members.
 	private Manufacture workshop;
 	private ManufactureProcessInfo info;
