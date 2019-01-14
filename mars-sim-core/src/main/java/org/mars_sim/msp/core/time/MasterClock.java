@@ -707,16 +707,17 @@ public class MasterClock implements Serializable {
 						// .0005%
 					}
 
-					else { // last frame went beyond the PERIOD
+					else { // if sleepTime <= 0 ( if t2 is way bigger than t1
+						// last frame went beyond the PERIOD
 						int secs = 0;
 						int overSleepSeconds = (int) (overSleepTime/1_000_000_000);
 						int mins = 0;
 						String s = "";
 						if (overSleepSeconds > 60) {
 							mins = overSleepSeconds / 60;
-							secs = overSleepSeconds % 60;
 						}
-
+						secs = overSleepSeconds % 60;
+						
 						if (mins > 0) {
 							s = mins + " mins " + secs + " secs";
 						}
@@ -731,7 +732,7 @@ public class MasterClock implements Serializable {
 						overSleepTime = 0L;
 
 						if (++noDelays >= noDelaysPerYield) {
-							Thread.yield();
+//							Thread.yield(); // this may cause the simulation unrecoverable after the machine restores from the power saving.
 							noDelays = 0;
 						}
 
@@ -768,7 +769,10 @@ public class MasterClock implements Serializable {
 						// Call addTime once to get back each lost frame
 						addTime();
 					}
-
+					
+					if (!keepRunning)
+						logger.config("keepRunning : " + keepRunning);
+					
 					// Set excess to zero to prevent getting stuck in the above while loop after
 					// waking up from power saving
 					excess = 0;
@@ -784,11 +788,9 @@ public class MasterClock implements Serializable {
 						AutosaveScheduler.cancel();
 						System.exit(0);
 					}
-
 					// For performance benchmarking
 //	 		       t2Cache = t2;
 //	 		       count++;
-
 				} // end of while
 			} // if fxgl is not used
 		} // end of run

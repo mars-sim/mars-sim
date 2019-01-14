@@ -422,7 +422,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			if (malfunction.isEVARepairDone()) {
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " had completed the EVA repair of " + malfunction.getName() + " in "+ entity + ".");
+						+ " had completed the EVA Repair of " + malfunction.getName() + " in "+ entity + ".");
 				finishedRepair = true;
 			}
 		} 
@@ -430,7 +430,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		else if (malfunction.isGeneralRepairDone()) {
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " had completed the General repair of " + malfunction.getName() + " in "+ entity + ".");
+						+ " had completed the General Repair of " + malfunction.getName() + " in "+ entity + ".");
 				finishedRepair = true;
 		}
 

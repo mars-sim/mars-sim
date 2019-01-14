@@ -156,6 +156,7 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 	                Iterator<Malfunction> j = manager.getGeneralMalfunctions().iterator();
 	                while (j.hasNext()) {
 	                    Malfunction malfunction = j.next();
+	                    result += WEIGHT/2D;
 	                    try {
 	                        if (RepairMalfunction.hasRepairPartsForMalfunction(robot, malfunction)) {
 	                            result += WEIGHT;

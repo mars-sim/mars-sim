@@ -46,12 +46,12 @@ public class Malfunction implements Serializable {
 
 	private double probability;
 	// Work time tracking
-	private double generalWorkTime;
-	private double generalWorkTimeCompleted;
-	private double emergencyWorkTime;
-	private double emergencyWorkTimeCompleted;
-	private double EVAWorkTime;
-	private double EVAWorkTimeCompleted;
+	private double generalWorkTime = 0;
+	private double generalWorkTimeCompleted = 0;
+	private double emergencyWorkTime = 0;
+	private double emergencyWorkTimeCompleted = 0;
+	private double EVAWorkTime = 0;
+	private double EVAWorkTimeCompleted = 0;
 
 	private String name;
 
@@ -97,10 +97,6 @@ public class Malfunction implements Serializable {
 		repairParts = new HashMap<>();
 		repairersWorkTime = new HashMap<>();
 
-		generalWorkTimeCompleted = 0D;
-		emergencyWorkTimeCompleted = 0D;
-		EVAWorkTimeCompleted = 0D;
-
 	}
 
 	public double computeWorkTime(double time) {
@@ -144,7 +140,7 @@ public class Malfunction implements Serializable {
 	 * @return true if general repair is done
 	 */
 	public boolean isGeneralRepairDone() {
-		if (generalWorkTime > 0 && generalWorkTimeCompleted <= generalWorkTime)
+		if (generalWorkTime > 0 && generalWorkTimeCompleted < generalWorkTime)
 			return false;
 		return true;
 	}
@@ -155,7 +151,7 @@ public class Malfunction implements Serializable {
 	 * @return true if emergency repair is done
 	 */
 	public boolean isEmergencyRepairDone() {
-		if (emergencyWorkTime > 0 && emergencyWorkTimeCompleted <= emergencyWorkTime)
+		if (emergencyWorkTime > 0 && emergencyWorkTimeCompleted < emergencyWorkTime)
 			return false;
 		return true;
 	}
@@ -166,7 +162,7 @@ public class Malfunction implements Serializable {
 	 * @return true if EVA repair is done
 	 */
 	public boolean isEVARepairDone() {
-		if (EVAWorkTime > 0 && EVAWorkTimeCompleted <= EVAWorkTime)
+		if (EVAWorkTime > 0 && EVAWorkTimeCompleted < EVAWorkTime)
 			return false;
 		return true;
 	}
@@ -235,6 +231,15 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
+	 * Does this malfunction require General Repair ?
+	 * 
+	 * @return true if it does
+	 */
+	public boolean needGeneralRepair() {
+		return generalWorkTime > 0;
+	}
+	
+	/**
 	 * Returns the general completed work time.
 	 * 
 	 * @return completed general work time (in millisols)
@@ -285,6 +290,15 @@ public class Malfunction implements Serializable {
 	 */
 	public double getEmergencyWorkTime() {
 		return emergencyWorkTime;
+	}
+
+	/**
+	 * Does this malfunction require Emergency Repair ?
+	 * 
+	 * @return true if it does
+	 */
+	public boolean needEmergencyRepair() {
+		return emergencyWorkTime > 0;
 	}
 
 	/**
@@ -340,6 +354,15 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
+	 * Does this malfunction require EVA Repair ?
+	 * 
+	 * @return true if it does
+	 */
+	public boolean needEVARepair() {
+		return EVAWorkTime > 0;
+	}
+
+	/**
 	 * Returns the completed EVA work time.
 	 * 
 	 * @return completed EVA work time (in millisols)
@@ -347,7 +370,7 @@ public class Malfunction implements Serializable {
 	public double getCompletedEVAWorkTime() {
 		return EVAWorkTimeCompleted;
 	}
-
+	
 	/**
 	 * Adds EVA work time to the malfunction.
 	 * 
