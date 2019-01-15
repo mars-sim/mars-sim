@@ -85,7 +85,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			entity = getEVAMalfunctionEntity(person);
 			if (entity != null) {
 				malfunction = getMalfunction(person, entity);
-				isEVAMalfunction = canRepairEVA(malfunction);
+				isEVAMalfunction = malfunction.needEVARepair();
 	
 				setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", malfunction.getName(),
 						entity.getNickName())); // $NON-NLS-1$
@@ -249,22 +249,22 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	}
 
 
-	/**
-	 * Checks if a malfunction requires EVA repair.
-	 * 
-	 * @param malfunction the malfunction.
-	 * @return true if malfunction requires EVA repair.
-	 */
-	private boolean canRepairEVA(Malfunction malfunction) {
-
-		boolean result = false;
-
-		if (!malfunction.isEVARepairDone()) {
-			result = true;
-		}
-
-		return result;
-	}
+//	/**
+//	 * Checks if a malfunction requires EVA repair.
+//	 * 
+//	 * @param malfunction the malfunction.
+//	 * @return true if malfunction requires EVA repair.
+//	 */
+//	private boolean canRepairEVA(Malfunction malfunction) {
+//
+//		boolean result = false;
+//
+//		if (!malfunction.isEVARepairDone()) {
+//			result = true;
+//		}
+//
+//		return result;
+//	}
 
 	/**
 	 * Checks if there are enough repair parts at person's location to fix the
@@ -417,6 +417,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			return time;
 		}
 
+		
 		boolean finishedRepair = false;
 		if (isEVAMalfunction) {
 			if (malfunction.isEVARepairDone()) {
@@ -484,12 +485,26 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		// Add EVA work to malfunction.
 		double workTimeLeft = 0D;
-		if (isEVAMalfunction) {
+		if (isEVAMalfunction && !malfunction.isEVARepairDone() ) {
 			workTimeLeft = malfunction.addEVAWorkTime(workTime, person.getName());
-		} else {
+		} else if (!malfunction.isGeneralRepairDone()) {
 			workTimeLeft = malfunction.addGeneralWorkTime(workTime, person.getName());
 		}
-
+		
+		// Check if there are no more malfunctions.
+		if (isEVAMalfunction && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
+			LogConsolidated.log(Level.INFO, 0, sourceName,
+				"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+					+ " had completed the Emergency Repair of " + malfunction.getName() + " in "+ entity + ".");
+			endTask();
+		}
+		else if (!isEVAMalfunction && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
+			LogConsolidated.log(Level.INFO, 0, sourceName,
+				"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+					+ " had completed the General Repair of " + malfunction.getName() + " in "+ entity + ".");
+			endTask();
+		}
+		
 		// Add experience points
 		addExperience(time);
 

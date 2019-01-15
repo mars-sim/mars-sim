@@ -545,13 +545,13 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		
 		else if (robot != null) {
 			// Check if there are no more malfunctions.
-			if (malfunction.needEmergencyRepair() && !malfunction.isEmergencyRepairDone()) {
+			if (isEmerg && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
 						+ " had completed the Emergency Repair of " + malfunction.getName() + " in "+ entity + ".");
 				endTask();
 			}
-			else if (malfunction.needGeneralRepair() && !malfunction.isGeneralRepairDone()) {
+			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
 						+ " had completed the General Repair of " + malfunction.getName() + " in "+ entity + ".");

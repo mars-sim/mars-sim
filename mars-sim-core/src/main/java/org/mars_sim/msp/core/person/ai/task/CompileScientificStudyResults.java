@@ -272,28 +272,6 @@ implements Serializable {
 
         // Check if data results compilation in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
-        if (isPrimary) {
-            if (study.isPrimaryPaperCompleted()) {
-    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-    					+ person.getName() + " just spent " 
-    					+ Math.round(study.getPrimaryPaperWorkTimeCompleted() *10.0)/10.0
-    					+ " millisols in compiling data " 
-    					+ " for a primary research study in " + study.getScience().getName() 
-    					+ " in " + person.getLocationTag().getImmediateLocation());	
-            	endTask();
-            }
-        }
-        else {
-            if (study.isCollaborativePaperCompleted(person)) {
-    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-    					+ person.getName() + " just spent " 
-    					+ Math.round(study.getCollaborativePaperWorkTimeCompleted(person) *10.0)/10.0
-    					+ " millisols in performing lab experiments " 
-    					+ " for a collaborative research study in " + study.getScience().getName() 
-    					+ " in " + person.getLocationTag().getImmediateLocation());	
-            	endTask();
-            }
-        }
 
         if (isDone()) {
             return time;
@@ -306,6 +284,29 @@ implements Serializable {
         }
         else {
             study.addCollaborativePaperWorkTime(person, compilingTime);
+        }
+
+        if (isPrimary) {
+            if (study.isPrimaryPaperCompleted()) {
+    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    					+ person.getName() + " just spent " 
+    					+ Math.round(study.getPrimaryPaperWorkTimeCompleted() *10.0)/10.0
+    					+ " millisols in compiling data" 
+    					+ " for a primary research study in " + study.getScience().getName() 
+    					+ " in " + person.getLocationTag().getImmediateLocation());	
+            	endTask();
+            }
+        }
+        else {
+            if (study.isCollaborativePaperCompleted(person)) {
+    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    					+ person.getName() + " just spent " 
+    					+ Math.round(study.getCollaborativePaperWorkTimeCompleted(person) *10.0)/10.0
+    					+ " millisols in performing lab experiments" 
+    					+ " for a collaborative research study in " + study.getScience().getName() 
+    					+ " in " + person.getLocationTag().getImmediateLocation());	
+            	endTask();
+            }
         }
 
         // Add experience
