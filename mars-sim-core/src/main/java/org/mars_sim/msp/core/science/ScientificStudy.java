@@ -185,7 +185,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return primary researcher
 	 */
 	public Person getPrimaryResearcher() {
-		return unitManager.getPersonID(primaryResearcher);
+		return unitManager.getPersonByID(primaryResearcher);
 	}
 
 	/**
@@ -327,7 +327,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	void cleanResearchInvitations() {
 		Iterator<Integer> i = invitedResearchers.keySet().iterator();
 		while (i.hasNext()) {
-			if (unitManager.getPersonID(i.next()).getPhysicalCondition().isDead())
+			if (unitManager.getPersonByID(i.next()).getPhysicalCondition().isDead())
 				i.remove();
 		}
 	}
@@ -480,7 +480,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		boolean result = true;
 		Iterator<Integer> i = collaborativeResearchWorkTime.keySet().iterator();
 		while (i.hasNext()) {
-			if (!isCollaborativeResearchCompleted(unitManager.getPersonID(i.next())))
+			if (!isCollaborativeResearchCompleted(unitManager.getPersonByID(i.next())))
 				result = false;
 		}
 		return result;
@@ -622,7 +622,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		boolean result = true;
 		Iterator<Integer> i = collaborativePaperWorkTime.keySet().iterator();
 		while (i.hasNext()) {
-			if (!isCollaborativePaperCompleted(unitManager.getPersonID(i.next())))
+			if (!isCollaborativePaperCompleted(unitManager.getPersonByID(i.next())))
 				result = false;
 		}
 		return result;

@@ -235,7 +235,7 @@ extends WizardPanel {
             units.add(study.getPrimaryResearcher());
             
             Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
-            while (i.hasNext()) units.add(unitManager.getPersonID(i.next()));
+            while (i.hasNext()) units.add(unitManager.getPersonByID(i.next()));
             
             fireTableDataChanged();
         }

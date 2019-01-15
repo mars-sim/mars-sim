@@ -18,10 +18,10 @@ public class SettlementVicinity implements LocationState, Serializable {
 	private static final long serialVersionUID = 1L;
 	private String name = "Outside but within a settlement's vicinity";
 	
-	private Unit unit;
+//	private Unit unit;
 
 	public SettlementVicinity(Unit unit) {
-		this.unit = unit;
+//		this.unit = unit;
 	}
 
 	public String getName() {

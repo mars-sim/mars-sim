@@ -91,7 +91,7 @@ public class ScientificStudyUtil {
         Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
         while (i.hasNext()) {
         	int id = i.next();
-            Person researcher = unitManager.getPersonID(id);
+            Person researcher = unitManager.getPersonByID(id);
             double collaboratorModifier = 10D;
             
             // Modify based on collaborative researcher skill in their science.
@@ -139,7 +139,7 @@ public class ScientificStudyUtil {
         Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
         while (i.hasNext()) {
         	int id = i.next();
-            Person researcher = unitManager.getPersonID(id);
+            Person researcher = unitManager.getPersonByID(id);
             ScienceType collaborativeScience = study.getCollaborativeResearchers().get(id);
             researcher.addScientificAchievement(collaborativeAchievement, collaborativeScience);
             study.setCollaborativeResearcherEarnedScientificAchievement(researcher, collaborativeAchievement);

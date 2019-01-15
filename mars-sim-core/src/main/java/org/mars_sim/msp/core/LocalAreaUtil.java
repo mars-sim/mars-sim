@@ -49,6 +49,8 @@ public class LocalAreaUtil {
 	/** Time stamps for obstacle area cache. */
 	private static final Map<Coordinates, String> obstacleAreaTimestamps = new HashMap<Coordinates, String>();
 
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+			
 	/**
 	 * Private empty constructor for utility class.
 	 */
@@ -347,7 +349,7 @@ public class LocalAreaUtil {
 		Set<LocalBoundedObject> result = new HashSet<LocalBoundedObject>();
 
 		// Add all vehicles at location.
-		Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
+		Iterator<Vehicle> i = unitManager.getVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 			if (vehicle.getCoordinates().equals(coordinates)) {
@@ -394,7 +396,7 @@ public class LocalAreaUtil {
 		Set<LocalBoundedObject> result = new HashSet<LocalBoundedObject>();
 
 		// Check for any settlements at coordinates.
-		Iterator<Settlement> l = Simulation.instance().getUnitManager().getSettlements().iterator();
+		Iterator<Settlement> l = unitManager.getSettlements().iterator();
 		while (l.hasNext()) {
 			Settlement settlement = l.next();
 			if (settlement.getCoordinates().equals(coordinates)) {
@@ -430,7 +432,7 @@ public class LocalAreaUtil {
 		Set<LocalBoundedObject> result = new HashSet<LocalBoundedObject>();
 
 		// Add all vehicles at location.
-		Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
+		Iterator<Vehicle> i = unitManager.getVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle vehicle = i.next();
 			if (vehicle.getCoordinates().equals(coordinates)) {
@@ -439,7 +441,7 @@ public class LocalAreaUtil {
 		}
 
 		// Check for any settlements at coordinates.
-		Iterator<Settlement> l = Simulation.instance().getUnitManager().getSettlements().iterator();
+		Iterator<Settlement> l = unitManager.getSettlements().iterator();
 		while (l.hasNext()) {
 			Settlement settlement = l.next();
 			if (settlement.getCoordinates().equals(coordinates)) {

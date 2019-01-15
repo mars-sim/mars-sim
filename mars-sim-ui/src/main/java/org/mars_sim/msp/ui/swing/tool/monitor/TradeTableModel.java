@@ -41,6 +41,8 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	private List<Good> goodsList;
 	private List<Settlement> settlements;
 
+	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
+
 	/**
 	 * Constructor.
 	 */
@@ -49,7 +51,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		// Initialize goods list.
 		goodsList = GoodsUtil.getGoodsList();
 
-		UnitManager unitManager = Simulation.instance().getUnitManager();
+//		UnitManager unitManager = Simulation.instance().getUnitManager();
 
 		// Initialize settlements.
 		settlements = new ArrayList<Settlement>(unitManager.getSettlements());

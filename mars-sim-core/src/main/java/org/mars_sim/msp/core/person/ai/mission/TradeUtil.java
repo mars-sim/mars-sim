@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -76,7 +77,9 @@ public final class TradeUtil {
 	private static Simulation sim = Simulation.instance();
 	private static MissionManager missionManager = sim.getMissionManager();
 	private static CreditManager creditManager = sim.getCreditManager();
+	private static UnitManager unitManager = sim.getUnitManager();
 
+			
 	/**
 	 * Private constructor for utility class.
 	 */
@@ -95,7 +98,7 @@ public final class TradeUtil {
 		double bestProfit = 0D;
 		Settlement bestSettlement = null;
 
-		for (Settlement s : Simulation.instance().getUnitManager().getSettlements()) {
+		for (Settlement s : unitManager.getSettlements()) {
 			if (s != startingSettlement) {
 
 				boolean hasCurrentTradeMission = hasCurrentTradeMission(startingSettlement, s);

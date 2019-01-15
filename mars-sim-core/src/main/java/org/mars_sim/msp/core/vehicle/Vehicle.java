@@ -158,7 +158,7 @@ public abstract class Vehicle extends Unit
 
 	// Static members
 	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-	private static MissionManager missionManager;
+//	private static MissionManager missionManager;
 
 	/**
 	 * Constructor 1 : prepares a Vehicle object with a given settlement
@@ -180,7 +180,7 @@ public abstract class Vehicle extends Unit
 		containerUnit = settlement;
 		settlement.getInventory().storeUnit(this);
 
-		missionManager = Simulation.instance().getMissionManager();
+//		missionManager = Simulation.instance().getMissionManager();
 		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
@@ -263,7 +263,7 @@ public abstract class Vehicle extends Unit
 		
 		this.vehicleType = vehicleType;
 
-		missionManager = Simulation.instance().getMissionManager();
+//		missionManager = Simulation.instance().getMissionManager();
 		
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
@@ -916,7 +916,7 @@ public abstract class Vehicle extends Unit
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
 		// Check all people.
-		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			Task task = person.getMind().getTaskManager().getTask();
@@ -951,7 +951,7 @@ public abstract class Vehicle extends Unit
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
 		// Check all people.
-		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			Task task = person.getMind().getTaskManager().getTask();
@@ -980,7 +980,7 @@ public abstract class Vehicle extends Unit
 		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
 
 		// Check all robots.
-		Iterator<Robot> i = Simulation.instance().getUnitManager().getRobots().iterator();
+		Iterator<Robot> i = unitManager.getRobots().iterator();
 		while (i.hasNext()) {
 			Robot robot = i.next();
 			Task task = robot.getBotMind().getBotTaskManager().getTask();
@@ -1163,8 +1163,7 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @param mgr
 	 */
-	public static void setInstances(MissionManager mgr) {
-		missionManager = mgr;
+	public static void setInstances() {
 		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 	}
 

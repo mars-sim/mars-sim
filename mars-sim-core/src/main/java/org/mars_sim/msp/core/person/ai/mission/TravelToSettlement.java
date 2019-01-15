@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Driver;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -272,7 +271,6 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			double range) {
 		Map<Settlement, Double> result = new HashMap<Settlement, Double>();
 
-		UnitManager unitManager = startingSettlement.getUnitManager();
 		Iterator<Settlement> i = unitManager.getSettlements().iterator();
 
 		while (i.hasNext()) {

@@ -702,7 +702,7 @@ public class CropTableModel extends UnitTableModel {
 	public String getToolTip(int row, int col) {
 		StringBuilder tt = new StringBuilder();
 		Building b = buildings.get(row);
-		int catNum = cropCatMap.get(row).get(col);
+		int catNum = cropCatMap.get(b).get(col);
 
 		Farming f = b.getFarming();
 		for (Crop c : f.getCrops()) {

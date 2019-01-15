@@ -111,7 +111,7 @@ public class Reporter extends Job implements Serializable {
 
 		int pop = settlement.getNumCitizens();
 		
-		Iterator<Settlement> i = settlement.getUnitManager().getSettlements().iterator();
+		Iterator<Settlement> i = unitManager.getSettlements().iterator();
 		while (i.hasNext()) {
 			Settlement otherSettlement = i.next();
 			if (otherSettlement != settlement) {

@@ -79,7 +79,6 @@ import com.alee.extended.WebComponent;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.managers.style.StyleId;
 
-@SuppressWarnings("restriction")
 public class SettlementTransparentPanel extends WebComponent {
 
 	/** Rotation change (radians per rotation button press). */
@@ -104,8 +103,9 @@ public class SettlementTransparentPanel extends WebComponent {
 	private SettlementMapPanel mapPanel;
 	private MainDesktopPane desktop;
 	private MainScene mainScene;
-	//private Settlement settlement;
 
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+		
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
 
         this.mapPanel = mapPanel;
@@ -872,7 +872,7 @@ public class SettlementTransparentPanel extends WebComponent {
 			// Initialize settlement list.
 			updateSettlements();
 			// Add this as a unit manager listener.
-			UnitManager unitManager = Simulation.instance().getUnitManager();
+//			UnitManager unitManager = Simulation.instance().getUnitManager();
 			unitManager.addUnitManagerListener(this);
 			/*
 			// 2014-12-19 Added addUnitListener
@@ -891,7 +891,7 @@ public class SettlementTransparentPanel extends WebComponent {
 		private void updateSettlements() {
 
 			removeAllElements();
-			UnitManager unitManager = Simulation.instance().getUnitManager();
+//			UnitManager unitManager = Simulation.instance().getUnitManager();
 			List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
 			Collections.sort(settlements);
 
@@ -931,7 +931,7 @@ public class SettlementTransparentPanel extends WebComponent {
 
 			removeAllElements();
 
-			UnitManager unitManager = Simulation.instance().getUnitManager();
+//			UnitManager unitManager = Simulation.instance().getUnitManager();
 			unitManager.removeUnitManagerListener(this);
 			Collection<Settlement> settlements = unitManager.getSettlements();
 			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);

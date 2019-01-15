@@ -29,6 +29,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class CollectionUtils {
 
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+
 	public static Collection<Equipment> getEquipment(
 		Collection<Unit> units
 	) {
@@ -288,7 +290,7 @@ public class CollectionUtils {
 		List<String> list = new ArrayList<>();
 		
 		// Creates an array with the names of all of settlements
-		Collection<Settlement> settlements = Simulation.instance().getUnitManager().getSettlements();
+		Collection<Settlement> settlements = unitManager.getSettlements();
 		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
 		
 		// autoCompleteArray = settlementList.toArray(new String[settlementList.size()]);
@@ -353,7 +355,7 @@ public class CollectionUtils {
 		}
 
 		// Get all vehicles name
-		Iterator<Vehicle> k = getVehicle(Simulation.instance().getUnitManager().getUnits()).iterator();
+		Iterator<Vehicle> k = unitManager.getVehicles().iterator();
 		while (k.hasNext()) {
 			Vehicle v = k.next();
 			list.add(v.getName());
@@ -397,7 +399,7 @@ public class CollectionUtils {
 	 */
 	public static List<Settlement> returnSettlementList(String text) {
 		List<Settlement> sList = new ArrayList<>();
-		Iterator<Settlement> j = Simulation.instance().getUnitManager().getSettlements().iterator();
+		Iterator<Settlement> j = unitManager.getSettlements().iterator();
 		while (j.hasNext()) {
 			Settlement settlement = j.next();
 			String s_name = settlement.getName();
@@ -419,7 +421,7 @@ public class CollectionUtils {
 //	public static List<String> createSettlerNames() {
 //
 //		// Creates an array with the names of all of settlements
-//		Collection<Settlement> settlements = Simulation.instance().getUnitManager().getSettlements();
+//		Collection<Settlement> settlements = unitManager.getSettlements();
 //		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
 //
 //		// autoCompleteArray = settlementList.toArray(new
@@ -490,7 +492,7 @@ public class CollectionUtils {
 //		}
 //
 //		// Get all vehicles name
-////		Iterator<Vehicle> k = getVehicle(Simulation.instance().getUnitManager().getUnits()).iterator();
+////		Iterator<Vehicle> k = getVehicle(unitManager.getUnits()).iterator();
 ////		while (k.hasNext()) {
 ////			Vehicle v = k.next();
 ////			nameList.add(v.getName());

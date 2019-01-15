@@ -29,6 +29,7 @@ import javax.swing.event.ListSelectionListener;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
@@ -55,6 +56,7 @@ class RendezvousVehiclePanel extends WizardPanel {
 	private JLabel errorMessageLabel;
 	
 	private static MissionManager missionManager;
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
 	/**
 	 * Constructor.
@@ -278,7 +280,7 @@ class RendezvousVehiclePanel extends WizardPanel {
     	 */
     	private Collection<Vehicle> getEmergencyBeaconVehicles() {
     		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
-        	Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
+        	Iterator<Vehicle> i = unitManager.getVehicles().iterator();
         	while (i.hasNext()) {
         		Vehicle vehicle = i.next();
         		if (vehicle.isBeaconOn()) result.add(vehicle);

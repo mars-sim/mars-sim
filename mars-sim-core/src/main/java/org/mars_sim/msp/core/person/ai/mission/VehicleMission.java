@@ -1132,7 +1132,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Coordinates location = getCurrentMissionLocation();
 		double closestDistance = Double.MAX_VALUE;
 
-		for (Settlement settlement : Simulation.instance().getUnitManager().getSettlements()) {
+		for (Settlement settlement : unitManager.getSettlements()) {
 			double distance = settlement.getCoordinates().getDistance(location);
 			if (distance < closestDistance) {
 				result = settlement;

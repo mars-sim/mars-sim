@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.toolWindow;
 import javax.swing.WindowConstants;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.MainSceneMenu;
@@ -28,20 +29,24 @@ import javafx.scene.control.CheckMenuItem;
 public abstract class ToolWindow extends WebInternalFrame {
 
 	// Data members
+
+	/** True if window is open. */
+	protected boolean opened;
+	
 	/** The name of the tool the window is for. */
 	protected String name;
+	
 	private CheckMenuItem item;
 	private MainSceneMenu msm;
+	
 	/** The main desktop. */
 	protected MainDesktopPane desktop;
-	private static MasterClock masterClock = Simulation.instance().getMasterClock();
-
 	protected MainScene mainScene;
 	protected MonitorWindow monitorWindow;
 	// private SingleSelectionModel<?> ssm;
 
-	/** True if window is open. */
-	protected boolean opened;
+	protected static MasterClock masterClock = Simulation.instance().getMasterClock();
+	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
 	 * Constructor.

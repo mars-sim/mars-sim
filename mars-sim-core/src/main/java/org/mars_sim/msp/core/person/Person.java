@@ -1503,7 +1503,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return the person's vehicle
 	 */
 	public Vehicle getVehicle() {
-		return unitManager.getVehicleID(vehicle);
+		return unitManager.getVehicleByID(vehicle);
 	}
 
 //	public Vehicle getAssociatedVehicle() {

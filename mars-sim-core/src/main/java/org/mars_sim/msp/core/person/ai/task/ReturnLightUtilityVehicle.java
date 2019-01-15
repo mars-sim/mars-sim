@@ -88,7 +88,7 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 
 		// If returnContainer hasn't been found, look for local settlement.
 		if (returnContainer == null) {
-			Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
+			Iterator<Settlement> i = unitManager.getSettlements().iterator();
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
 				if (person.getCoordinates().equals(settlement.getCoordinates())) {
@@ -100,7 +100,7 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 
 		// If returnContainer hasn't been found, look for local rover.
 		if (returnContainer == null) {
-			Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
+			Iterator<Vehicle> i = unitManager.getVehicles().iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				if (vehicle instanceof Rover) {
@@ -153,7 +153,7 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 
 		// If returnContainer hasn't been found, look for local settlement.
 		if (returnContainer == null) {
-			Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
+			Iterator<Settlement> i = unitManager.getSettlements().iterator();
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
 				if (robot.getCoordinates().equals(settlement.getCoordinates())) {
@@ -165,7 +165,7 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 
 		// If returnContainer hasn't been found, look for local rover.
 		if (returnContainer == null) {
-			Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
+			Iterator<Vehicle> i = unitManager.getVehicles().iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = i.next();
 				if (vehicle instanceof Rover) {

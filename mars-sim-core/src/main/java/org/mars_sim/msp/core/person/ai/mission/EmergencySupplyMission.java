@@ -18,8 +18,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -589,7 +587,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 
 		Settlement result = null;
 
-		Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
+		Iterator<Settlement> i = unitManager.getSettlements().iterator();
 		while (i.hasNext()) {
 			Settlement settlement = i.next();
 

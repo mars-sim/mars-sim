@@ -12,6 +12,7 @@ import java.util.Collection;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
@@ -39,6 +40,8 @@ public class LocationTag implements LocationState, Serializable {
 	private Equipment e = null;
 	private Building b = null;
 	private Vehicle v = null;
+
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	public LocationTag(Unit unit) {
 		this.unit = unit;
@@ -272,7 +275,10 @@ public class LocationTag implements LocationState, Serializable {
 	public Settlement findSettlementVicinity() {
 		Coordinates c = unit.getCoordinates();
 
-		Collection<Settlement> ss = Simulation.instance().getUnitManager().getSettlements();
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+				
+		Collection<Settlement> ss = unitManager.getSettlements();
 		for (Settlement s : ss) {
 			if (s.getCoordinates().equals(c) || s.getCoordinates() == c)
 				return s;

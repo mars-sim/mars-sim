@@ -122,25 +122,24 @@ extends UnitTableModel {
 		MISSION_ROBOTS;
 	}
 
-	/*
-    static final Map<String, Integer> EVENT_COLUMN_MAPPING;//= new HashMap<String, Integer>(12);
 
-        static {
-            HashMap<String, Integer> m = new HashMap<String, Integer>();
-            m.put(Unit.NAME_EVENT, NAME);
-            m.put(Unit.LOCATION_EVENT, LOCATION);
-            m.put(SystemCondition.HUNGER_EVENT, HUNGER);
-            m.put(SystemCondition.FATIGUE_EVENT, FATIGUE);
-            m.put(SystemCondition.STRESS_EVENT, STRESS);
-            m.put(SystemCondition.PERFORMANCE_EVENT, PERFORMANCE);
-            m.put(Mind.JOB_EVENT, JOB);
-            m.put(TaskManager.TASK_EVENT, TASK);
-            m.put(Mind.MISSION_EVENT, MISSION);
-            m.put(SystemCondition.ILLNESS_EVENT, HEALTH);
-            m.put(SystemCondition.DEATH_EVENT, HEALTH);
-                    EVENT_COLUMN_MAPPING = Collections.unmodifiableMap(m);
-        }
-	 */
+//    static final Map<String, Integer> EVENT_COLUMN_MAPPING;//= new HashMap<String, Integer>(12);
+//
+//        static {
+//            HashMap<String, Integer> m = new HashMap<String, Integer>();
+//            m.put(Unit.NAME_EVENT, NAME);
+//            m.put(Unit.LOCATION_EVENT, LOCATION);
+//            m.put(SystemCondition.HUNGER_EVENT, HUNGER);
+//            m.put(SystemCondition.FATIGUE_EVENT, FATIGUE);
+//            m.put(SystemCondition.STRESS_EVENT, STRESS);
+//            m.put(SystemCondition.PERFORMANCE_EVENT, PERFORMANCE);
+//            m.put(Mind.JOB_EVENT, JOB);
+//            m.put(TaskManager.TASK_EVENT, TASK);
+//            m.put(Mind.MISSION_EVENT, MISSION);
+//            m.put(SystemCondition.ILLNESS_EVENT, HEALTH);
+//            m.put(SystemCondition.DEATH_EVENT, HEALTH);
+//                    EVENT_COLUMN_MAPPING = Collections.unmodifiableMap(m);
+//        }
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 

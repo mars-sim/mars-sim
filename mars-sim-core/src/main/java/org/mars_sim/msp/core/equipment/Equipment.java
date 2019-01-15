@@ -84,7 +84,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 		Person owner = null;
 		if (lastOwner != -1) {// && lastOwner instanceof Person) {
-			owner = unitManager.getPersonID(lastOwner);
+			owner = unitManager.getPersonByID(lastOwner);
 			people.add(owner);
 		}
 
@@ -351,7 +351,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	public Unit getLastOwner() {
-		return unitManager.getPersonID(lastOwner);
+		return unitManager.getPersonByID(lastOwner);
 	}
 
 	@Override

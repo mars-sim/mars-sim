@@ -1283,7 +1283,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param e {@link HistoricalEventManager}
 	 * @param r {@link RelationshipManager}
 	 * @param u {@link UnitManager}
-	 * @param s {@link UnitManager}
+	 * @param s {@link ScientificStudyManager}
 	 * @param sf {@link SurfaceFeatures}
 	 * @param m {@link MissionManager}
 	 */

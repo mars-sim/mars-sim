@@ -8,6 +8,8 @@ package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import javax.swing.JPanel;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 
 /**
@@ -15,6 +17,8 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
  */
 public abstract class TransportItemEditingPanel
 extends JPanel {
+
+	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	// Data members
 	private Transportable transportItem;

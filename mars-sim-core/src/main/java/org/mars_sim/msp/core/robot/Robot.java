@@ -729,7 +729,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
 		// Check all people.
-		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			Task task = person.getMind().getTaskManager().getTask();
@@ -932,11 +932,8 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 
 	/**
 	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param c {@link EarthClock}
 	 */
-	public static void setInstances(EarthClock c) {
-		earthClock = c;
+	public static void setInstances() {
 		robotConfig = SimulationConfig.instance().getRobotConfiguration();
 	}
 //	

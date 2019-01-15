@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
@@ -85,7 +84,7 @@ implements Serializable {
         super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 5D + RandomUtil.getRandomDouble(10));
         
     	// List 8 situations for having a conversation
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.isInSettlement()) {
 
             Set<Person> pool = new HashSet<Person>();
             Settlement s = person.getSettlement();
@@ -169,7 +168,7 @@ implements Serializable {
 	            }  
             }
         }
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.isInVehicle()) {
 
             int score = person.getPreference().getPreferenceScore(new HaveConversationMeta());
             super.setDuration(5 + score);

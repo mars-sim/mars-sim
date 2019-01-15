@@ -217,7 +217,7 @@ class DestinationSettlementPanel extends WizardPanel {
     	public void updateTable() {
     		units.clear();
     		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();    		
-    		Collection<Settlement> settlements = Simulation.instance().getUnitManager().getSettlements();
+    		Collection<Settlement> settlements = unitManager.getSettlements();
     		settlements.remove(startingSettlement);
     		
     		// Add all settlements sorted by distance from mission starting point.

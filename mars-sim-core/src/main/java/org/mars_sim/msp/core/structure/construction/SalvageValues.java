@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.resource.Part;
@@ -19,6 +20,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
@@ -46,6 +48,8 @@ implements Serializable {
 	private Settlement settlement;
 	private Map<Integer, Double> settlementSalvageValueCache;
 	private MarsClock settlementSalvageValueCacheTime;
+
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
 	 * Constructor.
@@ -223,7 +227,7 @@ implements Serializable {
 
 		// Get value of prerequisite frame stage.
 		double frameStageValue = 0D;
-		ConstructionStageInfo buildingStage = ConstructionUtil.getConstructionStageInfo(building.getName());
+		ConstructionStageInfo buildingStage = ConstructionUtil.getConstructionStageInfo(building.getBuildingType());
 		if ((buildingStage != null) && buildingStage.isSalvagable() && 
 				(constructionSkill >= buildingStage.getArchitectConstructionSkill())) {
 			ConstructionStageInfo frameStage = ConstructionUtil.getPrerequisiteStage(buildingStage);
@@ -242,7 +246,7 @@ implements Serializable {
 			if (settlement.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT).size() == 1) { 
 				result = 0D;
 			}
-			LifeSupport lifeSupport = building.getLifeSupport();//(LifeSupport) building.getFunction(FunctionType.LIFE_SUPPORT);
+			LifeSupport lifeSupport = building.getLifeSupport();
 				// Check that the building doesn't currently have any people in it.
 		    if (lifeSupport.getOccupantNumber() > 0) {
 		        result = 0D;
@@ -253,7 +257,7 @@ implements Serializable {
 		if (building.hasFunction(FunctionType.LIVING_ACCOMODATIONS)) {
 			int popSize = settlement.getNumCitizens();
 			int popCapacity = settlement.getPopulationCapacity();
-			LivingAccommodations livingAccommodations = building.getLivingAccommodations();//(LivingAccommodations) building.getFunction(FunctionType.LIVING_ACCOMODATIONS);
+			LivingAccommodations livingAccommodations = building.getLivingAccommodations();
 			int buildingPopCapacity = livingAccommodations.getBeds();
 			if ((popCapacity - buildingPopCapacity) < popSize) {
 				result = 0D;
@@ -270,7 +274,7 @@ implements Serializable {
 
 		
 		// Check that the building isn't on any person's walking path.
-		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext() && (result > 0D)) {
 		    Person person = i.next();
 		    TaskManager taskManager = person.getMind().getTaskManager();
@@ -281,14 +285,14 @@ implements Serializable {
 		
 		// Check that the building doesn't currently have any robots in it.
 		if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {
-            RoboticStation roboticStation = building.getRoboticStation();//(RoboticStation) building.getFunction(FunctionType.ROBOTIC_STATION);
+            RoboticStation roboticStation = building.getRoboticStation();
             if (roboticStation.getRobotOccupantNumber() > 0) {
                 result = 0D;
             }
         } 
 		
 		// Check that the building isn't on any robot's walking path.
-		Iterator<Robot> j = Simulation.instance().getUnitManager().getRobots().iterator();
+		Iterator<Robot> j = unitManager.getRobots().iterator();
         while (j.hasNext() && (result > 0D)) {
             Robot robot = j.next();
             BotTaskManager taskManager = robot.getBotMind().getBotTaskManager();
@@ -299,8 +303,7 @@ implements Serializable {
 		
 		// Check that the building doesn't currently have any vehicles in it.
 		if (building.hasFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE)) {
-		    GroundVehicleMaintenance vehicleMaint = (GroundVehicleMaintenance) building.getFunction(
-		            FunctionType.GROUND_VEHICLE_MAINTENANCE);
+		    GroundVehicleMaintenance vehicleMaint = building.getGroundVehicleMaintenance();
 		    if (vehicleMaint.getCurrentVehicleNumber() > 0) {
 		        result = 0D;
 		    }
@@ -356,6 +359,15 @@ implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param u {@link UnitManager}
+	 */
+	public static void initializeInstances(UnitManager u) {
+		unitManager = u;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

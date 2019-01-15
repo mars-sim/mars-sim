@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -137,7 +136,7 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 
 	public Settlement findSettlementVicinity() {
 
-		Collection<Settlement> ss = Simulation.instance().getUnitManager().getSettlements();
+		Collection<Settlement> ss = unitManager.getSettlements();
 		for (Settlement s : ss) {
 			if (s.getCoordinates().equals(getCoordinates()))
 				return s;

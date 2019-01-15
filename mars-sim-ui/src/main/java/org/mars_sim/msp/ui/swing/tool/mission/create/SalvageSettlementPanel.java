@@ -147,8 +147,8 @@ extends WizardPanel {
 			super();
 
 			// Add all settlements to table sorted by name.
-			UnitManager manager = Simulation.instance().getUnitManager();
-			Collection<Settlement> settlements = CollectionUtils.sortByName(manager.getSettlements());
+//			UnitManager manager = Simulation.instance().getUnitManager();
+			Collection<Settlement> settlements = CollectionUtils.sortByName(unitManager.getSettlements());
 			Iterator<Settlement> i = settlements.iterator();
 			while (i.hasNext()) units.add(i.next());
 

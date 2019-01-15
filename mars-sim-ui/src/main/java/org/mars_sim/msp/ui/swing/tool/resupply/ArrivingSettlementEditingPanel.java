@@ -854,7 +854,7 @@ extends TransportItemEditingPanel {
 		String fullLonString = longitudeTF.getText().trim() + longitudeDirectionCB.getSelectedItem();
 		try {
 			Coordinates landingLocation = new Coordinates(fullLatString, fullLonString);
-			Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
+			Iterator<Settlement> i = unitManager.getSettlements().iterator();
 			while (i.hasNext()) {
 				if (i.next().getCoordinates().equals(landingLocation)) {
 					return false;

@@ -2443,7 +2443,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public Collection<Robot> updateAllAssociatedRobots() {
 		// using java 8 stream
-		Collection<Robot> result =unitManager.getRobots().stream().filter(r -> r.getAssociatedSettlement() == this)
+		Collection<Robot> result = unitManager.getRobots().stream().filter(r -> r.getAssociatedSettlement() == this)
 				.collect(Collectors.toList());
 
 		allAssociatedRobots = result;
@@ -2492,7 +2492,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public Collection<Vehicle> getAllAssociatedVehicles() {
 		List<Vehicle> list = new ArrayList<>();
-		Collection<Vehicle> vehicles = CollectionUtils.getVehicle(unitManager.getUnits());
+		Collection<Vehicle> vehicles = unitManager.getVehicles();//CollectionUtils.getVehicle(unitManager.getUnits());
 		for (Vehicle v : vehicles) {
 			if (v.getAssociatedSettlement() == this)
 				list.add(v);

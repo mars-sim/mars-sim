@@ -239,7 +239,7 @@ extends ToolWindow {
 	private void search() {
 		Collection<? extends Unit> units = null;
 		String category = (String) searchForSelect.getSelectedItem();
-		UnitManager unitManager = Simulation.instance().getUnitManager();
+//		UnitManager unitManager = Simulation.instance().getUnitManager();
 		if (category.equals(UnitCategory.PEOPLE.getName())) {
 			Collection<Person> people = unitManager.getPeople();
 			units = CollectionUtils.sortByName(people);
@@ -326,8 +326,8 @@ extends ToolWindow {
 	public void destroy() {} {
 
 		if (unitListModel != null) {
-			UnitManager manager = Simulation.instance().getUnitManager();
-			manager.removeUnitManagerListener(unitListModel);
+//			UnitManager manager = Simulation.instance().getUnitManager();
+			unitManager.removeUnitManagerListener(unitListModel);
 			unitListModel.clear();
 			unitListModel = null;
 		}
@@ -362,7 +362,7 @@ extends ToolWindow {
 			updateList();
 
 			// Add model as unit manager listener.
-			Simulation.instance().getUnitManager().addUnitManagerListener(this);
+			unitManager.addUnitManagerListener(this);
 		}
 
 		/**
@@ -385,10 +385,10 @@ extends ToolWindow {
 			clear();
 
 			Collection<? extends Unit> units = null;
-			UnitManager unitManager = Simulation.instance().getUnitManager();
+//			UnitManager unitManager = unitManager;
 			if (category.equals(UnitCategory.PEOPLE)) {
 
-				if (unitManager.getPeople() == null) {
+				if (unitManager.getTotalNumPeople() == 0) {
 					Thread.yield();
 					try {
 						Thread.sleep(2L);

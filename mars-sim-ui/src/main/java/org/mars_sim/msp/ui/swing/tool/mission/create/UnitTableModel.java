@@ -7,7 +7,9 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
@@ -24,6 +26,8 @@ abstract class UnitTableModel extends AbstractTableModel {
 	protected Collection<Unit> units;
 	protected List<String> columns;
 	
+	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
+
 	/**
 	 * Constructor
 	 */

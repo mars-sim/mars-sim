@@ -33,10 +33,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
-
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;

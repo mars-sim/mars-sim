@@ -128,7 +128,7 @@ public class DashboardController implements Initializable {
             	
         	//if (controller != null)
         	//	controller.updateSettlers(null);
-         	int total = unitManager.getPeople().size();
+         	int total = unitManager.getTotalNumPeople();
          	int outside = unitManager.getOutsidePeople().size();
          	int inside = total - outside;
             insertLabel.setText(total +  ALL_SETTLERS + " (" + INSIDE + inside + OUTSIDE + outside + ") :");
@@ -296,7 +296,7 @@ public class DashboardController implements Initializable {
     	//settlements = getNewSettlements();
     	if (controller != null)
     		controller.updateSettlers(null);
-     	int total = unitManager.getPeople().size();
+     	int total = unitManager.getTotalNumPeople();
      	int outside = unitManager.getOutsidePeople().size();
      	int inside = total - outside;
         insertLabel.setText(total +  ALL_SETTLERS + " (" + INSIDE + inside + OUTSIDE + outside + ") :");

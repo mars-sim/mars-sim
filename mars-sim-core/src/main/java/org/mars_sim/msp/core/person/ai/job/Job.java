@@ -12,6 +12,8 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
@@ -26,7 +28,6 @@ import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
 import org.mars_sim.msp.core.person.ai.task.WriteReport;
-import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
@@ -59,6 +60,7 @@ public abstract class Job implements Serializable {
 	protected List<Class<?>> jobMissionJoins;
 
 	public static MissionManager missionManager = Simulation.instance().getMissionManager();
+	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
 	/**
 	 * Constructor.
@@ -201,5 +203,16 @@ public abstract class Job implements Serializable {
 	 */
 	public boolean isJobRelatedTask(Class<?> taskClass) {
 		return jobTasks.contains(taskClass);
+	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param u {@link UnitManager}
+	 * @param m {@link MissionManager}
+	 */
+	public static void initializeInstances(UnitManager u, MissionManager m) {
+		unitManager = u;
+		missionManager = m;
 	}
 }

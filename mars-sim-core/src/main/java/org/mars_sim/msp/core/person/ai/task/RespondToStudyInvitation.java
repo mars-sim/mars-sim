@@ -221,7 +221,7 @@ implements Serializable {
                 Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
                 while (i.hasNext()) {
                 	int id = i.next();
-                    Person collaborator = unitManager.getPersonID(id);
+                    Person collaborator = unitManager.getPersonByID(id);
                     ScienceType collaborativeScience = study.getCollaborativeResearchers().get(id);
                     acceptChance += (collaborator.getScientificAchievement(collaborativeScience) / 2D);
                 }

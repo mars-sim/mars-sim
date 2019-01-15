@@ -7,6 +7,9 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
+
 import com.alee.laf.panel.WebPanel;
 
 /**
@@ -14,6 +17,8 @@ import com.alee.laf.panel.WebPanel;
  */
 abstract class WizardPanel
 extends WebPanel {
+	
+	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	// Data members.
 	protected CreateMissionWizard wizard;

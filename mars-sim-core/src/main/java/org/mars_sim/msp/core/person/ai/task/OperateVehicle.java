@@ -6,6 +6,9 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.io.Serializable;
+import java.util.Iterator;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
@@ -14,17 +17,12 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
-
-import java.io.Serializable;
-import java.util.Iterator;
 
 /**
  * The OperateVehicle class is an abstract task for operating a vehicle, 
@@ -327,7 +325,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	    
 	    boolean result = false;
 	    
-	    Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
+	    Iterator<Settlement> i = unitManager.getSettlements().iterator();
 	    while (i.hasNext()) {
 	        Settlement settlement = i.next();
 	        if (settlement.getCoordinates().equals(destination)) {

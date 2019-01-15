@@ -13,19 +13,20 @@ import javax.swing.*;
 import org.mars_sim.mapdata.MapDataUtil;
 
 /**
- *  The TopoMarsMap class is a map of the topography of Mars that can be generated
- *  for the MapDisplay.
+ * The TopoMarsMap class is a map of the topography of Mars that can be
+ * generated for the MapDisplay.
  */
 public class TopoMarsMap extends CannedMarsMap {
 
 	// The map type.
 	public static final String TYPE = "topographical map";
-    
-    /** 
-     * Constructor
-     * @param displayArea the display component
-     */
-    public TopoMarsMap(JComponent displayArea) {
-    	super(displayArea, MapDataUtil.instance().getTopoMapData());
-    }
+
+	/**
+	 * Constructor
+	 * 
+	 * @param displayArea the display component
+	 */
+	public TopoMarsMap(JComponent displayArea) {
+		super(displayArea, MapDataUtil.instance().getTopoMapData());
+	}
 }

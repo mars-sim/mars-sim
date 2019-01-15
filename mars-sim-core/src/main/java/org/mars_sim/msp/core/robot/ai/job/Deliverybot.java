@@ -82,7 +82,7 @@ implements Serializable {
 
         double result = 0D;
 
-        Iterator<Settlement> i = settlement.getUnitManager().getSettlements().iterator();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
         while (i.hasNext()) {
             Settlement otherSettlement = i.next();
             if (otherSettlement != settlement) {

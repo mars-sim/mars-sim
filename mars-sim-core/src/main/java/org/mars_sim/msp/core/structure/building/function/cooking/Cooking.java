@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -31,10 +30,9 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Function;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
@@ -119,8 +117,8 @@ public class Cooking extends Function implements Serializable {
 //	private Inventory inv;
 	private HotMeal aMeal;
 
-	private Person person;
-	private Robot robot;
+//	private Person person;
+//	private Robot robot;
 
 	private static List<HotMeal> mealConfigMealList = MealConfig.getMealList();
 	private static List<Integer> oilMenu;
@@ -230,8 +228,7 @@ public class Cooking extends Function implements Serializable {
 			int l;
 			for (l = 0; l < ingredientList.size(); l++) {
 				ingredientDryMass = fraction * waterContentList.get(l) + proportionList.get(l);
-				ingredientDryMass = Math.round(ingredientDryMass * 1000000.0) / 1000000.0; // round up to 0.0000001 or
-																							// 1mg
+				//ingredientDryMass = Math.round(ingredientDryMass * 1_000_000.0) / 1_000_000.0; // round up to 1 mg
 				aMeal.setIngredientDryMass(l, ingredientDryMass);
 			}
 
@@ -504,10 +501,10 @@ public class Cooking extends Function implements Serializable {
 	 */
 	// Called by CookMeal
 	public String addWork(double workTime, Unit theCook) {
-		if (theCook instanceof Person)
-			this.person = (Person) theCook;
-		else if (theCook instanceof Robot)
-			this.robot = (Robot) theCook;
+//		if (theCook instanceof Person)
+//			this.person = (Person) theCook;
+//		else if (theCook instanceof Robot)
+//			this.robot = (Robot) theCook;
 
 		String nameOfMeal = null;
 
@@ -527,7 +524,7 @@ public class Cooking extends Function implements Serializable {
 				// Randomly pick a meal which ingredients are available
 				aMeal = getACookableMeal();
 				if (aMeal != null) {
-					nameOfMeal = cookAHotMeal(aMeal);
+					nameOfMeal = cookAHotMeal(aMeal, theCook);
 				}
 			}
 		}
@@ -719,9 +716,17 @@ public class Cooking extends Function implements Serializable {
 	 * @param hotMeal the meal to cook.
 	 * @return name of meal
 	 */
-	public String cookAHotMeal(HotMeal hotMeal) {
+	public String cookAHotMeal(HotMeal hotMeal, Unit theCook) {
 		double mealQuality = 0;
+		Person person = null;
+		Robot robot = null;
+		
+		if (theCook instanceof Person)
+			person = (Person) theCook;
+		else if (theCook instanceof Robot)
+			robot = (Robot) theCook;
 
+		
 		List<Ingredient> ingredientList = hotMeal.getIngredientList();
 		for (Ingredient oneIngredient : ingredientList) {
 			// String ingredientName = oneIngredient.getName();
@@ -759,13 +764,16 @@ public class Cooking extends Function implements Serializable {
 		// TODO: quality also dependent upon the hygiene of a person
 		double culinarySkillPerf = 0;
 		// Add influence of a person/robot's performance on meal quality
-		if (person != null)
+		if (person != null) {
 			culinarySkillPerf = .25 * person.getPerformanceRating()
 					* person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
-		else if (robot != null)
+		}
+		
+		else {//if (theCook instanceof Robot)
 			culinarySkillPerf = .1 * robot.getPerformanceRating()
 					* robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
-
+		}
+		
 		// consume oil
 		boolean has_oil = true;
 
@@ -794,7 +802,7 @@ public class Cooking extends Function implements Serializable {
 
 		if (person != null)
 			producerName = person.getName();
-		else if (robot != null)
+		else //if (robot != null)
 			producerName = robot.getName();
 
 		CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, dryMassPerServing, currentTime, producerName, this);
@@ -809,8 +817,8 @@ public class Cooking extends Function implements Serializable {
 		// Reduce a tiny bit of kitchen's cleanliness upon every meal made
 		cleanliness = cleanliness - .0075;
 
-		LogConsolidated.log(Level.FINE, 10_000, sourceName,
-				"[" + building.getSettlement() + "] " + producerName + " just cooked '" + nameOfMeal + "' in " + building + ".");
+		LogConsolidated.log(Level.INFO, 5_000, sourceName,
+				"[" + building.getSettlement() + "] " + producerName + " cooked '" + nameOfMeal + "' in " + building + ".");
 
 		return nameOfMeal;
 	}
@@ -1155,8 +1163,8 @@ public class Cooking extends Function implements Serializable {
 		mealConfigMealList = null;
 		qualityMap = null;
 		timeMap = null;
-		person = null;
-		robot = null;
+//		person = null;
+//		robot = null;
 		ingredientMap = null;
 	}
 

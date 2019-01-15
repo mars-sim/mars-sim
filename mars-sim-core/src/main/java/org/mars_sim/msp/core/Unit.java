@@ -20,31 +20,25 @@ import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-
 /**
  * The Unit class is the abstract parent class to all units in the Simulation.
  * Units include people, vehicles and settlements. This class provides data
  * members and methods common to all units.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
-@JsonSubTypes({ @Type(value = Person.class, name = "person"), 
-				@Type(value = Structure.class, name = "structure"),
-				@Type(value = Vehicle.class, name = "vehicle"),
-				@Type(value = Equipment.class, name = "equipment"),})
+//@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
+//@JsonSubTypes({ @Type(value = Person.class, name = "person"), 
+//				@Type(value = Structure.class, name = "structure"),
+//				@Type(value = Vehicle.class, name = "vehicle"),
+//				@Type(value = Equipment.class, name = "equipment"),})
 public abstract class Unit implements Serializable, Comparable<Unit> {
 
 	/** default serial id. */
@@ -56,11 +50,11 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	// private static String sourceName =
 	// logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 	// logger.getName().length());
-	// static unit identifier
+	
+	/** Static unit identifier. */
 	private static int unitIdentifer = 0;
 
 	// Data members
-//	private static boolean once = true;
 	// Unique identifier
 	private int identifier;
 	// The unit's location code
@@ -77,12 +71,9 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	/** The unit's location tag. */
 	private LocationTag tag;
 	/** The unit's inventory. */
-	@JsonIgnore
 	private Inventory inventory;
 	/** The unit containing this unit. */
 	protected Unit containerUnit;
-	/** The cache of containerUnit. */
-//	protected Unit containerUnitCache;
 	/** Unit location coordinates. */
 	private Coordinates location;
 
@@ -98,6 +89,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	protected static MasterClock masterClock;
 	protected static MarsSurface marsSurface;
 	protected static UnitManager unitManager;
+	public static MissionManager missionManager;
 	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -181,14 +173,14 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		this.name = newName;
 	}
 
-	/**
-	 * Gets the unit's UnitManager
-	 * 
-	 * @return {@link UnitManager} the unit's unit manager
-	 */
-	public UnitManager getUnitManager() {
-		return Simulation.instance().getUnitManager();
-	}
+//	/**
+//	 * Gets the unit's UnitManager
+//	 * 
+//	 * @return {@link UnitManager} the unit's unit manager
+//	 */
+//	public UnitManager getUnitManager() {
+//		return Simulation.instance().getUnitManager();
+//	}
 
 	/**
 	 * Gets the unit's name
@@ -764,7 +756,8 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * 
 	 * @param m
 	 */
-	public static void setInstances(MasterClock c0, MarsClock c1, Simulation s, Mars m, MarsSurface ms, EarthClock e, UnitManager u) {
+	public static void setInstances(MasterClock c0, MarsClock c1, Simulation s, 
+			Mars m, MarsSurface ms, EarthClock e, UnitManager u, MissionManager mm) {
 		masterClock = c0;
 		marsClock = c1;
 		sim = s;
@@ -772,6 +765,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		marsSurface = ms;
 		earthClock = e;
 		unitManager = u;
+		missionManager = mm;
 	}
 	
 	/**

@@ -37,6 +37,8 @@ public class FoodInventoryTableModel extends AbstractTableModel
 	private List<Food> foodList;
 	private List<Settlement> settlements;
 
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+
 	/**
 	 * Constructor.
 	 */
@@ -45,7 +47,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 		// Initialize food list.
 		foodList = FoodUtil.getFoodList();
 
-		UnitManager unitManager = Simulation.instance().getUnitManager();
+//		UnitManager unitManager = Simulation.instance().getUnitManager();
 
 		// FoodInventoryTableModel ft = unitManager.
 
@@ -254,6 +256,10 @@ public class FoodInventoryTableModel extends AbstractTableModel
 			i.next().removeUnitListener(this);
 
 		// Remove as listener to unit manager.
-		Simulation.instance().getUnitManager().removeUnitManagerListener(this);
+		unitManager.removeUnitManagerListener(this);
+		
+		foodList = null;
+		settlements = null;
+		unitManager = null;
 	}
 }

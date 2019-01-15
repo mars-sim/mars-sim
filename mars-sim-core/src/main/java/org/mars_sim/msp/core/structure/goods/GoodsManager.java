@@ -61,6 +61,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -445,7 +446,7 @@ public class GoodsManager implements Serializable {
 			projectedDemand += getResourceConstructionDemand(id);
 
 			// Tune construction site demand.
-			projectedDemand += getResourceConstructionSiteDemand(resource);
+			projectedDemand += getResourceConstructionSiteDemand(id);
 
 			// Adjust the demand on various waste products with the disposal cost.
 			projectedDemand = getWasteDisposalSinkCost(id, projectedDemand);
@@ -1214,7 +1215,7 @@ public class GoodsManager implements Serializable {
 	 * @param resource the resource.
 	 * @return demand (kg)
 	 */
-	private double getResourceConstructionSiteDemand(AmountResource resource) {
+	private double getResourceConstructionSiteDemand(int resource) {
 
 		double demand = 0D;
 
@@ -1850,8 +1851,8 @@ public class GoodsManager implements Serializable {
 				while (j.hasNext()) {
 					Part part = j.next();
 					int demand = 1;
-					if (result.containsKey(part))
-						demand += result.get(part).intValue();
+					if (result.containsKey(part.getID()))
+						demand += result.get(part.getID()).intValue();
 					result.put(ItemResourceUtil.findIDbyItemResourceName(part.getName()), demand);
 				}
 			}
@@ -2643,7 +2644,7 @@ public class GoodsManager implements Serializable {
 				capacity = 0D;
 
 			boolean hasAreologyLab = false;
-			if (v.hasLab() && v.getLabTechSpecialties().contains("Areology")) {
+			if (v.hasLab() && v.getLabTechSpecialties().contains(ScienceType.AREOLOGY)) {
 					hasAreologyLab = true;
 			}
 			if (!hasAreologyLab)
@@ -2709,7 +2710,7 @@ public class GoodsManager implements Serializable {
 				capacity = 1D;
 
 			if (v.hasLab()) {
-				if (v.getLabTechSpecialties().contains("Areology")) {
+				if (v.getLabTechSpecialties().contains(ScienceType.AREOLOGY)) {
 					capacity += v.getLabTechLevel();
 				} else {
 					capacity /= 2D;
@@ -2724,7 +2725,7 @@ public class GoodsManager implements Serializable {
 				capacity = 1D;
 
 			if (v.hasLab()) {
-				if (v.getLabTechSpecialties().contains("Biology")) {
+				if (v.getLabTechSpecialties().contains(ScienceType.BIOLOGY)) {
 					capacity += v.getLabTechLevel();
 				} else {
 					capacity /= 2D;

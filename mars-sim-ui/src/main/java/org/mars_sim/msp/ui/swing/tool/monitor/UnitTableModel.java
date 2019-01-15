@@ -14,8 +14,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.UnitManager;
 
 /**
  * The UnitTableModel that maintains a table model of Units objects. It is only
@@ -38,6 +40,8 @@ abstract public class UnitTableModel extends AbstractTableModel implements Monit
 	private Class<?> columnTypes[];
 	private int size = -1;
 	private boolean refreshSize = true;
+
+	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
 	 * Constructor.

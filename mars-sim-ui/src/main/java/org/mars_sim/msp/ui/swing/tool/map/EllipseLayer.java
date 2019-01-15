@@ -29,6 +29,7 @@ public class EllipseLayer implements MapLayer {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param drawColor the color to draw the ellipse.
 	 */
 	public EllipseLayer(Color drawColor) {
@@ -37,6 +38,7 @@ public class EllipseLayer implements MapLayer {
 
 	/**
 	 * Sets the flag for displaying the ellipse.
+	 * 
 	 * @param displayEllipse true if ellipse is to be displayed.
 	 */
 	public void setDisplayEllipse(boolean displayEllipse) {
@@ -45,6 +47,7 @@ public class EllipseLayer implements MapLayer {
 
 	/**
 	 * Sets the ellipse details.
+	 * 
 	 * @param foci1 the position of the first focus point.
 	 * @param foci2 the position of the second focus point.
 	 * @param range the ellipse range.
@@ -57,9 +60,10 @@ public class EllipseLayer implements MapLayer {
 
 	/**
 	 * Displays the layer on the map image.
+	 * 
 	 * @param mapCenter the location of the center of the map.
-	 * @param mapType the type of map.
-	 * @param g graphics context of the map display.
+	 * @param mapType   the type of map.
+	 * @param g         graphics context of the map display.
 	 */
 	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
@@ -89,6 +93,7 @@ public class EllipseLayer implements MapLayer {
 
 	/**
 	 * Gets the width of the ellipse.
+	 * 
 	 * @return width in pixels.
 	 */
 	private int getWidth() {
@@ -97,6 +102,7 @@ public class EllipseLayer implements MapLayer {
 
 	/**
 	 * Gets the height of the ellipse.
+	 * 
 	 * @return height in pixels.
 	 */
 	private int getHeight() {
@@ -107,6 +113,7 @@ public class EllipseLayer implements MapLayer {
 
 	/**
 	 * Gets the distance between the focus points.
+	 * 
 	 * @return distance in pixels.
 	 */
 	private int getFociDistance() {
@@ -117,6 +124,7 @@ public class EllipseLayer implements MapLayer {
 
 	/**
 	 * Gets the center point of the ellipse.
+	 * 
 	 * @return center point.
 	 */
 	private IntPoint getCenterPoint() {
@@ -127,6 +135,7 @@ public class EllipseLayer implements MapLayer {
 
 	/**
 	 * Gets the angle between the focus points.
+	 * 
 	 * @return angle (radians)
 	 */
 	private double getFociAngle() {

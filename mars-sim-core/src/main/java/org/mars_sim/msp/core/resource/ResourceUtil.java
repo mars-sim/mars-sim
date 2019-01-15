@@ -291,15 +291,15 @@ public class ResourceUtil implements Serializable {
 	}
 
 	
-	public void restoreInventory() {
-		Collection<Unit> units = Simulation.instance().getUnitManager().getUnits();
-		for (Unit u : units) {
-			// if (!u.getName().contains("Large Bag") &&
-			if (u.getInventory() != null && !u.getInventory().isEmpty(false)) {
-				u.getInventory().restoreARs(ARs);
-			}
-		}
-	}
+//	public void restoreInventory() {
+//		Collection<Unit> units = Simulation.instance().getUnitManager().getUnits();
+//		for (Unit u : units) {
+//			// if (!u.getName().contains("Large Bag") &&
+//			if (u.getInventory() != null && !u.getInventory().isEmpty(false)) {
+//				u.getInventory().restoreARs(ARs);
+//			}
+//		}
+//	}
 
 	/**
 	 * Creates maps of amount resources

@@ -219,7 +219,7 @@ public class RelationshipManager implements Serializable {
 		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
 		Traverser traverser = relationshipGraph.traverser(person.getIdentifier(), GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
 		while (traverser.hasNext()) {
-			Person knownPerson = unitManager.getPersonID((Integer)traverser.next());
+			Person knownPerson = unitManager.getPersonByID((Integer)traverser.next());
 			result.add(knownPerson);
 		}
 		return result;
@@ -416,7 +416,7 @@ public class RelationshipManager implements Serializable {
 
 		// Go through each person in local group.
 		Iterator<Person> i = localGroup.iterator();
-		int count2 = 0;
+//		int count2 = 0;
 		while (i.hasNext()) {
 			Person localPerson = i.next();
 			double localPersonStress = localPerson.getPhysicalCondition().getStress();
@@ -496,7 +496,7 @@ public class RelationshipManager implements Serializable {
 				}
 			}
 		}
-		count2++;
+//		count2++;
 	}
 
 	/**

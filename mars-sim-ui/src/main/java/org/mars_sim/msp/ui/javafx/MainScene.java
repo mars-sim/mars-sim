@@ -2146,7 +2146,7 @@ public class MainScene implements ClockListener {
 		sBox = new JFXComboBox<>();
 		sBox.getStyleClass().add("jfx-combo-box");
 		setQuickToolTip(sBox, Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
-		sBox.itemsProperty().setValue(FXCollections.observableArrayList(sim.getUnitManager().getSettlements()));
+		sBox.itemsProperty().setValue(FXCollections.observableArrayList(unitManager.getSettlements()));
 		sBox.setPromptText("Select a settlement to view");
 		sBox.getSelectionModel().selectFirst();
 
@@ -2165,7 +2165,7 @@ public class MainScene implements ClockListener {
 	}
 
 	public void changeSBox() {
-		sBox.itemsProperty().setValue(FXCollections.observableArrayList(sim.getUnitManager().getSettlements()));
+		sBox.itemsProperty().setValue(FXCollections.observableArrayList(unitManager.getSettlements()));
 	}
 
 	public void createFXMapLabelBox() {

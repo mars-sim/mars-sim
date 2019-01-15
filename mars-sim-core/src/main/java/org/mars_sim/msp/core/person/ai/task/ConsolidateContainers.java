@@ -18,16 +18,12 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Container;
-import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /** 
  * A task for consolidating the resources stored in local containers.

@@ -11,7 +11,6 @@ import java.awt.Image;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.ui.swing.tool.navigator.MarsGlobe;
-import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
 /**
  * The Map interface represents a map usable by the MapDisplay class.
@@ -21,13 +20,13 @@ public interface Map {
 	/** created map height (for scrolling) */
 	public static final int DISPLAY_HEIGHT = MarsGlobe.map_height; // NavigatorWindow.VERTICAL_MINIMAP;
 	/** created map width (for scrolling) */
-	public static final int DISPLAY_WIDTH = DISPLAY_HEIGHT;//NavigatorWindow.VERTICAL_MINIMAP;
+	public static final int DISPLAY_WIDTH = DISPLAY_HEIGHT;// NavigatorWindow.VERTICAL_MINIMAP;
 	/** Map display width in pixels. */
 	public static final int MAP_VIS_WIDTH = DISPLAY_WIDTH;
 	/** Map display height in pixels. */
 	public static final int MAP_VIS_HEIGHT = DISPLAY_HEIGHT;
 	/** this is a mysterious variable. */
-	public static final double HALF_MAP_ANGLE = 0.48587D; 
+	public static final double HALF_MAP_ANGLE = 0.48587D;
 	/** Source map height in pixels. */
 	public static final int MAP_HEIGHT = 1440;
 	/** Source map width in pixels. */
@@ -39,21 +38,24 @@ public interface Map {
 	/** how far off center in the surface map are things placed */
 //	public static final int SCREEN_OFFSET_Y=300;
 
-	/** 
+	/**
 	 * Creates a 2D map at a given center point.
+	 * 
 	 * @param newCenter the new center location
 	 * @throws Exception if error in drawing map.
 	 */
-	public void drawMap(Coordinates newCenter) ;
+	public void drawMap(Coordinates newCenter);
 
-	/** 
+	/**
 	 * Checks if a requested map is complete.
+	 * 
 	 * @return true if requested map is complete
 	 */
 	public boolean isImageDone();
 
-	/** 
+	/**
 	 * Gets the constructed map image.
+	 * 
 	 * @return constructed map image
 	 */
 	public Image getMapImage();

@@ -100,10 +100,12 @@ public class UnitManager implements Serializable {
 	private volatile Map<Integer, Settlement> lookupSettlement;
 	/** A map of persons with its unit identifier. */
 	private volatile Map<Integer, Person> lookupPerson;
-	/** A map of equipment with its unit identifier. */
-	private volatile Map<Integer, Equipment> lookupEquipment;
+	/** A map of robots with its unit identifier. */
+	private volatile Map<Integer, Robot> lookupRobot;
 	/** A map of vehicle with its unit identifier. */
 	private volatile Map<Integer, Vehicle> lookupVehicle;
+	/** A map of other equipment (excluding robots and vehicles) with its unit identifier. */
+	private volatile Map<Integer, Equipment> lookupEquipment;
 	
 	// Transient members
 	/** Flag true if the class has just been loaded */
@@ -169,6 +171,7 @@ public class UnitManager implements Serializable {
 		lookupUnit = new HashMap<>();
 		lookupSettlement = new HashMap<>();
 		lookupPerson = new HashMap<>();
+		lookupRobot = new HashMap<>();
 		lookupEquipment = new HashMap<>();
 		lookupVehicle = new HashMap<>();
 		units = new CopyOnWriteArrayList<>();//ConcurrentLinkedQueue<Unit>();
@@ -350,7 +353,6 @@ public class UnitManager implements Serializable {
 			throw new IllegalStateException("settlement names could not be loaded: " + e.getMessage(), e);
 		}
 	}
-
 	
 	public Unit getUnitByID(int id) {
 		return lookupUnit.get(id);
@@ -361,6 +363,11 @@ public class UnitManager implements Serializable {
 			lookupUnit.put(unit.getIdentifier(), unit);
 	}
 
+	public void removeUnitID(Unit unit) {
+		if (lookupUnit.containsKey(unit.getIdentifier()))
+			lookupUnit.remove(unit.getIdentifier());
+	}
+	
 	public Settlement getSettlementByID(int id) {
 		return lookupSettlement.get(id);
 	}
@@ -372,7 +379,12 @@ public class UnitManager implements Serializable {
 			lookupSettlement.put(s.getIdentifier(), s);
 	}
 
-	public Person getPersonID(int id) {
+	public void removeSettlementID(Settlement s) {
+		if (!lookupSettlement.containsKey(s.getIdentifier()))
+			lookupSettlement.remove(s.getIdentifier());
+	}
+
+	public Person getPersonByID(int id) {
 		return lookupPerson.get(id);
 	}
 
@@ -380,8 +392,27 @@ public class UnitManager implements Serializable {
 		if (!lookupPerson.containsKey(p.getIdentifier()))
 			lookupPerson.put(p.getIdentifier(), p);
 	}
+
+	public void removePersonID(Person p) {
+		if (lookupPerson.containsKey(p.getIdentifier()))
+			lookupPerson.remove(p.getIdentifier());
+	}
+
+	public Robot getRobotByID(int id) {
+		return lookupRobot.get(id);
+	}
+
+	public void addRobotID(Robot r) {
+		if (!lookupRobot.containsKey(r.getIdentifier()))
+			lookupRobot.put(r.getIdentifier(), r);
+	}
+
+	public void removeRobotID(Robot r) {
+		if (lookupRobot.containsKey(r.getIdentifier()))
+			lookupRobot.remove(r.getIdentifier());
+	}
 	
-	public Equipment getEquipmentID(int id) {
+	public Equipment getEquipmentByID(int id) {
 		return lookupEquipment.get(id);
 	}
 
@@ -390,7 +421,12 @@ public class UnitManager implements Serializable {
 			lookupEquipment.put(e.getIdentifier(), e);
 	}
 
-	public Vehicle getVehicleID(int id) {
+	public void removeEquipmentID(Equipment e) {
+		if (lookupEquipment.containsKey(e.getIdentifier()))
+			lookupEquipment.remove(e.getIdentifier());
+	}
+
+	public Vehicle getVehicleByID(int id) {
 		return lookupVehicle.get(id);
 	}
 
@@ -399,6 +435,11 @@ public class UnitManager implements Serializable {
 			lookupVehicle.put(v.getIdentifier(), v);
 	}
 
+	public void removeVehicleID(Vehicle v) {
+		if (lookupVehicle.containsKey(v.getIdentifier()))
+			lookupVehicle.remove(v.getIdentifier());
+	}
+	
 	/**
 	 * Adds a unit to the unit manager if it doesn't already have it.
 	 *
@@ -408,15 +449,17 @@ public class UnitManager implements Serializable {
 		if (!units.contains(unit)) {
 			units.add(unit);
 			
-			// Track the unit's id
+			// Add the unit's id into its lookup maps
 			if (unit instanceof Settlement)
 				addSettlementID((Settlement)unit);
 			else if (unit instanceof Person)
 				addPersonID((Person)unit);
-			else if (unit instanceof Equipment)
-				addEquipmentID((Equipment)unit);
+			else if (unit instanceof Robot)
+				addRobotID((Robot)unit);
 			else if (unit instanceof Vehicle)
 				addVehicleID((Vehicle)unit);
+			else if (unit instanceof Equipment)
+				addEquipmentID((Equipment)unit);
 			else 
 				addUnitID(unit);
 
@@ -438,6 +481,20 @@ public class UnitManager implements Serializable {
 		if (units.contains(unit)) {
 			units.remove(unit);
 
+			// Add the unit's id into its lookup maps
+			if (unit instanceof Settlement)
+				removeSettlementID((Settlement)unit);
+			else if (unit instanceof Person)
+				removePersonID((Person)unit);
+			else if (unit instanceof Robot)
+				removeRobotID((Robot)unit);
+			else if (unit instanceof Vehicle)
+				removeVehicleID((Vehicle)unit);
+			else if (unit instanceof Equipment)
+				removeEquipmentID((Equipment)unit);
+			else 
+				removeUnitID(unit);
+			
 			// Fire unit manager event.
 			fireUnitManagerUpdate(UnitManagerEventType.REMOVE_UNIT, unit);
 		}
@@ -825,7 +882,7 @@ public class UnitManager implements Serializable {
 			// Get person's settlement or randomly determine it if not configured.
 			String preConfigSettlementName = personConfig.getConfiguredPersonDestination(x, crew_id);
 			if (preConfigSettlementName != null) {
-				Collection<Settlement> col = CollectionUtils.getSettlement(units);
+				Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
 				if (settlement == null) {
 					// TODO: If settlement cannot be found that matches the settlement name,
@@ -836,7 +893,7 @@ public class UnitManager implements Serializable {
 				}
 
 			} else {
-				Collection<Settlement> col = CollectionUtils.getSettlement(units);
+				Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getRandomSettlement(col);
 				logger.log(Level.INFO, name + " has no destination settlement specified and goes to "
 						+ preConfigSettlementName + " by random.");
@@ -1183,7 +1240,7 @@ public class UnitManager implements Serializable {
 	}
 	
 	public void tuneJobDeficit() {
-		Collection<Settlement> col = CollectionUtils.getSettlement(units);
+		Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
 		for (Settlement settlement : col) {
 	//		int pop = settlement.getNumCitizens();
 		
@@ -1233,7 +1290,7 @@ public class UnitManager implements Serializable {
 		String sponsor = getSponsor();
 		
 		List<Settlement> list = new ArrayList<>(getSettlements());
-		int size = getSettlements().size();
+		int size = list.size();
 		for (int j = 0; j < size; j++) {
 			Settlement s = list.get(j);		
 			// If the sponsors are a match
@@ -1316,7 +1373,7 @@ public class UnitManager implements Serializable {
 			// configured.
 			String preConfigSettlementName = robotConfig.getConfiguredRobotSettlement(x);
 			Settlement settlement = null;
-			Collection<Settlement> col = CollectionUtils.getSettlement(units);
+			Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
 			if (preConfigSettlementName != null) {
 				// Find the settlement instance with that name
 				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
@@ -1827,7 +1884,7 @@ public class UnitManager implements Serializable {
 			// Only need to run all these below once at the start of the sim
 			factory.computeReliability();
 
-			Collection<Settlement> c = CollectionUtils.getSettlement(units);
+			Collection<Settlement> c = lookupSettlement.values();//CollectionUtils.getSettlement(units);
 			for (Settlement s : c) {
 				s.updateAllAssociatedPeople();
 				s.updateAllAssociatedRobots();
@@ -1848,7 +1905,7 @@ public class UnitManager implements Serializable {
 	 * @return the number of settlements
 	 */
 	public int getSettlementNum() {
-		return CollectionUtils.getSettlement(units).size();
+		return lookupSettlement.size();//CollectionUtils.getSettlement(units).size();
 	}
 
 	/**
@@ -1857,18 +1914,8 @@ public class UnitManager implements Serializable {
 	 * @return Collection of settlements
 	 */
 	public Collection<Settlement> getSettlements() {
-		return CollectionUtils.getSettlement(units);
+		return lookupSettlement.values();//CollectionUtils.getSettlement(units);
 	}
-
-//	public Settlement getASettlement() {
-//		List<Settlement> list = new ArrayList<>();
-//		list.addAll(getSettlements());
-//		return list.get(0);
-//	}
-
-//	public Settlement getFirstSettlement() {
-//		return firstSettlement;
-//	}
 
 	/**
 	 * Get number of vehicles
@@ -1876,7 +1923,7 @@ public class UnitManager implements Serializable {
 	 * @return the number of vehicles
 	 */
 	public int getVehicleNum() {
-		return CollectionUtils.getVehicle(units).size();
+		return lookupVehicle.size();//CollectionUtils.getVehicle(units).size();
 	}
 
 	/**
@@ -1885,7 +1932,7 @@ public class UnitManager implements Serializable {
 	 * @return Collection of vehicles
 	 */
 	public Collection<Vehicle> getVehicles() {
-		return CollectionUtils.getVehicle(units);
+		return lookupVehicle.values();//CollectionUtils.getVehicle(units);
 	}
 
 	/**
@@ -1894,7 +1941,7 @@ public class UnitManager implements Serializable {
 	 * @return the number of people
 	 */
 	public int getTotalNumPeople() {
-		return CollectionUtils.getPerson(units).size();
+		return lookupPerson.size();//CollectionUtils.getPerson(units).size();
 	}
 
 	/**
@@ -1903,7 +1950,7 @@ public class UnitManager implements Serializable {
 	 * @return Collection of people
 	 */
 	public Collection<Person> getPeople() {
-		return CollectionUtils.getPerson(units);
+		return lookupPerson.values();//CollectionUtils.getPerson(units);
 	}
 
 	/**
@@ -1912,7 +1959,9 @@ public class UnitManager implements Serializable {
 	 * @return Collection of people
 	 */
 	public Collection<Person> getOutsidePeople() {
-		return CollectionUtils.getPerson(units).stream()
+		return //CollectionUtils.getPerson(units)
+				lookupPerson.values()
+				.stream()
 				.filter(p -> p.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY
 						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
 				.collect(Collectors.toList());
@@ -1924,7 +1973,7 @@ public class UnitManager implements Serializable {
 	 * @return the number of Robots
 	 */
 	public int getRobotsNum() {
-		return CollectionUtils.getRobot(units).size();
+		return lookupRobot.size();//CollectionUtils.getRobot(units).size();
 	}
 
 	/**
@@ -1933,7 +1982,7 @@ public class UnitManager implements Serializable {
 	 * @return Collection of Robots
 	 */
 	public Collection<Robot> getRobots() {
-		return CollectionUtils.getRobot(units);
+		return lookupRobot.values();//CollectionUtils.getRobot(units);
 	}
 
 	/**
@@ -1942,7 +1991,8 @@ public class UnitManager implements Serializable {
 	 * @return number
 	 */
 	public int getEquipmentNum() {
-		return CollectionUtils.getEquipment(units).size();
+		// TODO: should it include robots ? 
+		return lookupEquipment.size();//CollectionUtils.getEquipment(units).size();
 	}
 
 	/**
@@ -1951,7 +2001,7 @@ public class UnitManager implements Serializable {
 	 * @return collection
 	 */
 	public Collection<Equipment> getEquipment() {
-		return CollectionUtils.getEquipment(units);
+		return lookupEquipment.values();//CollectionUtils.getEquipment(units);
 	}
 
 	/**

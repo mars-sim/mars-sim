@@ -249,13 +249,13 @@ public class BrowserJFX {
     }
     
     public void createGUI() {
-//    	logger.config("Web Engine supported : " + engine.getUserAgent());
         view = new WebView();
         engine = view.getEngine();
         history = engine.getHistory();
         entryList = history.getEntries();
         ssm = comboBox.getSelectionModel();
-   
+    	logger.config("Web Engine supported : " + engine.getUserAgent());
+    	
     	// For JDK 8u131, it prints the following :
     	// Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/602.1 (KHTML, like Gecko) JavaFX/8.0 Safari/602.1
     	// For JDK 10.0.2
@@ -433,7 +433,7 @@ public class BrowserJFX {
         vbox.getChildren().addAll(topButtonBar, bar);
 
     	//history.go(0);
-    	updateButtons();
+//    	updateButtons();
     	
     }
     
@@ -484,48 +484,24 @@ public class BrowserJFX {
 	 * Set a display URL
 	 */
 	public void setURL(String fileloc) {
-		//goToURL(getClass().getResource(fileloc));
-		//browser.getStatusBarLabel().setText(fileloc);
 		String fullLink = getClass().getResource(fileloc).toExternalForm();
-		//Platform.runLater(()-> {
-			setTextInputCache(fullLink);
-			checkInputURLType(fullLink);//, BrowserJFX.REMOTE_HTML);
-			showFormattedURL();
-			fireButtonGo(fullLink);
-		//});
+		setTextInputCache(fullLink);
+		checkInputURLType(fullLink);
+		showFormattedURL();
+		fireButtonGo(fullLink);
 	}    
-
-
-//    public void goURL() {
-//
-//		if (input.contains(DOCS_HELP_DIR) && input.contains(".html")) {
-//			if (ourGuide == null)
-//				ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
-//			ourGuide.setURL(input); //$NON-NLS-1$
-//			setTextInputCache(fullLink);
-//			inputURLType(fullLink);//, BrowserJFX.REMOTE_HTML);
-//			showFormattedURL();
-//		}
-//    }
 
 
 	public void fireButtonGo(String input) {
 		if (input != null && !input.isEmpty()) {
 			// if the address bar is not empty
 			Platform.runLater(() -> {
-            	//System.out.println("i : " + history.getCurrentIndex());
 				checkInputURLType(input);
-            	//System.out.println("i : " + history.getCurrentIndex());
 		    	int i = history.getCurrentIndex();
 		    	ssm.select(i); // question : will it load the url the 2nd time ?
-            	//System.out.println("i : " + history.getCurrentIndex());
 		    	if (entryList.size() != 0)
 		    		textInputCache = entryList.get(i).getUrl();
-            	//System.out.println("i : " + history.getCurrentIndex());
-		    	//System.out.println("textInputCache : " + textInputCache);
-            	//System.out.println();
 			});
-
 		}
     }
 
@@ -534,64 +510,8 @@ public class BrowserJFX {
      */
     public WebPanel initWebPanel() {
 
-//        ActionListener al = new ActionListener() {
-//            @Override
-//            public void actionPerformed(java.awt.event.ActionEvent e) {
-//
-//            	highlight();
-//
-//        		String input = urlTF.getText().trim();
-//
-//        		if (input.contains(DOCS_HELP_DIR) && input.contains(".html")) {
-//        			if (ourGuide == null)
-//        				ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
-//        			ourGuide.setURL(input); //$NON-NLS-1$
-//        		}
-//        		else {
-//                	fireButtonGo(input);
-//        		}
-//
-//            }
-//        };
-//
-//        ActionListener bl = new ActionListener() {
-//            @Override
-//            public void actionPerformed(java.awt.event.ActionEvent e) {
-//                Platform.runLater(() -> {
-//                    goBack();
-//                });
-//            }
-//        };
-//
-//        ActionListener fl = new ActionListener() {
-//            @Override
-//            public void actionPerformed(java.awt.event.ActionEvent e) {
-//                Platform.runLater(() -> {
-//                    goForward();
-//                });
-//            }
-//        };
-//
-//        btnBack.addActionListener(bl);
-//        btnForward.addActionListener(fl);
-//        btnGo.addActionListener(al);
-//        urlTF.addActionListener(al);
-//
-//        urlTF.setEditable(true);
-//        urlTF.requestFocusInWindow();
-
         progressBar.setPreferredSize(new Dimension(150, 18));
         progressBar.setStringPainted(true);
-
-//        WebPanel topBar = new WebPanel(new BorderLayout(5, 0));
-//        topBar.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
-//        topBar.add(urlTF, BorderLayout.CENTER);
-//
-//        WebPanel buttonPane = new WebPanel(new FlowLayout());
-//        buttonPane.add(btnBack);
-//        buttonPane.add(btnGo);
-//        buttonPane.add(btnForward);
-//        topBar.add(buttonPane, BorderLayout.EAST);
 
         WebPanel statusBar = new WebPanel(new BorderLayout(5, 0));
         statusBar.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
@@ -647,11 +567,6 @@ public class BrowserJFX {
     			parseInput(input, UNKNOWN);
         	}
 		}
-    	//else {
-    	//	System.out.println("input is null");
-		//	parseInput(input, LOCAL_HTML); //or UNKNOWN ?!?
-    	//}
-
     }
     
     /**
@@ -699,17 +614,20 @@ public class BrowserJFX {
 				// will need to add http://
 				determineURL(input, UNKNOWN);
 			}
-
-
 		}
     }
 
 
 	private void initJFX() {
-
-//		System.setProperty("jsse.enableSNIExtension", "false");
-//		System.setProperty("-Djdk.tls.client.protocols", "TLSv1");
-//		System.setProperty("javax.net.ssl.trustStore", "path to truststore");
+		engine.setUserAgent("AppleWebKit/538.19");//602.1");//537.44");
+    	logger.config("Web Engine supported : " + engine.getUserAgent());
+    	   
+//		engine.setJavaScriptEnabled(true);
+//		URLPermission("https://*.com");
+		System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+		System.setProperty("jsse.enableSNIExtension", "false");
+		System.setProperty("-Djdk.tls.client.protocols", "TLSv1");
+		System.setProperty("javax.net.ssl.trustStore", "path to truststore");
 
 		// Create all-trusting host name verifier
 		HostnameVerifier allHostsValid = new HostnameVerifier() {
@@ -721,8 +639,6 @@ public class BrowserJFX {
 		// Install the all-trusting host verifier
 		HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid); 
 		
-//		engine.setUserAgent("AppleWebKit/537.44");
-		
 //		WebConsoleListener.setDefaultListener(new WebConsoleListener(){
 //		    @Override
 //		    public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
@@ -730,7 +646,7 @@ public class BrowserJFX {
 //		    }
 //		});
 		
-    	//java.net.CookieHandler.setDefault(null);
+    	java.net.CookieHandler.setDefault(null);
 
         //Platform.runLater(() -> {
 
@@ -755,7 +671,7 @@ public class BrowserJFX {
 		    					isLocalHtml = true;
 		    				}
 
-		                    updateButtons();
+//		                    updateButtons();
 		                    // Fix the URL not being displayed correctly
 		                    textInputCache = input;
 
@@ -776,38 +692,7 @@ public class BrowserJFX {
                 view.setStyle("-fx-background-color: #656565;"
                 		+ " -fx-font-color: white;"
                 		+ " -fx-border-color: #00a7c8");
-
-
-//                Button reloadB = new Button("Refresh");
-//                reloadB.setMaxWidth(110);
-//
-//                Button backB = new Button("Back");
-//                backB.setMaxWidth(110);
-//
-//                Button forwardB = new Button("Forward");
-//                forwardB.setMaxWidth(110);
-//
-//                reloadB.setOnAction(e -> engine.reload());
-//
-//                backB.setOnAction(e -> {
-//
-//                	engine.executeScript("history.back()");
-//                	String input = urlTF.getText().trim();
-//
-//                	getURLType(input);
-//                	System.out.println("calling history.back()");
-//
-//                });
-//
-//                forwardB.setOnAction(e -> {
-//
-//                	engine.executeScript("history.forward()");
-//                	String input = urlTF.getText().trim();
-//
-//                	getURLType(input);
-//                	System.out.println("calling history.forward()");
-//                });
-
+                
 //                engine.titleProperty().addListener(new ChangeListener<String>() {
 //                    @Override
 //                    public void changed(ObservableValue<? extends String> observable, String oldValue, final String newValue) {
@@ -819,7 +704,6 @@ public class BrowserJFX {
 //                        });
 //                    }
 //                });
-
 
 
                 // show the url address whenever a mouse hovers over a hyperlink
@@ -891,8 +775,7 @@ public class BrowserJFX {
                 
                 engine.getLoadWorker().exceptionProperty().addListener(new ChangeListener<Throwable>() {
                 	@Override
-	                public void changed(ObservableValue<? extends Throwable> o, Throwable old, final Throwable value) {
-                		
+	                public void changed(ObservableValue<? extends Throwable> o, Throwable old, final Throwable value) {               		
                 		//System.out.println("Received exception: " + value.getMessage());
                 		
 //                		Throwable t = engine.getLoadWorker().getException();
@@ -923,10 +806,7 @@ public class BrowserJFX {
 //        				jsobj.setMember("JavaBridge", new TicketSubmission());
 //                    }
 //                });
-
-
-
-                
+     
                 // process page loading
                 engine.getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
                     @Override
@@ -1060,16 +940,9 @@ public class BrowserJFX {
 
 	public void loadRemoteURL(final String content) {
     	isLocalHtml = false;
-    	//Platform.runLater(()-> {
-			//try {
-				engine.load(content);
-				updateButtons();
-				textInputCache = content;
-				statusBarURLText = content;
-			//} catch (StringIndexOutOfBoundsException e) {
-			//	e.printStackTrace();
-			//}
-        //});
+		engine.load(content);
+		textInputCache = content;
+		statusBarURLText = content;
 
         SwingUtilities.invokeLater(()-> statusBarLbl.setText(content));
     }
@@ -1078,7 +951,7 @@ public class BrowserJFX {
        	isLocalHtml = true;
     	Platform.runLater(()-> {
             engine.load(content);
-            updateButtons();
+//            updateButtons();
             textInputCache = content;
             if (content != null && !content.isEmpty()) {
             	// Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
@@ -1100,10 +973,9 @@ public class BrowserJFX {
     }
 
 	public void highlight() {
-        //System.out.println("highlight()");
         Platform.runLater(() -> {
-                engine.setJavaScriptEnabled(true);
-                //executejQuery(engine, " $(\"a\").css(\"color\", \"red\")");
+        	engine.setJavaScriptEnabled(true);
+        	//executejQuery(engine, " $(\"a\").css(\"color\", \"red\")");
         });
     }
 
@@ -1116,8 +988,6 @@ public class BrowserJFX {
 //        return executejQuery(engine, DEFAULT_JQUERY_MIN_VERSION, script);
 //    }
 
-
-
 	public String getCurrentURL() {
         //history = engine.getHistory();
         ObservableList<WebHistory.Entry> entryList = history.getEntries();
@@ -1125,8 +995,6 @@ public class BrowserJFX {
         String txt = null;
         if (currentIndex >=0 ) {
         	txt = entryList.get(currentIndex).getUrl();
-        	//System.out.println("currentIndex is " + currentIndex + " url is " + txt);
-        	//Platform.runLater(() -> { history.go(0);} );
         }
         return txt;
       }
@@ -1138,111 +1006,6 @@ public class BrowserJFX {
     public WebLabel getStatusBarLabel() {
     	return statusBarLbl;
     }
-
-    public void updateButtons() {
-    	
-    	//final WebHistory history = engine.getHistory();
-    	//ObservableList<WebHistory.Entry> entryList = history.getEntries();
-//    	int currentIndex = history.getCurrentIndex();
-       	//System.out.println("updateButtons()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
-
-//    	if (entryList.size() > 1) {
-//    		if (currentIndex > 0)
-//    			btnBack.setEnabled(true);
-//    		else
-//    			btnBack.setEnabled(false);
-//
-//    		if  (currentIndex < entryList.size() - 1)
-//    			btnForward.setEnabled(true);
-//    		else
-//    			btnForward.setEnabled(false);
-//    	}
-//    	else {
-//    		btnBack.setEnabled(false);
-//    		btnForward.setEnabled(false);
-//    	}
-
-
-//    	if (entryList.size() > 1
-//				&& currentIndex > 0)
-//    		btnBack.setEnabled(true);
-//    	else
-//    		btnBack.setEnabled(false);
-//
-//    	if (entryList.size() > 1
-//				&& currentIndex < entryList.size() - 1)
-//    		btnForward.setEnabled(true);
-//    	else
-//    		btnForward.setEnabled(false);
-
-    }
-
-
-//    @SuppressWarnings("restriction")
-//    public void goBack() {
-//    	Platform.runLater(() -> {
-//        	int currentIndex = history.getCurrentIndex();
-//        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
-//    		history.go(entryList.size() > 1
-//    				&& currentIndex > 0
-//    				? -1
-//    				: 0);
-//
-//       		showURL();
-//
-//        	currentIndex = history.getCurrentIndex();
-//        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
-//        	if (entryList.size() > 1) {
-//        		if (currentIndex > 0)
-//        			btnBack.setEnabled(true);
-//        		else
-//        			btnBack.setEnabled(false);
-//
-//        		if  (currentIndex < entryList.size() - 1)
-//        			btnForward.setEnabled(true);
-//        		else
-//        			btnForward.setEnabled(false);
-//        	}
-//        	else {
-//        		btnBack.setEnabled(false);
-//        		btnForward.setEnabled(false);
-//        	}
-//       	});
-//
-//	}
-//
-//    @SuppressWarnings("restriction")
-//    public void goForward() {
-//    	Platform.runLater(() -> {
-//        	int currentIndex = history.getCurrentIndex();
-//        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
-//
-//    		history.go(entryList.size() > 1
-//    				&& currentIndex < entryList.size() - 1
-//    				? 1
-//    				: 0);
-//
-//        	currentIndex = history.getCurrentIndex();
-//        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
-//        	if (entryList.size() > 1) {
-//        		if (currentIndex > 0)
-//        			btnBack.setEnabled(true);
-//        		else
-//        			btnBack.setEnabled(false);
-//
-//        		if  (currentIndex < entryList.size() - 1)
-//        			btnForward.setEnabled(true);
-//        		else
-//        			btnForward.setEnabled(false);
-//        	}
-//        	else {
-//        		btnBack.setEnabled(false);
-//        		btnForward.setEnabled(false);
-//        	}
-//
-//    	});
-//	}
-
 
     public String getTextInputCache() {
     	return textInputCache;

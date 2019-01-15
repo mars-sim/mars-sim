@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;

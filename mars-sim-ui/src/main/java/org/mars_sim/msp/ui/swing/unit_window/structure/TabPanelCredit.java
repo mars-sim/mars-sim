@@ -130,6 +130,7 @@ extends TabPanel {
 		private Collection<Settlement> settlements;
 		private Settlement thisSettlement;
 		private UnitManager unitManager = Simulation.instance().getUnitManager();
+		
 		/**
 		 * hidden constructor.
 		 * @param thisSettlement {@link Settlement}
@@ -229,7 +230,7 @@ extends TabPanel {
 
 			if (event.getUnit() instanceof Settlement) {
 				settlements.clear();
-				Iterator<Settlement> i = CollectionUtils.sortByName(Simulation.instance().getUnitManager().
+				Iterator<Settlement> i = CollectionUtils.sortByName(unitManager.
 						getSettlements()).iterator();
 				while (i.hasNext()) {
 					Settlement settlement = i.next();

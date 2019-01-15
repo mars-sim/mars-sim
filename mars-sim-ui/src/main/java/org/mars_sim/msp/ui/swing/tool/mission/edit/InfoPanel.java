@@ -28,6 +28,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -76,6 +77,8 @@ extends WebPanel {
 	protected JList<MissionMember> memberList;
 	protected WebButton addMembersButton;
 	protected WebButton removeMembersButton;
+	
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
 	/**
 	 * Constructor.
@@ -330,7 +333,7 @@ extends WebPanel {
 		
 		// Add people and robots who are outside at this location as well.
 		Coordinates missionLocation = mission.getCurrentMissionLocation();
-		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext()) {
 		    Person person = i.next();
 		    if (person.isOutside()) {
@@ -342,7 +345,7 @@ extends WebPanel {
 		    }
 		}
 		
-		Iterator<Robot> j = Simulation.instance().getUnitManager().getRobots().iterator();
+		Iterator<Robot> j = unitManager.getRobots().iterator();
         while (j.hasNext()) {
             Robot robot = j.next();
             if (robot.isOutside()) {
