@@ -497,17 +497,28 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		// Add work to malfunction.
 		// logger.info(description);
 		double workTimeLeft = 0;
+		boolean isEmerg = false;
+		boolean isGeneral = false;
+		
 		if (person != null) {
-			if (malfunction.needEmergencyRepair() && !malfunction.isEmergencyRepairDone())
+			if (malfunction.needEmergencyRepair() && !malfunction.isEmergencyRepairDone()) {
+				isEmerg = true;
 				workTimeLeft = malfunction.addEmergencyWorkTime(workTime, person.getName());
-			else if (malfunction.needGeneralRepair() && !malfunction.isGeneralRepairDone())
+			}
+			else if (malfunction.needGeneralRepair() && !malfunction.isGeneralRepairDone()) {
+				isGeneral = true;
 				workTimeLeft = malfunction.addGeneralWorkTime(workTime, person.getName());
+			}
 			
 		} else {
-			if (malfunction.needEmergencyRepair() && !malfunction.isEmergencyRepairDone())
+			if (malfunction.needEmergencyRepair() && !malfunction.isEmergencyRepairDone()) {
+				isEmerg = true;
 				workTimeLeft = malfunction.addEmergencyWorkTime(workTime, robot.getName());
-			else if (malfunction.needGeneralRepair() && !malfunction.isGeneralRepairDone())
+			}
+			else if (malfunction.needGeneralRepair() && !malfunction.isGeneralRepairDone()) {
+				isGeneral = true;
 				workTimeLeft = malfunction.addGeneralWorkTime(workTime, robot.getName());
+			}
 		}
 		
 		// Add experience
@@ -518,13 +529,13 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
 		if (person != null) {
 			// Check if there are no more malfunctions.
-			if (malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
+			if (isEmerg && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " had completed the Emergency Repair of " + malfunction.getName() + " in "+ entity + ".");
 				endTask();
 			}
-			else if (malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
+			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " had completed the General Repair of " + malfunction.getName() + " in "+ entity + ".");

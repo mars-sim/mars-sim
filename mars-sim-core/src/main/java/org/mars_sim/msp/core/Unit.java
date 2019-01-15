@@ -756,7 +756,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * 
 	 * @param m
 	 */
-	public static void setInstances(MasterClock c0, MarsClock c1, Simulation s, 
+	public static void initializeInstances(MasterClock c0, MarsClock c1, Simulation s, 
 			Mars m, MarsSurface ms, EarthClock e, UnitManager u, MissionManager mm) {
 		masterClock = c0;
 		marsClock = c1;

@@ -1287,7 +1287,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param sf {@link SurfaceFeatures}
 	 * @param m {@link MissionManager}
 	 */
-	public static void setInstances(HistoricalEventManager e, RelationshipManager r, 
+	public static void initializeInstances(HistoricalEventManager e, RelationshipManager r, 
 			UnitManager u, ScientificStudyManager s, SurfaceFeatures sf, MissionManager m) {
 		sim = Simulation.instance();
 		eventManager = e;

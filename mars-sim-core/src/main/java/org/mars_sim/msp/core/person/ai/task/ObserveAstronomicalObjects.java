@@ -284,8 +284,22 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			endTask();
 		}
 
-		// Check if research in study is completed.
 		boolean isPrimary = study.getPrimaryResearcher().equals(person);
+
+		if (isDone()) {
+			return time;
+		}
+
+		// Add research work time to study.
+		double observingTime = getEffectiveObservingTime(time);
+		
+		if (isPrimary) {
+			study.addPrimaryResearchWorkTime(observingTime);
+		} else {
+			study.addCollaborativeResearchWorkTime(person, observingTime);
+		}
+
+		// Check if research in study is completed.
 		if (isPrimary) {
 			if (study.isPrimaryResearchCompleted()) {
 				LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
@@ -303,19 +317,6 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 				endTask();
 			}
 		}
-
-		if (isDone()) {
-			return time;
-		}
-
-		// Add research work time to study.
-		double observingTime = getEffectiveObservingTime(time);
-		if (isPrimary) {
-			study.addPrimaryResearchWorkTime(observingTime);
-		} else {
-			study.addCollaborativeResearchWorkTime(person, observingTime);
-		}
-
 		// Add experience
 		addExperience(observingTime);
 

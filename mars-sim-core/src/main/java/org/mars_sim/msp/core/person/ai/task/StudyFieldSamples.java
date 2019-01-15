@@ -482,27 +482,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 
 		// Check if research in study is completed.
 		boolean isPrimary = study.getPrimaryResearcher().equals(person);
-		if (isPrimary) {
-			if (study.isPrimaryResearchCompleted()) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " just spent "
-								+ Math.round(study.getPrimaryResearchWorkTimeCompleted() * 10.0) / 10.0
-								+ " millisols in studying the field samples " + " for a primary research study in "
-								+ study.getScience().getName() + " in "
-								+ person.getLocationTag().getImmediateLocation());
-				endTask();
-			}
-		} else {
-			if (study.isCollaborativeResearchCompleted(person)) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " just spent "
-								+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) * 10.0) / 10.0
-								+ " millisols in studying the field samples "
-								+ " for a collaborative research study in " + study.getScience().getName() + " in "
-								+ person.getLocationTag().getImmediateLocation());
-				endTask();
-			}
-		}
+
 
 		// Check if person is in a moving rover.
 		if (inMovingRover(person)) {
@@ -521,6 +501,28 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 			study.addCollaborativeResearchWorkTime(person, researchTime);
 		}
 
+		if (isPrimary) {
+			if (study.isPrimaryResearchCompleted()) {
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " just spent "
+								+ Math.round(study.getPrimaryResearchWorkTimeCompleted() * 10.0) / 10.0
+								+ " millisols in studying the field samples for a primary research study in "
+								+ study.getScience().getName() + " in "
+								+ person.getLocationTag().getImmediateLocation());
+				endTask();
+			}
+		} else {
+			if (study.isCollaborativeResearchCompleted(person)) {
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " just spent "
+								+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) * 10.0) / 10.0
+								+ " millisols in studying the field samples for a collaborative research study in " 
+								+ study.getScience().getName() + " in "
+								+ person.getLocationTag().getImmediateLocation());
+				endTask();
+			}
+		}
+		
 		// If areology science, improve explored site mineral concentration estimates.
 		if (ScienceType.AREOLOGY == science)
 			improveMineralConcentrationEstimates(time);
@@ -605,7 +607,8 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 				// Add to site mineral concentration estimation improvement number.
 				site.addEstimationImprovement();
 				LogConsolidated.log(Level.FINE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-						+ person.getName() + " was studying field samples at " + site.getLocation().getFormattedString() + ". Estimation Improvement: "
+						+ person.getName() + " was studying field samples at " + site.getLocation().getFormattedString() 
+						+ ". Estimation Improvement: "
 						+ site.getNumEstimationImprovement() + ".");
 //				logger.fine("Explored site " + site.getLocation().getFormattedString() + " estimation improvement: "
 //						+ site.getNumEstimationImprovement() + " from studying field samples");

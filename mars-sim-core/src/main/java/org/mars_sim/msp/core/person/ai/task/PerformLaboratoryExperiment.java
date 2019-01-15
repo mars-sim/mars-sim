@@ -476,30 +476,7 @@ implements ResearchScientificStudy, Serializable {
             endTask();
         }
 
-        // Check if research in study is completed.
-        boolean isPrimary = study.getPrimaryResearcher().equals(person);
-        if (isPrimary) {
-            if (study.isPrimaryResearchCompleted()) {
-    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-    					+ person.getName() + " just spent " 
-    					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
-    					+ " millisols in performing lab experiments " 
-    					+ " for a primary research study in " + study.getScience().getName() 
-    					+ " in " + person.getLocationTag().getImmediateLocation());	
-                endTask();
-            }
-        }
-        else {
-            if (study.isCollaborativeResearchCompleted(person)) {
-    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-    					+ person.getName() + " just spent " 
-    					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
-    					+ " millisols in performing lab experiments " 
-    					+ " for a collaborative research study in " + study.getScience().getName() 
-    					+ " in " + person.getLocationTag().getImmediateLocation());	           		
-                endTask();
-            }
-        }
+
 
         // Check if person is in a moving rover.
         if (inMovingRover(person)) {
@@ -512,6 +489,7 @@ implements ResearchScientificStudy, Serializable {
 
         // Add research work time to study.
         double researchTime = getEffectiveResearchTime(time);
+        boolean isPrimary = study.getPrimaryResearcher().equals(person);
         if (isPrimary) {
             study.addPrimaryResearchWorkTime(researchTime);
         }
@@ -519,6 +497,29 @@ implements ResearchScientificStudy, Serializable {
             study.addCollaborativeResearchWorkTime(person, researchTime);
         }
 
+        // Check if research in study is completed.
+        if (isPrimary) {
+            if (study.isPrimaryResearchCompleted()) {
+    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    					+ person.getName() + " just spent " 
+    					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
+    					+ " millisols in performing primary lab experiments" 
+    					+ " in " + study.getScience().getName() 
+    					+ " in " + person.getLocationTag().getImmediateLocation());	
+                endTask();
+            }
+        }
+        else {
+            if (study.isCollaborativeResearchCompleted(person)) {
+    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    					+ person.getName() + " just spent " 
+    					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
+    					+ " millisols in performing collaborative lab experiments" 
+    					+ " in " + study.getScience().getName() 
+    					+ " in " + person.getLocationTag().getImmediateLocation());	           		
+                endTask();
+            }
+        }
         // Add experience
         addExperience(researchTime);
 

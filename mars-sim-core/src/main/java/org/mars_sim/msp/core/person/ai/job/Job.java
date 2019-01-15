@@ -59,8 +59,9 @@ public abstract class Job implements Serializable {
 	/** List of missions to be joined by a person with this job. */
 	protected List<Class<?>> jobMissionJoins;
 
-	public static MissionManager missionManager = Simulation.instance().getMissionManager();
-	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
+	private static Simulation sim = Simulation.instance();
+	public static MissionManager missionManager = sim.getMissionManager();
+	protected static UnitManager unitManager = sim.getUnitManager();
 	
 	/**
 	 * Constructor.

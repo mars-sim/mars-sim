@@ -103,8 +103,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	private Map<Integer, ScienceType> collaborativeResearchers;
 	private Map<Integer, Boolean> invitedResearchers;
 	
-	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	private static Simulation sim = Simulation.instance();
+	private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
+	private static UnitManager unitManager = sim.getUnitManager();
 
 	
 	/**

@@ -162,16 +162,7 @@ implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double proposingPhase(double time) {
-        
-    	if (study.isProposalCompleted()){
-   			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-					+ person.getName() + " just finished writing a study proposal in " 
-   					+ study.getScience().getName() 
-					+ " in " + person.getLocationTag().getImmediateLocation());	
-            endTask();
-        }
-    		
-    		
+        			
         if (!study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
             endTask();
         }
@@ -192,10 +183,22 @@ implements Serializable {
         
         study.addProposalWorkTime(workTime);
         
+        checkDone();
+        
         // Add experience
         addExperience(time);
         
         return 0D;
+    }
+    
+    private void checkDone() {
+    	if (study.isProposalCompleted()){
+   			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+					+ person.getName() + " just finished writing a study proposal in " 
+   					+ study.getScience().getName() 
+					+ " in " + person.getLocationTag().getImmediateLocation());	
+            endTask();
+        }
     }
     
     @Override

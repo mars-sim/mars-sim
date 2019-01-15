@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -45,6 +47,9 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(PerformLaboratoryResearch.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			 logger.getName().length());
+	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.performLaboratoryResearch"); //$NON-NLS-1$
 
@@ -445,16 +450,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 
 		// Check if research in study is completed.
 		boolean isPrimary = study.getPrimaryResearcher().equals(person);
-		if (isPrimary) {
-			if (study.isPrimaryResearchCompleted()) {
-				endTask();
-			}
-		} else {
-			if (study.isCollaborativeResearchCompleted(person)) {
-				endTask();
-			}
-		}
-
+		
 		// Check if person is in a moving rover.
 		if (inMovingRover(person)) {
 			endTask();
@@ -470,6 +466,28 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 			study.addPrimaryResearchWorkTime(researchTime);
 		} else {
 			study.addCollaborativeResearchWorkTime(person, researchTime);
+		}
+
+		if (isPrimary) {
+			if (study.isPrimaryResearchCompleted()) {
+    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    					+ person.getName() + " just spent " 
+    					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
+    					+ " millisols in performing primary lab research" 
+    					+ " in " + study.getScience().getName() 
+    					+ " in " + person.getLocationTag().getImmediateLocation());	
+				endTask();
+			}
+		} else {
+			if (study.isCollaborativeResearchCompleted(person)) {
+	   			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    					+ person.getName() + " just spent " 
+    					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
+    					+ " millisols in performing collaborative lab research" 
+    					+ " in " + study.getScience().getName() 
+    					+ " in " + person.getLocationTag().getImmediateLocation());	   
+				endTask();
+			}
 		}
 
 		// Add experience

@@ -28,8 +28,9 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  */
 public class ScientificStudyUtil {
 
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-	private static RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+	private static Simulation sim = Simulation.instance();
+	private static UnitManager unitManager = sim.getUnitManager();
+	private static RelationshipManager relationshipManager = sim.getRelationshipManager();
     
 	/**
 	 * Private constructor for utility class.

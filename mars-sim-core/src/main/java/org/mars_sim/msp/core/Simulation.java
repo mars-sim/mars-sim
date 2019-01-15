@@ -418,13 +418,16 @@ public class Simulation implements ClockListener, Serializable {
 		scientificStudyManager = new ScientificStudyManager();
 		transportManager = new TransportManager();
 
-
 		// Initialize meta tasks
 		new MetaTaskUtil();
+		
+		// Create marsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();
 		
-		// Initialize instances
+		// Set instances for logging
 		LogConsolidated.initializeInstances(marsClock, masterClock.getEarthClock());
+
+		// Initialize instances prior to UnitManager initiatiation		
 		MalfunctionFactory.setMarsClock(marsClock);
 		MissionManager.setMarsClock(marsClock);
 		MalfunctionManager.initializeInstances(masterClock, marsClock);
@@ -433,12 +436,16 @@ public class Simulation implements ClockListener, Serializable {
 		mars.initializeTransientData();
 		mars.getOrbitInfo().initializeTransientData();
 		mars.getWeather().initializeTransientData();
+		
+		// Set instance for Inventory
 		Inventory.initializeInstances(mars.getMarsSurface());
-		Mission.initializeInstances();
-		Unit.setInstances(masterClock, marsClock, this, mars, mars.getMarsSurface(), masterClock.getEarthClock(), unitManager, missionManager);
+				
+		// Set instances for classes that extend Unit and Task and Mission
+		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, mars.getSurfaceFeatures(), missionManager);
+		Task.initializeInstances(eventManager, relationshipManager, unitManager, scientificStudyManager, mars.getSurfaceFeatures(), missionManager);
+		Unit.initializeInstances(masterClock, marsClock, this, mars, mars.getMarsSurface(), masterClock.getEarthClock(), unitManager, missionManager);		
 		
 		ut = masterClock.getUpTimer();
-		
 
 		logger.config("Done initializing intransient data.");
 	}
@@ -901,7 +908,7 @@ public class Simulation implements ClockListener, Serializable {
 		Inventory.initializeInstances(marsSurface);
 		Robot.setInstances();
 		Rover.setInstances(pc);					
-		Unit.setInstances(masterClock, marsClock, this, mars, marsSurface, earthClock, unitManager, missionManager);
+		Unit.initializeInstances(masterClock, marsClock, this, mars, marsSurface, earthClock, unitManager, missionManager);		
 		Vehicle.setInstances();				//  vehicleconfig 
 		SalvageValues.initializeInstances(unitManager);
 //		System.out.println("Done with Unit Object instances");
@@ -953,8 +960,8 @@ public class Simulation implements ClockListener, Serializable {
 		Relax.setInstances(marsClock);
 		ReviewMissionPlan.setInstances(relationshipManager, missionManager);
 		Sleep.setInstances(masterClock, marsClock);
-		Task.setInstances(eventManager, relationshipManager, unitManager, scientificStudyManager, surface, missionManager);
 		Walk.setInstances(unitManager);	
+		Task.initializeInstances(eventManager, relationshipManager, unitManager, scientificStudyManager, surface, missionManager);
 
 //		System.out.println("Done with Task instances");
 		
@@ -964,7 +971,7 @@ public class Simulation implements ClockListener, Serializable {
 		CollectIceMeta.setInstances(missionManager);
 		
 		// Re-initialize Mission related class
-		Mission.justReloaded(marsClock, eventManager, missionManager, surface, pc, unitManager, scientificStudyManager);
+		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, surface, missionManager);
 //		RoverMission.justReloaded(eventManager);  // eventManager
 //		VehicleMission.justReloaded(missionManager); // missionmgr
 //		RescueSalvageVehicle.justReloaded(eventManager);  // eventManager

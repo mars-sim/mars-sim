@@ -1361,31 +1361,27 @@ public abstract class Mission implements Serializable {
 		return getType() + " " + MissionManager.getMissionDesignationString(p.getAssociatedSettlement().getName());
 	}
 	
-	public static void initializeInstances() {
-		unitManager = sim.getUnitManager();
-		eventManager = sim.getEventManager();
-		missionManager = sim.getMissionManager();
-		scientificManager = sim.getScientificStudyManager();
-		surface = sim.getMars().getSurfaceFeatures();	
-		personConfig = SimulationConfig.instance().getPersonConfiguration();
-		marsClock = sim.getMasterClock().getMarsClock();
-	}
-	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
-	 * @param {{@link HistoricalEventManager}
-	 * @param {{@link MissionManager}
+	 * @param si {@link Simulation}
+	 * @param c {@link MarsClock}
+	 * @param e {@link HistoricalEventManager}
+	 * @param u {@link UnitManager}
+	 * @param s {@link ScientificStudyManager}
+	 * @param sf {@link SurfaceFeatures}
+	 * @param m {@link MissionManager}
 	 */
-	public static void justReloaded(MarsClock c, HistoricalEventManager e, MissionManager m, SurfaceFeatures s, PersonConfig pc, UnitManager u, ScientificStudyManager ss) {
-		sim = Simulation.instance();
-		marsClock = c;
+	public static void initializeInstances(Simulation si, MarsClock c, HistoricalEventManager e, 
+			UnitManager u, ScientificStudyManager s, SurfaceFeatures sf, MissionManager m) {
+		sim = si;
+		marsClock = c;		
 		eventManager = e;
-		missionManager = m;		
-		scientificManager = ss;		
-		surface = s;		
-		personConfig = pc;
 		unitManager = u;
+		scientificManager = s;
+		surface = sf;
+		missionManager = m;
+		personConfig = SimulationConfig.instance().getPersonConfiguration();
 	}
 	
 	/**

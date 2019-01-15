@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.person.ai.job.Technician;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
@@ -1250,7 +1251,7 @@ public class UnitManager implements Serializable {
 				Settlement.assignBestCandidate(settlement, "Engineer");
 			}
 				
-			int numTechs = JobManager.numJobs(Engineer.class, settlement);
+			int numTechs = JobManager.numJobs(Technician.class, settlement);
 	
 			if (numTechs == 0) {
 				Settlement.assignBestCandidate(settlement, "Technician");
