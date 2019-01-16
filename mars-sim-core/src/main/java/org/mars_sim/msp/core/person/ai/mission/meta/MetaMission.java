@@ -6,9 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * Interface for a meta mission, responsible for determining mission probability
@@ -16,6 +19,9 @@ import org.mars_sim.msp.core.robot.Robot;
  */
 public interface MetaMission {
 
+    static MissionManager missionManager = Simulation.instance().getMissionManager();
+    static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	
 	/**
 	 * Gets the associated mission name.
 	 * 

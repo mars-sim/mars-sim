@@ -966,9 +966,10 @@ public class Simulation implements ClockListener, Serializable {
 //		System.out.println("Done with Task instances");
 		
 		// Re-initialize MetaMission class
-		BuildingConstructionMissionMeta.setInstances(marsClock);
-		CollectRegolithMeta.setInstances(missionManager);
-		CollectIceMeta.setInstances(missionManager);
+//		BuildingConstructionMissionMeta.setInstances(marsClock);
+//		CollectRegolithMeta.setInstances(missionManager);
+//		CollectIceMeta.setInstances(missionManager);
+//		MetaMission.setInstances(marsClock, missionManager);
 		
 		// Re-initialize Mission related class
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, surface, missionManager);

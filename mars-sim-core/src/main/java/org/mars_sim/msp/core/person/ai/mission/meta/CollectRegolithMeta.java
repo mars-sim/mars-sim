@@ -34,7 +34,7 @@ public class CollectRegolithMeta implements MetaMission {
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 1;
 
-    private static MissionManager missionManager = Simulation.instance().getMissionManager();
+//    private static MissionManager missionManager = Simulation.instance().getMissionManager();
     
 	@Override
 	public String getName() {
@@ -85,8 +85,8 @@ public class CollectRegolithMeta implements MetaMission {
         
 		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 		
-		if (missionManager == null)
-			missionManager = Simulation.instance().getMissionManager();
+//		if (missionManager == null)
+//			missionManager = Simulation.instance().getMissionManager();
 		
 		int numThisMission = missionManager.numParticularMissions(NAME, settlement);
 		 
@@ -172,12 +172,12 @@ public class CollectRegolithMeta implements MetaMission {
 		return 0;
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {{@link MissionManager}
-	 */
-	public static void setInstances(MissionManager m) {
-		missionManager = m;
-	}
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 * 
+//	 * @param {{@link MissionManager}
+//	 */
+//	public static void setInstances(MissionManager m) {
+//		missionManager = m;
+//	}
 }

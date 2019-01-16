@@ -38,7 +38,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
     /** default logger. */
     private static Logger logger = Logger.getLogger(MiningMeta.class.getName());
 
-    private static MarsClock marsClock;
+//    private static MarsClock marsClock;
     
     @Override
     public String getName() {
@@ -55,9 +55,9 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 
         double result = 0D;
         
-        if (marsClock == null)
-        	marsClock = Simulation.instance().getMasterClock().getMarsClock();
-//        
+//        if (marsClock == null)
+//        	marsClock = Simulation.instance().getMasterClock().getMarsClock();
+////        
         // No construction until after the x sols of the simulation.
         if (marsClock.getMissionSol() < BuildingConstructionMission.FIRST_AVAILABLE_SOL)
         	return 0;
@@ -151,8 +151,8 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 
         double result = 0D;
         
-        if (marsClock == null)
-        	marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//        if (marsClock == null)
+//        	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 //        
         // No construction until after the x sols of the simulation.
         if (marsClock.getMissionSol() < BuildingConstructionMission.FIRST_AVAILABLE_SOL)
@@ -201,8 +201,8 @@ public class BuildingConstructionMissionMeta implements MetaMission {
         return 0;
     }
 	
-	public static void setInstances(MarsClock c) {
-		marsClock = c;
-	}
+//	public static void setInstances(MarsClock c) {
+//		marsClock = c;
+//	}
 	
 }

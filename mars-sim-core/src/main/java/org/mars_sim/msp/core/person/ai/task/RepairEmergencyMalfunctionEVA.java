@@ -158,11 +158,13 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 					result = true;
 				}
 			} else if (entity instanceof Building) {
-				// Perform EVA emergency repair on uninhabitable buildings.
-				Building building = (Building) entity;
-				if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-					result = true;
-				}
+				// Note: a building always has external structures that need EVA repair
+				result = true;			
+//				// Requires EVA repair on uninhabitable buildings.
+//				Building building = (Building) entity;
+//				if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+//					result = true;
+//				}
 			}
 		}
 

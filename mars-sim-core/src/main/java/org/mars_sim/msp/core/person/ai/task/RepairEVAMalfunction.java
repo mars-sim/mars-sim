@@ -170,12 +170,16 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			if (outsideVehicle && personNotInVehicle) {
 				result = true;
 			}
-		} else if (entity instanceof Building) {
-			// Requires EVA repair on uninhabitable buildings.
-			Building building = (Building) entity;
-			if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-				result = true;
-			}
+		} 
+		
+		else if (entity instanceof Building) {
+			// Note: a building always has external structures that need EVA repair
+			result = true;			
+//			// Requires EVA repair on uninhabitable buildings.
+//			Building building = (Building) entity;
+//			if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+//				result = true;
+//			}
 		}
 
 		return result;
@@ -193,11 +197,13 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 				result = true;
 			}
 		} else if (entity instanceof Building) {
-			// Requires EVA repair on uninhabitable buildings.
-			Building building = (Building) entity;
-			if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-				result = true;
-			}
+			// Note: a building always has external structures that need EVA repair
+			result = true;			
+//			// Requires EVA repair on uninhabitable buildings.
+//			Building building = (Building) entity;
+//			if (!building.hasFunction(FunctionType.LIFE_SUPPORT)) {
+//				result = true;
+//			}
 		}
 
 		return result;
@@ -421,17 +427,17 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		boolean finishedRepair = false;
 		if (isEVAMalfunction) {
 			if (malfunction.isEVARepairDone()) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " had completed the EVA Repair of " + malfunction.getName() + " in "+ entity + ".");
+//				LogConsolidated.log(Level.INFO, 0, sourceName,
+//						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//						+ " had completed the EVA Repair of " + malfunction.getName() + " in "+ entity + ".");
 				finishedRepair = true;
 			}
 		} 
 		
 		else if (malfunction.isGeneralRepairDone()) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " had completed the General Repair of " + malfunction.getName() + " in "+ entity + ".");
+//				LogConsolidated.log(Level.INFO, 0, sourceName,
+//						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//						+ " had completed the General Repair of " + malfunction.getName() + " in "+ entity + ".");
 				finishedRepair = true;
 		}
 

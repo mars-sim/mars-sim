@@ -33,7 +33,7 @@ public class CollectIceMeta implements MetaMission {
 
 	private static final double VALUE = 500D;
 
-    private static MissionManager missionManager = Simulation.instance().getMissionManager();
+//    private static MissionManager missionManager = Simulation.instance().getMissionManager();
     
 	@Override
 	public String getName() {
@@ -82,8 +82,8 @@ public class CollectIceMeta implements MetaMission {
         
 		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 		
-		if (missionManager == null)
-			missionManager = Simulation.instance().getMissionManager();
+//		if (missionManager == null)
+//			missionManager = Simulation.instance().getMissionManager();
 		
 		int numThisMission = missionManager.numParticularMissions(NAME, settlement);
 		
@@ -176,12 +176,12 @@ public class CollectIceMeta implements MetaMission {
 		return 0;
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {{@link MissionManager}
-	 */
-	public static void setInstances(MissionManager m) {
-		missionManager = m;
-	}
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 * 
+//	 * @param {{@link MissionManager}
+//	 */
+//	public static void setInstances(MissionManager m) {
+//		missionManager = m;
+//	}
 }
