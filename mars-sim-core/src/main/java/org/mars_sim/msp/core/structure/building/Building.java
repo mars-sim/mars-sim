@@ -1320,18 +1320,22 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		if (msolCache != msol) {
 			msolCache = msol;
 
-			// Determine if a meteorite impact will occur within the new sol
-			checkForMeteoriteImpact();
-
+			// If powered up, active time passing.
+			if (powerModeCache == PowerMode.FULL_POWER)
+				malfunctionManager.activeTimePassing(time);
+			
+			// Update malfunction manager.
+			malfunctionManager.timePassing(time); 
+			
+			int solElapsed = marsClock.getMissionSol();
+			if (solCache != solElapsed) {
+				solCache = solElapsed;
+				// Determine if a meteorite impact will occur within the new sol
+				checkForMeteoriteImpact();
+			}
 		}
 
-		// Update malfunction manager.
-		malfunctionManager.timePassing(time); 
-		
-		// If powered up, active time passing.
-		if (powerModeCache == PowerMode.FULL_POWER)
-			malfunctionManager.activeTimePassing(time);
-		
+
 		inTransportMode = false;
 	}
 
@@ -1348,27 +1352,29 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 */
 	public void checkForMeteoriteImpact() {
 		// check for the passing of each day
-		int solElapsed = marsClock.getMissionSol();
+
 		int moment_of_impact = 0;
 
 		Settlement settlement = unitManager.getSettlementByID(settlementID);
 		BuildingManager manager = settlement.getBuildingManager();
-
-		if (solCache != solElapsed) {
-			solCache = solElapsed;
+		
+//		int solElapsed = marsClock.getMissionSol();
+//		if (solCache != solElapsed) {
+//			solCache = solElapsed;
 					
-			// Assume a gauissan profile
-			double probability = floorArea * manager.getProbabilityOfImpactPerSQMPerSol() * (.5 + RandomUtil.getGaussianDouble());
+			// if assuming a gauissan profile, p = desiredMean + RandomUtil.getGaussianDouble() * desiredStandardDeviation
+			// Note: Will have 70% probability within the first desiredStandardDeviation 
+			double probability = floorArea * manager.getProbabilityOfImpactPerSQMPerSol();
+//	 		logger.info(nickName + " : " + Math.round(probability*1_000_000D)/1_000_000D + " %.");
 			// probability is in percentage unit between 0% and 100%
 			if (probability > 0 && RandomUtil.getRandomDouble(100D) <= probability) {
-				// 		logger.info("Sensors just picked up the new probability
-				// 		of a meteorite impact for " + nickName
-				// 		+ " in " + settlement + " to be " + Math.round(probability*100D)/100D + " %.");
+//				 		logger.info("Sensors just picked up the new probability of a meteorite impact for " + nickName
+//				 		+ " in " + settlement + " to be " + Math.round(probability*100D)/100D + " %.");
 				isImpactImminent = true;
 				// set a time for the impact to happen any time between 0 and 1000 milisols
 				moment_of_impact = RandomUtil.getRandomInt(1000);
 			}
-		}
+//		}
 
 		if (isImpactImminent) {
 			int now = marsClock.getMillisolInt();
@@ -1376,8 +1382,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
 			int delta = (int) Math.sqrt(Math.sqrt(masterClock.getTimeRatio()));
 			if (now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
-				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-						"[" + settlement + "] A meteorite impact over " + nickName + " is imminent.", null);
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + settlement + "] A meteorite impact over " + nickName + " is imminent.");
 				// reset the boolean immmediately. This is for keeping track of whether the
 				// impact has occurred at msols
 				isImpactImminent = false;
