@@ -272,7 +272,7 @@ public class MenuApp {
         build.setTranslateX(15);
         build.setTranslateY(HEIGHT - 10);
 
-        MenuTitle year = new MenuTitle("All Rights Reserved, 2018", 14, Color.DARKGOLDENROD, false);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
+        MenuTitle year = new MenuTitle("All Rights Reserved, 2019", 14, Color.DARKGOLDENROD, false);//DARKORANGE);//.DARKGOLDENROD);//.LIGHTGRAY);//.GRAY); BLACK);//.DARKGRAY);/
         year.setTranslateX(WIDTH - year.getTitleWidth() - 10);
         year.setTranslateY(HEIGHT - 10);
      

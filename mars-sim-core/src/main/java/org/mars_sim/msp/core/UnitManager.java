@@ -18,6 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
@@ -89,12 +90,16 @@ public class UnitManager implements Serializable {
 	public static boolean isCommanderMode = false;	
 	
 	// Data members
+	private boolean justStarting = true;
+	
 	private int solCache = 0;
 
+	private int totalNumUnits = 0;
+	
 	public String originalBuild;
 	
-	/** A list of all units. */
-	private List<Unit> units;
+	private MarsSurface marsSurface;
+	
 	/** A map of all units with its unit identifier. */
 	private volatile Map<Integer, Unit> lookupUnit;
 	/** A map of settlements with its unit identifier. */
@@ -117,6 +122,8 @@ public class UnitManager implements Serializable {
 	private transient List<UnitManagerListener> listeners;
 
 	// Static members
+	/** A list of all units. */
+	private static List<Unit> units;
 	/** List of possible settlement names. */
 	private static List<String> settlementNames;
 	/** List of possible vehicle names. */
@@ -146,7 +153,9 @@ public class UnitManager implements Serializable {
 
 	private static List<String> countries;
 
-//	private static Settlement firstSettlement;
+	private static SimulationConfig simulationConfig = SimulationConfig.instance();
+	private static Simulation sim = Simulation.instance();
+	
 	private static PersonConfig personConfig;
 	private static SettlementConfig settlementConfig;
 	private static VehicleConfig vehicleConfig;
@@ -157,11 +166,7 @@ public class UnitManager implements Serializable {
 	private static MalfunctionFactory factory;
 	
 	private static MarsClock marsClock;
-	private static MarsSurface marsSurface;
-	
-	private static SimulationConfig simulationConfig = SimulationConfig.instance();
-	private static Simulation sim = Simulation.instance();
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -175,7 +180,7 @@ public class UnitManager implements Serializable {
 		lookupRobot = new HashMap<>();
 		lookupEquipment = new HashMap<>();
 		lookupVehicle = new HashMap<>();
-		units = new CopyOnWriteArrayList<>();//ConcurrentLinkedQueue<Unit>();
+//		units = new CopyOnWriteArrayList<>();//ConcurrentLinkedQueue<Unit>();
 		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		equipmentNumberMap = new HashMap<String, Integer>();
 		vehicleNumberMap = new HashMap<String, Integer>();
@@ -192,7 +197,7 @@ public class UnitManager implements Serializable {
 		// Add mars surface
 		marsSurface = sim.getMars().getMarsSurface();
 
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		marsClock = sim.getMasterClock().getMarsClock();
 
 	}
 
@@ -238,10 +243,11 @@ public class UnitManager implements Serializable {
 			createPreconfiguredPeople();
 			// Create more settlers to fill the settlement(s)
 			createInitialPeople();
-			
+			// Manually add job positions
 			tuneJobDeficit();
 		}
 
+		justStarting = false;
 	}
 
 	/**
@@ -447,8 +453,8 @@ public class UnitManager implements Serializable {
 	 * @param unit new unit to add.
 	 */
 	public void addUnit(Unit unit) {
-		if (!units.contains(unit)) {
-			units.add(unit);
+//		if (!units.contains(unit)) {
+//			units.add(unit);
 			
 			// Add the unit's id into its lookup maps
 			if (unit instanceof Settlement)
@@ -461,16 +467,23 @@ public class UnitManager implements Serializable {
 				addVehicleID((Vehicle)unit);
 			else if (unit instanceof Equipment)
 				addEquipmentID((Equipment)unit);
+			else if (unit instanceof MarsSurface)
+				marsSurface = (MarsSurface) unit;
 			else 
 				addUnitID(unit);
 
+			if (!justStarting) {
+				computeUnitNum();
+				computeUnits();
+			}
+			
 			Iterator<Unit> i = unit.getInventory().getContainedUnits().iterator();
 			while (i.hasNext()) {
 				addUnit(i.next());
 			}
 			// Fire unit manager event.
 			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
-		}
+//		}
 	}
 
 	/**
@@ -479,8 +492,8 @@ public class UnitManager implements Serializable {
 	 * @param unit the unit to remove.
 	 */
 	public void removeUnit(Unit unit) {
-		if (units.contains(unit)) {
-			units.remove(unit);
+//		if (units.contains(unit)) {
+//			units.remove(unit);
 
 			// Add the unit's id into its lookup maps
 			if (unit instanceof Settlement)
@@ -496,9 +509,14 @@ public class UnitManager implements Serializable {
 			else 
 				removeUnitID(unit);
 			
+			if (!justStarting) {
+				computeUnitNum();
+				computeUnits();
+			}
+
 			// Fire unit manager event.
 			fireUnitManagerUpdate(UnitManagerEventType.REMOVE_UNIT, unit);
-		}
+//		}
 	}
 
 	/**
@@ -1890,9 +1908,12 @@ public class UnitManager implements Serializable {
 				s.updateAllAssociatedPeople();
 				s.updateAllAssociatedRobots();
 			}
-
+						
 			justLoaded = false;
 		}
+
+		if (units == null)
+			computeUnits();
 
 		for (Unit u : units) {
 			u.timePassing(time);
@@ -2011,9 +2032,48 @@ public class UnitManager implements Serializable {
 	 * @return the total number of units
 	 */
 	public int getUnitNum() {
-		return units.size();
+		return totalNumUnits;
 	}
 
+	/**
+	 * The total number of units
+	 * 
+	 * @return the total number of units
+	 */
+	public int computeUnitNum() {
+		totalNumUnits = lookupUnit.size()
+				+ lookupSettlement.size()
+				+ lookupPerson.size()
+				+ lookupRobot.size()
+				+ lookupEquipment.size()
+				+ lookupVehicle.size();
+		return totalNumUnits;
+	}
+	
+	/**
+	 * Get all units in virtual Mars
+	 * 
+	 */
+	public void computeUnits() {
+		List<Unit> list = Stream.of(
+				lookupUnit.values(),
+				lookupSettlement.values(),
+				lookupPerson.values(),
+				lookupRobot.values(),
+				lookupEquipment.values(),
+				lookupVehicle.values()
+				)
+				.flatMap(Collection::stream).collect(Collectors.toList());		
+//		List<Unit> list = new ArrayList<>();
+//		list.addAll(lookupUnit.values());
+//		list.addAll(lookupSettlement.values());
+//		list.addAll(lookupPerson.values());
+//		list.addAll(lookupRobot.values());
+//		list.addAll(lookupEquipment.values());
+//		list.addAll(lookupVehicle.values());	
+		units = list;
+	}
+	
 	/**
 	 * Get all units in virtual Mars
 	 * 
@@ -2269,7 +2329,7 @@ public class UnitManager implements Serializable {
 	}
 	
 	public void setMarsSurface() {
-		Simulation.instance().getMars().setMarsSurface((MarsSurface)units.get(0));
+		sim.getMars().setMarsSurface(marsSurface);//(MarsSurface)units.get(0));
 	}
 	
 	
@@ -2277,12 +2337,12 @@ public class UnitManager implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		Iterator<Unit> i = units.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
-		units.clear();
-		units = null;
+//		Iterator<Unit> i = units.iterator();
+//		while (i.hasNext()) {
+//			i.next().destroy();
+//		}
+//		units.clear();
+//		units = null;
 		
 		lookupUnit = null;
 		lookupSettlement = null;

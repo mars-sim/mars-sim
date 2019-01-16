@@ -37,19 +37,18 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.InsidePathLocation;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.BuildingConnection;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Communication;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.EarthReturn;
 import org.mars_sim.msp.core.structure.building.function.Exercise;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.Function;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.Heating;
@@ -1357,24 +1356,19 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 		Settlement settlement = unitManager.getSettlementByID(settlementID);
 		BuildingManager manager = settlement.getBuildingManager();
-		
-//		int solElapsed = marsClock.getMissionSol();
-//		if (solCache != solElapsed) {
-//			solCache = solElapsed;
 					
-			// if assuming a gauissan profile, p = desiredMean + RandomUtil.getGaussianDouble() * desiredStandardDeviation
-			// Note: Will have 70% probability within the first desiredStandardDeviation 
-			double probability = floorArea * manager.getProbabilityOfImpactPerSQMPerSol();
+		// if assuming a gauissan profile, p = mean + RandomUtil.getGaussianDouble() * standardDeviation
+		// Note: Will have 70% of values will fall between mean +/- standardDeviation, i.e., within one std deviation
+		double probability = floorArea * manager.getProbabilityOfImpactPerSQMPerSol();
 //	 		logger.info(nickName + " : " + Math.round(probability*1_000_000D)/1_000_000D + " %.");
-			// probability is in percentage unit between 0% and 100%
-			if (probability > 0 && RandomUtil.getRandomDouble(100D) <= probability) {
+		// probability is in percentage unit between 0% and 100%
+		if (probability > 0 && RandomUtil.getRandomDouble(100D) <= probability) {
 //				 		logger.info("Sensors just picked up the new probability of a meteorite impact for " + nickName
 //				 		+ " in " + settlement + " to be " + Math.round(probability*100D)/100D + " %.");
-				isImpactImminent = true;
-				// set a time for the impact to happen any time between 0 and 1000 milisols
-				moment_of_impact = RandomUtil.getRandomInt(1000);
-			}
-//		}
+			isImpactImminent = true;
+			// set a time for the impact to happen any time between 0 and 1000 milisols
+			moment_of_impact = RandomUtil.getRandomInt(1000);
+		}
 
 		if (isImpactImminent) {
 			int now = marsClock.getMillisolInt();
@@ -1384,10 +1378,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			if (now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 						"[" + settlement + "] A meteorite impact over " + nickName + " is imminent.");
-				// reset the boolean immmediately. This is for keeping track of whether the
+				// Reset the boolean immmediately. This is for keeping track of whether the
 				// impact has occurred at msols
 				isImpactImminent = false;
-
 				// find the length this meteorite can penetrate
 				double penetrated_length = manager.getWallPenetration();
 
@@ -1499,10 +1492,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		heating.setHeatLoss(heat);
 	}
 
-	/*
-	 * @Override public String getShortLocationName() { return nickName + " in " +
-	 * getSettlement().getName(); //getLocationTag().getSettlementName(); }
-	 */
 	@Override
 	public String getImmediateLocation() {
 		return getLocationTag().getImmediateLocation();
@@ -1511,6 +1500,21 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	@Override
 	public String getLocale() {
 		return getLocationTag().getLocale();
+	}
+
+	@Override
+	public Building getBuildingLocation() {
+		return this;
+	}
+
+	@Override
+	public Settlement getAssociatedSettlement() {
+		return getSettlement(); 
+	}
+
+	@Override
+	public Unit getUnit() {
+		return this;
 	}
 
 	/**
@@ -1532,22 +1536,5 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		heatModeCache = null;
 		malfunctionManager.destroy();
 		malfunctionManager = null;
-		
 	}
-
-	@Override
-	public Building getBuildingLocation() {
-		return this;
-	}
-
-	@Override
-	public Settlement getAssociatedSettlement() {
-		return getSettlement(); 
-	}
-
-	@Override
-	public Unit getUnit() {
-		return this;
-	}
-
 }

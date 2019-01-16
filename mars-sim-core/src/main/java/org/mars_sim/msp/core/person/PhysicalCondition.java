@@ -292,7 +292,9 @@ public class PhysicalCondition implements Serializable {
 		
 		bodyMassDeviation = Math
 				.sqrt(person.getBaseMass() / Person.AVERAGE_WEIGHT * person.getHeight() / Person.AVERAGE_HEIGHT);
-
+		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
+		bodyMassDeviation = bodyMassDeviation + RandomUtil.getGaussianDouble() * bodyMassDeviation / 7D;
+		
 		// Note: must load static values such as h2o_consumption here
 		loadStaticValues();		
 		// Assume a person drinks 10 times a day, each time ~375 mL

@@ -440,9 +440,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// TODO: factor in country of origin.
 		// TODO: look for a gender-correlated curve
 
+		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Attempt to compute height with gaussian curve
-		double dad_height = AVERAGE_TALL_HEIGHT + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(22);
-		double mom_height = AVERAGE_SHORT_HEIGHT + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(15);
+		double dad_height = AVERAGE_TALL_HEIGHT + RandomUtil.getGaussianDouble() * AVERAGE_TALL_HEIGHT / 7D;//RandomUtil.getRandomInt(22);
+		double mom_height = AVERAGE_SHORT_HEIGHT + RandomUtil.getGaussianDouble() * AVERAGE_SHORT_HEIGHT / 10D;//RandomUtil.getRandomInt(15);
 
 		Gene dad_height_G = new Gene(this, ID, HEIGHT, true, dominant, null, dad_height);
 		paternal_chromosome.put(ID, dad_height_G);
@@ -476,9 +477,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// TODO: factor in country of origin.
 		// TODO: look for a gender-correlated curve
 
+		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Attempt to compute height with gaussian curve
-		double dad_weight = AVERAGE_HIGH_WEIGHT + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(10);
-		double mom_weight = AVERAGE_LOW_WEIGHT + RandomUtil.getGaussianDouble() * RandomUtil.getRandomInt(15);
+		double dad_weight = AVERAGE_HIGH_WEIGHT + RandomUtil.getGaussianDouble() * AVERAGE_HIGH_WEIGHT / 7D;//RandomUtil.getRandomInt(10);
+		double mom_weight = AVERAGE_LOW_WEIGHT + RandomUtil.getGaussianDouble() * AVERAGE_LOW_WEIGHT / 5D;//RandomUtil.getRandomInt(15);
 
 		Gene dad_weight_G = new Gene(this, ID, WEIGHT, true, dominant, null, dad_weight);
 		paternal_chromosome.put(ID, dad_weight_G);
