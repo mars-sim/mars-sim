@@ -39,9 +39,6 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.reviewMissionPlan"); //$NON-NLS-1$
 
-    public static MarsClock marsClock;
-	private static MissionManager missionManager;
-
     @Override
     public String getName() {
         return NAME;
@@ -65,7 +62,7 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
             double stress = condition.getStress();
             double hunger = condition.getHunger();
             
-            if (fatigue > 1000 || stress > 75 || hunger > 500)
+            if (fatigue > 1000 || stress > 75 || hunger > 750)
             	return 0;
             
         	//if (roleType == null)
@@ -77,9 +74,6 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 				|| (pop <= 8 && roleType == RoleType.RESOURCE_SPECIALIST)
 				|| ReviewMissionPlan.isRoleValid(roleType)) {
 
-                if (missionManager == null)
-                	missionManager = Simulation.instance().getMissionManager();
-                
                 List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
 
                 for (Mission m : missions) {
@@ -107,21 +101,19 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 	    							result -= 50D;;
 	    						}
 	    						
-	                    	result += 200D;                    	
+	                    	result += 300D;                    	
 	                    	// Add adjustment based on how many sol the request has since been submitted
-                            if (marsClock == null)
-                               marsClock = Simulation.instance().getMasterClock().getMarsClock();
                             // if the job assignment submitted date is > 1 sol
                             int sol = marsClock.getMissionSol();
                             int solRequest = m.getPlan().getMissionSol();
                             if (sol - solRequest == 1)
-                                result += 100D;
+                                result += 200D;
                             else if (sol - solRequest == 2)
-                                result += 2000D;
+                                result += 3000D;
                             else if (sol - solRequest == 3)
-                                result += 300D;
-                            else if (sol - solRequest > 3)
                                 result += 400D;
+                            else if (sol - solRequest > 3)
+                                result += 500D;
 	                    }
                 	}
                 }

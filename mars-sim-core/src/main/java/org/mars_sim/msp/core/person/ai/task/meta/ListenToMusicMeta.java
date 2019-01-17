@@ -117,7 +117,9 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
             if (result < 0) result = 0;
             
         }
-
+        
+        if (result < 0) result = 0;
+        
         return result;
     }
 

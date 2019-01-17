@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -396,6 +395,8 @@ public class UnitManager implements Serializable {
 	}
 
 	public void addPersonID(Person p) {
+		if (lookupPerson == null)
+			lookupPerson = new HashMap<>();
 		if (!lookupPerson.containsKey(p.getIdentifier()))
 			lookupPerson.put(p.getIdentifier(), p);
 	}
@@ -410,6 +411,8 @@ public class UnitManager implements Serializable {
 	}
 
 	public void addRobotID(Robot r) {
+		if (lookupRobot == null)
+			lookupRobot = new HashMap<>();
 		if (!lookupRobot.containsKey(r.getIdentifier()))
 			lookupRobot.put(r.getIdentifier(), r);
 	}
@@ -424,6 +427,8 @@ public class UnitManager implements Serializable {
 	}
 
 	public void addEquipmentID(Equipment e) {
+		if (lookupEquipment == null)
+			lookupEquipment = new HashMap<>();
 		if (!lookupEquipment.containsKey(e.getIdentifier()))
 			lookupEquipment.put(e.getIdentifier(), e);
 	}
@@ -438,6 +443,8 @@ public class UnitManager implements Serializable {
 	}
 
 	public void addVehicleID(Vehicle v) {
+		if (lookupVehicle == null)
+			lookupVehicle = new HashMap<>();
 		if (!lookupVehicle.containsKey(v.getIdentifier()))
 			lookupVehicle.put(v.getIdentifier(), v);
 	}
@@ -1907,6 +1914,7 @@ public class UnitManager implements Serializable {
 			for (Settlement s : c) {
 				s.updateAllAssociatedPeople();
 				s.updateAllAssociatedRobots();
+				s.updateAllAssociatedVehicles();
 			}
 						
 			justLoaded = false;

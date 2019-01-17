@@ -1521,13 +1521,13 @@ public class ChatUtils {
 			if (change) {
 //        	if (Input.change.equalsIgnoreCase("y")) {   		      		
         		double range = sim.getTerm().getTextIO().newDoubleInputReader()
-        				.withMinVal(50.0).withMaxVal(2000.0).read("Enter a number between 50 and 2000 [km]");
+        				.withMinVal(50.0).withMaxVal(4000.0).read("Enter a number between 50 and 3000 [km]");
 //        		handler.addIntTask("range", "Enter a number between 50 and 2000 (km)" , false)
 //        		.withInputReaderConfigurator(r -> r.withMinVal(50).withMaxVal(2000));
 //    	        handler.executeOneTask();
     	        String s = "";
     	        
-    	        if (range >= 50.0 && range <= 2000.0) {
+    	        if (range >= 50.0 && range <= 4000.0) {
 //    	        if (Input.range > 49 && Input.range < 2001) {
 
     				settlementCache.setMaxMssionRange(range);
@@ -2340,7 +2340,7 @@ public class ChatUtils {
 
 		else if (text.equalsIgnoreCase("vehicle") || text.equalsIgnoreCase("rover")) {
 
-			questionText = YOU_PROMPT + "What are the vehicles in the settlement ? ";
+			questionText = YOU_PROMPT + "What are the status of the vehicles in the settlement ? ";
 			responseText.append(System.lineSeparator());
 			
 			Collection<Vehicle> list = settlementCache.getAllAssociatedVehicles();

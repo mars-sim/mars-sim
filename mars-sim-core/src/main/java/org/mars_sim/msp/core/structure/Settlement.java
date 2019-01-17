@@ -47,7 +47,7 @@ import org.mars_sim.msp.core.person.ai.job.Engineer;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.job.Technician;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.BuildingConstructionMissionMeta;
@@ -74,8 +74,8 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.EVA;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
@@ -170,6 +170,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public transient boolean justReloadedPeople = false;
 	/* Flag showing if the bots list has been reloaded. */
 	public transient boolean justReloadedRobots = false;
+	/* Flag showing if the vehicle list has been reloaded. */
+	public transient boolean justReloadedVehicles = false;
 	/** The Flag showing if the settlement has been exposed to the last radiation event. */
 	private boolean[] exposed = { false, false, false };
 	
@@ -208,6 +210,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private int numCitizens;
 	/**  Numbers of associated bots in this settlement. */
 	private int numBots;
+	/**  Numbers of associated vehicles in this settlement. */
+	private int numVehicles;
 	
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
 	public double greyWaterFilteringRate = 1;
@@ -240,7 +244,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/** The settlement's outside temperature. */
 	private double outside_temperature;
 	/** The maximum distance the rovers are allowed to travel. */
-	private double maxMssionRange = 500;
+	private double maxMssionRange = 3000;
 
 	/** The settlement sponsor. */
 	private String sponsor;
@@ -302,6 +306,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private Collection<Person> allAssociatedPeople = new ConcurrentLinkedQueue<Person>();
 	/** The settlement's list of robots. */
 	private Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
+	/** The settlement's list of vehicles. */
+	private Collection<Vehicle> allAssociatedVehicles = new ConcurrentLinkedQueue<Vehicle>();
 	/** The settlement's map of adjacent buildings. */
 	private Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
 	/** The settlement's water consumption in kitchen when preparing/cleaning meal and dessert. */
@@ -836,24 +842,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 //			count++;
 //		}
 //		return robotArray;
-	}
-
-	/**
-	 * Gets a collection of vehicles parked or garaged at the settlement.
-	 *
-	 * @return Collection of parked vehicles
-	 */
-	public Collection<Vehicle> getParkedVehicles() {
-		return CollectionUtils.getVehicle(getInventory().getContainedUnits());
-	}
-
-	/**
-	 * Gets the number of vehicles parked or garaged at the settlement.
-	 * 
-	 * @return parked vehicles number
-	 */
-	public int getParkedVehicleNum() {
-		return getParkedVehicles().size();
 	}
 
 	/**
@@ -2104,7 +2092,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public Collection<Person> updateAllAssociatedPeople() {
 		// using java 8 stream
-		Collection<Person> result = unitManager.getPeople().stream().filter(p -> p.getAssociatedSettlement() == this)
+		Collection<Person> result = unitManager.getPeople()
+				.stream()
+				.filter(p -> p.getAssociatedSettlement() == this)
 				.collect(Collectors.toList());
 
 		allAssociatedPeople = result;
@@ -2116,14 +2106,20 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	public void addPerson(Person p) {
 		allAssociatedPeople.add(p);
+		// Set the flag to false so that it will update next time 
+		// when getAllAssociatedPeople() is called.
+		justReloadedPeople = false;
 		// Call to update people list
-		updateAllAssociatedPeople();
+//		updateAllAssociatedPeople();
 	}
 
 	public void removePerson(Person p) {
 		allAssociatedPeople.remove(p);
+		// Set the flag to false so that it will update next time 
+		// when getAllAssociatedPeople() is called.
+		justReloadedPeople = false;
 		// Call to update people list
-		updateAllAssociatedPeople();
+//		updateAllAssociatedPeople();
 	}
 
 	public void addRobot(Robot r) {
@@ -2271,10 +2267,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public List<Vehicle> returnVehicleList(String aName) {
 		List<Vehicle> vList = new ArrayList<>();
-		
-		Collection<Vehicle> list = getAllAssociatedVehicles();
-
-		Iterator<Vehicle> i = list.iterator();
+		Iterator<Vehicle> i = getAllAssociatedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle v = i.next();
 			if (v.getName().equalsIgnoreCase(aName)
@@ -2443,7 +2436,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public Collection<Robot> updateAllAssociatedRobots() {
 		// using java 8 stream
-		Collection<Robot> result = unitManager.getRobots().stream().filter(r -> r.getAssociatedSettlement() == this)
+		Collection<Robot> result = unitManager.getRobots()
+				.stream()
+				.filter(r -> r.getAssociatedSettlement() == this)
 				.collect(Collectors.toList());
 
 		allAssociatedRobots = result;
@@ -2461,28 +2456,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public int getNumBots() {
 		return numBots;
 	}
-			
-	/**
-	 * Gets all vehicles currently on mission and are associated with this
-	 * settlement.
-	 *
-	 * @return collection of vehicles on mission.
-	 */
-	public Collection<Vehicle> getMissionVehicles() {
-		Collection<Vehicle> result = new ArrayList<Vehicle>();
-
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof VehicleMission) {
-				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !this.equals(vehicle.getSettlement()))
-					result.add(vehicle);
-			}
-		}
-
-		return result;
-	}
 
 	/**
 	 * Gets all vehicles associated with this settlement, even if they are out on
@@ -2491,6 +2464,18 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return collection of associated vehicles.
 	 */
 	public Collection<Vehicle> getAllAssociatedVehicles() {
+		if (justReloadedVehicles)
+			// if (!allAssociatedVehicles.isEmpty())
+			return allAssociatedVehicles;
+
+		else {
+			// System.out.println("allAssociatedPeople.isEmpty() is true");
+			// using java 8 stream
+			return updateAllAssociatedVehicles();
+		}
+	}
+		
+	public Collection<Vehicle> updateAllAssociatedVehicles() {		
 		List<Vehicle> list = new ArrayList<>();
 		Collection<Vehicle> vehicles = unitManager.getVehicles();//CollectionUtils.getVehicle(unitManager.getUnits());
 		for (Vehicle v : vehicles) {
@@ -2498,8 +2483,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				list.add(v);
 		}
 		
+		allAssociatedVehicles = list;
+		justReloadedVehicles = true;
+		numVehicles = list.size();
 		return list;
-		
+
 //		Collection<Vehicle> result = getParkedVehicles();
 //		if (missionManager == null) // needed for passing maven test
 //			missionManager = Simulation.instance().getMissionManager();
@@ -2520,6 +2508,68 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 //		return result;
 	}
 
+	/**
+	 * Gets all associated vehicles currently reserved for mission or on mission 
+	 *
+	 * @return collection of vehicles.
+	 */
+	public Collection<Vehicle> getMissionVehicles() {
+		return getAllAssociatedVehicles()
+				.stream().filter(v -> v.isReservedForMission())
+				.collect(Collectors.toList());
+				
+//		Collection<Vehicle> result = new ArrayList<Vehicle>();
+//
+//		Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
+//		while (i.hasNext()) {
+//			Mission mission = i.next();
+//			if (mission instanceof VehicleMission) {
+//				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+//				if ((vehicle != null) && !this.equals(vehicle.getSettlement()))
+//					result.add(vehicle);
+//			}
+//		}
+//
+//		return result;
+	}
+	
+	/**
+	 * Gets a collection of vehicles parked or garaged at the settlement.
+	 *
+	 * @return Collection of parked vehicles
+	 */
+	public Collection<Vehicle> getParkedVehicles() {
+		return CollectionUtils.getVehicle(getInventory().getContainedUnits());
+//		return getAllAssociatedVehicles()
+//				.stream()
+//				.filter(v -> !v.isSalvaged() && v.isParked())//!v.isReservedForMission())
+//				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Gets the number of vehicles parked or garaged at the settlement.
+	 * 
+	 * @return parked vehicles number
+	 */
+	public int getParkedVehicleNum() {
+		return  Math.toIntExact(
+				getAllAssociatedVehicles()
+				.stream()
+				.filter(v -> !v.isSalvaged() && v.isParked())//!v.isReservedForMission())
+				.collect(Collectors.counting())
+				);
+//		return getParkedVehicles().size();
+	}
+
+	/**
+	 * Gets the number of vehicles parked or garaged at the settlement.
+	 * 
+	 * @return parked vehicles number
+	 */
+	public int getVehicleNum() {
+		return numVehicles;
+	}
+	
 	public Collection<Vehicle> getLUVs(int mode) {
 		Collection<Vehicle> LUVs = new ArrayList<Vehicle>();
 
@@ -3869,7 +3919,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				assignBestCandidate(settlement, "Engineer");
 			}
 				
-			int numTechs = JobManager.numJobs(Engineer.class, settlement);
+			int numTechs = JobManager.numJobs(Technician.class, settlement);
 	
 			if (numTechs == 0) {
 				assignBestCandidate(settlement, "Technician");

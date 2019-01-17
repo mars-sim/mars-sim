@@ -958,7 +958,7 @@ public class Simulation implements ClockListener, Serializable {
 		PlayHoloGame.setInstances(masterClock, marsClock);
 		ProposeScientificStudy.setInstances(scientificStudyManager);
 		Relax.setInstances(marsClock);
-		ReviewMissionPlan.setInstances(relationshipManager, missionManager);
+//		ReviewMissionPlan.setInstances(relationshipManager, missionManager);
 		Sleep.setInstances(masterClock, marsClock);
 		Walk.setInstances(unitManager);	
 		Task.initializeInstances(eventManager, relationshipManager, unitManager, scientificStudyManager, surface, missionManager);

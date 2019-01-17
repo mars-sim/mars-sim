@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -35,7 +34,6 @@ import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
@@ -1048,7 +1046,7 @@ public abstract class Vehicle extends Unit
 		// Get estimated average speed (km / hr).
 //    	double estSpeed = baseSpeed / 2D;
 		// Return estimated average speed in km / sol.
-		return baseSpeed * 12; // 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
+		return baseSpeed * 16; // 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
 	}
 
 	/**
@@ -1137,9 +1135,9 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Is the person outside of a settlement but within its vicinity
+	 * Is the vehicle outside of a settlement but within its vicinity
 	 * 
-	 * @return true if the person is just right outside of a settlement
+	 * @return
 	 */
 	public boolean isRightOutsideSettlement() {
 		if (getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
@@ -1148,6 +1146,19 @@ public abstract class Vehicle extends Unit
 			return false;
 	}
 
+	/**
+	 * Is the vehicle parked inside or right outside of a settlement but within its vicinity
+	 * 
+	 * @return 
+	 */
+	public boolean isParked() {
+		if (getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY
+				|| getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT)
+			return true;
+		else
+			return false;
+	}
+	
 	@Override
 	public Building getBuildingLocation() {
 		return this.getGarage();

@@ -316,6 +316,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 				Integer part = i.next();
 				int number = repairParts.get(part);
 				if (inv.getItemResourceNum(part) < number) {
+					inv.addItemDemand(part, number);
 					result = false;
 				}
 			}
@@ -345,6 +346,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			Integer part = i.next();
 			int number = repairParts.get(part);
 			if (settlement.getInventory().getItemResourceNum(part) < number) {
+				settlement.getInventory().addItemDemand(part, number);
 				result = false;
 			}
 		}
@@ -373,6 +375,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 				Integer part = i.next();
 				int number = repairParts.get(part);
 				if (inv.getItemResourceNum(part) < number) {
+					inv.addItemDemand(part, number);
 					result = false;
 				}
 			}

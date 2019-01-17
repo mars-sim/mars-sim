@@ -74,19 +74,19 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 			<!-- The oxygen cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="oxygen" value="44.0" />
+			<capacity resource="oxygen" value="88.0" />
 
 			<!-- The water cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="water" value="150.0" />
+			<capacity resource="water" value="300.0" />
 
 			<!-- The food cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="food" value="32.0" />
+			<capacity resource="food" value="64.0" />
 
 			<!-- The dessert cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle -->
-			<capacity resource="dessert" value="15.0" />
+			<capacity resource="dessert" value="30.0" />
 
 			<!-- The rock samples cargo capacity of the rover (kg) -->
 			<!-- See resources.txt -->
@@ -100,23 +100,23 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 			<!-- The food waste capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="food waste" value="20.0" />
+			<capacity resource="food waste" value="40.0" />
 			
 			<!-- The solid waste capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="solid waste" value="40.0" />	
+			<capacity resource="solid waste" value="80.0" />	
 
 			<!-- The toxic waste capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="toxic waste" value="20.0" />	
+			<capacity resource="toxic waste" value="40.0" />	
 
 			<!-- The grey water capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="grey water" value="120.0" />	
+			<capacity resource="grey water" value="240.0" />	
 
 			<!-- The black water capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity resource="black water" value="30.0" />	
+			<capacity resource="black water" value="60.0" />	
 	
 		</cargo>
 
@@ -162,17 +162,17 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<crew-size value="8" />
 		<cargo total-capacity="7300.0">
 			<capacity resource="methane" value="600.0" />
-			<capacity resource="oxygen" value="88.0" />
-			<capacity resource="water" value="300.0" />
-			<capacity resource="food" value="64.0" />
-			<capacity resource="dessert" value="30.0" />
+			<capacity resource="oxygen" value="176.0" />
+			<capacity resource="water" value="600.0" />
+			<capacity resource="food" value="128.0" />
+			<capacity resource="dessert" value="60.0" />
 
-			<capacity resource="food waste" value="40.0" />
-			<capacity resource="solid waste" value="80.0" />
-			<capacity resource="toxic waste" value="40.0" />	
+			<capacity resource="food waste" value="80.0" />
+			<capacity resource="solid waste" value="160.0" />
+			<capacity resource="toxic waste" value="80.0" />	
 			
-			<capacity resource="grey water" value="240.0" />
-			<capacity resource="black water" value="60.0" />
+			<capacity resource="grey water" value="480.0" />
+			<capacity resource="black water" value="120.0" />
 			
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
@@ -200,17 +200,17 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<crew-size value="2" />
 		<cargo total-capacity="10300.0">
 			<capacity resource="methane" value="800.0" />
-			<capacity resource="oxygen" value="22.0" />
-			<capacity resource="water" value="75.0" />
-			<capacity resource="food" value="16.0" />
-			<capacity resource="dessert" value="27.5" />
+			<capacity resource="oxygen" value="44.0" />
+			<capacity resource="water" value="150.0" />
+			<capacity resource="food" value="32.0" />
+			<capacity resource="dessert" value="55" />
 
-			<capacity resource="food waste" value="10.0" />
-			<capacity resource="solid waste" value="20.0" />
-			<capacity resource="toxic waste" value="10.0" />	
+			<capacity resource="food waste" value="20.0" />
+			<capacity resource="solid waste" value="40.0" />
+			<capacity resource="toxic waste" value="20.0" />	
 			
-			<capacity resource="grey water" value="60.0" />
-			<capacity resource="black water" value="15.0" />
+			<capacity resource="grey water" value="120.0" />
+			<capacity resource="black water" value="30.0" />
 		</cargo>
 		<sickbay tech-level="1" beds="1" />
 		<airlock xloc="-1.5" yloc="0.0" interior-xloc="-1.0" interior-yloc="0.0" exterior-xloc="-3.0"

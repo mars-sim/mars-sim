@@ -76,10 +76,6 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	
 	private int pop = 0;
 	
-	private static Simulation sim = Simulation.instance();
-	private static MissionManager missionManager = sim.getMissionManager();
-	private static RelationshipManager relationshipManager = sim.getRelationshipManager();
-
 	/**
 	 * Constructor. This is an effort-driven task.
 	 * 
@@ -313,7 +309,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 					        addExperience(time);
 				        
 							// Do only one review each time
-					        endTask();
+					        //endTask();
 						}
 		            }
 				}
@@ -422,19 +418,6 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		List<SkillType> results = new ArrayList<SkillType>(0);
 		return results;
 	}
-	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {{@link RelationshipManager}
-	 * @param {{@link MissionManager}
-	 */
-	public static void setInstances(RelationshipManager r, MissionManager m) {
-		sim = Simulation.instance();
-		relationshipManager = r;
-		missionManager = m;
-	}
-	
 	
 	@Override
 	public void destroy() {

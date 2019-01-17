@@ -88,8 +88,6 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	            return 0;
 	        }
 	
-	        result = settlement.getRegolithProbabilityValue() * 500D;
-	
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
             double stress = condition.getStress();
@@ -98,6 +96,8 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             if (fatigue > 1000)
             	return 0;
             
+	        result = settlement.getRegolithProbabilityValue();
+	    	
             // Stress modifier
             result -= stress * 1D;
             // fatigue modifier

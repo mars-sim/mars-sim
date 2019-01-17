@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * Interface for a meta task, responsible for determining task probability and
@@ -24,6 +25,8 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
 public interface MetaTask {
 
 	static Simulation sim = Simulation.instance();
+	/** The static instance of the mars clock */
+	static MarsClock marsClock = sim.getMasterClock().getMarsClock();
 	/** The static instance of the event manager */
 	static HistoricalEventManager eventManager = sim.getEventManager();
 	/** The static instance of the relationship manager */

@@ -312,6 +312,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			Integer part = i.next();
 			int number = repairParts.get(part);
 			if (inv.getItemResourceNum(part) < number) {
+				inv.addItemDemand(part, number);
 				result = false;
 			}
 		}

@@ -920,6 +920,9 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 						}
 						result.put(part, number);
 					}
+					else {
+						settlement.getInventory().addItemDemand(part, number);
+					}
 				}
 			}
 

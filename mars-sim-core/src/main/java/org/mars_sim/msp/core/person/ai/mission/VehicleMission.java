@@ -529,12 +529,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * Gets the amount of fuel (kg) needed for a trip of a given distance (km).
 	 * 
 	 * @param tripDistance   the distance (km) of the trip.
-	 * @param fuelEfficiency the vehicle's fuel efficiency (km/kg).
+	 * @param fuelConsumption the vehicle's instantaneous fuel consumption (km/kg).
 	 * @param useMargin      use time buffers in estimation if true.
 	 * @return amount of fuel needed for trip (kg)
 	 */
-	public static double getFuelNeededForTrip(double tripDistance, double fuelEfficiency, boolean useMargin) {
-		double result = tripDistance / fuelEfficiency;
+	public static double getFuelNeededForTrip(double tripDistance, double fuelConsumption, boolean useMargin) {
+		double result = tripDistance / fuelConsumption;
 		if (useMargin) {
 			result *= Vehicle.getErrorMargin();
 		}
@@ -824,7 +824,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public Map<Integer, Number> getResourcesNeededForTrip(boolean useMargin, double distance) {
 		Map<Integer, Number> result = new HashMap<Integer, Number>();
 		if (vehicle != null) {
-			result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, 1D, useMargin));
+			result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getIFuelConsumption(), useMargin));
 		}
 		return result;
 	}
@@ -1282,6 +1282,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					Integer part = j.next();
 					int number = parts.get(part);
 					if (vehicle.getInventory().getItemResourceNum(part) < number) {
+						vehicle.getInventory().addItemDemand(part, number);
 						result = true;
 					}
 				}

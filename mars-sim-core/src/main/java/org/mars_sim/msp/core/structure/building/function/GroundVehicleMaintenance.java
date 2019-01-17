@@ -76,7 +76,7 @@ implements Serializable {
 			Settlement settlement) {
 
 		// Demand is one ground vehicle capacity for every ground vehicles.
-		double demand = settlement.getAllAssociatedVehicles().size();
+		double demand = settlement.getVehicleNum();
 
 		double supply = 0D;
 		boolean removedBuilding = false;

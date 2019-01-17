@@ -92,8 +92,6 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
                 return 0;
             }
 
-            result = settlement.getIceProbabilityValue() * 4000D;
-
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
             double stress = condition.getStress();
@@ -102,6 +100,8 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             if (fatigue > 1000)
             	return 0;
             
+            result = settlement.getIceProbabilityValue();
+
             // Stress modifier
             result -= stress * 1D;
             // fatigue modifier

@@ -13,11 +13,14 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -105,7 +108,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 		map = surfMap;
 		mapError = false;
 		wait = false;
-		mapLayers = new ArrayList<MapLayer>();
+		mapLayers = new CopyOnWriteArrayList<MapLayer>();
 		update = true;
 		centerCoords = new Coordinates(HALF_PI, 0D);
 
@@ -143,7 +146,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 						map.drawMap(centerCoords);
 
-						paintDoubleBuffer();
+//						paintDoubleBuffer();
 						repaint();
 					}
 				}
@@ -312,7 +315,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 			}
 			wait = false;
 
-			paintDoubleBuffer();
+//			paintDoubleBuffer();
 			repaint();
 		}
 	}
@@ -337,117 +340,117 @@ public class MapPanel extends WebPanel implements ClockListener {
 		}
 	}
 
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		if (dbImage != null) {
-			g.drawImage(dbImage, 0, 0, null);
-		}
-	}
-
-	/*
-	 * Uses double buffering to draws into its own graphics object dbg before
-	 * calling paintComponent()
-	 */
-	public void paintDoubleBuffer() {
-		if (dbImage == null) {
-			dbImage = createImage(MAP_BOX_WIDTH, MAP_BOX_HEIGHT);
-			if (dbImage == null) {
-				// System.out.println("dbImage is null");
-				return;
-			} else
-				dbg = dbImage.getGraphics();
-		}
-
-//        Graphics2D g2d = (Graphics2D) dbg;
-//        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-		if (wait) {
-			if (mapImage != null) {
-				dbg.drawImage(mapImage, 0, 0, this);
-			}
-			String message = "Generating Map";
-			drawCenteredMessage(message, dbg);
-		} else {
-			if (mapError) {
-				logger.log(Level.SEVERE, "mapError: " + mapErrorMessage);
-				// Display previous map image
-				if (mapImage != null) {
-					dbg.drawImage(mapImage, 0, 0, this);
-				}
-
-				// Draw error message
-				if (mapErrorMessage == null) {
-					mapErrorMessage = "Null Map";
-				}
-				drawCenteredMessage(mapErrorMessage, dbg);
-			} else {
-				// Paint black background
-				dbg.setColor(Color.black);
-				dbg.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
-
-				if (centerCoords != null) {
-					if (map != null) {
-						if (map.isImageDone()) {
-							mapImage = map.getMapImage();
-							dbg.drawImage(mapImage, 0, 0, this);
-						}
-					}
-
-					// Display map layers.
-					// List<MapLayer> tempMapLayers = new ArrayList<MapLayer>(mapLayers);
-					// Iterator<MapLayer> i = tempMapLayers.iterator();
-					// while (i.hasNext()) {
-					// i.next().displayLayer(centerCoords, mapType, dbg);
-					// }
-
-					for (MapLayer l : mapLayers) {
-						if (dbg != null)
-							l.displayLayer(centerCoords, mapType, dbg);
-					}
-				}
-			}
-		}
-	}
-
 //	public void paintComponent(Graphics g) {
-//        super.paintComponent(g);
+//		super.paintComponent(g);
+//		if (dbImage != null) {
+//			g.drawImage(dbImage, 0, 0, null);
+//		}
+//	}
+
+//	/*
+//	 * Uses double buffering to draws into its own graphics object dbg before
+//	 * calling paintComponent()
+//	 */
+//	public void paintDoubleBuffer() {
+//		if (dbImage == null) {
+//			dbImage = createImage(MAP_BOX_WIDTH, MAP_BOX_HEIGHT);
+//			if (dbImage == null) {
+//				// System.out.println("dbImage is null");
+//				return;
+//			} else
+//				dbg = dbImage.getGraphics();
+//		}
 //
-//        Graphics2D g2d = (Graphics2D) g;
-//        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+////        Graphics2D g2d = (Graphics2D) dbg;
+////        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 //
-//        if (wait) {
-//        	if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
-//        	String message = "Generating Map";
-//        	drawCenteredMessage(message, g);
-//        }
-//        else {
-//        	if (mapError) {
-//            	logger.log(Level.SEVERE,"mapError: " + mapErrorMessage);
-//                // Display previous map image
-//                if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
+//		if (wait) {
+//			if (mapImage != null) {
+//				dbg.drawImage(mapImage, 0, 0, this);
+//			}
+//			String message = "Generating Map";
+//			drawCenteredMessage(message, dbg);
+//		} else {
+//			if (mapError) {
+//				logger.log(Level.SEVERE, "mapError: " + mapErrorMessage);
+//				// Display previous map image
+//				if (mapImage != null) {
+//					dbg.drawImage(mapImage, 0, 0, this);
+//				}
 //
-//                // Draw error message
-//                if (mapErrorMessage == null) mapErrorMessage = "Null Map";
-//                drawCenteredMessage(mapErrorMessage, g);
-//            }
-//        	else {
-//        		// Paint black background
-//                g.setColor(Color.black);
-//                g.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
+//				// Draw error message
+//				if (mapErrorMessage == null) {
+//					mapErrorMessage = "Null Map";
+//				}
+//				drawCenteredMessage(mapErrorMessage, dbg);
+//			} else {
+//				// Paint black background
+//				dbg.setColor(Color.black);
+//				dbg.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
 //
-//                if (centerCoords != null) {
-//                	if (map.isImageDone()) {
-//                		mapImage = map.getMapImage();
-//                		g.drawImage(mapImage, 0, 0, this);
-//                	}
+//				if (centerCoords != null) {
+//					if (map != null) {
+//						if (map.isImageDone()) {
+//							mapImage = map.getMapImage();
+//							dbg.drawImage(mapImage, 0, 0, this);
+//						}
+//					}
 //
-//                	// Display map layers.
-//                	Iterator<MapLayer> i = mapLayers.iterator();
-//                	while (i.hasNext()) i.next().displayLayer(centerCoords, mapType, g);
-//                }
-//        	}
-//        }
-//    }
+//					// Display map layers.
+//					// List<MapLayer> tempMapLayers = new ArrayList<MapLayer>(mapLayers);
+//					// Iterator<MapLayer> i = tempMapLayers.iterator();
+//					// while (i.hasNext()) {
+//					// i.next().displayLayer(centerCoords, mapType, dbg);
+//					// }
+//
+//					for (MapLayer l : mapLayers) {
+//						if (dbg != null)
+//							l.displayLayer(centerCoords, mapType, dbg);
+//					}
+//				}
+//			}
+//		}
+//	}
+
+	public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        if (wait) {
+        	if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
+        	String message = "Generating Map";
+        	drawCenteredMessage(message, g);
+        }
+        else {
+        	if (mapError) {
+            	logger.log(Level.SEVERE,"mapError: " + mapErrorMessage);
+                // Display previous map image
+                if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
+
+                // Draw error message
+                if (mapErrorMessage == null) mapErrorMessage = "Null Map";
+                drawCenteredMessage(mapErrorMessage, g);
+            }
+        	else {
+        		// Paint black background
+                g.setColor(Color.black);
+                g.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
+
+                if (centerCoords != null) {
+                	if (map.isImageDone()) {
+                		mapImage = map.getMapImage();
+                		g.drawImage(mapImage, 0, 0, this);
+                	}
+
+                	// Display map layers.
+                	Iterator<MapLayer> i = mapLayers.iterator();
+                	while (i.hasNext()) i.next().displayLayer(centerCoords, mapType, g);
+                }
+        	}
+        }
+    }
 
 	/**
 	 * Draws a message string in the center of the map panel.

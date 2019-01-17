@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.job;
 
 import java.io.Serializable;
-import java.util.Collection;
 
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
@@ -30,7 +29,6 @@ import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Driver class represents a rover driver job.
@@ -121,12 +119,14 @@ public class Driver extends Job implements Serializable {
 	 * @return the base need >= 0
 	 */
 	public double getSettlementNeed(Settlement settlement) {
-		// Get number of vehicles parked at a settlement.
-		Collection<Vehicle> vehicles = settlement.getAllAssociatedVehicles();
-		if (!vehicles.isEmpty())
-			return vehicles.size()/1.5;
-		else
-			return 0;
+		// Get number of associated vehicles at a settlement.
+//		Collection<Vehicle> vehicles = settlement.getAllAssociatedVehicles();
+//		if (!vehicles.isEmpty())
+//			return vehicles.size()/1.5;
+//		else
+//			return 0;
+		
+		return settlement.getVehicleNum()/1.5;
 	}
 
 }
