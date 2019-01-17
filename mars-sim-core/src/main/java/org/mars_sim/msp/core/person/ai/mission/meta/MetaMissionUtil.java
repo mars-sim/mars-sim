@@ -14,6 +14,8 @@ import java.util.List;
  */
 public class MetaMissionUtil {
 
+	private static int numMetaMissions;
+	
 	// Static values.
 	private static List<MetaMission> metaMissions = null;
 	private static List<MetaMission> robotMetaMissions = null;
@@ -44,6 +46,8 @@ public class MetaMissionUtil {
 		metaMissions.add(new RescueSalvageVehicleMeta());
 		metaMissions.add(new TradeMeta());
 		metaMissions.add(new TravelToSettlementMeta());
+		
+		computeNumMetaMissions();
 	}
 
 	private static void initializeRobotMetaMissions() {
@@ -55,6 +59,14 @@ public class MetaMissionUtil {
 		// robotMetaMissions.add(new TravelToSettlementMeta());
 		// robotMetaMissions.add(new BuildingConstructionMissionMeta());
 		// robotMetaMissions.add(new BuildingSalvageMissionMeta());
+	}
+
+	public static int getNumMetaMissions() {
+		return numMetaMissions;
+	}
+
+	public static void computeNumMetaMissions() {
+		numMetaMissions = getMetaMissions().size();
 	}
 
 	/**

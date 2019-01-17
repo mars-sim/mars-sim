@@ -88,8 +88,8 @@ public class MissionManager implements Serializable {
 		historicalMissions = new HashMap<>();
 		settlementID = new HashMap<>();
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
-		missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getMetaMissions().size());
-		robotMissionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getRobotMetaMissions().size());
+		missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getNumMetaMissions());
+		robotMissionProbCache = new HashMap<MetaMission, Double>();
 	}
 
 	/**
@@ -637,7 +637,7 @@ public class MissionManager implements Serializable {
 	 */
 	private void calculateProbability(Person person) {
 		if (missionProbCache == null) {
-			missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getMetaMissions().size());
+			missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getNumMetaMissions());
 		}
 
 		// Clear total probabilities.

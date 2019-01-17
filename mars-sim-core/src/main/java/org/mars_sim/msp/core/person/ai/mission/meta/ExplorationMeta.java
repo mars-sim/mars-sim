@@ -31,6 +31,8 @@ public class ExplorationMeta implements MetaMission {
 	/** Mission name */
 	private static final String NAME = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
 
+    private static double WEIGHT = 4D;
+    
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
 
@@ -53,9 +55,6 @@ public class ExplorationMeta implements MetaMission {
 
 			Settlement settlement = person.getSettlement();
 
-			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-			int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(NAME, settlement);
-	
 			// Check if a mission-capable rover is available.
 			if (!RoverMission.areVehiclesAvailable(settlement, false)) {
 				return 0;
@@ -98,6 +97,17 @@ public class ExplorationMeta implements MetaMission {
 					false) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE))
 				return 0;
 
+			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
+			int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(NAME, settlement);
+	
+    		// Check for embarking missions.
+    		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
+    			return 0;
+    		}	
+    		
+    		else if (numThisMission > 1)
+    			return 0;	
+    		
 			// if (reservableRover && backupRover && minNum && enoughContainers &&
 			// !embarkingMissions && hasBasicResources && enoughMethane) {
 			try {
@@ -106,7 +116,7 @@ public class ExplorationMeta implements MetaMission {
 				if (rover != null) {
 					// Check if any mineral locations within rover range.
 					if (Exploration.hasNearbyMineralLocations(rover, settlement)) {
-						result = 2D;
+						result = WEIGHT;
 					}
 				}
 			} catch (Exception e) {
@@ -118,14 +128,10 @@ public class ExplorationMeta implements MetaMission {
 //			if (crowding > 0)
 //				result *= (crowding + 1);
 
-			int f1 = numEmbarked;
-			int f2 = numThisMission;
-			if (numEmbarked == 0)
-				f1 = 1;
-			if (numThisMission == 0)
-				f2 = 1;
+			int f1 = numEmbarked + 1;
+			int f2 = numThisMission + 1;
 			
-			result *= settlement.getNumCitizens() / 2.0 / f1 / f2;
+			result *= settlement.getNumCitizens() / f1 / f2 / 2D;
 			
 			// Job modifier.
 			Job job = person.getMind().getJob();

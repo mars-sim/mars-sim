@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -30,7 +29,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -310,8 +308,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 		List<Mission> result = new ArrayList<Mission>();
 
-		MissionManager manager = Simulation.instance().getMissionManager();
-		Iterator<Mission> i = manager.getMissions().iterator();
+//		MissionManager manager = Simulation.instance().getMissionManager();
+		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
@@ -1020,9 +1018,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		else if (resource == waterID)
 			amountPersonPerSol = personConfig.getWaterConsumptionRate();
 		else if (resource == foodID)
-			// Divide by 3 arbitrarily since settlers prefer to have meals rather than
-			// preserved food
-			amountPersonPerSol = personConfig.getFoodConsumptionRate() / 3D;
+			amountPersonPerSol = personConfig.getFoodConsumptionRate();
 		else {
 			// check if this resource is a dessert
 			for (AmountResource dessert : availableDesserts) {

@@ -7,11 +7,13 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -38,7 +40,7 @@ public class RescueSalvageVehicleMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
-        double missionProbability = 0D;
+        double result = 0D;
 
         if (person.isInSettlement()) {
 
@@ -123,27 +125,44 @@ public class RescueSalvageVehicleMeta implements MetaMission {
 
             // Determine mission probability.
             if (rescuePeople) {
-                missionProbability = RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT;
+                result = RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT;
             }
             else {
-                missionProbability = RescueSalvageVehicle.BASE_SALVAGE_MISSION_WEIGHT;
+                result = RescueSalvageVehicle.BASE_SALVAGE_MISSION_WEIGHT;
             }
 
+
+			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
+			int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(NAME, settlement);
+	
+    		// Check for embarking missions.
+    		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
+    			return 0;
+    		}	
+    		
+    		else if (numThisMission > 1)
+    			return 0;	
+
+			int f1 = numEmbarked + 1;
+			int f2 = numThisMission + 1;
+			
+			result *= settlement.getNumCitizens() / f1 / f2 / 2D;
+			
             // Crowding modifier.
             int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
             if (crowding > 0) {
-                missionProbability *= (crowding + 1);
+                result *= (crowding + 1);
             }
 
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
-                missionProbability *= job.getStartMissionProbabilityModifier(RescueSalvageVehicle.class);
+                result *= job.getStartMissionProbabilityModifier(RescueSalvageVehicle.class);
             }
 
         }
 
-        return missionProbability;
+        return result;
     }
 
 	@Override

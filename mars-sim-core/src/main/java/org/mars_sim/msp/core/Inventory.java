@@ -180,6 +180,18 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
+	public double getItemDemand(int r) {
+		double result;
+
+		if (itemDemandMap.containsKey(r)) {
+			result = itemDemandMap.get(r);
+		} else {
+			itemDemandMap.put(r, 0);
+			result = 0.0;
+		}
+		return result;
+	}
+	
 	public int getAmountDemandTotalRequest(int r) {
 		int result;
 //		String r = resourceName.toLowerCase();
@@ -211,6 +223,10 @@ public class Inventory implements Serializable {
 		return amountDemandMap.size();
 	}
 
+	public int getItemDemandMapSize() {
+		return itemDemandMap.size();
+	}
+	
 	public int getDemandTotalRequestMapSize() {
 		return amountDemandTotalRequestMap.size();
 	}
@@ -220,22 +236,30 @@ public class Inventory implements Serializable {
 	}
 
 	public void compactAmountSupplyAmountMap(int sol) {
-		compactMap(amountSupplyMap, sol);
+		compactAMap(amountSupplyMap, sol);
 	}
 
 	public void clearAmountSupplyRequestMap() {
 		amountSupplyRequestMap.clear();
 	}
 
-	public void clearAmountDemandAmountMap() {
-		amountDemandMap.clear();
-	}
+//	public void clearAmountDemandAmountMap() {
+//		amountDemandMap.clear();
+//	}
 
+//	public void clearItemDemandMap() {
+//		itemDemandMap.clear();
+//	}
+	
 	public void compactAmountDemandAmountMap(int sol) {
-		compactMap(amountDemandMap, sol);
+		compactAMap(amountDemandMap, sol);
 	}
 
-	public void compactMap(Map<Integer, Double> amountMap, int sol) {
+	public void compactItemDemandMap(int sol) {
+		compactIMap(itemDemandMap, sol);
+	}
+	
+	public void compactAMap(Map<Integer, Double> amountMap, int sol) {
 
 		Map<Integer, Double> map = amountMap;
 
@@ -247,6 +271,18 @@ public class Inventory implements Serializable {
 		}
 	}
 
+	public void compactIMap(Map<Integer, Integer> amountMap, int sol) {
+
+		Map<Integer, Integer> map = amountMap;
+
+		for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+			Integer key = entry.getKey();
+			Integer value = entry.getValue();
+			value = value / sol;
+			map.put(key, value);
+		}
+	}
+	
 	public void clearAmountDemandTotalRequestMap() {
 		amountDemandTotalRequestMap.clear();
 	}

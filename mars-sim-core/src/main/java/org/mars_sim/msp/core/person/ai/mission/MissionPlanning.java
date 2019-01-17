@@ -82,25 +82,25 @@ public class MissionPlanning implements Serializable {
 	 * @param pop
 	 * @return
 	 */
-	public boolean isValidReview(String name, int pop) {
+	public boolean isReviewerValid(String name, int pop) {
 		if (reviewers.containsKey(name)) {
 			int num = reviewers.get(name);
 			if (pop <= 8) {
-				if (num < 4)
+				if (num < 5)
 					return true;
 				else
 					return false;
 			}
 			
 			else if (pop >= 48) {
-				if (num < 2)
+				if (num < 3)
 					return true;
 				else
 					return false;
 			}
 			
 			else {
-				if (num < 3)
+				if (num < 4)
 					return true;
 				else
 					return false;

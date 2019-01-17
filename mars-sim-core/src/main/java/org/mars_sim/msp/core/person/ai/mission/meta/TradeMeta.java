@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.Trade.TradeProfitInfo;
 import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -51,7 +52,7 @@ public class TradeMeta implements MetaMission {
 	@Override
 	public double getProbability(Person person) {
 
-		double missionProbability = 0D;
+		double result = 0D;
 
 		// Check if person is in a settlement.
 		if (person.isInSettlement()) {
@@ -64,22 +65,39 @@ public class TradeMeta implements MetaMission {
 					// TODO: checkMission() gives rise to a NULLPOINTEREXCEPTION that points to
 					// Inventory
 					// It happens only when this sim is a loaded saved sim.
-					missionProbability = checkMission(settlement);
+					result = checkMission(settlement);
 
 				} catch (Exception e) {
 					logger.log(Level.SEVERE,
 							person + " can't compute the exact need for trading now at " + settlement + ". ", e);
 					e.printStackTrace();
 
-					missionProbability = 200D;
+					result = 200D;
 				}
-
+				
 			} else {
-				missionProbability = 0;
+				result = 0;
 			}
+			
+			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
+			int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(NAME, settlement);
+	
+    		// Check for embarking missions.
+    		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
+    			return 0;
+    		}	
+    		
+    		else if (numThisMission > 1)
+    			return 0;	
+    		
+
+			int f1 = numEmbarked + 1;
+			int f2 = numThisMission + 1;
+			
+			result *= settlement.getNumCitizens() / f1 / f2 / 2D;
 		}
 
-		return missionProbability;
+		return result;
 	}
 
 	@Override

@@ -640,11 +640,11 @@ public class UnitManager implements Serializable {
 			int number = usedNames.size() + 1;
 			String tagID = "";
 			if (number < 10)
-				tagID = THREE_SPACES + number;
-			else if (number < 100)
 				tagID = TWO_SPACES + number;
-			else if (number < 1000)
+			else if (number < 100)
 				tagID = ONE_SPACE + number;
+			else if (number < 1000)
+				tagID = "" + number;
 			else
 				tagID = "" + number;
 			result = unitName + " " + tagID;

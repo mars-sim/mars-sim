@@ -69,10 +69,10 @@ public class CollectRegolithMeta implements MetaMission {
 //			 logger.info("CollectRegolithMeta's probability : " +
 //					 Math.round(result*100D)/100D);
 
-			if (result < 0)
-				return 0;
-			else if (result > 1D)
-				result = 1;
+			if (result > 10D)
+				result = 10D;
+			else if (result < 0)
+				result = 0;
 
 		}
 
@@ -82,14 +82,7 @@ public class CollectRegolithMeta implements MetaMission {
   public double getSettlementProbability(Settlement settlement) {
 
         double result = 0D;
-        
-		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-		
-//		if (missionManager == null)
-//			missionManager = Simulation.instance().getMissionManager();
-		
-		int numThisMission = missionManager.numParticularMissions(NAME, settlement);
-		 
+        		 
 		// a settlement with <= 4 population can always do DigLocalRegolith task
 		// should avoid the risk of mission.
 		if (settlement.getIndoorPeopleCount() <= 1)// .getAllAssociatedPeople().size() <= 4)
@@ -125,8 +118,14 @@ public class CollectRegolithMeta implements MetaMission {
 			return 0;
 		}
 
+//		result += CollectResourcesMission.getNewMissionProbability(settlement, Bag.class,
+//		CollectRegolith.REQUIRED_BAGS, CollectRegolith.MIN_PEOPLE);
+		
+		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
+		int numThisMission = missionManager.numParticularMissions(NAME, settlement);
+
 		// Check for embarking missions.
-		else if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
+		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
 			return 0;
 		}
 		
@@ -140,22 +139,15 @@ public class CollectRegolithMeta implements MetaMission {
 		if (result <= 0)
 			return 0;
 
-//		result += CollectResourcesMission.getNewMissionProbability(settlement, Bag.class,
-//				CollectRegolith.REQUIRED_BAGS, CollectRegolith.MIN_PEOPLE);
+		// Check for embarking missions.
+		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
+			return 0;
+		}	
+	
+		int f1 = numEmbarked + 1;
+		int f2 = numThisMission + 1;
 		
-		// Crowding modifier
-//		int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
-//		if (crowding > 0)
-//			result *= (crowding + 1);
-
-		int f1 = numEmbarked;
-		int f2 = numThisMission;
-		if (numEmbarked == 0)
-			f1 = 1;
-		if (numThisMission == 0)
-			f2 = 1;
-		
-		result *= settlement.getNumCitizens() / 4.0 / f1 / f2;
+		result *= settlement.getNumCitizens() / f1 / f2 / 2D;
         
         return result;
     }

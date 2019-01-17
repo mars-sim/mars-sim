@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -34,6 +35,8 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
     private static final String NAME = Msg.getString(
             "Mission.description.areologyStudyFieldMission"); //$NON-NLS-1$
 
+    private static double WEIGHT = 8D;
+    
     /** default logger. */
     private static Logger logger = Logger.getLogger(AreologyStudyFieldMissionMeta.class.getName());
 
@@ -86,12 +89,14 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
             }
 
             // Check if starting settlement has minimum amount of methane fuel.
-            //AmountResource methane = AmountResource.findAmountResource("methane");
             else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneID, false) <
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
             	return 0;
             }
 
+			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
+			int numThisMission = missionManager.numParticularMissions(NAME, settlement);
+	
             try {
                 // Get available rover.
                 Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
@@ -100,12 +105,12 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
                     ScienceType areology = ScienceType.AREOLOGY;
 
                     // Add probability for researcher's primary study (if any).
-                    ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
+//                    ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
                     ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
                     if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
                         if (!primaryStudy.isPrimaryResearchCompleted()) {
                             if (areology == primaryStudy.getScience()) {
-                                result += 4D;
+                                result += WEIGHT;
                             }
                         }
                     }
@@ -117,7 +122,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
                         if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                             if (!collabStudy.isCollaborativeResearchCompleted(person)) {
                                 if (areology == collabStudy.getCollaborativeResearchers().get(person.getIdentifier())) {
-                                    result += 2D;
+                                    result += WEIGHT/2D;
                                 }
                             }
                         }
@@ -128,7 +133,11 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
                 logger.log(Level.SEVERE, "Error determining rover.", e);
             }
 
-
+			int f1 = numEmbarked + 1;
+			int f2 = numThisMission + 1;
+			
+			result *= settlement.getNumCitizens() / f1 / f2 / 2D;
+			
             // Crowding modifier
             int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
             if (crowding > 0) {

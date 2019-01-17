@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
@@ -17,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -106,6 +108,17 @@ public class MiningMeta implements MetaMission {
             	return 0;
             }
             
+			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
+			int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(NAME, settlement);
+	
+    		// Check for embarking missions.
+    		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
+    			return 0;
+    		}	
+    		
+    		else if (numThisMission > 1)
+    			return 0;
+    		
             try {
                 // Get available rover.
                 Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(
@@ -133,6 +146,11 @@ public class MiningMeta implements MetaMission {
 //                result *= (crowding + 1);
 //            }
 
+			int f1 = numEmbarked + 1;
+			int f2 = numThisMission + 1;
+			
+			result *= settlement.getNumCitizens() / f1 / f2 / 2D;
+			
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {

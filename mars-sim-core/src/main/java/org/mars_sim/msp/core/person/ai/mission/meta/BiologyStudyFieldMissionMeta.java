@@ -16,11 +16,11 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -32,6 +32,8 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
     /** default logger. */
 	private static Logger logger = Logger.getLogger(BiologyStudyFieldMissionMeta.class.getName());
 
+    private static double WEIGHT = 8D;
+    
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.biologyStudyFieldMission"); //$NON-NLS-1$
@@ -85,12 +87,14 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
             }
 
             // Check if starting settlement has minimum amount of methane fuel.
-            //AmountResource methane = AmountResource.findAmountResource("methane");
             else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneID, false) <
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
             	return 0;
             }
 
+			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
+			int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(NAME, settlement);
+	
             // Get available rover.
             Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
             if (rover != null) {
@@ -98,12 +102,12 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
                 ScienceType biology = ScienceType.BIOLOGY;
 
                 // Add probability for researcher's primary study (if any).
-                ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
+//                ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
                 ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
                 if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
                     if (!primaryStudy.isPrimaryResearchCompleted()) {
                         if (biology == primaryStudy.getScience())
-                            result += 4D;
+                            result += WEIGHT;
                     }
                 }
 
@@ -114,13 +118,17 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
                     if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                         if (!collabStudy.isCollaborativeResearchCompleted(person)) {
                             if (biology == collabStudy.getCollaborativeResearchers().get(person.getIdentifier()))
-                                result += 2D;
+                                result += WEIGHT/2D;
                         }
                     }
                 }
             }
 
-
+            int f1 = numEmbarked + 1;
+			int f2 = numThisMission + 1;
+			
+			result *= settlement.getNumCitizens() / f1 / f2 / 2D;
+			
             // Crowding modifier
             int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
             if (crowding > 0) result *= (crowding + 1);

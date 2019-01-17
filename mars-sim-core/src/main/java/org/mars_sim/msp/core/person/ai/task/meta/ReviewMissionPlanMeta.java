@@ -85,23 +85,19 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 	                    PlanType status = mp.getStatus();
 
 	                    if (status != null && status == PlanType.PENDING 
-	                    		&& mp.getPercentComplete() < 100D) {
+	                    	&& mp.getPercentComplete() < 100D) {
 	    		            	
-	    						String reviewedBy = person.getName();
+    						String reviewedBy = person.getName();
+    						
+    						Person p = m.getStartingMember();
+    						String requestedBy = p.getName();
+    						
+    						if (reviewedBy.equals(requestedBy)) {
+    							// Add penalty to the probability score if reviewer is the same as requester
+    							result -= 50D;;
+    						}
 	    						
-	    						Person p = m.getStartingMember();
-	    						String requestedBy = p.getName();
-						
-	    						if (!mp.isValidReview(reviewedBy, pop)) {
-	    							return 0;
-	    						}
-	    						
-	    						if (reviewedBy.equals(requestedBy)) {
-	    							// Add penalty to the probability score if reviewer is the same as requester
-	    							result -= 50D;;
-	    						}
-	    						
-	                    	result += 300D;                    	
+	                    	result += 200D;                    	
 	                    	// Add adjustment based on how many sol the request has since been submitted
                             // if the job assignment submitted date is > 1 sol
                             int sol = marsClock.getMissionSol();
@@ -114,6 +110,13 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
                                 result += 400D;
                             else if (sol - solRequest > 3)
                                 result += 500D;
+                            
+                            // Check if this reviewer has already exceeded the max # of reviews allowed
+    						if (!mp.isReviewerValid(reviewedBy, pop)) {
+    							if (sol - solRequest < 7)
+    								// If no one else is able to offer the review, allow the review to go through
+    								return 0;
+    						}
 	                    }
                 	}
                 }

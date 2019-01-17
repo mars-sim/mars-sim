@@ -1633,6 +1633,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// Clear maps once every x number of days
 		if (solElapsed % SUPPLY_DEMAND_REFRESH == 0) {
 			// True if solElapsed is an exact multiple of x
+			
+			// Compact amount resource map
 			// Carry out the daily average of the previous 5 days
 			getInventory().compactAmountSupplyAmountMap(SUPPLY_DEMAND_REFRESH);
 			getInventory().clearAmountSupplyRequestMap();
@@ -1640,6 +1642,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			getInventory().compactAmountDemandAmountMap(SUPPLY_DEMAND_REFRESH);
 			getInventory().clearAmountDemandTotalRequestMap();
 			getInventory().clearAmountDemandMetRequestMap();
+			
+			// compact item resource map
+			getInventory().compactItemDemandMap(SUPPLY_DEMAND_REFRESH);
+			
 			// Added clearing of weather data map
 			weather.clearMap();
 			// logger.info(name + " : Compacted the settlement's supply demand data &

@@ -266,7 +266,7 @@ extends UnitTableModel {
 				} break;
 
 				case SPEED : {
-					result = new Float(vehicle.getSpeed()).intValue();
+					result = Math.round(vehicle.getSpeed()*10.0)/10.0;
 				} break;
 
 				case DRIVER : {
@@ -327,7 +327,7 @@ extends UnitTableModel {
 					if ((mission != null) && (mission instanceof VehicleMission)) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
 						try {
-							result = new Float(vehicleMission.getCurrentLegRemainingDistance()).intValue();
+							result = Math.round(vehicleMission.getCurrentLegRemainingDistance()*10.0)/10.0;
 						}
 						catch (Exception e) {
 							logger.log(Level.SEVERE,"Error getting current leg remaining distance.");

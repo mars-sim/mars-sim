@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -41,7 +42,7 @@ public class EmergencySupplyMissionMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
-        double missionProbability = 0D;
+        double result = 0D;
 
         if (person.isInSettlement()) {
         		
@@ -108,20 +109,39 @@ public class EmergencySupplyMissionMeta implements MetaMission {
 	                }
 	            }
 	
-	            missionProbability = EmergencySupplyMission.BASE_STARTING_PROBABILITY;
+	            result = EmergencySupplyMission.BASE_STARTING_PROBABILITY;
 	
+	    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);	
+	    		int numThisMission = missionManager.numParticularMissions(NAME, settlement);
+	    		
+	    		// Check for embarking missions.
+	    		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
+	    			return 0;
+	    		}	
+	    		
+	    		else if (numThisMission > 1)
+	    			return 0;	
+
+	    		if (result <= 0)
+	    			return 0;
+	    		
+	    		int f1 = numEmbarked + 1;
+	    		int f2 = numThisMission + 1;
+	    		
+	    		result *= settlement.getNumCitizens() / f1 / f2 / 2D;
+	    		
 	            // Crowding modifier.
 	            int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
-	            if (crowding > 0) missionProbability *= (crowding + 1);
+	            if (crowding > 0) result *= (crowding + 1);
 	
 	            // Job modifier.
-	            missionProbability *= jobModifier;
+	            result *= jobModifier;
 	
 	        }
 	        
         }
 
-        return missionProbability;
+        return result;
     }
 
 	@Override

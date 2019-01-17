@@ -794,18 +794,20 @@ public class Trade extends RoverMission implements Serializable {
 			Good good = i.next();
 			if (good.getCategory().equals(GoodType.AMOUNT_RESOURCE)) {
 				AmountResource resource = (AmountResource) good.getObject();
+				int id = resource.getID();
 				double amount = load.get(good).doubleValue();
-				if (result.containsKey(resource.getID())) {
-					amount += (Double) result.get(resource.getID());
+				if (result.containsKey(id)) {
+					amount += (Double) result.get(id);
 				}
-				result.put(ResourceUtil.findIDbyAmountResourceName(resource.getName()), amount);
+				result.put(id, amount);
 			} else if (good.getCategory().equals(GoodType.ITEM_RESOURCE)) {
 				ItemResource resource = (ItemResource) good.getObject();
+				int id = resource.getID();
 				int num = load.get(good);
-				if (result.containsKey(resource.getID())) {
-					num += (Integer) result.get(resource.getID());
+				if (result.containsKey(id)) {
+					num += (Integer) result.get(id);
 				}
-				result.put(ResourceUtil.findIDbyAmountResourceName(resource.getName()), num);
+				result.put(id, num);
 			}
 		}
 

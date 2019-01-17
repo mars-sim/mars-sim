@@ -134,8 +134,8 @@ public class GoodsManager implements Serializable {
 	private static final double FUEL_FACTOR = 5D;
 	private static final double VEHICLE_FUEL_FACTOR = 1D;
 	private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5D;
-	private static final double MANUFACTURING_INPUT_FACTOR = .5D;
-	private static final double CONSTRUCTING_INPUT_FACTOR = .5D;
+	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
+	private static final double CONSTRUCTING_INPUT_FACTOR = 2D;
 	private static final double COOKED_MEAL_INPUT_FACTOR = .5D;
 	private static final double DESSERT_FACTOR = .1D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .5D;
@@ -175,9 +175,7 @@ public class GoodsManager implements Serializable {
 	private double tourism_factor = 1;
 
 	private double vp_cache;
-	
 	private double inflation_rate = .8;
-
 
 	private Map<Good, Double> goodsValues;
 	private Map<Good, Double> goodsDemandCache;
@@ -367,7 +365,6 @@ public class GoodsManager implements Serializable {
 	 * @return value (value points / kg)
 	 */
 	private double determineAmountResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
-
 		double value = 0D;
 //        double demand = 0D;
 		double totalDemand = 0D;
@@ -389,12 +386,15 @@ public class GoodsManager implements Serializable {
 
 		AmountResource resource = (AmountResource) resourceGood.getObject();
 		int id = resource.getID();//ResourceUtil.findIDbyAmountResourceName(resource.getName());
-		
+
 		if (useCache) {
 			if (goodsDemandCache.containsKey(resourceGood)) {
+				// Get previous demand
 				previousDemand = goodsDemandCache.get(resourceGood);
-
-				totalSupply = getTotalSupplyAmount(id, supply, solElapsed);
+				// Calculate total demand
+				totalDemand =  .5 * previousDemand + .5 * getAverageAmoundDemand(id, numSol);
+				// Calculate total supply
+				totalSupply = getTotalSupplyAmountResource(id, supply, solElapsed);
 			}
 
 			// if (goodsSupplyCache.containsKey(resourceGood)) {
@@ -405,8 +405,8 @@ public class GoodsManager implements Serializable {
 		} 
 		
 		else {
-			// Create getAllSupplyAmount()
-			totalSupply = getTotalSupplyAmount(id, supply, solElapsed);
+			// Calculate total supply
+			totalSupply = getTotalSupplyAmountResource(id, supply, solElapsed);
 			// goodsSupplyCache.put(resourceGood, totalSupply);
 
 			// Tune life support demand if applicable.
@@ -456,7 +456,7 @@ public class GoodsManager implements Serializable {
 			// this out for now. - Scott
 			// projectedDemand = projectedDemand / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 
-			totalDemand = .33 * (previousDemand + projectedDemand + getNewDemandAmount(id, numSol));
+			totalDemand = .33 * (previousDemand + projectedDemand + getAverageAmoundDemand(id, numSol));
 
 			// Adjust VP for the inflation
 			adjustVPInflation();
@@ -542,13 +542,12 @@ public class GoodsManager implements Serializable {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getTotalSupplyAmount(int resource, double supplyStored, int solElapsed) {
+	public double getTotalSupplyAmountResource(int resource, double supplyStored, int solElapsed) {
 		double totalSupplyAmount = 0;
-//		String r = resource.getName().toLowerCase();
 
 		double supplyAmount = inv.getAmountSupplyAmount(resource);
-		supplyAmount = Math.round(supplyAmount * 1000000.0) / 1000000.0;
-//        int supplyRequest = inv.getAmountSupplyRequest(r);
+
+//        int supplyRequest = inv.getAmountSupplyRequest(resource);
 
 		// The total daily supply is the sum of the daily supply amount and the stored
 		// supply amount per sol
@@ -557,8 +556,8 @@ public class GoodsManager implements Serializable {
 		// Setting totalSupplyAmount to supplyStored. I don't think we want to modify
 		// the supply side of the value equation
 		// from it's actual value. - Scott
-		totalSupplyAmount = supplyStored;
-		totalSupplyAmount = Math.round(totalSupplyAmount * 1000000.0) / 1000000.0;
+		totalSupplyAmount = .5 * (supplyStored + supplyAmount);
+//		totalSupplyAmount = Math.round(totalSupplyAmount * 1_000_000.0) / 1_000_000.0;
 
 		// if (r.equals("regolith") ) {
 //        //if (r.equals("ethylene") || r.equals("polyethylene") || r.equals("regolith") || r.equals("iron") || r.equals("iron oxide")) {
@@ -580,13 +579,13 @@ public class GoodsManager implements Serializable {
 	 * @param solElapsed
 	 * @return
 	 */
-	public double getNewDemandAmount(int resource, int solElapsed) {
+	public double getAverageAmoundDemand(int resource, int solElapsed) {
 //		String r = resource.getName().toLowerCase();
 
 		// sDemand is the amount of successful demand
 		double sDemand = inv.getAmountDemandAmount(resource);
 		// sDemand = Math.round(sDemand * 1000000.0) / 1000000.0;
-		int requests = inv.getAmountDemandTotalRequest(resource);
+//		int requests = inv.getAmountDemandTotalRequest(resource);
 
 		// Get the average demand per orbit
 		// total average demand = projected demand + real demand usage
@@ -605,6 +604,24 @@ public class GoodsManager implements Serializable {
 		// return totalAmountDemand;
 	}
 
+	/**
+	 * Gets the new item demand
+	 * 
+	 * @param resource
+	 * @param solElapsed
+	 * @return
+	 */
+	public double getAverageItemDemand(int resource, int solElapsed) {
+		// sDemand is the amount of successful demand
+		double sDemand = inv.getItemDemand(resource);
+
+//		int requests = inv.getItemDemandTotalRequest(resource);
+
+		// Get the average demand per orbit
+		// total average demand = projected demand + real demand usage
+
+		return sDemand / solElapsed;
+	}
 	/**
 	 * Gets the life support demand for an amount resource.
 	 * 
@@ -1655,39 +1672,45 @@ public class GoodsManager implements Serializable {
 				throw new IllegalArgumentException("Good: " + resourceGood + " not valid.");
 
 			// Clear parts demand cache so it will be calculated next time.
-			partsDemandCache.clear();
+//			partsDemandCache.clear();
 		} 
 		
 		else {
 			// Get demand for part.
-			if (resource instanceof Part) {
+			Part part = (Part) resource;
+			int id = part.getID();
+						
+			determinePartsDemand();
+			
+			if (partsDemandCache.containsKey(id))
+				demand = partsDemandCache.get(id);
 
-				Part part = (Part) resource;
-				int id = part.getID();
-				if (partsDemandCache.size() == 0)
-					determinePartsDemand();
-				if (partsDemandCache.containsKey(id))
-					demand = partsDemandCache.get(id);
+			// Add eva related parts demand.
+			demand += getEVADemand(demand, part);
+			
+			// Add manufacturing demand.
+			demand += getPartManufacturingDemand(part);
 
-				// Add eva related parts demand.
-				demand += getEVADemand(demand, part);
-				
-				// Add manufacturing demand.
-				demand += getPartManufacturingDemand(part);
+			// Add food production demand.
+			demand += getPartFoodProductionDemand(part);
 
-				// Add food production demand.
-				demand += getPartFoodProductionDemand(part);
+			// Add construction demand.
+			demand += getPartConstructionDemand(id);
 
-				// Add construction demand.
-				demand += getPartConstructionDemand(id);
+			// Add construction site demand.
+			demand += getPartConstructionSiteDemand(id);
 
-				// Add construction site demand.
-				demand += getPartConstructionSiteDemand(id);
-			}
-
+			// needed for loading a saved sim
+			int solElapsed = marsClock.getMissionSol();
+			// Compact and/or clear supply and demand maps every 5 days
+			int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
+			
+			// Add the item demand not met
+			demand += getAverageItemDemand(id, numSol);
+			
 			// Add trade demand.
 			double tradeDemand = determineTradeDemand(resourceGood, useCache);
-			if (tradeDemand > demand) {
+			if (demand < tradeDemand) {
 				demand = tradeDemand;
 			}
 

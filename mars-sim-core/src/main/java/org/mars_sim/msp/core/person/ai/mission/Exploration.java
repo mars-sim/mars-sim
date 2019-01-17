@@ -212,7 +212,7 @@ public class Exploration extends RoverMission implements Serializable {
 	}
 
 	/**
-	 * Checks of there are any mineral locations within rover/mission range.
+	 * Checks if there are any mineral locations within rover/mission range.
 	 * 
 	 * @param rover          the rover to use.
 	 * @param homeSettlement the starting settlement.
