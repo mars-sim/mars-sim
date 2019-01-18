@@ -102,11 +102,21 @@ public class Malfunction implements Serializable {
 	public double computeWorkTime(double time) {
 		if (time < 1)
 			return 0;
-		if (RandomUtil.getRandomInt(3) == 0)
-			return time/8D + RandomUtil.getRandomDouble(time *.875);
-		else
-			// Set it to be at least a quarter of its value to its full value
-			return RandomUtil.getRandomRegressionInteger((int)(time/4D), (int)time);
+		
+		double t = 0;
+		
+		do {
+			t = time + RandomUtil.getGaussianDouble() * time/4D;
+		}
+		while (t <= 0);
+			
+		return t;
+		
+//		if (RandomUtil.getRandomInt(3) == 0)
+//			return time/8D + RandomUtil.getRandomDouble(time *.875);
+//		else
+//			// Set it to be at least a quarter of its value to its full value
+//			return RandomUtil.getRandomRegressionInteger((int)(time/4D), (int)time);
 	}
 	
 	/**
@@ -504,8 +514,6 @@ public class Malfunction implements Serializable {
 	 * @throws Exception if error determining the repair parts.
 	 */
 	void determineRepairParts() {
-		// MalfunctionConfig config =
-		// SimulationConfig.instance().getMalfunctionConfiguration();
 		String[] partNames = malfunctionConfig.getRepairPartNamesForMalfunction(name);
 		for (String partName : partNames) {
 			if (RandomUtil.lessThanRandPercent(malfunctionConfig.getRepairPartProbability(name, partName))) {

@@ -535,14 +535,17 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			if (isEmerg && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " had completed the Emergency Repair of " + malfunction.getName() + " in "+ entity + ".");
-				endTask();
+						+ " wrapped up the Emergency Repair of " + malfunction.getName() 
+						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
+//				endTask();
 			}
+			
 			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " had completed the General Repair of " + malfunction.getName() + " in "+ entity + ".");
-				endTask();
+						+ " had completed the General Repair of " + malfunction.getName() 
+						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");
+//				endTask();
 			}
 		} 
 		
@@ -551,14 +554,16 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			if (isEmerg && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
-						+ " had completed the Emergency Repair of " + malfunction.getName() + " in "+ entity + ".");
-				endTask();
+					+ " wrapped up the Emergency Repair of " + malfunction.getName() 
+					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
+//				endTask();
 			}
 			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
-						+ " had completed the General Repair of " + malfunction.getName() + " in "+ entity + ".");
-				endTask();
+					+ " had completed the General Repair of " + malfunction.getName() 
+					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");
+//				endTask();
 			}
 		}
 

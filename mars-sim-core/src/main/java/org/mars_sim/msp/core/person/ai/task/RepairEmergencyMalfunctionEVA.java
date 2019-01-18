@@ -303,25 +303,10 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		}
 
 		// Check if there emergency malfunction work is fixed.
-		double workTimeLeft = malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime();
-		if (workTimeLeft <= 0) {
-			if (person != null) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-						+ " had completed the emergency EVA repair on malfunction: " 
-				+ malfunction.getName() + " in "+ entity + ".");
-//				+ "@"+ Integer.toHexString(malfunction.hashCode()));
-			}
-        	else if (robot != null) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
-						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-						+ " had completed the emergency EVA repair on malfunction: " 
-				+ malfunction.getName() + " in "+ entity + ".");
-//				+ "@" + Integer.toHexString(malfunction.hashCode()));
-        	}
-			setPhase(WALK_BACK_INSIDE);
-			return time;
-		}
+//		if (malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {	
+//			setPhase(WALK_BACK_INSIDE);
+//			return time;
+//		}
 
 		double workTime = 0;
 
@@ -357,6 +342,24 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		// Check if an accident happens during maintenance.
 		checkForAccident(time);
 
+		// Check if the emergency malfunction work is fixed.
+		if (malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {	
+			if (person != null) {
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+					+ " wrapped up the emergency repair of " + malfunction.getName() 
+					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
+			}
+			else {
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
+						+ " wrapped up the emergency repair of " + malfunction.getName() 
+						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
+			}
+			setPhase(WALK_BACK_INSIDE);
+//			return remainingWorkTime;
+		}
+		
 		return remainingWorkTime;
 	}
 

@@ -151,22 +151,6 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 	private double repairingPhase(double time) {
 		String name = null;
 
-		// Check if the emergency malfunction work is fixed.
-		double workTimeLeft = malfunction.getEmergencyWorkTime() - malfunction.getCompletedEmergencyWorkTime();
-		if (workTimeLeft <= 0) {
-			if (person != null) {
-			LogConsolidated.log(Level.INFO, 0, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-					+ " had finished the emergency repair of " + malfunction.getName() + " in "+ entity + ".");
-			}
-			else {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
-						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-						+ " had finished the emergency repair of " + malfunction.getName() + " in "+ entity + ".");
-			}
-			endTask();
-		}
-
 		if (isDone()) {
 			return time;
 		}
@@ -193,9 +177,29 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		// Add work to emergency malfunction.
 		double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime, name);
 
-		// Add experience
+		// Add experience points
 		addExperience(time);
 
+		// Check if an accident happens during repair.
+//		checkForAccident(time);
+
+		// Check if the emergency malfunction work is fixed.
+		if (malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {	
+			if (person != null) {
+			LogConsolidated.log(Level.INFO, 0, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+					+ " wrapped up the emergency repair of " + malfunction.getName() 
+					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
+			}
+			else {
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
+						+ " wrapped up the emergency repair of " + malfunction.getName() 
+						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
+			}
+//			endTask();
+		}
+		
 		return remainingWorkTime;
 	}
 
