@@ -100,7 +100,7 @@ public class LocationTag implements LocationState, Serializable {
 				return p.getSettlement().getName();
 			else if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType())
 				return p.getVehicle().getName();
-			else if (p.isBuried())
+			else if (p.isBuried() && p.getBuriedSettlement() != null)
 				return p.getBuriedSettlement().getName();
 			else if (p.isDeclaredDead())
 				return p.getAssociatedSettlement().getName();

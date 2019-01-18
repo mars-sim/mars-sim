@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -155,9 +154,12 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		// Create list of possible sciences for studying field samples.
 		List<ScienceType> fieldSciences = new ArrayList<ScienceType>(3);
 		fieldSciences.add(ScienceType.AREOLOGY);
+		fieldSciences.add(ScienceType.ASTRONOMY);
 		fieldSciences.add(ScienceType.BIOLOGY);
 		fieldSciences.add(ScienceType.CHEMISTRY);
-
+		fieldSciences.add(ScienceType.METEOROLOGY);
+		fieldSciences.add(ScienceType.PHYSICS);
+		
 		return fieldSciences;
 	}
 
@@ -584,7 +586,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 			// Determine explored site to improve estimations.
 			ExploredLocation site = determineExplorationSite();
 			if (site != null) {
-				MineralMap mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
+				MineralMap mineralMap = surface.getMineralMap();
 				Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
 				Iterator<String> i = estimatedMineralConcentrations.keySet().iterator();
 				while (i.hasNext()) {
@@ -671,8 +673,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		Settlement settlement = person.getAssociatedSettlement();
 		if (settlement != null) {
 			List<ExploredLocation> settlementExploredLocations = new ArrayList<ExploredLocation>();
-			List<ExploredLocation> allExploredLocations = Simulation.instance().getMars().getSurfaceFeatures()
-					.getExploredLocations();
+			List<ExploredLocation> allExploredLocations = surface.getExploredLocations();
 			Iterator<ExploredLocation> i = allExploredLocations.iterator();
 			while (i.hasNext()) {
 				ExploredLocation location = i.next();

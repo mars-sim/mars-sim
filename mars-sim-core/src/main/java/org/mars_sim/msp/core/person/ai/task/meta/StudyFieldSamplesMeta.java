@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.FavoriteType;
@@ -27,7 +26,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Lab;
 
 /**
@@ -88,7 +86,7 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 				if (!(container instanceof MarsSurface)) {
 	                Inventory inv = container.getInventory();
 	                //AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
-	                if (inv.getAmountResourceStored(ResourceUtil.rockSamplesAR, false) < StudyFieldSamples.SAMPLE_MASS) {
+	                if (inv.getAmountResourceStored(ResourceUtil.rockSamplesID, false) < StudyFieldSamples.SAMPLE_MASS) {
 	                    result = 0D;
 	                    return 0;
 	                }
@@ -102,8 +100,8 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 	        List<ScienceType> fieldSciences = StudyFieldSamples.getFieldSciences();
 	
 	        // Add probability for researcher's primary study (if any).
-	        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-	        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
+//	        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
+	        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
 	        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
 	            if (!primaryStudy.isPrimaryResearchCompleted()) {
 	                if (fieldSciences.contains(primaryStudy.getScience())) {
@@ -135,7 +133,7 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 	        }
 	
 	        // Add probability for each study researcher is collaborating on.
-	        Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
+	        Iterator<ScientificStudy> i = scientificStudyManager.getOngoingCollaborativeStudies(person).iterator();
 	        while (i.hasNext()) {
 	            ScientificStudy collabStudy = i.next();
 	            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {

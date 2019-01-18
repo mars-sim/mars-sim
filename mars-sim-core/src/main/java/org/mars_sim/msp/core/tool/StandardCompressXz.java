@@ -1,11 +1,10 @@
 package org.mars_sim.msp.core.tool;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 
-import org.tukaani.xz.*;
+import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.XZOutputStream;
 
 public class StandardCompressXz {
 

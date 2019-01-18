@@ -67,11 +67,11 @@ public class DateDialog extends ModalInternalFrame {
 		monthCB.setSelectedIndex(atime.getMonth()-1);
 		add(monthCB);
 		
-		Integer iDate = new Integer(atime.getDay());
+		Integer iDate = Integer.valueOf(atime.getDay());
 		tfDate = new JTextField(iDate.toString(), 2);
 		add(tfDate);
 		
-		Integer iYear = new Integer(atime.getYear());
+		Integer iYear = Integer.valueOf(atime.getYear());
 		tfYear = new JTextField(iYear.toString(), 4);
 		add(tfYear);
 		

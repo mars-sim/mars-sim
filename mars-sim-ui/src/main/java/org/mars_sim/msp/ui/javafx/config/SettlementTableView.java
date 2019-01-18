@@ -52,7 +52,7 @@ public class SettlementTableView {
 	
 	private ObservableList<Map> allData;
  
-	private TableView table_view;
+	private TableView<Map> table_view;
 	
     //private SpreadsheetView spreadSheetView;
 	
@@ -64,14 +64,14 @@ public class SettlementTableView {
 	private List<String> settlementNames;
 	
 	private List<SettlementTemplate> templates;
-/*	
-    private List<String> cityList = Arrays.asList("Shanghai", "Paris", "New York City", "Bangkok",
-            "Singapore", "Johannesburg", "Berlin", "Wellington", "London", "Montreal");
-    private final List<String> countryList = Arrays.asList("China", "France", "New Zealand",
-            "United States", "Germany", "Canada");
-    private final List<String> companiesList = Arrays.asList("", "ControlsFX", "Aperture Science",
-            "Rapture", "Ammu-Nation", "Nuka-Cola", "Pay'N'Spray", "Umbrella Corporation");
-*/
+	
+//    private List<String> cityList = Arrays.asList("Shanghai", "Paris", "New York City", "Bangkok",
+//            "Singapore", "Johannesburg", "Berlin", "Wellington", "London", "Montreal");
+//    private final List<String> countryList = Arrays.asList("China", "France", "New Zealand",
+//            "United States", "Germany", "Canada");
+//    private final List<String> companiesList = Arrays.asList("", "ControlsFX", "Aperture Science",
+//            "Rapture", "Ammu-Nation", "Nuka-Cola", "Pay'N'Spray", "Umbrella Corporation");
+
 	private int[] col_widths = new int[]{200,220,80,80,194,90,90};
 
 	private List<TableColumn<Map, String>> cols = new ArrayList<>();//TableColumn<>();
@@ -87,21 +87,18 @@ public class SettlementTableView {
 		
 	}
 	
-/* 
-    public SpreadsheetView createGUI() {
-   	    	 	
-		for (int x = 0; x < NUM_COLUMNS; x++) {
-			TableColumn<Map, String> col = new TableColumn<>(headers[x]);
-			col.setCellValueFactory(new MapValueFactory(x));
-			col.setMinWidth(col_widths[x]);
-			cols.add(col);
-		}
-		
-		return buildSheet();
-	}
-*/ 
- 
-    @SuppressWarnings("restriction")
+//    public SpreadsheetView createGUI() {
+//   	    	 	
+//		for (int x = 0; x < NUM_COLUMNS; x++) {
+//			TableColumn<Map, String> col = new TableColumn<>(headers[x]);
+//			col.setCellValueFactory(new MapValueFactory(x));
+//			col.setMinWidth(col_widths[x]);
+//			cols.add(col);
+//		}
+//		
+//		return buildSheet();
+//	}
+
 	public TableView createGUI() {
 
 		for (int x = 0; x < NUM_COLUMNS; x++) {
@@ -146,132 +143,128 @@ public class SettlementTableView {
         return table_view;
     }
  
-
-/*
-    public SpreadsheetView buildSheet() {
-
-        //spreadSheetView = new SpreadsheetView(generateDataInMap());       
-        GridBase grid = new GridBase(rowCount, NUM_COLUMNS);
-        grid.setRowHeightCallback(new GridBase.MapBasedRowHeightFactory(generateRowHeight()));
-        buildGrid(grid);
-
-        spreadSheetView = new SpreadsheetView(grid);
-        //spreadSheetView.setShowRowHeader(rowHeader.isSelected());
-        //spreadSheetView.setShowColumnHeader(columnHeader.isSelected());
-        spreadSheetView.setEditable(true);//editable.isSelected());
-        //spreadSheetView.getSelectionModel().setSelectionMode(selectionMode.isSelected() ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);
-
-        spreadSheetView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        //spreadSheetView.getSelectionModel().setCellSelectionEnabled(true);
-        //spreadSheetView.getColumns().setAll(cols.get(0), cols.get(1), cols.get(2), 
-        //		cols.get(3), cols.get(4), cols.get(5), cols.get(6));
-   
-        return spreadSheetView;
-    }
-*/    
+//    public SpreadsheetView buildSheet() {
+//
+//        //spreadSheetView = new SpreadsheetView(generateDataInMap());       
+//        GridBase grid = new GridBase(rowCount, NUM_COLUMNS);
+//        grid.setRowHeightCallback(new GridBase.MapBasedRowHeightFactory(generateRowHeight()));
+//        buildGrid(grid);
+//
+//        spreadSheetView = new SpreadsheetView(grid);
+//        //spreadSheetView.setShowRowHeader(rowHeader.isSelected());
+//        //spreadSheetView.setShowColumnHeader(columnHeader.isSelected());
+//        spreadSheetView.setEditable(true);//editable.isSelected());
+//        //spreadSheetView.getSelectionModel().setSelectionMode(selectionMode.isSelected() ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);
+//
+//        spreadSheetView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+//        //spreadSheetView.getSelectionModel().setCellSelectionEnabled(true);
+//        //spreadSheetView.getColumns().setAll(cols.get(0), cols.get(1), cols.get(2), 
+//        //		cols.get(3), cols.get(4), cols.get(5), cols.get(6));
+//   
+//        return spreadSheetView;
+//    }
  
-/*    
-    private Map<Integer, Double> generateRowHeight() {
-        Map<Integer, Double> rowHeight = new HashMap<>();
-        rowHeight.put(1, 100.0);
-        return rowHeight;
-    }
-*/
+//    private Map<Integer, Double> generateRowHeight() {
+//        Map<Integer, Double> rowHeight = new HashMap<>();
+//        rowHeight.put(1, 100.0);
+//        return rowHeight;
+//    }
+
     
-    /**
-     * Build the grid.
-     * @param grid
-    
-    private void buildGrid(GridBase grid) {
-
-        List<ObservableList<SpreadsheetCell>> cols = new ArrayList<>(grid.getColumnCount());
-        int colIndex = 0;
-        cols.add(createRow(grid, colIndex++));
-        
-        for (int i = colIndex; i < NUM_COLUMNS; ++i) {
-            final ObservableList<SpreadsheetCell> randomCol = FXCollections.observableArrayList();
-            SpreadsheetCell cell = SpreadsheetCellType.STRING.createCell(0, i, 1, 1, "Random " + (i + 1));
-            cell.getStyleClass().add("first-cell");
-            randomCol.add(cell);
-
-            for (int column = 1; column < grid.getColumnCount(); column++) {
-                randomCol.add(generateCell(i, column, 1, 1));
-            }
-            cols.add(randomCol);
-        }
-
-        grid.setRows(cols);
- 
- */
-/*        
-        ArrayList<ObservableList<SpreadsheetCell>> rows = new ArrayList<>(grid.getRowCount());
-        int rowIndex = 0;
-        rows.add(getSettlement(grid, rowIndex++));
-        for (int i = rowIndex; i < rowIndex + 2; ++i) {
-            final ObservableList<SpreadsheetCell> randomRow = FXCollections.observableArrayList();
-            SpreadsheetCell cell = SpreadsheetCellType.STRING.createCell(i, 0, 1, 1, "Random " + (i + 1));
-            cell.getStyleClass().add("first-cell");
-            randomRow.add(cell);
-
-            for (int column = 1; column < grid.getColumnCount(); column++) {
-                randomRow.add(generateCell(i, column, 1, 1));
-            }
-            rows.add(randomRow);
-        }
-
-        grid.setRows(rows);
-        
-    }
- */
-    
-
-    /**
-     * Return a List of SpreadsheetCell with settlements
-     * @param grid
-     * @param row
-     * @return
-
-    private ObservableList<SpreadsheetCell> createRow(GridBase grid, int row) {
-
-        final ObservableList<SpreadsheetCell> settlementCells = FXCollections.observableArrayList();
-
-        SpreadsheetCell cell = SpreadsheetCellType.STRING.createCell(row, 0, 1, 1, "");
-
-        ((SpreadsheetCellBase) cell).setTooltip("This cell displays a custom toolTip.");
-        cell.setEditable(false);
-        settlementCells.add(cell);
-
-        for (int column = 1; column < grid.getColumnCount(); ++column) {
-
-            cell = SpreadsheetCellType.STRING.createCell(row, column, 1, 1,
-                    settlementNames.get(column));
-            cell.setEditable(false);
-            //cell.getStyleClass().add("company");
-            settlementCells.add(cell);
-        }
-
-        return settlementCells;
-    }
-*/
-
-    /**
-     * Randomly generate a {@link SpreadsheetCell}.
-     
-    private SpreadsheetCell generateCell(int row, int column, int rowSpan, int colSpan) {
-
-        SpreadsheetCell cell = SpreadsheetCellType.LIST(countryList).createCell(row, column, rowSpan, colSpan,
-                    countryList.get((int) (Math.random() * 6)));
-            
-            //cell = SpreadsheetCellType.STRING.createCell(row, column, rowSpan, colSpan,
-            //        cityList.get((int) (Math.random() * 10)));
-  
-        // Styling for preview
-        if (row % 5 == 0) {
-            cell.getStyleClass().add("five_rows");
-        }
-        return cell;
-    }
-*/
+//    /**
+//     * Build the grid.
+//     * @param grid
+//    
+//    private void buildGrid(GridBase grid) {
+//
+//        List<ObservableList<SpreadsheetCell>> cols = new ArrayList<>(grid.getColumnCount());
+//        int colIndex = 0;
+//        cols.add(createRow(grid, colIndex++));
+//        
+//        for (int i = colIndex; i < NUM_COLUMNS; ++i) {
+//            final ObservableList<SpreadsheetCell> randomCol = FXCollections.observableArrayList();
+//            SpreadsheetCell cell = SpreadsheetCellType.STRING.createCell(0, i, 1, 1, "Random " + (i + 1));
+//            cell.getStyleClass().add("first-cell");
+//            randomCol.add(cell);
+//
+//            for (int column = 1; column < grid.getColumnCount(); column++) {
+//                randomCol.add(generateCell(i, column, 1, 1));
+//            }
+//            cols.add(randomCol);
+//        }
+//
+//        grid.setRows(cols);
+// 
+//
+//      
+//        ArrayList<ObservableList<SpreadsheetCell>> rows = new ArrayList<>(grid.getRowCount());
+//        int rowIndex = 0;
+//        rows.add(getSettlement(grid, rowIndex++));
+//        for (int i = rowIndex; i < rowIndex + 2; ++i) {
+//            final ObservableList<SpreadsheetCell> randomRow = FXCollections.observableArrayList();
+//            SpreadsheetCell cell = SpreadsheetCellType.STRING.createCell(i, 0, 1, 1, "Random " + (i + 1));
+//            cell.getStyleClass().add("first-cell");
+//            randomRow.add(cell);
+//
+//            for (int column = 1; column < grid.getColumnCount(); column++) {
+//                randomRow.add(generateCell(i, column, 1, 1));
+//            }
+//            rows.add(randomRow);
+//        }
+//
+//        grid.setRows(rows);
+//        
+//    }
+// 
+//    
+//
+//    /**
+//     * Return a List of SpreadsheetCell with settlements
+//     * @param grid
+//     * @param row
+//     * @return
+//
+//    private ObservableList<SpreadsheetCell> createRow(GridBase grid, int row) {
+//
+//        final ObservableList<SpreadsheetCell> settlementCells = FXCollections.observableArrayList();
+//
+//        SpreadsheetCell cell = SpreadsheetCellType.STRING.createCell(row, 0, 1, 1, "");
+//
+//        ((SpreadsheetCellBase) cell).setTooltip("This cell displays a custom toolTip.");
+//        cell.setEditable(false);
+//        settlementCells.add(cell);
+//
+//        for (int column = 1; column < grid.getColumnCount(); ++column) {
+//
+//            cell = SpreadsheetCellType.STRING.createCell(row, column, 1, 1,
+//                    settlementNames.get(column));
+//            cell.setEditable(false);
+//            //cell.getStyleClass().add("company");
+//            settlementCells.add(cell);
+//        }
+//
+//        return settlementCells;
+//    }
+//
+//
+//    /**
+//     * Randomly generate a {@link SpreadsheetCell}.
+//     
+//    private SpreadsheetCell generateCell(int row, int column, int rowSpan, int colSpan) {
+//
+//        SpreadsheetCell cell = SpreadsheetCellType.LIST(countryList).createCell(row, column, rowSpan, colSpan,
+//                    countryList.get((int) (Math.random() * 6)));
+//            
+//            //cell = SpreadsheetCellType.STRING.createCell(row, column, rowSpan, colSpan,
+//            //        cityList.get((int) (Math.random() * 10)));
+//  
+//        // Styling for preview
+//        if (row % 5 == 0) {
+//            cell.getStyleClass().add("five_rows");
+//        }
+//        return cell;
+//    }
+//
 
     private ObservableList<Map> generateDataInMap() {
     	

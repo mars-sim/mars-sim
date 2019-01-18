@@ -54,7 +54,7 @@ public class AudioPlayer implements ClockListener {
 	// private boolean lastMusicState = true;
 	// private boolean lastSoundState = true;
 
-	private MainDesktopPane desktop;
+//	private MainDesktopPane desktop;
 	private static MainScene mainScene;
 
 	/** The current clip sound. */
@@ -72,7 +72,7 @@ public class AudioPlayer implements ClockListener {
 
 	public AudioPlayer(MainDesktopPane desktop) {
 		// logger.config("constructor is on " + Thread.currentThread().getName());
-		this.desktop = desktop;
+//		this.desktop = desktop;
 		mainScene = desktop.getMainScene();
 
 		masterClock = Simulation.instance().getMasterClock();
@@ -532,7 +532,7 @@ public class AudioPlayer implements ClockListener {
 	public void destroy() {
 		allSoundClips = null;
 		allMusicTracks = null;
-		desktop = null;
+//		desktop = null;
 		currentSoundClip = null;
 		currentMusicTrack = null;
 		soundTracks = null;

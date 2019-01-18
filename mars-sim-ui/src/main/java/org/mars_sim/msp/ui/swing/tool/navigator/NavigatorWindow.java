@@ -659,8 +659,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 					latText.setCaretPosition(latText.getText().length());
 					longText.setCaretPosition(longText.getText().length());
 
-					latitude = ((Float) new Float(latText.getText())).doubleValue();
-					longitude = ((Float) new Float(longText.getText())).doubleValue();
+					latitude = Double.valueOf(latText.getText());// ((Float) new Float(latText.getText())).doubleValue();
+					longitude = Double.valueOf(longText.getText());// ((Float) new Float(longText.getText())).doubleValue();
 				}
 
 				String latDirStr = (String) latDir.getSelectedItem();

@@ -246,7 +246,7 @@ extends UnitTableModel {
 		    	        	}
 		    			}
 		    		}
-				    result = new Double(sum);
+				    result = Double.valueOf(sum);
 
 				} break;
 

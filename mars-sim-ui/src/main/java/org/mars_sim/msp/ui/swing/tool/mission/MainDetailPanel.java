@@ -511,7 +511,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		if (currentVehicle != null) currentVehicle.removeUnitListener(this);
 
 		// Get the selected mission.
-		Mission mission = (Mission) ((JList) e.getSource()).getSelectedValue();
+		Mission mission = (Mission) ((JList<?>) e.getSource()).getSelectedValue();
 
 		if (mission != null) {
 			// Update mission info in UI.

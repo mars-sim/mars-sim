@@ -291,8 +291,8 @@ public class SimulationConfigEditor {
 	private void adjustColumn(JTable t) {
 		// If all column heads are wider than the column's cells'
 		// contents, then you can just use column.sizeWidthToFit().
-		final Object[] longValues = { "Schiaparelli Point", "Mars Direct Base (phase 1)", new Integer(18),
-				new Integer(16), new Integer(22), new Integer(22), Boolean.TRUE };
+		final Object[] longValues = { "Schiaparelli Point", "Mars Direct Base (phase 1)", Integer.valueOf(18),
+				Integer.valueOf(16), Integer.valueOf(22), Integer.valueOf(22), Boolean.TRUE };
 
 		boolean DEBUG = false;
 		// SettlementTableModel model = settlementTableModel;

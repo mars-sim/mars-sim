@@ -536,7 +536,7 @@ public class Malfunction implements Serializable {
 	 * @param number the number used for repair.
 	 */
 	public void repairWithParts(Integer id, int number, Inventory inv) {
-		Part part = (Part) ItemResourceUtil.findItemResource(id);
+//		Part part = (Part) ItemResourceUtil.findItemResource(id);
 		// if (part == null) throw new IllegalArgumentException("part is null");
 		if (repairParts.containsKey(id)) {
 
@@ -547,9 +547,10 @@ public class Malfunction implements Serializable {
 			else {
 				numberNeeded -= number;
 
-				//  Add produceSolidWaste()
-				if (part.getMassPerItem() > 0)
-					Storage.storeAnResource(part.getMassPerItem(), ResourceUtil.solidWasteID, inv,
+				//  Add producing solid waste
+				double mass = ItemResourceUtil.findItemResource(id).getMassPerItem();
+				if (mass > 0)
+					Storage.storeAnResource(mass, ResourceUtil.solidWasteID, inv,
 							sourceName + "::repairWithParts");
 
 				if (numberNeeded > 0)
@@ -558,7 +559,7 @@ public class Malfunction implements Serializable {
 					repairParts.remove(id);
 			}
 		} else
-			throw new IllegalArgumentException("Part " + part + " is not needed for repairs.");
+			throw new IllegalArgumentException("Part " + (Part) ItemResourceUtil.findItemResource(id) + " is not needed for repairs.");
 	}
 
 	/**

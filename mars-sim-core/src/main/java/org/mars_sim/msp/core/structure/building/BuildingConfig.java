@@ -169,21 +169,20 @@ public class BuildingConfig implements Serializable {
     private static final String WIND_POWER_SOURCE = PowerSourceType.WIND_POWER.toString();
     private static final String AREOTHERMAL_POWER_SOURCE = PowerSourceType.AREOTHERMAL_POWER.toString();
 
-    private Element root;
-	private Document buildingDoc;
+    private static Element root;
+	private static Document buildingDoc;
 	
-	
-	private Set<String> buildingTypes;
-	private List<FunctionType> functions;
-	private Map<String, Map<AmountResource, Double>> storageCapacities;
-	private Map<String, Map<AmountResource, Double>> initialResources;
+	private static Set<String> buildingTypes;
+	private static List<FunctionType> functions;
+	private static Map<String, Map<AmountResource, Double>> storageCapacities;
+	private static Map<String, Map<AmountResource, Double>> initialResources;
 	
 	/**
 	 * Constructor
 	 * @param buildingDoc DOM document with building configuration
 	 */
 	public BuildingConfig(Document buildingDoc) {
-		this.buildingDoc = buildingDoc;
+		BuildingConfig.buildingDoc = buildingDoc;
 
 		root = buildingDoc.getRootElement();
 		
@@ -798,7 +797,6 @@ public class BuildingConfig implements Serializable {
 	 * @return list of storage capacities
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-    @SuppressWarnings("unchecked")
 	public Map<AmountResource, Double> getStorageCapacities(String buildingType) {
 		if (storageCapacities.containsKey(buildingType)) {
 			return storageCapacities.get(buildingType);
@@ -812,7 +810,7 @@ public class BuildingConfig implements Serializable {
 			for (Element resourceStorageElement : resourceStorageNodes) {
 				String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
 	            AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-				Double capacity = new Double(resourceStorageElement.getAttributeValue(CAPACITY));
+				Double capacity = Double.valueOf(resourceStorageElement.getAttributeValue(CAPACITY));
 				map.put(resource, capacity);
 			}
 			storageCapacities.put(buildingType, map);
@@ -861,7 +859,7 @@ public class BuildingConfig implements Serializable {
 			for (Element resourceInitialElement : resourceInitialNodes) {
 				String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
 	            AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-				Double amount = new Double(resourceInitialElement.getAttributeValue(AMOUNT));
+				Double amount = Double.valueOf(resourceInitialElement.getAttributeValue(AMOUNT));
 				map.put(resource, amount);
 			}
 			return map;

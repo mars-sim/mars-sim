@@ -242,7 +242,7 @@ public class MiningSitePanel extends WizardPanel {
 		
 		// Update mineral concentrations table.
 		for (int x = 0; x < concentrationTableModel.getRowCount(); x++)
-			concentrationTableModel.setValueAt(new Double(0D), x, 1);
+			concentrationTableModel.setValueAt(Double.valueOf(0D), x, 1);
 	}
 
 	/**
@@ -299,7 +299,7 @@ public class MiningSitePanel extends WizardPanel {
 			longitudeLabel.setText("Longitude: ");
 			latitudeLabel.setText("Latitude: ");
 			for (int x = 0; x < concentrationTableModel.getRowCount(); x++)
-				concentrationTableModel.setValueAt(new Double(0D), x, 1);
+				concentrationTableModel.setValueAt(Double.valueOf(0D), x, 1);
 			errorMessageLabel.setText(" ");
 			getWizard().setButtons(false);
 		}

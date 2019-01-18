@@ -42,7 +42,7 @@ public class SpotlightLayerUI extends LayerUI<WebPanel> {
 	  public void installUI(JComponent c) {
 	    super.installUI(c);
 
-	    JLayer jlayer = (JLayer)c;
+	    JLayer<?> jlayer = (JLayer<?>)c;
 	    jlayer.setLayerEventMask(
 	      AWTEvent.MOUSE_EVENT_MASK |
 	      AWTEvent.MOUSE_MOTION_EVENT_MASK
@@ -53,7 +53,7 @@ public class SpotlightLayerUI extends LayerUI<WebPanel> {
 
 	  @Override
 	  public void uninstallUI(JComponent c) {
-	    JLayer jlayer = (JLayer)c;
+		JLayer<?> jlayer = (JLayer<?>)c;
 	    jlayer.setLayerEventMask(0);
 	    super.uninstallUI(c);
 	  }
@@ -99,7 +99,6 @@ public class SpotlightLayerUI extends LayerUI<WebPanel> {
 	  protected void processMouseEvent(MouseEvent e, JLayer l) {
 	    if (e.getID() == MouseEvent.MOUSE_ENTERED) mActive = true;
 	    if (e.getID() == MouseEvent.MOUSE_EXITED) mActive = false;
-	    l.repaint();
 	  }
 
 	  @Override

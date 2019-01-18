@@ -1,4 +1,5 @@
-/* Mars Simulation Project
+/** 
+ * Mars Simulation Project
  * CalendarProgram.java
  * @version 3.1.0 2018-08-02
  * @author Manny Kung
@@ -108,9 +109,9 @@ public class CalendarProgram{
 		currentYear = realYear;
 
 		//Add headers
-		String[] headers = {"Solisol", "Phobosol", "Deimosol", "Terrasol", "Hermesol", "Venusol", "Jovisol"}; //All headers
+		String[] weekHeaders = {"Solisol", "Phobosol", "Deimosol", "Terrasol", "Hermesol", "Venusol", "Jovisol"}; //All headers
 		for (int i=0; i<=6; i++){
-			mtblCalendar.addColumn(headers[i]);
+			mtblCalendar.addColumn(weekHeaders[i]);
 		}
 
 		tblCalendar.getParent().setBackground(tblCalendar.getBackground()); //Set background
@@ -171,7 +172,7 @@ public class CalendarProgram{
 
 		//Draw calendar
 		for (int i=1; i<=nod; i++){
-			int row = new Integer((i+som-2)/7);
+			int row = Integer.valueOf((i+som-2)/7);
 			int column  =  (i+som-2)%7;
 			mtblCalendar.setValueAt(i, row, column);
 		}

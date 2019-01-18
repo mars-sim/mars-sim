@@ -233,7 +233,7 @@ implements ListSelectionListener, MissionListener {
 	 * Note: this is called when a mission is selected on MissionWindow's mission list.
 	 */
 	public void valueChanged(ListSelectionEvent e) {
-		Mission mission = (Mission) ((JList) e.getSource()).getSelectedValue();
+		Mission mission = (Mission) ((JList<?>) e.getSource()).getSelectedValue();
 		
 		// Remove this as previous mission listener.
 		if ((currentMission != null) && (currentMission != mission)) 

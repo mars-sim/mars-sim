@@ -243,7 +243,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 					if (actualConcentrationMap.containsKey(minerals[row])) {
 						result = actualConcentrationMap.get(minerals[row]);
 					} else {
-						result = new Double(0D);
+						result = Double.valueOf(0D);
 					}
 				}
 			}

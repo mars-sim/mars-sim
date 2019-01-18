@@ -113,9 +113,9 @@ implements InternalFrameListener, ActionListener, WindowListener {
 	//private Choice			choiceCenterObject;
 	//private Choice			choiceOrbitObject;
 
-	private JComboBox			choiceTimeStep;
-	private JComboBox			choiceCenterObject;
-	private JComboBox			choiceOrbitObject;
+	private JComboBox<String>			choiceTimeStep;
+	private JComboBox<String>			choiceCenterObject;
+	private JComboBox<String>			choiceOrbitObject;
 
 	private JCheckBox		checkPlanetName;
 	private JCheckBox		checkObjectName;
@@ -715,7 +715,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
                 ctrlPanel.add(orbitLabel);
 
               // Display Orbit choice box
-                choiceOrbitObject = new JComboBox();
+                choiceOrbitObject = new JComboBox<String>();
                 choiceOrbitObject.setFont(new Font("Dialog", Font.PLAIN, fontSize));
                 choiceOrbitObject.addActionListener(this);
                 gbcCtrlPanel.gridx = 1;
