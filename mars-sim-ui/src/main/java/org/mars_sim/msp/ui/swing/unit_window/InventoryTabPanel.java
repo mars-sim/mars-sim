@@ -402,12 +402,12 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			List<Unit> newList = new ArrayList<Unit>();
 			Map<String,String> newMap = new HashMap<String,String>();
 			for (Unit unit : inventory.findAllUnitsOfClass(Equipment.class)) {
-/*
-				newMap.put(
-					unit.getName(),
-					yesNo(unit.getInventory().isEmpty(true))
-				);
-*/				
+
+//				newMap.put(
+//					unit.getName(),
+//					yesNo(unit.getInventory().isEmpty(true))
+//				);
+			
 				newMap.put(
 						unit.getName(),
 						showOwner(unit)//.getInventory())//.isEmpty(true))

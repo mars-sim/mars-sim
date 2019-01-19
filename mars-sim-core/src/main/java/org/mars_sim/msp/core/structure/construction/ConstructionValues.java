@@ -474,7 +474,7 @@ implements Serializable {
                         Iterator<Building> i = settlement.getBuildingManager().getACopyOfBuildings().iterator();
                         while (i.hasNext()) {
                             ConstructionStageInfo tempBuildingStage = ConstructionUtil.getConstructionStageInfo(
-                                    i.next().getName());
+                                    i.next().getBuildingType());
                             if (tempBuildingStage != null) {
                                 ConstructionStageInfo tempFrameStage = ConstructionUtil.getPrerequisiteStage(
                                         tempBuildingStage);

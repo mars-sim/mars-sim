@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -142,30 +141,25 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	// maximum & minimal acceptable temperature for living space (arbitrary)
 	// private static final double MIN_TEMP = -15.0D;
 	// private static final double MAX_TEMP = 45.0D;
-
-	public static double water_consumption;
-
+	/** The settlement water consumption */
+	public static double water_consumption_rate;
+	/** The settlement minimum air pressure requirement. */
 	public static double minimum_air_pressure;
-		
 	/** The settlement life support requirements. */
 	public static double[][] life_support_value = new double[2][7];
-	
 	/** Amount of time (millisols) required for periodic maintenance. */
 	// private static final double MAINTENANCE_TIME = 1000D;
-
-	/** The flag signifying this settlement as the destination of the user customized commander. */ 
-	private boolean isCommanderMode = false;	
+	
 	/** Override flag for food production. */
-	private boolean foodProductionOverride = false;
-	// private boolean reportSample = true;
+	private transient boolean foodProductionOverride = false;
 	/** Override flag for mission creation at settlement. */
-	private boolean missionCreationOverride = false;
+	private transient boolean missionCreationOverride = false;
 	/** Override flag for manufacturing at settlement. */
-	private boolean manufactureOverride = false;
+	private transient boolean manufactureOverride = false;
 	/** Override flag for resource process at settlement. */
-	private boolean resourceProcessOverride = false;
+	private transient boolean resourceProcessOverride = false;
 	/* Override flag for construction/salvage mission creation at settlement. */
-	private boolean constructionOverride = false;
+	private transient boolean constructionOverride = false;
 	/* Flag showing if the people list has been reloaded. */
 	public transient boolean justReloadedPeople = false;
 	/* Flag showing if the bots list has been reloaded. */
@@ -174,6 +168,36 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public transient boolean justReloadedVehicles = false;
 	/** The Flag showing if the settlement has been exposed to the last radiation event. */
 	private boolean[] exposed = { false, false, false };
+	/** The cache for the number of building connectors. */
+	private transient int numConnectorsCache = 0;
+	
+	/** The settlement objective type string array. */
+	private final static String[] objectiveArray = new String[] { 
+			Msg.getString("ObjectiveType.crop"),
+			Msg.getString("ObjectiveType.manu"), 
+			Msg.getString("ObjectiveType.research"),
+			Msg.getString("ObjectiveType.transportation"), 
+			Msg.getString("ObjectiveType.trade"),
+			Msg.getString("ObjectiveType.tourism") };
+	/** The settlement objective type array. */
+	private final static ObjectiveType[] objectives = new ObjectiveType[] { 
+			ObjectiveType.CROP_FARM,
+			ObjectiveType.MANUFACTURING_DEPOT, 
+			ObjectiveType.RESEARCH_CAMPUS, 
+			ObjectiveType.TRANSPORTATION_HUB,
+			ObjectiveType.TRADE_CENTER, 
+			ObjectiveType.TOURISM };
+	
+	/** The settlement's resource statistics. */
+	private transient Map<Integer, Map<Integer, List<Double>>> resourceStat = new HashMap<>();
+	/** The settlement's map of adjacent buildings. */
+	private transient Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
+	/** The settlement's list of citizens. */
+	private transient Collection<Person> allAssociatedPeople = new ConcurrentLinkedQueue<Person>();
+	/** The settlement's list of robots. */
+	private transient Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
+	/** The settlement's list of vehicles. */
+	private transient Collection<Vehicle> allAssociatedVehicles = new ConcurrentLinkedQueue<Vehicle>();
 	
 	/** The water ration level of the settlement. */
 	private int waterRationLevel = 1;
@@ -205,7 +229,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private int sumOfCurrentManuProcesses = 0;
 	private int cropsNeedingTendingCache = 5;
 	private int millisolCache = -5;
-	private int numConnectorsCache = 0;
 	/**  Numbers of associated people in this settlement. */
 	private int numCitizens;
 	/**  Numbers of associated bots in this settlement. */
@@ -255,16 +278,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType;
-	/** The settlement objective type string array. */
-	private final static String[] objectiveArray = new String[] { Msg.getString("ObjectiveType.crop"),
-			Msg.getString("ObjectiveType.manu"), Msg.getString("ObjectiveType.research"),
-			Msg.getString("ObjectiveType.transportation"), Msg.getString("ObjectiveType.trade"),
-			Msg.getString("ObjectiveType.tourism") };
-	/** The settlement objective type array. */
-	private final static ObjectiveType[] objectives = new ObjectiveType[] { ObjectiveType.CROP_FARM,
-			ObjectiveType.MANUFACTURING_DEPOT, ObjectiveType.RESEARCH_CAMPUS, ObjectiveType.TRANSPORTATION_HUB,
-			ObjectiveType.TRADE_CENTER, ObjectiveType.TOURISM };
-
 	/** The settlement's building manager. */
 	@JsonIgnore
 	protected BuildingManager buildingManager;
@@ -300,20 +313,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private List<Double> missionScores;	
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
-	/** The settlement's resource statistics. */
-	private Map<Integer, Map<Integer, List<Double>>> resourceStat = new HashMap<>();
-	/** The settlement's list of citizens. */
-	private Collection<Person> allAssociatedPeople = new ConcurrentLinkedQueue<Person>();
-	/** The settlement's list of robots. */
-	private Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
-	/** The settlement's list of vehicles. */
-	private Collection<Vehicle> allAssociatedVehicles = new ConcurrentLinkedQueue<Vehicle>();
-	/** The settlement's map of adjacent buildings. */
-	private Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
 	/** The settlement's water consumption in kitchen when preparing/cleaning meal and dessert. */
 	private Map<Integer, Map<Integer, Double>> consumption;
 	
 	// Static members
+	/** The flag signifying this settlement as the destination of the user-defined commander. */ 
+	private boolean isCommanderMode = false;
+	
 	private static int sample1 = ResourceUtil.findIDbyAmountResourceName("polyethylene");
 	private static int sample2 = ResourceUtil.findIDbyAmountResourceName("concrete");
 	private static int oxygenID = ResourceUtil.oxygenID;
@@ -336,10 +342,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static RepairEVAMalfunctionMeta repairEVAMalfunctionMeta;
 	
 	private static ConstructBuildingMeta constructBuildingMeta;
-	
 	private static BuildingConstructionMissionMeta buildingConstructionMissionMeta;
 	private static CollectRegolithMeta collectRegolithMeta;
 	private static CollectIceMeta collectIceMeta;
+	
+	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	
 	/** 
 	 * Constructor 1 called by ConstructionStageTest for maven testing.
@@ -363,6 +370,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	/** 
 	 * Constructor 2 called by MockSettlement for maven testing.
+	 * @param name
+	 * @param scenarioID
+	 * @param location
 	 */
 	public Settlement(String name, int scenarioID, Coordinates location) {
 		// Use Structure constructor.
@@ -387,25 +397,34 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/**
 	 * The static factory method called by ConstructionStageTest to return a new
 	 * instance of Settlement for maven testing.
+	 * 
+	 * @param name
+	 * @param scenarioID
+	 * @param location
+	 * @return
 	 */
 	public static Settlement createMockSettlement(String name, int scenarioID, Coordinates location) {
 		return new Settlement(name, scenarioID, location);
 	}
 
-	/*
+
+	/**
 	 * Constructor 3 for creating settlements. Called by UnitManager to create the
 	 * initial settlement Called by ArrivingSettlement to create a brand new
 	 * settlement
+	 * 
+	 * @param name
+	 * @param id
+	 * @param template
+	 * @param sponsor
+	 * @param location
+	 * @param populationNumber
+	 * @param initialNumOfRobots
 	 */
 	private Settlement(String name, int id, String template, String sponsor, Coordinates location, int populationNumber,
 			int initialNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
-		
-		if (unitManager == null)
-			unitManager = sim.getUnitManager();
-		
-		unitManager.addSettlementID(this);
 		
 		this.name = name;
 		this.template = template;
@@ -433,6 +452,15 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		buildingConstructionMissionMeta = new BuildingConstructionMissionMeta();
 		collectRegolithMeta = new CollectRegolithMeta();
 		collectIceMeta = new CollectIceMeta();
+		
+	}
+	
+	/**
+	 * Initialize field data, class and maps
+	 */
+	public void initialize() {
+		// Add this settlement to the lookup map
+		unitManager.addSettlementID(this);
 		
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);// 
@@ -466,9 +494,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		thermalSystem = new ThermalSystem(this);
 		// Initialize scientific achievement.
 		scientificAchievement = new HashMap<ScienceType, Double>(0);
-
+		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
-		// Added CompositionOfAir
+		// Add tracking composition of air
 		compositionOfAir = new CompositionOfAir(this);
 
 		// Set objective()
@@ -494,6 +522,15 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/**
 	 * The static factory method called by UnitManager and ArrivingSettlement to
 	 * create a brand new settlement
+	 * 
+	 * @param name
+	 * @param id
+	 * @param template
+	 * @param sponsor
+	 * @param location
+	 * @param populationNumber
+	 * @param initialNumOfRobots
+	 * @return
 	 */
 	public static Settlement createNewSettlement(String name, int id, String template, String sponsor,
 			Coordinates location, int populationNumber, int initialNumOfRobots) {
@@ -504,10 +541,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * Loads default values
 	 */
 	public static void loadDefaultValues() {
-		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
+//		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-		water_consumption = personConfig.getWaterConsumptionRate();
+		water_consumption_rate = personConfig.getWaterConsumptionRate();
 		minimum_air_pressure = personConfig.getMinAirPressure();
 	
 		life_support_value = settlementConfig.loadLifeSupportRequirements();
@@ -520,7 +557,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return a map
 	 */
 	public Map<Building, List<Building>> createBuildingConnectionMap() {
-		adjacentBuildingMap.clear();
+//		adjacentBuildingMap.clear();
+		if (adjacentBuildingMap == null)
+			adjacentBuildingMap = new HashMap<>(); 
 		for (Building b : buildingManager.getBuildings()) {
 			List<Building> connectors = createAdjacentBuildingConnectors(b);
 			// if (b == null)
@@ -655,26 +694,23 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return the number indoor
 	 */
 	public int getIndoorPeopleCount() {
-
-//		return allAssociatedPeople.stream()
-//        .filter(u -> u instanceof Person)
-//        .collect(Collectors.toList()).size();
-
+		return Math.toIntExact(
+				getInventory().getAllContainedUnits()
+				.stream()
+		        .filter(p -> p instanceof Person)
+		        .collect(Collectors.counting()));
+				
 		// TODO: need to factor in those inside a vehicle parked inside a garage 
 		
-		int n = 0;
-		Iterator<Unit> i = getInventory().getAllContainedUnits().iterator();
-		while (i.hasNext()) {
-			if (i.next() instanceof Person)
-				n++;
-		}
-		// for (Unit u : getInventory().getAllContainedUnits()) { // why
-		// java.lang.NullPointerException when adding a new arriving settlment ?
-		// if (u instanceof Person)
-		// n++;
-		// }
-		return n;
-		// return getInhabitants().size();
+//		int n = 0;
+//		Iterator<Unit> i = getInventory().getAllContainedUnits().iterator();
+//		while (i.hasNext()) {
+//			if (i.next() instanceof Person)
+//				n++;
+//		}
+//		
+//		return n;
+
 	}
 
 	public void endAllIndoorTasks() {
@@ -752,13 +788,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		return getPopulationCapacity() - numCitizens;//getIndoorPeopleCount();
 	}
 
-	/**
-	 * Gets an array of current inhabitants of the settlement
-	 * 
-	 * @return array of inhabitants
-	 */
-	public Person[] getInhabitantArray() {
-		return getIndoorPeople().toArray(new Person[getIndoorPeople().size()]);
+//	/**
+//	 * Gets an array of current inhabitants of the settlement
+//	 * 
+//	 * @return array of inhabitants
+//	 */
+//	public Person[] getInhabitantArray() {
+//		return getIndoorPeople().toArray(new Person[getIndoorPeople().size()]);
+//		
 //		Collection<Person> people = getIndoorPeople();
 //		Person[] personArray = new Person[people.size()];
 //		Iterator<Person> i = people.iterator();
@@ -768,7 +805,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 //			count++;
 //		}
 //		return personArray;
-	}
+//	}
 
 	/**
 	 * Gets the robot capacity of the settlement
@@ -794,18 +831,17 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return the number of robots
 	 */
 	public int getIndoorRobotsCount() {
+		return Math.toIntExact(
+				getInventory().getAllContainedUnits()
+				.stream()
+		        .filter(r -> r instanceof Robot)
+		        .collect(Collectors.counting()));
 //		int n = 0;
 //		Iterator<Unit> i = getInventory().getAllContainedUnits().iterator();
 //		while (i.hasNext()) {
 //			if (i.next() instanceof Robot)
 //				n++;
 //		}
-		int n = 0;
-		for (Unit u : getInventory().getAllContainedUnits()) {
-			if (u instanceof Robot)
-				n++;
-		}
-		return n;
 	}
 
 	/**
@@ -1137,23 +1173,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		// TODO: what to take into consideration the presence of robots ?
 		// If no current population at settlement for one sol, power down the
-		// building and turn the heat off.
-		// if (getNumCurrentPopulation() == 0) {
-		// zeroPopulationTime += time;
-		// if (zeroPopulationTime > 1000D) {
-		// if (powerGrid.getPowerMode() != PowerMode.POWER_DOWN)
-		// powerGrid.setPowerMode(PowerMode.POWER_DOWN);
-		// if (thermalSystem.getHeatMode() != HeatMode.HEAT_OFF)
-		// thermalSystem.setHeatMode(HeatMode.HEAT_OFF);
-		// }
-		// } else {
-//		zeroPopulationTime = 0D;
+		// building and turn the heat off ?
+
 		if (powerGrid.getPowerMode() != PowerMode.POWER_UP)
 			powerGrid.setPowerMode(PowerMode.POWER_UP);
 		// TODO: check if POWER_UP is necessary
 		// Question: is POWER_UP a prerequisite of FULL_POWER ?
-		// thermalSystem.setHeatMode(HeatMode.POWER_UP);
-		// }
 
 		powerGrid.timePassing(time);
 
@@ -1161,8 +1186,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		buildingManager.timePassing(time);
 
-		performEndOfDayTasks(); // NOTE: also update solCache in makeDailyReport()
-
+		performEndOfDayTasks();
+		
 		// Sample a data point every SAMPLE_FREQ (in millisols)
 		int millisols = marsClock.getMillisolInt();
 
@@ -1191,7 +1216,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		// updateRegistry();
 
-		// Added CompositionOfAir
 		compositionOfAir.timePassing(time);
 
 		currentPressure = computeAveragePressure();
@@ -1217,7 +1241,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// methaneProbabilityValue = computeMethaneProbability();
 		// }
 
-		if (!adjacentBuildingMap.isEmpty()) {
+		if (adjacentBuildingMap != null && !adjacentBuildingMap.isEmpty()) {
 			int numConnectors = adjacentBuildingMap.size();
 
 			if (numConnectorsCache != numConnectors) {
@@ -1401,6 +1425,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 
 	public void refreshResourceStat() {
+		if (resourceStat == null)
+			resourceStat = new HashMap<>();
 		// Remove the resourceStat map data from 12 days ago
 		if (resourceStat.size() > RESOURCE_STAT_SOLS)
 			resourceStat.remove(0);
@@ -3377,7 +3403,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public void computeWaterRation() {
 		double storedWater = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
-		double requiredDrinkingWaterOrbit = water_consumption * getNumCitizens() //getIndoorPeopleCount()
+		double requiredDrinkingWaterOrbit = water_consumption_rate * getNumCitizens() //getIndoorPeopleCount()
 				* MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 
 		// If stored water is less than 20% of required drinking water for Orbit, wash
@@ -3908,8 +3934,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		Job job = JobManager.getJob(jobName);
 		Person p0 = JobManager.findBestFit(settlement, job);
 		// Designate a specific job to a person
-		p0.getMind().setJob(job, true, JobManager.SETTLEMENT, JobAssignmentType.APPROVED,
+		if (p0 != null) {
+			p0.getMind().setJob(job, true, JobManager.SETTLEMENT, JobAssignmentType.APPROVED,
 					JobManager.SETTLEMENT);
+		}
 	}
 	
 	

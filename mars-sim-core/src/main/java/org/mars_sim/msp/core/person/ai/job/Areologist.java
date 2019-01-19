@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
@@ -22,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
@@ -54,8 +52,6 @@ public class Areologist extends Job implements Serializable {
 
 	// private static Logger logger = Logger.getLogger(Areologist.class.getName());
 
-	private static MissionManager missionManager;
-
 	/**
 	 * Constructor.
 	 */
@@ -63,7 +59,6 @@ public class Areologist extends Job implements Serializable {
 		// Use Job constructor
 		super(Areologist.class);
 
-		missionManager = Simulation.instance().getMissionManager();
 
 		// Add areologist-related tasks.
 		jobTasks.add(StudyFieldSamples.class);

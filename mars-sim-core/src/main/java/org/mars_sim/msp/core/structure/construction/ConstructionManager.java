@@ -287,11 +287,11 @@ implements Serializable {
 					buildingStage.setSalvaging(true);
 					site.addNewStage(buildingStage);
 				}
-				else throw new IllegalStateException("Could not find foundation construction stage for building: " + salvagedBuilding.getName());
+				else throw new IllegalStateException("Could not find foundation construction stage for building: " + salvagedBuilding.getBuildingType());
 			}
-			else throw new IllegalStateException("Could not find frame construction stage for building: " + salvagedBuilding.getName());
+			else throw new IllegalStateException("Could not find frame construction stage for building: " + salvagedBuilding.getBuildingType());
 		}
-		else throw new IllegalStateException("Could not find building construction stage for building: " + salvagedBuilding.getName());
+		else throw new IllegalStateException("Could not find building construction stage for building: " + salvagedBuilding.getBuildingType());
 
 		// Clear construction values cache.
 		values.clearCache();

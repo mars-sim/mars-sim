@@ -1194,7 +1194,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			// increments
 			// until a location is found.
 			BuildingManager buildingManager = settlement.getBuildingManager();
-			if (buildingManager.getNumBuilding() > 0) {
+			if (buildingManager.getNumBuildings() > 0) {
 				for (int x = 10; !goodPosition; x += 10) {
 					List<Building> allBuildings = buildingManager.getACopyOfBuildings();
 					Collections.shuffle(allBuildings);

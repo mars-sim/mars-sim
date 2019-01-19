@@ -892,7 +892,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 			Coordinates clickedPosition = map.getCenterLocation().convertRectToSpherical(x, y, rho);
 
-			Iterator<Unit> i = unitManager.getUnits().iterator();
+			Iterator<Unit> i = unitManager.computeUnits().iterator();
 
 			// Open window if unit is clicked on the map
 			while (i.hasNext()) {
@@ -924,7 +924,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			Coordinates mousePos = map.getCenterLocation().convertRectToSpherical(x, y, rho);
 			boolean onTarget = false;
 
-			Iterator<Unit> i = unitManager.getUnits().iterator();
+			Iterator<Unit> i = unitManager.computeUnits().iterator();
 
 			// Change mouse cursor if hovering over an unit on the map
 			while (i.hasNext()) {

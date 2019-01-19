@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -49,13 +50,16 @@ public class LocalAreaUtil {
 	/** Time stamps for obstacle area cache. */
 	private static final Map<Coordinates, String> obstacleAreaTimestamps = new HashMap<Coordinates, String>();
 
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-			
+	private static Simulation sim = Simulation.instance();
+	private static UnitManager unitManager = sim.getUnitManager();
+	private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
+	
 	/**
 	 * Private empty constructor for utility class.
 	 */
 	private LocalAreaUtil() {
-		// Do nothing
+//		unitManager = sim.getUnitManager();
+//		marsClock = sim.getMasterClock().getMarsClock();
 	}
 
 	/**
@@ -763,7 +767,7 @@ public class LocalAreaUtil {
 		boolean cached = false;
 		Area obstacleArea = null;
 		if (useCache && obstacleAreaCache.containsKey(coordinates)) {
-			String currentTimestamp = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
+			String currentTimestamp = marsClock.getDateTimeStamp();
 			String cachedTimestamp = obstacleAreaTimestamps.get(coordinates);
 			if (currentTimestamp.equals(cachedTimestamp)) {
 				cached = true;
@@ -806,8 +810,8 @@ public class LocalAreaUtil {
 		// Store cached obstacle area for location with current timestamp if needed.
 		if (useCache && !cached && (obstacleArea != null)) {
 			obstacleAreaCache.put(coordinates, obstacleArea);
-			String currentTimestamp = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
-			obstacleAreaTimestamps.put(coordinates, currentTimestamp);
+//			String currentTimestamp = marsClock.getDateTimeStamp();
+			obstacleAreaTimestamps.put(coordinates, marsClock.getDateTimeStamp());
 		}
 
 		return result;

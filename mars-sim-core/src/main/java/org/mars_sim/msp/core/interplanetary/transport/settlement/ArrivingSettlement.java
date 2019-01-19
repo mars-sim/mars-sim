@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -68,8 +69,10 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	private MarsClock arrivalDate;
 	private Coordinates landingLocation;
 	
-
-
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	private static RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
+	
 	/**
 	 * Constructor.
 	 * 
@@ -267,7 +270,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 */
 	private Settlement createNewSettlement() {
 		// Create new settlement with unit manager.
-		UnitManager unitManager = Simulation.instance().getUnitManager();
+//		UnitManager unitManager = Simulation.instance().getUnitManager();
 		// Compute sid
 		scenarioID = 9; // NOTE: scenarioID will be updated later and NOT important here
 		// TODO: add the option of choosing sponsor
@@ -275,8 +278,9 @@ public class ArrivingSettlement implements Transportable, Serializable {
 
 		Settlement newSettlement = Settlement.createNewSettlement(name, scenarioID, template, sponsor, landingLocation,
 				populationNum, numOfRobots);
+		newSettlement.initialize();
 		unitManager.addUnit(newSettlement);
-
+	
 		// Add new settlement to credit manager.
 		Simulation.instance().getCreditManager().addSettlement(newSettlement);
 
@@ -291,8 +295,8 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	private void createNewImmigrants(Settlement newSettlement) {
 
 		Collection<Person> immigrants = new ConcurrentLinkedQueue<Person>();
-		UnitManager unitManager = Simulation.instance().getUnitManager();
-		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+//		UnitManager unitManager = Simulation.instance().getUnitManager();
+//		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		for (int x = 0; x < populationNum; x++) {
 			PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 			GenderType gender = GenderType.FEMALE;
@@ -357,7 +361,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 */
 	private void createNewRobots(Settlement newSettlement) {
 
-		UnitManager unitManager = Simulation.instance().getUnitManager();
+//		UnitManager unitManager = Simulation.instance().getUnitManager();
 		for (int x = 0; x < numOfRobots; x++) {
 
 			// Get a robotType randomly
@@ -390,9 +394,9 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 */
 	private void createNewEquipment(Settlement newSettlement) {
 
-		SettlementTemplate template = SimulationConfig.instance().getSettlementConfiguration()
+		SettlementTemplate template = settlementConfig
 				.getSettlementTemplate(getTemplate());
-		UnitManager unitManager = Simulation.instance().getUnitManager();
+//		UnitManager unitManager = Simulation.instance().getUnitManager();
 		Iterator<String> equipmentI = template.getEquipment().keySet().iterator();
 		while (equipmentI.hasNext()) {
 			String equipmentType = equipmentI.next();
@@ -416,7 +420,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 */
 	private void createNewParts(Settlement newSettlement) {
 
-		SettlementTemplate template = SimulationConfig.instance().getSettlementConfiguration()
+		SettlementTemplate template = settlementConfig
 				.getSettlementTemplate(getTemplate());
 		Iterator<Part> partsI = template.getParts().keySet().iterator();
 		while (partsI.hasNext()) {
@@ -433,7 +437,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 */
 	private void createNewResources(Settlement newSettlement) {
 
-		SettlementTemplate template = SimulationConfig.instance().getSettlementConfiguration()
+		SettlementTemplate template = settlementConfig
 				.getSettlementTemplate(getTemplate());
 		Iterator<AmountResource> resourcesI = template.getResources().keySet().iterator();
 		while (resourcesI.hasNext()) {
@@ -454,9 +458,9 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 */
 	private void createNewVehicles(Settlement newSettlement) {
 
-		SettlementTemplate template = SimulationConfig.instance().getSettlementConfiguration()
+		SettlementTemplate template = settlementConfig
 				.getSettlementTemplate(getTemplate());
-		UnitManager unitManager = Simulation.instance().getUnitManager();
+//		UnitManager unitManager = Simulation.instance().getUnitManager();
 		Iterator<String> vehicleI = template.getVehicles().keySet().iterator();
 		while (vehicleI.hasNext()) {
 			String vehicleType = vehicleI.next();

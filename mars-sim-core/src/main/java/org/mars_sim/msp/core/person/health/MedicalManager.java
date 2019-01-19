@@ -261,8 +261,13 @@ public class MedicalManager implements Serializable {
 	 * @param name Name of the complaintType to retrieve.
 	 * @return Matched complaint, if none is found then a null.
 	 */
-	public Complaint getComplaintByName(ComplaintType type) {// String name) {
-		return complaints.get(type);// .getName());
+	public Complaint getComplaintByName(ComplaintType type) {
+		if (complaints.containsKey(type))
+			return complaints.get(type);
+		else if (environmentalComplaints.containsKey(type))
+			return environmentalComplaints.get(type);
+		else
+			return null;
 	}
 
 	/**

@@ -43,7 +43,7 @@ public class WalkInteriorTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building);
@@ -79,7 +79,7 @@ public class WalkInteriorTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building);
@@ -161,7 +161,7 @@ public class WalkInteriorTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);

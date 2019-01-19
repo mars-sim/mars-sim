@@ -38,21 +38,20 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.connection.InsideBuildingPath;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.core.structure.building.function.BuildingConnection;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Communication;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.EarthReturn;
 import org.mars_sim.msp.core.structure.building.function.Exercise;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.Function;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
-import org.mars_sim.msp.core.structure.building.function.RoboticStation;
-import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Management;
@@ -63,7 +62,9 @@ import org.mars_sim.msp.core.structure.building.function.PowerStorage;
 import org.mars_sim.msp.core.structure.building.function.Recreation;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.Dining;
@@ -81,7 +82,6 @@ import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import com.google.inject.Guice;
-import com.google.inject.Injector;
 
 /**
  * The BuildingManager manages the settlement's buildings.
@@ -97,35 +97,39 @@ public class BuildingManager implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
+	private transient MarsClock lastVPUpdateTime;
+
+	private transient List<Building> farmsNeedingWorkCache = new ArrayList<>();
+
+	private transient Map<String, Double> VPNewCache = new HashMap<String, Double>();
+	private transient Map<String, Double> VPOldCache = new HashMap<String, Double>();
+	private transient Map<FunctionType, List<Building>> buildingFunctionsMap  = new ConcurrentHashMap<FunctionType, List<Building>>();
+	private transient Map<String, Integer> buildingTypeIDMap  = new HashMap<>();
+
 	// Data members
-	private int numBuildings;
+//	private int numBuildings;
 	private int solCache = 0;
-	private int millisolCache = -5;
+	private int farmTimeCache = -5;
 	private int settlementID;
+	private int nextInhabitableID = 0;
 	
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
-//	private Settlement settlement;
-	private MarsClock lastBuildingValuesUpdateTime;
-
-	private Resupply resupply;
-	private Meteorite meteorite;
-
-	private List<Building> buildings, farmsNeedingWorkCache, buildingsNickNames;
-	private Map<String, Double> buildingValuesNewCache;
-	private Map<String, Double> buildingValuesOldCache;
-	private Map<FunctionType, List<Building>> buildingFunctionsMap;
-	private Map<String, Integer> buildingTypeIDMap;
+	private List<Building> buildings;
 
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
+
+	private static Meteorite meteorite;
+
 	private static HistoricalEventManager eventManager;
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 	private static BuildingConfig buildingConfig;
 	private static RelationshipManager relationshipManager;
 	private static UnitManager unitManager = sim.getUnitManager();
+	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 	
 
 	/**
@@ -136,7 +140,7 @@ public class BuildingManager implements Serializable {
 	 * @throws Exception if buildings cannot be constructed.
 	 */
 	public BuildingManager(Settlement settlement) {
-		this(settlement, simulationConfig.getSettlementConfiguration()
+		this(settlement, settlementConfig
 				.getSettlementTemplate(settlement.getTemplate()).getBuildingTemplates());
 	}
 
@@ -165,30 +169,23 @@ public class BuildingManager implements Serializable {
 		if (buildingTemplates != null) {
 			Iterator<BuildingTemplate> i = buildingTemplates.iterator();
 			while (i.hasNext()) {
-				BuildingTemplate template = i.next();
-				addBuilding(template, false);
+//				BuildingTemplate template = i.next();
+				addBuilding(i.next(), false);
 			}
 		}
 
 		buildings.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 
-		buildingTypeIDMap = new HashMap<>();
-		for (Building b : buildings) {
-			createBuildingTypeIDMap(b);
-		}
+		if (buildingTypeIDMap.isEmpty())
+			createBuildingTypeIDMap();
 
-		setupBuildingFunctionsMap();
-
-		numBuildings = getNumBuilding();
-
-		// Initialize building value caches.
-		buildingValuesNewCache = new HashMap<String, Double>();
-		buildingValuesOldCache = new HashMap<String, Double>();
+		if (buildingFunctionsMap.isEmpty())
+			setupBuildingFunctionsMap();
 
 		// Make use of Guice for Meteorite
-		Injector injector = Guice.createInjector(new MeteoriteModule());
-		meteorite = injector.getInstance(Meteorite.class);
+		meteorite = Guice.createInjector(new MeteoriteModule()).getInstance(Meteorite.class);
 
+//		System.out.println(settlement.getName() + "'s BuildingManager is initialized.");
 	}
 
 	/**
@@ -213,17 +210,12 @@ public class BuildingManager implements Serializable {
 		// Construct all buildings in the settlement.
 		buildings = new ArrayList<Building>();
 
-		// setupBuildingFunctionsMap();
-
-		buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>(); // HashMap<>();
-
-		// Initialize building value caches.
-		buildingValuesNewCache = new HashMap<String, Double>();
-		buildingValuesOldCache = new HashMap<String, Double>();
+//		setupBuildingFunctionsMap();
 	}
 
+	
 	public void setupBuildingFunctionsMap() {
-		buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>(); // HashMap<>();
+//		buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>(); // HashMap<>();
 		List<FunctionType> functions = buildingConfig.getBuildingFunctions();
 		for (FunctionType f : functions) {
 			List<Building> l = new ArrayList<Building>();
@@ -233,6 +225,7 @@ public class BuildingManager implements Serializable {
 			}
 			buildingFunctionsMap.put(f, l);
 		}
+//		System.out.println("buildingFunctionsMap : " + buildingFunctionsMap.values().size());
 	}
 
 	/**
@@ -299,6 +292,8 @@ public class BuildingManager implements Serializable {
 	 * @param oldBuilding
 	 */
 	public void addAllFunctionstoBFMap(Building newBuilding) {
+		if (buildingFunctionsMap.isEmpty())
+			setupBuildingFunctionsMap();
 		if (buildingFunctionsMap != null) {
 			// use this only after buildingFunctionsMap has been created
 			for (FunctionType f : buildingConfig.getBuildingFunctions()) {
@@ -333,7 +328,7 @@ public class BuildingManager implements Serializable {
 			
 			buildings.add(newBuilding);
 			// Add tracking air composition
-			if (settlement.getCompositionOfAir() != null)
+			if (settlement.getCompositionOfAir() != null && newBuilding.getInhabitableID() != -1)
 				settlement.getCompositionOfAir().addAirNew(newBuilding);
 			// Insert this new building into buildingFunctionsMap
 			addAllFunctionstoBFMap(newBuilding);
@@ -388,13 +383,13 @@ public class BuildingManager implements Serializable {
 		return newBuilding;
 	}
 
-	public Resupply getResupply() {
-		return resupply;
-	}
+//	public Resupply getResupply() {
+//		return resupply;
+//	}
 
-	public void addResupply(Resupply resupply) {
-		this.resupply = resupply;
-	}
+//	public void addResupply(Resupply resupply) {
+//		this.resupply = resupply;
+//	}
 
 	/**
 	 * Gets a copy of settlement's collection of buildings.
@@ -423,14 +418,14 @@ public class BuildingManager implements Serializable {
 		return buildings.stream().sorted(new AlphanumComparator()).collect(Collectors.toList());
 	}
 
-	/**
-	 * Gets the settlement's collection of buildings (in their nicknames)
-	 * 
-	 * @return collection of buildings (in their nicknames)
-	 */
-	public List<Building> getBuildingsNickNames() {
-		return new ArrayList<Building>(buildingsNickNames);
-	}
+//	/**
+//	 * Gets the settlement's collection of buildings (in their nicknames)
+//	 * 
+//	 * @return collection of buildings (in their nicknames)
+//	 */
+//	public List<Building> getBuildingsNickNames() {
+//		return new ArrayList<Building>(buildingsNickNames);
+//	}
 
 	/**
 	 * Gets a list of settlement's buildings with Robotic Station function
@@ -539,7 +534,7 @@ public class BuildingManager implements Serializable {
 	 * @param id the template ID .
 	 * @return building or null if none found.
 	 */
-	public Building getBuilding(int id) {
+	public Building getBuildingByTemplateID(int id) {
 		// Use Java 8 stream
 		// Note: stream won't pass junit test.
 //		return buildings
@@ -597,6 +592,11 @@ public class BuildingManager implements Serializable {
 	 * @return list of buildings.
 	 */
 	public List<Building> getBuildings(FunctionType bf) {
+		if (buildingFunctionsMap == null) {
+			buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>();
+			setupBuildingFunctionsMap();
+		}
+		
 		if (buildingFunctionsMap.containsKey(bf)) {
 			return buildingFunctionsMap.get(bf);
 		}
@@ -637,22 +637,22 @@ public class BuildingManager implements Serializable {
 				.collect(Collectors.toList());
 	}
 
-	/**
-	 * Gets the number of buildings at the settlement.
-	 * 
-	 * @return number of buildings
-	 */
-	public int countBuildingNum() {
-		return buildings.size();
-	}
+//	/**
+//	 * Gets the number of buildings at the settlement.
+//	 * 
+//	 * @return number of buildings
+//	 */
+//	public int countBuildingNum() {
+//		return buildings.size();
+//	}
 
 	/**
 	 * Gets the number of buildings at the settlement.
 	 * 
 	 * @return number of buildings
 	 */
-	public int getNumBuilding() {
-		return numBuildings;
+	public int getNumBuildings() {
+		return buildings.size();
 	}
 
 
@@ -671,11 +671,22 @@ public class BuildingManager implements Serializable {
 
 			// Update the impact probability for each settlement based on the size and speed
 			// of the new meteorite
-			meteorite.startMeteoriteImpact(this);
+			if (meteorite == null) {		
+				meteorite = Guice.createInjector(new MeteoriteModule()).getInstance(Meteorite.class);
+				meteorite.startMeteoriteImpact(this);
+			}
 		}
 
-		numBuildings = countBuildingNum();
-
+		if (buildingTypeIDMap == null) {
+			buildingTypeIDMap = new HashMap<>();
+			createBuildingTypeIDMap();
+		}
+		
+		if (buildingFunctionsMap == null) {
+			buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>();
+			setupBuildingFunctionsMap();
+		}
+		
 		for (Building b : buildings) {
 			b.timePassing(time);
 		}
@@ -1539,27 +1550,32 @@ public class BuildingManager implements Serializable {
 	 * @param newBuilding  true if adding a new building.
 	 * @return building value (VP).
 	 */
-	public double getBuildingValue(String buildingType, boolean newBuilding) {
+	public double getBuildingValue(String type, boolean newBuilding) {
 
 		// Make sure building name is lower case.
-		buildingType = buildingType.toLowerCase().trim();
+		String buildingType = type.toLowerCase().trim();
 
+		if (VPNewCache == null)
+			VPNewCache = new HashMap<>();
+		if (VPOldCache == null)
+			VPOldCache = new HashMap<>();
+		
 		// Update building values cache once per Sol.
 		// MarsClock currentTime =
 		// Simulation.instance().getMasterClock().getMarsClock(); ?
-		if ((lastBuildingValuesUpdateTime == null)
-				|| (MarsClock.getTimeDiff(marsClock, lastBuildingValuesUpdateTime) > 1000D)) {
-			buildingValuesNewCache.clear();
-			buildingValuesOldCache.clear();
-			lastBuildingValuesUpdateTime = (MarsClock) marsClock.clone();
+		if ((lastVPUpdateTime == null)
+				|| (MarsClock.getTimeDiff(marsClock, lastVPUpdateTime) > 1000D)) {
+			VPNewCache.clear();
+			VPOldCache.clear();
+			lastVPUpdateTime = (MarsClock) marsClock.clone();
 		}
-
-		if (newBuilding && buildingValuesNewCache.containsKey(buildingType)) {
-			return buildingValuesNewCache.get(buildingType);
+		
+		if (newBuilding && VPNewCache.containsKey(buildingType)) {
+			return VPNewCache.get(buildingType);
 		} 
 		
-		else if (!newBuilding && buildingValuesOldCache.containsKey(buildingType)) {
-			return buildingValuesOldCache.get(buildingType);
+		else if (!newBuilding && VPOldCache.containsKey(buildingType)) {
+			return VPOldCache.get(buildingType);
 		} 
 		
 		else {
@@ -1656,9 +1672,9 @@ public class BuildingManager implements Serializable {
 			// System.out.println("Building " + buildingType + " value: " + (int) result);
 
 			if (newBuilding)
-				buildingValuesNewCache.put(buildingType, result);
+				VPNewCache.put(buildingType, result);
 			else
-				buildingValuesOldCache.put(buildingType, result);
+				VPOldCache.put(buildingType, result);
 
 			return result;
 		}
@@ -1813,35 +1829,38 @@ public class BuildingManager implements Serializable {
 	 * 
 	 * @return inhabitable ID (starting from 0).
 	 */
-	public int getNextInhabitableID() {
-
-		int max = -1;
-		for (Building b : buildings) {
-			if (b.hasFunction(FunctionType.LIFE_SUPPORT)) {
-				int id = b.getInhabitableID();
-				max = Math.max(id, max);
-				// if (id > nextNum)
-				// nextNum++;
-			}
-		}
-		return max + 1;
+	public int obtainNextInhabitableID() {
+		return nextInhabitableID++;
+		
+//		int max = -1;
+//		for (Building b : buildings) {
+//			if (b.hasFunction(FunctionType.LIFE_SUPPORT)) {
+//				int id = b.getInhabitableID();
+//				max = Math.max(id, max);
+//				// if (id > nextNum)
+//				// nextNum++;
+//			}
+//		}
+//		
+////		System.out.println("getNextInhabitableID() " + buildings.size());
+//		return max + 1;
 	}
 
 	/**
-	 * Gets the largest inhabitable ID in a settlement
+	 * Gets the total number of inhabitable buildings in a settlement
 	 * 
 	 * @return inhabitable ID (starting from 0).
 	 */
-	public int getLargestInhabitableID() {
-
-		int max = -1;
-		for (Building b : buildings) {
-			if (b.hasFunction(FunctionType.LIFE_SUPPORT)) {
-				int id = b.getInhabitableID();
-				max = Math.max(id, max);
-			}
-		}
-		return max;
+	public int getNumInhabitables() {
+		return nextInhabitableID;
+//		int max = -1;
+//		for (Building b : buildings) {
+//			if (b.hasFunction(FunctionType.LIFE_SUPPORT)) {
+//				int id = b.getInhabitableID();
+//				max = Math.max(id, max);
+//			}
+//		}
+//		return max;
 	}
 
 	/**
@@ -1849,17 +1868,19 @@ public class BuildingManager implements Serializable {
 	 * 
 	 * @param b a given building
 	 */
-	public void createBuildingTypeIDMap(Building b) {
-		String buildingType = b.getBuildingType();
-		String n = b.getNickName();
-		int new_id = Integer.parseInt(b.getNickName().substring(n.lastIndexOf(" ") + 1, n.length()));
-
-		if (buildingTypeIDMap.containsKey(buildingType)) {
-			int old_id = buildingTypeIDMap.get(buildingType);
-			if (old_id < new_id)
+	public void createBuildingTypeIDMap() {
+		for (Building b : buildings) {
+			String buildingType = b.getBuildingType();
+			String n = b.getNickName();
+			int new_id = Integer.parseInt(b.getNickName().substring(n.lastIndexOf(" ") + 1, n.length()));
+	
+			if (buildingTypeIDMap.containsKey(buildingType)) {
+				int old_id = buildingTypeIDMap.get(buildingType);
+				if (old_id < new_id)
+					buildingTypeIDMap.put(buildingType, new_id);
+			} else
 				buildingTypeIDMap.put(buildingType, new_id);
-		} else
-			buildingTypeIDMap.put(buildingType, new_id);
+		}
 	}
 
 	/**
@@ -1919,14 +1940,17 @@ public class BuildingManager implements Serializable {
 	public List<Building> getFarmsNeedingWork() {
 		List<Building> result = null;
 
+		if (farmsNeedingWorkCache == null)
+			farmsNeedingWorkCache = new ArrayList<>();
+		
 		int m = marsClock.getMillisolInt();
 		// Add caching and relocate from TendGreenhouse
-		if (millisolCache + 5 >= m) {
+		if (farmTimeCache + 10 >= m && !farmsNeedingWorkCache.isEmpty()) {
 			result = farmsNeedingWorkCache;
 		}
 
 		else {
-			millisolCache = m;
+			farmTimeCache = m;
 			List<Building> farmBuildings = getLeastCrowdedBuildings(
 					getNonMalfunctioningBuildings(getBuildings(FunctionType.FARMING)));
 			// farmBuildings = getNonMalfunctioningBuildings(farmBuildings);
@@ -1944,9 +1968,9 @@ public class BuildingManager implements Serializable {
 		return result;
 	}
 
-	public List<Building> getFarmsNeedingWorkCache() {
-		return farmsNeedingWorkCache;
-	}
+//	public List<Building> getFarmsNeedingWorkCache() {
+//		return farmsNeedingWorkCache;
+//	}
 
 	// This method is called by MeteoriteImpactImpl
 	public void setProbabilityOfImpactPerSQMPerSol(double value) {
@@ -2019,11 +2043,11 @@ public class BuildingManager implements Serializable {
 		buildings = null;
 //		settlement = null;
 		// buildingValuesNewCache.clear();
-		buildingValuesNewCache = null;
+		VPNewCache = null;
 		// buildingValuesOldCache.clear();
-		buildingValuesOldCache = null;
-		lastBuildingValuesUpdateTime = null;
-		resupply = null;
+		VPOldCache = null;
+		lastVPUpdateTime = null;
+//		resupply = null;
 		meteorite = null;
 		marsClock = null;
 		masterClock = null;

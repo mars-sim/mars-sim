@@ -44,7 +44,7 @@ public class MasterClock implements Serializable {
 
 	// Data members
 	/** Runnable flag. */
-	private transient volatile boolean keepRunning = true;
+	private transient volatile boolean keepRunning = false;
 	/** Pausing clock. */
 	private transient volatile boolean isPaused = false;
 	/** Flag for ending the simulation program. */
@@ -1082,6 +1082,14 @@ public class MasterClock implements Serializable {
 		keepRunning = true;
 	}
 
+	/**
+	 * Starts the clock
+	 */
+	public void start() {
+		keepRunning = true;
+	}
+
+	
 	/**
 	 * Set if the simulation is paused or not.
 	 *

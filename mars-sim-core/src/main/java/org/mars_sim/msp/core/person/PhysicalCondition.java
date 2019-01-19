@@ -55,9 +55,6 @@ public class PhysicalCondition implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	public static final String WELL = "Well";
-	public static final String DEAD = "Dead : ";
-	public static final String ILL = "Sick : ";
 	/** The amount of thirst threshold [millisols]. */
 	public static final int THIRST_THRESHOLD = 150;
 	/** The amount of thirst threshold [millisols]. */
@@ -109,6 +106,10 @@ public class PhysicalCondition implements Serializable {
 	private static double highFatigueCollapseChance;
 	private static double stressBreakdownChance;
 
+	public static final String WELL = "Well";
+	public static final String DEAD = "Dead : ";
+	public static final String ILL = "Sick : ";
+	
 	/**
 	 * The amount of water this person would consume each time (assuming drinking
 	 * water 8 times a day)

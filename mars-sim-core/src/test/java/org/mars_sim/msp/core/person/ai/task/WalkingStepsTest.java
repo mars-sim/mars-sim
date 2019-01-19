@@ -100,7 +100,7 @@ public class WalkingStepsTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
@@ -179,7 +179,7 @@ public class WalkingStepsTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);		
+//		settlement.getInventory().storeUnit(person);		
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
@@ -255,7 +255,7 @@ public class WalkingStepsTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
@@ -338,7 +338,7 @@ public class WalkingStepsTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
@@ -417,7 +417,7 @@ public class WalkingStepsTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
@@ -480,7 +480,7 @@ public class WalkingStepsTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
@@ -531,10 +531,10 @@ public class WalkingStepsTest extends TestCase {
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
-        Iterator<Settlement> i = unitManager.getSettlements().iterator();
-        while (i.hasNext()) {
-            unitManager.removeUnit(i.next());
-        }
+//        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+//        while (i.hasNext()) {
+//            unitManager.removeUnit(i.next());
+//        }
 
         Settlement settlement = new MockSettlement();
 		unitManager.addSettlementID(settlement);
@@ -569,7 +569,7 @@ public class WalkingStepsTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(15D);
         person.setYLocation(-10D);
         settlement.getInventory().retrieveUnit(person);
@@ -655,7 +655,7 @@ public class WalkingStepsTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
@@ -742,7 +742,7 @@ public class WalkingStepsTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
@@ -811,7 +811,7 @@ public class WalkingStepsTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(15D);
         person.setYLocation(-10D);
         settlement.getInventory().retrieveUnit(person);
@@ -860,10 +860,10 @@ public class WalkingStepsTest extends TestCase {
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
-        Iterator<Settlement> i = unitManager.getSettlements().iterator();
-        while (i.hasNext()) {
-            unitManager.removeUnit(i.next());
-        }
+//        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+//        while (i.hasNext()) {
+//            unitManager.removeUnit(i.next());
+//        }
         
         Settlement settlement = new MockSettlement();
 		unitManager.addSettlementID(settlement);
@@ -904,7 +904,7 @@ public class WalkingStepsTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(4D);
         person.setYLocation(4D);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
@@ -944,10 +944,10 @@ public class WalkingStepsTest extends TestCase {
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
-        Iterator<Settlement> i = unitManager.getSettlements().iterator();
-        while (i.hasNext()) {
-            unitManager.removeUnit(i.next());
-        }
+//        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+//        while (i.hasNext()) {
+//            unitManager.removeUnit(i.next());
+//        }
         
         Settlement settlement = new MockSettlement();
 		unitManager.addSettlementID(settlement);
@@ -988,7 +988,7 @@ public class WalkingStepsTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);
         settlement.getInventory().retrieveUnit(person);
@@ -1064,7 +1064,7 @@ public class WalkingStepsTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(50D);
         person.setYLocation(50D);
         settlement.getInventory().retrieveUnit(person);
@@ -1211,7 +1211,7 @@ public class WalkingStepsTest extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
         person.setXLocation(20D);
         person.setYLocation(15D);
         settlement.getInventory().retrieveUnit(person);

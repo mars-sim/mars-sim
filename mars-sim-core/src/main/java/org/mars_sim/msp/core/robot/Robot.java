@@ -83,7 +83,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	/** Is the robot is salvaged. */
 	private boolean isSalvaged;
 	/** The settlement the robot is currently associated with. */
-	private int associatedSettlement = -1;
+	private int associatedSettlementID = -1;
 	/** The height of the robot (in cm). */
 	private int height;
 	/** Settlement X location (meters) from settlement center. */
@@ -122,15 +122,21 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	private static RobotConfig robotConfig;
 	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
-		super(name, settlement.getCoordinates()); // if extending equipment
+		super(name, settlement.getCoordinates()); // extending equipment
 //		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
 //		// Place this person within a building
 //		enter(LocationCodeType.BUILDING);
 		// Initialize data members.
 		this.name = name;
-		this.associatedSettlement = settlement.getIdentifier();
+		this.associatedSettlementID = settlement.getIdentifier();
+//		System.out.println("(1) " + associatedSettlementID + " : " + settlement + " : " + name);
 		this.robotType = robotType;
+		xLoc = 0D;
+		yLoc = 0D;
+		isSalvaged = false;
+		salvageInfo = null;
+		isInoperable = false;
 	}
 
 	/*
@@ -141,16 +147,10 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	}
 
 	public void initialize() {
-
-		xLoc = 0D;
-		yLoc = 0D;
-		isSalvaged = false;
-		salvageInfo = null;
-		isInoperable = false;
-
-		earthClock = Simulation.instance().getMasterClock().getEarthClock();
+		earthClock = sim.getMasterClock().getEarthClock();
 		robotConfig = SimulationConfig.instance().getRobotConfiguration();
-
+		unitManager = sim.getUnitManager();
+		
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
@@ -172,10 +172,17 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		int strength = attributes.getAttribute(RoboticAttributeType.STRENGTH);
 		getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
 
+		// Add the robot to the lookup map
+		unitManager.addRobotID(this);
+		
+//		System.out.println("(2) " + associatedSettlementID + " : " + unitManager.getSettlementByID(associatedSettlementID) + " : " + this);
 		// Put robot into the settlement.
-		unitManager.getSettlementByID(associatedSettlement).getInventory().storeUnit(this);
-		// Put robot in proper building.
-		BuildingManager.addToRandomBuilding(this, associatedSettlement);
+		if (unitManager.getSettlementByID(associatedSettlementID) != null) {
+			// TODO: need to find out why it's equals to null
+			unitManager.getSettlementByID(associatedSettlementID).getInventory().storeUnit(this);
+			// Put robot in proper building.
+			BuildingManager.addToRandomBuilding(this, associatedSettlementID);
+		}
 	}
 
 	/**
@@ -501,7 +508,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 			msolCache = msol1;
 
 			// If robot is dead, then skip
-			if (!health.isInoperable()) {
+			if (health != null && !health.isInoperable()) {
 
 				// support = getLifeSupportType();
 				// Pass the time in the physical condition first as this may
@@ -509,7 +516,8 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 				if (health.timePassing(time, robotConfig)) {
 
 					// Mental changes with time passing.
-					botMind.timePassing(time);
+					if (botMind != null)
+						botMind.timePassing(time);
 				} else {
 					// robot has died as a result of physical condition
 					setInoperable();
@@ -678,7 +686,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 * @return associated settlement or null if none.
 	 */
 	public Settlement getAssociatedSettlement() {
-		return unitManager.getSettlementByID(associatedSettlement);
+		return unitManager.getSettlementByID(associatedSettlementID);
 	}
 
 	/**
@@ -687,10 +695,10 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 * @param newSettlement the new associated settlement or null if none.
 	 */
 	public void setAssociatedSettlement(int newSettlement) {
-		if (associatedSettlement != newSettlement) {
-			int oldSettlement = associatedSettlement;
-			associatedSettlement = newSettlement;
-			fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT, unitManager.getSettlementByID(associatedSettlement));
+		if (associatedSettlementID != newSettlement) {
+			int oldSettlement = associatedSettlementID;
+			associatedSettlementID = newSettlement;
+			fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT, unitManager.getSettlementByID(associatedSettlementID));
 			if (oldSettlement != -1) {
 				unitManager.getSettlementByID(oldSettlement).removeRobot(this);
 				unitManager.getSettlementByID(oldSettlement).fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
@@ -701,10 +709,10 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 			}
 
 			// set description for this robot
-			if (associatedSettlement == -1) {
+			if (associatedSettlementID == -1) {
 				super.setDescription("Inoperable");
 			} else
-				super.setDescription(unitManager.getSettlementByID(associatedSettlement).getName());
+				super.setDescription(unitManager.getSettlementByID(associatedSettlementID).getName());
 		}
 	}
 

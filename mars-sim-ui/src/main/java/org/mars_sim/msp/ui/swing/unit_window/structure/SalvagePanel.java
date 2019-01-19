@@ -78,7 +78,7 @@ public class SalvagePanel extends JPanel {
 
         if (showBuilding) {
             // Prepare building name label.
-            String buildingName = process.getWorkshop().getBuilding().getName();
+            String buildingName = process.getWorkshop().getBuilding().getBuildingType();
             JLabel buildingNameLabel = new JLabel(buildingName, JLabel.CENTER);
             add(buildingNameLabel);
         }
@@ -135,7 +135,7 @@ public class SalvagePanel extends JPanel {
         StringBuilder result = new StringBuilder("<html>");
 
         result.append("Salvage Process: ").append(processInfo.toString()).append("<br>");
-        if (building != null) result.append("Manufacture Building: ").append(building.getName()).append("<br>");
+        if (building != null) result.append("Manufacture Building: ").append(building.getBuildingType()).append("<br>");
         result.append("Effort Time Required: ").append(processInfo.getWorkTimeRequired()).append(" millisols<br>");
         result.append("Building Tech Level Required: ").append(processInfo.getTechLevelRequired()).append("<br>");
         result.append("Materials Science Skill Level Required: ").append(processInfo.getSkillLevelRequired()).append("<br>");

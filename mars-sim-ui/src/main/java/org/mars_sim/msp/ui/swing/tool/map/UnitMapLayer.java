@@ -60,7 +60,7 @@ abstract class UnitMapLayer implements MapLayer {
 		if (unitsToDisplay != null) {
 			units = unitsToDisplay;
 		} else {
-			units = unitManager.getUnits();
+			units = unitManager.computeUnits();
 		}
 
 		for (Unit unit : units) {

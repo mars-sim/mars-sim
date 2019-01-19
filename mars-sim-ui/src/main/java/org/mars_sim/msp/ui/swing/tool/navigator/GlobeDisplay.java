@@ -556,7 +556,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 //		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 //		g.setRenderingHint( RenderingHints.  KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-		Iterator<Unit> i = unitManager.getUnits().iterator();
+		Iterator<Unit> i = unitManager.computeUnits().iterator();
 		while (i.hasNext()) {
 			Unit unit = i.next();
 			UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);

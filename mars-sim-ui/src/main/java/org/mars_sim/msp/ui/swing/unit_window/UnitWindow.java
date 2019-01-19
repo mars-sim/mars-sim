@@ -392,9 +392,9 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 		// Update each of the tab panels.
 		for (TabPanel tabPanel : tabPanels) {
 			if (tabPanel.isVisible()) {// && isShowing()) {
-				SwingUtilities.invokeLater(() -> 
-					tabPanel.update()
-				);
+//				SwingUtilities.invokeLater(() -> 
+					tabPanel.update();
+//				);
 //				tabPanel.updateUI();
 //			tabPanel.validate();
 			}

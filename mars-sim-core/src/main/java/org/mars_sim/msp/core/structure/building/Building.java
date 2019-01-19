@@ -143,8 +143,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	// Note : the typical values of penetrationThicknessOnAL for a 1 g/cm^3, 1 km/s
 	// meteorite can be .0010 to 0.0022 meter
-
 	// Loaded wearLifeTime, maintenanceTime, roomTemperature from buildings.xml
+	
+	/** A list of functions of this building. */
+	protected transient List<Function> functions;
+//	private static List<FunctionType> functionTypes = buildingConfig.getBuildingFunctions();
+	
 	/** Default : 3340 Sols (5 orbits). */
 	private int wearLifeTime = 3340000;
 	/** Default : 50 millisols maintenance time. */
@@ -183,11 +187,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private String nickName;
 	/** Description for this building. */
 	private String description;
-
-	/** A list of functions of this building. */
-	protected List<Function> functions;
-	// private List<BuildingKit> buildingKit;
-//	private Map<Integer, ItemResource> itemMap = new HashMap<Integer, ItemResource>();
 
 	/** Unit location coordinates. */
 	private Coordinates location;
@@ -257,47 +256,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			if (lifeSupport == null) {
 				lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
 				// Set up an inhabitable_building id for tracking composition of air
-				int id = manager.getNextInhabitableID();
+				int id = manager.obtainNextInhabitableID();
 				setInhabitableID(id);
 			}
 		}
 
-//		// Set the instance of thermal generation function.
-//		if (hasFunction(FunctionType.POWER_GENERATION))
-//			if (powerGen == null)
-//				powerGen = (PowerGeneration) getFunction(FunctionType.POWER_GENERATION);
-//
-//		// Set the instance of thermal generation function.
-//		if (hasFunction(FunctionType.THERMAL_GENERATION))
-//			if (furnace == null)
-//				furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
-//		// if (heating == null)
-//		// heating = furnace.getHeating();
-//
-//		// Set the instance of power storage function.
-//		if (hasFunction(FunctionType.POWER_STORAGE))
-//			if (powerStorage == null)
-//				powerStorage = (PowerStorage) getFunction(FunctionType.POWER_STORAGE);
-//
-//		// Set the instance of robotic station function.
-//		if (hasFunction(FunctionType.ROBOTIC_STATION))
-//			if (roboticStation == null)
-//				roboticStation = (RoboticStation) getFunction(FunctionType.ROBOTIC_STATION);
-//
-//		// Set the instance of eva function.
-//		if (hasFunction(FunctionType.EVA))
-//			if (eva == null)
-//				eva = (EVA) getFunction(FunctionType.EVA);
-//
-//		// Set the instance of farming function.
-//		if (hasFunction(FunctionType.FARMING))
-//			if (farm == null)
-//				farm = (Farming) getFunction(FunctionType.FARMING);
-//
-//		if (hasFunction(FunctionType.LIVING_ACCOMODATIONS))
-//			if (livingAccommodations == null)
-//				livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMODATIONS);
-
+//		System.out.println(manager.getSettlement().getName() + "'s " + nickName + " (" + inhabitableID + ") is initialized.");
 	}
 
 	/**
@@ -339,13 +303,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 		malfunctionMeteoriteImpact = MalfunctionFactory
 				.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
-
-//		if (inv == null)
-//			inv = settlement.getInventory();
-//		if (s_inv == null)
-//			s_inv = settlement.getInventory();
-//		if (b_inv == null) {
-//			b_inv = super.getInventory(); // it's already been created in its super class
+		masterClock = Simulation.instance().getMasterClock();
+		marsClock = masterClock.getMarsClock();
 
 //		if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
 //			//b_inv = new Inventory(this);
@@ -370,9 +329,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			// inflatable greenhouse : 4.815E-4 or 0.0004815
 			// large greenhouse : 9.63E-4 or 0.000963
 		}
-
-		masterClock = Simulation.instance().getMasterClock();
-		marsClock = masterClock.getMarsClock();
 
 		powerModeCache = PowerMode.FULL_POWER;
 		heatModeCache = HeatMode.HALF_HEAT;
@@ -449,13 +405,18 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 //		}
 	}
 
-	/** Constructor 3 (for use by Mock Building in Unit testing) */
+	/**
+	 * Constructor 3 (for use by Mock Building in Unit testing)
+	 * 
+	 * @return manager
+	 */
 	protected Building(BuildingManager manager) {
 		super("Mock Building", new Coordinates(0D, 0D));
 
-		this.manager = manager;
-//		settlementID = manager.getSettlement().getIdentifier();
-
+		if (manager != null) {
+			this.manager = manager;
+			settlementID = manager.getSettlement().getIdentifier();
+		}
 		// Place it in a settlement
 //		enter(LocationCodeType.SETTLEMENT);
 	}
@@ -830,6 +791,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 */
 	public boolean hasFunction(FunctionType functionType) {
 		boolean result = false;
+		
+		if (functions == null)
+			functions = determineFunctions();
+		
 		for (Function f : functions) {
 			if (f.getFunctionType() == functionType) {
 				return true;
@@ -896,7 +861,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			getBuildingManager().removeOneFunctionfromBFMap(this, function);
 		}
 	}
-
+	
 	/**
 	 * Gets the building's building manager.
 	 * 
@@ -1310,6 +1275,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 //		if (time < 0D)
 //			throw new IllegalArgumentException("Time must be > 0D");
 
+		// Get the building's functions
+		if (functions == null)
+			functions = determineFunctions();
+		
 		// Send time to each building function.
 		for (Function f : functions)
 			f.timePassing(time);

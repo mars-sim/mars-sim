@@ -268,7 +268,7 @@ extends WizardPanel {
             if (project instanceof Building) {
                 Building salvageBuilding = (Building) project;
                 try {
-                    info = ConstructionUtil.getConstructionStageInfo(salvageBuilding.getName());
+                    info = ConstructionUtil.getConstructionStageInfo(salvageBuilding.getBuildingType());
                 }
                 catch (Exception e) {
                     e.printStackTrace(System.err);

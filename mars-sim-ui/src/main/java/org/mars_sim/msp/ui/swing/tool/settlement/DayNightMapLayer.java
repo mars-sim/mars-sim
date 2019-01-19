@@ -36,7 +36,8 @@ public class DayNightMapLayer implements SettlementMapLayer {
     
 	private SettlementMapPanel mapPanel;
 	private Coordinates location;
-	private BufferedImage shadingImage, darkImage;
+	private BufferedImage shadingImage;
+	private BufferedImage darkImage;
 
     public DayNightMapLayer(SettlementMapPanel mapPanel) {
 		// Initialize data members.

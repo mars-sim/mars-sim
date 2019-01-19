@@ -265,7 +265,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	/**
 	 * Get the equipment's location
 	 * 
-	 * @deprecated use other more efficient methods
 	 * @return {@link LocationSituation} the person's location
 	 */
 	public LocationSituation getLocationSituation() {

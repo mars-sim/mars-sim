@@ -192,7 +192,7 @@ public class SalvageVehiclePanel extends WizardPanel {
         Building salvageBuilding = getWizard().getMissionData().getSalvageBuilding();
         if (salvageBuilding != null) {
             try {
-                salvageInfo = ConstructionUtil.getConstructionStageInfo(salvageBuilding.getName());
+                salvageInfo = ConstructionUtil.getConstructionStageInfo(salvageBuilding.getBuildingType());
             }
             catch (Exception e) {
                 e.printStackTrace(System.err);

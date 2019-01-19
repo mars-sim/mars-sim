@@ -1183,8 +1183,8 @@ public class Inventory implements Serializable {
 	}
 
 	private boolean containsUnitClassLocal(int id) {
-		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-		return containsUnitClassLocal(unitClass);
+//		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
+		return containsUnitClassLocal(EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName()));
 	}
 
 	/**
@@ -1199,7 +1199,7 @@ public class Inventory implements Serializable {
 			Iterator<Unit> i = containedUnits.iterator();
 			while (!result && i.hasNext()) {
 				if (unitClass.isInstance(i.next())) {
-					result = true;
+					return true;
 				}
 			}
 		}
@@ -1210,7 +1210,7 @@ public class Inventory implements Serializable {
 		boolean result = false;
 		// Check if unit of class is in inventory.
 		if (containsUnitClassLocal(c)) {
-			result = true;
+			return true;
 		}
 		return result;
 	}
@@ -1225,14 +1225,14 @@ public class Inventory implements Serializable {
 		boolean result = false;
 		// Check if unit of class is in inventory.
 		if (containsUnitClassLocal(unitClass)) {
-			result = true;
+			return true;
 		}
 		return result;
 	}
 
 	public Unit findUnitOfClass(int id) {
-		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-		return findUnitOfClass(unitClass);
+//		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
+		return findUnitOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName()));
 	}
 
 	/**
@@ -1257,8 +1257,8 @@ public class Inventory implements Serializable {
 	}
 
 	public Collection<Unit> findAllUnitsOfClass(int id) {
-		Class<?> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-		return findAllUnitsOfClass(unitClass);
+//		Class<?> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
+		return findAllUnitsOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName()));
 	}
 
 	/**
@@ -1280,8 +1280,8 @@ public class Inventory implements Serializable {
 	}
 
 	public int findNumUnitsOfClass(int id) {
-		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-		return findNumUnitsOfClass(unitClass);
+//		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
+		return findNumUnitsOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName()));
 	}
 
 	/**

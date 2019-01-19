@@ -6,21 +6,22 @@
  */
 package org.mars_sim.msp.core.structure;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
-import org.mars_sim.msp.core.structure.building.function.Storage;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
+import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * The CompositionOfAir class accounts for the composition of air of each
@@ -124,11 +125,14 @@ public class CompositionOfAir implements Serializable {
 	// see https://en.wikipedia.org/wiki/Gas_constant
 
 	public static final int numGases = 5;
+	
+	// Data members
+	private int sizeCache;
 	/** The cache for msols */
 	private int msolCache;
-
-	private boolean isDone = false;
-
+	/** The settlement ID */
+	private int settlementID;
+	
 	/** Oxygen consumed by a person [kg/millisol] */
 	private double o2Consumed;
 	/** CO2 expelled by a person [kg/millisol] */
@@ -162,10 +166,6 @@ public class CompositionOfAir implements Serializable {
 	// in Martian atmosphere, nitrogen (~2.7%) , argon (~1.6%) , carbon dioxide
 	// (~95.3%)
 
-	// Data members
-	private int numIDsCache;
-	// private int solCache = 0;
-
 	// Note : Gas volumes are additive. If you mix some volumes of oxygen and
 	// nitrogen, final volume will equal sum of
 	// volumes, also final mass will equal sum of masses.
@@ -184,13 +184,15 @@ public class CompositionOfAir implements Serializable {
 
 	private double[][] standardMoles;
 
-	private BuildingManager buildingManager;
-
+//	private BuildingManager buildingManager;
+	
+	private static Simulation sim = Simulation.instance();
+	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static MasterClock masterClock;
 	private static MarsClock marsClock;
-	// private static SurfaceFeatures surfaceFeatures;
 	private static PersonConfig personConfig;
-
+	private static UnitManager unitManager = sim.getUnitManager();
+	
 	/**
 	 * Constructor.
 	 * 
@@ -199,12 +201,11 @@ public class CompositionOfAir implements Serializable {
 	 */
 	public CompositionOfAir(Settlement settlement) {
 
-		this.buildingManager = settlement.getBuildingManager();
-
-		masterClock = Simulation.instance().getMasterClock();
+		settlementID = settlement.getIdentifier();		
+//		System.out.println("1. CompositionOfAir for " + settlement + " " + settlementID);
+		masterClock = sim.getMasterClock();
 		marsClock = masterClock.getMarsClock();
-		// weather = Simulation.instance().getMars().getWeather();
-		personConfig = SimulationConfig.instance().getPersonConfiguration();
+		personConfig = simulationConfig.getPersonConfiguration();
 
 		o2Consumed = personConfig.getHighO2ConsumptionRate() / 1000D; // divide by 1000 to convert to [kg/millisol]
 
@@ -231,101 +232,104 @@ public class CompositionOfAir implements Serializable {
 		// Thus, a person loses about 800ml of water per day, half through the skin
 		// and half through respiration.
 
-		int numIDs = buildingManager.getLargestInhabitableID() + 1;
-		numIDsCache = numIDs;
+		int size = settlement.getBuildingManager().getNumInhabitables();
+		sizeCache = size;
 
+//		System.out.println(settlement.getBuildingManager() + " size : " + size);
 		// CO2, H2O, N2, O2, Ar2, He, CH4...
 		// numGases = 5;
 
-		percent = new double[numGases][numIDs];
-		partialPressure = new double[numGases][numIDs];
-		temperature = new double[numGases][numIDs];
-		numMoles = new double[numGases][numIDs];
-		mass = new double[numGases][numIDs];
-		standardMoles = new double[numGases][numIDs];
+		percent = new double[numGases][size];
+		partialPressure = new double[numGases][size];
+		temperature = new double[numGases][size];
+		numMoles = new double[numGases][size];
+		mass = new double[numGases][size];
+		standardMoles = new double[numGases][size];
 
-		fixedVolume = new double[numIDs];
-		totalPressure = new double[numIDs];
-		totalMoles = new double[numIDs];
-		totalMass = new double[numIDs];
+		fixedVolume = new double[size];
+		totalPressure = new double[size];
+		totalMoles = new double[size];
+		totalMass = new double[size];
 		// buildingTemperature = new double[numIDs];
 
 		// Part 1 : set up initial conditions at the start of sim
-		for (int id = 0; id < numIDs; id++) {
+		for (int i = 0; i < size; i++) {
 
-			partialPressure[0][id] = CO2_PARTIAL_PRESSURE;
-			partialPressure[1][id] = ARGON_PARTIAL_PRESSURE;
-			partialPressure[2][id] = N2_PARTIAL_PRESSURE;
-			partialPressure[3][id] = O2_PARTIAL_PRESSURE;
-			partialPressure[4][id] = H2O_PARTIAL_PRESSURE;
-			/*
-			 * double total_pressure = 0; for (int i = 0; i < numGases; i++) total_pressure
-			 * += partialPressure [i][id];
-			 * 
-			 * for (int j = 0; j < numGases; j++) percent [j][id] += partialPressure
-			 * [j][id]/total_pressure;
-			 */
-			/*
-			 * percent [0][id] = CO2_PARTIAL_PRESSURE/total_pressure; percent [1][id] =
-			 * ARGON_PARTIAL_PRESSURE/total_pressure; percent [2][id] =
-			 * N2_PARTIAL_PRESSURE/total_pressure; percent [3][id] =
-			 * O2_PARTIAL_PRESSURE/total_pressure; percent [4][id] =
-			 * H2O_PARTIAL_PRESSURE/total_pressure;
-			 */
+			partialPressure[0][i] = CO2_PARTIAL_PRESSURE;
+			partialPressure[1][i] = ARGON_PARTIAL_PRESSURE;
+			partialPressure[2][i] = N2_PARTIAL_PRESSURE;
+			partialPressure[3][i] = O2_PARTIAL_PRESSURE;
+			partialPressure[4][i] = H2O_PARTIAL_PRESSURE;
 		}
 
 		// Part 2 : calculate total # of moles, total mass and total pressure
 
 		// double t = 22.5 + C_TO_K ;
 
-		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
+		List<Building> buildings = settlement.getBuildingManager().getBuildingsWithLifeSupport();
+//		System.out.println("buildings size : " + buildings.size());
 		for (Building b : buildings) {
-
+			
 			int id = b.getInhabitableID();
-			double t = C_TO_K + b.getCurrentTemperature();
-			double vol = b.getVolumeInLiter(); // 1 Cubic Meter = 1,000 Liters
-
-			fixedVolume[id] = vol;
-
-			double sum1 = 0, sum2 = 0, sum3 = 0;// , sum4 = 0;
-
-			for (int gas = 0; gas < numGases; gas++) {
-
-				double molecularMass = getMolecularMass(gas);
-
-				double p = partialPressure[gas][id];
-				double nm = p * vol / R_GAS_CONSTANT / t;
-				double m = molecularMass * nm;
-
-				temperature[gas][id] = t;
-				numMoles[gas][id] = nm;
-				standardMoles[gas][id] = nm;
-				mass[gas][id] = m;
-
-				sum1 += nm;
-				sum2 += m;
-				sum3 += p;
-				// sum4 += t;
-
+			if (id != -1) {
+				double t = C_TO_K + b.getCurrentTemperature();
+				double vol = b.getVolumeInLiter(); // 1 Cubic Meter = 1,000 Liters
+	
+//				System.out.println(size + " : " + buildings.size() + " : " + b + " : " + id);
+				
+				fixedVolume[id] = vol;
+	
+				double sum1 = 0, sum2 = 0, sum3 = 0;// , sum4 = 0;
+	
+				for (int gas = 0; gas < numGases; gas++) {
+	
+					double molecularMass = getMolecularMass(gas);
+	
+// 					p = nm * R_GAS_CONSTANT * t / fixedVolume[id];
+	
+					double p = partialPressure[gas][id];
+					double nm = p * vol / R_GAS_CONSTANT / t;
+					double m = molecularMass * nm;
+	
+					temperature[gas][id] = t;
+					numMoles[gas][id] = nm;
+					standardMoles[gas][id] = nm;
+					mass[gas][id] = m;
+	
+//					System.out.println(b.getSettlement() + "'s " + b + "(" + id + ") : mass[][] : " 
+//							+ mass[gas][0] + " is " + mass.length + " x " + mass[0].length);
+					
+					sum1 += nm;
+					sum2 += m;
+					sum3 += p;
+					// sum4 += t;
+	
+				}
+	
+				// The quantity for each gas 
+				totalMoles[id] = sum1;
+				totalMass[id] = sum2;
+				totalPressure[id] = sum3;
+				// buildingTemperature[id] = sum4/numGases;
+	
+				// System.out.println(b.getNickName() + " has a total " +
+				// Math.round(totalMass[id]*100D)/100D + " kg of gas");
 			}
-
-			totalMoles[id] = sum1;
-			totalMass[id] = sum2;
-			totalPressure[id] = sum3;
-			// buildingTemperature[id] = sum4/numGases;
-
-			// System.out.println(b.getNickName() + " has a total " +
-			// Math.round(totalMass[id]*100D)/100D + " kg of gas");
 		}
 
 		// Part 3 : calculate for each building the percent composition
-		for (int id = 0; id < numIDs; id++) {
+		for (int i = 0; i < size; i++) {
 			// calculate for each gas the % composition
 			for (int gas = 0; gas < numGases; gas++) {
-				percent[gas][id] = partialPressure[gas][id] / totalPressure[id] * 100D;
+				percent[gas][i] = partialPressure[gas][i] / totalPressure[i] * 100D;
 
 			}
 		}
+		
+//		System.out.println(//size + " : " + 
+//		buildings.size() + " : " + buildings.get(size-1) + "   id: " 
+//				+ buildings.get(size-1).getInhabitableID() + ":    mass[0][last]: " + mass[0][buildings.get(size-1).getInhabitableID()]);
+
 	}
 	
 	/**
@@ -335,12 +339,11 @@ public class CompositionOfAir implements Serializable {
 	 * @throws BuildingException if error occurs.
 	 */
 	public void timePassing(double time) {
-		List<Building> newList = buildingManager.getBuildingsWithLifeSupport();
-		int num = buildingManager.getLargestInhabitableID() + 1;
-
-		// if adding or subtracting a building in the settlement
-//		addAirNew(newList, num);
-
+//		System.out.println("2. CompositionOfAir for " + unitManager.getSettlementByID(settlementID) + " " + settlementID);
+//		System.out.println("3. CompositionOfAir for " + unitManager.getSettlementByID(2)  + " 2");
+		List<Building> newList = unitManager.getSettlementByID(settlementID).getBuildingManager().getBuildingsWithLifeSupport();
+		int num = newList.size();// unitManager.getSettlementByID(settlementID).getBuildingManager().getLargestInhabitableID() + 1;
+		
 		// For each time interval
 		calculateGasExchange(time, newList, num);
 
@@ -374,10 +377,11 @@ public class CompositionOfAir implements Serializable {
 	 * 
 	 * @param time      interval in millisols
 	 * @param buildings a list of buildings
-	 * @param num       numbers of buildings
+	 * @param size       numbers of buildings
 	 */
-	public void calculateGasExchange(double time, List<Building> buildings, int num) {
-
+	public void calculateGasExchange(double time, List<Building> buildings, int size) {
+//		int size = buildings.size();
+		
 		double o2 = o2Consumed * time;
 		double cO2 = cO2Expelled * time;
 		double moisture = moistureExpelled * time;
@@ -387,116 +391,128 @@ public class CompositionOfAir implements Serializable {
 		for (Building b : buildings) {
 			
 			double tt = b.getCurrentTemperature();
+			int id = b.getInhabitableID();
 			
-			if (tt > -40 && tt < 40) {
-				
-				int id = b.getInhabitableID();
-				int numPeople = b.getInhabitants().size();
-	
-				double t = C_TO_K + tt;
-	
-				o2 = numPeople * -o2; // consumed
-				cO2 = numPeople * cO2; // generated
-				moisture = numPeople * moisture; // generated
-				// h2o = numPeople * h2o;
-	
-				// Extract the air moisture generated, O2 generated and CO2 consumed if it's a
-				// greenhouse
-//				if (b.getBuildingType().toLowerCase().contains(GREENHOUSE)) {
-//					double _m = b.getFarming().getMoisture();
-//					if (_m > 0)
-//						moisture = moisture + b.getFarming().retrieveMoisture(_m); // generated by crops
-//					double _o2 = b.getFarming().getO2();
-//					if (_o2 > 0)
-//						o2 = o2 + b.getFarming().retrieveO2(_o2); // generated by crops
-//					double _cO2 = b.getFarming().getCO2();
-//					if (_cO2 > 0)
-//						cO2 = cO2 - b.getFarming().retrieveCO2(_cO2); // consumed by crops
-//				}
-	
-				for (int gas = 0; gas < numGases; gas++) {
-	
-					double molecularMass = getMolecularMass(gas);
-	
-					double m = mass[gas][id];
-					double nm = numMoles[gas][id];
-					double p = 0;
+//			for (int id = 0; id < size; id++) {
 					
-					if (gas == 0) {
-						m += cO2;
-					} else if (gas == 3) {
-						m += o2;
-					} else if (gas == 4) {
-						m += moisture;
+				if (tt > -40 && tt < 40 && id != -1) {
+					
+					int numPeople = b.getInhabitants().size();
+		
+					double t = C_TO_K + tt;
+		
+					o2 = numPeople * -o2; // consumed
+					cO2 = numPeople * cO2; // generated
+					moisture = numPeople * moisture; // generated
+					// h2o = numPeople * h2o;
+		
+					// Extract the air moisture generated, O2 generated and CO2 consumed if it's a
+					// greenhouse
+	//				if (b.getBuildingType().toLowerCase().contains(GREENHOUSE)) {
+	//					double _m = b.getFarming().getMoisture();
+	//					if (_m > 0)
+	//						moisture = moisture + b.getFarming().retrieveMoisture(_m); // generated by crops
+	//					double _o2 = b.getFarming().getO2();
+	//					if (_o2 > 0)
+	//						o2 = o2 + b.getFarming().retrieveO2(_o2); // generated by crops
+	//					double _cO2 = b.getFarming().getCO2();
+	//					if (_cO2 > 0)
+	//						cO2 = cO2 - b.getFarming().retrieveCO2(_cO2); // consumed by crops
+	//				}
+					
+//					System.out.println(b.getSettlement() + "'s " + b + "(" + id + ") : "
+//							+ "mass[2][" + (size-1) + "] is " + mass[2][size-1] 
+//							+ "  " + mass.length + " x " + mass[0].length);
+					
+					for (int gas = 0; gas < numGases; gas++) {
+//						System.out.println(b.getSettlement() + "'s " + b + "(" + id + ") : gas (" + gas  + ")   out of " + buildings.size());
+
+						double molecularMass = getMolecularMass(gas);
+
+						double m = mass[gas][id];
+						double nm = numMoles[gas][id];
+						double p = 0;
+						
+						if (gas == 0) {
+							m += cO2;
+						} else if (gas == 3) {
+							m += o2;
+						} else if (gas == 4) {
+							m += moisture;
+						}
+		
+						// Divide by molecular mass to convert mass to # of moles
+						// note the kg/mole are as indicated as each gas have different amu
+		
+						nm = m / molecularMass;
+						p = nm * R_GAS_CONSTANT * t / fixedVolume[id];
+						
+						if (p < 0)
+							p = 0;
+						if (nm < 0)
+							nm = 0;
+						if (m < 0)
+							m = 0;
+						
+						temperature[gas][id] = t;
+						partialPressure[gas][id] = p;
+						mass[gas][id] = m;
+						numMoles[gas][id] = nm;
+		
 					}
-	
-					// Divide by molecular mass to convert mass to # of moles
-					// note the kg/mole are as indicated as each gas have different amu
-	
-					nm = m / molecularMass;
-					p = nm * R_GAS_CONSTANT * t / fixedVolume[id];
-					
-					if (p < 0)
-						p = 0;
-					if (nm < 0)
-						nm = 0;
-					if (m < 0)
-						m = 0;
-					
-					temperature[gas][id] = t;
-					partialPressure[gas][id] = p;
-					mass[gas][id] = m;
-					numMoles[gas][id] = nm;
-	
 				}
-			}
+//			}
 		}
 
 		// Part 2
 		// calculate for each building the total pressure, total # of moles and
 		// percentage of composition
-		for (int id = 0; id < num; id++) {
-
-			double sum_p = 0, sum_nm = 0, sum_m = 0;// , sum_t = 0;
-			// calculate for each gas the total pressure and moles
-			for (int gas = 0; gas < numGases; gas++) {
-
-				sum_p += partialPressure[gas][id];
-				sum_nm += numMoles[gas][id];
-				sum_m += mass[gas][id];
-				// sum_t += temperature[gas][id];
-
+//		for (Building b : buildings) {
+//			int id = b.getInhabitableID();
+			
+			for (int id = 0; id < size; id++) {
+	
+				double sum_p = 0, sum_nm = 0, sum_m = 0;// , sum_t = 0;
+				// calculate for each gas the total pressure and moles
+				for (int gas = 0; gas < numGases; gas++) {
+//					System.out.println(unitManager.getSettlementByID(settlementID) + "'s " + b + " : gas is " + gas + "  id is " + id + "  out of " + buildings.size());
+					sum_p += partialPressure[gas][id];
+					sum_nm += numMoles[gas][id];
+					sum_m += mass[gas][id];
+					// sum_t += temperature[gas][id];
+				}
+	
+				totalPressure[id] = sum_p;
+				totalMoles[id] = sum_nm;
+				totalMass[id] = sum_m;
+				// buildingTemperature[id] = sum_t/numGases;
+	
+				// System.out.println(buildingManager.getBuilding(id).getNickName() + " has a
+				// total " + Math.round(totalMass[id]*100D)/100D + " kg of gas");
 			}
-
-			totalPressure[id] = sum_p;
-			totalMoles[id] = sum_nm;
-			totalMass[id] = sum_m;
-			// buildingTemperature[id] = sum_t/numGases;
-
-			// System.out.println(buildingManager.getBuilding(id).getNickName() + " has a
-			// total " + Math.round(totalMass[id]*100D)/100D + " kg of gas");
-		}
-
+//		}
 		// Part 3
 		// calculate for each building the percent composition
-		for (int id = 0; id < num; id++) {
-			// calculate for each gas the % composition
-			for (int gas = 0; gas < numGases; gas++) {
-				percent[gas][id] = partialPressure[gas][id] / totalPressure[id] * 100D;
-				// if (percent [gas][id] < 0)
-				// System.out.println("gas " + gas
-				// + "'s percent : " + Math.round(percent [gas][id]*100.0)/100.0);
+//		for (Building b : buildings) {
+			for (int id = 0; id < size; id++) {
+				// calculate for each gas the % composition
+				for (int gas = 0; gas < numGases; gas++) {
+					percent[gas][id] = partialPressure[gas][id] / totalPressure[id] * 100D;
+					// if (percent [gas][id] < 0)
+					// System.out.println("gas " + gas
+					// + "'s percent : " + Math.round(percent [gas][id]*100.0)/100.0);
+				}
 			}
-		}
+//		}
 	}
 
 	/**
 	 * Monitors air and add mass of gases below the threshold
 	 * 
 	 * @param buildings a list of buildings
-	 * @param num       numbers of buildings
+	 * @param size       numbers of buildings
 	 */
-	public void monitorAir(List<Building> buildings, int num) {
+	public void monitorAir(List<Building> buildings, int size) {
 		// PART 1 :
 		// check % of gas in each building
 		// find the delta mass needed for each gas to go within the threshold
@@ -505,64 +521,66 @@ public class CompositionOfAir implements Serializable {
 		for (Building b : buildings) {
 			int id = b.getInhabitableID();
 			
-			double tt = b.getCurrentTemperature();
-
-			if (tt > -40 && tt < 40) {
-
-				double t = C_TO_K + tt;
-				
-				for (int gas = 0; gas < numGases; gas++) {
-
-					// [0] = CO2
-					// [1] = ARGON
-					// [2] = N2
-					// [3] = O2
-					// [4] = H2O
-
-					// double diff = delta/standard_moles;
-					double PP = PARTIAL_PRESSURES[gas];
-					double p = partialPressure[gas][id];
-//					double diff = (PP - p) / PP;
-					double tolerance = p / PP;
+			if (id != -1) {
+				double tt = b.getCurrentTemperature();
+	
+				if (tt > -40 && tt < 40) {
+	
+					double t = C_TO_K + tt;
 					
-					// if this gas has BELOW 95% or ABOVE 105% the standard percentage of air
-					// composition
-//					if (Math.abs(diff) > UPPER_THRESHOLD_GAS_COMPOSITION || 
-					// if this gas has BELOW 90% or ABOVE 110% the standard percentage of air
-					// composition					
-					if (tolerance > 1.1 || tolerance < .9) {
-
-						double d_new_moles = standardMoles[gas][id] - numMoles[gas][id];;
-						double molecularMass = getMolecularMass(gas);
-						double d_mass = d_new_moles * molecularMass; // d_mass can be -ve;
-						// if (d_mass >= 0) d_mass = d_mass * 1.1D; //add or extract a little more to
-						// save the future effort
-						int ar = getGasID(gas);
-
-						if (d_mass > 0)
-							Storage.retrieveAnResource(d_mass, ar, b.getInventory(), true);
-						else { // too much gas, need to recapture it; d_mass is less than 0
-							double recaptured = -d_mass * GAS_CAPTURE_EFFICIENCY;
-							if (recaptured > 0)
-								Storage.storeAnResource(recaptured, ar, b.getInventory(), sourceName + "::monitorAir");
-						}
-
-						double new_m = mass[gas][id] + d_mass;
-						double new_moles = 0;
+					for (int gas = 0; gas < numGases; gas++) {
+	
+						// [0] = CO2
+						// [1] = ARGON
+						// [2] = N2
+						// [3] = O2
+						// [4] = H2O
+	
+						// double diff = delta/standard_moles;
+						double PP = PARTIAL_PRESSURES[gas];
+						double p = partialPressure[gas][id];
+	//					double diff = (PP - p) / PP;
+						double tolerance = p / PP;
 						
-						if (new_m < 0) {
-//							logger.info("[" + settlement + "] no more " + ResourceUtil.findAmountResource(ar).getName()
-//									+ " in ");
-							new_m = 0;
+						// if this gas has BELOW 95% or ABOVE 105% the standard percentage of air
+						// composition
+	//					if (Math.abs(diff) > UPPER_THRESHOLD_GAS_COMPOSITION || 
+						// if this gas has BELOW 90% or ABOVE 110% the standard percentage of air
+						// composition					
+						if (tolerance > 1.1 || tolerance < .9) {
+	
+							double d_new_moles = standardMoles[gas][id] - numMoles[gas][id];;
+							double molecularMass = getMolecularMass(gas);
+							double d_mass = d_new_moles * molecularMass; // d_mass can be -ve;
+							// if (d_mass >= 0) d_mass = d_mass * 1.1D; //add or extract a little more to
+							// save the future effort
+							int ar = getGasID(gas);
+	
+							if (d_mass > 0)
+								Storage.retrieveAnResource(d_mass, ar, b.getInventory(), true);
+							else { // too much gas, need to recapture it; d_mass is less than 0
+								double recaptured = -d_mass * GAS_CAPTURE_EFFICIENCY;
+								if (recaptured > 0)
+									Storage.storeAnResource(recaptured, ar, b.getInventory(), sourceName + "::monitorAir");
+							}
+	
+							double new_m = mass[gas][id] + d_mass;
+							double new_moles = 0;
+							
+							if (new_m < 0) {
+	//							logger.info("[" + settlement + "] no more " + ResourceUtil.findAmountResource(ar).getName()
+	//									+ " in ");
+								new_m = 0;
+							}
+							else {
+								new_moles = new_m / molecularMass;
+							}
+	
+							temperature[gas][id] = t;
+							partialPressure[gas][id] = new_moles * R_GAS_CONSTANT * t / fixedVolume[id];
+							mass[gas][id] = new_m;
+							numMoles[gas][id] = new_moles;
 						}
-						else {
-							new_moles = new_m / molecularMass;
-						}
-
-						temperature[gas][id] = t;
-						partialPressure[gas][id] = new_moles * R_GAS_CONSTANT * t / fixedVolume[id];
-						mass[gas][id] = new_m;
-						numMoles[gas][id] = new_moles;
 					}
 				}
 			}
@@ -571,30 +589,30 @@ public class CompositionOfAir implements Serializable {
 		// Part 2
 		// calculate for each building the total pressure, total # of moles and
 		// percentage of composition
-		for (int id = 0; id < num; id++) {
+		for (int i = 0; i < size; i++) {
 
 			double p = 0, nm = 0, m = 0;
 			// calculate for each gas the total pressure and moles
 			for (int gas = 0; gas < numGases; gas++) {
 
-				p += partialPressure[gas][id];
-				nm += numMoles[gas][id];
-				m += mass[gas][id];
+				p += partialPressure[gas][i];
+				nm += numMoles[gas][i];
+				m += mass[gas][i];
 
 			}
 
-			totalPressure[id] = p;
-			totalMoles[id] = nm;
-			totalMass[id] = m;
+			totalPressure[i] = p;
+			totalMoles[i] = nm;
+			totalMass[i] = m;
 
 		}
 
 		// Part 3
 		// calculate for each building the percent composition
-		for (int id = 0; id < num; id++) {
+		for (int i = 0; i < size; i++) {
 			// calculate for each gas the % composition
 			for (int gas = 0; gas < numGases; gas++) {
-				percent[gas][id] = partialPressure[gas][id] / totalPressure[id] * 100D;
+				percent[gas][i] = partialPressure[gas][i] / totalPressure[i] * 100D;
 
 			}
 		}
@@ -628,156 +646,91 @@ public class CompositionOfAir implements Serializable {
 	 */
 //	public void addAirNew(List<Building> buildings, int numID) {
 	public void addAirNew(Building building) {
-
-		int numID = buildingManager.getLargestInhabitableID() + 1;
-		int id = numID - 1;
+		int size = building.getBuildingManager().getNumInhabitables();
+		int id = size;
 		
 		int diff = 1;//numID - numIDsCache;
 
-//		if (numID != numIDsCache && diff > 0) {
-			// if a building is added from a settlement
+		double[] new_volume = Arrays.copyOf(fixedVolume, fixedVolume.length + diff);
 
-//			numIDsCache = numID;
-			// System.out.println("numBuildings : " + numBuildings + " numBuildingsCache : "
-			// + numBuildingsCache);
-			// System.out.println("percentComposition.length : " +
-			// percentComposition.length);
-			// System.out.println("partialPressure[0].length : " +
-			// partialPressure[0].length);
-			// increase the size of the vectors...
-			// initialize the new building with default values;
+		double[] new_totalPressure = Arrays.copyOf(totalPressure, totalPressure.length + diff);
+		double[] new_totalMoles = Arrays.copyOf(totalMoles, totalMoles.length + diff);
+		double[] new_totalMass = Arrays.copyOf(totalMass, totalMass.length + diff);
 
-			double[] new_volume = Arrays.copyOf(fixedVolume, fixedVolume.length + diff);
+		double[][] new_temperature = createGasArray(temperature, size);
+		double[][] new_percent = createGasArray(percent, size);
 
-			double[] new_totalPressure = Arrays.copyOf(totalPressure, totalPressure.length + diff);
-			double[] new_totalMoles = Arrays.copyOf(totalMoles, totalMoles.length + diff);
-			double[] new_totalMass = Arrays.copyOf(totalMass, totalMass.length + diff);
-			// double [] new_buildingTemperature = Arrays.copyOf(buildingTemperature,
-			// buildingTemperature.length + diff);
+		double[][] new_partialPressure = createGasArray(partialPressure, size);
+		double[][] new_numMoles = createGasArray(numMoles, size);
+		double[][] new_standard_moles = createGasArray(standardMoles, size);
+		double[][] new_mass = createGasArray(mass, size);
 
-			double[][] new_temperature = createGasArray(temperature, numID);
-			double[][] new_percent = createGasArray(percent, numID);
+		new_totalPressure[id] = 1.0;
 
-			double[][] new_partialPressure = createGasArray(partialPressure, numID);
-			double[][] new_numMoles = createGasArray(numMoles, numID);
-			double[][] new_standard_moles = createGasArray(standardMoles, numID);
-			double[][] new_mass = createGasArray(mass, numID);
+		new_partialPressure[0][id] = CO2_PARTIAL_PRESSURE;
+		new_partialPressure[1][id] = ARGON_PARTIAL_PRESSURE;
+		new_partialPressure[2][id] = N2_PARTIAL_PRESSURE;
+		new_partialPressure[3][id] = O2_PARTIAL_PRESSURE;
+		new_partialPressure[4][id] = H2O_PARTIAL_PRESSURE;
 
-			// double [][] new_percent = Arrays.copyOf(percentComposition,
-			// percentComposition[0].length + diff);
-			// double [][] new_partialPressure = Arrays.copyOf(partialPressure,
-			// partialPressure[0].length + diff);
-			// double [][] new_temperature = Arrays.copyOf(temperature,
-			// temperature[0].length + diff);
-			// double [][] new_numMoles = Arrays.copyOf(numMoles, numMoles[0].length +
-			// diff);
-			/*
-			 * // Use Java 8 stream to create new 2D arrays with more columns. double [][]
-			 * new_percent = Arrays.stream(percentComposition) .map((double[] row) ->
-			 * row.clone()) .toArray((int length) -> new double[length + diff][]);
-			 */
+		Building b = building;	
+//		int id = b.getInhabitableID();
 
-			// System.out.println("new_partialPressure[0].length : " +
-			// new_partialPressure[0].length);
+		double t = C_TO_K + b.getCurrentTemperature();
+		double sum_nm = 0, sum_p = 0, sum_mass = 0;// , sum_t = 0;
+		double vol = b.getVolumeInLiter(); // 1 Cubic Meter = 1,000 Liters
 
-//			for (int i = numID; i < numID; i++) {
-				// System.out.println("j : " + j);
-				new_totalPressure[id] = 1.0;
+		new_volume[id] = vol;
 
-				new_partialPressure[0][id] = CO2_PARTIAL_PRESSURE;
-				new_partialPressure[1][id] = ARGON_PARTIAL_PRESSURE;
-				new_partialPressure[2][id] = N2_PARTIAL_PRESSURE;
-				new_partialPressure[3][id] = O2_PARTIAL_PRESSURE;
-				new_partialPressure[4][id] = H2O_PARTIAL_PRESSURE;
+		// Part 2 : Calculate for each gas the new volume, # of moles and total # of moles
+		for (int gas = 0; gas < numGases; gas++) {
 
-//			}
+			double molecularMass = getMolecularMass(gas);
 
-//			List<Building> newList = new ArrayList<>();
+			double p = new_partialPressure[gas][id];
+			double nm = p * vol / R_GAS_CONSTANT / t;
+			double m = molecularMass * nm;
 
-			// Part 2 : calculate # of moles and mass
-			// Assembled a list of new buildings
-//			for (Building b : buildings) {
-//				int id = b.getInhabitableID();
-//				if (id >= numIDsCache)
-//					newList.add(b);
-//			}
-
-			// for (int id = 0; id< num; id++) {
-//			for (Building b : newList) {
+			if (p < 0)
+				p = 0;
+			if (nm < 0)
+				nm = 0;
+			if (m < 0)
+				m = 0;
 			
-			
-			Building b = building;
-			
-//				int id = b.getInhabitableID();
+			new_temperature[gas][id] = t;
+			new_numMoles[gas][id] = nm;
+			new_standard_moles[gas][id] = nm;
+			new_mass[gas][id] = m;
+			new_partialPressure[gas][id] = p;
 
-				double t = C_TO_K + b.getCurrentTemperature();
-				double sum_nm = 0, sum_p = 0, sum_mass = 0;// , sum_t = 0;
-				double vol = b.getVolumeInLiter(); // 1 Cubic Meter = 1,000 Liters
+			sum_nm += nm;
+			sum_p += p;
+			sum_mass += m;
+		}
 
-				new_volume[id] = vol;
+		new_totalMoles[id] = sum_nm;
+		new_totalPressure[id] = sum_p;
+		new_totalMass[id] = sum_mass;
 
-				// calculate for each gas the new volume, # of moles and total # of moles
-				for (int gas = 0; gas < numGases; gas++) {
+		// Part 3 : calculate for each building the percent composition
+		for (int gas = 0; gas < numGases; gas++) {
+			new_percent[gas][id] = new_partialPressure[gas][id] / new_totalPressure[id] * 100D;
+		}
 
-					double molecularMass = getMolecularMass(gas);
+		percent = new_percent;
+		fixedVolume = new_volume;
+		temperature = new_temperature;
 
-					double p = new_partialPressure[gas][id];
-					double nm = p * vol / R_GAS_CONSTANT / t;
-					double m = molecularMass * nm;
+		partialPressure = new_partialPressure;
 
-					if (p < 0)
-						p = 0;
-					if (nm < 0)
-						nm = 0;
-					if (m < 0)
-						m = 0;
-					
-					new_temperature[gas][id] = t;
-					new_numMoles[gas][id] = nm;
-					new_standard_moles[gas][id] = nm;
-					new_mass[gas][id] = m;
-					new_partialPressure[gas][id] = p;
+		numMoles = new_numMoles;
+		standardMoles = new_standard_moles;
+		mass = new_mass;
 
-					sum_nm += nm;
-					sum_p += p;
-					sum_mass += m;
-					// sum_t += t;
-
-				}
-
-				new_totalMoles[id] = sum_nm;
-				new_totalPressure[id] = sum_p;
-				new_totalMass[id] = sum_mass;
-				// new_buildingTemperature [id] = sum_t/numGases;
-
-//			}
-
-			// Part 3 : calculate for each building the percent composition
-//			for (int j = 0; j < id; j++) {
-				// calculate for each gas the % composition
-				for (int gas = 0; gas < numGases; gas++) {
-					new_percent[gas][id] = new_partialPressure[gas][id] / new_totalPressure[id] * 100D;
-				}
-//			}
-
-			percent = new_percent;
-			fixedVolume = new_volume;
-			temperature = new_temperature;
-
-			partialPressure = new_partialPressure;
-
-			numMoles = new_numMoles;
-			standardMoles = new_standard_moles;
-			mass = new_mass;
-
-			totalPressure = new_totalPressure;
-			totalMoles = new_totalMoles;
-			totalMass = new_totalMass;
-			// buildingTemperature = new_buildingTemperature;
-
-//			numIDsCache = numID;
-//		}
-
+		totalPressure = new_totalPressure;
+		totalMoles = new_totalMoles;
+		totalMass = new_totalMass;
 	}
 
 	/**
@@ -792,7 +745,7 @@ public class CompositionOfAir implements Serializable {
 		int size = oldArray[0].length;
 		for (int j = 0; j < size; j++) {
 			for (int i = 0; i < numGases; i++) {
-				if (j < numIDsCache) {
+				if (j < sizeCache) {
 					newArray[i][j] = oldArray[i][j];
 				} else
 					newArray[i][j] = 0;
@@ -921,15 +874,17 @@ public class CompositionOfAir implements Serializable {
 	 * @param c0 {@link MasterClock}
 	 * @param c1 {@link MarsClock}
 	 * @param pc {@link PersonConfig}
+	 * @param u {@link UnitManager}
 	 */
-	public static void setInstances(MasterClock c0, MarsClock c1, PersonConfig pc) {
+	public static void initializeInstances(MasterClock c0, MarsClock c1, PersonConfig pc, UnitManager u) {
 		masterClock = c0;
 		marsClock = c1;
 		personConfig = pc;
+		unitManager = u;
 	}
 	
 	public void destroy() {
-		buildingManager = null;
+//		buildingManager = null;
 		masterClock = null;
 		marsClock = null;
 		personConfig = null;

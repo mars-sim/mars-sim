@@ -222,11 +222,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		super(name, settlement.getCoordinates());
 		super.setDescription(settlement.getName());
 
-		if (unitManager == null)
-			unitManager = sim.getUnitManager();
-		if (unitManager != null) // for passing maven test
-			unitManager.addPersonID(this);
-		
 		this.pid = getNextCount();
 //		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
@@ -253,28 +248,25 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * Initialize field data, class and maps
 	 */
 	public void initialize() {
-
-		// sim = Simulation.instance();
 		masterClock = sim.getMasterClock();
-		if (masterClock != null) { // avoid NullPointerException during maven test
-			marsClock = masterClock.getMarsClock();
-			earthClock = masterClock.getEarthClock();
-			mars = sim.getMars();
-			marsSurface = mars.getMarsSurface();
-			unitManager = sim.getUnitManager();
-			// TODO : avoid declaring a birth clock for each person
-			// Find a way to use existing EarthClock inside MasterClock, plus the difference
-			// in date
-			birthTimeStamp = new EarthClock(createBirthTimeString());
-		}
+		marsClock = masterClock.getMarsClock();
+		earthClock = masterClock.getEarthClock();
+		mars = sim.getMars();
+		marsSurface = mars.getMarsSurface();
+		unitManager = sim.getUnitManager();
+		// TODO : avoid declaring a birth clock for each person
+		// Find a way to use existing EarthClock inside MasterClock, plus the difference
+		// in date
+		birthTimeStamp = new EarthClock(createBirthTimeString());
 		
 		isBuried = false;
+		
+		// Add the person to the lookup map
+		unitManager.addPersonID(this);
 		// Put person in proper building.
-		if (unitManager != null)  {// for passing maven test
-			unitManager.getSettlementByID(associatedSettlement).getInventory().storeUnit(this);
-			// Note: setAssociatedSettlement(settlement) will cause suffocation when reloading from a saved sim
-			BuildingManager.addToRandomBuilding(this, associatedSettlement); 
-		}
+		unitManager.getSettlementByID(associatedSettlement).getInventory().storeUnit(this);
+		// Note: setAssociatedSettlement(settlement) will cause suffocation when reloading from a saved sim
+		BuildingManager.addToRandomBuilding(this, associatedSettlement); 
 		// why failed in testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
 		attributes = new NaturalAttributeManager(this);
 		// Set up genetic make-up. Notes it requires attributes.
@@ -316,10 +308,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * Initialize field data, class and maps
 	 */
 	public void initializeMock() {
+		unitManager.getSettlementByID(associatedSettlement).getInventory().storeUnit(this);
+		BuildingManager.addToRandomBuilding(this, associatedSettlement);
 		isBuried = false;
 		attributes = new NaturalAttributeManager(this);
-		mind = new Mind(this);
-		mind.getTaskManager().initialize();
+//		mind = new Mind(this);
+//		mind.getTaskManager().initialize();
 	}
 	
 	/**
@@ -776,7 +770,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Get a person's location situation
 	 * 
-	 * @deprecated use other more efficient methods
 	 * @return {@link LocationSituation} the person's location
 	 */
 	public LocationSituation getLocationSituation() {

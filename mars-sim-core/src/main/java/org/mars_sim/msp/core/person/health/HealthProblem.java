@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -52,7 +53,8 @@ public class HealthProblem implements Serializable {
 	private MedicalAid usedAid; // Any aid being used
 
 	private static MedicalManager medicalManager = Simulation.instance().getMedicalManager();
-
+	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
+	
 	/**
 	 * Create a new Health Problem that relates to a single Physical Condition
 	 * object. It also references a complaint that defines the behaviour. If the
@@ -70,11 +72,9 @@ public class HealthProblem implements Serializable {
 		usedAid = null;
 		requiresBedRest = false;
 
-//        medicalManager = Simulation.instance().getMedicalManager();
-
 		// Create medical event for health problem.
 		MedicalEvent newEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_STARTS);
-		Simulation.instance().getEventManager().registerNewEvent(newEvent);
+		eventManager.registerNewEvent(newEvent);
 
 		logger.finest(
 				person.getName() + " has a new health problem of " + complaint.getType().toString().toLowerCase());
@@ -233,7 +233,7 @@ public class HealthProblem implements Serializable {
 
 		// Create medical event for treatment.
 		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_TREATED);
-		Simulation.instance().getEventManager().registerNewEvent(treatedEvent);
+		eventManager.registerNewEvent(treatedEvent);
 
 		LogConsolidated.log(Level.INFO, 0, sourceName, "[" + getSufferer().getLocationTag().getLocale() + "] "
 						+ getSufferer().getName() + " began to receive treatment for " + toString().toLowerCase());
@@ -260,7 +260,7 @@ public class HealthProblem implements Serializable {
 
 		// Create medical event for degrading.
 		MedicalEvent degradingEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_DEGRADES);
-		Simulation.instance().getEventManager().registerNewEvent(degradingEvent);
+		eventManager.registerNewEvent(degradingEvent);
 	}
 
 	/**
@@ -310,7 +310,7 @@ public class HealthProblem implements Serializable {
 				
 				// Create medical event for recovering.
 				MedicalEvent recoveringEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_RECOVERY);
-				Simulation.instance().getEventManager().registerNewEvent(recoveringEvent);
+				eventManager.registerNewEvent(recoveringEvent);
 
 			} else
 				setCured();
@@ -325,7 +325,7 @@ public class HealthProblem implements Serializable {
 
 		// Create medical event for cured.
 		MedicalEvent curedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_CURED);
-		Simulation.instance().getEventManager().registerNewEvent(curedEvent);
+		eventManager.registerNewEvent(curedEvent);
 	}
 
 	/**
@@ -438,6 +438,17 @@ public class HealthProblem implements Serializable {
 	 */
 	public boolean isEnvironmentalProblem() {
 		return medicalManager.isEnvironmentalComplaint(illness);
+	}
+	
+	/**
+	 * initializes instances after loading from a saved sim
+	 * 
+	 * @param m {@link medicalManager}
+	 * @param h {@link HistoricalEventManager}
+	 */
+	public static void initializeInstances(MedicalManager m, HistoricalEventManager h) {
+		medicalManager = m;
+		eventManager = h;
 	}
 
 	public void destroy() {

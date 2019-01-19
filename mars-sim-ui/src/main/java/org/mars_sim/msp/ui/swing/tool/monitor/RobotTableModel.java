@@ -537,19 +537,19 @@ extends UnitTableModel {
 			UnitEventType eventType = event.getType();
 
 			Integer column = EVENT_COLUMN_MAPPING.get(eventType);
-			/*
-			int columnNum = -1;
-			if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
-			else if (eventType.equals(Unit.LOCATION_EVENT)) columnNum = LOCATION;
-			else if (eventType.equals(SystemCondition.HUNGER_EVENT)) columnNum = HUNGER;
-			else if (eventType.equals(SystemCondition.FATIGUE_EVENT)) columnNum = FATIGUE;
-			else if (eventType.equals(SystemCondition.STRESS_EVENT)) columnNum = STRESS;
-			else if (eventType.equals(SystemCondition.PERFORMANCE_EVENT)) columnNum = PERFORMANCE;
-			else if (eventType.equals(Mind.JOB_EVENT)) columnNum = JOB;
-			else if (eventType.equals(TaskManager.TASK_EVENT)) columnNum = TASK;
-			else if (eventType.equals(Mind.MISSION_EVENT)) columnNum = MISSION;
-			else if (eventType.equals(SystemCondition.ILLNESS_EVENT) ||
-			*/
+			
+//			int columnNum = -1;
+//			if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
+//			else if (eventType.equals(Unit.LOCATION_EVENT)) columnNum = LOCATION;
+//			else if (eventType.equals(SystemCondition.HUNGER_EVENT)) columnNum = HUNGER;
+//			else if (eventType.equals(SystemCondition.FATIGUE_EVENT)) columnNum = FATIGUE;
+//			else if (eventType.equals(SystemCondition.STRESS_EVENT)) columnNum = STRESS;
+//			else if (eventType.equals(SystemCondition.PERFORMANCE_EVENT)) columnNum = PERFORMANCE;
+//			else if (eventType.equals(Mind.JOB_EVENT)) columnNum = JOB;
+//			else if (eventType.equals(TaskManager.TASK_EVENT)) columnNum = TASK;
+//			else if (eventType.equals(Mind.MISSION_EVENT)) columnNum = MISSION;
+//			else if (eventType.equals(SystemCondition.ILLNESS_EVENT) ||
+			
 
 			if (eventType == UnitEventType.DEATH_EVENT) {
 				if (event.getTarget() instanceof Robot) {

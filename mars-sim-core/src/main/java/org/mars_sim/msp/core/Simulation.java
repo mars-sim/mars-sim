@@ -63,9 +63,6 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
-import org.mars_sim.msp.core.person.ai.mission.meta.BuildingConstructionMissionMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.CollectIceMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.CollectRegolithMeta;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.ObserveAstronomicalObjects;
@@ -73,12 +70,12 @@ import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.PlayHoloGame;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.Relax;
-import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
+import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -387,6 +384,7 @@ public class Simulation implements ClockListener, Serializable {
 		// comparison when loading a saved sim
 		unitManager.originalBuild = Simulation.BUILD;
 
+//		masterClock.start();
 	}
 
 //	/**
@@ -483,6 +481,8 @@ public class Simulation implements ClockListener, Serializable {
 		Simulation.autosaveDefault = autosaveDefault;
 		AutosaveScheduler.defaultStart();
 		ut = masterClock.getUpTimer();
+		
+		masterClock.start();
 	}
 
 	/**
@@ -922,6 +922,7 @@ public class Simulation implements ClockListener, Serializable {
 		Role.setInstances(marsClock);
 		TaskManager.setInstances(marsClock, missionManager);
 		TaskSchedule.setInstances(marsClock);
+		HealthProblem.initializeInstances(medicalManager, eventManager);
 		
 		// Re-initialize Structure related class
 		Building.setInstances(masterClock, marsClock, bc, unitManager);
@@ -938,7 +939,7 @@ public class Simulation implements ClockListener, Serializable {
 		Farming.setInstances();  // cropConfig
 
 		// Miscs.
-		CompositionOfAir.setInstances(masterClock, marsClock, pc);
+		CompositionOfAir.initializeInstances(masterClock, marsClock, pc, unitManager);
 		Crop.setInstances(masterClock, marsClock, surface, unitManager);
 		HeatSource.setInstances(mars, surface, orbit, weather);
 		Malfunction.setInstances();

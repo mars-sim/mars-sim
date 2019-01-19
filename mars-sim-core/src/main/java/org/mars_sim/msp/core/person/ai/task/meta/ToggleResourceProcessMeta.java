@@ -112,7 +112,7 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
 				}
 			}
 
-			double multiple = settlement.getIndoorPeopleCount() / settlement.getPopulationCapacity();
+			double multiple = (settlement.getIndoorPeopleCount() + 1) / (settlement.getPopulationCapacity() + 1);
 			result *= multiple;
 
 			// Effort-driven task modifier.

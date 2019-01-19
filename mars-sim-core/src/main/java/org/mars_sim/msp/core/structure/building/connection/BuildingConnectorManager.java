@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTemplate;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -64,15 +65,18 @@ public class BuildingConnectorManager implements Serializable {
 
 	// Data members.
 	private Settlement settlement;
+	
 	private Set<BuildingConnector> buildingConnections;
-
+	
+	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
+	
 	/**
 	 * Constructor
 	 * 
 	 * @param settlement the settlement.
 	 */
 	public BuildingConnectorManager(Settlement settlement) {
-		this(settlement, SimulationConfig.instance().getSettlementConfiguration()
+		this(settlement, settlementConfig
 				.getSettlementTemplate(settlement.getTemplate()).getBuildingTemplates());
 	}
 
@@ -99,7 +103,7 @@ public class BuildingConnectorManager implements Serializable {
 		while (i.hasNext()) {
 			BuildingTemplate buildingTemplate = i.next();
 			int buildingID = buildingTemplate.getID();
-			Building building = buildingManager.getBuilding(buildingID);
+			Building building = buildingManager.getBuildingByTemplateID(buildingID);
 			// Building building = buildingManager.getBuilding(0);
 			if (building == null) {
 				throw new IllegalStateException("Building ID: 0 does not exist for settlement " + settlement.getName());
@@ -109,7 +113,7 @@ public class BuildingConnectorManager implements Serializable {
 			while (j.hasNext()) {
 				BuildingConnectionTemplate connectionTemplate = j.next();
 				int connectionID = connectionTemplate.getID();
-				Building connectionBuilding = buildingManager.getBuilding(connectionID);
+				Building connectionBuilding = buildingManager.getBuildingByTemplateID(connectionID);
 				if (connectionBuilding == null) {
 					throw new IllegalStateException(
 							"Building ID: " + connectionID + " does not exist for settlement " + settlement.getName());
@@ -186,11 +190,11 @@ public class BuildingConnectorManager implements Serializable {
 					partialBuildingConnectorList.remove(bestFitConnector);
 				} else {
 					throw new IllegalStateException("Unable to find building connection for "
-							+ partialConnector.building.getName() + " in " + settlement.getName());
+							+ partialConnector.building.getBuildingType() + " in " + settlement.getName());
 				}
 			} else {
 				throw new IllegalStateException("Unable to find building connection for "
-						+ partialConnector.building.getName() + " in " + settlement.getName());
+						+ partialConnector.building.getBuildingType() + " in " + settlement.getName());
 			}
 		}
 	}

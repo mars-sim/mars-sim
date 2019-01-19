@@ -54,6 +54,7 @@ import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -89,55 +90,55 @@ public class UnitManager implements Serializable {
 	public static boolean isCommanderMode = false;	
 	
 	// Data members
-	private boolean justStarting = true;
+	private static boolean justStarting = true;
 	
 	private int solCache = 0;
 
-	private int totalNumUnits = 0;
+	private static int totalNumUnits = 0;
 	
 	public String originalBuild;
 	
-	private MarsSurface marsSurface;
-	
+	private static MarsSurface marsSurface;
+
 	/** A map of all units with its unit identifier. */
-	private volatile Map<Integer, Unit> lookupUnit;
+	private volatile Map<Integer, Unit> lookupUnit = new HashMap<>();
 	/** A map of settlements with its unit identifier. */
-	private volatile Map<Integer, Settlement> lookupSettlement;
+	private volatile Map<Integer, Settlement> lookupSettlement = new HashMap<>();
 	/** A map of persons with its unit identifier. */
-	private volatile Map<Integer, Person> lookupPerson;
+	private volatile Map<Integer, Person> lookupPerson = new HashMap<>();
 	/** A map of robots with its unit identifier. */
-	private volatile Map<Integer, Robot> lookupRobot;
+	private volatile Map<Integer, Robot> lookupRobot = new HashMap<>();
 	/** A map of vehicle with its unit identifier. */
-	private volatile Map<Integer, Vehicle> lookupVehicle;
+	private volatile Map<Integer, Vehicle> lookupVehicle = new HashMap<>();
 	/** A map of other equipment (excluding robots and vehicles) with its unit identifier. */
-	private volatile Map<Integer, Equipment> lookupEquipment;
+	private volatile Map<Integer, Equipment> lookupEquipment = new HashMap<>();
 	
 	// Transient members
 	/** Flag true if the class has just been loaded */
-	public transient boolean justLoaded = true;
+	public static boolean justLoaded = true;
 	/** Flag true if the class has just been reloaded/deserialized */
-	public transient boolean justReloaded = false;
+	public static boolean justReloaded = false;
 	/** List of unit manager listeners. */
-	private transient List<UnitManagerListener> listeners;
+	private static List<UnitManagerListener> listeners;
 
 	// Static members
 	/** A list of all units. */
-	private static List<Unit> units;
+//	private static List<Unit> units;
 	/** List of possible settlement names. */
-	private static List<String> settlementNames;
+	private static volatile List<String> settlementNames;
 	/** List of possible vehicle names. */
-	private static List<String> vehicleNames;
+	private static volatile List<String> vehicleNames;
 	/** List of possible male person names. */
-	private static List<String> personMaleNames;
+	private static volatile List<String> personMaleNames;
 	/** List of possible female person names. */
-	private static List<String> personFemaleNames;
+	private static volatile List<String> personFemaleNames;
 	/** List of possible robot names. */
-	private static List<String> robotNameList;
+	private static volatile List<String> robotNameList;
 
 	/** Map of equipment types and their numbers. */
-	private static Map<String, Integer> equipmentNumberMap;
+	private static volatile Map<String, Integer> equipmentNumberMap;
 	/** Map of vehicle types and their numbers. */
-	private static Map<String, Integer> vehicleNumberMap;
+	private static volatile Map<String, Integer> vehicleNumberMap;
 
 	private static Map<Integer, List<String>> marsSociety = new HashMap<>();
 
@@ -365,7 +366,7 @@ public class UnitManager implements Serializable {
 	}
 	
 	public void addUnitID(Unit unit) {
-		if (!lookupUnit.containsKey(unit.getIdentifier()))
+		if (unit != null && !lookupUnit.containsKey(unit.getIdentifier()))
 			lookupUnit.put(unit.getIdentifier(), unit);
 	}
 
@@ -375,14 +376,17 @@ public class UnitManager implements Serializable {
 	}
 	
 	public Settlement getSettlementByID(int id) {
+//		System.out.println("Getting " + lookupSettlement.get(id) + " (" + id + ")");
 		return lookupSettlement.get(id);
 	}
 	
 	public void addSettlementID(Settlement s) {
 		if (lookupSettlement == null)
 			lookupSettlement = new HashMap<>();
-		if (!lookupSettlement.containsKey(s.getIdentifier()))
+		if (s != null && !lookupSettlement.containsKey(s.getIdentifier())) {
+//			System.out.println("Adding " + s + " (" + s.getIdentifier() + ") size : " + lookupSettlement.size());
 			lookupSettlement.put(s.getIdentifier(), s);
+		}
 	}
 
 	public void removeSettlementID(Settlement s) {
@@ -397,7 +401,7 @@ public class UnitManager implements Serializable {
 	public void addPersonID(Person p) {
 		if (lookupPerson == null)
 			lookupPerson = new HashMap<>();
-		if (!lookupPerson.containsKey(p.getIdentifier()))
+		if (p != null && !lookupPerson.containsKey(p.getIdentifier()))
 			lookupPerson.put(p.getIdentifier(), p);
 	}
 
@@ -413,7 +417,7 @@ public class UnitManager implements Serializable {
 	public void addRobotID(Robot r) {
 		if (lookupRobot == null)
 			lookupRobot = new HashMap<>();
-		if (!lookupRobot.containsKey(r.getIdentifier()))
+		if (r != null && !lookupRobot.containsKey(r.getIdentifier()))
 			lookupRobot.put(r.getIdentifier(), r);
 	}
 
@@ -429,7 +433,7 @@ public class UnitManager implements Serializable {
 	public void addEquipmentID(Equipment e) {
 		if (lookupEquipment == null)
 			lookupEquipment = new HashMap<>();
-		if (!lookupEquipment.containsKey(e.getIdentifier()))
+		if (e != null && !lookupEquipment.containsKey(e.getIdentifier()))
 			lookupEquipment.put(e.getIdentifier(), e);
 	}
 
@@ -445,7 +449,7 @@ public class UnitManager implements Serializable {
 	public void addVehicleID(Vehicle v) {
 		if (lookupVehicle == null)
 			lookupVehicle = new HashMap<>();
-		if (!lookupVehicle.containsKey(v.getIdentifier()))
+		if (v != null && !lookupVehicle.containsKey(v.getIdentifier()))
 			lookupVehicle.put(v.getIdentifier(), v);
 	}
 
@@ -697,8 +701,11 @@ public class UnitManager implements Serializable {
 				// Add settlement's id called sid
 				// Add scenarioID
 				int scenarioID = settlementConfig.getInitialSettlementScenarioID(x);
-				addUnit(Settlement.createNewSettlement(name, scenarioID, template, sponsor, location, populationNumber,
-						initialNumOfRobots));
+				
+				Settlement settlement = Settlement.createNewSettlement(name, scenarioID, template, sponsor, location, populationNumber,
+						initialNumOfRobots);
+				settlement.initialize();
+				addUnit(settlement);
 
 			}
 		} catch (Exception e) {
@@ -1383,9 +1390,11 @@ public class UnitManager implements Serializable {
 	 * @throws Exception if error parsing XML.
 	 */
 	private void createPreconfiguredRobots() {
+		int numBots = 0;
 		int size = robotConfig.getNumberOfConfiguredRobots();
 		// If players choose # of bots less than what's being configured
 		// Create all configured robot.
+		Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
 		for (int x = 0; x < size; x++) {
 			boolean isDestinationChange = false;
 			// Get robot's name (required)
@@ -1398,11 +1407,11 @@ public class UnitManager implements Serializable {
 			// Get robot's settlement or randomly determine it if not
 			// configured.
 			String preConfigSettlementName = robotConfig.getConfiguredRobotSettlement(x);
-			Settlement settlement = null;
-			Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
+			Settlement settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
+			
 			if (preConfigSettlementName != null) {
 				// Find the settlement instance with that name
-				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
+//				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
 				if (settlement == null) {
 					// TODO: If settlement cannot be found that matches the settlement name,
 					// should we put the robot in a randomly selected settlement?
@@ -1430,8 +1439,9 @@ public class UnitManager implements Serializable {
 						
 					}
 				}
+				
 				else {
-					
+					// settlement != null
 					if (settlement.getNumBots() < settlement.getInitialNumOfRobots()) {
 						isDestinationChange = true;
 					}
@@ -1459,7 +1469,8 @@ public class UnitManager implements Serializable {
 				}
 			}
 			
-			else {
+			else { 
+				// preConfigSettlementName = null
 				boolean done = false;
 				while (!done) {
 					if (col.size() > 0) {
@@ -1491,9 +1502,14 @@ public class UnitManager implements Serializable {
 				return;
 			}
 
+			// update the num of bots
 			settlement.updateAllAssociatedRobots();
+			
+//			System.out.println("settlement.getInitialNumOfRobots() : " + settlement.getInitialNumOfRobots());
+//			System.out.println("settlement.getNumBots() : " + settlement.getNumBots());
+			
 			// If settlement does not have initial robot capacity, try another settlement.
-			if (settlement.getInitialNumOfRobots() <= settlement.getNumBots()) {
+			if (settlement.getInitialNumOfRobots() <= numBots) { //settlement.getNumBots()) {
 				return;
 			}
 
@@ -1515,10 +1531,19 @@ public class UnitManager implements Serializable {
 
 					if (proceed) {
 						// Create robot and add to the unit manager.
+//						System.out.println("UnitManager : " + settlement);
+						
+//						if (lookupSettlement.values().size() > 1) {
+//							List<Settlement> list = new ArrayList<>(lookupSettlement.values());
+//							settlement = list.get(0);
+//							System.out.println("> 1 UnitManager : " + settlement);
+//						}
+						
 						// Adopt Static Factory Method and Factory Builder Pattern
 						Robot robot = Robot.create(name, settlement, robotType).setCountry("Earth").build();
 						robot.initialize();
 						addUnit(robot);
+						numBots++;
 
 						if (isDestinationChange) {
 
@@ -1920,13 +1945,36 @@ public class UnitManager implements Serializable {
 			justLoaded = false;
 		}
 
-		if (units == null)
-			computeUnits();
+//		if (units == null)
+//			computeUnits();
 
-		for (Unit u : units) {
-			u.timePassing(time);
+//		for (Unit u : units) {
+//			u.timePassing(time);
+//		}
+		
+		for (Settlement s : lookupSettlement.values()) 
+			s.timePassing(time);
+
+		for (Person p : lookupPerson.values()) 
+			p.timePassing(time);
+		
+		for (Robot r : lookupRobot.values()) 
+			r.timePassing(time);
+
+		for (Equipment e : lookupEquipment.values()) 
+			e.timePassing(time);
+
+		for (Vehicle v : lookupVehicle.values()) 
+			v.timePassing(time);
+
+	
+		for (Unit u : lookupUnit.values()) {
+			if (!(u instanceof Building)) {
+				System.out.println(u);
+				u.timePassing(time);
+			}
 		}
-
+		
 	}
 
 	/**
@@ -1944,7 +1992,10 @@ public class UnitManager implements Serializable {
 	 * @return Collection of settlements
 	 */
 	public Collection<Settlement> getSettlements() {
-		return lookupSettlement.values();//CollectionUtils.getSettlement(units);
+		if (lookupSettlement != null && !lookupSettlement.isEmpty())
+			return lookupSettlement.values();//CollectionUtils.getSettlement(units);
+		else 
+			return new ArrayList<>();
 	}
 
 	/**
@@ -2059,10 +2110,10 @@ public class UnitManager implements Serializable {
 	}
 	
 	/**
-	 * Get all units in virtual Mars
+	 * Put together all units in virtual Mars
 	 * 
 	 */
-	public void computeUnits() {
+	public List<Unit> computeUnits() {
 		List<Unit> list = Stream.of(
 				lookupUnit.values(),
 				lookupSettlement.values(),
@@ -2079,17 +2130,17 @@ public class UnitManager implements Serializable {
 //		list.addAll(lookupRobot.values());
 //		list.addAll(lookupEquipment.values());
 //		list.addAll(lookupVehicle.values());	
-		units = list;
+		return list;
 	}
 	
-	/**
-	 * Get all units in virtual Mars
-	 * 
-	 * @return Colleciton of units
-	 */
-	public Collection<Unit> getUnits() {
-		return units;
-	}
+//	/**
+//	 * Get all units in virtual Mars
+//	 * 
+//	 * @return Colleciton of units
+//	 */
+//	public Collection<Unit> getUnits() {
+//		return units;
+//	}
 
 	/**
 	 * Adds a unit manager listener
@@ -2144,7 +2195,7 @@ public class UnitManager implements Serializable {
 	 */
 	public Unit findUnit(String name) {
 		Unit result = null;
-		Iterator<Unit> i = units.iterator();
+		Iterator<Unit> i = computeUnits().iterator();
 		while (i.hasNext() && (result == null)) {
 			Unit unit = i.next();
 			if (unit.getName().equalsIgnoreCase(name)) {
@@ -2154,6 +2205,7 @@ public class UnitManager implements Serializable {
 		return result;
 	}
 
+	
 	public static String getCountry(String sponsor) {
 
 		if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.CNSA)

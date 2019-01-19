@@ -19,48 +19,48 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * The HeatSource class represents a heat generator for a building.
  */
-public abstract class HeatSource
-implements Serializable {
+public abstract class HeatSource implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	//private static Logger logger = Logger.getLogger(HeatSource.class.getName());
+	// private static Logger logger = Logger.getLogger(HeatSource.class.getName());
 
 	// Data members
 	private double maxHeat;
-	
+
 	private HeatSourceType type;
 
-	protected static SurfaceFeatures surface ;
+	protected static SurfaceFeatures surface;
 	protected static Mars mars;
 	protected static OrbitInfo orbitInfo;
 	protected static Weather weather;
-	
+
 	/**
 	 * Constructor.
-	 * @param type the type of Heat source.
+	 * 
+	 * @param type    the type of Heat source.
 	 * @param maxHeat the max heat generated.
 	 */
 	public HeatSource(HeatSourceType type, double maxHeat) {
 		this.type = type;
 		this.maxHeat = maxHeat;
-		
-        if (mars == null)
-        	mars = Simulation.instance().getMars();
+
+		if (mars == null)
+			mars = Simulation.instance().getMars();
 		if (surface == null)
 			surface = mars.getSurfaceFeatures();
-        if (orbitInfo == null)
-            orbitInfo = mars.getOrbitInfo();
-        if (weather == null)
-        	weather = mars.getWeather();
-
+		if (orbitInfo == null)
+			orbitInfo = mars.getOrbitInfo();
+		if (weather == null)
+			weather = mars.getWeather();
 
 	}
 
 	/**
 	 * Gets the type of Heat source.
+	 * 
 	 * @return type
 	 */
 	public HeatSourceType getType() {
@@ -69,6 +69,7 @@ implements Serializable {
 
 	/**
 	 * Gets the max heat generated.
+	 * 
 	 * @return Heat
 	 */
 	public double getMaxHeat() {
@@ -77,6 +78,7 @@ implements Serializable {
 
 	/**
 	 * Gets the current Heat produced by the heat source.
+	 * 
 	 * @param building the building this heat source is for.
 	 * @return Heat (kW)
 	 */
@@ -84,6 +86,7 @@ implements Serializable {
 
 	/**
 	 * Gets the average Heat produced by the heat source.
+	 * 
 	 * @param settlement the settlement this heat source is at.
 	 * @return heat(kW)
 	 */
@@ -91,30 +94,33 @@ implements Serializable {
 
 	/**
 	 * Gets the efficiency by the heat source.
+	 * 
 	 * @return efficiency (max is 1)
 	 */
 	public abstract double getEfficiency();
-	
+
 	/**
-     * Gets the maintenance time for this heat source.
-     * @return maintenance work time (millisols).
-     */
+	 * Gets the maintenance time for this heat source.
+	 * 
+	 * @return maintenance work time (millisols).
+	 */
 	public abstract double getMaintenanceTime();
 
 	/**
 	 * Gets the current Power produced by the heat source.
+	 * 
 	 * @param building the building this heat source is for.
 	 * @return power (kW)
 	 */
 	public abstract double getCurrentPower(Building building);
 
-	
 	/**
 	 * Sets the time for burning the fuel
+	 * 
 	 * @param time
 	 */
 	public abstract void setTime(double time);
-	
+
 	/**
 	 * Switch to producing the full output
 	 */
@@ -129,7 +135,7 @@ implements Serializable {
 	 * Switch to producing only a quarter of the output
 	 */
 	public abstract void switch2Quarter();
-	
+
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
@@ -144,14 +150,12 @@ implements Serializable {
 		orbitInfo = o;
 		weather = w;
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
 		type = null;
 	}
-
-
 
 }

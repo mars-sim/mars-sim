@@ -48,6 +48,19 @@ public final class ResupplyUtil {
 	/**
 	 * Create the initial resupply missions from the configuration XML files.
 	 */
+	public static Resupply getResupply(String settlementName) {
+        Iterator<Resupply> i = resupplies.iterator();
+        while (i.hasNext()) {
+        	Resupply r = i.next();
+        	if (r.getSettlementName().equals(settlementName))
+        		return r;
+        }
+        return null;
+	}
+	        
+	/**
+	 * Create the initial resupply missions from the configuration XML files.
+	 */
 	public static List<Resupply> loadInitialResupplyMissions() {
 
 		if (resupplies == null)  {

@@ -266,7 +266,7 @@ public class PowerGeneration extends Function implements Serializable {
 		result[0] = getFunctionType().getName();
 
 		for (int x = 0; x < powerSources.size(); x++) {
-			result[x + 1] = powerSources.get(x).getType().getString();
+			result[x + 1] = powerSources.get(x).getType().getName();
 		}
 
 		return result;

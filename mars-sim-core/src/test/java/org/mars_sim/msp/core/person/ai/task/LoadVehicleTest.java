@@ -99,7 +99,7 @@ extends TestCase {
 								.setSponsor("Mars Society (MS)")
 								.build();
 		person.initializeMock();
-		settlement.getInventory().storeUnit(person);
+//		settlement.getInventory().storeUnit(person);
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeType.STRENGTH, 100);
 
 		Vehicle vehicle = new MockVehicle(settlement);

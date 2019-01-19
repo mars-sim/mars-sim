@@ -171,7 +171,7 @@ public class TransportWizard {
 	// Add keyword synchronized to avoid JOption crash
     public synchronized void deliverBuildings(BuildingManager mgr) {
     	logger.info("deliverBuildings() is on " + Thread.currentThread().getName()); // normally on JavaFX Application Thread
-	    resupply = mgr.getResupply();
+//	    resupply = mgr.getResupply();
 
     	if (settlementWindow == null)
     		settlementWindow = desktop.getSettlementWindow();

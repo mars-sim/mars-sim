@@ -143,7 +143,7 @@ public class Resupply implements Serializable, Transportable {
 	public synchronized void startDeliveryEvent() {
 //		logger.config("startDeliverBuildings() is on " + Thread.currentThread().getName() + " Thread"); 
 		Settlement s = unitManager.getSettlementByID(settlementID);
-		s.getBuildingManager().addResupply(this);
+//		s.getBuildingManager().addResupply(this);
 
 		// Terminate handling of delivery by
 		// Resupply.java if GUI is in use
@@ -730,7 +730,7 @@ public class Resupply implements Serializable, Transportable {
 			// If not successful, try again 10m from each building and continue out at 10m
 			// increments
 			// until a location is found.
-			if (buildingManager.getNumBuilding() > 0) {
+			if (buildingManager.getNumBuildings() > 0) {
 				for (int x = BUILDING_CENTER_SEPARATION; newPosition == null; x = x + 2) {
 					List<Building> allBuildings = buildingManager.getACopyOfBuildings();
 					// System.out.println("allBuildings.size() is "+ allBuildings.size());

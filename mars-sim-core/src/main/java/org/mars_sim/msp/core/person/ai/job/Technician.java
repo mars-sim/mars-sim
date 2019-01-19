@@ -108,7 +108,7 @@ public class Technician extends Job implements Serializable {
 		double result = 0D;
 
 		// Add number of buildings in settlement.
-		result += settlement.getBuildingManager().getNumBuilding() / 3D;
+		result += settlement.getBuildingManager().getNumBuildings() / 3D;
 
 		// Add number of vehicles parked at settlement.
 		result += settlement.getParkedVehicleNum() / 4D;

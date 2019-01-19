@@ -22,15 +22,6 @@ public enum HeatSourceType {
 		this.string = string;
 	}
 
-	/**
-	 * use internationalized strings or no strings at all.
-	 * @return {@link String}
-	 * @deprecated
-	 */
-	public String getString() {
-		return this.string;
-	}
-	
 	public final String getName() {
 		return this.string;
 	}

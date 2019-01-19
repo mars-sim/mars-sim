@@ -52,7 +52,7 @@ public class Repairbot extends RobotJob implements Serializable {
 		double result = 15D;
 
 		// Add number of buildings in settlement.
-		result += settlement.getBuildingManager().getNumBuilding() / 3D;
+		result += settlement.getBuildingManager().getNumBuildings() / 3D;
 
 		// Add number of vehicles parked at settlement.
 		result += settlement.getParkedVehicleNum() / 3D;

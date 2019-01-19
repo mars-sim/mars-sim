@@ -22,16 +22,6 @@ public enum PowerSourceType {
 	private PowerSourceType(String string) {
 		this.string = string;
 	}
-
-	/**
-	 * use internationalized strings or no strings at all.
-	 * @return {@link String}
-	 * @deprecated
-	 */	
-	// use getType().getString() 
-	public String getString() {
-		return this.string;
-	}
 	
 	public final String getName() {
 		return this.string;
