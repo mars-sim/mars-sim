@@ -1284,6 +1284,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			resource = ResourceUtil.iceID;// "ice";
 		}
 
+		if (resourceStat == null)
+			resourceStat = new HashMap<>();
 		if (resourceStat.containsKey(solCache)) {
 			Map<Integer, List<Double>> todayMap = resourceStat.get(solCache);
 

@@ -227,7 +227,7 @@ public class TabPanelCooking extends TabPanel {
 		cookingTableModel = new CookingTableModel(settlement);
 
 		// Prepare cooking table.
-		table = new WebTable(cookingTableModel) {
+		table = new ZebraJTable(cookingTableModel) {
 
 			public String getToolTipText(java.awt.event.MouseEvent e) {
 				String personName = null;
@@ -456,9 +456,12 @@ public class TabPanelCooking extends TabPanel {
 
 		public String getColumnName(int columnIndex) {
 
-			String[] columnNames = { "<html>Meal<br>Name</html>", "<html># of<br>Servings</html>",
-					"<html>Best<br>Grade</html>", "<html>Worst<br>Grade</html>" };
+//			String[] columnNames = { "<html>Meal<br>Name</html>", "<html># of<br>Servings</html>",
+//					"<html>Best<br>Grade</html>", "<html>Worst<br>Grade</html>" };
+			String[] columnNames = { "Meal", "# Servings",
+					"Best", "Worst" };
 
+			
 			// if (columnIndex == 0) return Msg.getString("TabPanelCooking.column.s");
 			// //$NON-NLS-1$
 			if (columnIndex == 0)

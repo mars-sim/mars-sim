@@ -440,7 +440,7 @@ public class Simulation implements ClockListener, Serializable {
 				
 		// Set instances for classes that extend Unit and Task and Mission
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, mars.getSurfaceFeatures(), missionManager);
-		Task.initializeInstances(eventManager, relationshipManager, unitManager, scientificStudyManager, mars.getSurfaceFeatures(), missionManager);
+		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, scientificStudyManager, mars.getSurfaceFeatures(), missionManager);
 		Unit.initializeInstances(masterClock, marsClock, this, mars, mars.getMarsSurface(), masterClock.getEarthClock(), unitManager, missionManager);		
 		
 		ut = masterClock.getUpTimer();
@@ -962,7 +962,7 @@ public class Simulation implements ClockListener, Serializable {
 //		ReviewMissionPlan.setInstances(relationshipManager, missionManager);
 		Sleep.setInstances(masterClock, marsClock);
 		Walk.setInstances(unitManager);	
-		Task.initializeInstances(eventManager, relationshipManager, unitManager, scientificStudyManager, surface, missionManager);
+		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, scientificStudyManager, surface, missionManager);
 
 //		System.out.println("Done with Task instances");
 		

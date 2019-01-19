@@ -753,8 +753,9 @@ public abstract class RoverMission extends VehicleMission {
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum * Mission.FOOD_MARGIN; 
 		if (useBuffer)
-			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
+			foodAmount *= 1;//Vehicle.getLifeSupportRangeErrorMargin();
 		result.put(foodID, foodAmount);
+		System.out.println("RoverMission : foodAmount : " + foodAmount);
 
 		return result;
 	}

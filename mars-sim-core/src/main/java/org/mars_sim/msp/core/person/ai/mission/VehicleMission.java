@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.TaskPhase;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -61,7 +62,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	// Static members
 
 	/** Modifier for number of parts needed for a trip. */
-	private static final double PARTS_NUMBER_MODIFIER = 5D;
+	private static final double PARTS_NUMBER_MODIFIER = 6D;
 	/** Estimate number of broken parts per malfunctions */
 	private static final double AVERAGE_NUM_MALFUNCTION = 3;
 
@@ -771,9 +772,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		double totalSpeed = 0D;
 		int count = 0;
-		// Iterator<MissionMember> i = getMembers().iterator();
-		// while (i.hasNext()) {
-		for (MissionMember member : getMembers()) {// = i.next();
+		for (MissionMember member : getMembers()) {
 			if (member instanceof Person) {
 				totalSpeed += getAverageVehicleSpeedForOperator((Person) member);
 				count++;
@@ -797,9 +796,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		return OperateVehicle.getAverageVehicleSpeed(vehicle, operator);
 	}
 
-//	private double getAverageVehicleSpeedForOperator(Robot robot) {
-//		return OperateVehicle.getAverageVehicleSpeed(vehicle, robot);
-//	}
 	/**
 	 * Gets the number and amounts of resources needed for the mission.
 	 * 
@@ -904,7 +900,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 					if (numStored < num) {
 						String newLog = "[" + vehicle.getLocationTag().getLocale() + "] " + vehicle.getName() + " does not have enough " 
-								+ ResourceUtil.findAmountResource(resource).getName() + " to continue with "
+								+ ItemResourceUtil.findItemResource(resource).getName() + " to continue with "
 								+ getName() + " (Required: " + num + "  Stored: " + numStored + ").";
 						LogConsolidated.log(Level.WARNING, 10_000, sourceName, newLog);
 						result = false;
@@ -913,7 +909,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 				else {
 					throw new IllegalStateException(getPhase() + " : issues with the resource type of " 
-							+ ResourceUtil.findAmountResource(resource).getName());
+							+ ResourceUtil.findAmountResourceName(resource));
 				}
 			}
 
@@ -944,13 +940,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_MEDICAL_EMERGENCY, this,
 					person.getName() + " had " + person.getPhysicalCondition().getHealthSituation(), this.getName(),
 					member.getName(), member.getVehicle().getName(), member.getLocationTag().getLocale());
-			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+			eventManager.registerNewEvent(newEvent);
 		} else {
 			// Creating 'Not enough resources' mission event.
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_NOT_ENOUGH_RESOURCES, this,
 					"Dwindling resource(s)", this.getName(), member.getName(), member.getVehicle().getName(),
 					member.getLocationTag().getLocale());
-			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+			eventManager.registerNewEvent(newEvent);
 		}
 
 
@@ -1001,7 +997,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION, this,
 							"Dwindling Resource(s)", this.getName(), member.getName(), member.getVehicle().getName(),
 							member.getLocationTag().getLocale());
-					Simulation.instance().getEventManager().registerNewEvent(newEvent);
+					eventManager.registerNewEvent(newEvent);
 
 					// Note: use Mission.goToNearestSettlement() as reference
 

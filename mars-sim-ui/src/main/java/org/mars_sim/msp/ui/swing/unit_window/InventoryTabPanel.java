@@ -106,7 +106,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         resourcesTable.getColumnModel().getColumn(0).setPreferredWidth(120);
         resourcesTable.getColumnModel().getColumn(1).setPreferredWidth(50);
         resourcesTable.getColumnModel().getColumn(2).setPreferredWidth(50);
-        resourcesTable.setCellSelectionEnabled(false);
+        resourcesTable.setCellSelectionEnabled(true);
         resourcesPanel.setViewportView(resourcesTable);
 
 		// Added sorting
@@ -191,6 +191,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
+		private int counts = 0;
 		private Inventory inventory;
 		private Map<Resource, Number> resources;
 		private Map<Resource, Number> capacity;
@@ -239,7 +240,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
 
         public String getColumnName(int columnIndex) {
-			// 2014-11-17 Internationalized and capitalized column headers
+			// Internationalized and capitalized column headers
             if (columnIndex == 0) return Msg.getString("InventoryTabPanel.Resource.header.name");
             else if (columnIndex == 1) return Msg.getString("InventoryTabPanel.Resource.header.quantity");
             else if (columnIndex == 2) return Msg.getString("InventoryTabPanel.Resource.header.capacity");
@@ -248,7 +249,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
         public Object getValueAt(int row, int column) {
             if (column == 0) {
-    			// 2014-11-17 Capitalize Resource Names
+    			// Capitalize Resource Names
             	Object result = keys.get(row);
             	return Conversion.capitalize(result.toString());
             }
@@ -270,6 +271,15 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             else return "unknown";
         }
 
+//        public void updateRow() {
+//            int rowCount = getRowCount();
+//            String[] row = new String[rowCount];
+//            for (int index = 0; index < rowCount; index++) {
+//                row[index] = rowCount + "x" + index;
+//            }
+//            fireTableRowsInserted(rowCount, rowCount);
+//        }      
+        
         public void update() {
         	try {
         		List<Resource> newResourceKeys = new ArrayList<Resource>();
@@ -295,12 +305,27 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             	// Sort resources alphabetically by name.
                 Collections.sort(newResourceKeys);
 
-        		if (!resources.equals(newResources)) {
-        			resources = newResources;
-        			capacity = newCapacity;
-        			keys = newResourceKeys;
-        			fireTableDataChanged();
+                counts++;
+        		if (counts % 10 == 10 && !resources.equals(newResources)) {
+            		if (getRowCount() == newResources.size()) {
+            			resources = newResources;
+            			capacity = newCapacity;
+            			keys = newResourceKeys;
+            			if (counts % 10 == 10) {
+                   			counts = 0;
+            				fireTableDataChanged();
+//                			((AbstractTableModel)this).fireTableCellUpdated(counts, counts);
+            			}
+            		}
+            		else {
+               			counts = 0;
+            			resources = newResources;
+            			capacity = newCapacity;
+            			keys = newResourceKeys;
+            			fireTableDataChanged();
+            		}
         		}
+        		
         	}
         	catch(Exception e) {
         	    e.printStackTrace(System.err);
@@ -418,7 +443,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			// Sort equipment alphabetically by name.
 			Collections.sort(newList);
 
-			if (!list.equals(newList)) {
+			if (list.size() != newList.size() && !list.equals(newList)) {
 				list = newList;
 				equipment = newMap;
 				fireTableDataChanged();

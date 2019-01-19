@@ -157,9 +157,9 @@ public class GoodsManager implements Serializable {
 	private static final double TOURISM_BASE = 1;
 	
 	/** VP probability modifier. */
-	public static double ICE_VALUE_MODIFIER = 2D;
+	public static double ICE_VALUE_MODIFIER = 1D;
 	public static double WATER_VALUE_MODIFIER = 3D;
-	public static double REGOLITH_VALUE_MODIFIER = 3D;
+	public static double REGOLITH_VALUE_MODIFIER = 5D;
 	public static double SAND_VALUE_MODIFIER = 2D;
 	public static double OXYGEN_VALUE_MODIFIER = 2D;
 	public static double METHANE_VALUE_MODIFIER = 2D;

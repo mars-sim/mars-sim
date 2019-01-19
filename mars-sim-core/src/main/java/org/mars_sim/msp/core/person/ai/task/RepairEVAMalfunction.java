@@ -504,23 +504,25 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		// Check if an accident happens during repair.
 		checkForAccident(time);
 
-		// Check if there are no more malfunctions.
-		if (isEVAMalfunction && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
-			LogConsolidated.log(Level.INFO, 0, sourceName,
-				"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-					+ " wrapped up the Emergency Repair of " + malfunction.getName() 
-					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
-			setPhase(WALK_BACK_INSIDE);
-		}
-		
-		else if (!isEVAMalfunction && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
-			LogConsolidated.log(Level.INFO, 0, sourceName,
-				"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-					+ " wrapped up the General Repair of " + malfunction.getName() 
-					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");
-
-			setPhase(WALK_BACK_INSIDE);
-		}
+//		if (isDone()) {
+			// Check if there are no more malfunctions.
+			if (isEVAMalfunction && malfunction.needEVARepair() && malfunction.isEVARepairDone()) {
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+						+ " wrapped up the EVA Repair of " + malfunction.getName() 
+						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEVAWorkTime()*10.0)/10.0 + " millisols spent).");
+				setPhase(WALK_BACK_INSIDE);
+			}
+			
+			else if (!isEVAMalfunction && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+						+ " wrapped up the General Repair of " + malfunction.getName() 
+						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");
+	
+				setPhase(WALK_BACK_INSIDE);
+			}
+//		}
 		
 		return workTimeLeft;
 	}

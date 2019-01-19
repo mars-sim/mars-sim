@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -50,7 +51,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	private Coordinates destination; // The location of the destination of the trip.
 	private MarsClock startTripTime; // The time/date the trip is starting.
 	
-	private static SurfaceFeatures surface;
+//	private static SurfaceFeatures surface;
 	private MalfunctionManager malfunctionManager;
 	
 
@@ -93,7 +94,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		this.startTripTime = startTripTime;
 		this.startTripDistance = startTripDistance;
 		
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
+//		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		malfunctionManager = vehicle.getMalfunctionManager();
 		
 		// Walk to operation activity spot in vehicle.
@@ -133,7 +134,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		this.startTripTime = startTripTime;
 		this.startTripDistance = startTripDistance;
 		
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
+//		surface = Simulation.instance().getMars().getSurfaceFeatures();
 		malfunctionManager = vehicle.getMalfunctionManager();
 		
 		// Walk to operation activity spot in vehicle.
@@ -360,10 +361,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
      * @return MarsClock instance of date/time for ETA
      */
     public MarsClock getETA() {
-        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+//        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 
         // Determine time difference from start of trip in millisols.
-        double millisolsDiff = MarsClock.getTimeDiff(currentTime, startTripTime);
+        double millisolsDiff = MarsClock.getTimeDiff(marsClock, startTripTime);
         double hoursDiff = MarsClock.convertMillisolsToSeconds(millisolsDiff) / 60D / 60D;
 
         // Determine average speed so far in km/hr.
@@ -383,7 +384,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double millisolsToDestination = MarsClock.convertSecondsToMillisols(hoursToDestination * 60D * 60D);
 
         // Determine ETA
-        MarsClock eta = (MarsClock) currentTime.clone();
+        MarsClock eta = (MarsClock) marsClock.clone();
         eta.addTime(millisolsToDestination);
 
         return eta;
@@ -442,8 +443,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
      *  @return elevation in km.
      */
     protected double getVehicleElevation() {
-    	if (surface == null)
-    		surface = Simulation.instance().getMars().getSurfaceFeatures();
+//    	if (surface == null)
+//    		surface = Simulation.instance().getMars().getSurfaceFeatures();
         return surface.getTerrainElevation().getElevation(vehicle.getCoordinates());
     }
     
@@ -465,9 +466,31 @@ public abstract class OperateVehicle extends Task implements Serializable {
      * @return average operating speed (km/h)
      */
     public static double getAverageVehicleSpeed(Vehicle vehicle, VehicleOperator operator) {
-    	if (vehicle != null)
+    	if (vehicle != null) {
     		// Need to update this to reflect the particular operator's average speed operating the vehicle.
-    		return vehicle.getBaseSpeed() / 2D;
+    		double baseSpeed = vehicle.getBaseSpeed();
+    		double speed = 0;
+    		Person p = null;
+    		if (operator instanceof Person) {
+    			p = (Person)operator;
+    			if (p.getJobName().toLowerCase().contains("driver")) {
+    				speed = baseSpeed * 1.1; 
+    			}
+    			
+    			int skill = p.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.DRIVING);
+    			if (skill <= 5) {
+    				speed = 0D - ((baseSpeed / 2D) * ((5D - skill) / 5D));
+    	        }
+    	        else {
+    	            double tempSpeed = baseSpeed;
+    	            for (int x=0; x < skill - 5; x++) {
+    	                tempSpeed /= 2D;
+    	                speed += tempSpeed;
+    	            }
+    	        }
+    		}
+    		return speed;
+    	}
     	else
     		return 0;
     }

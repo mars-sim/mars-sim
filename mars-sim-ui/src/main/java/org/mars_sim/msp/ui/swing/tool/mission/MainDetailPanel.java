@@ -140,12 +140,20 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		// Set the layout.
 		setLayout(new BorderLayout());
 
+		WebScrollPane scrollPane = new WebScrollPane();
+		scrollPane.setBorder(new MarsPanelBorder());
+		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+		scrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		add(scrollPane, BorderLayout.CENTER);
+	
 		// Create the main panel.
 		Box mainBox = Box.createVerticalBox();
 		//JPanel mainPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		mainBox.setBorder(new MarsPanelBorder());
-		add(mainBox, BorderLayout.CENTER);
-
+//		add(mainBox, BorderLayout.CENTER);
+//		scrollPane.add(mainBox, BorderLayout.CENTER);
+		scrollPane.setViewportView(mainBox);
+		
 		// Create the description panel.
 		Box infoPane = new CustomBox();
 		infoPane.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -161,9 +169,9 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		descriptionLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		topPane.add(descriptionLabel0);
 		
-		descriptionTF = new WebTextField("None");
+		descriptionTF = new WebTextField("");
 		//descriptionTF.setEditable(true);
-		descriptionTF.setColumns(15);
+		descriptionTF.setColumns(25);
 		//descriptionTF.setOpaque(false);
 		//descriptionTF.setFont(new Font("Serif", Font.PLAIN, 10));
 		descriptionTF.setToolTipText(Msg.getString("MainDetailPanel.tf.description")); //$NON-NLS-1$
@@ -189,7 +197,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		topPane.add(startingLabel0);
 		//startingLabel0.setToolTipText(Msg.getString("MainDetailPanel.starting"));//$NON-NLS-1$
 
-		startingLabel = new WebLabel("None", WebLabel.LEFT);
+		startingLabel = new WebLabel("", WebLabel.LEFT);
 		//typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper1 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper1.add(startingLabel);
@@ -201,7 +209,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		topPane.add(typeLabel0);
 		//typeLabel0.setToolTipText(Msg.getString("MainDetailPanel.type"));//$NON-NLS-1$
 
-		typeLabel = new WebLabel("None", WebLabel.LEFT);
+		typeLabel = new WebLabel("", WebLabel.LEFT);
 		//typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper2 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper2.add(typeLabel);
@@ -212,7 +220,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		phaseLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		topPane.add(phaseLabel0);
 
-		phaseLabel = new WebLabel("None", WebLabel.LEFT);
+		phaseLabel = new WebLabel("", WebLabel.LEFT);
 		//phaseLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper3 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper3.add(phaseLabel);
@@ -221,7 +229,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(topPane,
 		                                4, 2, //rows, cols
-		                                3, 2,        //initX, initY
+		                                3, 1,        //initX, initY
 		                                25, 1);       //xPad, yPad
 
 		// Create the travel panel.
@@ -343,8 +351,8 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(travelPane,
 		                                5, 2, //rows, cols
-		                                10, 2,        //initX, initY
-		                                5, 1);       //xPad, yPad
+		                                10, 1,        //initX, initY
+		                                3, 0);       //xPad, yPad
 
 		// Create the member panel.
 		Box memberPane = new CustomBox();
@@ -408,12 +416,6 @@ implements ListSelectionListener, MissionListener, UnitListener {
 					}
 				});
 		memberScrollPane.setViewportView(memberTable);
-	
-//		JScrollPane scrollPane = new JScrollPane();
-//		//scrollPane.setBorder(new MarsPanelBorder());
-//		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-//		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-//		mainBox.add(scrollPane);//,  BorderLayout.CENTER);
 	
 		// Create the mission custom panel.
 		customPanelLayout = new CardLayout();

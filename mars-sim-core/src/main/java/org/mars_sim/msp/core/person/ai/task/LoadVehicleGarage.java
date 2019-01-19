@@ -488,7 +488,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 		Inventory vInv = vehicle.getInventory();
 		Inventory sInv = settlement.getInventory();
-
+		
 		double amountNeededTotal = 0D;
 		if (required) {
 			amountNeededTotal = (Double) requiredResources.get(resource);
@@ -511,7 +511,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			if (settlementStored < amountNeeded) {
 				if (required) {
 					canLoad = false;
-					loadingError = " did NOT have enough resource stored at settlement to load " + "resource: " + resource
+					loadingError = " did NOT have enough resource stored at settlement to load " + "resource: " 
+							+ ResourceUtil.findAmountResourceName(resource)
 							+ " needed: " + Math.round(amountNeeded * 100D) / 100D + ", stored: "
 							+ Math.round(settlementStored * 100D) / 100D;
 				} else {
@@ -527,7 +528,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 						amountNeeded = remainingCapacity;
 					} else {
 						canLoad = false;
-						loadingError = " did NOT have enough capacity in vehicle for loading resource " + resource + ": "
+						loadingError = " did NOT have enough capacity in vehicle for loading resource " 
+								+ ResourceUtil.findAmountResourceName(resource) + ": "
 								+ Math.round(amountNeeded * 100D) / 100D + ", remaining capacity: "
 								+ Math.round(remainingCapacity * 100D) / 100D;
 					}
@@ -1107,6 +1109,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 				if (resource < FIRST_ITEM_RESOURCE) {
 					double amount = (Double) (resources.get(resource));
+					System.out.println("LoadVehicleGarage : " + ResourceUtil.findAmountResourceName(resource) 
+						+ " amount : " + amount);
 					inv.storeAmountResource(resource, amount, true);
 				} else {
 					int num = (Integer) (resources.get(resource));

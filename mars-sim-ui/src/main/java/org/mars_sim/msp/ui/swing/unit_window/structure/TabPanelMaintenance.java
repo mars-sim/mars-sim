@@ -34,22 +34,26 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.managers.tooltip.TooltipWay;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 //import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 
 public class TabPanelMaintenance extends TabPanel {
 
+//	private int count = 0;
+	private WebScrollPane maintenanceScrollPane;
+	private WebScrollPane malfunctionsScrollPane;
+	
+	private WebPanel malfunctionsListPanel;
+	private WebPanel maintenanceListPanel;
+
 	private Settlement settlement;
 	private List<Building> buildingsList;
-	private WebScrollPane maintenanceScrollPane;
-	private WebPanel maintenanceListPanel;
 	private List<Malfunction> malfunctionsList;
-	private WebScrollPane malfunctionsScrollPane;
-	private WebPanel malfunctionsListPanel;
+	
 
 	/**
 	 * Constructor.
@@ -185,20 +189,30 @@ public class TabPanelMaintenance extends TabPanel {
 		while (i.hasNext()) {
 			Iterator<Malfunction> j = i.next().getMalfunctionManager().getMalfunctions().iterator();
 			while (j.hasNext())
-				malfunctionsList.add(j.next());
+				tempMalfunctions.add(j.next());
 		}
 
+//		count++;
 		// Check if malfunctions list has changed.
-		if (!tempMalfunctions.equals(malfunctionsList)) {
+		if (tempMalfunctions.size() != malfunctionsList.size() && !tempMalfunctions.equals(malfunctionsList)) {
 			// Populate malfunctions list.
 			populateMalfunctionsList();
-			malfunctionsListPanel.validate();
+//			malfunctionsListPanel.validate();
 			malfunctionsScrollPane.validate();
-//		} else {
-			// Update all building malfunction panels.
-			Component[] components = malfunctionsListPanel.getComponents();
-			for (Component component : components)
-				((BuildingMalfunctionPanel) component).update();
+		} 
+		
+		else {
+//			if (count == 20) {
+//				count = 0;
+//			 	Update all building malfunction panels.
+				Component[] components = malfunctionsListPanel.getComponents();
+				for (Component component : components) {
+					((BuildingMalfunctionPanel) component).update();
+//					BuildingMalfunctionPanel panel = ((BuildingMalfunctionPanel) component);
+//					if (panel.isChanged)
+//						panel.update();
+				}
+//			}
 		}
 	}
 
@@ -404,11 +418,16 @@ public class TabPanelMaintenance extends TabPanel {
 		private static final long serialVersionUID = 1L;
 
 		// Data members.
+		public boolean isChanged = false;
+		public int progressCache;
+		public String partsCache;
+		public String workCache;
+		
 		private Malfunction malfunction;
 		private WebLabel malfunctionLabel;
 		private WebLabel workLabel;
-		private BoundedRangeModel progressBarModel;
 		private WebLabel partsLabel;
+		private BoundedRangeModel progressBarModel;
 
 		/**
 		 * Constructor.
@@ -463,7 +482,7 @@ public class TabPanelMaintenance extends TabPanel {
 
 			// Add tooltip.
 //			setToolTipText(getToolTipString());
-//			TooltipManager.setTooltip(this, getToolTipString(), TooltipWay.up);
+			TooltipManager.setTooltip(this, getToolTipString(), TooltipWay.up);
 			
 			update();
 		}
@@ -493,18 +512,28 @@ public class TabPanelMaintenance extends TabPanel {
 				work += "  [EVA]";
 			}
 			
-			workLabel.setText(work);
+			if (workCache != work) {
+				workCache = work;
+				workLabel.setText(work);
+			}
 			
 			// Update progress bar.
 			int percentComplete = (int)malfunction.getPercentageFixed();
-			progressBarModel.setValue(percentComplete);
-
+			if (progressCache != percentComplete) {
+				progressCache = percentComplete;
+				progressBarModel.setValue(percentComplete);
+			}
+			
 			// Update parts label.
-			partsLabel.setText(getPartsString(malfunction.getRepairParts(), false));
-
+			String parts = getPartsString(malfunction.getRepairParts(), false);
+			if (partsCache != parts) {
+				partsCache = parts;
+				partsLabel.setText(parts);
+			}
+			
 			// Update tool tip.
 			// setToolTipText(getToolTipString());
-			TooltipManager.setTooltip (this, getToolTipString(), TooltipWay.up);
+//			TooltipManager.setTooltip (this, getToolTipString(), TooltipWay.up);
 		}
 
 		/**

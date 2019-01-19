@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -116,18 +117,20 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private Collection<TaskPhase> phases;
 
 	public static Simulation sim = Simulation.instance();
+	/** The static instance of the mars clock*/	
+	protected static MarsClock marsClock;
 	/** The static instance of the event manager */
 	public static HistoricalEventManager eventManager;
 	/** The static instance of the relationship manager */
-	public static RelationshipManager relationshipManager = sim.getRelationshipManager();
+	public static RelationshipManager relationshipManager;// = sim.getRelationshipManager();
 	/** The static instance of the UnitManager */	
-	protected static UnitManager unitManager = sim.getUnitManager();
+	protected static UnitManager unitManager;// = sim.getUnitManager();
 	/** The static instance of the ScientificStudyManager */
-	protected static ScientificStudyManager scientificStudyManager = sim.getScientificStudyManager();
+	protected static ScientificStudyManager scientificStudyManager;// = sim.getScientificStudyManager();
 	/** The static instance of the SurfaceFeatures */
-	protected static SurfaceFeatures surface = sim.getMars().getSurfaceFeatures();
+	protected static SurfaceFeatures surface;// = sim.getMars().getSurfaceFeatures();
 	/** The static instance of the MissionManager */
-	protected static MissionManager missionManager = sim.getMissionManager();
+	protected static MissionManager missionManager;// = sim.getMissionManager();
 
 	/**
 	 * Constructs a Task object.
@@ -151,8 +154,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		this.hasDuration = hasDuration;
 		this.duration = duration;
 
-		eventManager = sim.getEventManager();
-		relationshipManager = sim.getRelationshipManager();
+//		eventManager = sim.getEventManager();
+//		relationshipManager = sim.getRelationshipManager();
 
 		Person person = null;
 		Robot robot = null;
@@ -1280,6 +1283,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
+	 * @param c {@link MarsClock}
 	 * @param e {@link HistoricalEventManager}
 	 * @param r {@link RelationshipManager}
 	 * @param u {@link UnitManager}
@@ -1287,9 +1291,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param sf {@link SurfaceFeatures}
 	 * @param m {@link MissionManager}
 	 */
-	public static void initializeInstances(HistoricalEventManager e, RelationshipManager r, 
+	public static void initializeInstances(MarsClock c, HistoricalEventManager e, RelationshipManager r, 
 			UnitManager u, ScientificStudyManager s, SurfaceFeatures sf, MissionManager m) {
 		sim = Simulation.instance();
+		marsClock = c;
 		eventManager = e;
 		relationshipManager = r;
 		unitManager = u;
