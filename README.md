@@ -32,7 +32,7 @@ While at the Earth's sea level, the atmospheric pressure is **101 kPa** (14.7 ps
 
 Other than oxygen, carbon dioxide, and water moisture indoor are continuously monitored and replenished periodically in each building being equipped with various life-support system [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function). These gases are generated via systems such as **Sabatier Reverse Water Gas (SRWG)**, and **Oxygen Generation System (OGS)**, etc..
 
-Another example is the mode of operations involved before and after an **Extra-Vehicular Activity (EVA)**. In mars-sim, an *airlock* is an immediate place between a settlement and outside. In order to walk on the surface of Mars, a settler must come through an airlock, which is found in a *Lander Hab* or a *Garage*. Before. one of the settlers will be selected as the *airlock operator*. The airlock would have to be pressurized and depressurized (gases captured and released and reheated) with inner/outer doors opened and closed at a specific sequence in order to allow the ingress/egress of the settlers onto the surface of Mars.
+Another example is the mode of operations involved before and after an **Extra-Vehicular Activity (EVA)**. In mars-sim, an *airlock* is an immediate place between a settlement and outside. In order to walk on the surface of Mars, a settler must come through an airlock, which is found in a *Lander Hab* or a *Garage*. For a team EVA, one of them will be selected as the *airlock operator*. To enter an airlock from within the settlement, the airwould have to be *pressurized* and *depressurized* (gases captured and released and reheated) with inner/outer doors opened and closed at a specific sequence in order to allow the ingress/egress of the settlers onto the surface of Mars.
 
 The third example is the [Radiation Modeling](https://github.com/mars-sim/mars-sim/wiki/Radiation-Exposure), which accounts for how often the Galactic Cosmic Ray (GCR) and Solar Energetic Particles (SEP) would occur during EVA as the dose is closely monitored and tracked presumably over the career lifetime of a settler. 
  
@@ -185,5 +185,5 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjA3MTAxMTQ5Nl19
+eyJoaXN0b3J5IjpbLTIwMTA0MzQ2NThdfQ==
 -->
