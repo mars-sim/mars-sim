@@ -113,14 +113,13 @@ Note 3 : The BEST approach is to enable only one Java build (such as Java 10.0.2
  ```
  4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can interfere with the correct version of Java that you would like to use. 
  ```
-Note 4 : Depending on the order of precedence in Path variable, `C:\ProgramData\Oracle\Java\javapath` can load the undesired version of jre/jdk, inst
+Note 4 : Depending on the order of precedence in Path variable, `C:\ProgramData\Oracle\Java\javapath` can load the undesired version of jre/jdk, instead of the java version you prefer.
  ```
- 6. Check if the correct version of Java is being enabled in the **Java Control Panel** in Windows's Control Panel. 
+ 5. Check if the correct version of Java is being enabled in the **Java Control Panel** in Windows's Control Panel. 
  ```
 Note 5 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
  ```
 
-```
 
 ---
 
@@ -183,7 +182,7 @@ We welcome anyone to contribute to mars-sim in terms of ideas, concepts and codi
 ---
 
 ## Download 
-Check out the most recent build in the [GitHub's release tab](https://github.com/mars-sim/mars-sim/releases) or in [SourceForge repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/)
+Check out the most recent build in the [GitHub's Release Tab](https://github.com/mars-sim/mars-sim/releases) or in [SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/)
 
 Alternatively, you may use SourceForge's button below to automatically sense the correct platform. 
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
@@ -193,5 +192,5 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTc5NjA1MTM0MCwtODY5ODg0NTgwXX0=
+eyJoaXN0b3J5IjpbMjAwMTcyNzM3OCwtODY5ODg0NTgwXX0=
 -->
