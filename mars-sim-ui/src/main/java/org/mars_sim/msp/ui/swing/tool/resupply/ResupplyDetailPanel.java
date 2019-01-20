@@ -46,6 +46,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
@@ -91,9 +92,9 @@ implements ClockListener, HistoricalEventListener {
 		this.desktop = desktop;
 		this.mainScene = desktop.getMainScene();
 		
-		currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		masterClock = Simulation.instance().getMasterClock();
-		
+		currentTime = masterClock.getMarsClock();
+	
 		// Initialize data members.
 		resupply = null;
 
@@ -190,7 +191,7 @@ implements ClockListener, HistoricalEventListener {
 		SpringUtilities.makeCompactGrid(springPane,
 		                                6, 2, //rows, cols
 		                                20, 5,        //initX, initY
-		                                20, 1);       //xPad, yPad
+		                                20, 2);       //xPad, yPad
 
 
 		// Create the outer supply panel.
@@ -365,7 +366,7 @@ implements ClockListener, HistoricalEventListener {
 			}
 
 			// Create table
-			WebTable buildingTable = new WebTable(tableModel);
+			WebTable buildingTable = new ZebraJTable(tableModel);
 			TableStyle.setTableStyle(buildingTable);
 			buildingTable.setAutoCreateRowSorter(true);
 			buildingTable.setCellSelectionEnabled(false);
@@ -440,7 +441,7 @@ implements ClockListener, HistoricalEventListener {
 			}
 
 			// Create table
-			WebTable vehicleTable = new WebTable(tableModel);
+			WebTable vehicleTable = new ZebraJTable(tableModel);
 			TableStyle.setTableStyle(vehicleTable);
 			vehicleTable.setAutoCreateRowSorter(true);
 			vehicleTable.setCellSelectionEnabled(false);
@@ -501,7 +502,7 @@ implements ClockListener, HistoricalEventListener {
 			}
 
 			// Create table
-			WebTable equipmentTable = new WebTable(tableModel);
+			WebTable equipmentTable = new ZebraJTable(tableModel);
 			TableStyle.setTableStyle(equipmentTable);
 			equipmentTable.setAutoCreateRowSorter(true);
 			equipmentTable.setCellSelectionEnabled(false);
@@ -565,7 +566,7 @@ implements ClockListener, HistoricalEventListener {
 			}
 
 			// Create table
-			WebTable resourcesTable = new WebTable(tableModel);
+			WebTable resourcesTable = new ZebraJTable(tableModel);
 			TableStyle.setTableStyle(resourcesTable);
 			resourcesTable.setAutoCreateRowSorter(true);
 			resourcesTable.setCellSelectionEnabled(false);
@@ -629,7 +630,7 @@ implements ClockListener, HistoricalEventListener {
 			}
 
 			// Create table
-			WebTable partsTable = new WebTable(tableModel);
+			WebTable partsTable = new ZebraJTable(tableModel);
 			TableStyle.setTableStyle(partsTable);
 			partsTable.setAutoCreateRowSorter(true);
 			partsTable.setAutoCreateRowSorter(true);
@@ -742,8 +743,8 @@ implements ClockListener, HistoricalEventListener {
 	 */
 	public void destroy() {
 		resupply = null;
-		Simulation.instance().getEventManager().removeListener(this);
-		Simulation.instance().getMasterClock().removeClockListener(this);
+//		Simulation.instance().getEventManager().removeListener(this);
+//		Simulation.instance().getMasterClock().removeClockListener(this);
 
 		destinationValueLabel = null;
 		stateValueLabel = null;

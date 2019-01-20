@@ -194,8 +194,8 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		if (resupply != null) {
 			resupplyTime = resupply.getArrivalDate();
 		} else {
-			resupplyTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-			resupplyTime.addTime(ResupplyUtil.AVG_TRANSIT_TIME * 1000D);
+			resupplyTime = (MarsClock) marsClock.clone();
+			resupplyTime.addTime(ResupplyUtil.getAverageTransitTime() * 1000D);
 		}
 
 		martianSolCBModel = new MartianSolComboBoxModel(resupplyTime.getMonth(), resupplyTime.getOrbit());
@@ -287,7 +287,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		// Switch to using ComboBoxMW for sols
 		int size = sols.length;
 		// int max = ResupplyUtil.MAX_NUM_SOLS_PLANNED;
-		int t = ResupplyUtil.AVG_TRANSIT_TIME;
+		int t = ResupplyUtil.getAverageTransitTime();
 		for (int i = t + 1; i < size + t + 1; i++) {
 			if (i > t)
 				sols[i - t - 1] = i;
@@ -735,7 +735,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		// Determine launch date.
 		MarsClock launchDate = (MarsClock) arrivalDate.clone();
-		launchDate.addTime(-1D * ResupplyUtil.AVG_TRANSIT_TIME * 1000D);
+		launchDate.addTime(-1D * ResupplyUtil.getAverageTransitTime() * 1000D);
 		resupplyMission.setLaunchDate(launchDate);
 
 		// Set resupply state based on launch and arrival time.

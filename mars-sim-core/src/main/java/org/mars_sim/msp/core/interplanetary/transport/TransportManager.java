@@ -45,6 +45,8 @@ public class TransportManager extends Thread implements Serializable {
 	 * Constructor.
 	 */
 	public TransportManager() {
+		// initialize ResupplyUtil.
+		new ResupplyUtil();
 		// Initialize data
 		transportItems = new ConcurrentLinkedQueue<Transportable>();
 		// Create initial arriving settlements.

@@ -154,8 +154,7 @@ extends TransportItemEditingPanel {
 
 		// Create template combo box.
 		Vector<String> templateNames = new Vector<String>();
-		Iterator<SettlementTemplate> i = SimulationConfig.instance().
-				getSettlementConfiguration().getSettlementTemplates().iterator();
+		Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
 		while (i.hasNext()) {
 			templateNames.add(i.next().getTemplateName());
 		}
@@ -182,7 +181,7 @@ extends TransportItemEditingPanel {
 
 		// Create template combo box.
 		Vector<String> sponsorNames = new Vector<String>();
-		Iterator<String> ii = SimulationConfig.instance().getPersonConfiguration().createCountryList().iterator();
+		Iterator<String> ii = personConfig.createCountryList().iterator();
 		while (ii.hasNext()) {
 			sponsorNames.add(ii.next());
 		}
@@ -234,8 +233,7 @@ extends TransportItemEditingPanel {
 			// Update the population number based on selected template.
 			String templateName = (String) templateCB.getSelectedItem();
 			if (templateName != null) {
-				SettlementTemplate template = SimulationConfig.instance().
-						getSettlementConfiguration().getSettlementTemplate(templateName);
+				SettlementTemplate template = settlementConfig.getSettlementTemplate(templateName);
 				if (template != null) {
 					populationNum = template.getDefaultPopulation();
 					numOfRobots = template.getDefaultNumOfRobots();
@@ -282,7 +280,7 @@ extends TransportItemEditingPanel {
 		arrivalDateSelectionPane.add(arrivalDateTitleLabel);
 
 		// Get default arriving settlement Martian time.
-		MarsClock arrivingTime = Simulation.instance().getMasterClock().getMarsClock();
+		MarsClock arrivingTime = null;//Simulation.instance().getMasterClock().getMarsClock();
 		if (settlement != null) {
 			arrivingTime = settlement.getArrivalDate();
 		}
@@ -358,8 +356,8 @@ extends TransportItemEditingPanel {
 		timeUntilArrivalPane.add(timeUntilArrivalLabel);
 
 		// Create sols text field.
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, currentTime) / 1000D));
+//		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
 		solsTF = new JTextField(4);
 		solsTF.setText(Integer.toString(solsDiff));
 		solsTF.setHorizontalAlignment(JTextField.RIGHT);
@@ -524,8 +522,7 @@ extends TransportItemEditingPanel {
 	 */
 	private void updateTemplatePopulationNum(String templateName) {
 		if (templateName != null) {
-			SettlementTemplate template = SimulationConfig.instance().getSettlementConfiguration().
-					getSettlementTemplate(templateName);
+			SettlementTemplate template = settlementConfig.getSettlementTemplate(templateName);
 			if (template != null) {
 				populationTF.setText(Integer.toString(template.getDefaultPopulation()));
 			}
@@ -539,8 +536,7 @@ extends TransportItemEditingPanel {
 	 */
 	private void updateTemplateNumOfRobots(String templateName) {
 		if (templateName != null) {
-			SettlementTemplate template = SimulationConfig.instance().getSettlementConfiguration().
-					getSettlementTemplate(templateName);
+			SettlementTemplate template = settlementConfig.getSettlementTemplate(templateName);
 			if (template != null) {
 				numOfRobotsTF.setText(Integer.toString(template.getDefaultNumOfRobots()));
 			}
@@ -731,8 +727,8 @@ extends TransportItemEditingPanel {
 							// Create modify resupply mission dialog.
 							Resupply resupply = (Resupply) transportItem;
 							MarsClock arrivingTime = resupply.getArrivalDate();
-							MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-							int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, currentTime) / 1000D));
+//							MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+							int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
 							sols.add(solsDiff);
 
 						}
@@ -741,8 +737,8 @@ extends TransportItemEditingPanel {
 							ArrivingSettlement newS = (ArrivingSettlement) transportItem;
 							if (!newS.equals(settlement)) {
 								MarsClock arrivingTime = newS.getArrivalDate();
-								MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-								int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, currentTime) / 1000D));
+//								MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+								int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
 								sols.add(solsDiff);
 							}
 						}
@@ -966,15 +962,15 @@ extends TransportItemEditingPanel {
 
 		// Populate launch date.
 		MarsClock launchDate = (MarsClock) arrivalDate.clone();
-		launchDate.addTime(-1D * ResupplyUtil.AVG_TRANSIT_TIME * 1000D);
+		launchDate.addTime(-1D * ResupplyUtil.getAverageTransitTime() * 1000D);
 		settlement.setLaunchDate(launchDate);
 
 		// Set transit state based on launch and arrival time.
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+//		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		TransitState state = TransitState.PLANNED;
-		if (MarsClock.getTimeDiff(currentTime, launchDate) > 0D) {
+		if (MarsClock.getTimeDiff(marsClock, launchDate) > 0D) {
 			state = TransitState.IN_TRANSIT;
-			if (MarsClock.getTimeDiff(currentTime, arrivalDate) > 0D) {
+			if (MarsClock.getTimeDiff(marsClock, arrivalDate) > 0D) {
 				state = TransitState.ARRIVED;
 			}
 		}
@@ -1000,8 +996,8 @@ extends TransportItemEditingPanel {
 	 */
 	private MarsClock getArrivalDate() {
 
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		MarsClock result = (MarsClock) currentTime.clone();
+//		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		MarsClock result = (MarsClock) marsClock.clone();
 
 		if (arrivalDateRB.isSelected()) {
 			// Determine arrival date from arrival date combo boxes.
@@ -1012,9 +1008,9 @@ extends TransportItemEditingPanel {
 
 				// Set millisols to current time if resupply is current date, otherwise 0.
 				double millisols = 0D;
-				if ((sol == currentTime.getSolOfMonth()) && (month == currentTime.getMonth()) &&
-						(orbit == currentTime.getOrbit())) {
-					millisols = currentTime.getMillisol();
+				if ((sol == marsClock.getSolOfMonth()) && (month == marsClock.getMonth()) &&
+						(orbit == marsClock.getOrbit())) {
+					millisols = marsClock.getMillisol();
 				}
 
 				result = new MarsClock(orbit, month, sol, millisols, -1);
@@ -1031,7 +1027,7 @@ extends TransportItemEditingPanel {
 					result.addTime(solsDiff * 1000D);
 				}
 				else {
-					result.addTime(currentTime.getMillisol());
+					result.addTime(marsClock.getMillisol());
 				}
 			}
 			catch (NumberFormatException e) {

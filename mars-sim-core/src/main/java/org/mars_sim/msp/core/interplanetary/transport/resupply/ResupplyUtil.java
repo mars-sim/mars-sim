@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 public final class ResupplyUtil {
 
     // Average transit time for resupply missions from Earth to Mars [in sols]
-    public static int AVG_TRANSIT_TIME;
+    private static int averageTransitTime;
     // TODO: implement calculation of transit time at http://www.jpl.nasa.gov/edu/teach/activity/lets-go-to-mars-calculating-launch-windows/
 
     public static int MAX_NUM_SOLS_PLANNED = 2007; // 669 * 3 = 2007
@@ -40,11 +40,15 @@ public final class ResupplyUtil {
 	/**
 	 * Private constructor for utility class.
 	 */
-	private ResupplyUtil() {
+	public ResupplyUtil() {
 		// Do nothing
-		AVG_TRANSIT_TIME = simulationConfig.getAverageTransitTime();
+		averageTransitTime = simulationConfig.getAverageTransitTime();
 	}
 
+	public static int getAverageTransitTime() {
+		return averageTransitTime;
+	}
+	
 	/**
 	 * Create the initial resupply missions from the configuration XML files.
 	 */
@@ -81,7 +85,7 @@ public final class ResupplyUtil {
 
 	                // Determine launch date.
 	                MarsClock launchDate = (MarsClock) arrivalDate.clone();
-	                launchDate.addTime(-1D * AVG_TRANSIT_TIME * 1000D);
+	                launchDate.addTime(-1D * averageTransitTime * 1000D);
 	                resupply.setLaunchDate(launchDate);
 
 	                // Set resupply state based on launch and arrival time.

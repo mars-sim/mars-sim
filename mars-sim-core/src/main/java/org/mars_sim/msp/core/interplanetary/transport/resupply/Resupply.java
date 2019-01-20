@@ -120,6 +120,11 @@ public class Resupply implements Serializable, Transportable {
 	public Resupply(MarsClock arrivalDate, Settlement settlement) {
 		// Initialize data members.
 		this.arrivalDate = arrivalDate;
+		
+        // Determine launch date.
+        launchDate = (MarsClock) arrivalDate.clone();
+        launchDate.addTime(-1D * ResupplyUtil.getAverageTransitTime() * 1000D);
+ 
 //		this.settlement = settlement;
 		settlementID = ((Unit)settlement).getIdentifier();
 		settlementName = settlement.getName();
