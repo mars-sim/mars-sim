@@ -28,9 +28,9 @@ mars-sim adopts a rich set of scientific vocabulary from research journal and pa
 
 For instance, the simulation assumes a low-pressure living environment that facilitates EVA and reduces structural requirements on buildings. 
 
-While at the Earth's sea level, the atmospheric pressure is 101 kPa (14.7 psi) and has 20.9% oxygen, in mars-sim, a low pressure atmosphere of 34 kPa (5 psi) is chosen for the settlement and, as a result, the composition of oxygen inside a settlement is 58.8%. 
+While at the Earth's sea level, the atmospheric pressure is **101 kPa** (14.7 psi) and has 20.9% oxygen, in mars-sim, a low pressure atmosphere of **34 kPa** (5 psi) is chosen for the settlement and, as a result, the composition of oxygen inside a settlement is 58.8%. 
 
-Other than oxygen, carbon dioxide, and water moisture indoor are continuously monitored and replenished periodically in each building being equipped with various life-support system [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function). These gases are generated via systems such as Sabatier Reverse Water Gas (SRWG), and Oxygen Generation System, etc..
+Other than oxygen, carbon dioxide, and water moisture indoor are continuously monitored and replenished periodically in each building being equipped with various life-support system [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function). These gases are generated via systems such as **Sabatier Reverse Water Gas (SRWG)**, and **Oxygen Generation System (OGS)**, etc..
 
 Another example is the mode of operation involved in EVA. Prior to each EVA activity, one of the settlers will be selected as the airlock operator. The airlock would have to be pressurized and depressurized (gases captured and released and reheated) with inner/outer doors opened and closed at a specific sequence in order to allow the ingress/egress of the settlers onto the surface of Mars.
 
@@ -185,5 +185,5 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTc3NDE4NjA2M119
+eyJoaXN0b3J5IjpbLTEwMTkyNDg5MzNdfQ==
 -->
