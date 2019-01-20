@@ -15,7 +15,7 @@ The Mars Simulation Project is a Java-based [open source](https://opensource.dev
 ## Simulation
 mars-sim is a *general purpose* simulator depicting the early development of human settlements on Mars. According to Encyclopædia Britannica, a computer simulation is the use of a computer to represent the dynamic responses of one system by the behavior of another system modeled after it. In essence, a simulation is a mathematical description, or model, of a real system in the form of a computer program. 
 
-mars-sim attempts to incorporate as much mathematical modeling of many systems or scientific disciplines (such as in physics, chemistry, biology, economics, psychology, and social science) as possible to simulate the dynamics and behaviors of people, systems, and environment. 
+mars-sim attempts to incorporate as much scientific disciplines (such as in physics, chemistry, biology, economics, psychology, and social science) as possible to simulate the dynamics and behaviors of people, systems, and environment in the context of human settlement on Mars. 
 
 As each settler in mars-sim is a computer agent possessing certain properties, one has prescribed properties and the external characteristics imposed on them, they make weight decisions and interact with one another to produce unexpected results in a sandbox world.
 
@@ -181,5 +181,5 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEzMjAyOTcwMDRdfQ==
+eyJoaXN0b3J5IjpbLTE1Mjc0NTMyMDBdfQ==
 -->
