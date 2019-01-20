@@ -113,7 +113,7 @@ Note 3 : The BEST approach is to enable only one Java build (such as Java 10.0.2
  ```
  4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can interfere with the correct version of Java that you would like to use. 
  ```
-Note 4 : The C:\ProgramData\Oracle\Java\javapath` order of precedence in path  in order to avoid loading the undesired version of jre/jdk.
+Note 4 : Depending on the order of precedence in Path variable, `C:\ProgramData\Oracle\Java\javapath` can load the undesired version of jre/jdk, inst
  ```
  6. Check if the correct version of Java is being enabled in the **Java Control Panel** in Windows's Control Panel. 
  ```
@@ -193,5 +193,5 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTcyNDU1Nzg1NiwtODY5ODg0NTgwXX0=
+eyJoaXN0b3J5IjpbLTc5NjA1MTM0MCwtODY5ODg0NTgwXX0=
 -->
