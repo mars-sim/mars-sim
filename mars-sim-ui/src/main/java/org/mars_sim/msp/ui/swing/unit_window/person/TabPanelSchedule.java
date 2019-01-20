@@ -206,6 +206,7 @@ public class TabPanelSchedule extends TabPanel {
 		todayInteger = (Integer) today;
 		solList = new CopyOnWriteArrayList<Integer>();
 
+		allActivities = taskSchedule.getAllActivities();
 		for (int key : allActivities.keySet()) {
 			solList.add(key);
 		}

@@ -404,7 +404,7 @@ public class CookMeal extends Task implements Serializable {
 	public static boolean mealTime(double timeDiff) {
 
 		boolean result = false;
-		double timeOfDay = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+		double timeOfDay = marsClock.getMillisol();
 		double modifiedTime = timeOfDay + timeDiff;
 		if (modifiedTime >= 1000D) {
 			modifiedTime -= 1000D;
@@ -440,7 +440,7 @@ public class CookMeal extends Task implements Serializable {
 		else if (robot != null)
 			timeDiff = 1000D * (robot.getCoordinates().getTheta() / (2D * Math.PI));
 
-		double timeOfDay = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+		double timeOfDay = marsClock.getMillisol();
 
 		double modifiedTime = timeOfDay + timeDiff;
 		if (modifiedTime >= 1000D) {

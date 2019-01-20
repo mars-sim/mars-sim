@@ -335,6 +335,8 @@ public class TaskSchedule implements Serializable {
 	 */
 	public void recordYestersolLastTask() {
 		if (solCache > 1) {
+			if (allActivities == null)
+				allActivities = new ConcurrentHashMap<>();
 			// Load the last task from yestersol's schedule
 			List<OneActivity> yesterSolschedule = allActivities.get(solCache - 1);
 
@@ -358,11 +360,15 @@ public class TaskSchedule implements Serializable {
 	 * @return all activity schedules
 	 */
 	public Map<Integer, List<OneActivity>> getAllActivities() {
+		if (allActivities == null)
+			allActivities = new ConcurrentHashMap<>();
 		return allActivities;
 	}
 	
 	public double getTaskTime(int sol, String name) {
 		double time = 0;
+		if (allActivities == null)
+			allActivities = new ConcurrentHashMap<>();
 		if (allActivities.containsKey(sol)) {
 			List<OneActivity> list = allActivities.get(sol);
 			int size = list.size();
@@ -413,6 +419,8 @@ public class TaskSchedule implements Serializable {
 	 */
 	public double getEVATasksTime(int sol) {
 		double time = 0;
+		if (allActivities == null)
+			allActivities = new ConcurrentHashMap<>();
 		if (allActivities.containsKey(sol)) {
 			List<OneActivity> list = allActivities.get(sol);
 			int size = list.size();
@@ -453,6 +461,8 @@ public class TaskSchedule implements Serializable {
 	 */
 	public double getAirlockTasksTime(int sol) {
 		double time = 0;
+		if (allActivities == null)
+			allActivities = new ConcurrentHashMap<>();
 		if (allActivities.containsKey(sol)) {
 			List<OneActivity> list = allActivities.get(sol);
 			int size = list.size();

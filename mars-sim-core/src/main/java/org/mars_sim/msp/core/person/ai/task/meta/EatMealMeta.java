@@ -78,6 +78,11 @@ public class EatMealMeta implements MetaTask, Serializable {
 
 		if (person.isInSettlement()) {
 
+			if (CookMeal.isMealTime(person.getCoordinates())) {
+				result = hunger; 
+			} else
+				result = hunger / 4D;
+			
 			// Check if a cooked meal is available in a kitchen building at the settlement.
 			Cooking kitchen = EatMeal.getKitchenWithMeal(person);
 			if (kitchen != null) {
@@ -99,11 +104,6 @@ public class EatMealMeta implements MetaTask, Serializable {
 				result *= TaskProbabilityUtil.getRelationshipModifier(person, diningBuilding);
 			}
 
-			if (CookMeal.isMealTime(person.getCoordinates())) {
-				result *= 4D;
-			} else
-				result *= 1D;
-
 		}
 
 		else if (person.isInVehicle()) {
@@ -114,9 +114,9 @@ public class EatMealMeta implements MetaTask, Serializable {
 			// higher probability than inside a settlement since a person is more likely to
 			// become thirsty due to on-call shift.
 			if (CookMeal.isMealTime(person.getCoordinates())) {
-				result *= 5D;
+				result = hunger; 
 			} else
-				result *= 2.5;
+				result = hunger / 4D;
 
 			// TODO : how to ration food and water if running out of it ?
 		} 
@@ -127,10 +127,9 @@ public class EatMealMeta implements MetaTask, Serializable {
 				return 0;
 			}
 			else if (CookMeal.isMealTime(person.getCoordinates())) {
-				result *= 3D;
-			} 
-			else
-				result *= 1.5;
+				result = hunger; 
+			} else
+				result = hunger / 4D;
 		}
 
 		// Add Preference modifier
