@@ -198,16 +198,15 @@ implements Serializable {
 		String taskName = getTaskClassName();
 		String taskPhase = null;
 	
-		if (!taskName.toLowerCase().contains("walk")
-			&& !taskDescription.equals(taskDescriptionCache)
-			&& !taskDescription.toLowerCase().contains("walk")
+//		if (!taskName.toLowerCase().contains("walk")
+//			&& !taskDescription.toLowerCase().contains("walk")
+		if (!taskDescriptionCache.equals(taskDescription)
 			&& !taskDescription.equals("")
 			&& getPhase() != null) {
 
 			taskPhase = getPhase().getName();
 
-			if (!taskPhase.equals(taskPhaseCache)) {
-				
+			if (!taskPhase.equals(taskPhaseCache)) {		
 				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase, "");
 				taskPhaseCache = taskPhase;
 				taskDescriptionCache = taskDescription;

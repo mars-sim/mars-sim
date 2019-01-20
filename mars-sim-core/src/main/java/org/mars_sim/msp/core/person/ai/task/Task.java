@@ -96,7 +96,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** The name of the task. */
 	private String name;
 	/** Description of the task. */
-	private String description;
+	private String description = "";
 
 	/** The person teaching this task if any. */
 	private Person teacher;
@@ -312,13 +312,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @param description the task description.
 	 */
-	protected void setDescription(String description) {
-		if (!this.description.equals(description)) {
-			this.description = description;
+	protected void setDescription(String des) {
+		if (des != null && !des.equals("") && !des.equals(description)) {
+			description = des;
 			if (person != null) {
-				person.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, description);
+				person.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
 			} else if (robot != null) {
-				robot.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, description);
+				robot.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
 			}
 		}
 	}

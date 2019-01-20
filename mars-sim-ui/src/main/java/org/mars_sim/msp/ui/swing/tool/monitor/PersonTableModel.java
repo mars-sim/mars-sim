@@ -102,7 +102,7 @@ public class PersonTableModel extends UnitTableModel {
 	private final static String MALE = "male";
 	private final static String M = "M";
 	private final static String F = "F";
-	private final static String WALK = "walk";
+//	private final static String WALK = "walk";
 
 	/**
 	 * The static initializer creates the name & type arrays.
@@ -378,13 +378,13 @@ public class PersonTableModel extends UnitTableModel {
 			case TASK: {
 				// If the Person is dead, there is no Task Manager
 				TaskManager mgr = person.getMind().getTaskManager();
-				String t = taskCache;
+				String t = null;
 
 				if (mgr != null) {
 
 					t = mgr.getTaskDescription(false);
 
-					if (!t.toLowerCase().contains(WALK) && t != null && !t.equals(taskCache))
+					if (t != null && !t.equals(taskCache)) // !t.toLowerCase().contains(WALK) && 
 						result = t;
 					else
 						result = t;

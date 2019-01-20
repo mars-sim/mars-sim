@@ -138,13 +138,14 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		else {
 			if (person != null) {
 				String t = taskManager.getTaskDescription(false);
-				if (t != null && !t.toLowerCase().contains("walk"))
+				if (t != null) 
+//						&& !t.toLowerCase().contains("walk"))
 					taskTextCache = t;
 			}
 
 			else if (robot != null) {
 				String t = botTaskManager.getTaskDescription(false);
-				if (t != null && !t.toLowerCase().contains("walk"))
+				if (t != null)// && !t.toLowerCase().contains("walk"))
 					taskTextCache = t;
 			}
 		}
@@ -410,7 +411,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		}
 
-		if (!newTaskText.toLowerCase().contains("walk")) {
+//		if (!newTaskText.toLowerCase().contains("walk")) {
 			if (!newTaskText.equals("") && !taskTextCache.equals(newTaskText)) {
 				taskTextCache = newTaskText;
 				taskTextArea.setText(newTaskText);
@@ -420,7 +421,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				taskPhaseCache = newTaskPhase;
 				taskPhaseArea.setText(newTaskPhase);
 			}
-		}
+//		}
 
 		// Update mission text area if necessary.
 		if (dead) {

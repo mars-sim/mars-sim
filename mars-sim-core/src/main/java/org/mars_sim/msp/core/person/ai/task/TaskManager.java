@@ -306,33 +306,27 @@ public class TaskManager implements Serializable {
 			if (isEVATask(taskName)) {
 				person.addEVATime(taskName, time);
 			}
-			
-			if (!taskDescription.equals(taskDescriptionCache)
+	
+			if (!taskDescriptionCache.equals(taskDescription)
 //				&& !taskName.toLowerCase().contains(WALK) 
 //				&& !taskDescription.toLowerCase().contains(WALK) 
-				&& !taskDescription.equals("")
-				) {
+				&& !taskDescription.equals("")) {
 
-			String taskPhaseName = null;
-			TaskPhase tp = getMainTaskPhase();
-
-			if (tp != null) {
-
-				taskPhaseName = tp.getName();
-
-				if (!taskPhaseNameCache.equals(taskPhaseName))
-					taskPhaseNameCache = taskPhaseName;
-
+				String taskPhaseName = null;
+				TaskPhase tp = getMainTaskPhase();
+	
+				if (tp != null) {
+					taskPhaseName = tp.getName();
+					if (!taskPhaseNameCache.equals(taskPhaseName)) {
+						// Note : can taskPhaseName be null ?
+						// TODO: decide if it needs to record the same task description as the last
+						ts.recordTask(taskName, taskDescription, taskPhaseName, missionName);
+						taskPhaseNameCache = taskPhaseName;
+						taskDescriptionCache = taskDescription;
+					}
+				}
 			}
-
-			// Note : can taskPhaseName be null ?
-//			if (taskPhaseName != null) { 
-				// TODO: decide if it needs to record the same task description as the last
-				ts.recordTask(taskName, taskDescription, taskPhaseName, missionName);
-				taskDescriptionCache = taskDescription;
-//			}
 		}
-	}
 	}
 
 	/**
