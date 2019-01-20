@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -309,7 +310,7 @@ public class MissionManager implements Serializable {
 
 			// recordMission(newMission);
 
-			logger.finest("Added new mission : " + newMission.getName());
+			logger.fine("Added new mission : " + newMission.getName());
 		}
 	}
 
@@ -327,17 +328,16 @@ public class MissionManager implements Serializable {
 					
 			// Update listeners.
 			if (listeners == null) {
-				listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>());
-			}
-
-			synchronized (listeners) {
-				Iterator<MissionManagerListener> i = listeners.iterator();
-				while (i.hasNext()) {
-					i.next().removeMission(oldMission);
+//				listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>());
+				synchronized (listeners) {
+					Iterator<MissionManagerListener> i = listeners.iterator();
+					while (i.hasNext()) {
+						i.next().removeMission(oldMission);
+					}
 				}
 			}
 
-			logger.info("Removing old mission : " + oldMission.getName());
+			logger.fine("Removing old mission : " + oldMission.getName());
 		}
 	}
 
@@ -609,14 +609,14 @@ public class MissionManager implements Serializable {
 		int index = 0;		
 		if (missions != null) { // for passing maven test
 			while (index < missions.size()) {
-//				Mission m = missions.get(index);
-//				if (m == null 
+				Mission m = missions.get(index);
+				if (m == null 
 ////						|| m.isDone() 
-//						|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)) {
-//					removeMission(m);
-//				} else {
+						|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)) {
+					removeMission(m);
+				} else {
 					index++;
-//				}
+				}
 			}
 		}
 //		if (missions != null) {
@@ -808,18 +808,37 @@ public class MissionManager implements Serializable {
 	 * @param status
 	 */
 	public void scoreMissionPlan(MissionPlanning missionPlan, double newScore, Person reviewer) {
-		
+		double weight = 1;
+		RoleType role = reviewer.getRole().getType();
 		for (int mSol : historicalMissions.keySet()) {
 			List<MissionPlanning> plans = historicalMissions.get(mSol);
 			for (MissionPlanning mp : plans) {
 				if (mp == missionPlan && mp.getStatus() == PlanType.PENDING) {
 					double percent = mp.getPercentComplete();
-					mp.setPercentComplete(percent + PERCENT_PER_SCORE);
+					
+					if (role == RoleType.COMMANDER)
+						weight = 3;
+					else if (role == RoleType.SUB_COMMANDER
+							|| role == RoleType.CHIEF_OF_MISSION_PLANNING)
+						weight = 2.5;
+					else if (role == RoleType.CHIEF_OF_AGRICULTURE
+							|| role == RoleType.CHIEF_OF_ENGINEERING
+							|| role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
+							|| role == RoleType.CHIEF_OF_SAFETY_N_HEALTH
+							|| role == RoleType.CHIEF_OF_SCIENCE
+							|| role == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
+							)
+						weight = 2;
+					else if (role == RoleType.MISSION_SPECIALIST)
+						weight = 1.5;
+					
+					mp.setPercentComplete(percent + weight * PERCENT_PER_SCORE);
 					double score = mp.getScore();
-					mp.setScore(score + newScore);
+					mp.setScore(score + weight * newScore);
 					mp.setReviewedBy(reviewer.getName());
-					break;
 				}
+				// Should the reviewer look at multiple plans at the same time ?
+				break;
 			}
 		}
 	}

@@ -8,12 +8,10 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 
 import java.util.Collection;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -23,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
-import org.mars_sim.msp.core.time.MarsClock;
 
 
 /**

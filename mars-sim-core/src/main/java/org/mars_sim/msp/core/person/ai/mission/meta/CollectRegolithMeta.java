@@ -63,16 +63,16 @@ public class CollectRegolithMeta implements MetaMission {
 				result = result / settlement.getGoodsManager().getTourismFactor();
 			}
 
-//	        if (result > 0)
-//			 logger.info("CollectRegolithMeta's probability : " +
-//					 Math.round(result*100D)/100D);
 
 			if (result > 10D)
 				result = 10D;
 			else if (result < 0)
 				result = 0;
-
 		}
+		
+//        if (result > 0)
+//		 logger.info("CollectRegolithMeta's probability : " +
+//				 Math.round(result*100D)/100D);
 
 		return result;
 	}

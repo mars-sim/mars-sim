@@ -65,7 +65,7 @@ public class MissionPlanning implements Serializable {
 	public void setReviewer(String name) {
 		if (reviewers.containsKey(name)) {
 			int num = reviewers.get(name);
-			reviewers.put(name, ++num);
+			reviewers.put(name, num + 1);
 		}
 		
 		else {
@@ -83,32 +83,56 @@ public class MissionPlanning implements Serializable {
 	 * @return
 	 */
 	public boolean isReviewerValid(String name, int pop) {
-		if (reviewers.containsKey(name)) {
+		if (!reviewers.containsKey(name)) {
+			return true;
+		}
+		else {
 			int num = reviewers.get(name);
-			if (pop <= 8) {
-				if (num < 5)
-					return true;
-				else
-					return false;
-			}
-			
-			else if (pop >= 48) {
+			if (pop >= 48) {
 				if (num < 3)
 					return true;
 				else
 					return false;
 			}
-			
-			else {
-				if (num < 4)
+			else if (pop >= 24) {
+				if (num < 3)
 					return true;
 				else
 					return false;
 			}
-		}
-		
-		else {
-			return true;
+			else if (pop >= 12) {
+				if (num < 3)
+					return true;
+				else
+					return false;
+			}
+			else if (pop >= 8) {
+				if (num < 3)
+					return true;
+				else
+					return false;
+			}			
+			else if (pop >= 4) {
+				if (num < 3)
+					return true;
+				else
+					return false;
+			}
+			else if (pop == 3) {
+				if (num < 3)
+					return true;
+				else
+					return false;
+			}
+			else if (pop == 2) {
+				if (num < 2)
+					return true;
+				else
+					return false;
+			}
+			else {
+				return true;
+			}
 		}
 	}
 	

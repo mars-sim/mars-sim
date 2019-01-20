@@ -59,15 +59,16 @@ public class CollectIceMeta implements MetaMission {
 				// If this town has a tourist objective, divided by bonus
 				result = result / settlement.getGoodsManager().getTourismFactor();
 			}
-	
-			// logger.info("CollectIceMeta's probability : " +
-			// Math.round(result*100D)/100D);
+
 
 			if (result > 10D)
 				result = 10D;
 			else if (result < 0)
 				result = 0;
 		}
+		
+//		if (result > 0)
+//		logger.info("CollectIceMeta's probability : " + Math.round(result*100D)/100D);
 
 		return result;
 	}

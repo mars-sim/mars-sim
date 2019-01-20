@@ -162,9 +162,9 @@ public class MiningMeta implements MetaMission {
 
         }
 
-        if (result > 0)
-        	logger.info("MiningMeta's probability : " +
-				 Math.round(result*100D)/100D);
+//        if (result > 0)
+//        	logger.info("MiningMeta's probability : " +
+//				 Math.round(result*100D)/100D);
 		 
         return result;
     }

@@ -4188,7 +4188,8 @@ public class MainScene implements ClockListener {
 //		if (sound)
 //			soundEffectMuteBox.setSelected(true);
 		// Pause time label timer
-		timeLabeltimer.pause();
+		if (timeLabeltimer != null)
+			timeLabeltimer.pause();
 		// Stop billboard timer
 		if (billboardTimer != null)
 			billboardTimer.stop();

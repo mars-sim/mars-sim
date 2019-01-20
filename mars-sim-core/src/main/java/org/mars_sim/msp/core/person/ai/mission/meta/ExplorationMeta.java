@@ -142,9 +142,9 @@ public class ExplorationMeta implements MetaMission {
                		 + settlement.getGoodsManager().getResearchFactor())/1.5;
 		}
 
-        if (result > 0)
-        	logger.info("ExplorationMeta's probability : " +
-				 Math.round(result*100D)/100D);
+//        if (result > 0)
+//        	logger.info("ExplorationMeta's probability : " +
+//				 Math.round(result*100D)/100D);
 		
 		return result;
 	}

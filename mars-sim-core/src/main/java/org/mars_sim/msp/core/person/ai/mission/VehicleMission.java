@@ -1253,7 +1253,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //	            int id = EquipmentType.str2int(containerClass.getClass().getName());
 
 				if (result.containsKey(containerID)) {
-					numContainers += (int) (result.get(resource));
+					numContainers += (int) (result.get(containerID));
 				}
 
 				result.put(containerID, numContainers);

@@ -143,9 +143,9 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
             }
         }
 
-        if (result > 0)
-        	logger.info("BiologyStudyFieldMissionMeta's probability : " +
-				 Math.round(result*100D)/100D);
+//        if (result > 0)
+//        	logger.info("BiologyStudyFieldMissionMeta's probability : " +
+//				 Math.round(result*100D)/100D);
 
         return result;
     }

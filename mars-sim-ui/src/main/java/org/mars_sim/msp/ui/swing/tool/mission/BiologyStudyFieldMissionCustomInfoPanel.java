@@ -130,16 +130,18 @@ public class BiologyStudyFieldMissionCustomInfoPanel extends MissionCustomInfoPa
 
 			// Add as scientific study listener to new study.
 			study = biologyMission.getScientificStudy();
-			study.addScientificStudyListener(this);
+			if (study != null) {
+				study.addScientificStudyListener(this);
+				
+				// Update study name.
+				studyNameLabel.setText(study.toString());
 
-			// Update study name.
-			studyNameLabel.setText(study.toString());
+				// Update lead researcher for mission.
+				researcherNameLabel.setText(biologyMission.getLeadResearcher().getName());
 
-			// Update lead researcher for mission.
-			researcherNameLabel.setText(biologyMission.getLeadResearcher().getName());
-
-			// Update study research bar.
-			updateStudyResearchBar(study, biologyMission.getLeadResearcher());
+				// Update study research bar.
+				updateStudyResearchBar(study, biologyMission.getLeadResearcher());
+			}
 		}
 	}
 
