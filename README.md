@@ -17,7 +17,7 @@ mars-sim is a *general purpose* simulator depicting the early development of hum
 
 mars-sim aims to integrate and  incorporate as many research disciplines (such as physics, chemistry, biology, economics, psychology, and social science) as possible to simulate the dynamics and behaviors of people, social structure, physical and mechanical systems, and environment in the context of developing human settlements on Mars. 
 
-Each settler in mars-sim is a computer agent possessing certain properties, one has prescribed properties and the external characteristics imposed on them, they make weight decisions and interact with one another to produce unexpected results in a sandbox world.
+A settler will be a computer agent possessing certain prescribed attributes, dynamic properties and the external characteristics imposed on hithem, they make weight decisions and interact with one another to produce unexpected results in a sandbox world.
 
 For instance, each settler has a well-defined job, a role, a bunch of technical [skills](https://github.com/mars-sim/mars-sim/wiki/Skills), a set of personality, natural [attributes](https://github.com/mars-sim/mars-sim/wiki/Attributes), and task preferences (likes and dislikes). They build [relationship](https://github.com/mars-sim/mars-sim/wiki/Relationship) as they interact and work with one another. They are there to live, dream, explore, and settle Mars. 
 
@@ -181,5 +181,5 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTY0OTUxODA5NF19
+eyJoaXN0b3J5IjpbLTM1NTMyNTg2N119
 -->
