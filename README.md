@@ -8,16 +8,16 @@
 
 
 # mars-sim
-The Mars Simulation Project is a Java-based [open source](https://opensource.dev/) project that simulates the activities of the first generation of settlers on Mars with a higher fidelity of simulation than typical PC strategy games. 
+*The Mars Simulation Project* is a Java-based [open source](https://opensource.dev/) project that simulates the activities of the first generation of settlers on Mars with a higher fidelity of modeling and simulation details than a typical PC strategy game. 
 
 ---
 
 ## Simulation
-mars-sim is a **general purpose** simulator depicting the early development of human settlements on Mars. According to Encyclopædia Britannica, Computer Simulation is the use of a computer to represent the dynamic responses of one system by the behavior of another system modeled after it. A simulation is a mathematical description, or model, of a real system in the form of a computer program. 
+mars-sim is a **general purpose** simulator depicting the early development of human settlements on Mars. According to *Encyclopædia Britannica*, a computer simulation is the use of a computer to represent the dynamic responses of one system by the behavior of another system modeled after it. In essence, a simulation is a mathematical description, or model, of a real system in the form of a computer program. 
 
-mars-sim attempts to incorporate as much mathematical modeling of many systems or scientific disciplines (such as in physics, chemistry, biology, economics, psychology, and social science) as possible to simulate the dynamics and behaviors of people, systems, and environment. 
+mars-sim aims to integrate and  incorporate as many research disciplines (such as physics, chemistry, biology, economics, psychology, and social science) as possible to simulate the dynamics and behaviors of people, social structure, physical and mechanical systems, and environment in the context of developing human settlements on Mars. 
 
-As each settler in mars-sim is a computer agent possessing certain properties, one has prescribed properties and the external characteristics imposed on them, they make weight decisions and interact with one another to produce unexpected results in a sandbox world.
+A settler will be a computer agent possessing certain prescribed attributes, dynamic properties and the external characteristics imposed on it. Each makes weighted decisions and interact with one another to produce unexpected results in a sandbox world.
 
 For instance, each settler has a well-defined job, a role, a bunch of technical [skills](https://github.com/mars-sim/mars-sim/wiki/Skills), a set of personality, natural [attributes](https://github.com/mars-sim/mars-sim/wiki/Attributes), and task preferences (likes and dislikes). They build [relationship](https://github.com/mars-sim/mars-sim/wiki/Relationship) as they interact and work with one another. They are there to live, dream, explore, and settle Mars. 
 
@@ -26,22 +26,27 @@ For instance, each settler has a well-defined job, a role, a bunch of technical 
 ## Operation Modeling
 mars-sim adopts a rich set of scientific vocabulary from research journal and paper when it comes to defining operation paradigms and programming models based on the present day technologies that are applicable for the near-term human exploration and settlement on Mars.
 
-For instance, the simulation assumes a low-pressure living environment that facilitates EVA and reduces structural requirements on buildings. At the Earth's sea level, the atmospheric pressure is 101 kPa (14.7 psi) and has 20.9% oxygen. In mars-sim, a low pressure atmosphere of 34 kPa (5 psi) is chosen for the settlement. As a result, the composition of oxygen within the settlement is 58.8%. Other than oxygen, carbon dioxide, and water moisture indoor are continuously monitored and replenished periodically in each building being equipped with various life-support system [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function). These gases are generated via systems such as Sabatier Reverse Water Gas (SRWG), and Oxygen Generation System, etc..
+For instance, the simulation assumes a low-pressure living environment that facilitates EVA and reduces structural requirements on buildings. 
 
-Another example is the mode of operation involved in EVA. Prior to each EVA activity, one of the settlers will be selected as the airlock operator. The airlock would have to be pressurized and depressurized (gases captured and released and reheated) with inner/outer doors opened and closed at a specific sequence in order to allow the ingress/egress of the settlers onto the surface of Mars.
+While at the Earth's sea level, the atmospheric pressure is **101 kPa** (14.7 psi) and has 20.9% oxygen, in mars-sim, a low pressure atmosphere of **34 kPa** (5 psi) is chosen for the settlement and, as a result, the composition of oxygen inside a settlement is 58.8%. 
 
-The third example is the [Radiation Modeling](https://github.com/mars-sim/mars-sim/wiki/Radiation-Exposure), which accounts for how often the Galactic Cosmic Ray (GCR) and Solar Energetic Particles (SEP) would occur during EVA as the dose is closely monitored and tracked presumably over the career lifetime of a settler. 
+Other than oxygen, carbon dioxide, and water moisture indoor are continuously monitored and replenished periodically in each building being equipped with various life-support system [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function). These gases are generated via systems such as **Sabatier Reverse Water Gas (SRWG)**, and **Oxygen Generation System (OGS)**, etc..
+
+Another example is modeling the sequence of operations involving the airlock for an **Extra-Vehicular Activity (EVA)**. In mars-sim, an *airlock* is an immediate place between a settlement and outside. In order to walk on the surface of Mars, a settler must come through an airlock, which is found in a *Lander Hab* or a *Garage*. To perform a team EVA, one of them will be selected as the *airlock operator*. He will ensure that before entering the *inner door* of the airlock from within the settlement, the airlock would have to be *pressurized* first and the air would be heated so that the atmospheric pressure and temperature is equalized. Then he would open the inner door and the whole team will enter the airlock chamber. Once he locks the inner door. he will  *depressurize* the chamber, meaning, the gases would be re-captured to match the air pressure and the gas composition of that of the surface of Mars. Then he will open the *outer door* of the airlock to allow the egress of the team outside.
+
+The third example is the [Radiation Modeling](https://github.com/mars-sim/mars-sim/wiki/Radiation-Exposure), which accounts for how often the **Galactic Cosmic Ray (GCR)** and **Solar Energetic Particles (SEP)** would occur during EVA. The cumulative dose is closely monitored in 3 specific periods of time, namely, the 30-day, the annual and the career lifetime of a settler. 
  
 ---
  
 ## Settlement Development 
-Player may create numerous settlements spreading across the surface of Mars. Each settlement has a command structure and a development [objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective). They can be as simple as a four-person initial base (loosely following the Mars Direct Mission Plan by Robert Zubrin), a trading outpost, a mining depot near sites with high mineral concentration; or a self-contained colony with 48+ settlers having an elected mayor. 
+Player may build numerous settlements spreading across the surface of Mars. Each settlement has a *[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)* and a *[development objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective)*.  
+
+As mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin*, there are 6 types of [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) to choose from. A 4-settler initial base is called a MDP Phase 1. A 8-settler base is MDP Phase 2. A 12-settler base is MDP Phase 3. A 24-settler base is designated as Alpha Base. Besides, players may build a Trading Outpost as well as a Mining Depot near sites with high mineral concentration.
 
 ---
 
 ## Economics
-In terms of [economic](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements a value point (VP) system, which keeps track of the supply and demand on each resource. There is no standard currency established on Mars yet. 
-Traders barter trades with neighboring settlements and the surplus/ deficit based on the VPs of the resources in exchange in each trading session.
+In terms of [economic](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements the **Value Point (VP)** system, which keeps track of the supply and demand on each good and resource. As there is no standard currency established on Mars yet, settlers barter trades with neighboring settlements by keeping track of the credits and deficit based on the VPs of the resources in exchange in each trading session.
 
 ---
 
@@ -88,27 +93,33 @@ For a more detail description of this project, see our [project website](https:/
 * Require Java 9/10 for binaries compiled under Java 9
 
 ```
-Note 1 : Beginning Java 11, the JRE/JDK has been decoupled from the graphic JavaFX API. If you use OpenJDK 11, make sure you also download OpenJFK 11 **separately**. 
+Note 1 : Beginning Java 11, the JRE/JDK is decoupled from the graphic JavaFX API. If you use OpenJDK 11, make sure you also download OpenJFK 11 **separately**. 
 Feel free to discuss how to set up mars-sim to run it under Java 11. See also #156.
 ```
 
-* For Windows OS, one should manually set up the following : 
-  - Edit the `JAVA_HOME` and `PATH` in the *Environment Variables* in Control Panel 
-  - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-10.0.2` or `C:\Program Files\Java\jre-10.0.2`
-  - Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`         
-  - Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can interfere with the correct version of 
-    Java that you would like to use. 
-  - Check if the correct version of Java is being enabled in the **Java Control Panel** in Windows's Control Panel. 
+#### For Windows OS
+ 
 
-```
+ 1. Edit the `JAVA_HOME` and `PATH` in the *Environment Variables* in Control Panel 
+ ```
 Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java executable inside will be the one to be loaded  by Windows OS. 
+ ```
+ 
+ 2. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-10.0.2` or `C:\Program Files\Java\jre-10.0.2`
 
+ 3. Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`         
+ ```
 Note 3 : The BEST approach is to enable only one Java build (such as Java 10.0.2) inside `PATH` and remove all other folders referencing other java versions/builds.
+ ```
+ 4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can interfere with the correct version of Java that you would like to use. 
+ ```
+Note 4 : Depending on the order of precedence in Path variable, `C:\ProgramData\Oracle\Java\javapath` can load the undesired version of jre/jdk, instead of the java version you prefer.
+ ```
+ 5. Check if the correct version of Java is being enabled in the **Java Control Panel** in Windows's Control Panel. 
+ ```
+Note 5 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
+ ```
 
-Note 4 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
-
-Note 5 : Remove all Java related executables inside the folder `C:\ProgramData\Oracle\Java\javapath` in order to avoid loading the undesired version of jre/jdk.
-```
 
 ---
 
@@ -171,7 +182,7 @@ We welcome anyone to contribute to mars-sim in terms of ideas, concepts and codi
 ---
 
 ## Download 
-Check out the most recent build in the [GitHub's release tab](https://github.com/mars-sim/mars-sim/releases) or in [SourceForge repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/)
+Check out the most recent build in the [GitHub's Release Tab](https://github.com/mars-sim/mars-sim/releases) or in [SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/)
 
 Alternatively, you may use SourceForge's button below to automatically sense the correct platform. 
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
@@ -180,3 +191,6 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
+<!--stackedit_data:
+eyJoaXN0b3J5IjpbMjAwMTcyNzM3OCwtODY5ODg0NTgwXX0=
+-->
