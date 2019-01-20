@@ -240,7 +240,7 @@ extends TabPanel {
 		heatTable = new ZebraJTable(heatTableModel);
 	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(heatTable));
 
-		heatTable.setCellSelectionEnabled(false);
+		heatTable.setRowSelectionAllowed(true);
 		heatTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		heatTable.getColumnModel().getColumn(0).setPreferredWidth(10);
 		heatTable.getColumnModel().getColumn(1).setPreferredWidth(120);

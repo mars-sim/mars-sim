@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.terminal.ChatUtils;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -84,8 +83,7 @@ implements ListSelectionListener {
 		relationshipTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		relationshipTable.getColumnModel().getColumn(0).setPreferredWidth(80);
 		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(70);
-		
-		relationshipTable.setCellSelectionEnabled(true);
+		relationshipTable.setRowSelectionAllowed(true);
 		
 		// For single clicking on a person to pop up his person window.
 		//relationshipTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);	

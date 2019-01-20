@@ -114,7 +114,7 @@ extends TabPanel {
 		attributeTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		attributeTable.getColumnModel().getColumn(0).setPreferredWidth(100);
 		attributeTable.getColumnModel().getColumn(1).setPreferredWidth(70);
-		attributeTable.setCellSelectionEnabled(false);
+		attributeTable.setRowSelectionAllowed(true);
 		// attributeTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 
 		attributeScrollPanel.setViewportView(attributeTable);
@@ -124,10 +124,10 @@ extends TabPanel {
         //if (!MainScene.OS.equals("linux")) {
         //	attributeTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 		//}
-		// 2015-09-24 Align the content to the center of the cell
+		// Align the content to the center of the cell
         // Note: DefaultTableCellRenderer does NOT work well with nimrod
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		renderer.setHorizontalAlignment(SwingConstants.LEFT);
 		attributeTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		attributeTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 

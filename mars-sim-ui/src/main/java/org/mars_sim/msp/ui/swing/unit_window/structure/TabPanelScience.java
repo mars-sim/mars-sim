@@ -116,7 +116,7 @@ extends TabPanel {
 		studyTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		
 		studyTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		studyTable.setCellSelectionEnabled(false);
+//		studyTable.setCellSelectionEnabled(false);
 		studyTable.setRowSelectionAllowed(true);
 		studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		studyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -182,7 +182,7 @@ extends TabPanel {
 		achievementTableModel = new AchievementTableModel(settlement);
 		achievementTable = new ZebraJTable(achievementTableModel);
 		achievementTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		achievementTable.setCellSelectionEnabled(false);
+		achievementTable.setRowSelectionAllowed(true);
 		achievementTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
 		achievementScrollPane.setViewportView(achievementTable);
 

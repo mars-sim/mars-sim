@@ -342,7 +342,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		table.getColumnModel().getColumn(2).setPreferredWidth(50);
 		table.getColumnModel().getColumn(3).setPreferredWidth(50);
 		table.getColumnModel().getColumn(4).setPreferredWidth(50);
-
+		table.setRowSelectionAllowed(true);
 		table.setCellSelectionEnabled(false);
 		// table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 		scrollPanel.setViewportView(table);

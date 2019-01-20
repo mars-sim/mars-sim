@@ -240,7 +240,7 @@ extends TabPanel {
 		radiationTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
 
 		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 55));
-		radiationTable.setCellSelectionEnabled(false);
+		radiationTable.setRowSelectionAllowed(true);
 		radiationScrollPanel.setViewportView(radiationTable);
 
 		// Added sorting
@@ -276,14 +276,13 @@ extends TabPanel {
 		sleepTable.setPreferredScrollableViewportSize(new Dimension(225, 55));
 		sleepTable.getColumnModel().getColumn(0).setPreferredWidth(10);
 		sleepTable.getColumnModel().getColumn(1).setPreferredWidth(100);
-		sleepTable.setCellSelectionEnabled(false);
+		sleepTable.setRowSelectionAllowed(true);
 		sleepScrollPanel.setViewportView(sleepTable);
 
 		DefaultTableCellRenderer sleepRenderer = new DefaultTableCellRenderer();
 		sleepRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 		sleepTable.getColumnModel().getColumn(0).setCellRenderer(sleepRenderer);
 		sleepTable.getColumnModel().getColumn(1).setCellRenderer(sleepRenderer);
-		
 		
 		// Add sorting
 		sleepTable.setAutoCreateRowSorter(true);
@@ -311,7 +310,7 @@ extends TabPanel {
 		// Prepare medication table.
 		medicationTable = new ZebraJTable(medicationTableModel);
 		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 10));
-		medicationTable.setCellSelectionEnabled(false);
+		medicationTable.setRowSelectionAllowed(true);
 		medicationScrollPanel.setViewportView(medicationTable);
 
 		// Add sorting
@@ -340,7 +339,7 @@ extends TabPanel {
 		// Create health problem table
 		healthProblemTable = new ZebraJTable(healthProblemTableModel);
 		healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 10));
-		healthProblemTable.setCellSelectionEnabled(false);
+		healthProblemTable.setRowSelectionAllowed(true);
 		healthProblemScrollPanel.setViewportView(healthProblemTable);
 
 		// Add sorting

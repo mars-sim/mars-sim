@@ -258,7 +258,7 @@ public class TabPanelCooking extends TabPanel {
 		table = new ZebraJTable(table);
 
 		scrollPane.setViewportView(table);
-		table.setCellSelectionEnabled(false);
+		table.setRowSelectionAllowed(true);
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		table.getColumnModel().getColumn(0).setPreferredWidth(140);
 		table.getColumnModel().getColumn(1).setPreferredWidth(47);

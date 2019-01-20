@@ -6,18 +6,30 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
-import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.structure.construction.*;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.swing.BoundedRangeModel;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.structure.construction.ConstructionStage;
+import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
+import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A panel displaying a list of construction sites at a settlement.

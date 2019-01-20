@@ -112,7 +112,7 @@ extends TabPanel {
 		studyTableModel = new StudyTableModel(person);
 		studyTable = new ZebraJTable(studyTableModel);
 		studyTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		studyTable.setCellSelectionEnabled(false);
+//		studyTable.setCellSelectionEnabled(false);
 		studyTable.setRowSelectionAllowed(true);
 		studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		studyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -179,7 +179,7 @@ extends TabPanel {
 		achievementTableModel = new AchievementTableModel(person);
 		achievementTable = new ZebraJTable(achievementTableModel);
 		achievementTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		achievementTable.setCellSelectionEnabled(false);
+		achievementTable.setRowSelectionAllowed(true);
 		achievementTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
 
 		// 2015-09-24 Align the content to the center of the cell
@@ -195,7 +195,6 @@ extends TabPanel {
 	    ///if (!MainScene.OS.equals("linux")) {
 	    //	achievementTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 	    //}
-		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(achievementTable);
 	}
 

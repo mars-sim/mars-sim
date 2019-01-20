@@ -295,7 +295,7 @@ public class TabPanelSchedule extends TabPanel {
 		table.getColumnModel().getColumn(1).setPreferredWidth(100);
 		table.getColumnModel().getColumn(2).setPreferredWidth(60);
 		table.getColumnModel().getColumn(3).setPreferredWidth(50);
-		table.setCellSelectionEnabled(false);
+		table.setRowSelectionAllowed(true);
 		// table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 
 		scrollPanel.setViewportView(table);

@@ -81,7 +81,7 @@ extends TabPanel {
 		// Prepare credit table.
 		creditTable = new ZebraJTable(creditTableModel);
 		creditScrollPanel.setViewportView(creditTable);
-		creditTable.setCellSelectionEnabled(false);
+		creditTable.setRowSelectionAllowed(true);
 		creditTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
 		creditTable.getColumnModel().getColumn(0).setPreferredWidth(100);
 		creditTable.getColumnModel().getColumn(1).setPreferredWidth(120);
@@ -90,9 +90,6 @@ extends TabPanel {
 		// Resizable automatically when its Panel resizes
 		creditTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		//creditTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
-		//creditTablePanel.add(creditTable.getTableHeader(), BorderLayout.NORTH);
-		//creditTablePanel.add(creditTable, BorderLayout.CENTER);
-
 		// Added sorting
 		creditTable.setAutoCreateRowSorter(true);
 

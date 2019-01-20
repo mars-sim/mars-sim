@@ -300,7 +300,7 @@ extends TabPanel {
 		table = new ZebraJTable(tableModel);
 	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(table));
 
-		table.setCellSelectionEnabled(false);
+		table.setRowSelectionAllowed(true);
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		table.getColumnModel().getColumn(0).setPreferredWidth(60);
 		table.getColumnModel().getColumn(1).setPreferredWidth(25);

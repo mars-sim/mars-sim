@@ -290,7 +290,6 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		TooltipManager.setTooltip(missionButton, Msg.getString("TabPanelActivity.tooltip.mission"), TooltipWay.down);
 		// missionButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.mission"));
 		// //$NON-NLS-1$
-		// balloonToolTip.createBalloonTip(missionButton,
 		// Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
 		missionButton.addActionListener(this);
 
@@ -311,7 +310,6 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		TooltipManager.setTooltip(monitorButton, Msg.getString("TabPanelActivity.tooltip.monitor"), TooltipWay.down);
 		// monitorButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.monitor"));
 		// //$NON-NLS-1$
-		// balloonToolTip.createBalloonTip(monitorButton,
 		// Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(this);
 

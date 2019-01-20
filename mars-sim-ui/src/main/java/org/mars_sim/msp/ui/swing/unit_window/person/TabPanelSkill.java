@@ -114,7 +114,7 @@ extends TabPanel {
 		skillTable.setPreferredScrollableViewportSize(new Dimension(250, 100));
 		skillTable.getColumnModel().getColumn(0).setPreferredWidth(150);
 		skillTable.getColumnModel().getColumn(1).setPreferredWidth(100);
-		skillTable.setCellSelectionEnabled(false);
+		skillTable.setRowSelectionAllowed(true);
 		skillTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 
 		// Align the content to the center of the cell

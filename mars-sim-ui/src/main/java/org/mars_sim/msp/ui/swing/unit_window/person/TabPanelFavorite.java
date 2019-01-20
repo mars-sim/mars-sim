@@ -180,7 +180,7 @@ extends TabPanel {
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		table.getColumnModel().getColumn(0).setPreferredWidth(100);
 		table.getColumnModel().getColumn(1).setPreferredWidth(30);
-		table.setCellSelectionEnabled(false);
+		table.setRowSelectionAllowed(true);
 		table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 
 		// Added sorting

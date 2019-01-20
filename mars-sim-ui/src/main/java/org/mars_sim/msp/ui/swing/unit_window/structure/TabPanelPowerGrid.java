@@ -263,7 +263,7 @@ extends TabPanel {
 		powerTable = new ZebraJTable(powerTableModel);
 	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(powerTable));
 
-	    powerTable.setCellSelectionEnabled(false);
+	    powerTable.setRowSelectionAllowed(true);
 		powerTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		powerTable.getColumnModel().getColumn(0).setPreferredWidth(10);
 		powerTable.getColumnModel().getColumn(1).setPreferredWidth(130);

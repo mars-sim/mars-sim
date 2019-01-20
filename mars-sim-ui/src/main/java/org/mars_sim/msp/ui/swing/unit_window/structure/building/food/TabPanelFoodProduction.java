@@ -55,10 +55,10 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
- * TabPanelFoodProduction is a panel that displays a settlement's food production information.
+ * TabPanelFoodProduction is a panel that displays a settlement's food
+ * production information.
  */
-public class TabPanelFoodProduction
-extends TabPanel {
+public class TabPanelFoodProduction extends TabPanel {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TabPanelFoodProduction.class.getName());
@@ -84,18 +84,16 @@ extends TabPanel {
 
 	/**
 	 * Constructor.
-	 * @param unit {@link Unit} the unit to display.
+	 * 
+	 * @param unit    {@link Unit} the unit to display.
 	 * @param desktop {@link MainDesktopPane} the main desktop.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public TabPanelFoodProduction(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(
-			Msg.getString("TabPanelFoodProduction.title"), //$NON-NLS-1$
-			null,
-			Msg.getString("TabPanelFoodProduction.tooltip"), //$NON-NLS-1$
-			unit, desktop
-		);
+		super(Msg.getString("TabPanelFoodProduction.title"), //$NON-NLS-1$
+				null, Msg.getString("TabPanelFoodProduction.tooltip"), //$NON-NLS-1$
+				unit, desktop);
 
 		settlement = (Settlement) unit;
 		setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -107,9 +105,8 @@ extends TabPanel {
 		// Create foodProduction label.
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelFoodProduction.label"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		// titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		topPane.add(titleLabel);
-
 
 		// Create scroll panel for foodProduction list pane.
 		foodProductionScrollPane = new JScrollPane();
@@ -132,7 +129,8 @@ extends TabPanel {
 		// Create the process panels.
 		processCache = getFoodProductionProcesses();
 		Iterator<FoodProductionProcess> i = processCache.iterator();
-		while (i.hasNext()) foodProductionListPane.add(new FoodProductionPanel(i.next(), true, 30));
+		while (i.hasNext())
+			foodProductionListPane.add(new FoodProductionPanel(i.next(), true, 30));
 
 		// Create interaction panel.
 		JPanel interactionPanel = new JPanel(new GridLayout(4, 1, 0, 0));
@@ -140,13 +138,9 @@ extends TabPanel {
 
 		// Create new building selection.
 		buildingComboBoxCache = getFoodProductionBuildings();
-		// 2014-12-01 Added sorting
 		Collections.sort(buildingComboBoxCache);
 		buildingComboBox = new JComboBoxMW<Building>(buildingComboBoxCache);
-		//buildingComboBox.setOpaque(false);
-		//buildingComboBox.setBackground(new Color(51,25,0,128));
-		//buildingComboBox.setForeground(Color.orange);
-		// 2014-12-01 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
+		// AddePromptComboBoxRenderer() & setSelectedIndex(-1)
 		buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
 		buildingComboBox.setSelectedIndex(-1);
 		buildingComboBox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectBuilding")); //$NON-NLS-1$
@@ -161,10 +155,7 @@ extends TabPanel {
 		Building foodFactoryBuilding = (Building) buildingComboBox.getSelectedItem();
 		processSelectionCache = getAvailableProcesses(foodFactoryBuilding);
 		processSelection = new JComboBoxMW(processSelectionCache);
-		//processSelection.setOpaque(false);
-		//processSelection.setBackground(new Color(51,25,0,128));
-		//processSelection.setForeground(Color.ORANGE);
-		// 2014-12-01 Modified FoodProductionSelectionListCellRenderer() & Added setSelectedIndex(-1)
+		// Modify FoodProductionSelectionListCellRenderer() & Added setSelectedIndex(-1)
 		processSelection.setRenderer(new FoodProductionSelectionListCellRenderer("(2). Select a Process"));
 		processSelection.setSelectedIndex(-1);
 		processSelection.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectAvailableProcess")); //$NON-NLS-1$
@@ -174,15 +165,13 @@ extends TabPanel {
 		newProcessButton = new JButton(Msg.getString("TabPanelFoodProduction.button.createNewProcess")); //$NON-NLS-1$
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 		newProcessButton.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.createNewProcess")); //$NON-NLS-1$
-        //newProcessButton.setOpaque(false);
-        //newProcessButton.setBackground(new Color(51,25,0,128));
-        //newProcessButton.setForeground(Color.ORANGE);
 		newProcessButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				try {
 					Building foodFactoryBuilding = (Building) buildingComboBox.getSelectedItem();
 					if (foodFactoryBuilding != null) {
-						FoodProduction foodFactory = (FoodProduction) foodFactoryBuilding.getFunction(FunctionType.FOOD_PRODUCTION);
+						FoodProduction foodFactory = (FoodProduction) foodFactoryBuilding
+								.getFunction(FunctionType.FOOD_PRODUCTION);
 						Object selectedItem = processSelection.getSelectedItem();
 						if (selectedItem != null) {
 							if (selectedItem instanceof FoodProductionProcessInfo) {
@@ -193,7 +182,8 @@ extends TabPanel {
 									// 2014-12-09 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
 									buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
 									buildingComboBox.setSelectedIndex(-1);
-									processSelection.setRenderer(new FoodProductionSelectionListCellRenderer("(2). Select a Process"));
+									processSelection.setRenderer(
+											new FoodProductionSelectionListCellRenderer("(2). Select a Process"));
 									processSelection.setSelectedIndex(-1);
 								}
 
@@ -201,8 +191,7 @@ extends TabPanel {
 
 						}
 					}
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					logger.log(Level.SEVERE, Msg.getString("TabPanelFoodProduction.log.newProcessButton"), e); //$NON-NLS-1$
 				}
 			}
@@ -220,12 +209,11 @@ extends TabPanel {
 		overrideCheckbox.setSelected(settlement.getFoodProductionOverride());
 		interactionPanel.add(overrideCheckbox);
 
-		//setVisible(true);
+		// setVisible(true);
 	}
 
 	// 2014-12-01 Added PromptComboBoxRenderer()
-	class PromptComboBoxRenderer extends BasicComboBoxRenderer
-	{
+	class PromptComboBoxRenderer extends BasicComboBoxRenderer {
 
 		private static final long serialVersionUID = 1L;
 		private String prompt;
@@ -233,41 +221,37 @@ extends TabPanel {
 		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
 		/*
-		 *  Set the text to display when no item has been selected.
+		 * Set the text to display when no item has been selected.
 		 */
-		public PromptComboBoxRenderer(String prompt)
-		{
+		public PromptComboBoxRenderer(String prompt) {
 			this.prompt = prompt;
 		}
 
 		/*
-		 *  Custom rendering to display the prompt text when no item is selected
+		 * Custom rendering to display the prompt text when no item is selected
 		 */
-		// 2014-12-09 Added color rendering
-		public Component getListCellRendererComponent(
-				JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus)
-		{
+		// Add color rendering
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-			Component c = defaultRenderer.getListCellRendererComponent(
-	                list, value, index, isSelected, cellHasFocus);
+			Component c = defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
 			if (value == null) {
-				setText( prompt );
+				setText(prompt);
 				return this;
 			}
 			if (c instanceof JLabel) {
-	            if (isSelected) {
-	                c.setBackground(Color.orange);
-	            } else {
-	                c.setBackground(Color.white);
-	            }
-	        } else {
-	            c.setBackground(Color.white);
-	            c = super.getListCellRendererComponent(
-	                    list, value, index, isSelected, cellHasFocus);
-	        }
-	        return c;
+				if (isSelected) {
+					c.setBackground(Color.orange);
+				} else {
+					c.setBackground(Color.white);
+				}
+			} else {
+				c.setBackground(Color.white);
+				c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			}
+			return c;
 		}
 	}
 
@@ -276,8 +260,8 @@ extends TabPanel {
 
 		// Update processes if necessary.
 		List<FoodProductionProcess> processes = getFoodProductionProcesses();
-		//List<SalvageProcess> salvages = getSalvageProcesses();
-		//if (!processCache.equals(processes) || !salvageCache.equals(salvages)) {
+		// List<SalvageProcess> salvages = getSalvageProcesses();
+		// if (!processCache.equals(processes) || !salvageCache.equals(salvages)) {
 		if (!processCache.equals(processes)) {
 
 			// Add foodProduction panels for new processes.
@@ -294,7 +278,8 @@ extends TabPanel {
 				FoodProductionProcess process = j.next();
 				if (!processes.contains(process)) {
 					FoodProductionPanel panel = getFoodProductionPanel(process);
-					if (panel != null) foodProductionListPane.remove(panel);
+					if (panel != null)
+						foodProductionListPane.remove(panel);
 				}
 			}
 
@@ -310,7 +295,8 @@ extends TabPanel {
 		Iterator<FoodProductionProcess> i = processes.iterator();
 		while (i.hasNext()) {
 			FoodProductionPanel panel = getFoodProductionPanel(i.next());
-			if (panel != null) panel.update();
+			if (panel != null)
+				panel.update();
 		}
 
 		// Update building selection list.
@@ -320,7 +306,8 @@ extends TabPanel {
 			Building currentSelection = (Building) buildingComboBox.getSelectedItem();
 			buildingComboBox.removeAllItems();
 			Iterator<Building> k = buildingComboBoxCache.iterator();
-			while (k.hasNext()) buildingComboBox.addItem(k.next());
+			while (k.hasNext())
+				buildingComboBox.addItem(k.next());
 
 			if (currentSelection != null) {
 				if (buildingComboBoxCache.contains(currentSelection))
@@ -331,14 +318,15 @@ extends TabPanel {
 		// Update process selection list.
 		Building selectedBuilding = (Building) buildingComboBox.getSelectedItem();
 		Vector<FoodProductionProcessInfo> newProcesses = getAvailableProcesses(selectedBuilding);
-			if (!newProcesses.equals(processSelectionCache)) {
+		if (!newProcesses.equals(processSelectionCache)) {
 
 			processSelectionCache = newProcesses;
 			Object currentSelection = processSelection.getSelectedItem();
 			processSelection.removeAllItems();
 
 			Iterator<FoodProductionProcessInfo> l = processSelectionCache.iterator();
-			while (l.hasNext()) processSelection.addItem(l.next());
+			while (l.hasNext())
+				processSelection.addItem(l.next());
 
 			if (currentSelection != null) {
 				if (processSelectionCache.contains(currentSelection))
@@ -356,6 +344,7 @@ extends TabPanel {
 
 	/**
 	 * Gets all the foodProduction processes at the settlement.
+	 * 
 	 * @return list of foodProduction processes.
 	 */
 	private List<FoodProductionProcess> getFoodProductionProcesses() {
@@ -363,19 +352,19 @@ extends TabPanel {
 
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
 		while (i.hasNext()) {
-			//			try {
+			// try {
 			FoodProduction foodFactory = (FoodProduction) i.next().getFunction(FunctionType.FOOD_PRODUCTION);
 			result.addAll(foodFactory.getProcesses());
-			//			}
-			//			catch (BuildingException e) {}
+			// }
+			// catch (BuildingException e) {}
 		}
 
 		return result;
 	}
 
-
 	/**
 	 * Gets the panel for a foodProduction process.
+	 * 
 	 * @param process the foodProduction process.
 	 * @return foodProduction panel or null if none.
 	 */
@@ -385,15 +374,16 @@ extends TabPanel {
 			Component component = foodProductionListPane.getComponent(x);
 			if (component instanceof FoodProductionPanel) {
 				FoodProductionPanel panel = (FoodProductionPanel) component;
-				if (panel.getFoodProductionProcess().equals(process)) result = panel;
+				if (panel.getFoodProductionProcess().equals(process))
+					result = panel;
 			}
 		}
 		return result;
 	}
 
-
 	/**
 	 * Gets all food production buildings at a settlement.
+	 * 
 	 * @return vector of buildings.
 	 */
 	private Vector<Building> getFoodProductionBuildings() {
@@ -402,6 +392,7 @@ extends TabPanel {
 
 	/**
 	 * Gets all food production processes available at the foodFactory.
+	 * 
 	 * @param foodProductionBuilding the manufacturing building.
 	 * @return vector of processes.
 	 */
@@ -411,24 +402,25 @@ extends TabPanel {
 		try {
 			if (foodProductionBuilding != null) {
 
-			    // Determine highest materials science skill level at settlement.
-	            Settlement settlement = foodProductionBuilding.getSettlement();
-	            int highestSkillLevel = 0;
-	            Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-	            while (i.hasNext()) {
-	                Person tempPerson = i.next();
-	                SkillManager skillManager = tempPerson.getMind().getSkillManager();
-	                int skill = skillManager.getSkillLevel(SkillType.COOKING);
-	                if (skill > highestSkillLevel) {
-	                    highestSkillLevel = skill;
-	                }
-	            }
+				// Determine highest materials science skill level at settlement.
+				Settlement settlement = foodProductionBuilding.getSettlement();
+				int highestSkillLevel = 0;
+				Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+				while (i.hasNext()) {
+					Person tempPerson = i.next();
+					SkillManager skillManager = tempPerson.getMind().getSkillManager();
+					int skill = skillManager.getSkillLevel(SkillType.COOKING);
+					if (skill > highestSkillLevel) {
+						highestSkillLevel = skill;
+					}
+				}
 
-				FoodProduction foodFactory = (FoodProduction) foodProductionBuilding.getFunction(FunctionType.FOOD_PRODUCTION);
+				FoodProduction foodFactory = (FoodProduction) foodProductionBuilding
+						.getFunction(FunctionType.FOOD_PRODUCTION);
 				if (foodFactory.getProcesses().size() < foodFactory.getConcurrentProcesses()) {
-					Iterator<FoodProductionProcessInfo> j =
-							FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
-									foodFactory.getTechLevel(), highestSkillLevel).iterator();
+					Iterator<FoodProductionProcessInfo> j = FoodProductionUtil
+							.getFoodProductionProcessesForTechSkillLevel(foodFactory.getTechLevel(), highestSkillLevel)
+							.iterator();
 					while (j.hasNext()) {
 						FoodProductionProcessInfo process = j.next();
 						if (FoodProductionUtil.canProcessBeStarted(process, foodFactory))
@@ -436,25 +428,24 @@ extends TabPanel {
 					}
 				}
 			}
+		} catch (Exception e) {
 		}
-		catch (Exception e) {}
 		return result;
 	}
 
 	/**
 	 * Sets the settlement foodProduction override flag.
+	 * 
 	 * @param override the foodProduction override flag.
 	 */
 	private void setFoodProductionOverride(boolean override) {
 		settlement.setFoodProductionOverride(override);
 	}
 
-
 	/**
 	 * Inner class for the foodProduction selection list cell renderer.
 	 */
-	private static class FoodProductionSelectionListCellRenderer
-	extends DefaultListCellRenderer {
+	private static class FoodProductionSelectionListCellRenderer extends DefaultListCellRenderer {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -463,25 +454,26 @@ extends TabPanel {
 		private String prompt;
 
 		/*
-		 *  Set the text to display when no item has been selected.
+		 * Set the text to display when no item has been selected.
 		 */
 		// 2014-12-01 Added prompt
-		public FoodProductionSelectionListCellRenderer(String prompt)
-		{
+		public FoodProductionSelectionListCellRenderer(String prompt) {
 			this.prompt = prompt;
 		}
 
-
-		// TODO check actual combobox size before cutting off too much of the processes' names
+		// TODO check actual combobox size before cutting off too much of the processes'
+		// names
 		@Override
-		public Component getListCellRendererComponent(JList<?> list, Object value, int index,
-				boolean isSelected, boolean cellHasFocus) {
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+				boolean cellHasFocus) {
 			Component result = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			if (value instanceof FoodProductionProcessInfo) {
 				FoodProductionProcessInfo info = (FoodProductionProcessInfo) value;
 				if (info != null) {
 					String processName = info.getName();
-					if (processName.length() > PROCESS_NAME_LENGTH) processName = processName.substring(0, PROCESS_NAME_LENGTH) + Msg.getString("TabPanelFoodProduction.cutOff"); //$NON-NLS-1$
+					if (processName.length() > PROCESS_NAME_LENGTH)
+						processName = processName.substring(0, PROCESS_NAME_LENGTH)
+								+ Msg.getString("TabPanelFoodProduction.cutOff"); //$NON-NLS-1$
 					// 2014-11-19 Capitalized process names
 					((JLabel) result).setText(Conversion.capitalize(processName));
 					((JComponent) result).setToolTipText(FoodProductionPanel.getToolTipString(info, null));
@@ -494,7 +486,7 @@ extends TabPanel {
 			return result;
 		}
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

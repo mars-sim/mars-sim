@@ -80,7 +80,7 @@ extends TabPanel {
 		// Prepare goods table.
 		goodsTable = new ZebraJTable(goodsTableModel);
 		goodsScrollPane.setViewportView(goodsTable);
-		goodsTable.setCellSelectionEnabled(false);
+		goodsTable.setRowSelectionAllowed(true);
 		goodsTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
 		goodsTable.getColumnModel().getColumn(0).setPreferredWidth(140);
 		goodsTable.getColumnModel().getColumn(1).setPreferredWidth(140);
@@ -88,8 +88,6 @@ extends TabPanel {
 		// Resizable automatically when its Panel resizes
 		goodsTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		//goodsTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
-		//goodsTablePanel.add(goodsTable.getTableHeader(), BorderLayout.NORTH);
-		//goodsTablePanel.add(goodsTable, BorderLayout.CENTER);
 
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();

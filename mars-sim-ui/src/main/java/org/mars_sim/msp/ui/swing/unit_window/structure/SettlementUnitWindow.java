@@ -13,7 +13,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
-import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelDeath;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelFoodProduction;
 
@@ -38,24 +37,22 @@ public class SettlementUnitWindow extends UnitWindow {
 
         // Add tab panels
         if (desktop.getMainScene() != null)
-        	// 2016-01-16 Added TabPanelDashboard()
         	addTabPanel(new TabPanelDashboard(settlement, desktop));
-    
-        // 2015-12-29 Added TabPanelAirComposition
+
         addTabPanel(new TabPanelAirComposition(settlement, desktop));
 
         addTabPanel(new TabPanelAssociatedPeople(settlement, desktop));
-        //2015-01-21 Added TabPanelBot
+
         addTabPanel(new TabPanelBots(settlement, desktop));
 
         addTabPanel(new TabPanelBuildings(settlement, desktop));
-        //2014-12-02 Added TabPanelCooking
+
         addTabPanel(new TabPanelCooking(settlement, desktop));
 
         addTabPanel(new TabPanelConstruction(settlement, desktop));
 
         addTabPanel(new TabPanelCredit(settlement, desktop));
-        //2014-11-23 Added TabPanelFoodProduction
+
         addTabPanel(new TabPanelFoodProduction(settlement, desktop));
 
         addTabPanel(new TabPanelGoods(settlement, desktop));
@@ -69,7 +66,7 @@ public class SettlementUnitWindow extends UnitWindow {
         addTabPanel(new TabPanelManufacture(settlement, desktop));
 
         addTabPanel(new TabPanelMissions(settlement, desktop));
-        //2015-04-28 Added TabPanelOrganization
+        
         addTabPanel(new TabPanelOrganization(settlement, desktop));
 
         addTabPanel(new TabPanelPopulation(settlement, desktop));
@@ -79,14 +76,13 @@ public class SettlementUnitWindow extends UnitWindow {
         addTabPanel(new TabPanelResourceProcesses(settlement, desktop));
 
         addTabPanel(new TabPanelScience(settlement, desktop));
-    	//2014-10-17 Added TabPanelHeatingSystem
+
         addTabPanel(new TabPanelThermalSystem(settlement, desktop));
 
         addTabPanel(new TabPanelVehicles(settlement, desktop));
-        //2015-05-01 Added TabPanelWeather
+        
         addTabPanel(new TabPanelWeather(settlement, desktop));
 
-        // 2015-06-20 Added tab sorting
 		sortTabPanels();
     }
     
