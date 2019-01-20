@@ -9,6 +9,8 @@
 
 package org.mars_sim.msp.ui.astroarts;
 
+import org.mars_sim.msp.core.astroarts.ATime;
+
 public class OrbitPlayer implements Runnable {
 		OrbitViewer	orbitViewer;
 		

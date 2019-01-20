@@ -1,9 +1,9 @@
 /**
  * CometOrbit Class
  */
-package org.mars_sim.msp.ui.astroarts;
+package org.mars_sim.msp.core.astroarts;
 
-import org.mars_sim.msp.ui.astroarts.Xyz;
+import org.mars_sim.msp.core.astroarts.Xyz;
 
 public class CometOrbit {
 

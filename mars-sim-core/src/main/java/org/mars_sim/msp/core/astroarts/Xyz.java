@@ -1,9 +1,9 @@
 /**
  * 3-Dimensional Vector
  */
-package org.mars_sim.msp.ui.astroarts;
+package org.mars_sim.msp.core.astroarts;
 
-import org.mars_sim.msp.ui.astroarts.Matrix;
+import org.mars_sim.msp.core.astroarts.Matrix;
 
 public class Xyz {
 	

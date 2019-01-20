@@ -20,6 +20,15 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.RenderingHints;
 
+import org.mars_sim.msp.core.astroarts.ATime;
+import org.mars_sim.msp.core.astroarts.Astro;
+import org.mars_sim.msp.core.astroarts.Comet;
+import org.mars_sim.msp.core.astroarts.CometOrbit;
+import org.mars_sim.msp.core.astroarts.Matrix;
+import org.mars_sim.msp.core.astroarts.Planet;
+import org.mars_sim.msp.core.astroarts.PlanetOrbit;
+import org.mars_sim.msp.core.astroarts.Xyz;
+
 public 
 /*
 /**

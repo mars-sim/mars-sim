@@ -1,7 +1,7 @@
 /**
  * Common Mathematic Functions
  */
-package org.mars_sim.msp.ui.astroarts;
+package org.mars_sim.msp.core.astroarts;
 
 public class UdMath {
 	/**

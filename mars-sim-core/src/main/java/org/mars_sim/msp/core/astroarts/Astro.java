@@ -1,7 +1,7 @@
 /**
  * Astronomical Constants
  */
-package org.mars_sim.msp.ui.astroarts;
+package org.mars_sim.msp.core.astroarts;
 
 public class Astro {
 	public static final double GAUSS  = 0.01720209895;

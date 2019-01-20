@@ -1,4 +1,5 @@
-/* Mars Simulation Project
+/**
+ * Mars Simulation Project
  * OrbitViewer.java
  * @version 3.1.0 2017-02-02
  * @author Manny Kung
@@ -46,8 +47,13 @@ package org.mars_sim.msp.ui.astroarts;
  *
  */
 
-//import java.applet.*;
-import java.awt.*;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -56,12 +62,13 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.*;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -69,14 +76,15 @@ import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
-
+import org.mars_sim.msp.core.astroarts.ATime;
+import org.mars_sim.msp.core.astroarts.Astro;
+import org.mars_sim.msp.core.astroarts.Comet;
+import org.mars_sim.msp.core.astroarts.TimeSpan;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanelAstronomicalObservation;
 
-//import com.astroarts.*;
-//import java.math.*;
 
 /**
  * This Class creates a pictorial representation of a solar system showing the orbits of all planets plus a satellite of interest

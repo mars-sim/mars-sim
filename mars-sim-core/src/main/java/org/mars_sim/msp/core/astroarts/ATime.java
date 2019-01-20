@@ -1,8 +1,7 @@
 /**
  * Astronomical Time Class
  */
-package org.mars_sim.msp.ui.astroarts;
-import org.mars_sim.msp.ui.astroarts.TimeSpan;
+package org.mars_sim.msp.core.astroarts;
 
 public class ATime {
 	private int    nYear, nMonth, nDay;

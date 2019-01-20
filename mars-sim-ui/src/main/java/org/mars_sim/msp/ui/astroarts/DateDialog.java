@@ -21,6 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.astroarts.ATime;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 
@@ -149,8 +150,7 @@ public class DateDialog extends ModalInternalFrame {
 		};
 		
 		buttonCancel.addActionListener(listener2);
-		
-		
+			
 		viewer.getDesktop().add(this);
 		
 		Dimension desktopSize = viewer.getDesktop().getParent().getSize();
@@ -171,36 +171,36 @@ public class DateDialog extends ModalInternalFrame {
 
 	}
 		
-	/**
-	 * Event Handler
-	 
-    public boolean handleEvent(Event evt) {
-		if (evt.id == Event.ACTION_EVENT) {
-			ATime atime = null;
-			if (evt.target == buttonOk) {
-				int nYear = Integer.valueOf(tfYear.getText()).intValue();
-				int nMonth = monthCB.getSelectedIndex() + 1;
-				int nDate  = Integer.valueOf(tfDate.getText()).intValue();
-				if (1600 <= nYear && nYear <= 2199 &&
-							1 <= nMonth && nMonth <= 12 &&
-							1 <= nDate  && nDate  <= 31) {
-					atime = new ATime(nYear, nMonth, (double)nDate, 0.0);
-				}
-			} else if (evt.target == buttonToday) {
-				EarthClock clock = Simulation.instance().getMasterClock().getEarthClock();
-				monthCB.setSelectedIndex(clock.getMonth()-1);
-				tfDate.setText(Integer.toString(clock.getDayOfMonth()));
-				tfYear.setText(Integer.toString(clock.getYear()));// + 1900));
-				
-				return false;
-			} else if (evt.target != buttonCancel) {
-				return false;
-			}
-			dispose();
-			viewer.endDateDialog(atime);
-			return true;
-		}
-		return false;	// super.handleEvent(evt);
-	}
-*/
+//	/**
+//	 * Event Handler
+//	 */
+//    public boolean handleEvent(Event evt) {
+//		if (evt.id == Event.ACTION_EVENT) {
+//			ATime atime = null;
+//			if (evt.target == buttonOk) {
+//				int nYear = Integer.valueOf(tfYear.getText()).intValue();
+//				int nMonth = monthCB.getSelectedIndex() + 1;
+//				int nDate  = Integer.valueOf(tfDate.getText()).intValue();
+//				if (1600 <= nYear && nYear <= 2199 &&
+//							1 <= nMonth && nMonth <= 12 &&
+//							1 <= nDate  && nDate  <= 31) {
+//					atime = new ATime(nYear, nMonth, (double)nDate, 0.0);
+//				}
+//			} else if (evt.target == buttonToday) {
+//				EarthClock clock = Simulation.instance().getMasterClock().getEarthClock();
+//				monthCB.setSelectedIndex(clock.getMonth()-1);
+//				tfDate.setText(Integer.toString(clock.getDayOfMonth()));
+//				tfYear.setText(Integer.toString(clock.getYear()));// + 1900));
+//				
+//				return false;
+//			} else if (evt.target != buttonCancel) {
+//				return false;
+//			}
+//			dispose();
+//			viewer.endDateDialog(atime);
+//			return true;
+//		}
+//		return false;	// super.handleEvent(evt);
+//	}
+
 	}

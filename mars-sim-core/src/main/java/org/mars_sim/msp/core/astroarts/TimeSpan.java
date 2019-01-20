@@ -1,7 +1,7 @@
 /**
  * TimeSpan Class for ATime
  */
-package org.mars_sim.msp.ui.astroarts;
+package org.mars_sim.msp.core.astroarts;
 
 public class TimeSpan {
 	public int    nYear, nMonth, nDay;
