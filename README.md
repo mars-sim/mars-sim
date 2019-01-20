@@ -8,12 +8,12 @@
 
 
 # mars-sim
-The Mars Simulation Project is a Java-based [open source](https://opensource.dev/) project that simulates the activities of the first generation of settlers on Mars with a higher fidelity of modeling and simulation details than a typical PC strategy game. 
+*The Mars Simulation Project* is a Java-based [open source](https://opensource.dev/) project that simulates the activities of the first generation of settlers on Mars with a higher fidelity of modeling and simulation details than a typical PC strategy game. 
 
 ---
 
 ## Simulation
-mars-sim is a *general purpose* simulator depicting the early development of human settlements on Mars. According to *Encyclopædia Britannica*, a computer simulation is the use of a computer to represent the dynamic responses of one system by the behavior of another system modeled after it. In essence, a simulation is a mathematical description, or model, of a real system in the form of a computer program. 
+mars-sim is a **general purpose** simulator depicting the early development of human settlements on Mars. According to *Encyclopædia Britannica*, a computer simulation is the use of a computer to represent the dynamic responses of one system by the behavior of another system modeled after it. In essence, a simulation is a mathematical description, or model, of a real system in the form of a computer program. 
 
 mars-sim aims to integrate and  incorporate as many research disciplines (such as physics, chemistry, biology, economics, psychology, and social science) as possible to simulate the dynamics and behaviors of people, social structure, physical and mechanical systems, and environment in the context of developing human settlements on Mars. 
 
@@ -26,7 +26,11 @@ For instance, each settler has a well-defined job, a role, a bunch of technical 
 ## Operation Modeling
 mars-sim adopts a rich set of scientific vocabulary from research journal and paper when it comes to defining operation paradigms and programming models based on the present day technologies that are applicable for the near-term human exploration and settlement on Mars.
 
-For instance, the simulation assumes a low-pressure living environment that facilitates EVA and reduces structural requirements on buildings. At the Earth's sea level, the atmospheric pressure is 101 kPa (14.7 psi) and has 20.9% oxygen. In mars-sim, a low pressure atmosphere of 34 kPa (5 psi) is chosen for the settlement. As a result, the composition of oxygen within the settlement is 58.8%. Other than oxygen, carbon dioxide, and water moisture indoor are continuously monitored and replenished periodically in each building being equipped with various life-support system [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function). These gases are generated via systems such as Sabatier Reverse Water Gas (SRWG), and Oxygen Generation System, etc..
+For instance, the simulation assumes a low-pressure living environment that facilitates EVA and reduces structural requirements on buildings. 
+
+At the Earth's sea level, the atmospheric pressure is 101 kPa (14.7 psi) and has 20.9% oxygen. In mars-sim, a low pressure atmosphere of 34 kPa (5 psi) is chosen for the settlement. 
+
+As a result, the composition of oxygen within the settlement is 58.8%. Other than oxygen, carbon dioxide, and water moisture indoor are continuously monitored and replenished periodically in each building being equipped with various life-support system [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function). These gases are generated via systems such as Sabatier Reverse Water Gas (SRWG), and Oxygen Generation System, etc..
 
 Another example is the mode of operation involved in EVA. Prior to each EVA activity, one of the settlers will be selected as the airlock operator. The airlock would have to be pressurized and depressurized (gases captured and released and reheated) with inner/outer doors opened and closed at a specific sequence in order to allow the ingress/egress of the settlers onto the surface of Mars.
 
@@ -181,5 +185,5 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE0MjI4ODczMjZdfQ==
+eyJoaXN0b3J5IjpbODgwMTMxOTUwXX0=
 -->
