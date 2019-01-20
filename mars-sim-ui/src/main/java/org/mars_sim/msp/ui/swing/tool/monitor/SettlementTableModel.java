@@ -106,6 +106,17 @@ public class SettlementTableModel extends UnitTableModel {
 
 	private DecimalFormat df = new DecimalFormat("#,###,##0.00");
 
+	private static int regolithID = ResourceUtil.regolithID;
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+	private static int methaneID = ResourceUtil.methaneID;
+	private static int rockSamplesID = ResourceUtil.rockSamplesID;
+	private static int iceID = ResourceUtil.iceID;
+	
+	private static int greyWaterID = ResourceUtil.greyWaterID;
+	private static int blackWaterID = ResourceUtil.blackWaterID;
+	private static int co2ID = ResourceUtil.co2ID;
+	private static int hydrogenID = ResourceUtil.hydrogenID;
 	
 	/**
 	 * Constructs a SettlementTableModel model that displays all Settlements in the
@@ -147,37 +158,37 @@ public class SettlementTableModel extends UnitTableModel {
 					break;
 
 				case WATER: {
-					result = df.format(resourceMap.get(ResourceUtil.waterID));
+					result = df.format(resourceMap.get(waterID));
 				}
 					break;
 
 				case OXYGEN: {
-					result = df.format(resourceMap.get(ResourceUtil.oxygenID));
+					result = df.format(resourceMap.get(oxygenID));
 				}
 					break;
 
 				case METHANE: {
-					result = df.format(resourceMap.get(ResourceUtil.methaneID));
+					result = df.format(resourceMap.get(methaneID));
 				}
 					break;
 
 				case HYDROGEN: {
-					result = df.format(resourceMap.get(ResourceUtil.hydrogenID));
+					result = df.format(resourceMap.get(hydrogenID));
 				}
 					break;
 
 				case CO2: {
-					result = df.format(resourceMap.get(ResourceUtil.co2ID));
+					result = df.format(resourceMap.get(co2ID));
 				}
 					break;
 
 				case ROCK_SAMPLES: {
-					result = df.format(resourceMap.get(ResourceUtil.rockSamplesID));
+					result = df.format(resourceMap.get(rockSamplesID));
 				}
 					break;
 
 				case REGOLITH: {
-					result = df.format(resourceMap.get(ResourceUtil.regolithID));
+					result = df.format(resourceMap.get(regolithID));
 				}
 					break;
 
@@ -192,17 +203,17 @@ public class SettlementTableModel extends UnitTableModel {
 					break;
 
 				case GREY_WATER: {
-					result = df.format(resourceMap.get(ResourceUtil.greyWaterID));
+					result = df.format(resourceMap.get(greyWaterID));
 				}
 					break;
 
 				case BLACK_WATER: {
-					result = df.format(resourceMap.get(ResourceUtil.blackWaterID));
+					result = df.format(resourceMap.get(blackWaterID));
 				}
 					break;
 
 				case ICE: {
-					result = df.format(resourceMap.get(ResourceUtil.iceID));
+					result = df.format(resourceMap.get(iceID));
 				}
 					break;
 
@@ -264,49 +275,50 @@ public class SettlementTableModel extends UnitTableModel {
 				double currentValue = 0.0;
 				Map<Integer, Double> resourceMap = resourceCache.get(unit);
 				
-				if (target == ResourceUtil.oxygenID) {
+				if (target == oxygenID) {
 					tempColumnNum = OXYGEN;
-					currentValue = resourceMap.get(ResourceUtil.oxygenID);
+					currentValue = resourceMap.get(oxygenID);
 				}
-				else if (target == ResourceUtil.hydrogenID) {
+				else if (target == hydrogenID) {
 					tempColumnNum = HYDROGEN;
-					currentValue = resourceMap.get(ResourceUtil.hydrogenID);
+					currentValue = resourceMap.get(hydrogenID);
 				}	
-				else if (target == ResourceUtil.co2ID) {
+				else if (target == co2ID) {
 					tempColumnNum = CO2;
-					currentValue = resourceMap.get(ResourceUtil.co2ID);
+					currentValue = resourceMap.get(co2ID);
 				}
-				else if (target == ResourceUtil.methaneID) {
+				else if (target == methaneID) {
 					tempColumnNum = METHANE;		
-					currentValue = resourceMap.get(ResourceUtil.methaneID);
+					currentValue = resourceMap.get(methaneID);
 				}
-				else if (target == ResourceUtil.waterID) {
+				else if (target == waterID) {
 					tempColumnNum = WATER;
-					currentValue = resourceMap.get(ResourceUtil.waterID);
+					currentValue = resourceMap.get(waterID);
 				}
-				else if (target == ResourceUtil.greyWaterID) {
+				else if (target == greyWaterID) {
 					tempColumnNum = GREY_WATER;
-					currentValue = resourceMap.get(ResourceUtil.greyWaterID);
+					currentValue = resourceMap.get(greyWaterID);
 				}
-				else if (target == ResourceUtil.blackWaterID) {
+				else if (target == blackWaterID) {
 					tempColumnNum = BLACK_WATER;
-					currentValue = resourceMap.get(ResourceUtil.blackWaterID);
+					currentValue = resourceMap.get(blackWaterID);
 				}
-				else if (target == ResourceUtil.rockSamplesID) {
+				else if (target == rockSamplesID) {
 					tempColumnNum = ROCK_SAMPLES;
-					currentValue = resourceMap.get(ResourceUtil.rockSamplesID);
+					currentValue = resourceMap.get(rockSamplesID);
 				}
-				else if (target == ResourceUtil.regolithID) {
+				else if (target == regolithID) {
 					tempColumnNum = REGOLITH;
-					currentValue = resourceMap.get(ResourceUtil.regolithID);
+					currentValue = resourceMap.get(regolithID);
 				}
-				else if (target == ResourceUtil.iceID) {
+				else if (target == iceID) {
 					tempColumnNum = ICE;
-					currentValue = resourceMap.get(ResourceUtil.iceID);
+					currentValue = resourceMap.get(iceID);
 				}
 				
 				if (tempColumnNum > -1) {
-					double newValue = getResourceStored(unit, target);
+					currentValue = Math.round (currentValue * 10.0 ) / 10.0;
+					double newValue = Math.round (getResourceStored(unit, target) * 10.0 ) / 10.0;
 					if (currentValue != newValue) {
 						columnNum = tempColumnNum;
 						resourceMap.put(target, newValue);
@@ -338,16 +350,16 @@ public class SettlementTableModel extends UnitTableModel {
 			try {
 				Map<Integer, Double> resourceMap = new HashMap<>();
 
-				resourceMap.put(ResourceUtil.oxygenID, getResourceStored(newUnit, ResourceUtil.oxygenID));
-				resourceMap.put(ResourceUtil.waterID, getResourceStored(newUnit, ResourceUtil.waterID));
-				resourceMap.put(ResourceUtil.hydrogenID, getResourceStored(newUnit, ResourceUtil.hydrogenID));
-				resourceMap.put(ResourceUtil.methaneID, getResourceStored(newUnit, ResourceUtil.methaneID));
-				resourceMap.put(ResourceUtil.rockSamplesID, getResourceStored(newUnit, ResourceUtil.rockSamplesID));
-				resourceMap.put(ResourceUtil.regolithID, getResourceStored(newUnit, ResourceUtil.regolithID));
-				resourceMap.put(ResourceUtil.greyWaterID, getResourceStored(newUnit, ResourceUtil.greyWaterID));
-				resourceMap.put(ResourceUtil.blackWaterID, getResourceStored(newUnit, ResourceUtil.blackWaterID));
-				resourceMap.put(ResourceUtil.iceID, getResourceStored(newUnit, ResourceUtil.iceID));
-				resourceMap.put(ResourceUtil.co2ID, getResourceStored(newUnit, ResourceUtil.co2ID));
+				resourceMap.put(oxygenID, getResourceStored(newUnit, oxygenID));
+				resourceMap.put(waterID, getResourceStored(newUnit, waterID));
+				resourceMap.put(hydrogenID, getResourceStored(newUnit, hydrogenID));
+				resourceMap.put(methaneID, getResourceStored(newUnit, methaneID));
+				resourceMap.put(rockSamplesID, getResourceStored(newUnit, rockSamplesID));
+				resourceMap.put(regolithID, getResourceStored(newUnit, regolithID));
+				resourceMap.put(greyWaterID, getResourceStored(newUnit, greyWaterID));
+				resourceMap.put(blackWaterID, getResourceStored(newUnit, blackWaterID));
+				resourceMap.put(iceID, getResourceStored(newUnit, iceID));
+				resourceMap.put(co2ID, getResourceStored(newUnit, co2ID));
 
 				resourceCache.put(newUnit, resourceMap);
 			} catch (Exception e) {

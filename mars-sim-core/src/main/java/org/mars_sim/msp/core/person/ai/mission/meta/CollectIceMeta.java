@@ -6,15 +6,11 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -26,12 +22,12 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class CollectIceMeta implements MetaMission {
 
-	private static Logger logger = Logger.getLogger(CollectIceMeta.class.getName());
+//	private static Logger logger = Logger.getLogger(CollectIceMeta.class.getName());
 
 	/** Mission name */
 	private static final String NAME = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
 
-	private static final double VALUE = 500D;
+	private static final double VALUE = 1000D;
 
 //    private static MissionManager missionManager = Simulation.instance().getMissionManager();
     

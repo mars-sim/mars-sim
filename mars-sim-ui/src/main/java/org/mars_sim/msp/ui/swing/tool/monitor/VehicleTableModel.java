@@ -388,37 +388,50 @@ extends UnitTableModel {
 		else if (eventType == UnitEventType.MALFUNCTION_EVENT) columnNum = MALFUNCTION;
 		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT) {
 			try {
-				int tempColumnNum = -1;
 				int target = ((AmountResource)source).getID();
+				int tempColumnNum = -1;
+				double currentValue = 0.0;
+				Map<Integer, Double> resourceMap = resourceCache.get(unit);
 				
-				if (target == oxygenID)
+				if (target == oxygenID) {
 					tempColumnNum = OXYGEN;
-				else if (target == methaneID)
-					tempColumnNum = METHANE;
-				else if (target == foodID)
+					currentValue = resourceMap.get(oxygenID);
+				}
+				else if (target == methaneID) {
+					tempColumnNum = METHANE;		
+					currentValue = resourceMap.get(methaneID);
+				}
+				if (target == foodID) {
 					tempColumnNum = FOOD;
-				else if (target == waterID)
+					currentValue = resourceMap.get(foodID);
+				}
+				else if (target == waterID) {
 					tempColumnNum = WATER;
-				else if (target == rockSamplesID)
+					currentValue = resourceMap.get(waterID);
+				}
+				else if (target == rockSamplesID) {
 					tempColumnNum = ROCK_SAMPLES;
-				else if (target == iceID)
+					currentValue = resourceMap.get(rockSamplesID);
+				}
+				else if (target == iceID) {
 					tempColumnNum = ICE;
+					currentValue = resourceMap.get(iceID);
+				}
 				else {
 				  	// Put together a list of available dessert
 			        for(AmountResource ar : availableDesserts) {
-			        	if (target == ar.getID())
+			        	if (target == ar.getID()) {
 			        		tempColumnNum = DESSERT;
+			        		currentValue = resourceMap.get(ar.getID());
+			        	}
 			        }
 				}
 
 				if (tempColumnNum > -1) {
-					// Convert resourceCache and resourceMap from Map<AmountResource, Integer> to Map<AmountResource, Double> in VehicleTableModel.java.
-					double currentValue =  Math.round ( (Double) getValueAt(unitIndex, tempColumnNum) * 10.0 ) / 10.0;
+					currentValue = Math.round (currentValue * 10.0 ) / 10.0;
 					double newValue = Math.round (getResourceStored(unit, target) * 10.0 ) / 10.0;
 					if (currentValue != newValue) {
-						//System.out.println("Column : " + tempColumnNum + "  currentValue : " + currentValue + "   newValue : " + newValue);
 						columnNum = tempColumnNum;
-						Map<Integer, Double> resourceMap = resourceCache.get(unit);
 						resourceMap.put(target, newValue);
 					}
 				}

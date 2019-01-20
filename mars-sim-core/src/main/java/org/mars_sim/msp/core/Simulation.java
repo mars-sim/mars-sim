@@ -1142,13 +1142,13 @@ public class Simulation implements ClockListener, Serializable {
 		try {
 	
 			// Set a delay for 200 millis to avoid java.util.ConcurrentModificationException
-			delay(500L);
+			delay(1000L);
 			
 			// Store the in-transient objects.
 //			oos.writeObject(SimulationConfig.instance());
 //			oos.writeObject(ResourceUtil.getInstance());
 			oos.writeObject(malfunctionFactory);
-			oos.writeObject(mars); // has infinite ObjectOutputStream.java:1510)
+			oos.writeObject(mars); // java.util.ConcurrentModificationException, infinite ObjectOutputStream.java:1510)
 			oos.writeObject(missionManager);
 			oos.writeObject(medicalManager);
 			oos.writeObject(scientificStudyManager);
