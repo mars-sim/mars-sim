@@ -93,7 +93,7 @@ public class Walk extends Task implements Serializable {
 	 * @param person the person performing the task.
 	 */
 	public Walk(Person person) {
-		super(null, person, false, false, STRESS_MODIFIER, false, 0D);
+		super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
 		// this.person = person;
 
 		unitManager = Simulation.instance().getUnitManager();

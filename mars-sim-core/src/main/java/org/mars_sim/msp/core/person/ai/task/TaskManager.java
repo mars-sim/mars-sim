@@ -307,7 +307,7 @@ public class TaskManager implements Serializable {
 				person.addEVATime(taskName, time);
 			}
 	
-			if (!taskDescriptionCache.equals(taskDescription)
+			if (!taskDescription.equals(taskDescriptionCache)
 //				&& !taskName.toLowerCase().contains(WALK) 
 //				&& !taskDescription.toLowerCase().contains(WALK) 
 				&& !taskDescription.equals("")) {

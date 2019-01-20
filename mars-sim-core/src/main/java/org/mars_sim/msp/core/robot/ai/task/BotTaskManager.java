@@ -200,7 +200,7 @@ implements Serializable {
 	
 //		if (!taskName.toLowerCase().contains("walk")
 //			&& !taskDescription.toLowerCase().contains("walk")
-		if (!taskDescriptionCache.equals(taskDescription)
+		if (!taskDescription.equals(taskDescriptionCache)
 			&& !taskDescription.equals("")
 			&& getPhase() != null) {
 
@@ -211,7 +211,6 @@ implements Serializable {
 				taskPhaseCache = taskPhase;
 				taskDescriptionCache = taskDescription;
 			}
-
 		}
 	}
 
