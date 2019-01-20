@@ -106,7 +106,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         resourcesTable.getColumnModel().getColumn(0).setPreferredWidth(120);
         resourcesTable.getColumnModel().getColumn(1).setPreferredWidth(50);
         resourcesTable.getColumnModel().getColumn(2).setPreferredWidth(50);
-        resourcesTable.setCellSelectionEnabled(true);
+        resourcesTable.setRowSelectionAllowed(true);//setCellSelectionEnabled(true);
         resourcesPanel.setViewportView(resourcesTable);
 
 		// Added sorting
@@ -138,7 +138,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         // Create equipment table
         equipmentTable = new ZebraJTable(equipmentTableModel);
         equipmentTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
-        equipmentTable.setCellSelectionEnabled(true);
+        equipmentTable.setRowSelectionAllowed(true);//.setCellSelectionEnabled(true);
         equipmentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         equipmentTable.getSelectionModel().addListSelectionListener(this);
         equipmentPanel.setViewportView(equipmentTable);

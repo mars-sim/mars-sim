@@ -723,7 +723,8 @@ public abstract class RoverMission extends VehicleMission {
 		// Determine estimate time for trip.
 		double time = getEstimatedTripTime(useBuffer, distance);
 		double timeSols = time / 1000D;
-
+//		System.out.println("RoverMission : time : " + time);
+		
 		int crewNum = getPeopleNumber();
 
 		// Determine life support supplies needed for trip.
@@ -755,7 +756,7 @@ public abstract class RoverMission extends VehicleMission {
 		if (useBuffer)
 			foodAmount *= 1;//Vehicle.getLifeSupportRangeErrorMargin();
 		result.put(foodID, foodAmount);
-		System.out.println("RoverMission : foodAmount : " + foodAmount);
+//		System.out.println("RoverMission : foodAmount : " + foodAmount);
 
 		return result;
 	}

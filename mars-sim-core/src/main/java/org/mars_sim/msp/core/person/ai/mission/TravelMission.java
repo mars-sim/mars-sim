@@ -379,8 +379,8 @@ public abstract class TravelMission extends Mission {
 
 		for (int x = (index + 1); x < getNumberOfNavpoints(); x++)
 			result += getNavpoint(x - 1).getLocation().getDistance(getNavpoint(x).getLocation());
-
-		return result;
+//		System.out.println("TravelMission : total remaining dist : " + result);
+		return result; //Math.abs(result);
 	}
 
 	/**

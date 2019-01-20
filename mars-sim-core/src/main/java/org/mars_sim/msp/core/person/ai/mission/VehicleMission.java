@@ -743,9 +743,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		// If buffer, add one sol.
 		if (useMargin) {
-			result += 1000D;
+			result += 500D;
 		}
-
+//		System.out.println("VehicleMission : est trip time : " + result);
 		return result;
 	}
 
@@ -782,7 +782,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (count > 0) {
 			result = totalSpeed / (double) count;
 		}
-
+//		System.out.println("VehicleMission : average speed : " + result);
 		return result;
 	}
 

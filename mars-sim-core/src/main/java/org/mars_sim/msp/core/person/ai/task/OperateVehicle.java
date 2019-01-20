@@ -469,7 +469,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	if (vehicle != null) {
     		// Need to update this to reflect the particular operator's average speed operating the vehicle.
     		double baseSpeed = vehicle.getBaseSpeed();
+//    		System.out.println("OperateVehicle : base speed : " + baseSpeed);
     		double speed = 0;
+    		double mod = 0;
     		Person p = null;
     		if (operator instanceof Person) {
     			p = (Person)operator;
@@ -479,16 +481,17 @@ public abstract class OperateVehicle extends Task implements Serializable {
     			
     			int skill = p.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.DRIVING);
     			if (skill <= 5) {
-    				speed = 0D - ((baseSpeed / 2D) * ((5D - skill) / 5D));
+    				mod = 0D - ((baseSpeed / 2D) * ((5D - skill) / 5D));
     	        }
     	        else {
     	            double tempSpeed = baseSpeed;
     	            for (int x=0; x < skill - 5; x++) {
     	                tempSpeed /= 2D;
-    	                speed += tempSpeed;
+    	                mod += tempSpeed;
     	            }
     	        }
     		}
+    		speed = baseSpeed + mod;
     		return speed;
     	}
     	else

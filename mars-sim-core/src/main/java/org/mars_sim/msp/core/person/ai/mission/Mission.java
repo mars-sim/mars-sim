@@ -93,15 +93,15 @@ public abstract class Mission implements Serializable {
 	/**
 	 * The marginal factor for the amount of water to be brought during a mission.
 	 */
-	public final static double WATER_MARGIN = 4.4; // TODO: need to find out why water is running so fast in vehicle
+	public final static double WATER_MARGIN = 3.5;
 	/**
 	 * The marginal factor for the amount of oxygen to be brought during a mission.
 	 */
-	public final static double OXYGEN_MARGIN = 3.5;
+	public final static double OXYGEN_MARGIN = 4;
 	/**
 	 * The marginal factor for the amount of food to be brought during a mission.
 	 */
-	public final static double FOOD_MARGIN = 2.8;
+	public final static double FOOD_MARGIN = 3;
 	/**
 	 * The marginal factor for the amount of dessert to be brought during a mission.
 	 */

@@ -1109,8 +1109,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 				if (resource < FIRST_ITEM_RESOURCE) {
 					double amount = (Double) (resources.get(resource));
-					System.out.println("LoadVehicleGarage : " + ResourceUtil.findAmountResourceName(resource) 
-						+ " amount : " + amount);
+//					System.out.println("LoadVehicleGarage : " + ResourceUtil.findAmountResourceName(resource) 
+//						+ " amount : " + amount);
 					inv.storeAmountResource(resource, amount, true);
 				} else {
 					int num = (Integer) (resources.get(resource));

@@ -70,7 +70,7 @@ public class TaskSchedule implements Serializable {
 
 	// private Map <Integer, List<OneTask>> schedules;
 	// private List<OneTask> todaySchedule;
-	private Map<Integer, List<OneActivity>> allActivities;
+	private transient Map<Integer, List<OneActivity>> allActivities;
 	private Map<String, Integer> taskDescriptions;
 	private Map<String, Integer> taskNames;
 	private Map<String, Integer> missionNames;
@@ -79,7 +79,7 @@ public class TaskSchedule implements Serializable {
 
 	private List<OneActivity> todayActivities;
 
-	private static MarsClock marsClock;
+	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
 	/**
 	 * Constructor for TaskSchedule
@@ -109,8 +109,8 @@ public class TaskSchedule implements Serializable {
 		shiftChoice.put(ShiftType.ON_CALL, 50);
 		shiftChoice.put(ShiftType.OFF, 50);
 
-		if (Simulation.instance().getMasterClock() != null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//		if (Simulation.instance().getMasterClock() != null)
+//			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	/**
@@ -132,7 +132,7 @@ public class TaskSchedule implements Serializable {
 		taskPhases = new ConcurrentHashMap<String, Integer>();
 //		functions = new ConcurrentHashMap<String, Integer>();
 
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	/**
@@ -142,17 +142,19 @@ public class TaskSchedule implements Serializable {
 	 * @param description
 	 */
 	public void recordTask(String task, String description, String phase, String mission) {
-
+		
 		startTime = marsClock.getMillisolInt();
 		int solElapsed = marsClock.getMissionSol();
 		if (solElapsed != solCache) {
+			if (allActivities == null)
+				allActivities = new ConcurrentHashMap<>();
+			
 			// Removed the sol log from LAST_SOL ago
 			if (solElapsed > NUM_SOLS) {
 				int diff = solElapsed - NUM_SOLS;
 				allActivities.remove(diff);
 				if (allActivities.containsKey(diff - 1))
 					allActivities.remove(diff - 1);
-
 			}
 
 			// save yesterday's schedule (except on the very first day when there's nothing
@@ -617,8 +619,8 @@ public class TaskSchedule implements Serializable {
 
 					s.incrementAShift(newShift);
 
-					if (marsClock == null)
-						marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//					if (marsClock == null)
+//						marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
 					int now = marsClock.getMillisolInt();
 					boolean isOnShiftNow = isShiftHour(now);

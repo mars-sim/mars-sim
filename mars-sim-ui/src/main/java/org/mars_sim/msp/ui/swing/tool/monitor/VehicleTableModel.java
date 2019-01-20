@@ -145,14 +145,14 @@ extends UnitTableModel {
 	// Data members
 	private UnitManagerListener unitManagerListener;
 	private LocalMissionManagerListener missionManagerListener;
-	private Map<Unit, Map<AmountResource, Double>> resourceCache;
+	private Map<Unit, Map<Integer, Double>> resourceCache;
 
-	private static AmountResource foodAR = ResourceUtil.foodAR;
-	private static AmountResource oxygenAR = ResourceUtil.oxygenAR;
-	private static AmountResource waterAR = ResourceUtil.waterAR;
-	private static AmountResource methaneAR = ResourceUtil.methaneAR;
-	private static AmountResource rockSamplesAR = ResourceUtil.rockSamplesAR;
-	private static AmountResource iceAR = ResourceUtil.iceAR;
+	private static int foodID = ResourceUtil.foodID;
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+	private static int methaneID = ResourceUtil.methaneID;
+	private static int rockSamplesID = ResourceUtil.rockSamplesID;
+	private static int iceID = ResourceUtil.iceID;
 
 	private static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
@@ -193,7 +193,7 @@ extends UnitTableModel {
 
 		if (rowIndex < getUnitNumber()) {
 			Vehicle vehicle = (Vehicle)getUnit(rowIndex);
-			Map<AmountResource, Double> resourceMap = resourceCache.get(vehicle);
+			Map<Integer, Double> resourceMap = resourceCache.get(vehicle);
 
 			try {
 				// Invoke the appropriate method, switch is the best solution
@@ -221,12 +221,12 @@ extends UnitTableModel {
 
 				case WATER : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.WATER)));
-					result = resourceMap.get(waterAR);
+					result = resourceMap.get(waterID);
 				} break;
 
 				case FOOD : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.FOOD)));
-					result= resourceMap.get(foodAR);
+					result= resourceMap.get(foodID);
 				} break;
 
 				case DESSERT : {
@@ -235,11 +235,11 @@ extends UnitTableModel {
 					if (mapSizeCache != mapSize) {
 						mapSizeCache = mapSize ;
 					}
-		    		for (AmountResource ar : resourceMap.keySet()) {
+		    		for (Integer ar : resourceMap.keySet()) {
 		    	        for(AmountResource n : availableDesserts) {
 		    	        	//if (n.getName().equals(ar.getName())) {
 		    	        	//if (n.equals(ar)) {
-			    	        if (n == ar) {
+			    	        if (n.getID() == ar) {
 		    	        		double amount = resourceMap.get(ar);
 		    	        		sum += amount;
 		    	    			break;
@@ -252,17 +252,17 @@ extends UnitTableModel {
 
 				case OXYGEN : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.OXYGEN)));
-					result = resourceMap.get(oxygenAR);
+					result = resourceMap.get(oxygenID);
 				} break;
 
 				case METHANE : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("methane")));
-					result = resourceMap.get(methaneAR);
+					result = resourceMap.get(methaneID);
 				} break;
 
 				case ROCK_SAMPLES : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("rock samples")));
-					result = resourceMap.get(rockSamplesAR);
+					result = resourceMap.get(rockSamplesID);
 				} break;
 
 				case SPEED : {
@@ -347,7 +347,7 @@ extends UnitTableModel {
 
 				case ICE : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("ice")));
-					result = resourceMap.get(iceAR);
+					result = resourceMap.get(iceID);
 				} break;
 
 				}
@@ -368,16 +368,17 @@ extends UnitTableModel {
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
 		int unitIndex = getUnitIndex(unit);
-		Object target = event.getTarget();
+		Object source = event.getTarget();
 		UnitEventType eventType = event.getType();
 
+		
 		int columnNum = -1;
 		if (eventType == UnitEventType.NAME_EVENT) columnNum = NAME;
 		else if (eventType == UnitEventType.LOCATION_EVENT) columnNum = LOCATION;
 		else if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT ||
 				eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
-			if (target instanceof Person) columnNum = CREW;
-			else if (target instanceof Robot) columnNum = BOTS;
+			if (source instanceof Person) columnNum = CREW;
+			else if (source instanceof Robot) columnNum = BOTS;
 		}
 		else if (eventType == UnitEventType.OPERATOR_EVENT) columnNum = DRIVER;
 		else if (eventType == UnitEventType.STATUS_EVENT) columnNum = STATUS;
@@ -388,37 +389,37 @@ extends UnitTableModel {
 		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT) {
 			try {
 				int tempColumnNum = -1;
-
-				if (target.equals(oxygenAR))
+				int target = ((AmountResource)source).getID();
+				
+				if (target == oxygenID)
 					tempColumnNum = OXYGEN;
-				else if (target.equals(methaneAR))
+				else if (target == methaneID)
 					tempColumnNum = METHANE;
-				else if (target.equals(foodAR))
+				else if (target == foodID)
 					tempColumnNum = FOOD;
-				else if (target.equals(waterAR))
+				else if (target == waterID)
 					tempColumnNum = WATER;
-				else if (target.equals(rockSamplesAR))
+				else if (target == rockSamplesID)
 					tempColumnNum = ROCK_SAMPLES;
-				else if (target.equals(iceAR))
+				else if (target == iceID)
 					tempColumnNum = ICE;
 				else {
 				  	// Put together a list of available dessert
 			        for(AmountResource ar : availableDesserts) {
-			        	//if (((AmountResource) target).getName().equals(n.getName()))
-			        	if (target.equals(ar))
+			        	if (target == ar.getID())
 			        		tempColumnNum = DESSERT;
 			        }
 				}
 
 				if (tempColumnNum > -1) {
-					// 2015-03-10 Converted resourceCache and resourceMap from Map<AmountResource, Integer> to Map<AmountResource, Double> in VehicleTableModel.java.
+					// Convert resourceCache and resourceMap from Map<AmountResource, Integer> to Map<AmountResource, Double> in VehicleTableModel.java.
 					double currentValue =  Math.round ( (Double) getValueAt(unitIndex, tempColumnNum) * 10.0 ) / 10.0;
-					double newValue = Math.round ( getResourceStored(unit, (AmountResource) target) * 10.0 ) / 10.0;
+					double newValue = Math.round (getResourceStored(unit, target) * 10.0 ) / 10.0;
 					if (currentValue != newValue) {
 						//System.out.println("Column : " + tempColumnNum + "  currentValue : " + currentValue + "   newValue : " + newValue);
 						columnNum = tempColumnNum;
-						Map<AmountResource, Double> resourceMap = resourceCache.get(unit);
-						resourceMap.put((AmountResource) target, newValue);
+						Map<Integer, Double> resourceMap = resourceCache.get(unit);
+						resourceMap.put(target, newValue);
 					}
 				}
 			}
@@ -445,19 +446,19 @@ extends UnitTableModel {
 	 * @param newUnit Unit to add to the model.
 	 */
 	protected void addUnit(Unit newUnit) {
-		if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Double>>();
+		if (resourceCache == null) resourceCache = new HashMap<Unit, Map<Integer, Double>>();
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
-				Map<AmountResource, Double> resourceMap = new HashMap<AmountResource, Double>();
-				resourceMap.put(foodAR, Math.round(100.0 * getResourceStored(newUnit, foodAR))/100.0);
-				resourceMap.put(oxygenAR, Math.round(100.0 * getResourceStored(newUnit, oxygenAR))/100.0);
-				resourceMap.put(waterAR, Math.round(100.0 * getResourceStored(newUnit, waterAR))/100.0);
-				resourceMap.put(methaneAR, Math.round(100.0 *getResourceStored(newUnit, methaneAR))/100.0);
-				resourceMap.put(rockSamplesAR, Math.round(100.0 *getResourceStored(newUnit, rockSamplesAR))/100.0);
-				resourceMap.put(iceAR, Math.round(100.0 *getResourceStored(newUnit, iceAR))/100.0);
+				Map<Integer, Double> resourceMap = new HashMap<Integer, Double>();
+				resourceMap.put(foodID, Math.round(100.0 * getResourceStored(newUnit, foodID))/100.0);
+				resourceMap.put(oxygenID, Math.round(100.0 * getResourceStored(newUnit, oxygenID))/100.0);
+				resourceMap.put(waterID, Math.round(100.0 * getResourceStored(newUnit, waterID))/100.0);
+				resourceMap.put(methaneID, Math.round(100.0 *getResourceStored(newUnit, methaneID))/100.0);
+				resourceMap.put(rockSamplesID, Math.round(100.0 *getResourceStored(newUnit, rockSamplesID))/100.0);
+				resourceMap.put(iceID, Math.round(100.0 *getResourceStored(newUnit, iceID))/100.0);
 			  	// Put together a list of available dessert
 		        for(AmountResource ar : availableDesserts) {
-		        	resourceMap.put(ar, Math.round(100.0 *getResourceStored(newUnit, ar))/100.0);
+		        	resourceMap.put(ar.getID(), Math.round(100.0 *getResourceStored(newUnit, ar.getID()))/100.0);
 		        }
 
 				resourceCache.put(newUnit, resourceMap);
@@ -475,9 +476,9 @@ extends UnitTableModel {
 	 * @param oldUnit Unit to remove from the model.
 	 */
 	protected void removeUnit(Unit oldUnit) {
-		if (resourceCache == null) resourceCache = new HashMap<Unit, Map<AmountResource, Double>>();
+		if (resourceCache == null) resourceCache = new HashMap<Unit, Map<Integer, Double>>();
 		if (resourceCache.containsKey(oldUnit)) {
-			Map<AmountResource, Double> resourceMap = resourceCache.get(oldUnit);
+			Map<Integer, Double> resourceMap = resourceCache.get(oldUnit);
 			resourceMap.clear();
 			resourceCache.remove(oldUnit);
 		}
@@ -490,8 +491,9 @@ extends UnitTableModel {
 	 * @param resource the resource to check.
 	 * @return  amount of resource.
 	 */
-	private double getResourceStored(Unit unit, AmountResource resource) {
-		return unit.getInventory().getAmountResourceStored(resource, false);
+	private double getResourceStored(Unit unit, int resource) {
+//		return unit.getInventory().getAmountResourceStored(resource, false);
+		return Math.round(unit.getInventory().getAmountResourceStored(resource, true) * 100.0) / 100.0;
 	}
 
 	/**
