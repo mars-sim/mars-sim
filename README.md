@@ -39,7 +39,9 @@ The third example is the [Radiation Modeling](https://github.com/mars-sim/mars-s
 ---
  
 ## Settlement Development 
-Player may create numerous settlements spreading across the surface of Mars. Each settlement has a *[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)* and a *[development objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective)*.  mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin*. The template for a simple 4-settler initial base called a MDP Phase 1. A 8-settler base is MDP Phase 2. A 12-settler base is called MDP Phase 3. A 24-settler base is called Alpha Base. Besides, players may build a Trading Outpost as well as a Mining Depot near sites with high mineral concentration.
+Player may build numerous settlements spreading across the surface of Mars. Each settlement has a *[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)* and a *[development objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective)*.  
+
+As mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin*, there are 6 types of [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) to choose from. A simple 4-settler initial base called a MDP Phase 1. A 8-settler base is MDP Phase 2. A 12-settler base is called MDP Phase 3. A 24-settler base is called Alpha Base. Besides, players may build a Trading Outpost as well as a Mining Depot near sites with high mineral concentration.
 
 ---
 
@@ -185,5 +187,5 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTY0ODM3MTY3N119
+eyJoaXN0b3J5IjpbLTMyNjUxNDQ3MF19
 -->
