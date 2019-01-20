@@ -34,7 +34,7 @@ Other than oxygen, carbon dioxide, and water moisture indoor are continuously mo
 
 Another example is modeling the sequence of operations involving the airlock for an **Extra-Vehicular Activity (EVA)**. In mars-sim, an *airlock* is an immediate place between a settlement and outside. In order to walk on the surface of Mars, a settler must come through an airlock, which is found in a *Lander Hab* or a *Garage*. To perform a team EVA, one of them will be selected as the *airlock operator*. He will ensure that before entering the *inner door* of the airlock from within the settlement, the airlock would have to be *pressurized* first and the air would be heated so that the atmospheric pressure and temperature is equalized. Then he would open the inner door and the whole team will enter the airlock chamber. Once he locks the inner door. he will  *depressurize* the chamber, meaning, the gases would be re-captured to match the air pressure and the gas composition of that of the surface of Mars. Then he will open the *outer door* of the airlock to allow the egress of the team outside.
 
-The third example is the [Radiation Modeling](https://github.com/mars-sim/mars-sim/wiki/Radiation-Exposure), which accounts for how often the Galactic Cosmic Ray (GCR) and Solar Energetic Particles (SEP) would occur during EVA as the dose is closely monitored and tracked presumably over the career lifetime of a settler. 
+The third example is the [Radiation Modeling](https://github.com/mars-sim/mars-sim/wiki/Radiation-Exposure), which accounts for how often the Galactic Cosmic Ray (GCR) and Solar Energetic Particles (SEP) would occur during EVA. The cumulative dose is closely monitored in 3 specific period of time, namely, the 30-day, the annual and the career lifetime of a settler. 
  
 ---
  
@@ -185,5 +185,5 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTkyMjEzMzI4M119
+eyJoaXN0b3J5IjpbMTUwOTIwNzA5Nl19
 -->
