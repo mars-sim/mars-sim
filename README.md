@@ -97,7 +97,7 @@ Note 1 : Beginning Java 11, the JRE/JDK is decoupled from the graphic JavaFX API
 Feel free to discuss how to set up mars-sim to run it under Java 11. See also #156.
 ```
 
-* For Windows OS, one should manually set up the following : 
+* For Windows OS
   - Edit the `JAVA_HOME` and `PATH` in the *Environment Variables* in Control Panel 
  ```
 Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java executable inside will be the one to be loaded  by Windows OS. 
@@ -106,17 +106,18 @@ Note 2 : The order of precedence inside `PATH` is crucial. The first available f
   - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-10.0.2` or `C:\Program Files\Java\jre-10.0.2`
 
   - Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`         
-  - Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can interfere with the correct version of Java that you would like to use. 
  ```
 Note 3 : The BEST approach is to enable only one Java build (such as Java 10.0.2) inside `PATH` and remove all other folders referencing other java versions/builds.
  ```
+  - Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can interfere with the correct version of Java that you would like to use. 
+ ```
+Note 4 : Remove all Java related executables inside the folder `C:\ProgramData\Oracle\Java\javapath` in order to avoid loading the undesired version of jre/jdk.
+ ```
   - Check if the correct version of Java is being enabled in the **Java Control Panel** in Windows's Control Panel. 
+ ```
+Note 5 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
+ ```
 
-
-
-Note 4 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
-
-Note 5 : Remove all Java related executables inside the folder `C:\ProgramData\Oracle\Java\javapath` in order to avoid loading the undesired version of jre/jdk.
 ```
 
 ---
@@ -190,5 +191,5 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEyMzEzNDgyMzIsLTg2OTg4NDU4MF19
+eyJoaXN0b3J5IjpbMTY0NDUxMDcwMywtODY5ODg0NTgwXX0=
 -->
