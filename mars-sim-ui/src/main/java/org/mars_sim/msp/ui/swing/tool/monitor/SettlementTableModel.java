@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
@@ -36,6 +38,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * key attributes of the Settlement into Columns.
  */
 public class SettlementTableModel extends UnitTableModel {
+
+	private static Logger logger = Logger.getLogger(SettlementTableModel.class.getName());
 
 	// Column indexes
 	private final static int NAME = 0;
@@ -268,7 +272,8 @@ public class SettlementTableModel extends UnitTableModel {
 		}
 		else if (eventType == UnitEventType.GENERATED_POWER_EVENT) columnNum = POWER;
 		else if (eventType == UnitEventType.MALFUNCTION_EVENT) columnNum = MALFUNCTION;
-		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT) {
+		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT
+				&& source instanceof AmountResource) {
 			try {
 				int target = ((AmountResource)source).getID();
 				int tempColumnNum = -1;
@@ -325,7 +330,9 @@ public class SettlementTableModel extends UnitTableModel {
 					}
 				}
 			}
-			catch (Exception e) {}
+			catch (Exception e) {
+				logger.log(Level.SEVERE, "Issues with unitUpdate()", e);
+			}
 		}
 
 		if (columnNum > -1) {

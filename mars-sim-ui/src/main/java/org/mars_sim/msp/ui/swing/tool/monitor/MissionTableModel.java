@@ -116,7 +116,7 @@ public class MissionTableModel extends AbstractTableModel
 		if (!missionCache.contains(mission)) {
 			missionCache.add(mission);
 			mission.addMissionListener(this);
-
+			
 			// Inform listeners of new row
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
@@ -204,13 +204,13 @@ public class MissionTableModel extends AbstractTableModel
 	public void missionUpdate(MissionEvent event) {		
 		MissionEventType eventType = event.getType();
 		
-		if (eventType == MissionEventType.END_MISSION_EVENT) {
-			removeMission((Mission)event.getSource());
-			// Update the missionCache
-			missionCache = missionManager.getMissions();
-		}
+//		if (eventType == MissionEventType.END_MISSION_EVENT) {
+//			removeMission((Mission)event.getSource());
+//			// Update the missionCache
+//			missionCache = missionManager.getMissions();
+//		}
 		
-		else {
+//		else {
 			int index = missionCache.indexOf(event.getSource());
 			
 			if ((index > -1) && (index < missionCache.size())) {
@@ -249,7 +249,7 @@ public class MissionTableModel extends AbstractTableModel
 				// Update the missionCache
 				missionCache = missionManager.getMissions();
 			}
-		}
+//		}
 	}
 
 	public int getRowCount() {

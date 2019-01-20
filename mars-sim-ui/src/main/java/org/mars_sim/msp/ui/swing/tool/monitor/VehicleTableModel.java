@@ -370,7 +370,6 @@ extends UnitTableModel {
 		int unitIndex = getUnitIndex(unit);
 		Object source = event.getTarget();
 		UnitEventType eventType = event.getType();
-
 		
 		int columnNum = -1;
 		if (eventType == UnitEventType.NAME_EVENT) columnNum = NAME;
@@ -386,7 +385,8 @@ extends UnitTableModel {
 		else if (eventType == UnitEventType.RESERVED_EVENT) columnNum = RESERVED;
 		else if (eventType == UnitEventType.SPEED_EVENT) columnNum = SPEED;
 		else if (eventType == UnitEventType.MALFUNCTION_EVENT) columnNum = MALFUNCTION;
-		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT) {
+		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT
+				&& source instanceof AmountResource) {
 			try {
 				int target = ((AmountResource)source).getID();
 				int tempColumnNum = -1;

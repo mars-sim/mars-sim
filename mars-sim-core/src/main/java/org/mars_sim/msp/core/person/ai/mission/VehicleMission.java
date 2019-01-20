@@ -517,10 +517,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (!vehicleCapacity) {
 			LogConsolidated.log(Level.WARNING, 5000, sourceName,
 					"[" + vehicle.getName() + "] doesn't have enough capacity for " + startingMember + "'s proposed excursion.");
+			// Disapprove this mission
+			setApproval(false);
 		}
 		if (!settlementSupplies) {
 			LogConsolidated.log(Level.WARNING, 5000, sourceName,
 					"[" + settlement.getName() + "] doesn't have enough supplies for " + startingMember + "'s proposed excursion.");
+			// Disapprove this mission
+			setApproval(false);		
 		}
 
 		return vehicleCapacity && settlementSupplies;

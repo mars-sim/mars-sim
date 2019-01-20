@@ -609,13 +609,14 @@ public class MissionManager implements Serializable {
 		int index = 0;		
 		if (missions != null) { // for passing maven test
 			while (index < missions.size()) {
-				Mission m = missions.get(index);
-				if (m == null || m.isDone() 
-						|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)) {
-					removeMission(m);
-				} else {
+//				Mission m = missions.get(index);
+//				if (m == null 
+////						|| m.isDone() 
+//						|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)) {
+//					removeMission(m);
+//				} else {
 					index++;
-				}
+//				}
 			}
 		}
 //		if (missions != null) {
@@ -789,8 +790,8 @@ public class MissionManager implements Serializable {
 						else if (status == PlanType.NOT_APPROVED) {
 							mp.setStatus(PlanType.NOT_APPROVED);
 							mp.getMission().setApproval(false);
-							// Remove this mission from the current mission list
-							removeMission(mp.getMission());
+							// Do NOT remove this on-going mission from the current mission list
+//							removeMission(mp.getMission());
 						}
 					}
 					break;
