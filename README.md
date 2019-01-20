@@ -39,7 +39,7 @@ The third example is the [Radiation Modeling](https://github.com/mars-sim/mars-s
 ---
  
 ## Settlement Development 
-Player may create numerous settlements spreading across the surface of Mars. Each settlement has a *command structure* and a *development [objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective)*. They can be as simple as a four-person initial base (loosely following the Mars Direct Mission Plan by Robert Zubrin), a trading outpost, a mining depot near sites with high mineral concentration; or a self-contained colony with 48+ settlers having an elected mayor. 
+Player may create numerous settlements spreading across the surface of Mars. Each settlement has a *[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)* and a *[development objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective)*. They can be as simple as a four-person initial base (loosely following the Mars Direct Mission Plan by Robert Zubrin), a trading outpost, a mining depot near sites with high mineral concentration; or a self-contained colony with 48+ settlers having an elected mayor. 
 
 ---
 
@@ -185,5 +185,5 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTExODc5NDExNV19
+eyJoaXN0b3J5IjpbMTAzNzA4ODk1OV19
 -->
