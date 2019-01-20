@@ -104,13 +104,15 @@ Note 2 : The order of precedence inside `PATH` is crucial. The first available f
  ```
  
   - Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-10.0.2` or `C:\Program Files\Java\jre-10.0.2`
+
   - Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`         
-  - Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can interfere with the correct version of 
-    Java that you would like to use. 
+  - Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can interfere with the correct version of Java that you would like to use. 
+ ```
+Note 3 : The BEST approach is to enable only one Java build (such as Java 10.0.2) inside `PATH` and remove all other folders referencing other java versions/builds.
+ ```
   - Check if the correct version of Java is being enabled in the **Java Control Panel** in Windows's Control Panel. 
 
 
-Note 3 : The BEST approach is to enable only one Java build (such as Java 10.0.2) inside `PATH` and remove all other folders referencing other java versions/builds.
 
 Note 4 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
 
@@ -188,5 +190,5 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTkxOTE0OTM0OCwtODY5ODg0NTgwXX0=
+eyJoaXN0b3J5IjpbLTEyMzEzNDgyMzIsLTg2OTg4NDU4MF19
 -->
