@@ -46,8 +46,7 @@ As mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin*, the
 ---
 
 ## Economics
-In terms of [economic](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements a value point (VP) system, which keeps track of the supply and demand on each resource. There is no standard currency established on Mars yet. 
-Traders barter trades with neighboring settlements and the surplus/ deficit based on the VPs of the resources in exchange in each trading session.
+In terms of [economic](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements the **Value Point (VP)** system, which keeps track of the supply and demand on each good and resource. As there is no standard currency established on Mars yet, settlers barter trades with neighboring settlements and the surplus/ deficit based on the VPs of the resources in exchange in each trading session.
 
 ---
 
@@ -187,5 +186,5 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIxMDIzMzA3MjBdfQ==
+eyJoaXN0b3J5IjpbMjEyODM0MTc3OV19
 -->
