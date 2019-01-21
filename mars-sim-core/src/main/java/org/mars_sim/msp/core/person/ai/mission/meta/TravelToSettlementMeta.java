@@ -48,23 +48,25 @@ public class TravelToSettlementMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
-        double missionProbability = 0D;
+        double result = 0D;
 
         if (person.isInSettlement()) {
             // Check if mission is possible for person based on their
             // circumstance.
             Settlement settlement = person.getSettlement();
 
-            missionProbability = getMission(settlement, person);
+            result = getMissionProbability(settlement, person);
 
 	        // Job modifier.
 	        Job job = person.getMind().getJob();
 	        if (job != null)
-	            missionProbability *= job.getStartMissionProbabilityModifier(
+	        	result *= job.getStartMissionProbabilityModifier(
 	                    TravelToSettlement.class)* settlement.getGoodsManager().getTourismFactor();
-	        }
 
-        return missionProbability;
+        }
+
+        
+        return result;
     }
 
     @Override
@@ -72,48 +74,14 @@ public class TravelToSettlementMeta implements MetaMission {
         return 0;
     }
 
-    public double getMission(Settlement settlement, Unit unit) {
+    public double getMissionProbability(Settlement settlement, Unit unit) {
     	Person person = null;
     	Robot robot = null;
 
-        double missionProbability = 0;
-
-        // Check if available rover.
-        if (!RoverMission.areVehiclesAvailable(settlement, false)) {
-        	return 0;
-        }
-
-        // Check if available backup rover.
-        if (!RoverMission.hasBackupRover(settlement)) {
-        	return 0;
-        }
-
-	    // Check if minimum number of people are available at the settlement.
-	    if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_STAYING_MEMBERS)) {
-	        return 0;
-	    }
-
-	    // Check if min number of EVA suits at settlement.
-	    if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_GOING_MEMBERS) {
-	        return 0;
-	    }
-
-        // Check if settlement has enough basic resources for a rover mission.
-        if (!RoverMission.hasEnoughBasicResources(settlement, false)) {
-        	return 0;
-        }
-
-        // Check for embarking missions.
-//        if (VehicleMission.hasEmbarkingMissions(settlement)) {
-//        	return 0;
-//        }
-
-        // Check if starting settlement has minimum amount of methane fuel.
-        else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneID, false) <
-                RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
-        	return 0;
-        }
-
+        double missionProbability = settlement.getMissionBaseProbability();
+		if (missionProbability == 0)
+			return 0;
+		
         // Check if there are any desirable settlements within range.
         double topSettlementDesirability = 0D;
         Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, false);

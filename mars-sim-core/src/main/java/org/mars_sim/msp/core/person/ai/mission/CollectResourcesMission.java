@@ -263,34 +263,11 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		}
 
 		else {
-			// Check if a mission-capable rover is available.
-			if (!areVehiclesAvailable(settlement, false))
-				return 0;
-
-			// Check if available backup rover.
-			if (!hasBackupRover(settlement))
-				return 0;
-
-			// Check if minimum number of people are available at the settlement.
-			// Plus one to hold down the fort.
-			if (!minAvailablePeopleAtSettlement(settlement, (minPeople + 1)))
-				return 0;
-
+			result = settlement.getMissionBaseProbability();
+	
 			// Check if there are enough specimen containers at the settlement for
 			// collecting rock samples.
 			if ((numCollectingContainersAvailable(settlement, containerType) < containerNum))
-				return 0;
-
-			// Check for embarking missions.
-//			if (VehicleMission.hasEmbarkingMissions(settlement))
-//				return 0;
-
-			// Check if settlement has enough basic resources for a rover mission.
-//			 if (!RoverMission.hasEnoughBasicResources(settlement))
-//			 return 0;
-
-			// Check if starting settlement has minimum amount of methane fuel.
-			if (settlement.getInventory().getAmountResourceStored(methaneID, false) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE)
 				return 0;
 
 		}

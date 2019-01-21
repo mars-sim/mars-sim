@@ -275,8 +275,8 @@ public final class JobManager implements Serializable {
 
 		List<Person> ppl = new ArrayList<>(settlement.getAllAssociatedPeople());
 		for (Person p : ppl) {
-			if (!p.getJobName().toLowerCase().contains("engineer")
-					&& !p.getJobName().toLowerCase().contains("technician")) {
+			if (!p.getMind().getJob().getClass().equals(Engineer.class) //p.getJobName().toLowerCase().contains("engineer")
+					&& !p.getMind().getJob().getClass().equals(Technician.class)) {//p.getJobName().toLowerCase().contains("technician")) {
 				double score = Math.round(job.getCapability(p) * 100.0)/100.0;
 	//			System.out.println("score : " + score);
 				if (score > bestScore) {

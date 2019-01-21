@@ -131,9 +131,8 @@ public class RescueSalvageVehicleMeta implements MetaMission {
                 result = RescueSalvageVehicle.BASE_SALVAGE_MISSION_WEIGHT;
             }
 
-
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-			int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(NAME, settlement);
+			int numThisMission = missionManager.numParticularMissions(NAME, settlement);
 	
     		// Check for embarking missions.
     		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {

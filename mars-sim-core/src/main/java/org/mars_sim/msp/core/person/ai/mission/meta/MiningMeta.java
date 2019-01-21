@@ -49,47 +49,18 @@ public class MiningMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
-        double result = 0D;
+        double missionProbability = 0D;
 
         if (person.isInSettlement()) {
         	
         	Settlement settlement = person.getSettlement();
 
-            // Check if a mission-capable rover is available.
-            //boolean reservableRover =
-            if (!RoverMission.areVehiclesAvailable(settlement, false))
-                return 0;
-
-            // Check if available backup rover.
-            //boolean backupRover =
-            else if (!RoverMission.hasBackupRover(settlement))
-        		return 0;
-
-    	    // Check if minimum number of people are available at the settlement.
-            else if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_STAYING_MEMBERS)) {
-    	        return 0;
-    	    }
-
-    	    // Check if min number of EVA suits at settlement.
-            else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_GOING_MEMBERS) {
-    	        return 0;
-    	    }
+            missionProbability = settlement.getMissionBaseProbability();
+       		if (missionProbability == 0)
+    			return 0;
+       		
             // Check if there are enough bags at the settlement for collecting minerals.
-            //boolean enoughBags = false;
-
-            else if (settlement.getInventory().findNumEmptyUnitsOfClass(Bag.class, false) < Mining.NUMBER_OF_BAGS)
-            //int numBags = settlement.getInventory().findNumEmptyUnitsOfClass(Bag.class, false);
-            //enoughBags = (numBags >= Mining.NUMBER_OF_BAGS);
-        		return 0;
-
-            // Check for embarking missions.
-            //boolean embarkingMissions =
-//            else if (VehicleMission.hasEmbarkingMissions(settlement))
-//    			return 0;
-
-            // Check if settlement has enough basic resources for a rover mission.
-            //boolean hasBasicResources =
-            else if (!RoverMission.hasEnoughBasicResources(settlement, true))
+            if (settlement.getInventory().findNumEmptyUnitsOfClass(Bag.class, false) < Mining.NUMBER_OF_BAGS)
             	return 0;
 
             // Check if available light utility vehicles.
@@ -101,15 +72,9 @@ public class MiningMeta implements MetaMission {
             //boolean availableAttachmentParts =
             else if (!Mining.areAvailableAttachmentParts(settlement))
             	return 0;
-            // Check if starting settlement has minimum amount of methane fuel.
 
-            else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneID, false) <
-                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
-            	return 0;
-            }
-            
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-			int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(NAME, settlement);
+			int numThisMission = missionManager.numParticularMissions(NAME, settlement);
 	
     		// Check for embarking missions.
     		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
@@ -129,9 +94,9 @@ public class MiningMeta implements MetaMission {
                     ExploredLocation miningSite = Mining.determineBestMiningSite(
                             rover, settlement);
                     if (miningSite != null) {
-                        result = Mining.getMiningSiteValue(miningSite, settlement);
-                        if (result > 5D) {
-                            result = 5D;
+                        missionProbability = Mining.getMiningSiteValue(miningSite, settlement);
+                        if (missionProbability > 5D) {
+                            missionProbability = 5D;
                         }
                     }
                 }
@@ -140,22 +105,22 @@ public class MiningMeta implements MetaMission {
             }
 
             // Crowding modifier
-//            int crowding = settlement.getIndoorPeopleCount()
-//                    - settlement.getPopulationCapacity();
-//            if (crowding > 0) {
-//                result *= (crowding + 1);
-//            }
+            int crowding = settlement.getIndoorPeopleCount()
+                    - settlement.getPopulationCapacity();
+            if (crowding > 0) {
+                missionProbability *= (crowding + 1);
+            }
 
 			int f1 = numEmbarked + 1;
 			int f2 = numThisMission + 1;
 			
-			result *= settlement.getNumCitizens() / f1 / f2 / 2D;
+			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
 			
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
 				// It this town has a tourist objective, add bonus
-                result *= job.getStartMissionProbabilityModifier(Mining.class)
+                missionProbability *= job.getStartMissionProbabilityModifier(Mining.class)
                 		* (settlement.getGoodsManager().getTourismFactor()
                   		 + settlement.getGoodsManager().getResearchFactor())/1.5;
             }
@@ -166,7 +131,7 @@ public class MiningMeta implements MetaMission {
 //        	logger.info("MiningMeta's probability : " +
 //				 Math.round(result*100D)/100D);
 		 
-        return result;
+        return missionProbability;
     }
 
 	@Override

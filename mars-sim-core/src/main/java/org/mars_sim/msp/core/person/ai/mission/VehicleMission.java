@@ -58,6 +58,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	final public static MissionPhase EMBARKING = new MissionPhase(Msg.getString("Mission.phase.embarking")); //$NON-NLS-1$
 	final public static MissionPhase TRAVELLING = new MissionPhase(Msg.getString("Mission.phase.travelling")); //$NON-NLS-1$
 	final public static MissionPhase DISEMBARKING = new MissionPhase(Msg.getString("Mission.phase.disembarking")); //$NON-NLS-1$
+	final public static MissionPhase COMPLETED = new MissionPhase(Msg.getString("Mission.phase.completed")); //$NON-NLS-1$
 
 	// Static members
 
@@ -109,6 +110,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		addPhase(EMBARKING);
 		addPhase(TRAVELLING);
 		addPhase(DISEMBARKING);
+		addPhase(COMPLETED);
 
 		reserveVehicle();
 
@@ -134,7 +136,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		addPhase(EMBARKING);
 		addPhase(TRAVELLING);
 		addPhase(DISEMBARKING);
-
+		addPhase(COMPLETED);
+		
 		// Set the vehicle.
 		setVehicle(vehicle);
 	}
@@ -576,6 +579,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		} 
 		
 		else if (DISEMBARKING.equals(getPhase())) {
+			setPhase(VehicleMission.COMPLETED);
+			setPhaseDescription(
+					Msg.getString("Mission.phase.completed.description")); // $NON-NLS-1$
+		}
+		
+		else if (COMPLETED.equals(getPhase())) {
 			endMission(ALL_DISEMBARKED);
 		}
 	}
@@ -594,6 +603,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		} 
 		else if (DISEMBARKING.equals(getPhase())) {
 			performDisembarkToSettlementPhase(member, getCurrentNavpoint().getSettlement());
+		}
+		else if (COMPLETED.equals(getPhase())) {
+			// createAfterActionReport();
+			setPhaseEnded(true);
 		}
 	}
 

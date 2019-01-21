@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -51,47 +50,15 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
-        double result = 0D;
+        double missionProbability = 0D;
 
         if (person.isInSettlement()) {
             Settlement settlement = person.getSettlement();
 
-            // Check if a mission-capable rover is available.
-            if (!RoverMission.areVehiclesAvailable(settlement, false)) {
-            	return 0;
-            }
-
-            // Check if available backup rover.
-            else if (!RoverMission.hasBackupRover(settlement)) {
-            	return 0;
-            }
-
-    	    // Check if minimum number of people are available at the settlement.
-            else if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_STAYING_MEMBERS)) {
-    	        return 0;
-    	    }
-
-    	    // Check if min number of EVA suits at settlement.
-            else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_GOING_MEMBERS) {
-    	        return 0;
-    	    }
-
-            // Check for embarking missions.
-//            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
-//            	return 0;
-//            }
-
-            // Check if settlement has enough basic resources for a rover mission.
-            else if (!RoverMission.hasEnoughBasicResources(settlement, true)) {
-            	return 0;
-            }
-
-            // Check if starting settlement has minimum amount of methane fuel.
-            else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneID, false) <
-                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
-            	return 0;
-            }
-
+            missionProbability = settlement.getMissionBaseProbability();
+    		if (missionProbability == 0)
+    			return 0;
+    		
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 			int numThisMission = missionManager.numParticularMissions(NAME, settlement);
 	
@@ -108,7 +75,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
                     if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
                         if (!primaryStudy.isPrimaryResearchCompleted()) {
                             if (areology == primaryStudy.getScience()) {
-                                result += WEIGHT;
+                                missionProbability += WEIGHT;
                             }
                         }
                     }
@@ -120,7 +87,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
                         if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                             if (!collabStudy.isCollaborativeResearchCompleted(person)) {
                                 if (areology == collabStudy.getCollaborativeResearchers().get(person.getIdentifier())) {
-                                    result += WEIGHT/2D;
+                                    missionProbability += WEIGHT/2D;
                                 }
                             }
                         }
@@ -134,19 +101,19 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
 			int f1 = numEmbarked + 1;
 			int f2 = numThisMission + 1;
 			
-			result *= settlement.getNumCitizens() / f1 / f2 / 2D;
+			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
 			
             // Crowding modifier
             int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
             if (crowding > 0) {
-                result *= (crowding + 1);
+                missionProbability *= (crowding + 1);
             }
 
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
             	// If this town has a tourist objective, add bonus
-                result *= job.getStartMissionProbabilityModifier(AreologyStudyFieldMission.class) 
+                missionProbability *= job.getStartMissionProbabilityModifier(AreologyStudyFieldMission.class) 
                 		* (settlement.getGoodsManager().getTourismFactor()
                        		 + settlement.getGoodsManager().getResearchFactor())/1.5;
             }
@@ -156,7 +123,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
 //        	logger.info("AreologyStudyFieldMissionMeta's probability : " +
 //				 Math.round(result*100D)/100D);
 		
-        return result;
+        return missionProbability;
     }
 
 	@Override

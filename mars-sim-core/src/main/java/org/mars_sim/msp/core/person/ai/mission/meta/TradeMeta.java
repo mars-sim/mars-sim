@@ -112,43 +112,14 @@ public class TradeMeta implements MetaMission {
 
 	public double checkMission(Settlement settlement) {
 
-		double missionProbability = 0;
+		double missionProbability = settlement.getMissionBaseProbability();
 
-		// Check if available rover.
-		if (!RoverMission.areVehiclesAvailable(settlement, false)) {
+		if (missionProbability == 0)
 			return 0;
-		}
-
-		// Check if available backup rover.
-		if (!RoverMission.hasBackupRover(settlement)) {
-			return 0;
-		}
-
-		// Check if minimum number of people are available at the settlement.
-		if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_STAYING_MEMBERS)) {
-			return 0;
-		}
-
-		// Check if min number of EVA suits at settlement.
-		if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_GOING_MEMBERS) {
-			return 0;
-		}
-
 		// Check for embarking missions.
 //		if (VehicleMission.hasEmbarkingMissions(settlement)) {
 //			return 0;
 //		}
-
-		// Check if settlement has enough basic resources for a rover mission.
-		if (!RoverMission.hasEnoughBasicResources(settlement, true)) {
-			return 0;
-		}
-
-		// Check if starting settlement has minimum amount of methane fuel.
-        if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneID, false) <
-                RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
-			return 0;
-		}
 
 		// Check for the best trade settlement within range.
 		double tradeProfit = 0D;

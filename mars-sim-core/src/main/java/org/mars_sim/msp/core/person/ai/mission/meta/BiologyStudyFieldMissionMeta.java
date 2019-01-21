@@ -51,50 +51,18 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
-        double result = 0D;
+        double missionProbability = 0D;
 
         if (person.isInSettlement()) {
             Settlement settlement = person.getSettlement();
 
-            // Check if a mission-capable rover is available.
-            if (!RoverMission.areVehiclesAvailable(settlement, false)) {
-            	return 0;
-            }
-
-            // Check if available backup rover.
-            else if (!RoverMission.hasBackupRover(settlement)) {
-            	return 0;
-            }
-
-    	    // Check if minimum number of people are available at the settlement.
-    	    if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_STAYING_MEMBERS)) {
-    	        return 0;
-    	    }
-
-    	    // Check if min number of EVA suits at settlement.
-    	    if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_GOING_MEMBERS) {
-    	        return 0;
-    	    }
-
-            // Check for embarking missions.
-//            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
-//            	return 0;
-//            }
-
-            // Check if settlement has enough basic resources for a rover mission.
-            else if (!RoverMission.hasEnoughBasicResources(settlement, true)) {
-            	return 0;
-            }
-
-            // Check if starting settlement has minimum amount of methane fuel.
-            else if (settlement.getInventory().getAmountResourceStored(ResourceUtil.methaneID, false) <
-                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
-            	return 0;
-            }
-
+            missionProbability = settlement.getMissionBaseProbability();
+       		if (missionProbability == 0)
+    			return 0;
+       		
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-			int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(NAME, settlement);
-	
+			int numThisMission = missionManager.numParticularMissions(NAME, settlement);
+
             // Get available rover.
             Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
             if (rover != null) {
@@ -107,7 +75,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
                 if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
                     if (!primaryStudy.isPrimaryResearchCompleted()) {
                         if (biology == primaryStudy.getScience())
-                            result += WEIGHT;
+                            missionProbability += WEIGHT;
                     }
                 }
 
@@ -118,7 +86,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
                     if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                         if (!collabStudy.isCollaborativeResearchCompleted(person)) {
                             if (biology == collabStudy.getCollaborativeResearchers().get(person.getIdentifier()))
-                                result += WEIGHT/2D;
+                                missionProbability += WEIGHT/2D;
                         }
                     }
                 }
@@ -127,17 +95,17 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
             int f1 = numEmbarked + 1;
 			int f2 = numThisMission + 1;
 			
-			result *= settlement.getNumCitizens() / f1 / f2 / 2D;
+			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
 			
             // Crowding modifier
             int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
-            if (crowding > 0) result *= (crowding + 1);
+            if (crowding > 0) missionProbability *= (crowding + 1);
 
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
             	// If this town has a tourist objective, add bonus
-                result *= job.getStartMissionProbabilityModifier(BiologyStudyFieldMission.class) 
+                missionProbability *= job.getStartMissionProbabilityModifier(BiologyStudyFieldMission.class) 
                 		* (settlement.getGoodsManager().getTourismFactor()
                 		 + settlement.getGoodsManager().getResearchFactor())/1.5;
             }
@@ -147,7 +115,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
 //        	logger.info("BiologyStudyFieldMissionMeta's probability : " +
 //				 Math.round(result*100D)/100D);
 
-        return result;
+        return missionProbability;
     }
 
 	@Override

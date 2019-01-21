@@ -223,7 +223,7 @@ public class Exploration extends RoverMission implements Serializable {
 
 		double roverRange = rover.getRange();
 		double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
-		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 2D);
+		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
 		double range = roverRange;
 		if (tripRange < range)
 			range = tripRange;

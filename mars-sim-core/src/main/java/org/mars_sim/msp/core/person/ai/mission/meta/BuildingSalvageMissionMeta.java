@@ -34,8 +34,6 @@ public class BuildingSalvageMissionMeta implements MetaMission {
     /** default logger. */
     private static Logger logger = Logger.getLogger(BuildingSalvageMissionMeta.class.getName());
     
-    private static MarsClock marsClock;
-    
     @Override
     public String getName() {
         return NAME;
@@ -50,10 +48,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
     public double getProbability(Person person) {
 
         double result = 0D;
-
-        if (marsClock == null)
-        	marsClock = Simulation.instance().getMasterClock().getMarsClock();
-        
+  
         // No construction until after the first ten sols of the simulation.
         //MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
         //MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
@@ -134,53 +129,6 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 
 	@Override
 	public double getProbability(Robot robot) {
-
-        double result = 0D;
-/*
-        if (robot.getBotMind().getRobotJob() instanceof Constructionbot)
-
-	        // Check if robot is in a settlement.
-	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	            Settlement settlement = robot.getSettlement();
-
-	            // Check if available light utility vehicles.
-	            boolean reservableLUV = BuildingSalvageMission.isLUVAvailable(settlement);
-
-	            // No construction until after the first ten sols of the simulation.
-	            MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
-	            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-	            double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
-	            double totalTimeSols = totalTimeMillisols / 1000D;
-	            boolean firstTenSols = (totalTimeSols < 10D);
-
-	            // Check if settlement has construction override flag set.
-	            boolean constructionOverride = settlement.getConstructionOverride();
-
-	            if (reservableLUV && !constructionOverride && !firstTenSols) { // && enoughPeople
-	                try {
-	                    int constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-	                    SalvageValues values = settlement.getConstructionManager()
-	                            .getSalvageValues();
-	                    double salvageProfit = values
-	                            .getSettlementSalvageProfit(constructionSkill);
-	                    result = salvageProfit;
-	                    if (result > 10D) {
-	                        result = 10D;
-	                    }
-	                } catch (Exception e) {
-	                    logger.log(Level.SEVERE,
-	                            "Error getting salvage construction site by a robot.", e);
-	                }
-	            }
-
-	            // Check if min number of EVA suits at settlement.
-	            if (Mission.getNumberAvailableEVASuitsAtSettlement(robot
-	                    .getSettlement()) < BuildingSalvageMission.MIN_PEOPLE)
-	                result = 0D;
-
-
-	        }
-*/
-        return result;
+        return 0;
     }
 }

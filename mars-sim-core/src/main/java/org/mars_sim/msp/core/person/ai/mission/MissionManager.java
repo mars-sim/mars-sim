@@ -327,7 +327,7 @@ public class MissionManager implements Serializable {
 			oldMission.fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
 					
 			// Update listeners.
-			if (listeners == null) {
+			if (listeners != null) {
 //				listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>());
 				synchronized (listeners) {
 					Iterator<MissionManagerListener> i = listeners.iterator();

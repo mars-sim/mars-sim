@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -160,6 +159,7 @@ public abstract class Mission implements Serializable {
 	protected static SurfaceFeatures surface;
 	protected static PersonConfig personConfig;
 	protected static MarsClock marsClock;
+	protected static RelationshipManager relationshipManager;
 	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -942,7 +942,6 @@ public abstract class Mission implements Serializable {
 				// Determine how much the recruiter likes the person.
 				double likability = 50D;
 				if (startingMember instanceof Person) {
-					RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 					likability = relationshipManager.getOpinionOfPerson((Person) startingMember, person);
 				}
 
@@ -978,9 +977,6 @@ public abstract class Mission implements Serializable {
 		if (isCapableOfMission(recruitee)) {
 			// Get mission qualification modifier.
 			double qualification = getMissionQualification(recruitee) * 100D;
-
-			RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-
 			// Get the recruitee's social opinion of the recruiter.
 			double recruiterLikability = 50D;
 			if (recruiter instanceof Person) {
@@ -1264,8 +1260,7 @@ public abstract class Mission implements Serializable {
 		int result = 0;
 
 		if (settlement == null)
-			result = 0;
-		// throw new NullPointerException();
+			logger.severe("Settlement is null");
 
 		else {
 			result = settlement.getInventory().findNumUnitsOfClass(EVASuit.class);
@@ -1292,7 +1287,7 @@ public abstract class Mission implements Serializable {
 					+ p.getName() + " (" + p.getRole().getType() 
 					+ ") was requesting approval for " + getDescription() + ".");
 
-			 Simulation.instance().getMissionManager().requestMissionApproval(plan);
+			 missionManager.requestMissionApproval(plan);
 		}
 		
 		else if (plan != null && plan.getStatus() == PlanType.NOT_APPROVED) {
@@ -1373,7 +1368,7 @@ public abstract class Mission implements Serializable {
 	 * @param m {@link MissionManager}
 	 */
 	public static void initializeInstances(Simulation si, MarsClock c, HistoricalEventManager e, 
-			UnitManager u, ScientificStudyManager s, SurfaceFeatures sf, MissionManager m) {
+			UnitManager u, ScientificStudyManager s, SurfaceFeatures sf, MissionManager m, RelationshipManager r, PersonConfig pc) {
 		sim = si;
 		marsClock = c;		
 		eventManager = e;
@@ -1381,7 +1376,8 @@ public abstract class Mission implements Serializable {
 		scientificManager = s;
 		surface = sf;
 		missionManager = m;
-		personConfig = SimulationConfig.instance().getPersonConfiguration();
+		personConfig = pc;
+		relationshipManager = r;
 	}
 	
 	/**

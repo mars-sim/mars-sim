@@ -376,7 +376,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 			        addExperience(time);
 		        
 					// Do only one review each time
-			        endTask();
+			        return 0;//endTask();
 				}
 			}
 		} // end of while

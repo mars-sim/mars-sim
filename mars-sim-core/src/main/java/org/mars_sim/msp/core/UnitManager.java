@@ -1264,30 +1264,10 @@ public class UnitManager implements Serializable {
 		}
 	}
 	
-	public static void assignBestCandidate(Settlement settlement, String jobName) {
-		Job job = JobManager.getJob(jobName);
-		Person p0 = JobManager.findBestFit(settlement, job);
-		// Designate a specific job to a person
-		p0.getMind().setJob(job, true, JobManager.MISSION_CONTROL, JobAssignmentType.APPROVED,
-					JobManager.MISSION_CONTROL);
-	}
-	
 	public void tuneJobDeficit() {
 		Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
 		for (Settlement settlement : col) {
-	//		int pop = settlement.getNumCitizens();
-		
-			int numEngs = JobManager.numJobs(Engineer.class, settlement);
-		
-			if (numEngs == 0) {
-				Settlement.assignBestCandidate(settlement, "Engineer");
-			}
-				
-			int numTechs = JobManager.numJobs(Technician.class, settlement);
-	
-			if (numTechs == 0) {
-				Settlement.assignBestCandidate(settlement, "Technician");
-			}
+			settlement.tuneJobDeficit();
 		}
 	}
 	

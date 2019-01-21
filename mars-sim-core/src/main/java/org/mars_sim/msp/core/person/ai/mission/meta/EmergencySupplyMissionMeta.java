@@ -75,11 +75,7 @@ public class EmergencySupplyMissionMeta implements MetaMission {
 	            else 
 	            	min_num = RoverMission.MIN_STAYING_MEMBERS;
 	    	    
-	    	    // Check if minimum number of people are available at the settlement.
-	            if (!RoverMission.minAvailablePeopleAtSettlement(settlement, min_num)) {
-	    	        return 0;
-	    	    }
-	
+
 	            if (all == 2)
 	            	min_num = 1;
 	            else
@@ -89,12 +85,7 @@ public class EmergencySupplyMissionMeta implements MetaMission {
 	            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
 	    	        return 0;
 	    	    }
-	
-	            // Check for embarking missions.
-//	            if (VehicleMission.hasEmbarkingMissions(settlement)) {
-//	                return 0;
-//	            }
-	
+
 	            // Check if settlement has enough basic resources for a rover mission.
 	            if (!RoverMission.hasEnoughBasicResources(settlement, false)) {
 	                return 0;
@@ -114,12 +105,12 @@ public class EmergencySupplyMissionMeta implements MetaMission {
 	    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);	
 	    		int numThisMission = missionManager.numParticularMissions(NAME, settlement);
 	    		
-	    		// Check for embarking missions.
-	    		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
-	    			return 0;
-	    		}	
+//	    		// Check for embarking missions.
+//	    		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
+//	    			return 0;
+//	    		}	
 	    		
-	    		else if (numThisMission > 1)
+	    		if (numThisMission > 1)
 	    			return 0;	
 
 	    		if (result <= 0)
