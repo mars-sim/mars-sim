@@ -128,8 +128,8 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 
 			// Set initial mission phase.
 			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.approval.description" //$NON-NLS-1$
-					, s.getName()));
+			setPhaseDescription(Msg.getString("Mission.phase.approval.description")); //$NON-NLS-1$
+//					, s.getName()));
 
 		}
 	}

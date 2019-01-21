@@ -45,7 +45,7 @@ public class MissionManager implements Serializable {
 
 	private static final int MAX_NUM_PLANS = 100;
 	
-	private static final double PERCENT_PER_SCORE = 20D;
+	private static final double PERCENT_PER_SCORE = 10D;
 	/** static mission identifier */
 	private static int missionIdentifer;
 

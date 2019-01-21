@@ -138,7 +138,7 @@ public class Exploration extends RoverMission implements Serializable {
 
 			// Set initial mission phase.
 			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.approval.description", s.getName())); // $NON-NLS-1$
+			setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, s.getName())); // $NON-NLS-1$
 		}
 	}
 

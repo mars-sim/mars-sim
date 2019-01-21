@@ -31,6 +31,8 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+	private static final double VALUE = 10D;
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.digLocalRegolith"); //$NON-NLS-1$
@@ -96,7 +98,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             if (fatigue > 1000)
             	return 0;
             
-	        result = settlement.getRegolithProbabilityValue();
+	        result = settlement.getRegolithProbabilityValue() * VALUE;
 	    	
             // Stress modifier
             result -= stress * 1D;

@@ -119,10 +119,12 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 			endTask();
 			logger.severe(person.getName() + " cannot find a settlement or rover to return light utility vehicle.");
 		} else {
-			setDescription(Msg.getString("Task.description.returnLightUtilityVehicle.detail", luv.getName(),
+			if (luv != null) {
+				setDescription(Msg.getString("Task.description.returnLightUtilityVehicle.detail", luv.getName(),
 					returnContainer.getName())); // $NON-NLS-1$
-			logger.fine(person.getName() + " is starting to return light utility vehicle: " + luv.getName() + " to "
+				logger.fine(person.getName() + " is starting to return light utility vehicle: " + luv.getName() + " to "
 					+ returnContainer.getName());
+			}
 		}
 	}
 

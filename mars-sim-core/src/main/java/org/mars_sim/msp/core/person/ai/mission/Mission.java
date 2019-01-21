@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -161,6 +162,7 @@ public abstract class Mission implements Serializable {
 	protected static PersonConfig personConfig;
 	protected static MarsClock marsClock;
 	protected static RelationshipManager relationshipManager;
+	protected static CreditManager creditManager;
 	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -1382,7 +1384,8 @@ public abstract class Mission implements Serializable {
 	 * @param m {@link MissionManager}
 	 */
 	public static void initializeInstances(Simulation si, MarsClock c, HistoricalEventManager e, 
-			UnitManager u, ScientificStudyManager s, SurfaceFeatures sf, MissionManager m, RelationshipManager r, PersonConfig pc) {
+			UnitManager u, ScientificStudyManager s, SurfaceFeatures sf, 
+			MissionManager m, RelationshipManager r, PersonConfig pc, CreditManager cm) {
 		sim = si;
 		marsClock = c;		
 		eventManager = e;
@@ -1392,6 +1395,7 @@ public abstract class Mission implements Serializable {
 		missionManager = m;
 		personConfig = pc;
 		relationshipManager = r;
+		creditManager = cm;
 	}
 	
 	/**

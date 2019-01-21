@@ -1316,6 +1316,7 @@ public class Inventory implements Serializable {
 			for (Unit unit : containedUnits) {
 				if (unitClass.isInstance(unit)) {
 					Inventory inv = unit.getInventory();
+					// It must be empty inside
 					if ((inv != null) && inv.isEmpty(allowDirty)) {
 						result++;
 					}
@@ -1354,7 +1355,7 @@ public class Inventory implements Serializable {
 			if (unit.getMass() <= getRemainingGeneralCapacity(allowDirty)) {
 				result = true;
 			} else {
-				System.out.println(unit + "'s mass : " + unit.getMass() + "   getRemainingGeneralCapacity(allowDirty) : " + getRemainingGeneralCapacity(allowDirty));
+//				System.out.println(unit + "'s mass : " + unit.getMass() + "   getRemainingGeneralCapacity(allowDirty) : " + getRemainingGeneralCapacity(allowDirty));
 				result = false;
 			}
 

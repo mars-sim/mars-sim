@@ -156,7 +156,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 
 			// Set initial phase
 			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.approval.description", s.getName())); // $NON-NLS-1$
+			setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, s.getName())); // $NON-NLS-1$
 			if (logger.isLoggable(Level.INFO)) {
 				if (startingPerson != null && getRover() != null) {
 					logger.info("[" + s + "] " + startingPerson.getName()

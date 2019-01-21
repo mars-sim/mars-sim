@@ -161,7 +161,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 			// Set initial mission phase.
 			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.approval.description", s.getName())); //$NON-NLS-1$
+			setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, s.getName())); //$NON-NLS-1$
 		}
 	}
 

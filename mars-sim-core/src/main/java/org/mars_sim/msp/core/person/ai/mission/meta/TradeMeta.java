@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.Trade.TradeProfitInfo;
 import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -65,7 +64,7 @@ public class TradeMeta implements MetaMission {
 					// TODO: checkMission() gives rise to a NULLPOINTEREXCEPTION that points to
 					// Inventory
 					// It happens only when this sim is a loaded saved sim.
-					result = checkMission(settlement);
+					result = getSettlementProbability(settlement);
 
 				} catch (Exception e) {
 					logger.log(Level.SEVERE,
@@ -110,16 +109,12 @@ public class TradeMeta implements MetaMission {
 		return 0;
 	}
 
-	public double checkMission(Settlement settlement) {
+	public double getSettlementProbability(Settlement settlement) {
 
 		double missionProbability = settlement.getMissionBaseProbability();
 
 		if (missionProbability == 0)
 			return 0;
-		// Check for embarking missions.
-//		if (VehicleMission.hasEmbarkingMissions(settlement)) {
-//			return 0;
-//		}
 
 		// Check for the best trade settlement within range.
 		double tradeProfit = 0D;
@@ -129,21 +124,17 @@ public class TradeMeta implements MetaMission {
 				// Only check every couple of Sols, else use cache.
 				// Note: this method is very CPU intensive.
 				boolean useCache = false;
-				MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-				if (currentTime == null) {
-					throw new NullPointerException("currentTime == null");
-				}
 
 				if (Trade.TRADE_PROFIT_CACHE.containsKey(settlement)) {
 					TradeProfitInfo profitInfo = Trade.TRADE_PROFIT_CACHE.get(settlement);
-					double timeDiff = MarsClock.getTimeDiff(currentTime, profitInfo.time);
+					double timeDiff = MarsClock.getTimeDiff(marsClock, profitInfo.time);
 					if (timeDiff < 2000D) {
 						tradeProfit = profitInfo.profit;
 						useCache = true;
 					}
 				} else {
 					Trade.TRADE_PROFIT_CACHE.put(settlement,
-							new TradeProfitInfo(tradeProfit, (MarsClock) currentTime.clone()));
+							new TradeProfitInfo(tradeProfit, (MarsClock) marsClock.clone()));
 					useCache = true;
 				}
 
@@ -155,7 +146,7 @@ public class TradeMeta implements MetaMission {
 //					// + " milliseconds "
 //							+ " Profit: " + (int) tradeProfit + " VP");
 					Trade.TRADE_PROFIT_CACHE.put(settlement,
-							new TradeProfitInfo(tradeProfit, (MarsClock) currentTime.clone()));
+							new TradeProfitInfo(tradeProfit, (MarsClock) marsClock.clone()));
 					Trade.TRADE_SETTLEMENT_CACHE.put(settlement, TradeUtil.bestTradeSettlementCache);
 				}
 			}

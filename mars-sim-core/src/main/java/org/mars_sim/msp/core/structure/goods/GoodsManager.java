@@ -156,10 +156,14 @@ public class GoodsManager implements Serializable {
 	private static final double TRADE_BASE = 1;
 	private static final double TOURISM_BASE = 1;
 	
+	private static final double SPECIMEN_BOX_DEMAND = 5D;
+
+	private static final double SCRAP_METAL_DEMAND = .0000001D;
+	
 	/** VP probability modifier. */
 	public static double ICE_VALUE_MODIFIER = 1D;
 	public static double WATER_VALUE_MODIFIER = 3D;
-	public static double REGOLITH_VALUE_MODIFIER = 5D;
+	public static double REGOLITH_VALUE_MODIFIER = 20D;
 	public static double SAND_VALUE_MODIFIER = 2D;
 	public static double OXYGEN_VALUE_MODIFIER = 2D;
 	public static double METHANE_VALUE_MODIFIER = 2D;
@@ -1920,6 +1924,13 @@ public class GoodsManager implements Serializable {
 			}
 		}
 
+		// Reduce the demand on the steel/aluminum scrap metal 
+		// since they can only be produced by salvaging a vehicle
+		// therefore it's not reasonable to have high VP
+		if (part.getName().contains("scrap"))
+			demand *= SCRAP_METAL_DEMAND;
+		// Note: the VP of a scrap metal heavily influence the VP of regolith
+
 		return demand;
 	}
 
@@ -2219,13 +2230,15 @@ public class GoodsManager implements Serializable {
 	private double determineEquipmentDemand(Class<?> equipmentClass) {
 		double numDemand = 0D;
 
+		int areologistFactor = getAreologistNum() + 1;
+
 		// Determine number of EVA suits that are needed
 		if (EVASuit.class.equals(equipmentClass)) {
 			numDemand += (int)Math.round(2D * settlement.getNumCitizens() * eVASuitMod);
 		}
-
+		
 		// Determine the number of containers that are needed.
-		if (Container.class.isAssignableFrom(equipmentClass) && !SpecimenContainer.class.equals(equipmentClass)) {
+		else if (Container.class.isAssignableFrom(equipmentClass) && !SpecimenContainer.class.equals(equipmentClass)) {
 
 			PhaseType containerPhase = ContainerUtil.getContainerPhase((Class<? extends Container>) equipmentClass);
 			double containerCapacity = ContainerUtil.getContainerCapacity((Class<? extends Container>) equipmentClass);
@@ -2253,19 +2266,17 @@ public class GoodsManager implements Serializable {
 			numDemand = totalPhaseOverfill * containerCapacity / 10000D;
 		}
 
-		int areologistNum = getAreologistNum();
-
 		// Determine number of bags that are needed.
-		if (Bag.class.equals(equipmentClass)) {
+		else if (Bag.class.equals(equipmentClass)) {
 			double iceValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
 			double regolithValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
-			numDemand += CollectIce.REQUIRED_BAGS * areologistNum * iceValue;
-			numDemand += CollectRegolith.REQUIRED_BAGS * areologistNum * regolithValue;
+			numDemand += CollectIce.REQUIRED_BAGS * areologistFactor * iceValue;
+			numDemand += CollectRegolith.REQUIRED_BAGS * areologistFactor * regolithValue;
 		}
 
 		// Determine number of specimen containers that are needed.
-		if (SpecimenContainer.class.equals(equipmentClass)) {
-			numDemand += Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistNum;
+		else if (SpecimenContainer.class.equals(equipmentClass)) {
+			numDemand += Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistFactor * SPECIMEN_BOX_DEMAND;
 		}
 
 		return numDemand;

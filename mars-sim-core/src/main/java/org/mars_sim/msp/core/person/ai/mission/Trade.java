@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationSituation;
@@ -37,7 +36,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
-import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodType;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -135,7 +133,6 @@ public class Trade extends RoverMission implements Serializable {
 			if (!isDone()) {
 				// Get the credit that the starting settlement has with the destination
 				// settlement.
-				CreditManager creditManager = Simulation.instance().getCreditManager();
 				double credit = creditManager.getCredit(s, tradingSettlement);
 
 				if (credit > (TradeUtil.SELL_CREDIT_LIMIT * -1D)) {
@@ -238,7 +235,7 @@ public class Trade extends RoverMission implements Serializable {
 
 		// Set initial phase
 		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
 		if (logger.isLoggable(Level.INFO)) {
 			MissionMember startingMember = (MissionMember) members.toArray()[0];
 			if (startingMember != null && getRover() != null) {

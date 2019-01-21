@@ -129,7 +129,7 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 
 			// Set initial mission phase.
 			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.approval.description", s.getName())); // $NON-NLS-1$
+			setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, s.getName())); // $NON-NLS-1$
 
 		}
 	}
