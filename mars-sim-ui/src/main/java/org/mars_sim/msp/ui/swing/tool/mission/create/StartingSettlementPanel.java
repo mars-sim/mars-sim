@@ -60,8 +60,6 @@ class StartingSettlementPanel extends WizardPanel {
 	private WebTable settlementTable;
 	private WebLabel errorMessageLabel;
 
-//	public static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
-
 	/**
 	 * Constructor.
 	 * @param wizard the create mission wizard.
@@ -99,7 +97,7 @@ class StartingSettlementPanel extends WizardPanel {
 		settlementTable = new ZebraJTable(settlementTableModel);
 		TableStyle.setTableStyle(settlementTable);
 		// Added sorting
-		settlementTable.setAutoCreateRowSorter(true);
+//		settlementTable.setAutoCreateRowSorter(true);
 		settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
 		settlementTable.setRowSelectionAllowed(true);
 		settlementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -110,7 +108,7 @@ class StartingSettlementPanel extends WizardPanel {
 							int index = settlementTable.getSelectedRow();
 							if (index > -1) {
 								if (settlementTableModel.isFailureRow(index)) {
-									errorMessageLabel.setText("Settlement cannot start the mission (see red cells).");
+									errorMessageLabel.setText("Settlement cannot start the mission. See red cell(s).");
 									getWizard().setButtons(false);
 								}
 								else {
@@ -121,7 +119,7 @@ class StartingSettlementPanel extends WizardPanel {
 						}
 					}
 				}
-				);
+			);
 		// call it a click to next button when user double clicks the table
 		settlementTable.addMouseListener(
 				new MouseListener() {

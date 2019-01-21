@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.map.*;
 
@@ -113,6 +114,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		mapPane.setBorder(new MarsPanelBorder());
 		mapPane.addMouseListener(new NavpointMouseListener());
 		mapPane.addMouseMotionListener(new NavpointMouseMotionListener());
+		
 		mapMainPane.add(mapPane, BorderLayout.NORTH);
 
 		// Create the instruction label panel.
@@ -168,7 +170,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		addButtonPane.add(addButton);
 
 		// Create bottom panel.
-		WebPanel bottomPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		WebPanel bottomPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		bottomPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(bottomPane);
 
@@ -178,7 +180,7 @@ class ExplorationSitesPanel extends WizardPanel {
 
 		// Create mineral legend label.
 		WebLabel mineralLegendLabel = new WebLabel("Mineral Legend", WebLabel.CENTER);
-		mineralLegendLabel.setFont(mineralLegendLabel.getFont().deriveFont(Font.BOLD));
+		mineralLegendLabel.setFont(mineralLegendLabel.getFont().deriveFont(Font.ITALIC));
 		mineralLegendPane.add(mineralLegendLabel, BorderLayout.NORTH);
 
 		// Create mineral legend scroll panel.
@@ -191,6 +193,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		// Create mineral legend table.
 		WebTable mineralLegendTable = new WebTable(mineralTableModel);
 		TableStyle.setTableStyle(mineralLegendTable);
+		
 		mineralLegendTable.setAutoCreateRowSorter(true);
 		mineralLegendTable.setPreferredScrollableViewportSize(new Dimension(300, 120));
 		mineralLegendTable.setCellSelectionEnabled(false);
@@ -760,7 +763,7 @@ class ExplorationSitesPanel extends WizardPanel {
 			if (row < getRowCount()) {
 				String mineralName = mineralNames.get(row);
 				if (column == 0) {
-					return mineralName;
+					return Conversion.capitalize(mineralName);
 				} else if (column == 1) {
 					return mineralColors.get(mineralName);
 				} else
