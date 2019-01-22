@@ -3575,11 +3575,15 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		else {
 			millisolCache = m;
 			for (Building b : buildingManager.getBuildings(FunctionType.FARMING)) {
-				Farming farm = b.getFarming();
-				for (Crop c : farm.getCrops()) {
+//				Farming farm = b.getFarming();
+				for (Crop c : b.getFarming().getCrops()) {
 					if (c.requiresWork()) {
 						result++;
 					}
+					// if the health condition is below 50%, 
+					// need special care
+					if (c.getHealthCondition() < .5)
+						result++;
 				}
 			}
 			cropsNeedingTendingCache = result;

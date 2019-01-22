@@ -118,7 +118,7 @@ public class RelaxMeta implements MetaTask, Serializable {
             result*= WORK_SHIFT_MODIFIER;
         }
 
-        if (result < 0) result = 0;
+        if (result < 0) result = 1;
 
         return result;
     }

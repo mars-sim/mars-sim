@@ -272,7 +272,7 @@ implements Serializable {
 			}
 		//}
 
-		building.setPowerRequiredForHeating(powerReq1+powerReq2+powerReq3+powerReq4);
+		building.setPowerRequiredForHeating(powerReq1 + powerReq2 + powerReq3 + powerReq4);
 			
 		return result;
 	}

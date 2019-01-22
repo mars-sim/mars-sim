@@ -172,7 +172,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- power-down-level: the efficiency of the resource processes 
 								   when building is in 'power down' mode. -->
 	
-			<resource-processing power-down-level=".5">
+			<resource-processing power-down-level="0.0">
 
 <!--	NASA's Regenerative ECLSS Water Recovery System (WRS) 
 		consumes a time averaged 743 W-hr/hr in overall 		-->
@@ -601,11 +601,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 
-			<resource-processing power-down-level=".5">
+			<resource-processing power-down-level="0.0">
 			<!-- CO2 pump will make use of Solid Oxide Electrolysis Cell: Yttria-Stabilized Zirconia (YSZ) -->
-				<process name="Carbon Dioxide Pump" power-required="0.8" default="on">
-					<input resource="carbon dioxide" rate="80.0" ambient="true" />
-					<output resource="carbon dioxide" rate="80.0" ambient="false" />
+				<process name="Carbon Dioxide Pump" power-required="1.0" default="on">
+					<input resource="carbon dioxide" rate="100.0" ambient="true" />
+					<output resource="carbon dioxide" rate="100.0" ambient="false" />
 				</process>
 				<activity>
 					<activity-spot xloc="-1.47" yloc="3.68" />
@@ -623,8 +623,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="water" capacity="500.0" />
 
 				<!-- gases -->
-				<resource-storage resource="carbon dioxide" capacity="500.0" />
-				<resource-storage resource="nitrogen" capacity="500.0" />
+				<resource-storage resource="carbon dioxide" capacity="2500.0" />
+				<resource-storage resource="nitrogen" capacity="2500.0" />
 				<resource-storage resource="ammonia" capacity="500.0" />
 
 				<!-- soil related -->				
@@ -700,10 +700,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="4.25" yloc="-7.7" />
 				</activity>
 			</research>
-			<resource-processing power-down-level=".5">
-				<process name="Carbon Dioxide Pump" power-required="2.4" default="on">
-					<input resource="carbon dioxide" rate="240.0" ambient="true" />
-					<output resource="carbon dioxide" rate="240.0" ambient="false" />
+			<resource-processing power-down-level="0.0">
+				<process name="Carbon Dioxide Pump" power-required="3.0" default="on">
+					<input resource="carbon dioxide" rate="300.0" ambient="true" />
+					<output resource="carbon dioxide" rate="300.0" ambient="false" />
 				</process>
 				<activity>
 					<activity-spot xloc="-4.5" yloc="8.25" />
@@ -724,8 +724,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<storage stock-capacity="10000">
 
 				<!-- gases -->
-				<resource-storage resource="carbon dioxide" capacity="1000.0" />
-				<resource-storage resource="nitrogen" capacity="1000.0" />
+				<resource-storage resource="carbon dioxide" capacity="5000.0" />
+				<resource-storage resource="nitrogen" capacity="5000.0" />
 				<resource-storage resource="ammonia" capacity="1000.0" />
 
 				<!-- soil related -->				
@@ -743,7 +743,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- Supplies -->				
 				<resource-initial resource="carbon dioxide" amount="1000.0" />
 				
-
 			</storage>
 
 			<thermal-generation>
@@ -773,7 +772,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<research tech-level="2" capacity="2">
 				<research-specialty name="BIOLOGY" />
 			</research>
-			<resource-processing power-down-level=".5">
+			<resource-processing power-down-level="0.0">
 				<process name="Carbon Dioxide Pump" power-required="5.0" default="on">
 					<input resource="carbon dioxide" rate="50.0" ambient="true" />
 					<output resource="carbon dioxide" rate="50.0" ambient="false" />
@@ -829,7 +828,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />			
-			<resource-processing power-down-level=".5">
+			<resource-processing power-down-level="0.0">
 				<process name="Sabatier RWGS Reactor" power-required="0.94" default="on">
 					<input resource="carbon dioxide" rate="79.2" ambient="true" />
 					<input resource="hydrogen" rate="7.2" ambient="false" />
@@ -899,7 +898,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />			
-			<resource-processing power-down-level=".5">
+			<resource-processing power-down-level="0.0">
 				<process name="Sabatier RWGS Reactor" power-required="0.94" default="on">
 					<input resource="carbon dioxide" rate="79.2" ambient="true" />
 					<input resource="hydrogen" rate="7.2" ambient="false" />
@@ -1022,7 +1021,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />		
-			<resource-processing power-down-level=".5">
+			<resource-processing power-down-level="0.0">
 			    <!-- The grey water processor below is 3 times more powerful 
 			         than the one fund in Lander Hab or Outpost Hub  -->
 				<process name="Grey Water Processor" power-required="1" default="on">			
@@ -1947,7 +1946,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power=".5" base-power-down-power=".05" />
 
 		<functions>
-			<resource-processing power-down-level=".5">
+			<resource-processing power-down-level="0.0">
 				<process name="Sabatier RWGS Reactor" power-required="1.56" default="on">
 					<input resource="carbon dioxide" rate="132" ambient="true" />
 					<input resource="hydrogen" rate="12" ambient="false" />
@@ -2362,7 +2361,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</recreation>
 
-			<resource-processing power-down-level=".5">
+			<resource-processing power-down-level="0.0">
 				<process name="Grey Water Processor" power-required=".32" default="on">			
 					<input resource="grey water" rate="40.0" ambient="false" />
 					<input resource="chlorine" rate="0.5" ambient="false" />
@@ -2684,10 +2683,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-.5" yloc="4.0" />
 				</activity>
 			</research>
-			<resource-processing power-down-level=".5">
-				<process name="Carbon Dioxide Pump" power-required="0.6" default="on">
-					<input resource="carbon dioxide" rate="60.0" ambient="true" />
-					<output resource="carbon dioxide" rate="60.0" ambient="false" />
+			<resource-processing power-down-level="0.0">
+				<process name="Carbon Dioxide Pump" power-required="1.0" default="on">
+					<input resource="carbon dioxide" rate="100.0" ambient="true" />
+					<output resource="carbon dioxide" rate="100.0" ambient="false" />
 				</process>
 				<activity>
 					<activity-spot xloc="2.0" yloc="4.5" />
@@ -2704,8 +2703,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<storage stock-capacity="5000">
 				<!-- gases -->
-				<resource-storage resource="carbon dioxide" capacity="500.0" />
-				<resource-storage resource="nitrogen" capacity="500.0" />
+				<resource-storage resource="carbon dioxide" capacity="2500.0" />
+				<resource-storage resource="nitrogen" capacity="2500.0" />
 				<resource-storage resource="ammonia" capacity="500.0" />
 
 				<!-- soil related -->				

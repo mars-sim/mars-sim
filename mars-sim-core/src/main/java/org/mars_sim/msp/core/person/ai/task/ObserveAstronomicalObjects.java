@@ -65,8 +65,6 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	/** True if person is active observer. */
 	private boolean isActiveObserver = false;
 
-	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-
 	/**
 	 * Constructor.
 	 * 
@@ -82,7 +80,6 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			// Determine observatory to use.
 			observatory = determineObservatory(person);
 			if (observatory != null) {
-
 				// Walk to observatory building.
 				walkToActivitySpotInBuilding(observatory.getBuilding(), false);
 				observatory.addObserver();
@@ -274,7 +271,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		}
 
 		// Check for observatory malfunction.
-		if (observatory.getBuilding().getMalfunctionManager().hasMalfunction()) {
+		if (observatory != null && observatory.getBuilding().getMalfunctionManager().hasMalfunction()) {
 			endTask();
 		}
 

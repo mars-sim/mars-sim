@@ -605,7 +605,7 @@ public class BuildingManager implements Serializable {
 			List<Building> list = buildings.stream().filter(b -> b.hasFunction(bf)).collect(Collectors.toList());
 
 			buildingFunctionsMap.put(bf, list);
-			logger.info(bf + " was not found in buildingFunctionsMap yet. Just added.");
+			logger.config(bf + " was not found in buildingFunctionsMap yet. Just added.");
 
 			return list;
 		}
