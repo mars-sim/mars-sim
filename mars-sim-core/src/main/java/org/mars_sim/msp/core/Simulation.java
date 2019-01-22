@@ -47,6 +47,7 @@ import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.mars.DustStorm;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MarsSurface;
@@ -418,6 +419,8 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize meta tasks
 		new MetaTaskUtil();
+        // Initialize ManufactureUtil
+        new ManufactureUtil();
 		
 		// Create marsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();

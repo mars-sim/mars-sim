@@ -53,7 +53,7 @@ public final class ManufactureUtil {
 	public final static int printerID = ItemResourceUtil.printerID;
 
 	/** Private constructor. */
-	ManufactureUtil() {
+	public ManufactureUtil() {
 		// printerItem =
 		// ItemResource.findItemResource(Manufacture.LASER_SINTERING_3D_PRINTER);
 	}

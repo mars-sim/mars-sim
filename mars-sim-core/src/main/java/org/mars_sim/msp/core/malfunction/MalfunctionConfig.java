@@ -73,7 +73,6 @@ public class MalfunctionConfig implements Serializable {
 	public MalfunctionConfig(Document malfunctionDoc) {
 		MalfunctionConfig.malfunctionDoc = malfunctionDoc;
 		repairParts = new HashMap<String, List<RepairPart>>();
-
 	}
 
 	/**

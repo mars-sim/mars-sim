@@ -16,19 +16,18 @@ import org.jdom.Element;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 /**
- * Provides configuration information about meal.
- * Uses a DOM document to get the information.
+ * Provides configuration information about meal. Uses a DOM document to get the
+ * information.
  */
 
-public class MealConfig
-implements Serializable {
+public class MealConfig implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String CLEANING_AGENT_PER_SOL = "cleaning-agent-per-sol";
-	private static final String VALUE= "value";
+	private static final String VALUE = "value";
 
 	// Element names
 	private static final String MEAL_LIST = "meal-list";
@@ -44,8 +43,8 @@ implements Serializable {
 	private static final String SALT = "salt";
 
 	// water consumption rate, cleaning agent per sol
-	private double[] values = new double[] {0,0};
-	
+	private double[] values = new double[] { 0, 0 };
+
 //	private List<HotMeal> mainDishes;
 //	private List<HotMeal> sideDishes;
 
@@ -55,18 +54,19 @@ implements Serializable {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param mealDoc the meal DOM document.
 	 */
 	public MealConfig(Document mealDoc) {
 		this.mealDoc = mealDoc;
-		
-		// Generate meal list 
+
+		// Generate meal list
 		getMealList();
 	}
 
-
 	/**
 	 * Gets the water consumption rate.
+	 * 
 	 * @return water rate (kg/meal)
 	 * @throws Exception if consumption rate could not be found.
 	 */
@@ -80,9 +80,9 @@ implements Serializable {
 		}
 	}
 
-
 	/**
 	 * Gets average amount of cleaning agent per sol
+	 * 
 	 * @return rate (kg/sol)
 	 * @throws Exception if rate could not be found.
 	 */
@@ -95,11 +95,11 @@ implements Serializable {
 		}
 	}
 
-
-
 	/*
 	 * Gets the value of an element as a double
+	 * 
 	 * @param an element
+	 * 
 	 * @return a double
 	 */
 	private double getValueAsDouble(String child) {
@@ -109,9 +109,9 @@ implements Serializable {
 		return Double.parseDouble(str);
 	}
 
-
 	/**
 	 * Gets a list of meal.
+	 * 
 	 * @return list of meal
 	 * @throws Exception when meal could not be parsed.
 	 */
@@ -142,14 +142,14 @@ implements Serializable {
 				double salt = Double.parseDouble(saltStr);
 
 				// Get meal category
-				String mealCategory ="";
+				String mealCategory = "";
 				mealCategory = mainDish.getAttributeValue(MEAL_CATEGORY);
 
 				// Create meal
 
-				HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory); //, isItAvailable);
+				HotMeal aMeal = new HotMeal(id, name, oil, salt, mealCategory); // , isItAvailable);
 
-				//  Modify to ingredients = meal.getChildren(INGREDIENT);
+				// Modify to ingredients = meal.getChildren(INGREDIENT);
 				List<Element> ingredients = mainDish.getChildren(INGREDIENT);
 
 				for (Element ingredient : ingredients) {
@@ -166,7 +166,7 @@ implements Serializable {
 					String proportionStr = ingredient.getAttributeValue(PROPORTION);
 					double proportion = Double.parseDouble(proportionStr);
 
-					aMeal.addIngredient(ingredientId, ingredientID, proportion);//, isItAvailable);
+					aMeal.addIngredient(ingredientId, ingredientID, proportion);// , isItAvailable);
 
 				}
 
@@ -183,7 +183,7 @@ implements Serializable {
 	 */
 	public void destroy() {
 		mealDoc = null;
-		if(mealList != null){
+		if (mealList != null) {
 			mealList.clear();
 			mealList = null;
 		}

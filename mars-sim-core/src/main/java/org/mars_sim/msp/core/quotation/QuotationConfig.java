@@ -22,68 +22,69 @@ public class QuotationConfig implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	// Element names
-    private static final String QUOTATION_LIST = "quotation-list";	
-    private static final String QUOTATION = "quotation";
-    private static final String TEXT = "text";
-    private static final String NAME = "name";
+	private static final String QUOTATION_LIST = "quotation-list";
+	private static final String QUOTATION = "quotation";
+	private static final String TEXT = "text";
+	private static final String NAME = "name";
 
-    
-    private int count = 0;
+	private int count = 0;
 
-    private Document quotationDoc;
-    private Map<Integer, Quotation> quotations;
+	private Document quotationDoc;
+	private Map<Integer, Quotation> quotations;
 
-    /**
-     * Constructor
-     * @param quotationDoc DOM document
-     */
-    public QuotationConfig(Document quotationDoc) {
-        this.quotationDoc = quotationDoc;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param quotationDoc DOM document
+	 */
+	public QuotationConfig(Document quotationDoc) {
+		this.quotationDoc = quotationDoc;
+	}
 
-    /**
-     * Gets a map of quotations.
-     * @return map of quotations
-     * @throws Exception when quotations can not be parsed.
-     */
-    @SuppressWarnings("unchecked")
-    public Map<Integer, Quotation> getQuotations() {
+	/**
+	 * Gets a map of quotations.
+	 * 
+	 * @return map of quotations
+	 * @throws Exception when quotations can not be parsed.
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<Integer, Quotation> getQuotations() {
 
-        if (quotations == null) {
-        	quotations = new HashMap<>();
+		if (quotations == null) {
+			quotations = new HashMap<>();
 
-            Element root = quotationDoc.getRootElement();
-            List<Element> q_list = root.getChildren(QUOTATION);
+			Element root = quotationDoc.getRootElement();
+			List<Element> q_list = root.getChildren(QUOTATION);
 
-            for (Element q : q_list) {
-            	
-            	String name = q.getAttributeValue(NAME);
-                String text = q.getAttributeValue(TEXT);
-                
-                //String str = "'" + text + "'  -" + name; 
-                
-                // Get a new id.
-                int id = count++; 
-    
-                Quotation quote = new Quotation(name, text);
-                // Add a quote.
-                quotations.put(id, quote);
-                //quotations.put(text, name);
-            }
-        }
+			for (Element q : q_list) {
 
-        return quotations;
-    }
-    
-    /**
-     * Prepare object for garbage collection.
-     */
-    public void destroy() {
-    	quotationDoc = null;
-        if(quotations != null){
+				String name = q.getAttributeValue(NAME);
+				String text = q.getAttributeValue(TEXT);
 
-        	quotations.clear();
-        	quotations = null;
-        }
-    }
+				// String str = "'" + text + "' -" + name;
+
+				// Get a new id.
+				int id = count++;
+
+				Quotation quote = new Quotation(name, text);
+				// Add a quote.
+				quotations.put(id, quote);
+				// quotations.put(text, name);
+			}
+		}
+
+		return quotations;
+	}
+
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		quotationDoc = null;
+		if (quotations != null) {
+
+			quotations.clear();
+			quotations = null;
+		}
+	}
 }

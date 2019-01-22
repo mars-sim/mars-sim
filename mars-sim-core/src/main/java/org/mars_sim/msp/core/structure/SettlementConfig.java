@@ -106,6 +106,7 @@ public class SettlementConfig implements Serializable {
 	private Document settlementDoc;
 
 	// private MultiplayerClient multiplayerClient;
+	
 	/**
 	 * Constructor.
 	 * 
