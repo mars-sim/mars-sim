@@ -322,7 +322,7 @@ public class Storage extends Function implements Serializable {
 						Settlement s = (Settlement)(inv.getOwner());
 						s.increaseGreyWaterFilteringRate();
 						double r = s.getGreyWaterFilteringRate();
-						LogConsolidated.log(Level.WARNING, 1_000, sourceName + "::" + method, 
+						LogConsolidated.log(Level.WARNING, 10_000, sourceName + "::" + method, 
 								"[" + s
 					    		+ "] Updated the grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 					}

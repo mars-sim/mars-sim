@@ -62,6 +62,8 @@ public class ManufactureConfig implements Serializable {
      */
     public ManufactureConfig(Document manufactureDoc) {
         this.manufactureDoc = manufactureDoc;
+        // Initialize ManufactureUtil
+        new ManufactureUtil();
     }
 
     /**

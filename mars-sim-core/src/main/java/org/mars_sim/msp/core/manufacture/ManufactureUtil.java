@@ -46,11 +46,14 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
 public final class ManufactureUtil {
 
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
+	private static ManufactureConfig manufactureConfig = simulationConfig.getManufactureConfiguration();
+	private static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
+	
 //    private static ItemResource printerItem;
 	public final static int printerID = ItemResourceUtil.printerID;
 
 	/** Private constructor. */
-	private ManufactureUtil() {
+	ManufactureUtil() {
 		// printerItem =
 		// ItemResource.findItemResource(Manufacture.LASER_SINTERING_3D_PRINTER);
 	}
@@ -62,7 +65,7 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<ManufactureProcessInfo> getAllManufactureProcesses() {
-		return simulationConfig.getManufactureConfiguration().getManufactureProcessList();
+		return manufactureConfig.getManufactureProcessList();
 	}
 
 	/**
@@ -87,9 +90,7 @@ public final class ManufactureUtil {
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesForTechLevel(int techLevel) {
 		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
-
-		ManufactureConfig config = simulationConfig.getManufactureConfiguration();
-		Iterator<ManufactureProcessInfo> i = config.getManufactureProcessList().iterator();
+		Iterator<ManufactureProcessInfo> i = manufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
 			if (process.getTechLevelRequired() <= techLevel)
@@ -107,8 +108,7 @@ public final class ManufactureUtil {
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenOutput(String name) {
 		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
-		Iterator<ManufactureProcessInfo> i = SimulationConfig.instance().getManufactureConfiguration()
-				.getManufactureProcessList().iterator();
+		Iterator<ManufactureProcessInfo> i = manufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
 			if (process.getOutputNames().contains(name))
@@ -125,8 +125,7 @@ public final class ManufactureUtil {
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenInput(String item) {
 		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
-		Iterator<ManufactureProcessInfo> i = SimulationConfig.instance().getManufactureConfiguration()
-				.getManufactureProcessList().iterator();
+		Iterator<ManufactureProcessInfo> i = manufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
 			if (process.getInputNames().contains(item))
@@ -147,9 +146,7 @@ public final class ManufactureUtil {
 	public static List<ManufactureProcessInfo> getManufactureProcessesForTechSkillLevel(int techLevel, int skillLevel) {
 		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
 
-//        ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
-		Iterator<ManufactureProcessInfo> i = SimulationConfig.instance().getManufactureConfiguration()
-				.getManufactureProcessList().iterator();
+		Iterator<ManufactureProcessInfo> i = manufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
 			if ((process.getTechLevelRequired() <= techLevel) && (process.getSkillLevelRequired() <= skillLevel))
@@ -170,9 +167,7 @@ public final class ManufactureUtil {
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechSkillLevel(int techLevel, int skillLevel) {
 		List<SalvageProcessInfo> result = new ArrayList<SalvageProcessInfo>();
-
-//        ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
-		Iterator<SalvageProcessInfo> i = SimulationConfig.instance().getManufactureConfiguration().getSalvageList()
+		Iterator<SalvageProcessInfo> i = manufactureConfig.getSalvageList()
 				.iterator();
 		while (i.hasNext()) {
 			SalvageProcessInfo process = i.next();
@@ -192,9 +187,7 @@ public final class ManufactureUtil {
 	 */
 	public static List<SalvageProcessInfo> getSalvageProcessesForTechLevel(int techLevel) {
 		List<SalvageProcessInfo> result = new ArrayList<SalvageProcessInfo>();
-
-//        ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
-		Iterator<SalvageProcessInfo> i = SimulationConfig.instance().getManufactureConfiguration().getSalvageList()
+		Iterator<SalvageProcessInfo> i = manufactureConfig.getSalvageList()
 				.iterator();
 		while (i.hasNext()) {
 			SalvageProcessInfo process = i.next();
@@ -600,8 +593,7 @@ public final class ManufactureUtil {
 			double equipmentMass = EquipmentFactory.getEquipmentMass(item.getName());
 			mass = item.getAmount() * equipmentMass;
 		} else if (ItemType.VEHICLE.equals(item.getType())) {
-			VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-			mass = item.getAmount() * config.getEmptyMass(item.getName());
+			mass = item.getAmount() * vehicleConfig.getEmptyMass(item.getName());
 		}
 
 		return mass;

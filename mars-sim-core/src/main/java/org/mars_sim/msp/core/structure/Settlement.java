@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.DustStorm;
 import org.mars_sim.msp.core.mars.MarsSurface;
@@ -48,7 +47,6 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.job.Technician;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -82,7 +80,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
-import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
@@ -337,10 +334,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 //	private static int foodID = ResourceUtil.foodID;
 
 	private static Simulation sim = Simulation.instance();
-	// WARNING : The UnitManager instance will be stale after loading from a saved
-	// sim
-	// It will fail to run methods in Settlement and without any warning as to why
-	// that it fails.
 	private static UnitManager unitManager;
 	private static MissionManager missionManager = sim.getMissionManager();
 	private static Weather weather;

@@ -242,11 +242,12 @@ public class Crop implements Serializable {
 	
 	private static int mushroomBoxID = ItemResourceUtil.mushroomBoxID;
 
+	private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock;
 	private static MarsClock marsClock;
 	private static SurfaceFeatures surface;
 	private static CropConfig cropConfig;
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	private static UnitManager unitManager = sim.getUnitManager();
 	
 
 	/**
@@ -283,8 +284,8 @@ public class Crop implements Serializable {
 		phases = cropType.getPhases();
 
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
-		masterClock = Simulation.instance().getMasterClock();
+		surface = sim.getMars().getSurfaceFeatures();
+		masterClock = sim.getMasterClock();
 		marsClock = masterClock.getMarsClock();
 
 		for (Phase p : phases.values()) {
