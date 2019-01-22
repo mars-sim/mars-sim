@@ -45,7 +45,7 @@ public class Crop implements Serializable {
 
 	public static final double TUNING_FACTOR = 0.2;
 	
-	public static final int CHECK_HEALTH_FREQUENCY = 55;
+	public static final int CHECK_HEALTH_FREQUENCY = 20;
 	/**
 	 * The limiting factor that determines how fast and how much PAR can be absorbed
 	 * in one frame.
@@ -176,7 +176,7 @@ public class Crop implements Serializable {
 	/** The required power for lighting [in kW]. */
 	private double lightingPower = 0;
 	/** The health condition factor of the crop. 1 = excellent. 0 = worst*/
-	private double healthCondition = 0;
+	private double healthCondition = 1;
 	/** The average water needed [in kg] */
 	private double averageWaterNeeded;
 	/** The average O2 needed [in kg] */
@@ -208,12 +208,12 @@ public class Crop implements Serializable {
 	
 	/** The cache values of the pastor environment factors influencing the crop */
 	private Double[] environmentalFactor = new Double[] { 
-			1.0, // light
-			1.0, // fertilizer
-			1.0, // temperature
-			1.0, // water
-			1.0, // o2
-			1.0 }; // co2
+			1.0,   // light, 0
+			1.0,   // fertilizer, 1
+			1.0,   // temperature, 2
+			1.0,   // water, 3
+			1.0,   // o2, 4
+			1.0 }; // co2, 5
 
 	private String cropName;
 	private String capitalizedCropName;
@@ -568,6 +568,7 @@ public class Crop implements Serializable {
 		double total = 0;
 		int size = environmentalFactor.length;
 		for (int i=0; i< size; i++) {		
+//			System.out.println(this.getCropName() + "'s environmentalFactor [" + i + "] = " + environmentalFactor[i]);
 			if (cropCategoryType == CropCategoryType.FUNGI) {
 				if (i == 0)
 					total = total + 1;
@@ -603,6 +604,12 @@ public class Crop implements Serializable {
 		int current = getCurrentPhaseNum();
 		int length = phases.size();
 
+		// Improve the health of the crop each time it's being worked on
+		if (healthCondition < 1)
+			healthCondition += .001 * workTime;
+		if (healthCondition > 1)
+			healthCondition = 1;
+		
 		double w = phases.get(current).getWorkRequired() * 1000D;
 
 		if (dailyHarvest < 0D) {
@@ -618,7 +625,7 @@ public class Crop implements Serializable {
 				remainingTime = currentPhaseWorkCompleted - w;
 				currentPhaseWorkCompleted = 0D;
 				phaseType = phases.get(current + 1).getPhaseType();
-				logger.info(capitalizedCropName + " had entered a new phase " + phaseType
+				logger.fine(capitalizedCropName + " had entered a new phase " + phaseType
 						+ "   Work Completed : " + Math.round(currentPhaseWorkCompleted * 10D) / 10D
 						+ "   Work Required : " + Math.round(w * 10D) / 10D);
 			}
@@ -1011,13 +1018,12 @@ public class Crop implements Serializable {
 //			 logger.info(cropType.getName() + "\tcumulativeDailyPAR : " +
 //			 fmt.format(cumulativeDailyPAR)); //+ "\tdelta_PAR_sunlight : "+
 //			 fmt.format(delta_PAR_sunlight));
-			 
 		}
 
 		// check for the passing of each day
 		int newSol = marsClock.getMissionSol();
 		// the crop has memory of the past lighting condition
-		lightModifier = cumulativeDailyPAR / dailyPARRequired * 1000D / msols;
+		lightModifier = cumulativeDailyPAR / (dailyPARRequired + .0001) * 1000D / ( msols  + .0001);
 		// TODO: If too much light, the crop's health may suffer unless a person comes
 		// to intervene
 		if (isStartup && newSol == 1) {
@@ -1098,6 +1104,8 @@ public class Crop implements Serializable {
 					//  Records the daily water usage in the farm
 					farm.addDailyWaterUsage(waterUsed);
 				}
+				
+				waterModifier = 1D;
 			}
 			else {
 				// not enough water
@@ -1108,19 +1116,22 @@ public class Crop implements Serializable {
 					farm.addDailyWaterUsage(waterUsed);
 				}
 				// Incur penalty if water is NOT available
-				waterModifier = (greyWaterAvailable + waterUsed) / waterRequired;
+				// need to add .0001 in case waterRequired becomes zero
+				waterModifier = (greyWaterUsed + waterUsed) / (waterRequired + .0001);
 			}
 
 			double fertilizerAvailable = building.getInventory().getAmountResourceStored(fertilizerID, false);
 			// The amount of fertilizer to be used depends on the ratio of the grey water used
-			double fertilizerRequired = FERTILIZER_NEEDED_WATERING * time * greyWaterUsed / (greyWaterUsed + waterUsed);
+			double fertilizerRequired = FERTILIZER_NEEDED_WATERING * time * greyWaterUsed / (greyWaterUsed + waterUsed + .0001);
 			double fertilizerUsed = fertilizerRequired;
 
 			if (fertilizerUsed > fertilizerAvailable) {
+				// not enough fertilizer
 				fertilizerUsed = fertilizerAvailable;
 				// should incur penalty due to insufficient fertilizer
-				fertilizerModifier = fertilizerUsed / fertilizerAvailable;
+				fertilizerModifier = fertilizerUsed / ( fertilizerRequired + 0.0001);
 			} else {
+				// there's enough fertilizer
 				fertilizerModifier = 1D;
 			}
 
@@ -1129,8 +1140,6 @@ public class Crop implements Serializable {
 			}
 
 			adjustEnvironmentFactor(fertilizerModifier, 1);
-
-//			totalWaterUsed = greyWaterAvailable + waterUsed;
 
 		}
 
@@ -1269,11 +1278,13 @@ public class Crop implements Serializable {
 	 * @param type the 
 	 */
 	public void adjustEnvironmentFactor(double mod, int type) {
-		environmentalFactor[type] = 0.05 * mod + 0.95 * environmentalFactor[type];
-		if (environmentalFactor[type] > 1.5)
-			environmentalFactor[type] = 1.5;	
-		else if (environmentalFactor[type] < 0.1)
-			environmentalFactor[type] = 0.1;
+		double f = environmentalFactor[type];
+		f = 0.01 * mod + 0.99 * f;
+		if (f > 1.25)
+			f = 1.25;	
+		else if (f < 0.1 || Double.isNaN(f))
+			f = 0.1;
+		environmentalFactor[type] = f;
 	}
 	
 	/**
@@ -1324,9 +1335,10 @@ public class Crop implements Serializable {
 			// Set uPAR to zero since mushrooms are fungi, neeed no sunlight
 			// Fungi consumes O2 and release CO2
 			uPAR = 0;
-		} else
+		} else {
 			uPAR = computeLight(time);
-
+		}
+		
 		// STEP 2 : COMPUTE THE EFFECTS OF THE TEMPERATURE
 		computeTemperature();
 
@@ -1340,6 +1352,7 @@ public class Crop implements Serializable {
 		// TODO: add air pressure modifier in future
 
 		// Tune harvestModifier
+		// Note that light is the dorminant environmental factor
 		if (phaseNum > 2 && phaseNum < length - 2) {
 			harvestModifier = .6 * harvestModifier + .4 * harvestModifier * environmentalFactor[0];
 		} else if (phaseNum == 2)

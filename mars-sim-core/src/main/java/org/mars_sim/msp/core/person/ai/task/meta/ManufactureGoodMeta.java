@@ -29,6 +29,8 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
+    private static final double CAP = 500D; 
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.manufactureGood"); //$NON-NLS-1$
@@ -73,8 +75,8 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
                 result *= ManufactureGood.getHighestManufacturingProcessValue(person, manufacturingBuilding);
 
                 // Capping the probability at 100 as manufacturing process values can be very large numbers.
-                if (result > 100D) {
-                    result = 100D;
+                if (result > CAP) {
+                    result = CAP;
                 }
 
                 // If manufacturing building has process requiring work, add
