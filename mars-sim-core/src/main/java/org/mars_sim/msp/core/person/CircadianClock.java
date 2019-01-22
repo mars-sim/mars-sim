@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
@@ -29,10 +28,10 @@ public class CircadianClock implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(CircadianClock.class.getName());
+//	private static Logger logger = Logger.getLogger(CircadianClock.class.getName());
 
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+//			logger.getName().length());
 
 	/** Sleep Habit Map resolution. */
 	private static double SLEEP_INFLATION = 1.15;
@@ -94,32 +93,15 @@ public class CircadianClock implements Serializable {
 	/** The amount of Sleep [millisols] a person on each mission sol */
 	private List<Double> sleepTime;
 
-	private static MarsClock marsClock;
+	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
 	public CircadianClock(Person person) {
 		this.person = person;
 
-		init();
-	}
-
-	public void init() {
-
 		sleepCycleMap = new HashMap<>();
-
 		sleepTime = new ArrayList<>();
-
-		if (Simulation.instance().getMasterClock() != null) // for passing maven test
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
-	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void setInstances(MarsClock clock) {
-		marsClock = clock;
+//		if (Simulation.instance().getMasterClock() != null) // for passing maven test
+//			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 	
 	public void timePassing(double time, LifeSupportType support) {
@@ -530,6 +512,15 @@ public class CircadianClock implements Serializable {
 	
 	public List<Double> getSleepTime() {
 		return sleepTime;
+	}
+	
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void setInstances(MarsClock clock) {
+		marsClock = clock;
 	}
 	
 	/**

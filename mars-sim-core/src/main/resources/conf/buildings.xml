@@ -416,6 +416,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="oxygen" rate="64" ambient="false" />
 				</process>
 
+				<process name="Carbon Dioxide Pump" power-required=".4" default="on">
+					<input resource="carbon dioxide" rate="40.0" ambient="true" />
+					<output resource="carbon dioxide" rate="40.0" ambient="false" />
+				</process>
 				
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>

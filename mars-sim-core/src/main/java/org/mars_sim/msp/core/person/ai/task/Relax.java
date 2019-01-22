@@ -14,15 +14,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -52,27 +49,12 @@ implements Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.4D;
 
-//    private double timeFactor;
-
-    private static Simulation sim = Simulation.instance();
-	private static MasterClock masterClock = sim.getMasterClock();
-	private static MarsClock marsClock;// = masterClock.getMarsClock();
-
 	/**
 	 * Constructor.
 	 * @param person the person to perform the task
 	 */
 	public Relax(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D);
-		
-        marsClock = masterClock.getMarsClock();
-        
-//        timeFactor = 1D; // TODO: should vary this factor by person
-
-		compute();
-	}
-	
-	public void compute() {
 		
 		// If during person's work shift, only relax for short period.
 		int msols = marsClock.getMillisolInt();
@@ -245,15 +227,6 @@ implements Serializable {
 	public List<SkillType> getAssociatedSkills() {
 		List<SkillType> results = new ArrayList<SkillType>(0);
 		return results;
-	}
-	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void setInstances(MarsClock clock) {
-		marsClock = clock;
 	}
 	
 }

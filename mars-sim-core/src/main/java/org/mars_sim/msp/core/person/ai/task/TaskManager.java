@@ -45,13 +45,14 @@ public class TaskManager implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TaskManager.class.getName());
 
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static String loggerName = logger.getName();
+
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	private static final String WALK = "walk";
-	
+
 	private static final int MAX_TASK_PROBABILITY = 3000;
-	
+
 	// Data members
 	/** The cache for msolInt */
 	private double msolCache = -1.0;
@@ -80,13 +81,12 @@ public class TaskManager implements Serializable {
 	private TaskSchedule ts;
 
 	private int shiftCache;
-	
+
 	private transient Map<MetaTask, Double> taskProbCache;
 	private transient List<MetaTask> mtListCache;
 
 	private static MarsClock marsClock;
 	private static MissionManager missionManager;
-
 
 	/**
 	 * Constructor.
@@ -115,7 +115,7 @@ public class TaskManager implements Serializable {
 		// Ensure no NULLPOiNTEREXCEPTION in maven test
 		// since marsClock won't be initiated in maven test
 		if (Simulation.instance().getMasterClock() != null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock(); 
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	/**
@@ -124,7 +124,7 @@ public class TaskManager implements Serializable {
 	public void initialize() {
 		ts = person.getTaskSchedule();
 	}
-	
+
 	/**
 	 * Returns true if person has an active task.
 	 * 
@@ -275,18 +275,13 @@ public class TaskManager implements Serializable {
 	}
 
 	public boolean isEVATask(String taskName) {
-		return (taskName.toLowerCase().contains("eva")
-				|| taskName.toLowerCase().contains("dig")
-				|| taskName.toLowerCase().contains("exploresite")
-				|| taskName.toLowerCase().contains("salvagebuilding")
-				|| taskName.toLowerCase().contains("walkoutside")
-				|| taskName.toLowerCase().contains("minesite")
-				|| taskName.toLowerCase().contains("collectmined")
-				|| taskName.toLowerCase().contains("fieldwork")
-				|| taskName.toLowerCase().contains("collectresources")
-				);
+		return (taskName.toLowerCase().contains("eva") || taskName.toLowerCase().contains("dig")
+				|| taskName.toLowerCase().contains("exploresite") || taskName.toLowerCase().contains("salvagebuilding")
+				|| taskName.toLowerCase().contains("walkoutside") || taskName.toLowerCase().contains("minesite")
+				|| taskName.toLowerCase().contains("collectmined") || taskName.toLowerCase().contains("fieldwork")
+				|| taskName.toLowerCase().contains("collectresources"));
 	}
-	
+
 	/*
 	 * Filters tasks for recording in the task schedule
 	 */
@@ -302,19 +297,19 @@ public class TaskManager implements Serializable {
 		// WalkSteps
 		// Filters off descriptions such as "Walking inside a settlement"
 		if (taskName != null) {
-			
+
 			if (isEVATask(taskName)) {
 				person.addEVATime(taskName, time);
 			}
-	
+
 			if (!taskDescription.equals(taskDescriptionCache)
 //				&& !taskName.toLowerCase().contains(WALK) 
 //				&& !taskDescription.toLowerCase().contains(WALK) 
-				&& !taskDescription.equals("")) {
+					&& !taskDescription.equals("")) {
 
 				String taskPhaseName = null;
 				TaskPhase tp = getMainTaskPhase();
-	
+
 				if (tp != null) {
 					taskPhaseName = tp.getName();
 					if (!taskPhaseNameCache.equals(taskPhaseName)) {
@@ -403,7 +398,7 @@ public class TaskManager implements Serializable {
 			double energyTime = time - remainingTime;
 
 			// Double energy expenditure if performing effort-driven task.
-			if (currentTask != null && currentTask.isEffortDriven()) { 
+			if (currentTask != null && currentTask.isEffortDriven()) {
 				// why java.lang.NullPointerException at TR = 2048 ?
 				energyTime *= 2D;
 			}
@@ -554,6 +549,8 @@ public class TaskManager implements Serializable {
 	 */
 	public Task getNewTask() {
 		Task result = null;
+		MetaTask selectedMetaTask = null;
+
 		// If cache is not current, calculate the probabilities.
 		if (!useCache()) {
 			calculateProbability();
@@ -563,29 +560,33 @@ public class TaskManager implements Serializable {
 
 		if (totalProbability == 0D) {
 //			throw new IllegalStateException(mind.getPerson() + " has zero total task probability weight.");
-			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
-					person.getName() + " has zero total task probability weight.");
-		}
+//			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+//					person.getName() + " has zero total task probability weight.");
 
-		double r = RandomUtil.getRandomDouble(totalProbability);
+			// Switch to loading non-work hour meta tasks since
+			// leisure tasks are NOT based on needs
+			List<MetaTask> list = MetaTaskUtil.getNonWorkHourMetaTasks();
+			selectedMetaTask = list.get(RandomUtil.getRandomInt(list.size() - 1));
 
-		MetaTask selectedMetaTask = null;
+		} else {
 
-		// Determine which task is selected.
-		for (MetaTask mt : taskProbCache.keySet()) {
-			double probWeight = taskProbCache.get(mt);
-			if (r <= probWeight) {
-				// Select this task
-				selectedMetaTask = mt;
-			} else {
-				r -= probWeight;
+			double r = RandomUtil.getRandomDouble(totalProbability);
+
+			// Determine which task is selected.
+			for (MetaTask mt : taskProbCache.keySet()) {
+				double probWeight = taskProbCache.get(mt);
+				if (r <= probWeight) {
+					// Select this task
+					selectedMetaTask = mt;
+				} else {
+					r -= probWeight;
+				}
 			}
 		}
 
 		if (selectedMetaTask == null) {
 //			throw new IllegalStateException(mind.getPerson() + " could not determine a new task.");
-			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
-					person.getName() + " could not determine a new task.");
+			LogConsolidated.log(Level.SEVERE, 5_000, sourceName, person.getName() + " could not determine a new task.");
 		} else {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			result = selectedMetaTask.constructInstance(mind.getPerson());
@@ -593,8 +594,8 @@ public class TaskManager implements Serializable {
 		}
 
 		// Clear time cache.
-//		timeCache = null;
 		msolCache = -1;
+
 		return result;
 	}
 
@@ -613,12 +614,10 @@ public class TaskManager implements Serializable {
 
 	public static boolean isInMissionWindow(double time) {
 		boolean result = false;
-		
-		
+
 		return result;
 	}
-	
-	
+
 	/**
 	 * Calculates and caches the probabilities.
 	 */
@@ -626,23 +625,23 @@ public class TaskManager implements Serializable {
 
 		double msol1 = marsClock.getMillisolOneDecimal();
 
-		int diff = Double.compare(msolCache, msol1);    
-		if (diff < 0 || diff > 0) {    
+		int diff = Double.compare(msolCache, msol1);
+		if (diff < 0 || diff > 0) {
 			msolCache = msol1;
 
 			int shift = 0;
-			
+
 			if (ts.getShiftType() == ShiftType.ON_CALL) {
 				shift = 0;
-			} 
-			
+			}
+
 			else if (ts.isShiftHour(marsClock.getMillisolInt())) {
 				shift = 1;
-			} 
-			
+			}
+
 			else {
 				shift = 2;
-			}			
+			}
 
 			// Note : mtListCache is null when loading from a saved sim
 			if (shiftCache != shift || mtListCache == null) {
@@ -653,12 +652,12 @@ public class TaskManager implements Serializable {
 				// NOTE: any need to use getAnyHourTasks()
 				if (shift == 0) {
 					mtList = MetaTaskUtil.getAllMetaTasks();
-				} 
-				
+				}
+
 				else if (shift == 1) {
 					mtList = MetaTaskUtil.getDutyHourTasks();
-				} 
-				
+				}
+
 				else if (shift == 2) {
 					mtList = MetaTaskUtil.getNonDutyHourTasks();
 				}
@@ -666,7 +665,7 @@ public class TaskManager implements Serializable {
 				// Use new mtList
 				mtListCache = mtList;
 				// Create new taskProbCache
-				taskProbCache = new HashMap<MetaTask, Double>(mtList.size());		
+				taskProbCache = new HashMap<MetaTask, Double>(mtList.size());
 			}
 
 			// Clear total probabilities.
@@ -676,14 +675,13 @@ public class TaskManager implements Serializable {
 				double probability = mt.getProbability(person);
 				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 					if (probability > MAX_TASK_PROBABILITY) {
-						LogConsolidated.log(Level.FINER, 5_000, sourceName,
-								mind.getPerson().getName() + " - " + mt.getName() 
-									+ " : Probability is " + Math.round(probability*10.0)/10.0 + ".");										
-						if (mt.getName().contains("eat")) 
+						LogConsolidated.log(Level.FINER, 5_000, sourceName, mind.getPerson().getName() + " - "
+								+ mt.getName() + " : Probability is " + Math.round(probability * 10.0) / 10.0 + ".");
+						if (mt.getName().contains("eat"))
 							addTask(new EatMeal(person));
-						else if (mt.getName().contains("sleep")) 
-							addTask(new Sleep(person));	
-						else 
+						else if (mt.getName().contains("sleep"))
+							addTask(new Sleep(person));
+						else
 							probability = MAX_TASK_PROBABILITY;
 					}
 //					if (person.getName().contains("Enrique")) // && mt.getName().contains("Review"))
@@ -692,12 +690,12 @@ public class TaskManager implements Serializable {
 					totalProbCache += probability;
 //					System.out.println(person + " totalProbCache : " + Math.round(totalProbCache*10.0)/10.0);
 				}
-				
+
 				else {
 					taskProbCache.put(mt, 0D);
 					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
-							mind.getPerson().getName() + " has invalid probability when calculating "
-								+ mt.getName() + " : Probability is " + probability + ".");
+							mind.getPerson().getName() + " has invalid probability when calculating " + mt.getName()
+									+ " : Probability is " + probability + ".");
 				}
 			}
 		}
@@ -719,7 +717,7 @@ public class TaskManager implements Serializable {
 	public TaskSchedule getTaskSchedule() {
 		return ts;
 	}
-	
+
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
@@ -730,7 +728,7 @@ public class TaskManager implements Serializable {
 		marsClock = clock;
 		missionManager = mgr;
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

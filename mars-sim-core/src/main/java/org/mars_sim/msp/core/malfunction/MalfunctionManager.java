@@ -1569,10 +1569,13 @@ public class MalfunctionManager implements Serializable {
 	/**
 	 * initializes instances after loading from a saved sim
 	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
+	 * @param c0 {@link MasterClock}
+	 * @param c1 {@link MarsClock}
+	 * @param mf {@link MalfunctionFactory}
+	 * @param m {@link MedicalManager}	 
+	 * @param e {@link HistoricalEventManager}
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1) {
+	public static void initializeInstances(MasterClock c0, MarsClock c1, MalfunctionFactory mf, MedicalManager m, HistoricalEventManager e) {
 		masterClock = c0;
 //		startTime = masterClock.getInitialMarsTime();
 		currentTime = c1;
@@ -1580,9 +1583,9 @@ public class MalfunctionManager implements Serializable {
 		sim = Simulation.instance();
 		simconfig = SimulationConfig.instance();
 		malfunctionConfig = simconfig.getMalfunctionConfiguration();
-		factory = sim.getMalfunctionFactory();
-		medic = sim.getMedicalManager();
-		eventManager = sim.getEventManager();
+		factory = mf;
+		medic = m;
+		eventManager = e;
 	}
 	
 	/**

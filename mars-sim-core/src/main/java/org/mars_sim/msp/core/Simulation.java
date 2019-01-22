@@ -433,9 +433,9 @@ public class Simulation implements ClockListener, Serializable {
 		LogConsolidated.initializeInstances(marsClock, masterClock.getEarthClock());
 
 		// Initialize instances prior to UnitManager initiatiation		
-		MalfunctionFactory.setMarsClock(marsClock);
+		MalfunctionFactory.setMarsClock(marsClock, unitManager);
 		MissionManager.setMarsClock(marsClock);
-		MalfunctionManager.initializeInstances(masterClock, marsClock);
+		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
 		RelationshipManager.setInstances(unitManager);
 //		MedicalManager.initializeInstances();
 		mars.initializeTransientData();
@@ -896,13 +896,13 @@ public class Simulation implements ClockListener, Serializable {
 		PersonConfig pc = SimulationConfig.instance().getPersonConfiguration();
 		
 		// Re-initialize static class
-		MalfunctionFactory.setMarsClock(marsClock);
+		MalfunctionFactory.setMarsClock(marsClock, unitManager);
 		MalfunctionFactory.initializeInstances(marsClock, unitManager);
 		MissionManager.setMarsClock(marsClock);
 //		MedicalManager.justReloaded();
 		unitManager.setInstances(marsClock);
 		RelationshipManager.setInstances(unitManager);
-		MalfunctionManager.initializeInstances(masterClock, marsClock);
+		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
 		TransportManager.initializeInstances(marsClock, eventManager);
 		ScientificStudyManager.initializeInstances(marsClock, unitManager);
 		ScientificStudy.initializeInstances(marsClock, unitManager);
@@ -921,6 +921,7 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.initializeInstances(masterClock, marsClock, this, mars, marsSurface, earthClock, unitManager, missionManager);		
 		Vehicle.setInstances();				//  vehicleconfig 
 		SalvageValues.initializeInstances(unitManager);
+		
 //		System.out.println("Done with Unit Object instances");
 		
 		// Re-initialize Person/Robot related class
@@ -960,17 +961,12 @@ public class Simulation implements ClockListener, Serializable {
 
 //		System.out.println("Done with Building function instances");
 		
-		// Re-initialize Task related class
-//		ConstructBuilding.setInstances(missionManager);
-//		EVAOperation.setInstances(surface); 
+		// Re-initialize Task related class 
 		LoadVehicleGarage.initializeInstances(pc); 
 		ObserveAstronomicalObjects.setInstances(surface);
 		PerformLaboratoryExperiment.setInstances(scientificStudyManager);
 		PlayHoloGame.setInstances(masterClock, marsClock);
 		ProposeScientificStudy.setInstances(scientificStudyManager);
-		Relax.setInstances(marsClock);
-//		ReviewMissionPlan.setInstances(relationshipManager, missionManager);
-		Sleep.setInstances(masterClock, marsClock);
 		Walk.setInstances(unitManager);	
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, scientificStudyManager, surface, missionManager);
 

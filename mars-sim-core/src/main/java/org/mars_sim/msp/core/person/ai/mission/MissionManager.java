@@ -382,7 +382,11 @@ public class MissionManager implements Serializable {
 
 		if (totalProbability == 0D) {
 			//throw new IllegalStateException(person + " has zero total mission probability weight.");
-			logger.log(Level.FINEST, person + " has zero total mission probability weight.");
+			logger.log(Level.FINEST, person + " has zero total mission probability weight. No mission selected.");
+			// Clear time cache.
+			personTimeCache = null;
+			
+			return null;
 		}
 
 		// Get a random number from 0 to the total probability weight.

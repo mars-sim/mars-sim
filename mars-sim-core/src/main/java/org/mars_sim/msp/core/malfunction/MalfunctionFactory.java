@@ -538,11 +538,12 @@ public final class MalfunctionFactory implements Serializable {
 	/**
 	 * Set instances
 	 * 
-	 * @param clock
+	 * @param c {@link MarsClock}
+	 * @param u {@link UnitManager}
 	 */
-	public static void setMarsClock(MarsClock clock) {
-		marsClock = clock;
-		unitManager = sim.getUnitManager();
+	public static void setMarsClock(MarsClock c, UnitManager u) {
+		marsClock = c;
+		unitManager = u;
 	}
 	
 	/**

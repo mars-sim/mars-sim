@@ -10,8 +10,6 @@ import java.io.Serializable;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -21,9 +19,6 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * Meta task for the Sleep task.
@@ -36,26 +31,14 @@ public class SleepMeta implements MetaTask, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(SleepMeta.class.getName());
 
-    private static String sourceName = logger.getName();
+//	private static String loggerName = logger.getName();
+//
+//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
 
     private static final int MAX_SUPPRESSION = 10;
-
-    private static Simulation sim = Simulation.instance();
-	private static MasterClock masterClock;// = sim.getMasterClock();
-	private static MarsClock marsClock;// = masterClock.getMarsClock();
-
-	public SleepMeta() {
-        sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
-
-        masterClock = sim.getMasterClock();
-        if (masterClock != null) { // to avoid NullPointerException during maven test
-	        marsClock = masterClock.getMarsClock();
-        }
-
-	}
 
     @Override
     public String getName() {
@@ -65,18 +48,6 @@ public class SleepMeta implements MetaTask, Serializable {
     @Override
     public Task constructInstance(Person person) {
     	return new Sleep(person);
-///       Sleep sleep = person.getSleep();
-//    	if (sleep == null) {
-//    		sleep = new Sleep(person);
-//    		person.setSleep(sleep);
-//    	}
-//    	else {
-//    		sleep.taskCompute();
-//    		sleep.compute();
-//    	}
-//    	
-//    	return sleep;
-   	
     }
 
     @Override
@@ -88,12 +59,8 @@ public class SleepMeta implements MetaTask, Serializable {
         	
            	boolean proceed = false;
 
-        	// each millisol generates 1 fatigue point
-        	// 500 millisols is 12 hours
-
-//           	ts = person.getTaskSchedule();
-//        	pc = person.getPhysicalCondition();
-//        	circadian = person.getCircadianClock();
+        	// Note : each millisol generates 1 fatigue point
+        	// 500 millisols is ~12 hours
 
         	int now = marsClock.getMillisolInt();
            // boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
@@ -102,11 +69,7 @@ public class SleepMeta implements MetaTask, Serializable {
         	double stress = person.getPhysicalCondition().getStress();
         	double ghrelin = person.getCircadianClock().getSurplusGhrelin();
         	double leptin = person.getCircadianClock().getSurplusLeptin();
-        	//str = person + " GS " + Math.round(ghrelin*10.0)/10.0  + " LS " + Math.round(leptin*10.0)/10.0  + " "; 
-        			
-//        	System.out.println("ghrelin : " + ghrelin);
-//        	System.out.println("leptin : " + leptin);
-//           	System.out.println("fatigue : " + fatigue);      	
+    	
         	// When we are sleep deprived. The 2 hormones (Leptin and Ghrelin) are "out of sync" and that is 
         	// when we eat more than we should without even realizing.
         	
@@ -119,45 +82,14 @@ public class SleepMeta implements MetaTask, Serializable {
         	if (fatigue > 500D || stress > 50D || ghrelin-leptin > 300) {
         		proceed = true;
         	}
-
-        	else {
-     	
-	        	int maxNumSleep = 0;
-
-	        	if (person.getTaskSchedule().getShiftType() == ShiftType.ON_CALL)
-	            	maxNumSleep = 7;
-	            else
-	            	maxNumSleep = 3;
-
-	        	int sol = marsClock.getMissionSol();
-	        	
-	        	// Skip the first sol since the sleep time pattern has not been established
-	            if (sol != 1 && person.getCircadianClock().getNumSleep() <= maxNumSleep) {
-	            	// Checks the current time against the sleep habit heat map
-	    	    	int bestSleepTime[] = person.getPreferredSleepHours();
-	    	    	// is now falling two of the best sleep time ?
-	    	    	for (int time : bestSleepTime) {
-	    		    	int diff = time - now;
-	    		    	if (diff < 50 || diff > -50) {
-	    		    		proceed = true;
-	    		    		result = 1000;
-	    		    		break;
-	    		    	}
-	    	    	}
-	            }
-        	}
-
-            if (proceed) {
-    	         		
+        	
+            if (proceed) {   		
 	        	// the desire to go to bed increase linearly after 12 hours of wake time
 	            result += (fatigue - 100) * 2D + stress * 5D + (ghrelin-leptin - 300)/10D;
 	            
                 double pref = person.getPreference().getPreferenceScore(this);
                 
-             	result += pref * 10D;
-             	
-	            // Add the influence from the sleep habit of the person
-            	result += refreshSleepHabit(person);                         	
+             	result += result * pref/4D;                            	
             	
 	    	    if (result < 0)
 	    	    	return 0;
@@ -203,8 +135,9 @@ public class SleepMeta implements MetaTask, Serializable {
 
 				else {
 
-			        // 2016-01-10 Added checking if a person has a designated bed
+			        // Add checking if a person has a designated bed
 	                quarters = person.getQuarters();
+	                
 	                if (quarters != null) {
 		            	// if this person has already been assigned a quarter and a bed, not a shared/guest bed
 	                	// he should be "more" inclined to fall asleep this way
@@ -242,12 +175,46 @@ public class SleepMeta implements MetaTask, Serializable {
 	                }
 				}
 
+	        	int maxNumSleep = 0;
+
+	        	if (person.getTaskSchedule().getShiftType() == ShiftType.ON_CALL)
+	            	maxNumSleep = 7;
+	            else
+	            	maxNumSleep = 3;
+
+	        	int sol = marsClock.getMissionSol();
+	        	
+	        	// Skip the first sol since the sleep time pattern has not been established
+	            if (sol != 1 && person.getCircadianClock().getNumSleep() <= maxNumSleep) {
+	            	// Checks the current time against the sleep habit heat map
+	    	    	int bestSleepTime[] = person.getPreferredSleepHours();
+	    	    	// is now falling two of the best sleep time ?
+	    	    	for (int time : bestSleepTime) {
+	    		    	int diff = time - now;
+	    		    	if (diff < 50 || diff > -50) {
+	    		    		proceed = true;
+	    		    		result = 1000;
+	    		    		break;
+	    		    	}
+	    		    	else {
+	    		    		// Reduce the probability by a factor of 10
+	    		    		result = result/10D;
+	    		    	}
+	    	    	}
+	            }
+	            
 	    	    if (result < 0)
 	    	    	result = 0;
 
             }
+            
+            else {
+            	// if process is false
+            	
+    	        // Reduce the probability if it's not the right time to sleep
+    	    	refreshSleepHabit(person);  
+            }
         }
-
 
         // No sleeping outside.
         //else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
@@ -264,84 +231,11 @@ public class SleepMeta implements MetaTask, Serializable {
     public double modifyProbability(double value, Person person, Building quarters) {
     	return value * TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters) * TaskProbabilityUtil.getRelationshipModifier(person, quarters);
     }
-
-    /***
-     * Refreshes a person's sleep habit based on his/her latest work shift 
-     * 
-     * @param person
-     * @return
-     */
-    public double refreshSleepHabit(Person person) {
-        double result = 0;
-
-    	int now = marsClock.getMillisolInt();
-  	  	//boolean isOnShiftNow = ts.isShiftHour(now);
-        //boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
-
-        // if a person is NOT on-call
-        if (person.getTaskSchedule().getShiftType() != ShiftType.ON_CALL) {
-	        // if a person is on shift right now
-           	if (person.getTaskSchedule().isShiftHour(now)) {
-           		CircadianClock circadian = person.getCircadianClock();
-           		int habit = circadian.getSuppressHabit();
-           		int spaceOut = circadian.getSpaceOut();
-	           	// limit adjustment to 10 times and space it out to at least 50 millisols apart
-           		if (spaceOut < now && habit < MAX_SUPPRESSION) {
-	           		// Discourage the person from forming the sleep habit at this time
-		  	  		person.updateSleepCycle(now, false);
-		        	// shouldn't be zero since it's possible a person did not have enough sleep at other time and now fall asleep
-			    	result = result / 10D;
-			    	//System.out.println("spaceOut : " + spaceOut + "   now : " + now + "  suppressHabit : " + habit);
-
-			    	circadian.setSuppressHabit(habit+1);
-			    	spaceOut = now + 20;
-			    	if (spaceOut > 1000) {
-			    		spaceOut = spaceOut - 1000;
-			    	}
-			    	circadian.setSpaceOut(spaceOut);
-           		}
-		    }
-
-           	else {
-           		int future = now;
-                // Check if person's work shift will begin within the next 50 millisols.
-           		future += 50;
-	            if (future > 1000)
-	            	future = future - 1000;
-
-	            boolean willBeShiftHour = person.getTaskSchedule().isShiftHour(future);
-	            if (willBeShiftHour) {
-	            	//if work shift is slated to begin in the next 50 millisols, probability of sleep reduces to one tenth of its value
-	                result = result / 10D;
-	            }
-	            //else
-	            	//result = result * 2D;
-           	}
-	    }
-        
-        else {
-        	// if he's on-call
-        	result = result * 1.1D;
-        }
-        
-        return result;
-    }
     
     
 	@Override
 	public Task constructInstance(Robot robot) {
-		return new Sleep(robot);
-//        Sleep sleep = robot.getSleep();
-//    	if (sleep == null) {
-//    		sleep = new Sleep(robot);
-//    		robot.setSleep(sleep);
-//    	}
-//    	else {
-//    	    sleep.taskCompute();
-//    		sleep.botCompute();
-//    	}
-//    	
-//    	return sleep;    	  	
+		return new Sleep(robot); 	  	
 	}
 
 	@Override
@@ -356,21 +250,6 @@ public class SleepMeta implements MetaTask, Serializable {
         else if (robot.isInVehicle())
             return result;
         
-        // TODO: in what case should a bot "relax" or slow down its pace?
-        // result += robot.getPhysicalCondition().getStress();
-
-        // Fatigue modifier.
-//        double fatigue = robot.getPhysicalCondition().getFatigue();
-//        if (fatigue > 500D) {
-//            result = (fatigue - 500D) / 4D;
-//        }
-
-        // Dark outside modifier.
-        //SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        //if (surface.getSurfaceSunlight(robot.getCoordinates()) == 0) {
-        //    result *= 2D;
-        //}
-
         // Crowding modifier.
         else if (robot.isInSettlement()) {
         	result += 1D;
@@ -387,9 +266,60 @@ public class SleepMeta implements MetaTask, Serializable {
         return result;
 	}
 	
+	/**
+     * Refreshes a person's sleep habit based on his/her latest work shift 
+     * 
+     * @param person
+     */
+    public void refreshSleepHabit(Person person) {
+    	int now = marsClock.getMillisolInt();
+
+        // if a person is NOT on-call
+        if (person.getTaskSchedule().getShiftType() != ShiftType.ON_CALL) {
+	        // if a person is on shift right now
+           	if (person.getTaskSchedule().isShiftHour(now)) {
+           		CircadianClock circadian = person.getCircadianClock();
+           		int habit = circadian.getSuppressHabit();
+           		int spaceOut = circadian.getSpaceOut();
+	           	// limit adjustment to 10 times and space it out to at least 50 millisols apart
+           		if (spaceOut < now && habit < MAX_SUPPRESSION) {
+	           		// Discourage the person from forming the sleep habit at this time
+		  	  		person.updateSleepCycle(now, false);
+			    	//System.out.println("spaceOut : " + spaceOut + "   now : " + now + "  suppressHabit : " + habit);
+
+			    	circadian.setSuppressHabit(habit+1);
+			    	spaceOut = now + 20;
+			    	if (spaceOut > 1000) {
+			    		spaceOut = spaceOut - 1000;
+			    	}
+			    	circadian.setSpaceOut(spaceOut);
+           		}
+		    }
+
+//           	else {
+//           		int future = now;
+//                // Check if person's work shift will begin within the next 50 millisols.
+//           		future += 50;
+//	            if (future > 1000)
+//	            	future = future - 1000;
+//
+//	            boolean willBeShiftHour = person.getTaskSchedule().isShiftHour(future);
+//	            if (willBeShiftHour) {
+//	            	//if work shift is slated to begin in the next 50 millisols, probability of sleep reduces to one tenth of its value
+//	                result = result / 10D;
+//	            }
+//	            //else
+//	            	//result = result * 2D;
+//           	}
+	    }
+        
+//        else {
+//        	// if he's on-call
+//        	result = result * 1.1D;
+//        }
+
+    }
+    
     public void destroy() {
-    	sim = null;
-    	masterClock = null;
-    	marsClock = null;
     }
 }

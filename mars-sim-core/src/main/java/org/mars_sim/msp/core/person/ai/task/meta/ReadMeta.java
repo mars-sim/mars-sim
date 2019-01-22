@@ -87,7 +87,8 @@ public class ReadMeta implements MetaTask, Serializable {
             double pref = person.getPreference().getPreferenceScore(this);
             
         	result = pref * 5D;
-
+	        if (result < 0) result = 0;
+	        
             if (pref > 0) {
              	if (stress > 45D)
              		result*=1.5;

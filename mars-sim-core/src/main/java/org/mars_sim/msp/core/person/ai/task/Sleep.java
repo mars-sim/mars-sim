@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -28,8 +27,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -77,10 +74,6 @@ public class Sleep extends Task implements Serializable {
 	private CircadianClock circadian;
 	private PhysicalCondition pc;
 
-	private static Simulation sim = Simulation.instance();
-	private static MasterClock masterClock;
-	private static MarsClock marsClock;
-
 	/**
 	 * Constructor.
 	 * 
@@ -90,21 +83,11 @@ public class Sleep extends Task implements Serializable {
 	public Sleep(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(10D)));
 
-		if (masterClock == null)
-			masterClock = sim.getMasterClock();
-
-		if (marsClock == null)
-			marsClock = masterClock.getMarsClock();
-
 		pc = person.getPhysicalCondition();
 		circadian = person.getCircadianClock();
 
 		timeFactor = 6D; // TODO: should vary this factor by person
 
-		compute();
-	}
-
-	public void compute() {
 		// Organized into 9 branching decisions
 		// A bed can be either empty(E) or occupied(O), either unmarked(U) or
 		// designated(D).
@@ -278,17 +261,6 @@ public class Sleep extends Task implements Serializable {
 	public Sleep(Robot robot) {
 		super(SLEEP_MODE, robot, false, false, STRESS_MODIFIER, true, 10D);
 
-		if (masterClock == null)
-			masterClock = sim.getMasterClock();
-
-		if (marsClock == null)
-			marsClock = masterClock.getMarsClock();
-
-		botCompute();
-	}
-
-	public void botCompute() {
-
 		// If robot is in a settlement, try to find a living accommodations building.
 		if (robot.isInSettlement()) {
 
@@ -380,12 +352,6 @@ public class Sleep extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double sleepingPhase(double time) {
-		if (masterClock == null)
-			masterClock = sim.getMasterClock();
-
-		if (marsClock == null)
-			marsClock = masterClock.getMarsClock();// needed for loading a saved sim
-
 		if (person != null) {
 
 			pc.recoverFromSoreness(.05);
@@ -418,7 +384,7 @@ public class Sleep extends Task implements Serializable {
 			
 			circadian.setNumSleep(circadian.getNumSleep() + 1);
 			circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
-
+    	
 			// Check if alarm went off
 			double newTime = marsClock.getMillisol();
 			double alarmTime = getAlarmTime();
@@ -633,17 +599,6 @@ public class Sleep extends Task implements Serializable {
 		return results;
 	}
 
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
-	 */
-	public static void setInstances(MasterClock c0, MarsClock c1) {
-		masterClock = c0;
-		marsClock = c1;
-	}
-	
 	@Override
 	public void destroy() {
 		super.destroy();

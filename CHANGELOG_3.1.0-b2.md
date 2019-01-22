@@ -5,7 +5,7 @@ Copyright (C) 2019 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0-beta2 (build 4831) - 2019-01-22
+## v3.1.0-beta2 (build 4832) - 2019-01-22
 
 ### KNOWN LIMITATIONS :
 
@@ -74,6 +74,7 @@ Copyright (C) 2019 Scott Davis
 
 7. Correct how food crop harvest should end.
 
+8. Fix recovering the simulation from machine's power saving.
 
 -----------------------------------------------------------------------------------------
 

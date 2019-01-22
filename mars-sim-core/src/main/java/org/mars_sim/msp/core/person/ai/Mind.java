@@ -451,39 +451,35 @@ public class Mind implements Serializable {
 			weightSum += missionWeights;
 		}
 
-		if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || (Double.isInfinite(weightSum))) {
+		if (weightSum <= 0D || Double.isNaN(weightSum) || Double.isInfinite(weightSum)) {
 //			try {
 //				TimeUnit.MILLISECONDS.sleep(100L);
 //			} catch (InterruptedException e) {
 //				e.printStackTrace();
 //			}
+			String s = "zero";
+			if (Double.isNaN(weightSum) || Double.isInfinite(weightSum))
+				s = "infinite";
+			
 			LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
-					person.getName() + " has an invalid weight sum of " + weightSum 
-					+ ". (tasks is " + tasks + ". missions is " + missions + "). Clearing all tasks...");
+					person.getName() + " has " + s + " weight sum" 
+					+ " (tasks = " + tasks 
+					+ ". missions = " + missions 
+					+ ") and will pick one task to do randomly.");
 //			taskManager.clearTask();
 //			throw new IllegalStateException("Mind.getNewAction(): " + person + " weight sum: " + weightSum);
-		}
-
-		// Select randomly across the total weight sum.
-		double rand = RandomUtil.getRandomDouble(weightSum);
-
-		// Determine which type of action was selected and set new action accordingly.
-		if (tasks) {
-			if (rand < taskWeights) {
+			
+			if (tasks) {
 				Task newTask = taskManager.getNewTask();
 				if (newTask != null)
 					taskManager.addTask(newTask);
 				else
 					logger.severe(person + "'s newTask is null ");
-
+				
 				return;
-			} else {
-				rand -= taskWeights;
 			}
-		}
-
-		if (missions) {
-			if (rand < missionWeights) {
+			
+			if (missions) {
 				Mission newMission = missionManager.getNewMission(person);
 				if (newMission != null) {
 					missionManager.addMission(newMission);
@@ -491,11 +487,42 @@ public class Mind implements Serializable {
 				}
 
 				return;
-			} else {
-				rand -= missionWeights;
 			}
 		}
-
+		
+		else {
+			// Select randomly across the total weight sum.
+			double rand = RandomUtil.getRandomDouble(weightSum);
+	
+			// Determine which type of action was selected and set new action accordingly.
+			if (tasks) {
+				if (rand < taskWeights) {
+					Task newTask = taskManager.getNewTask();
+					if (newTask != null)
+						taskManager.addTask(newTask);
+					else
+						logger.severe(person + "'s newTask is null ");
+	
+					return;
+				} else {
+					rand -= taskWeights;
+				}
+			}
+	
+			if (missions) {
+				if (rand < missionWeights) {
+					Mission newMission = missionManager.getNewMission(person);
+					if (newMission != null) {
+						missionManager.addMission(newMission);
+						setMission(newMission);
+					}
+	
+					return;
+				} else {
+					rand -= missionWeights;
+				}
+			}
+		}
 		
 		// If reached this point, no task or mission has been found.
 		LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
