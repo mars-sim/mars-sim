@@ -1435,6 +1435,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		taskSchedule.setShiftType(shiftType);
 	}
 
+	public ShiftType getShiftType() {
+		return taskSchedule.getShiftType();
+	}
+	
 	public double getFatigue() {
 		return condition.getFatigue();
 	}

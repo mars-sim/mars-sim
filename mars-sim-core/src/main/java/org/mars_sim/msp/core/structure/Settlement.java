@@ -208,7 +208,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	private int solCache = 0;
 	// NOTE: can't be static since each settlement needs to keep tracking of it
-	private int numShift;
+	private int numShiftsCache;
 	/** number of people with work shift A */
 	private int numA;
 	/** number of people with work shift B */
@@ -1474,7 +1474,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public void reassignWorkShift() {
 		// TODO: should call this method at, say, 800 millisols, not right at 1000
 		// millisols
-		Collection<Person> people = getIndoorPeople();
+		Collection<Person> people = getAllAssociatedPeople();//getIndoorPeople();
 		int pop = people.size();
 
 		int nShift = 0;
@@ -1486,26 +1486,33 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		} else {// if pop => 6
 			nShift = 3;
 		}
+		
+//		System.out.println();
+//		System.out.println(this + " used to have " + numShiftsCache + " shifts.");
+		
+		if (numShiftsCache != nShift) {
+			numShiftsCache = nShift;
 
-		if (numShift != nShift)
-			numShift = nShift;
+//			System.out.println(this + " now has " + nShift + " shifts.");
+			
+			for (Person p : people) {
 
-		for (Person p : people) {
-
-			if (!p.isBuried() || !p.isDeclaredDead() || !p.getPhysicalCondition().isDead()) {
-
-				if (p.getMind().getMission() == null && p.isInSettlement()) {
+				// Skip the person who is dead or is on a mission
+				if (!p.isBuried() && !p.isDeclaredDead() && !p.getPhysicalCondition().isDead()
+						&& p.getMind().getMission() == null) {
 
 					// Check if person is an astronomer.
 					boolean isAstronomer = (p.getMind().getJob() instanceof Astronomer);
 
 					ShiftType oldShift = p.getTaskSchedule().getShiftType();
-
+					
+//					System.out.println(p + " has " + oldShift + " shift in " + this);
+					
 					if (isAstronomer) {
 						// TODO: find the darkest time of the day
 						// and set work shift to cover time period
 
-						// For now, we may assume it will usually be X or Z, but Y
+						// For now, we may assume it will usually be X or Z, NOT Y
 						// since Y is usually where midday is at unless a person is at polar region.
 						if (oldShift == ShiftType.Y) {
 
@@ -1536,12 +1543,17 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 					} // end of if (isAstronomer)
 
 					else {
-						// if a person's shift is saturated, he will need to change shift
+						// Not an astronomer
+						// Note: if a person's shift is over-filled or saturated, he will need to change shift
+						
+						// Get an unfilled work shift 
 						ShiftType newShift = getAnEmptyWorkShift(pop);
-
+//						System.out.println(this + " found a new unfilled work shift : " + newShift);
+						
 						int tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
 						// TODO: should find the person with the highest tendency to take this shift
 
+						// if the person just came back from a mission, he would have on-call shift
 						if (oldShift == ShiftType.ON_CALL) {
 							// TODO: check a person's sleep habit map and request changing his work shift
 							// to avoid taking a work shift that overlaps his sleep hour
@@ -1568,17 +1580,43 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 							}
 						}
 
-						else {
-							// Note: if a person's shift is NOT saturated, he doesn't need to change shift
+						else { 
+							// Not on-call
+							
+							// Note: if a person's shift is NOT over-filled or saturated, he doesn't need to change shift
 							boolean oldShift_ok = isWorkShiftSaturated(oldShift, true);
 
 							// TODO: check a person's sleep habit map and request changing his work shift
 							// to avoid taking a work shift that overlaps his sleep hour
 
-							if (oldShift_ok) {
+							if (!oldShift_ok) {
 
 								if (newShift != oldShift && tendency > 50) { // sanity check
 									p.setShiftType(newShift);
+								}
+								
+								else if (tendency <= 50) {
+									ShiftType anotherShift = getAnEmptyWorkShift(pop);
+									if (anotherShift == newShift) {
+										anotherShift = getAnEmptyWorkShift(pop);
+									}
+
+									tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
+
+									if (newShift != oldShift && tendency > 50) { // sanity check
+										p.setShiftType(newShift);
+									}
+									
+									else {
+										ShiftType shift3 = getAnEmptyWorkShift(pop);
+										if (shift3 == newShift) {
+											shift3 = getAnEmptyWorkShift(pop);
+										}
+
+										if (shift3 != oldShift) { // sanity check
+											p.setShiftType(shift3);
+										}
+									}
 								}
 							}
 						}
@@ -1595,9 +1633,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 					if (oldShift != ShiftType.ON_CALL) {
 						p.setShiftType(ShiftType.ON_CALL);
 					}
-				}
-
-			} // end of dead loop
+				}				
+//				System.out.println(p + " is now on " + p.getShiftType() + " shift in " + this);
+			} // end of people for loop
 		} // end of for loop
 	}
 
@@ -2968,11 +3006,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		if (inclusiveChecking)
 			decrementShiftType(st);
 
-		int pop = getIndoorPeopleCount();
-		int quotient = pop / numShift;
-		int remainder = pop % numShift;
+		int pop = getNumCitizens();//getIndoorPeopleCount();
+		int quotient = pop / numShiftsCache;
+		int remainder = pop % numShiftsCache;
 
-		switch (numShift) {
+		switch (numShiftsCache) {
 		case 1: // (numShift == 1)
 			if (st != ShiftType.ON_CALL)
 				result = false;
@@ -3098,14 +3136,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public ShiftType getAnEmptyWorkShift(int population) {
 		int pop = 0;
 		if (population == -1)
-			pop = getIndoorPeopleCount();
+			pop = this.getNumCitizens();//getIndoorPeopleCount();
 		else
 			pop = population;
 
 		int rand = -1;
 		ShiftType shiftType = ShiftType.OFF;
-		int quotient = pop / numShift;
-		int remainder = pop % numShift;
+		int quotient = pop / numShiftsCache;
+		int remainder = pop % numShiftsCache;
 
 		int limX = 0;
 		int limY = 0;
@@ -3124,7 +3162,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		limY = pop - limX - limZ;
 
-		switch (numShift) {
+		switch (numShiftsCache) {
 
 		case 1: // for numShift = 1
 			shiftType = ShiftType.ON_CALL;
@@ -3235,7 +3273,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @param numShift
 	 */
 	public void setNumShift(int numShift) {
-		this.numShift = numShift;
+		this.numShiftsCache = numShift;
 	}
 
 	/**
@@ -3244,7 +3282,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return a number, either 2 or 3
 	 */
 	public int getNumShift() {
-		return numShift;
+		return numShiftsCache;
 	}
 
 	/*
