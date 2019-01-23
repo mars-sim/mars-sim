@@ -645,7 +645,7 @@ implements ResearchScientificStudy, Serializable {
 	 * 
 	 * @param {{@link ScientificStudyManager}
 	 */
-	public static void setInstances(ScientificStudyManager s) {
+	public static void initializeInstances(ScientificStudyManager s) {
 		studyManager = s;
 	}
 

@@ -413,7 +413,7 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	 * 
 	 * @param w
 	 */
-	public static void setInstances(Weather w) {
+	public static void initializeInstances(Weather w) {
 		weather = w;
 	}
 	

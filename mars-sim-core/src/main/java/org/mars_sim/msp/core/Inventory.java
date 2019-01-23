@@ -2349,7 +2349,7 @@ public class Inventory implements Serializable {
 	/**
 	 * Remaps the instances
 	 * 
-	 * @return {@Link MarsSurface}
+	 * @param ms {@link MarsSurface}
 	 */
 	public static void initializeInstances(MarsSurface ms) {
 		marsSurface = ms;

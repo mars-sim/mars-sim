@@ -1095,7 +1095,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @param clock
 	 * @param w
 	 */
-	public static void setInstances(MarsClock clock, Weather w, UnitManager u) {
+	public static void initializeInstances(MarsClock clock, Weather w, UnitManager u) {
 		marsClock = clock;
 		weather = w;
 		unitManager = u;

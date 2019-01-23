@@ -186,7 +186,7 @@ public class MissionPlanning implements Serializable {
 		return qualityScore;
 	}
 	
-	public static void setInstances(MarsClock c) {
+	public static void initializeInstances(MarsClock c) {
 		clock = c;
 	}
 }

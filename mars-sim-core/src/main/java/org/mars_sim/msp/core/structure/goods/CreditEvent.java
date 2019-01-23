@@ -7,11 +7,12 @@
 
 package org.mars_sim.msp.core.structure.goods;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.structure.Settlement;
-
 import java.io.Serializable;
 import java.util.EventObject;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * A credit change event.
@@ -25,6 +26,10 @@ public class CreditEvent extends EventObject implements Serializable {
 	private int settlement2;
 	private double credit;
 	
+	private static Simulation sim = Simulation.instance();
+	private static UnitManager unitManager = sim.getUnitManager();
+	private static CreditManager creditManager = sim.getCreditManager();
+	
 	/**
 	 * Constructor
 	 * @param settlement1 the first settlement.
@@ -33,7 +38,7 @@ public class CreditEvent extends EventObject implements Serializable {
 	 */
 	public CreditEvent(Settlement settlement1, Settlement settlement2, double credit) {
 		// Use EventObject constructor
-		super(Simulation.instance().getCreditManager());
+		super(creditManager);
 		
 		this.settlement1 = settlement1.getIdentifier();
 		this.settlement2 = settlement2.getIdentifier();
@@ -46,7 +51,7 @@ public class CreditEvent extends EventObject implements Serializable {
 	 * @return settlement.
 	 */
 	public Settlement getSettlement1() {
-		return Simulation.instance().getUnitManager().getSettlementByID(settlement1);
+		return unitManager.getSettlementByID(settlement1);
 	}
 	
 	/**
@@ -54,7 +59,7 @@ public class CreditEvent extends EventObject implements Serializable {
 	 * @return settlement.
 	 */
 	public Settlement getSettlement2() {
-		return Simulation.instance().getUnitManager().getSettlementByID(settlement2);
+		return unitManager.getSettlementByID(settlement2);
 	}
 	
 	/**
@@ -64,4 +69,16 @@ public class CreditEvent extends EventObject implements Serializable {
 	public double getCredit() {
 		return credit;
 	}
+	
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 * 
+//	 * @param u {@link UnitManager}
+//	 * @param c {@link CreditManager}
+//	 */
+//	public static void setInstances(UnitManager u, CreditManager c) {
+//		unitManager = u;
+//		creditManager = c;
+//	}
+
 }

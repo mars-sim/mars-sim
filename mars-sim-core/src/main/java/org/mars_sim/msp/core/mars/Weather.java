@@ -156,13 +156,13 @@ public class Weather implements Serializable {
 			orbitInfo = mars.getOrbitInfo();
 		
 		if (surfaceFeatures == null)
-			surfaceFeatures = sim.getMars().getSurfaceFeatures();
+			surfaceFeatures = mars.getSurfaceFeatures();
 		
 		if (terrainElevation == null)
 			terrainElevation = surfaceFeatures.getTerrainElevation();
 
 		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
+			unitManager = sim.getUnitManager();
 		
 	}
 	
@@ -555,24 +555,17 @@ public class Weather implements Serializable {
 			// 5. Randomness
 			// 6. Wind speed
 
-//			// (1). Time of day, longitude (included inside in solar irradiance)
+//			// (1). Time of day, longitude (see SurfaceFeature's calculateSolarIrradiance())
 //			double theta = location.getTheta() / Math.PI * 500D; // convert theta in longitude in radian to millisols;
-//			//System.out.println(" theta: " + theta);
+			
 //	        double time  = marsClock.getMillisol();
 //	        double x_offset = time + theta - VIKING_LONGITUDE_OFFSET_IN_MILLISOLS ;
 //	        double equatorial_temperature = 27.5D * Math.sin  ( Math.PI * x_offset / 500D) - 58.5D ;
-//			equatorial_temperature = Math.round (equatorial_temperature * 100.0)/100.0;
-//			System.out.println("factor : " + Math.sin  ( Math.PI * x_offset / 500D) + "\tequatorial T: "+ equatorial_temperature);
-			// System.out.print("Time: " + Math.round (time) + " T: " +
-			// standard_temperature);
-
+			
 			double light_factor = surfaceFeatures.getSunlight(location);
 
 			// Equation below is modeled after Viking's data.
 			double equatorial_temperature = 27.5D * light_factor - 58.5D;
-			equatorial_temperature = Math.round(equatorial_temperature * 100.0) / 100.0;
-			// System.out.println("sunlight : " + sunlight + "\t\tequatorial T: "+
-			// equatorial_temperature);
 
 			// ...getSurfaceSunlight * (80D / 127D (max sun))
 			// if sun full we will get -40D the avg, if night or twilight we will get
@@ -595,7 +588,7 @@ public class Weather implements Serializable {
 			else // delta = -31 + 23.4 = 7.6
 				terrain_dt = 7.6 - 0.00222 * elevation * 1000;
 
-			terrain_dt = Math.round(terrain_dt * 100.0) / 100.0;
+//			terrain_dt = Math.round(terrain_dt * 100.0) / 100.0;
 			// System.out.print(" terrain_dt: " + terrain_dt );
 
 			// (3). Latitude
@@ -603,7 +596,7 @@ public class Weather implements Serializable {
 
 			// System.out.print(" degree: " + Math.round (degree * 10.0)/10.0 );
 			double lat_dt = -15D - 15D * Math.sin(2D * lat_degree * Math.PI / 180D + Math.PI / 2D);
-			lat_dt = Math.round(lat_dt * 100.0) / 100.0;
+//			lat_dt = Math.round(lat_dt * 100.0) / 100.0;
 			// System.out.println(" lat_dt: " + lat_dt );
 
 			// (4). Seasonal variation
@@ -611,7 +604,7 @@ public class Weather implements Serializable {
 			// System.out.println(marsClock);
 			int solElapsed = marsClock.getMissionSol();
 			double seasonal_dt = lat_adjustment * Math.sin(2 * Math.PI / 1000D * (solElapsed - 142));
-			seasonal_dt = Math.round(seasonal_dt * 100.0) / 100.0;
+//			seasonal_dt = Math.round(seasonal_dt * 100.0) / 100.0;
 			// System.out.println(" seasonal_dt: " + seasonal_dt );
 
 			// (5). Add randomness
@@ -662,7 +655,7 @@ public class Weather implements Serializable {
 	}
 
 	/**
-	 * Provides the surface temperature /air pressure at a given location from the
+	 * Provides the surface temperature or air pressure at a given location from the
 	 * temperatureCacheMap. If calling the given location for the first time from
 	 * the cache map, call update temperature/air pressure instead
 	 * 
@@ -686,7 +679,7 @@ public class Weather implements Serializable {
 
 			result = cache;
 		}
-		// System.out.println("air pressure cache : "+ result);
+		
 		return result;
 	}
 
@@ -1007,12 +1000,14 @@ public class Weather implements Serializable {
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
-	 * @param {@link MasterClock}
-	 * @param {@link MarsClock}
-	 * @param {@link Mars}
-	 * @param {@link SurfaceFeatures}
+	 * @param c0 {@link MasterClock}
+	 * @param c1 {@link MarsClock}
+	 * @param m {@link Mars}
+	 * @param s {@link SurfaceFeatures}
+	 * @param o {@link OrbitInfo}
+	 * @param u {@link UnitManager}
 	 */
-	public static void setInstances(MasterClock c0, MarsClock c1, Mars m, SurfaceFeatures s, OrbitInfo o, UnitManager u) {
+	public static void initializeInstances(MasterClock c0, MarsClock c1, Mars m, SurfaceFeatures s, OrbitInfo o, UnitManager u) {
 		masterClock = c0;
 		marsClock = c1;
 		mars = m;	

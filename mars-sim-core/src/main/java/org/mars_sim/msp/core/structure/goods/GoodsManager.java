@@ -2970,22 +2970,23 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
-	 * @param clock
-	 * @param mgr
-	 * @param um
+	 * @param s {@link Simulation}
+	 * @param c {@link MarsClock}
+	 * @param m {@link MissionManager}
+	 * @param u {@link UnitManager}
+	 * @param pc {@link PersonConfig}
 	 */
-	public static void setInstances(MarsClock clock, MissionManager mgr, UnitManager um, PersonConfig pc) {
-		sim = Simulation.instance();
+	public static void initializeInstances(Simulation s, MarsClock c, MissionManager m, UnitManager u, PersonConfig pc) {
+		sim = s;
 		simulationConfig = SimulationConfig.instance();
-		unitManager = um;
-		missionManager = mgr;
-		marsClock = clock;
+		unitManager = u;
+		missionManager = m;
+		marsClock = c;
 //		buildingConfig = simulationConfig.getBuildingConfiguration();
 		cropConfig = simulationConfig.getCropConfiguration();
 		mealConfig = simulationConfig.getMealConfiguration();
 		personConfig = pc;
 		vehicleConfig = simulationConfig.getVehicleConfiguration();
-
 	}
 	
 	/**

@@ -1174,7 +1174,7 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @param mgr
 	 */
-	public static void setInstances() {
+	public static void initializeInstances() {
 		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 	}
 

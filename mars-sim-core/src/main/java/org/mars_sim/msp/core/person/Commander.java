@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.terminal;
+package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
 

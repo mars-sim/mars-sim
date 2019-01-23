@@ -2364,7 +2364,7 @@ public class UnitManager implements Serializable {
 	 * 
 	 * @param clock
 	 */
-	public void setInstances(MarsClock clock) {
+	public void initializeInstances(MarsClock clock) {
 		marsClock = clock;
 	}
 	

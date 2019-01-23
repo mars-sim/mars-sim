@@ -263,7 +263,7 @@ public class DustStorm implements Serializable {
 		this.type = type;
 	}
 
-	public static void setInstances(Weather w) {
+	public static void initializeInstances(Weather w) {
 		weather = w;
 	}
 

@@ -443,7 +443,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	 * 
 	 * @param s
 	 */
-	public static void setInstances(SurfaceFeatures s) {
+	public static void initializeInstances(SurfaceFeatures s) {
 		surface = s;
 	}
 	

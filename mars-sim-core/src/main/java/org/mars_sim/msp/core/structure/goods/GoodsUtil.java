@@ -89,11 +89,11 @@ public class GoodsUtil {
 //			throw new IllegalArgumentException("resource cannot be null");
 //		}
 		GoodType category = null;
-		if (resource < ResourceUtil.FIRST_ITEM_RESOURCE) {
+		if (resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 			category = GoodType.AMOUNT_RESOURCE;
 			AmountResource ar = ResourceUtil.findAmountResource(resource);
 			return new Good(ar.getName(), ar, category);
-		} else if (resource >= ResourceUtil.FIRST_ITEM_RESOURCE) {
+		} else if (resource >= ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 			Part p = ItemResourceUtil.findItemResource(resource);
 			category = GoodType.ITEM_RESOURCE;
 			return new Good(p.getName(), p, category);

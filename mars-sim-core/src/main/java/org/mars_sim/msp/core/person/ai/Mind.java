@@ -123,7 +123,7 @@ public class Mind implements Serializable {
 	 * 
 	 * @param clock
 	 */
-	public static void setInstances(MarsClock clock, Simulation s, MissionManager m, RelationshipManager r) {
+	public static void initializeInstances(MarsClock clock, Simulation s, MissionManager m, RelationshipManager r) {
 		marsClock = clock;
 		sim = s;
 		relationshipManager = r;

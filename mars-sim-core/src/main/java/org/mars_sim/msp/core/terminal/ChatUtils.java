@@ -18,7 +18,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -108,11 +107,8 @@ import org.mars_sim.msp.core.vehicle.VehicleAirlock;
 
 public class ChatUtils {
 
-    /** default logger. */
-  
+    /** DEFAULT LOGGER. */  
 	private static Logger logger = Logger.getLogger(ChatUtils.class.getName());
-//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			logger.getName().length());
 
 	private static boolean expertMode = false;
 
@@ -1612,7 +1608,7 @@ public class ChatUtils {
 			Map<String, List<Person>> map =
 					settlementCache.getAllAssociatedPeople().stream().collect(Collectors.groupingBy(Person::getTaskDescription));
 								
-			for (Entry<String, List<Person>> entry : map.entrySet()) {
+			for (Map.Entry<String, List<Person>> entry : map.entrySet()) {
 				String task = entry.getKey();
 				List<Person> plist = entry.getValue();
 			
@@ -1661,7 +1657,7 @@ public class ChatUtils {
 			Map<String, List<Robot>> botMap =
 					settlementCache.getAllAssociatedRobots().stream().collect(Collectors.groupingBy(Robot::getTaskDescription));
 								
-			for (Entry<String, List<Robot>> entry : botMap.entrySet()) {
+			for (Map.Entry<String, List<Robot>> entry : botMap.entrySet()) {
 				String task = entry.getKey();
 				List<Robot> plist = entry.getValue();
 			
@@ -2079,7 +2075,7 @@ public class ChatUtils {
 			Map<String, List<Person>> map =
 					settlementCache.getAllAssociatedPeople().stream().collect(Collectors.groupingBy(Person::getCountry));
 								
-			for (Entry<String, List<Person>> entry : map.entrySet()) {
+			for (Map.Entry<String, List<Person>> entry : map.entrySet()) {
 				String country = entry.getKey();
 				String sponsor = UnitManager.mapCountry2Sponsor(country);
 				responseText.append(System.lineSeparator());

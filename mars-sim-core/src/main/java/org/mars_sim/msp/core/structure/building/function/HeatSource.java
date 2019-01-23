@@ -144,7 +144,7 @@ public abstract class HeatSource implements Serializable {
 	 * @param {@link OrbitInfo}
 	 * @param {@link Weather}
 	 */
-	public static void setInstances(Mars m, SurfaceFeatures s, OrbitInfo o, Weather w) {
+	public static void initializeInstances(Mars m, SurfaceFeatures s, OrbitInfo o, Weather w) {
 		mars = m;
 		surface = s;
 		orbitInfo = o;

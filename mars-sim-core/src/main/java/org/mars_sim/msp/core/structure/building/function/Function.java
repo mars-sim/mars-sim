@@ -391,7 +391,7 @@ public abstract class Function implements Serializable {
 	 * @param c1 {@link MarsClock}
 	 * @param pc {@link PersonConfig}
 	 */
-	public static void setInstances(BuildingConfig bc, MasterClock c0, MarsClock c1, PersonConfig pc,
+	public static void initializeInstances(BuildingConfig bc, MasterClock c0, MarsClock c1, PersonConfig pc,
 			Mars m, SurfaceFeatures sf, Weather w, UnitManager u) {
 		masterClock = c0;
 		marsClock = c1;

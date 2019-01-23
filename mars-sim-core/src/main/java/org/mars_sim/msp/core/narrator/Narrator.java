@@ -23,7 +23,7 @@ public class Narrator implements Serializable {
 	}
 	
 	public void translate(HistoricalEvent event) {
-		String caue = event.getWhatCause();
+		String cause = event.getWhatCause();
 	    HistoricalEventCategory category = event.getCategory();
 		//Object source = event.getSource();
 		Object who = event.getWho();

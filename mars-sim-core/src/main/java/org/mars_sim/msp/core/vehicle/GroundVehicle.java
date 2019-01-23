@@ -303,7 +303,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	 * 
 	 * @param s
 	 */
-	public static void setInstances(SurfaceFeatures s) {
+	public static void initializeInstances(SurfaceFeatures s) {
 		surface = s;
 		terrain = surface.getTerrainElevation();
 	}

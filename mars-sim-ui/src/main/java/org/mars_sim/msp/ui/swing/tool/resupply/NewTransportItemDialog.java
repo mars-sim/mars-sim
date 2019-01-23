@@ -71,7 +71,7 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		getContentPane().add(transportTypePanel, BorderLayout.NORTH);
 
 		// Create combo box for determining transport item type.
-		JComboBox<String> typeBox = new JComboBoxMW<String>();
+		JComboBoxMW<String> typeBox = new JComboBoxMW<>();
 		typeBox.addItem(DEFAULT_MESSAGE);
 		typeBox.addItem(RESUPPLY_MISSION);
 		typeBox.addItem(ARRIVING_SETTLEMENT);

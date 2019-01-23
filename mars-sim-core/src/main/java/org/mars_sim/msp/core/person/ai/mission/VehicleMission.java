@@ -896,7 +896,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			Inventory inv = vehicle.getInventory();
 
 			for (Integer resource : neededResources.keySet()) {
-				if (resource < MAX_AMOUNT_RESOURCE) {
+				if (resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 
 					double amount = (Double) neededResources.get(resource);
 					double amountStored = inv.getAmountResourceStored(resource, false);
@@ -911,7 +911,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					}
 				}
 
-				else if (resource >= MAX_AMOUNT_RESOURCE) {
+				else if (resource >= ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 					int num = (Integer) neededResources.get(resource);
 					int numStored = inv.getItemResourceNum(resource);
 
@@ -1253,18 +1253,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Iterator<Integer> i = optionalResources.keySet().iterator();
 		while (i.hasNext()) {
 			int resource = i.next();
-
-			if (resource < MAX_AMOUNT_RESOURCE) {
-				// AmountResource amountResource = (AmountResource) resource;
+			// Check if it's an amount resource that can be stored inside
+			if (resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				double amount = (double) optionalResources.get(resource);
 				// Class<? extends Container> containerClass =
 				// ContainerUtil.getContainerClassToHoldResource(resource);
 				int containerID = ContainerUtil.getContainerClassIDToHoldResource(resource);
 				double capacity = ContainerUtil.getContainerCapacity(resource);
 				int numContainers = (int) Math.ceil(amount / capacity);
-
 //	            int id = EquipmentType.str2int(containerClass.getClass().getName());
-
 				if (result.containsKey(containerID)) {
 					numContainers += (int) (result.get(containerID));
 				}

@@ -251,7 +251,7 @@ public class PlayHoloGame extends Task implements Serializable {
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void setInstances(MasterClock c0, MarsClock c1) {
+	public static void initializeInstances(MasterClock c0, MarsClock c1) {
 		masterClock = c0;
 		marsClock = c1;
 	}

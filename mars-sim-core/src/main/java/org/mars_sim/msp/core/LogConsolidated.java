@@ -185,6 +185,12 @@ public class LogConsolidated {
 		return earthClock;
 	}
 	
+	/**
+	 * Initialize transient data in the simulation.
+	 * 
+	 * @param m {@link MarsClock}
+	 * @param e {@link EarthClock}
+	 */
 	public static void initializeInstances(MarsClock m, EarthClock e) {
 		marsClock = m;
 		earthClock = e;

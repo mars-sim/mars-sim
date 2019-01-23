@@ -9,12 +9,10 @@ package org.mars_sim.msp.core.mars;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.time.ClockUtils;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * The OrbitInfo class keeps track of the orbital position of Mars
@@ -131,7 +129,7 @@ public class OrbitInfo implements Serializable {
 	private Coordinates sunDirection;
 
 	// static instances
-	private static Simulation sim = Simulation.instance();
+//	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock;
 	private static EarthClock earthClock;
 
@@ -156,16 +154,6 @@ public class OrbitInfo implements Serializable {
 //		testOrbitData();
 
 		offsetL_s = computePerihelion(2043);
-	}
-	
-	/**
-	 * Initialize transient data in the simulation.
-	 * 
-	 * @throws Exception if transient data could not be constructed.
-	 */
-	public void initializeTransientData() {
-		earthClock = sim.getMasterClock().getEarthClock();
-		marsClock = sim.getMasterClock().getMarsClock();
 	}
 
 	public void testOrbitData() {
@@ -451,8 +439,7 @@ public class OrbitInfo implements Serializable {
 		// 1. http://www.giss.nasa.gov/research/briefs/allison_02/
 		// 2. https://en.wiki2.org/wiki/Equation_of_time
 		// 3. https://en.wiki2.org/wiki/Analemma
-		// 4.
-		// http://www.planetary.org/blogs/emily-lakdawalla/2014/a-martian-analemma.html?referrer=https://www.google.com/
+		// 4. http://www.planetary.org/blogs/emily-lakdawalla/2014/a-martian-analemma.html
 
 		computeSineSolarDeclinationAngle();
 		double d = getSolarDeclinationAngle();
@@ -633,15 +620,14 @@ public class OrbitInfo implements Serializable {
 	}
 
 	/**
-	 * Reloads instances after loading from a saved sim
+	 * Initialize transient data in the simulation.
 	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
-	 * @param {{@link Mars}
+	 * @param m {@link MarsClock}
+	 * @param e {@link EarthClock}
 	 */
-	public static void setInstances(MarsClock c1, EarthClock c) {
-		marsClock = c1;
-		earthClock = c;
+	public static void initializeInstances(MarsClock m, EarthClock e) {
+		marsClock = m;
+		earthClock = e;
 	}
 	
 	/**
@@ -650,7 +636,6 @@ public class OrbitInfo implements Serializable {
 	public void destroy() {
 		sunDirection = null;
 		marsClock = null;
-		sim = null;
 		earthClock = null;
 	}
 }

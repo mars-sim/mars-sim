@@ -1437,7 +1437,7 @@ public class Crop implements Serializable {
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void setInstances(MasterClock c0, MarsClock c1, SurfaceFeatures sf, UnitManager u) {
+	public static void initializeInstances(MasterClock c0, MarsClock c1, SurfaceFeatures sf, UnitManager u) {
 		masterClock = c0;
 		marsClock = c1;
 		surface = sf;

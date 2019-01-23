@@ -14,18 +14,18 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * This class represents a time based event that has occurred in the simulation.
  * It is aimed at being subclassed to reflect the real simulation specific
- * events.
- * An event consists of a time stamp when it occurred, a description, an
+ * events. An event consists of a time stamp when it occurred, a description, an
  * optional Unit that is the source of the event and an optional Object that has
  * triggered the event.
  */
 public abstract class HistoricalEvent implements Serializable {
-	
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Category of event.
+	 * 
 	 * @see HistoricalEventManager
 	 * @see HistoricalEventCategory
 	 */
@@ -43,20 +43,21 @@ public abstract class HistoricalEvent implements Serializable {
 	private String who;
 	private String location0;
 	private String location1;
-	
 
 	/**
-	 * Construct an event with the appropriate information. The time is not
-	 * defined until the evnet is registered with the Event Manager.
-	 * @param category {@link HistoricalEventCategory} Category of event.
-	 * @param type {@link EventType} Type of event.
-	 * @param whatCause The cause for this event
+	 * Construct an event with the appropriate information. The time is not defined
+	 * until the evnet is registered with the Event Manager.
+	 * 
+	 * @param category    {@link HistoricalEventCategory} Category of event.
+	 * @param type        {@link EventType} Type of event.
+	 * @param whatCause   The cause for this event
 	 * @param whoAffected Who is being primarily affected by this event.
-	 * @param location0 the building/vehicle where it occurs
-	 * @param location1 the settlement/coordinate where it occurs
+	 * @param location0   the building/vehicle where it occurs
+	 * @param location1   the settlement/coordinate where it occurs
 	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent
 	 */
-	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause, String whileDoing, String whoAffected, String location0, String location1) { 
+	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause,
+			String whileDoing, String whoAffected, String location0, String location1) {
 		this.category = category;
 		this.type = type;
 		this.source = source;
@@ -69,6 +70,7 @@ public abstract class HistoricalEvent implements Serializable {
 
 	/**
 	 * Set the timestamp for this event.
+	 * 
 	 * @param timestamp
 	 */
 	void setTimestamp(MarsClock timestamp) {
@@ -77,6 +79,7 @@ public abstract class HistoricalEvent implements Serializable {
 
 	/**
 	 * Get the cause.
+	 * 
 	 * @return String the cause.
 	 */
 	public String getWhatCause() {
@@ -85,24 +88,25 @@ public abstract class HistoricalEvent implements Serializable {
 
 	/**
 	 * Get the activity a person was engaging.
+	 * 
 	 * @return String the activity.
 	 */
 	public String getWhileDoing() {
 		return whileDoing;
 	}
 
-	
 	/**
 	 * Get the name of the offender or the person affected.
+	 * 
 	 * @return String the name.
 	 */
 	public String getWho() {
 		return who;
 	}
-	
-	
+
 	/**
 	 * Get the building/vehicle.
+	 * 
 	 * @return String the building/vehicle.
 	 */
 	public String getLocation0() {
@@ -111,14 +115,16 @@ public abstract class HistoricalEvent implements Serializable {
 
 	/**
 	 * Get the settlement/coordinates.
+	 * 
 	 * @return String the settlement/coordinates
 	 */
 	public String getLocation1() {
 		return location1;
 	}
-	
+
 	/**
 	 * Get event time.
+	 * 
 	 * @return Time the event happened
 	 */
 	public MarsClock getTimestamp() {
@@ -127,6 +133,7 @@ public abstract class HistoricalEvent implements Serializable {
 
 	/**
 	 * Get the type of event.
+	 * 
 	 * @return String representing the type.
 	 */
 	public EventType getType() {
@@ -135,14 +142,16 @@ public abstract class HistoricalEvent implements Serializable {
 
 	/**
 	 * Get event source.
-	 * @return source 
+	 * 
+	 * @return source
 	 */
 	public Object getSource() {
 		return source;
 	}
-	
+
 	/**
 	 * Gets the category of the event.
+	 * 
 	 * @return {@link HistoricalEventCategory}
 	 */
 	public HistoricalEventCategory getCategory() {

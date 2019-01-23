@@ -69,9 +69,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	// 1/2
 	private static final double SKILL_STRESS_MODIFIER = .1D;
 
-	public static final int FIRST_ITEM_RESOURCE = ResourceUtil.FIRST_ITEM_RESOURCE;
+	protected static final int FIRST_ITEM_RESOURCE_ID = ResourceUtil.FIRST_ITEM_RESOURCE_ID;
 
-	public static final int FIRST_EQUIPMENT_RESOURCE = ResourceUtil.FIRST_EQUIPMENT_RESOURCE;
+	protected static final int FIRST_EQUIPMENT_RESOURCE_ID = ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 
 	// Data members
 	/** True if task is finished. */

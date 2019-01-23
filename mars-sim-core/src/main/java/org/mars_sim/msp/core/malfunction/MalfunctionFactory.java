@@ -534,26 +534,15 @@ public final class MalfunctionFactory implements Serializable {
 		return namePartMap;
 	}
 	
-	
-	/**
-	 * Set instances
-	 * 
-	 * @param c {@link MarsClock}
-	 * @param u {@link UnitManager}
-	 */
-	public static void setMarsClock(MarsClock c, UnitManager u) {
-		marsClock = c;
-		unitManager = u;
-	}
-	
+
 	/**
 	 * Set instances
 	 * 
 	 * @param clock
 	 */
-	public static void initializeInstances(MarsClock clock, UnitManager u) {
-		marsClock = clock;
-		sim = Simulation.instance();
+	public static void initializeInstances(Simulation s, MarsClock c, UnitManager u) {
+		marsClock = c;
+		sim = s;
 		simulationConfig = SimulationConfig.instance();
 		malfunctionConfig = simulationConfig.getMalfunctionConfiguration();
 		partConfig = simulationConfig.getPartConfiguration();

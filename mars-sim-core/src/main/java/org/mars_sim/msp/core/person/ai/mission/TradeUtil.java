@@ -345,16 +345,20 @@ public final class TradeUtil {
 							number = itemResourceNum;
 						massCapacity -= (GoodsUtil.getGoodMassPerItem(good) * number);
 					}
+					
 					int currentNum = 0;
 					if (tradeList.containsKey(good))
 						currentNum = tradeList.get(good);
 					double supply = buyerGoodsManager.getNumberOfGoodForSettlement(good);
 					double goodNum = 1D;
+					
 					if (isAmountResource)
 						goodNum = getResourceTradeAmount((AmountResource) good.getObject());
 					if (isItemResource)
 						goodNum = itemResourceNum;
+					
 					double buyGoodValue = buyerGoodsManager.getGoodValuePerItem(good, (supply + currentNum + goodNum));
+					
 					if (isAmountResource) {
 						double tradeAmount = getResourceTradeAmount((AmountResource) good.getObject());
 						buyGoodValue *= tradeAmount;

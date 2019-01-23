@@ -6,9 +6,18 @@
  */
 package org.mars_sim.msp.core.mars;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -18,14 +27,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * SurfaceFeatures represents the surface terrain and landmarks of the virtual
@@ -313,8 +314,6 @@ public class SurfaceFeatures implements Serializable {
 	 * @return solar irradiance (W/m2)
 	 */
 	public double getSolarIrradiance(Coordinates location) {
-//		if (masterClock == null)
-//			masterClock = sim.getMasterClock();
 		MarsClock currentTime = masterClock.getMarsClock();
 		if (!currentTime.equals(solarIrradianceMapCacheTime)) {
 			// Call here once per frame because getSolarIrradiance()
@@ -389,127 +388,127 @@ public class SurfaceFeatures implements Serializable {
 //    	s1 = MEAN_SOLAR_IRRADIANCE * Math.cos(z) * num / den * num / den  ;
 //    	System.out.println("solar irradiance s1 is " + s1);
 
-// Approach 2 consists of 5 parts
-			// PART 1 : COSINE SOLAR ZENITH ANGLE
-			double G_0 = 0;
-			double G_h = 0;
-			double G_bh = 0;
-			double G_dh = 0;
-			// G_0: direct solar irradiance at the top of the atmosphere
-			// G_h: global irradiance on a horizontal surface
-			// G_bh: direct beam irradiance on a horizontal surface
-			// G_dh: diffuse irradiance on a horizontal surface
-			
-			if (mars == null)
-				mars = sim.getMars();
-			if (orbitInfo == null)
-				orbitInfo = mars.getOrbitInfo();
+		// Approach 2 consists of 5 parts
+		// PART 1 : COSINE SOLAR ZENITH ANGLE
+		double G_0 = 0;
+		double G_h = 0;
+		double G_bh = 0;
+		double G_dh = 0;
+		// G_0: direct solar irradiance at the top of the atmosphere
+		// G_h: global irradiance on a horizontal surface
+		// G_bh: direct beam irradiance on a horizontal surface
+		// G_dh: diffuse irradiance on a horizontal surface
+		
+		if (mars == null)
+			mars = sim.getMars();
+		if (orbitInfo == null)
+			orbitInfo = mars.getOrbitInfo();
 
-			double cos_z = orbitInfo.getCosineSolarZenithAngle(location);
-			double z = Math.acos(cos_z);
+		double cos_z = orbitInfo.getCosineSolarZenithAngle(location);
+		double z = Math.acos(cos_z);
 
-			if (z >= Math.PI / 2D) {
-				// if Mars is in the so-called twilight zone,
-				// Set it to a maximum of 12 degree below the horizon
-				// indirect sunlight such as diffuse/scattering/reflective sunlight will light
-				// up the Martian sky
-				if (z <= Math.PI / 2D + .1) {
-					// twilight zone is defined as bwtween 0.1 to -0.1 in radians above and below
-					// the horizon
-					G_h = Math.round((-200 * z + 100 * Math.PI + 20) * 100.00) / 100.00; // keep a minimum of G_h at 20
-																							// W/m2 if the sun is within
-																							// the twilight zone
-					// G_h = Math.round((0.2094 + z)*100D);
-					// This an arbitrary model set G_0 to 41.8879 W/ m-2 when Mars is at the horizon
-				}
+		if (z >= Math.PI / 2D) {
+			// if Mars is in the so-called twilight zone,
+			// Set it to a maximum of 12 degree below the horizon
+			// indirect sunlight such as diffuse/scattering/reflective sunlight will light
+			// up the Martian sky
+			if (z <= Math.PI / 2D + .1) {
+				// twilight zone is defined as bwtween 0.1 to -0.1 in radians above and below
+				// the horizon
+				G_h = Math.round((-200 * z + 100 * Math.PI + 20) * 100.00) / 100.00; // keep a minimum of G_h at 20
+																						// W/m2 if the sun is within
+																						// the twilight zone
+				// G_h = Math.round((0.2094 + z)*100D);
+				// This an arbitrary model set G_0 to 41.8879 W/ m-2 when Mars is at the horizon
 			}
+		}
 
-			else {
+		else {
 
-				// Part 2: get the new average solar irradiance as a result of the changing
-				// distance between Mars and Sun with respect to the value of L_s.
-				// double L_s = orbitInfo.getL_s();
+			// Part 2: get the new average solar irradiance as a result of the changing
+			// distance between Mars and Sun with respect to the value of L_s.
+			// double L_s = orbitInfo.getL_s();
 
-				// Note a: Because of Mars's orbital eccentricity, L_s advances somewhat
-				// unevenly with time, but can be evaluated
-				// as a trigonometric power series for the orbital eccentricity and the orbital
-				// mean anomaly measured with respect to the perihelion.
-				// The areocentric longitude at perihelion, L_s = 251.000 + 0.00645 * (year -
-				// 2000),
-				// indicates a near alignment of the planet's closest approach to the Sun in its
-				// orbit with its winter solstice season,
+			// Note a: Because of Mars's orbital eccentricity, L_s advances somewhat
+			// unevenly with time, but can be evaluated
+			// as a trigonometric power series for the orbital eccentricity and the orbital
+			// mean anomaly measured with respect to the perihelion.
+			// The areocentric longitude at perihelion, L_s = 251.000 + 0.00645 * (year -
+			// 2000),
+			// indicates a near alignment of the planet's closest approach to the Sun in its
+			// orbit with its winter solstice season,
 
-				// Note b: In 2043, there is 35% (max is 45.4%) on average more sunlight at
-				// perihelion (L_s = 251.2774 deg) than at aphelion (L_s = 71.2774 deg)
-				// Equation: 135% * (.5 * sin (L_s - 251.2774 + 180 - 90) + .5 )
+			// Note b: In 2043, there is 35% (max is 45.4%) on average more sunlight at
+			// perihelion (L_s = 251.2774 deg) than at aphelion (L_s = 71.2774 deg)
+			// Equation: 135% * (.5 * sin (L_s - 251.2774 + 180 - 90) + .5 )
 
-				// Part 3: get the instantaneous radius and semi major axis
-				double r = orbitInfo.getDistanceToSun();
+			// Part 3: get the instantaneous radius and semi major axis
+			double r = orbitInfo.getDistanceToSun();
 
-				G_0 = cos_z * factor / r / r;
+			G_0 = cos_z * factor / r / r;
 
-				// if (G_0 <= 0)
-				// G_0 = 0;
+			// if (G_0 <= 0)
+			// G_0 = 0;
 
-				// PART 4 : OPTICAL DEPTH - CALCULATING ABSORPTION AND SCATTERING OF SOLAR
-				// RADIATION
+			// PART 4 : OPTICAL DEPTH - CALCULATING ABSORPTION AND SCATTERING OF SOLAR
+			// RADIATION
 
-				double tau = computeOpticalDepth(location);
+			double tau = computeOpticalDepth(location);
 
-				// TODO: Part 4a : reducing opacity of the Martian atmosphere due to local dust
-				// storm
+			// TODO: Part 4a : reducing opacity of the Martian atmosphere due to local dust
+			// storm
 
-				// Note 1 : The extinction of radiation through the Martian atmosphere is caused
-				// mainly by suspended dust particles.
-				// Although dust particles are effective at scattering direct solar irradiance,
-				// a substantial amount of diffuse light is able to penetrate to the surface of
-				// the planet.
-				// The amount of PAR available on the Martian surface can then be calculated to
-				// be 42% of the total PAR to reach the surface.
+			// Note 1 : The extinction of radiation through the Martian atmosphere is caused
+			// mainly by suspended dust particles.
+			// Although dust particles are effective at scattering direct solar irradiance,
+			// a substantial amount of diffuse light is able to penetrate to the surface of
+			// the planet.
+			// The amount of PAR available on the Martian surface can then be calculated to
+			// be 42% of the total PAR to reach the surface.
 
-				// Note 2: Based on Viking observation, it's estimated approximately 100 local
-				// dust storms (each last a few days) can occur in a given Martian year
-				// Duration of a global dust storm is 35 - 70 sols. Local dust storms last a few
-				// days.
+			// Note 2: Based on Viking observation, it's estimated approximately 100 local
+			// dust storms (each last a few days) can occur in a given Martian year
+			// Duration of a global dust storm is 35 - 70 sols. Local dust storms last a few
+			// days.
 
-				// Note 3: TODO: Model how dust clouds, water/ice clouds, CO2 clouds affects tau
-				// differently
-				// REFERENCE: http://www.sciencedirect.com/science/article/pii/S0019103514001559
-				// The solar longitude (LS) 20 deg 136 deg period is also characterized by the
-				// presence of cirriform clouds at the Opportunity site,
-				// especially near LS = 50 deg and 115 deg. In addition to water ice clouds, a
-				// water ice haze may also be present, and carbon dioxide clouds
-				// may be present early in the season.
+			// Note 3: TODO: Model how dust clouds, water/ice clouds, CO2 clouds affects tau
+			// differently
+			// REFERENCE: http://www.sciencedirect.com/science/article/pii/S0019103514001559
+			// The solar longitude (LS) 20 deg 136 deg period is also characterized by the
+			// presence of cirriform clouds at the Opportunity site,
+			// especially near LS = 50 deg and 115 deg. In addition to water ice clouds, a
+			// water ice haze may also be present, and carbon dioxide clouds
+			// may be present early in the season.
 
-				// Choice 1 : if using Beer's law : transmissivity = Math.exp(-tau/cos_z);
-				// G_bh = G_0 * cos_z * Math.exp(-tau/cos_z);
+			// Choice 1 : if using Beer's law : transmissivity = Math.exp(-tau/cos_z);
+			// G_bh = G_0 * cos_z * Math.exp(-tau/cos_z);
 
-				// Choice 2 : The pure scattering transmissivity = (1 + tau / 2 / cos_z)^ -1
+			// Choice 2 : The pure scattering transmissivity = (1 + tau / 2 / cos_z)^ -1
 
-				G_bh = G_0 * cos_z / (1 + tau / 2 / cos_z);
+			G_bh = G_0 * cos_z / (1 + tau / 2 / cos_z);
 
-				// assuming the reflection from the surface is negligible
-				// ref:
-				// http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources30.pdf
+			// assuming the reflection from the surface is negligible
+			// ref:
+			// http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources30.pdf
 
-				// Note: m(z), the air mass, is estimated as ~ 1/cos_z
+			// Note: m(z), the air mass, is estimated as ~ 1/cos_z
 
-				// save tau onto opticalDepthMap
-				opticalDepthMap.put(location, tau);
+			// save tau onto opticalDepthMap
+			opticalDepthMap.put(location, tau);
 
-				// Note: one can estimate m(z), the air mass, as ~ 1/cos_z
+			// Note: one can estimate m(z), the air mass, as ~ 1/cos_z
 
-				// PART 5 : DIFFUSE SOLAR IRRADIANCE
+			// PART 5 : DIFFUSE SOLAR IRRADIANCE
 
-				// G_h = G_direct + G_diffuse
-				// On earth, the direct solar irradiance plays the major role of bringing in
-				// sunlight
-				// On Mars, the role of diffuse solar irradiance is more prominent than that on
-				// Earth.
+			// G_h = G_direct + G_diffuse
+			// On earth, the direct solar irradiance plays the major role of bringing in
+			// sunlight
+			// On Mars, the role of diffuse solar irradiance is more prominent than that on
+			// Earth.
 
-				// TODO: Modeling the diffuse effect of solar irradiance with formula
-				// Note: the value of G_dh to decrease more slowly when value cos_z is
-				// diminishing
+			// TODO: Modeling the diffuse effect of solar irradiance with formula
+			// Note: the value of G_dh to decrease more slowly when value cos_z is
+			// diminishing
 
 //    	    	if (cos_z > .9)
 //    	    		G_dh = G_bh / 6;
@@ -532,38 +531,38 @@ public class SurfaceFeatures implements Serializable {
 //    	    	else if (cos_z > .05)
 //    	    		G_dh = G_bh;
 
-				G_dh = G_bh * .3;
+			G_dh = G_bh * .3;
 
-				// Finally,
-				G_h = G_bh + G_dh;
+			// Finally,
+			G_h = G_bh + G_dh;
 
-				if (G_h > SurfaceFeatures.MEAN_SOLAR_IRRADIANCE)
-					G_h = SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+			if (G_h > SurfaceFeatures.MEAN_SOLAR_IRRADIANCE)
+				G_h = SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
 
-				else if (G_h < 20.94)
-					G_h = 20.94;
+			else if (G_h < 20.94)
+				G_h = 20.94;
 
-				// System.out.println(" radiusAndAxis : " + fmt3.format(radiusAndAxis)
-				// + " cos_z : "+ fmt3.format(cos_z)
-				// + " G_0 : " + fmt3.format(G_0)
-				// + " G_bh : " + fmt3.format(G_bh)
-				// + " G_dh : " + fmt3.format(G_dh)
-				// + " G_h : " + fmt3.format(G_h));
+			// System.out.println(" radiusAndAxis : " + fmt3.format(radiusAndAxis)
+			// + " cos_z : "+ fmt3.format(cos_z)
+			// + " G_0 : " + fmt3.format(G_0)
+			// + " G_bh : " + fmt3.format(G_bh)
+			// + " G_dh : " + fmt3.format(G_dh)
+			// + " G_h : " + fmt3.format(G_h));
 
-				// TODO: Part 6 : calculate other components on Mars such as twilight and
-				// reflective irradiance
+			// TODO: Part 6 : calculate other components on Mars such as twilight and
+			// reflective irradiance
 
-				// Note: A lot of code use of this method depends on dark night time = 0 solar
-				// irradiance. If we want to
-				// have scattering produce > 0 irradiance at full night time, we need to modify
-				// code calling this method
-				// as necessary for night time indication. - Scott
-			}
+			// Note: A lot of code use of this method depends on dark night time = 0 solar
+			// irradiance. If we want to
+			// have scattering produce > 0 irradiance at full night time, we need to modify
+			// code calling this method
+			// as necessary for night time indication. - Scott
+		}
 
-			if (G_h < 0)
-				G_h = 0;
-			
-			return G_h;
+		if (G_h < 0)
+			G_h = 0;
+		
+		return G_h;
 	}
 	
 	/**
@@ -712,16 +711,20 @@ public class SurfaceFeatures implements Serializable {
 	/**
 	 * Reloads instances
 	 * 
-	 * @param m
-	 * @param {@link Weather}
+	 * @param c {@link MasterClock}
+	 * @param m {@link Mars}
+	 * @param s {@link Simulation}
+	 * @param w {@link Weather}
+	 * @param o {@link OrbitInfo}
+	 * @param mr {@link MissionManager}
 	 */
-	public static void setInstances(MasterClock ms, Mars m, Simulation s, Weather w, OrbitInfo o, MissionManager mmgr) {
-		masterClock = ms;
+	public static void initializeInstances(MasterClock c, Mars m, Simulation s, Weather w, OrbitInfo o, MissionManager mr) {
+		masterClock = c;
 		mars = m;
 		orbitInfo = o;
 		weather = w;
 		sim = s;
-		missionManager = mmgr;
+		missionManager = mr;
 		sunDirection = o.getSunDirection();
 		landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
 	}

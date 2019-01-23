@@ -881,7 +881,7 @@ public class ChainOfCommand implements Serializable {
 	 * @param clock
 	 * @param um
 	 */
-	public static void setInstances(MarsClock clock, UnitManager um) {
+	public static void initializeInstances(MarsClock clock, UnitManager um) {
 		marsClock = clock;
 		unitManager = um;
 	}

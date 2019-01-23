@@ -40,10 +40,7 @@ public class HistoricalEventManager implements Serializable {
 
 	private transient List<HistoricalEventListener> listeners;
 
-	private Narrator narrator;
-
-	private MarsClock marsClock;
-
+	// Static list - don't want to be serialized
 	private volatile static List<HistoricalEvent> lastEvents = new ArrayList<>();
 
 	// The following list cannot be static since it needs to be serialized
@@ -56,19 +53,15 @@ public class HistoricalEventManager implements Serializable {
 	private List<String> loc0List;
 	private List<String> loc1List;
 
+	// Note : marsClock CAN'T be initialized until the simulation start
+	private MarsClock marsClock;
+
 	/**
 	 * Create a new EventManager that represents a particular simulation.
 	 */
 	public HistoricalEventManager() {
-		// logger.info("HistoricalEventManager's constructor is on " +
-		// Thread.currentThread().getName());
-		// Note : the masterClock and marsClock CANNOAT initialized until the simulation
-		// start
 		listeners = new ArrayList<HistoricalEventListener>();
-//		events = new LinkedList<HistoricalEvent>();
 		eventsRegistry = new ArrayList<>();
-		narrator = new Narrator();
-//		lastEvents = new ArrayList<>();
 		initMaps();
 	}
 
@@ -78,7 +71,6 @@ public class HistoricalEventManager implements Serializable {
 		whoList = new ArrayList<>();
 		loc0List = new ArrayList<>();
 		loc1List = new ArrayList<>();
-
 	}
 
 	/**
@@ -86,7 +78,6 @@ public class HistoricalEventManager implements Serializable {
 	 * 
 	 * @param newListener listener to add.
 	 */
-	// 5 models or panels called addListener()
 	public void addListener(HistoricalEventListener newListener) {
 		if (listeners == null)
 			listeners = new ArrayList<HistoricalEventListener>();
@@ -124,20 +115,16 @@ public class HistoricalEventManager implements Serializable {
 	}
 
 	public boolean isSameEvent(HistoricalEvent newEvent) {
-//		boolean result = false;
 		if (lastEvents != null && !lastEvents.isEmpty()) {
 			for (HistoricalEvent e : lastEvents) {
-
 				if (e.getType() == newEvent.getType() && e.getCategory() == newEvent.getCategory()
 						&& e.getWhatCause().equals(newEvent.getWhatCause())
 						&& e.getWhileDoing().equals(newEvent.getWhileDoing()) 
 						&& e.getWho().equals(newEvent.getWho())
 						&& e.getLocation0().equals(newEvent.getLocation0())
 						&& e.getLocation1().equals(newEvent.getLocation1())) {
-//					result = true;
 					return true;
 				}
-
 			}
 		}
 		return false;
@@ -150,16 +137,18 @@ public class HistoricalEventManager implements Serializable {
 	 * @param newEvent The event to register.
 	 */
 	public synchronized void registerNewEvent(HistoricalEvent newEvent) {
-//		HistoricalEventCategory category = newEvent.getCategory();
 		if (newEvent.getCategory() == HistoricalEventCategory.TASK)
 			return;
-		else if (newEvent.getType() == EventType.MISSION_START)
+		
+		EventType type = newEvent.getType();
+		
+		if (type == EventType.MISSION_START)
 			return;
-		else if (newEvent.getType() == EventType.MISSION_JOINING)
+		else if (type == EventType.MISSION_JOINING)
 			return;
-		else if (newEvent.getType() == EventType.MISSION_FINISH)
+		else if (type == EventType.MISSION_FINISH)
 			return;
-		else if (newEvent.getType() == EventType.MISSION_NOT_ENOUGH_RESOURCES)
+		else if (type == EventType.MISSION_NOT_ENOUGH_RESOURCES)
 			return;
 		else if (isSameEvent(newEvent))
 			return;
@@ -178,7 +167,7 @@ public class HistoricalEventManager implements Serializable {
 //				int excess = events.size() - (TRANSIENT_EVENTS - 1);
 //				removeEvents(events.size() - excess, excess);
 //			}
-		// Note : the elaborate if-else conditions below is for passing the maven test
+		
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
@@ -199,11 +188,7 @@ public class HistoricalEventManager implements Serializable {
 		while (iter.hasNext()) {
 			HistoricalEventListener l = iter.next();
 			l.eventAdded(0, se, newEvent);
-//			l.eventAdded(0, se);
-//			l.eventAdded(0, newEvent);
 		}
-
-		narrator.translate(newEvent);
 	}
 
 	private SimpleEvent convert2SimpleEvent(HistoricalEvent event, MarsClock timestamp) {
@@ -217,27 +202,11 @@ public class HistoricalEventManager implements Serializable {
 		short loc0 = (short) (getID(loc0List, event.getLocation0()));
 		short loc1 = (short) (getID(loc1List, event.getLocation1()));
 
-//		System.out.println("HistoricalEventManager's mission sol : " + missionSol);
 		SimpleEvent se = new SimpleEvent(missionSol, millisols, cat, type, what, whileDoing, who, loc0, loc1);
 		eventsRegistry.add(0, se);
 		return se;
 	}
 
-//	public int getID(Map<Integer, String> map, String s) {
-//		if (map.containsValue(s)) {
-//			Set<Integer> id = map.keySet();
-//			for (Integer i : id)
-//				return i;
-////			List<String> values = new ArrayList<>(map.values());
-//			
-//		} else {
-//			int size = map.size();
-//			map.put(size + 1, s);
-//			return size + 1;
-//		}
-//		return -1;
-//	}
-	
 	public int getID(List<String> list, String s) {
 		if (list.contains(s)) {
 			return list.indexOf(s);
@@ -247,14 +216,6 @@ public class HistoricalEventManager implements Serializable {
 			return size;
 		}
 	}
-	
-//	public String getStr(Map<Integer, String> map, Integer id) {
-//		return map.get(id);
-//	}
-
-//	public String getStr(List<String> list, Integer id) {
-//		return list.get(id);
-//	}
 	
 	public String getWhat(int id) {
 		return whatList.get(id);
@@ -276,34 +237,6 @@ public class HistoricalEventManager implements Serializable {
 		return loc1List.get(id);
 	}
 
-//	/**
-//	 * An event is removed from the list.
-//	 * @param index Index of the event to be removed.
-//	 * @param number Number to remove.
-//	 */
-//	private void removeEvents(int index, int number) {
-//
-//		// Remove the rows
-//		for(int i = index; i < (index + number); i++) {
-//			events.remove(i);
-//		}
-//
-//		Iterator<HistoricalEventListener> iter = listeners.iterator();
-//		while(iter.hasNext()) iter.next().eventsRemoved(index, index + number);
-//	}
-
-//	/**
-//	 * Get the number of events in the manager.
-//	 * @return Stored event count.
-//	 */
-//	public int size() {
-//		return events.size();
-//	}
-
-//	public List<HistoricalEvent> getEvents() {
-//		return events;
-//	}
-
 	public List<SimpleEvent> getEvents() {
 		return eventsRegistry;
 	}
@@ -314,8 +247,6 @@ public class HistoricalEventManager implements Serializable {
 	public void destroy() {
 		listeners.clear();
 		listeners = null;
-//		events.clear();
-//		events = null;
 		eventsRegistry.clear();
 		eventsRegistry = null;
 	}

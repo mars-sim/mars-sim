@@ -2019,9 +2019,9 @@ public class BuildingManager implements Serializable {
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void setInstances(MasterClock c0, MarsClock c1, BuildingConfig bc, 
+	public static void initializeInstances(Simulation s, MasterClock c0, MarsClock c1, BuildingConfig bc, 
 			HistoricalEventManager e, RelationshipManager r, UnitManager u) {
-		sim = Simulation.instance();
+		sim = s;
 		simulationConfig = SimulationConfig.instance();
 		masterClock = c0;
 		marsClock = c1;

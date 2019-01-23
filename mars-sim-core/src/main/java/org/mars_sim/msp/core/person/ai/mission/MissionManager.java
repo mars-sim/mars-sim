@@ -864,7 +864,7 @@ public class MissionManager implements Serializable {
 	 * 
 	 * @param clock
 	 */
-	public static void setMarsClock(MarsClock clock) {
+	public static void initializeInstances(MarsClock clock) {
 		marsClock = clock;
 	}
 	

@@ -83,7 +83,7 @@ public class FoodUtil {
 		}
 		FoodType category = null;
 
-		if (resource < Task.FIRST_ITEM_RESOURCE) {
+		if (resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 			category = FoodType.AMOUNT_RESOURCE;
 			AmountResource ar = ResourceUtil.findAmountResource(resource);
 			if (ar.isEdible()) {

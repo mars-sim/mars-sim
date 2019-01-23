@@ -449,10 +449,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		Iterator<Integer> iR = requiredResources.keySet().iterator();
 		while (iR.hasNext() && (amountLoading > 0D)) {
 			Integer resource = iR.next();
-			if (resource < FIRST_ITEM_RESOURCE) {
+			if (resource < FIRST_ITEM_RESOURCE_ID) {
 				// Load amount resources
 				amountLoading = loadAmountResource(amountLoading, resource, true);
-			} else if (resource >= FIRST_ITEM_RESOURCE) {
+			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 				// Load item resources
 				amountLoading = loadItemResource(amountLoading, resource, true);
 			}
@@ -462,10 +462,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		Iterator<Integer> iR2 = optionalResources.keySet().iterator();
 		while (iR2.hasNext() && (amountLoading > 0D)) {
 			Integer resource = iR2.next();
-			if (resource < FIRST_ITEM_RESOURCE) {
+			if (resource < FIRST_ITEM_RESOURCE_ID) {
 				// Load amount resources
 				amountLoading = loadAmountResource(amountLoading, resource, false);
-			} else if (resource >= FIRST_ITEM_RESOURCE) {
+			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 				// Load item resources
 				amountLoading = loadItemResource(amountLoading, resource, false);
 			}
@@ -903,7 +903,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 		for (Integer resource : resources.keySet()) {
 
-			if (resource < FIRST_ITEM_RESOURCE) {
+			if (resource < FIRST_ITEM_RESOURCE_ID) {
 				// Added all desserts to the matching test
 				boolean isDessert = false;
 				double amountDessertLoaded = 0;
@@ -956,7 +956,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				}
 			}
 
-			else if (resource >= FIRST_ITEM_RESOURCE) {
+			else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 				int numNeeded = (Integer) resources.get(resource);
 				int settlementNumPartNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, resource);
 				int numLoaded = vInv.getItemResourceNum(resource);
@@ -1107,7 +1107,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			while (j.hasNext()) {
 				Integer resource = j.next();
 
-				if (resource < FIRST_ITEM_RESOURCE) {
+				if (resource < FIRST_ITEM_RESOURCE_ID) {
 					double amount = (Double) (resources.get(resource));
 //					System.out.println("LoadVehicleGarage : " + ResourceUtil.findAmountResourceName(resource) 
 //						+ " amount : " + amount);
@@ -1181,13 +1181,13 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		Iterator<Integer> iR = requiredResources.keySet().iterator();
 		while (iR.hasNext() && sufficientSupplies) {
 			Integer resource = iR.next();
-			if (resource < FIRST_ITEM_RESOURCE) {
+			if (resource < FIRST_ITEM_RESOURCE_ID) {
 				double amount = (double) requiredResources.get(resource);
 				double storedAmount = vInv.getAmountResourceStored(resource, false);
 				if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
 					sufficientSupplies = false;
 				}
-			} else if (resource >= FIRST_ITEM_RESOURCE) {
+			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 				int num = (Integer) (requiredResources.get(resource));
 				if (vInv.getItemResourceNum(resource) < num) {
 					sufficientSupplies = false;
@@ -1201,7 +1201,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		Iterator<Integer> iR2 = optionalResources.keySet().iterator();
 		while (iR2.hasNext() && sufficientSupplies) {
 			Integer resource = iR2.next();
-			if (resource < FIRST_ITEM_RESOURCE) {
+			if (resource < FIRST_ITEM_RESOURCE_ID) {
 
 				// AmountResource amountResource = (AmountResource) resource;
 				double amount = (Double) optionalResources.get(resource);
@@ -1226,7 +1226,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 						sufficientSupplies = false;
 					}
 				}
-			} else if (resource >= FIRST_ITEM_RESOURCE) {
+			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 
 				// ItemResource itemResource = (ItemResource) resource;
 				int num = (Integer) (optionalResources.get(resource));

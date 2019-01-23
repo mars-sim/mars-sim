@@ -14,7 +14,7 @@ module mars-sim-headless {
 	
 	requires java.util.Arrays;
 	requires java.util.List;
-	
+			
 	requires java.util.logging;
 	
 //	requires java.util.logging.Level;
@@ -24,7 +24,7 @@ module mars-sim-headless {
 //	requires java.util.logging.LogRecord;
 //	requires java.util.logging.Formatter;
 	
-    requires junit;
+	requires junit;
     requires mars-sim-core;
     
 	exports mars-sim-headless;

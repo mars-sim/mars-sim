@@ -590,7 +590,7 @@ public class Malfunction implements Serializable {
 	 * 
 	 * @param clock
 	 */
-	public static void setInstances() {
+	public static void initializeInstances() {
 		malfunctionConfig = SimulationConfig.instance().getMalfunctionConfiguration();
 	}
 	

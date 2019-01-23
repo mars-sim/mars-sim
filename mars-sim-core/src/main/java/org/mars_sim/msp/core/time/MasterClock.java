@@ -725,7 +725,8 @@ public class MasterClock implements Serializable {
 							s = secs + " secs";
 						}
 						
-						logger.config("On power saving for " + s); 
+						if (overSleepSeconds > 0)
+							logger.config("On power saving for " + s); 
 						// e.g. overSleepTime : 598_216_631_335
 						
 						excess -= sleepTime;
@@ -1274,7 +1275,7 @@ public class MasterClock implements Serializable {
 	 * 
 	 * @param clock
 	 */
-	public static void setInstances(Simulation s) {
+	public static void initializeInstances(Simulation s) {
 		sim = s;
 		timeIntervals = new ArrayList<>();
 		justReloaded = true;

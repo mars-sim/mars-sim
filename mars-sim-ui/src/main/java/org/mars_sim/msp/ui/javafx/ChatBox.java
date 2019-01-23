@@ -12,6 +12,19 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.terminal.ChatMenu;
+import org.mars_sim.msp.core.terminal.ChatUtils;
+import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
+
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXPopup.PopupHPosition;
+import com.jfoenix.controls.JFXPopup.PopupVPosition;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -22,19 +35,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXPopup.PopupHPosition;
-import com.jfoenix.controls.JFXPopup.PopupVPosition;
-
-import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.terminal.ChatUtils;
-import org.mars_sim.msp.core.terminal.ChatMenu;
-import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 
 public class ChatBox extends BorderPane {
 

@@ -53,12 +53,12 @@ public class TabPanelDashboard extends TabPanel {
 	
 	private static String header = "  Click on a new settlement goal below : ";
 	
-	private static String cropURL = "/icons/settlement_goals/cropfarm.png";
-	private static String manuURL = "/icons/settlement_goals/manufacture.png";
-	private static String researchURL = "/icons/settlement_goals/research.png";
-	private static String transportURL = "/icons/settlement_goals//transport.png";
-	private static String tradeURL = "/icons/settlement_goals/trade.png";
-	private static String tripURL = "/icons/settlement_goals//trip_128.png";
+	private static String cropURL 		= "/icons/settlement_goals/cropfarm.png";
+	private static String manuURL 		= "/icons/settlement_goals/manufacture.png";
+	private static String researchURL 	= "/icons/settlement_goals/research.png";
+	private static String transportURL 	= "/icons/settlement_goals/transport.png";
+	private static String tradeURL 		= "/icons/settlement_goals/trade.png";
+	private static String tripURL 		= "/icons/settlement_goals/trip_128.png";
 	
 	private ImageView cropIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(cropURL)));
 	private ImageView manuIV = new ImageView(new Image(TabPanelDashboard.class.getResourceAsStream(manuURL)));

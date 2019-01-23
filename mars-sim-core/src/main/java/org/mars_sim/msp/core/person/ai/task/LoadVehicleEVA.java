@@ -419,10 +419,10 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		Iterator<Integer> iR = requiredResources.keySet().iterator();
 		while (iR.hasNext() && (amountLoading > 0D)) {
 			Integer resource = iR.next();
-			if (resource < FIRST_ITEM_RESOURCE) {
+			if (resource < FIRST_ITEM_RESOURCE_ID) {
 				// Load amount resources
 				amountLoading = loadAmountResource(amountLoading, resource, true);
-			} else if (resource >= FIRST_ITEM_RESOURCE) {
+			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 				// Load item resources
 				amountLoading = loadItemResource(amountLoading, resource, true);
 			}
@@ -432,10 +432,10 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		Iterator<Integer> iR2 = optionalResources.keySet().iterator();
 		while (iR2.hasNext() && (amountLoading > 0D)) {
 			Integer resource = iR2.next();
-			if (resource < FIRST_ITEM_RESOURCE) {
+			if (resource < FIRST_ITEM_RESOURCE_ID) {
 				// Load amount resources
 				amountLoading = loadAmountResource(amountLoading, resource, false);
-			} else if (resource >= FIRST_ITEM_RESOURCE) {
+			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 				// Load item resources
 				amountLoading = loadItemResource(amountLoading, resource, false);
 			}
@@ -889,7 +889,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			Iterator<Integer> j = resources.keySet().iterator();
 			while (j.hasNext()) {
 				Integer resource = j.next();
-				if (resource < FIRST_ITEM_RESOURCE) {
+				if (resource < FIRST_ITEM_RESOURCE_ID) {
 					double amount = (Double) (resources.get(resource));
 					inv.storeAmountResource(resource, amount, true);
 				} else {
@@ -963,13 +963,13 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		Iterator<Integer> iR = requiredResources.keySet().iterator();
 		while (iR.hasNext() && sufficientSupplies) {
 			Integer resource = iR.next();
-			if (resource < FIRST_ITEM_RESOURCE) {
+			if (resource < FIRST_ITEM_RESOURCE_ID) {
 				double amount = (Double) (requiredResources.get(resource));
 				double storedAmount = vInv.getAmountResourceStored(resource, false);
 				if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
 					sufficientSupplies = false;
 				}
-			} else if (resource >= FIRST_ITEM_RESOURCE) {
+			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 				int num = (Integer) (requiredResources.get(resource));
 				if (vInv.getItemResourceNum(resource) < num) {
 					sufficientSupplies = false;
@@ -983,7 +983,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		Iterator<Integer> iR2 = optionalResources.keySet().iterator();
 		while (iR2.hasNext() && sufficientSupplies) {
 			Integer resource = iR2.next();
-			if (resource < FIRST_ITEM_RESOURCE) {
+			if (resource < FIRST_ITEM_RESOURCE_ID) {
 
 				// AmountResource amountResource = (AmountResource) resource;
 				double amount = (Double) (optionalResources.get(resource));
@@ -1008,7 +1008,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 						sufficientSupplies = false;
 					}
 				}
-			} else if (resource >= FIRST_ITEM_RESOURCE) {
+			} else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 
 				ItemResource ir = ItemResourceUtil.findItemResource(resource);
 				int num = (Integer) (optionalResources.get(resource));

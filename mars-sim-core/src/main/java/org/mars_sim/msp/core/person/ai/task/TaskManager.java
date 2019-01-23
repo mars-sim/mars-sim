@@ -724,7 +724,7 @@ public class TaskManager implements Serializable {
 	 * @param clock
 	 * @param mgr
 	 */
-	public static void setInstances(MarsClock clock, MissionManager mgr) {
+	public static void initializeInstances(MarsClock clock, MissionManager mgr) {
 		marsClock = clock;
 		missionManager = mgr;
 	}

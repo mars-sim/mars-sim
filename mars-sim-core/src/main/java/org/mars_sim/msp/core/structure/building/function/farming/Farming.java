@@ -1543,7 +1543,7 @@ public class Farming extends Function implements Serializable {
 	/**
 	 * Reloads instances after loading from a saved sim
 	 */
-	public static void setInstances() {
+	public static void initializeInstances() {
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
 	}
 	

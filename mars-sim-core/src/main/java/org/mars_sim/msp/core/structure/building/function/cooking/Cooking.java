@@ -1149,7 +1149,7 @@ public class Cooking extends Function implements Serializable {
 	 * Reloads instances after loading from a saved sim
 	 * 
 	 */
-	public static void setInstances() {
+	public static void initializeInstances() {
 //		mealConfigMealList = MealConfig.getMealList();
 		prepareOilMenu();
 	}

@@ -109,7 +109,7 @@ public class Role implements Serializable {
 	 * 
 	 * @param clock
 	 */
-	public static void setInstances(MarsClock clock) {
+	public static void initializeInstances(MarsClock clock) {
 		marsClock = clock;
 	}
 	

@@ -17,7 +17,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
-import org.mars_sim.msp.core.terminal.Commander;
 
 /**
  * Provides configuration information about people units. Uses a JDOM document

@@ -1256,7 +1256,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @param {@link MasterClock}
 	 * @param {{@link MarsClock}
 	 */
-	public static void setInstances(MasterClock c0, MarsClock c1, BuildingConfig bc, UnitManager u) {
+	public static void initializeInstances(MasterClock c0, MarsClock c1, BuildingConfig bc, UnitManager u) {
 		masterClock = c0;
 		marsClock = c1;
 		buildingConfig = bc;

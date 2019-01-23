@@ -59,8 +59,6 @@ public abstract class Mission implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	protected static final int MAX_AMOUNT_RESOURCE = ResourceUtil.FIRST_ITEM_RESOURCE;
-
 	public static final String CONSTRUCTION_ENDED = "Construction ended.";
 	public static final String ALL_DISEMBARKED = "All members disembarked.";
 	public static final String USER_ABORTED_MISSION = "Mission aborted by user.";

@@ -567,7 +567,7 @@ public class RelationshipManager implements Serializable {
 		return score;
 	}
 	
-	public static void setInstances(UnitManager u) {
+	public static void initializeInstances(UnitManager u) {
 		unitManager = u;		
 	}
 	

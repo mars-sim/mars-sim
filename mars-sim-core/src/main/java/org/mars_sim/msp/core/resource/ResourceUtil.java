@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,19 +20,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.LifeSupportType;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
 
 public class ResourceUtil implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public static final int FIRST_ITEM_RESOURCE = 1000;
+	public static final int FIRST_ITEM_RESOURCE_ID = 1000;
 
-	public static final int FIRST_EQUIPMENT_RESOURCE = 1000;
+	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 1500;
 
+	public static final int FIRST_VEHICLE_RESOURCE_ID = 2000;
+	
 	public static final String ARGON = "argon";
 	public static final String NITROGEN = "nitrogen";
 	public static final String CO = "carbon monoxide";

@@ -51,7 +51,7 @@ public final class PartConfig implements Serializable {
 	 */
 	public PartConfig(Document itemResourceDoc) {
 		// Pick up from the last resource id
-		nextID = ResourceUtil.FIRST_ITEM_RESOURCE;
+		nextID = ResourceUtil.FIRST_ITEM_RESOURCE_ID;
 		loadItemResources(itemResourceDoc);
 	}
 
