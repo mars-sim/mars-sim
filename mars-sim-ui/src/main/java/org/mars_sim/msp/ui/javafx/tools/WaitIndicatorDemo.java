@@ -38,7 +38,6 @@ public class WaitIndicatorDemo extends Application {
         indicator = new CircularProgressIndicator();
     }
 
-    @SuppressWarnings("restriction")
 	//@Override 
     public void start(Stage stage) {
    // public WaitIndicatorDemo(Stage stage) {	

@@ -919,7 +919,7 @@ public class Mining extends RoverMission {
 			Map<Integer, Integer> result = new HashMap<>();
 
 			// Include required number of bags.
-			result.put(EquipmentType.str2int(Bag.TYPE), NUMBER_OF_BAGS);
+			result.put(EquipmentType.convertName2ID(Bag.TYPE), NUMBER_OF_BAGS);
 
 			equipmentNeededCache = result;
 			return result;

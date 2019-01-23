@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
@@ -58,15 +59,15 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
-import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
@@ -388,8 +389,8 @@ public class GoodsManager implements Serializable {
 		if (supply < MINIMUM_STORED_SUPPLY)
 			supply = MINIMUM_STORED_SUPPLY;
 
-		AmountResource resource = (AmountResource) resourceGood.getObject();
-		int id = resource.getID();//ResourceUtil.findIDbyAmountResourceName(resource.getName());
+//		AmountResource resource = (AmountResource) resourceGood.getObject();
+		int id = resourceGood.getID();//resource.getID();//ResourceUtil.findIDbyAmountResourceName(resource.getName());
 
 		if (useCache) {
 			if (goodsDemandCache.containsKey(resourceGood)) {
@@ -435,16 +436,16 @@ public class GoodsManager implements Serializable {
 			projectedDemand += getResourceProcessingDemand(id);
 
 			// Tune manufacturing demand.
-			projectedDemand += getResourceManufacturingDemand(resource);
+			projectedDemand += getResourceManufacturingDemand(id);
 
 			// Tune food production related demand.
-			projectedDemand += getResourceFoodProductionDemand(resource);
+			projectedDemand += getResourceFoodProductionDemand(id);
 
 			// Tune demand for the ingredients in a cooked meal.
-			projectedDemand += getResourceCookedMealIngredientDemand(resource);
+			projectedDemand += getResourceCookedMealIngredientDemand(id);
 
 			// Tune dessert demand.
-			projectedDemand += getResourceDessertDemand(resource);
+			projectedDemand += getResourceDessertDemand(id);
 
 			// Tune construction demand.
 			projectedDemand += getResourceConstructionDemand(id);
@@ -1001,7 +1002,7 @@ public class GoodsManager implements Serializable {
 	 * @param resource the amount resource.
 	 * @return demand (kg)
 	 */
-	private double getResourceManufacturingDemand(AmountResource resource) {
+	private double getResourceManufacturingDemand(int resource) {
 		double demand = 0D;
 
 		// Get highest manufacturing tech level in settlement.
@@ -1025,7 +1026,7 @@ public class GoodsManager implements Serializable {
 	 * @param resource the amount resource.
 	 * @return demand (kg)
 	 */
-	private double getResourceFoodProductionDemand(AmountResource resource) {
+	private double getResourceFoodProductionDemand(int resource) {
 		double demand = 0D;
 
 		// Get highest Food Production tech level in settlement.
@@ -1049,9 +1050,9 @@ public class GoodsManager implements Serializable {
 	 * @param process  the manufacturing process.
 	 * @return demand (kg)
 	 */
-	private double getResourceManufacturingProcessDemand(AmountResource resource, ManufactureProcessInfo process) {
+	private double getResourceManufacturingProcessDemand(int resource, ManufactureProcessInfo process) {
 		double demand = 0D;
-		String r = resource.getName().toLowerCase();
+		String r = ResourceUtil.findAmountResourceName(resource).toLowerCase();
 
 		ManufactureProcessItem resourceInput = null;
 		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
@@ -1105,7 +1106,7 @@ public class GoodsManager implements Serializable {
 	 * @param process  the Food Production process.
 	 * @return demand (kg)
 	 */
-	private double getResourceFoodProductionProcessDemand(AmountResource resource, FoodProductionProcessInfo process) {
+	private double getResourceFoodProductionProcessDemand(int resource, FoodProductionProcessInfo process) {
 		double demand = 0D;
 
 		FoodProductionProcessItem resourceInput = null;
@@ -1113,7 +1114,7 @@ public class GoodsManager implements Serializable {
 		while ((resourceInput == null) && i.hasNext()) {
 			FoodProductionProcessItem item = i.next();
 			if (ItemType.AMOUNT_RESOURCE.equals(item.getType())
-					&& resource.getName().equalsIgnoreCase(item.getName())) {
+					&& ResourceUtil.findAmountResourceName(resource).equalsIgnoreCase(item.getName())) {
 				resourceInput = item;
 				break;
 			}
@@ -1154,20 +1155,20 @@ public class GoodsManager implements Serializable {
 	 * @param resource the amount resource.
 	 * @return demand (kg)
 	 */
-	private double getResourceCookedMealIngredientDemand(AmountResource resource) {
+	private double getResourceCookedMealIngredientDemand(int resource) {
 		double demand = 0D;
 
-		String r = resource.getName().toLowerCase();
-		int id = ResourceUtil.findIDbyAmountResourceName(r);
+//		String r = resource.getName().toLowerCase();
+//		int id = ResourceUtil.findIDbyAmountResourceName(r);
 
-		if (id == ResourceUtil.tableSaltID) {
+		if (resource == ResourceUtil.tableSaltID) {
 			// Assuming a person takes 2.5 meals per sol
 			demand = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_SALT_PER_MEAL;
 		} 
 		
 		else {
 			for (int oilID : Cooking.getOilMenu()) {
-				if (id == oilID) {
+				if (resource == oilID) {
 					// Assuming a person takes 2.5 meals per sol
 					demand = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_OIL_PER_MEAL;
 				}
@@ -1189,7 +1190,7 @@ public class GoodsManager implements Serializable {
 			Iterator<Ingredient> j = meal.getIngredientList().iterator();
 			while (j.hasNext()) {
 				Ingredient ingredient = j.next();
-				if (ingredient.getAmountResourceID() == id) {
+				if (ingredient.getAmountResourceID() == resource) {
 					demand += ingredient.getProportion() * cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
 				}
 			}
@@ -1205,7 +1206,7 @@ public class GoodsManager implements Serializable {
 	 * @return demand (kg)
 	 */
 
-	private double getResourceDessertDemand(AmountResource resource) {
+	private double getResourceDessertDemand(int resource) {
 
 		double demand = 0D;
 		AmountResource[] dessert = PreparingDessert.getArrayOfDessertsAR();
@@ -1213,7 +1214,7 @@ public class GoodsManager implements Serializable {
 
 		if (dessert[0] != null) {
 			for (AmountResource ar : dessert) {
-				if (ar.getName().equalsIgnoreCase(resource.getName())) {
+				if (ar.getID() == resource) {
 					hasDessert = true;
 					break;
 				}
@@ -1546,11 +1547,11 @@ public class GoodsManager implements Serializable {
 			double result = 0D;
 
 			if (GoodType.AMOUNT_RESOURCE == good.getCategory())
-				result = getAmountOfResourceForSettlement((AmountResource) (good.getObject()));
+				result = getAmountOfResourceForSettlement(ResourceUtil.findAmountResource(good.getID()));
 			else if (GoodType.ITEM_RESOURCE == good.getCategory())
-				result = getNumberOfResourceForSettlement((ItemResource) (good.getObject()));
+				result = getNumberOfResourceForSettlement(ItemResourceUtil.findItemResource(good.getID()));
 			else if (GoodType.EQUIPMENT == good.getCategory())
-				result = getNumberOfEquipmentForSettlement(good.getClassType());
+				result = getNumberOfEquipmentForSettlement(EquipmentFactory.getEquipmentClass(good.getID()));
 			else if (GoodType.VEHICLE == good.getCategory())
 				result = getNumberOfVehiclesForSettlement(good.getName());
 
@@ -1663,7 +1664,7 @@ public class GoodsManager implements Serializable {
 	 */
 	private double determineItemResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
 		double value = 0D;
-		ItemResource resource = (ItemResource) resourceGood.getObject();
+		ItemResource resource = ItemResourceUtil.findItemResource(resourceGood.getID());
 		double demand = 0D;
 //        double projectedDemand = 0D;
 //        double totalDemand = 0D;
@@ -2204,7 +2205,7 @@ public class GoodsManager implements Serializable {
 				throw new IllegalArgumentException("Good: " + equipmentGood + " not valid.");
 		} else {
 			// Determine demand amount.
-			demand = determineEquipmentDemand(equipmentGood.getClassType());
+			demand = determineEquipmentDemand(EquipmentFactory.getEquipmentClass(equipmentGood.getID()));
 
 			// Add trade demand.
 //            demand += determineTradeDemand(equipmentGood, useCache);

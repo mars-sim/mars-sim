@@ -938,7 +938,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 	@Override
 	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
 		Map<Integer, Integer> equipment = new HashMap<>(1);
-		equipment.put(EquipmentType.str2int(EVASuit.TYPE), getPeopleNumber());
+		equipment.put(EquipmentType.convertName2ID(EVASuit.TYPE), getPeopleNumber());
 		return equipment;
 	}
 

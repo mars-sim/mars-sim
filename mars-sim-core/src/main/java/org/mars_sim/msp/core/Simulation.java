@@ -522,15 +522,6 @@ public class Simulation implements ClockListener, Serializable {
 				clockThreadExecutor.execute(masterClock.getClockThreadTask());
 		//}
 	}
-
-	/**
-	 * Get the interactive terminal instance
-	 * 
-	 * @return {@link InteractiveTerm}
-	 */
-	public InteractiveTerm getITerm() {
-		return interactiveTerm;
-	}
 	
 //	/*
 //	 * Obtains the size of the file
@@ -1650,6 +1641,11 @@ public class Simulation implements ClockListener, Serializable {
 			masterClock.onUpdate(tpf);
 	}
 
+	/**
+	 * Get the interactive terminal instance
+	 * 
+	 * @return {@link InteractiveTerm}
+	 */
 	public InteractiveTerm getTerm() {
 		return interactiveTerm;
 	}

@@ -58,7 +58,7 @@ public final class EquipmentFactory {
 	}
 
 	public static Equipment createEquipment(int id, Coordinates location, boolean temp) {
-		return createEquipment(EquipmentType.int2enum(id).getName(), location, temp);
+		return createEquipment(EquipmentType.convertID2Type(id).getName(), location, temp);
 	}
 
 	/**
@@ -173,8 +173,9 @@ public final class EquipmentFactory {
 	}
 
 	public static Class<? extends Equipment> getEquipmentClass(int id) {
-		String type = EquipmentType.int2enum(id).getName();
-		return getEquipmentClass(type);
+//		String type = EquipmentType.convertID2Type(id).getName();
+//		return getEquipmentClass(type);
+		return getEquipmentClass(EquipmentType.convertID2Type(id).getName());
 	}
 
 //	public static int getEquipmentID(String type) {

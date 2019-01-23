@@ -189,7 +189,7 @@ extends TabPanel {
 						e.printStackTrace(System.err);
 					}
 
-					if (column == 1) return Math.round(credit*10.0)/10.0;
+					if (column == 1) return Math.round(credit*100.0)/100.0;
 					else if (column == 2) {
 						if (credit > 0D) return Msg.getString("TabPanelCredit.column.credit"); //$NON-NLS-1$
 						else if (credit < 0D) return Msg.getString("TabPanelCredit.column.debt"); //$NON-NLS-1$
@@ -247,15 +247,16 @@ extends TabPanel {
 			}
 		}
 
-		/*
-		 * Prepare for deletion.
-		 *
-		public void destroy() {
-			manager.removeListener(this);
-			settlements = null;
-			thisSettlement = null;
-		}
-		 */
+//		/*
+//		 * Prepare for deletion.
+//		 *
+//		 */
+//		public void destroy() {
+//			manager.removeListener(this);
+//			settlements = null;
+//			thisSettlement = null;
+//		}
+
 	}
 	
 	/**

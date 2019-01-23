@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -29,8 +28,6 @@ import org.mars_sim.msp.core.person.ai.task.NegotiateTrade;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -758,9 +755,9 @@ public class Trade extends RoverMission implements Serializable {
 		while (i.hasNext()) {
 			Good good = i.next();
 			if (good.getCategory().equals(GoodType.EQUIPMENT)) {
-				Class<?> equipmentClass = good.getClassType();
+//				Class<?> equipmentClass = good.getClassType();
 				int num = load.get(good);
-				int id = EquipmentType.getEquipmentID(equipmentClass);
+				int id = good.getID();//EquipmentType.getEquipmentID(equipmentClass);
 				if (result.containsKey(id)) {
 					num += (Integer) result.get(id);
 				}
@@ -789,16 +786,16 @@ public class Trade extends RoverMission implements Serializable {
 		while (i.hasNext()) {
 			Good good = i.next();
 			if (good.getCategory().equals(GoodType.AMOUNT_RESOURCE)) {
-				AmountResource resource = (AmountResource) good.getObject();
-				int id = resource.getID();
+//				AmountResource resource = (AmountResource) good.getObject();
+				int id = good.getID();//resource.getID();
 				double amount = load.get(good).doubleValue();
 				if (result.containsKey(id)) {
 					amount += (Double) result.get(id);
 				}
 				result.put(id, amount);
 			} else if (good.getCategory().equals(GoodType.ITEM_RESOURCE)) {
-				ItemResource resource = (ItemResource) good.getObject();
-				int id = resource.getID();
+//				ItemResource resource = (ItemResource) good.getObject();
+				int id = good.getID();//resource.getID();
 				int num = load.get(good);
 				if (result.containsKey(id)) {
 					num += (Integer) result.get(id);

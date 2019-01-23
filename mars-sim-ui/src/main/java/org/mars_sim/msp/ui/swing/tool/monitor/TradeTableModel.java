@@ -159,13 +159,11 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (columnIndex == 0) {
-			// 2014-11-17 Capitalized Resource Names
 			//Object result =  goodsList.get(rowIndex).getName();
 			return Conversion.capitalize(goodsList.get(rowIndex).getName().toString());
 		}
 
 		else if (columnIndex == 1) {
-			// 2014-11-17 Capitalized Category Names
 			//Object result = getGoodCategoryName(goodsList.get(rowIndex));
 			return Conversion.capitalize(getGoodCategoryName(goodsList.get(rowIndex)).toString());
 		}

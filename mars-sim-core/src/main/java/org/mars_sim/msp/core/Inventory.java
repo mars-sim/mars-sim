@@ -1184,7 +1184,7 @@ public class Inventory implements Serializable {
 
 	private boolean containsUnitClassLocal(int id) {
 //		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-		return containsUnitClassLocal(EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName()));
+		return containsUnitClassLocal(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
 	}
 
 	/**
@@ -1232,7 +1232,7 @@ public class Inventory implements Serializable {
 
 	public Unit findUnitOfClass(int id) {
 //		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-		return findUnitOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName()));
+		return findUnitOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
 	}
 
 	/**
@@ -1258,7 +1258,7 @@ public class Inventory implements Serializable {
 
 	public Collection<Unit> findAllUnitsOfClass(int id) {
 //		Class<?> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-		return findAllUnitsOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName()));
+		return findAllUnitsOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
 	}
 
 	/**
@@ -1281,7 +1281,7 @@ public class Inventory implements Serializable {
 
 	public int findNumUnitsOfClass(int id) {
 //		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-		return findNumUnitsOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName()));
+		return findNumUnitsOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
 	}
 
 	/**
@@ -1327,7 +1327,7 @@ public class Inventory implements Serializable {
 	}
 
 	public int findNumEmptyUnitsOfClass(int id, boolean allowDirty) {
-		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
+		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName());
 		int result = 0;
 		if (containsUnitClass(unitClass)) {
 			for (Unit unit : containedUnits) {

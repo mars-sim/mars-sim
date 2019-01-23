@@ -591,7 +591,7 @@ public class Exploration extends RoverMission implements Serializable {
 			Map<Integer, Integer> result = new HashMap<>();
 
 			// Include required number of specimen containers.
-			result.put(EquipmentType.str2int(SpecimenContainer.TYPE), REQUIRED_SPECIMEN_CONTAINERS);
+			result.put(EquipmentType.convertName2ID(SpecimenContainer.TYPE), REQUIRED_SPECIMEN_CONTAINERS);
 
 			equipmentNeededCache = result;
 			return result;

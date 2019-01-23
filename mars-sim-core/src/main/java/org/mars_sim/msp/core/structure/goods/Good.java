@@ -8,6 +8,8 @@ package org.mars_sim.msp.core.structure.goods;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
+
 /**
  * A meta class describing an economic good in the simulation.
  */
@@ -17,8 +19,10 @@ public class Good implements Serializable, Comparable<Good> {
 	private static final long serialVersionUID = 1L;
 	// Data members
 	private String name;
-	private Class<?> classType;
-	private Object object;
+	//
+//	private Class<?> classType;
+//	private Object object;
+	private int id;
 	private GoodType category;
 
 	/**
@@ -28,17 +32,17 @@ public class Good implements Serializable, Comparable<Good> {
 	 * @param object   the good's object if any.
 	 * @param category the good's category.
 	 */
-	Good (String name, Object object, GoodType category) {
+	Good (String name, int id, GoodType category) {
 		if (name != null)
 			this.name = name.trim().toLowerCase();
 		else
 			throw new IllegalArgumentException("name cannot be null.");
-
-		if (object != null) {
-			this.object = object;
-			this.classType = object.getClass();
-		} else
-			throw new IllegalArgumentException("object cannot be null.");
+		this.id = id;
+//		if (object != null) {
+//			this.object = object;
+//			this.classType = object.getClass();
+//		} else
+//			throw new IllegalArgumentException("object cannot be null.");
 
 		if (isValidCategory(category))
 			this.category = category;
@@ -46,29 +50,29 @@ public class Good implements Serializable, Comparable<Good> {
 			throw new IllegalArgumentException("category: " + category + " not valid.");
 	}
 
-	/**
-	 * Constructor with class.
-	 * 
-	 * @param name      the name of the good.
-	 * @param classType the good's class.
-	 * @param category  {@link GoodType} the good's category.
-	 */
-	Good (String name, Class<?> classType, GoodType category) {
-		if (name != null)
-			this.name = name.trim().toLowerCase();
-		else
-			throw new IllegalArgumentException("name cannot be null.");
-
-		if (classType != null)
-			this.classType = classType;
-		else
-			throw new IllegalArgumentException("classType cannot be null.");
-
-		if (isValidCategory(category))
-			this.category = category;
-		else
-			throw new IllegalArgumentException("category: " + category + " not valid.");
-	}
+//	/**
+//	 * Constructor with class.
+//	 * 
+//	 * @param name      the name of the good.
+//	 * @param classType the good's class.
+//	 * @param category  {@link GoodType} the good's category.
+//	 */
+//	Good (String name, Class<?> classType, GoodType category) {
+//		if (name != null)
+//			this.name = name.trim().toLowerCase();
+//		else
+//			throw new IllegalArgumentException("name cannot be null.");
+//
+//		if (classType != null)
+//			this.classType = classType;
+//		else
+//			throw new IllegalArgumentException("classType cannot be null.");
+//
+//		if (isValidCategory(category))
+//			this.category = category;
+//		else
+//			throw new IllegalArgumentException("category: " + category + " not valid.");
+//	}
 
 	/**
 	 * Checks if a category string is valid.
@@ -101,23 +105,27 @@ public class Good implements Serializable, Comparable<Good> {
 	}
 
 	/**
-	 * Gets the good's class.
+	 * Gets the good's equipment class.
 	 * 
-	 * @return class
+	 * @return equipment class
 	 */
 	public Class<?> getClassType() {
-		return classType;
+		return EquipmentFactory.getEquipmentClass(id);
 	}
 
-	/**
-	 * Gets the good's object if any.
-	 * 
-	 * @return object or null if none.
-	 */
-	public Object getObject() {
-		return object;
-	}
+//	/**
+//	 * Gets the good's object if any.
+//	 * 
+//	 * @return object or null if none.
+//	 */
+//	public Object getObject() {
+//		return object;
+//	}
 
+	public int getID() {
+		return id;
+	}
+	
 	/**
 	 * Gets the good's category enum.
 	 * 
@@ -136,39 +144,40 @@ public class Good implements Serializable, Comparable<Good> {
 		return name;
 	}
 
-	/**
-	 * Checks if an object is equal to this object.
-	 * 
-	 * @param object the object to compare.
-	 * @return true if equal
-	 */
-	public boolean equals(Object object) {
-		boolean result = true;
-		if (object instanceof Good) {
-			Good good = (Good) object;
-			if (!name.equals(good.name))
-				result = false;
-			if (!classType.equals(good.classType))
-				result = false;
-			if (this.object != null) {
-				if (!this.object.equals(good.object))
-					result = false;
-			}
-			if (!category.equals(good.category))
-				result = false;
-		} else
-			result = false;
-
-		return result;
-	}
-
+//	/**
+//	 * Checks if an object is equal to this object.
+//	 * 
+//	 * @param object the object to compare.
+//	 * @return true if equal
+//	 */
+//	public boolean equals(Object object) {
+//		boolean result = true;
+//		if (object instanceof Good) {
+//			Good good = (Good) object;
+//			if (!name.equals(good.name))
+//				result = false;
+//			if (!classType.equals(good.classType))
+//				result = false;
+//			if (this.object != null) {
+//				if (!this.object.equals(good.object))
+//					result = false;
+//			}
+//			if (!category.equals(good.category))
+//				result = false;
+//		} else
+//			result = false;
+//
+//		return result;
+//	}
+	
 	/**
 	 * Gets the hash code value.
 	 */
 	public int hashCode() {
-		int hashCode = name.hashCode() * getClass().hashCode();
-		if (object != null)
-			hashCode *= object.hashCode();
+		int hashCode = name.hashCode();// * getClass().hashCode();
+//		hashCode *= id;
+//		if (object != null)
+//			hashCode *= object.hashCode();
 		hashCode *= category.hashCode();
 		return hashCode;
 	}

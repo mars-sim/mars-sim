@@ -59,7 +59,7 @@ public class CollectIce extends CollectResourcesMission {
 	public CollectIce(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, ResourceUtil.iceID, SITE_GOAL, COLLECTION_RATE,
-				EquipmentType.str2int(Bag.TYPE), REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
+				EquipmentType.convertName2ID(Bag.TYPE), REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class CollectIce extends CollectResourcesMission {
 
 		// Use CollectResourcesMission constructor.
 		super(description, members, startingSettlement, ResourceUtil.iceID, SITE_GOAL, COLLECTION_RATE,
-				EquipmentType.str2int(Bag.TYPE), REQUIRED_BAGS, iceCollectionSites.size(),
+				EquipmentType.convertName2ID(Bag.TYPE), REQUIRED_BAGS, iceCollectionSites.size(),
 				RoverMission.MIN_GOING_MEMBERS, rover, iceCollectionSites);
 	}
 

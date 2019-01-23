@@ -90,10 +90,10 @@ extends TabPanel {
 		//goodsTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		// Align the preference score to the center of the cell
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		goodsTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		goodsTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+//		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+//		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+//		goodsTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+//		goodsTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
 		// Added sorting
 		goodsTable.setAutoCreateRowSorter(true);

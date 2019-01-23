@@ -25,6 +25,8 @@ import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
@@ -309,11 +311,13 @@ public final class TradeUtil {
 				try {
 					boolean isAmountResource = good.getCategory() == GoodType.AMOUNT_RESOURCE;
 					boolean isItemResource = good.getCategory() == GoodType.ITEM_RESOURCE;
-
+					AmountResource resource = null;
+					
 					// Add resource container if needed.
 					if (isAmountResource) {
-						AmountResource resource = (AmountResource) good.getObject();
-						Equipment container = getAvailableContainerForResource(resource, sellingSettlement, tradeList);
+						resource = ResourceUtil.findAmountResource(good.getID());
+						Equipment container = getAvailableContainerForResource(resource,
+								sellingSettlement, tradeList);
 						if (container != null) {
 							Good containerGood = GoodsUtil.getEquipmentGood(container.getClass());
 							massCapacity -= container.getBaseMass();
@@ -340,7 +344,7 @@ public final class TradeUtil {
 					else {
 						int number = 1;
 						if (isAmountResource)
-							number = (int) getResourceTradeAmount((AmountResource) good.getObject());
+							number = (int) getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID()));
 						else if (isItemResource)
 							number = itemResourceNum;
 						massCapacity -= (GoodsUtil.getGoodMassPerItem(good) * number);
@@ -353,14 +357,14 @@ public final class TradeUtil {
 					double goodNum = 1D;
 					
 					if (isAmountResource)
-						goodNum = getResourceTradeAmount((AmountResource) good.getObject());
+						goodNum = getResourceTradeAmount(resource);
 					if (isItemResource)
 						goodNum = itemResourceNum;
 					
 					double buyGoodValue = buyerGoodsManager.getGoodValuePerItem(good, (supply + currentNum + goodNum));
 					
 					if (isAmountResource) {
-						double tradeAmount = getResourceTradeAmount((AmountResource) good.getObject());
+						double tradeAmount = getResourceTradeAmount(resource);
 						buyGoodValue *= tradeAmount;
 					}
 					if (isItemResource) {
@@ -402,7 +406,7 @@ public final class TradeUtil {
 			double supply = manager.getNumberOfGoodForSettlement(good);
 			double multiplier = 1D;
 			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
-				double tradeAmount = getResourceTradeAmount((AmountResource) good.getObject());
+				double tradeAmount = getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID()));
 				goodNumber /= (int) tradeAmount;
 				multiplier = tradeAmount;
 			}
@@ -500,7 +504,7 @@ public final class TradeUtil {
 
 		int result = 0;
 
-		ItemResource item = (ItemResource) itemResourceGood.getObject();
+		Part item = ItemResourceUtil.findItemResource(itemResourceGood.getID());
 
 		int sellingInventory = sellingSettlement.getInventory().getItemResourceNum(item);
 		int buyingInventory = buyingSettlement.getInventory().getItemResourceNum(item);
@@ -566,7 +570,7 @@ public final class TradeUtil {
 			boolean allowNegValue, Set<Integer> repairParts) {
 
 		double result = Double.NEGATIVE_INFINITY;
-
+		AmountResource resource = null;
 		double amountTraded = 0D;
 		if (tradedGoods.containsKey(good))
 			amountTraded += tradedGoods.get(good).doubleValue();
@@ -576,9 +580,10 @@ public final class TradeUtil {
 		if (sellingSupplyAmount < 0D)
 			sellingSupplyAmount = 0D;
 		double sellingValue = sellingSettlement.getGoodsManager().getGoodValuePerItem(good, sellingSupplyAmount);
-		if (good.getCategory() == GoodType.AMOUNT_RESOURCE)
-			sellingValue *= getResourceTradeAmount((AmountResource) good.getObject());
-
+		if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
+			resource = ResourceUtil.findAmountResource(good.getID());
+			sellingValue *= getResourceTradeAmount(resource);
+		}
 		boolean allTraded = (sellingInventory <= amountTraded);
 
 		double buyingInventory = getNumInInventory(good, buyingSettlement.getInventory());
@@ -587,7 +592,7 @@ public final class TradeUtil {
 			buyingSupplyAmount = 0D;
 		double buyingValue = buyingSettlement.getGoodsManager().getGoodValuePerItem(good, buyingSupplyAmount);
 		if (good.getCategory() == GoodType.AMOUNT_RESOURCE)
-			buyingValue *= getResourceTradeAmount((AmountResource) good.getObject());
+			buyingValue *= getResourceTradeAmount(resource);
 
 		boolean profitable = (buyingValue > sellingValue);
 		boolean hasBuyValue = buyingValue > 0D;
@@ -597,7 +602,7 @@ public final class TradeUtil {
 
 			boolean isContainerAvailable = true;
 			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
-				Equipment container = getAvailableContainerForResource((AmountResource) good.getObject(),
+				Equipment container = getAvailableContainerForResource(resource,
 						sellingSettlement, tradedGoods);
 				isContainerAvailable = (container != null);
 			}
@@ -612,8 +617,7 @@ public final class TradeUtil {
 
 			boolean enoughResourceForContainer = true;
 			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
-				enoughResourceForContainer = (sellingSupplyAmount >= getResourceTradeAmount(
-						(AmountResource) good.getObject()));
+				enoughResourceForContainer = (sellingSupplyAmount >= getResourceTradeAmount(resource));
 			}
 
 			boolean enoughEVASuits = true;
@@ -625,7 +629,7 @@ public final class TradeUtil {
 
 			boolean enoughRepairParts = true;
 			if (good.getCategory() == GoodType.ITEM_RESOURCE) {
-				if (repairParts.contains(good.getObject())) {
+				if (repairParts.contains(good.getID())) {
 					if (sellingSupplyAmount < MIN_REPAIR_PARTS)
 						enoughRepairParts = false;
 				}
@@ -633,7 +637,6 @@ public final class TradeUtil {
 
 			boolean enoughLifeSupportResources = true;
 			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
-				AmountResource resource = (AmountResource) good.getObject();
 				if (resource.isLifeSupport() && sellingSupplyAmount < MIN_LIFE_SUPPORT_RESOURCES)
 					enoughLifeSupportResources = false;
 			}
@@ -660,10 +663,9 @@ public final class TradeUtil {
 	private static boolean hasCapacityInInventory(Good good, double remainingCapacity, boolean hasVehicle) {
 		boolean result = false;
 		if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
-			AmountResource resource = (AmountResource) good.getObject();
-			result = (remainingCapacity >= getResourceTradeAmount(resource));
+			result = (remainingCapacity >= getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID())));
 		} else if (good.getCategory() == GoodType.ITEM_RESOURCE)
-			result = remainingCapacity >= ((ItemResource) good.getObject()).getMassPerItem();
+			result = remainingCapacity >= (ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
 		else if (good.getCategory() == GoodType.EQUIPMENT) {
 			Class type = good.getClassType();
 			if (!equipmentGoodCache.containsKey(type))
@@ -684,14 +686,14 @@ public final class TradeUtil {
 	 */
 	public static double getNumInInventory(Good good, Inventory inventory) {
 		if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
-			return inventory.getAmountResourceStored((AmountResource) good.getObject(), false);
+			return inventory.getAmountResourceStored(good.getID(), false);
 		} else if (good.getCategory() == GoodType.ITEM_RESOURCE) {
-			return inventory.getItemResourceNum((ItemResource) good.getObject());
+			return inventory.getItemResourceNum(good.getID());
 		} else if (good.getCategory() == GoodType.EQUIPMENT) {
-			return inventory.findNumEmptyUnitsOfClass(good.getClassType(), false);
+			return inventory.findNumEmptyUnitsOfClass(EquipmentFactory.getEquipmentClass(good.getID()), false);
 		} else if (good.getCategory() == GoodType.VEHICLE) {
 			int count = 0;
-			Iterator<Unit> i = inventory.findAllUnitsOfClass(good.getClassType()).iterator();
+			Iterator<Unit> i = inventory.findAllUnitsOfClass(Vehicle.class).iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = (Vehicle) i.next();
 				boolean isEmpty = vehicle.getInventory().isEmpty(false);

@@ -15,8 +15,7 @@
  */
 package org.mars_sim.msp.core.terminal;
 
-import org.beryx.textio.*;
-import org.beryx.textio.swing.SwingTextTerminal;
+import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -33,7 +32,16 @@ import java.util.stream.LongStream;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
+import org.beryx.textio.DoubleInputReader;
+import org.beryx.textio.InputReader;
+import org.beryx.textio.IntInputReader;
+import org.beryx.textio.LongInputReader;
+import org.beryx.textio.ReadAbortedException;
+import org.beryx.textio.ReadHandlerData;
+import org.beryx.textio.ReadInterruptionStrategy;
+import org.beryx.textio.StringInputReader;
+import org.beryx.textio.TextIO;
+import org.beryx.textio.swing.SwingTextTerminal;
 
 public class SwingHandler {
     private static final String KEY_STROKE_UP = "pressed UP";

@@ -20,8 +20,6 @@ import javafx.geometry.Pos;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-
-@SuppressWarnings("restriction")
 public class UnitDescriptionStage {
 
 	//private MainDesktopPane desktop;
@@ -34,7 +32,6 @@ public class UnitDescriptionStage {
     	//this.desktop = desktop;
     }
 
-	@SuppressWarnings("restriction")
     public BorderPane init(String unitName, String unitType, String unitDescription) {
 
     	//this.setSize(350, 400); // undecorated 301, 348 ; decorated : 303, 373

@@ -216,8 +216,8 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 			} else if (GoodType.EQUIPMENT.equals(good.getCategory())) {
 				Class<?> equipmentClass = good.getClassType();
 				System.out.println("EmergencySupplyMission str : " + good.getName() + " : " + equipmentClass.getName()
-						+ " : " + EquipmentType.str2int(good.getName()));
-				emergencyEquipment.put(EquipmentType.str2int(good.getName()), amount);
+						+ " : " + EquipmentType.convertName2ID(good.getName()));
+				emergencyEquipment.put(EquipmentType.convertName2ID(good.getName()), amount);
 			} else if (GoodType.VEHICLE.equals(good.getCategory())) {
 				String vehicleType = good.getName();
 				Iterator<Vehicle> h = startingSettlement.getParkedVehicles().iterator();

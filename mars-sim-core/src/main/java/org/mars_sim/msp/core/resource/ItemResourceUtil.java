@@ -259,6 +259,18 @@ public class ItemResourceUtil implements Serializable {
 	}
 
 	/**
+	 * Finds an item resource name by id.
+	 * 
+	 * @param id the resource's id.
+	 * @return resource name
+	 * @throws ResourceException if resource could not be found.
+	 */
+	public static String findItemResourceName(int id) {
+		return partIDNameMap.get(id);
+	}
+	
+	
+	/**
 	 * Finds an amount resource by name.
 	 * 
 	 * @param name the name of the resource.

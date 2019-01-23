@@ -9,6 +9,9 @@ package org.mars_sim.msp.core.equipment;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
+
 
 /**
  * The EquipmentType enum class is used for distinguishing between various type of equipments
@@ -64,11 +67,11 @@ public enum EquipmentType {
 		return equipmentSet;
 	}
 	
-	public static int str2int(String name) {
+	public static int convertName2ID(String name) {
 		if (name != null) {
 	    	for (EquipmentType e : EquipmentType.values()) {
 	    		if (name.equalsIgnoreCase(e.name)) {
-	    			return e.ordinal();
+	    			return e.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 	    		}
 	    	}
 		}
@@ -76,18 +79,19 @@ public enum EquipmentType {
 		return -1;
 	}
 	
-	public static EquipmentType int2enum(int ordinal) {
-		return EquipmentType.values()[ordinal];
+	public static EquipmentType convertID2Type(int id) {
+		return EquipmentType.values()[id - ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID];
 	}
 	
 	public static int getEquipmentID(Class<?> equipmentClass) {
-		if (Bag.class.equals(equipmentClass)) return BAG.ordinal();
-		else if (Barrel.class.equals(equipmentClass)) return BARREL.ordinal();
-		else if (BuildingKit.class.equals(equipmentClass)) return BUILDING_KIT.ordinal();
-		else if (EVASuit.class.equals(equipmentClass)) return EVA_SUIT.ordinal();
-		else if (GasCanister.class.equals(equipmentClass)) return GAS_CANISTER.ordinal();
-        else if (LargeBag.class.equals(equipmentClass)) return LARGE_BAG.ordinal();
-		else if (SpecimenContainer.class.equals(equipmentClass)) return SPECIMEN_CONTAINER.ordinal();
+		if (Bag.class.equals(equipmentClass)) return BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+		else if (Barrel.class.equals(equipmentClass)) return BARREL.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+		else if (BuildingKit.class.equals(equipmentClass)) return BUILDING_KIT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+		else if (EVASuit.class.equals(equipmentClass)) return EVA_SUIT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+		else if (GasCanister.class.equals(equipmentClass)) return GAS_CANISTER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+        else if (LargeBag.class.equals(equipmentClass)) return LARGE_BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+        else if (Robot.class.equals(equipmentClass)) return ROBOT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+		else if (SpecimenContainer.class.equals(equipmentClass)) return SPECIMEN_CONTAINER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 		else return -1;
 	}
 }

@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.equipment.GasCanister;
 import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.PhaseType;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodType;
@@ -302,7 +303,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		while (i.hasNext()) {
 			Good good = i.next();
 			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
-				AmountResource resource = (AmountResource) good.getObject();
+				AmountResource resource = ResourceUtil.findAmountResource(good.getID());
 				PhaseType phase = resource.getPhase();
 				Class containerType = ContainerUtil.getContainerTypeNeeded(phase);
 				int containerNum = containerMap.get(containerType);

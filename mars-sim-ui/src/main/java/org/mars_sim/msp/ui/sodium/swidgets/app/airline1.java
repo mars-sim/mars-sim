@@ -1,13 +1,14 @@
 package org.mars_sim.msp.ui.sodium.swidgets.app;
 
-import javax.swing.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
-import org.mars_sim.msp.core.sodium.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
+import org.mars_sim.msp.core.sodium.Cell;
 import org.mars_sim.msp.ui.sodium.swidgets.SButton;
 import org.mars_sim.msp.ui.sodium.swidgets.SDateField;
-
-import java.awt.*;
-import java.util.Calendar;
 
 public class airline1 {
     public static void main(String[] args) {

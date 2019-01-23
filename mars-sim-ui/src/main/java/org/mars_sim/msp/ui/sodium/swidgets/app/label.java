@@ -1,12 +1,11 @@
 package org.mars_sim.msp.ui.sodium.swidgets.app;
 
-import javax.swing.*;
+import java.awt.FlowLayout;
 
-import org.mars_sim.msp.core.sodium.*;
+import javax.swing.JFrame;
+
 import org.mars_sim.msp.ui.sodium.swidgets.SLabel;
 import org.mars_sim.msp.ui.sodium.swidgets.STextField;
-
-import java.awt.FlowLayout;
 
 public class label {
     public static void main(String[] args) {

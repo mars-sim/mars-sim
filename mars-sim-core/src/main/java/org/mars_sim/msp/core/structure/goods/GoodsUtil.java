@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -21,9 +20,8 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Utility class for goods information.
@@ -33,6 +31,8 @@ public class GoodsUtil {
 	// Data members
 	private static List<Good> goodsList;
 
+	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
+	
 	/**
 	 * Private constructor for utility class.
 	 */
@@ -75,7 +75,7 @@ public class GoodsUtil {
 			category = GoodType.AMOUNT_RESOURCE;
 		else if (resource instanceof ItemResource)
 			category = GoodType.ITEM_RESOURCE;
-		return new Good(resource.getName(), resource, category);
+		return new Good(resource.getName(), resource.getID(), category);
 	}
 
 	/**
@@ -84,19 +84,17 @@ public class GoodsUtil {
 	 * @param resource the resource.
 	 * @return good for the resource.
 	 */
-	public static Good getResourceGood(int resource) {
+	public static Good getResourceGood(int id) {
 //		if (resource == null) {
 //			throw new IllegalArgumentException("resource cannot be null");
 //		}
 		GoodType category = null;
-		if (resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+		if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 			category = GoodType.AMOUNT_RESOURCE;
-			AmountResource ar = ResourceUtil.findAmountResource(resource);
-			return new Good(ar.getName(), ar, category);
-		} else if (resource >= ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-			Part p = ItemResourceUtil.findItemResource(resource);
+			return new Good(ResourceUtil.findAmountResourceName(id), id, category);
+		} else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 			category = GoodType.ITEM_RESOURCE;
-			return new Good(p.getName(), p, category);
+			return new Good(ItemResourceUtil.findItemResourceName(id), id, category);
 		}
 
 		return null;
@@ -112,21 +110,33 @@ public class GoodsUtil {
 		if (equipmentClass == null) {
 			throw new IllegalArgumentException("goodClass cannot be null");
 		}
-		Good result = null;
-
+//		Good result = null;
+		int id = EquipmentType.getEquipmentID(equipmentClass);
 		Iterator<Good> i = getGoodsList().iterator();
 		while (i.hasNext()) {
 			Good good = i.next();
-			if (good.getClassType() == equipmentClass)
-				result = new Good(good.getName(), equipmentClass, GoodType.EQUIPMENT);
+//			if (good.getClassType() == equipmentClass)
+//				result = new Good(good.getName(), equipmentClass, GoodType.EQUIPMENT);	
+			if (good.getID() == id)
+				return good;
+			
 		}
-
-		return result;
+		
+		return new Good(EquipmentType.convertID2Type(id).getName(), id, GoodType.EQUIPMENT);
 	}
 
 	public static Good getEquipmentGood(int id) {
+		Iterator<Good> i = getGoodsList().iterator();
+		while (i.hasNext()) {
+			Good good = i.next();
+			if (good.getID() == id)
+				return good;	
+		}
+		
+		return new Good(EquipmentType.convertID2Type(id).getName(), id, GoodType.EQUIPMENT);
+		
 //		Class<? extends Unit> equipmentClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(e).getName());
-		return getEquipmentGood(EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName()));
+//		return getEquipmentGood(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
 	}
 
 	/**
@@ -139,11 +149,11 @@ public class GoodsUtil {
 		if ((vehicleType == null) || vehicleType.trim().length() == 0) {
 			throw new IllegalArgumentException("vehicleType cannot be blank or null.");
 		}
-		Class<?> vehicleClass = Rover.class;
-		if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType))
-			vehicleClass = LightUtilityVehicle.class;
-		return new Good(vehicleType, vehicleClass, GoodType.VEHICLE);
-
+//		Class<?> vehicleClass = Rover.class;
+//		if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType))
+//			vehicleClass = LightUtilityVehicle.class;
+//		return new Good(vehicleType, vehicleClass, GoodType.VEHICLE);
+		return new Good(vehicleType, VehicleType.convertName2ID(vehicleType), GoodType.VEHICLE);
 	}
 
 	/**
@@ -208,8 +218,9 @@ public class GoodsUtil {
 		Iterator<String> i = equipmentNames.iterator();
 		while (i.hasNext()) {
 			String name = i.next();
-			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(name);
-			goodsList.add(new Good(name, equipmentClass, GoodType.EQUIPMENT));
+//			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(name);
+			int id = EquipmentType.convertName2ID(name);
+			goodsList.add(new Good(name, id, GoodType.EQUIPMENT));
 		}
 	}
 
@@ -217,10 +228,8 @@ public class GoodsUtil {
 	 * Populates the goods list with all vehicles.
 	 */
 	private static void populateVehicles() {
-		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-
 		try {
-			Iterator<String> i = config.getVehicleTypes().iterator();
+			Iterator<String> i = vehicleConfig.getVehicleTypes().iterator();
 			while (i.hasNext())
 				goodsList.add(getVehicleGood(i.next()));
 		} catch (Exception e) {
@@ -241,12 +250,11 @@ public class GoodsUtil {
 		if (GoodType.AMOUNT_RESOURCE == good.getCategory())
 			result = 1D;
 		else if (GoodType.ITEM_RESOURCE == good.getCategory())
-			result = ((ItemResource) good.getObject()).getMassPerItem();
+			result = ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
 		else if (GoodType.EQUIPMENT == good.getCategory())
 			result = EquipmentFactory.getEquipmentMass(good.getName());
 		else if (GoodType.VEHICLE == good.getCategory()) {
-			VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-			result = config.getEmptyMass(good.getName());
+			result = vehicleConfig.getEmptyMass(good.getName());
 		}
 
 		return result;

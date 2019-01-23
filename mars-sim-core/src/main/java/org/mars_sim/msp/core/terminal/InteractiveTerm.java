@@ -23,7 +23,6 @@ import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.beryx.textio.jline.JLineTextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
-
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -108,7 +107,7 @@ public class InteractiveTerm {
 				+ System.lineSeparator()
 				);
 			
-        handler.addStringTask("mode", "Enter your choice:", false).addChoices("1", "2").constrainInputToChoices();
+        handler.addStringTask("mode", "Enter the game mode:", false).addChoices("1", "2").constrainInputToChoices();
         handler.executeOneTask();
         
 		if ((CommanderInput.mode).equals("1")) {
@@ -131,6 +130,7 @@ public class InteractiveTerm {
 				terminal.print(System.lineSeparator());
 				profile.accept(textIO, null);
 	    	}
+	    	
 	    	else {
 	    		try {
 					boolean canLoad = CommanderProfile.loadProfile();
