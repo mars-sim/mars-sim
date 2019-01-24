@@ -72,19 +72,14 @@ public class ClockUtils implements Serializable {
 	 * Constructor
 	 */
 //	public ClockUtils() {
-//		sim = Simulation.instance();
-//		
-//		orbitInfo = sim.getMars().getOrbitInfo();
-//		earthClock = sim.getMasterClock().getEarthClock();
-//		marsClock = sim.getMasterClock().getMarsClock();
 //	}
 
-	public MarsClock convertTimeEarth2Mars() {
-		MarsClock marsClock = null;
-		// ;
-		// ;
-		return marsClock;
-	}
+//	public MarsClock convertTimeEarth2Mars() {
+//		MarsClock marsClock = null;
+//		// ;
+//		// ;
+//		return marsClock;
+//	}
 
 	/**
 	 * Obtain the first landing date and time

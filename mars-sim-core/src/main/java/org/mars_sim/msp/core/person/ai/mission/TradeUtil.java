@@ -405,7 +405,7 @@ public final class TradeUtil {
 			int goodNumber = load.get(good);
 			double supply = manager.getNumberOfGoodForSettlement(good);
 			double multiplier = 1D;
-			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
+			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {	
 				double tradeAmount = getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID()));
 				goodNumber /= (int) tradeAmount;
 				multiplier = tradeAmount;
@@ -665,7 +665,7 @@ public final class TradeUtil {
 		if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
 			result = (remainingCapacity >= getResourceTradeAmount(ResourceUtil.findAmountResource(good.getID())));
 		} else if (good.getCategory() == GoodType.ITEM_RESOURCE)
-			result = remainingCapacity >= (ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
+			result = remainingCapacity >= ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
 		else if (good.getCategory() == GoodType.EQUIPMENT) {
 			Class type = good.getClassType();
 			if (!equipmentGoodCache.containsKey(type))

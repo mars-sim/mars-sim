@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.structure.goods;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 
 /**
@@ -109,7 +110,7 @@ public class Good implements Serializable, Comparable<Good> {
 	 * 
 	 * @return equipment class
 	 */
-	public Class<?> getClassType() {
+	public Class<? extends Equipment> getClassType() {
 		return EquipmentFactory.getEquipmentClass(id);
 	}
 

@@ -180,7 +180,7 @@ public class GoodsManager implements Serializable {
 	private double tourism_factor = 1;
 
 	private double vp_cache;
-	private double inflation_rate = .8;
+	private double inflation_rate = 1;
 
 	private Map<Good, Double> goodsValues;
 	private Map<Good, Double> goodsDemandCache;
@@ -389,15 +389,17 @@ public class GoodsManager implements Serializable {
 		if (supply < MINIMUM_STORED_SUPPLY)
 			supply = MINIMUM_STORED_SUPPLY;
 
-//		AmountResource resource = (AmountResource) resourceGood.getObject();
-		int id = resourceGood.getID();//resource.getID();//ResourceUtil.findIDbyAmountResourceName(resource.getName());
+		int id = resourceGood.getID();
 
+		// control VP inflation
+		controlVPInflation();
+		
 		if (useCache) {
 			if (goodsDemandCache.containsKey(resourceGood)) {
 				// Get previous demand
 				previousDemand = goodsDemandCache.get(resourceGood);
 				// Calculate total demand
-				totalDemand =  .5 * previousDemand + .5 * getAverageAmoundDemand(id, numSol);
+				totalDemand =  .8 * previousDemand + .2 * getAverageAmoundDemand(id, numSol);
 				// Calculate total supply
 				totalSupply = getTotalSupplyAmountResource(id, supply, solElapsed);
 			}
@@ -456,86 +458,78 @@ public class GoodsManager implements Serializable {
 			// Adjust the demand on various waste products with the disposal cost.
 			projectedDemand = getWasteDisposalSinkCost(id, projectedDemand);
 
-			// Revert back to projectedDemand per sol for calculating totalDemand
-			// This demand never gets changed back to per orbit, so I'm commenting
-			// this out for now. - Scott
-			// projectedDemand = projectedDemand / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-
-			totalDemand = .33 * (previousDemand + projectedDemand + getAverageAmoundDemand(id, numSol));
-
-			// Adjust VP for the inflation
-			adjustVPInflation();
-
 			// Add trade value.
 			tradeDemand = determineTradeDemand(resourceGood, useCache);
-			// tradeDemand = Math.round(tradeDemand* 1000000.0) / 1000000.0;
 
-			if (tradeDemand > totalDemand) {
-				totalDemand = tradeDemand;
-			}
+//			if (tradeDemand > totalDemand) {
+//				totalDemand = tradeDemand;
+//			}
+
+			totalDemand = .6 * previousDemand 
+					+ .2 * projectedDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR 
+					+ .1 * getAverageAmoundDemand(id, numSol) 
+					+ .1 * tradeDemand;
 
 			goodsDemandCache.put(resourceGood, totalDemand);
 		}
 
 		value = totalDemand / totalSupply;
 
-		// Add MAXIMUM_ALLOWABLE_VALUE_POINT
-		// Why have a min or max value limit? - Scott
-		// if (value > MAXIMUM_ALLOWABLE_VALUE_POINT)
-		// value = MAXIMUM_ALLOWABLE_VALUE_POINT;
-		// else if (value < MINIMUM_ALLOWABLE_VALUE_POINT)
-		// value = MINIMUM_ALLOWABLE_VALUE_POINT;
-
-		// Use resource processing value if higher.
-		// Manny: why using higher values?
-		// double resourceProcessingValue = getResourceProcessingValue(resource,
-		// useCache);
-		// if (resourceProcessingValue > value) value = resourceProcessingValue;
-
-		// if (r.equals("ethylene") || r.equals("polyethylene") ||
-//       if (r.equals("regolith") ) {
-//       //|| r.equals("iron") || r.equals("iron oxide")) {
-		// System.out.println( r
-		// + " projectedDemand per sol is " + Math.round(projectedDemand* 1000000.0) /
-		// 1000000.0
-		// + " : tradeDemand per sol is " + Math.round(tradeDemand* 1000000.0) /
-		// 1000000.0
-//                + "     VP is " + Math.round(value* 1000000.0) / 1000000.0);
-//        }
-
 		return value;
 	}
 
 	/**
-	 * Adjust the inflation rate of the value point (VP)
+	 * Adjust the value point with an inflation rate
 	 * 
 	 * @return
 	 */
-	public void adjustVPInflation() {
+	public void controlVPInflation() {
 		double vp = 0;
 
 		List<Double> list = new ArrayList<Double>(goodsDemandCache.values());
 
 		Collections.sort(list, Collections.reverseOrder());
 
-		int num = 10;
-		List<Double> tops = list.subList(0, num);
+		int size = list.size();
+		// Assume there are 4 tiers of goods
+		// Use the second-tier VP resource as the benchmark
+		int first = (int)(size/4D);
+		int last = (int)(size/2D);
+		
+		List<Double> secondTier = list.subList(first, last);
 
 		int sum = 0;
 
-		for (double d : tops) {
+		for (double d : secondTier) {
 			sum += d;
 		}
 
-		vp = sum / num;
+		vp = sum / secondTier.size();
 
-		// System.out.println("vp : " + vp);
-
+//		// Find the average VP for all goods
+//		sum = 0;
+//		for (double d : list) {
+//			sum += d;
+//		}
+//		
+//		// Get the average out of both
+//		vp = (sum / list.size() + vp ) / 2D;
+		
+		double dampingRatio = vp / vp_cache;
+			
 		if (vp > 1.1 * vp_cache)
-			inflation_rate = inflation_rate * 0.95;
+			dampingRatio = dampingRatio * 1.1;
 		else if (vp < .9 * vp_cache)
-			inflation_rate = inflation_rate * 1.05;
+			dampingRatio = dampingRatio * .9;
 
+		// TODO: need to develop a sophisticated system to control the inflation 
+
+		// Update the VP for each good based on the inflation rate
+		for (Good good: goodsDemandCache.keySet()) {
+			double value = goodsDemandCache.get(good) / dampingRatio;
+			goodsDemandCache.put(good, value);
+		}
+		
 		vp_cache = vp;
 	}
 

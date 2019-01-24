@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 
 // References: 

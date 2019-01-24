@@ -208,16 +208,13 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 			Good good = j.next();
 			int amount = emergencyGoods.get(good);
 			if (GoodType.AMOUNT_RESOURCE.equals(good.getCategory())) {
-				AmountResource resource = (AmountResource) good.getObject();
-				emergencyResources.put(ResourceUtil.findIDbyAmountResourceName(resource.getName()), (double) amount);
+				emergencyResources.put(good.getID(), (double) amount);
 			} else if (GoodType.ITEM_RESOURCE.equals(good.getCategory())) {
-				Part part = (Part) good.getObject();
-				emergencyParts.put(ItemResourceUtil.findIDbyItemResourceName(part.getName()), amount);
+				emergencyParts.put(good.getID(), amount);
 			} else if (GoodType.EQUIPMENT.equals(good.getCategory())) {
-				Class<?> equipmentClass = good.getClassType();
-				System.out.println("EmergencySupplyMission str : " + good.getName() + " : " + equipmentClass.getName()
-						+ " : " + EquipmentType.convertName2ID(good.getName()));
-				emergencyEquipment.put(EquipmentType.convertName2ID(good.getName()), amount);
+//				System.out.println("EmergencySupplyMission str : " + good.getName() + " : " + equipmentClass.getName()
+//						+ " : " + EquipmentType.convertName2ID(good.getName()));
+				emergencyEquipment.put(good.getID(), amount);
 			} else if (GoodType.VEHICLE.equals(good.getCategory())) {
 				String vehicleType = good.getName();
 				Iterator<Vehicle> h = startingSettlement.getParkedVehicles().iterator();
