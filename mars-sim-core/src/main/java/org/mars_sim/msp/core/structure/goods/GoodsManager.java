@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.structure.goods;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -117,6 +116,7 @@ public class GoodsManager implements Serializable {
 	private static final String SALVAGE_BUILDING_MISSION = "salvage building";
 	private static final String EMERGENCY_SUPPLY_MISSION = "deliver emergency supplies";
 
+	private static final double DAMPING_RATIO = .5;
 	
 	// Number modifiers for outstanding repair and maintenance parts.
 	private static final int OUTSTANDING_REPAIR_PART_MODIFIER = 150;
@@ -391,9 +391,6 @@ public class GoodsManager implements Serializable {
 
 		int id = resourceGood.getID();
 
-		// control VP inflation
-		controlVPInflation();
-		
 		if (useCache) {
 			if (goodsDemandCache.containsKey(resourceGood)) {
 				// Get previous demand
@@ -412,9 +409,6 @@ public class GoodsManager implements Serializable {
 		} 
 		
 		else {
-			// Calculate total supply
-			totalSupply = getTotalSupplyAmountResource(id, supply, solElapsed);
-			// goodsSupplyCache.put(resourceGood, totalSupply);
 
 			// Tune life support demand if applicable.
 			projectedDemand += getLifeSupportDemand(id);
@@ -470,67 +464,26 @@ public class GoodsManager implements Serializable {
 					+ .1 * getAverageAmoundDemand(id, numSol) 
 					+ .1 * tradeDemand;
 
-			goodsDemandCache.put(resourceGood, totalDemand);
+			// Calculate total supply
+			totalSupply = getTotalSupplyAmountResource(id, supply, solElapsed);
+			// goodsSupplyCache.put(resourceGood, totalSupply);
 		}
 
+		// Apply the universal damping ratio
+		if (totalDemand / previousDemand > 1)
+			// Reduce the increase
+			totalDemand = previousDemand + (totalDemand - previousDemand) * DAMPING_RATIO;
+		
+		else if (totalDemand / previousDemand < 1)
+			// Reduce the decrease
+			totalDemand = previousDemand - (previousDemand - totalDemand) * DAMPING_RATIO;
+			
+		// Save the goods demand
+		goodsDemandCache.put(resourceGood, totalDemand);
+		
 		value = totalDemand / totalSupply;
 
 		return value;
-	}
-
-	/**
-	 * Adjust the value point with an inflation rate
-	 * 
-	 * @return
-	 */
-	public void controlVPInflation() {
-		double vp = 0;
-
-		List<Double> list = new ArrayList<Double>(goodsDemandCache.values());
-
-		Collections.sort(list, Collections.reverseOrder());
-
-		int size = list.size();
-		// Assume there are 4 tiers of goods
-		// Use the second-tier VP resource as the benchmark
-		int first = (int)(size/4D);
-		int last = (int)(size/2D);
-		
-		List<Double> secondTier = list.subList(first, last);
-
-		int sum = 0;
-
-		for (double d : secondTier) {
-			sum += d;
-		}
-
-		vp = sum / secondTier.size();
-
-//		// Find the average VP for all goods
-//		sum = 0;
-//		for (double d : list) {
-//			sum += d;
-//		}
-//		
-//		// Get the average out of both
-//		vp = (sum / list.size() + vp ) / 2D;
-		
-		double dampingRatio = vp / vp_cache;
-			
-		if (vp > 1.1 * vp_cache)
-			dampingRatio = dampingRatio * 1.1;
-		else if (vp < .9 * vp_cache)
-			dampingRatio = dampingRatio * .9;
-
-		// TODO: need to develop a sophisticated system to control the inflation 
-
-		// Update the VP for each good based on the inflation rate
-		for (Good good: goodsDemandCache.keySet()) {
-			double value = goodsDemandCache.get(good) / dampingRatio;
-			goodsDemandCache.put(good, value);
-		}
-		
-		vp_cache = vp;
 	}
 
 	/**
