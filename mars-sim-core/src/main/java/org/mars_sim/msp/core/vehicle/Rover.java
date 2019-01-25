@@ -346,8 +346,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 			oxygenTaken = oxygenLeft;
 
 		getInventory().retrieveAmountResource(ResourceUtil.oxygenID, oxygenTaken);
-		getInventory().addAmountDemandTotalRequest(ResourceUtil.oxygenID);
-		getInventory().addAmountDemand(ResourceUtil.oxygenID, oxygenTaken);
+//		getInventory().addAmountDemandTotalRequest(ResourceUtil.oxygenID);
+//		getInventory().addAmountDemand(ResourceUtil.oxygenID, oxygenTaken);
 
 //		return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
 		return oxygenTaken;
@@ -376,8 +376,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 			waterTaken = waterLeft;
 
 		getInventory().retrieveAmountResource(ResourceUtil.waterID, waterTaken);
-		getInventory().addAmountDemandTotalRequest(ResourceUtil.waterID);
-		getInventory().addAmountDemand(ResourceUtil.waterID, waterTaken);
+//		getInventory().addAmountDemandTotalRequest(ResourceUtil.waterID);
+//		getInventory().addAmountDemand(ResourceUtil.waterID, waterTaken);
 
 //		return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
 		return waterTaken;

@@ -231,7 +231,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 						false);
 				if (rockSampleMass < rockSampleCapacity)
 					inv.storeAmountResource(ResourceUtil.rockSamplesID, rockSampleMass, true);
-				inv.addAmountSupplyAmount(ResourceUtil.rockSamplesID, rockSampleMass);
+				inv.addAmountSupply(ResourceUtil.rockSamplesID, rockSampleMass);
 			}
 		}
 	}

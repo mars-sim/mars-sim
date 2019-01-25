@@ -1274,7 +1274,7 @@ public class PhysicalCondition implements Serializable {
 		double foodEaten = amount;
 		double foodAvailable = inv.getAmountResourceStored(ResourceUtil.foodID, false);
 
-		inv.addAmountDemandTotalRequest(ResourceUtil.foodID);
+		inv.addAmountDemandTotalRequest(ResourceUtil.foodID, foodEaten);
 
 		if (foodAvailable < 0.01D) {
 			// throw new IllegalStateException("Warning: less than 0.01 kg dried food

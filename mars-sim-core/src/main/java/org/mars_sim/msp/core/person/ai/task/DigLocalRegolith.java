@@ -255,7 +255,7 @@ implements Serializable {
                 bag.getInventory().retrieveAmountResource(regolithID, collectedAmount);
                 settlement.getInventory().storeAmountResource(regolithID, collectedAmount, false);
         		// 2015-01-15 Add addSupplyAmount()
-                settlement.getInventory().addAmountSupplyAmount(regolithID, collectedAmount);
+                settlement.getInventory().addAmountSupply(regolithID, collectedAmount);
             }
 
             // Store bag.

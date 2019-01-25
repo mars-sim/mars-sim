@@ -82,19 +82,22 @@ public class Inventory implements Serializable {
 	private transient double totalInventoryMassCache;
 	private transient boolean totalInventoryMassCacheDirty = true;
 
-	// Add 3 amount resource demand maps
+	// Add 4 amount resource demand maps
 	private Map<Integer, Integer> amountDemandTotalRequestMap = new HashMap<>();
 	private Map<Integer, Integer> amountDemandMetRequestMap = new HashMap<>();
 	private Map<Integer, Double> amountDemandMap = new HashMap<>();
+	private Map<Integer, Double> amountDemandEstimatedMap = new HashMap<>();
 	// Add 2 amount resource supply maps
 	private Map<Integer, Double> amountSupplyMap = new HashMap<>();
 	private Map<Integer, Integer> amountSupplyRequestMap = new HashMap<>();
-	// Add 2 item resource demand maps
+	// Add 4 item resource demand maps
+	private Map<Integer, Integer> itemDemandTotalRequestMap = new HashMap<>();
 	private Map<Integer, Integer> itemDemandMetRequestMap = new HashMap<>();
 	private Map<Integer, Integer> itemDemandMap = new HashMap<>();
+	private Map<Integer, Integer> itemDemandEstimatedMap = new HashMap<>();
 	// Add 2 item resource supply maps
-//	private Map<Integer, Integer> itemSupplyMap = new HashMap<>();
-//	private Map<Integer, Integer> itemSupplyRequestMap = new HashMap<>();
+	private Map<Integer, Integer> itemSupplyMap = new HashMap<>();
+	private Map<Integer, Integer> itemSupplyRequestMap = new HashMap<>();
 	
 	/** The unit that owns this inventory. */
 	private Unit owner;
@@ -116,7 +119,6 @@ public class Inventory implements Serializable {
 
 	public int getAmountSupplyRequest(int r) {
 		int result;
-//		String r = resourceName.toLowerCase();
 
 		if (amountSupplyRequestMap.containsKey(r)) {
 			result = amountSupplyRequestMap.get(r);
@@ -127,10 +129,21 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public double getAmountSupplyAmount(int r) {
-		double result;
-//		String r = resourceName.toLowerCase();
+	public int getItemSupplyRequest(int r) {
+		int result;
 
+		if (itemSupplyRequestMap.containsKey(r)) {
+			result = itemSupplyRequestMap.get(r);
+		} else {
+			itemSupplyRequestMap.put(r, 0);
+			result = 0;
+		}
+		return result;
+	}
+	
+	public double getAmountSupply(int r) {
+		double result;
+		
 		if (amountSupplyMap.containsKey(r)) {
 			result = amountSupplyMap.get(r);
 		} else {
@@ -140,36 +153,62 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public void addAmountSupplyAmount(int r, double amount) {
-//		String r = ResourceUtil.findAmountResource(resource).getName();
-
+	public double getItemSupply(int r) {
+		double result;
+		
+		if (itemSupplyMap.containsKey(r)) {
+			result = itemSupplyMap.get(r);
+		} else {
+			itemSupplyMap.put(r, 0);
+			result = 0.0;
+		}
+		return result;
+	}
+	
+	public void addAmountSupply(int r, double amount) {
 		if (amountSupplyMap.containsKey(r)) {
-
 			double oldAmount = amountSupplyMap.get(r);
 			amountSupplyMap.put(r, amount + oldAmount);
-
 		} else {
 			amountSupplyMap.put(r, amount);
 		}
 
-		addAmountSupplyRequest(r, amount);
+		addAmountSupplyRequest(r);
 	}
 
-	public void addAmountSupplyRequest(int r, double amount) {
+	public void addItemSupply(int r, int amount) {
+		if (itemSupplyMap.containsKey(r)) {
+			int oldAmount = itemSupplyMap.get(r);
+			itemSupplyMap.put(r, amount + oldAmount);
+		} else {
+			itemSupplyMap.put(r, amount);
+		}
 
+		addItemSupplyRequest(r);
+	}
+	
+	public void addAmountSupplyRequest(int r) {
 		if (amountSupplyRequestMap.containsKey(r)) {
 			int oldNum = amountSupplyRequestMap.get(r);
 			amountSupplyRequestMap.put(r, oldNum + 1);
 		}
-
 		else {
 			amountSupplyRequestMap.put(r, 1);
 		}
 	}
 
-	public double getAmountDemandAmount(int r) {
+	public void addItemSupplyRequest(int r) {
+		if (itemSupplyRequestMap.containsKey(r)) {
+			int oldNum = itemSupplyRequestMap.get(r);
+			itemSupplyRequestMap.put(r, oldNum + 1);
+		}
+		else {
+			itemSupplyRequestMap.put(r, 1);
+		}
+	}
+	
+	public double getAmountDemand(int r) {
 		double result;
-//		String r = resourceName.toLowerCase();
 
 		if (amountDemandMap.containsKey(r)) {
 			result = amountDemandMap.get(r);
@@ -192,10 +231,32 @@ public class Inventory implements Serializable {
 		return result;
 	}
 	
+	public double getAmountDemandEstimated(int r) {
+		double result;
+
+		if (amountDemandEstimatedMap.containsKey(r)) {
+			result = amountDemandEstimatedMap.get(r);
+		} else {
+			amountDemandEstimatedMap.put(r, 0.0);
+			result = 0.0;
+		}
+		return result;
+	}
+
+	public double getItemDemandEstimated(int r) {
+		double result;
+
+		if (itemDemandEstimatedMap.containsKey(r)) {
+			result = itemDemandEstimatedMap.get(r);
+		} else {
+			itemDemandEstimatedMap.put(r, 0);
+			result = 0.0;
+		}
+		return result;
+	}
+	
 	public int getAmountDemandTotalRequest(int r) {
 		int result;
-//		String r = resourceName.toLowerCase();
-
 		if (amountDemandTotalRequestMap.containsKey(r)) {
 			result = amountDemandTotalRequestMap.get(r);
 		} else {
@@ -205,21 +266,40 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
+	public int getItemDemandTotalRequest(int r) {
+		int result;
+		if (itemDemandTotalRequestMap.containsKey(r)) {
+			result = itemDemandTotalRequestMap.get(r);
+		} else {
+			itemDemandTotalRequestMap.put(r, 0);
+			result = 0;
+		}
+		return result;
+	}
+
 	public int getAmountDemandMetRequest(int r) {
 		int result;
-//		String r = resourceName.toLowerCase();
-
 		if (amountDemandMetRequestMap.containsKey(r)) {
 			result = amountDemandMetRequestMap.get(r);
 		} else {
 			amountDemandMetRequestMap.put(r, 0);
 			result = 0;
 		}
-
 		return result;
 	}
 
-	public int getAmountDemandAmountMapSize() {
+	public int getItemDemandMetRequest(int r) {
+		int result;
+		if (itemDemandMetRequestMap.containsKey(r)) {
+			result = itemDemandMetRequestMap.get(r);
+		} else {
+			itemDemandMetRequestMap.put(r, 0);
+			result = 0;
+		}
+		return result;
+	}
+	
+	public int getAmountDemandMapSize() {
 		return amountDemandMap.size();
 	}
 
@@ -231,27 +311,35 @@ public class Inventory implements Serializable {
 		return amountDemandTotalRequestMap.size();
 	}
 
+	public int getItemDemandTotalRequestMapSize() {
+		return itemDemandTotalRequestMap.size();
+	}
+
 	public int getAmountDemandMetRequestMapSize() {
 		return amountDemandMetRequestMap.size();
 	}
 
-	public void compactAmountSupplyAmountMap(int sol) {
+	public int getItemDemandMetRequestMapSize() {
+		return itemDemandMetRequestMap.size();
+	}
+
+	public void compactAmountSupplyMap(int sol) {
 		compactAMap(amountSupplyMap, sol);
+	}
+
+	public void compactItemSupplyMap(int sol) {
+		compactIMap(itemSupplyMap, sol);
 	}
 
 	public void clearAmountSupplyRequestMap() {
 		amountSupplyRequestMap.clear();
 	}
 
-//	public void clearAmountDemandAmountMap() {
-//		amountDemandMap.clear();
-//	}
+	public void clearItemSupplyRequestMap() {
+		itemSupplyRequestMap.clear();
+	}
 
-//	public void clearItemDemandMap() {
-//		itemDemandMap.clear();
-//	}
-	
-	public void compactAmountDemandAmountMap(int sol) {
+	public void compactAmountDemandMap(int sol) {
 		compactAMap(amountDemandMap, sol);
 	}
 
@@ -287,21 +375,56 @@ public class Inventory implements Serializable {
 		amountDemandTotalRequestMap.clear();
 	}
 
+	public void clearItemDemandTotalRequestMap() {
+		itemDemandTotalRequestMap.clear();
+	}
+
 	public void clearAmountDemandMetRequestMap() {
 		amountDemandMetRequestMap.clear();
 	}
 
-	public void addAmountDemandTotalRequest(int r) {
-//		String r = ResourceUtil.findAmountResource(resource).getName();
+	public void clearItemDemandMetRequestMap() {
+		itemDemandMetRequestMap.clear();
+	}
 
+	public void addAmountDemandTotalRequest(int r, double amount) {
+		// Record this demand request 
 		if (amountDemandTotalRequestMap.containsKey(r)) {
-
 			int oldNum = amountDemandTotalRequestMap.get(r);
 			amountDemandTotalRequestMap.put(r, oldNum + 1);
 		} else
 			amountDemandTotalRequestMap.put(r, 1);
+		// Record estimated demand
+		if (amountDemandEstimatedMap.containsKey(r)) {
+			double oldAmount = amountDemandEstimatedMap.get(r);
+			amountDemandEstimatedMap.put(r, oldAmount + amount);
+		} else
+			amountDemandEstimatedMap.put(r, amount);
 	}
 
+	public void addItemDemandTotalRequest(int r, int num) {
+		// Record this demand request 
+		if (itemDemandTotalRequestMap.containsKey(r)) {
+			int oldNum = itemDemandTotalRequestMap.get(r);
+			itemDemandTotalRequestMap.put(r, oldNum + 1);
+		} else
+			itemDemandTotalRequestMap.put(r, 1);
+		// Record estimated demand		
+		if (itemDemandEstimatedMap.containsKey(r)) {
+			int oldNum = itemDemandEstimatedMap.get(r);
+			itemDemandEstimatedMap.put(r, oldNum + num);
+		} else
+			itemDemandEstimatedMap.put(r, num);
+	}
+
+	public void compactAmountDemandEstimatedMap(int sol) {
+		compactAMap(amountDemandEstimatedMap, sol);
+	}
+
+	public void compactItemDemandEstimatedMap(int sol) {
+		compactIMap(itemDemandEstimatedMap, sol);
+	}
+	
 	/**
 	 * Adds the demand of this resource. It prompts for raising its value point
 	 * (VP).
@@ -310,10 +433,7 @@ public class Inventory implements Serializable {
 	 * @param amount
 	 */
 	public void addAmountDemand(int r, double amount) {
-//		String r = ResourceUtil.findAmountResource(resource).getName();
-
 		if (amountDemandMap.containsKey(r)) {
-
 			double oldAmount = amountDemandMap.get(r);
 			amountDemandMap.put(r, amount + oldAmount);
 
@@ -325,10 +445,7 @@ public class Inventory implements Serializable {
 	}
 
 	public void addItemDemand(int r, int number) {
-//		String r = ItemResourceUtil.findItemResource(resource).getName();
-
 		if (itemDemandMap.containsKey(r)) {
-
 			int oldNumber = itemDemandMap.get(r);
 			itemDemandMap.put(r, number + oldNumber);
 
@@ -340,8 +457,6 @@ public class Inventory implements Serializable {
 	}
 	
 	public void addAmountDemandMetRequest(int r, double amount) {
-//		String r = ResourceUtil.findAmountResource(resource).getName();
-
 		if (amountDemandMetRequestMap.containsKey(r)) {
 			int oldNum = amountDemandMetRequestMap.get(r);
 			amountDemandMetRequestMap.put(r, oldNum + 1);
@@ -353,8 +468,6 @@ public class Inventory implements Serializable {
 	}
 
 	public void addItemDemandMetRequest(int r, double number) {
-//		String r = ItemResourceUtil.findItemResource(id).getName();
-		
 		if (itemDemandMetRequestMap.containsKey(r)) {
 			int oldNum = itemDemandMetRequestMap.get(r);
 			itemDemandMetRequestMap.put(r, oldNum + 1);

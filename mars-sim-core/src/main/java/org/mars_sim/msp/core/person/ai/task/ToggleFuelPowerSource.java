@@ -266,8 +266,8 @@ implements Serializable {
 
     	int resource = fuelSource.getFuelResourceID();
         double massPerSol = fuelSource.getFuelConsumptionRate();
-        Good good = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(resource));
-        double value = settlement.getGoodsManager().getGoodValuePerItem(good);
+//        Good good = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(resource));
+        double value = settlement.getGoodsManager().getGoodsDemandValue(resource);
 
         return value * massPerSol;
     }

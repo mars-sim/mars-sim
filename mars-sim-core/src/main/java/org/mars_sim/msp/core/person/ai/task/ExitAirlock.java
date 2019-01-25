@@ -791,16 +791,17 @@ public class ExitAirlock extends Task implements Serializable {
 			// Fill oxygen in suit from entity's inventory.
 			double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
 			double availableOxygen = entityInv.getAmountResourceStored(oxygenID, false);
-	
-			entityInv.addAmountDemandTotalRequest(oxygenID);
+			// Add tracking demand
+			entityInv.addAmountDemandTotalRequest(oxygenID, neededOxygen);
 	
 			double takenOxygen = neededOxygen;
 			if (takenOxygen > availableOxygen)
 				takenOxygen = availableOxygen;
 			try {
 				entityInv.retrieveAmountResource(oxygenID, takenOxygen);
-				entityInv.addAmountDemand(oxygenID, takenOxygen);
 				suitInv.storeAmountResource(oxygenID, takenOxygen, true);
+				// Add tracking demand
+				entityInv.addAmountDemand(oxygenID, takenOxygen);
 			} catch (Exception e) {
 				LogConsolidated.log(
 						logger, Level.SEVERE, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
@@ -811,18 +812,17 @@ public class ExitAirlock extends Task implements Serializable {
 			// Fill water in suit from entity's inventory.
 			double neededWater = suitInv.getAmountResourceRemainingCapacity(waterID, true, false);
 			double availableWater = entityInv.getAmountResourceStored(waterID, false);
-	
-			entityInv.addAmountDemandTotalRequest(waterID);
+			// Add tracking demand
+			entityInv.addAmountDemandTotalRequest(waterID, neededWater);
 	
 			double takenWater = neededWater;
 			if (takenWater > availableWater)
 				takenWater = availableWater;
 			try {
 				entityInv.retrieveAmountResource(waterID, takenWater);
-	
-				entityInv.addAmountDemand(waterID, takenWater);
 				suitInv.storeAmountResource(waterID, takenWater, true);
-	
+				// Add tracking demand
+				entityInv.addAmountDemand(waterID, takenWater);
 			} catch (Exception e) {
 				LogConsolidated.log( Level.SEVERE, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 								+ person + " ran into issues providing water to " + suit.getName(), e);

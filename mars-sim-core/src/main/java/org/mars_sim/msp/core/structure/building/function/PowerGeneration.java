@@ -115,7 +115,7 @@ public class PowerGeneration extends Function implements Serializable {
 				// AmountResource fuelResource = fuelSource.getFuelResource();
 				int id = fuelSource.getFuelResourceID();
 				Good fuelGood = GoodsUtil.getResourceGood(id);
-				double fuelValue = settlement.getGoodsManager().getGoodValuePerItem(fuelGood);
+				double fuelValue = settlement.getGoodsManager().getGoodsDemandValue(fuelGood);
 				fuelValue *= fuelSource.getFuelConsumptionRate();
 				fuelPower -= fuelValue;
 				if (fuelPower < 0D)
@@ -128,8 +128,7 @@ public class PowerGeneration extends Function implements Serializable {
 			} else if (source instanceof WindPowerSource) {
 				result += source.getMaxPower() / 2D;
 			} else if (source instanceof AreothermalPowerSource) {
-				double areothermalHeat = Simulation.instance().getMars().getSurfaceFeatures()
-						.getAreothermalPotential(settlement.getCoordinates());
+				double areothermalHeat = surface.getAreothermalPotential(settlement.getCoordinates());
 				result += source.getMaxPower() * (areothermalHeat / 100D);
 			}
 		}

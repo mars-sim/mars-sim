@@ -508,6 +508,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 			// Check if enough resource in settlement inventory.
 			double settlementStored = sInv.getAmountResourceStored(resource, false);
+			// add tracking demand
+			sInv.addAmountDemandTotalRequest(resource, amountNeeded);
+		
 			if (settlementStored < amountNeeded) {
 				if (required) {
 					canLoad = false;
@@ -550,6 +553,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				try {
 					sInv.retrieveAmountResource(resource, resourceAmount);
 					vInv.storeAmountResource(resource, resourceAmount, true);
+					sInv.addAmountDemand(resource, resourceAmount);
 				} catch (Exception e) {
 					e.printStackTrace(System.err);
 				}
@@ -617,6 +621,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 			// Check if enough resource in settlement inventory.
 			int settlementStored = sInv.getItemResourceNum(id);
+			// Add tracking demand
+			sInv.addItemDemandTotalRequest(id, numNeeded);
+			
 			if (settlementStored < numNeeded) {
 				if (required) {
 					canLoad = false;

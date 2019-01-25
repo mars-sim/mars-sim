@@ -453,7 +453,7 @@ public class EnterAirlock extends Task implements Serializable {
 						
 						suitInv.retrieveAmountResource(oxygenID, oxygenAmount);
 						entityInv.storeAmountResource(oxygenID, oxygenAmount, true);
-						entityInv.addAmountSupplyAmount(oxygenID, oxygenAmount);
+						entityInv.addAmountSupply(oxygenID, oxygenAmount);
 		
 					} catch (Exception e) {
 						LogConsolidated.log(Level.WARNING, 0, sourceName, 
@@ -472,7 +472,7 @@ public class EnterAirlock extends Task implements Serializable {
 					try {
 						suitInv.retrieveAmountResource(waterID, waterAmount);
 						entityInv.storeAmountResource(waterID, waterAmount, true);
-						entityInv.addAmountSupplyAmount(waterID, waterAmount);
+						entityInv.addAmountSupply(waterID, waterAmount);
 		
 					} catch (Exception e) {
 						LogConsolidated.log(Level.WARNING, 0, sourceName, 

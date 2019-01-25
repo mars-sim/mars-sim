@@ -507,7 +507,7 @@ public class Manufacture extends Function implements Serializable {
 						}
 						inv.storeAmountResource(id, amount, true);
 						// Add tracking supply
-						inv.addAmountSupplyAmount(id, amount);
+						inv.addAmountSupply(id, amount);
 					} else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
 						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
@@ -516,6 +516,8 @@ public class Manufacture extends Function implements Serializable {
 						double capacity = inv.getGeneralCapacity();
 						if (mass <= capacity) {
 							inv.storeItemResources(id, (int) item.getAmount());
+							// Add tracking supply
+							inv.addItemSupply(id, (int) item.getAmount());
 						}
 					} else if (ItemType.EQUIPMENT.equals(item.getType())) {
 						// Produce equipment.
@@ -528,6 +530,7 @@ public class Manufacture extends Function implements Serializable {
 							// Place this equipment within a settlement
 //							equipment.enter(LocationCodeType.SETTLEMENT);
 							inv.storeUnit(equipment);
+							// TODO: how to add tracking supply for equipment
 						}
 					} else if (ItemType.VEHICLE.equals(item.getType())) {
 						// Produce vehicles.

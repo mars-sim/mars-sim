@@ -470,15 +470,18 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		}
 
 		double amountAlreadyLoaded = vInv.getAmountResourceStored(resource, false);
-
+		
 		if (amountAlreadyLoaded < amountNeededTotal) {
 			double amountNeeded = amountNeededTotal - amountAlreadyLoaded;
 			boolean canLoad = true;
 			String loadingError = "";
 
+			
 			// Check if enough resource in settlement inventory.
 			double settlementStored = sInv.getAmountResourceStored(resource, false);
-			sInv.addAmountDemandTotalRequest(resource);
+			// add tracking demand
+			sInv.addAmountDemandTotalRequest(resource, amountNeeded);
+			
 			if (settlementStored < amountNeeded) {
 				if (required) {
 					canLoad = false;
@@ -519,6 +522,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				try {
 					sInv.retrieveAmountResource(resource, resourceAmount);
 					vInv.storeAmountResource(resource, resourceAmount, true);
+					sInv.addAmountDemand(resource, resourceAmount);
 				} catch (Exception e) {
 					e.printStackTrace(System.err);
 				}
@@ -583,6 +587,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 			// Check if enough resource in settlement inventory.
 			int settlementStored = sInv.getItemResourceNum(resource);
+			// Add tracking demand
+			sInv.addItemDemandTotalRequest(resource, numNeeded);
+			
 			if (settlementStored < numNeeded) {
 				if (required) {
 					canLoad = false;
@@ -621,6 +628,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				// Load resource from settlement inventory to vehicle inventory.
 				sInv.retrieveItemResources(resource, resourceNum);
 				vInv.storeItemResources(resource, resourceNum);
+				// add tracking demand
+				sInv.addItemDemand(resource, resourceNum);
 				amountLoading -= (resourceNum * ir.getMassPerItem());
 				if (amountLoading < 0D)
 					amountLoading = 0D;

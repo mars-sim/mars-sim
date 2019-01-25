@@ -258,7 +258,7 @@ implements Serializable {
 	            if (collectedAmount < settlementCap) {
 	                bag.getInventory().retrieveAmountResource(iceID, collectedAmount);
 	                sInv.storeAmountResource(iceID, collectedAmount, false);
-	                sInv.addAmountSupplyAmount(iceID, collectedAmount);
+	                sInv.addAmountSupply(iceID, collectedAmount);
 	                
 	            	// TODO: java.lang.IllegalStateException: Unit: Bag 104 could not be retrieved
 	            	// ExitAirlock : [Alpha Base] Cheryl Halvorson had tried to exit the airlock 1 times

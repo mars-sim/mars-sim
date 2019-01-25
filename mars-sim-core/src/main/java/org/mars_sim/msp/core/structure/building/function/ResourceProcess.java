@@ -293,7 +293,7 @@ public class ResourceProcess implements Serializable {
 					resourceAmount = remainingCapacity;
 				try {
 					inventory.storeAmountResource(resource, resourceAmount, false);
-					inventory.addAmountSupplyAmount(resource, resourceAmount);
+					inventory.addAmountSupply(resource, resourceAmount);
 				} catch (Exception e) {
 				}
 				// logger.info(resourceName + " output: " + resourceAmount + "kg.");

@@ -420,8 +420,8 @@ public class Farming extends Function implements Serializable {
 	}
 
 	public double getCropValue(AmountResource resource) {
-		return building.getSettlement().getGoodsManager().getGoodValuePerItem(
-				GoodsUtil.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName())));
+		return building.getSettlement().getGoodsManager().getGoodsDemandValue(resource.getID());
+//				GoodsUtil.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName())));
 	}
 
 	/**
@@ -535,7 +535,7 @@ public class Farming extends Function implements Serializable {
 			Inventory inv = building.getInventory();
 			
 			double amountStored = inv.getAmountResourceStored(tissueID, false);
-			inv.addAmountDemandTotalRequest(tissueID);
+			inv.addAmountDemandTotalRequest(tissueID, amountStored);
 
 			if (amountStored < MIN) {
 				LogConsolidated.log(Level.INFO, 1000, sourceName,
@@ -559,10 +559,10 @@ public class Farming extends Function implements Serializable {
 						+ Math.round(requestedAmount * 100.0) / 100.0 + " kg " + tissueName + " was fully available.");
 			}
 
-			if (available)
+			if (available) {
 				inv.retrieveAmountResource(tissueID, requestedAmount);
-
-			inv.addAmountDemand(tissueID, requestedAmount);
+				inv.addAmountDemand(tissueID, requestedAmount);
+			}
 
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage());
@@ -664,7 +664,7 @@ public class Farming extends Function implements Serializable {
 
 		// Modify result by value (VP) of food at the settlement.
 		Good foodGood = GoodsUtil.getResourceGood(ResourceUtil.foodID);
-		double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
+		double foodValue = settlement.getGoodsManager().getGoodsDemandValue(foodGood);
 
 		result = (demand / (supply + 1D)) * foodValue;
 
@@ -682,7 +682,7 @@ public class Farming extends Function implements Serializable {
 	public static double getFarmingAreaNeededPerPerson() {
 		if (farmingAreaNeededPerPerson <= 0) {
 			// Determine average amount (kg) of food required per person per orbit.
-			double neededFoodPerSol = SimulationConfig.instance().getPersonConfiguration().getFoodConsumptionRate();
+			double neededFoodPerSol = personConfig.getFoodConsumptionRate();
 	
 			// Determine average amount (kg) of food produced per farm area (m^2).
 			// CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();

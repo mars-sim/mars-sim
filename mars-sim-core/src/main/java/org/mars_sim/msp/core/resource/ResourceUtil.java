@@ -53,12 +53,14 @@ public class ResourceUtil implements Serializable {
 	public static final String SOLID_WASTE = "solid waste";
 	public static final String TOXIC_WASTE = "toxic waste";
 	
-	
 //	public static final String TOILET_WASTE = "toilet waste";
 
 	public static final String GREY_WATER = "grey water";
 	public static final String BLACK_WATER = "black water";
 	public static final String TABLE_SALT = "table salt";
+	public static final String ROCK_SALT = "rock salt";
+	public static final String EPSOM_SALT = "epsom salt";
+	
 	public static final String SODIUM_HYPOCHLORITE = "sodium hypochlorite";
 	public static final String NAPKIN = "napkin";
 
@@ -117,6 +119,7 @@ public class ResourceUtil implements Serializable {
 	public static int blackWaterID;
 	public static int greyWaterID;
 	
+	public static int compostID;
 	public static int cropWasteID;
 	public static int foodWasteID;
 	public static int toxicWasteID;
@@ -133,9 +136,11 @@ public class ResourceUtil implements Serializable {
 	public static int garlicOilID;
 	public static int sesameOilID;
 	public static int peanutOilID;
-	
+
+	public static int epsomSaltID;
 	public static int tableSaltID;
-    
+	public static int rockSaltID;
+	
 	public static int eWasteID;
 	
 	public static AmountResource foodAR;
@@ -361,7 +366,8 @@ public class ResourceUtil implements Serializable {
 		toxicWasteID = findAmountResource(TOXIC_WASTE).getID();
 		solidWasteID = findAmountResource(SOLID_WASTE).getID();
 		eWasteID = findAmountResource(ELECTRONIC_WASTE).getID(); // 16
-		
+		compostID = findAmountResource(COMPOST).getID(); // 
+				
 		toiletTissueID = findAmountResource(TOILET_TISSUE).getID();
 		
 		fertilizerID = findAmountResource(FERTILIZER).getID(); // 139
@@ -382,7 +388,9 @@ public class ResourceUtil implements Serializable {
 		peanutOilID = findAmountResource(PEANUT_OIL).getID(); // 46
 		
 		tableSaltID = findAmountResource(TABLE_SALT).getID(); // 23
-		
+		rockSaltID = findAmountResource(ROCK_SALT).getID(); // 
+		epsomSaltID = findAmountResource(EPSOM_SALT).getID(); // 
+				
 		// AmountResource instances as objects
 		foodAR = findAmountResource(LifeSupportType.FOOD); // 1
 		waterAR = findAmountResource(LifeSupportType.WATER); // 2

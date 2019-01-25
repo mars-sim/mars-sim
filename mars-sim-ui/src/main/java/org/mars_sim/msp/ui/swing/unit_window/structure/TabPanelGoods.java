@@ -81,7 +81,7 @@ extends TabPanel {
 		goodsTable = new ZebraJTable(goodsTableModel);
 		goodsScrollPane.setViewportView(goodsTable);
 		goodsTable.setRowSelectionAllowed(true);
-		goodsTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
+		goodsTable.setDefaultRenderer(Double.class, new NumberCellRenderer(3));
 		goodsTable.getColumnModel().getColumn(0).setPreferredWidth(140);
 		goodsTable.getColumnModel().getColumn(1).setPreferredWidth(140);
 		// Added the two methods below to make all heatTable columns
@@ -124,7 +124,7 @@ extends TabPanel {
 	extends AbstractTableModel {
 
 		/** default serial id. */
-		private static final long serialVersionUID = 1L;
+//		private static final long serialVersionUID = 1L;
 		// Data members
 		GoodsManager manager;
 		List<?> goods;

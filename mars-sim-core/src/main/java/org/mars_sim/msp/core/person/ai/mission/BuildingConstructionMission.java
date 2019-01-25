@@ -783,8 +783,8 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		while (i.hasNext()) {
 			Integer resource = i.next();
 			double amountNeeded = stage.getRemainingResources().get(resource);
-
-			inv.addAmountDemandTotalRequest(resource);
+			// Add tracking demand
+			inv.addAmountDemandTotalRequest(resource, amountNeeded);
 
 			double amountAvailable = inv.getAmountResourceStored(resource, false);
 
@@ -798,7 +798,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			if (amountLoading > 0D) {
 				inv.retrieveAmountResource(resource, amountLoading);
 				stage.addResource(resource, amountLoading);
-
+				// Add tracking demand
 				inv.addAmountDemand(resource, amountLoading);
 			}
 		}
@@ -809,7 +809,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			Integer part = j.next();
 			int numberNeeded = stage.getRemainingParts().get(part);
 			int numberAvailable = inv.getItemResourceNum(part);
-
+			// Add demand tracking
+			inv.addItemDemandTotalRequest(part, numberNeeded);
+			
 			// Load as many remaining parts as possible into the construction site stage.
 			int numberLoading = numberNeeded;
 			if (numberAvailable < numberNeeded) {
@@ -818,6 +820,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 			if (numberLoading > 0) {
 				inv.retrieveItemResources(part, numberLoading);
+				// Add tracking demand
+				inv.addItemDemand(part, numberLoading);
+				
 				stage.addParts(part, numberLoading);
 			}
 		}

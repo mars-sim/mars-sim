@@ -385,8 +385,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				useResource = false;
 			}
 			if (useResource) {
-				double value = settlement.getGoodsManager()
-						.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(resource)));
+				double value = settlement.getGoodsManager().getGoodsDemandValue(resource);
 				double rate = 0D;
 				if (input) {
 					rate = process.getMaxInputResourceRate(resource);

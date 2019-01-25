@@ -501,7 +501,7 @@ public class Resupply implements Serializable, Transportable {
 			if (amount > capacity)
 				amount = capacity;
 			inv.storeAmountResource(id, amount, true);
-			inv.addAmountSupplyAmount(id, amount);
+			inv.addAmountSupply(id, amount);
 		}
 
 		// Deliver parts.
@@ -510,7 +510,7 @@ public class Resupply implements Serializable, Transportable {
 			Part part = partsI.next();
 			int number = getNewParts().get(part);
 			inv.storeItemResources(part.getID(), number);
-//			inv.addItemSupplyAmount(part.getID(), number);
+			inv.addItemSupply(part.getID(), number);
 		}
 
 		// Deliver Robots.

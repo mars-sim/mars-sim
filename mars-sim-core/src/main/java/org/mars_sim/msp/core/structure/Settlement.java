@@ -109,7 +109,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	public static final int MAX_NUM_SOLS = 3;
 
-	public static final int SUPPLY_DEMAND_REFRESH = 10;
+	public static final int SUPPLY_DEMAND_REFRESH = 7;
 
 	private static final int RESOURCE_UPDATE_FREQ = 50;
 
@@ -195,6 +195,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private transient Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
 	/** The settlement's list of vehicles. */
 	private transient Collection<Vehicle> allAssociatedVehicles = new ConcurrentLinkedQueue<Vehicle>();
+	
+	/** The flag for checking if the simulation has just started. */	
+	private boolean justLoaded = true;
 	/** The base mission probability of the settlement. */
 	private int missionProbability = -1;
 	/** The water ration level of the settlement. */
@@ -326,8 +329,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	private boolean isCommanderMode = false;
 
-	private static int sample1 = ResourceUtil.findIDbyAmountResourceName("polyethylene");
-	private static int sample2 = ResourceUtil.findIDbyAmountResourceName("concrete");
+	private static int sample1 = ResourceUtil.findIDbyAmountResourceName("regolith");//"polyethylene");
+	private static int sample2 = ResourceUtil.findIDbyAmountResourceName("ice");//concrete");
+	
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 	private static int co2ID = ResourceUtil.co2ID;
@@ -938,7 +942,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			// CompositionOfAir
 			// is doing it for all inhabitants once per frame.
 			getInventory().retrieveAmountResource(oxygenID, oxygenTaken);
-			getInventory().addAmountDemandTotalRequest(oxygenID);
+//			getInventory().addAmountDemandTotalRequest(oxygenID);
 			getInventory().addAmountDemand(oxygenID, oxygenTaken);
 
 			double carbonDioxideProvided = oxygenTaken;
@@ -948,7 +952,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			// Note: do NOT store CO2 here since calculateGasExchange() in CompositionOfAir
 			// is doing it for all inhabitants once per frame.
 			getInventory().storeAmountResource(co2ID, carbonDioxideProvided, true);
-			getInventory().addAmountSupplyAmount(co2ID, carbonDioxideProvided);
+//			getInventory().addAmountSupply(co2ID, carbonDioxideProvided);
 
 		} catch (Exception e) {
 			LogConsolidated.log(Level.SEVERE, 5000, sourceName, name + " - Error in providing O2/removing CO2: ", e);
@@ -973,9 +977,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				waterTaken = waterLeft;
 			if (waterTaken > MIN) {
 				Storage.retrieveAnResource(waterTaken, waterID, getInventory(), true);
-//			 	getInventory().retrieveAmountResource(waterID, waterTaken);
-				getInventory().addAmountDemandTotalRequest(waterID);
-				getInventory().addAmountDemand(waterID, waterTaken);
+			 	getInventory().retrieveAmountResource(waterID, waterTaken);
+//				getInventory().addAmountDemandTotalRequest(waterID);
+//				getInventory().addAmountDemand(waterID, waterTaken);
 			}
 		} catch (Exception e) {
 			LogConsolidated.log(Level.SEVERE, 5000, sourceName, name + " - Error in providing H2O needs: ", e);
@@ -1184,6 +1188,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// due to high cpu util during the change of day
 		if (millisols != 0 && millisols != 1000) {
 			
+			// Updates the goodsManager randomly 4 times per sol .
+			updateGoodsManager(time);
+
 			int remainder = millisols % 5;
 			if (remainder == 0) {
 				// Reset the mission probability back to 1
@@ -1228,9 +1235,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			// methaneProbabilityValue = computeMethaneProbability();
 			// }
 		}
-		
-		// Updates the goodsManager randomly 4 times per sol .
-		updateGoodsManager(time);
 
 		// updateRegistry();
 
@@ -1419,9 +1423,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 			refreshSleepMap(solElapsed);
 
-			// getSupplyDemandSampleReport(solElapsed);
+//			getSupplyDemandSampleReport(solElapsed);
 
-			refreshDataMap(solElapsed);
+			refreshSupplyDemandMap(solElapsed);
 
 			solCache = solElapsed;
 		}
@@ -1649,15 +1653,23 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		// Sample supply and demand data on Potato and Water
 
-		double supplyAmount1 = getInventory().getAmountSupplyAmount(sample1);
-		double supplyAmount2 = getInventory().getAmountSupplyAmount(sample2);
+		double vp1 = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(sample1));
+		double vp2 = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(sample2));
+		
+		double supplyAmount1 = getInventory().getAmountSupply(sample1);
+		double supplyAmount2 = getInventory().getAmountSupply(sample2);
 
 		int supplyRequest1 = getInventory().getAmountSupplyRequest(sample1);
 		int supplyRequest2 = getInventory().getAmountSupplyRequest(sample2);
 
-		double demandAmount1 = getInventory().getAmountDemandAmount(sample1);
-		double demandAmount2 = getInventory().getAmountDemandAmount(sample2);
+		double demandAmount1 = getInventory().getAmountDemand(sample1);
+		double demandAmount2 = getInventory().getAmountDemand(sample2);
 
+		// For items : 
+		double demandItem1 = getInventory().getItemDemand(sample1);
+		double demandItem2 = getInventory().getItemDemand(sample2);
+
+		
 		// int totalRequest1 = getInventory().getDemandTotalRequest(sample1);
 		// int totalRequest2 = getInventory().getDemandTotalRequest(sample2);
 
@@ -1675,19 +1687,25 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// numOfGoodsInDemandSuccessfulRequestMap);
 		// logger.info(" numOfGoodsInDemandAmountMap : " +
 		// numOfGoodsInDemandAmountMap);
-		logger.info(sample1 + " Supply Amount : " + Math.round(supplyAmount1 * 100.0) / 100.0);
-		logger.info(sample1 + " Supply Request : " + supplyRequest1);
+		String name1 = ResourceUtil.findAmountResourceName(sample1);
+		String name2 = ResourceUtil.findAmountResourceName(sample2);
+		
+		logger.info(name1 + " (" + sample1 + ")" + "  vp : " + Math.round(vp1 * 100.0) / 100.0);
+		logger.info(name2 + " (" + sample2 + ")" + "  vp : " + Math.round(vp2 * 100.0) / 100.0);
+		
+		logger.info(name1 + " Supply Amount : " + Math.round(supplyAmount1 * 100.0) / 100.0);
+		logger.info(name1 + " Supply Request : " + supplyRequest1);
 
-		logger.info(sample1 + " Demand Amount : " + Math.round(demandAmount1 * 100.0) / 100.0);
+		logger.info(name1 + " Demand Amount : " + Math.round(demandAmount1 * 100.0) / 100.0);
 		// logger.info(sample1 + " Demand Total Request : " + totalRequest1);
-		logger.info(sample1 + " Demand Successful Request : " + demandSuccessfulRequest1);
+		logger.info(name1 + " Demand Successful Request : " + demandSuccessfulRequest1);
 
-		logger.info(sample2 + " Supply Amount : " + Math.round(supplyAmount2 * 100.0) / 100.0);
-		logger.info(sample2 + " Supply Request : " + supplyRequest2);
+		logger.info(name2 + " Supply Amount : " + Math.round(supplyAmount2 * 100.0) / 100.0);
+		logger.info(name2 + " Supply Request : " + supplyRequest2);
 
-		logger.info(sample2 + " Demand Amount : " + Math.round(demandAmount2 * 100.0) / 100.0);
+		logger.info(name2 + " Demand Amount : " + Math.round(demandAmount2 * 100.0) / 100.0);
 		// logger.info(sample2 + " Demand Total Request : " + totalRequest2);
-		logger.info(sample2 + " Demand Successful Request : " + demandSuccessfulRequest2);
+		logger.info(name2 + " Demand Successful Request : " + demandSuccessfulRequest2);
 
 	}
 
@@ -1696,23 +1714,28 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * 
 	 * @param solElapsed # of sols since the start of the sim
 	 */
-	public void refreshDataMap(int solElapsed) {
+	public void refreshSupplyDemandMap(int solElapsed) {
 		// Clear maps once every x number of days
 		if (solElapsed % SUPPLY_DEMAND_REFRESH == 0) {
 			// True if solElapsed is an exact multiple of x
 
 			// Compact amount resource map
-			// Carry out the daily average of the previous 5 days
-			getInventory().compactAmountSupplyAmountMap(SUPPLY_DEMAND_REFRESH);
+			// Carry out the daily average of the previous x days
+			getInventory().compactAmountSupplyMap(SUPPLY_DEMAND_REFRESH);
 			getInventory().clearAmountSupplyRequestMap();
-			// Carry out the daily average of the previous 5 days
-			getInventory().compactAmountDemandAmountMap(SUPPLY_DEMAND_REFRESH);
+			// Carry out the daily average of the previous x days
+			getInventory().compactAmountDemandMap(SUPPLY_DEMAND_REFRESH);
 			getInventory().clearAmountDemandTotalRequestMap();
 			getInventory().clearAmountDemandMetRequestMap();
 
 			// compact item resource map
+			getInventory().compactItemSupplyMap(SUPPLY_DEMAND_REFRESH);
+			getInventory().clearItemSupplyRequestMap();
+			// Carry out the daily average of the previous x days
 			getInventory().compactItemDemandMap(SUPPLY_DEMAND_REFRESH);
-
+			getInventory().clearItemDemandTotalRequestMap();
+			getInventory().clearItemDemandMetRequestMap();
+			
 			// Added clearing of weather data map
 			weather.clearMap();
 			// logger.info(name + " : Compacted the settlement's supply demand data &
@@ -1727,6 +1750,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	private void updateGoodsManager(double time) {
 
+		if (justLoaded) {
+			justLoaded = false;
+			goodsManager.timePassing(time);
+		}
+		
 		goodsManagerUpdateTime += time;
 
 		// Randomly update goods manager twice per Sol.
@@ -3640,14 +3668,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public double computeRegolithProbability() {
 		double result = 0;
 
-		double regolith_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
+		double regolith_value = goodsManager.getGoodsDemandValue(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
 		regolith_value = regolith_value * GoodsManager.REGOLITH_VALUE_MODIFIER;
 		if (regolith_value > 2000)
 			regolith_value = 2000;
 		else if (regolith_value <= 5)
 			return 0;
 
-		double sand_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.sandID));
+		double sand_value = goodsManager.getGoodsDemandValue(GoodsUtil.getResourceGood(ResourceUtil.sandID));
 		sand_value = sand_value * GoodsManager.SAND_VALUE_MODIFIER;
 		if (sand_value > 2000)
 			sand_value = 2000;
@@ -3686,17 +3714,17 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public double computeIceProbability() {
 		double result = 0;
 
-		double ice_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
+		double ice_value = goodsManager.getGoodsDemandValue(GoodsUtil.getResourceGood(ResourceUtil.iceID));
 		ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
-		if (ice_value > 8000)
-			ice_value = 8000;
+		if (ice_value > 4_000)
+			ice_value = 4_000;
 		if (ice_value < 1)
 			ice_value = 1;
 
-		double water_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.waterID));
+		double water_value = goodsManager.getGoodsDemandValue(GoodsUtil.getResourceGood(ResourceUtil.waterID));
 		water_value = water_value * GoodsManager.WATER_VALUE_MODIFIER;
-		if (water_value > 8000)
-			water_value = 8000;
+		if (water_value > 16_000)
+			water_value = 16_000;
 		if (water_value < 1)
 			water_value = 1;
 

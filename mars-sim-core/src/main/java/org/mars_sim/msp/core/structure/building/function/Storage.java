@@ -125,7 +125,7 @@ public class Storage extends Function implements Serializable {
 			}
 
 			Good resourceGood = GoodsUtil.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName()));
-			double resourceValue = settlement.getGoodsManager().getGoodValuePerItem(resourceGood);
+			double resourceValue = settlement.getGoodsManager().getGoodsDemandValue(resourceGood);
 			double resourceStored = settlement.getInventory().getAmountResourceStored(resource, false);
 			double resourceDemand = resourceValue * (resourceStored + 1D);
 
@@ -346,13 +346,13 @@ public class Storage extends Function implements Serializable {
 				    	);	
 					amount = remainingCapacity;
 					inv.storeAmountResource(id, amount, true);
-					inv.addAmountSupplyAmount(id, amount);
+//					inv.addAmountSupply(id, amount);
 					result = false;
 				}
 
 				else {
 					inv.storeAmountResource(id, amount, true);
-					inv.addAmountSupplyAmount(id, amount);
+//					inv.addAmountSupply(id, amount);
 					result = true;
 				}
 
@@ -414,7 +414,7 @@ public class Storage extends Function implements Serializable {
 		if (amount > 0) {
 			try {
 				double amountStored = inv.getAmountResourceStored(id, false);
-				inv.addAmountDemandTotalRequest(id);
+//				inv.addAmountDemandTotalRequest(id);
 
 				if (amountStored < 0.00001) {
 					result = false;
@@ -432,7 +432,7 @@ public class Storage extends Function implements Serializable {
 					amount = amountStored;
 					if (isRetrieving) {
 						inv.retrieveAmountResource(id, amount);
-						inv.addAmountDemand(id, amount);
+//						inv.addAmountDemand(id, amount);
 					}
 					LogConsolidated.log(Level.WARNING, 30_000, sourceName,
 							"[" + inv.getOwner()
@@ -444,7 +444,7 @@ public class Storage extends Function implements Serializable {
 				} else {
 					if (isRetrieving) {
 						inv.retrieveAmountResource(id, amount);
-						inv.addAmountDemand(id, amount);
+//						inv.addAmountDemand(id, amount);
 					}
 					result = true;
 				}

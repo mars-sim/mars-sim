@@ -114,11 +114,11 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 		inv.retrieveAmountResource(methaneID, consumed);
 		inv.retrieveAmountResource(oxygenID, 4D * consumed);
 
-		inv.addAmountDemandTotalRequest(methaneID);
+		inv.addAmountDemandTotalRequest(methaneID, consumed);
 		inv.addAmountDemand(methaneID, consumed);
 
-		inv.addAmountDemandTotalRequest(methaneID);
-		inv.addAmountDemand(methaneID, 4D * consumed);
+		inv.addAmountDemandTotalRequest(oxygenID, consumed);
+		inv.addAmountDemand(oxygenID, 4D * consumed);
 
 		return consumed;
 	}
@@ -165,7 +165,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 		double fuelHeat = getMaxHeat();
 		Good fuelGood = GoodsUtil.getResourceGood(methaneID);
 		GoodsManager goodsManager = settlement.getGoodsManager();
-		double fuelValue = goodsManager.getGoodValuePerItem(fuelGood);
+		double fuelValue = goodsManager.getGoodsDemandValue(fuelGood);
 		fuelValue *= getFuelConsumptionRate();
 		fuelHeat -= fuelValue;
 		if (fuelHeat < 0D)

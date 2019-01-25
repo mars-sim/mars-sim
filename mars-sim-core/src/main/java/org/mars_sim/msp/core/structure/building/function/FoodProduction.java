@@ -234,12 +234,15 @@ public class FoodProduction extends Function implements Serializable {
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 				inv.retrieveAmountResource(id, item.getAmount());
 				// Add tracking demand
-				inv.addAmountDemandTotalRequest(id);
+				inv.addAmountDemandTotalRequest(id, item.getAmount());
 				inv.addAmountDemand(id, item.getAmount());
 			} else if (ItemType.PART.equals(item.getType())) {
 //				Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 				inv.retrieveItemResources(id, (int) item.getAmount());
+				// Add tracking demand
+				inv.addItemDemandTotalRequest(id, (int) item.getAmount());
+				inv.addItemDemand(id, (int) item.getAmount());
 			} else
 				throw new IllegalStateException(
 						"FoodProduction process input: " + item.getType() + " not a valid type.");
@@ -360,7 +363,7 @@ public class FoodProduction extends Function implements Serializable {
 						}
 						inv.storeAmountResource(id, amount, true);
 						// Add tracking supply
-						inv.addAmountSupplyAmount(id, amount);
+						inv.addAmountSupply(id, amount);
 					} else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
 						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
@@ -369,6 +372,7 @@ public class FoodProduction extends Function implements Serializable {
 						double capacity = inv.getGeneralCapacity();
 						if (mass <= capacity) {
 							inv.storeItemResources(id, (int) item.getAmount());
+							inv.addItemSupply(id, (int) item.getAmount());
 						}
 					} else if (ItemType.EQUIPMENT.equals(item.getType())) {
 						// Produce equipment.
@@ -433,7 +437,7 @@ public class FoodProduction extends Function implements Serializable {
 						}
 						inv.storeAmountResource(id, amount, true);
 						// Add tracking supply
-						inv.addAmountSupplyAmount(id, amount);
+						inv.addAmountSupply(id, amount);
 					} else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
 						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());

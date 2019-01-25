@@ -644,8 +644,8 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 			double amountNeededAtStartingSettlement = getResourceAmountNeededAtStartingSettlement(startingSettlement,
 					resource);
 			double amountAvailable = startingSettlement.getInventory().getAmountResourceStored(resource, false);
-			// 2015-01-09 Added addDemandTotalRequest()
-			startingSettlement.getInventory().addAmountDemandTotalRequest(resource);
+			// Adding tracking demand
+			startingSettlement.getInventory().addAmountDemandTotalRequest(resource, amountRequired);
 			if (amountAvailable < (amountRequired + amountNeededAtStartingSettlement)) {
 				result = false;
 			}
@@ -657,6 +657,8 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 			Integer container = j.next();
 			int numberRequired = emergencyContainersNeeded.get(container);
 			int numberAvailable = startingSettlement.getInventory().findNumEmptyUnitsOfClass(container, false);
+			
+			// TODO: add tracking demand for containers
 			if (numberAvailable < numberRequired) {
 				result = false;
 			}
@@ -767,7 +769,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 				* Mission.OXYGEN_MARGIN;
 		double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygenID, false);
 
-		inv.addAmountDemandTotalRequest(oxygenID);
+		inv.addAmountDemandTotalRequest(oxygenID, oxygenAmountNeeded);
 
 		oxygenAmountAvailable += getResourcesOnMissions(settlement, oxygenID);
 		if (oxygenAmountAvailable < oxygenAmountNeeded) {
@@ -782,7 +784,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		double waterAmountNeeded = personConfig.getWaterConsumptionRate() * numPeople * solsMonth * Mission.WATER_MARGIN;
 		double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(waterID, false);
 
-		inv.addAmountDemandTotalRequest(waterID);
+		inv.addAmountDemandTotalRequest(waterID, waterAmountNeeded);
 
 		waterAmountAvailable += getResourcesOnMissions(settlement, waterID);
 		if (waterAmountAvailable < waterAmountNeeded) {
@@ -797,7 +799,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		double foodAmountNeeded = personConfig.getFoodConsumptionRate() * numPeople * solsMonth * Mission.FOOD_MARGIN;
 		double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(foodID, false);
 
-		inv.addAmountDemandTotalRequest(foodID);
+		inv.addAmountDemandTotalRequest(foodID, foodAmountNeeded);
 
 		foodAmountAvailable += getResourcesOnMissions(settlement, foodID);
 		if (foodAmountAvailable < foodAmountNeeded) {
@@ -812,7 +814,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		double methaneAmountNeeded = VEHICLE_FUEL_DEMAND;
 		double methaneAmountAvailable = settlement.getInventory().getAmountResourceStored(methaneID, false);
 
-		inv.addAmountDemandTotalRequest(methaneID);
+		inv.addAmountDemandTotalRequest(methaneID, methaneAmountNeeded);
 
 		methaneAmountAvailable += getResourcesOnMissions(settlement, methaneID);
 		if (methaneAmountAvailable < methaneAmountNeeded) {
@@ -847,8 +849,6 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 					Rover rover = roverMission.getRover();
 					if (rover != null) {
 						result += rover.getInventory().getAmountResourceStored(resource, false);
-						// 2015-01-09 Added addDemandTotalRequest()
-						rover.getInventory().addAmountDemandTotalRequest(resource);
 					}
 				}
 			}
@@ -870,7 +870,6 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		Iterator<Integer> i = resources.keySet().iterator();
 		while (i.hasNext()) {
 			Integer resource = i.next();
-
 //            Class<? extends Container> containerClass = ContainerUtil.getContainerClassToHoldResource(resource);
 //            if (containerClass != null) {
 			double resourceAmount = resources.get(resource);

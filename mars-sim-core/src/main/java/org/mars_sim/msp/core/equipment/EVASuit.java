@@ -232,8 +232,8 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 					oxygenTaken = oxygenLeft;
 				if (oxygenTaken > 0) {
 					getInventory().retrieveAmountResource(ResourceUtil.oxygenID, oxygenTaken);
-					getInventory().addAmountDemandTotalRequest(ResourceUtil.oxygenID);
-					getInventory().addAmountDemand(ResourceUtil.oxygenID, oxygenTaken);
+//					getInventory().addAmountDemandTotalRequest(ResourceUtil.oxygenID);
+//					getInventory().addAmountDemand(ResourceUtil.oxygenID, oxygenTaken);
 				}
 				// NOTE: Assume the EVA Suit has pump system to vent out all CO2 to prevent the
 				// built-up. Since the breath rate is 12 to 25 per minute. Size of breath is 500 mL.
@@ -271,8 +271,8 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		}
 
 		getInventory().retrieveAmountResource(ResourceUtil.waterID, waterTaken);
-		getInventory().addAmountDemandTotalRequest(ResourceUtil.waterID);
-		getInventory().addAmountDemand(ResourceUtil.waterID, waterTaken);
+//		getInventory().addAmountDemandTotalRequest(ResourceUtil.waterID);
+//		getInventory().addAmountDemand(ResourceUtil.waterID, waterTaken);
 
 		return waterTaken;// * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}

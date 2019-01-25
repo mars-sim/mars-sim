@@ -258,7 +258,7 @@ public final class ManufactureUtil {
 			}
 
 			if (salvagedGood != null)
-				salvagedGoodValue = goodsManager.getGoodValuePerItem(salvagedGood);
+				salvagedGoodValue = goodsManager.getGoodsDemandValue(salvagedGood);
 			else
 				throw new IllegalStateException("Salvaged good is null");
 
@@ -272,7 +272,7 @@ public final class ManufactureUtil {
 //                Part part = (Part) ItemResource.findItemResource(partSalvage.getName());
 //                int id = ItemResourceUtil.findIDbyItemResourceName(partSalvage.getName());
 				Good partGood = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(partSalvage.getName()));
-				double partValue = goodsManager.getGoodValuePerItem(partGood) * partSalvage.getNumber();
+				double partValue = goodsManager.getGoodsDemandValue(partGood) * partSalvage.getNumber();
 				totalPartsGoodValue += partValue;
 			}
 
@@ -315,19 +315,19 @@ public final class ManufactureUtil {
 				}
 			}
 			Good good = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(item.getName()));
-			result = manager.getGoodValuePerItem(good) * amount;
+			result = manager.getGoodsDemandValue(good) * amount;
 		} else if (item.getType().equals(ItemType.PART)) {
 //            ItemResource resource = ItemResource.findItemResource(item.getName());
 //            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 			Good good = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
-			result = manager.getGoodValuePerItem(good) * item.getAmount();
+			result = manager.getGoodsDemandValue(good) * item.getAmount();
 		} else if (item.getType().equals(ItemType.EQUIPMENT)) {
 			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
 			Good good = GoodsUtil.getEquipmentGood(equipmentClass);
-			result = manager.getGoodValuePerItem(good) * item.getAmount();
+			result = manager.getGoodsDemandValue(good) * item.getAmount();
 		} else if (item.getType().equals(ItemType.VEHICLE)) {
 			Good good = GoodsUtil.getVehicleGood(item.getName());
-			result = manager.getGoodValuePerItem(good) * item.getAmount();
+			result = manager.getGoodsDemandValue(good) * item.getAmount();
 		} else
 			throw new IllegalStateException("Item type: " + item.getType() + " not valid.");
 
@@ -463,10 +463,12 @@ public final class ManufactureUtil {
 				int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 				result = (inv.getAmountResourceStored(id, false) >= item.getAmount());
 				// Add demand tracking
-				inv.addAmountDemandTotalRequest(id);
+				inv.addAmountDemandTotalRequest(id, item.getAmount());
 			} else if (ItemType.PART.equals(item.getType())) {
-				Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
-				result = (inv.getItemResourceNum(part) >= (int) item.getAmount());
+				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
+				result = (inv.getItemResourceNum(id) >= (int) item.getAmount());
+				// Add tracking demand
+				inv.addItemDemandTotalRequest(id, (int) item.getAmount());
 			} else
 				throw new IllegalStateException("Manufacture process input: " + item.getType() + " not a valid type.");
 		}
