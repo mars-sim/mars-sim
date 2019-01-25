@@ -203,20 +203,19 @@ implements Serializable {
 
 	 @Override
 	 public double getAveragePower(Settlement settlement) {
-		 double fuelPower = getMaxPower();
-		 //AmountResource fuelResource = getFuelResource();
-		 Good fuelGood = GoodsUtil.getResourceGood(ResourceUtil.methaneID);
-		 GoodsManager goodsManager = settlement.getGoodsManager();
-		 double fuelValue = goodsManager.getGoodsDemandValue(fuelGood);
-		 fuelValue *= getFuelConsumptionRate();
-		 fuelPower -= fuelValue;
-		 if (fuelPower < 0D) fuelPower = 0D;
-		 return fuelPower;
+		double fuelPower = getMaxPower();
+//			Good fuelGood = GoodsUtil.getResourceGood(methaneID);
+//			GoodsManager goodsManager = settlement.getGoodsManager();
+		double fuelValue = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(methaneID));
+		fuelValue *= getFuelConsumptionRate();
+		fuelPower -= fuelValue;
+		if (fuelPower < 0D) fuelPower = 0D;
+		return fuelPower;
 	 }
 
 	 @Override
 	 public double getMaintenanceTime() {
-	     return getMaxPower() * MAINTENANCE_FACTOR;
+	    return getMaxPower() * MAINTENANCE_FACTOR;
 	 }
 
 	 // Return the fuel cell stacks to the inventory

@@ -270,8 +270,8 @@ implements Serializable {
 		            sInv.storeUnit(bag);	      
 		            
 		            // Recalculate settlement good value for output item.
-		            GoodsManager goodsManager = settlement.getGoodsManager();
-		            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(iceID), false);
+//		            GoodsManager goodsManager = settlement.getGoodsManager();
+		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(iceID), false);
 	            }
             }
         }

@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
+import javax.swing.JDesktopPane;
 import javax.swing.JLayer;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
@@ -22,25 +23,23 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
 import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
-import com.alee.laf.desktoppane.WebDesktopPane;
 import com.alee.laf.panel.WebPanel;
 
-import javafx.scene.control.Label;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Scene;
-import javafx.scene.control.Separator;
-import javafx.scene.layout.StackPane;
-import javafx.util.Duration;
-import javafx.scene.paint.Color;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
@@ -482,7 +481,7 @@ public class SettlementWindow extends ToolWindow {
 	 * 
 	 * @return main desktop panel.
 	 */
-	public WebDesktopPane getDesktop() {
+	public JDesktopPane getDesktop() {
 		return desktop;
 	}
 

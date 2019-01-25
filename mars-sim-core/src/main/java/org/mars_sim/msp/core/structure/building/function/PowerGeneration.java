@@ -115,7 +115,7 @@ public class PowerGeneration extends Function implements Serializable {
 				// AmountResource fuelResource = fuelSource.getFuelResource();
 				int id = fuelSource.getFuelResourceID();
 				Good fuelGood = GoodsUtil.getResourceGood(id);
-				double fuelValue = settlement.getGoodsManager().getGoodsDemandValue(fuelGood);
+				double fuelValue = settlement.getGoodsManager().getGoodValuePerItem(fuelGood);
 				fuelValue *= fuelSource.getFuelConsumptionRate();
 				fuelPower -= fuelValue;
 				if (fuelPower < 0D)

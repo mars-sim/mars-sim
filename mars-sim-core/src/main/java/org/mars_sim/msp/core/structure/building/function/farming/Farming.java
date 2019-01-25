@@ -656,7 +656,7 @@ public class Farming extends Function implements Serializable {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				Farming farmingFunction = (Farming) building.getFunction(FARMING_FUNCTION);
+				Farming farmingFunction = building.getFarming();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += farmingFunction.getGrowingArea() * wearModifier;
 			}
@@ -664,7 +664,7 @@ public class Farming extends Function implements Serializable {
 
 		// Modify result by value (VP) of food at the settlement.
 		Good foodGood = GoodsUtil.getResourceGood(ResourceUtil.foodID);
-		double foodValue = settlement.getGoodsManager().getGoodsDemandValue(foodGood);
+		double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
 
 		result = (demand / (supply + 1D)) * foodValue;
 

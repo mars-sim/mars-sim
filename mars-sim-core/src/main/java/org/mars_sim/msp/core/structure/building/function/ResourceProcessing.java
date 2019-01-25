@@ -74,7 +74,7 @@ public class ResourceProcessing extends Function implements Serializable {
 				if (!process.isWasteOutputResource(resource)) {
 					Good resourceGood = GoodsUtil.getResourceGood(resource);
 					double rate = process.getMaxOutputResourceRate(resource);// * 1000D;
-					processValue += settlement.getGoodsManager().getGoodsDemandValue(resourceGood) * rate;
+					processValue += settlement.getGoodsManager().getGoodValuePerItem(resourceGood) * rate;
 				}
 			}
 
@@ -82,10 +82,9 @@ public class ResourceProcessing extends Function implements Serializable {
 			for (int resource : process.getInputResources()) {
 				if (!process.isAmbientInputResource(resource)) {
 					Good resourceGood = GoodsUtil.getResourceGood(resource);
-					if (resource == ResourceUtil.greyWaterID)
-						; // 
+					if (resource == ResourceUtil.greyWaterID); 
 					double rate = process.getMaxInputResourceRate(resource);// * 1000D;
-					processValue -= settlement.getGoodsManager().getGoodsDemandValue(resourceGood) * rate;
+					processValue -= settlement.getGoodsManager().getGoodValuePerItem(resourceGood) * rate;
 
 					// Check inventory limit.
 					double inputSupply = inv.getAmountResourceStored(resource, false);

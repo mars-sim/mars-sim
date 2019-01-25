@@ -252,13 +252,13 @@ public final class ManufactureUtil {
 			double salvagedGoodValue = 0D;
 			Good salvagedGood = null;
 			if (salvagedUnit instanceof Equipment) {
-				salvagedGood = GoodsUtil.getEquipmentGood(salvagedUnit.getClass());
+				salvagedGood = GoodsUtil.createEquipmentGood(salvagedUnit.getClass());
 			} else if (salvagedUnit instanceof Vehicle) {
-				salvagedGood = GoodsUtil.getVehicleGood(salvagedUnit.getDescription());
+				salvagedGood = GoodsUtil.createVehicleGood(salvagedUnit.getDescription());
 			}
 
 			if (salvagedGood != null)
-				salvagedGoodValue = goodsManager.getGoodsDemandValue(salvagedGood);
+				salvagedGoodValue = goodsManager.getGoodValuePerItem(salvagedGood);
 			else
 				throw new IllegalStateException("Salvaged good is null");
 
@@ -271,8 +271,8 @@ public final class ManufactureUtil {
 				PartSalvage partSalvage = i.next();
 //                Part part = (Part) ItemResource.findItemResource(partSalvage.getName());
 //                int id = ItemResourceUtil.findIDbyItemResourceName(partSalvage.getName());
-				Good partGood = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(partSalvage.getName()));
-				double partValue = goodsManager.getGoodsDemandValue(partGood) * partSalvage.getNumber();
+				Good partGood = GoodsUtil.createResourceGood(ItemResourceUtil.findItemResource(partSalvage.getName()));
+				double partValue = goodsManager.getGoodValuePerItem(partGood) * partSalvage.getNumber();
 				totalPartsGoodValue += partValue;
 			}
 
@@ -314,20 +314,20 @@ public final class ManufactureUtil {
 					amount = remainingCapacity;
 				}
 			}
-			Good good = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(item.getName()));
-			result = manager.getGoodsDemandValue(good) * amount;
+			Good good = GoodsUtil.createResourceGood(ResourceUtil.findAmountResource(item.getName()));
+			result = manager.getGoodValuePerItem(good) * amount;
 		} else if (item.getType().equals(ItemType.PART)) {
 //            ItemResource resource = ItemResource.findItemResource(item.getName());
 //            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-			Good good = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
-			result = manager.getGoodsDemandValue(good) * item.getAmount();
+			Good good = GoodsUtil.createResourceGood(ItemResourceUtil.findItemResource(item.getName()));
+			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		} else if (item.getType().equals(ItemType.EQUIPMENT)) {
 			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			Good good = GoodsUtil.getEquipmentGood(equipmentClass);
-			result = manager.getGoodsDemandValue(good) * item.getAmount();
+			Good good = GoodsUtil.createEquipmentGood(equipmentClass);
+			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		} else if (item.getType().equals(ItemType.VEHICLE)) {
-			Good good = GoodsUtil.getVehicleGood(item.getName());
-			result = manager.getGoodsDemandValue(good) * item.getAmount();
+			Good good = GoodsUtil.createVehicleGood(item.getName());
+			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		} else
 			throw new IllegalStateException("Item type: " + item.getType() + " not valid.");
 
@@ -563,14 +563,14 @@ public final class ManufactureUtil {
 	public static Good getGood(ManufactureProcessItem item) {
 		Good result = null;
 		if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-			result = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(item.getName()));
+			result = GoodsUtil.createResourceGood(ResourceUtil.findAmountResource(item.getName()));
 		} else if (ItemType.PART.equals(item.getType())) {
-			result = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
+			result = GoodsUtil.createResourceGood(ItemResourceUtil.findItemResource(item.getName()));
 		} else if (ItemType.EQUIPMENT.equals(item.getType())) {
 			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			result = GoodsUtil.getEquipmentGood(equipmentClass);
+			result = GoodsUtil.createEquipmentGood(equipmentClass);
 		} else if (ItemType.VEHICLE.equals(item.getType())) {
-			result = GoodsUtil.getVehicleGood(item.getName());
+			result = GoodsUtil.createVehicleGood(item.getName());
 		}
 
 		return result;

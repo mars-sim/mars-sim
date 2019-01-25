@@ -363,7 +363,7 @@ implements Serializable {
         	Integer resource = j.next();
             Good resourceGood = GoodsUtil.getResourceGood(resource);
             double amount = resources.get(resource);
-            double value = manager.getGoodsDemandValue(resourceGood) * amount;
+            double value = manager.getGoodValuePerItem(resourceGood) * amount;
             cost += value;
         }
 
@@ -374,7 +374,7 @@ implements Serializable {
         	Integer part = k.next();
             Good partGood = GoodsUtil.getResourceGood(part);
             int number = parts.get(part);
-            double value = manager.getGoodsDemandValue(partGood) * number;
+            double value = manager.getGoodValuePerItem(partGood) * number;
             cost += value;
         }
 

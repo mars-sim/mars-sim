@@ -265,8 +265,8 @@ implements Serializable {
             settlement.getInventory().storeUnit(bag);
 
             // Recalculate settlement good value for output item.
-            GoodsManager goodsManager = settlement.getGoodsManager();
-            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(regolithID), false);
+//            GoodsManager goodsManager = settlement.getGoodsManager();
+            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(regolithID), false);
         }
 
         super.endTask();

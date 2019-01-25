@@ -163,9 +163,9 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	@Override
 	public double getAverageHeat(Settlement settlement) {
 		double fuelHeat = getMaxHeat();
-		Good fuelGood = GoodsUtil.getResourceGood(methaneID);
-		GoodsManager goodsManager = settlement.getGoodsManager();
-		double fuelValue = goodsManager.getGoodsDemandValue(fuelGood);
+//		Good fuelGood = GoodsUtil.getResourceGood(methaneID);
+//		GoodsManager goodsManager = settlement.getGoodsManager();
+		double fuelValue = settlement.getGoodsManager().getGoodValuePerItem( GoodsUtil.getResourceGood(methaneID));
 		fuelValue *= getFuelConsumptionRate();
 		fuelHeat -= fuelValue;
 		if (fuelHeat < 0D)

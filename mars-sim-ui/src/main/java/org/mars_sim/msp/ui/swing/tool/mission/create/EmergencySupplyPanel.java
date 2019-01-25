@@ -339,7 +339,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private int getNumberOfCargoContainers(Class containerType) {
 		int result = 0;
-		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
+		Good containerGood = GoodsUtil.createEquipmentGood(containerType);
 		Map<Good, Integer> cargoGoods = cargoTableModel.getCargoGoods();
 		if (cargoGoods.containsKey(containerGood)) result = cargoGoods.get(containerGood);
 		return result;

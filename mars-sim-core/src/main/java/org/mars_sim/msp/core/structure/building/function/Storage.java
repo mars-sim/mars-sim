@@ -124,8 +124,8 @@ public class Storage extends Function implements Serializable {
 					existingStorage = 0D;
 			}
 
-			Good resourceGood = GoodsUtil.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName()));
-			double resourceValue = settlement.getGoodsManager().getGoodsDemandValue(resourceGood);
+//			Good resourceGood = GoodsUtil.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName()));
+			double resourceValue = settlement.getGoodsManager().getGoodValuePerItem(resource.getID());
 			double resourceStored = settlement.getInventory().getAmountResourceStored(resource, false);
 			double resourceDemand = resourceValue * (resourceStored + 1D);
 

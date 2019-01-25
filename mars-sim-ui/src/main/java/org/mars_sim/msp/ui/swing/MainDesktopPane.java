@@ -26,10 +26,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javafx.application.Platform;
-import javafx.scene.control.SingleSelectionModel;
-
 import javax.swing.ImageIcon;
+import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
@@ -73,16 +71,19 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
-import com.alee.laf.desktoppane.WebDesktopPane;
+
 import com.alee.laf.desktoppane.WebInternalFrame;
 import com.alee.laf.label.WebLabel;
+
+import javafx.application.Platform;
+import javafx.scene.control.SingleSelectionModel;
 
 /**
  * The MainDesktopPane class is the desktop part of the project's UI. It
  * contains all tool and unit windows, and is itself contained, along with the
  * tool bars, by the main window.
  */
-public class MainDesktopPane extends WebDesktopPane
+public class MainDesktopPane extends JDesktopPane
 		implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 	/** default logger. */

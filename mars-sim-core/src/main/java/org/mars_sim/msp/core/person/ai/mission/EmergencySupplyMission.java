@@ -1065,7 +1065,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		while (i.hasNext()) {
 			Integer resource = i.next();
 			double amount = emergencyResources.get(resource);
-			Good resourceGood = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(resource));
+			Good resourceGood = GoodsUtil.createResourceGood(ResourceUtil.findAmountResource(resource));
 			result.put(resourceGood, (int) amount);
 		}
 
@@ -1074,7 +1074,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		while (j.hasNext()) {
 			Integer part = j.next();
 			int number = emergencyParts.get(part);
-			Good partGood = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(part));
+			Good partGood = GoodsUtil.createResourceGood(ItemResourceUtil.findItemResource(part));
 			result.put(partGood, number);
 		}
 
@@ -1083,13 +1083,13 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		while (k.hasNext()) {
 			Integer equipmentClass = k.next();
 			int number = emergencyEquipment.get(equipmentClass);
-			Good equipmentGood = GoodsUtil.getEquipmentGood(equipmentClass);
+			Good equipmentGood = GoodsUtil.createEquipmentGood(equipmentClass);
 			result.put(equipmentGood, number);
 		}
 
 		// Add emergency vehicle.
 		if (emergencyVehicle != null) {
-			Good vehicleGood = GoodsUtil.getVehicleGood(emergencyVehicle.getDescription());
+			Good vehicleGood = GoodsUtil.createVehicleGood(emergencyVehicle.getDescription());
 			result.put(vehicleGood, 1);
 		}
 

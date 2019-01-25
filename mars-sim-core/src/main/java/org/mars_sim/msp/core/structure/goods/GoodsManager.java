@@ -277,6 +277,25 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
+	 * Gets the value per item of a good.
+	 * 
+	 * @param good the good to check.
+	 * @return value (VP)
+	 */
+	public double getGoodValuePerItem(int id) {
+		try {
+			Good good = GoodsUtil.getResourceGood(id);
+			if (goodsValues.containsKey(good))
+				return Math.round(goodsValues.get(good) * 1000.0) / 1000.0;
+			else
+				throw new IllegalArgumentException("Good: " + good + " not valid.");
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.getMessage());
+			return 0;
+		}
+	}
+	
+	/**
 	 * Gets the demand value per item of a good.
 	 * 
 	 * @param good the good to check.
@@ -302,10 +321,11 @@ public class GoodsManager implements Serializable {
 	 */
 	public double getGoodsDemandValue(int id) {
 		try {
-			if (goodsDemandCache.containsKey(GoodsUtil.getResourceGood(id)))
-				return Math.round(goodsDemandCache.get(GoodsUtil.getResourceGood(id)) * 1000.0) / 1000.0;
+			Good good = GoodsUtil.getResourceGood(id);
+			if (goodsDemandCache.containsKey(good))
+				return Math.round(goodsDemandCache.get(good) * 1000.0) / 1000.0;
 			else
-				throw new IllegalArgumentException("Good: " + GoodsUtil.getResourceGood(id) + " not valid.");
+				throw new IllegalArgumentException("Good: " + good + " not valid.");
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage());
 			return 0;
@@ -733,7 +753,7 @@ public class GoodsManager implements Serializable {
 		if (resource == ResourceUtil.rockSaltID
 				|| resource == ResourceUtil.epsomSaltID) {
 			double tableSaltDemand = goodsDemandCache.get(GoodsUtil.getResourceGood(ResourceUtil.tableSaltID));	
-			return tableSaltDemand * .4; 
+			return tableSaltDemand * .4 - demand; 
 		}
 		
 		else if (resource == ResourceUtil.regolithID
@@ -765,7 +785,7 @@ public class GoodsManager implements Serializable {
 				|| resource == ResourceUtil.blackWaterID) {		
 			double waterDemand = goodsDemandCache.get(GoodsUtil.getResourceGood(ResourceUtil.waterID));	
 			if (demand > waterDemand)
-				return demand - waterDemand;	
+				return waterDemand - demand;	
 			else
 				return 0;
 		}	
@@ -827,9 +847,10 @@ public class GoodsManager implements Serializable {
 //			double iceDemand = goodsDemandCache.get(GoodsUtil.getResourceGood(ResourceUtil.iceID));
 			
 			if (demand > waterDemand)
-				return waterDemand;	
+				// Equate it to the water demand
+				return waterDemand - demand;	
 			else
-				return demand;
+				return 0;
 		}
 		
 		return 0;
@@ -1700,7 +1721,7 @@ public class GoodsManager implements Serializable {
 
 		// Get the amount of the resource that will be produced by ongoing manufacturing
 		// processes.
-		Good amountResourceGood = GoodsUtil.getResourceGood(resource);
+		Good amountResourceGood = GoodsUtil.createResourceGood(resource);
 		amount += getManufacturingProcessOutput(amountResourceGood);
 
 		// Get the amount of the resource that will be produced by ongoing food
@@ -2336,7 +2357,7 @@ public class GoodsManager implements Serializable {
 
 		// Get the number of resources that will be produced by ongoing manufacturing
 		// processes.
-		Good amountResourceGood = GoodsUtil.getResourceGood(resource);
+		Good amountResourceGood = GoodsUtil.createResourceGood(resource);
 		number += getManufacturingProcessOutput(amountResourceGood);
 
 		return number;
@@ -2428,8 +2449,8 @@ public class GoodsManager implements Serializable {
 
 		// Determine number of bags that are needed.
 		if (Bag.class.equals(equipmentClass)) {
-			double iceValue = getGoodsDemandValue(GoodsUtil.getResourceGood(ResourceUtil.iceID));
-			double regolithValue = getGoodsDemandValue(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
+			double iceValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
+			double regolithValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
 			numDemand += CollectIce.REQUIRED_BAGS * areologistFactor * iceValue;
 			numDemand += CollectRegolith.REQUIRED_BAGS * areologistFactor * regolithValue;
 		}
@@ -3008,7 +3029,7 @@ public class GoodsManager implements Serializable {
 
 		// Get the number of vehicles that will be produced by ongoing manufacturing
 		// processes.
-		Good vehicleGood = GoodsUtil.getVehicleGood(vehicleType);
+		Good vehicleGood = GoodsUtil.createVehicleGood(vehicleType);
 		number += getManufacturingProcessOutput(vehicleGood);
 
 		return number;

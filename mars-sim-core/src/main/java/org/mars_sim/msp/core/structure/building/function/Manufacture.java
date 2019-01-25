@@ -345,9 +345,9 @@ public class Manufacture extends Function implements Serializable {
 		// GoodsManager goodsManager = settlement.getGoodsManager();
 		Good salvagedGood = null;
 		if (salvagedUnit instanceof Equipment) {
-			salvagedGood = GoodsUtil.getEquipmentGood(salvagedUnit.getClass());
+			salvagedGood = GoodsUtil.createEquipmentGood(salvagedUnit.getClass());
 		} else if (salvagedUnit instanceof Vehicle) {
-			salvagedGood = GoodsUtil.getVehicleGood(salvagedUnit.getDescription());
+			salvagedGood = GoodsUtil.createVehicleGood(salvagedUnit.getDescription());
 		}
 
 		if (salvagedGood != null) {
@@ -688,7 +688,7 @@ public class Manufacture extends Function implements Serializable {
 						inv.storeItemResources(id, totalNumber);
 
 					// Recalculate settlement good value for salvaged part.
-					settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(part), false);
+					settlement.getGoodsManager().updateGoodValue(GoodsUtil.createResourceGood(part), false);
 				}
 			}
 		}

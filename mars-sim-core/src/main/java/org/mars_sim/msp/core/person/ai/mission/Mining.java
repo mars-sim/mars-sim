@@ -839,8 +839,8 @@ public class Mining extends RoverMission {
 		while (i.hasNext()) {
 			String mineralType = i.next();
 //          int mineralResource = ResourceUtil.findIDbyAmountResourceName(mineralType);
-			Good mineralGood = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(mineralType));
-			double mineralValue = settlement.getGoodsManager().getGoodsDemandValue(mineralGood);
+			Good mineralGood = GoodsUtil.createResourceGood(ResourceUtil.findAmountResource(mineralType));
+			double mineralValue = settlement.getGoodsManager().getGoodValuePerItem(mineralGood);
 			double concentration = concentrations.get(mineralType);
 			double mineralAmount = (concentration / 100D) * MINERAL_BASE_AMOUNT;
 			result += mineralValue * mineralAmount;

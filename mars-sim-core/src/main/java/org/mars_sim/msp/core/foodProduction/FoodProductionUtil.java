@@ -190,30 +190,30 @@ public final class FoodProductionUtil {
 		GoodsManager manager = settlement.getGoodsManager();
 
 		if (item.getType().equals(ItemType.AMOUNT_RESOURCE)) {
-			AmountResource resource = ResourceUtil.findAmountResource(item.getName());
-//            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
+//			AmountResource resource = ResourceUtil.findAmountResource(item.getName());
+            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 			double amount = item.getAmount();
 			if (isOutput) {
-				double remainingCapacity = settlement.getInventory().getAmountResourceRemainingCapacity(resource, true,
+				double remainingCapacity = settlement.getInventory().getAmountResourceRemainingCapacity(id, true,
 						false);
 				if (amount > remainingCapacity) {
 					amount = remainingCapacity;
 				}
 			}
-			Good good = GoodsUtil.getResourceGood(resource);
-			result = manager.getGoodsDemandValue(good) * amount;
+//			Good good = GoodsUtil.getResourceGood(resource);
+			result = manager.getGoodValuePerItem(id) * amount;
 		} else if (item.getType().equals(ItemType.PART)) {
 			ItemResource resource = ItemResourceUtil.findItemResource(item.getName());
 //            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-			Good good = GoodsUtil.getResourceGood(resource);
-			result = manager.getGoodsDemandValue(good) * item.getAmount();
+			Good good = GoodsUtil.createResourceGood(resource);
+			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		} else if (item.getType().equals(ItemType.EQUIPMENT)) {
 			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			Good good = GoodsUtil.getEquipmentGood(equipmentClass);
-			result = manager.getGoodsDemandValue(good) * item.getAmount();
+			Good good = GoodsUtil.createEquipmentGood(equipmentClass);
+			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		} else if (item.getType().equals(ItemType.VEHICLE)) {
-			Good good = GoodsUtil.getVehicleGood(item.getName());
-			result = manager.getGoodsDemandValue(good) * item.getAmount();
+			Good good = GoodsUtil.createVehicleGood(item.getName());
+			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		} else
 			throw new IllegalStateException("Item type: " + item.getType() + " not valid.");
 
@@ -375,14 +375,14 @@ public final class FoodProductionUtil {
 		if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 			AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 //            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-			result = GoodsUtil.getResourceGood(resource);
+			result = GoodsUtil.createResourceGood(resource);
 		} else if (ItemType.PART.equals(item.getType())) {
 			Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 //            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-			result = GoodsUtil.getResourceGood(part);
+			result = GoodsUtil.createResourceGood(part);
 		} else if (ItemType.EQUIPMENT.equals(item.getType())) {
 			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			result = GoodsUtil.getEquipmentGood(equipmentClass);
+			result = GoodsUtil.createEquipmentGood(equipmentClass);
 		}
 		// else if (Type.VEHICLE.equals(item.getType())) {
 		// result = GoodsUtil.getVehicleGood(item.getName());
