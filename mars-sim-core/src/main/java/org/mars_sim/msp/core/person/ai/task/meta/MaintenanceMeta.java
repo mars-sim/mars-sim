@@ -42,7 +42,7 @@ public class MaintenanceMeta implements MetaTask, Serializable {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.maintenance"); //$NON-NLS-1$
 
-	private static final double FACTOR = 5D;
+	private static final double FACTOR = 1D;
 	
 
 	@Override

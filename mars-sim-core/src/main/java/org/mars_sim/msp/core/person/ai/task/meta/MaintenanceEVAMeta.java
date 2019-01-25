@@ -44,7 +44,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.maintenanceEVA"); //$NON-NLS-1$
 
-	private static final double FACTOR = 5D;
+	private static final double FACTOR = 1D;
 
     @Override
     public String getName() {
