@@ -21,8 +21,9 @@ public final class EquipmentFactory {
 
 	// Cache maps.
 	private static final Map<String, Equipment> equipmentTypeCache = new HashMap<String, Equipment>(8);
-	private static final Map<Class<? extends Equipment>, Equipment> equipmentClassCache = new HashMap<Class<? extends Equipment>, Equipment>(
-			8);
+	private static final Map<Class<? extends Equipment>, Equipment> equipmentClassCache 
+		= new HashMap<Class<? extends Equipment>, Equipment>(8);
+	
 	private static Set<String> equipmentNamesCache;
 
 	// private static UnitManager unitManager =
@@ -84,8 +85,8 @@ public final class EquipmentFactory {
 			return new Bag(location);
 		else if (Barrel.TYPE.equalsIgnoreCase(type))
 			return new Barrel(location);
-		else if (BuildingKit.TYPE.equalsIgnoreCase(type))
-			return new BuildingKit(location);
+//		else if (BuildingKit.TYPE.equalsIgnoreCase(type))
+//			return new BuildingKit(location);
 		else if (EVASuit.TYPE.equalsIgnoreCase(type))
 			return new EVASuit(location);
 		else if (GasCanister.TYPE.equalsIgnoreCase(type))
@@ -136,9 +137,10 @@ public final class EquipmentFactory {
 			return new LargeBag(location);
 		else if (SpecimenContainer.class.equals(equipmentClass))
 			return new SpecimenContainer(location);
-		else if (BuildingKit.class.equals(equipmentClass))
-			return new BuildingKit(location);
-//		else if (Robot.class.equals(equipmentClass)) return new Robot(null, null, null, null, location);
+//		else if (BuildingKit.class.equals(equipmentClass))
+//			return new BuildingKit(location);
+//		else if (Robot.class.equals(equipmentClass)) 
+//			return new Robot(null, null, null, null, location);
 		else
 			throw new IllegalStateException("Equipment: " + equipmentClass + " could not be constructed.");
 	}
@@ -163,10 +165,10 @@ public final class EquipmentFactory {
 			return LargeBag.class;
 		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type))
 			return SpecimenContainer.class;
-		else if (BuildingKit.TYPE.equalsIgnoreCase(type))
-			return BuildingKit.class;
-		else if (Robot.TYPE.equalsIgnoreCase(type))
-			return Robot.class;
+//		else if (BuildingKit.TYPE.equalsIgnoreCase(type))
+//			return BuildingKit.class;
+//		else if (Robot.TYPE.equalsIgnoreCase(type))
+//			return Robot.class;
 //		else if (Vehicle.NAME.equalsIgnoreCase(type)) return Vehicle.class;
 		else
 			throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
@@ -202,10 +204,10 @@ public final class EquipmentFactory {
 			return LargeBag.EMPTY_MASS;
 		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type))
 			return SpecimenContainer.EMPTY_MASS;
-		else if (BuildingKit.TYPE.equalsIgnoreCase(type))
-			return BuildingKit.EMPTY_MASS;
-		else if (Robot.TYPE.equalsIgnoreCase(type))
-			return Robot.EMPTY_MASS;
+//		else if (BuildingKit.TYPE.equalsIgnoreCase(type))
+//			return BuildingKit.EMPTY_MASS;
+//		else if (Robot.TYPE.equalsIgnoreCase(type))
+//			return Robot.EMPTY_MASS;
 		else
 			throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
 	}

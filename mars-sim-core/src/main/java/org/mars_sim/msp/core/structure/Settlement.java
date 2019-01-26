@@ -107,7 +107,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	private static String DETECTOR_GRID = "] The detector grid forecast a ";
 
-	public static final int CHECK_MISSION = 10; // once every 10 millisols
+	public static final int CHECK_MISSION = 20; // once every 10 millisols
 	
 	public static final int MAX_NUM_SOLS = 3;
 
@@ -123,7 +123,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 
-	public static final int MIN_REGOLITH_RESERVE = 10; // per person
+	public static final int MIN_REGOLITH_RESERVE = 20; // per person
 
 	public static final int MIN_SAND_RESERVE = 5; // per person
 
@@ -3672,16 +3672,16 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		double regolith_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
 		regolith_value = regolith_value * GoodsManager.REGOLITH_VALUE_MODIFIER;
-		if (regolith_value > 2000)
-			regolith_value = 2000;
-		else if (regolith_value <= 5)
+		if (regolith_value > 5000)
+			regolith_value = 5000;
+		else if (regolith_value < 0)
 			return 0;
 
 		double sand_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.sandID));
 		sand_value = sand_value * GoodsManager.SAND_VALUE_MODIFIER;
-		if (sand_value > 2000)
-			sand_value = 2000;
-		else if (sand_value <= 3)
+		if (sand_value > 5000)
+			sand_value = 5000;
+		else if (sand_value < 0)
 			return 0;
 
 		int pop = numCitizens;// getAllAssociatedPeople().size();// getCurrentPopulationNum();
@@ -3691,11 +3691,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		if (regolith_available < MIN_REGOLITH_RESERVE * pop + regolith_value / 10
 				&& sand_available < MIN_SAND_RESERVE * pop + sand_value / 10) {
-			result = (MIN_REGOLITH_RESERVE * pop / 2.5D - regolith_available) / 10D;
+			result = (MIN_REGOLITH_RESERVE * pop - regolith_available) / 10D;
 		}
 
-		// Prompt the collect ice mission to proceed more easily if water resource is
-		// dangerously low,
+		// Prompt the regolith mission if regolith resource is low,
 		if (regolith_available > MIN_REGOLITH_RESERVE * pop) {
 			;// no change to missionProbability
 		} else if (regolith_available > MIN_REGOLITH_RESERVE * pop / 1.5) {
@@ -3705,6 +3704,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		} else
 			result = 5D * result + (MIN_REGOLITH_RESERVE * pop - regolith_available);
 
+		if (result < 0)
+			result = 0;
+		
+//		System.out.println("computeRegolithProbability() " + result);
 		return result;
 	}
 

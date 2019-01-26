@@ -186,7 +186,8 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	public String getGoodCategoryName(Good good) {
 		String key = good.getCategory().getMsgKey();
 		if (good.getCategory() == GoodType.EQUIPMENT) {
-			if (Container.class.isAssignableFrom(good.getClassType())) key = "GoodType.container"; //$NON-NLS-1$
+			if (Container.class.isAssignableFrom(good.getClassType())) 
+				key = "GoodType.container"; //$NON-NLS-1$
 		}
 		return Msg.getString(key);
 	}

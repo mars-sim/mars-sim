@@ -102,7 +102,7 @@ public class ConnectWithEarth extends Task implements Serializable {
 		else if (rand == 3)
 			act = "watching TV/movies";
 		
-		LogConsolidated.log(Level.INFO, 2_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+		LogConsolidated.log(Level.FINE, 2_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 				+ person + " was " + act + " in " + person.getLocationTag().getImmediateLocation());
 		
 		// Initialize phase

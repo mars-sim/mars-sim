@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -621,7 +622,7 @@ public final class TradeUtil {
 			}
 
 			boolean enoughEVASuits = true;
-			if (good.getClassType() == EVASuit.class) {
+			if (good.getName().equalsIgnoreCase("EVA Suit")) {
 				double remainingSuits = sellingInventory - amountTraded;
 				int requiredSuits = Trade.MAX_MEMBERS + 2;
 				enoughEVASuits = remainingSuits > requiredSuits;
@@ -668,8 +669,11 @@ public final class TradeUtil {
 			result = remainingCapacity >= ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
 		else if (good.getCategory() == GoodType.EQUIPMENT) {
 			Class type = good.getClassType();
-			if (!equipmentGoodCache.containsKey(type))
+			if (!equipmentGoodCache.containsKey(type)) {
+//				int id = EquipmentType.convertName2ID("Robot");
+//				Equipment e = EquipmentFactory.getEquipment();
 				equipmentGoodCache.put(type, EquipmentFactory.createEquipment(type, new Coordinates(0D, 0D), true));
+			}
 			result = (remainingCapacity >= equipmentGoodCache.get(type).getBaseMass());
 		} else if (good.getCategory() == GoodType.VEHICLE)
 			result = !hasVehicle;

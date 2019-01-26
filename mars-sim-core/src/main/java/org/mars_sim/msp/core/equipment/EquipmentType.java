@@ -20,11 +20,11 @@ public enum EquipmentType {
 
 	BAG 				("Bag"),
 	BARREL 				("Barrel"),
-	BUILDING_KIT		("Building Kit"),
+//	BUILDING_KIT		("Building Kit"),
 	EVA_SUIT			("EVA Suit"),
 	GAS_CANISTER		("Gas Canister"),
 	LARGE_BAG			("Large Bag"),
-	ROBOT				("Robot"),	
+//	ROBOT				("Robot"),	
 	SPECIMEN_CONTAINER	("Specimen Box");
 	// should 3D printer be an equipment or an itemResource ?
 	
@@ -86,11 +86,11 @@ public enum EquipmentType {
 	public static int getEquipmentID(Class<?> equipmentClass) {
 		if (Bag.class.equals(equipmentClass)) return BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 		else if (Barrel.class.equals(equipmentClass)) return BARREL.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-		else if (BuildingKit.class.equals(equipmentClass)) return BUILDING_KIT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+//		else if (BuildingKit.class.equals(equipmentClass)) return BUILDING_KIT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 		else if (EVASuit.class.equals(equipmentClass)) return EVA_SUIT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 		else if (GasCanister.class.equals(equipmentClass)) return GAS_CANISTER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
         else if (LargeBag.class.equals(equipmentClass)) return LARGE_BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-        else if (Robot.class.equals(equipmentClass)) return ROBOT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+//        else if (Robot.class.equals(equipmentClass)) return ROBOT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 		else if (SpecimenContainer.class.equals(equipmentClass)) return SPECIMEN_CONTAINER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 		else return -1;
 	}

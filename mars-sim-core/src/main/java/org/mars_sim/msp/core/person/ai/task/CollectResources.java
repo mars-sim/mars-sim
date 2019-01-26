@@ -19,11 +19,10 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -288,7 +287,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 		// Modify collection rate by polar region if ice collecting.
 		if (resourceType == ResourceUtil.iceID) {
-			if (Simulation.instance().getMars().getSurfaceFeatures().inPolarRegion(person.getCoordinates())) {
+			if (surface.inPolarRegion(person.getCoordinates())) {
 				samplesCollected *= 3D;
 			}
 		}
@@ -351,15 +350,6 @@ public class CollectResources extends EVAOperation implements Serializable {
 			// Check if person can exit the rover.
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
 				return false;
-
-//			Mars mars = Simulation.instance().getMars();
-//			if (mars.getSurfaceFeatures().getSolarIrradiance(person.getCoordinates()) == 0D) {
-//				LogConsolidated.log(logger, Level.FINE, 5000, sourceName, 
-//		        		"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-//		        			+ " ended collecting resources: night time",   null);
-//				if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
-//					return false;
-//			}
 
 			if (EVAOperation.isGettingDark(person)) {
 				return false;
