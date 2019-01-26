@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -25,10 +26,13 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class TravelToSettlementMeta implements MetaMission {
 
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(TravelToSettlementMeta.class.getName());
+
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.travelToSettlement"); //$NON-NLS-1$
-
+    
     @Override
     public String getName() {
         return NAME;
@@ -47,25 +51,28 @@ public class TravelToSettlementMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
-        double result = 0D;
+        double missionProbability = 0D;
 
         if (person.isInSettlement()) {
             // Check if mission is possible for person based on their
             // circumstance.
             Settlement settlement = person.getSettlement();
 
-            result = getMissionProbability(settlement, person);
+            missionProbability = getMissionProbability(settlement, person);
 
 	        // Job modifier.
 	        Job job = person.getMind().getJob();
 	        if (job != null)
-	        	result *= job.getStartMissionProbabilityModifier(
+	        	missionProbability *= job.getStartMissionProbabilityModifier(
 	                    TravelToSettlement.class)* settlement.getGoodsManager().getTourismFactor();
 
         }
 
-        
-        return result;
+//        if (missionProbability > 0)
+//        	logger.info("TravelToSettlementMeta's probability : " +
+//				 Math.round(missionProbability*100D)/100D);
+		 
+        return missionProbability;
     }
 
     @Override

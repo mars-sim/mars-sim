@@ -259,6 +259,7 @@ public class Mind implements Serializable {
 			}
 			// See if this person can ask for a mission
 			boolean needMission = !hasActiveMission && !overrideMission && isInMissionWindow;
+//			System.out.println(person + "--needMission is " + needMission);
 			// A person has no active task
 			if (!taskManager.hasActiveTask()) {
 				try {

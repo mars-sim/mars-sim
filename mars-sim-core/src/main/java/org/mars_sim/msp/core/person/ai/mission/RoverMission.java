@@ -67,7 +67,7 @@ public abstract class RoverMission extends VehicleMission {
 	public static final int MIN_STAYING_MEMBERS = 1;
 	public static final int MIN_GOING_MEMBERS = 2;
 
-	public static final double MIN_STARTING_SETTLEMENT_METHANE = 1000D;
+	public static final double MIN_STARTING_SETTLEMENT_METHANE = 500D;
 
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;

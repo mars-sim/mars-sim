@@ -107,6 +107,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	private static String DETECTOR_GRID = "] The detector grid forecast a ";
 
+	public static final int CHECK_MISSION = 10; // once every 10 millisols
+	
 	public static final int MAX_NUM_SOLS = 3;
 
 	public static final int SUPPLY_DEMAND_REFRESH = 7;
@@ -1129,21 +1131,21 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	}
 
-	/**
-	 * Prints the raw scores of certain tasks
-	 */
-	public void printMissionProbability() {
-		double bConstScore = buildingConstructionMissionMeta.getSettlementProbability(this);
-		double regolithScore = collectRegolithMeta.getSettlementProbability(this);
-		double iceScore = collectIceMeta.getSettlementProbability(this);
-
-		LogConsolidated.log(Level.INFO, 0, sourceName, "[" + name + "] BuildingConstructionMissionMeta Task score : "
-				+ Math.round(bConstScore * 10.0) / 10.0 + ".");
-		LogConsolidated.log(Level.INFO, 0, sourceName,
-				"[" + name + "] CollectRegolithMeta Task score : " + Math.round(regolithScore * 10.0) / 10.0 + ".");
-		LogConsolidated.log(Level.INFO, 0, sourceName,
-				"[" + name + "] CollectIceMeta Task score : " + Math.round(iceScore * 10.0) / 10.0 + ".");
-	}
+//	/**
+//	 * Prints the raw scores of certain tasks
+//	 */
+//	public void printMissionProbability() {
+//		double bConstScore = buildingConstructionMissionMeta.getSettlementProbability(this);
+//		double regolithScore = collectRegolithMeta.getSettlementProbability(this);
+//		double iceScore = collectIceMeta.getSettlementProbability(this);
+//
+//		LogConsolidated.log(Level.INFO, 0, sourceName, "[" + name + "] BuildingConstructionMissionMeta Task score : "
+//				+ Math.round(bConstScore * 10.0) / 10.0 + ".");
+//		LogConsolidated.log(Level.INFO, 0, sourceName,
+//				"[" + name + "] CollectRegolithMeta Task score : " + Math.round(regolithScore * 10.0) / 10.0 + ".");
+//		LogConsolidated.log(Level.INFO, 0, sourceName,
+//				"[" + name + "] CollectIceMeta Task score : " + Math.round(iceScore * 10.0) / 10.0 + ".");
+//	}
 
 	/**
 	 * Perform time-related processes
@@ -1191,13 +1193,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			// Updates the goodsManager randomly 4 times per sol .
 			updateGoodsManager(time);
 
-			int remainder = millisols % 5;
+			int remainder = millisols % (int)(CHECK_MISSION/time);
 			if (remainder == 0) {
 				// Reset the mission probability back to 1
 				missionProbability = -1;
 			}
 			
-			remainder = millisols % SAMPLING_FREQ;
+			remainder = millisols % (int)(SAMPLING_FREQ/time);
 			if (remainder == 0) {
 				// will NOT check for radiation at the exact 1000 millisols in order to balance
 				// the simulation load
@@ -1205,7 +1207,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				sampleAllResources();
 			}
 	
-			remainder = millisols % 100;
+			remainder = millisols % (int)(100/time);
 			if (remainder == 0) {
 				// Recompute the water ration level
 				computeWaterRation();
@@ -1213,12 +1215,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	
 			// Check every RADIATION_CHECK_FREQ (in millisols)
 			// Compute whether a baseline, GCR, or SEP event has occurred
-			remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ;
+			remainder = millisols % (int)(RadiationExposure.RADIATION_CHECK_FREQ/time);
 			if (remainder == 5) {
 				checkRadiationProbability(time);
 			}
 			
-			remainder = millisols % RESOURCE_UPDATE_FREQ;
+			remainder = millisols % (int)(RESOURCE_UPDATE_FREQ/time);
 			if (remainder == 5) {
 				iceProbabilityValue = computeIceProbability();
 			}
@@ -4002,6 +4004,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		}
 	}
 
+	/**
+	 * Calculate the base mission probability used by all missions
+	 * 
+	 * @return probability value
+	 */
 	public double getMissionBaseProbability() {
 		
 		if (missionProbability == -1) {
@@ -4011,56 +4018,59 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				missionProbability = 0;
 				return 0;
 			}
-	
+//			System.out.println("1.  missionProbability is " + missionProbability);
 			// 2. Check if available backup rover.
-			else if (!RoverMission.hasBackupRover(this)) {
+			if (!RoverMission.hasBackupRover(this)) {
 				missionProbability = 0;
 				return 0;
 			}
-	
+//			System.out.println("2.  missionProbability is " + missionProbability);	
 			// 3. Check if at least 1 person is there
 			// A settlement with <= 4 population can always do DigLocalRegolith task
 			// should avoid the risk of mission.
-			else if (getIndoorPeopleCount() <= 1) {// .getAllAssociatedPeople().size() <= 4)
+			if (getIndoorPeopleCount() <= 1) {// .getAllAssociatedPeople().size() <= 4)
 				missionProbability = 0;
 				return 0;
 			}
-			
-			// 3. Check if minimum number of people are available at the settlement.
-			else if (!RoverMission.minAvailablePeopleAtSettlement(this, RoverMission.MIN_STAYING_MEMBERS)) {
+//			System.out.println("3.  missionProbability is " + missionProbability);			
+			// 4. Check if minimum number of people are available at the settlement.
+			if (!RoverMission.minAvailablePeopleAtSettlement(this, RoverMission.MIN_STAYING_MEMBERS)) {
 				missionProbability = 0;
 				return 0;
 			}
-	
+//			System.out.println("4.  missionProbability is " + missionProbability);
 	//		// Check for embarking missions.
 	//		else if (VehicleMission.hasEmbarkingMissions(this)) {
 	//			return 0;
 	//		}
 			
-			// 4. Check if min number of EVA suits at settlement.
-			else if (Mission.getNumberAvailableEVASuitsAtSettlement(this) < RoverMission.MIN_GOING_MEMBERS) {
+			// 5. Check if min number of EVA suits at settlement.
+			if (Mission.getNumberAvailableEVASuitsAtSettlement(this) < RoverMission.MIN_GOING_MEMBERS) {
 				missionProbability = 0;
 				return 0;
 			}
-	
+//			System.out.println("5.  missionProbability is " + missionProbability);	
 	//		// Check for embarking missions.
 	//		else if (getNumCitizens() / 4.0 < VehicleMission.numEmbarkingMissions(this)) {
 	//			return 0;
 	//		}
 	
-			// 5. Check if settlement has enough basic resources for a rover mission.
-			else if (!RoverMission.hasEnoughBasicResources(this, true)) {
+			// 6. Check if settlement has enough basic resources for a rover mission.
+			if (!RoverMission.hasEnoughBasicResources(this, true)) {
 				missionProbability = 0;
 				return 0;
 			}
-	
-			// 6. Check if starting settlement has minimum amount of methane fuel.
-			else if (!(getInventory().getAmountResourceStored(ResourceUtil.methaneID,
-					false) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE)) {
+//			System.out.println("6.  missionProbability is " + missionProbability);	
+			// 7. Check if starting settlement has minimum amount of methane fuel.
+			if (getInventory().getAmountResourceStored(ResourceUtil.methaneID,
+					false) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
 				missionProbability = 0;
 				return 0;	
 			}
+//			System.out.println("7.  missionProbability is " + missionProbability);			
+			missionProbability = 1;
 			
+//			System.out.println(this + "  missionProbability is " + missionProbability);
 		}
 		
 		return missionProbability;

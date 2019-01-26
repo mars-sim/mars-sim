@@ -661,6 +661,8 @@ public class MissionManager implements Serializable {
 				logger.severe(person.getName() + " had bad mission probability on " + metaMission.getName() + " probability: "
 						+ probability);
 			}
+//			if (probability > 0)
+//				System.out.println(person + " " + metaMission.getName() + " is " + probability);
 		}
 
 		// Set the time cache to the current time.

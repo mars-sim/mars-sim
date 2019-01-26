@@ -10,14 +10,12 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -111,9 +109,9 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
             }
         }
 
-//        if (result > 0)
+//        if (missionProbability > 0)
 //        	logger.info("BiologyStudyFieldMissionMeta's probability : " +
-//				 Math.round(result*100D)/100D);
+//				 Math.round(missionProbability*100D)/100D);
 
         return missionProbability;
     }

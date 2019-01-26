@@ -304,7 +304,7 @@ public class MainScene implements ClockListener {
 	private boolean minimized = false;
 	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
-	private boolean isFullScreenCache = false;
+//	private boolean isFullScreenCache = false;
 
 	private DoubleProperty sceneWidth;// = new SimpleDoubleProperty(DEFAULt_WIDTH);//1366-40;
 	private DoubleProperty sceneHeight;// = new SimpleDoubleProperty(DEFAULt_HEIGHT); //768-40;
@@ -509,9 +509,9 @@ public class MainScene implements ClockListener {
 		stage.setMinHeight(sceneHeight.get());
 		
 		// Enable Full Screen
-		stage.setFullScreenExitHint(
-				"Use Ctrl+F (or Meta+F in macOS) to toggle between Full-Screen and the Window mode");
-		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
+//		stage.setFullScreenExitHint(
+//				"Use Ctrl+F (or Meta+F in macOS) to toggle between Full-Screen and the Window mode");
+//		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 		
 		// Detect if a user hits the top-right close button
 		stage.setOnCloseRequest(e -> {
@@ -816,21 +816,21 @@ public class MainScene implements ClockListener {
 				});
 		Nodes.addInputMap(rootStackPane, ctrlN);
 
-		InputMap<KeyEvent> ctrlF = consume(keyPressed(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN)),
-				e -> {
-					boolean isFullScreen = stage.isFullScreen();
-					if (!isFullScreen) {
-						menuBar.getShowFullScreenItem().setSelected(true);
-						if (!isFullScreenCache)
-							stage.setFullScreen(true);
-					} else {
-						menuBar.getShowFullScreenItem().setSelected(false);
-						if (isFullScreenCache)
-							stage.setFullScreen(false);
-					}
-					isFullScreenCache = stage.isFullScreen();
-				});
-		Nodes.addInputMap(rootStackPane, ctrlF);
+//		InputMap<KeyEvent> ctrlF = consume(keyPressed(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN)),
+//				e -> {
+//					boolean isFullScreen = stage.isFullScreen();
+//					if (!isFullScreen) {
+//						menuBar.getShowFullScreenItem().setSelected(true);
+//						if (!isFullScreenCache)
+//							stage.setFullScreen(true);
+//					} else {
+//						menuBar.getShowFullScreenItem().setSelected(false);
+//						if (isFullScreenCache)
+//							stage.setFullScreen(false);
+//					}
+//					isFullScreenCache = stage.isFullScreen();
+//				});
+//		Nodes.addInputMap(rootStackPane, ctrlF);
 
 		InputMap<KeyEvent> ctrlUp = consume(keyPressed(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN)),
 				e -> {
@@ -893,9 +893,9 @@ public class MainScene implements ClockListener {
 	}
 
 	// Toggle the full screen mode off
-	public void updateFullScreenMode() {
-		menuBar.getShowFullScreenItem().setSelected(false);
-	}
+//	public void updateFullScreenMode() {
+//		menuBar.getShowFullScreenItem().setSelected(false);
+//	}
 
 	public void createBlend() {
 

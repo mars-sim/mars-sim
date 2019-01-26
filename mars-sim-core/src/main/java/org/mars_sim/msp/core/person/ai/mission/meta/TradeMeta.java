@@ -51,7 +51,7 @@ public class TradeMeta implements MetaMission {
 	@Override
 	public double getProbability(Person person) {
 
-		double result = 0D;
+		double missionProbability = 0D;
 
 		// Check if person is in a settlement.
 		if (person.isInSettlement()) {
@@ -64,18 +64,18 @@ public class TradeMeta implements MetaMission {
 					// TODO: checkMission() gives rise to a NULLPOINTEREXCEPTION that points to
 					// Inventory
 					// It happens only when this sim is a loaded saved sim.
-					result = getSettlementProbability(settlement);
+					missionProbability = getSettlementProbability(settlement);
 
 				} catch (Exception e) {
 					logger.log(Level.SEVERE,
 							person + " can't compute the exact need for trading now at " + settlement + ". ", e);
 					e.printStackTrace();
 
-					result = 200D;
+					missionProbability = 200D;
 				}
 				
 			} else {
-				result = 0;
+				missionProbability = 0;
 			}
 			
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
@@ -93,10 +93,15 @@ public class TradeMeta implements MetaMission {
 			int f1 = numEmbarked + 1;
 			int f2 = numThisMission + 1;
 			
-			result *= settlement.getNumCitizens() / f1 / f2 / 2D;
+			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
 		}
-
-		return result;
+//
+//        if (missionProbability > 0)
+//        	logger.info("TradeMeta's probability : " +
+//				 Math.round(missionProbability*100D)/100D);
+		 
+        
+		return missionProbability;
 	}
 
 	@Override

@@ -119,9 +119,9 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
             }
         }
         
-//        if (result > 0)
+//        if (missionProbability > 0)
 //        	logger.info("AreologyStudyFieldMissionMeta's probability : " +
-//				 Math.round(result*100D)/100D);
+//				 Math.round(missionProbability*100D)/100D);
 		
         return missionProbability;
     }
