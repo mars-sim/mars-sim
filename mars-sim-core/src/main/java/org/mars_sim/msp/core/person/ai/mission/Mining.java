@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationSituation;
@@ -422,7 +421,7 @@ public class Mining extends RoverMission {
 
 		// Set the mining site start time if necessary.
 		if (miningSiteStartTime == null) {
-			miningSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+			miningSiteStartTime = (MarsClock) marsClock.clone();
 		}
 
 		// Detach towed light utility vehicle if necessary.
@@ -433,8 +432,8 @@ public class Mining extends RoverMission {
 
 		// Check if crew has been at site for more than three sols.
 		boolean timeExpired = false;
-		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		if (MarsClock.getTimeDiff(currentTime, miningSiteStartTime) >= MINING_SITE_TIME) {
+//		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		if (MarsClock.getTimeDiff(marsClock, miningSiteStartTime) >= MINING_SITE_TIME) {
 			timeExpired = true;
 		}
 
@@ -793,7 +792,7 @@ public class Mining extends RoverMission {
 				range = tripRange;
 			}
 
-			Iterator<ExploredLocation> i = Simulation.instance().getMars().getSurfaceFeatures().getExploredLocations()
+			Iterator<ExploredLocation> i = surface.getExploredLocations()
 					.iterator();
 			while (i.hasNext()) {
 				ExploredLocation site = i.next();
@@ -963,8 +962,8 @@ public class Mining extends RoverMission {
 
 		// Use estimated remaining mining time at site if still there.
 		if (MINING_SITE.equals(getPhase())) {
-			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-			double timeSpentAtMiningSite = MarsClock.getTimeDiff(currentTime, miningSiteStartTime);
+//			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+			double timeSpentAtMiningSite = MarsClock.getTimeDiff(marsClock, miningSiteStartTime);
 			double remainingTime = MINING_SITE_TIME - timeSpentAtMiningSite;
 			if (remainingTime > 0D) {
 				result = remainingTime;

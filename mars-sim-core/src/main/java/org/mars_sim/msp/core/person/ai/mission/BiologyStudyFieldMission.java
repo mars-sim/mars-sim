@@ -86,6 +86,11 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 
+		// Check if it has a vehicle 
+//		if (!hasVehicle()) {
+//			endMission(Mission.NO_AVAILABLE_VEHICLES);
+//		}
+
 		Settlement s = startingPerson.getSettlement();
 
 		if (!isDone() && s != null) {
@@ -151,6 +156,11 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 
 		// Use RoverMission constructor.
 		super(description, leadResearcher, RoverMission.MIN_GOING_MEMBERS, rover);
+
+		// Check if it has a vehicle 
+//		if (!hasVehicle()) {
+//			endMission(Mission.NO_AVAILABLE_VEHICLES);
+//		}
 
 		setStartingSettlement(startingSettlement);
 		this.study = study;

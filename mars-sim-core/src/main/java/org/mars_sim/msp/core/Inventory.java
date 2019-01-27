@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.mars.MarsSurface;
@@ -1297,7 +1298,19 @@ public class Inventory implements Serializable {
 
 	private boolean containsUnitClassLocal(int id) {
 //		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-		return containsUnitClassLocal(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
+//		return containsUnitClassLocal(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
+		if (containedUnits != null && !containedUnits.isEmpty()) {
+			Iterator<Unit> i = containedUnits.iterator();
+			while (i.hasNext()) {
+				Unit unit = i.next();
+				if (unit instanceof Equipment) {
+					if (EquipmentType.getType(((Equipment)unit).getName()) == EquipmentType.convertID2Type(id)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -1345,7 +1358,22 @@ public class Inventory implements Serializable {
 
 	public Unit findUnitOfClass(int id) {
 //		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-		return findUnitOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
+//		return findUnitOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
+		
+		Unit result = null;
+		if (containedUnits != null && !containedUnits.isEmpty()) {
+			Iterator<Unit> i = containedUnits.iterator();
+			while ((result == null) && i.hasNext()) {
+				Unit unit = i.next();
+				if (unit instanceof Equipment) {
+					if (EquipmentType.getType(((Equipment)unit).getName()) == EquipmentType.convertID2Type(id)) {
+						result = unit;
+						break;
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -1394,7 +1422,21 @@ public class Inventory implements Serializable {
 
 	public int findNumUnitsOfClass(int id) {
 //		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-		return findNumUnitsOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
+//		return findNumUnitsOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
+		
+		int result = 0;
+		if (containedUnits != null && !containedUnits.isEmpty()) {
+			Iterator<Unit> i = containedUnits.iterator();
+			while (i.hasNext()) {
+				Unit unit = i.next();
+				if (unit instanceof Equipment) {
+					if (EquipmentType.getType(((Equipment)unit).getName()) == EquipmentType.convertID2Type(id)) {
+						result++;
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	/**

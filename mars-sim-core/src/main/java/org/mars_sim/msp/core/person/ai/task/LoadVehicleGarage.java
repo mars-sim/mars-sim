@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -952,11 +953,12 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					if (inv.getAmountResourceStored(resource, false) < totalNeeded) {
 						double stored = inv.getAmountResourceStored(resource, false);
 						if (logger.isLoggable(Level.INFO))
-							LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-									Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)) + " needed: "
-											+ Math.round(totalNeeded * 100.0) / 100.0 + " kg   Stored: "
-											+ Math.round(stored * 100.0) / 100.0 + " kg ",
-									null);
+							LogConsolidated.log(Level.INFO, 5000, sourceName,
+									Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)) 
+									+ "-  needed by the mission: " + Math.round(amountNeeded * 100.0) / 100.0
+									+ "-  needed by " + settlement + ": " + Math.round(settlementNeed* 100.0) / 100.0
+									+ "  Stored: " + Math.round(stored* 100.0) / 100.0
+									);
 						// enoughSupplies = false;
 						return false;
 					}
@@ -965,16 +967,17 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 			else if (resource >= FIRST_ITEM_RESOURCE_ID) {
 				int numNeeded = (Integer) resources.get(resource);
-				int settlementNumPartNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, resource);
+				int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, resource);
 				int numLoaded = vInv.getItemResourceNum(resource);
-				int totalNeeded = numNeeded + settlementNumPartNeed - numLoaded;
+				int totalNeeded = numNeeded + settlementNeed - numLoaded;
 				if (inv.getItemResourceNum(resource) < totalNeeded) {
 					int stored = inv.getItemResourceNum(resource);
 					if (logger.isLoggable(Level.INFO))
-						LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-								Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)) + " needed: "
-										+ totalNeeded + "  Stored: " + stored,
-								null);
+						LogConsolidated.log(Level.INFO, 0, sourceName,
+								Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)) 
+								+ "-  needed by the mission: " + numNeeded 
+								+ "-  needed by " + settlement + ": " + settlementNeed
+								+ "  Stored: " + stored);
 					// enoughSupplies = false;
 					return false;
 				}
@@ -985,16 +988,19 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		// Check if there is enough equipment at the settlement.
 		Iterator<Integer> iE = equipment.keySet().iterator();
 		while (iE.hasNext()) {
-			Integer equipmentType = iE.next();
-			int numNeeded = equipment.get(equipmentType);
-			int settlementEquipmentNumNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
-			int numLoaded = vInv.findNumUnitsOfClass(equipmentType);
-			int totalNeeded = numNeeded + settlementEquipmentNumNeed - numLoaded;
-			if (inv.findNumEmptyUnitsOfClass(equipmentType, false) < totalNeeded) {
-				int stored = inv.findNumEmptyUnitsOfClass(equipmentType, false);
+			Integer equipmentID = iE.next();
+			int numNeeded = equipment.get(equipmentID);
+			int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentID);
+			int numLoaded = vInv.findNumUnitsOfClass(equipmentID);
+			int totalNeeded = numNeeded + settlementNeed - numLoaded;
+			if (inv.findNumEmptyUnitsOfClass(equipmentID, false) < totalNeeded) {
+				int stored = inv.findNumEmptyUnitsOfClass(equipmentID, false);
 				if (logger.isLoggable(Level.INFO))
-					LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
-							equipmentType + " needed: " + totalNeeded + "  Stored: " + stored, null);
+					LogConsolidated.log(Level.INFO, 0, sourceName,
+							EquipmentType.convertID2Type(equipmentID) 
+							+ "-  needed by the mission: " + numNeeded 
+							+ "-  needed by " + settlement + ": " + settlementNeed
+							+ "  Stored: " + stored);
 				// enoughSupplies = false;
 				return false;
 			}

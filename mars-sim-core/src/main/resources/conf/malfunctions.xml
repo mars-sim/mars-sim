@@ -334,8 +334,6 @@
 		<repair-time value="50.0" />
 		<system-list>
 			<system name="vehicle" />
-			<system name="robot" />		
-			<system name="power storage" />
 		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="3.0" />
@@ -349,15 +347,34 @@
 		</repair-parts-list>
 	</malfunction>
 
-	<!-- Battery failure. -->
-	<malfunction name="EVA Battery Failure">
+	<!-- Rover Battery failure. -->
+	<malfunction name="Rover Battery Failure">
 		<severity value="40" />
 		<probability value="3.0" />
 		<repair-time value="50.0" />
 		<system-list>
 			<system name="vehicle" />
-			<system name="robot" />		
 			<system name="power storage" />
+		</system-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" probability="3.0" />
+		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="wire connector" number="2" probability="40" />
+			<part name="electrical wire" number="2" probability="40" />
+			<part name="rover battery" number="1" probability="5" />
+			<part name="microcontroller" number="1" probability="5" />
+			<part name="logic board" number="1" probability="10" />
+		</repair-parts-list>
+	</malfunction>
+	
+		<!-- Battery failure. -->
+	<malfunction name="EVA Battery Failure">
+		<severity value="40" />
+		<probability value="3.0" />
+		<repair-time value="50.0" />
+		<system-list>
+			<system name="EVA Suit" />
 		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="3.0" />
@@ -611,6 +628,7 @@
 			<system name="vehicle" />
 			<system name="EVA suit" />
 			<system name="power generation" />
+			<system name="power storage" />
 			<system name="Building" />
 		</system-list>
 		<medical-complaint-list>

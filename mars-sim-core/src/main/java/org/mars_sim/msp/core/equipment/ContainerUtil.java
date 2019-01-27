@@ -53,13 +53,13 @@ public final class ContainerUtil {
 		int result = -1;
 		switch (phase) {
 		case GAS:
-			result = EquipmentType.GAS_CANISTER.ordinal();// str2int("Gas Canister");;
+			result = EquipmentType.GAS_CANISTER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;// str2int("Gas Canister");;
 			break;
 		case LIQUID:
-			result = EquipmentType.BARREL.ordinal();// .str2int("Barrel");
+			result = EquipmentType.BARREL.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;// .str2int("Barrel");
 			break;
 		case SOLID:
-			result = EquipmentType.BAG.ordinal();// .str2int("Bag");
+			result = EquipmentType.BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;// .str2int("Bag");
 			break;
 		}
 		return result;

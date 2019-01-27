@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -34,7 +33,6 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -59,6 +57,8 @@ public abstract class Mission implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
+	public static final int MAX_CAP = 8;
+	
 	public static final String CONSTRUCTION_ENDED = "Construction ended.";
 	public static final String ALL_DISEMBARKED = "All members disembarked.";
 	public static final String USER_ABORTED_MISSION = "Mission aborted by user.";
@@ -194,7 +194,7 @@ public abstract class Mission implements Serializable {
 		phases = new ArrayList<MissionPhase>();
 		phaseEnded = false;
 		this.minMembers = minMembers;
-		missionCapacity = Integer.MAX_VALUE;
+		missionCapacity = MAX_CAP;//Integer.MAX_VALUE;
 				
 		listeners = new CopyOnWriteArrayList<>(); //Collections.synchronizedList(new ArrayList<MissionListener>());
 		

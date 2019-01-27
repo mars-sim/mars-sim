@@ -88,6 +88,11 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, MIN_PEOPLE);
 
+		// Check if it has a vehicle 
+//		if (!hasVehicle()) {
+//			endMission(Mission.NO_AVAILABLE_VEHICLES);
+//		}
+
 		Settlement s = startingPerson.getSettlement();
 
 		if (!isDone() && s != null) {
@@ -152,6 +157,11 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 		// Use RoverMission constructor.
 		super(description, leadResearcher, MIN_PEOPLE, rover);
 
+		// Check if it has a vehicle 
+//		if (!hasVehicle()) {
+//			endMission(Mission.NO_AVAILABLE_VEHICLES);
+//		}
+
 		setStartingSettlement(startingSettlement);
 		this.study = study;
 		this.leadResearcher = leadResearcher;
@@ -181,7 +191,7 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 		// Set initial mission phase.
 		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
 		setPhaseDescription(Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
-
+		
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
 			endMission(VEHICLE_NOT_LOADABLE);

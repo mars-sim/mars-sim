@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.equipment;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 
 
 /**
@@ -18,15 +18,15 @@ import org.mars_sim.msp.core.robot.Robot;
  */
 public enum EquipmentType {
 
-	BAG 				("Bag"),
-	BARREL 				("Barrel"),
+	BAG 				(Msg.getString("EquipmentType.bag")), //$NON-NLS-1$
+	BARREL 				(Msg.getString("EquipmentType.barrel")), //$NON-NLS-1$
 //	BUILDING_KIT		("Building Kit"),
-	EVA_SUIT			("EVA Suit"),
-	GAS_CANISTER		("Gas Canister"),
-	LARGE_BAG			("Large Bag"),
+	EVA_SUIT			(Msg.getString("EquipmentType.EVASuit")), //$NON-NLS-1$ 
+	GAS_CANISTER		(Msg.getString("EquipmentType.gasCanister")), //$NON-NLS-1$
+	LARGE_BAG			(Msg.getString("EquipmentType.largeBag")), //$NON-NLS-1$
 //	ROBOT				("Robot"),	
-	SPECIMEN_CONTAINER	("Specimen Box");
-	// should 3D printer be an equipment or an itemResource ?
+	SPECIMEN_CONTAINER	(Msg.getString("EquipmentType.specimenBox")); //$NON-NLS-1$
+	// TODO: should 3D printer be an equipment or an itemResource ?
 	
 	private String name;	
 
@@ -75,7 +75,6 @@ public enum EquipmentType {
 	    		}
 	    	}
 		}
-		
 		return -1;
 	}
 	
@@ -94,4 +93,16 @@ public enum EquipmentType {
 		else if (SpecimenContainer.class.equals(equipmentClass)) return SPECIMEN_CONTAINER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 		else return -1;
 	}
+	
+	public static EquipmentType getType(String name) {
+		if (name != null) {
+	    	for (EquipmentType et : EquipmentType.values()) {
+	    		if (name.equalsIgnoreCase(et.name)) {
+	    			return et;
+	    		}
+	    	}
+		}
+		return null;
+	}
+	
 }

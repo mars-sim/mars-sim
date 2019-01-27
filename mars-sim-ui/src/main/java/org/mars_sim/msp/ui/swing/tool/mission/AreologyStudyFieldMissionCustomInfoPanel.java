@@ -124,16 +124,18 @@ implements ScientificStudyListener {
 
 			// Add as scientific study listener to new study.
 			study = areologyMission.getScientificStudy();
-			study.addScientificStudyListener(this);
+			if (study != null) {
+				study.addScientificStudyListener(this);
 
-			// Update study name.
-			studyNameLabel.setText(study.toString());
-
-			// Update lead researcher for mission.
-			researcherNameLabel.setText(areologyMission.getLeadResearcher().getName());
-
-			// Update study research bar.
-			updateStudyResearchBar(study, areologyMission.getLeadResearcher());
+				// Update study name.
+				studyNameLabel.setText(study.toString());
+	
+				// Update lead researcher for mission.
+				researcherNameLabel.setText(areologyMission.getLeadResearcher().getName());
+	
+				// Update study research bar.
+				updateStudyResearchBar(study, areologyMission.getLeadResearcher());
+			}
 		}
 	}
 

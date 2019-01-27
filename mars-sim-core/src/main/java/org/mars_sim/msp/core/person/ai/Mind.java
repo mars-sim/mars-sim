@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
@@ -242,6 +243,8 @@ public class Mind implements Serializable {
 				mission = null;
 			}
 
+			boolean hasApprovedMission = hasApprovedMission();
+			
 			boolean hasActiveMission = hasActiveMission();
 			// Check if mission creation at settlement (if any) is overridden.
 			boolean overrideMission = false;
@@ -254,12 +257,13 @@ public class Mind implements Serializable {
 			// Within 50 millisols at the start of the work shift
 			boolean isInMissionWindow = taskManager.getTaskSchedule().isAtStartOfWorkShift();
 		
-			if (hasActiveMission) {
+			if (hasApprovedMission && hasActiveMission) {
 				mission.performMission(person);
 			}
 			// See if this person can ask for a mission
-			boolean needMission = !hasActiveMission && !overrideMission && isInMissionWindow;
-//			System.out.println(person + "--needMission is " + needMission);
+			boolean needMission = !hasActiveMission && !hasApprovedMission && !overrideMission && isInMissionWindow;
+//			if (hasActiveMission)
+//				System.out.println(person + "'s needMission is " + needMission);
 			// A person has no active task
 			if (!taskManager.hasActiveTask()) {
 				try {
@@ -378,9 +382,37 @@ public class Mind implements Serializable {
 	 * @return true for active mission
 	 */
 	public boolean hasActiveMission() {
-		return (mission != null) && !mission.isDone();
+		if (mission != null) {
+			// has a mission but need to determine if this mission is active or not
+			if (!mission.isDone())
+				return true;
+//			else if (mission.isApproved())
+//				return true;
+			else if (mission.getPlan() != null && 
+					(mission.getPlan().getStatus() == PlanType.PENDING
+					|| mission.getPlan().getStatus() == PlanType.APPROVED))
+				return true;
+		}
+		return false;
 	}
 
+	/**
+	 * Returns true if person has an approved mission.
+	 * 
+	 * @return true for active mission
+	 */
+	public boolean hasApprovedMission() {
+		if (mission != null) {
+			// has a mission but need to determine if this mission is active or not
+			if (mission.isApproved())
+				return true;
+			else if (mission.getPlan() != null 
+					&& mission.getPlan().getStatus() == PlanType.APPROVED)
+				return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * Set this mind as inactive. Needs move work on this; has to abort the Task can
 	 * not just close it. This abort action would then allow the Mission to be also

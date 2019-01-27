@@ -38,19 +38,18 @@ public enum VehicleType {
 	    		}
 	    	}
 		}
-		
 		return -1;
 	}
 	
 	public static VehicleType convertID2Type(int id) {
-		return VehicleType.values()[id - ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID];
+		return VehicleType.values()[id - ResourceUtil.FIRST_VEHICLE_RESOURCE_ID];
 	}
 	
 	public static int getVehicleID(VehicleType type) {
-		if (type == LUV) return LUV.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-		else if (type == EXPLORER_ROVER) return EXPLORER_ROVER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-		else if (type == TRANSPORT_ROVER) return TRANSPORT_ROVER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-		else if (type == CARGO_ROVER) return CARGO_ROVER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+		if (type == LUV) return LUV.ordinal() + ResourceUtil.FIRST_VEHICLE_RESOURCE_ID;
+		else if (type == EXPLORER_ROVER) return EXPLORER_ROVER.ordinal() + ResourceUtil.FIRST_VEHICLE_RESOURCE_ID;
+		else if (type == TRANSPORT_ROVER) return TRANSPORT_ROVER.ordinal() + ResourceUtil.FIRST_VEHICLE_RESOURCE_ID;
+		else if (type == CARGO_ROVER) return CARGO_ROVER.ordinal() + ResourceUtil.FIRST_VEHICLE_RESOURCE_ID;
 		else return -1;
 	}
 }
