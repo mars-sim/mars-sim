@@ -134,7 +134,7 @@ public class DashboardController implements Initializable {
             insertLabel.setText(total +  ALL_SETTLERS + " (" + INSIDE + inside + OUTSIDE + outside + ") :");
             
         } catch (IOException ex) {
-            Logger.getLogger(DashboardController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DashboardController.class.getName()).log(Level.SEVERE, "Cannot load settlers.fxml", ex);
         }
     }
 

@@ -3098,10 +3098,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<!-- favorite-side-dish: the person's favorite side dish. (optional) -->
 		<!-- favorite-dessert: the person's favorite dessert. (optional) -->
 		<!-- favorite-activity: the person's favorite hobby. see list in the FavoriteType class (optional) -->
-		<person name="Karen Andersen"
-			crew="alpha"
-			gender="female"
-			personality-type="ISTJ"
+		<person name="Karen Andersen" crew="alpha" gender="female" personality-type="ISTJ"
 			settlement="Schiaparelli Point"
 			sponsor="Mars Society (MS)"
 			country="USA"
@@ -3185,7 +3182,9 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 			sponsor="Mars Society (MS)"
 			country="USA"
 			job="Areologist"
-			favorite-main-dish="Salsa Potato Salad" favorite-side-dish="Miso Soup" favorite-dessert="soymilk"
+			favorite-main-dish="Salsa Potato Salad" 
+			favorite-side-dish="Miso Soup" 
+			favorite-dessert="soymilk"
 			favorite-activity="Operation">
 			<personality-trait-list>
 				<personality-trait name = "openness"	 value = "35"/>
@@ -3209,7 +3208,9 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
         	sponsor="Mars Society (MS)"
 			country="USA"
         	job="Engineer"
-			favorite-main-dish="Roasted Carrot Soup and Brown Rice" favorite-side-dish="Baby Carrots" favorite-dessert="craneberry juice"
+			favorite-main-dish="Roasted Carrot Soup and Brown Rice" 
+			favorite-side-dish="Baby Carrots" 
+			favorite-dessert="craneberry juice"
 			favorite-activity="Research">
 			<personality-trait-list>
 				<personality-trait name = "openness" 	value = "65"/>
@@ -3236,7 +3237,9 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
         	sponsor="Mars Society (MS)"
 			country="USA"
         	job="Technician"
-			favorite-main-dish="Kidney Bean Fried Rice with Onion" favorite-side-dish="Peas and Onions" favorite-dessert="bluebbery muffin"
+			favorite-main-dish="Kidney Bean Fried Rice with Onion" 
+			favorite-side-dish="Peas and Onions" 
+			favorite-dessert="bluebbery muffin"
 			favorite-activity="Lab Experimentation">
 			<personality-trait-list>
 				<personality-trait name = "openness" 	value = "70"/>

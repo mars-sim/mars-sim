@@ -207,7 +207,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/** The number of people at the start of the settlement. */
 	private int initialPopulation;
 	/** The number of robots at the start of the settlement. */
-	private int initialNumOfRobots;
+	private int projectedNumOfRobots;
 	/** The scenario ID of the settlement. */
 	private int scenarioID;
 
@@ -432,7 +432,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @param initialNumOfRobots
 	 */
 	private Settlement(String name, int id, String template, String sponsor, Coordinates location, int populationNumber,
-			int initialNumOfRobots) {
+			int projectedNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
 
@@ -441,7 +441,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		this.sponsor = sponsor;
 		this.location = location;
 		this.scenarioID = id;
-		this.initialNumOfRobots = initialNumOfRobots;
+		this.projectedNumOfRobots = projectedNumOfRobots;
 		this.initialPopulation = populationNumber;
 
 		marsClock = sim.getMasterClock().getMarsClock();
@@ -2936,8 +2936,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * 
 	 * @return initial number of robots.
 	 */
-	public int getInitialNumOfRobots() {
-		return initialNumOfRobots;
+	public int getProjectedNumOfRobots() {
+		return projectedNumOfRobots;
 	}
 
 	/**

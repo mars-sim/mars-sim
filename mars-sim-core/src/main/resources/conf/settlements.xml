@@ -1178,13 +1178,13 @@
 	<!-- List of initial settlements in the simulation -->
 	<initial-settlement-list>
 
-		<settlement name="Alpha Base" template="Alpha Base (Phase 4)">
-			<location longitude="0.0 W" latitude="0.0 N" />
-			<population number="24" />
-			<number-of-robots number="12" />
-			<sponsor name="National Aeronautics and Space Administration (NASA)"/>
+		<settlement name="Schiaparelli Point" template="Mars Direct Base (Phase 1)">
+			<location longitude="16.0 E" latitude="3.0 S" />
+			<population number="4" />
+			<number-of-robots number="2" />
+			<sponsor name="Mars Society (MS)"/>
 		</settlement>
-
+		
 		<settlement name="Plymouth Base" template="Mars Direct Base (Phase 2)">
 			<location longitude="4.2 E" latitude="15.9 S" />
 			<population number="8" />
@@ -1192,11 +1192,11 @@
 			<sponsor name="Mars Society (MS)"/>
 		</settlement>
 		
-		<settlement name="Schiaparelli Point" template="Mars Direct Base (Phase 1)">
-			<location longitude="16.0 E" latitude="3.0 S" />
-			<population number="4" />
-			<number-of-robots number="2" />
-			<sponsor name="Mars Society (MS)"/>
+		<settlement name="Alpha Base" template="Alpha Base (Phase 4)">
+			<location longitude="0.0 W" latitude="0.0 N" />
+			<population number="24" />
+			<number-of-robots number="12" />
+			<sponsor name="National Aeronautics and Space Administration (NASA)"/>
 		</settlement>
 
 	</initial-settlement-list>

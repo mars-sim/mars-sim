@@ -35,12 +35,10 @@ import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Engineer;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.job.JobType;
-import org.mars_sim.msp.core.person.ai.job.Technician;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
@@ -206,7 +204,7 @@ public class UnitManager implements Serializable {
 	 *
 	 * @throws Exception in unable to load names.
 	 */
-	void constructInitialUnits(boolean loadSaveSim) {
+	synchronized void constructInitialUnits(boolean loadSaveSim) {
 		// Add marsSurface as the very first unit
 		addUnit(marsSurface);
 		
@@ -230,11 +228,9 @@ public class UnitManager implements Serializable {
 			createInitialEquipment();
 			createInitialResources();
 			createInitialParts();
-			
 			// Find the settlement match for the user proposed commander's sponsor 
 			if (isCommanderMode)
 				matchSettlement();
-			
 			// Create pre-configured robots as stated in robots.xml
 			createPreconfiguredRobots();
 			// Create more robots to fill the settlement(s)
@@ -706,7 +702,6 @@ public class UnitManager implements Serializable {
 						initialNumOfRobots);
 				settlement.initialize();
 				addUnit(settlement);
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -915,9 +910,10 @@ public class UnitManager implements Serializable {
 			// Get person's settlement or randomly determine it if not configured.
 			String preConfigSettlementName = personConfig.getConfiguredPersonDestination(x, crew_id);
 			if (preConfigSettlementName != null) {
-				Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
+				Collection<Settlement> col = getSettlements();//lookupSettlement.values();//CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
 				if (settlement == null) {
+//					System.out.println("settlement : " + settlement);
 					// TODO: If settlement cannot be found that matches the settlement name,
 					// should we put the person in a randomly selected settlement?
 					settlement = CollectionUtils.getRandomSettlement(col);
@@ -1374,7 +1370,7 @@ public class UnitManager implements Serializable {
 		int size = robotConfig.getNumberOfConfiguredRobots();
 		// If players choose # of bots less than what's being configured
 		// Create all configured robot.
-		Collection<Settlement> col = lookupSettlement.values();//CollectionUtils.getSettlement(units);
+		Collection<Settlement> col = new ArrayList<>(lookupSettlement.values());//CollectionUtils.getSettlement(units);
 		for (int x = 0; x < size; x++) {
 			boolean isDestinationChange = false;
 			// Get robot's name (required)
@@ -1388,7 +1384,6 @@ public class UnitManager implements Serializable {
 			// configured.
 			String preConfigSettlementName = robotConfig.getConfiguredRobotSettlement(x);
 			Settlement settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
-			
 			if (preConfigSettlementName != null) {
 				// Find the settlement instance with that name
 //				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
@@ -1401,28 +1396,28 @@ public class UnitManager implements Serializable {
 							settlement = CollectionUtils.getRandomSettlement(col);
 							settlement.updateAllAssociatedRobots();
 							col.remove(settlement);
-//							logger.log(Level.INFO, name + " has no destination settlement specified and goes to "
-//									+ preConfigSettlementName + " by random.");
-							if (settlement.getNumBots() < settlement.getInitialNumOfRobots()) {
+							
+							boolean filled = (settlement.getNumBots() <= settlement.getProjectedNumOfRobots());
+							if (filled) {
 								isDestinationChange = true;
 								done = true;
-								logger.log(Level.INFO, name + " is being sent to " + settlement + " since "
+								logger.log(Level.CONFIG, "Robot " + name + " is being sent to " + settlement + " since "
 										+ preConfigSettlementName + " doesn't exist.");
-		
 							}	
+
 						}
 						else {
 							isDestinationChange = false;
 							done = true;
 							break;
 						}
-						
 					}
 				}
 				
 				else {
 					// settlement != null
-					if (settlement.getNumBots() < settlement.getInitialNumOfRobots()) {
+					boolean filled = (settlement.getNumBots() <= settlement.getProjectedNumOfRobots());
+					if (filled) {
 						isDestinationChange = true;
 					}
 					
@@ -1434,7 +1429,7 @@ public class UnitManager implements Serializable {
 								settlement.updateAllAssociatedRobots();
 								col.remove(settlement);
 								
-								if (settlement.getNumBots() < settlement.getInitialNumOfRobots()) {
+								if (filled) {
 									isDestinationChange = true;
 									done = true;
 								}	
@@ -1449,7 +1444,7 @@ public class UnitManager implements Serializable {
 				}
 			}
 			
-			else { 
+			else {
 				// preConfigSettlementName = null
 				boolean done = false;
 				while (!done) {
@@ -1459,12 +1454,11 @@ public class UnitManager implements Serializable {
 						settlement.updateAllAssociatedRobots();
 						col.remove(settlement);
 						
-						if (settlement.getNumBots() < settlement.getInitialNumOfRobots()) {
+						if (settlement.getNumBots() <= settlement.getProjectedNumOfRobots()) {
 							isDestinationChange = true;
 							done = true;
-							logger.log(Level.INFO, name + " is being sent to " + settlement + " since "
+							logger.log(Level.CONFIG, "Robot " + name + " is being sent to " + settlement + " since "
 									+ preConfigSettlementName + " doesn't exist.");
-	
 						}	
 					}
 					else {
@@ -1476,7 +1470,7 @@ public class UnitManager implements Serializable {
 				}
 				
 			}
-
+	
 			// If settlement is still null (no settlements available), don't create robot.
 			if (settlement == null) {
 				return;
@@ -1489,10 +1483,10 @@ public class UnitManager implements Serializable {
 //			System.out.println("settlement.getNumBots() : " + settlement.getNumBots());
 			
 			// If settlement does not have initial robot capacity, try another settlement.
-			if (settlement.getInitialNumOfRobots() <= numBots) { //settlement.getNumBots()) {
+			if (settlement.getProjectedNumOfRobots() <= numBots) { //settlement.getNumBots()) {
 				return;
 			}
-
+	
 			// Add "if (settlement != null)" to stop the last
 			// instance of robot from getting overwritten
 			if (settlement != null) {
@@ -1511,14 +1505,7 @@ public class UnitManager implements Serializable {
 
 					if (proceed) {
 						// Create robot and add to the unit manager.
-//						System.out.println("UnitManager : " + settlement);
-						
-//						if (lookupSettlement.values().size() > 1) {
-//							List<Settlement> list = new ArrayList<>(lookupSettlement.values());
-//							settlement = list.get(0);
-//							System.out.println("> 1 UnitManager : " + settlement);
-//						}
-						
+			
 						// Adopt Static Factory Method and Factory Builder Pattern
 						Robot robot = Robot.create(name, settlement, robotType).setCountry("Earth").build();
 						robot.initialize();
@@ -1573,7 +1560,7 @@ public class UnitManager implements Serializable {
 			Iterator<Settlement> i = getSettlements().iterator();
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
-				int initial = settlement.getInitialNumOfRobots();
+				int initial = settlement.getProjectedNumOfRobots();
 				// Note : need to call updateAllAssociatedRobots() first to compute numBots in Settlement
 				while (settlement.getIndoorRobotsCount() < initial) {
 					// Get a robotType randomly
