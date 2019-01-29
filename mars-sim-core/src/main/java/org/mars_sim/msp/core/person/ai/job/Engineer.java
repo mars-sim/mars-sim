@@ -129,7 +129,7 @@ public class Engineer extends Job implements Serializable {
 		while (i.hasNext()) {
 			Building building = i.next();
 			Manufacture workshop = building.getManufacture();
-			result += workshop.getTechLevel() * workshop.getSupportingProcesses() / 6D;
+			result += ((workshop.getTechLevel() + 1)/1.5) * (workshop.getSupportingProcesses() / 8D);
 		}
 
 		return result;

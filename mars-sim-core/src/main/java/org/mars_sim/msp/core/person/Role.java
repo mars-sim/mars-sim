@@ -92,16 +92,18 @@ public class Role implements Serializable {
 	 */
 	public void obtainRole(Settlement s) {
 		ChainOfCommand cc = s.getChainOfCommand();
-
-		// Assign a role associate with
-		if (s.getNumCitizens() >= ChainOfCommand.POPULATION_WITH_MAYOR) {
-			cc.set7Divisions(true);
-			cc.assignSpecialiststo7Divisions(person);
-		}
-		else {
-			cc.set3Divisions(true);
-			cc.assignSpecialiststo3Divisions(person);
-		}
+		cc.set7Divisions(true);
+		cc.assignSpecialiststo7Divisions(person);
+		
+//		// Assign a role associate with
+//		if (s.getNumCitizens() >= ChainOfCommand.POPULATION_WITH_MAYOR) {
+//			cc.set7Divisions(true);
+//			cc.assignSpecialiststo7Divisions(person);
+//		}
+//		else {
+//			cc.set3Divisions(true);
+//			cc.assignSpecialiststo3Divisions(person);
+//		}
 	}
 	
 	/**

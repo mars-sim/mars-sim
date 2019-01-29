@@ -121,8 +121,7 @@ public class Reporter extends Job implements Serializable {
 			}
 		}
 
-		result += pop/24;
-		return result;
+		return result * pop / 24D;
 	}
 
 }

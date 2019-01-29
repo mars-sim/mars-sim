@@ -280,7 +280,7 @@ extends TransportItemEditingPanel {
 		arrivalDateSelectionPane.add(arrivalDateTitleLabel);
 
 		// Get default arriving settlement Martian time.
-		MarsClock arrivingTime = null;//Simulation.instance().getMasterClock().getMarsClock();
+		MarsClock arrivingTime = Simulation.instance().getMasterClock().getMarsClock();
 		if (settlement != null) {
 			arrivingTime = settlement.getArrivalDate();
 		}

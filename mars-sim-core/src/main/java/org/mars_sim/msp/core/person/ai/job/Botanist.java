@@ -143,7 +143,7 @@ implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.BOTANY)) {
-				result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 4D;
+				result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 6D;
 			}
 		}
 
@@ -153,7 +153,7 @@ implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			Farming farm = building.getFarming();
-			result += (farm.getGrowingArea() / 90D);
+			result += (farm.getGrowingArea() / 120D);
 		}
 
 		// Multiply by food value at settlement.
@@ -162,7 +162,7 @@ implements Serializable {
 		//result *= foodValue;
 		//System.out.println("getSettlementNeed() : result is " + result);
 
-		result += pop/4D;
+		result += pop/6D;
 		return result;
 	}
 
