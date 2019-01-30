@@ -134,11 +134,11 @@ public class BotMind implements Serializable {
 	 */
 	public void takeAction(double time) {
 
-		if ((mission != null) && mission.isDone()) {
-			mission = null;
-		}
+//		if ((mission != null) && mission.isDone()) {
+//			mission = null;
+//		}
 
-		boolean activeMission = (mission != null);
+//		boolean activeMission = (mission != null);
 
 		// Check if mission creation at settlement (if any) is overridden.
 		boolean overrideMission = false;
@@ -156,13 +156,13 @@ public class BotMind implements Serializable {
 			}
 		} else {
 
-			if (activeMission) {
-				mission.performMission(robot);
-			}
+//			if (activeMission) {
+//				mission.performMission(robot);
+//			}
 
 			if (!botTaskManager.hasActiveTask()) {
 				try {
-					getNewAction(true, (!activeMission && !overrideMission));
+					getNewAction(true, false);//(!activeMission && !overrideMission));
 				} catch (Exception e) {
 					logger.log(Level.WARNING, robot + " could not get new action", e);
 					e.printStackTrace(System.err);
@@ -233,14 +233,14 @@ public class BotMind implements Serializable {
 		}
 	}
 
-	/**
-	 * Returns true if robot has an active mission.
-	 * 
-	 * @return true for active mission
-	 */
-	public boolean hasActiveMission() {
-		return (mission != null) && !mission.isDone();
-	}
+//	/**
+//	 * Returns true if robot has an active mission.
+//	 * 
+//	 * @return true for active mission
+//	 */
+//	public boolean hasActiveMission() {
+//		return (mission != null) && !mission.isDone();
+//	}
 
 	/**
 	 * Set this mind as inactive. Needs move work on this; has to abort the Task can
@@ -249,13 +249,11 @@ public class BotMind implements Serializable {
 	 */
 	public void setInactive() {
 		botTaskManager.clearTask();
-		if (hasActiveMission()) {
-
+//		if (hasActiveMission()) {
 			if (robot != null)
 				mission.removeMember(robot);
-
 			mission = null;
-		}
+//		}
 	}
 
 	/**

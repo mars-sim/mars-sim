@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.RoleType;
@@ -28,13 +27,11 @@ import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -85,14 +82,14 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		// Use Task constructor.
 		super(NAME, person, true, false, STRESS_MODIFIER, true, 20D + RandomUtil.getRandomInt(0, 5));
 
-		roleType = person.getRole().getType();
+//		roleType = person.getRole().getType();
 		
-		if (person.isInside() && roleType != null) {
+		if (person.isInside()) {// && roleType != null) {
 
 			pop = person.getAssociatedSettlement().getNumCitizens();
-			if (pop <= 4		
-				|| (pop <= 8 && roleType == RoleType.RESOURCE_SPECIALIST)
-				|| ReviewMissionPlan.isRoleValid(roleType)) {
+//			if (pop <= 4		
+//				|| (pop <= 8 && roleType == RoleType.RESOURCE_SPECIALIST)
+//				|| ReviewMissionPlan.isRoleValid(roleType)) {
 
 				// If person is in a settlement, try to find an office building.
 				Building officeBuilding = Administration.getAvailableOffice(person);
@@ -114,10 +111,10 @@ public class ReviewMissionPlan extends Task implements Serializable {
 			else {
 				endTask();
 			}
-		}
-		else {
-			endTask();
-		}
+//		}
+//		else {
+//			endTask();
+//		}
 
 		// Initialize phase
 		addPhase(REVIEWING);
@@ -195,8 +192,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
             			
 						String s = person.getAssociatedSettlement().getName();
 						
-						if (!reviewedBy.equals(requestedBy)
-								&& mp.isReviewerValid(reviewedBy, pop)) {
+						if (!reviewedBy.equals(requestedBy)) {
+//								&& mp.isReviewerValid(reviewedBy, pop)) {
 							
 							List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
 							int last = list.size() - 1;

@@ -94,6 +94,11 @@ public class Exploration extends RoverMission implements Serializable {
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 
+		// Check if it has a vehicle 
+		if (!hasVehicle()) {
+			endMission(Mission.NO_AVAILABLE_VEHICLES);
+		}
+		
 		Settlement s = startingPerson.getSettlement();
 
 		if (s != null & !isDone()) {

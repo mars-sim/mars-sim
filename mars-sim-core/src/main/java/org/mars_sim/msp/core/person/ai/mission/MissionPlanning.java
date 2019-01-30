@@ -27,9 +27,9 @@ public class MissionPlanning implements Serializable {
 //	
 	
 	private int requestedSol;
-	private double percentComplete = 10; // 0% to 100%
-	private double score = 0; // 0 to 1000 points
-	private double qualityScore = 0;
+	private double percentComplete; // 0% to 100%
+	private double score; // 0 to 1000 points
+	private double qualityScore;
 	
 	private String requestedBy;
 	private String approvedBy;
@@ -89,13 +89,13 @@ public class MissionPlanning implements Serializable {
 		else {
 			int num = reviewers.get(name);
 			if (pop >= 48) {
-				if (num < 3)
+				if (num < 2)
 					return true;
 				else
 					return false;
 			}
 			else if (pop >= 24) {
-				if (num < 3)
+				if (num < 2)
 					return true;
 				else
 					return false;

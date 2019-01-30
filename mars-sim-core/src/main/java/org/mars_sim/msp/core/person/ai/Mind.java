@@ -257,7 +257,7 @@ public class Mind implements Serializable {
 			// Within 50 millisols at the start of the work shift
 			boolean isInMissionWindow = taskManager.getTaskSchedule().isAtStartOfWorkShift();
 		
-			if (hasApprovedMission && hasActiveMission) {
+			if (hasActiveMission) {
 				mission.performMission(person);
 			}
 			// See if this person can ask for a mission
@@ -382,18 +382,7 @@ public class Mind implements Serializable {
 	 * @return true for active mission
 	 */
 	public boolean hasActiveMission() {
-		if (mission != null) {
-			// has a mission but need to determine if this mission is active or not
-			if (!mission.isDone())
-				return true;
-//			else if (mission.isApproved())
-//				return true;
-			else if (mission.getPlan() != null && 
-					(mission.getPlan().getStatus() == PlanType.PENDING
-					|| mission.getPlan().getStatus() == PlanType.APPROVED))
-				return true;
-		}
-		return false;
+        return (mission != null) && !mission.isDone();
 	}
 
 	/**
@@ -404,10 +393,9 @@ public class Mind implements Serializable {
 	public boolean hasApprovedMission() {
 		if (mission != null) {
 			// has a mission but need to determine if this mission is active or not
-			if (mission.isApproved())
-				return true;
-			else if (mission.getPlan() != null 
-					&& mission.getPlan().getStatus() == PlanType.APPROVED)
+			if (mission.isApproved()
+				|| (mission.getPlan() != null 
+					&& mission.getPlan().getStatus() == PlanType.APPROVED))
 				return true;
 		}
 		return false;
@@ -490,15 +478,16 @@ public class Mind implements Serializable {
 //			} catch (InterruptedException e) {
 //				e.printStackTrace();
 //			}
-			String s = "zero";
-			if (Double.isNaN(weightSum) || Double.isInfinite(weightSum))
-				s = "infinite";
+//			String s = "zero";
+//			if (Double.isNaN(weightSum) || Double.isInfinite(weightSum))
+//				s = "infinite";
+//			
+//			LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
+//					person.getName() + " has " + s + " weight sum" 
+//					+ " (tasks = " + tasks 
+//					+ ". missions = " + missions 
+//					+ ") and will pick one task to do randomly.");
 			
-			LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
-					person.getName() + " has " + s + " weight sum" 
-					+ " (tasks = " + tasks 
-					+ ". missions = " + missions 
-					+ ") and will pick one task to do randomly.");
 //			taskManager.clearTask();
 //			throw new IllegalStateException("Mind.getNewAction(): " + person + " weight sum: " + weightSum);
 			

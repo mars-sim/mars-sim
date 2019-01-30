@@ -527,13 +527,13 @@ public class MissionManager implements Serializable {
 		}
 		
 		List<Mission> m0 = new ArrayList<Mission>();
-		List<Mission> m1 = getMissions();
+		List<Mission> m1 = missions;
 		if (!m1.isEmpty()) {		
 			Iterator<Mission> i = m1.iterator();
 			while (i.hasNext()) {
 				Mission m = i.next();
 				if (!m.isDone() 
-						&& (settlement == m.getAssociatedSettlement())
+						&& settlement.getName().equalsIgnoreCase(m.getAssociatedSettlement().getName())
 						&& !m.isApproved()
 						&& m.getPlan() != null
 						&& m.getPlan().getStatus() == PlanType.PENDING) {
@@ -614,9 +614,12 @@ public class MissionManager implements Serializable {
 		if (missions != null) { // for passing maven test
 			while (index < missions.size()) {
 				Mission m = missions.get(index);
-				if (m == null 
-////						|| m.isDone() 
-						|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)) {
+				if (m == null
+//						|| m.isDone() 
+//						|| !m.isApproved() // initially it's not approved until it passsed the approval phase
+//						|| m.getPlan() == null
+						|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)
+						) {
 					removeMission(m);
 				} else {
 					index++;
@@ -742,7 +745,7 @@ public class MissionManager implements Serializable {
 	/**
 	 * Adds a mission plan
 	 * 
-	 * @param {{@link MissionPlanning}
+	 * @param plan {@link MissionPlanning}
 	 */
 	public void addMissionPlanning(MissionPlanning plan) {
 		int mSol = marsClock.getMissionSol();
@@ -814,7 +817,7 @@ public class MissionManager implements Serializable {
 	 * @param status
 	 */
 	public void scoreMissionPlan(MissionPlanning missionPlan, double newScore, Person reviewer) {
-		double weight = 1;
+		double weight = 1D;
 		RoleType role = reviewer.getRole().getType();
 		for (int mSol : historicalMissions.keySet()) {
 			List<MissionPlanning> plans = historicalMissions.get(mSol);
@@ -823,10 +826,10 @@ public class MissionManager implements Serializable {
 					double percent = mp.getPercentComplete();
 					
 					if (role == RoleType.COMMANDER)
-						weight = 3;
+						weight = 4D;
 					else if (role == RoleType.SUB_COMMANDER
 							|| role == RoleType.CHIEF_OF_MISSION_PLANNING)
-						weight = 2.5;
+						weight = 3D;
 					else if (role == RoleType.CHIEF_OF_AGRICULTURE
 							|| role == RoleType.CHIEF_OF_ENGINEERING
 							|| role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
@@ -834,13 +837,16 @@ public class MissionManager implements Serializable {
 							|| role == RoleType.CHIEF_OF_SCIENCE
 							|| role == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
 							)
-						weight = 2;
+						weight = 2D;
 					else if (role == RoleType.MISSION_SPECIALIST)
 						weight = 1.5;
 					
 					mp.setPercentComplete(percent + weight * PERCENT_PER_SCORE);
 					double score = mp.getScore();
 					mp.setScore(score + weight * newScore);
+					logger.info(mp.getMission().getDescription() 
+							+ "  New score : " + mp.getScore() 
+							+ "  New percent : " + mp.getPercentComplete() + "%");
 					mp.setReviewedBy(reviewer.getName());
 				}
 				// Should the reviewer look at multiple plans at the same time ?

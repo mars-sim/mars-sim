@@ -274,10 +274,10 @@ public class MissionTableModel extends AbstractTableModel
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
-		if (rowIndex < missionCache.size()) {
+//		if (rowIndex < missionCache.size()) {
 			Mission mission = missionCache.get(rowIndex);
 
-			if (mission != null) {
+			if (mission != null && mission.getDescription() != null && !mission.getDescription().equals("")) {
 				switch (columnIndex) {
 
 				case STARTING_MEMBER: {
@@ -296,7 +296,14 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case PHASE: {
-					result = mission.getPhaseDescription();
+					if (mission.getPhaseDescription().contains("Approval")) {
+						result = Math.round(mission.getPlan().getPercentComplete()) + "% ("
+								+ Math.round(mission.getPlan().getScore()) + ") "
+								+ mission.getPhaseDescription();
+					}
+					else
+						result = mission.getPhaseDescription();
+
 				}
 					break;
 
@@ -370,7 +377,7 @@ public class MissionTableModel extends AbstractTableModel
 				}
 				}
 			}
-		}
+//		}
 
 		return result;
 	}

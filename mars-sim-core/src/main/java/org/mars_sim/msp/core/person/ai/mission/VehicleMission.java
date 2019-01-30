@@ -105,15 +105,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		description = missionName;
 		this.startingMember = startingMember;
 
+		if (!reserveVehicle())
+			endMission(Mission.NO_AVAILABLE_VEHICLES);
+		
 		// Add mission phases.
 		addPhase(APPROVAL);
 		addPhase(EMBARKING);
 		addPhase(TRAVELLING);
 		addPhase(DISEMBARKING);
 		addPhase(COMPLETED);
-
-		reserveVehicle();
-
 	}
 
 	/**
@@ -1333,6 +1333,24 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			if (EMBARKING.equals(i.next().getPhase())) {
+				result++;
+			}
+		}
+
+		return result;
+	}
+	
+	/**
+	 * Checks to see how many missions currently under the approval phase at the settlement.
+	 * 
+	 * @param settlement the settlement.
+	 * @return true if embarking missions.
+	 */
+	public static int numApprovingMissions(Settlement settlement) {
+		int result = 0;
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
+		while (i.hasNext()) {
+			if (APPROVAL.equals(i.next().getPhase())) {
 				result++;
 			}
 		}

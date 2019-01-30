@@ -121,7 +121,7 @@ public abstract class Mission implements Serializable {
 	/** Has the current phase ended? */
 	private boolean phaseEnded;
 	/** True if mission is completed. */
-	private boolean done;
+	private boolean done = false;
 	/** True if the mission has been approved. */
 	protected boolean approved = false;
 	/** True if the mission has been requested. */
@@ -228,7 +228,7 @@ public abstract class Mission implements Serializable {
 				article = "an ";
 
 			LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + person.getSettlement() + "] "
-					+ startingMember.getName() + " is organizing " + article + missionName + " mission" + str);
+					+ startingMember.getName() + " was trying to organize " + article + missionName + " mission" + str);
 
 			// Add starting member to mission.
 			// Temporarily set the shift type to none during the mission
@@ -1294,17 +1294,18 @@ public abstract class Mission implements Serializable {
 	 */	
 	protected void requestApprovalPhase(MissionMember member) {	
 		Person p = (Person)member;
-		
-		if (!approved && plan == null) {			
+
+		if (plan == null) {			
 			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());		
-			LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
+			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
 					+ p.getName() + " (" + p.getRole().getType() 
 					+ ") was requesting approval for " + getDescription() + ".");
 
 			 missionManager.requestMissionApproval(plan);
 		}
 		
-		else if (plan != null && plan.getStatus() == PlanType.NOT_APPROVED) {
+		else if (plan != null 
+				&& plan.getStatus() == PlanType.NOT_APPROVED) {
 			endMission(MISSION_NOT_APPROVED);
 		}
 		
@@ -1312,11 +1313,12 @@ public abstract class Mission implements Serializable {
 			
 			fullMissionDesignation = createFullDesignation(p);
 			
-			LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
+			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
 					+ p.getRole().getType() + " " + p.getName() 
 					+ " was getting"// the rover " + startingMember.getVehicle() 
 					+ " ready to embark on " + getDescription());
 
+			// Set the members' work shift to on-call to get ready
 			for (MissionMember m : members) {
 				Person pp = (Person) m;
 				pp.setShiftType(ShiftType.ON_CALL);

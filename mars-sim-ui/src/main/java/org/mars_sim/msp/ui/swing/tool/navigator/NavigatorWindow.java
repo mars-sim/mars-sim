@@ -292,7 +292,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 			latCB = new JComboBoxMW<Integer>(lat_degrees);
 			latCB.setSelectedItem(0);
-			latCB.setPreferredSize(new Dimension(50, -1));
+			latCB.setPreferredSize(new Dimension(80, -1));
 			coordPane.add(latCB);
 
 			String[] latStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
@@ -308,7 +308,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			// positionPane.add(Box.createHorizontalStrut(5));
 
 			// Prepare longitude entry components
-			WebLabel longLabel = new WebLabel(" Lon : ", WebLabel.RIGHT);// Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
+			WebLabel longLabel = new WebLabel("Lon : ", WebLabel.RIGHT);// Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
 			// longLabel.setAlignmentY(.5F);
 			coordPane.add(longLabel);
 
@@ -320,7 +320,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			// 2016-11-24 Switch to using ComboBoxMW for longtitude
 			longCB = new JComboBoxMW<Integer>(lon_degrees);
 			longCB.setSelectedItem(0);
-			longCB.setPreferredSize(new Dimension(50, -1));
+			longCB.setPreferredSize(new Dimension(80, -1));
 			coordPane.add(longCB);
 
 			String[] longStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$

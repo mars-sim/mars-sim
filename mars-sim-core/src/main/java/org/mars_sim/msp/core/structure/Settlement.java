@@ -4070,6 +4070,17 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				missionProbability = 0;
 				return 0;	
 			}
+			
+			if (VehicleMission.numEmbarkingMissions(this) > getNumCitizens() / 4D) {
+				missionProbability = 0;
+				return 0;	
+			}
+			
+			if (VehicleMission.numApprovingMissions(this) > getNumCitizens() / 4D) {
+				missionProbability = 0;
+				return 0;	
+			}
+			
 //			System.out.println("7.  missionProbability is " + missionProbability);			
 			missionProbability = 1;
 			

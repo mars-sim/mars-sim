@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
@@ -64,26 +63,32 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
             
         	//if (roleType == null)
         	//NOTE: sometimes enum is null. sometimes it is NOT. why?
-        	RoleType roleType = person.getRole().getType();
+//        	RoleType roleType = person.getRole().getType();
 
         	int pop = person.getAssociatedSettlement().getNumCitizens();
-			if (pop <= 4		
-				|| (pop <= 8 && roleType == RoleType.RESOURCE_SPECIALIST)
-				|| ReviewMissionPlan.isRoleValid(roleType)) {
+//			if (pop <= 4		
+//				|| (pop <= 8 && roleType == RoleType.RESOURCE_SPECIALIST)
+//				|| ReviewMissionPlan.isRoleValid(roleType)) {
 
                 List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
+//   		     	if (missions.size() > 0)
+//   		     		System.out.println(person + " " + person.getRole().getType() + " has " + missions.size() + " to review.");
 
                 for (Mission m : missions) {
                 	
                 	if (m.getPlan() != null) {
-                		
+
                 		MissionPlanning mp = m.getPlan();
                 		
 	                    PlanType status = mp.getStatus();
 
-	                    if (status != null && status == PlanType.PENDING 
-	                    	&& mp.getPercentComplete() < 100D) {
+	                    if (status != null && status == PlanType.PENDING) { 
+//	                    	&& mp.getPercentComplete() < 100D) {
 	    		            	
+//	                    	System.out.println(person + " " + person.getRole().getType() + " on " 
+//	                    			+ mp.getMission().getDescription() + " has " 
+//	                    			+ mp.getPercentComplete() + "%");
+
     						String reviewedBy = person.getName();
     						
     						Person p = m.getStartingMember();
@@ -91,14 +96,26 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
     						
     						if (reviewedBy.equals(requestedBy)) {
     							// Add penalty to the probability score if reviewer is the same as requester
-    							result -= 50D;;
+    							result -= 100D;
     						}
 	    						
-	                    	result += 200D;                    	
+	                    	result += 100D;                    	
 	                    	// Add adjustment based on how many sol the request has since been submitted
                             // if the job assignment submitted date is > 1 sol
                             int sol = marsClock.getMissionSol();
                             int solRequest = m.getPlan().getMissionSol();
+                            
+	                    	// Check if this reviewer has already exceeded the max # of reviews allowed
+    						if (!mp.isReviewerValid(reviewedBy, pop)) {
+    							if (sol - solRequest > 7) {
+    								// If no one else is able to offer the review after x days, 
+    								// do allow the review to go through even if the reviewer is not valid
+    								result += 100;
+    							}
+    							else
+    								return 0;
+    						}
+    						
                             if (sol - solRequest == 1)
                                 result += 200D;
                             else if (sol - solRequest == 2)
@@ -108,12 +125,6 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
                             else if (sol - solRequest > 3)
                                 result += 500D;
                             
-                            // Check if this reviewer has already exceeded the max # of reviews allowed
-    						if (!mp.isReviewerValid(reviewedBy, pop)) {
-    							if (sol - solRequest < 7)
-    								// If no one else is able to offer the review, allow the review to go through
-    								return 0;
-    						}
 	                    }
                 	}
                 }
@@ -143,10 +154,11 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
                 if (result < 0) {
                     result = 0;
                 }
-
-//                if (result > 0) System.out.println(person + " ReviewMissionPlanMeta : probability is " + result);
-            }
+//            }
         }
+
+//      if (result > 0) 
+//    	  System.out.println(person + " " + person.getRole().getType() + " ReviewMissionPlanMeta : " + result);
 
         return result;
     }

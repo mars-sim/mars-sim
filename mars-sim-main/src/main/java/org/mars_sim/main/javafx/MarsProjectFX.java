@@ -563,7 +563,7 @@ public class MarsProjectFX extends Application {
 					try {
 						// load FileChooser instead
 						mainMenu.loadSim(null);
-						logger.config("Done calling loadSim(null)");
+//						logger.config("Done calling loadSim(null)");
 						// Then wait for user to select a saved sim to load in loadSim();
 
 					} catch (Exception e2) {

@@ -349,6 +349,7 @@ public class MainScene implements ClockListener {
 	private SwingNode mapNode;
 	private SwingNode minimapNode;
 
+	private Pane desktopPane;
 
 	private Stage stage;
 	private Stage savingStage;
@@ -2306,7 +2307,7 @@ public class MainScene implements ClockListener {
 		// Set up the "Main" Tab
 		createJFXToolbar();
 
-		toolbarBox = new VBox(toolbar, desktopNode);
+		toolbarBox = new VBox(toolbar, desktopPane);//desktopNode);
 		toolbarBox.setPadding(new Insets(5, 5, 5, 5));
 		mainStackPane = new StackPane();
 		// mainStackPane.setStyle("-fx-background-color: transparent; ");
@@ -3515,14 +3516,17 @@ public class MainScene implements ClockListener {
 		desktopNode = new SwingNode();
 		// desktopNode.setStyle("-fx-background-color: black; ");
 		desktop = new MainDesktopPane(this);
-		// SwingUtilities.invokeLater(() -> desktopNode.setContent(desktop));
+		desktopNode.setStyle("-fx-background-color: transparent; -fx-border-color: black; ");	
+		desktopPane = new Pane(desktopNode);
+		desktopPane.setMaxSize(screen_width, screen_height);
 
 		// Add main pane
 		WebPanel mainPane = new WebPanel(new BorderLayout());
 		mainPane.setSize(screen_width, screen_height);
-		mainPane.add(desktop, BorderLayout.CENTER);		
+		mainPane.add(desktop, BorderLayout.CENTER);	
+//		desktopNode.setContent(mainPane);
 		SwingUtilities.invokeLater(() -> desktopNode.setContent(mainPane));
-//		SwingUtilities.invokeLater(() -> desktopNode.setContent(desktop));
+
 //		desktopNode.requestFocus();
 	}
 
@@ -3530,9 +3534,9 @@ public class MainScene implements ClockListener {
 		desktopNode.requestFocus();
 	}
 	
-	public SwingNode getDesktopNode() {
-		return desktopNode;
-	}
+//	public SwingNode getDesktopNode() {
+//		return desktopNode;
+//	}
 
 	/**
 	 * Open the exit dialog box

@@ -151,6 +151,7 @@
 		<!-- <module>mars-sim-network</module-->
 		<!-- module>mars-sim-service</module-->
 		<module>mars-sim-ui</module>
+		<module>mars-sim-javafx</module>
 	</modules>
 	<!-- ************************************************************************************************* -->
 	<!-- * Build Section * -->

@@ -385,8 +385,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 			} else if (robot != null) {
 				botTaskManager = botMind.getBotTaskManager();
-				if (botMind.hasActiveMission())
-					mission = botMind.getMission();
+//				if (botMind.hasActiveMission())
+//					mission = botMind.getMission();
 
 			}
 
@@ -526,14 +526,14 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 				if (!robot.getSystemCondition().isInoperable()) {
 					botMind = robot.getBotMind();
-					if (botMind.hasActiveMission()) {
-						if (source == missionButton) {
-							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME))
-									.selectMission(botMind.getMission());
-							getDesktop().openToolWindow(MissionWindow.NAME);
-						} else if (source == monitorButton)
-							desktop.addModel(new RobotTableModel(botMind.getMission()));
-					}
+//					if (botMind.hasActiveMission()) {
+//						if (source == missionButton) {
+//							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME))
+//									.selectMission(botMind.getMission());
+//							getDesktop().openToolWindow(MissionWindow.NAME);
+//						} else if (source == monitorButton)
+//							desktop.addModel(new RobotTableModel(botMind.getMission()));
+//					}
 				}
 			}
 		}

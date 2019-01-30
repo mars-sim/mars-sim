@@ -77,10 +77,6 @@ public abstract class Job implements Serializable {
 		// Every settler will need to tasks
 		jobTasks.add(DigLocalIce.class);
 		jobTasks.add(DigLocalRegolith.class);
-//		jobTasks.add(EatMeal.class);
-//		jobTasks.add(ListenToMusic.class);
-//		jobTasks.add(PlayHoloGame.class);
-//		jobTasks.add(Read.class);
 		jobTasks.add(ReviewJobReassignment.class);
 		jobTasks.add(ReviewMissionPlan.class);
 		jobTasks.add(WriteReport.class);
