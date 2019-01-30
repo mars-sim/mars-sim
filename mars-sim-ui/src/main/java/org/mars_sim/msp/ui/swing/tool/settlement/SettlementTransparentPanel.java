@@ -541,48 +541,48 @@ public class SettlementTransparentPanel extends WebComponent {
 
 		labelPane.add(emptyLabel);
 	}
-    /*
-    class MyCellRenderer extends JLabel implements ListCellRenderer<Object>  {
-		private static final long serialVersionUID = 1L;
+    
+//    class MyCellRenderer extends JLabel implements ListCellRenderer<Object>  {
+//		private static final long serialVersionUID = 1L;
+//
+//		public MyCellRenderer() {
+//	          setOpaque(true);
+//	      }
+//	      public Component getListCellRendererComponent(JList<?> list,
+//	                                                    Object value,
+//	                                                    int index,
+//	                                                    boolean isSelected,
+//	                                                    boolean cellHasFocus) {
+//
+//	          setText(value.toString());
+//	  		  setBackground(new Color(0,0,0,0));
+//
+//	          Color background = Color.orange;
+//	          Color foreground = Color.green;
+//
+//	          // check if this cell represents the current DnD drop location
+//	          JList.DropLocation dropLocation = list.getDropLocation();
+//
+//	          if (dropLocation != null
+//	                  && !dropLocation.isInsert()
+//	                  && dropLocation.getIndex() == index) {
+//
+//	          // check if this cell is selected
+//	          } else if (isSelected) {
+//	              background = Color.orange;
+//	              foreground = Color.green;
+//
+//	          // unselected
+//	          } else {
+//	          };
+//
+//	          setBackground(background);
+//	          setForeground(foreground);
+//
+//	          return this;
+//	      }
+//    }
 
-		public MyCellRenderer() {
-	          setOpaque(true);
-	      }
-	      public Component getListCellRendererComponent(JList<?> list,
-	                                                    Object value,
-	                                                    int index,
-	                                                    boolean isSelected,
-	                                                    boolean cellHasFocus) {
-
-	          setText(value.toString());
-	  		  setBackground(new Color(0,0,0,0));
-
-	          Color background = Color.orange;
-	          Color foreground = Color.green;
-
-	          // check if this cell represents the current DnD drop location
-	          JList.DropLocation dropLocation = list.getDropLocation();
-
-	          if (dropLocation != null
-	                  && !dropLocation.isInsert()
-	                  && dropLocation.getIndex() == index) {
-
-	          // check if this cell is selected
-	          } else if (isSelected) {
-	              background = Color.orange;
-	              foreground = Color.green;
-
-	          // unselected
-	          } else {
-	          };
-
-	          setBackground(background);
-	          setForeground(foreground);
-
-	          return this;
-	      }
-    }
-*/
 	/**
 	 * Create the labels popup menu.
 	 * @return popup menu.
@@ -690,15 +690,15 @@ public class SettlementTransparentPanel extends WebComponent {
 			super(s, b);
 		}
 
-		/*public void paint(Graphics g) {
-			//protected void paintComponent(Graphics g) {
-				//super.paintComponent(g);
-
-                Graphics2D g2d = (Graphics2D) g.create();
-                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
-                super.paint(g2d);
-                g2d.dispose();
-        } */
+//		public void paint(Graphics g) {
+//			//protected void paintComponent(Graphics g) {
+//				//super.paintComponent(g);
+//
+//                Graphics2D g2d = (Graphics2D) g.create();
+//                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+//                super.paint(g2d);
+//                g2d.dispose();
+//      }
 	}
 
 
@@ -756,14 +756,15 @@ public class SettlementTransparentPanel extends WebComponent {
 
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			//String nameCache = settlement.getType();
-			String settlementNewName = askNameDialog().trim();
-
-			if ( settlementNewName.trim() == null || settlementNewName.trim().length() == 0)
-				settlementNewName = askNameDialog();
-			else {
-				mapPanel.getSettlement().changeName(settlementNewName);
+			if (askNameDialog() != null) {
+				String settlementNewName = askNameDialog().trim();
+	
+				if ( settlementNewName.trim() == null || settlementNewName.trim().length() == 0)
+					settlementNewName = askNameDialog();
+				else {
+					mapPanel.getSettlement().changeName(settlementNewName);
+				}
 			}
-
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.openToolWindow(SettlementWindow.NAME);
 
@@ -787,7 +788,6 @@ public class SettlementTransparentPanel extends WebComponent {
 	 * @since 2.0
 	 * @author commons.apache.org
 	 */
-	// 2015-10-19 Added isBlank()
 	public static boolean isBlank(String str) {
 	    int strLen;
 	    if (str == null || (strLen = str.length()) == 0) {
@@ -805,7 +805,6 @@ public class SettlementTransparentPanel extends WebComponent {
 	 * Ask for a new Settlement name
 	 * @return pop up jDialog
 	 */
-	// 2014-10-26 Added askNameDialog()
 	public String askNameDialog() {
 		return JOptionPane
 			.showInputDialog(desktop,
@@ -861,15 +860,15 @@ public class SettlementTransparentPanel extends WebComponent {
 			// Add this as a unit manager listener.
 //			UnitManager unitManager = Simulation.instance().getUnitManager();
 			unitManager.addUnitManagerListener(this);
-			/*
-			// 2014-12-19 Added addUnitListener
-			Collection<Settlement> settlements = unitManager.getSettlements();
-			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
-			Iterator<Settlement> i = settlementList.iterator();
-			while (i.hasNext()) {
-				i.next().addUnitListener(this);
-			}
-			*/
+
+//			// Add addUnitListener
+//			Collection<Settlement> settlements = unitManager.getSettlements();
+//			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+//			Iterator<Settlement> i = settlementList.iterator();
+//			while (i.hasNext()) {
+//				i.next().addUnitListener(this);
+//			}
+
 		}
 
 		/**

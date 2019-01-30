@@ -24,24 +24,23 @@ public interface SettlementMapLayer {
 	static UnitManager unitManager = sim.getUnitManager();
 	static MissionManager missionManager = sim.getMissionManager();
 	static SurfaceFeatures surfaceFeatures = sim.getMars().getSurfaceFeatures();
-	
+
 	/**
 	 * Displays the settlement map layer.
-	 * @param g2d the graphics context.
+	 * 
+	 * @param g2d        the graphics context.
 	 * @param settlement the settlement to display.
-	 * @param xPos the X center position.
-	 * @param yPos the Y center position.
-	 * @param mapWidth the width of the map.
-	 * @param mapHeight the height of the map.
-	 * @param rotation the rotation (radians)
-	 * @param scale the map scale.
+	 * @param xPos       the X center position.
+	 * @param yPos       the Y center position.
+	 * @param mapWidth   the width of the map.
+	 * @param mapHeight  the height of the map.
+	 * @param rotation   the rotation (radians)
+	 * @param scale      the map scale.
 	 */
-	// 
+	//
 	// Add building parameter
-	public void displayLayer(
-		Graphics2D g2d, Settlement settlement, Building building, double xPos, 
-		double yPos, int mapWidth, int mapHeight, double rotation, double scale
-	);
+	public void displayLayer(Graphics2D g2d, Settlement settlement, Building building, double xPos, double yPos,
+			int mapWidth, int mapHeight, double rotation, double scale);
 
 	/**
 	 * Destroy the map layer.
