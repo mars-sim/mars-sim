@@ -7,6 +7,15 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.edit;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Iterator;
+
+import javax.swing.JComponent;
+
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
@@ -21,15 +30,6 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
 import com.alee.laf.button.WebButton;
 import com.alee.laf.panel.WebPanel;
-
-import javax.swing.JComponent;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Iterator;
 
 /**
  * The edit mission dialog for the mission tool.
@@ -103,10 +103,10 @@ public class EditMissionDialog extends ModalInternalFrame {
 		//setVisible(true);
 		
         // Add to its own tab pane
-        if (desktop.getMainScene() != null)
-        	desktop.add(this);
-        	//desktop.getMainScene().getDesktops().get(1).add(this);
-        else 
+//        if (desktop.getMainScene() != null)
+//        	desktop.add(this);
+//        	//desktop.getMainScene().getDesktops().get(1).add(this);
+//        else 
         	desktop.add(this);
 	    
 	    

@@ -7,18 +7,16 @@
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-
-import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 
 public class UnitDescriptionStage {
 
@@ -74,7 +72,7 @@ public class UnitDescriptionStage {
 
     public void applyTheme() {
         String cssFile = null;
-        int theme = MainScene.getTheme(); 
+        int theme = 0;// MainScene.getTheme(); 
         if (theme == 0 || theme == 6)
         	cssFile = MainDesktopPane.BLUE_CSS;
         else if (theme == 7)

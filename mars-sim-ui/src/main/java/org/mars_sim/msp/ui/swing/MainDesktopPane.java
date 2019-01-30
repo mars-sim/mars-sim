@@ -51,9 +51,6 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
-import org.mars_sim.msp.ui.javafx.BrowserJFX;
-import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -90,9 +87,13 @@ public class MainDesktopPane extends JDesktopPane
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 
 //	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;// 750D / MarsClock.SECONDS_IN_MILLISOL;
+	public final static String THEME_PATH = "/fxui/css/theme/";
 
-	public final static String ORANGE_CSS = MainScene.ORANGE_CSS_THEME; 
-	public final static String BLUE_CSS = MainScene.BLUE_CSS_THEME;
+	public final static String ORANGE_CSS_THEME = THEME_PATH + "nimrodskin.css";
+	public final static String BLUE_CSS_THEME = THEME_PATH + "snowBlue.css";
+	
+	public final static String ORANGE_CSS = ORANGE_CSS_THEME; 
+	public final static String BLUE_CSS = BLUE_CSS_THEME;
 
 	// Data members
 //	private double timeCache = 0;
@@ -125,10 +126,7 @@ public class MainDesktopPane extends JDesktopPane
 	private TimeWindow timeWindow;
 	private Building building;
 	private MainWindow mainWindow;
-	public static MainScene mainScene;
-//	private MarqueeTicker marqueeTicker;
 	private OrbitViewer orbitViewer;
-	private BrowserJFX browserJFX;
 	private EventTableModel eventTableModel;
 	private SingleSelectionModel ssm;
 
@@ -143,33 +141,13 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public MainDesktopPane(MainWindow mainWindow) {
 		super();
-
 		this.mainWindow = mainWindow;
-
-		init();
-	}
-
-	/**
-	 * Constructor 2.
-	 * 
-	 * @param mainScene the main scene
-	 */
-	public MainDesktopPane(MainScene mainScene) {
-		this.mainScene = mainScene;
-
-		init();
-	}
-
-	public void init() {
 		// Set background color to black
 		setBackground(Color.black);
-
 		// set desktop manager
 		setDesktopManager(new MainDesktopManager());
-
 		// Set component listener
 		addComponentListener(this);
-
 		// Create background label and set it to the back layer
 		backgroundImageIcon = new ImageIcon();
 		backgroundLabel = new WebLabel(backgroundImageIcon);
@@ -180,23 +158,20 @@ public class MainDesktopPane extends JDesktopPane
 		// Initialize firstDisplay to true
 		firstDisplay = true;
 
-		if (mainScene != null)
-			setPreferredSize(new Dimension(mainScene.getWidth(), mainScene.getHeight()));
-		else
-			setPreferredSize(new Dimension(1366, 768 - MainScene.TAB_PANEL_HEIGHT));
+		setPreferredSize(new Dimension(1366, 768 - 35));
 
 		prepareListeners();
 
 		// Initialize data members
 		soundPlayer = new AudioPlayer(this);
 
-		if (mainScene == null && !MainMenu.isSoundDisabled() && !soundPlayer.isSoundDisabled())
+		if (!soundPlayer.isSoundDisabled())
 			soundPlayer.playRandomMusicTrack();
 
 		// Prepare tool windows.
 		toolWindows = new ArrayList<ToolWindow>();
 
-		browserJFX = new BrowserJFX(this);
+//		browserJFX = new BrowserJFX(this);
 
 		prepareToolWindows();
 		// Prepare unit windows.
@@ -206,8 +181,7 @@ public class MainDesktopPane extends JDesktopPane
 
 		sim.getMasterClock().addClockListener(this);
 
-		if (mainScene == null)
-			prepareAnnouncementWindow();
+		prepareAnnouncementWindow();
 	}
 
 	/**
@@ -251,45 +225,22 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public void componentMoved(ComponentEvent e) {
 		logger.config("componentMoved()");
-		if (mainScene == null) {
-			SwingUtilities.invokeLater(() -> 
-				updateToolWindow()
-			);
-		}
-		else {
-			SwingUtilities.invokeLater(() -> 
-				updateWebToolWindow()
-			);
-		}
+		SwingUtilities.invokeLater(() ->  updateToolWindow());
 	}
 
 	@Override
 	public void componentShown(ComponentEvent e) {
 		logger.config("componentShown()");
-		if (mainScene == null) {
-			SwingUtilities.invokeLater(() -> {
-				JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
-				for (JInternalFrame f : frames) {
-					 ((ToolWindow)f).update();
-					f.updateUI();
-					// SwingUtilities.updateComponentTreeUI(f);
-					f.validate();
-					f.repaint();
-				}
-			});
-		}
-		else {
-			SwingUtilities.invokeLater(() -> {
-				WebInternalFrame[] frames = (WebInternalFrame[]) this.getAllFrames();
-				for (WebInternalFrame f : frames) {
-					// ((ToolWindow)f).update();
-					f.updateUI();
-					// SwingUtilities.updateComponentTreeUI(f);
-					f.validate();
-					f.repaint();
-				}
-			});
-		}
+		SwingUtilities.invokeLater(() -> {
+			JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
+			for (JInternalFrame f : frames) {
+				 ((ToolWindow)f).update();
+				f.updateUI();
+				// SwingUtilities.updateComponentTreeUI(f);
+				f.validate();
+				f.repaint();
+			}
+		});
 	}
 
 	@Override
@@ -353,20 +304,11 @@ public class MainDesktopPane extends JDesktopPane
 			UnitManagerEventType eventType = event.getEventType();
 
 			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
-
 				settlement.addUnitListener(this);
-
-				if (mainScene != null) {
-					mainScene.changeSBox();
-				}
-
-			} else if (eventType == UnitManagerEventType.REMOVE_UNIT) { // REMOVE_UNIT;
-
+			} 
+			
+			else if (eventType == UnitManagerEventType.REMOVE_UNIT) { // REMOVE_UNIT;
 				settlement.removeUnitListener(this);
-
-				if (mainScene != null) {
-					mainScene.changeSBox();
-				}
 			}
 
 			updateToolWindow();
@@ -408,14 +350,14 @@ public class MainDesktopPane extends JDesktopPane
 		return mainWindow;
 	}
 
-	/**
-	 * Returns the MainScene instance
-	 * 
-	 * @return MainScene instance
-	 */
-	public MainScene getMainScene() {
-		return mainScene;
-	}
+//	/**
+//	 * Returns the MainScene instance
+//	 * 
+//	 * @return MainScene instance
+//	 */
+//	public MainScene getMainScene() {
+//		return mainScene;
+//	}
 
 	/*
 	 * Creates tool windows
@@ -606,18 +548,8 @@ public class MainDesktopPane extends JDesktopPane
 					window.setWasOpened(true);
 				}
 
-				if (mainScene != null) {
-					// These 2 tools are in the Main Tab
-					if (toolName.equals(SearchWindow.NAME) || toolName.equals(TimeWindow.NAME)
-							|| toolName.equals(MonitorWindow.NAME) || toolName.equals(MissionWindow.NAME)
-							|| toolName.equals(ResupplyWindow.NAME) || toolName.equals(ScienceWindow.NAME)) {
-
-						add(window, 0);
-					}
-
-				} else { // in case of classic swing mode for MainWindow
-					add(window, 0);
-				}
+				// in case of classic swing mode for MainWindow
+				add(window, 0);
 
 				try {
 					window.setClosed(false);
@@ -640,88 +572,6 @@ public class MainDesktopPane extends JDesktopPane
 		window.getContentPane().repaint();
 		validate();
 		repaint();
-
-		// Added below to check the corresponding menu item
-		if (mainScene != null) {
-			if (ssm == null)
-				ssm = mainScene.getJFXTabPane().getSelectionModel();
-			Platform.runLater(() -> {
-
-				// Opening the first 3 tools will switch to the Desktop Tab
-				if (toolName.equals(NavigatorWindow.NAME)) {
-					if (mainScene.isMainSceneDone())
-						if (!ssm.isSelected(MainScene.MAP_TAB))
-							ssm.select(MainScene.MAP_TAB);
-					if (mainScene.getMainSceneMenu().getMarsNavigatorItem() != null)
-						mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);
-				}
-
-				else if (toolName.equals(SettlementWindow.NAME)) {
-					if (mainScene.isMainSceneDone())
-						if (!ssm.isSelected(MainScene.MAP_TAB))
-							ssm.select(MainScene.MAP_TAB);
-					if (mainScene.getMainSceneMenu().getSettlementMapToolItem() != null)
-						mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
-				}
-
-				else if (toolName.equals(SearchWindow.NAME)) {
-					if (mainScene.isMainSceneDone())
-						if (!ssm.isSelected(MainScene.MAIN_TAB))
-							ssm.select(MainScene.MAIN_TAB);// .MAIN_TAB);
-					if (mainScene.getMainSceneMenu().getSearchToolItem() != null)
-						mainScene.getMainSceneMenu().getSearchToolItem().setSelected(true);
-				}
-
-				else if (toolName.equals(TimeWindow.NAME)) {
-					if (mainScene.isMainSceneDone())
-						if (!ssm.isSelected(MainScene.MAIN_TAB))
-							ssm.select(MainScene.MAIN_TAB);// .MAIN_TAB);
-					if (mainScene.getMainSceneMenu().getTimeToolItem() != null)
-						mainScene.getMainSceneMenu().getTimeToolItem().setSelected(true);
-				}
-
-				else if (toolName.equals(MonitorWindow.NAME)) {
-					if (mainScene.isMainSceneDone())
-						if (!ssm.isSelected(MainScene.MAIN_TAB))
-							ssm.select(MainScene.MAIN_TAB);// MONITOR_TAB);
-					if (mainScene.getMainSceneMenu().getMonitorToolItem() != null)
-						mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(true);
-				}
-
-				else if (toolName.equals(MissionWindow.NAME)) {
-					if (mainScene.isMainSceneDone())
-						if (!ssm.isSelected(MainScene.MAIN_TAB))
-							ssm.select(MainScene.MAIN_TAB);// .MISSION_TAB);
-					if (mainScene.getMainSceneMenu().getMissionToolItem() != null)
-						mainScene.getMainSceneMenu().getMissionToolItem().setSelected(true);
-				}
-
-				else if (toolName.equals(ResupplyWindow.NAME)) {
-					if (mainScene.isMainSceneDone())
-						if (!ssm.isSelected(MainScene.MAIN_TAB))
-							ssm.select(MainScene.MAIN_TAB);
-					if (mainScene.getMainSceneMenu().getResupplyToolItem() != null)
-						mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
-				}
-
-				else if (toolName.equals(ScienceWindow.NAME)) {
-					if (mainScene.isMainSceneDone())
-						if (!ssm.isSelected(MainScene.MAIN_TAB))
-							ssm.select(MainScene.MAIN_TAB);// .SCIENCE_TAB);
-					if (mainScene.getMainSceneMenu().getScienceToolItem() != null)
-						mainScene.getMainSceneMenu().getScienceToolItem().setSelected(true);
-				}
-
-				else if (toolName.equals(GuideWindow.NAME)) {
-					if (mainScene.isMainSceneDone())
-						if (!ssm.isSelected(MainScene.HELP_TAB))
-							ssm.select(MainScene.HELP_TAB);
-					// Check if getHelpBrowserItem() is null as it may not be fully loaded at the start of the sim.
-					if (mainScene.getMainSceneMenu().getHelpBrowserItem() != null)
-						mainScene.getMainSceneMenu().getHelpBrowserItem().setSelected(true);
-				}
-			});
-		}
 	}
 
 	/**
@@ -751,16 +601,6 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public void openUnitWindow(Unit unit, boolean initialWindow) {
 		UnitWindow tempWindow = null;
-
-		// go to the main tab
-		if (mainScene != null) {
-			if (ssm == null)
-				ssm = mainScene.getJFXTabPane().getSelectionModel();
-			Platform.runLater(() -> {
-				ssm.select(MainScene.MAIN_TAB);
-				mainScene.desktopFocus();
-			});
-		}
 
 		for (UnitWindow window : unitWindows) {
 			if (window.getUnit() == unit) {
@@ -835,16 +675,6 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public void openUnitWindow(Unit unit, boolean initialWindow, boolean toShow) {
 		UnitWindow tempWindow = null;
-
-		// go to the main tab
-		if (toShow && mainScene != null) {
-			if (ssm == null)
-				ssm = mainScene.getJFXTabPane().getSelectionModel();
-			Platform.runLater(() -> {
-				ssm.select(MainScene.MAIN_TAB);
-				mainScene.desktopFocus();
-			});
-		}
 
 		for (UnitWindow window : unitWindows) {
 			if (window.getUnit() == unit) {
@@ -1235,22 +1065,17 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public void openAnnouncementWindow(String announcement) {
 		announcementWindow.setAnnouncement(announcement);
-
-		if (mainScene != null) {
-
-		} else {
-			announcementWindow.pack();
-			add(announcementWindow, 0);
-			int Xloc = (int) ((getWidth() - announcementWindow.getWidth()) * .5D);
-			int Yloc = (int) ((getHeight() - announcementWindow.getHeight()) * .15D);
-			announcementWindow.setLocation(Xloc, Yloc);
-			// Note: second window packing seems necessary to get window
-			// to display components correctly.
-			announcementWindow.pack();
-			announcementWindow.setVisible(true);
-			validate();
-			repaint();
-		}
+		announcementWindow.pack();
+		add(announcementWindow, 0);
+		int Xloc = (int) ((getWidth() - announcementWindow.getWidth()) * .5D);
+		int Yloc = (int) ((getHeight() - announcementWindow.getHeight()) * .15D);
+		announcementWindow.setLocation(Xloc, Yloc);
+		// Note: second window packing seems necessary to get window
+		// to display components correctly.
+		announcementWindow.pack();
+		announcementWindow.setVisible(true);
+		validate();
+		repaint();
 	}
 
 	/**
@@ -1322,25 +1147,13 @@ public class MainDesktopPane extends JDesktopPane
 	 * Opens all initial windows based on UI configuration.
 	 */
 	public void openInitialWindows() {
-
 		UIConfig config = UIConfig.INSTANCE;
 		if (config.useUIDefault()) {
-
 			// Note: SwingUtilities.invokeLater(()) doesn't allow guide windows to be
 			// centered for javaFX mode in Windows PC (but not in other platform)
-
-			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
-			openToolWindow(GuideWindow.NAME);
-
-			if (mainScene != null) {					
-				int Xloc = (int) ((mainScene.getWidth() - ourGuide.getWidth()) * .5D);
-				int Yloc = (int) ((mainScene.getHeight() - ourGuide.getHeight()) * .5D);
-
-				ourGuide.setLocation(Xloc, Yloc);
-				ourGuide.toFront();
-			}
-
-			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
+//			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
+//			openToolWindow(GuideWindow.NAME);
+//			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 
 		} else {
 			// Open windows in Z-order.
@@ -1445,14 +1258,12 @@ public class MainDesktopPane extends JDesktopPane
 			building = (Building) target; // overwrite the dummy building object made by the constructor
 			BuildingManager mgr = building.getBuildingManager();
 
-			if (!isTransportingBuilding) {
-				isTransportingBuilding = true;
-				if (mainWindow != null)
-					mainWindow.openTransportWizard(mgr);
-				else if (mainScene != null)
-					mainScene.openTransportWizard(mgr);
-				// sim.getTransportManager().setIsTransportingBuilding(false);
-			}
+//			if (!isTransportingBuilding) {
+//				isTransportingBuilding = true;
+//				if (mainWindow != null)
+//					mainWindow.openTransportWizard(mgr);
+//				// sim.getTransportManager().setIsTransportingBuilding(false);
+//			}
 
 		}
 
@@ -1467,12 +1278,9 @@ public class MainDesktopPane extends JDesktopPane
 			if (!isConstructingSite) {
 				isConstructingSite = true;
 
-				if (mainWindow != null) {
-					mainWindow.openConstructionWizard(mission);
-				} else if (mainScene != null) {
-					mainScene.openConstructionWizard(mission);
-				}
-
+//				if (mainWindow != null) {
+//					mainWindow.openConstructionWizard(mission);
+//				}
 			}
 		}
 
@@ -1501,9 +1309,9 @@ public class MainDesktopPane extends JDesktopPane
 		this.orbitViewer = orbitViewer;
 	}
 
-	public BrowserJFX getBrowserJFX() {
-		return browserJFX;
-	}
+//	public BrowserJFX getBrowserJFX() {
+//		return browserJFX;
+//	}
 
 	public void setEventTableModel(EventTableModel eventTableModel) {
 		this.eventTableModel = eventTableModel;
@@ -1521,24 +1329,7 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public void uiPulse(double time) {
 		super.updateUI();
-		if (mainScene != null) {
-			if (mainScene.isMainTabOpen() && !mainScene.isMinimized()) {// && !isEmpty()) {
-//				timeCache = timeCache + time;
-//				double freq = PERIOD_IN_MILLISOLS * Math.sqrt(masterClock.getTimeRatio());
-//				if (timeCache > PERIOD_IN_MILLISOLS * time) {
-//					System.out.println(masterClock.getTimeRatio() + " > " + Math.round(freq*100.0)/100.0);
-				updateWindows();
-//					timeCache = 0;
-			}
-		} 
-		
-		else {//if (!isEmpty()) {
-//			timeCache = timeCache + time;
-//			if (timeCache > PERIOD_IN_MILLISOLS * Math.sqrt(masterClock.getTimeRatio())) {
-			updateWindows();
-//				timeCache = 0;
-//			}
-		}
+		updateWindows();
 	}
 
 	@Override
@@ -1579,10 +1370,9 @@ public class MainDesktopPane extends JDesktopPane
 		timeWindow = null;
 		building = null;
 		mainWindow = null;
-		mainScene = null;
 //		marqueeTicker = null;
 		orbitViewer = null;
-		browserJFX = null;
+//		browserJFX = null;
 		eventTableModel = null;
 		ssm = null;
 	}

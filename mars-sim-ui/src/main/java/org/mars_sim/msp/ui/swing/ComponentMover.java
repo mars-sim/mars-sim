@@ -50,7 +50,7 @@ public class ComponentMover extends MouseAdapter {
 
 	private Cursor originalCursor;
 
-	private Class destinationClass;
+	private Class<?> destinationClass;
 
 	/**
 	 *  Constructor for moving individual components. The components must be
@@ -67,7 +67,7 @@ public class ComponentMover extends MouseAdapter {
 	 *  @param component         the Components to be registered for forwarding
 	 *                           drag events to the ancestor Component.
 	 */
-	public ComponentMover(Class destinationClass, Component... components)
+	public ComponentMover(Class<?> destinationClass, Component... components)
 	{
 		this.destinationClass = destinationClass;
 		registerComponent( components );

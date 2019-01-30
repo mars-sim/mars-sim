@@ -12,8 +12,6 @@ import java.awt.Color;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.ui.javafx.MainScene;
-
 public class TableStyle extends ZebraJTable{
 
 	//private static JTableHeader theHeader;
@@ -56,7 +54,7 @@ public class TableStyle extends ZebraJTable{
     public static void setTableStyle(JTable table) {
 	   	//logger.info("setTableStyle() is on " + Thread.currentThread().getName() );
 
-    	int theme = MainScene.getTheme();
+    	int theme = 0;//MainScene.getTheme();
 
 		// 255 228 225	MistyRose1
 

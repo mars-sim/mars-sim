@@ -23,7 +23,7 @@ public class MarsProjectUtility {
 
     public static void launchApp(AppLaunch appLaunch, String... sArArgs) {
     	AppFX.appLaunch = appLaunch;
-    	MarsProjectFX.launch(MarsProjectFX.class, sArArgs);
+//    	MarsProjectFX.launch(MarsProjectFX.class, sArArgs);
     }
 
     // This must be public in order to instantiate successfully

@@ -16,7 +16,6 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,7 +35,6 @@ import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.alee.laf.panel.WebPanel;
@@ -76,7 +74,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	private boolean showRobotLabels;
 	private boolean showDaylightLayer;
 
-	private MainScene mainScene;
+//	private MainScene mainScene;
 	private MainDesktopPane desktop;
 
 	private Building building;
@@ -102,7 +100,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		super();
 		this.settlementWindow = settlementWindow;
 		this.desktop = desktop;
-		this.mainScene = desktop.getMainScene();
+//		this.mainScene = desktop.getMainScene();
 
 //		if (mainScene != null) {
 ////			fxg2 = MainScene.getFXGraphics2D();
@@ -181,9 +179,9 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		size = mapLayers.size();
 
 		// SwingUtilities.invokeLater(() -> {
-		if (desktop.getMainScene() == null)
-			settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
-		// });
+//		if (desktop.getMainScene() == null)
+//			settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
+//		// });
 
 		// paintDoubleBuffer();
 		repaint();
@@ -219,7 +217,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	public void detectMouseMovement() {
 
-		if (mainScene == null) {
+//		if (mainScene == null) {
 			// For Classic Java Swing mode
 
 			addMouseListener(new MouseAdapter() {
@@ -252,78 +250,78 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 			});
 
-		}
-
-		else {
-			// For JavaFX mode
-
-			addMouseListener(new MouseAdapter() {
-
-				@Override
-				public void mouseReleased(MouseEvent evt) {
-					if (evt.getButton() == MouseEvent.BUTTON1) {
-						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					}
-				}
-
-				@Override
-				public void mousePressed(MouseEvent evt) {
-					// setCursor(new Cursor(Cursor.HAND_CURSOR));
-					if (evt.getButton() == MouseEvent.BUTTON1) {
-						// Set initial mouse drag position.
-						xLast = evt.getX();
-						yLast = evt.getY();
-					}
-				}
-
-				@Override
-				public void mouseClicked(MouseEvent evt) {
-					// Select person if clicked on.
-					if (evt.getButton() == MouseEvent.BUTTON1) {
-						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-//						setCursor(new Cursor(Cursor.HAND_CURSOR));
-//						selectPersonAt(evt.getX(), evt.getY());
-//						selectRobotAt(evt.getX(), evt.getY());
-					}
-				}
-
-			});
-
-			addMouseMotionListener(new MouseMotionAdapter() {
-				@Override
-				public void mouseDragged(MouseEvent evt) {
-					if (evt.getButton() == MouseEvent.BUTTON1) {
-						double xDiff = evt.getX() - xLast;
-						double yDiff = evt.getY() - yLast;
-						xLast = evt.getX();
-						yLast = evt.getY();
-						// System.out.println("button3");
-						setCursor(new Cursor(Cursor.MOVE_CURSOR));
-						// Move map center based on mouse drag difference.
-						moveCenter(xDiff, yDiff);
-					} else {
-						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					}
-
-				}
-
+//		}
+//
+//		else {
+//			// For JavaFX mode
+//
+//			addMouseListener(new MouseAdapter() {
+//
 //				@Override
-//				public void mouseMoved(MouseEvent evt) {
-//					//System.out.println("mouseDragged()");
+//				public void mouseReleased(MouseEvent evt) {
 //					if (evt.getButton() == MouseEvent.BUTTON1) {
-////						double xDiff = evt.getX() - xLast;
-////						double yDiff = evt.getY() - yLast;
-//						xLast = evt.getX();
-//						yLast = evt.getY();
-//						//System.out.println("button3");
-//						setCursor(new Cursor(Cursor.MOVE_CURSOR));
-//						// Move map center based on mouse drag difference.
-//						//moveCenter(xDiff, yDiff);
-//	
+//						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 //					}
 //				}
-			});
-		}
+//
+//				@Override
+//				public void mousePressed(MouseEvent evt) {
+//					// setCursor(new Cursor(Cursor.HAND_CURSOR));
+//					if (evt.getButton() == MouseEvent.BUTTON1) {
+//						// Set initial mouse drag position.
+//						xLast = evt.getX();
+//						yLast = evt.getY();
+//					}
+//				}
+//
+//				@Override
+//				public void mouseClicked(MouseEvent evt) {
+//					// Select person if clicked on.
+//					if (evt.getButton() == MouseEvent.BUTTON1) {
+//						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+////						setCursor(new Cursor(Cursor.HAND_CURSOR));
+////						selectPersonAt(evt.getX(), evt.getY());
+////						selectRobotAt(evt.getX(), evt.getY());
+//					}
+//				}
+//
+//			});
+//
+//			addMouseMotionListener(new MouseMotionAdapter() {
+//				@Override
+//				public void mouseDragged(MouseEvent evt) {
+//					if (evt.getButton() == MouseEvent.BUTTON1) {
+//						double xDiff = evt.getX() - xLast;
+//						double yDiff = evt.getY() - yLast;
+//						xLast = evt.getX();
+//						yLast = evt.getY();
+//						// System.out.println("button3");
+//						setCursor(new Cursor(Cursor.MOVE_CURSOR));
+//						// Move map center based on mouse drag difference.
+//						moveCenter(xDiff, yDiff);
+//					} else {
+//						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+//					}
+//
+//				}
+//
+////				@Override
+////				public void mouseMoved(MouseEvent evt) {
+////					//System.out.println("mouseDragged()");
+////					if (evt.getButton() == MouseEvent.BUTTON1) {
+//////						double xDiff = evt.getX() - xLast;
+//////						double yDiff = evt.getY() - yLast;
+////						xLast = evt.getX();
+////						yLast = evt.getY();
+////						//System.out.println("button3");
+////						setCursor(new Cursor(Cursor.MOVE_CURSOR));
+////						// Move map center based on mouse drag difference.
+////						//moveCenter(xDiff, yDiff);
+////	
+////					}
+////				}
+//			});
+//		}
 
 		// Add PopClickListener() to detect mouse right click
 		class PopClickListener extends MouseAdapter {
@@ -1165,19 +1163,20 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	@Override
 	public void uiPulse(double time) {
-		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMapTabOpen() && mainScene.isSettlementMapOn()) {// &&
-																										// !masterClock.isPaused())
-																										// {
-//				timeCache += time;
-//				if (timeCache > PERIOD_IN_MILLISOLS * time) {
-//					System.out.println(masterClock.getTimeRatio() + " : " + Math.round(PERIOD_IN_MILLISOLS * time*100.0)/100.0);
-				// Repaint map panel
-				repaint();
-//					timeCache = 0;
-//				}	
-			}
-		} else if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
+//		if (mainScene != null) {
+//			if (!mainScene.isMinimized() && mainScene.isMapTabOpen() && mainScene.isSettlementMapOn()) {// &&
+//																										// !masterClock.isPaused())
+//																										// {
+////				timeCache += time;
+////				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+////					System.out.println(masterClock.getTimeRatio() + " : " + Math.round(PERIOD_IN_MILLISOLS * time*100.0)/100.0);
+//				// Repaint map panel
+//				repaint();
+////					timeCache = 0;
+////				}	
+//			}
+//		} else 
+			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
 //			timeCache += time;
 //			if (timeCache > PERIOD_IN_MILLISOLS * time) {
 			repaint();
@@ -1213,7 +1212,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 		mapLayers = null;
 		selectedRobot = null;
-		mainScene = null;
+//		mainScene = null;
 		building = null;
 		settlementTransparentPanel = null;
 

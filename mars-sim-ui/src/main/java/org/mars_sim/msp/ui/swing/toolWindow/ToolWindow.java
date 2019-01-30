@@ -11,15 +11,11 @@ import javax.swing.WindowConstants;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.javafx.MainSceneMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 
 import com.alee.laf.desktoppane.WebInternalFrame;
 
-import javafx.application.Platform;
 import javafx.scene.control.CheckMenuItem;
 
 /**
@@ -37,11 +33,11 @@ public abstract class ToolWindow extends WebInternalFrame {
 	protected String name;
 	
 	private CheckMenuItem item;
-	private MainSceneMenu msm;
+//	private MainSceneMenu msm;
 	
 	/** The main desktop. */
 	protected MainDesktopPane desktop;
-	protected MainScene mainScene;
+//	protected MainScene mainScene;
 	protected MonitorWindow monitorWindow;
 	// private SingleSelectionModel<?> ssm;
 
@@ -66,7 +62,7 @@ public abstract class ToolWindow extends WebInternalFrame {
 		// Initialize data members
 		this.name = name;
 		this.desktop = desktop;
-		this.mainScene = desktop.getMainScene();
+//		this.mainScene = desktop.getMainScene();
 
 		// Remove title bar
 		// putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
@@ -85,10 +81,10 @@ public abstract class ToolWindow extends WebInternalFrame {
 
 		opened = false;
 
-		if (mainScene != null) {
-			msm = mainScene.getMainSceneMenu();
-			// ssm = mainScene.getJFXTabPane().getSelectionModel();
-		}
+//		if (mainScene != null) {
+//			msm = mainScene.getMainSceneMenu();
+//			// ssm = mainScene.getJFXTabPane().getSelectionModel();
+//		}
 
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		// setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -135,7 +131,7 @@ public abstract class ToolWindow extends WebInternalFrame {
 
 	public void closeMaps() {
 		// if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-		mainScene.closeMaps();
+//		mainScene.closeMaps();
 		// }
 	}
 
@@ -144,7 +140,7 @@ public abstract class ToolWindow extends WebInternalFrame {
 	 */
 	public void update() {
 
-		if (mainScene != null && !masterClock.isPaused()) {
+//		if (mainScene != null && !masterClock.isPaused()) {
 
 			if (this.isVisible() || this.isShowing()) {
 				// Note: need to update the table color style after the theme is changed
@@ -152,21 +148,21 @@ public abstract class ToolWindow extends WebInternalFrame {
 					monitorWindow.refreshTableStyle();
 					// pack(); // create time lag, and draw artifact
 			}
-
-			else if (!this.isVisible() || !this.isShowing()) {
-				Platform.runLater(() -> {
-					if (msm == null)
-						msm = mainScene.getMainSceneMenu();
-					item = msm.getCheckMenuItem(name);
-					if (item != null) {
-						// Note: need to accommodate if item is a guide window, as it is always null
-						if (item.isSelected()) {
-							msm.uncheckToolWindow(name);
-						}
-					}
-				});
-			}
-		}
+//
+//			else if (!this.isVisible() || !this.isShowing()) {
+//				Platform.runLater(() -> {
+//					if (msm == null)
+//						msm = mainScene.getMainSceneMenu();
+//					item = msm.getCheckMenuItem(name);
+//					if (item != null) {
+//						// Note: need to accommodate if item is a guide window, as it is always null
+//						if (item.isSelected()) {
+//							msm.uncheckToolWindow(name);
+//						}
+//					}
+//				});
+//			}
+//		}
 	}
 
 	/**
@@ -174,10 +170,10 @@ public abstract class ToolWindow extends WebInternalFrame {
 	 */
 	public void destroy() {
 		item = null;
-		msm = null;
+//		msm = null;
 		desktop = null;
 		masterClock = null;
-		mainScene = null;
+//		mainScene = null;
 		monitorWindow = null;
 	}
 }

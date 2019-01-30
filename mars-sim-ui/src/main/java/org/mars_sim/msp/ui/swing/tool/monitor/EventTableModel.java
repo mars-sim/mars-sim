@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import org.controlsfx.control.Notifications;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -25,16 +24,9 @@ import org.mars_sim.msp.core.events.SimpleEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.tool.Conversion;
-import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.javafx.MainSceneMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
-
-import javafx.application.Platform;
-import javafx.geometry.Pos;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 /**
  * This class provides a table model for use with the MonitorWindow that
@@ -106,20 +98,20 @@ public class EventTableModel extends AbstractTableModel
 	private NotificationWindow notifyBox;
 	private MainDesktopPane desktop;
 	private NotificationMenu nMenu;
-	private MainSceneMenu mainSceneMenu;
+//	private MainSceneMenu mainSceneMenu;
 
 	private List<String> messageCache = new ArrayList<>();
 
-	private Map<Integer, Image> appIconSet = new LinkedHashMap<>();
+//	private Map<Integer, Image> appIconSet = new LinkedHashMap<>();
 
-	private static Image icon_med = new Image(
-			EventTableModel.class.getResource("/icons/notification/medical_48.png").toExternalForm());
-	private static Image icon_mal = new Image(
-			EventTableModel.class.getResource("/icons/notification/tool_48.png").toExternalForm());
-	private static Image icon_mission = new Image(
-			EventTableModel.class.getResource("/icons/notification/car_48.png").toExternalForm());
-	private static Image icon_hazard = new Image(
-			EventTableModel.class.getResource("/icons/notification/hazard_48.png").toExternalForm());
+//	private static Image icon_med = new Image(
+//			EventTableModel.class.getResource("/icons/notification/medical_48.png").toExternalForm());
+//	private static Image icon_mal = new Image(
+//			EventTableModel.class.getResource("/icons/notification/tool_48.png").toExternalForm());
+//	private static Image icon_mission = new Image(
+//			EventTableModel.class.getResource("/icons/notification/car_48.png").toExternalForm());
+//	private static Image icon_hazard = new Image(
+//			EventTableModel.class.getResource("/icons/notification/hazard_48.png").toExternalForm());
 
 //	private transient List<HistoricalEvent> cachedEvents = new ArrayList<HistoricalEvent>();
 	private transient List<SimpleEvent> cachedEvents = new ArrayList<>();
@@ -143,10 +135,10 @@ public class EventTableModel extends AbstractTableModel
 		// Add this model as an event listener.
 		manager.addListener(this);
 
-		appIconSet.put(0, icon_mal);
-		appIconSet.put(1, icon_med);
-		appIconSet.put(2, icon_mission);
-		appIconSet.put(3, icon_hazard);
+//		appIconSet.put(0, icon_mal);
+//		appIconSet.put(1, icon_med);
+//		appIconSet.put(2, icon_mission);
+//		appIconSet.put(3, icon_hazard);
 
 	}
 
@@ -369,12 +361,12 @@ public class EventTableModel extends AbstractTableModel
 	}
 
 	public synchronized void eventAdded(int index, SimpleEvent se, HistoricalEvent he) {
-		if (desktop.getMainScene() != null) {
-			eventAdded(index, se);
-		}
-		else {
+//		if (desktop.getMainScene() != null) {
+//			eventAdded(index, se);
+//		}
+//		else {
 			eventAdded(index, he);
-		}
+//		}
 	}
 	
 	/**
@@ -384,15 +376,14 @@ public class EventTableModel extends AbstractTableModel
 	 */
 	public synchronized void eventAdded(int index, SimpleEvent event) {
 
-		if (mainSceneMenu == null) {
-			try {
-				mainSceneMenu = desktop.getMainScene().getMainSceneMenu();
-			} catch (NullPointerException e) {
-			}
-
-		} 
-		
-		if (mainSceneMenu != null) {
+//		if (mainSceneMenu == null) {
+//			try {
+//				mainSceneMenu = desktop.getMainScene().getMainSceneMenu();
+//			} catch (NullPointerException e) {
+//			}
+//
+//		} 
+//		if (mainSceneMenu != null) {
 
 			updateCachedEvents();
 
@@ -595,10 +586,11 @@ public class EventTableModel extends AbstractTableModel
 				
 			
 				// Use controlsfx's notification window for javaFX UI
-				if (willNotify)
-					Platform.runLater(new NotifyFXLauncher(header, message, type));
+				if (willNotify);
+				
+//					Platform.runLater(new NotifyFXLauncher(header, message, type));
 			}
-		}
+//		}
 
 	}
 
@@ -772,71 +764,71 @@ public class EventTableModel extends AbstractTableModel
 		updateCachedEvents();
 	}
 
-	/**
-	 * Internal class for launching a notify window.
-	 */
-	private class NotifyFXLauncher implements Runnable {
-		private String header;
-		private String message;
-		private Pos pos = null;
-		private int type = -1;
-
-		private NotifyFXLauncher(String header, String message, int type) {
-			this.header = header;
-			this.message = message;
-			this.type = type;
-
-			if (type == 0) {
-				pos = Pos.BOTTOM_RIGHT;
-			}
-
-			else if (type == 1) {
-				pos = Pos.BOTTOM_LEFT;
-			}
-
-			else if (type == 2) {
-				pos = Pos.TOP_RIGHT;
-			}
-
-			else if (type == 3) {
-				pos = Pos.TOP_LEFT;
-			}
-
-		}
-
-		public void run() {
-//			System.out.println("EventTableModel : " + message);
-
-			int theme = MainScene.getTheme();
-
-			if (theme == 7) {// use dark theme
-				Notifications.create().title(header).text(message).position(pos)
-//		    		.onAction(new EventHandler<ActionEvent>() {
-//		    			@Override
-//		    			public void handle(ActionEvent event){
-//		    				logger.config("A notification box titled " + "header" + " with " + message + "' has just been clicked.");
-//		    			}
-//		    		})
-						.graphic(new ImageView(appIconSet.get(type)))
-						.darkStyle().owner(desktop.getMainScene().getStage()).show();
-			}
-
-			else {// use light theme
-				Notifications.create().title(header).text(message).position(pos)
-//		    		.onAction(new EventHandler<ActionEvent>() {
-//		    			@Override
-//		    			public void handle(ActionEvent event){
-//		    				logger.config("A notification box titled " + "header" + " with " + message + "' has just been clicked.");
-//		    			}
-//		    		})
-						.graphic(new ImageView(appIconSet.get(type)))
-						.owner(desktop.getMainScene().getStage()).show();
-//		    		.showWarning();
-			}
-
-			desktop.getMainScene().sendMsg(message);
-		}
-	}
+//	/**
+//	 * Internal class for launching a notify window.
+//	 */
+//	private class NotifyFXLauncher implements Runnable {
+//		private String header;
+//		private String message;
+//		private Pos pos = null;
+//		private int type = -1;
+//
+//		private NotifyFXLauncher(String header, String message, int type) {
+//			this.header = header;
+//			this.message = message;
+//			this.type = type;
+//
+//			if (type == 0) {
+//				pos = Pos.BOTTOM_RIGHT;
+//			}
+//
+//			else if (type == 1) {
+//				pos = Pos.BOTTOM_LEFT;
+//			}
+//
+//			else if (type == 2) {
+//				pos = Pos.TOP_RIGHT;
+//			}
+//
+//			else if (type == 3) {
+//				pos = Pos.TOP_LEFT;
+//			}
+//
+//		}
+//
+//		public void run() {
+////			System.out.println("EventTableModel : " + message);
+//
+//			int theme = 7;//MainScene.getTheme();
+//
+//			if (theme == 7) {// use dark theme
+//				Notifications.create().title(header).text(message).position(pos)
+////		    		.onAction(new EventHandler<ActionEvent>() {
+////		    			@Override
+////		    			public void handle(ActionEvent event){
+////		    				logger.config("A notification box titled " + "header" + " with " + message + "' has just been clicked.");
+////		    			}
+////		    		})
+//						.graphic(new ImageView(appIconSet.get(type)))
+//						.darkStyle().owner(desktop.getMainScene().getStage()).show();
+//			}
+//
+//			else {// use light theme
+//				Notifications.create().title(header).text(message).position(pos)
+////		    		.onAction(new EventHandler<ActionEvent>() {
+////		    			@Override
+////		    			public void handle(ActionEvent event){
+////		    				logger.config("A notification box titled " + "header" + " with " + message + "' has just been clicked.");
+////		    			}
+////		    		})
+//						.graphic(new ImageView(appIconSet.get(type)))
+//						.owner(desktop.getMainScene().getStage()).show();
+////		    		.showWarning();
+//			}
+//
+//			desktop.getMainScene().sendMsg(message);
+//		}
+//	}
 
 	/**
 	 * Internal class for launching a notify window.
@@ -887,13 +879,13 @@ public class EventTableModel extends AbstractTableModel
 		notifyBox = null;
 		desktop = null;
 		nMenu = null;
-		mainSceneMenu = null;
+//		mainSceneMenu = null;
 		messageCache = null;
-		appIconSet = null;
-		icon_med = null;
-		icon_mal = null;
-		icon_mission = null;
-		icon_hazard = null;
+//		appIconSet = null;
+//		icon_med = null;
+//		icon_mal = null;
+//		icon_mission = null;
+//		icon_hazard = null;
 		cachedEvents.clear();
 		cachedEvents = null;
 	}

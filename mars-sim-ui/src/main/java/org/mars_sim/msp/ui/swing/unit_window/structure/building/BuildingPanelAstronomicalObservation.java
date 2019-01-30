@@ -9,7 +9,6 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
@@ -101,7 +100,7 @@ extends BuildingFunctionPanel {
 		button.addActionListener(
 			new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					openOrbitViewer();
+//					openOrbitViewer();
 				}
 			});
 		buttonPane.add(button);
@@ -125,25 +124,25 @@ extends BuildingFunctionPanel {
     	this.orbitViewer = orbitViewer;
     }
     
-	/**
-	 * Open orbit viewer
-	 */
-    // 2015-11-04 Added openOrbitViewer()
-	private void openOrbitViewer() {
-
-		MainWindow mw = desktop.getMainWindow();
-		if (mw != null)  {
-			if (orbitViewer == null && !desktop.isOrbitViewerOn())
-				orbitViewer = new OrbitViewer(desktop, this);
-		}
-
-		MainScene ms = desktop.getMainScene();
-		
-		if (ms != null)  {
-			if (orbitViewer == null && !desktop.isOrbitViewerOn()) {
-				orbitViewer = new OrbitViewer(desktop, this);
-			}
-		}
-	}
+//	/**
+//	 * Open orbit viewer
+//	 */
+//    // 2015-11-04 Added openOrbitViewer()
+//	private void openOrbitViewer() {
+//
+//		MainWindow mw = desktop.getMainWindow();
+//		if (mw != null)  {
+//			if (orbitViewer == null && !desktop.isOrbitViewerOn())
+//				orbitViewer = new OrbitViewer(desktop, this);
+//		}
+//
+//		MainScene ms = desktop.getMainScene();
+//		
+//		if (ms != null)  {
+//			if (orbitViewer == null && !desktop.isOrbitViewerOn()) {
+//				orbitViewer = new OrbitViewer(desktop, this);
+//			}
+//		}
+//	}
 
 }

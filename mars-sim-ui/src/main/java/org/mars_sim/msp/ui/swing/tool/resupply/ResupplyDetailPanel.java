@@ -19,8 +19,6 @@ import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-
-
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
@@ -39,7 +37,6 @@ import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -76,7 +73,7 @@ implements ClockListener, HistoricalEventListener {
 	private static MasterClock masterClock;
 	
 	private MainDesktopPane desktop;
-	private MainScene mainScene;
+//	private MainScene mainScene;
 	
 //	private double timeCache = 0;
 	private int solsToArrival = -1;
@@ -90,7 +87,7 @@ implements ClockListener, HistoricalEventListener {
 		super();
 
 		this.desktop = desktop;
-		this.mainScene = desktop.getMainScene();
+//		this.mainScene = desktop.getMainScene();
 		
 		masterClock = Simulation.instance().getMasterClock();
 		currentTime = masterClock.getMarsClock();
@@ -714,21 +711,8 @@ implements ClockListener, HistoricalEventListener {
 	
 	@Override
 	public void uiPulse(double time) {
-		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
-//				timeCache += time;
-//				if (timeCache > PERIOD_IN_MILLISOLS * time) {
-					updateArrival();
-//					timeCache = 0;
-//				}
-			}
-		}
-		else if (desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
-//			timeCache += time;
-//			if (timeCache > PERIOD_IN_MILLISOLS * time) {
-				updateArrival();
-//				timeCache = 0;
-//			}
+		if (desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
+			updateArrival();
 		}	
 	}
 	
@@ -757,8 +741,7 @@ implements ClockListener, HistoricalEventListener {
 		masterClock = null;
 		
 		desktop = null;
-		mainScene = null;
-		
+
 	}
 	
 }

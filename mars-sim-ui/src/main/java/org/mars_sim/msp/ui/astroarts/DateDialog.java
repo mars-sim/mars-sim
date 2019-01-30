@@ -33,7 +33,7 @@ public class DateDialog extends ModalInternalFrame {
 			
 	protected JTextField		tfYear;
 	protected JTextField		tfDate;
-	protected JComboBox		monthCB;
+	protected JComboBox<String>		monthCB;
 	
 	protected JButton		buttonOk;
 	protected JButton		buttonCancel;

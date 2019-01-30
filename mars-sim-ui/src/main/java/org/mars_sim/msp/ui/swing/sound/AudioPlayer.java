@@ -21,8 +21,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
@@ -55,7 +53,7 @@ public class AudioPlayer implements ClockListener {
 	// private boolean lastSoundState = true;
 
 //	private MainDesktopPane desktop;
-	private static MainScene mainScene;
+//	private static MainScene mainScene;
 
 	/** The current clip sound. */
 	private static OGGSoundClip currentSoundClip;
@@ -73,22 +71,22 @@ public class AudioPlayer implements ClockListener {
 	public AudioPlayer(MainDesktopPane desktop) {
 		// logger.config("constructor is on " + Thread.currentThread().getName());
 //		this.desktop = desktop;
-		mainScene = desktop.getMainScene();
+//		mainScene = desktop.getMainScene();
 
 		masterClock = Simulation.instance().getMasterClock();
 
 		// Add AudioPlayer to MasterClock's clock listener
 		masterClock.addClockListener(this);
 
-		if (MainMenu.isSoundDisabled()) {
-			isSoundDisabled = true;
-			currentMusicVol = 0;
-			currentSoundVol = 0;
-		}
-
-		else {
-			currentMusicVol = MainMenu.music_v / 100D;
-			currentSoundVol = MainMenu.sound_effect_v / 100D;
+//		if (MainMenu.isSoundDisabled()) {
+//			isSoundDisabled = true;
+//			currentMusicVol = 0;
+//			currentSoundVol = 0;
+//		}
+//
+//		else {
+//			currentMusicVol = MainMenu.music_v / 100D;
+//			currentSoundVol = MainMenu.sound_effect_v / 100D;
 		
 			allMusicTracks = new HashMap<>();
 			allSoundClips = new HashMap<>();
@@ -148,7 +146,7 @@ public class AudioPlayer implements ClockListener {
 			currentSoundClip = allSoundClips.get(SoundConstants.SND_PERSON_FEMALE1);
 			//currentMusicTrack = null;
 
-		}
+//		}
 		// if (UIConfig.INSTANCE.useUIDefault()) {
 		// }
 	}
@@ -160,11 +158,11 @@ public class AudioPlayer implements ClockListener {
 	 */
 	public void playSound(String filepath) {
 		if (!isSoundMute() && filepath != null && !filepath.equals("")) {
-			if (mainScene != null)
-				// Platform.runLater(() -> {
-				loadSound(filepath);
-			// });
-			else
+//			if (mainScene != null)
+//				// Platform.runLater(() -> {
+//				loadSound(filepath);
+//			// });
+//			else
 				SwingUtilities.invokeLater(() -> loadSound(filepath));
 		}
 	}
@@ -200,12 +198,12 @@ public class AudioPlayer implements ClockListener {
 	public void playMusic(String filepath) {
 		// logger.config("play() is on " + Thread.currentThread().getName());
 		if (!isMusicMute()) {
-			if (mainScene != null)
-//			if (desktop.getMainScene() != null)
-				// Platform.runLater(() -> {
-				loadMusic(filepath);
-			// });
-			else
+//			if (mainScene != null)
+////			if (desktop.getMainScene() != null)
+//				// Platform.runLater(() -> {
+//				loadMusic(filepath);
+//			// });
+//			else
 				SwingUtilities.invokeLater(() -> loadMusic(filepath));
 		}
 	}
@@ -524,8 +522,8 @@ public class AudioPlayer implements ClockListener {
 		soundTracks = null;
 		played_tracks = null;
 
-		if (mainScene != null)
-			MainScene.disableSound();
+//		if (mainScene != null)
+//			MainScene.disableSound();
 
 	}
 

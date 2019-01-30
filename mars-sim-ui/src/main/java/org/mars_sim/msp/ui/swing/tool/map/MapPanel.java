@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
@@ -77,7 +76,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 	private MainDesktopPane desktop;
 
-	private MainScene mainScene;
+//	private MainScene mainScene;
 
 	private Graphics dbg;
 	private Image dbImage = null;
@@ -90,7 +89,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 	public MapPanel(MainDesktopPane desktop, long refreshRate) {
 		super();
 		this.desktop = desktop;
-		this.mainScene = desktop.getMainScene();
+//		this.mainScene = desktop.getMainScene();
 
 		// executor = ? (ThreadPoolExecutor) Executors.newCachedThreadPool(); //
 		// newFixedThreadPool(1); //
@@ -488,19 +487,20 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 	@Override
 	public void uiPulse(double time) {
-		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMainTabOpen()
-					&& (desktop.isToolWindowOpen(NavigatorWindow.NAME) || (desktop.isToolWindowOpen(MissionWindow.NAME)
-							&& ((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).isNavPointsMapTabOpen()))) {
-				// TODO: should also check if navpoints tab is open or not
-//				timeCache += time;
-//				if (timeCache > PERIOD_IN_MILLISOLS * time) {
-				// Repaint map panel
-				updateDisplay();
-//					timeCache = 0;
-//				}	
-			}
-		} else if (desktop.isToolWindowOpen(NavigatorWindow.NAME) || desktop.isToolWindowOpen(MissionWindow.NAME)
+//		if (mainScene != null) {
+//			if (!mainScene.isMinimized() && mainScene.isMainTabOpen()
+//					&& (desktop.isToolWindowOpen(NavigatorWindow.NAME) || (desktop.isToolWindowOpen(MissionWindow.NAME)
+//							&& ((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).isNavPointsMapTabOpen()))) {
+//				// TODO: should also check if navpoints tab is open or not
+////				timeCache += time;
+////				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+//				// Repaint map panel
+//				updateDisplay();
+////					timeCache = 0;
+////				}	
+//			}
+//		} else 
+			if (desktop.isToolWindowOpen(NavigatorWindow.NAME) || desktop.isToolWindowOpen(MissionWindow.NAME)
 		// ||desktop.isToolWindowOpen(ResupplyWindow.NAME)
 		) {
 //			timeCache += time;

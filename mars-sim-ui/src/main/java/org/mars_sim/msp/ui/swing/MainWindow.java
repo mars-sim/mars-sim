@@ -45,8 +45,6 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
-import org.mars_sim.msp.ui.swing.tool.construction.ConstructionWizard;
-import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 
 //import com.alee.managers.UIManagers;
 import com.alee.laf.WebLookAndFeel;
@@ -67,7 +65,7 @@ public class MainWindow extends JComponent {
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 
 	// Data members
-	// 2015-05-02 Added lookAndFeelTheme
+
 	private String lookAndFeelTheme;
 
 	private JFrame frame;
@@ -78,19 +76,16 @@ public class MainWindow extends JComponent {
 	/** The main desktop. */
 	private MainDesktopPane desktop;
 
-	// 2014-12-05 Added mainWindowMenu;
 	private MainWindowMenu mainWindowMenu;
 
-	// 2014-12-23 Added transportWizard
-	private TransportWizard transportWizard;
-	private ConstructionWizard constructionWizard;
+//	private TransportWizard transportWizard;
+//	private ConstructionWizard constructionWizard;
 	private BuildingManager mgr; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
 
 	private Thread newSimThread;
 	private Thread loadSimThread;
 	private Thread saveSimThread;
 
-	// 2014-12-27 Added delay timer
 	private Timer delayLaunchTimer;
 	private Timer autosaveTimer;
 	private javax.swing.Timer earthTimer = null;
@@ -151,17 +146,13 @@ public class MainWindow extends JComponent {
 		init();
 
 		showStatusBar();
-		// 2015-01-07 Added startAutosaveTimer()
+		// Add autosave timer
 		startAutosaveTimer();
 		// Open all initial windows.
 		desktop.openInitialWindows();
-
-		// 2014-12-23 Added transportWizard
-		transportWizard = new TransportWizard(this, desktop);
-		constructionWizard = new ConstructionWizard(desktop);
 	}
 
-	// 2015-02-04 Added init()
+
 	public void init() {
 
 		frame.setTitle(Simulation.title);
@@ -180,7 +171,6 @@ public class MainWindow extends JComponent {
 		mainPane.add(desktop, BorderLayout.CENTER);
 
 		// Prepare menu
-		// 2014-12-05 Added mainWindowMenu
 		mainWindowMenu = new MainWindowMenu(this, desktop);
 		frame.setJMenuBar(mainWindowMenu);
 
@@ -188,7 +178,7 @@ public class MainWindow extends JComponent {
 		toolToolbar = new ToolToolBar(this);
 		mainPane.add(toolToolbar, BorderLayout.NORTH);
 
-		// 2015-01-07 Added bottomPane for holding unitToolbar and statusBar
+		// Add bottomPane for holding unitToolbar and statusBar
 		bottomPane = new JPanel(new BorderLayout());
 
 		// Prepare unit toolbar
@@ -219,20 +209,20 @@ public class MainWindow extends JComponent {
 		unitToolbar.setVisible(UIConfig.INSTANCE.showUnitBar());
 		toolToolbar.setVisible(UIConfig.INSTANCE.showToolBar());
 
-		// 2015-01-07 Added statusBar
+		// Add statusBar
 		statusBar = new JStatusBar();
 
 		memMaxLabel = new JLabel();
 		memMaxLabel.setHorizontalAlignment(JLabel.CENTER);
-		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
+		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1_000_000;
 		memMaxLabel.setText("Total Designated Memory : " + memMax + " MB");
 		statusBar.addRightComponent(memMaxLabel, false);
 
-		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
+		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
 
 		memUsedLabel = new JLabel();
 		memUsedLabel.setHorizontalAlignment(JLabel.CENTER);
-		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
+		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
 		memUsed = memTotal - memFree;
 		memUsedLabel.setText("Used Memory : " + memUsed + " MB");
 		statusBar.addRightComponent(memUsedLabel, false);
@@ -273,9 +263,11 @@ public class MainWindow extends JComponent {
 
 	}
 
-	// 2015-02-05 Added showEarthTime()
+	/**
+	 * Updates time in the status bar
+	 */
 	public void showStatusBar() {
-		// 2015-01-19 Added using delayLaunchTimer to launch earthTime
+		// Use delayLaunchTimer to launch earthTime
 		if (earthTimer == null) {
 			delayLaunchTimer = new Timer();
 			int millisec = 500;
@@ -289,7 +281,9 @@ public class MainWindow extends JComponent {
 		return bottomPane;
 	}
 
-	// 2015-01-07 Added startAutosaveTimer()
+	/**
+	 * Start the auto save timer
+	 */
 	public void startAutosaveTimer() {
 		TimerTask timerTask = new TimerTask() {
 			@Override
@@ -303,7 +297,9 @@ public class MainWindow extends JComponent {
 		autosaveTimer.schedule(timerTask, 1000 * 60 * AUTOSAVE_EVERY_X_MINUTE);
 	}
 
-	// 2015-01-13 Added startEarthTimer()
+	/**
+	 * Start the earth timer
+	 */
 	public void startEarthTimer() {
 
 		earthTimer = new javax.swing.Timer(TIME_DELAY, new ActionListener() {
@@ -344,7 +340,9 @@ public class MainWindow extends JComponent {
 		earthTimer.start();
 	}
 
-	// 2015-01-19 Added StatusBar
+	/**
+	 * Defines the StatusBar class for running earth timer
+	 */
 	class StatusBar extends TimerTask { // (final String t) {
 		public void run() {
 			startEarthTimer();
@@ -374,7 +372,6 @@ public class MainWindow extends JComponent {
 	 * 
 	 * @return mainWindowMenu
 	 */
-	// 2014-12-05 Added getMainWindowMenu()
 	public MainWindowMenu getMainWindowMenu() {
 		return mainWindowMenu;
 	}
@@ -382,7 +379,6 @@ public class MainWindow extends JComponent {
 	/**
 	 * Load a previously saved simulation.
 	 */
-	// 2015-01-25 Added autosave
 	public void loadSimulation(boolean autosave) {
 		final boolean ans = autosave;
 
@@ -410,7 +406,7 @@ public class MainWindow extends JComponent {
 		String dir = null;
 
 		String title = null;
-		// 2015-01-25 Added autosave
+		// Add autosave
 		if (autosave) {
 			dir = Simulation.AUTOSAVE_DIR;
 			title = Msg.getString("MainWindow.dialogLoadAutosaveSim");
@@ -584,7 +580,6 @@ public class MainWindow extends JComponent {
 	/**
 	 * Performs the process of saving a simulation.
 	 */
-	// 2015-01-08 Added autosave
 	private void saveSimulationProcess(boolean loadingDefault, boolean isAutosave) {
 		File fileLocn = null;
 
@@ -686,7 +681,6 @@ public class MainWindow extends JComponent {
 	 * @param nativeLookAndFeel
 	 *            true if native look and feel should be used.
 	 */
-	// 2015-05-02 Edited setLookAndFeel()
 	public void setLookAndFeel(boolean nativeLookAndFeel, boolean nimRODLookAndFeel) {
 		boolean changed = false;
 
@@ -784,28 +778,5 @@ public class MainWindow extends JComponent {
 
 	public String getLookAndFeelTheme() {
 		return lookAndFeelTheme;
-	}
-
-	/**
-	 * Opens a transport wizard on the desktop.
-	 * 
-	 * @param announcement
-	 *            the announcement text to display.
-	 */
-	// 2014-12-23 Added openTransportWizard().
-	// To be called in case of non-javaFX mode. Use the version in MainScene in
-	// javaFX mode
-	public synchronized void openTransportWizard(BuildingManager buildingManager) { // , Building building) {
-		transportWizard.deliverBuildings(buildingManager);
-
-	}
-
-	public void openConstructionWizard(BuildingConstructionMission mission) {
-		logger.config("MainWindow's openConstructionWizard() is in " + Thread.currentThread().getName() + " Thread");
-		constructionWizard.selectSite(mission);
-	}
-
-	public TransportWizard getTransportWizard() {
-		return transportWizard;
 	}
 }

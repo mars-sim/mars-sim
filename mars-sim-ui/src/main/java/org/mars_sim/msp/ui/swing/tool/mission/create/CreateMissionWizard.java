@@ -7,14 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.ModalInternalFrame;
-import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
-
-import com.alee.laf.button.WebButton;
-import com.alee.laf.panel.WebPanel;
-
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -23,6 +15,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.ModalInternalFrame;
+import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
+
+import com.alee.laf.button.WebButton;
+import com.alee.laf.panel.WebPanel;
 
 /**
  * A wizard for creating new missions.
@@ -122,10 +122,10 @@ implements ActionListener {
 		//setVisible(true);
 
         // Add to its own tab pane
-        if (desktop.getMainScene() != null)
-        	desktop.add(this);
-        	//desktop.getMainScene().getDesktops().get(1).add(this);
-        else 
+//        if (desktop.getMainScene() != null)
+//        	desktop.add(this);
+//        	//desktop.getMainScene().getDesktops().get(1).add(this);
+//        else 
         	desktop.add(this);
         
 		Dimension desktopSize = desktop.getParent().getSize();

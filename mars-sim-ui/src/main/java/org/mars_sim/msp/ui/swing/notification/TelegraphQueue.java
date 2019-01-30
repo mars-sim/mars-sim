@@ -80,7 +80,7 @@ public class TelegraphQueue implements ActionListener {
 
 		// set everything
 		//queue = new LinkedList<Telegraph>();//
-		//2014-12-11 Changed from LinkedList to ConcurrentLinkedQueue 
+		// Change from LinkedList to ConcurrentLinkedQueue 
 		queue = new ConcurrentLinkedQueue<Telegraph>();
 		timer = new Timer(100, this);
 		current = null;

@@ -8,7 +8,6 @@
 package org.mars_sim.msp.ui.swing;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.ui.javafx.MainScene;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -37,7 +36,6 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 	private List<UnitButton> unitButtons; // List of unit buttons
 
 	private MainWindow parentMainWindow; // Main window that contains this toolbar.
-	private MainScene mainScene;
 
 	/**
 	 * Constructs a UnitToolBar object
@@ -71,37 +69,6 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 
 	}
 
-	/**
-	 * Constructs a UnitToolBar object
-	 * 
-	 * @param parentMainWindow
-	 *            the main window pane
-	 */
-	public UnitToolBar(MainScene scene) {
-
-		// Use JToolBar constructor
-		super();
-
-		setOpaque(false);
-		setBackground(new Color(0, 0, 0, 128));
-
-		// Initialize data members
-		unitButtons = new ArrayList<UnitButton>();
-		this.mainScene = scene;
-
-		// Set name
-		setName("Unit Toolbar");
-
-		// Fix tool bar
-		setFloatable(false);
-
-		// Set preferred height to 57 pixels.
-		setPreferredSize(new Dimension(0, 57));
-
-		// Set border around toolbar
-		setBorder(new BevelBorder(BevelBorder.RAISED));
-
-	}
 
 	/**
 	 * Create a new unit button in the toolbar.

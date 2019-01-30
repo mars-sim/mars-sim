@@ -23,8 +23,6 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
-
 import com.jcraft.jogg.Packet;
 import com.jcraft.jogg.Page;
 import com.jcraft.jogg.StreamState;
@@ -397,7 +395,7 @@ public class OGGSoundClip {
 //		}
 //		else
 		AudioPlayer.disableSound();
-		MainMenu.disableSound();
+//		MainMenu.disableSound();
 	}
 
 	/**

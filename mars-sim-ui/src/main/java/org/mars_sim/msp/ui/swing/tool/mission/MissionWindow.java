@@ -16,7 +16,6 @@ import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.tool.mission.edit.EditMissionDialog;
@@ -43,7 +42,7 @@ extends ToolWindow {
 	private JList<Mission> missionList;
 	
 	private NavpointPanel navpointPane;
-	private MainScene mainScene;
+//	private MainScene mainScene;
 	private CreateMissionWizard createMissionWizard;
 	private EditMissionDialog editMissionDialog;
 	
@@ -56,7 +55,7 @@ extends ToolWindow {
 
 		// Use ToolWindow constructor
 		super(NAME, desktop);
-		mainScene = desktop.getMainScene();
+//		mainScene = desktop.getMainScene();
 
 		// Create content panel.
 		WebPanel mainPane = new WebPanel(new BorderLayout());
@@ -150,9 +149,9 @@ extends ToolWindow {
 		setMaximizable(true);
 		setResizable(false);
 
-		if (desktop.getMainScene() != null) {
-			//setClosable(false);
-		}
+//		if (desktop.getMainScene() != null) {
+//			//setClosable(false);
+//		}
 
 		setVisible(true);
 		//pack();
@@ -178,14 +177,14 @@ extends ToolWindow {
 	 * Open wizard to create a new mission.
 	 */
 	private void createNewMission() {
-		if (mainScene != null)  {
-			previous = mainScene.slowDownTimeRatio();
+//		if (mainScene != null)  {
+//			previous = mainScene.slowDownTimeRatio();
+//			createMissionWizard = new CreateMissionWizard(desktop, this);
+//			mainScene.speedUpTimeRatio(previous);
+//		} 
+//		else {
 			createMissionWizard = new CreateMissionWizard(desktop, this);
-			mainScene.speedUpTimeRatio(previous);
-		} 
-		else {
-			createMissionWizard = new CreateMissionWizard(desktop, this);
-		}
+//		}
 
 	}
 

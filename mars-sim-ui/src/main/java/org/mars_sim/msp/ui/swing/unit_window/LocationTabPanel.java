@@ -18,7 +18,6 @@ import java.awt.event.ActionListener;
 import java.util.logging.Logger;
 
 import javax.swing.JComponent;
-
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -32,7 +31,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.steelseries.gauges.DisplayCircular;
 import org.mars_sim.msp.ui.steelseries.gauges.DisplaySingle;
 import org.mars_sim.msp.ui.steelseries.tools.BackgroundColor;
@@ -49,8 +47,6 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
-
-import javafx.application.Platform;
 
 /**
  * The LocationTabPanel is a tab panel for location information.
@@ -103,7 +99,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 	private TerrainElevation terrainElevation;
 	private Coordinates locationCache;
-	private MainScene mainScene;
+//	private MainScene mainScene;
 
 	private WebButton locatorButton;
 	private SettlementMapPanel mapPanel;
@@ -134,10 +130,10 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		if (terrainElevation == null)
 			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getTerrainElevation();
 
-		mainScene = desktop.getMainScene();
+//		mainScene = desktop.getMainScene();
 		mapPanel = desktop.getSettlementWindow().getMapPanel();
 
-		if (mainScene == null)
+//		if (mainScene == null)
 			combox = mapPanel.getSettlementTransparentPanel().getSettlementListBox();
 
 		// Initialize location header.
@@ -159,7 +155,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 		// Initialize location cache
 		locationCache = new Coordinates(unit.getCoordinates());
-		themeCache = MainScene.getTheme();
+//		themeCache = MainScene.getTheme();
 
 		String dir_N_S = null;
 		String dir_E_W = null;
@@ -289,23 +285,23 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 	}
 
 	public void checkTheme(boolean firstRun) {
-		if (mainScene != null) {
-			int theme = MainScene.getTheme();
+//		if (mainScene != null) {
+//			int theme = MainScene.getTheme();
+//
+//			if (themeCache != theme || firstRun) {
+//				themeCache = theme;
 
-			if (themeCache != theme || firstRun) {
-				themeCache = theme;
-
-				if (theme == 7) {
-					lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
-					gauge.setFrameDesign(FrameDesign.GOLD);
-					locatorButton.setIcon(ImageLoader.getIcon(LOCATOR_ORANGE));
-				} else if (theme == 6 || theme == 0) {
+//				if (theme == 7) {
+//					lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
+//					gauge.setFrameDesign(FrameDesign.GOLD);
+//					locatorButton.setIcon(ImageLoader.getIcon(LOCATOR_ORANGE));
+//				} else if (theme == 6 || theme == 0) {
 					lcdText.setLcdColor(LcdColor.DARKBLUE_LCD);
 					gauge.setFrameDesign(FrameDesign.STEEL);
 					locatorButton.setIcon(ImageLoader.getIcon(LOCATOR_BLUE));
-				}
-			}
-		}
+//				}
+//			}
+//		}
 	}
 
 	public void setGauge(DisplayCircular gauge, double elevationCache) {
@@ -420,15 +416,15 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 				if (p.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-					if (mainScene != null) {
-						mainScene.setSettlement(p.getSettlement());
-					} else {
+//					if (mainScene != null) {
+//						mainScene.setSettlement(p.getSettlement());
+//					} else {
 						desktop.openToolWindow(SettlementWindow.NAME);
-						if (mainScene != null)
-							mainScene.setSettlement(p.getSettlement());
-						else
+//						if (mainScene != null)
+//							mainScene.setSettlement(p.getSettlement());
+//						else
 							combox.setSelectedItem(p.getSettlement());
-					}
+//					}
 
 					Building b = p.getBuildingLocation();
 					double xLoc = b.getXLocation();
@@ -449,8 +445,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 						// out there on a mission
 						desktop.openToolWindow(NavigatorWindow.NAME);
-						if (mainScene != null)
-							Platform.runLater(() -> mainScene.openMinimap());
+//						if (mainScene != null)
+//							Platform.runLater(() -> mainScene.openMinimap());
 
 						desktop.centerMapGlobe(p.getCoordinates());
 					} else {
@@ -458,9 +454,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 						desktop.openToolWindow(SettlementWindow.NAME);
 						// System.out.println("Just open Settlement Map Tool");
 
-						if (mainScene != null)
-							mainScene.setSettlement(vv.getSettlement());
-						else
+//						if (mainScene != null)
+//							mainScene.setSettlement(vv.getSettlement());
+//						else
 							combox.setSelectedItem(vv.getSettlement());
 
 						double xLoc = vv.getXLocation();
@@ -509,8 +505,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 							// out there on a mission
 							desktop.openToolWindow(NavigatorWindow.NAME);
-							if (mainScene != null)
-								Platform.runLater(() -> mainScene.openMinimap());
+//							if (mainScene != null)
+//								Platform.runLater(() -> mainScene.openMinimap());
 							// he's stepped outside a vehicle
 							desktop.centerMapGlobe(p.getCoordinates());
 						}
@@ -525,9 +521,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 				if (r.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 					desktop.openToolWindow(SettlementWindow.NAME);
 					// System.out.println("Just open Settlement Map Tool");
-					if (mainScene != null)
-						mainScene.setSettlement(r.getSettlement());
-					else
+//					if (mainScene != null)
+//						mainScene.setSettlement(r.getSettlement());
+//					else
 						combox.setSelectedItem(r.getSettlement());
 
 					Building b = r.getBuildingLocation();
@@ -551,9 +547,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 						// still parked inside a garage or within the premise of a settlement
 						desktop.openToolWindow(SettlementWindow.NAME);
 						// System.out.println("Just open Settlement Map Tool");
-						if (mainScene != null)
-							mainScene.setSettlement(vv.getSettlement());
-						else
+//						if (mainScene != null)
+//							mainScene.setSettlement(vv.getSettlement());
+//						else
 							combox.setSelectedItem(vv.getSettlement());
 
 						double xLoc = vv.getXLocation();
@@ -605,9 +601,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 				if (v.getSettlement() != null) {
 					desktop.openToolWindow(SettlementWindow.NAME);
 					// System.out.println("Just open Settlement Map Tool");
-					if (mainScene != null)
-						mainScene.setSettlement(v.getSettlement());
-					else
+//					if (mainScene != null)
+//						mainScene.setSettlement(v.getSettlement());
+//					else
 						combox.setSelectedItem(v.getSettlement());
 
 					double xLoc = v.getXLocation();
@@ -621,8 +617,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 				} else {
 					// out there on a mission
 					desktop.openToolWindow(NavigatorWindow.NAME);
-					if (mainScene != null)
-						Platform.runLater(() -> mainScene.openMinimap());
+//					if (mainScene != null)
+//						Platform.runLater(() -> mainScene.openMinimap());
 					desktop.centerMapGlobe(unit.getCoordinates());
 				}
 			}
@@ -634,9 +630,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 				if (e.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 					desktop.openToolWindow(SettlementWindow.NAME);
 
-					if (mainScene != null)
-						mainScene.setSettlement(e.getSettlement());
-					else
+//					if (mainScene != null)
+//						mainScene.setSettlement(e.getSettlement());
+//					else
 						combox.setSelectedItem(e.getSettlement());
 
 //	    			Building b = e.getBuildingLocation();
@@ -659,9 +655,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 					} else {
 						// still parked inside a garage or within the premise of a settlement
 						desktop.openToolWindow(SettlementWindow.NAME);
-						if (mainScene != null)
-							mainScene.setSettlement(vv.getSettlement());
-						else
+//						if (mainScene != null)
+//							mainScene.setSettlement(vv.getSettlement());
+//						else
 							combox.setSelectedItem(vv.getSettlement());
 
 						double xLoc = vv.getXLocation();
@@ -1104,7 +1100,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		topContainerCache = null;
 		terrainElevation = null;
 		locationCache = null;
-		mainScene = null;
+//		mainScene = null;
 		locatorButton = null;
 		lcdLong = null;
 		lcdLat = null;

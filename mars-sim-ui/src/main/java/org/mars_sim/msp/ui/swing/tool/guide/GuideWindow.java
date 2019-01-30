@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.ui.javafx.BrowserJFX;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
@@ -28,8 +27,6 @@ import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.viewport.WebViewport;
-
-import javafx.application.Platform;
 
 /**
  * The GuideWindow is a tool window that displays the built-in User Guide, About
@@ -73,7 +70,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 	 */
 	private WebButton wikiButton = new WebButton(Msg.getString("GuideWindow.button.wiki")); //$NON-NLS-1$
 
-	private BrowserJFX browser;
+//	private BrowserJFX browser;
 	private WebPanel browserPanel;
 
 	/**
@@ -132,9 +129,9 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		// toolPanel.add(discussionButton);
 		mainPane.add(toolPanel, BorderLayout.NORTH);
 			
-		browser = desktop.getBrowserJFX();
-		browserPanel = browser.getPanel();// .init();
-		mainPane.add(browserPanel, BorderLayout.CENTER);
+//		browser = desktop.getBrowserJFX();
+//		browserPanel = browser.getPanel();// .init();
+//		mainPane.add(browserPanel, BorderLayout.CENTER);
 
 		setResizable(true);
 		setMaximizable(true);
@@ -143,15 +140,15 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		setMinimumSize(new Dimension(800, 600));
 		setSize(new Dimension(1024, 600));
 
-		if (desktop.getMainScene() != null) {
-			setClosable(false);
-		} else {
+//		if (desktop.getMainScene() != null) {
+//			setClosable(false);
+//		} else {
 			Dimension desktopSize = desktop.getSize();
 			Dimension jInternalFrameSize = getSize();
 			int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 			int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 			setLocation(width, height);
-		}
+//		}
 
 		// Pack window.
 		// pack(); // this will shrink the window to one line tall in swing mode
@@ -166,12 +163,12 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		// goToURL(getClass().getResource(fileloc));
 		// browser.getStatusBarLabel().setText(fileloc);
 		String fullLink = getClass().getResource(fileloc).toExternalForm();
-		Platform.runLater(() -> {
-			browser.setTextInputCache(fullLink);
-			browser.checkInputURLType(fullLink);// , BrowserJFX.REMOTE_HTML);
-			browser.showFormattedURL();
-			browser.fireButtonGo(fullLink);
-		});
+//		Platform.runLater(() -> {
+//			browser.setTextInputCache(fullLink);
+//			browser.checkInputURLType(fullLink);// , BrowserJFX.REMOTE_HTML);
+//			browser.showFormattedURL();
+//			browser.fireButtonGo(fullLink);
+//		});
 	}
 
 	/** Gets the full URL string for internal html files. */
@@ -187,46 +184,46 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		Object source = event.getSource();
 		if (source == this.userguideButton) {
 			String input = guideURL.toExternalForm();
-			Platform.runLater(() -> {
-				browser.setTextInputCache(input);
-				browser.checkInputURLType(input);
-				browser.showFormattedURL();
-			});
+//			Platform.runLater(() -> {
+//				browser.setTextInputCache(input);
+//				browser.checkInputURLType(input);
+//				browser.showFormattedURL();
+//			});
 		}
 
 		else if (source == this.shortcutsButton) {
 			String input = shortcutsURL.toExternalForm();
-			Platform.runLater(() -> {
-				browser.setTextInputCache(input);
-				browser.checkInputURLType(input);
-				browser.showFormattedURL();
-			});
+//			Platform.runLater(() -> {
+//				browser.setTextInputCache(input);
+//				browser.checkInputURLType(input);
+//				browser.showFormattedURL();
+//			});
 		}
 
 		else if (source == this.aboutButton) {
 			String input = aboutURL.toExternalForm();
-			Platform.runLater(() -> {
-				browser.setTextInputCache(input);
-				browser.checkInputURLType(input);
-				browser.showFormattedURL();
-			});
+//			Platform.runLater(() -> {
+//				browser.setTextInputCache(input);
+//				browser.checkInputURLType(input);
+//				browser.showFormattedURL();
+//			});
 		}
 
 		else if (source == this.tutorialButton) {
 			String input = tutorialURL.toExternalForm();
-			Platform.runLater(() -> {
-				browser.setTextInputCache(input);
-				browser.checkInputURLType(input);
-				browser.showFormattedURL();
-			});
+//			Platform.runLater(() -> {
+//				browser.setTextInputCache(input);
+//				browser.checkInputURLType(input);
+//				browser.showFormattedURL();
+//			});
 		}
 
 		else if (source == this.projectsiteButton || source == this.wikiButton) {
-			Platform.runLater(() -> {
-				browser.setTextInputCache(projectsiteURLstring);
-				browser.checkInputURLType(projectsiteURLstring);
-				browser.showFormattedURL();
-			});
+//			Platform.runLater(() -> {
+//				browser.setTextInputCache(projectsiteURLstring);
+//				browser.checkInputURLType(projectsiteURLstring);
+//				browser.showFormattedURL();
+//			});
 		}
 	}
 

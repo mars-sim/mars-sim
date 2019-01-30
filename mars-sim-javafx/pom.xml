@@ -1,0 +1,332 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>net.sf</groupId>
+    <artifactId>mars-sim</artifactId>
+    <version>3.1.0-b2</version>
+  </parent>
+  <groupId>net.sf.mars-sim</groupId>
+  <artifactId>mars-sim-javafx</artifactId>
+  <name>mars-sim-javafx</name>
+  <url>http://maven.apache.org</url>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    	<dependency>
+			<groupId>net.sf.mars-sim</groupId>
+			<artifactId>mars-sim-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	
+		<!-- https://mvnrepository.com/artifact/de.codecentric.centerdevice/javafxsvg/1.2.1 : 5KB 
+			 https://github.com/codecentric/javafxsvg
+ 		     Require batik-transcoder 1.8 and xmlgraphics-commons 2.1
+ 		     have source codes saves in javafx.svg package
+ 		     https://blog.codecentric.de/en/2015/03/adding-custom-image-renderer-javafx-8/ 		     
+ 		     not java 9 compatible as it uses com.sun.javafx.iio; see https://github.com/codecentric/javafxsvg/issues/7 
+		<dependency>
+			<groupId>de.codecentric.centerdevice</groupId>
+			<artifactId>javafxsvg</artifactId>
+			<version>1.3.0</version>
+		</dependency> -->
+		
+		<!-- https://mvnrepository.com/artifact/org.jfree/jfreesvg/3.3 : 43KB
+		     can jfreesvg potentially replace batik ? see http://object-refinery.com/blog/blog-20140423.html
+		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreesvg</artifactId>
+			<version>3.3</version>
+		</dependency> -->
+		<!-- https://mvnrepository.com/artifact/org.jfree/fxgraphics2d -->
+		<dependency>
+		    <groupId>org.jfree</groupId>
+		    <artifactId>fxgraphics2d</artifactId>
+		    <version>1.7</version>
+		</dependency>
+
+		<!--<dependency>
+		    <groupId>com.object-refinery</groupId>
+		    <artifactId>orsoncharts</artifactId>
+		    <version>1.5</version>
+ 		</dependency>-->
+
+		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart-fx
+		<dependency>
+		    <groupId>org.jfree</groupId>
+		    <artifactId>jfreechart-fx</artifactId>
+		    <version>1.0.1</version>
+		</dependency-->	
+		<!-- https://mvnrepository.com/artifact/com.miglayout/miglayout-javafx : 10 KB
+		<dependency>
+		    <groupId>com.miglayout</groupId>
+		    <artifactId>miglayout-javafx</artifactId>
+		    <version>5.1</version>
+		</dependency-->
+
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-svg-dom
+			 Needed by afester's svg class
+		<dependency>
+		  <groupId>org.apache.xmlgraphics</groupId>
+		  <artifactId>batik-svg-dom</artifactId>
+		  <version>1.9.1</version>
+		</dependency-->	
+
+		<!-- https://mvnrepository.com/artifact/org.fxmisc.flowless/flowless : 20 KB
+			 https://github.com/FXMisc/Flowless
+			 Needed by afester's svg class
+		<dependency>
+		    <groupId>org.fxmisc.flowless</groupId>
+		    <artifactId>flowless</artifactId>
+		    <version>0.6.1</version>
+		</dependency-->
+
+
+		<!-- https://mvnrepository.com/artifact/org.controlsfx/controlsfx : 644KB -->
+		<dependency>
+			<groupId>org.controlsfx</groupId>
+			<artifactId>controlsfx</artifactId>
+			<version>9.0.0</version>
+			<!-- version>8.40.14</version-->
+		</dependency>
+
+		<!-- For Java 8, use fontawesomefx
+ 		<dependency>
+		    <groupId>de.jensd</groupId>
+		    <artifactId>fontawesomefx</artifactId>
+		    <version>8.9</version>
+		</dependency-->
+		
+		<!-- For Java 9, use fontawesomefx-commons, fontawesomefx-fontawesome, fontawesomefx-materialdesignfont -->
+		<dependency>
+		  <groupId>de.jensd</groupId>
+		  <artifactId>fontawesomefx-commons</artifactId>
+		  <version>9.1.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/de.jensd/fontawesomefx-fontawesome -->
+		<dependency>
+		    <groupId>de.jensd</groupId>
+		    <artifactId>fontawesomefx-fontawesome</artifactId>
+		    <version>4.7.0-9.1.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/de.jensd/fontawesomefx-materialdesignfont -->
+		<dependency>
+		    <groupId>de.jensd</groupId>
+		    <artifactId>fontawesomefx-materialdesignfont</artifactId>
+		    <version>2.0.26-9.1.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/eu.hansolo/tilesfx : 500 KB -->
+		<dependency>
+			<groupId>eu.hansolo</groupId>
+			<artifactId>tilesfx</artifactId>
+			<version>1.6.5</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/eu.hansolo/Medusa : 1018 KB 
+			 see https://github.com/HanSolo/Medusa/wiki -->
+		<dependency>
+			<groupId>eu.hansolo</groupId>
+			<artifactId>Medusa</artifactId>
+			<version>8.0</version>
+		</dependency>
+
+		<!-- Needed by BrowserJFX for WebViewHyperlinkListener
+			Note: use ListenerHandles instead of removing listener
+			http://blog.codefx.org/techniques/use-listenerhandles/
+			https://mvnrepository.com/artifact/org.codefx.libfx/LibFX : 183 KB
+			http://libfx.codefx.org/ -->
+		<dependency>
+		    <groupId>org.codefx.libfx</groupId>
+		    <artifactId>LibFX</artifactId>
+		    <version>0.3.0</version>
+		</dependency>
+
+		<!-- Load undecorator from bintray.com 
+		https://arnaudnouard.wordpress.com/
+		Newer version at https://github.com/in-sideFX/UndecoratorBis
+		-->
+		<dependency>
+			<groupId>insidefx.undecorator</groupId>
+			<artifactId>undecorator</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.jfoenix/jfoenix : 1.7 MB -->
+		<dependency>
+			<groupId>com.jfoenix</groupId>
+			<artifactId>jfoenix</artifactId>
+			<!-- version>8.0.8</version-->
+			<version>9.0.8</version>
+		</dependency>
+		
+		<!-- The following artifacts are Needed by jfoenix
+			fontawesomefx 8.0.10 : 84 KB
+			datafx : 261 B
+			flow : 97 KB
+			core : 37 KB 
+		me.tatarka.retrolambda 3.6.1 : -->
+		<!-- 
+		<dependency>
+		    <groupId>de.jensd</groupId>
+		    <artifactId>fontawesomefx</ artifactId>
+		    <version>8.0.13</version>
+		</dependency>
+		-->
+
+		<!-- https://github.com/codecentric/NSMenuFX
+		https://mvnrepository.com/artifact/de.codecentric.centerdevice/centerdevice-nsmenufx : 37 KB -->
+		<dependency>
+		    <groupId>de.codecentric.centerdevice</groupId>
+		    <artifactId>centerdevice-nsmenufx</artifactId>
+		    <version>2.1.6</version>
+		</dependency>
+
+		<!-- Used by MainScene for setting up shortcut keys
+			https://github.com/TomasMikula/WellBehavedFX
+			https://mvnrepository.com/artifact/org.fxmisc.wellbehaved/wellbehavedfx : 64 KB -->
+		<dependency>
+			<groupId>org.fxmisc.wellbehaved</groupId>
+			<artifactId>wellbehavedfx</artifactId>
+			<version>0.3.3</version>
+		</dependency>
+
+		<!-- see http://jiconfont.github.io/javafx
+		https://mvnrepository.com/artifact/com.github.jiconfont/jiconfont-javafx : 5 KB -->
+		<dependency>
+		    <groupId>com.github.jiconfont</groupId>
+		    <artifactId>jiconfont-javafx</artifactId>
+		    <version>1.0.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.github.jiconfont/jiconfont-font_awesome : 102 KB
+		https://github.com/jIconFont/jiconfont-font_awesome-->
+		<dependency>
+		    <groupId>com.github.jiconfont</groupId>
+		    <artifactId>jiconfont-font_awesome</artifactId>
+		    <version>4.7.0.1</version>
+		    <!-- version>4.5.0.3</version-->
+		</dependency>
+	  	<!-- https://mvnrepository.com/artifact/com.github.almasb/fxgl 
+			 https://github.com/AlmasB/FXGL -->
+		<dependency>
+			<groupId>com.github.almasb</groupId>
+			<artifactId>fxgl</artifactId>
+			<version>0.5.4</version>	
+		</dependency> 
+	<!-- https://mvnrepository.com/artifact/org.reactfx/reactfx : 418 KB 
+		 Needed by https://mvnrepository.com/artifact/org.fxmisc.flowless/flowless/0.5.2 in mars-sim-ui's pom.xml 
+		 reactfx requires javafx api
+		 -->
+	<dependency>
+		<groupId>org.reactfx</groupId>
+		<artifactId>reactfx</artifactId>
+		<version>2.0-M5</version>
+	</dependency>
+	
+	<!--https://github.com/Oshan96/CustomStage -->
+	<!--
+	<dependency>	
+	    <groupId>lk.vivoxalabs.customstage</groupId>
+	    <artifactId>CustomStage</artifactId>
+	    <version>1.3.2</version>
+	</dependency>		
+	-->		
+  </dependencies>
+  	<repositories>
+	    <repository>
+	        <id>maven-central-repo</id>
+	        <url>http://repo1.maven.org/maven2</url>
+	        <releases>
+                <enabled>true</enabled>
+            </releases>
+	        <snapshots>
+	            <enabled>true</enabled>
+	        </snapshots>
+	    </repository>
+ 		<repository>
+            <id>oss-sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+ 		<repository>
+            <id>oss-sonatype</id>
+            <url>https://oss.sonatype.org/content/repositories/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>    
+  		<repository>
+	        <id>jerady</id>
+	        <url>https://dl.bintray.com/jerady/maven/</url>
+	    </repository>     
+	    <repository>
+	    <!-- jcenter required by ikonli-javafx -->
+	        <id>central</id>
+	        <name>jcenter</name>
+	        <url>http://jcenter.bintray.com</url>
+	    </repository>
+		<repository>
+	        <id>in-sidefx</id>
+	        <url>https://dl.bintray.com/in-sidefx/maven/</url>
+	    </repository>
+		<repository>
+			<id>bintray</id>
+			<name>Medusa</name>
+			<url>https://dl.bintray.com/hansolo/Medusa/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+                <enabled>true</enabled>
+            </releases>
+		</repository>
+		<repository>
+			<id>oxbow-repository</id>
+			<url>https://github.com/eugener/oxbow/raw/master/maven/repository</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>glg2d-repo</id>
+			<url>http://brandonborkholder.github.com/glg2d/maven2/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	    <repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+	    </repository>		
+		<repository>
+            <id>spring-releases</id>
+            <url>https://repo.spring.io/libs-release</url>
+        </repository>
+		<repository>
+	        <id>spring-snapshots</id>
+	        <name>Spring Snapshots</name>
+	        <url>https://repo.spring.io/libs-snapshot</url>
+	        <snapshots>
+	            <enabled>true</enabled>
+	        </snapshots>
+	    </repository>        
+	</repositories>
+</project>

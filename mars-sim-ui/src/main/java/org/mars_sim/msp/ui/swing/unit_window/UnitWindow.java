@@ -20,14 +20,12 @@ import java.util.Collection;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -97,7 +95,7 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 	/** Unit for this window. */
 	protected Unit unit;
 //	protected SlidePaneFactory factory;
-	protected MainScene mainScene;
+//	protected MainScene mainScene;
 
 	/**
 	 * Constructor
@@ -112,7 +110,7 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 
 		// Initialize data members
 		this.desktop = desktop;
-		mainScene = desktop.getMainScene();
+//		mainScene = desktop.getMainScene();
 		this.unit = unit;
 
 		this.setMaximumSize(new Dimension(WIDTH, HEIGHT));
@@ -139,17 +137,17 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 		}
 
 		int theme = 0;
-		if (mainScene != null) {
-			theme = MainScene.getTheme();
-			if (themeCache != theme) {
-				themeCache = theme;
-				// pale blue : Color(198, 217, 217)) = new Color(0xC6D9D9)
-				// pale grey : Color(214,217,223) = D6D9DF
-				// pale mud : (193, 191, 157) = C1BF9D
-			}
-		}
-
-		else
+//		if (mainScene != null) {
+//			theme = MainScene.getTheme();
+//			if (themeCache != theme) {
+//				themeCache = theme;
+//				// pale blue : Color(198, 217, 217)) = new Color(0xC6D9D9)
+//				// pale grey : Color(214,217,223) = D6D9DF
+//				// pale mud : (193, 191, 157) = C1BF9D
+//			}
+//		}
+//
+//		else
 			theme = 7;
 
 		if (unit instanceof Person) {
@@ -159,11 +157,11 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 
 			Font font = null;
 
-			if (MainScene.OS.contains("linux")) {
-				new Font("DIALOG", Font.BOLD, 8);
-			} else {
+//			if (MainScene.OS.contains("linux")) {
+//				new Font("DIALOG", Font.BOLD, 8);
+//			} else {
 				new Font("DIALOG", Font.BOLD, 10);
-			}
+//			}
 			nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);// .CENTER_ALIGNMENT);
 			nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 			nameLabel.setFont(font);
@@ -251,13 +249,13 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 		tabPanel.setScrollSelectedTabOnWheel(true);
 		tabPanel.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
 		
-		if (MainScene.getTheme() == 7) {
-			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
-			tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); // COLOR_THEME_VSNET);
-		} else {
+//		if (MainScene.getTheme() == 7) {
+//			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
+//			tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); // COLOR_THEME_VSNET);
+//		} else {
 			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
 			tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
-		}
+//		}
 		// Setting foreground color for tab text.
 		tabPanel.setForeground(Color.DARK_GRAY);
 		tabPanel.setTabPlacement(JideTabbedPane.LEFT);
@@ -427,6 +425,6 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 		shiftLabel = null;
 		desktop = null;
 		unit = null;
-		mainScene = null;
+//		mainScene = null;
 	}
 }

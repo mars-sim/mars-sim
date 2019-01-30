@@ -34,7 +34,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -289,11 +288,11 @@ implements ListSelectionListener, MissionListener {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					navpointTableModel.updateNavpoints();
-					int t = MainScene.getTheme();		
-					if (theme != t) {
-						theme = t;
-						TableStyle.setTableStyle(navpointTable);
-					}
+//					int t = MainScene.getTheme();		
+//					if (theme != t) {
+//						theme = t;
+//						TableStyle.setTableStyle(navpointTable);
+//					}
 
 				}
 			});

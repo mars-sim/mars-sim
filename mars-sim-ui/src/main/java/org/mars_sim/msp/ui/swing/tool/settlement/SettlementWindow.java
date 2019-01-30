@@ -11,35 +11,20 @@ import java.awt.Dimension;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JLayer;
-import javax.swing.JRootPane;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.LayerUI;
-import javax.swing.plaf.basic.BasicInternalFrameUI;
 
-import org.controlsfx.control.StatusBar;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import com.alee.laf.panel.WebPanel;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.util.Duration;
 
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
@@ -86,12 +71,12 @@ public class SettlementWindow extends ToolWindow {
 	private boolean isBound;
 
 	// private JStatusBar statusBar;
-	private Label solLabel, popLabel, capLabel, xyLabel, timeLabel, dateLabel;
+//	private Label solLabel, popLabel, capLabel, xyLabel, timeLabel, dateLabel;
 	private WebPanel subPanel;
 
 	/** The main desktop. */
 	private MainDesktopPane desktop;
-	private MainScene mainScene;
+//	private MainScene mainScene;
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
@@ -100,11 +85,11 @@ public class SettlementWindow extends ToolWindow {
 
 //	private MarqueeTicker marqueeTicker;
 
-	private JFXPanel jfxPanel;
-	private Scene scene;
-	private StackPane stack;
-	private StatusBar statusBar;
-	private Timeline timeline;
+//	private JFXPanel jfxPanel;
+//	private Scene scene;
+//	private StackPane stack;
+//	private StatusBar statusBar;
+//	private Timeline timeline;
 
 	/**
 	 * Constructor.
@@ -115,7 +100,7 @@ public class SettlementWindow extends ToolWindow {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 		this.desktop = desktop;
-		mainScene = desktop.getMainScene();
+//		mainScene = desktop.getMainScene();
 
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -127,15 +112,15 @@ public class SettlementWindow extends ToolWindow {
 
 	public void init() {
 
-		if (mainScene != null) {
-			// setTitleName(null);
-			// Remove title bar
-			putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
-			getRootPane().setWindowDecorationStyle(JRootPane.NONE);
-			BasicInternalFrameUI bi = (BasicInternalFrameUI) super.getUI();
-			bi.setNorthPane(null);
-			setBorder(null);
-		}
+//		if (mainScene != null) {
+//			// setTitleName(null);
+//			// Remove title bar
+//			putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
+//			getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+//			BasicInternalFrameUI bi = (BasicInternalFrameUI) super.getUI();
+//			bi.setNorthPane(null);
+//			setBorder(null);
+//		}
 
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
@@ -195,54 +180,54 @@ public class SettlementWindow extends ToolWindow {
 //		//marqueeTicker.setBackground(Color.BLACK);
 //    	subPanel.add(marqueeTicker, BorderLayout.SOUTH);
 
-		jfxPanel = new JFXPanel();
+//		jfxPanel = new JFXPanel();
+//
+//		Platform.runLater(new Runnable() {
+//			@Override
+//			public void run() {
+//
+//				stack = new StackPane();
+//				stack.setStyle("-fx-border-style: 2px; "
+//						// "-fx-background-color: #231d12; "
+//						+ "-fx-background-color: transparent; " + "-fx-background-radius: 2px;");
+//
+//				solLabel = new Label();
+//				popLabel = new Label();
+//				capLabel = new Label();
+//				xyLabel = new Label();
+//				timeLabel = new Label();
+//
+//				// Create ControlFX's StatusBar
+//				statusBar = createStatusBar();
+//				startMarsTimer();
+//
+//				stack.getChildren().add(statusBar);
+//
+//				scene = new Scene(stack, HORIZONTAL, 30);// mainPanel.getWidth(), mainPanel.getHeight());
+//
+//				scene.setFill(javafx.scene.paint.Color.TRANSPARENT);// .BLACK);
+//				jfxPanel.setScene(scene);
+//
+//			}
+//		});
+//
+//		mainPanel.add(jfxPanel, BorderLayout.SOUTH);
 
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-
-				stack = new StackPane();
-				stack.setStyle("-fx-border-style: 2px; "
-						// "-fx-background-color: #231d12; "
-						+ "-fx-background-color: transparent; " + "-fx-background-radius: 2px;");
-
-				solLabel = new Label();
-				popLabel = new Label();
-				capLabel = new Label();
-				xyLabel = new Label();
-				timeLabel = new Label();
-
-				// Create ControlFX's StatusBar
-				statusBar = createStatusBar();
-				startMarsTimer();
-
-				stack.getChildren().add(statusBar);
-
-				scene = new Scene(stack, HORIZONTAL, 30);// mainPanel.getWidth(), mainPanel.getHeight());
-
-				scene.setFill(javafx.scene.paint.Color.TRANSPARENT);// .BLACK);
-				jfxPanel.setScene(scene);
-
-			}
-		});
-
-		mainPanel.add(jfxPanel, BorderLayout.SOUTH);
-
-		if (mainScene != null) {
-			// setSize(new Dimension((int)width.get(), (int)height.get()));
-			setPreferredSize(new Dimension(mainScene.getWidth(), mainScene.getHeight() - MainScene.TITLE_BAR_HEIGHT));
-			// setMinimumSize(new Dimension(mainScene.getHORIZONTAL/2, VERTICAL/2));
-			setClosable(false);
-			setResizable(false);
-			setMaximizable(true);
-		} else {
+//		if (mainScene != null) {
+//			// setSize(new Dimension((int)width.get(), (int)height.get()));
+//			setPreferredSize(new Dimension(mainScene.getWidth(), mainScene.getHeight() - MainScene.TITLE_BAR_HEIGHT));
+//			// setMinimumSize(new Dimension(mainScene.getHORIZONTAL/2, VERTICAL/2));
+//			setClosable(false);
+//			setResizable(false);
+//			setMaximizable(true);
+//		} else {
 			setSize(new Dimension(HORIZONTAL, VERTICAL));
 			setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
 			setMinimumSize(new Dimension(HORIZONTAL / 2, VERTICAL / 2));
 			setClosable(true);
 			setResizable(false);
 			setMaximizable(true);
-		}
+//		}
 
 		setVisible(true);
 
@@ -250,64 +235,66 @@ public class SettlementWindow extends ToolWindow {
 
 	}
 
-	/*
-	 * Creates the status bar for MainScene
-	 */
-	@SuppressWarnings("restriction")
-	public StatusBar createStatusBar() {
-		if (statusBar == null) {
-			statusBar = new StatusBar();
-			statusBar.setId("status-bar");
-			statusBar.setText("");
-			setTheme(null);
-			// setStatusBarTheme(cssFile);
-
-		}
-
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
-		sol = marsClock.getMissionSol();
-		pop = mapPanel.getSettlement().getNumCitizens();
-		cap = mapPanel.getSettlement().getPopulationCapacity();
-
-		String statusText = "" + sol;
-		String populationText = "" + pop;
-		String capText = "" + cap;
-
-		// 2015-02-09 Added leftLabel
-		solLabel.setText(SOL + statusText);
-		popLabel.setText(POPULATION + populationText);
-		capLabel.setText(CAP + capText);
-		xyLabel.setText(POINTER + xCoor + COMMA + yCoor + CLOSE_PARENT);
+//	/*
+//	 * Creates the status bar for MainScene
+//	 */
+//	@SuppressWarnings("restriction")
+//	public StatusBar createStatusBar() {
+//		if (statusBar == null) {
+//			statusBar = new StatusBar();
+//			statusBar.setId("status-bar");
+//			statusBar.setText("");
+//			setTheme(null);
+//			// setStatusBarTheme(cssFile);
+//
+//		}
+//
+//		if (marsClock == null)
+//			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//
+//		sol = marsClock.getMissionSol();
+//		pop = mapPanel.getSettlement().getNumCitizens();
+//		cap = mapPanel.getSettlement().getPopulationCapacity();
+//
+//		String statusText = "" + sol;
+//		String populationText = "" + pop;
+//		String capText = "" + cap;
+//
+//		// 2015-02-09 Added leftLabel
+//		solLabel.setText(SOL + statusText);
+//		popLabel.setText(POPULATION + populationText);
+//		capLabel.setText(CAP + capText);
+//		xyLabel.setText(POINTER + xCoor + COMMA + yCoor + CLOSE_PARENT);
 		// yLabel.setText(", " + yCoor + ")" + " ");
 
-		if (mainScene != null) {
-			// solLabel.setTooltip(new Tooltip ("Mission Day"));
-			mainScene.setQuickToolTip(solLabel, "# of days since the start of mission");
-			// popLabel.setTooltip(new Tooltip ("Population of this Settlement"));
-			mainScene.setQuickToolTip(popLabel, "the current population of this settlement");
-			// capLabel.setTooltip(new Tooltip ("Max Number of Beds/Quarters in this
-			// Settlement"));
-			mainScene.setQuickToolTip(capLabel, "the max # of beds/quarters for this Settlement");
-			// xyLabel.setTooltip(new Tooltip ("x and y meters from center of a Building
-			// (Updated when Right-Click inside)"));
-			mainScene.setQuickToolTip(xyLabel,
-					"x and y meters from the center of a building (Note: right-click inside to update)");
-		}
+//		if (mainScene != null) {
+//			// solLabel.setTooltip(new Tooltip ("Mission Day"));
+//			mainScene.setQuickToolTip(solLabel, "# of days since the start of mission");
+//			// popLabel.setTooltip(new Tooltip ("Population of this Settlement"));
+//			mainScene.setQuickToolTip(popLabel, "the current population of this settlement");
+//			// capLabel.setTooltip(new Tooltip ("Max Number of Beds/Quarters in this
+//			// Settlement"));
+//			mainScene.setQuickToolTip(capLabel, "the max # of beds/quarters for this Settlement");
+//			// xyLabel.setTooltip(new Tooltip ("x and y meters from center of a Building
+//			// (Updated when Right-Click inside)"));
+//			mainScene.setQuickToolTip(xyLabel,
+//					"x and y meters from the center of a building (Note: right-click inside to update)");
+//		}
 
 		// statusBar.getLeftItems().add(new
 		// Separator(javafx.geometry.Orientation.VERTICAL));
-		statusBar.getRightItems().add(solLabel);
-		statusBar.getRightItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
-
-		statusBar.getRightItems().add(popLabel);
-		statusBar.getRightItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
-
-		statusBar.getRightItems().add(capLabel);
-		statusBar.getRightItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
-
-		statusBar.getRightItems().add(xyLabel);
+	
+//		statusBar.getRightItems().add(solLabel);
+//		statusBar.getRightItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
+//
+//		statusBar.getRightItems().add(popLabel);
+//		statusBar.getRightItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
+//
+//		statusBar.getRightItems().add(capLabel);
+//		statusBar.getRightItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
+//
+//		statusBar.getRightItems().add(xyLabel);
+	
 		// statusBar.getLeftItems().add(yLabel);
 		// statusBar.getLeftItems().add(new
 		// Separator(javafx.geometry.Orientation.VERTICAL));
@@ -352,91 +339,91 @@ public class SettlementWindow extends ToolWindow {
 //		xyLabel.setStyle("-fx-text-inner-color: orange;");
 //		timeLabel.setStyle("-fx-text-inner-color: orange;");
 
-		return statusBar;
-	}
+//		return statusBar;
+//	}
 
-	/*
-	 * Updates the cpu loads, memory usage and time text in the status bar
-	 */
-	public void updateStatusBarText() {
-
-		setTheme(null);
-
-		if (mainScene != null) {
-			if (mainScene.isMainSceneDone() && !isBound) {
-				isBound = true;
-				height.bind(mainScene.getAnchorPane().heightProperty());
-				width.bind(mainScene.getAnchorPane().widthProperty());
-			}
-		}
-
-		if (widthCache != width.get() || heightCache != height.get()) {
-			widthCache = width.get();
-			heightCache = height.get();
-			SwingUtilities.invokeLater(() -> setSize(new Dimension((int) widthCache, (int) heightCache)));
-		}
-
-//		String d = marsClock.getDateString();
-//		String t = marsClock.getTrucatedTimeString();
+//	/*
+//	 * Updates the cpu loads, memory usage and time text in the status bar
+//	 */
+//	public void updateStatusBarText() {
 //
-//		if (!marsTimeString.equals(t)) {
-//			timeLabel.setText("  " + d + "  " + t + MILLISOLS_UMST);
-//			marsTimeString = t;
-//			marsDateString = d;
+//		setTheme(null);
+//
+////		if (mainScene != null) {
+////			if (mainScene.isMainSceneDone() && !isBound) {
+////				isBound = true;
+////				height.bind(mainScene.getAnchorPane().heightProperty());
+////				width.bind(mainScene.getAnchorPane().widthProperty());
+////			}
+////		}
+//
+//		if (widthCache != width.get() || heightCache != height.get()) {
+//			widthCache = width.get();
+//			heightCache = height.get();
+//			SwingUtilities.invokeLater(() -> setSize(new Dimension((int) widthCache, (int) heightCache)));
 //		}
-//		else if (marsDateString.equals(d)) {
-//			timeLabel.setText("  " + d + "  " + t + MILLISOLS_UMST);
-//			marsDateString = d;
-//			marsTimeString = t;
+//
+////		String d = marsClock.getDateString();
+////		String t = marsClock.getTrucatedTimeString();
+////
+////		if (!marsTimeString.equals(t)) {
+////			timeLabel.setText("  " + d + "  " + t + MILLISOLS_UMST);
+////			marsTimeString = t;
+////			marsDateString = d;
+////		}
+////		else if (marsDateString.equals(d)) {
+////			timeLabel.setText("  " + d + "  " + t + MILLISOLS_UMST);
+////			marsDateString = d;
+////			marsTimeString = t;
+////		}
+//
+//		int s = marsClock.getMissionSol();
+//		int p = mapPanel.getSettlement().getNumCitizens();
+//		int c = mapPanel.getSettlement().getPopulationCapacity();
+//
+//		if (sol != s) {
+////		    SwingUtilities.invokeLater(()-> 
+//			solLabel.setText(SOL + s);
+////		    );
+//			sol = s;
 //		}
+//
+//		if (pop != p) {
+////		    SwingUtilities.invokeLater(()-> 
+//			popLabel.setText(POPULATION + p);
+////		    );
+//			pop = p;
+//		}
+//
+//		if (cap != c) {
+////		    SwingUtilities.invokeLater(()-> 
+//			capLabel.setText(CAP + c);
+////		    );
+//			cap = c;
+//		}
+//
+//		if (xCoor != 0 && yCoor != 0)
+////	    	SwingUtilities.invokeLater(()-> 
+//			xyLabel.setText(POINTER + xCoor + COMMA + yCoor + CLOSE_PARENT);
+////	    	);
+//		else
+////	    	SwingUtilities.invokeLater(()-> 
+//			xyLabel.setText("");
+////	    	);
+//	}
 
-		int s = marsClock.getMissionSol();
-		int p = mapPanel.getSettlement().getNumCitizens();
-		int c = mapPanel.getSettlement().getPopulationCapacity();
-
-		if (sol != s) {
-//		    SwingUtilities.invokeLater(()-> 
-			solLabel.setText(SOL + s);
-//		    );
-			sol = s;
-		}
-
-		if (pop != p) {
-//		    SwingUtilities.invokeLater(()-> 
-			popLabel.setText(POPULATION + p);
-//		    );
-			pop = p;
-		}
-
-		if (cap != c) {
-//		    SwingUtilities.invokeLater(()-> 
-			capLabel.setText(CAP + c);
-//		    );
-			cap = c;
-		}
-
-		if (xCoor != 0 && yCoor != 0)
-//	    	SwingUtilities.invokeLater(()-> 
-			xyLabel.setText(POINTER + xCoor + COMMA + yCoor + CLOSE_PARENT);
-//	    	);
-		else
-//	    	SwingUtilities.invokeLater(()-> 
-			xyLabel.setText("");
-//	    	);
-	}
-
-	/**
-	 * Creates and starts the Mars timer
-	 */
-	public void startMarsTimer() {
-		timeline = new Timeline(new KeyFrame(Duration.millis(TIME_DELAY), ae -> updateStatusBarText()));
-		// Note: Infinite Timeline might result in a memory leak if not stopped
-		// properly.
-		// All the objects with animated properties would not be garbage collected.
-		timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
-		timeline.play();
-
-	}
+//	/**
+//	 * Creates and starts the Mars timer
+//	 */
+//	public void startMarsTimer() {
+//		timeline = new Timeline(new KeyFrame(Duration.millis(TIME_DELAY), ae -> updateStatusBarText()));
+//		// Note: Infinite Timeline might result in a memory leak if not stopped
+//		// properly.
+//		// All the objects with animated properties would not be garbage collected.
+//		timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
+//		timeline.play();
+//
+//	}
 
 //	public void showMarsTime() {
 //		//Add Martian Time on status bar
@@ -496,9 +483,9 @@ public class SettlementWindow extends ToolWindow {
 //	    subPanel.draw(g);
 //	}
 
-	public StatusBar getStatusBar() {
-		return statusBar;
-	}
+//	public StatusBar getStatusBar() {
+//		return statusBar;
+//	}
 
 //	public void setStatusBarTheme(String cssFile) {
 //		if (statusBar != null) {
@@ -515,39 +502,39 @@ public class SettlementWindow extends ToolWindow {
 		this.yCoor = y;
 	}
 
-	public void setTheme(Color c) {
-		if (solLabel != null) {
-
-			if (c == null) {
-				int theme = MainScene.getTheme();
-				if (themeCache != theme) {
-					themeCache = theme;
-					// orange theme : F4BA00
-					// blue theme : 3291D2
-					// String color = txtColor.replace("0x", "");
-					if (theme == 0 || theme == 6) {
-						css_file = MainDesktopPane.BLUE_CSS;
-						c = Color.rgb(0, 107, 184);
-					} else if (theme == 7) {
-						css_file = MainDesktopPane.ORANGE_CSS;
-						c = Color.rgb(156, 77, 0);
-					}
-
-					if (statusBar != null) {
-						statusBar.getStylesheets().clear();
-						statusBar.getStylesheets().add(getClass().getResource(css_file).toExternalForm());
-					}
-
-					solLabel.setTextFill(c);
-					popLabel.setTextFill(c);
-					capLabel.setTextFill(c);
-					xyLabel.setTextFill(c);
-					timeLabel.setTextFill(c);
-
-				}
-			}
-		}
-	}
+//	public void setTheme(Color c) {
+//		if (solLabel != null) {
+//
+//			if (c == null) {
+//				int theme = 0;//MainScene.getTheme();
+//				if (themeCache != theme) {
+//					themeCache = theme;
+//					// orange theme : F4BA00
+//					// blue theme : 3291D2
+//					// String color = txtColor.replace("0x", "");
+//					if (theme == 0 || theme == 6) {
+//						css_file = MainDesktopPane.BLUE_CSS;
+//						c = Color.rgb(0, 107, 184);
+//					} else if (theme == 7) {
+//						css_file = MainDesktopPane.ORANGE_CSS;
+//						c = Color.rgb(156, 77, 0);
+//					}
+//
+//					if (statusBar != null) {
+//						statusBar.getStylesheets().clear();
+//						statusBar.getStylesheets().add(getClass().getResource(css_file).toExternalForm());
+//					}
+//
+//					solLabel.setTextFill(c);
+//					popLabel.setTextFill(c);
+//					capLabel.setTextFill(c);
+//					xyLabel.setTextFill(c);
+//					timeLabel.setTextFill(c);
+//
+//				}
+//			}
+//		}
+//	}
 
 	//// public void setDesktop(MainDesktopPane desktop) {
 	// this.desktop = desktop;
@@ -560,11 +547,11 @@ public class SettlementWindow extends ToolWindow {
 		mapPanel.destroy();
 		mapPanel = null;
 		desktop = null;
-		timeline = null;
-//		marqueeTicker = null;
-		jfxPanel = null;
-		scene = null;
-		stack = null;
+//		timeline = null;
+////		marqueeTicker = null;
+//		jfxPanel = null;
+//		scene = null;
+//		stack = null;
 
 	}
 

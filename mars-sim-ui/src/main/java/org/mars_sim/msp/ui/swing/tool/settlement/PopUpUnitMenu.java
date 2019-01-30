@@ -25,21 +25,6 @@ import javax.swing.UIManager;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.UIResource;
 
-import javafx.scene.Node;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
-import javafx.stage.StageStyle;
-import javafx.scene.Cursor;
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -48,14 +33,24 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.javafx.MainScene;
-
 import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
+
+import javafx.event.EventHandler;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 //import com.jfoenix.controls.JFXPopup;
 //import com.jfoenix.controls.JFXPopup.PopupHPosition;
@@ -88,7 +83,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 
     private Settlement settlement;
 	private MainDesktopPane desktop;
-	private MainScene mainScene;
+//	private MainScene mainScene;
 	private MainWindow mainWindow;
 
 	private double initialX, initialY;
@@ -102,18 +97,18 @@ public class PopUpUnitMenu extends JPopupMenu {
 
         if (desktop.getMainWindow() != null)
         	mainWindow = desktop.getMainWindow();
-        else if (desktop.getMainScene() != null)
-        	mainScene = desktop.getMainScene();
+//        else if (desktop.getMainScene() != null)
+//        	mainScene = desktop.getMainScene();
 
         UIResource res = null;
 
-        if (mainScene != null) {
-	        if (MainScene.getTheme() == 7)
-	        	new BorderUIResource.LineBorderUIResource(Color.orange);
-	        else if (MainScene.getTheme() == 0 || MainScene.getTheme() == 6)
-	        	new BorderUIResource.LineBorderUIResource(Color.blue);
-        }
-        else
+//        if (mainScene != null) {
+//	        if (MainScene.getTheme() == 7)
+//	        	new BorderUIResource.LineBorderUIResource(Color.orange);
+//	        else if (MainScene.getTheme() == 0 || MainScene.getTheme() == 6)
+//	        	new BorderUIResource.LineBorderUIResource(Color.blue);
+//        }
+//        else
         	new BorderUIResource.LineBorderUIResource(Color.blue);
 
         UIManager.put("PopupMenu.border", res);
@@ -194,14 +189,14 @@ public class PopUpUnitMenu extends JPopupMenu {
         itemOne.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-            	if (mainScene != null) {
-					Platform.runLater(() -> {
-                       	createDescriptionStage(unit);
-					});
-                }
-                else {
+//            	if (mainScene != null) {
+//					Platform.runLater(() -> {
+//                       	createDescriptionStage(unit);
+//					});
+//                }
+//                else {
                 	createDescriptionPanel(unit);
-                }
+//                }
              }
         });
     }
@@ -266,16 +261,16 @@ public class PopUpUnitMenu extends JPopupMenu {
         stage.toFront();
 	   	stage.requestFocus();
 
-		if (!mainScene.OS.contains("linux")) {
-		   	stage.focusedProperty().addListener(new ChangeListener<Boolean>()
-		   	{
-		   	  @Override
-		   	  public void changed(javafx.beans.value.ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
-		   	  {
-		   	    stage.close();
-		   	  }
-		   	});
-		}
+//		if (!mainScene.OS.contains("linux")) {
+//		   	stage.focusedProperty().addListener(new ChangeListener<Boolean>()
+//		   	{
+//		   	  @Override
+//		   	  public void changed(javafx.beans.value.ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
+//		   	  {
+//		   	    stage.close();
+//		   	  }
+//		   	});
+//		}
 
 
 	}
@@ -439,58 +434,58 @@ public class PopUpUnitMenu extends JPopupMenu {
 	            else if (unit instanceof Building){
 	            	Building building = (Building) unit;
 
-                    if (mainScene != null) {
-    					Platform.runLater(() -> createBuildingPanelFX(building));
-                    }
-                    else {
+//                    if (mainScene != null) {
+//    					Platform.runLater(() -> createBuildingPanelFX(building));
+//                    }
+//                    else {
                     	createBuildingPanel(building);
-                    }
+//                    }
 	            } // end of building
 	         }
 	    });
 
     }
 
-	/*
-	 * Creates a stage for displaying the detail status of a building
-	 */
-    @SuppressWarnings("restriction")
-	public void createBuildingPanelFX(Building building) {
-    	Stage stage = new Stage();
-
-		BuildingStage buildingPanel = new BuildingStage("Building Detail", building, desktop);
-    	StackPane p = new StackPane(buildingPanel.init());
-    	p.setMaxSize(WIDTH, HEIGHT); 
-//		ScrollPane scroller = new ScrollPane(buildingPanel.init());
-//        scroller.setFitToWidth(true);
-//        scroller.setMaxSize(WIDTH, HEIGHT*3); 
-    			
-    	Scene scene = new Scene(p, WIDTH, HEIGHT, javafx.scene.paint.Color.TRANSPARENT);
-
-	    //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
-	   	//addDraggableNode(swingNode);
-	   	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
-	   	stage.setTitle("Building Detail");
-		//stage.initOwner(mainScene.getStage()); // initOwner() causes problem if in full screen mode.
-	   	stage.initStyle(StageStyle.DECORATED);//.UTILITY); //UNIFIED);
-	   	//stage.initStyle(StageStyle.TRANSPARENT);
-		stage.setOpacity(.9);
-		stage.setResizable(false);
-	   	stage.setScene(scene);
-        stage.show();
-        stage.toFront();
-	   	stage.requestFocus();
-		if (!mainScene.OS.contains("linux")) {
-		   	stage.focusedProperty().addListener(new ChangeListener<Boolean>()
-		   	{
-		   	  @Override
-		   	  public void changed(javafx.beans.value.ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
-		   	  {
-		   	    stage.close();
-		   	  }
-		   	});
-		}
-    }
+//	/*
+//	 * Creates a stage for displaying the detail status of a building
+//	 */
+//    @SuppressWarnings("restriction")
+//	public void createBuildingPanelFX(Building building) {
+//    	Stage stage = new Stage();
+//
+//		BuildingStage buildingPanel = new BuildingStage("Building Detail", building, desktop);
+//    	StackPane p = new StackPane(buildingPanel.init());
+//    	p.setMaxSize(WIDTH, HEIGHT); 
+////		ScrollPane scroller = new ScrollPane(buildingPanel.init());
+////        scroller.setFitToWidth(true);
+////        scroller.setMaxSize(WIDTH, HEIGHT*3); 
+//    			
+//    	Scene scene = new Scene(p, WIDTH, HEIGHT, javafx.scene.paint.Color.TRANSPARENT);
+//
+//	    //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
+//	   	//addDraggableNode(swingNode);
+//	   	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
+//	   	stage.setTitle("Building Detail");
+//		//stage.initOwner(mainScene.getStage()); // initOwner() causes problem if in full screen mode.
+//	   	stage.initStyle(StageStyle.DECORATED);//.UTILITY); //UNIFIED);
+//	   	//stage.initStyle(StageStyle.TRANSPARENT);
+//		stage.setOpacity(.9);
+//		stage.setResizable(false);
+//	   	stage.setScene(scene);
+//        stage.show();
+//        stage.toFront();
+//	   	stage.requestFocus();
+//		if (!mainScene.OS.contains("linux")) {
+//		   	stage.focusedProperty().addListener(new ChangeListener<Boolean>()
+//		   	{
+//		   	  @Override
+//		   	  public void changed(javafx.beans.value.ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
+//		   	  {
+//		   	    stage.close();
+//		   	  }
+//		   	});
+//		}
+//    }
 
     private void addDraggableNode(final Node node) {
 

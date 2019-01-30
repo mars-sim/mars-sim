@@ -27,13 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
-
-import javafx.application.Platform;
-import javafx.scene.control.TextInputDialog;
-import javafx.stage.Modality;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -70,9 +63,7 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
-import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.alee.extended.WebComponent;
@@ -102,7 +93,7 @@ public class SettlementTransparentPanel extends WebComponent {
 
 	private SettlementMapPanel mapPanel;
 	private MainDesktopPane desktop;
-	private MainScene mainScene;
+//	private MainScene mainScene;
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 		
@@ -110,7 +101,7 @@ public class SettlementTransparentPanel extends WebComponent {
 
         this.mapPanel = mapPanel;
         this.desktop = desktop;
-        this.mainScene = desktop.getMainScene();
+//        this.mainScene = desktop.getMainScene();
 
 		setDoubleBuffered(true);
 
@@ -485,10 +476,10 @@ public class SettlementTransparentPanel extends WebComponent {
 			public void actionPerformed(ActionEvent evt) {
 				mapPanel.reCenter();
 
-				if (mainScene != null) {
-					mainScene.getZoom().setValue(0);
-				}
-				else
+//				if (mainScene != null) {
+//					mainScene.getZoom().setValue(0);
+//				}
+//				else
 					zoomSlider.setValue(0);
 			}
 		});
@@ -724,48 +715,44 @@ public class SettlementTransparentPanel extends WebComponent {
 		//logger.info("Old name was " + oldName);
 		//boolean isFX = Platform.isFxApplicationThread();
 
-		if (desktop.getMainScene() != null) {
-
-			Platform.runLater(() -> {
-
-				if (askNameFX(oldName) != null) {
-					String newName = askNameFX(oldName).trim();
-					if (!isBlank(newName)) { // newName != null && !newName.isEmpty() && newName with only whitespace(s)
-						mapPanel.getSettlement().changeName(newName);
-		            }
-					else {
-						Alert alert = new Alert(AlertType.ERROR, "Please use a valid name.");
-						alert.initOwner(desktop.getMainScene().getStage());
-						alert.showAndWait();
-					}
-	/*
-					// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
-					if (newName == null || newName.trim() == "" || (newName.trim().length() == 0)) {
-						//System.out.println("newName is " + newName);
-						newName = askNameFX(oldName);
-
-						if (newName == null || newName.trim() == "" || (newName.trim().length() == 0))
-							return;
-						else
-							mapPanel.getSettlement().changeName(newName);
-					}
-					else {
-						mapPanel.getSettlement().changeName(newName);
-						//logger.info("New name is now " + newName);
-					}
-	*/
-				}
-			});
-
-
-
-
-
-			//desktop.closeToolWindow(SettlementWindow.NAME);
-			//desktop.openToolWindow(SettlementWindow.NAME);
-		}
-
-		else {
+//		if (desktop.getMainScene() != null) {
+//
+//			Platform.runLater(() -> {
+//
+//				if (askNameFX(oldName) != null) {
+//					String newName = askNameFX(oldName).trim();
+//					if (!isBlank(newName)) { // newName != null && !newName.isEmpty() && newName with only whitespace(s)
+//						mapPanel.getSettlement().changeName(newName);
+//		            }
+//					else {
+//						Alert alert = new Alert(AlertType.ERROR, "Please use a valid name.");
+//						alert.initOwner(desktop.getMainScene().getStage());
+//						alert.showAndWait();
+//					}
+//	/*
+//					// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
+//					if (newName == null || newName.trim() == "" || (newName.trim().length() == 0)) {
+//						//System.out.println("newName is " + newName);
+//						newName = askNameFX(oldName);
+//
+//						if (newName == null || newName.trim() == "" || (newName.trim().length() == 0))
+//							return;
+//						else
+//							mapPanel.getSettlement().changeName(newName);
+//					}
+//					else {
+//						mapPanel.getSettlement().changeName(newName);
+//						//logger.info("New name is now " + newName);
+//					}
+//	*/
+//				}
+//			});
+//
+//			//desktop.closeToolWindow(SettlementWindow.NAME);
+//			//desktop.openToolWindow(SettlementWindow.NAME);
+//		}
+//
+//		else {
 
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			//String nameCache = settlement.getType();
@@ -780,7 +767,7 @@ public class SettlementTransparentPanel extends WebComponent {
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.openToolWindow(SettlementWindow.NAME);
 
-		}
+//		}
 
 	}
 
@@ -827,29 +814,29 @@ public class SettlementTransparentPanel extends WebComponent {
 			        JOptionPane.QUESTION_MESSAGE);
 	}
 
-	/**
-	 * Ask for a new building name using TextInputDialog in JavaFX/8
-	 * @return new name
-	 */
-	public String askNameFX(String oldName) {
-		String newName = null;
-		TextInputDialog dialog = new TextInputDialog(oldName);
-		dialog.initOwner(desktop.getMainScene().getStage());
-		dialog.initModality(Modality.APPLICATION_MODAL);
-		dialog.setTitle(Msg.getString("BuildingPanel.renameBuilding.dialogTitle"));
-		dialog.setHeaderText(Msg.getString("BuildingPanel.renameBuilding.dialog.header"));
-		dialog.setContentText(Msg.getString("BuildingPanel.renameBuilding.dialog.content"));
-
-		Optional<String> result = dialog.showAndWait();
-		//result.ifPresent(name -> {});
-
-		if (result.isPresent()){
-		    //logger.info("The settlement name has been changed to : " + result.get());
-			newName = result.get();
-		}
-
-		return newName;
-	}
+//	/**
+//	 * Ask for a new building name using TextInputDialog in JavaFX/8
+//	 * @return new name
+//	 */
+//	public String askNameFX(String oldName) {
+//		String newName = null;
+//		TextInputDialog dialog = new TextInputDialog(oldName);
+//		dialog.initOwner(desktop.getMainScene().getStage());
+//		dialog.initModality(Modality.APPLICATION_MODAL);
+//		dialog.setTitle(Msg.getString("BuildingPanel.renameBuilding.dialogTitle"));
+//		dialog.setHeaderText(Msg.getString("BuildingPanel.renameBuilding.dialog.header"));
+//		dialog.setContentText(Msg.getString("BuildingPanel.renameBuilding.dialog.content"));
+//
+//		Optional<String> result = dialog.showAndWait();
+//		//result.ifPresent(name -> {});
+//
+//		if (result.isPresent()){
+//		    //logger.info("The settlement name has been changed to : " + result.get());
+//			newName = result.get();
+//		}
+//
+//		return newName;
+//	}
 
 	/**
 	 * Inner class combo box model for settlements.

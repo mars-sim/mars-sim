@@ -36,8 +36,8 @@ public class SettlementUnitWindow extends UnitWindow {
         //setSize(600,600);
 
         // Add tab panels
-        if (desktop.getMainScene() != null)
-        	addTabPanel(new TabPanelDashboard(settlement, desktop));
+//        if (desktop.getMainScene() != null)
+//        addTabPanel(new TabPanelDashboard(settlement, desktop));
 
         addTabPanel(new TabPanelAirComposition(settlement, desktop));
 

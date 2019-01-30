@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.time.ClockListener;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
@@ -127,7 +126,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	private MainDesktopPane desktop;
 //	private NavigatorWindow navwin;
 	private SurfaceFeatures surfaceFeatures;
-	private MainScene mainScene;
+//	private MainScene mainScene;
 
 //	private static MasterClock masterClock = Simulation.instance().getMasterClock();
 
@@ -151,7 +150,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 //		this.navwin = navwin;
 		this.desktop = navwin.getDesktop();
-		this.mainScene = desktop.getMainScene();
+//		this.mainScene = desktop.getMainScene();
 
 		// Initialize data members
 		this.width = GLOBE_BOX_WIDTH;
@@ -705,18 +704,19 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 	@Override
 	public void uiPulse(double time) {
-		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMapTabOpen() && mainScene.isMinimapOn()) {// &&
-																									// !masterClock.isPaused())
-																									// {
-//				timeCache += time;
-//				if (timeCache > PERIOD_IN_MILLISOLS * time) {
-				// Repaint map panel
-				updateDisplay();
-//					timeCache = 0;
-//				}
-			}
-		} else if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
+//		if (mainScene != null) {
+//			if (!mainScene.isMinimized() && mainScene.isMapTabOpen() && mainScene.isMinimapOn()) {// &&
+//																									// !masterClock.isPaused())
+//																									// {
+////				timeCache += time;
+////				if (timeCache > PERIOD_IN_MILLISOLS * time) {
+//				// Repaint map panel
+//				updateDisplay();
+////					timeCache = 0;
+////				}
+//			}
+//		} else 
+			if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 //			timeCache += time;
 //			if (timeCache > PERIOD_IN_MILLISOLS * time) {
 			updateDisplay();

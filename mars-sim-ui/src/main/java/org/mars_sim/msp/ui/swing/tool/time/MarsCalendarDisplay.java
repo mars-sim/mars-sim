@@ -16,7 +16,6 @@ import java.awt.Graphics;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.alee.extended.WebComponent;
@@ -38,7 +37,7 @@ public class MarsCalendarDisplay extends WebComponent {
 
 	private MainDesktopPane desktop;
 
-	private MainScene mainScene;
+//	private MainScene mainScene;
 	/** The Sol of month cache. */
 	private int solOfMonthCache;
 
@@ -58,7 +57,7 @@ public class MarsCalendarDisplay extends WebComponent {
 		// Initialize data members
 		this.marsTime = marsTime;
 		this.desktop = desktop;
-		mainScene = desktop.getMainScene();
+//		mainScene = desktop.getMainScene();
 		solOfMonthCache = marsTime.getSolOfMonth();
 
 		// Set component size
@@ -83,8 +82,8 @@ public class MarsCalendarDisplay extends WebComponent {
 	 */
 	public void update() {
 
-		if (mainScene != null) {
-			int theme = MainScene.getTheme();
+//		if (mainScene != null) {
+			int theme = 0;//MainScene.getTheme();
 
 			if (themeCache != theme) {
 				themeCache = theme;
@@ -130,7 +129,7 @@ public class MarsCalendarDisplay extends WebComponent {
 
 				SwingUtilities.invokeLater(() -> repaint());
 			}
-		}
+//		}
 
 		if (solOfMonthCache != marsTime.getSolOfMonth()) {
 			solOfMonthCache = marsTime.getSolOfMonth();

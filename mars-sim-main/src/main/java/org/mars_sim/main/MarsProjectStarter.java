@@ -53,8 +53,9 @@ public class MarsProjectStarter {
         	.append("jars")
         	.append(File.separator)
         	.append("*")
-        	.append(" org.mars_sim.main.javafx.MarsProjectFX"); 
-        // OR .append(" org.mars_sim.main.MarsProject");
+//        	.append(" org.mars_sim.main.javafx.MarsProjectFX"); 
+        // OR 
+        .append(" org.mars_sim.main.MarsProject");
         // OR .append(" org.mars_sim.headless.MarsProject");
         
         // Add checking for input args

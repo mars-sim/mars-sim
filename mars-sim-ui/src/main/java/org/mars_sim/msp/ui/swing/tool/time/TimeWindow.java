@@ -34,7 +34,6 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -125,7 +124,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** button for pause. */
 	private WebButton pauseButton;
 	/** MainScene instance . */
-	private MainScene mainScene;
+//	private MainScene mainScene;
 
 	DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
 	
@@ -137,7 +136,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public TimeWindow(final MainDesktopPane desktop) {
 		// Use TimeWindow constructor
 		super(NAME, desktop);
-		mainScene = desktop.getMainScene();
+//		mainScene = desktop.getMainScene();
 
 		ratioatmid = Simulation.instance().getMasterClock().getTimeRatio();
 
@@ -259,9 +258,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		pauseButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (mainScene != null)
-					masterClock.setPaused(!masterClock.isPaused(), true);
-				else
+//				if (mainScene != null)
+//					masterClock.setPaused(!masterClock.isPaused(), true);
+//				else
 					masterClock.setPaused(!masterClock.isPaused(), false);
 			}
 		});
@@ -317,7 +316,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		northPanel.add(speedLabel);
 		northPanel.add(timeRatioLabel);
 
-		if (mainScene == null) {
+//		if (mainScene == null) {
 
 			timeCompressionLabel.addMouseListener(new MouseInputAdapter() {
 				@Override
@@ -366,7 +365,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			pulsePane.add(pulseSlider, BorderLayout.SOUTH);
 			setTimeRatioSlider(masterClock.getTimeRatio());
 
-		}
+//		}
 
 		// Pack window
 		pack();
@@ -626,32 +625,34 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Note : when a wizard or a dialog box is opened/close,
 		// need to call below to remove/add the ability to use ESC to
 		// unpause/pause
-		if (!MainScene.isFXGL)
-			mainScene.setEscapeEventHandler(value, mainScene.getStage());
+//		if (!MainScene.isFXGL)
+//			mainScene.setEscapeEventHandler(value, mainScene.getStage());
 	}
 
 	@Override
 	public void clockPulse(double time) {
-		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMainTabOpen()) {	
-				if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
-					updateFastLabels();
-				}
-			}
-		} else if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
+//		if (mainScene != null) {
+//			if (!mainScene.isMinimized() && mainScene.isMainTabOpen()) {	
+//				if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
+//					updateFastLabels();
+//				}
+//			}
+//		} else 
+			if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
 			updateFastLabels();
 		}
 	}
 
 	@Override
 	public void uiPulse(double time) {
-		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMainTabOpen()) {	
-				if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
-					updateSlowLabels();
-				}
-			}
-		} else if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
+//		if (mainScene != null) {
+//			if (!mainScene.isMinimized() && mainScene.isMainTabOpen()) {	
+//				if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
+//					updateSlowLabels();
+//				}
+//			}
+//		} else 
+			if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
 			updateSlowLabels();
 		}
 	}

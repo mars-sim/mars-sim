@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -54,7 +53,7 @@ implements ClockListener, HistoricalEventListener {
 	private ArrivingSettlement arrivingSettlement;
 	
 	private MainDesktopPane desktop;
-	private MainScene mainScene;
+//	private MainScene mainScene;
 	
 	private static MarsClock currentTime;
 	private static MasterClock masterClock;
@@ -70,7 +69,7 @@ implements ClockListener, HistoricalEventListener {
 		// Use WebPanel constructor.
 		super();
 		this.desktop = desktop;
-		this.mainScene = desktop.getMainScene();
+//		this.mainScene = desktop.getMainScene();
 		
 		currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		masterClock = Simulation.instance().getMasterClock();
@@ -303,23 +302,9 @@ implements ClockListener, HistoricalEventListener {
 	
 	@Override
 	public void uiPulse(double time) {
-		if (mainScene != null) {
-			if (!mainScene.isMinimized() && mainScene.isMainTabOpen() && desktop.isToolWindowOpen(MissionWindow.NAME)) {
-//				timeCache += time;
-//				if (timeCache > PERIOD_IN_MILLISOLS * time) {
-					updateArrival();
-//					timeCache = 0;
-//				}
-			}
-		}
-		else if (desktop.isToolWindowOpen(MissionWindow.NAME)) {
-//			timeCache += time;
-//			if (timeCache > PERIOD_IN_MILLISOLS * time) {
-				updateArrival();
-//				timeCache = 0;
-//			}
-		}			
-		
+		if (desktop.isToolWindowOpen(MissionWindow.NAME)) {
+			updateArrival();
+		}				
 	}
 	
 	@Override
@@ -344,8 +329,7 @@ implements ClockListener, HistoricalEventListener {
 		populationValueLabel = null;
 		arrivingSettlement = null;		
 		desktop = null;
-		mainScene = null;
-		
+
 		currentTime = null;
 		masterClock = null;
 	}

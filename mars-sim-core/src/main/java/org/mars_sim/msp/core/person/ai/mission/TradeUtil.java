@@ -670,9 +670,10 @@ public final class TradeUtil {
 		else if (good.getCategory() == GoodType.EQUIPMENT) {
 			Class type = good.getClassType();
 			if (!equipmentGoodCache.containsKey(type)) {
-//				int id = EquipmentType.convertName2ID("Robot");
-//				Equipment e = EquipmentFactory.getEquipment();
+//				int id = good.getID();
+//				Equipment e = EquipmentFactory.get.getEquipment(id);
 				equipmentGoodCache.put(type, EquipmentFactory.createEquipment(type, new Coordinates(0D, 0D), true));
+//				equipmentGoodCache.put(type, EquipmentFactory.getEquipmentClass(id));
 			}
 			result = (remainingCapacity >= equipmentGoodCache.get(type).getBaseMass());
 		} else if (good.getCategory() == GoodType.VEHICLE)

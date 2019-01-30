@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.TaskSchedule.OneActivity;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -45,7 +44,6 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.managers.tooltip.TooltipWay;
 import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
@@ -54,6 +52,7 @@ import com.alee.laf.table.WebTable;
 import com.alee.laf.text.WebTextField;
 //import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * The TabPanelSchedule is a tab panel showing the daily schedule a person.
@@ -323,8 +322,8 @@ public class TabPanelSchedule extends TabPanel {
 	public void update() {
 		int t = -1;
 
-		if (desktop.getMainScene() != null)
-			t = MainScene.getTheme();
+//		if (desktop.getMainScene() != null)
+//			t = MainScene.getTheme();
 
 		if (theme != t) {
 			theme = t;

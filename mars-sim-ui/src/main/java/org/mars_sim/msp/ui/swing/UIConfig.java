@@ -29,7 +29,6 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
@@ -220,100 +219,100 @@ public class UIConfig {
 		}
 	}
 
-	/**
-	 * Creates an XML document for the UI configuration and saves it to a file.
-	 * 
-	 * @param mainScene the Main Scene.
-	 */
-	public void saveFile(MainScene mainScene) {
-		desktop = mainScene.getDesktop();
-		FileOutputStream stream = null;
-
-		try {
-			Document outputDoc = new Document();
-			DocType dtd = new DocType(UI, DIRECTORY + File.separator + FILE_NAME_DTD);
-			Element uiElement = new Element(UI);
-			outputDoc.setDocType(dtd);
-			outputDoc.addContent(uiElement);
-			outputDoc.setRootElement(uiElement);
-
-			uiElement.setAttribute(USE_DEFAULT, "false"); // FIXME lechimp 10/9/13: why is this always set to false upon
-															// save?
-
-			Element mainWindowElement = new Element(MAIN_WINDOW);
-			uiElement.addContent(mainWindowElement);
-
-			Element volumeElement = new Element(VOLUME);
-			uiElement.addContent(volumeElement);
-
-			AudioPlayer player = desktop.getSoundPlayer();
-			volumeElement.setAttribute(SOUND, Double.toString(player.getMusicVolume()));
-			volumeElement.setAttribute(SOUND, Double.toString(player.getEffectVolume()));
-			volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
-			volumeElement.setAttribute(MUTE, Boolean.toString(player.isSoundMute()));
-
-			Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
-			uiElement.addContent(internalWindowsElement);
-
-			// Add all internal windows.
-			JInternalFrame[] windows = desktop.getAllFrames();
-			for (JInternalFrame window1 : windows) {
-				Element windowElement = new Element(WINDOW);
-				internalWindowsElement.addContent(windowElement);
-
-				windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
-				windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
-				windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
-				windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
-				windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
-				windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
-
-				if (window1 instanceof ToolWindow) {
-					windowElement.setAttribute(TYPE, TOOL);
-					windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
-				} else if (window1 instanceof UnitWindow) {
-					windowElement.setAttribute(TYPE, UNIT);
-					windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
-				} else {
-					windowElement.setAttribute(TYPE, "other");
-					windowElement.setAttribute(NAME, "other");
-				}
-			}
-
-			// Save to file.
-			
-//			 [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the
-//			 users home dir, because this will work properly. Also we will have to copy
-//			 the ui_settings.dtd to this folder because in a webstart environment, the
-//			 user has no initial data in his dirs.
-			 
-			File configFile = new File(DIRECTORY, FILE_NAME);
-
-			// Create save directory if it doesn't exist.
-			if (!configFile.getParentFile().exists()) {
-				configFile.getParentFile().mkdirs();
-			}
-
-			// Copy /dtd/ui_settings.dtd resource to save directory.
-			// Always do this as we don't know when the local saved dtd file is out of date.
-			InputStream in = getClass().getResourceAsStream("/dtd/ui_settings.dtd");
-			IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
-
-			XMLOutputter fmt = new XMLOutputter();
-			fmt.setFormat(Format.getPrettyFormat());
-			stream = new FileOutputStream(configFile);
-			
-//			 // bug 2909888: read the inputstream with a specific encoding instead of the
-//			 system default.
-			 
-			OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
-			fmt.output(outputDoc, writer);
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, e.getMessage());
-		} finally {
-			IOUtils.closeQuietly(stream);
-		}
-	}
+//	/**
+//	 * Creates an XML document for the UI configuration and saves it to a file.
+//	 * 
+//	 * @param mainScene the Main Scene.
+//	 */
+//	public void saveFile(MainScene mainScene) {
+//		desktop = mainScene.getDesktop();
+//		FileOutputStream stream = null;
+//
+//		try {
+//			Document outputDoc = new Document();
+//			DocType dtd = new DocType(UI, DIRECTORY + File.separator + FILE_NAME_DTD);
+//			Element uiElement = new Element(UI);
+//			outputDoc.setDocType(dtd);
+//			outputDoc.addContent(uiElement);
+//			outputDoc.setRootElement(uiElement);
+//
+//			uiElement.setAttribute(USE_DEFAULT, "false"); // FIXME lechimp 10/9/13: why is this always set to false upon
+//															// save?
+//
+//			Element mainWindowElement = new Element(MAIN_WINDOW);
+//			uiElement.addContent(mainWindowElement);
+//
+//			Element volumeElement = new Element(VOLUME);
+//			uiElement.addContent(volumeElement);
+//
+//			AudioPlayer player = desktop.getSoundPlayer();
+//			volumeElement.setAttribute(SOUND, Double.toString(player.getMusicVolume()));
+//			volumeElement.setAttribute(SOUND, Double.toString(player.getEffectVolume()));
+//			volumeElement.setAttribute(MUTE, Boolean.toString(player.isMusicMute()));
+//			volumeElement.setAttribute(MUTE, Boolean.toString(player.isSoundMute()));
+//
+//			Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
+//			uiElement.addContent(internalWindowsElement);
+//
+//			// Add all internal windows.
+//			JInternalFrame[] windows = desktop.getAllFrames();
+//			for (JInternalFrame window1 : windows) {
+//				Element windowElement = new Element(WINDOW);
+//				internalWindowsElement.addContent(windowElement);
+//
+//				windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
+//				windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
+//				windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
+//				windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
+//				windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
+//				windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
+//
+//				if (window1 instanceof ToolWindow) {
+//					windowElement.setAttribute(TYPE, TOOL);
+//					windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
+//				} else if (window1 instanceof UnitWindow) {
+//					windowElement.setAttribute(TYPE, UNIT);
+//					windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
+//				} else {
+//					windowElement.setAttribute(TYPE, "other");
+//					windowElement.setAttribute(NAME, "other");
+//				}
+//			}
+//
+//			// Save to file.
+//			
+////			 [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the
+////			 users home dir, because this will work properly. Also we will have to copy
+////			 the ui_settings.dtd to this folder because in a webstart environment, the
+////			 user has no initial data in his dirs.
+//			 
+//			File configFile = new File(DIRECTORY, FILE_NAME);
+//
+//			// Create save directory if it doesn't exist.
+//			if (!configFile.getParentFile().exists()) {
+//				configFile.getParentFile().mkdirs();
+//			}
+//
+//			// Copy /dtd/ui_settings.dtd resource to save directory.
+//			// Always do this as we don't know when the local saved dtd file is out of date.
+//			InputStream in = getClass().getResourceAsStream("/dtd/ui_settings.dtd");
+//			IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
+//
+//			XMLOutputter fmt = new XMLOutputter();
+//			fmt.setFormat(Format.getPrettyFormat());
+//			stream = new FileOutputStream(configFile);
+//			
+////			 // bug 2909888: read the inputstream with a specific encoding instead of the
+////			 system default.
+//			 
+//			OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
+//			fmt.output(outputDoc, writer);
+//		} catch (Exception e) {
+//			logger.log(Level.SEVERE, e.getMessage());
+//		} finally {
+//			IOUtils.closeQuietly(stream);
+//		}
+//	}
 
 	/**
 	 * Checks if UI should use default configuration.

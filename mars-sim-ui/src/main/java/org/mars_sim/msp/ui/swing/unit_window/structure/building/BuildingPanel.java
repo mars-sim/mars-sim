@@ -430,25 +430,24 @@ public class BuildingPanel extends WebPanel {
 		newName = oldName;
 		logger.info("Old name was " + oldName);
 
-		if (desktop.getMainScene() != null) {
-
-			Platform.runLater(() -> {
-
-				String newName = askNameFX(oldName);
-				if (!isBlank(newName)) { // newName != null && !newName.isEmpty() && newName with only whitespace(s)
-					building.setNickName(newName);
-					logger.info("New name is now " + newName);
-					buildingNameLabel.setText(building.getNickName());
-				} else {
-					Alert alert = new Alert(AlertType.ERROR, "Please use a valid name.");
-					alert.initOwner(desktop.getMainScene().getStage());
-					alert.showAndWait();
-				}
-			});
-
-		}
-
-		else {
+//		if (desktop.getMainScene() != null) {
+//
+//			Platform.runLater(() -> {
+//
+//				String newName = askNameFX(oldName);
+//				if (!isBlank(newName)) { // newName != null && !newName.isEmpty() && newName with only whitespace(s)
+//					building.setNickName(newName);
+//					logger.info("New name is now " + newName);
+//					buildingNameLabel.setText(building.getNickName());
+//				} else {
+//					Alert alert = new Alert(AlertType.ERROR, "Please use a valid name.");
+//					alert.initOwner(desktop.getMainScene().getStage());
+//					alert.showAndWait();
+//				}
+//			});
+//
+//		}
+//		else {
 
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			newName = askNameDialog();
@@ -462,7 +461,7 @@ public class BuildingPanel extends WebPanel {
 				logger.info("New name is now " + newName);
 				// isRenamed = true;
 			}
-		}
+//		}
 
 		// return isRenamed;
 	}

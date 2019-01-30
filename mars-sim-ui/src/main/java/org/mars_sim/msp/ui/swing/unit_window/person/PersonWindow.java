@@ -58,7 +58,7 @@ extends UnitWindow {
 
 		addTopPanel(new LocationTabPanel(person, desktop));
 
-		addTabPanel(new TabPanelPersonality(person, desktop));
+//		addTabPanel(new TabPanelPersonality(person, desktop));
 
 		addTabPanel(new TabPanelSchedule(person, desktop));
 

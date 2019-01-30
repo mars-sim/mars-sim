@@ -23,7 +23,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
@@ -94,7 +93,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private WebButton buttonProps;
 
 	private MainDesktopPane desktop;
-	private MainScene mainScene;
+//	private MainScene mainScene;
 	private MainWindow mainWindow;
 
 	private WebPanel statusPanel;
@@ -113,9 +112,9 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		super(NAME, desktop);
 		this.desktop = desktop;
 
-		if (desktop.getMainScene() != null)
-			mainScene = desktop.getMainScene();
-		else if (desktop.getMainWindow() != null)
+//		if (desktop.getMainScene() != null)
+//			mainScene = desktop.getMainScene();
+//		else if (desktop.getMainWindow() != null)
 			mainWindow = desktop.getMainWindow();
 
 		// Get content pane
