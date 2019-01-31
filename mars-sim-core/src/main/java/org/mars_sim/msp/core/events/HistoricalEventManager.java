@@ -245,7 +245,7 @@ public class HistoricalEventManager implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		listeners.clear();
+//		listeners.clear();
 		listeners = null;
 		eventsRegistry.clear();
 		eventsRegistry = null;

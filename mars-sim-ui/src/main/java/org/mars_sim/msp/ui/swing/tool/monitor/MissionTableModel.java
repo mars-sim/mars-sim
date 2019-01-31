@@ -277,7 +277,7 @@ public class MissionTableModel extends AbstractTableModel
 //		if (rowIndex < missionCache.size()) {
 			Mission mission = missionCache.get(rowIndex);
 
-			if (mission != null && mission.getDescription() != null && !mission.getDescription().equals("")) {
+			if (mission != null) {// && mission.getDescription() != null && !mission.getDescription().equals("")) {
 				switch (columnIndex) {
 
 				case STARTING_MEMBER: {

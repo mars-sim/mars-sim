@@ -75,9 +75,9 @@ public class VehicleConfig implements Serializable {
 	private static final String SICKBAY_TYPE = "sickbay";
 	private static final String LAB_TYPE = "lab";
 
-	private Document vehicleDoc;
-	private List<String> roverNames;
-	private Map<String, VehicleDescription> map;
+	private static Document vehicleDoc;
+	private static List<String> roverNames;
+	private static Map<String, VehicleDescription> map;
 
 	/**
 	 * Constructor.

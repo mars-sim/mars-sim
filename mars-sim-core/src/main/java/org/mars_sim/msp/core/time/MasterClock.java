@@ -410,13 +410,16 @@ public class MasterClock implements Serializable {
 //		 ClockListenerTask l = c; 
 //		if (t.getClockListener().equals(oldListener)) l = t;
 //		 });
-		 
+		
 		ClockListenerTask t = null;
-		Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
-		while (i.hasNext()) {
-			ClockListenerTask c = i.next();
-			if (c.getClockListener().equals(oldListener))
-				t = c;
+		
+		if (clockListenerTasks != null) {
+			Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
+			while (i.hasNext()) {
+				ClockListenerTask c = i.next();
+				if (c.getClockListener().equals(oldListener))
+					t = c;
+			}
 		}
 		return t;
 	}

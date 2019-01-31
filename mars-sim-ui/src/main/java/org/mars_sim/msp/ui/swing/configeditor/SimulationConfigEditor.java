@@ -78,6 +78,8 @@ public class SimulationConfigEditor {
 	private CrewEditor crewEditor;
 	private SimulationConfig config;
 
+	private Simulation sim = Simulation.instance();
+
 	/**
 	 * Constructor
 	 * 
@@ -238,17 +240,19 @@ public class SimulationConfigEditor {
 						mainWindow.getFrame().dispose();
 					}
 					f.setVisible(false);
-					setConfiguration();
-					// Correct order:
-					// 1. Simulation.createNewSimulation();
-					// 2. MainWindow mw = new MainWindow(true);
-					// 3. Simulation.instance().start();
-					Simulation.instance().destroyOldSimulation();
+					setConfiguration();		
+					// Destroy old simulation
+					sim.destroyOldSimulation();
+					// Create new simulation
 					Simulation.createNewSimulation(-1, false);
+					// Start the simulation
+					sim.start(false);
+					// Create main window
 					new MainWindow(true);
-					Simulation.instance().start(false);
-
+					// Close simulation config editor
 					closeWindow();
+					// Load the menu choice
+//					sim.getTerm().loadTerminalMenu();
 				}
 			}
 		});

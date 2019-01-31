@@ -538,7 +538,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param file the file to be loaded from.
 	 */
 	public void loadSimulation(final File file) {
-//		logger.config("Simulation's loadSimulation() is on " + Thread.currentThread().getName());
+		logger.config("Simulation's loadSimulation() is on " + Thread.currentThread().getName());
 		isUpdating = true;
 
 		File f = file;
@@ -578,6 +578,8 @@ public class Simulation implements ClockListener, Serializable {
 			try {
 				sim.readFromFile(f);
 
+				logger.config("Done readFromFile()");
+				
 			} catch (ClassNotFoundException e2) {
 				logger.log(Level.SEVERE,
 						"Quitting mars-sim with ClassNotFoundException when loading the simulation : "
@@ -794,7 +796,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @throws ClassNotFoundException if error reading serialized classes.
 	 * @throws IOException            if error reading from file.
 	 */
-	private synchronized void readFromFile(File file) throws ClassNotFoundException, IOException {
+	private void readFromFile(File file) throws ClassNotFoundException, IOException {
 		// logger.config("Simulation : running readFromFile()");
 		logger.config("Loading and processing the saved sim. Please wait...");
 		
@@ -842,7 +844,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Re-initialize instances
 		reinitializeInstances();
-
+//		logger.config("Done reinitializeInstances");
 	}
 	
 	/**

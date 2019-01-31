@@ -924,9 +924,9 @@ public class MainMenu {
 				}
 
 			mainScene.finalizeMainScene();
-
-			// Initialize interactive terminal and load menu
-			sim.getTerm().initializeTerminal();
+			// Initialize interactive terminal 
+			sim.getTerm().initializeTerminal();	
+			// Load the menu choice
 			sim.getTerm().loadTerminalMenu();
 		}
 	}

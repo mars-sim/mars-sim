@@ -251,10 +251,5 @@
 			<id>oss.sonatype.org-snapshot</id>
 			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
 		</repository>
-		<repository>
-			<id>sourceforge.net</id>
-			<name>Mars Sim Releases</name>
-			<url>scp://shell.sourceforge.net/home/project-web/mars-sim/htdocs/maven-repo</url>
-		</repository>
 	</repositories>
 </project>

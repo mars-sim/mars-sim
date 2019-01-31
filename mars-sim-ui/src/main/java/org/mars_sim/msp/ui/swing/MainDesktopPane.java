@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
@@ -70,9 +71,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
 
 import com.alee.laf.desktoppane.WebInternalFrame;
-import com.alee.laf.label.WebLabel;
 
-import javafx.application.Platform;
 import javafx.scene.control.SingleSelectionModel;
 
 /**
@@ -107,7 +106,7 @@ public class MainDesktopPane extends JDesktopPane
 	/** ImageIcon that contains the tiled background. */
 	private ImageIcon backgroundImageIcon;
 	/** Label that contains the tiled background. */
-	private WebLabel backgroundLabel;
+	private JLabel backgroundLabel;
 
 	private ToolWindowTask toolWindowTask;
 
@@ -150,37 +149,38 @@ public class MainDesktopPane extends JDesktopPane
 		addComponentListener(this);
 		// Create background label and set it to the back layer
 		backgroundImageIcon = new ImageIcon();
-		backgroundLabel = new WebLabel(backgroundImageIcon);
+		// Set up background
+		backgroundLabel = new JLabel(backgroundImageIcon);
+		// Add background
 		add(backgroundLabel, Integer.MIN_VALUE);
+		// Set location of background 
 		backgroundLabel.setLocation(0, 0);
+		// Push the background to the back
 		moveToBack(backgroundLabel);
-
 		// Initialize firstDisplay to true
 		firstDisplay = true;
-
+		// Set background paper size
 		setPreferredSize(new Dimension(1366, 768 - 35));
-
+		// Prep listeners
 		prepareListeners();
-
 		// Initialize data members
 		soundPlayer = new AudioPlayer(this);
-
+		// Play music
 		if (!soundPlayer.isSoundDisabled())
 			soundPlayer.playRandomMusicTrack();
-
 		// Prepare tool windows.
 		toolWindows = new ArrayList<ToolWindow>();
-
+		// Instantiate BrowserJFX
 //		browserJFX = new BrowserJFX(this);
-
+		// Prep tool windows
 		prepareToolWindows();
 		// Prepare unit windows.
 		unitWindows = new ArrayList<UnitWindow>();
 		// Create update thread.
 		setupToolWindowTasks();
-
+		// Add clock listener
 		sim.getMasterClock().addClockListener(this);
-
+		// Setup announcement window
 		prepareAnnouncementWindow();
 	}
 
@@ -374,7 +374,7 @@ public class MainDesktopPane extends JDesktopPane
 		}
 		toolWindows.add(navWindow);
 
-		// logger.config("toolWindows.add(navWindow)");
+//		logger.config("toolWindows.add(navWindow)");
 
 		// Prepare search tool window
 		SearchWindow searchWindow = new SearchWindow(this);
@@ -384,7 +384,7 @@ public class MainDesktopPane extends JDesktopPane
 		}
 		toolWindows.add(searchWindow);
 
-		// logger.config("toolWindows.add(searchWindow)");
+//		logger.config("toolWindows.add(searchWindow)");
 
 		// Prepare time tool window
 		timeWindow = new TimeWindow(this);
@@ -393,7 +393,9 @@ public class MainDesktopPane extends JDesktopPane
 		} catch (PropertyVetoException e) {
 		}
 		toolWindows.add(timeWindow);
-
+		
+//		logger.config("Done with TimeWindow()");
+		
 		// Prepare settlement tool window
 		settlementWindow = new SettlementWindow(this);
 		try {
@@ -402,7 +404,9 @@ public class MainDesktopPane extends JDesktopPane
 		}
 		toolWindows.add(settlementWindow);
 		setSettlementWindow(settlementWindow);
-
+		
+//		logger.config("Done with setSettlementWindow()");
+		
 		// Prepare science tool window
 		ScienceWindow scienceWindow = new ScienceWindow(this);
 		try {
@@ -410,7 +414,9 @@ public class MainDesktopPane extends JDesktopPane
 		} catch (PropertyVetoException e) {
 		}
 		toolWindows.add(scienceWindow);
-
+		
+//		logger.config("Done with ScienceWindow()");
+		
 		// Prepare guide tool window
 		GuideWindow guideWindow = new GuideWindow(this);
 		try {
@@ -418,7 +424,9 @@ public class MainDesktopPane extends JDesktopPane
 		} catch (PropertyVetoException e) {
 		}
 		toolWindows.add(guideWindow);
-
+		
+//		logger.config("Done with GuideWindow()");
+		
 		// Prepare monitor tool window
 		MonitorWindow monitorWindow = new MonitorWindow(this);
 		try {
