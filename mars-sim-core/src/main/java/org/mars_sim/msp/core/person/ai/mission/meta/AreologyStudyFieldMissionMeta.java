@@ -32,7 +32,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
     private static final String NAME = Msg.getString(
             "Mission.description.areologyStudyFieldMission"); //$NON-NLS-1$
 
-    private static double WEIGHT = 8D;
+    private static double WEIGHT = 4D;
     
     /** default logger. */
     private static Logger logger = Logger.getLogger(AreologyStudyFieldMissionMeta.class.getName());
@@ -66,6 +66,8 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
     		if (Math.max(1, settlement.getNumCitizens()) / 8.0 < numEmbarked + numThisMission) {
     			return 0;
     		}	
+    		
+    		missionProbability = 0;
     		
             try {
                 // Get available rover.

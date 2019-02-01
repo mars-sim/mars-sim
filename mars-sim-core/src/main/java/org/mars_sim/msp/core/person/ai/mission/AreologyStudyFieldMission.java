@@ -443,7 +443,19 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-		} else if (DISEMBARKING.equals(getPhase())) {
+		} 
+		
+//		else if (DISEMBARKING.equals(getPhase())) {
+//			endMission(ALL_DISEMBARKED);
+//		}
+		
+		else if (DISEMBARKING.equals(getPhase())) {
+			setPhase(VehicleMission.COMPLETED);
+			setPhaseDescription(
+					Msg.getString("Mission.phase.completed.description")); // $NON-NLS-1$
+		}
+		
+		else if (COMPLETED.equals(getPhase())) {
 			endMission(ALL_DISEMBARKED);
 		}
 	}

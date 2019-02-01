@@ -71,7 +71,7 @@ public class TradeMeta implements MetaMission {
 							person + " can't compute the exact need for trading now at " + settlement + ". ", e);
 					e.printStackTrace();
 
-					missionProbability = 200D;
+					missionProbability = 0D;
 				}
 				
 			} else {
@@ -121,6 +121,8 @@ public class TradeMeta implements MetaMission {
 		if (missionProbability == 0)
 			return 0;
 
+		missionProbability = 0;
+		
 		// Check for the best trade settlement within range.
 		double tradeProfit = 0D;
 		try {

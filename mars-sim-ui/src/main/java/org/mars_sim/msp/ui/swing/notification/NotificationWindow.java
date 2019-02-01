@@ -282,7 +282,7 @@ public class NotificationWindow extends JDialog implements ClockListener {
 		    }
 		}
 		
-		if (willNotify) setupTelegraph(event, message, header);
+//		if (willNotify) setupTelegraph(event, message, header);
 	}
 	
 	// 2014-11-16 Added modifyMsg()

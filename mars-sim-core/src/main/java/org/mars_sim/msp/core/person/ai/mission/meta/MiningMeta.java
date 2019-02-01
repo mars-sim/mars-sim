@@ -82,6 +82,8 @@ public class MiningMeta implements MetaMission {
     		else if (numThisMission > 1)
     			return 0;
     		
+    		missionProbability = 0;
+    		
             try {
                 // Get available rover.
                 Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(
@@ -93,8 +95,8 @@ public class MiningMeta implements MetaMission {
                             rover, settlement);
                     if (miningSite != null) {
                         missionProbability = Mining.getMiningSiteValue(miningSite, settlement);
-                        if (missionProbability > 5D) {
-                            missionProbability = 5D;
+                        if (missionProbability > 10D) {
+                            missionProbability = 10D;
                         }
                     }
                 }

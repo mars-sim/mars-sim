@@ -783,20 +783,20 @@ public class MissionManager implements Serializable {
 	 * @param person
 	 * @param status
 	 */
-	public void approveMissionPlan(MissionPlanning missionPlan, Person person, PlanType status) {
+	public void approveMissionPlan(MissionPlanning missionPlan, Person person, PlanType newStatus) {
 		
 		for (int mSol : historicalMissions.keySet()) {
 			List<MissionPlanning> plans = historicalMissions.get(mSol);
 			for (MissionPlanning mp : plans) {
 				if (mp == missionPlan) {
 					mp.setApproved(person);
-					mp.setStatus(status);
+//					mp.setStatus(status);
 					if (mp.getStatus() == PlanType.PENDING) {
-						if (status == PlanType.APPROVED) {
+						if (newStatus == PlanType.APPROVED) {
 							mp.setStatus(PlanType.APPROVED);
 							mp.getMission().setApproval(true);
 						}
-						else if (status == PlanType.NOT_APPROVED) {
+						else if (newStatus == PlanType.NOT_APPROVED) {
 							mp.setStatus(PlanType.NOT_APPROVED);
 							mp.getMission().setApproval(false);
 							// Do NOT remove this on-going mission from the current mission list

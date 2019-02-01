@@ -707,6 +707,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		} else if (CONSTRUCTION_PHASE.equals(getPhase())) {
 			endMission(CONSTRUCTION_ENDED);
 		}
+
 	}
 
 	@Override

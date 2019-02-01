@@ -75,8 +75,8 @@ public class ExplorationMeta implements MetaMission {
     		else if (numThisMission > 1)
     			return 0;	
     		
-			// if (reservableRover && backupRover && minNum && enoughContainers &&
-			// !embarkingMissions && hasBasicResources && enoughMethane) {
+    		missionProbability = 0;
+
 			try {
 				// Get available rover.
 				Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);

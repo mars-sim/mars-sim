@@ -126,6 +126,9 @@ public abstract class Mission implements Serializable {
 	protected boolean approved = false;
 	/** True if the mission has been requested. */
 	protected boolean requested = false;
+	
+	/** The date the mission was filed. */
+	private String time;
 	/** Name of mission. */
 	private String missionName;
 	/** The description of the current phase of operation. */
@@ -184,6 +187,7 @@ public abstract class Mission implements Serializable {
 		this.identifier = getNextIdentifier();
 		this.missionName = missionName;
 		this.startingMember = startingMember;
+		time = marsClock.getDateTimeStamp();
 		
 		missionID = MissionManager.matchMissionID(missionName);
 		
@@ -241,7 +245,20 @@ public abstract class Mission implements Serializable {
 
 	}
 
+	/**
+	 * Return the timestamp of the mission.
+	 * 
+	 * @return
+	 */
+	public String getTime() {
+		return time;
+	}
 	
+	/**
+	 * Return the unique identifier of the mission.
+	 * 
+	 * @return
+	 */
 	public int getIdentifier() {
 		return identifier;
 	}

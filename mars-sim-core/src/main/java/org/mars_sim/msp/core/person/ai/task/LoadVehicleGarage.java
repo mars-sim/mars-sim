@@ -623,13 +623,14 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			// Check if enough resource in settlement inventory.
 			int settlementStored = sInv.getItemResourceNum(id);
 			// Add tracking demand
+			sInv.addItemDemand(id, numNeeded);
 			sInv.addItemDemandTotalRequest(id, numNeeded);
 			
 			if (settlementStored < numNeeded) {
 				if (required) {
 					canLoad = false;
-					loadingError = " did NOT have enough resource stored at settlement to load " + "resource: " + p + " needed: "
-							+ numNeeded + ", stored: " + settlementStored;
+					loadingError = " did NOT have enough " + p + " stored at settlement to load up.  Needed: "
+							+ numNeeded + ".  Stored: " + settlementStored;
 				} else {
 					numNeeded = settlementStored;
 				}
@@ -640,7 +641,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			if (remainingMassCapacity < (numNeeded * p.getMassPerItem())) {
 				if (required) {
 					canLoad = false;
-					loadingError = " did NOT enough capacity in vehicle for loading resource " + p + ": " + numNeeded
+					loadingError = " did NOT enough capacity in vehicle for loading " + numNeeded + " " + p  
 							+ ", remaining capacity: " + remainingMassCapacity + " kg";
 				} else {
 					numNeeded = (int) (remainingMassCapacity / p.getMassPerItem());
@@ -943,7 +944,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 									+ ". Mission need: " + Math.round(amountDessertNeeded * 100.0) / 100.0  
 									+ " ; " + settlement + " need: " + Math.round(settlementNeed* 100.0) / 100.0
 									+ " ; Stored: " + Math.round(stored* 100.0) / 100.0);
-						inv.addAmountDemand(resource, totalNeeded);
+						inv.addAmountDemandTotalRequest(resource, totalNeeded);
 						enoughSupplies = false;
 					}
 				}
@@ -983,7 +984,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 								+ ". Mission need: " + needed   
 								+ " ; " + settlement + " need: " + settlementNeed
 								+ " ; Stored: " + stored);
-					inv.addAmountDemand(resource, totalNeeded);
+					inv.addItemDemand(resource, totalNeeded);
 					enoughSupplies = false;
 					return false;
 				}
@@ -1008,7 +1009,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 							+ ". Mission need: " + needed   
 							+ " ; " + settlement + " need: " + settlementNeed
 							+ " ; Stored: " + stored);
-				inv.addAmountDemand(equipmentID, totalNeeded);
 				enoughSupplies = false;
 				return false;
 			}

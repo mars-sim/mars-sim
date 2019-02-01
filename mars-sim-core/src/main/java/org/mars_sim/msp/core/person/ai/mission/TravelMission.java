@@ -88,7 +88,7 @@ public abstract class TravelMission extends Mission {
 			navPoints.add(navPoint);
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 		} else {
-			LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), "navPoint is null", null);
+			LogConsolidated.log(Level.SEVERE, 1000, logger.getName(), "navPoint is null");
 			// throw new IllegalArgumentException("navPoint is null");
 		}
 	}
@@ -105,7 +105,7 @@ public abstract class TravelMission extends Mission {
 			navPoints.set(index, navPoint);
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 		} else {
-			LogConsolidated.log(logger, Level.SEVERE, 1000, logger.getName(), "navPoint is null", null);
+			LogConsolidated.log(Level.SEVERE, 1000, logger.getName(), "navPoint is null");
 			// throw new IllegalArgumentException("navPoint is null");
 		}
 	}
@@ -165,8 +165,8 @@ public abstract class TravelMission extends Mission {
 		if (newNavIndex < getNumberOfNavpoints()) {
 			navIndex = newNavIndex;
 		} else
-			LogConsolidated.log(logger, Level.SEVERE, 0, logger.getName(),
-					getPhase() + "'s newNavIndex " + newNavIndex + " is out of bounds.", null);
+			LogConsolidated.log(Level.SEVERE, 0, logger.getName(),
+					getPhase() + "'s newNavIndex " + newNavIndex + " is out of bounds.");
 		// throw new IllegalStateException(getPhase() + " : newNavIndex: "
 		// + newNavIndex + " is outOfBounds.");
 	}
@@ -182,9 +182,11 @@ public abstract class TravelMission extends Mission {
 		if ((index >= 0) && (index < getNumberOfNavpoints()))
 			return navPoints.get(index);
 		else {
-			LogConsolidated.log(logger, Level.SEVERE, 0, logger.getName(),
-					// getPhase() + " index " + index + " out of bounds."
-					"Index is " + index + ". # of navpoints is " + getNumberOfNavpoints(), null);
+//			LogConsolidated.log(Level.SEVERE, 0, logger.getName(),
+//					// getPhase() + " index " + index + " out of bounds."
+//					this.getDescription() 
+////					+ " at " + getPhase() 
+//					+ "  Index is " + index + ". # of navpoints is " + getNumberOfNavpoints());
 			// throw new IllegalArgumentException("index: " + index
 			// + " out of bounds.");
 

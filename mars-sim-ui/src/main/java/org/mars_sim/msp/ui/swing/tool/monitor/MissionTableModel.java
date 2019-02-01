@@ -36,27 +36,29 @@ public class MissionTableModel extends AbstractTableModel
 
 	// Column indexes
 	/** Starting member column. */
-	private final static int STARTING_MEMBER = 0;
+	private final static int STARTING_TIME = 0;
+	/** Starting member column. */
+	private final static int STARTING_MEMBER = 1;
 	/** Desc column. */
-	private final static int DESC = 1;
+	private final static int DESC = 2;
 	/** Description column. */
-	private final static int DESIGNATION = 2;
+	private final static int DESIGNATION = 3;
 	/** Phase column. */
-	private final static int PHASE = 3;
+	private final static int PHASE = 4;
 	/** Mission vehicle column. */
-	private final static int VEHICLE = 4;
+	private final static int VEHICLE = 5;
 	/** Starting settlement column. */
-	private final static int STARTING_SETTLEMENT = 5;
+	private final static int STARTING_SETTLEMENT = 6;
 	/** Member number column. */
-	private final static int MEMBER_NUM = 6;
+	private final static int MEMBER_NUM = 7;
 	/** Navpoint number column. */
-	private final static int NAVPOINT_NUM = 7;
+	private final static int NAVPOINT_NUM = 8;
 	/** Travelled distance column. */
-	private final static int TRAVELLED_DISTANCE = 8;
+	private final static int TRAVELLED_DISTANCE = 9;
 	/** Remaining distance column. */
-	private final static int REMAINING_DISTANCE = 9;
+	private final static int REMAINING_DISTANCE = 10;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 10;
+	private final static int COLUMNCOUNT = 11;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
@@ -69,6 +71,8 @@ public class MissionTableModel extends AbstractTableModel
 	public MissionTableModel() {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
+		columnNames[STARTING_TIME] = Msg.getString("MissionTableModel.column.time"); //$NON-NLS-1$
+		columnTypes[STARTING_TIME] = String.class;
 		columnNames[STARTING_MEMBER] = Msg.getString("MissionTableModel.column.name"); //$NON-NLS-1$
 		columnTypes[STARTING_MEMBER] = String.class;
 		columnNames[DESC] = Msg.getString("MissionTableModel.column.desc"); //$NON-NLS-1$
@@ -216,8 +220,10 @@ public class MissionTableModel extends AbstractTableModel
 			if ((index > -1) && (index < missionCache.size())) {
 				int column1 = -1;
 				int column2 = -1;
-			
-				if (eventType == MissionEventType.NAME_EVENT)
+
+				if (eventType == MissionEventType.TIME_EVENT)
+					column1 = STARTING_TIME;
+				else if (eventType == MissionEventType.NAME_EVENT)
 					column1 = STARTING_MEMBER;
 				else if (eventType == MissionEventType.DESCRIPTION_EVENT)
 					column1 = DESC;
@@ -282,6 +288,11 @@ public class MissionTableModel extends AbstractTableModel
 			if (mission != null) {// && mission.getDescription() != null && !mission.getDescription().equals("")) {
 				switch (columnIndex) {
 
+				case STARTING_TIME: {
+					result = mission.getTime();
+				}
+					break;
+					
 				case STARTING_MEMBER: {
 					result = mission.getStartingMember().getName();
 				}

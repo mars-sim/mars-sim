@@ -30,7 +30,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
     /** default logger. */
 	private static Logger logger = Logger.getLogger(BiologyStudyFieldMissionMeta.class.getName());
 
-    private static double WEIGHT = 8D;
+    private static double WEIGHT = 4D;
     
     /** Mission name */
     private static final String NAME = Msg.getString(
@@ -65,6 +65,8 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
     		if (Math.max(1, settlement.getNumCitizens()) / 8.0 < numEmbarked + numThisMission) {
     			return 0;
     		}	
+    		
+    		missionProbability = 0;
     		
             // Get available rover.
             Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);

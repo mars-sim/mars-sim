@@ -82,8 +82,8 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
                 		
 	                    PlanType status = mp.getStatus();
 
-	                    if (status != null && status == PlanType.PENDING) { 
-//	                    	&& mp.getPercentComplete() < 100D) {
+	                    if (status != null && status == PlanType.PENDING
+	                    	&& mp.getPercentComplete() < 100D) {
 	    		            	
 //	                    	System.out.println(person + " " + person.getRole().getType() + " on " 
 //	                    			+ mp.getMission().getDescription() + " has " 

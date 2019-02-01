@@ -512,6 +512,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Vehicle vehicle = this.vehicle;
 		Settlement settlement = vehicle.getSettlement();
 		double tripTime = getEstimatedRemainingMissionTime(true);
+		if (tripTime == 0) {
+			// Disapprove this mission
+			setApproval(false);	
+			return false;
+		}
 
 		boolean vehicleCapacity = LoadVehicleGarage.enoughCapacityForSupplies(resources, equipment, vehicle,
 				settlement);
