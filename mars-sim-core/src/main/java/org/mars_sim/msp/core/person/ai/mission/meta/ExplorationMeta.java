@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,7 +30,7 @@ public class ExplorationMeta implements MetaMission {
 	/** Mission name */
 	private static final String NAME = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
 
-	private static final double VALUE = 10D;
+	private static final double FACTOR = 250D;
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
@@ -81,9 +82,10 @@ public class ExplorationMeta implements MetaMission {
 				// Get available rover.
 				Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
 				if (rover != null) {
-					// Check if any mineral locations within rover range.
-					if (Exploration.hasNearbyMineralLocations(rover, settlement)) {
-						missionProbability = settlement.getRegolithProbabilityValue() / VALUE;
+					// Check if any mineral locations within rover range and obtain their concentration
+					Map<String, Double> minerals = Exploration.getNearbyMineral(rover, settlement);
+					if (!minerals.isEmpty()) {
+						missionProbability = Exploration.getTotalMineralValue(settlement, minerals) / FACTOR;
 					}
 				}
 			} catch (Exception e) {

@@ -1321,28 +1321,31 @@ public abstract class Mission implements Serializable {
 			 missionManager.requestMissionApproval(plan);
 		}
 		
-		else if (plan != null 
-				&& plan.getStatus() == PlanType.NOT_APPROVED) {
-			endMission(MISSION_NOT_APPROVED);
-		}
-		
-		if (approved || plan.getStatus() == PlanType.APPROVED) {
-			
-			fullMissionDesignation = createFullDesignation(p);
-			
-			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
-					+ p.getRole().getType() + " " + p.getName() 
-					+ " was getting"// the rover " + startingMember.getVehicle() 
-					+ " ready to embark on " + getDescription());
-
-			// Set the members' work shift to on-call to get ready
-			for (MissionMember m : members) {
-				Person pp = (Person) m;
-				pp.setShiftType(ShiftType.ON_CALL);
+		else if (plan != null) {
+			if (plan.getStatus() == PlanType.NOT_APPROVED) {
+				endMission(MISSION_NOT_APPROVED);
 			}
 			
-			setPhaseEnded(true);
+			else if (plan.getStatus() == PlanType.APPROVED) {
+				
+				fullMissionDesignation = createFullDesignation(p);
+				
+				LogConsolidated.log(Level.INFO, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
+						+ p.getRole().getType() + " " + p.getName() 
+						+ " was getting"// the rover " + startingMember.getVehicle() 
+						+ " ready to embark on " + getDescription());
+
+				// Set the members' work shift to on-call to get ready
+				for (MissionMember m : members) {
+					Person pp = (Person) m;
+					pp.setShiftType(ShiftType.ON_CALL);
+				}
+				
+				setPhaseEnded(true);
+			}
 		}
+		
+		
 	}
 
 	/**

@@ -31,6 +31,8 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.goods.Good;
+import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -83,6 +85,19 @@ public class Exploration extends RoverMission implements Serializable {
 	private static int waterID = ResourceUtil.waterID;
 	private static int foodID = ResourceUtil.foodID;
 
+	private static String[] MINERALS = new String[] {
+	        "Chalcopyrite",
+			"Goethite",
+			"Hematite",
+			"Kamacite",
+			"Magnesite",
+			"Magnetite",
+			"Malachite",
+			"Olivine",
+			"Taenite",
+			"Sylvite"
+			};
+	
 	/**
 	 * Constructor.
 	 * 
@@ -235,11 +250,39 @@ public class Exploration extends RoverMission implements Serializable {
 
 		MineralMap map = surface.getMineralMap();
 		Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
+		
 		boolean result = (mineralLocation != null);
 
 		return result;
 	}
 
+	/**
+	 * Checks if there are any mineral locations within rover/mission range.
+	 * 
+	 * @param rover          the rover to use.
+	 * @param homeSettlement the starting settlement.
+	 * @return true if mineral locations.
+	 * @throws Exception if error determining mineral locations.
+	 */
+	public static Map<String, Double> getNearbyMineral(Rover rover, Settlement homeSettlement) {
+		Map<String, Double> minerals = new HashMap<>();
+		
+		double roverRange = rover.getRange();
+		double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
+		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
+		double range = roverRange;
+		if (tripRange < range)
+			range = tripRange;
+
+		MineralMap map = surface.getMineralMap();
+		Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
+		
+		if (mineralLocation != null)
+			minerals = map.getAllMineralConcentrations(mineralLocation);
+		
+		return minerals;
+	}
+	
 	/**
 	 * Gets the range of a trip based on its time limit and exploration sites.
 	 * 
@@ -840,6 +883,30 @@ public class Exploration extends RoverMission implements Serializable {
 		return new HashMap<String, Double>(explorationSiteCompletion);
 	}
 
+	/**
+	 * Gets the estimated total mineral value of a mining site.
+	 * 
+	 * @param site       the mining site.
+	 * @param settlement the settlement valuing the minerals.
+	 * @return estimated value of the minerals at the site (VP).
+	 * @throws MissionException if error determining the value.
+	 */
+	public static double getTotalMineralValue(Settlement settlement, Map<String, Double> minerals) {
+
+		double result = 0D;		
+
+		for (String mineralType : minerals.keySet()) {
+			int mineralResource = ResourceUtil.findIDbyAmountResourceName(mineralType);
+//			Good mineralGood = GoodsUtil.createResourceGood(ResourceUtil.findAmountResource(mineralType));
+			double mineralValue = settlement.getGoodsManager().getGoodValuePerItem(mineralResource);
+			double concentration = minerals.get(mineralType);
+			double mineralAmount = (concentration / 100D) * Mining.MINERAL_BASE_AMOUNT;
+			result += mineralValue * mineralAmount;
+		}
+
+		return result / MINERALS.length;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

@@ -62,7 +62,7 @@ public class Mining extends RoverMission {
 	public static final int NUMBER_OF_BAGS = 20;
 
 	/** Base amount (kg) of a type of mineral at a site. */
-	private static final double MINERAL_BASE_AMOUNT = 1000D;
+	static final double MINERAL_BASE_AMOUNT = 1000D;
 
 	/** Amount of time(millisols) to spend at the mining site. */
 	private static final double MINING_SITE_TIME = 3000D;
