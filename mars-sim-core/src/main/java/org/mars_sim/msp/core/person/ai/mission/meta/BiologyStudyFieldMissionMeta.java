@@ -61,6 +61,11 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 			int numThisMission = missionManager.numParticularMissions(NAME, settlement);
 
+	   		// Check for # of embarking missions.
+    		if (Math.max(1, settlement.getNumCitizens()) / 8.0 < numEmbarked + numThisMission) {
+    			return 0;
+    		}	
+    		
             // Get available rover.
             Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
             if (rover != null) {
@@ -90,8 +95,8 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
                 }
             }
 
-            int f1 = numEmbarked + 1;
-			int f2 = numThisMission + 1;
+            int f1 = 2*numEmbarked + 1;
+			int f2 = 2*numThisMission + 1;
 			
 			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
 			

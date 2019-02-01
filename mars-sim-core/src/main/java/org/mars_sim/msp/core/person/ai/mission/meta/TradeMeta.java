@@ -81,17 +81,17 @@ public class TradeMeta implements MetaMission {
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 			int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(NAME, settlement);
 	
-    		// Check for embarking missions.
-    		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
+	   		// Check for # of embarking missions.
+    		if (Math.max(1, settlement.getNumCitizens()) / 8.0 < numEmbarked + numThisMission) {
     			return 0;
-    		}	
+    		}		
     		
     		else if (numThisMission > 1)
     			return 0;	
     		
 
-			int f1 = numEmbarked + 1;
-			int f2 = numThisMission + 1;
+			int f1 = 2*numEmbarked + 1;
+			int f2 = 2*numThisMission + 1;
 			
 			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
 		}

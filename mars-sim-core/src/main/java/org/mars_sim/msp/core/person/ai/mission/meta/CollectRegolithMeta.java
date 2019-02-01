@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -58,6 +59,19 @@ public class CollectRegolithMeta implements MetaMission {
 			missionProbability = settlement.getMissionBaseProbability() / VALUE;
     		if (missionProbability == 0)
     			return 0;
+    	   		
+    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
+    		int numThisMission = missionManager.numParticularMissions(NAME, settlement);
+    	
+	   		// Check for # of embarking missions.
+    		if (Math.max(1, settlement.getNumCitizens()) / 8.0 < numEmbarked + numThisMission) {
+    			return 0;
+    		}	
+    	
+    		int f1 = 2*numEmbarked + 1;
+    		int f2 = 2*numThisMission + 1;
+    		
+    		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
     		
 			// Job modifier.
 			Job job = person.getMind().getJob();

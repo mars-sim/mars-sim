@@ -842,7 +842,7 @@ public class EventTableModel extends AbstractTableModel
 		}
 
 		public void run() {
-			notifyBox.validateMsg(event);
+//			notifyBox.validateMsg(event);
 			// Note: adding try-catch can cause UI significant slow down here
 		}
 	}

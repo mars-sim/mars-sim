@@ -103,7 +103,6 @@ public abstract class Function implements Serializable {
 	 * Gets the function's malfunction scope strings.
 	 * 
 	 * @return array of scope strings.
-	 * @deprecated TODO malfunction scope strings should be internationalized.
 	 */
 	public String[] getMalfunctionScopeStrings() {
 		String[] result = { type.getName() };
