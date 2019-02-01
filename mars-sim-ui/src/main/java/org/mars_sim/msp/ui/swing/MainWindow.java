@@ -129,7 +129,7 @@ public class MainWindow extends JComponent {
 			setLookAndFeel(false, false);
 		else
 			setLookAndFeel(false, true);
-		logger.config("Calling MainDesktopPane()");
+//		logger.config("Calling MainDesktopPane()");
 		desktop = new MainDesktopPane(this);
 		
 		frame = new JFrame();
@@ -153,7 +153,7 @@ public class MainWindow extends JComponent {
 		// Open all initial windows.
 		desktop.openInitialWindows();
 		
-		logger.config("Done MainWindow()");
+//		logger.config("Done MainWindow()");
 	}
 
 

@@ -797,7 +797,6 @@ public class Simulation implements ClockListener, Serializable {
 	 * @throws IOException            if error reading from file.
 	 */
 	private void readFromFile(File file) throws ClassNotFoundException, IOException {
-		// logger.config("Simulation : running readFromFile()");
 		logger.config("Loading and processing the saved sim. Please wait...");
 		
 //		System.out.println(file.length() / 1000D);

@@ -126,15 +126,10 @@ public class MarsProject {
 				// splashWindow.display();
 
 				initializeSimulation(args);
-				logger.config("Done with initializeSimulation()");
 
 				// Load the menu choice
 				sim.getTerm().loadTerminalMenu();
-				
-				// Create the main desktop window.
-//				new MainWindow(false);
-//				logger.config("Done with MainWindow()");
-				
+							
 				// Dispose the splash window.
 				// splashWindow.remove();
 			} else {
@@ -258,18 +253,18 @@ public class MarsProject {
 	 * @throws Exception if error loading the default saved simulation.
 	 */
 	private void handleLoadDefaultSimulation() throws Exception {
-		logger.config("handleLoadDefaultSimulation() is on " 
-				+ Thread.currentThread().getName() + " Thread");
+//		logger.config("handleLoadDefaultSimulation() is on " 
+//				+ Thread.currentThread().getName() + " Thread");
 
 		try {
 //			sim.loadSimulation(null);
 			// Prompt to open the file cHooser to select a saved sim
 			MainWindow.loadSimulationProcess(false);
-			logger.config("Done with MainWindow.loadSimulationProcess(true)");
+//			logger.config("Done with MainWindow.loadSimulationProcess(true)");
 			// Start simulation.
 			startSimulation(true);
 
-			logger.config("useGUI is " + useGUI);
+//			logger.config("useGUI is " + useGUI);
 			if (useGUI) {
 				// Create main window
 				new MainWindow(true);
@@ -296,7 +291,7 @@ public class MarsProject {
 	 * @throws Exception if error loading the saved simulation.
 	 */
 	private void handleLoadSimulation(List<String> argList) throws Exception {
-		logger.config("MarsProject's handleLoadSimulation() is on " + Thread.currentThread().getName() + " Thread");
+//		logger.config("MarsProject's handleLoadSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
 		try {
 			boolean hasDefault = argList.contains("default.sim");
@@ -324,7 +319,7 @@ public class MarsProject {
 			// Start simulation.
 			startSimulation(false);
 
-			logger.config("useGUI is " + useGUI);
+//			logger.config("useGUI is " + useGUI);
 			if (useGUI) {
 				// Create main window
 				new MainWindow(true);
@@ -346,7 +341,7 @@ public class MarsProject {
 	 * Create a new simulation instance.
 	 */
 	private void handleNewSimulation() {
-		 logger.config("MarsProject's handleNewSimulation() is on " + Thread.currentThread().getName());
+//		 logger.config("handleNewSimulation() is on " + Thread.currentThread().getName());
 
 		try {
 			// Alert the user to see the interactive terminal 
@@ -378,7 +373,7 @@ public class MarsProject {
 			sim.getTerm().loadTerminalMenu();	
 		}
 
-		logger.config("Done handleNewSimulation()");
+//		logger.config("Done handleNewSimulation()");
 	}
 
 	/**
@@ -390,7 +385,7 @@ public class MarsProject {
 
 		// Start the simulation.
 		sim.start(useDefaultName);
-		logger.config("Done with sim.start()");
+//		logger.config("Done with sim.start()");
 	}
 
 	/**

@@ -190,7 +190,6 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	@Override
 	public void componentResized(ComponentEvent e) {
-
 		// If displayed for the first time, create background image tile.
 		// The size of the background tile cannot be determined during construction
 		// since it requires the MainDesktopPane be displayed first.
@@ -221,13 +220,13 @@ public class MainDesktopPane extends JDesktopPane
 	// Additional Component Listener methods implemented but not used.
 	@Override
 	public void componentMoved(ComponentEvent e) {
-		logger.config("componentMoved()");
+//		logger.config("componentMoved()");
 		SwingUtilities.invokeLater(() ->  updateToolWindow());
 	}
 
 	@Override
 	public void componentShown(ComponentEvent e) {
-		logger.config("componentShown()");
+//		logger.config("componentShown()");
 		SwingUtilities.invokeLater(() -> {
 			JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
 			for (JInternalFrame f : frames) {

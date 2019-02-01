@@ -368,7 +368,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	 * 
 	 * @return notificationMenu
 	 */
-	// 2014-12-05 Added getNotificationMenu()
 	public NotificationMenu getNotificationMenu() {
 		return notificationMenu;
 	}
@@ -378,7 +377,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	 * 
 	 * @return mainWindow
 	 */
-	// 2014-12-05 Added getMainWindow()
 	public MainWindow getMainWindow() {
 		return mainWindow;
 	}

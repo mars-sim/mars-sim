@@ -252,7 +252,7 @@ public class SimulationConfigEditor {
 					new MainWindow(true);
 					// Close simulation config editor
 					closeWindow();
-					logger.config("Done SimulationConfigEditor()");
+//					logger.config("Done SimulationConfigEditor()");
 				}
 			}
 		});

@@ -215,7 +215,7 @@ public class TelegraphConfig {
 			screenWidth = rect.getWidth();
 			screenHeight = rect.getHeight();
 		}
-		audioEnabled = true;
+		audioEnabled = false;
 		try {
 			audioInputStream = AudioSystem
 					.getAudioInputStream(new BufferedInputStream(ImageLoader.class
