@@ -29,11 +29,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>mars-sim-mapdata</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>net.sf.mars-sim</groupId>
-			<artifactId>mars-sim-network</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.jfree/jfreesvg/3.3 : 43KB
 		     can jfreesvg potentially replace batik ? see http://object-refinery.com/blog/blog-20140423.html

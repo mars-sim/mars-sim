@@ -13,6 +13,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.SpringLayout;
@@ -40,26 +42,23 @@ import javax.swing.text.JTextComponent;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
-import org.mars_sim.network.ClientRegistry;
-import org.mars_sim.network.SettlementRegistry;
+//import org.mars_sim.network.ClientRegistry;
+//import org.mars_sim.network.SettlementRegistry;
 
 /**
  * A panel for creating or editing an arriving settlement.
  */
-public class ArrivingSettlementEditingPanel
-extends TransportItemEditingPanel {
+public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
 	// Data members
 	private String errorString = new String();
@@ -92,12 +91,13 @@ extends TransportItemEditingPanel {
 	private ResupplyWindow resupplyWindow;
 	private NewTransportItemDialog newTransportItemDialog;
 	private ArrivingSettlement settlement;
-	private List<SettlementRegistry> settlementList;
-
+//	private List<SettlementRegistry> settlementList;
 
 	/**
 	 * Constructor.
-	 * @param settlement the arriving settlement to modify or null if creating a new one.
+	 * 
+	 * @param settlement                the arriving settlement to modify or null if
+	 *                                  creating a new one.
 	 * @param resupplywindow
 	 * @param modifyTransportItemDialog
 	 * @param newTransportItemDialog
@@ -119,20 +119,21 @@ extends TransportItemEditingPanel {
 		JPanel topEditPane = new JPanel(new BorderLayout(10, 10));
 		add(topEditPane, BorderLayout.NORTH);
 
-		JPanel topPane = new JPanel(new BorderLayout(10, 10));//GridLayout(2, 1));
+		JPanel topPane = new JPanel(new BorderLayout(10, 10));// GridLayout(2, 1));
 		topEditPane.add(topPane, BorderLayout.NORTH);
 
 		// Create top spring layout.
-		JPanel topSpring = new JPanel(new SpringLayout());//GridLayout(3, 1, 0, 10));
+		JPanel topSpring = new JPanel(new SpringLayout());// GridLayout(3, 1, 0, 10));
 		topPane.add(topSpring, BorderLayout.NORTH);
 
 		// Create name pane.
-		//JPanel namePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		//topInnerEditPane.add(namePane);
+		// JPanel namePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		// topInnerEditPane.add(namePane);
 
 		// Create name title label.
-		JLabel nameTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.settlementName"), JLabel.TRAILING); //$NON-NLS-1$
-		//namePane.add(nameTitleLabel);
+		JLabel nameTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.settlementName"), //$NON-NLS-1$
+				JLabel.TRAILING);
+		// namePane.add(nameTitleLabel);
 		topSpring.add(nameTitleLabel);
 
 		// Create name text field.
@@ -140,16 +141,17 @@ extends TransportItemEditingPanel {
 		if (settlement != null) {
 			nameTF.setText(settlement.getName());
 		}
-		//namePane.add(nameTF);
+		// namePane.add(nameTF);
 		topSpring.add(nameTF);
 
 		// Create the template pane.
-		//JPanel templatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		//topInnerEditPane.add(templatePane);
+		// JPanel templatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		// topInnerEditPane.add(templatePane);
 
 		// Create template title label.
-		JLabel templateTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.layoutTemplate"), JLabel.TRAILING); //$NON-NLS-1$
-		//templatePane.add(templateTitleLabel);
+		JLabel templateTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.layoutTemplate"), //$NON-NLS-1$
+				JLabel.TRAILING);
+		// templatePane.add(templateTitleLabel);
 		topSpring.add(templateTitleLabel);
 
 		// Create template combo box.
@@ -171,12 +173,12 @@ extends TransportItemEditingPanel {
 				updateTemplateLongitude((String) templateCB.getSelectedItem());
 			}
 		});
-		//templatePane.add(templateCB);
+		// templatePane.add(templateCB);
 		topSpring.add(templateCB);
 
-
 		// 2017-02-11 Create sponsor label.
-		JLabel sponsorTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.sponsoringAgency"), JLabel.TRAILING); //$NON-NLS-1$
+		JLabel sponsorTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.sponsoringAgency"), //$NON-NLS-1$
+				JLabel.TRAILING);
 		topSpring.add(sponsorTitleLabel);
 
 		// Create template combo box.
@@ -195,14 +197,13 @@ extends TransportItemEditingPanel {
 		});
 		topSpring.add(sponsorCB);
 
-		//Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(topSpring,
-		                                3, 2, //rows, cols
-		                                50, 10,        //initX, initY
-		                                10, 10);       //xPad, yPad
+		// Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(topSpring, 3, 2, // rows, cols
+				50, 10, // initX, initY
+				10, 10); // xPad, yPad
 
 		JPanel numPane = new JPanel(new GridLayout(1, 2));
-		//topInnerEditPane.add(numPane);
+		// topInnerEditPane.add(numPane);
 		topPane.add(numPane, BorderLayout.CENTER);
 
 		// Create population panel.
@@ -228,8 +229,7 @@ extends TransportItemEditingPanel {
 		if (settlement != null) {
 			populationNum = settlement.getPopulationNum();
 			numOfRobots = settlement.getNumOfRobots();
-		}
-		else {
+		} else {
 			// Update the population number based on selected template.
 			String templateName = (String) templateCB.getSelectedItem();
 			if (templateName != null) {
@@ -375,41 +375,42 @@ extends TransportItemEditingPanel {
 		topEditPane.add(southPane, BorderLayout.SOUTH);
 
 		// Create landing location panel.
-		JPanel landingLocationPane = new JPanel(new SpringLayout());//new GridLayout(2, 5, 0, 10));
-		//landingLocationPane.setSize(300, 100);
-		//landingLocationPane.setMaximumSize(new Dimension(300, 100));
-		//landingLocationPane.setMinimumSize(new Dimension(300, 100));
-		landingLocationPane.setBorder(new TitledBorder(Msg.getString("ArrivingSettlementEditingPanel.landingLocation"))); //$NON-NLS-1$
+		JPanel landingLocationPane = new JPanel(new SpringLayout());// new GridLayout(2, 5, 0, 10));
+		// landingLocationPane.setSize(300, 100);
+		// landingLocationPane.setMaximumSize(new Dimension(300, 100));
+		// landingLocationPane.setMinimumSize(new Dimension(300, 100));
+		landingLocationPane
+				.setBorder(new TitledBorder(Msg.getString("ArrivingSettlementEditingPanel.landingLocation"))); //$NON-NLS-1$
 
 		southPane.add(landingLocationPane);
 		southPane.add(emptyLabel);
 
-
 		// Create latitude panel.
-		//JPanel latitudePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		//landingLocationPane.add(latitudePane);
+		// JPanel latitudePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		// landingLocationPane.add(latitudePane);
 
 		// Create latitude title label.
 		JLabel latitudeTitleLabel = new JLabel(Msg.getString("direction.latitude"), JLabel.TRAILING); //$NON-NLS-1$
-		//latitudePane.add(latitudeTitleLabel);
+		// latitudePane.add(latitudeTitleLabel);
 		landingLocationPane.add(latitudeTitleLabel);
 
 		// Create latitude text field.
 		latitudeTF = new JTextField(4);
 		latitudeTitleLabel.setLabelFor(latitudeTF);
-/*		if (settlement != null) {
-			String latString = settlement.getLandingLocation().getFormattedLatitudeString();
-			System.out.println("ArrivingSettlementEditingPanel : latString is " + latString);
-			// Remove last two characters from formatted latitude string.
-			String cleanLatString = latString.substring(0, latString.length() - 3);
-			latitudeTF.setText(cleanLatString);
-		}
-*/
+		/*
+		 * if (settlement != null) { String latString =
+		 * settlement.getLandingLocation().getFormattedLatitudeString();
+		 * System.out.println("ArrivingSettlementEditingPanel : latString is " +
+		 * latString); // Remove last two characters from formatted latitude string.
+		 * String cleanLatString = latString.substring(0, latString.length() - 3);
+		 * latitudeTF.setText(cleanLatString); }
+		 */
 		latitudeTF.setHorizontalAlignment(JTextField.RIGHT);
-		//latitudePane.add(latitudeTF);
+		// latitudePane.add(latitudeTF);
 		landingLocationPane.add(latitudeTF);
 
-		// pull the degree sign into the comboboxes so it looks more like mars navigator window
+		// pull the degree sign into the comboboxes so it looks more like mars navigator
+		// window
 		String deg = Msg.getString("direction.degreeSign"); //$NON-NLS-1$
 
 		// Create latitude direction combo box.
@@ -418,7 +419,8 @@ extends TransportItemEditingPanel {
 		latitudeDirectionCB.addItem(deg + Msg.getString("direction.southShort")); //$NON-NLS-1$
 		if (settlement != null) {
 			String latString = settlement.getLandingLocation().getFormattedLatitudeString();
-			//System.out.println("ArrivingSettlementEditingPanel : latString is " + latString);
+			// System.out.println("ArrivingSettlementEditingPanel : latString is " +
+			// latString);
 			// Remove last two characters from formatted latitude string.
 			String cleanLatString = latString.substring(0, latString.length() - 3);
 			latitudeTF.setText(cleanLatString);
@@ -427,33 +429,33 @@ extends TransportItemEditingPanel {
 			String dirString = latString.substring(latString.length() - 1, latString.length());
 			latitudeDirectionCB.setSelectedItem(dirString);
 		}
-		//latitudePane.add(latitudeDirectionCB);
+		// latitudePane.add(latitudeDirectionCB);
 		landingLocationPane.add(latitudeDirectionCB);
 
 		// Create longitude panel.
-		//JPanel longitudePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		//landingLocationPane.add(longitudePane);
+		// JPanel longitudePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		// landingLocationPane.add(longitudePane);
 
 		// Create longitude title label.
 		JLabel longitudeTitleLabel = new JLabel(Msg.getString("direction.longitude"), JLabel.TRAILING); //$NON-NLS-1$
-		//longitudePane.add(longitudeTitleLabel);
+		// longitudePane.add(longitudeTitleLabel);
 		landingLocationPane.add(longitudeTitleLabel);
-		//landingLocationPane.add(emptyLabel);
-		//landingLocationPane.add(emptyLabel);
+		// landingLocationPane.add(emptyLabel);
+		// landingLocationPane.add(emptyLabel);
 
 		// Create longitude text field.
 		longitudeTF = new JTextField(4);
 		longitudeTitleLabel.setLabelFor(longitudeTF);
-/*		if (settlement != null) {
-			String lonString = settlement.getLandingLocation().getFormattedLongitudeString();
-			System.out.println("ArrivingSettlementEditingPanel : lonString is " + lonString);
-			// Remove last three characters from formatted longitude string.
-			String cleanLonString = lonString.substring(0, lonString.length() - 3);
-			longitudeTF.setText(cleanLonString);
-		}
-*/
+//		if (settlement != null) {
+//			String lonString = settlement.getLandingLocation().getFormattedLongitudeString();
+//			System.out.println("ArrivingSettlementEditingPanel : lonString is " + lonString);
+//			// Remove last three characters from formatted longitude string.
+//			String cleanLonString = lonString.substring(0, lonString.length() - 3);
+//			longitudeTF.setText(cleanLonString);
+//		}
+
 		longitudeTF.setHorizontalAlignment(JTextField.RIGHT);
-		//longitudePane.add(longitudeTF);
+		// longitudePane.add(longitudeTF);
 		landingLocationPane.add(longitudeTF);
 
 		// Create longitude direction combo box.
@@ -462,7 +464,8 @@ extends TransportItemEditingPanel {
 		longitudeDirectionCB.addItem(deg + Msg.getString("direction.eastShort")); //$NON-NLS-1$
 		if (settlement != null) {
 			String lonString = settlement.getLandingLocation().getFormattedLongitudeString();
-			//System.out.println("ArrivingSettlementEditingPanel : lonString is " + lonString);
+			// System.out.println("ArrivingSettlementEditingPanel : lonString is " +
+			// lonString);
 			// Remove last three characters from formatted longitude string.
 			String cleanLonString = lonString.substring(0, lonString.length() - 3);
 			longitudeTF.setText(cleanLonString);
@@ -470,16 +473,15 @@ extends TransportItemEditingPanel {
 			String dirString = lonString.substring(lonString.length() - 1, lonString.length());
 			longitudeDirectionCB.setSelectedItem(dirString);
 		}
-		//longitudePane.add(longitudeDirectionCB);
+		// longitudePane.add(longitudeDirectionCB);
 		landingLocationPane.add(longitudeDirectionCB);
-		//landingLocationPane.add(emptyLabel);
-		//landingLocationPane.add(emptyLabel);
+		// landingLocationPane.add(emptyLabel);
+		// landingLocationPane.add(emptyLabel);
 
-		//Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(landingLocationPane,
-		                                2, 3, //rows, cols
-		                                20, 10,        //initX, initY
-		                                10, 10);       //xPad, yPad
+		// Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(landingLocationPane, 2, 3, // rows, cols
+				20, 10, // initX, initY
+				10, 10); // xPad, yPad
 
 		// Create error pane.
 		JPanel errorPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
@@ -494,6 +496,7 @@ extends TransportItemEditingPanel {
 
 	/**
 	 * Set the components of the arrival date pane to be enabled or disabled.
+	 * 
 	 * @param enable true if enable components, false if disable components.
 	 */
 	private void setEnableArrivalDatePane(boolean enable) {
@@ -508,6 +511,7 @@ extends TransportItemEditingPanel {
 
 	/**
 	 * Set the components of the time until arrival pane to be enabled or disabled.
+	 * 
 	 * @param enable true if enable components, false if disable components.
 	 */
 	private void setEnableTimeUntilArrivalPane(boolean enable) {
@@ -517,7 +521,9 @@ extends TransportItemEditingPanel {
 	}
 
 	/**
-	 * Updates the population number text field value based on the selected template name.
+	 * Updates the population number text field value based on the selected template
+	 * name.
+	 * 
 	 * @param templateName the template name.
 	 */
 	private void updateTemplatePopulationNum(String templateName) {
@@ -529,9 +535,9 @@ extends TransportItemEditingPanel {
 		}
 	}
 
-
 	/**
 	 * Updates the numOfRobots text field value based on the selected template name.
+	 * 
 	 * @param templateName the template name.
 	 */
 	private void updateTemplateNumOfRobots(String templateName) {
@@ -545,6 +551,7 @@ extends TransportItemEditingPanel {
 
 	/**
 	 * Updates the Latitude text field value based on the selected template name.
+	 * 
 	 * @param templateName the template name.
 	 */
 	private void updateTemplateLatitude(String templateName) {
@@ -552,14 +559,15 @@ extends TransportItemEditingPanel {
 
 	/**
 	 * Updates the Longitudetext field value based on the selected template name.
+	 * 
 	 * @param templateName the template name.
 	 */
 	private void updateTemplateLongitude(String templateName) {
 	}
 
-
 	/**
 	 * Validate the arriving settlement data.
+	 * 
 	 * @param MultiplayerClient
 	 * @return true if data is valid.
 	 */
@@ -585,37 +593,32 @@ extends TransportItemEditingPanel {
 		if (populationNumString.trim().isEmpty()) {
 			validation_result = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noPopulation"); //$NON-NLS-1$
-		}
-		else {
+		} else {
 			try {
 				int popNum = Integer.parseInt(populationNumString);
 				if (popNum < 0) {
 					validation_result = false;
 					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativePopulation"); //$NON-NLS-1$
 				}
-			}
-			catch (NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				validation_result = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidPopulation"); //$NON-NLS-1$
 			}
 		}
-
 
 		// Validate numOfRobots.
 		String numOfRobotsString = numOfRobotsTF.getText();
 		if (numOfRobotsString.trim().isEmpty()) {
 			validation_result = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.nonumOfRobots"); //$NON-NLS-1$
-		}
-		else {
+		} else {
 			try {
 				int numOfRobots = Integer.parseInt(numOfRobotsString);
 				if (numOfRobots < 0) {
 					validation_result = false;
 					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativenumOfRobots"); //$NON-NLS-1$
 				}
-			}
-			catch (NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				validation_result = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidnumOfRobots"); //$NON-NLS-1$
 			}
@@ -632,9 +635,8 @@ extends TransportItemEditingPanel {
 				errorLabel.setText(errorString);
 				enableButton(false);
 				System.out.println("Invalid sol. It cannot be empty.");
-			}
-			else {
-				//System.out.println("calling addChangeListener()");
+			} else {
+				// System.out.println("calling addChangeListener()");
 				addChangeListener(solsTF, e -> validateSolsTF(timeArrivalString));
 
 				if (errorString == null)
@@ -649,16 +651,14 @@ extends TransportItemEditingPanel {
 		if (latitudeString.isEmpty()) {
 			validation_result = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noLatitude"); //$NON-NLS-1$
-		}
-		else {
+		} else {
 			try {
 				Double latitudeValue = Double.parseDouble(latitudeString);
 				if ((latitudeValue < 0D) || (latitudeValue > 90D)) {
 					validation_result = false;
 					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.rangeLatitude"); //$NON-NLS-1$
 				}
-			}
-			catch (NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				validation_result = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidLatitude"); //$NON-NLS-1$
 			}
@@ -669,23 +669,21 @@ extends TransportItemEditingPanel {
 		if (longitudeString.isEmpty()) {
 			validation_result = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noLongitude"); //$NON-NLS-1$
-		}
-		else {
+		} else {
 			try {
 				Double longitudeValue = Double.parseDouble(longitudeString);
 				if ((longitudeValue < 0D) || (longitudeValue > 180D)) {
 					validation_result = false;
 					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.rangeLongitude"); //$NON-NLS-1$
 				}
-			}
-			catch (NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				validation_result = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidLongitude"); //$NON-NLS-1$
 			}
 		}
 
 		// Check that landing location is not at an existing settlement's location.
-		if (validation_result && !validateLandingLocation()) {
+		if (validation_result) { // && !validateLandingLocation()) {
 			validation_result = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.collision"); //$NON-NLS-1$
 		}
@@ -696,7 +694,7 @@ extends TransportItemEditingPanel {
 	}
 
 	public void validateSolsTF(String timeArrivalString) {
-		//System.out.println("running validateSolsTF()");
+		// System.out.println("running validateSolsTF()");
 		errorString = null;
 
 		try {
@@ -705,52 +703,49 @@ extends TransportItemEditingPanel {
 			if (timeArrivalString.equals("-"))
 				timeArrivalString = "-1";
 			double timeArrival = Double.parseDouble(timeArrivalString);
-			//int inputSols = Integer.parseInt(solsTF.getText());
+			// int inputSols = Integer.parseInt(solsTF.getText());
 			if (timeArrival < 0D) {
 				validation_result = false;
 				enableButton(false);
 				System.out.println("Invalid entry! Sol must be greater than zero.");
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativeSols"); //$NON-NLS-1$
 				errorLabel.setText(errorString);
-			}
-			else {
+			} else {
 				boolean good = true;
-				// 2016-01-14 Added checking if that sol has already been taken
+				// Add checking if that sol has already been taken
 				JList<?> jList = resupplyWindow.getIncomingListPane().getIncomingList();
 				ListModel<?> model = jList.getModel();
 
-				for(int i=0; i < model.getSize(); i++){
-				     Transportable transportItem = (Transportable) model.getElementAt(i);
+				for (int i = 0; i < model.getSize(); i++) {
+					Transportable transportItem = (Transportable) model.getElementAt(i);
 
 					if ((transportItem != null)) {
 						if (transportItem instanceof Resupply) {
 							// Create modify resupply mission dialog.
 							Resupply resupply = (Resupply) transportItem;
 							MarsClock arrivingTime = resupply.getArrivalDate();
-//							MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 							int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
 							sols.add(solsDiff);
 
-						}
-						else if (transportItem instanceof ArrivingSettlement) {
+						} else if (transportItem instanceof ArrivingSettlement) {
 							// Create modify arriving settlement dialog.
 							ArrivingSettlement newS = (ArrivingSettlement) transportItem;
 							if (!newS.equals(settlement)) {
 								MarsClock arrivingTime = newS.getArrivalDate();
-//								MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-								int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
+								int solsDiff = (int) Math
+										.round((MarsClock.getTimeDiff(arrivingTime, marsClock) / 1000D));
 								sols.add(solsDiff);
 							}
 						}
 					}
 				}
 
-				//System.out.println("sols.size() : " + sols.size() );
+				// System.out.println("sols.size() : " + sols.size() );
 
 				Iterator<Integer> i = sols.iterator();
 				while (i.hasNext()) {
 					int sol = i.next();
-					if (sol == (int)timeArrival) {
+					if (sol == (int) timeArrival) {
 						System.out.println("Invalid entry! Sol " + sol + " has already been taken.");
 						validation_result = false;
 						good = false;
@@ -768,8 +763,7 @@ extends TransportItemEditingPanel {
 					enableButton(true);
 				}
 			}
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			validation_result = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidSols"); //$NON-NLS-1$
 			enableButton(false);
@@ -788,127 +782,130 @@ extends TransportItemEditingPanel {
 	/**
 	 * Installs a listener to receive notification when the text of any
 	 * {@code JTextComponent} is changed. Internally, it installs a
-	 * {@link DocumentListener} on the text component's {@link Document},
-	 * and a {@link PropertyChangeListener} on the text component to detect
-	 * if the {@code Document} itself is replaced.
+	 * {@link DocumentListener} on the text component's {@link Document}, and a
+	 * {@link PropertyChangeListener} on the text component to detect if the
+	 * {@code Document} itself is replaced.
 	 *
-	 * @param text any text component, such as a {@link JTextField}
-	 *        or {@link JTextArea}
-	 * @param changeListener a listener to receieve {@link ChangeEvent}s
-	 *        when the text is changed; the source object for the events
-	 *        will be the text component
+	 * @param text           any text component, such as a {@link JTextField} or
+	 *                       {@link JTextArea}
+	 * @param changeListener a listener to receieve {@link ChangeEvent}s when the
+	 *                       text is changed; the source object for the events will
+	 *                       be the text component
 	 * @throws NullPointerException if either parameter is null
 	 */
-	// see http://stackoverflow.com/questions/3953208/value-change-listener-to-jtextfield
-	// 2016-01-15 Added addChangeListener()
+	// see
+	// http://stackoverflow.com/questions/3953208/value-change-listener-to-jtextfield
 	public static void addChangeListener(JTextComponent text, ChangeListener changeListener) {
-	    Objects.requireNonNull(text);
-	    Objects.requireNonNull(changeListener);
-	    DocumentListener dl = new DocumentListener() {
-	        private int lastChange = 0, lastNotifiedChange = 0;
+		Objects.requireNonNull(text);
+		Objects.requireNonNull(changeListener);
+		DocumentListener dl = new DocumentListener() {
+			private int lastChange = 0, lastNotifiedChange = 0;
 
-	        @Override
-	        public void insertUpdate(DocumentEvent e) {
-	            changedUpdate(e);
-	        }
-
-	        @Override
-	        public void removeUpdate(DocumentEvent e) {
-	            changedUpdate(e);
-	        }
-
-	        public void changedUpdate(DocumentEvent e) {
-				//System.out.println("calling addChangeListener()'s changedUpdate()");
-	            lastChange++;
-	            SwingUtilities.invokeLater(() -> {
-	                if (lastNotifiedChange != lastChange) {
-	                    lastNotifiedChange = lastChange;
-	                    changeListener.stateChanged(new ChangeEvent(text));
-	                }
-	            });
-	        }
-	    };
-	    text.addPropertyChangeListener("document", (PropertyChangeEvent e) -> {
-	        Document d1 = (Document)e.getOldValue();
-	        Document d2 = (Document)e.getNewValue();
-	        if (d1 != null) d1.removeDocumentListener(dl);
-	        if (d2 != null) d2.addDocumentListener(dl);
-	        dl.changedUpdate(null);
-	    });
-	    Document d = text.getDocument();
-	    if (d != null) d.addDocumentListener(dl);
-	}
-
-	/**
-	 * Validate that landing location is not equal to an existing settlement's location.
-	 * @return true if good landing location.
-	 */
-	private boolean validateLandingLocation() {
-		boolean result = true;
-
-		String fullLatString = latitudeTF.getText().trim() + latitudeDirectionCB.getSelectedItem();
-		String fullLonString = longitudeTF.getText().trim() + longitudeDirectionCB.getSelectedItem();
-		try {
-			Coordinates landingLocation = new Coordinates(fullLatString, fullLonString);
-			Iterator<Settlement> i = unitManager.getSettlements().iterator();
-			while (i.hasNext()) {
-				if (i.next().getCoordinates().equals(landingLocation)) {
-					return false;
-				}
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				changedUpdate(e);
 			}
 
-			// 2015-04-23 Added checking of latitudes and longitudes of other clients' existing settlements
-			// Need to load a fresh, updated version of this list every time validateData() is called.
-			settlementList = ClientRegistry.getSettlementList();
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				changedUpdate(e);
+			}
 
-			String latitudeString = latitudeTF.getText().trim();
-			String longitudeString = longitudeTF.getText().trim();
-
-			Double latitudeValue = Double.parseDouble(latitudeString);
-			Double longitudeValue = Double.parseDouble(longitudeString);
-
-			latitudeValue = Math.abs(Math.round(latitudeValue*10.0)/10.0);
-			latitudeTF.setText(latitudeValue + "");
-
-			longitudeValue = Math.abs(Math.round(longitudeValue*10.0)/10.0);
-			longitudeTF.setText(longitudeValue + "");
-
-			String latDir = (String) latitudeDirectionCB.getSelectedItem();
-			String lonDir = (String) longitudeDirectionCB.getSelectedItem();
-
-			//System.out.println("latDir.substring(1) is "+ latDir.substring(1));
-
-			// 2015-04-23 Added checking of latitude of existing settlements
-			if (settlementList != null)
-				for(SettlementRegistry s : settlementList) {
-					if (latitudeValue == 0 && s.getLatitude() == 0)
-						return false;
-					else if (longitudeValue == 0 && s.getLongitude() == 0)
-						return false;
-
-					else if (latitudeValue == Math.abs(s.getLatitude())) {
-						if ((s.getLatitude() > 0 && latDir.substring(1).equals("N")))
-							return false;
-						else if ((s.getLatitude() < 0 && latDir.substring(1).equals("S")))
-							return false;
+			public void changedUpdate(DocumentEvent e) {
+				// System.out.println("calling addChangeListener()'s changedUpdate()");
+				lastChange++;
+				SwingUtilities.invokeLater(() -> {
+					if (lastNotifiedChange != lastChange) {
+						lastNotifiedChange = lastChange;
+						changeListener.stateChanged(new ChangeEvent(text));
 					}
-					else if (longitudeValue == Math.abs(s.getLongitude())) {
-						if ((s.getLongitude() > 0 && lonDir.substring(1).equals("E")))
-							return false;
-						else if ((s.getLongitude() < 0 && lonDir.substring(1).equals("W")))
-							return false;
-					}
-
-				}
-
-		}
-		catch (IllegalStateException e) {
-			e.printStackTrace(System.err);
-			result = false;
-		}
-
-		return result;
+				});
+			}
+		};
+		text.addPropertyChangeListener("document", (PropertyChangeEvent e) -> {
+			Document d1 = (Document) e.getOldValue();
+			Document d2 = (Document) e.getNewValue();
+			if (d1 != null)
+				d1.removeDocumentListener(dl);
+			if (d2 != null)
+				d2.addDocumentListener(dl);
+			dl.changedUpdate(null);
+		});
+		Document d = text.getDocument();
+		if (d != null)
+			d.addDocumentListener(dl);
 	}
+
+//	/**
+//	 * Validate that landing location is not equal to an existing settlement's location.
+//	 * @return true if good landing location.
+//	 */
+//	private boolean validateLandingLocation() {
+//		boolean result = true;
+//
+//		String fullLatString = latitudeTF.getText().trim() + latitudeDirectionCB.getSelectedItem();
+//		String fullLonString = longitudeTF.getText().trim() + longitudeDirectionCB.getSelectedItem();
+//		try {
+//			Coordinates landingLocation = new Coordinates(fullLatString, fullLonString);
+//			Iterator<Settlement> i = unitManager.getSettlements().iterator();
+//			while (i.hasNext()) {
+//				if (i.next().getCoordinates().equals(landingLocation)) {
+//					return false;
+//				}
+//			}
+//
+//			// 2015-04-23 Added checking of latitudes and longitudes of other clients' existing settlements
+//			// Need to load a fresh, updated version of this list every time validateData() is called.
+//			settlementList = ClientRegistry.getSettlementList();
+//
+//			String latitudeString = latitudeTF.getText().trim();
+//			String longitudeString = longitudeTF.getText().trim();
+//
+//			Double latitudeValue = Double.parseDouble(latitudeString);
+//			Double longitudeValue = Double.parseDouble(longitudeString);
+//
+//			latitudeValue = Math.abs(Math.round(latitudeValue*10.0)/10.0);
+//			latitudeTF.setText(latitudeValue + "");
+//
+//			longitudeValue = Math.abs(Math.round(longitudeValue*10.0)/10.0);
+//			longitudeTF.setText(longitudeValue + "");
+//
+//			String latDir = (String) latitudeDirectionCB.getSelectedItem();
+//			String lonDir = (String) longitudeDirectionCB.getSelectedItem();
+//
+//			//System.out.println("latDir.substring(1) is "+ latDir.substring(1));
+//
+//			// 2015-04-23 Added checking of latitude of existing settlements
+//			if (settlementList != null)
+//				for(SettlementRegistry s : settlementList) {
+//					if (latitudeValue == 0 && s.getLatitude() == 0)
+//						return false;
+//					else if (longitudeValue == 0 && s.getLongitude() == 0)
+//						return false;
+//
+//					else if (latitudeValue == Math.abs(s.getLatitude())) {
+//						if ((s.getLatitude() > 0 && latDir.substring(1).equals("N")))
+//							return false;
+//						else if ((s.getLatitude() < 0 && latDir.substring(1).equals("S")))
+//							return false;
+//					}
+//					else if (longitudeValue == Math.abs(s.getLongitude())) {
+//						if ((s.getLongitude() > 0 && lonDir.substring(1).equals("E")))
+//							return false;
+//						else if ((s.getLongitude() < 0 && lonDir.substring(1).equals("W")))
+//							return false;
+//					}
+//
+//				}
+//
+//		}
+//		catch (IllegalStateException e) {
+//			e.printStackTrace(System.err);
+//			result = false;
+//		}
+//
+//		return result;
+//	}
 
 	@Override
 	public boolean modifyTransportItem() {
@@ -917,8 +914,7 @@ extends TransportItemEditingPanel {
 			populateArrivingSettlement(settlement);
 			settlement.commitModification();
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -933,19 +929,19 @@ extends TransportItemEditingPanel {
 			int numOfRobots = Integer.parseInt(numOfRobotsTF.getText());
 			MarsClock arrivalDate = getArrivalDate();
 			Coordinates landingLoc = getLandingLocation();
-			ArrivingSettlement newArrivingSettlement = new ArrivingSettlement(name, template,
-					arrivalDate, landingLoc, popNum, numOfRobots);
+			ArrivingSettlement newArrivingSettlement = new ArrivingSettlement(name, template, arrivalDate, landingLoc,
+					popNum, numOfRobots);
 			populateArrivingSettlement(newArrivingSettlement);
 			Simulation.instance().getTransportManager().addNewTransportItem(newArrivingSettlement);
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
 
 	/**
 	 * Populate the arriving settlement with UI data.
+	 * 
 	 * @param settlement the arriving settlement to populate.
 	 */
 	private void populateArrivingSettlement(ArrivingSettlement settlement) {
@@ -966,7 +962,6 @@ extends TransportItemEditingPanel {
 		settlement.setLaunchDate(launchDate);
 
 		// Set transit state based on launch and arrival time.
-//		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		TransitState state = TransitState.PLANNED;
 		if (MarsClock.getTimeDiff(marsClock, launchDate) > 0D) {
 			state = TransitState.IN_TRANSIT;
@@ -984,7 +979,6 @@ extends TransportItemEditingPanel {
 		int numOfRobots = Integer.parseInt(numOfRobotsTF.getText());
 		settlement.setNumOfRobots(numOfRobots);
 
-
 		// Set landing location.
 		Coordinates landingLocation = getLandingLocation();
 		settlement.setLandingLocation(landingLocation);
@@ -992,11 +986,11 @@ extends TransportItemEditingPanel {
 
 	/**
 	 * Gets the arrival date from the UI values.
+	 * 
 	 * @return arrival date as MarsClock instance.
 	 */
 	private MarsClock getArrivalDate() {
 
-//		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		MarsClock result = (MarsClock) marsClock.clone();
 
 		if (arrivalDateRB.isSelected()) {
@@ -1008,29 +1002,25 @@ extends TransportItemEditingPanel {
 
 				// Set millisols to current time if resupply is current date, otherwise 0.
 				double millisols = 0D;
-				if ((sol == marsClock.getSolOfMonth()) && (month == marsClock.getMonth()) &&
-						(orbit == marsClock.getOrbit())) {
+				if ((sol == marsClock.getSolOfMonth()) && (month == marsClock.getMonth())
+						&& (orbit == marsClock.getOrbit())) {
 					millisols = marsClock.getMillisol();
 				}
 
 				result = new MarsClock(orbit, month, sol, millisols, -1);
-			}
-			catch (NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				e.printStackTrace(System.err);
 			}
-		}
-		else if (timeUntilArrivalRB.isSelected()) {
+		} else if (timeUntilArrivalRB.isSelected()) {
 			// Determine arrival date from time until arrival text field.
 			try {
 				int solsDiff = Integer.parseInt(solsTF.getText());
 				if (solsDiff > 0) {
 					result.addTime(solsDiff * 1000D);
-				}
-				else {
+				} else {
 					result.addTime(marsClock.getMillisol());
 				}
-			}
-			catch (NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				e.printStackTrace(System.err);
 			}
 		}
@@ -1040,13 +1030,14 @@ extends TransportItemEditingPanel {
 
 	/**
 	 * Gets the landing location from the UI values.
+	 * 
 	 * @return landing location coordinates.
 	 */
 	private Coordinates getLandingLocation() {
 		String fullLatString = latitudeTF.getText().trim() + latitudeDirectionCB.getSelectedItem();
-		//System.out.println("fullLatString : " + fullLatString);
+		// System.out.println("fullLatString : " + fullLatString);
 		String fullLonString = longitudeTF.getText().trim() + longitudeDirectionCB.getSelectedItem();
-		//System.out.println("fullLonString : " + fullLonString);
+		// System.out.println("fullLonString : " + fullLonString);
 		return new Coordinates(fullLatString, fullLonString);
 	}
 

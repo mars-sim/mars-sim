@@ -690,11 +690,25 @@ public class MainWindow extends JComponent {
 	 */
 	public void setLookAndFeel(boolean nativeLookAndFeel, boolean nimRODLookAndFeel) {
 		boolean changed = false;
-
+   
 		// use the weblaf skin
 		WebLookAndFeel.install();
 		UIManagers.initialize();
 		
+//		 final XStream xs = XmlUtils.getXStream();
+//		 XStream.setupDefaultSecurity(xs);
+//		 xs.allowTypesByWildcard(new String[] { "com.alee.**" });
+    
+//		 XStream xstream = new XStream(new StaxDriver()) {
+//		      @Override
+//		      protected void setupConverters() {
+//		      }
+//		    };
+//		    xstream.registerConverter(new ReflectionConverter(xstream.getMapper(), xstream.getReflectionProvider()), XStream.PRIORITY_VERY_LOW);
+//		    xstream.registerConverter(new IntConverter(), XStream.PRIORITY_NORMAL);
+//		    xstream.registerConverter(new StringConverter(), XStream.PRIORITY_NORMAL);
+//		    xstream.registerConverter(new CollectionConverter(xstream.getMapper()), XStream.PRIORITY_NORMAL);
+		    
 		String currentTheme = UIManager.getLookAndFeel().getClass().getName();
 
 		if (nativeLookAndFeel) {
