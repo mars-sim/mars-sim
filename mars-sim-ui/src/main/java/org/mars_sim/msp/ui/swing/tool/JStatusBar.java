@@ -13,6 +13,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -69,7 +70,7 @@ public class JStatusBar extends JPanel {
         
     }
     
-    /*
+    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -99,5 +100,5 @@ public class JStatusBar extends JPanel {
         g.drawLine(0, y, getWidth(), y);
 
     }
-*/
+
 }

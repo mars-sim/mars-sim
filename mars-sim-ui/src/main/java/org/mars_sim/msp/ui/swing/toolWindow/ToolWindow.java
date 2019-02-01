@@ -16,8 +16,6 @@ import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 
 import com.alee.laf.desktoppane.WebInternalFrame;
 
-import javafx.scene.control.CheckMenuItem;
-
 /**
  * The ToolWindow class is an abstract UI window for a tool. Particular tool
  * windows should be derived from this.
@@ -31,10 +29,7 @@ public abstract class ToolWindow extends WebInternalFrame {
 	
 	/** The name of the tool the window is for. */
 	protected String name;
-	
-	private CheckMenuItem item;
-//	private MainSceneMenu msm;
-	
+
 	/** The main desktop. */
 	protected MainDesktopPane desktop;
 //	protected MainScene mainScene;
@@ -169,11 +164,8 @@ public abstract class ToolWindow extends WebInternalFrame {
 	 * Prepares tool window for deletion.
 	 */
 	public void destroy() {
-		item = null;
-//		msm = null;
 		desktop = null;
 		masterClock = null;
-//		mainScene = null;
 		monitorWindow = null;
 	}
 }

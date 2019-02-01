@@ -17,27 +17,20 @@ import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Logger;
-
-import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.Alert.AlertType;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-
 import javax.swing.JOptionPane;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
@@ -396,28 +389,28 @@ public class BuildingPanel extends WebPanel {
 				Msg.getString("BuildingPanel.renameBuilding.dialogTitle"), JOptionPane.QUESTION_MESSAGE);
 	}
 
-	/**
-	 * Ask for a new building name using TextInputDialog in JavaFX/8
-	 * 
-	 * @return new name
-	 */
-	public String askNameFX(String oldName) {
-		String newName = null;
-		TextInputDialog dialog = new TextInputDialog(oldName);
-		dialog.setTitle(Msg.getString("BuildingPanel.renameBuilding.dialogTitle"));
-		dialog.setHeaderText(Msg.getString("BuildingPanel.renameBuilding.dialog.header"));
-		dialog.setContentText(Msg.getString("BuildingPanel.renameBuilding.dialog.content"));
-
-		Optional<String> result = dialog.showAndWait();
-		// result.ifPresent(name -> {});
-
-		if (result.isPresent()) {
-			logger.info("The old building name has been changed to: " + result.get());
-			newName = result.get();
-		}
-
-		return newName;
-	}
+//	/**
+//	 * Ask for a new building name using TextInputDialog in JavaFX/8
+//	 * 
+//	 * @return new name
+//	 */
+//	public String askNameFX(String oldName) {
+//		String newName = null;
+//		TextInputDialog dialog = new TextInputDialog(oldName);
+//		dialog.setTitle(Msg.getString("BuildingPanel.renameBuilding.dialogTitle"));
+//		dialog.setHeaderText(Msg.getString("BuildingPanel.renameBuilding.dialog.header"));
+//		dialog.setContentText(Msg.getString("BuildingPanel.renameBuilding.dialog.content"));
+//
+//		Optional<String> result = dialog.showAndWait();
+//		// result.ifPresent(name -> {});
+//
+//		if (result.isPresent()) {
+//			logger.info("The old building name has been changed to: " + result.get());
+//			newName = result.get();
+//		}
+//
+//		return newName;
+//	}
 
 	/**
 	 * Change and validate the new name of a Building

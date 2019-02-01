@@ -72,8 +72,6 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
 
 import com.alee.laf.desktoppane.WebInternalFrame;
 
-import javafx.scene.control.SingleSelectionModel;
-
 /**
  * The MainDesktopPane class is the desktop part of the project's UI. It
  * contains all tool and unit windows, and is itself contained, along with the
@@ -127,7 +125,6 @@ public class MainDesktopPane extends JDesktopPane
 	private MainWindow mainWindow;
 	private OrbitViewer orbitViewer;
 	private EventTableModel eventTableModel;
-	private SingleSelectionModel ssm;
 
 	private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock = sim.getMasterClock();
@@ -520,8 +517,9 @@ public class MainDesktopPane extends JDesktopPane
 	 * @return true true if tool window is open
 	 */
 	public boolean isToolWindowOpen(String toolName) {
-		return !getToolWindow(toolName).isClosed();
-
+		if (getToolWindow(toolName) != null)
+			return !getToolWindow(toolName).isClosed();
+		return false;
 	}
 
 	/**
@@ -1382,7 +1380,6 @@ public class MainDesktopPane extends JDesktopPane
 		orbitViewer = null;
 //		browserJFX = null;
 		eventTableModel = null;
-		ssm = null;
 	}
 
 }

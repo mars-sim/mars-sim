@@ -659,7 +659,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
         ctrlPanel.add(stepLabel);
 
 		// Step choice box
-		choiceTimeStep = new JComboBox();
+		choiceTimeStep = new JComboBox<String>();
 		choiceTimeStep.setFont(new Font("Dialog", Font.PLAIN, fontSize));
 		choiceTimeStep.addActionListener(this);
 		gbcCtrlPanel.gridx = 1;
@@ -691,7 +691,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
                 ctrlPanel.add(centerLabel);
 
                // Center Object choice box
-                choiceCenterObject = new JComboBox();
+                choiceCenterObject = new JComboBox<String>();
                 choiceCenterObject.setFont(new Font("Dialog", Font.PLAIN, fontSize));
                 choiceCenterObject.addActionListener(this);
                 gbcCtrlPanel.gridx = 1;

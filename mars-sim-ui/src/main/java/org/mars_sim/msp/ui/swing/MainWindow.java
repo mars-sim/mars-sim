@@ -129,7 +129,7 @@ public class MainWindow extends JComponent {
 			setLookAndFeel(false, false);
 		else
 			setLookAndFeel(false, true);
-		
+		logger.config("Calling MainDesktopPane()");
 		desktop = new MainDesktopPane(this);
 		
 		frame = new JFrame();
@@ -153,8 +153,7 @@ public class MainWindow extends JComponent {
 		// Open all initial windows.
 		desktop.openInitialWindows();
 		
-		// Load the menu choice
-		sim.getTerm().loadTerminalMenu();
+		logger.config("Done MainWindow()");
 	}
 
 
@@ -474,9 +473,7 @@ public class MainWindow extends JComponent {
 //				sim.start(false);
 
 //			startEarthTimer();
-
 		}
-
 	}
 
 	/**
@@ -604,8 +601,6 @@ public class MainWindow extends JComponent {
 				return;
 			}
 		}
-
-//		MasterClock clock = Simulation.instance().getMasterClock();
 
 		if (isAutosave) {
 			desktop.disposeAnnouncementWindow();
@@ -752,9 +747,7 @@ public class MainWindow extends JComponent {
 			if (desktop != null) {
 				desktop.updateToolWindowLF();
 				desktop.updateAnnouncementWindowLF();
-
 			}
-
 		}
 	}
 

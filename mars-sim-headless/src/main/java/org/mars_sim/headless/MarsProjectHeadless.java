@@ -141,8 +141,6 @@ public class MarsProjectHeadless {
 			// If new argument, create new simulation.
 			handleNewSimulation(userTimeRatio); // if this fails we always exit, continuing is useless
 			result = true;
-			// Load the menu choice
-			sim.getTerm().loadTerminalMenu();
 		} 
 		
 		else if (argList.contains("-load")) {
@@ -154,16 +152,12 @@ public class MarsProjectHeadless {
 				Simulation.createNewSimulation(userTimeRatio, true);
 				
 				handleLoadDefaultSimulation();
-				// Initialize interactive terminal and load menu
-				initTerminal();
 
 				// FIXME : make it work
 			} catch (Exception e) {
 				showError("Could not load the desired simulation. Staring a new Simulation instead. ", e);
 				handleNewSimulation(userTimeRatio);
 				result = true;
-				// Load the menu choice
-				sim.getTerm().loadTerminalMenu();
 			}
 			
 
@@ -174,8 +168,6 @@ public class MarsProjectHeadless {
 //                showError("Could not load the default simulation, trying to create a new Simulation...", e);
 			handleNewSimulation(userTimeRatio);
 			result = true;
-			// Load the menu choice
-			sim.getTerm().loadTerminalMenu();
 		}
 
 		return result;
@@ -215,15 +207,16 @@ public class MarsProjectHeadless {
 		try {
 			// Load the default simulation
 			sim.loadSimulation(null);
-
+			// Start simulation.
+			startSimulation(true);
+			// Initialize interactive terminal and load menu
+			initTerminal();
+			
 		} catch (Exception e) {
 			// logger.log(Level.WARNING, "Could not load default simulation", e);
 //			 throw e;
 			exitWithError("Problem loading the default simulation.", e);
 		}
-
-		// Start simulation.
-		startSimulation(true);
 	}
 
 	/**
@@ -236,13 +229,15 @@ public class MarsProjectHeadless {
 			// Alert the user to see the interactive terminal 
 			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 			// Start interactive terminal 
-			sim.getTerm().startCommanderMode(); 
+			sim.getTerm().startModeSelection(); 
 			
 			sim.destroyOldSimulation();
 
 			Simulation.createNewSimulation(userTimeRatio, false);
 			
 			sim.start(true);
+			// Load the menu choice
+			sim.getTerm().loadTerminalMenu();
 			
 		} catch (Exception e) {
 			e.printStackTrace();

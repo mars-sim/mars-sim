@@ -179,7 +179,7 @@ public class TransportManager extends Thread implements Serializable {
 	/**
 	 * Prepare object for garbage collection.
 	 */
-	@Override
+//	@Override
 	public void destroy() {
 		Iterator<Transportable> i = transportItems.iterator();
 		while (i.hasNext())

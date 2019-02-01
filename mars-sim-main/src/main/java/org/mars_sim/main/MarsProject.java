@@ -98,9 +98,9 @@ public class MarsProject {
 			logger.config("Starting " + Simulation.title);
 
 			List<String> argList = Arrays.asList(args);
-			useGUI = !argList.contains("-headless");
+			boolean headless = argList.contains("-headless");
+			if (headless) useGUI = false;
 			generateHelp = argList.contains("-generateHelp");
-
 			
 			if (argList.contains("-help")) {
 				System.out.println(HELP);
@@ -127,10 +127,13 @@ public class MarsProject {
 
 				initializeSimulation(args);
 				logger.config("Done with initializeSimulation()");
-				// Create the main desktop window.
 
-				new MainWindow(false);
-				logger.config("Done with MainWindow()");
+				// Load the menu choice
+				sim.getTerm().loadTerminalMenu();
+				
+				// Create the main desktop window.
+//				new MainWindow(false);
+//				logger.config("Done with MainWindow()");
 				
 				// Dispose the splash window.
 				// splashWindow.remove();
@@ -155,6 +158,11 @@ public class MarsProject {
 		List<String> argList = Arrays.asList(args);
 
 		if (argList.contains("-new")) {
+			// Initialize the simulation.
+			SimulationConfig.loadConfig();
+			// Create serializable class 
+			Simulation.createNewSimulation(-1, true);
+			
 			// If new argument, create new simulation.
 			handleNewSimulation(); // if this fails we always exit, continuing is useless
 			
@@ -162,15 +170,14 @@ public class MarsProject {
 
 		} else if (argList.contains("-load")) {
 			// If load argument, load simulation from file.
+
+			// Initialize the simulation.
+			SimulationConfig.loadConfig();
+			// Create serializable class 
+			Simulation.createNewSimulation(-1, true);
+			
 			try {
-				// Initialize the simulation.
-				SimulationConfig.loadConfig();
-				
-				Simulation.createNewSimulation(-1, true);
-				
 				handleLoadSimulation(argList);
-				// Initialize interactive terminal and load menu
-				initTerminal();
 				
 				// FIXME : make it work
 			} catch (Exception e) {
@@ -182,16 +189,16 @@ public class MarsProject {
 			}
 			
 		} else {
-			// if there is no args, load default.sim
+			// if there is no args, load default.sim in GUI mode
+			
+			// Initialize the simulation.
+			SimulationConfig.loadConfig();
+			// Create serializable class 
+			Simulation.createNewSimulation(-1, true);
+			
 			try {
-				// Initialize the simulation.
-				SimulationConfig.loadConfig();
-				
-				Simulation.createNewSimulation(-1, true);
-				
 				handleLoadDefaultSimulation();
-				// Initialize interactive terminal and load menu
-//				initTerminal();
+
 				logger.config("Done with handleLoadDefaultSimulation()");
 				
 			} catch (Exception e) {
@@ -255,25 +262,24 @@ public class MarsProject {
 				+ Thread.currentThread().getName() + " Thread");
 
 		try {
-			// Load the default simulation
 //			sim.loadSimulation(null);
+			// Prompt to open the file cHooser to select a saved sim
 			MainWindow.loadSimulationProcess(false);
 			logger.config("Done with MainWindow.loadSimulationProcess(true)");
-			
+			// Start simulation.
+			startSimulation(true);
+
+			logger.config("useGUI is " + useGUI);
 			if (useGUI) {
-				// Start simulation.
-				startSimulation(false);
-				logger.config("Done with startSimulation()");
+				// Create main window
+				new MainWindow(true);
 			} 
 			
 			else {
-				// go headless
-				
-				// Input user info
-				sim.getTerm().startCommanderMode();
-				// Start simulation.
-				startSimulation(true);
+				// Go headless				
 			}
+			// Initialize interactive terminal and load menu
+			initTerminal();
 			
 		} catch (Exception e) {
 			// logger.log(Level.WARNING, "Could not load default simulation", e);
@@ -293,31 +299,47 @@ public class MarsProject {
 		logger.config("MarsProject's handleLoadSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
 		try {
+			boolean hasDefault = argList.contains("default.sim");
 			int index = argList.indexOf("-load");
-			// Get the next argument as the filename.
-			File loadFile = new File(argList.get(index + 1));
-			if (loadFile.exists() && loadFile.canRead()) {
-				sim.loadSimulation(loadFile);
-				logger.config("Done sim.loadSimulation()");
-				// Start simulation.
-				startSimulation(false);
-				logger.config("Done with startSimulation()");
-				// Create the main desktop window.
-//				new MainWindow(false);
-//				logger.config("Done with MainWindow()");
+			boolean hasSim = argList.contains(".sim");
+			
+			if (hasDefault || !hasSim) {
+				// Prompt to open the file cHooser to select a saved sim
+				MainWindow.loadSimulationProcess(false);
+			}
+
+			else if (!hasDefault && hasSim) {
+				// Get the next argument as the filename.
+				File loadFile = new File(argList.get(index + 1));
+				if (loadFile.exists() && loadFile.canRead()) {
+					sim.loadSimulation(loadFile);
+					logger.config("Done sim.loadSimulation()");
+				}
+				else {
+//					logger.config("Invalid param.");
+					exitWithError("Problem loading simulation. No valid saved sim is found.", null);
+				}
+			}
+				
+			// Start simulation.
+			startSimulation(false);
+
+			logger.config("useGUI is " + useGUI);
+			if (useGUI) {
+				// Create main window
+				new MainWindow(true);
 			} 
 			
 			else {
-//				sim.loadSimulation(null);
-				exitWithError("Problem loading simulation. " + argList.get(index + 1) + " not found.", null);
+				// Go headless				
 			}
+			// Initialize interactive terminal and load menu
+			initTerminal();
+			
 		} catch (Exception e) {
 			// logger.log(Level.SEVERE, "Problem loading existing simulation", e);
 			exitWithError("Problem loading the default simulation.", e);
 		}
-
-
-
 	}
 
 	/**
@@ -327,8 +349,13 @@ public class MarsProject {
 		 logger.config("MarsProject's handleNewSimulation() is on " + Thread.currentThread().getName());
 
 		try {
-			SimulationConfig.loadConfig();
-
+			// Alert the user to see the interactive terminal 
+			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
+			// Start interactive terminal
+			sim.getTerm().startModeSelection();
+			// Initialize interactive terminal 
+			sim.getTerm().initializeTerminal();	
+			// Call Sim config editor in a thread
 			SwingUtilities.invokeLater(() -> {
 				new SimulationConfigEditor(SimulationConfig.instance(), null);
 			});
@@ -339,25 +366,19 @@ public class MarsProject {
 		}
 			
 		if (useGUI) {
-			// Create the main desktop window.
-//			new MainWindow(true);
 
-			// Start simulation.
-			startSimulation(false);
-			
-		} else {
-			// go headless
-			// Start interactive terminal
-			sim.getTerm().startCommanderMode();
-			// Initialize the simulation.
-			Simulation.createNewSimulation(-1, false);
+		} 
+		
+		else {
+			// Go headless
+
 			// Start the simulation.
 			startSimulation(true);				
 			// Load the menu choice
-			sim.getTerm().loadTerminalMenu();
-			
+			sim.getTerm().loadTerminalMenu();	
 		}
-	
+
+		logger.config("Done handleNewSimulation()");
 	}
 
 	/**

@@ -40,38 +40,6 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
-import javafx.event.EventHandler;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
-//import com.jfoenix.controls.JFXPopup;
-//import com.jfoenix.controls.JFXPopup.PopupHPosition;
-//import com.jfoenix.controls.JFXPopup.PopupVPosition;
-//
-//import javafx.application.Application;
-//import javafx.scene.shape.Circle;
-//import javafx.embed.swing.SwingNode;
-//import javafx.geometry.Rectangle2D;
-//import javafx.stage.Screen;
-//import javafx.scene.SnapshotParameters;
-//import javafx.stage.Popup;
-//import javafx.scene.Group;
-//import javafx.scene.ImageCursor;
-//import javafx.application.Platform;
-//import javafx.scene.control.Alert;
-//import javafx.scene.control.Alert.AlertType;
-//import javafx.scene.effect.DropShadow;
-//import javafx.scene.shape.Rectangle;
-
-
 // TODO: is extending to JInternalFrame better?
 public class PopUpUnitMenu extends JPopupMenu {
 
@@ -202,64 +170,64 @@ public class PopUpUnitMenu extends JPopupMenu {
     }
 
 
-    public void createDescriptionStage(Unit unit) {
-
-		String description = null;
-		String type = null;
-		String name = null;
-
-		if (unit instanceof Vehicle) {
-			Vehicle vehicle = (Vehicle) unit;
-			description = vehicle.getDescription(vehicle.getVehicleType());
-			type = Conversion.capitalize(vehicle.getVehicleType());
-			name = Conversion.capitalize(vehicle.getName());
-		}
-
-		else if (unit instanceof Building) {
-			Building building = (Building) unit;
-			description = building.getDescription();
-			type = building.getBuildingType();
-			name = building.getNickName();
-		}
-
-		// 2015-12-08 Added ConstructionSite
-		else if (unit instanceof ConstructionSite) {
- 			ConstructionSite site = (ConstructionSite) unit;
-			description = Conversion.capitalize(LabelMapLayer.getConstructionLabel(site)).replace(" X ", " x ")
-					+ ".\nNext phase is "
-					+ Conversion.capitalize(site.getNextStageType()) + " Stage";
-			type = Conversion.capitalize(site.getCurrentConstructionStage().getInfo().getName()).replace(" X ", " x ");
-			name = Conversion.capitalize(site.getDescription());
-	    }
-
-		double height = 100D + type.length() * 8D + name.length() * 1.3D + description.length() * 1.5D;
-		if (height > 450)
-			height = 450;
-
-
-		UnitDescriptionStage unitInfo = new UnitDescriptionStage();//desktop);
-		BorderPane pane = (BorderPane) unitInfo.init(name, type, description);
-
-		ScrollPane scroller = new ScrollPane(pane);
-        scroller.setFitToWidth(true);
-        
-	   	Scene scene = new Scene(pane, WIDTH, HEIGHT, javafx.scene.paint.Color.TRANSPARENT);
-	   	//scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-	   	//swingPane.setFill(javafx.scene.paint.Color.TRANSPARENT);
-
-    	//Popup stage = new Popup();
-	 	Stage stage = new Stage();
-	   	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
-	   	//addDraggableNode(unitInfo);
-	   	stage.setTitle("Description");
-		stage.setOpacity(.9);
-	   	//stage.initStyle(StageStyle.TRANSPARENT);
-	    stage.initStyle(StageStyle.DECORATED);
-		stage.setResizable(false);
-	   	stage.setScene(scene);
-        stage.show();
-        stage.toFront();
-	   	stage.requestFocus();
+//    public void createDescriptionStage(Unit unit) {
+//
+//		String description = null;
+//		String type = null;
+//		String name = null;
+//
+//		if (unit instanceof Vehicle) {
+//			Vehicle vehicle = (Vehicle) unit;
+//			description = vehicle.getDescription(vehicle.getVehicleType());
+//			type = Conversion.capitalize(vehicle.getVehicleType());
+//			name = Conversion.capitalize(vehicle.getName());
+//		}
+//
+//		else if (unit instanceof Building) {
+//			Building building = (Building) unit;
+//			description = building.getDescription();
+//			type = building.getBuildingType();
+//			name = building.getNickName();
+//		}
+//
+//		// 2015-12-08 Added ConstructionSite
+//		else if (unit instanceof ConstructionSite) {
+// 			ConstructionSite site = (ConstructionSite) unit;
+//			description = Conversion.capitalize(LabelMapLayer.getConstructionLabel(site)).replace(" X ", " x ")
+//					+ ".\nNext phase is "
+//					+ Conversion.capitalize(site.getNextStageType()) + " Stage";
+//			type = Conversion.capitalize(site.getCurrentConstructionStage().getInfo().getName()).replace(" X ", " x ");
+//			name = Conversion.capitalize(site.getDescription());
+//	    }
+//
+//		double height = 100D + type.length() * 8D + name.length() * 1.3D + description.length() * 1.5D;
+//		if (height > 450)
+//			height = 450;
+//
+//
+//		UnitDescriptionStage unitInfo = new UnitDescriptionStage();//desktop);
+//		BorderPane pane = (BorderPane) unitInfo.init(name, type, description);
+//
+//		ScrollPane scroller = new ScrollPane(pane);
+//        scroller.setFitToWidth(true);
+//        
+//	   	Scene scene = new Scene(pane, WIDTH, HEIGHT, javafx.scene.paint.Color.TRANSPARENT);
+//	   	//scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+//	   	//swingPane.setFill(javafx.scene.paint.Color.TRANSPARENT);
+//
+//    	//Popup stage = new Popup();
+//	 	Stage stage = new Stage();
+//	   	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
+//	   	//addDraggableNode(unitInfo);
+//	   	stage.setTitle("Description");
+//		stage.setOpacity(.9);
+//	   	//stage.initStyle(StageStyle.TRANSPARENT);
+//	    stage.initStyle(StageStyle.DECORATED);
+//		stage.setResizable(false);
+//	   	stage.setScene(scene);
+//        stage.show();
+//        stage.toFront();
+//	   	stage.requestFocus();
 
 //		if (!mainScene.OS.contains("linux")) {
 //		   	stage.focusedProperty().addListener(new ChangeListener<Boolean>()
@@ -271,9 +239,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 //		   	  }
 //		   	});
 //		}
-
-
-	}
+//	}
 
     public void createDescriptionPanel(Unit unit) {
 
@@ -487,63 +453,63 @@ public class PopUpUnitMenu extends JPopupMenu {
 //		}
 //    }
 
-    private void addDraggableNode(final Node node) {
+//    private void addDraggableNode(final Node node) {
+//
+//        node.setOnMousePressed(new EventHandler<MouseEvent>() {
+//            @Override
+//            public void handle(MouseEvent me) {
+//                if (me.getButton() != MouseButton.MIDDLE
+//                		&& me.getButton() != MouseButton.PRIMARY) {
+//                	node.setCursor(Cursor.MOVE);
+//                    initialX = me.getSceneX();
+//                    initialY = me.getSceneY();
+//                }
+//                else
+//                	node.setCursor(Cursor.DEFAULT);
+//            }
+//        });
+//
+//        node.setOnMouseDragged(new EventHandler<MouseEvent>() {
+//            @Override
+//            public void handle(MouseEvent me) {
+//                if (me.getButton() != MouseButton.MIDDLE
+//                		&& me.getButton() != MouseButton.PRIMARY) {
+//                	node.setCursor(Cursor.MOVE);
+//                    node.getScene().getWindow().setX(me.getScreenX() - initialX);
+//                    node.getScene().getWindow().setY(me.getScreenY() - initialY);
+//                }
+//                else
+//                	node.setCursor(Cursor.DEFAULT);
+//            }
+//        });
+//    }
+    
+//    public void createBuildingPanelFX(Building building) {
+//    	//System.out.println("PopUpUnitMenu.java : createBuildingPanelFX()");
+//      	@SuppressWarnings("restriction")
+//		Alert alert = new Alert(AlertType.INFORMATION);
+//		//alert.initModality(Modality.APPLICATION_MODAL);
+//		//alert.initModality(Modality.WINDOW_MODAL);
+//
+//		alert.initOwner(mainScene.getStage());
+//		double x = mainScene.getStage().getWidth();
+//		double y = mainScene.getStage().getHeight();
+//		double xx = alert.getDialogPane().getWidth();
+//		double yy = alert.getDialogPane().getHeight();
+//		alert.setX((x - xx)/2);
+//		alert.setY((y - yy)*3/4);
+//
+//		alert.setTitle(settlement.getName());
+//		alert.setHeaderText("Inside " + building.getNickName());
+//		alert.setContentText("Building Detail");
+//		//DialogPane dialogPane = alert.getDialogPane();
+//
+//		alert.show();
+//
+//		// move mouse focus to Alert. if off close, execute alert.close();
+//	   	//System.out.println("PopUpUnitMenu.java : done createBuildingPanelFX()");
+//    }
 
-        node.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent me) {
-                if (me.getButton() != MouseButton.MIDDLE
-                		&& me.getButton() != MouseButton.PRIMARY) {
-                	node.setCursor(Cursor.MOVE);
-                    initialX = me.getSceneX();
-                    initialY = me.getSceneY();
-                }
-                else
-                	node.setCursor(Cursor.DEFAULT);
-            }
-        });
-
-        node.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent me) {
-                if (me.getButton() != MouseButton.MIDDLE
-                		&& me.getButton() != MouseButton.PRIMARY) {
-                	node.setCursor(Cursor.MOVE);
-                    node.getScene().getWindow().setX(me.getScreenX() - initialX);
-                    node.getScene().getWindow().setY(me.getScreenY() - initialY);
-                }
-                else
-                	node.setCursor(Cursor.DEFAULT);
-            }
-        });
-    }
-/*
-    public void createBuildingPanelFX(Building building) {
-    	//System.out.println("PopUpUnitMenu.java : createBuildingPanelFX()");
-      	@SuppressWarnings("restriction")
-		Alert alert = new Alert(AlertType.INFORMATION);
-		//alert.initModality(Modality.APPLICATION_MODAL);
-		//alert.initModality(Modality.WINDOW_MODAL);
-
-		alert.initOwner(mainScene.getStage());
-		double x = mainScene.getStage().getWidth();
-		double y = mainScene.getStage().getHeight();
-		double xx = alert.getDialogPane().getWidth();
-		double yy = alert.getDialogPane().getHeight();
-		alert.setX((x - xx)/2);
-		alert.setY((y - yy)*3/4);
-
-		alert.setTitle(settlement.getName());
-		alert.setHeaderText("Inside " + building.getNickName());
-		alert.setContentText("Building Detail");
-		//DialogPane dialogPane = alert.getDialogPane();
-
-		alert.show();
-
-		// move mouse focus to Alert. if off close, execute alert.close();
-	   	//System.out.println("PopUpUnitMenu.java : done createBuildingPanelFX()");
-    }
-*/
     public void createBuildingPanel(Building building) {
 
     	JFrame f = new JFrame();

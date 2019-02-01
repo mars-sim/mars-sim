@@ -12,21 +12,21 @@ public class Conversion {
 	public Conversion() {
 
 	}
-/*
-	public void capitalize(String nameStr) {
 
-		// convert nameStr down into an array
-		// create new String at each whitespace
+//	public void capitalize(String nameStr) {
+//
+//		// convert nameStr down into an array
+//		// create new String at each whitespace
+//
+//		// at each word, do
+//
+//		String word = null;
+//		word = word.substring(0,1).toUpperCase()+ word.substring(1).toLowerCase();
+//
+//		// convert the array back to one single String
+//
+//	}
 
-		// at each word, do
-
-		String word = null;
-		word = word.substring(0,1).toUpperCase()+ word.substring(1).toLowerCase();
-
-		// convert the array back to one single String
-
-	}
-*/
 	public static String capitalize(String input) {
 	    StringBuilder titleCase = new StringBuilder();
 	    boolean nextTitleCase = true;

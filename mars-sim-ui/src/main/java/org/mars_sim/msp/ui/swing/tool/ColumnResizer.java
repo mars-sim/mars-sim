@@ -27,15 +27,15 @@ public class ColumnResizer {
             int colWidth = 0;
             for (int row=0; row<table.getRowCount(); row++) {
                 TableCellRenderer rend = table.getCellRenderer (row, col);
-/*                Object value = table.getValueAt (row, col);
-                Component comp =
-                    rend.getTableCellRendererComponent (table,
-                                                        value,
-                                                        false,
-                                                        false,
-                                                        row,
-                                                        col);
-*/
+//                Object value = table.getValueAt (row, col);
+//                Component comp =
+//                    rend.getTableCellRendererComponent (table,
+//                                                        value,
+//                                                        false,
+//                                                        false,
+//                                                        row,
+//                                                        col);
+
                 Component comp = table.prepareRenderer(rend, row, col);
                 colWidth = comp.getPreferredSize().width;
                 //minwidth = colWidth;
@@ -51,24 +51,24 @@ public class ColumnResizer {
 
             // Considers the column header's preferred width too
             TableColumn column = columnModel.getColumn (col);
-/*
-            int headerWidth = 0;
-            TableCellRenderer headerRenderer = column.getHeaderRenderer();
-            if (headerRenderer == null)
-                headerRenderer = table.getTableHeader().getDefaultRenderer();
-            Object headerValue = column.getHeaderValue();
-            Component headerComp =
-                    headerRenderer.getTableCellRendererComponent (table,
-                                                                  headerValue,
-                                                                  false,
-                                                                  false,
-                                                                  0,
-                                                                  col);
-            headerWidth = headerComp.getPreferredSize().width;
 
-            maxwidth = Math.max (colWidth, headerWidth);
-            minwidth = Math.min (colWidth, headerWidth);
-*/
+//            int headerWidth = 0;
+//            TableCellRenderer headerRenderer = column.getHeaderRenderer();
+//            if (headerRenderer == null)
+//                headerRenderer = table.getTableHeader().getDefaultRenderer();
+//            Object headerValue = column.getHeaderValue();
+//            Component headerComp =
+//                    headerRenderer.getTableCellRendererComponent (table,
+//                                                                  headerValue,
+//                                                                  false,
+//                                                                  false,
+//                                                                  0,
+//                                                                  col);
+//            headerWidth = headerComp.getPreferredSize().width;
+//
+//            maxwidth = Math.max (colWidth, headerWidth);
+//            minwidth = Math.min (colWidth, headerWidth);
+
             column.setPreferredWidth (maxwidth);
             //column.setMaxWidth(maxwidth); // very bad!
             column.setMinWidth(maxwidth);

@@ -25,7 +25,7 @@
 package org.mars_sim.msp.ui.javafx.quotation;
 
 import org.mars_sim.javafx.MainScene;
-import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
+import org.mars_sim.javafx.tools.StartUpLocation;
 
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;

@@ -4,6 +4,7 @@
  * @version 3.1.0 2018-09-30
  * @author Manny Kung
  */
+
 package org.mars_sim.msp.core.terminal;
 
 import java.awt.geom.Point2D;
@@ -18,6 +19,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -309,11 +311,11 @@ public class ChatUtils {
 	private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
 	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
 	
-	private static Map<String, Level> logLevels = new ConcurrentHashMap<>();
+	private static ConcurrentHashMap<String, Level> logLevels = new ConcurrentHashMap<>();
 	
 	public ChatUtils() {
 		masterClock = sim.getMasterClock();
-		marsClock = masterClock.getMarsClock();
+		if (masterClock != null) marsClock = masterClock.getMarsClock();
 		mars = sim.getMars();
 		weather = mars.getWeather();
 		surfaceFeatures = mars.getSurfaceFeatures();
@@ -535,6 +537,8 @@ public class ChatUtils {
 		StringBuffer responseText = new StringBuffer();
 		// Mars/Earth Date and Time
 //		String earthDateTime = masterClock.getEarthClock().getTimeStampF2();
+		if (masterClock == null)
+			masterClock = sim.getMasterClock();
 		String earthDate = masterClock.getEarthClock().getDateStringF3();
 		String earthTime = masterClock.getEarthClock().getTimeStringF0();
 		int missionSol = marsClock.getMissionSol();
@@ -1608,7 +1612,7 @@ public class ChatUtils {
 			Map<String, List<Person>> map =
 					settlementCache.getAllAssociatedPeople().stream().collect(Collectors.groupingBy(Person::getTaskDescription));
 								
-			for (Map.Entry<String, List<Person>> entry : map.entrySet()) {
+			for (java.util.Map.Entry<String, List<Person>> entry : map.entrySet()) {
 				String task = entry.getKey();
 				List<Person> plist = entry.getValue();
 			
@@ -2132,8 +2136,8 @@ public class ChatUtils {
 			int max = 28;
 			responseText.append(addhiteSpacesName("Name : ", max));
 			responseText.append(settlementCache);
-			
-			if (marsClock == null) marsClock = sim.getMasterClock().getMarsClock();
+			if (masterClock == null) masterClock = sim.getMasterClock();
+			if (marsClock == null) marsClock = masterClock.getMarsClock();
 			if (mars == null) mars = sim.getMars();
 			if (weather == null) weather = mars.getWeather();
 			if (surfaceFeatures == null) surfaceFeatures = mars.getSurfaceFeatures();

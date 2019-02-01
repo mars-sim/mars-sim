@@ -23,9 +23,6 @@ import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import com.alee.laf.panel.WebPanel;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
  */
@@ -62,8 +59,8 @@ public class SettlementWindow extends ToolWindow {
 	private double heightCache;
 	private double xCoor, yCoor;
 
-	private DoubleProperty width = new SimpleDoubleProperty(HORIZONTAL);
-	private DoubleProperty height = new SimpleDoubleProperty(VERTICAL);
+//	private DoubleProperty width = new SimpleDoubleProperty(HORIZONTAL);
+//	private DoubleProperty height = new SimpleDoubleProperty(VERTICAL);
 
 	private String marsDateString;
 	private String marsTimeString;

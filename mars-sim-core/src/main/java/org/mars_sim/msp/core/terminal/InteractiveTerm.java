@@ -69,7 +69,7 @@ public class InteractiveTerm {
 	
     
     public static void main(String[] args) {	
-    	new InteractiveTerm().startCommanderMode();
+    	new InteractiveTerm().startModeSelection();
     	
     }
  
@@ -77,7 +77,7 @@ public class InteractiveTerm {
 	/**
 	 * Asks users what mode to run in a text-io terminal.
 	 */
-	public void startCommanderMode() {
+	public void startModeSelection() {
 
 		initializeTerminal();
 		
@@ -189,7 +189,8 @@ public class InteractiveTerm {
 	 * Loads the terminal menu
 	 */
 	public void loadTerminalMenu() {
-		keepRunning = true;
+		logger.config("Calling loadTerminalMenu()");
+
 		// Call ChatUils' default constructor to initialize instances
 		new ChatUtils();
 		chatMenu = new ChatMenu();
@@ -202,7 +203,8 @@ public class InteractiveTerm {
             
 	    // Set the bookmark here
 //        terminal.setBookmark("MENU");
-        
+		keepRunning = true;
+		
 		while (keepRunning) {
 			     
 		    BiConsumer<TextIO, RunnerData> menu = chooseMenu(textIO);

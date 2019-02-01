@@ -240,6 +240,7 @@ public class SimulationConfigEditor {
 						mainWindow.getFrame().dispose();
 					}
 					f.setVisible(false);
+					
 					setConfiguration();		
 					// Destroy old simulation
 					sim.destroyOldSimulation();
@@ -251,8 +252,7 @@ public class SimulationConfigEditor {
 					new MainWindow(true);
 					// Close simulation config editor
 					closeWindow();
-					// Load the menu choice
-//					sim.getTerm().loadTerminalMenu();
+					logger.config("Done SimulationConfigEditor()");
 				}
 			}
 		});
