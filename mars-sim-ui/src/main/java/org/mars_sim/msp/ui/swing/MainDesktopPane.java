@@ -1157,8 +1157,8 @@ public class MainDesktopPane extends JDesktopPane
 			// Note: SwingUtilities.invokeLater(()) doesn't allow guide windows to be
 			// centered for javaFX mode in Windows PC (but not in other platform)
 //			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
-//			openToolWindow(GuideWindow.NAME);
-//			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
+			openToolWindow(GuideWindow.NAME);
+			((GuideWindow) getToolWindow(GuideWindow.NAME)).setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
 
 		} else {
 			// Open windows in Z-order.

@@ -534,7 +534,7 @@ public class MissionManager implements Serializable {
 				Mission m = i.next();
 				if (!m.isDone() 
 						&& settlement.getName().equalsIgnoreCase(m.getAssociatedSettlement().getName())
-						&& !m.isApproved()
+//						&& !m.isApproved()
 						&& m.getPlan() != null
 						&& m.getPlan().getStatus() == PlanType.PENDING) {
 					m0.add(m);
@@ -616,7 +616,7 @@ public class MissionManager implements Serializable {
 				Mission m = missions.get(index);
 				if (m == null
 //						|| m.isDone() 
-//						|| !m.isApproved() // initially it's not approved until it passsed the approval phase
+//						|| !m.isApproved() // initially it's not approved until it passes the approval phase
 //						|| m.getPlan() == null
 						|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)
 						) {
@@ -844,10 +844,11 @@ public class MissionManager implements Serializable {
 					mp.setPercentComplete(percent + weight * PERCENT_PER_SCORE);
 					double score = mp.getScore();
 					mp.setScore(score + weight * newScore);
-					logger.info(mp.getMission().getDescription() 
-							+ "  New score : " + mp.getScore() 
+					logger.info(mp.getMission().getStartingMember() + "'s " + mp.getMission().getDescription() 
+							+ ":  New score : " + mp.getScore() 
 							+ "  New percent : " + mp.getPercentComplete() + "%");
 					mp.setReviewedBy(reviewer.getName());
+					mp.getMission().fireMissionUpdate(MissionEventType.PHASE_DESCRIPTION_EVENT, "Score and Percentage");
 				}
 				// Should the reviewer look at multiple plans at the same time ?
 				break;

@@ -111,7 +111,7 @@
 			<equipment type="Barrel" number="40" />
 			<equipment type="Bag" number="40" />
 			<equipment type="Large Bag" number="10" />
-			<equipment type="Specimen Box" number="20" />
+			<equipment type="Specimen Box" number="50" />
 
 			<!-- Resources -->
 			<!-- type: the type of resource (see resources.txt) -->
@@ -218,7 +218,7 @@
 			<equipment type="Barrel" number="80" />
 			<equipment type="Bag" number="80" />
 			<equipment type="Large Bag" number="20" />
-			<equipment type="Specimen Box" number="20" />
+			<equipment type="Specimen Box" number="50" />
 
 
 			<!-- Resources -->
@@ -432,7 +432,7 @@
 			<equipment type="Barrel" number="120" />
 			<equipment type="Bag" number="120" />
 			<equipment type="Large Bag" number="30" />
-			<equipment type="Specimen Box" number="30" />
+			<equipment type="Specimen Box" number="70" />
 
 			<!-- Resources -->
 			<resource type="food" amount="6000.0" />
@@ -745,7 +745,7 @@
 			<equipment type="Barrel" number="160" />
 			<equipment type="Bag" number="160" />
 			<equipment type="Large Bag" number="40" />
-			<equipment type="Specimen Box" number="40" />
+			<equipment type="Specimen Box" number="100" />
 
 			<!-- Resources -->
 			<resource type="food" amount="8000.0" />
@@ -981,7 +981,7 @@
 			<equipment type="Barrel" number="10" />
 			<equipment type="Bag" number="10" />
 			<equipment type="Large Bag" number="10" />
-			<equipment type="Specimen Box" number="20" />
+			<equipment type="Specimen Box" number="50" />
 
 			<resource type="oxygen" amount="4000.0" />
 			<resource type="water" amount="8000.0" />
@@ -1146,7 +1146,7 @@
 			<equipment type="Barrel" number="10" />
 			<equipment type="Bag" number="10" />
 			<equipment type="Large Bag" number="10" />
-			<equipment type="Specimen Box" number="20" />
+			<equipment type="Specimen Box" number="50" />
 
 			<resource type="oxygen" amount="4000.0" />
 			<resource type="water" amount="8000.0" />

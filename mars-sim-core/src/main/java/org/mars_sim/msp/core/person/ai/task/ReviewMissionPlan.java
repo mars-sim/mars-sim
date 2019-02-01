@@ -192,8 +192,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
             			
 						String s = person.getAssociatedSettlement().getName();
 						
-						if (!reviewedBy.equals(requestedBy)) {
-//								&& mp.isReviewerValid(reviewedBy, pop)) {
+						if (!reviewedBy.equals(requestedBy)
+								&& mp.isReviewerValid(reviewedBy, pop)) {
 							
 							List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
 							int last = list.size() - 1;

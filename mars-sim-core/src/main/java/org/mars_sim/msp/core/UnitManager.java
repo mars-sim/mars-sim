@@ -339,6 +339,7 @@ public class UnitManager implements Serializable {
 	private void initializeVehicleNames() {
 		try {
 			vehicleNames = vehicleConfig.getRoverNameList();
+//			System.out.println(vehicleNames);
 		} catch (Exception e) {
 			throw new IllegalStateException("rover names could not be loaded: " + e.getMessage(), e);
 		}
@@ -551,6 +552,7 @@ public class UnitManager implements Serializable {
 
 		} else if (unitType == UnitType.VEHICLE) {
 			if (baseName != null) {
+				// for LUVs 
 				String tagID = "";
 				int number = 1;
 				if (vehicleNumberMap.containsKey(baseName)) {
@@ -569,6 +571,7 @@ public class UnitManager implements Serializable {
 
 			} else {
 				initialNameList = vehicleNames;
+//				System.out.println(initialNameList);
 				Iterator<Vehicle> vi = getVehicles().iterator();
 				while (vi.hasNext()) {
 					usedNames.add(vi.next().getName());
@@ -726,7 +729,7 @@ public class UnitManager implements Serializable {
 				while (j.hasNext()) {
 					String vehicleType = j.next();
 					int number = vehicleMap.get(vehicleType);
-					// vehicleType = vehicleType.toLowerCase();
+					vehicleType = vehicleType.toLowerCase();
 					for (int x = 0; x < number; x++) {
 						if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
 							String name = getNewName(UnitType.VEHICLE, "LUV", null, null);
@@ -2374,21 +2377,21 @@ public class UnitManager implements Serializable {
 		lookupUnit = null;
 		lookupSettlement = null;
 
-		settlementNames.clear();
+//		settlementNames.clear();
 		settlementNames = null;
-		vehicleNames.clear();
+//		vehicleNames.clear();
 		vehicleNames = null;
-		personMaleNames.clear();
+//		personMaleNames.clear();
 		personMaleNames = null;
-		personFemaleNames.clear();
+//		personFemaleNames.clear();
 		personFemaleNames = null;
 		listeners.clear();
 		listeners = null;
 		// personExecutor = null;
 		// settlementExecutor = null;
-		equipmentNumberMap.clear();
+//		equipmentNumberMap.clear();
 		equipmentNumberMap = null;
-		vehicleNumberMap.clear();
+//		vehicleNumberMap.clear();
 		vehicleNumberMap = null;
 		// masterClock = null;
 //		firstSettlement = null;

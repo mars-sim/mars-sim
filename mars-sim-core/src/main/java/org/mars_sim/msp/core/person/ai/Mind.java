@@ -48,7 +48,7 @@ public class Mind implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	private static final double MINIMUM_MISSION_PERFORMANCE = 0.1;
+	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double FACTOR = .05;
 
 	// Data members
@@ -243,7 +243,7 @@ public class Mind implements Serializable {
 				mission = null;
 			}
 
-			boolean hasApprovedMission = hasApprovedMission();
+			boolean hasAMission = hasAMission();
 			
 			boolean hasActiveMission = hasActiveMission();
 			// Check if mission creation at settlement (if any) is overridden.
@@ -261,13 +261,13 @@ public class Mind implements Serializable {
 				mission.performMission(person);
 			}
 			// See if this person can ask for a mission
-			boolean needMission = !hasActiveMission && !hasApprovedMission && !overrideMission && isInMissionWindow;
+			boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;
 //			if (hasActiveMission)
 //				System.out.println(person + "'s needMission is " + needMission);
 			// A person has no active task
 			if (!taskManager.hasActiveTask()) {
 				try {
-					getNewAction(true, needMission);
+					getNewAction(true, newMission);
 				} catch (Exception e) {
 					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 							person.getName() + " could not get new action", e);
@@ -386,16 +386,16 @@ public class Mind implements Serializable {
 	}
 
 	/**
-	 * Returns true if person has an approved mission.
+	 * Returns true if person has a mission.
 	 * 
 	 * @return true for active mission
 	 */
-	public boolean hasApprovedMission() {
+	public boolean hasAMission() {
 		if (mission != null) {
-			// has a mission but need to determine if this mission is active or not
-			if (mission.isApproved()
-				|| (mission.getPlan() != null 
-					&& mission.getPlan().getStatus() == PlanType.APPROVED))
+//			// has a mission but need to determine if this mission is active or not
+//			if (mission.isApproved()
+//				|| (mission.getPlan() != null 
+//					&& mission.getPlan().getStatus() != PlanType.NOT_APPROVED))
 				return true;
 		}
 		return false;

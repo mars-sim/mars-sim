@@ -223,7 +223,9 @@ public class MissionTableModel extends AbstractTableModel
 					column1 = DESC;
 				else if (eventType == MissionEventType.DESIGNATION_EVENT)
 					column1 = DESIGNATION;
-				else if (eventType == MissionEventType.PHASE_EVENT)
+				else if (eventType == MissionEventType.PHASE_EVENT
+						|| eventType == MissionEventType.PHASE_DESCRIPTION_EVENT
+						|| eventType == MissionEventType.END_MISSION_EVENT)
 					column1 = PHASE;
 				else if (eventType == MissionEventType.ADD_MEMBER_EVENT
 						|| eventType == MissionEventType.REMOVE_MEMBER_EVENT)
@@ -297,8 +299,11 @@ public class MissionTableModel extends AbstractTableModel
 
 				case PHASE: {
 					if (mission.getPhaseDescription().contains("Approval")) {
-						result = Math.round(mission.getPlan().getPercentComplete()) + "% ("
-								+ Math.round(mission.getPlan().getScore()) + ") "
+						int percent = (int) mission.getPlan().getPercentComplete();
+						if (percent > 100)
+							percent= 100;
+						int score = (int)mission.getPlan().getScore();
+						result = percent + "% (" + score + ") "
 								+ mission.getPhaseDescription();
 					}
 					else

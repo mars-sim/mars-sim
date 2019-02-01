@@ -189,7 +189,7 @@ public class InteractiveTerm {
 	 * Loads the terminal menu
 	 */
 	public void loadTerminalMenu() {
-		logger.config("Calling loadTerminalMenu()");
+//		logger.config("Calling loadTerminalMenu()");
 
 		// Call ChatUils' default constructor to initialize instances
 		new ChatUtils();
