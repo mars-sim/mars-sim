@@ -1070,6 +1070,7 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public void openAnnouncementWindow(String announcement) {
 		announcementWindow.setAnnouncement(announcement);
+		announcementWindow.setSize(new Dimension(200, 100));
 		announcementWindow.pack();
 		add(announcementWindow, 0);
 		int Xloc = (int) ((getWidth() - announcementWindow.getWidth()) * .5D);

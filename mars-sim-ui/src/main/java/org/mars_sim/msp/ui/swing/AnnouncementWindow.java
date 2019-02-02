@@ -43,7 +43,7 @@ public class AnnouncementWindow extends JInternalFrame {
 		mainPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 		setContentPane(mainPane);
 
-		mainPane.setMinimumSize(new Dimension(200, 80));
+		mainPane.setSize(new Dimension(200, 80));
 		announcementLabel = new ResizedFontLabel(" "); //$NON-NLS-1$
 		announcementLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 

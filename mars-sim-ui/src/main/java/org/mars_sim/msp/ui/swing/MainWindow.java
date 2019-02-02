@@ -125,15 +125,16 @@ public class MainWindow extends JComponent {
 	 */
 	public MainWindow(boolean cleanUI) {
 		// this.cleanUI = cleanUI;
+		frame = new JFrame();
+		// Set up the look and feel library to be used
 		if (OS.contains("linux"))
 			setLookAndFeel(false, false);
 		else
 			setLookAndFeel(false, true);
-//		logger.config("Calling MainDesktopPane()");
+		
+		// Set up MainDesktopPane
 		desktop = new MainDesktopPane(this);
 		
-		frame = new JFrame();
-
 		// Load UI configuration.
 		if (!cleanUI) {
 			UIConfig.INSTANCE.parseFile();
@@ -144,19 +145,19 @@ public class MainWindow extends JComponent {
 
 		// Set the icon image for the frame.
 		setIconImage();
-
+		// Initialize UI elements for the frame
 		init();
-
-		showStatusBar();
+		// Set up timers for use on the status bar
+		setupTimers();
 		// Add autosave timer
 		startAutosaveTimer();
 		// Open all initial windows.
 		desktop.openInitialWindows();
-		
-//		logger.config("Done MainWindow()");
 	}
 
-
+	/**
+	 * Initializes UI elements for the frame
+	 */
 	public void init() {
 		frame.setTitle(Simulation.title);
 		frame.addWindowListener(new WindowAdapter() {
@@ -166,8 +167,10 @@ public class MainWindow extends JComponent {
 				exitSimulation();
 			}
 		});
-
+		// Set up the main pane
 		mainPane = new JPanel(new BorderLayout());
+		
+		// Add the main pane to the frame
 		frame.setContentPane(mainPane);
 
 		// Add main pane
@@ -212,7 +215,7 @@ public class MainWindow extends JComponent {
 		unitToolbar.setVisible(UIConfig.INSTANCE.showUnitBar());
 		toolToolbar.setVisible(UIConfig.INSTANCE.showToolBar());
 
-		// Add statusBar
+		// Create the status bar
 		statusBar = new JStatusBar();
 
 		memMaxLabel = new JLabel();
@@ -267,16 +270,16 @@ public class MainWindow extends JComponent {
 	}
 
 	/**
-	 * Updates time in the status bar
+	 * Set up timers
 	 */
-	public void showStatusBar() {
+	public void setupTimers() {
 		// Use delayLaunchTimer to launch earthTime
 		if (earthTimer == null) {
 			delayLaunchTimer = new Timer();
 			int millisec = 500;
 			// Note: this delayLaunchTimer is non-repeating
 			// thus period is N/A
-			delayLaunchTimer.schedule(new StatusBar(), millisec);
+			delayLaunchTimer.schedule(new StatusTimer(), millisec);
 		}
 	}
 
@@ -346,7 +349,7 @@ public class MainWindow extends JComponent {
 	/**
 	 * Defines the StatusBar class for running earth timer
 	 */
-	class StatusBar extends TimerTask { // (final String t) {
+	class StatusTimer extends TimerTask { // (final String t) {
 		public void run() {
 			startEarthTimer();
 		}
@@ -401,6 +404,7 @@ public class MainWindow extends JComponent {
 
 	/**
 	 * Performs the process of loading a simulation.
+	 * @param autosave
 	 */
 	public static void loadSimulationProcess(boolean autosave) {
 		logger.config("MainWindow's loadSimulationProcess() is on " + Thread.currentThread().getName());
@@ -504,7 +508,7 @@ public class MainWindow extends JComponent {
 		if (JOptionPane.showConfirmDialog(desktop, Msg.getString("MainWindow.abandonRunningSim"), //$NON-NLS-1$
 				UIManager.getString("OptionPane.titleText"), //$NON-NLS-1$
 				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-			desktop.openAnnouncementWindow(Msg.getString("MainWindow.creatingNewSim")); //$NON-NLS-1$
+			desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.creatingNewSim") + "  "); //$NON-NLS-1$
 
 			// Break up the creation of the new simulation, to allow interfering with the
 			// single steps.
@@ -561,7 +565,6 @@ public class MainWindow extends JComponent {
 		public void run() {
 			SimulationConfig.loadConfig();
 			new SimulationConfigEditor(SimulationConfig.instance(), null);
-			// });
 		}
 	}
 
@@ -604,11 +607,11 @@ public class MainWindow extends JComponent {
 
 		if (isAutosave) {
 			desktop.disposeAnnouncementWindow();
-			desktop.openAnnouncementWindow(Msg.getString("MainWindow.autosavingSim")); //$NON-NLS-1$
+			desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.autosavingSim") + "  "); //$NON-NLS-1$
 			masterClock.setSaveSim(Simulation.AUTOSAVE, null);
 		} else {
 			desktop.disposeAnnouncementWindow();
-			desktop.openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
+			desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.savingSim") + "  "); //$NON-NLS-1$
 			if (fileLocn == null)
 				masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
 			else
@@ -629,7 +632,7 @@ public class MainWindow extends JComponent {
 	 * Pauses the simulation and opens an announcement window.
 	 */
 	public void pauseSimulation() {
-		desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
+		desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.pausingSim") + "  "); //$NON-NLS-1$
 		masterClock.setPaused(true, false);
 	}
 
@@ -798,4 +801,34 @@ public class MainWindow extends JComponent {
 	public String getLookAndFeelTheme() {
 		return lookAndFeelTheme;
 	}
+	
+	/**
+	 * Prepares the panel for deletion.
+	 */
+	public void destroy() {
+		frame = null;
+		unitToolbar = null;
+		toolToolbar = null;
+		desktop.destroy();
+		desktop = null;
+		mainWindowMenu = null;
+		mgr = null;
+		newSimThread = null;
+		loadSimThread = null;
+		saveSimThread = null;
+		delayLaunchTimer = null;
+		autosaveTimer = null;
+		earthTimer = null;
+		statusBar = null;
+		leftLabel = null;
+		memMaxLabel = null;
+		memUsedLabel = null;
+		timeLabel = null;
+		bottomPane = null;
+		mainPane = null;
+		sim = null;
+		masterClock = null;
+		earthClock = null;
+	}
+
 }
