@@ -31,8 +31,6 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.goods.Good;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -84,19 +82,6 @@ public class Exploration extends RoverMission implements Serializable {
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 	private static int foodID = ResourceUtil.foodID;
-
-	private static String[] MINERALS = new String[] {
-	        "Chalcopyrite",
-			"Goethite",
-			"Hematite",
-			"Kamacite",
-			"Magnesite",
-			"Magnetite",
-			"Malachite",
-			"Olivine",
-			"Taenite",
-			"Sylvite"
-			};
 	
 	/**
 	 * Constructor.
@@ -110,9 +95,9 @@ public class Exploration extends RoverMission implements Serializable {
 		super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 
 		// Check if it has a vehicle 
-		if (!hasVehicle()) {
-			endMission(Mission.NO_AVAILABLE_VEHICLES);
-		}
+//		if (!hasVehicle()) {
+//			endMission(Mission.NO_AVAILABLE_VEHICLES);
+//		}
 		
 		Settlement s = startingPerson.getSettlement();
 
@@ -649,7 +634,7 @@ public class Exploration extends RoverMission implements Serializable {
 			Map<Integer, Integer> result = new HashMap<>();
 
 			// Include required number of specimen containers.
-			result.put(EquipmentType.convertName2ID(SpecimenContainer.TYPE), REQUIRED_SPECIMEN_CONTAINERS);
+			result.put(EquipmentType.convertType2ID(SpecimenContainer.TYPE), REQUIRED_SPECIMEN_CONTAINERS);
 
 			equipmentNeededCache = result;
 			return result;
@@ -904,7 +889,7 @@ public class Exploration extends RoverMission implements Serializable {
 			result += mineralValue * mineralAmount;
 		}
 
-		return result / MINERALS.length;
+		return result;
 	}
 	
 	@Override

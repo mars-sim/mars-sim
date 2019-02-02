@@ -46,7 +46,7 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 	 * The BuildingKit class represents a building kit in a building.
 	 */
 	public BuildingKit(Coordinates location) {
-		super(TYPE, location);
+		super(null, TYPE, location);
 
 		// Initialize data members.
 		isSalvaged = false;

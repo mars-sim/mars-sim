@@ -36,7 +36,7 @@ implements Container, Serializable {
 	 */
 	public Barrel(Coordinates location) {
 		// Use Equipment constructor
-		super(TYPE, location);
+		super(null, TYPE, location);
 
 		// Sets the base mass of the barrel.
 		setBaseMass(EMPTY_MASS);

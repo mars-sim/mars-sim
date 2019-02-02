@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.robot.Robot;
 
 /**
  * A factory for equipment units.
@@ -59,7 +58,7 @@ public final class EquipmentFactory {
 	}
 
 	public static Equipment createEquipment(int id, Coordinates location, boolean temp) {
-		return createEquipment(EquipmentType.convertID2Type(id).getName(), location, temp);
+		return createEquipment(EquipmentType.convertID2Type(id).getType(), location, temp);
 	}
 
 	/**
@@ -177,7 +176,7 @@ public final class EquipmentFactory {
 	public static Class<? extends Equipment> getEquipmentClass(int id) {
 //		String type = EquipmentType.convertID2Type(id).getName();
 //		return getEquipmentClass(type);
-		return getEquipmentClass(EquipmentType.convertID2Type(id).getName());
+		return getEquipmentClass(EquipmentType.convertID2Type(id).getType());
 	}
 
 //	public static int getEquipmentID(String type) {

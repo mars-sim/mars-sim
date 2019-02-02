@@ -173,6 +173,19 @@ public class GoodsManager implements Serializable {
 	public static double OXYGEN_VALUE_MODIFIER = 2D;
 	public static double METHANE_VALUE_MODIFIER = 2D;
 
+	private static String[] MINERALS = new String[] {
+	        "Chalcopyrite",
+			"Goethite",
+			"Hematite",
+			"Kamacite",
+			"Magnesite",
+			"Magnetite",
+			"Malachite",
+			"Olivine",
+			"Taenite",
+			"Sylvite"
+			};
+	
 	// Data members
 	private boolean initialized = false;
 	// Add modifiers due to Settlement Development Objectives
@@ -524,7 +537,7 @@ public class GoodsManager implements Serializable {
 			projectedDemand = getWasteDisposalSinkCost(id, projectedDemand);
 
 			// Adjust the demand on various waste products with the disposal cost.
-			projectedDemand = getSaltMineralDemand(id, projectedDemand);
+			projectedDemand = getMineralDemand(id, projectedDemand);
 					
 			// Add trade value.
 			tradeDemand = determineTradeDemand(resourceGood, useCache);
@@ -757,7 +770,7 @@ public class GoodsManager implements Serializable {
 			return 0D;
 	}
 
-	private double getSaltMineralDemand(int resource, double demand) {
+	private double getMineralDemand(int resource, double demand) {
 		if (resource == ResourceUtil.rockSaltID
 				|| resource == ResourceUtil.epsomSaltID) {
 			double tableSaltDemand = goodsDemandCache.get(GoodsUtil.getResourceGood(ResourceUtil.tableSaltID));	
@@ -777,6 +790,13 @@ public class GoodsManager implements Serializable {
 			else
 				// Don't add anything
 				return 0;
+		}
+		
+		else {
+			for (String name: MINERALS) {
+				if (resource == ResourceUtil.findIDbyAmountResourceName(name))
+					return demand * MINERAL_VALUE;
+			}
 		}
 		
 		return 0;

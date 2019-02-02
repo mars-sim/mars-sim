@@ -221,7 +221,7 @@ public class MissionTableModel extends AbstractTableModel
 				int column1 = -1;
 				int column2 = -1;
 
-				if (eventType == MissionEventType.TIME_EVENT)
+				if (eventType == MissionEventType.DATE_EVENT)
 					column1 = STARTING_TIME;
 				else if (eventType == MissionEventType.NAME_EVENT)
 					column1 = STARTING_MEMBER;

@@ -32,7 +32,7 @@ implements Container, Serializable {
 
 	public SpecimenContainer(Coordinates location) {
 		// Use Equipment constructor.
-		super(TYPE, location);
+		super(null, TYPE, location);
 
 		// Set the base mass of the container.
 		setBaseMass(EMPTY_MASS);

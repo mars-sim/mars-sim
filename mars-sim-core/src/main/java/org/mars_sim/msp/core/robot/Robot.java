@@ -122,7 +122,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	private static RobotConfig robotConfig;
 	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
-		super(name, settlement.getCoordinates()); // extending equipment
+		super(name, robotType.toString(), settlement.getCoordinates()); // extending equipment
 //		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
 //		// Place this person within a building

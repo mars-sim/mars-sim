@@ -476,7 +476,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			// and the occupants did not leave the vehicle.
 			setPhaseEnded(true);
 			super.endMission(reason);
-
 		}
 	}
 
@@ -601,6 +600,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			requestApprovalPhase(member);
 		}
 		else if (EMBARKING.equals(getPhase())) {
+			setDateEmbarked();
 			performEmbarkFromSettlementPhase(member);
 		} 
 		else if (TRAVELLING.equals(getPhase())) {
@@ -611,6 +611,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		else if (COMPLETED.equals(getPhase())) {
 			// createAfterActionReport();
+			setDateCompleted();
 			setPhaseEnded(true);
 		}
 	}

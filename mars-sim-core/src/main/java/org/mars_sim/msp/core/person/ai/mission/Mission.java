@@ -128,7 +128,11 @@ public abstract class Mission implements Serializable {
 	protected boolean requested = false;
 	
 	/** The date the mission was filed. */
-	private String time;
+	private String dateFiled;
+	/** The date the mission embarked. */
+	private String dateEmbarked;
+	/** The date the mission was completed. */
+	private String dateCompleted;
 	/** Name of mission. */
 	private String missionName;
 	/** The description of the current phase of operation. */
@@ -187,7 +191,8 @@ public abstract class Mission implements Serializable {
 		this.identifier = getNextIdentifier();
 		this.missionName = missionName;
 		this.startingMember = startingMember;
-		time = marsClock.getDateTimeStamp();
+		dateFiled = marsClock.getDateTimeStamp();
+		fireMissionUpdate(MissionEventType.DATE_EVENT, dateFiled);
 		
 		missionID = MissionManager.matchMissionID(missionName);
 		
@@ -251,7 +256,17 @@ public abstract class Mission implements Serializable {
 	 * @return
 	 */
 	public String getTime() {
-		return time;
+		return dateFiled;
+	}
+	
+	public void setDateCompleted() {
+		dateCompleted = marsClock.getDateTimeStamp();
+		fireMissionUpdate(MissionEventType.DATE_EVENT, dateCompleted);
+	}
+
+	public void setDateEmbarked() {
+		dateEmbarked = marsClock.getDateTimeStamp();
+		fireMissionUpdate(MissionEventType.DATE_EVENT, dateEmbarked);
 	}
 	
 	/**
@@ -1344,8 +1359,6 @@ public abstract class Mission implements Serializable {
 				setPhaseEnded(true);
 			}
 		}
-		
-		
 	}
 
 	/**

@@ -59,7 +59,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	public CollectRegolith(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, ResourceUtil.regolithID, SITE_GOAL, COLLECTION_RATE,
-				EquipmentType.convertName2ID(Bag.TYPE), REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
+				EquipmentType.convertType2ID(Bag.TYPE), REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class CollectRegolith extends CollectResourcesMission {
 
 		// Use CollectResourcesMission constructor.
 		super(description, members, startingSettlement, ResourceUtil.regolithID, SITE_GOAL, COLLECTION_RATE,
-				EquipmentType.convertName2ID(Bag.TYPE), REQUIRED_BAGS, regolithCollectionSites.size(),
+				EquipmentType.convertType2ID(Bag.TYPE), REQUIRED_BAGS, regolithCollectionSites.size(),
 				RoverMission.MIN_GOING_MEMBERS, rover, regolithCollectionSites);
 	}
 

@@ -1297,16 +1297,16 @@ public class Inventory implements Serializable {
 	}
 
 	private boolean containsUnitClassLocal(int id) {
-//		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
+		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(id);//EquipmentType.int2enum(id).getName());
 //		return containsUnitClassLocal(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
 		if (containedUnits != null && !containedUnits.isEmpty()) {
 			Iterator<Unit> i = containedUnits.iterator();
 			while (i.hasNext()) {
 				Unit unit = i.next();
-				if (unit instanceof Equipment) {
-					if (EquipmentType.getType(((Equipment)unit).getName()) == EquipmentType.convertID2Type(id)) {
+				if (unitClass.isInstance(unit)) {
+//					if (EquipmentType.getType(((Equipment)unit).getType()) == EquipmentType.convertID2Type(id)) {
 						return true;
-					}
+//					}
 				}
 			}
 		}
@@ -1399,7 +1399,7 @@ public class Inventory implements Serializable {
 
 	public Collection<Unit> findAllUnitsOfClass(int id) {
 //		Class<?> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-		return findAllUnitsOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
+		return findAllUnitsOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getType()));
 	}
 
 	/**
@@ -1421,16 +1421,16 @@ public class Inventory implements Serializable {
 	}
 
 	public int findNumUnitsOfClass(int id) {
-//		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-//		return findNumUnitsOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
+//		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(id);
+//		return findNumUnitsOfClass(unitClass);
 		
 		int result = 0;
 		if (containedUnits != null && !containedUnits.isEmpty()) {
 			Iterator<Unit> i = containedUnits.iterator();
 			while (i.hasNext()) {
 				Unit unit = i.next();
-				if (unit instanceof Equipment) {
-					if (EquipmentType.getType(((Equipment)unit).getName()) == EquipmentType.convertID2Type(id)) {
+				if (unit instanceof Equipment || unit instanceof Container) {
+					if (EquipmentType.getType(((Equipment)unit).getType()) == EquipmentType.convertID2Type(id)) {
 						result++;
 					}
 				}
@@ -1482,9 +1482,11 @@ public class Inventory implements Serializable {
 	}
 
 	public int findNumEmptyUnitsOfClass(int id, boolean allowDirty) {
-		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName());
+		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(id);//EquipmentType.convertID2Type(id).getType());
+//		return findNumEmptyUnitsOfClass(unitClass, allowDirty);
+		
 		int result = 0;
-		if (containsUnitClass(unitClass)) {
+		if (containsUnitClass(id)) {
 			for (Unit unit : containedUnits) {
 				if (unitClass.isInstance(unit)) {
 					Inventory inv = unit.getInventory();

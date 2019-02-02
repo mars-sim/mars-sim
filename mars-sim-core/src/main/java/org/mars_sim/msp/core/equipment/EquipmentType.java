@@ -28,24 +28,24 @@ public enum EquipmentType {
 	SPECIMEN_CONTAINER	(Msg.getString("EquipmentType.specimenBox")); //$NON-NLS-1$
 	// TODO: should 3D printer be an equipment or an itemResource ?
 	
-	private String name;	
+	private String type;	
 
 	private static Set<EquipmentType> equipmentSet;
 
 	private static Set<String> equipmentTypeString;
 	
 	/** hidden constructor. */
-	private EquipmentType(String name) {
-		this.name = name;
+	private EquipmentType(String type) {
+		this.type = type;
 	}
 
-	public String getName() {
-		return this.name;
+	public String getType() {
+		return this.type;
 	}
 
 	@Override
 	public String toString() {
-		return this.name;
+		return this.type;
 	}
 
 	public static Set<String> getEquipmentTypeString() {
@@ -67,10 +67,10 @@ public enum EquipmentType {
 		return equipmentSet;
 	}
 	
-	public static int convertName2ID(String name) {
-		if (name != null) {
+	public static int convertType2ID(String type) {
+		if (type != null) {
 	    	for (EquipmentType e : EquipmentType.values()) {
-	    		if (name.equalsIgnoreCase(e.name)) {
+	    		if (type.equalsIgnoreCase(e.type)) {
 	    			return e.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 	    		}
 	    	}
@@ -97,7 +97,7 @@ public enum EquipmentType {
 	public static EquipmentType getType(String name) {
 		if (name != null) {
 	    	for (EquipmentType et : EquipmentType.values()) {
-	    		if (name.equalsIgnoreCase(et.name)) {
+	    		if (name.equalsIgnoreCase(et.type)) {
 	    			return et;
 	    		}
 	    	}

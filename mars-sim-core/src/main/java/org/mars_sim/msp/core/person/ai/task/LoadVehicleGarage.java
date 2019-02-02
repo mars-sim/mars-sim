@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -752,9 +753,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 								}
 								loaded++;
 							} else {
-                    			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
+                    			LogConsolidated.log(Level.WARNING, 1_000, sourceName,
                     					"[" + settlement.getName() + "] Rover " + vehicle
-                    						+ " cannot store " + eq + ".", null);
+                    						+ " cannot store " + eq + ".");
 								endTask();
 							}
 						}
@@ -840,9 +841,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 							}
 							loaded++;
 						} else {
-                			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
+                			LogConsolidated.log(Level.WARNING, 1_000, sourceName,
                 					"[" + settlement.getName() + "] Rover " + vehicle
-                						+ " cannot store " + eq + ".", null);
+                						+ " cannot store " + eq + ".");
 							endTask();
 						}
 					}
@@ -916,7 +917,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				// Added all desserts to the matching test
 				boolean isDessert = false;
 				double amountDessertLoaded = 0;
-				double stored = 0;
+				double stored = inv.getAmountResourceStored(resource, false);
 				double settlementNeed = 0;
 				double amountDessertNeeded = (Double) resources.get(resource);
 				String dessertName = "";
@@ -927,7 +928,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					if (ResourceUtil.findAmountResource(resource).getName().equals(dessertName)) {
 						// Add the amount of all six desserts together
 						amountDessertLoaded += vInv.getAmountResourceStored(resource, false);
-						stored += inv.getAmountResourceStored(resource, false);
+//						stored += inv.getAmountResourceStored(resource, false);
 						settlementNeed += getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
 						isDessert = true;
 					}
@@ -954,8 +955,13 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					settlementNeed = getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
 					double loaded = vInv.getAmountResourceStored(resource, false);
 					double totalNeeded = needed + settlementNeed - loaded;
-					if (inv.getAmountResourceStored(resource, false) < totalNeeded) {
-						stored = inv.getAmountResourceStored(resource, false);
+					if (Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)).equalsIgnoreCase("food"))
+						System.out.println(settlement + "'s food supply : "
+								+ " Mission need: " + Math.round(needed * 100.0) / 100.0  
+								+ " ; " + settlement + " need: " + Math.round(settlementNeed* 100.0) / 100.0
+								+ " ; Stored: " + Math.round(stored* 100.0) / 100.0);
+								
+					if (stored < totalNeeded) {
 						if (logger.isLoggable(Level.INFO))
 							LogConsolidated.log(Level.INFO, 5000, sourceName,
 									" Not enough "
@@ -963,7 +969,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 									+ ". Mission need: " + Math.round(needed * 100.0) / 100.0  
 									+ " ; " + settlement + " need: " + Math.round(settlementNeed* 100.0) / 100.0
 									+ " ; Stored: " + Math.round(stored* 100.0) / 100.0);
-						inv.addAmountDemand(resource, totalNeeded);
+						inv.addAmountDemandTotalRequest(resource, totalNeeded);
 						enoughSupplies = false;
 						return false;
 					}
@@ -984,7 +990,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 								+ ". Mission need: " + needed   
 								+ " ; " + settlement + " need: " + settlementNeed
 								+ " ; Stored: " + stored);
-					inv.addItemDemand(resource, totalNeeded);
+					inv.addItemDemandTotalRequest(resource, totalNeeded);
 					enoughSupplies = false;
 					return false;
 				}
@@ -995,20 +1001,23 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		// Check if there is enough equipment at the settlement.
 		Iterator<Integer> iE = equipment.keySet().iterator();
 		while (iE.hasNext()) {
-			Integer equipmentID = iE.next();
+			Integer equipmentID = iE.next();			
+			String name = Conversion.capitalize(EquipmentType.convertID2Type(equipmentID).toString());
+//			Class<?> c = EquipmentFactory.getEquipmentClass(equipmentID);
 			int needed = equipment.get(equipmentID);
 			int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentID);
 			int numLoaded = vInv.findNumUnitsOfClass(equipmentID);
 			int totalNeeded = needed + settlementNeed - numLoaded;
-			if (inv.findNumEmptyUnitsOfClass(equipmentID, false) < totalNeeded) {
-				int stored = inv.findNumEmptyUnitsOfClass(equipmentID, false);
+			int stored = inv.findNumEmptyUnitsOfClass(equipmentID, false);
+			if (stored < totalNeeded) {	
 				if (logger.isLoggable(Level.INFO))
 					LogConsolidated.log(Level.INFO, 0, sourceName,						
-							" Not enough "
-							+ Conversion.capitalize(EquipmentType.convertID2Type(equipmentID).toString()) 
-							+ ". Mission need: " + needed   
-							+ " ; " + settlement + " need: " + settlementNeed
-							+ " ; Stored: " + stored);
+							"Not enough "
+							+ name 
+							+ ". Mission need: " + needed 
+							+ ". # loaded: " + numLoaded 
+							+ "; " + settlement + " need: " + settlementNeed
+							+ "; # unused: " + stored);
 				enoughSupplies = false;
 				return false;
 			}

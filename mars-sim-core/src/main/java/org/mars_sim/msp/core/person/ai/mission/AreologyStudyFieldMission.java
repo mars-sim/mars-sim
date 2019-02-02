@@ -88,10 +88,10 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, MIN_PEOPLE);
 
-		// Check if it has a vehicle 
-		if (!hasVehicle()) {
-			endMission(Mission.NO_AVAILABLE_VEHICLES);
-		}
+//		// Check if it has a vehicle 
+//		if (!hasVehicle()) {
+//			endMission(Mission.NO_AVAILABLE_VEHICLES);
+//		}
 
 		Settlement s = startingPerson.getSettlement();
 

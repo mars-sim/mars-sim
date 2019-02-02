@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 public enum MissionEventType {
 
 	// from Mission.java
-	TIME_EVENT					("date"),
+	DATE_EVENT					("date"),
 	NAME_EVENT					("name"),
 	TYPE_EVENT					("type"),
 	DESCRIPTION_EVENT			("description"),

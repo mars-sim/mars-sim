@@ -43,6 +43,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	private SalvageInfo salvageInfo;
 
+	private String type;
+	
 	private int lastOwner = -1;
 
 	/**
@@ -51,8 +53,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @param name     the name of the unit
 	 * @param location the unit's location
 	 */
-	protected Equipment(String name, Coordinates location) {
+	protected Equipment(String name, String type,Coordinates location) {
 		super(name, location);
+		this.type = type;
 		// Initialize data members.
 		isSalvaged = false;
 		salvageInfo = null;
@@ -353,6 +356,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return unitManager.getPersonByID(lastOwner);
 	}
 
+	public String getType() {
+		return type;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

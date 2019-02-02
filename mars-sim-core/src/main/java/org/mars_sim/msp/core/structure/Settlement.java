@@ -47,6 +47,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.job.Technician;
+import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -86,6 +87,7 @@ import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
@@ -238,10 +240,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private int numBots;
 	/** Numbers of associated vehicles in this settlement. */
 	private int numVehicles;
-
-	/**
-	 * The rate [kg per millisol] of filtering grey water for irrigating the crop.
-	 */
+	
+	/**  The composite value of the minerals nearby. */
+	public double mineralValue = -1;
+	/**  The rate [kg per millisol] of filtering grey water for irrigating the crop. */
 	public double greyWaterFilteringRate = 1;
 	/** The currently minimum passing score for mission approval. */
 	private double minimumPassingScore = 0;
@@ -1197,6 +1199,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			if (remainder == 0) {
 				// Reset the mission probability back to 1
 				missionProbability = -1;
+				mineralValue = -1;
 			}
 			
 			remainder = millisols % (int)(SAMPLING_FREQ/time);
@@ -4088,6 +4091,17 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		}
 		
 		return missionProbability;
+	}
+	
+	public double getTotalMineralValue(Rover rover) {
+		if (mineralValue == -1) {
+			// Check if any mineral locations within rover range and obtain their concentration
+			Map<String, Double> minerals = Exploration.getNearbyMineral(rover, this);
+			if (!minerals.isEmpty()) {
+				mineralValue = Exploration.getTotalMineralValue(this, minerals);
+			}
+		}
+		return mineralValue;
 	}
 	
 	@Override
