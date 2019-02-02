@@ -16,14 +16,8 @@ module mars-sim-core {
     requires commons-lang3;
 //    requires xz;
     
-//	requires java.desktop;
-    
-//    requires reactfx;
-//   requires fxgl;
-//    requires javafx.collections.FXCollections;
-//    requires javafx.collections.ObservableList;
-    
-//   requires mars-sim-ui;
+	requires flogger;
+  
     requires mars-sim-mapdata;
     
 	exports mars-sim-core;

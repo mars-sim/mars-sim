@@ -23,6 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.SwingConstants;
@@ -444,7 +445,7 @@ public class TabPanelSchedule extends TabPanel {
 //			plannerWindow = new PlannerWindow(unit, desktop, this);
 //	}
 
-	class PromptComboBoxRenderer extends BasicComboBoxRenderer {
+	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private String prompt;
 
@@ -466,8 +467,10 @@ public class TabPanelSchedule extends TabPanel {
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
-			JComponent result = (JComponent) super.getListCellRendererComponent(list, value, index, isSelected,
-					cellHasFocus);
+//			JComponent result = (JComponent) super.getListCellRendererComponent(list, value, index, isSelected,
+//					cellHasFocus);
+			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			
 			// Component component = super.getListCellRendererComponent(list, value, index,
 			// isSelected, cellHasFocus);
 			// component.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
@@ -487,26 +490,26 @@ public class TabPanelSchedule extends TabPanel {
 
 			if (isSelected) {
 				if (theme == 7) {
-					result.setBackground(new Color(184, 134, 11, 255)); // 184,134,11 mud yellow
-					result.setForeground(Color.white);// new Color(255,229,204)); // 255,229,204 white-ish (super pale)
+					c.setBackground(new Color(184, 134, 11, 255)); // 184,134,11 mud yellow
+					c.setForeground(Color.white);// new Color(255,229,204)); // 255,229,204 white-ish (super pale)
 														// yellow
 				} else {// if (theme == 0 || theme == 6) {
-					result.setBackground(new Color(37, 85, 118, 255)); // (37, 85, 118) navy blue
-					result.setForeground(Color.white);// new Color(131,172,234)); // 131,172,234 pale sky blue
+					c.setBackground(new Color(37, 85, 118, 255)); // (37, 85, 118) navy blue
+					c.setForeground(Color.white);// new Color(131,172,234)); // 131,172,234 pale sky blue
 				}
 
 			} else {
 				// unselected, and not the DnD drop location
 				if (theme == 7) {
-					result.setForeground(new Color(184, 134, 11)); // 184,134,11 mud yellow
-					result.setBackground(new Color(255, 229, 204, 40)); // 255,229,204 white-ish (super pale) yellow
+					c.setForeground(new Color(184, 134, 11)); // 184,134,11 mud yellow
+					c.setBackground(new Color(255, 229, 204, 40)); // 255,229,204 white-ish (super pale) yellow
 				} else {// if (theme == 0 || theme == 6) {
-					result.setForeground(new Color(37, 85, 118));// (37, 85, 118) navy blue
-					result.setBackground(new Color(131, 172, 234, 40)); // 131,172,234 pale sky blue
+					c.setForeground(new Color(37, 85, 118));// (37, 85, 118) navy blue
+					c.setBackground(new Color(131, 172, 234, 40)); // 131,172,234 pale sky blue
 				}
 			}
 			// result.setOpaque(false);
-			return result;
+			return c;
 		}
 	}
 

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * GuideWindow.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2019-02-02
  * @author Lars Naesbye Christensen
  */
 package org.mars_sim.msp.ui.swing;

@@ -213,7 +213,7 @@ public class TabPanelFoodProduction extends TabPanel {
 	}
 
 	// 2014-12-01 Added PromptComboBoxRenderer()
-	class PromptComboBoxRenderer extends BasicComboBoxRenderer {
+	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
 		private String prompt;
@@ -233,9 +233,9 @@ public class TabPanelFoodProduction extends TabPanel {
 		// Add color rendering
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
-			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+//			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-			Component c = defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
 			if (value == null) {
 				setText(prompt);

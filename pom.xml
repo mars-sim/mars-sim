@@ -14,7 +14,7 @@
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
-		<release>11</release>
+		<release>8</release>
 		<project.version>3.1.0-b2</project.version>
 		<junit.version>4.12</junit.version>
 		<timestamp>${maven.build.timestamp}</timestamp>

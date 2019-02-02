@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -567,7 +566,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				// throw new IllegalStateException(loadingError);
 
 			}
-		} else {
+		}
+		
+		else {
 			if (required && optionalResources.containsKey(resource)) {
 				amountNeededTotal += (Double) optionalResources.get(resource);
 			}
@@ -955,11 +956,11 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					settlementNeed = getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
 					double loaded = vInv.getAmountResourceStored(resource, false);
 					double totalNeeded = needed + settlementNeed - loaded;
-					if (Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)).equalsIgnoreCase("food"))
-						System.out.println(settlement + "'s food supply : "
-								+ " Mission need: " + Math.round(needed * 100.0) / 100.0  
-								+ " ; " + settlement + " need: " + Math.round(settlementNeed* 100.0) / 100.0
-								+ " ; Stored: " + Math.round(stored* 100.0) / 100.0);
+//					if (Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)).equalsIgnoreCase("food"))
+//						System.out.println(settlement + "'s food supply : "
+//								+ " Mission need: " + Math.round(needed * 100.0) / 100.0  
+//								+ " ; " + settlement + " need: " + Math.round(settlementNeed* 100.0) / 100.0
+//								+ " ; Stored: " + Math.round(stored* 100.0) / 100.0);
 								
 					if (stored < totalNeeded) {
 						if (logger.isLoggable(Level.INFO))

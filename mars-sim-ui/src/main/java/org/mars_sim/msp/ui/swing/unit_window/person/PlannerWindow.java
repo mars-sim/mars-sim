@@ -19,6 +19,7 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
@@ -248,7 +249,7 @@ implements InternalFrameListener, ActionListener {
 		// Update if necessary.
 	}
 
-	class PromptComboBoxRenderer extends BasicComboBoxRenderer {
+	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
 		private String prompt;
@@ -269,10 +270,13 @@ implements InternalFrameListener, ActionListener {
 			@Override
 		    public Component getListCellRendererComponent(JList<?> list, Object value,
 		            int index, boolean isSelected, boolean cellHasFocus) {
-		        JComponent result = (JComponent)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+//		        JComponent result = (JComponent)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		        //Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+		        Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				
 		        //component.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-				if (value == null) {
+				
+		        if (value == null) {
 					setText( prompt );
 					//this.setForeground(Color.orange);
 			        //this.setBackground(new Color(184,134,11));
@@ -282,19 +286,19 @@ implements InternalFrameListener, ActionListener {
 				setText(" Sol " + value);
 
 				if (isSelected) {
-					result.setForeground(new Color(184,134,11));
-			        result.setBackground(Color.orange);
+					c.setForeground(new Color(184,134,11));
+			        c.setBackground(Color.orange);
 
 		          // unselected, and not the DnD drop location
 		        } else {
-		        	  result.setForeground(new Color(184,134,11));
-		        	  result.setBackground(new Color(255,229,204)); //pale yellow (255,229,204)
+		        	  c.setForeground(new Color(184,134,11));
+		        	  c.setBackground(new Color(255,229,204)); //pale yellow (255,229,204)
 				      //Color(184,134,11)) brown
 		        }
 
 		        //result.setOpaque(false);
 
-		        return result;
+		        return c;
 		    }
 	}
 

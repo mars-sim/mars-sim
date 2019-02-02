@@ -231,11 +231,11 @@ public class TabPanelManufacture extends TabPanel {
 		interactionPanel.add(overrideCheckbox);
 	}
 
-	class PromptComboBoxRenderer extends BasicComboBoxRenderer {
+	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
 		private String prompt;
-		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+//		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 		// Width doesn't matter as the combo box will size
 		// private Dimension preferredSize = new Dimension(0, 20);
 
@@ -252,9 +252,11 @@ public class TabPanelManufacture extends TabPanel {
 		// Add color rendering
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
-			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			Component c = defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+//			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+//			Component c = defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
+			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			
 			if (value == null) {
 				setText(prompt);
 				return this;

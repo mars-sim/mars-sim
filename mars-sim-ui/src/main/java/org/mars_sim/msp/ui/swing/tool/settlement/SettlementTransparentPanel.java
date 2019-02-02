@@ -32,6 +32,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
@@ -242,7 +243,7 @@ public class SettlementTransparentPanel extends WebComponent {
 
 	}
 
-	class PromptComboBoxRenderer extends BasicComboBoxRenderer {
+	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
 		private String prompt;
@@ -260,10 +261,11 @@ public class SettlementTransparentPanel extends WebComponent {
 				this.prompt = prompt;
 			}
 
-			@Override
-		    public Component getListCellRendererComponent(JList<?> list, Object value,
+			public Component getListCellRendererComponent(JList<?> list, Object value,
 		            int index, boolean isSelected, boolean cellHasFocus) {
-		        JComponent result = (JComponent)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				
+//		        JComponent result = (JComponent)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		        //Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		        //component.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 				if (value == null) {
@@ -274,39 +276,39 @@ public class SettlementTransparentPanel extends WebComponent {
 				}
 
 				if (isSelected) {
-					result.setForeground(Color.GREEN);
-			        result.setBackground(new Color(184,134,11,50));
+					c.setForeground(Color.GREEN);
+			        c.setBackground(new Color(184,134,11,50));
 
 		          // unselected, and not the DnD drop location
 		          } else {
-		        	  result.setForeground(Color.ORANGE);
-		        	  result.setBackground(new Color(255,229,204,50));
+		        	  c.setForeground(Color.ORANGE);
+		        	  c.setBackground(new Color(255,229,204,50));
 				      //result.setBackground(new Color(184,134,11)); //brown
 		          }
 
 		        //result.setOpaque(false);
 
-		        return result;
+		        return c;
 		    }
 	}
 
-/*
-    public void buildZoomLabel() {
 
-		zoomLabel = new JLabel(Msg.getString("SettlementTransparentPanel.label.zoom")); //$NON-NLS-1$
-		//zoomLabel.setPreferredSize(new Dimension(60, 20));
-		zoomLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
-		zoomLabel.setForeground(Color.GREEN);
-		//zoomLabel.setContentAreaFilled(false);
-		zoomLabel.setOpaque(false);
-		zoomLabel.setVerticalAlignment(JLabel.CENTER);
-		zoomLabel.setHorizontalAlignment(JLabel.CENTER);
-		//zoomLabel.setBorder(new LineBorder(Color.green, 1, true));
-		//zoomLabel.setBorderPainted(true);
-		zoomLabel.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
+//    public void buildZoomLabel() {
+//
+//		zoomLabel = new JLabel(Msg.getString("SettlementTransparentPanel.label.zoom")); //$NON-NLS-1$
+//		//zoomLabel.setPreferredSize(new Dimension(60, 20));
+//		zoomLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
+//		zoomLabel.setForeground(Color.GREEN);
+//		//zoomLabel.setContentAreaFilled(false);
+//		zoomLabel.setOpaque(false);
+//		zoomLabel.setVerticalAlignment(JLabel.CENTER);
+//		zoomLabel.setHorizontalAlignment(JLabel.CENTER);
+//		//zoomLabel.setBorder(new LineBorder(Color.green, 1, true));
+//		//zoomLabel.setBorderPainted(true);
+//		zoomLabel.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
+//
+//    }
 
-    }
-*/
 
     public void buildZoomSlider() {
 

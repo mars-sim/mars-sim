@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
@@ -112,7 +113,7 @@ implements ActionListener {
 		}
 		// Create building list.
 		comboBox = new JComboBoxMW<Building>(comboBoxModel);
-		comboBox.setRenderer(new PromptComboBoxRenderer());
+		comboBox.setRenderer(new PromptComboBoxRenderer("Select a Building"));
 		//comboBox.setOpaque(false);
 		//comboBox.setBackground(new Color(0,0,0,128));
 		//comboBox.setBackground(new Color(255,229,204));
@@ -145,7 +146,7 @@ implements ActionListener {
 		setPanelTranslucent();
 	}
 	
-	class PromptComboBoxRenderer extends BasicComboBoxRenderer {	
+	class PromptComboBoxRenderer extends DefaultListCellRenderer {	
 		
 		private static final long serialVersionUID = 1L;
 		private String prompt;		
@@ -166,7 +167,9 @@ implements ActionListener {
 			@Override
 		    public Component getListCellRendererComponent(JList<?> list, Object value,
 		            int index, boolean isSelected, boolean cellHasFocus) {
-		        JComponent result = (JComponent)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				
+//		        JComponent result = (JComponent)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		        //Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		        //component.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);		        
 				if (value == null) {
@@ -196,7 +199,7 @@ implements ActionListener {
 				
 		        //result.setOpaque(false);
 
-		        return result;
+		        return c;
 		    }
 	}
 

@@ -565,7 +565,7 @@ implements MouseListener {
  		listScrollPanel.validate();
  		listScrollPanel.revalidate();
  		listScrollPanel.repaint();
-		//comboBox.setRenderer(new PromptComboBoxRenderer("A list of crops"));
+		comboBox.setRenderer(new PromptComboBoxRenderer("A list of crops"));
 		//comboBox.setSelectedIndex(-1);
     	//list.clearSelection(); // cause setting deletingCropIndex to -1
     	//list.setSelectedIndex(0);
@@ -866,12 +866,12 @@ implements MouseListener {
 	}
 
 	// Add PromptComboBoxRenderer()
-	class PromptComboBoxRenderer extends BasicComboBoxRenderer {
+	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
 		private String prompt;
 
-		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+//		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 	    // Width doesn't matter as the combo box will size
 	    //private Dimension preferredSize = new Dimension(0, 20);
 
@@ -889,10 +889,9 @@ implements MouseListener {
 		public Component getListCellRendererComponent(
 				JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
-			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-				Component c = defaultRenderer.getListCellRendererComponent(
-		                list, value, index, isSelected, cellHasFocus);
+			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+//				Component c = defaultRenderer.getListCellRendererComponent(
+//		                list, value, index, isSelected, cellHasFocus);
 
 			if (value == null) {
 				setText(Conversion.capitalize(prompt));
