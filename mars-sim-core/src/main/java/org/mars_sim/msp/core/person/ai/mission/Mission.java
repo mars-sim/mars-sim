@@ -127,6 +127,8 @@ public abstract class Mission implements Serializable {
 	/** True if the mission has been requested. */
 	protected boolean requested = false;
 	
+	/** The name of the vehicle reserved. */
+	private String vehicleReserved;
 	/** The date the mission was filed. */
 	private String dateFiled;
 	/** The date the mission embarked. */
@@ -1410,6 +1412,14 @@ public abstract class Mission implements Serializable {
 
 	public String createFullDesignation(Person p) {	
 		return getType() + " " + MissionManager.getMissionDesignationString(p.getAssociatedSettlement().getName());
+	}
+	
+	public void setReservedVehicle(String name) {
+		vehicleReserved = name;
+	}
+	
+	public String getReservedVehicle() {
+		return vehicleReserved;
 	}
 	
 	/**

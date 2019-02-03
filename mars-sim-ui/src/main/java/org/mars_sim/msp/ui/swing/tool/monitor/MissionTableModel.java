@@ -326,9 +326,10 @@ public class MissionTableModel extends AbstractTableModel
 				case VEHICLE: {
 					result = ""; //$NON-NLS-1$
 					if (mission instanceof VehicleMission) {
-						VehicleMission vehicleMission = (VehicleMission) mission;
-						if (vehicleMission.getVehicle() != null)
-							result = vehicleMission.getVehicle().getName();
+//						VehicleMission vehicleMission = (VehicleMission) mission;
+//						if (vehicleMission.getVehicle() != null)
+//							result = vehicleMission.getVehicle().getName();
+						result = mission.getReservedVehicle();
 					} else if (mission instanceof BuildingConstructionMission) {
 						BuildingConstructionMission constructionMission = (BuildingConstructionMission) mission;
 						List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();

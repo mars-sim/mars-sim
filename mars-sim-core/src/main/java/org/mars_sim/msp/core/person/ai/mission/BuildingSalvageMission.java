@@ -385,6 +385,8 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		while (j.hasNext()) {
 			GroundVehicle vehicle = j.next();
 			vehicle.setReservedForMission(true);
+			// Record the name of this vehicle in Mission
+			setReservedVehicle(vehicle.getName());
 			if (settlement.getInventory().containsUnit(vehicle)) {
 				settlement.getInventory().retrieveUnit(vehicle);
 			} else {

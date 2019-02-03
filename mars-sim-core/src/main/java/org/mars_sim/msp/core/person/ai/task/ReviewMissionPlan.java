@@ -306,6 +306,12 @@ public class ReviewMissionPlan extends Task implements Serializable {
 				        
 							// Do only one review each time
 					        //endTask();
+					        
+					        if (mp.getPercentComplete() >= 100D) {
+				            	// Go to the finished phase and finalize the approval
+				            	setPhase(FINISHED);
+				                return time * 0.1;
+				            }
 						}
 		            }
 				}

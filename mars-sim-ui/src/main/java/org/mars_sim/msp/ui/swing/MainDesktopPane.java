@@ -318,18 +318,20 @@ public class MainDesktopPane extends JDesktopPane
 		// logger.config("MainDesktopPane's prepareListeners() is on " +
 		// Thread.currentThread().getName() + " Thread");
 
-		// Add addUnitManagerListener()
-//		UnitManager unitManager = sim.getUnitManager();
+		// Attach UnitManagerListener to desktop
 		unitManager.addUnitManagerListener(this);
 
 		// Add addUnitListener()
 		Collection<Settlement> settlements = unitManager.getSettlements();
-		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
-		Settlement settlement = settlementList.get(0);
-		List<Building> buildings = settlement.getBuildingManager().getACopyOfBuildings();
-		building = buildings.get(0);
+		
+//		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+//		Settlement settlement = settlementList.get(0);
+//		List<Building> buildings = settlement.getBuildingManager().getACopyOfBuildings();
+//		building = buildings.get(0);
 		// building.addUnitListener(this); // not working
-		Iterator<Settlement> i = settlementList.iterator();
+		
+		// Attach UnitListener to each settlement
+		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()) {
 			i.next().addUnitListener(this);
 		}

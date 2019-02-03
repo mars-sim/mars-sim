@@ -11,7 +11,6 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -90,7 +89,9 @@ implements ListSelectionListener, MissionListener, UnitListener {
 
 	// Private members
 	private WebTextField descriptionTF;	
+	
 //	private WebLabel descriptionLabel;
+	private WebLabel designationLabel;
 	private WebLabel typeLabel;
 	private WebLabel startingLabel;
 	private WebLabel phaseLabel;
@@ -170,7 +171,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		topPane.add(descriptionLabel0);
 		
 		descriptionTF = new WebTextField("");
-		//descriptionTF.setEditable(true);
+		descriptionTF.setEditable(false);
 		descriptionTF.setColumns(25);
 		//descriptionTF.setOpaque(false);
 		//descriptionTF.setFont(new Font("Serif", Font.PLAIN, 10));
@@ -190,7 +191,17 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		WebPanel wrapper0 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper0.add(descriptionTF);
 		topPane.add(wrapper0);
-
+	
+		// Create the designation label.
+		WebLabel designationLabel0 = new WebLabel(Msg.getString("MainDetailPanel.designation", WebLabel.LEFT)); //$NON-NLS-1$
+		designationLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
+		topPane.add(designationLabel0);
+	
+		designationLabel = new WebLabel("", WebLabel.LEFT);
+		WebPanel wrapper1a = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		wrapper1a.add(designationLabel);
+		topPane.add(wrapper1a);
+		
 		// Create the type label.
 		WebLabel startingLabel0 = new WebLabel(Msg.getString("MainDetailPanel.startingMember", WebLabel.LEFT)); //$NON-NLS-1$
 		startingLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -228,7 +239,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(topPane,
-		                                4, 2, //rows, cols
+		                                5, 2, //rows, cols
 		                                3, 1,        //initX, initY
 		                                25, 1);       //xPad, yPad
 
@@ -552,11 +563,13 @@ implements ListSelectionListener, MissionListener, UnitListener {
 //				descriptionTF.setText(Conversion.capitalize(oldDes));
 //			}
 
-			typeLabel.setText(mission.getName()); //$NON-NLS-1$
-			String phaseText = mission.getPhaseDescription();
-
+			designationLabel.setText(mission.getFullMissionDesignation()); 		
+			
+			typeLabel.setText(mission.getName()); 
+			
 			startingLabel.setText(mission.getStartingMember().getName()); //$NON-NLS-1$
 			
+			String phaseText = mission.getPhaseDescription();
 			phaseLabel.setToolTipText(phaseText);
 			if (phaseText.length() > 48) phaseText = phaseText.substring(0, 48) + "...";
 			phaseLabel.setText(phaseText); //$NON-NLS-1$
