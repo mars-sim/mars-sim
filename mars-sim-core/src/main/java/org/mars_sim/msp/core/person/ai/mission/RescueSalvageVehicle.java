@@ -551,20 +551,19 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		int peopleNum = getRescuePeopleNum(vehicleTarget);
 
 		// Determine life support supplies needed for trip.
-		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * peopleNum
-				* Mission.OXYGEN_MARGIN;
+		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * peopleNum;//* Mission.OXYGEN_MARGIN;
 		if (useBuffer) {
 			oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		}
 		result.put(oxygenID, oxygenAmount);
 
-		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * peopleNum * Mission.WATER_MARGIN;
+		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * peopleNum;// * Mission.WATER_MARGIN;
 		if (useBuffer) {
 			waterAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		}
 		result.put(waterID, waterAmount);
 
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * peopleNum * Mission.FOOD_MARGIN;
+		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * peopleNum;// * Mission.FOOD_MARGIN;
 		if (useBuffer) {
 			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		}
@@ -729,9 +728,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 //            int cutOffID = SimulationConfig.instance().getResourceConfiguration().getNextID();
 
-			for (Integer resource : rescueResources.keySet()) {// = i.next();
-				if (resource < 1000) {
-//                if (resource instanceof AmountResource) {
+			for (Integer resource : rescueResources.keySet()) {
+				if (resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 					double amount = (Double) rescueResources.get(resource);
 					if (result.containsKey(resource)) {
 						amount += (Double) result.get(resource);

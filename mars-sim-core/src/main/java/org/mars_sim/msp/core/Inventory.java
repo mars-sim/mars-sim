@@ -46,9 +46,8 @@ public class Inventory implements Serializable {
 	private static final long serialVersionUID = 123L;
 
 	 private static Logger logger = Logger.getLogger(Inventory.class.getName());
-	 
-	 private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			 logger.getName().length());
+		private static String loggerName = logger.getName();
+		private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	/** Comparison to indicate a small but non-zero amount. */
 	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;

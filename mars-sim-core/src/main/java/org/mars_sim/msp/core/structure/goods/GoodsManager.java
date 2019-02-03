@@ -98,7 +98,9 @@ public class GoodsManager implements Serializable {
 
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(GoodsManager.class.getName());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 //	public static final double SOFC_CONVERSION_EFFICIENCY = .57D;
 
 	// TODO Mission types should be an enum.

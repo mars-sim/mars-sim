@@ -46,9 +46,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	private static final long serialVersionUID = 1L;
 	
 	private static Logger logger = Logger.getLogger(Rover.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	/** The amount of work time to perform maintenance (millisols) */
 	public static final double MAINTENANCE_WORK_TIME = 500D;
@@ -296,18 +295,18 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 
 		double p = getAirPressure();
 		if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimum_air_pressure) {
-			LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
+			LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
 					"[" + this.getName() + "] out-of-range overall air pressure at " + Math.round(p * 10D) / 10D 
-					+ " kPa detected.", null);
+					+ " kPa detected.");
 			return false;
 		}
 		
 		double t = getTemperature();
 		if (t < Settlement.life_support_value[0][4] - Settlement.SAFE_TEMPERATURE_RANGE
 				|| t > Settlement.life_support_value[1][4] + Settlement.SAFE_TEMPERATURE_RANGE) {
-				LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName,
+				LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
 					"[" + this.getName() + "] out-of-range overall temperature at " + Math.round(t * 10D) / 10D 
-						+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.", null);		
+						+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");		
 			return false;
 		}
 

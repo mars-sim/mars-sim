@@ -57,9 +57,8 @@ public abstract class Vehicle extends Unit
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(Vehicle.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
 	private static double fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration()

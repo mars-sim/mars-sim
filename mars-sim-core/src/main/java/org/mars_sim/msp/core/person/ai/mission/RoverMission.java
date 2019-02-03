@@ -59,9 +59,8 @@ public abstract class RoverMission extends VehicleMission {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(RoverMission.class.getName());
-	
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	// Static members
 	public static final int MIN_STAYING_MEMBERS = 1;
@@ -723,40 +722,23 @@ public abstract class RoverMission extends VehicleMission {
 		// Determine estimate time for trip.
 		double time = getEstimatedTripTime(useBuffer, distance);
 		double timeSols = time / 1000D;
-//		System.out.println("RoverMission : time : " + time);
-		
 		int crewNum = getPeopleNumber();
 
 		// Determine life support supplies needed for trip.
-		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum * Mission.OXYGEN_MARGIN;
+		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;// * Mission.OXYGEN_MARGIN;
 		if (useBuffer)
 			oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin();
-//		LogConsolidated.log(logger, Level.WARNING, 10000, sourceName, 
-//				"Preparing " + getVehicle() + ", <Water Estimate>  sols : " + Math.round(timeSols * 10.0)/10.0 
-//				+ "   O2 Consumption : " + PhysicalCondition.getOxygenConsumptionRate() 
-//				+ "   margin : " + Mission.OXYGEN_MARGIN
-//				+ "   crewNum : " + crewNum 
-//				+ "   O2 amount : " + Math.round(oxygenAmount * 1000.0)/1000.0 + " kg" 
-//				, null);
 		result.put(oxygenID, oxygenAmount);
 
-		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum * Mission.WATER_MARGIN;
+		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;// * Mission.WATER_MARGIN;
 		if (useBuffer)
 			waterAmount *= Vehicle.getLifeSupportRangeErrorMargin();
-		// LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
-		// "Preparing " + getVehicle() + ", <Water Estimate> sols : " +
-		// Math.round(timeSols * 10.0)/10.0
-		// + " Consumption Rate : " + PhysicalCondition.getWaterConsumptionRate()
-		// + " crewNum : " + crewNum
-		// + " water : " + Math.round(waterAmount * 10.0)/10.0 + " kg"
-		// , null);
 		result.put(waterID, waterAmount);
 
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum * Mission.FOOD_MARGIN; 
+		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;// * Mission.FOOD_MARGIN; 
 		if (useBuffer)
 			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		result.put(foodID, foodAmount);
-//		System.out.println("RoverMission : foodAmount : " + foodAmount);
 
 		return result;
 	}
@@ -874,39 +856,7 @@ public abstract class RoverMission extends VehicleMission {
 		return (availableVehicleNum >= 2);
 	}
 
-	/**
-	 * Checks if there are enough basic mission resources at the settlement to start
-	 * mission.
-	 * 
-	 * @param settlement the starting settlement.
-	 * @return true if enough resources.
-	 */
-	public static boolean hasEnoughBasicResources(Settlement settlement, boolean unmasked) {
-		// if unmasked is false, it won't check the amount of H2O and O2.
-		// the goal of this mission can potentially increase O2 & H2O of the settlement
-		// e.g. an ice mission is desperately needed especially when there's
-		// not enough water since ice will produce water.
-
-		Inventory inv = settlement.getInventory();
-		try {
-			if (inv.getAmountResourceStored(methaneID, false) < 50D) {
-				return false;
-			}
-			if (unmasked && inv.getAmountResourceStored(oxygenID, false) < 50D) {
-				return false;
-			}
-			if (unmasked && inv.getAmountResourceStored(waterID, false) < 50D) {
-				return false;
-			}
-			if (inv.getAmountResourceStored(foodID, false) < 100D) {
-				return false;
-			}
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-		}
-
-		return true;
-	}
+	
 
 	@Override
 	protected void recruitMembersForMission(MissionMember startingMember) {

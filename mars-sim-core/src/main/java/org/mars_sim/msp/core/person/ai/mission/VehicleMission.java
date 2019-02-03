@@ -49,9 +49,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(VehicleMission.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	/** Mission phases. */
 	final public static MissionPhase APPROVAL = new MissionPhase(Msg.getString("Mission.phase.approval")); //$NON-NLS-1$
@@ -913,7 +912,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 								+ getName() + " (Required: " + Math.round(amount * 100D) / 100D + " kg  Stored: "
 								+ Math.round(amountStored * 100D) / 100D + " kg).";
 						LogConsolidated.log(Level.WARNING, 10_000, sourceName, newLog);
-						result = false;
+						return false;
 					}
 				}
 
@@ -926,7 +925,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 								+ ItemResourceUtil.findItemResource(resource).getName() + " to continue with "
 								+ getName() + " (Required: " + num + "  Stored: " + numStored + ").";
 						LogConsolidated.log(Level.WARNING, 10_000, sourceName, newLog);
-						result = false;
+						return false;
 					}
 				}
 

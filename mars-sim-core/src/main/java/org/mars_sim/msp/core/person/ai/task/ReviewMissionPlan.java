@@ -96,13 +96,12 @@ public class ReviewMissionPlan extends Task implements Serializable {
 
 				// Note: office building is optional
 				if (officeBuilding != null) {
-					// Walk to the office building.
-//					walkToActivitySpotInBuilding(officeBuilding, false);
-
-					office = officeBuilding.getAdministration();
-					office.addstaff();
-					
-					walkToActivitySpotInBuilding(officeBuilding, true);
+					office = officeBuilding.getAdministration();	
+					if (!office.isFull()) {
+						office.addstaff();
+						// Walk to the office building.
+						walkToActivitySpotInBuilding(officeBuilding, true);
+					}
 				}
 
 				// TODO: add other workplace if administration building is not available

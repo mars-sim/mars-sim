@@ -639,22 +639,16 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 		int crewNum = getPeopleNumber();
 
 		// Determine life support supplies needed for trip.
-		// AmountResource oxygen =
-		// AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
 		if (result.containsKey(oxygenID))
 			oxygenAmount += (Double) result.get(oxygenID);
 		result.put(oxygenID, oxygenAmount);
 
-		// AmountResource waterID =
-		// AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
 		if (result.containsKey(waterID))
 			waterAmount += (Double) result.get(waterID);
 		result.put(waterID, waterAmount);
 
-		// AmountResource foodID =
-		// AmountResource.findAmountResource(LifeSupportType.FOOD);
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
 		if (result.containsKey(foodID))
 			foodAmount += (Double) result.get(foodID);

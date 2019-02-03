@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
@@ -240,6 +241,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private int numBots;
 	/** Numbers of associated vehicles in this settlement. */
 	private int numVehicles;
+	/** Minimum amount of methane to stay in this settlement when considering a mission. */
+	private int minMethane = 50;
+	/** Minimum amount of oxygen to stay in this settlement when considering a mission. */
+	private int mineOxygen = 50;
+	/** Minimum amount of water to stay in this settlement when considering a mission. */
+	private int minWater = 50;
+	/** Minimum amount of food to stay in this settlement when considering a mission. */
+	private int minFood = 50;
 	
 	/**  The composite value of the minerals nearby. */
 	public double mineralValue = -1;
@@ -273,8 +282,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private double methaneProbabilityValue = 0;
 	/** The settlement's outside temperature. */
 	private double outside_temperature;
-	/** The maximum distance the rovers are allowed to travel. */
-	private double maxMssionRange = 2000;
+	/** The maximum distance (in km) the rovers are allowed to travel. */
+	private double maxMssionRange = 2200;
 
 	/** The settlement sponsor. */
 	private String sponsor;
@@ -339,7 +348,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 	private static int co2ID = ResourceUtil.co2ID;
-//	private static int foodID = ResourceUtil.foodID;
+	private static int foodID = ResourceUtil.foodID;
+	private static int methaneID = ResourceUtil.methaneID;
 
 	private static Simulation sim = Simulation.instance();
 	private static UnitManager unitManager;
@@ -4062,7 +4072,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	//		}
 	
 			// 6. Check if settlement has enough basic resources for a rover mission.
-			if (!RoverMission.hasEnoughBasicResources(this, true)) {
+			if (!hasEnoughBasicResources(true)) {
 				missionProbability = 0;
 				return 0;
 			}
@@ -4102,6 +4112,41 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			}
 		}
 		return mineralValue;
+	}
+	
+	/**
+	 * Checks if there are enough basic mission resources at the settlement to start
+	 * mission.
+	 * 
+	 * @param settlement the starting settlement.
+	 * @return true if enough resources.
+	 */
+	public boolean hasEnoughBasicResources(boolean unmasked) {
+		// if unmasked is false, it won't check the amount of H2O and O2.
+		// the goal of this mission can potentially increase O2 & H2O of the settlement
+		// e.g. an ice mission is desperately needed especially when there's
+		// not enough water since ice will produce water.
+
+		Inventory inv = getInventory();
+		
+		try {
+			if (inv.getAmountResourceStored(methaneID, false) < minMethane) {
+				return false;
+			}
+			if (unmasked && inv.getAmountResourceStored(oxygenID, false) < mineOxygen) {
+				return false;
+			}
+			if (unmasked && inv.getAmountResourceStored(waterID, false) < minWater) {
+				return false;
+			}
+			if (inv.getAmountResourceStored(foodID, false) < minFood) {
+				return false;
+			}
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+
+		return true;
 	}
 	
 	@Override

@@ -42,10 +42,16 @@ public class EmergencySupplyMissionMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
-        double result = 0D;
+        double missionProbability = 0D;
 
         if (person.isInSettlement()) {
         		
+            Settlement settlement = person.getSettlement();
+        	
+            missionProbability = settlement.getMissionBaseProbability();
+    		if (missionProbability == 0)
+    			return 0;
+    		
 	        // Determine job modifier.
 	        Job job = person.getMind().getJob();
 	        double jobModifier = 0D;
@@ -56,18 +62,15 @@ public class EmergencySupplyMissionMeta implements MetaMission {
 	        // Check if person is in a settlement.
 	        if (jobModifier > 0D) {
 
-	            Settlement settlement = person.getSettlement();
-	
-	            // Check if available rover.
-	            if (!RoverMission.areVehiclesAvailable(settlement, false)) {
-	                return 0;
+	            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
+	            if (rover != null) {
+	                Settlement targetSettlement = EmergencySupplyMission.findSettlementNeedingEmergencySupplies(
+	                        settlement, rover);
+	                if (targetSettlement == null) {
+	                    return 0;
+	                }
 	            }
-	
-	            // Check if available backup rover.
-	            if (!RoverMission.hasBackupRover(settlement)) {
-	                return 0;
-	            }
-	
+	            
 	            int min_num = 0;
 	            int all = settlement.getNumCitizens();
 	            if (all == 2)
@@ -85,22 +88,8 @@ public class EmergencySupplyMissionMeta implements MetaMission {
 	            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
 	    	        return 0;
 	    	    }
-
-	            // Check if settlement has enough basic resources for a rover mission.
-	            if (!RoverMission.hasEnoughBasicResources(settlement, false)) {
-	                return 0;
-	            }
 	
-	            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
-	            if (rover != null) {
-	                Settlement targetSettlement = EmergencySupplyMission.findSettlementNeedingEmergencySupplies(
-	                        settlement, rover);
-	                if (targetSettlement == null) {
-	                    return 0;
-	                }
-	            }
-	
-	            result = EmergencySupplyMission.BASE_STARTING_PROBABILITY;
+	            missionProbability = EmergencySupplyMission.BASE_STARTING_PROBABILITY;
 	
 	    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);	
 	    		int numThisMission = missionManager.numParticularMissions(NAME, settlement);
@@ -113,26 +102,26 @@ public class EmergencySupplyMissionMeta implements MetaMission {
 	    		if (numThisMission > 1)
 	    			return 0;	
 
-	    		if (result <= 0)
+	    		if (missionProbability <= 0)
 	    			return 0;
 	    		
 	    		int f1 = 2*numEmbarked + 1;
 	    		int f2 = 2*numThisMission + 1;
 	    		
-	    		result *= settlement.getNumCitizens() / f1 / f2 / 2D;
+	    		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
 	    		
 	            // Crowding modifier.
 	            int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
-	            if (crowding > 0) result *= (crowding + 1);
+	            if (crowding > 0) missionProbability *= (crowding + 1);
 	
 	            // Job modifier.
-	            result *= jobModifier;
+	            missionProbability *= jobModifier;
 	
 	        }
 	        
         }
 
-        return result;
+        return missionProbability;
     }
 
 	@Override

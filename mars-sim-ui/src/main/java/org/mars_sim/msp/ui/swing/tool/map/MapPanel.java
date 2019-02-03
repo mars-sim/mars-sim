@@ -32,8 +32,10 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
+import org.mars_sim.msp.ui.swing.tool.mission.NavpointPanel;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
+import com.alee.laf.desktoppane.WebInternalFrame;
 import com.alee.laf.panel.WebPanel;
 
 public class MapPanel extends WebPanel implements ClockListener {
@@ -119,7 +121,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 	/*
 	 * Sets up the mouse dragging capability
 	 */
-	public void setNavWin(final NavigatorWindow navwin) {
+	public void setNavWin(NavigatorWindow navwin) {
 		// showMap(centerCoords);
 		setMapType(getMapType());
 		map.drawMap(centerCoords);
@@ -175,9 +177,70 @@ public class MapPanel extends WebPanel implements ClockListener {
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
-
 	}
 
+	/*
+	 * Sets up the mouse dragging capability
+	 */
+	public void setNavpointPanel(NavpointPanel panel) {
+		// showMap(centerCoords);
+		setMapType(getMapType());
+		map.drawMap(centerCoords);
+
+		// Note: need navWin prior to calling addMouseMotionListener()
+		addMouseMotionListener(new MouseAdapter() {
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				// setCursor(new Cursor(Cursor.MOVE_CURSOR));
+				int dx, dy, x = e.getX(), y = e.getY();
+
+				dx = dragx - x;
+				dy = dragy - y;
+
+				if (dx != 0 || dy != 0) {
+					if (x > 0 && x < MAP_BOX_HEIGHT && y > 0 && y < MAP_BOX_HEIGHT) {
+						// double rho = CannedMarsMap.PIXEL_RHO;
+						centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
+
+						// if (!executor.isTerminated() || !executor.isShutdown() )
+						// executor.execute(new MapTask());
+
+						map.drawMap(centerCoords);
+
+//						paintDoubleBuffer();
+						repaint();
+					}
+				}
+
+				dragx = x;
+				dragy = y;
+
+				// setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			}
+		});
+
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// System.out.println("mousepressed X = " + e.getX());
+				// System.out.println(" Y = " + e.getY());
+				dragx = e.getX();
+				dragy = e.getY();
+				setCursor(new Cursor(Cursor.MOVE_CURSOR));
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				dragx = 0;
+				dragy = 0;
+				panel.updateCoords(centerCoords);
+				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			}
+		});
+
+	}
+	
 	/**
 	 * Adds a new map layer
 	 * 

@@ -772,8 +772,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		int numPeople = settlement.getNumCitizens();
 		Inventory inv = settlement.getInventory();
 		// Determine oxygen amount needed.
-		double oxygenAmountNeeded = personConfig.getNominalO2ConsumptionRate() * numPeople * solsMonth
-				* Mission.OXYGEN_MARGIN;
+		double oxygenAmountNeeded = personConfig.getNominalO2ConsumptionRate() * numPeople * solsMonth;//* Mission.OXYGEN_MARGIN;
 		double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygenID, false);
 
 		inv.addAmountDemandTotalRequest(oxygenID, oxygenAmountNeeded);
@@ -788,7 +787,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		}
 
 		// Determine water amount needed.
-		double waterAmountNeeded = personConfig.getWaterConsumptionRate() * numPeople * solsMonth * Mission.WATER_MARGIN;
+		double waterAmountNeeded = personConfig.getWaterConsumptionRate() * numPeople * solsMonth;// * Mission.WATER_MARGIN;
 		double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(waterID, false);
 
 		inv.addAmountDemandTotalRequest(waterID, waterAmountNeeded);
@@ -803,7 +802,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		}
 
 		// Determine food amount needed.
-		double foodAmountNeeded = personConfig.getFoodConsumptionRate() * numPeople * solsMonth * Mission.FOOD_MARGIN;
+		double foodAmountNeeded = personConfig.getFoodConsumptionRate() * numPeople * solsMonth;// * Mission.FOOD_MARGIN;
 		double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(foodID, false);
 
 		inv.addAmountDemandTotalRequest(foodID, foodAmountNeeded);

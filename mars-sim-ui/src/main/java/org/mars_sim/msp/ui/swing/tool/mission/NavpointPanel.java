@@ -9,11 +9,16 @@ package org.mars_sim.msp.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JList;
@@ -25,6 +30,10 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.mars.Landmark;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -41,6 +50,7 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
+import org.mars_sim.msp.ui.swing.tool.map.Map;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.NavpointMapLayer;
@@ -48,6 +58,8 @@ import org.mars_sim.msp.ui.swing.tool.map.ShadingMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
+import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
+import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 import com.alee.laf.button.WebButton;
 import com.alee.laf.panel.WebPanel;
@@ -65,7 +77,7 @@ implements ListSelectionListener, MissionListener {
 	
 	// Private members.
 	private Mission currentMission;
-	private MapPanel mapPane;
+	private MapPanel mapPanel;
 	private VehicleTrailMapLayer trailLayer;
 	private NavpointMapLayer navpointLayer;
     private MineralMapLayer mineralLayer;
@@ -73,6 +85,10 @@ implements ListSelectionListener, MissionListener {
 	private WebTable navpointTable;
 	private MainDesktopPane desktop;
 	
+	private static Simulation sim = Simulation.instance();
+	private static UnitManager unitManager = sim.getUnitManager();
+	private static List<Landmark> landmarks = sim.getMars().getSurfaceFeatures().getLandmarks();
+
 	/**
 	 * Constructor.
 	 */
@@ -106,32 +122,37 @@ implements ListSelectionListener, MissionListener {
 		//mainPane.add(Box.createVerticalStrut(10));
 	
 		// Create the map panel.
-		mapPane = new MapPanel(desktop, 500L);
-		mapPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		mapPane.addMapLayer(new ShadingMapLayer(mapPane), 0);
-		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 2);
-		mapPane.addMapLayer(new UnitLabelMapLayer(), 3);
+		mapPanel = new MapPanel(desktop, 500L);
+		// Set up mouse control
+		mapPanel.setNavpointPanel(this);
+		mapPanel.addMouseListener(new mapListener());
+		mapPanel.addMouseMotionListener(new mouseMotionListener());
+		
+		mapPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mapPanel.addMapLayer(new ShadingMapLayer(mapPanel), 0);
+		mapPanel.addMapLayer(new UnitIconMapLayer(mapPanel), 2);
+		mapPanel.addMapLayer(new UnitLabelMapLayer(), 3);
 		trailLayer = new VehicleTrailMapLayer();
-		mapPane.addMapLayer(trailLayer, 4);
+		mapPanel.addMapLayer(trailLayer, 4);
 		navpointLayer = new NavpointMapLayer(this);
-		mapPane.addMapLayer(navpointLayer, 5);
+		mapPanel.addMapLayer(navpointLayer, 5);
         mineralLayer = new MineralMapLayer(this);
         // Forcing map panel to be 300x300 size.
-        mapPane.setSize(new Dimension(300, 300));
-        mapPane.setPreferredSize(new Dimension(300, 300));
-        mapDisplayPane.add(mapPane, BorderLayout.CENTER);
+        mapPanel.setSize(new Dimension(300, 300));
+        mapPanel.setPreferredSize(new Dimension(300, 300));
+        mapDisplayPane.add(mapPanel, BorderLayout.CENTER);
         
 		// Create the north button.
         WebButton northButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.navpoint.north"))); //$NON-NLS-1$
 		northButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Recenter the map to the north by a half map.
-				Coordinates centerCoords = mapPane.getCenterLocation();
+				// Recenter the map to the north by a 1/8 map.
+				Coordinates centerCoords = mapPanel.getCenterLocation();
 				if (centerCoords != null) {
 					double phi = centerCoords.getPhi();
-					phi = phi - CannedMarsMap.HALF_MAP_ANGLE;
+					phi = phi - CannedMarsMap.HALF_MAP_ANGLE/4D;
 					if (phi < 0D) phi = 0D;
-					mapPane.showMap(new Coordinates(phi, centerCoords.getTheta()));
+					mapPanel.showMap(new Coordinates(phi, centerCoords.getTheta()));
 				}
 			}
 		});
@@ -142,13 +163,13 @@ implements ListSelectionListener, MissionListener {
 		westButton.setMargin(new Insets(1, 1, 1, 1));
 		westButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Recenter the map to the west by a half map.
-				Coordinates centerCoords = mapPane.getCenterLocation();
+				// Recenter the map to the west by 1/8 map.
+				Coordinates centerCoords = mapPanel.getCenterLocation();
 				if (centerCoords != null) {
 					double theta = centerCoords.getTheta();
-					theta = theta - CannedMarsMap.HALF_MAP_ANGLE;
+					theta = theta - CannedMarsMap.HALF_MAP_ANGLE/4D;
 					if (theta < 0D) theta += (Math.PI * 2D);
-					mapPane.showMap(new Coordinates(centerCoords.getPhi(), theta));
+					mapPanel.showMap(new Coordinates(centerCoords.getPhi(), theta));
 				}
 			}
 		});
@@ -159,13 +180,13 @@ implements ListSelectionListener, MissionListener {
 		eastButton.setMargin(new Insets(1, 1, 1, 1));
 		eastButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Recenter the map to the east by a half map.
-				Coordinates centerCoords = mapPane.getCenterLocation();
+				// Recenter the map to the east by 1/8 map.
+				Coordinates centerCoords = mapPanel.getCenterLocation();
 				if (centerCoords != null) {
 					double theta = centerCoords.getTheta();
-					theta = theta + CannedMarsMap.HALF_MAP_ANGLE;
+					theta = theta + CannedMarsMap.HALF_MAP_ANGLE/4D;
 					if (theta < (Math.PI * 2D)) theta -= (Math.PI * 2D);
-					mapPane.showMap(new Coordinates(centerCoords.getPhi(), theta));
+					mapPanel.showMap(new Coordinates(centerCoords.getPhi(), theta));
 				}
 			}
 		});
@@ -175,13 +196,13 @@ implements ListSelectionListener, MissionListener {
 		WebButton southButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.navpoint.south"))); //$NON-NLS-1$
 		southButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Recenter the map to the south by a half map.
-				Coordinates centerCoords = mapPane.getCenterLocation();
+				// Recenter the map to the south by 1/8 map.
+				Coordinates centerCoords = mapPanel.getCenterLocation();
 				if (centerCoords != null) {
 					double phi = centerCoords.getPhi();
-					phi = phi + CannedMarsMap.HALF_MAP_ANGLE;
+					phi = phi + CannedMarsMap.HALF_MAP_ANGLE/4D;
 					if (phi > Math.PI) phi = Math.PI;
-					mapPane.showMap(new Coordinates(phi, centerCoords.getTheta()));
+					mapPanel.showMap(new Coordinates(phi, centerCoords.getTheta()));
 				}
 			}
 		});
@@ -217,7 +238,7 @@ implements ListSelectionListener, MissionListener {
             				if (index > -1) {
             					NavPoint navpoint = travelMission.getNavpoint(index); 
             					navpointLayer.setSelectedNavpoint(navpoint);
-            					mapPane.showMap(navpoint.getLocation());
+            					mapPanel.showMap(navpoint.getLocation());
             				}
             				else navpointLayer.setSelectedNavpoint(null);
             			}
@@ -225,6 +246,120 @@ implements ListSelectionListener, MissionListener {
             	}
             });
         navpointScrollPane.setViewportView(navpointTable);
+	}
+	
+	/**
+	 * Update coordinates in map, buttons, and globe Redraw map and globe if
+	 * necessary
+	 * 
+	 * @param newCoords the new center location
+	 */
+	public void updateCoords(Coordinates newCoords) {
+		mapPanel.showMap(newCoords);
+	}
+
+	private class mapListener extends MouseAdapter {
+		public void mouseEntered(MouseEvent event) {
+			// checkHover(event);
+		}
+		public void mouseExited(MouseEvent event) {
+		}
+
+		public void mouseClicked(MouseEvent event) {
+			checkClick(event);
+		}
+	}
+
+	private class mouseMotionListener extends MouseMotionAdapter {
+		public void mouseMoved(MouseEvent event) {
+			checkHover(event);
+		}
+		public void mouseDragged(MouseEvent event) {
+		}
+	}
+	
+	public void checkClick(MouseEvent event) {
+
+		if (mapPanel.getCenterLocation() != null) {
+			double rho = CannedMarsMap.PIXEL_RHO;
+
+			double x = (double) (event.getX() - (Map.DISPLAY_WIDTH / 2D) - 1);
+			double y = (double) (event.getY() - (Map.DISPLAY_HEIGHT / 2D) - 1);
+
+			Coordinates clickedPosition = mapPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
+
+			Iterator<Unit> i = unitManager.computeUnits().iterator();
+
+			// Open window if unit is clicked on the map
+			while (i.hasNext()) {
+				Unit unit = i.next();
+				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+				if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
+					Coordinates unitCoords = unit.getCoordinates();
+					double clickRange = unitCoords.getDistance(clickedPosition);
+					double unitClickRange = displayInfo.getMapClickRange();
+					if (clickRange < unitClickRange) {
+						mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+//						openUnitWindow(unit);
+					} else
+						mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				}
+			}
+		}
+	}
+
+	public void checkHover(MouseEvent event) {
+
+		Coordinates mapCenter = mapPanel.getCenterLocation();
+		if (mapCenter != null) {
+			double rho = CannedMarsMap.PIXEL_RHO;
+
+			double x = (double) (event.getX() - (Map.DISPLAY_WIDTH / 2D) - 1);
+			double y = (double) (event.getY() - (Map.DISPLAY_HEIGHT / 2D) - 1);
+			// System.out.println("x is " + x + " y is " + y);
+			Coordinates mousePos = mapPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
+			boolean onTarget = false;
+
+			Iterator<Unit> i = unitManager.computeUnits().iterator();
+
+			// Change mouse cursor if hovering over an unit on the map
+			while (i.hasNext()) {
+				Unit unit = i.next();
+				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+				if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
+					Coordinates unitCoords = unit.getCoordinates();
+					double clickRange = unitCoords.getDistance(mousePos);
+					double unitClickRange = displayInfo.getMapClickRange();
+					if (clickRange < unitClickRange) {
+						// System.out.println("you're on a settlement or vehicle");
+						mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+						onTarget = true;
+					}
+				}
+			}
+
+			// Change mouse cursor if hovering over a landmark on the map
+			Iterator<Landmark> j = landmarks.iterator();
+			while (j.hasNext()) {
+				Landmark landmark = (Landmark) j.next();
+
+				Coordinates unitCoords = landmark.getLandmarkLocation();
+				double clickRange = unitCoords.getDistance(mousePos);
+				double unitClickRange = 40D;
+
+				if (clickRange < unitClickRange) {
+					onTarget = true;
+					// System.out.println("you're on a landmark");
+					// TODO: may open a panel showing any special items at that landmark
+					mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+					// System.out.println("right on landmark");
+				}
+			}
+
+			if (!onTarget) {
+				mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			}
+		}
 	}
 	
 	/**
@@ -255,13 +390,13 @@ implements ListSelectionListener, MissionListener {
 					navpointTableModel.updateNavpoints();
                     
                     if ((mission instanceof Exploration) || (mission instanceof Mining)) {
-                        if (!mapPane.hasMapLayer(mineralLayer)) mapPane.addMapLayer(mineralLayer, 1);
+                        if (!mapPanel.hasMapLayer(mineralLayer)) mapPanel.addMapLayer(mineralLayer, 1);
                     }
                     else {
-                        if (mapPane.hasMapLayer(mineralLayer)) mapPane.removeMapLayer(mineralLayer);
+                        if (mapPanel.hasMapLayer(mineralLayer)) mapPanel.removeMapLayer(mineralLayer);
                     }
                     
-                    mapPane.showMap(currentMission.getCurrentMissionLocation());
+                    mapPanel.showMap(currentMission.getCurrentMissionLocation());
 				}
 			}
 		}
@@ -272,8 +407,8 @@ implements ListSelectionListener, MissionListener {
 			navpointLayer.setSingleMission(null);
 			navpointLayer.setSelectedNavpoint(null);
 			navpointTableModel.updateNavpoints();
-            if (mapPane.hasMapLayer(mineralLayer)) mapPane.removeMapLayer(mineralLayer);
-			mapPane.showMap(null);
+            if (mapPanel.hasMapLayer(mineralLayer)) mapPanel.removeMapLayer(mineralLayer);
+			mapPanel.showMap(null);
 		}
 	}
 
@@ -303,7 +438,7 @@ implements ListSelectionListener, MissionListener {
 	 * Prepares navpoint panel for deletion.
 	 */
 	public void destroy() {
-		mapPane.destroy();
+		mapPanel.destroy();
 	}
 	
 	/**

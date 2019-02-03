@@ -876,7 +876,7 @@ public class Mining extends RoverMission {
 		// Check food capacity as time limit.
 		// AmountResource food =
 		// ResourceUtil.findAmountResource(LifeSupportType.FOOD);
-		double foodConsumptionRate = personConfig.getFoodConsumptionRate() * Mission.FOOD_MARGIN;
+		double foodConsumptionRate = personConfig.getFoodConsumptionRate();// * Mission.FOOD_MARGIN;
 		double foodCapacity = vInv.getARCapacity(foodID, false);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit) {
@@ -894,7 +894,7 @@ public class Mining extends RoverMission {
 		// Check water capacity as time limit.
 		// AmountResource water =
 		// ResourceUtil.findAmountResource(LifeSupportType.WATER);
-		double waterConsumptionRate = personConfig.getWaterConsumptionRate() * Mission.WATER_MARGIN;
+		double waterConsumptionRate = personConfig.getWaterConsumptionRate();// * Mission.WATER_MARGIN;
 		double waterCapacity = vInv.getARCapacity(waterID, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit) {
@@ -904,7 +904,7 @@ public class Mining extends RoverMission {
 		// Check oxygen capacity as time limit.
 		// AmountResource oxygen =
 		// ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
-		double oxygenConsumptionRate = personConfig.getHighO2ConsumptionRate() * Mission.OXYGEN_MARGIN;
+		double oxygenConsumptionRate = personConfig.getHighO2ConsumptionRate();// * Mission.OXYGEN_MARGIN;
 		double oxygenCapacity = vInv.getARCapacity(oxygenID, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit) {
@@ -1000,24 +1000,18 @@ public class Mining extends RoverMission {
 		int crewNum = getPeopleNumber();
 
 		// Determine life support supplies needed for trip.
-		// AmountResource oxygen =
-		// ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
 		if (result.containsKey(oxygenID)) {
 			oxygenAmount += (Double) result.get(oxygenID);
 		}
 		result.put(oxygenID, oxygenAmount);
 
-		// AmountResource water =
-		// ResourceUtil.findAmountResource(LifeSupportType.WATER);
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
 		if (result.containsKey(waterID)) {
 			waterAmount += (Double) result.get(waterID);
 		}
 		result.put(waterID, waterAmount);
 
-		// AmountResource food =
-		// ResourceUtil.findAmountResource(LifeSupportType.FOOD);
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
 		if (result.containsKey(foodID)) {
 			foodAmount += (Double) result.get(foodID);
