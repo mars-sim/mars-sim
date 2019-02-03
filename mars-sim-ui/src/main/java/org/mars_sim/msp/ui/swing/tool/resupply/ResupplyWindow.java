@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import com.alee.laf.button.WebButton;
@@ -61,7 +62,7 @@ implements ListSelectionListener {
 		super(NAME, desktop);
 
 		this.desktop = desktop;
-		//MainWindow mw = desktop.getMainWindow();
+		MainWindow mw = desktop.getMainWindow();
 //		mainScene = desktop.getMainScene();
 
 		// Create main panel.
@@ -97,7 +98,7 @@ implements ListSelectionListener {
 		mainPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create new button.
-		// 9/29/2014 Changed button text from "New"  to "New Mission"
+		// Change button text from "New"  to "New Mission"
 		WebButton newButton = new WebButton("New Mission");
 		newButton.addActionListener(new ActionListener() {
 			@Override
@@ -108,7 +109,7 @@ implements ListSelectionListener {
 		buttonPane.add(newButton);
 
 		// Create modify button.
-		// 9/29/2014 Changed button text from "Modify"  to "Modify Mission"
+		// Change button text from "Modify"  to "Modify Mission"
 		modifyButton = new WebButton("Modify Mission");
 		modifyButton.setEnabled(false);
 		modifyButton.addActionListener(new ActionListener() {
@@ -120,7 +121,7 @@ implements ListSelectionListener {
 		buttonPane.add(modifyButton);
 
 		// Create cancel button.
-		// 9/29/2014 Changed button text from "Discard"  to "Discard Mission"
+		// Change button text from "Discard"  to "Discard Mission"
 		cancelButton = new WebButton("Discard Mission");
 		cancelButton.setEnabled(false);
 		cancelButton.addActionListener(new ActionListener() {
@@ -141,16 +142,15 @@ implements ListSelectionListener {
 //		}
 //		else
 			setMinimumSize(new Dimension(640, 640));
-
+			setSize(new Dimension(768, 640));
 		setVisible(true);
-		//pack();
+		pack();
 
 		Dimension desktopSize = desktop.getSize();
 	    Dimension jInternalFrameSize = this.getSize();
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 	    setLocation(width, height);
-
 
 	}
 
@@ -186,7 +186,6 @@ implements ListSelectionListener {
 	/**
 	 * Loads modify dialog for the currently selected transport item.
 	 */
-	// 2015-03-23 Added modifyTransport()
 	private void modifyTransport() {
 		// Get currently selected incoming transport item.
 		Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
@@ -198,7 +197,6 @@ implements ListSelectionListener {
 				String title = "Modify Resupply Mission";
 				//new ModifyTransportItemDialog(mw.getFrame(), title, resupply);
 				new ModifyTransportItemDialog(desktop, this, title, resupply);
-
 				//isRunning = true;
 			}
 			else if (transportItem instanceof ArrivingSettlement) {
@@ -207,7 +205,6 @@ implements ListSelectionListener {
 				String title = "Modify Arriving Settlement";
 				//new ModifyTransportItemDialog(mw.getFrame(), title, settlement);
 				new ModifyTransportItemDialog(desktop, this, title, settlement);
-
 				//isRunning = true;
 			}
 		}

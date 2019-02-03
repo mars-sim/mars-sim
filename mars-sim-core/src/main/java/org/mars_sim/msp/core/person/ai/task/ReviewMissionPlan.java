@@ -172,7 +172,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 			if (m.getPlan() != null) {
 	            PlanType status = mp.getStatus();
 	
-	            if (status != null) {// && status == PlanType.PENDING) {
+	            if (status != null && status == PlanType.PENDING) {
 	            	
 		            if (mp.getPercentComplete() >= 100D) {
 		            	// Go to the finished phase and finalize the approval

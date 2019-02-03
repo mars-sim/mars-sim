@@ -170,18 +170,9 @@ public class VehicleConfig implements Serializable {
 					if (labElement != null) {
 						v.labTechLevel = Integer.parseInt(labElement.getAttributeValue(TECH_LEVEL));
 						for (Object tech : labElement.getChildren(TECH_SPECIALTY)) {
+							// TODO: make sure the value from xml config conforms with enum values
 							v.labTechSpecialties
-									.add(ScienceType.valueOf((((Element) tech).getAttributeValue(VALUE)).toUpperCase() // make
-																														// sure
-																														// the
-																														// value
-																														// from
-																														// xml
-																														// config
-																														// conforms
-																														// with
-																														// enum
-																														// values
+									.add(ScienceType.valueOf((((Element) tech).getAttributeValue(VALUE)).toUpperCase() 
 											.replace(" ", "_")));
 						}
 					}

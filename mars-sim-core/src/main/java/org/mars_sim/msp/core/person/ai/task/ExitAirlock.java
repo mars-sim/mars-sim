@@ -603,10 +603,13 @@ public class ExitAirlock extends Task implements Serializable {
 				
 				Vehicle v = person.getVehicle();
 				Mission m = person.getMind().getMission();
+				String hasMission = "";
+				if (m != null)
+					hasMission = " for " + m.getName();
 				// Mission m = missionManager.getMission(person);
 				
 				LogConsolidated.log(Level.WARNING, 20_000, sourceName, "[" + person.getLocationTag().getLocale() 
-						+ "] " + person + " in " + v.getName() + " for " + m.getName() 
+						+ "] " + person + " in " + v.getName() + hasMission
 						+ " did NOT have a working EVA suit, awaiting the response for rescue.");
 				
 				// TODO: should at least wait for a period of time for the EVA suit to be fixed
@@ -623,7 +626,7 @@ public class ExitAirlock extends Task implements Serializable {
 					// Repair this EVASuit by himself/herself
 					
 					LogConsolidated.log(Level.WARNING, 2000, sourceName, "[" + person.getLocationTag().getLocale() 
-							+ "] " + person + " in " + v.getName() + " for " + m.getName() 
+							+ "] " + person + " in " + v.getName() + hasMission
 							+ " will try to repair an EVA suit.");
 					
 					EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);

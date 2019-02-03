@@ -84,6 +84,8 @@ public class ExplorationMeta implements MetaMission {
 				if (rover != null) {
 					// Check if any mineral locations within rover range and obtain their concentration
 					missionProbability = settlement.getTotalMineralValue(rover) / FACTOR;
+					if (missionProbability < 0)
+						missionProbability = 0;
 				}
 				
 			} catch (Exception e) {

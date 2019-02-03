@@ -1013,11 +1013,12 @@ public class Mining extends RoverMission {
 		result.put(waterID, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(foodID)) {
+//		if (result.containsKey(foodID)) {
 			foodAmount += (Double) result.get(foodID);
-		}
+//		}
 		result.put(foodID, foodAmount);
-
+		System.out.println("Mining - food : " + foodAmount);
+		
 		// Add Soymilk AmountResource dessert1 =
 //		ResourceUtil.findAmountResource("Soymilk"); 
 //		double dessert1Amount = PhysicalCondition.getFoodConsumptionRate() / 6D timeSols * crewNum; 

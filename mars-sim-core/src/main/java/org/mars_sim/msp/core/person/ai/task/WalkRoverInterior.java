@@ -61,25 +61,25 @@ implements Serializable {
         super("Walking inside a rover", person, false, false, STRESS_MODIFIER, false, 0D);
 
         // Check that the person is currently inside a rover.
-        if (person.isInSettlement()) {
+        if (!person.isInVehicle()) {
         	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
-        			person + " is in " + person.getSettlement() + " now but is calling WalkRoverInterior "
-           			+ "task and NOT in rover " + rover.getName() + "."); 
+        			person + " is supposed to be inside rover "
+           			+ rover.getName() + "."); 
     	}
         
-        else if (person.isOutside()) {
-        	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
-        			person + " is outside but is calling WalkRoverInterior task and NOT in rover " 
-        			+ rover.getName() + "."); 
-            //throw new IllegalStateException(
-            //        "WalkRoverInterior task started when " + person + " is not in a rover.");
-        }
+//        else if (person.isOutside()) {
+//        	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
+//        			person + " is outside but is calling WalkRoverInterior task and NOT in rover " 
+//        			+ rover.getName() + "."); 
+//            //throw new IllegalStateException(
+//            //        "WalkRoverInterior task started when " + person + " is not in a rover.");
+//        }
 
-        else if (person.isInVehicle()) {
-        	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
-        		"WalkRoverInterior task started when " + person + " is not in rover " 
-        			+ rover.getName() + ".");
-        }
+//        else if (person.isInVehicle()) {
+//        	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
+//        		"WalkRoverInterior task started when " + person + " is not in rover " 
+//        			+ rover.getName() + ".");
+//        }
    
         // Initialize data members.
         this.rover = rover;
@@ -102,14 +102,20 @@ implements Serializable {
         super("Walking Rover Interior", robot, false, false, STRESS_MODIFIER, false, 0D);
 
         // Check that the robot is currently inside a rover.
-        LocationSituation location = robot.getLocationSituation();
-        if (location != LocationSituation.IN_VEHICLE) {
-//            throw new IllegalStateException(
-            	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
-                    robot + " is not in a vheicle but doing WalkRoverInterior task in rover "
-                    		+ rover.getName() + "."); 
-        }
+//        LocationSituation location = robot.getLocationSituation();
+//        if (location != LocationSituation.IN_VEHICLE) {
+////            throw new IllegalStateException(
+//            	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
+//                    robot + " is not in a vheicle but doing WalkRoverInterior task in rover "
+//                    		+ rover.getName() + "."); 
+//        }
 
+        if (!robot.isInVehicle()) {
+        	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
+        			robot + " is supposed to be inside rover "
+           			+ rover.getName() + "."); 
+    	}
+        
         // Initialize data members.
         this.rover = rover;
         this.destXLoc = destinationXLocation;

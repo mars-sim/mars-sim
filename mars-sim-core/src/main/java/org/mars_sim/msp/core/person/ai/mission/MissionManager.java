@@ -822,7 +822,7 @@ public class MissionManager implements Serializable {
 		for (int mSol : historicalMissions.keySet()) {
 			List<MissionPlanning> plans = historicalMissions.get(mSol);
 			for (MissionPlanning mp : plans) {
-				if (mp == missionPlan && mp.getStatus() == PlanType.PENDING) {
+				if (mp == missionPlan) {// && mp.getStatus() == PlanType.PENDING) {
 					double percent = mp.getPercentComplete();
 					
 					if (role == RoleType.COMMANDER)
@@ -849,9 +849,8 @@ public class MissionManager implements Serializable {
 							+ "  New percent : " + mp.getPercentComplete() + "%");
 					mp.setReviewedBy(reviewer.getName());
 					mp.getMission().fireMissionUpdate(MissionEventType.PHASE_DESCRIPTION_EVENT, "Score and Percentage");
+					break;
 				}
-				// Should the reviewer look at multiple plans at the same time ?
-				break;
 			}
 		}
 	}

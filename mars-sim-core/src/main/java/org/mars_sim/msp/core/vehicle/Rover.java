@@ -122,12 +122,12 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		inv.addGeneralCapacity(cargoCapacity);
 
 		// Set inventory resource capacities.
-		inv.addARTypeCapacity(ResourceUtil.methaneID, vehicleConfig.getCargoCapacity(type, ResourceUtil.METHANE));
-		inv.addARTypeCapacity(ResourceUtil.oxygenID, vehicleConfig.getCargoCapacity(type, LifeSupportType.OXYGEN));
-		inv.addARTypeCapacity(ResourceUtil.waterID, vehicleConfig.getCargoCapacity(type, LifeSupportType.WATER));
-		inv.addARTypeCapacity(ResourceUtil.foodID, vehicleConfig.getCargoCapacity(type, LifeSupportType.FOOD));
-		inv.addARTypeCapacity(ResourceUtil.rockSamplesID, vehicleConfig.getCargoCapacity(type, ResourceUtil.ROCK_SAMLES));
-		inv.addARTypeCapacity(ResourceUtil.iceID, vehicleConfig.getCargoCapacity(type, ResourceUtil.ICE));
+		inv.addAmountResourceTypeCapacity(ResourceUtil.methaneID, vehicleConfig.getCargoCapacity(type, ResourceUtil.METHANE));
+		inv.addAmountResourceTypeCapacity(ResourceUtil.oxygenID, vehicleConfig.getCargoCapacity(type, LifeSupportType.OXYGEN));
+		inv.addAmountResourceTypeCapacity(ResourceUtil.waterID, vehicleConfig.getCargoCapacity(type, LifeSupportType.WATER));
+		inv.addAmountResourceTypeCapacity(ResourceUtil.foodID, vehicleConfig.getCargoCapacity(type, LifeSupportType.FOOD));
+		inv.addAmountResourceTypeCapacity(ResourceUtil.rockSamplesID, vehicleConfig.getCargoCapacity(type, ResourceUtil.ROCK_SAMLES));
+		inv.addAmountResourceTypeCapacity(ResourceUtil.iceID, vehicleConfig.getCargoCapacity(type, ResourceUtil.ICE));
 		
 		inv.addAmountResourceTypeCapacity(ResourceUtil.foodWasteID,
 				vehicleConfig.getCargoCapacity(type, ResourceUtil.FOOD_WASTE));
