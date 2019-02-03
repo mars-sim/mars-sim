@@ -100,7 +100,7 @@ public abstract class Mission implements Serializable {
 	/**
 	 * The marginal factor for the amount of food to be brought during a mission.
 	 */
-	public final static double FOOD_MARGIN = 3;
+	public final static double FOOD_MARGIN = 8;
 	/**
 	 * The marginal factor for the amount of dessert to be brought during a mission.
 	 */
@@ -1264,33 +1264,40 @@ public abstract class Mission implements Serializable {
 			String missionName = this.toString();
 			if (missionName.toLowerCase().contains("mission")) {
 				if (phase != null) {
-					s.append("Anyone can do ").append(phase).append(" for a ").append(missionName).append("?");
+					s.append("Error : no crew members on the ").append(phase).append(" phase in ")
+					.append(missionName).append(" (").append(fullMissionDesignation).append(").");
 				}
 				else {
-					int rand = RandomUtil.getRandomInt(2);
+//					int rand = RandomUtil.getRandomInt(2);
 					String theInitial = missionName.substring(0);
 					if (Conversion.isVowel(theInitial))
-						s.append(EXPRESSIONS[rand]).append("an ").append(missionName).append("?");
+						s.append("Error : no crew members for ")
+						.append("an ").append(missionName).append(" (").append(fullMissionDesignation).append(").");
 					else
-						s.append(EXPRESSIONS[rand]).append("a ").append(missionName).append("?");
+						s.append("Error : no crew members for ")
+							.append("a ").append(missionName).append(" (").append(fullMissionDesignation).append(").");
+						
 				}
 			}
 			
 			else {
 				if (phase != null) {
-					s.append("Anyone can do ").append(phase).append(" for a ").append(missionName).append(MISSION).append("?");
+					s.append("Error : no crew members on the ").append(phase).append(" phase in ")
+						.append(missionName).append(MISSION).append(" (").append(fullMissionDesignation).append(").");
 				}
 				else {
-					int rand = RandomUtil.getRandomInt(2);
+//					int rand = RandomUtil.getRandomInt(2);
 					String theInitial = missionName.substring(0);
 					if (Conversion.isVowel(theInitial))
-						s.append(EXPRESSIONS[rand]).append("an ").append(missionName).append(MISSION).append("?");
+						s.append("Error : no crew members for ")
+						.append("an ").append(missionName).append(MISSION).append(" (").append(fullMissionDesignation).append(").");
 					else
-						s.append(EXPRESSIONS[rand]).append("a ").append(missionName).append(MISSION).append("?");
+						s.append("Error : no crew members for ")
+						.append("a ").append(missionName).append(MISSION).append(" (").append(fullMissionDesignation).append(").");
 				}
 			}
 			
-			LogConsolidated.log(Level.INFO, 1000, sourceName, s.toString());
+			LogConsolidated.log(Level.INFO, 10000, sourceName, s.toString());
 		}
 
 		return result;

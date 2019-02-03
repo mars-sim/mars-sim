@@ -401,7 +401,7 @@ extends UnitTableModel {
 					tempColumnNum = METHANE;		
 					currentValue = resourceMap.get(methaneID);
 				}
-				if (target == foodID) {
+				else if (target == foodID) {
 					tempColumnNum = FOOD;
 					currentValue = resourceMap.get(foodID);
 				}
@@ -640,8 +640,7 @@ extends UnitTableModel {
 			Mission mission = (Mission) event.getSource();
 			MissionEventType eventType = event.getType();
 			int columnNum = -1;
-			if (
-					eventType == MissionEventType.TRAVEL_STATUS_EVENT ||
+			if (eventType == MissionEventType.TRAVEL_STATUS_EVENT ||
 					eventType == MissionEventType.NAVPOINTS_EVENT
 					) columnNum = DESTINATION;
 			else if (eventType == MissionEventType.DISTANCE_EVENT) columnNum = DESTDIST;

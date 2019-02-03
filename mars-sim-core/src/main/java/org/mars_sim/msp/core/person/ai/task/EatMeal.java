@@ -53,7 +53,8 @@ public class EatMeal extends Task implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			 logger.getName().length());
 
-	private static final int MAX_HUNGER = 1000;
+	private static final int HUNGER_CEILING = 1000;
+	private static final int THIRST_CEILING = 500;
 	
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.00001;
@@ -205,7 +206,7 @@ public class EatMeal extends Task implements Serializable {
 				Inventory inv = person.getSettlement().getInventory();
 				if (inv != null) {
 					if (NAPKIN_MASS > MIN)
-						hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, ResourceUtil.napkinAR, inv, false);
+						hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, ResourceUtil.napkinID, inv, false);
 				}
 			}
 
@@ -326,36 +327,51 @@ public class EatMeal extends Task implements Serializable {
 	 *         phase.
 	 */
 	private double eatingMealPhase(double time) {
-
 		double remainingTime = 0D;
-
 		double eatingTime = time;
-		if ((totalMealEatingTime + eatingTime) >= mealEatingDuration) {
-			eatingTime = mealEatingDuration - totalMealEatingTime;
-		}
+		
+		if (person.isInVehicle()) {
+			// Eat preserved food.
+			setDescription(Msg.getString("Task.description.eatMeal.preserved")); //$NON-NLS-1$
+			boolean enoughFood = eatPreservedFood(eatingTime);
 
-		if (eatingTime > 0D) {
-
-			if (cookedMeal != null) {
-				// Eat cooked meal.
-				setDescription(Msg.getString("Task.description.eatMeal.cooked.detail", cookedMeal.getName())); //$NON-NLS-1$
-				eatCookedMeal(eatingTime);
-			} else {
-				// Eat preserved food.
-				setDescription(Msg.getString("Task.description.eatMeal.preserved")); //$NON-NLS-1$
-				boolean enoughFood = eatPreservedFood(eatingTime);
-
-				// If not enough preserved food available, change to dessert phase.
-				if (!enoughFood) {
-					setPhase(PICK_UP_DESSERT);
-					remainingTime = time * .6;
-				}
-				// else {
-				// consumeWater(false);
-				// }
+			// If not enough preserved food available, change to dessert phase.
+			if (!enoughFood) {
+				setPhase(PICK_UP_DESSERT);
+				remainingTime = time * .6;
 			}
 		}
+		
+		else {
+	
+			if ((totalMealEatingTime + eatingTime) >= mealEatingDuration) {
+				eatingTime = mealEatingDuration - totalMealEatingTime;
+			}
+	
+			if (eatingTime > 0D) {
+	
+				if (cookedMeal != null) {
+					// Eat cooked meal.
+					setDescription(Msg.getString("Task.description.eatMeal.cooked.detail", cookedMeal.getName())); //$NON-NLS-1$
+					eatCookedMeal(eatingTime);
+				} else {
+					// Eat preserved food.
+					setDescription(Msg.getString("Task.description.eatMeal.preserved")); //$NON-NLS-1$
+					boolean enoughFood = eatPreservedFood(eatingTime);
+	
+					// If not enough preserved food available, change to dessert phase.
+					if (!enoughFood) {
+						setPhase(PICK_UP_DESSERT);
+						remainingTime = time * .6;
+					}
+					// else {
+					// consumeWater(false);
+					// }
+				}
+			}
 
+		}
+		
 		totalMealEatingTime += eatingTime;
 
 		// If finished eating, change to dessert phase.
@@ -416,16 +432,19 @@ public class EatMeal extends Task implements Serializable {
 		// Proportion of meal being eaten over this time period.
 		double mealProportion = eatingTime / mealEatingDuration;
 
-		// PhysicalCondition condition = person.getPhysicalCondition();
-
+		// Note: once a person has eaten a bit of food,
+		// the hunger index should be reset to HUNGER_CEILING
+		if (currentHunger > HUNGER_CEILING)
+			currentHunger = HUNGER_CEILING;
+		condition.setHunger(currentHunger);
+		currentHunger = condition.getHunger();
 		// Reduce person's hunger by proportion of meal eaten.
 		// Entire meal will reduce person's hunger to 0.
 		currentHunger -= (startingHunger * mealProportion);
 		if (currentHunger < 0D) {
 			currentHunger = 0D;
 		}
-		if (currentHunger > MAX_HUNGER)
-			currentHunger = MAX_HUNGER;
+
 		condition.setHunger(currentHunger);
 
 		// Reduce person's stress over time from eating a cooked meal.
@@ -468,15 +487,19 @@ public class EatMeal extends Task implements Serializable {
 			
 			if (haveFood) {
 				// Consume preserved food.
-
+				// Note: once a person has eaten a bit of food,
+				// the hunger index should be reset to HUNGER_CEILING
+				if (currentHunger > HUNGER_CEILING)
+					currentHunger = HUNGER_CEILING;		
+				condition.setHunger(currentHunger);
+				currentHunger = condition.getHunger();
 				// Note : Reduce person's hunger by proportion of meal eaten.
 				// Entire meal will reduce person's hunger to 0.
 				currentHunger -= (startingHunger * mealProportion);
 				if (currentHunger < 0D) {
 					currentHunger = 0D;
 				}
-				if (currentHunger > MAX_HUNGER)
-					currentHunger = MAX_HUNGER;
+
 				condition.setHunger(currentHunger);
 
 				// Add caloric energy from meal.
@@ -584,6 +607,21 @@ public class EatMeal extends Task implements Serializable {
 		// Consume water
 		consumeDessertWater(dryMass);
 
+		// Note: once a person has eaten a bit of food,
+		// the hunger index should be reset to HUNGER_CEILING
+		if (currentHunger > HUNGER_CEILING)
+			currentHunger = HUNGER_CEILING;
+		condition.setHunger(currentHunger);
+		currentHunger = condition.getHunger();
+		// Reduce person's hunger by proportion of meal eaten.
+		// Entire meal will reduce person's hunger to 0.
+		currentHunger -= (startingHunger * dessertProportion);
+		if (currentHunger < 0D) {
+			currentHunger = 0D;
+		}
+
+		condition.setHunger(currentHunger);
+		
 		// Add caloric energy from dessert.
 		double caloricEnergyFoodAmount = dryMass * dessertProportion;
 		condition.addEnergy(caloricEnergyFoodAmount);
@@ -649,8 +687,8 @@ public class EatMeal extends Task implements Serializable {
 						new_thirst = new_thirst - amount * 5_000;
 						if (new_thirst < 0)
 							new_thirst = 0;
-						else if (new_thirst > 500)
-							new_thirst = 500;
+						else if (new_thirst > THIRST_CEILING)
+							new_thirst = THIRST_CEILING;
 						condition.setThirst(new_thirst);
 
 						if (amount > MIN) {
@@ -682,8 +720,8 @@ public class EatMeal extends Task implements Serializable {
 							new_thirst = new_thirst - amount * 5_000;
 							if (new_thirst < 0)
 								new_thirst = 0;
-							else if (new_thirst > 500)
-								new_thirst = 500;
+							else if (new_thirst > THIRST_CEILING)
+								new_thirst = THIRST_CEILING;
 							condition.setThirst(new_thirst);
 							
 							if (amount > MIN) {
@@ -708,8 +746,8 @@ public class EatMeal extends Task implements Serializable {
 								new_thirst = new_thirst - amount * 5_000;
 								if (new_thirst < 0)
 									new_thirst = 0;
-								else if (new_thirst > 500)
-									new_thirst = 500;
+								else if (new_thirst > THIRST_CEILING)
+									new_thirst = THIRST_CEILING;
 								condition.setThirst(new_thirst);
 
 								if (amount > MIN) {
@@ -735,8 +773,8 @@ public class EatMeal extends Task implements Serializable {
 									new_thirst = new_thirst - amount * 5_000;
 									if (new_thirst < 0)
 										new_thirst = 0;
-									else if (new_thirst > 500)
-										new_thirst = 500;
+									else if (new_thirst > THIRST_CEILING)
+										new_thirst = THIRST_CEILING;
 									condition.setThirst(new_thirst);
 
 									if (amount > MIN) {

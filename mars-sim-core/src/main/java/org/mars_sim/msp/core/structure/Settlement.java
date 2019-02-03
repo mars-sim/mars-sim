@@ -274,7 +274,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/** The settlement's outside temperature. */
 	private double outside_temperature;
 	/** The maximum distance the rovers are allowed to travel. */
-	private double maxMssionRange = 3000;
+	private double maxMssionRange = 2000;
 
 	/** The settlement sponsor. */
 	private String sponsor;
