@@ -44,10 +44,9 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(ExploreSite.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			 logger.getName().length());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.exploreSite"); //$NON-NLS-1$
 

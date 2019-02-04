@@ -53,10 +53,9 @@ public class Cooking extends Function implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Cooking.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			 logger.getName().length());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	private static final FunctionType FUNCTION = FunctionType.COOKING;
 
 	private static final String CONVERTING = "A meal has expired. Converting ";

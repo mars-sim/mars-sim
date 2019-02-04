@@ -40,7 +40,9 @@ public final class MalfunctionFactory implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 //	private static final Logger logger = Logger.getLogger(MalfunctionFactory.class.getName());
-
+//	private static String loggerName = logger.getName();
+//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	public static final String METEORITE_IMPACT_DAMAGE = "Meteorite Impact Damage";
 
 	/** The assumed # of years for calculating MTBF. */

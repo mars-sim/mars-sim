@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
@@ -28,6 +29,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -131,6 +133,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static SurfaceFeatures surface;// = sim.getMars().getSurfaceFeatures();
 	/** The static instance of the MissionManager */
 	protected static MissionManager missionManager;// = sim.getMissionManager();
+	/** The static instance of the personConfig */
+	protected static PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 
 	/**
 	 * Constructs a Task object.
@@ -1292,7 +1296,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param m {@link MissionManager}
 	 */
 	public static void initializeInstances(MarsClock c, HistoricalEventManager e, RelationshipManager r, 
-			UnitManager u, ScientificStudyManager s, SurfaceFeatures sf, MissionManager m) {
+			UnitManager u, ScientificStudyManager s, SurfaceFeatures sf, MissionManager m, PersonConfig pc) {
 		sim = Simulation.instance();
 		marsClock = c;
 		eventManager = e;
@@ -1301,6 +1305,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		scientificStudyManager = s;
 		surface = sf;
 		missionManager = m;
+		personConfig = pc;
 	}
 	
 	/**

@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
@@ -25,7 +24,6 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
@@ -75,9 +73,7 @@ implements ResearchScientificStudy, Serializable {
     private MalfunctionManager malfunctions;
     /** The research assistant. */
     private Person researchAssistant;
-
-    private static ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-    
+ 
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -174,7 +170,7 @@ implements ResearchScientificStudy, Serializable {
         List<ScienceType> experimentalSciences = getExperimentalSciences();
 
         // Add primary study if appropriate science and in research phase.
-        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
+        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
         if (primaryStudy != null) {
             if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) &&
                     !primaryStudy.isPrimaryResearchCompleted()) {
@@ -193,7 +189,7 @@ implements ResearchScientificStudy, Serializable {
         }
 
         // Add all collaborative studies with appropriate sciences and in research phase.
-        Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
+        Iterator<ScientificStudy> i = scientificStudyManager.getOngoingCollaborativeStudies(person).iterator();
         while (i.hasNext()) {
             ScientificStudy collabStudy = i.next();
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) &&
@@ -640,14 +636,14 @@ implements ResearchScientificStudy, Serializable {
         this.researchAssistant = researchAssistant;
     }
     
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {{@link ScientificStudyManager}
-	 */
-	public static void initializeInstances(ScientificStudyManager s) {
-		studyManager = s;
-	}
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 * 
+//	 * @param {{@link ScientificStudyManager}
+//	 */
+//	public static void initializeInstances(ScientificStudyManager s) {
+//		scientificStudyManager = s;
+//	}
 
     @Override
     public void destroy() {

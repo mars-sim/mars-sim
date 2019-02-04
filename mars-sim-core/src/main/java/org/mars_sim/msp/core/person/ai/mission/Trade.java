@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
@@ -51,7 +50,9 @@ public class Trade extends RoverMission implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Trade.class.getName());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
 
@@ -167,7 +168,7 @@ public class Trade extends RoverMission implements Serializable {
 
 		// Set initial phase
 		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approval.description", s.getName())); //$NON-NLS-1$
+		setPhaseDescription(Msg.getString("Mission.phase.approval.description")); //$NON-NLS-1$
 		if (logger.isLoggable(Level.INFO)) {
 			if (startingMember != null && getRover() != null) {
 				logger.info("[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
@@ -338,22 +339,22 @@ public class Trade extends RoverMission implements Serializable {
 	 * @param member the mission member performing the mission.
 	 */
 	private void performTradeDisembarkingPhase(MissionMember member) {
-
+		Vehicle v = getVehicle();
 		// If rover is not parked at settlement, park it.
-		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
+		if ((v != null) && (v.getSettlement() == null)) {
 
-			tradingSettlement.getInventory().storeUnit(getVehicle());
+			tradingSettlement.getInventory().storeUnit(v);
 
 			// Add vehicle to a garage if available.
-			if (getVehicle().getGarage() == null) {
-				BuildingManager.addToGarage((GroundVehicle) getVehicle(), tradingSettlement);
+			if (v.getGarage() == null) {
+				BuildingManager.addToGarage((GroundVehicle) v, tradingSettlement);
 			}
 			
-			getVehicle().determinedSettlementParkedLocationAndFacing();
+			v.determinedSettlementParkedLocationAndFacing();
 		}
 
 		// Have person exit rover if necessary.
-		if (member.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
+		if (member.isInSettlement()) {
 
 			// Get random inhabitable building at trading settlement.
 			Building destinationBuilding = tradingSettlement.getBuildingManager().getRandomAirlockBuilding();
@@ -533,7 +534,7 @@ public class Trade extends RoverMission implements Serializable {
 					}
 				}
 			} else {
-				endMission("Vehicle is not loadable (RoverMission).");
+				endMission(VEHICLE_NOT_LOADABLE);//"Vehicle is not loadable (RoverMission).");
 			}
 		} else {
 			setPhaseEnded(true);
@@ -582,7 +583,7 @@ public class Trade extends RoverMission implements Serializable {
 	private void performTradeEmbarkingPhase(MissionMember member) {
 
 		// If person is not aboard the rover, board rover.
-		if (!isDone() && !member.isInVehicle() && member.getLocationSituation() != LocationSituation.BURIED) {
+		if (!isDone() && !member.isInVehicle()) {
 
 			// Move person to random location within rover.
 			Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
@@ -591,6 +592,8 @@ public class Trade extends RoverMission implements Serializable {
 			// TODO Refactor.
 			if (member instanceof Person) {
 				Person person = (Person) member;
+				if (person.isDeclaredDead())
+					endMission("The person is no longer alive.");
 				if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
 					assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
 				} else {
@@ -828,7 +831,7 @@ public class Trade extends RoverMission implements Serializable {
 
 		if (result) {
 			boolean atStartingSettlement = false;
-			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			if (member.isInSettlement()) {
 				if (member.getSettlement() == getStartingSettlement()) {
 					atStartingSettlement = true;
 				}

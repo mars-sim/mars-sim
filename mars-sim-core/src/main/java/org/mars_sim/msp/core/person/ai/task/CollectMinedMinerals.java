@@ -45,9 +45,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(CollectMinedMinerals.class.getName());
-
-    private static String sourceName = logger.getName();
- 
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.collectMinedMinerals"); //$NON-NLS-1$
 

@@ -28,7 +28,9 @@ public abstract class TravelMission extends Mission {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TravelMission.class.getName());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	// Travel Mission status
 	public final static String AT_NAVPOINT = "At a navpoint";
 	public final static String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";

@@ -78,10 +78,10 @@ public class Conversion {
 	}
 
 	/**
-	 * Capitalizes the input word
+	 * Capitalizes the first letter of each word in the input phase
 	 * 
-	 * @param input
-	 * @return the modified word
+	 * @param input The input phase
+	 * @return The modified phase
 	 */
 	public static String capitalize(String input) {
 		if (input != null) {
@@ -104,6 +104,33 @@ public class Conversion {
 			return null;
 	}
 
+	/**
+	 * Obtains the initials of each word in the input phase
+	 * 
+	 * @param input The input phase
+	 * @return The initials
+	 */
+	public static String getInitials(String input) {
+		if (input != null) {
+			StringBuilder titleCase = new StringBuilder();
+			boolean nextTitleCase = true;
+
+			for (char c : input.toCharArray()) {
+				if (Character.isSpaceChar(c) || c == '(') {
+					nextTitleCase = true;
+				} else if (nextTitleCase) {
+					c = Character.toTitleCase(c);
+					titleCase.append(c);
+					nextTitleCase = false;
+				}
+			}
+
+			return titleCase.toString();
+		} else
+			return null;
+	}
+
+	
 	public static boolean isInteger(String s, int radix) {
 	    if(s.isEmpty()) return false;
 	    for(int i = 0; i < s.length(); i++) {

@@ -19,7 +19,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -111,7 +110,9 @@ public class ChatUtils {
 
     /** DEFAULT LOGGER. */  
 	private static Logger logger = Logger.getLogger(ChatUtils.class.getName());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	private static boolean expertMode = false;
 
 	private static final double RADIANS_TO_DEGREES = 180D/Math.PI;

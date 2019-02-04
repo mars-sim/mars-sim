@@ -48,10 +48,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	private static final long serialVersionUID = 1L;
 
 //  private static Logger logger = Logger.getLogger(CollectResourcesMission.class.getName());
-
-//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			 logger.getName().length());
-
+//	private static String loggerName = logger.getName();
+//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	/** Mission phase. */
 	public final static MissionPhase COLLECT_RESOURCES = new MissionPhase(
 			Msg.getString("Mission.phase.collectResources")); //$NON-NLS-1$

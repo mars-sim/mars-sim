@@ -341,6 +341,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			// pulseSlider.setEnabled(false);
 			pulseSlider.setMajorTickSpacing(20);
 			pulseSlider.setMinorTickSpacing(5);
+			// activated for custom tick space
+			pulseSlider.setSnapToTicks(true); 
 			pulseSlider.setPaintTicks(true);
 			pulseSlider.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {

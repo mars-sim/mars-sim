@@ -59,10 +59,9 @@ public class MalfunctionManager implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MalfunctionManager.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	/** Initial estimate for malfunctions per orbit for an entity. */
 	private static double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 10D;
 	/** Initial estimate for maintenances per orbit for an entity. */

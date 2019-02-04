@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -438,14 +437,14 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		this.researchAssistant = researchAssistant;
 	}
 
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param s
-	 */
-	public static void initializeInstances(SurfaceFeatures s) {
-		surface = s;
-	}
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 * 
+//	 * @param s
+//	 */
+//	public static void initializeInstances(SurfaceFeatures s) {
+//		surface = s;
+//	}
 	
 	@Override
 	public void destroy() {

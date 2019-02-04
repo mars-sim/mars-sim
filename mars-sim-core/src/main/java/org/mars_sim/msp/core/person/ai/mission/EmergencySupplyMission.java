@@ -59,7 +59,9 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(EmergencySupplyMission.class.getName());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.emergencySupplyMission"); //$NON-NLS-1$
 
@@ -506,7 +508,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 					}
 				}
 			} else {
-				endMission("Vehicle is not loadable (RoverMission).");
+				endMission(VEHICLE_NOT_LOADABLE); // "Vehicle is not loadable (RoverMission)."
 			}
 		} else {
 			setPhaseEnded(true);

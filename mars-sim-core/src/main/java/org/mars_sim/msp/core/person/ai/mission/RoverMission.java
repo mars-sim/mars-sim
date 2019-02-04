@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
@@ -279,24 +278,25 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param member the mission member currently performing the mission
 	 */
 	protected void performEmbarkFromSettlementPhase(MissionMember member) {
-
-		if (getVehicle() == null) {
+		Vehicle v = getVehicle();
+		
+		if (v == null) {
 			endMission(Mission.NO_AVAILABLE_VEHICLES);
 		}
 
 		else {
-			Settlement settlement = getVehicle().getSettlement();
+			Settlement settlement = v.getSettlement();
 			if (settlement == null) {
 				//throw new IllegalStateException(
-				LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-						Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName()), null); //$NON-NLS-1$
+				LogConsolidated.log(Level.WARNING, 0, sourceName, 
+						Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
 				endMission(Mission.NO_AVAILABLE_VEHICLES);
 			}
 
 			// If the vehicle is currently not in a garage
-			if (getVehicle().getGarage() == null) { //BuildingManager.getBuilding(getVehicle()) == null) {
+			if (v.getGarage() == null) { //BuildingManager.getBuilding(getVehicle()) == null) {
 				// Add the rover to a garage if possible.
-				BuildingManager.addToGarage((Rover) getVehicle(), getVehicle().getSettlement());
+				BuildingManager.addToGarage((Rover) v, v.getSettlement());
 			}
 
 			// Load vehicle if not fully loaded.
@@ -316,13 +316,13 @@ public abstract class RoverMission extends VehicleMission {
 									if (isRoverInAGarage()) {
 										// TODO Refactor.
 										assignTask(person,
-													new LoadVehicleGarage(person, getVehicle(),
+													new LoadVehicleGarage(person, v,
 															getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 															getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
 									} else {
 										// Check if it is day time.
 //										if (!EVAOperation.isGettingDark(person)) {
-											assignTask(person, new LoadVehicleEVA(person, getVehicle(),
+											assignTask(person, new LoadVehicleEVA(person, v,
 														getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 														getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
 //										}
@@ -335,7 +335,7 @@ public abstract class RoverMission extends VehicleMission {
 								Person person = (Person) member;
 								// Check if it is day time.
 //								if (!EVAOperation.isGettingDark(person)) {
-									assignTask(person, new LoadVehicleEVA(person, getVehicle(),
+									assignTask(person, new LoadVehicleEVA(person, v,
 												getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 												getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
 //								}
@@ -343,7 +343,7 @@ public abstract class RoverMission extends VehicleMission {
 						}
 						
 					} else {
-						endMission(Msg.getString("RoverMission.log.notLoadable")); //$NON-NLS-1$
+						endMission(VEHICLE_NOT_LOADABLE);//Msg.getString("RoverMission.log.notLoadable")); //$NON-NLS-1$
 						return;
 					}
 				}
@@ -353,33 +353,33 @@ public abstract class RoverMission extends VehicleMission {
 				// If person is not aboard the rover, board rover.
 				if (!member.isInVehicle()) {
 					// Move person to random location within rover.
-					Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
+					Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(v);
 					Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
-							vehicleLoc.getY(), getVehicle());
+							vehicleLoc.getY(), v);
 					// TODO Refactor.
 					if (member instanceof Person) {
 						Person person = (Person) member;
-						if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
-							assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
+						if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), v)) {
+							assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), v));
 						} else {
-							LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,
+							LogConsolidated.log(Level.SEVERE, 0, sourceName,
 									"[" + person.getLocationTag().getLocale() + "] " 
 										+  Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
-									getVehicle().getName()), null);
+									v.getName()));
 							endMission(Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
-									getVehicle().getName()));
+									v.getName()));
 						}
 					} else if (member instanceof Robot) {
 						Robot robot = (Robot) member;
-						if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
-							assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
+						if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), v)) {
+							assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), v));
 						} else {
-							LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,
+							LogConsolidated.log(Level.SEVERE, 0, sourceName,
 									"[" + robot.getLocationTag().getLocale() + "] " 
 										+  Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
-									getVehicle().getName()), null);
+									v.getName()));
 							endMission(Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
-									getVehicle().getName()));
+									v.getName()));
 						}
 					}
 
@@ -391,21 +391,21 @@ public abstract class RoverMission extends VehicleMission {
 						while (numEVASuit <= limit) {
 							if (settlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
 								EVASuit suit = (EVASuit) settlement.getInventory().findUnitOfClass(EVASuit.class);
-								if (getVehicle().getInventory().canStoreUnit(suit, false)) {
+								if (v.getInventory().canStoreUnit(suit, false)) {
 									settlement.getInventory().retrieveUnit(suit);
-									getVehicle().getInventory().storeUnit(suit);
+									v.getInventory().storeUnit(suit);
 									numEVASuit++;
 								}
 
 								else {
 									endMission(Msg.getString("RoverMission.log.cannotBeLoaded", suit.getName(), //$NON-NLS-1$
-											getVehicle().getName()));
+											v.getName()));
 									return;
 								}
 							}
 
 							else {
-								endMission(Msg.getString("RoverMission.log.noEVASuit", getVehicle().getName())); //$NON-NLS-1$
+								endMission(Msg.getString("RoverMission.log.noEVASuit", v.getName())); //$NON-NLS-1$
 								return;
 							}
 						}
@@ -416,13 +416,13 @@ public abstract class RoverMission extends VehicleMission {
 				if (!isDone() && loadedFlag && isEveryoneInRover()) {
 
 					// Remove from garage if in garage.
-					Building garageBuilding = BuildingManager.getBuilding(getVehicle());
+					Building garageBuilding = BuildingManager.getBuilding(v);
 					if (garageBuilding != null) {
-						garageBuilding.getVehicleMaintenance().removeVehicle(getVehicle());
+						garageBuilding.getVehicleMaintenance().removeVehicle(v);
 					}
 
 					// Embark from settlement
-					settlement.getInventory().retrieveUnit(getVehicle());
+					settlement.getInventory().retrieveUnit(v);
 					setPhaseEnded(true);
 				}
 			}

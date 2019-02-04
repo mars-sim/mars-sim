@@ -53,9 +53,9 @@ public class PlayHoloGame extends Task implements Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.3D;
 
-	private static Simulation sim = Simulation.instance();
-	private static MasterClock masterClock = sim.getMasterClock();
-	private static MarsClock marsClock = masterClock.getMarsClock();
+//	private static Simulation sim = Simulation.instance();
+//	private static MasterClock masterClock = sim.getMasterClock();
+//	private static MarsClock marsClock = masterClock.getMarsClock();
 
 	/**
 	 * Constructor.
@@ -245,24 +245,23 @@ public class PlayHoloGame extends Task implements Serializable {
 		return results;
 	}
 
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
-	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1) {
-		masterClock = c0;
-		marsClock = c1;
-	}
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 * 
+//	 * @param {@link MasterClock}
+//	 * @param {{@link MarsClock}
+//	 */
+//	public static void initializeInstances(MasterClock c0, MarsClock c1) {
+//		masterClock = c0;
+//		marsClock = c1;
+//	}
 
 	@Override
 	public void destroy() {
 		super.destroy();
-
-		sim = null;
-		marsClock = null;
-		masterClock = null;
+//		sim = null;
+//		marsClock = null;
+//		masterClock = null;
 	}
 
 }

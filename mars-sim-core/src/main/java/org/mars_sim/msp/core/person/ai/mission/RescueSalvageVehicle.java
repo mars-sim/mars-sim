@@ -62,8 +62,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(RescueSalvageVehicle.class.getName());
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
@@ -157,7 +157,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				// Set initial phase
 				setPhase(VehicleMission.APPROVAL);// .EMBARKING);
 				setPhaseDescription(
-						Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
+						Msg.getString("Mission.phase.approval.description")); // $NON-NLS-1$
 			} else {
 				endMission(TARGET_VEHICLE_NOT_FOUND);
 			}
@@ -215,7 +215,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 		// Set initial phase
 		setPhase(VehicleMission.APPROVAL);// .EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhaseDescription(Msg.getString("Mission.phase.approval.description")); // $NON-NLS-1$
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -302,13 +302,13 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
 			if (rescue) {
-				LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
+				LogConsolidated.log(Level.INFO, 3000, sourceName,
 						"[" + getVehicle().getLocationTag().getLocale() + "] " 
-								+ getVehicle().getName() + " has been embarked to rescue " + vehicleTarget.getName(), null);
+								+ getVehicle().getName() + " has been embarked to rescue " + vehicleTarget.getName());
 			} else {
-				LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
+				LogConsolidated.log(Level.INFO, 3000, sourceName,
 						"[" + getVehicle().getLocationTag().getLocale() + "] " 
-								+ getVehicle().getName() + " has been embarked to rescue " + vehicleTarget.getName(), null);
+								+ getVehicle().getName() + " has been embarked to rescue " + vehicleTarget.getName());
 			}
 		}
 
@@ -366,9 +366,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 */
 	private void rendezvousPhase(MissionMember member) {
 
-		LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+		LogConsolidated.log(Level.FINER, 5000, sourceName,
 				"[" + member.getLocationTag().getLocale() + "] " + member.getName() + " in " + getVehicle().getName()
-				+ " had arrived to rendezvous with " + vehicleTarget.getName() + ".", null);
+				+ " had arrived to rendezvous with " + vehicleTarget.getName() + ".");
 
 		// If rescuing vehicle crew, load rescue life support resources into vehicle (if
 		// possible).

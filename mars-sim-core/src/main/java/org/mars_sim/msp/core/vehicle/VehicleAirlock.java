@@ -29,9 +29,9 @@ extends Airlock {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(VehicleAirlock.class.getName());
-
-    private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	// Data members.
 	/** The vehicle this airlock is for. */
 	private Vehicle vehicle;

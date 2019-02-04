@@ -51,7 +51,9 @@ public class Mining extends RoverMission {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Mining.class.getName());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.mining"); //$NON-NLS-1$
 

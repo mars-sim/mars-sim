@@ -451,7 +451,7 @@ public class Simulation implements ClockListener, Serializable {
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, 
 				mars.getSurfaceFeatures(), missionManager, relationshipManager, pc, creditManager);
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
-				scientificStudyManager, mars.getSurfaceFeatures(), missionManager);
+				scientificStudyManager, mars.getSurfaceFeatures(), missionManager, pc);
 		Unit.initializeInstances(masterClock, marsClock, this, mars, mars.getMarsSurface(), 
 				earthClock, unitManager, missionManager);		
 		
@@ -959,13 +959,14 @@ public class Simulation implements ClockListener, Serializable {
 //		System.out.println("Done with Building function instances");
 		
 		// Re-initialize Task related class 
-		LoadVehicleGarage.initializeInstances(pc); 
-		ObserveAstronomicalObjects.initializeInstances(surface);
-		PerformLaboratoryExperiment.initializeInstances(scientificStudyManager);
-		PlayHoloGame.initializeInstances(masterClock, marsClock);
-		ProposeScientificStudy.initializeInstances(scientificStudyManager);
+//		LoadVehicleGarage.initializeInstances(pc); 
+//		ObserveAstronomicalObjects.initializeInstances(surface);
+//		PerformLaboratoryExperiment.initializeInstances(scientificStudyManager);
+//		PlayHoloGame.initializeInstances(masterClock, marsClock);
+//		ProposeScientificStudy.initializeInstances(scientificStudyManager);
 		Walk.initializeInstances(unitManager);	
-		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, scientificStudyManager, surface, missionManager);
+		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
+				scientificStudyManager, surface, missionManager, pc);
 
 //		System.out.println("Done with Task instances");
 		

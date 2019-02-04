@@ -39,10 +39,9 @@ public class MissionManager implements Serializable {
 
 	/** default logger. */
 	private static transient Logger logger = Logger.getLogger(MissionManager.class.getName());
-
-//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			logger.getName().length());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	private static final int MAX_NUM_PLANS = 100;
 	
 	private static final double PERCENT_PER_SCORE = 10D;

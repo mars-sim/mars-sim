@@ -49,10 +49,9 @@ public class EatMeal extends Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(EatMeal.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			 logger.getName().length());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	private static final int HUNGER_CEILING = 1000;
 	private static final int THIRST_CEILING = 500;
 	
@@ -486,6 +485,9 @@ public class EatMeal extends Task implements Serializable {
 				haveFood = Storage.retrieveAnResource(foodAmount, ResourceUtil.foodID, inv, true);
 			
 			if (haveFood) {
+				LogConsolidated.log(Level.FINE, 1000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person 
+						+ " just ate " + foodAmount + " kg of preserved food.");
 				// Consume preserved food.
 				// Note: once a person has eaten a bit of food,
 				// the hunger index should be reset to HUNGER_CEILING

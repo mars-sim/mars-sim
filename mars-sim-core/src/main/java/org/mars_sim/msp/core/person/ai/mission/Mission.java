@@ -72,7 +72,7 @@ public abstract class Mission implements Serializable {
 	public static final String NO_GOOD_EVA_SUIT = "No good EVA suit.";
 	public static final String REQUEST_RESCUE = "Requesting rescue.";
 	public static final String NO_ONGOING_SCIENTIFIC_STUDY = "No on-going scientific study being conducted in this subject.";
-	public static final String VEHICLE_NOT_LOADABLE = "Cannot load resources into the rover.";
+	public static final String VEHICLE_NOT_LOADABLE = "Cannot load resources into the rover."; // 
 	public static final String NO_EXPLORATION_SITES = "Exploration sites could not be determined.";
 	public static final String NOT_ENOUGH_MEMBERS = "Not enough members recruited.";
 	public static final String NO_MEMBERS_ON_MISSION = "No members available for mission.";
@@ -644,9 +644,9 @@ public abstract class Mission implements Serializable {
 	 */
 	public final String getPhaseDescription() {
 		if (phaseDescription != null) {
-			return Conversion.capitalize(phaseDescription);
+			return phaseDescription;
 		} else if (phase != null) {
-			return Conversion.capitalize(phase.toString());
+			return phase.toString();
 		} else
 			return "";
 	}
@@ -1411,7 +1411,7 @@ public abstract class Mission implements Serializable {
 	}
 
 	public String createFullDesignation(Person p) {	
-		return getType() + " " + MissionManager.getMissionDesignationString(p.getAssociatedSettlement().getName());
+		return Conversion.getInitials(getDescription()) + " " + MissionManager.getMissionDesignationString(p.getAssociatedSettlement().getName());
 	}
 	
 	public void setReservedVehicle(String name) {

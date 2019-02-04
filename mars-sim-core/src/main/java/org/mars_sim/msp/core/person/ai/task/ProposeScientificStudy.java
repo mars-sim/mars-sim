@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -23,7 +22,6 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -61,7 +59,7 @@ implements Serializable {
 	/** The scientific study to propose. */
 	private ScientificStudy study;
 
-	private static ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
+//	private static ScientificStudyManager scientificStudyManager = Simulation.instance().getScientificStudyManager();
     
     /**
      * Constructor.
@@ -71,7 +69,7 @@ implements Serializable {
         super(NAME, person, false, true, STRESS_MODIFIER, 
                 true, 10D + RandomUtil.getRandomDouble(50D));
         
-        study = studyManager.getOngoingPrimaryStudy(person);
+        study = scientificStudyManager.getOngoingPrimaryStudy(person);
         if (study == null) {
             
             // Create new scientific study.
@@ -80,7 +78,7 @@ implements Serializable {
             if (science != null) {
                 SkillType skill = science.getSkill();
                 int level = person.getMind().getSkillManager().getSkillLevel(skill);
-                study = studyManager.createScientificStudy(person, science, level);
+                study = scientificStudyManager.createScientificStudy(person, science, level);
             }
             else {
                 logger.severe("Person's job: " + job.getName(person.getGender()) + " not scientist.");
@@ -241,14 +239,14 @@ implements Serializable {
         }
     }
     
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {{@link ScientificStudyManager}
-	 */
-	public static void initializeInstances(ScientificStudyManager s) {
-		studyManager = s;
-	}
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 * 
+//	 * @param {{@link ScientificStudyManager}
+//	 */
+//	public static void initializeInstances(ScientificStudyManager s) {
+//		scientificStudyManager = s;
+//	}
 	
     @Override
     public void destroy() {

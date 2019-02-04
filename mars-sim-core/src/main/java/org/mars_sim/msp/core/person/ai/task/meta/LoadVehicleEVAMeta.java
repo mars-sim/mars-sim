@@ -38,7 +38,9 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(LoadVehicleEVAMeta.class.getName());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
     @Override
     public String getName() {
         return NAME;

@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,13 +48,15 @@ public class Walk extends Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default serial id. */
-//	private static Logger logger = Logger.getLogger(Walk.class.getName());
-	private static Logger logger = 
-			  Logger.getLogger(MethodHandles.lookup().lookupClass().getSimpleName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
-
+	private static Logger logger = Logger.getLogger(Walk.class.getName());
+//	private static Logger logger = 
+//			  Logger.getLogger(MethodHandles.lookup().lookupClass().getSimpleName());
+//
+//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+//			logger.getName().length());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.2D;
 	/** Task name */
