@@ -56,10 +56,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(LoadVehicleEVA.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.loadVehicleEVA"); //$NON-NLS-1$
 
@@ -75,7 +74,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	private static double LOAD_RATE = 20D;
 
-	private static double WATER_NEED = 40D;
+	private static double WATER_NEED = 10D;
 	private static double FOOD_NEED = 10D;
 	private static double OXYGEN_NEED = 10D;
 
@@ -112,14 +111,19 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
 			vehicle = roversNeedingEVASuits.get(roverIndex);
 			setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
+			
 			requiredResources = new HashMap<Integer, Number>();
-//            requiredResources.put(foodID, FOOD_NEED); 
+//            requiredResources.put(foodID, FOOD_NEED);
 			requiredResources.put(waterID, WATER_NEED);
 			requiredResources.put(oxygenID, OXYGEN_NEED);
+			
 			optionalResources = new HashMap<Integer, Number>(0);
+			
 			requiredEquipment = new HashMap<>(1);
 			requiredEquipment.put(EquipmentType.convertType2ID(EVASuit.TYPE), 1);
+			
 			optionalEquipment = new HashMap<>(0);
+			
 			settlement = person.getSettlement();
 		}
 
@@ -371,7 +375,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			strength = robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.STRENGTH);
 
 		double strengthModifier = .1D + (strength * .018D);
-		double amountLoading = LOAD_RATE * strengthModifier * time / 4D;
+		double amountLoading = LOAD_RATE * strengthModifier * time / 16D;
 
 		// Temporarily remove rover from settlement so that inventory doesn't get mixed
 		// in.
@@ -462,6 +466,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		double amountNeededTotal = 0D;
 		if (required) {
 			amountNeededTotal = (Double) requiredResources.get(resource);
+					
 		} else {
 			if (requiredResources.containsKey(resource)) {
 				amountNeededTotal += (Double) requiredResources.get(resource);
@@ -528,12 +533,14 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				}
 				amountLoading -= resourceAmount;
 			} else {
-				LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-						"[" + settlement.getName() + "] Rover " + vehicle + loadingError, null);
+				LogConsolidated.log(Level.WARNING, 1_000, sourceName,
+						"[" + settlement.getName() + "] Rover " + vehicle + loadingError);
 				endTask();
 //                throw new IllegalStateException(loadingError);
 			}
-		} else {
+		} 
+		
+		else { // if (amountAlreadyLoaded >= amountNeededTotal)
 			if (required && optionalResources.containsKey(resource)) {
 				amountNeededTotal += (Double) optionalResources.get(resource);
 			}
@@ -634,8 +641,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				if (amountLoading < 0D)
 					amountLoading = 0D;
 			} else {
-				LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-						"[" + settlement.getName() + "] Rover " + vehicle + loadingError, null);
+				LogConsolidated.log(Level.WARNING, 1_000, sourceName,
+						"[" + settlement.getName() + "] Rover " + vehicle + loadingError);
 				endTask();
 //                throw new IllegalStateException(loadingError);
 			}
@@ -720,9 +727,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 								}
 								loaded++;
 							} else {
-								LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-										"[" + settlement.getName() + "] Rover " + vehicle + " cannot store " + eq + ".",
-										null);
+								LogConsolidated.log(Level.WARNING, 1_000, sourceName,
+										"[" + settlement.getName() + "] Rover " + vehicle + " cannot store " + eq + ".");
 								endTask();
 							}
 						}
@@ -810,9 +816,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 							}
 							loaded++;
 						} else {
-							LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-									"[" + settlement.getName() + "] Rover " + vehicle + " cannot store " + eq + ".",
-									null);
+							LogConsolidated.log(Level.WARNING, 1_000, sourceName,
+									"[" + settlement.getName() + "] Rover " + vehicle + " cannot store " + eq + ".");
 //                            logger.warning(vehicle + " cannot store " + eq);
 							endTask();
 						}
@@ -908,10 +913,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			}
 		} catch (Exception e) {
 //            logger.info(e.getMessage());
-			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
+			LogConsolidated.log(Level.WARNING, 1_000, sourceName,
 					"[" + settlement.getName() + "] did NOT have enough capacity in rover " + vehicle
-							+ " to store needed resources for a proposed mission. " + e.getMessage(),
-					null);
+							+ " to store needed resources for a proposed mission. " + e.getMessage());
 			sufficientCapacity = false;
 		}
 

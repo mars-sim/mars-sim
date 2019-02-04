@@ -407,14 +407,16 @@ extends ToolWindow {
 				units = CollectionUtils.sortByName(settlement);
 			}
 			else if (category.equals(UnitCategory.VEHICLES)) {
-				Collection<Vehicle> vehicle= unitManager.getVehicles();
+				Collection<Vehicle> vehicle = unitManager.getVehicles();
 				units = CollectionUtils.sortByName(vehicle);
 			}
 
-			Iterator<? extends Unit> unitI = units.iterator();
-
-			while (unitI.hasNext()) {
-				addElement(unitI.next());
+			if (units != null && !units.isEmpty()) {
+				Iterator<? extends Unit> unitI = units.iterator();
+	
+				while (unitI.hasNext()) {
+					addElement(unitI.next());
+				}
 			}
 		}
 

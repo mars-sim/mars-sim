@@ -102,12 +102,7 @@ public class SettlementWindow extends ToolWindow {
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-		init();
-
 		// showMarsTime();
-	}
-
-	public void init() {
 
 //		if (mainScene != null) {
 //			// setTitleName(null);

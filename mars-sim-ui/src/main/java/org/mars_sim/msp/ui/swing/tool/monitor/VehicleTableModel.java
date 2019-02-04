@@ -385,10 +385,19 @@ extends UnitTableModel {
 		else if (eventType == UnitEventType.RESERVED_EVENT) columnNum = RESERVED;
 		else if (eventType == UnitEventType.SPEED_EVENT) columnNum = SPEED;
 		else if (eventType == UnitEventType.MALFUNCTION_EVENT) columnNum = MALFUNCTION;
-		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT
-				&& source instanceof AmountResource) {
+		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT) {
+			int target = -1;	
+			if (source instanceof AmountResource) {
+				target = ((AmountResource)source).getID();
+			}
+				
+			else if (source instanceof Integer) {
+				target = (Integer)source;
+				if (target >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
+					return;
+			}
+				
 			try {
-				int target = ((AmountResource)source).getID();
 				int tempColumnNum = -1;
 				double currentValue = 0.0;
 				Map<Integer, Double> resourceMap = resourceCache.get(unit);

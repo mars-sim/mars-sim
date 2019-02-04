@@ -20,14 +20,12 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -57,10 +55,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(LoadVehicleGarage.class.getName());
-
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.loadVehicleGarage"); //$NON-NLS-1$
 
@@ -77,12 +74,11 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	 * The amount of resources (kg) one person of average strength can load per
 	 * millisol.
 	 */
-	private static double LOAD_RATE = 20D;
-
+	private static double LOAD_RATE = 30D;
+	
 	/** The duration of the loading task (millisols). */
 	private static double DURATION = RandomUtil.getRandomDouble(50D) + 10D;
 
-	
 	// Data members
 
 	/** Resources required to load. */
@@ -103,10 +99,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 	private static int foodID = ResourceUtil.foodID;
-	private static int methaneID = ResourceUtil.methaneID;
-	
-	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-
+//	private static int methaneID = ResourceUtil.methaneID;
 	
 	/**
 	 * Constructor.
@@ -117,9 +110,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		// Use Task constructor
 		super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
 
-		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfiguration();
-
 		VehicleMission mission = getMissionNeedingLoading();
 		if (mission != null) {
 			vehicle = mission.getVehicle();
@@ -129,6 +119,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			requiredEquipment = mission.getRequiredEquipmentToLoad();
 			optionalEquipment = mission.getOptionalEquipmentToLoad();
 
+//			if (requiredResources.containsKey(1))
+//				logger.info("1. food : " + Math.round((double)requiredResources.get(1)*100.0)/100.0);
+			
 			settlement = person.getSettlement();
 			if (settlement == null) {
 				endTask();
@@ -159,9 +152,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		// Use Task constructor
 		super(NAME, robot, true, false, STRESS_MODIFIER, true, DURATION);
 
-		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfiguration();
-
 		VehicleMission mission = getMissionNeedingLoading();
 		if (mission != null) {
 			vehicle = mission.getVehicle();
@@ -171,6 +161,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			optionalResources = mission.getOptionalResourcesToLoad();
 			requiredEquipment = mission.getRequiredEquipmentToLoad();
 			optionalEquipment = mission.getOptionalEquipmentToLoad();
+			
+//			if (requiredResources.containsKey(1))
+//				logger.info("2. food : " + Math.round((double)requiredResources.get(1)*100.0)/100.0);
+			
 			settlement = robot.getSettlement();
 			if (settlement == null) {
 				endTask();
@@ -215,9 +209,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 		setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;
-
-		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfiguration();
 		
 		if (requiredResources != null) {
 			this.requiredResources = new HashMap<Integer, Number>(requiredResources);
@@ -232,6 +223,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			this.optionalEquipment = new HashMap<>(optionalEquipment);
 		}
 
+//		if (requiredResources.containsKey(1))
+//			logger.info("3. food : " + Math.round((double)requiredResources.get(1)*100.0)/100.0);
+		
 		settlement = person.getSettlement();
 
 		// If vehicle is in a garage, add person to garage.
@@ -256,9 +250,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;
 		
-		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfiguration();
-
 		if (requiredResources != null) {
 			this.requiredResources = new HashMap<Integer, Number>(requiredResources);
 		}
@@ -272,6 +263,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			this.optionalEquipment = new HashMap<>(optionalEquipment);
 		}
 
+//		if (requiredResources.containsKey(1))
+//			logger.info("4. food : " + Math.round((double)requiredResources.get(1)*100.0)/100.0);
+		
 		settlement = robot.getSettlement();
 
 		// If vehicle is in a garage, add robot to garage.
@@ -400,7 +394,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		else if (robot != null)
 			strength = robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.STRENGTH);
 		double strengthModifier = .1D + (strength * .018D);
-		double amountLoading = LOAD_RATE * strengthModifier * time;
+		double amountLoading = LOAD_RATE * strengthModifier * time / 12D;
 
 		// Temporarily remove rover from settlement so that inventory doesn't get mixed
 		// in.
@@ -411,19 +405,19 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			sInv.retrieveUnit(vehicle);
 		}
 
-		// Load equipment
-		if (amountLoading > 0D) {
-			amountLoading = loadEquipment(amountLoading);
-		}
-
 		// Load resources
 		try {
 			amountLoading = loadResources(amountLoading);
 		} catch (Exception e) {
 			// logger.severe(e.getMessage());
-			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, e.getMessage(), null);
+			LogConsolidated.log(Level.WARNING, 0, sourceName + "::loadingPhase", "Error in loadResources()" + e.getMessage());
 		}
 
+		// Load equipment
+		if (amountLoading > 0D) {
+			amountLoading = loadEquipment(amountLoading);
+		}
+		
 		// Put rover back into settlement.
 		if (roverInSettlement) {
 			sInv.storeUnit(vehicle);
@@ -486,7 +480,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	 * @return the remaining amount (kg) the person can load in this time period.
 	 */
 	private double loadAmountResource(double amountLoading, Integer resource, boolean required) {
-
 		Inventory vInv = vehicle.getInventory();
 		Inventory sInv = settlement.getInventory();
 		
@@ -501,11 +494,19 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		}
 
 		double amountAlreadyLoaded = vInv.getAmountResourceStored(resource, false);
-
+//		if (resource == 1)
+//			LogConsolidated.log(Level.INFO, 0, sourceName, //"LoadVehicleGarage's loadAmountResource - " + 
+//			System.out.println("1. " + 
+//				vehicle.getName() + " - "
+//				+ ResourceUtil.findAmountResourceName(resource) 
+//				+ " needed: " + Math.round(amountNeededTotal*100.0)/100.0
+//				+ " already loaded: " + Math.round(amountAlreadyLoaded*100.0)/100.0);
+		
+		
 		if (amountAlreadyLoaded < amountNeededTotal) {
 			double amountNeeded = amountNeededTotal - amountAlreadyLoaded;
 			boolean canLoad = true;
-			String loadingError = "";
+			String loadingErrorMsg = "";
 
 			// Check if enough resource in settlement inventory.
 			double settlementStored = sInv.getAmountResourceStored(resource, false);
@@ -515,7 +516,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			if (settlementStored < amountNeeded) {
 				if (required) {
 					canLoad = false;
-					loadingError = " did NOT have enough resource stored at settlement to load " + "resource: " 
+					loadingErrorMsg = " did NOT have enough resource stored at settlement to load " + "resource: " 
 							+ ResourceUtil.findAmountResourceName(resource)
 							+ " needed: " + Math.round(amountNeeded * 100D) / 100D + ", stored: "
 							+ Math.round(settlementStored * 100D) / 100D;
@@ -528,11 +529,11 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			double remainingCapacity = vInv.getAmountResourceRemainingCapacity(resource, true, false);
 			if (remainingCapacity < amountNeeded) {
 				if (required) {
-					if ((amountNeeded - remainingCapacity) < .00001D) {
+					if ((amountNeeded - remainingCapacity) < SMALL_AMOUNT_COMPARISON) {
 						amountNeeded = remainingCapacity;
 					} else {
 						canLoad = false;
-						loadingError = " did NOT have enough capacity in vehicle for loading resource " 
+						loadingErrorMsg = " did NOT have enough capacity in vehicle for loading resource " 
 								+ ResourceUtil.findAmountResourceName(resource) + ": "
 								+ Math.round(amountNeeded * 100D) / 100D + ", remaining capacity: "
 								+ Math.round(remainingCapacity * 100D) / 100D;
@@ -554,33 +555,63 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				try {
 					sInv.retrieveAmountResource(resource, resourceAmount);
 					vInv.storeAmountResource(resource, resourceAmount, true);
+					
+//					if (resource == 1)
+						//LogConsolidated.log(Level.INFO, 0, sourceName, //"LoadVehicleGarage's loadAmountResource - " 
+//						System.out.println("2" + ". " + 
+//						vehicle.getName() + " - "
+//							+ ResourceUtil.findAmountResourceName(resource) 
+//							+ " needed: " + amountNeededTotal
+//							+ " loading: " + resourceAmount);
+					
 					sInv.addAmountDemand(resource, resourceAmount);
 				} catch (Exception e) {
 					e.printStackTrace(System.err);
 				}
 				amountLoading -= resourceAmount;
-			} else {
-    			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-    					"[" + settlement.getName() + "] Rover " + vehicle + loadingError, null);
+			}
+			
+			else {
+    			LogConsolidated.log(Level.WARNING, 0, sourceName,
+//    					System.out.println("3. (loadingErrorMsg)" + 
+    					"[" + settlement.getName() + "] Rover " + vehicle + loadingErrorMsg);
 				endTask();
 				// throw new IllegalStateException(loadingError);
 
 			}
 		}
 		
-		else {
+		else { // if (amountAlreadyLoaded >= amountNeededTotal) {
 			if (required && optionalResources.containsKey(resource)) {
 				amountNeededTotal += (Double) optionalResources.get(resource);
 			}
 
-			if (amountAlreadyLoaded > amountNeededTotal) {
+			if (amountAlreadyLoaded > 0 && amountNeededTotal > 0 
+					&& amountAlreadyLoaded > amountNeededTotal) {
 
 				// In case vehicle wasn't fully unloaded first.
 				double amountToRemove = amountAlreadyLoaded - amountNeededTotal;
-				try {
-					vInv.retrieveAmountResource(resource, amountToRemove);
-					sInv.storeAmountResource(resource, amountToRemove, true);
-				} catch (Exception e) {
+				
+				if (amountToRemove > SMALL_AMOUNT_COMPARISON) {
+					try {
+						vInv.retrieveAmountResource(resource, amountToRemove);
+						sInv.storeAmountResource(resource, amountToRemove, true);
+						
+//						if (resource == 1)
+//							LogConsolidated.log(Level.INFO, 0, sourceName, //"LoadVehicleGarage's loadAmountResource - " + 
+//									System.out.println("4. " + 
+//									vehicle.getName() + " - "
+//									+ ResourceUtil.findAmountResourceName(resource) 
+//									+ " needed: " + amountNeededTotal
+//									+ " loaded: " + amountAlreadyLoaded
+//									+ " returning: " + amountToRemove);
+					
+					} catch (Exception e) {
+						LogConsolidated.log(Level.WARNING, 0, sourceName,
+//								System.out.println("5. (Exception)" + 
+								"[" + settlement.getName() + "] Rover " + vehicle 
+		    					+ " was trying to return the excessive " + ResourceUtil.findAmountResourceName(resource));
+					}
 				}
 			}
 		}
@@ -668,8 +699,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				if (amountLoading < 0D)
 					amountLoading = 0D;
 			} else {
-    			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
-    					"[" + settlement.getName() + "] Rover " + vehicle + loadingError, null);
+    			LogConsolidated.log(Level.WARNING, 1_000, sourceName,
+    					"[" + settlement.getName() + "] Rover " + vehicle + loadingError);
 				endTask();
 //				throw new IllegalStateException(loadingError);
 			}
@@ -916,44 +947,45 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 			if (resource < FIRST_ITEM_RESOURCE_ID) {
 				// Added all desserts to the matching test
-				boolean isDessert = false;
-				double amountDessertLoaded = 0;
-				double stored = inv.getAmountResourceStored(resource, false);
-				double settlementNeed = 0;
-				double amountDessertNeeded = (Double) resources.get(resource);
-				String dessertName = "";
+//				boolean isDessert = false;
+//				double amountDessertLoaded = 0;
+//				double stored = inv.getAmountResourceStored(resource, false);
+//				double settlementNeed = getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
+//				double needed = (Double) resources.get(resource);
+//				String dessertName = "";
 				
 				// Put together a list of available dessert
-				for (AmountResource dessert : availableDesserts) {
-					dessertName = dessert.getName();
-					if (ResourceUtil.findAmountResource(resource).getName().equals(dessertName)) {
-						// Add the amount of all six desserts together
-						amountDessertLoaded += vInv.getAmountResourceStored(resource, false);
-//						stored += inv.getAmountResourceStored(resource, false);
-						settlementNeed += getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
-						isDessert = true;
-					}
-				}
+//				for (AmountResource dessert : availableDesserts) {
+//					dessertName = dessert.getName();
+//					if (ResourceUtil.findAmountResource(resource).getName().equals(dessertName)) {
+//						// Add the amount of all six desserts together
+//						amountDessertLoaded = vInv.getAmountResourceStored(resource, false);
+////						stored += inv.getAmountResourceStored(resource, false);
+////						settlementNeed += getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
+//						isDessert = true;
+//					}
+//				}
+//
+//				if (isDessert) {
+//					double totalNeeded = needed + settlementNeed - amountDessertLoaded;
+//
+//					if (stored < totalNeeded) {
+//						if (logger.isLoggable(Level.INFO))
+//							LogConsolidated.log(Level.INFO, 5000, sourceName,
+//									" Not enough "
+//									+ Conversion.capitalize(dessertName) 
+//									+ ". Mission need: " + Math.round(needed * 100.0) / 100.0  
+//									+ " ; " + settlement + " need: " + Math.round(settlementNeed* 100.0) / 100.0
+//									+ " ; Stored: " + Math.round(stored* 100.0) / 100.0);
+//						inv.addAmountDemandTotalRequest(resource, totalNeeded);
+//						enoughSupplies = false;
+//					}
+//				}
 
-				if (isDessert) {
-					double totalNeeded = amountDessertNeeded + settlementNeed - amountDessertLoaded;
-
-					if (stored < totalNeeded) {
-						if (logger.isLoggable(Level.INFO))
-							LogConsolidated.log(Level.INFO, 5000, sourceName,
-									" Not enough "
-									+ Conversion.capitalize(dessertName) 
-									+ ". Mission need: " + Math.round(amountDessertNeeded * 100.0) / 100.0  
-									+ " ; " + settlement + " need: " + Math.round(settlementNeed* 100.0) / 100.0
-									+ " ; Stored: " + Math.round(stored* 100.0) / 100.0);
-						inv.addAmountDemandTotalRequest(resource, totalNeeded);
-						enoughSupplies = false;
-					}
-				}
-
-				else { // this resource is not a dessert
+//				else { // this resource is not a dessert
+					double stored = inv.getAmountResourceStored(resource, false);
 					double needed = (Double) resources.get(resource);
-					settlementNeed = getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
+					double settlementNeed = getSettlementNeed(settlement, vehicleCrewNum, resource, tripTime);
 					double loaded = vInv.getAmountResourceStored(resource, false);
 					double totalNeeded = needed + settlementNeed - loaded;
 //					if (Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)).equalsIgnoreCase("food"))
@@ -974,7 +1006,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 						enoughSupplies = false;
 						return false;
 					}
-				}
+//				}
 			}
 
 			else if (resource >= FIRST_ITEM_RESOURCE_ID) {
@@ -1150,9 +1182,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			}
 		} catch (Exception e) {
 			// logger.info(e.getMessage());
-			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
+			LogConsolidated.log(Level.WARNING, 1_000, sourceName,
 					"[" + settlement.getName() + "] did NOT have enough capacity in rover "
-							+ vehicle + " to store needed resources for a proposed mission. " + e.getMessage(), null);
+							+ vehicle + " to store needed resources for a proposed mission. " + e.getMessage());
 			sufficientCapacity = false;
 		}
 
@@ -1369,14 +1401,14 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		return new ArrayList<SkillType>(0);
 	}
 
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param pc
-	 */
-	public static void initializeInstances(PersonConfig pc) {
-		personConfig = pc;
-	}
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 * 
+//	 * @param pc
+//	 */
+//	public static void initializeInstances(PersonConfig pc) {
+//		personConfig = pc;
+//	}
 	
 	@Override
 	public void destroy() {

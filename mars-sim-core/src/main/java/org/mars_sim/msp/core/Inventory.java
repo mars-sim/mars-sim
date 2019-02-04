@@ -919,8 +919,8 @@ public class Inventory implements Serializable {
 
 				// Fire inventory event.
 				if (owner != null) {
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT,
-							ResourceUtil.findAmountResourceName(resource));
+					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+//							ResourceUtil.findAmountResourceName(resource));
 				}
 			} else {
 				throw new IllegalStateException("Insufficient capacity to store "
@@ -1000,8 +1000,8 @@ public class Inventory implements Serializable {
 
 				// Fire inventory event.
 				if (owner != null) {
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT,
-							ResourceUtil.findAmountResource(resource));
+					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+//							ResourceUtil.findAmountResource(resource));
 				}
 			} else {
 				throw new IllegalStateException("Insufficient stored amount to retrieve "
@@ -1236,7 +1236,7 @@ public class Inventory implements Serializable {
 
 				// Fire inventory event.
 				if (owner != null) {
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//ItemResourceUtil.findItemResource(resource));
 				}
 
 				if (remainingNum > 0) {
@@ -1613,10 +1613,10 @@ public class Inventory implements Serializable {
 					for (Integer resource : unit.getInventory().getAllARStored(false)) {
 						updateAmountResourceCapacityCache(resource);
 						updateAmountResourceStoredCache(resource);
-						owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+						owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//ResourceUtil.findAmountResource(resource)); 
 					}
-					for (Integer itemResource : unit.getInventory().getAllItemResourcesStored()) {
-						owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
+					for (Integer resource : unit.getInventory().getAllItemResourcesStored()) {
+						owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//, ItemResourceUtil.findItemResource(resource));
 					}
 				}
 

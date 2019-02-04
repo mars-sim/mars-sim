@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -102,9 +103,18 @@ implements UnitListener {
 	@Override
 	public void unitUpdate(UnitEvent event) {
 		if (UnitEventType.INVENTORY_RESOURCE_EVENT == event.getType()) {
-			if (resource.equals(event.getTarget())) {
-				updateCollectionValueLabel();   
+			Object source = event.getTarget();
+			if (source instanceof AmountResource) {
+				updateCollectionValueLabel(); 
 			}
+				
+			else if (source instanceof Integer) {
+				if ((Integer)source < ResourceUtil.FIRST_ITEM_RESOURCE_ID)
+					updateCollectionValueLabel();
+			}
+//			if (resource.equals(event.getTarget())) {
+//				updateCollectionValueLabel();   
+//			}
 		}
 	}
 

@@ -115,7 +115,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
 		
-		settlement = (Settlement) unitManager.getSettlements().toArray()[0];
+		if (!unitManager.getSettlements().isEmpty())
+			settlement = (Settlement) unitManager.getSettlements().toArray()[0];
 
 		setLayout(new BorderLayout());
 

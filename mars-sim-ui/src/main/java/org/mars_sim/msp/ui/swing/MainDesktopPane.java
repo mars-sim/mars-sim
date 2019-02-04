@@ -165,18 +165,18 @@ public class MainDesktopPane extends JDesktopPane
 		// Play music
 		if (!soundPlayer.isSoundDisabled())
 			soundPlayer.playRandomMusicTrack();
+		// Prepare unit windows.
+		unitWindows = new ArrayList<UnitWindow>();
+		// Add clock listener
+		sim.getMasterClock().addClockListener(this);
 		// Prepare tool windows.
 		toolWindows = new ArrayList<ToolWindow>();
 		// Instantiate BrowserJFX
 //		browserJFX = new BrowserJFX(this);
-		// Prep tool windows
-		prepareToolWindows();
-		// Prepare unit windows.
-		unitWindows = new ArrayList<UnitWindow>();
 		// Create update thread.
 		setupToolWindowTasks();
-		// Add clock listener
-		sim.getMasterClock().addClockListener(this);
+		// Prep tool windows
+		prepareToolWindows();
 		// Setup announcement window
 		prepareAnnouncementWindow();
 	}

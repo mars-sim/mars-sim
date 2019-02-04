@@ -246,12 +246,14 @@ public class SimulationConfigEditor {
 					sim.destroyOldSimulation();
 					// Create new simulation
 					Simulation.createNewSimulation(-1, false);
+					// Initialize interactive terminal 
+					sim.getTerm().initializeTerminal();	
 					// Start the simulation
 					sim.start(false);
-					// Create main window
-					new MainWindow(true);
 					// Close simulation config editor
 					closeWindow();
+					// Create main window
+					new MainWindow(true);
 //					logger.config("Done SimulationConfigEditor()");
 				}
 			}

@@ -153,11 +153,7 @@ public class MarsProject {
 		List<String> argList = Arrays.asList(args);
 
 		if (argList.contains("-new")) {
-			// Initialize the simulation.
-			SimulationConfig.loadConfig();
-			// Create serializable class 
-			Simulation.createNewSimulation(-1, true);
-			
+
 			// If new argument, create new simulation.
 			handleNewSimulation(); // if this fails we always exit, continuing is useless
 			
@@ -166,11 +162,6 @@ public class MarsProject {
 		} else if (argList.contains("-load")) {
 			// If load argument, load simulation from file.
 
-			// Initialize the simulation.
-			SimulationConfig.loadConfig();
-			// Create serializable class 
-			Simulation.createNewSimulation(-1, true);
-			
 			try {
 				handleLoadSimulation(argList);
 				
@@ -185,11 +176,6 @@ public class MarsProject {
 			
 		} else {
 			// if there is no args, load default.sim in GUI mode
-			
-			// Initialize the simulation.
-			SimulationConfig.loadConfig();
-			// Create serializable class 
-			Simulation.createNewSimulation(-1, true);
 			
 			try {
 				handleLoadDefaultSimulation();
@@ -255,7 +241,11 @@ public class MarsProject {
 	private void handleLoadDefaultSimulation() throws Exception {
 //		logger.config("handleLoadDefaultSimulation() is on " 
 //				+ Thread.currentThread().getName() + " Thread");
-
+		// Initialize the simulation.
+		SimulationConfig.loadConfig();
+		// Create serializable class 
+		Simulation.createNewSimulation(-1, true);
+		
 		try {
 //			sim.loadSimulation(null);
 			// Prompt to open the file cHooser to select a saved sim
@@ -292,7 +282,11 @@ public class MarsProject {
 	 */
 	private void handleLoadSimulation(List<String> argList) throws Exception {
 //		logger.config("MarsProject's handleLoadSimulation() is on " + Thread.currentThread().getName() + " Thread");
-
+		// Initialize the simulation.
+		SimulationConfig.loadConfig();
+		// Create serializable class 
+		Simulation.createNewSimulation(-1, true);
+		
 		try {
 			boolean hasDefault = argList.contains("default.sim");
 			int index = argList.indexOf("-load");
@@ -344,34 +338,44 @@ public class MarsProject {
 //		 logger.config("handleNewSimulation() is on " + Thread.currentThread().getName());
 
 		try {
-			// Alert the user to see the interactive terminal 
-			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
-			// Start interactive terminal
-			sim.getTerm().startModeSelection();
-			// Initialize interactive terminal 
-			sim.getTerm().initializeTerminal();	
-			// Call Sim config editor in a thread
-			SwingUtilities.invokeLater(() -> {
-				new SimulationConfigEditor(SimulationConfig.instance(), null);
-			});
+			if (useGUI) {
+				// Alert the user to see the interactive terminal 
+				logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
+				// Initialize the simulation.
+				SimulationConfig.loadConfig();
+				// Start interactive terminal
+				sim.getTerm().startModeSelection();
+				// Call Sim config editor in a thread
+				SwingUtilities.invokeLater(() -> {
+					new SimulationConfigEditor(SimulationConfig.instance(), null);
+				});
+			} 
+			
+			else {
+				// Go headless
+				// Alert the user to see the interactive terminal 
+				logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
+				// Initialize the simulation.
+				SimulationConfig.loadConfig();
+				// Create serializable class 
+				Simulation.createNewSimulation(-1, true);
+				// Start interactive terminal
+				sim.getTerm().startModeSelection();
+				// Initialize interactive terminal 
+				sim.getTerm().initializeTerminal();	
+				// Start the simulation.
+				startSimulation(true);				
+				// Load the menu choice
+				sim.getTerm().loadTerminalMenu();	
+			}
+		
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			exitWithError("Could not create a new simulation, startup cannot continue", e);
 		}
 			
-		if (useGUI) {
 
-		} 
-		
-		else {
-			// Go headless
-
-			// Start the simulation.
-			startSimulation(true);				
-			// Load the menu choice
-			sim.getTerm().loadTerminalMenu();	
-		}
 
 //		logger.config("Done handleNewSimulation()");
 	}
