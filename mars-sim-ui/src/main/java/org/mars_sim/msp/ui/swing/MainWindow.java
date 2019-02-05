@@ -202,13 +202,14 @@ public class MainWindow extends JComponent {
 			@Override
 			protected JButton createActionComponent(Action a) {
 				JButton jb = super.createActionComponent(a);
-				jb.setOpaque(false);
+//				jb.setOpaque(false);
 				return jb;
 			}
 		};
 
-		BasicToolBarUI ui = new BasicToolBarUI();
-		unitToolbar.setUI(ui);
+//		BasicToolBarUI ui = new BasicToolBarUI();
+//		unitToolbar.setUI(ui);
+		
 		// unitToolbar.setOpaque(false);
 		// unitToolbar.setBackground(new Color(0,0,0,0));
 		unitToolbar.setBorder(new MarsPanelBorder());

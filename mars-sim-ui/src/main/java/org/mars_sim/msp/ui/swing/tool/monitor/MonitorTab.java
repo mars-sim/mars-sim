@@ -13,7 +13,9 @@ import java.util.List;
 import javax.swing.Icon;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
 import com.alee.laf.panel.WebPanel;
 
@@ -68,6 +70,10 @@ public abstract class MonitorTab extends WebPanel {
 			Object selected = it.next();
 			if (selected instanceof Unit)
 				desktop.openUnitWindow((Unit) selected, false);
+			else if (selected instanceof Mission) {
+				((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission((Mission) selected);
+				desktop.openToolWindow(MissionWindow.NAME);
+			}
 		}
 	}
 

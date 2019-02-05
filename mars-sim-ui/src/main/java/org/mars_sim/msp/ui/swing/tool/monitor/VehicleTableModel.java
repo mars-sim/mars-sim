@@ -394,6 +394,7 @@ extends UnitTableModel {
 			else if (source instanceof Integer) {
 				target = (Integer)source;
 				if (target >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
+					// if it's an item resource, quit
 					return;
 			}
 				

@@ -431,21 +431,21 @@ public class EatMeal extends Task implements Serializable {
 	 * @param eatingTime the amount of time (millisols) to eat.
 	 */
 	private void eatCookedMeal(double eatingTime) {
-
+		double dryMass = cookedMeal.getDryMass();
 		// Proportion of meal being eaten over this time period.
 //		double mealProportion = eatingTime / mealEatingDuration;
 		double proportion = person.getEatingSpeed() * eatingTime;
 		cumulativeProportion += proportion;
 
-		if (cumulativeProportion > cookedMeal.getDryMass()) {
-			double excess = cumulativeProportion - cookedMeal.getDryMass();
+		if (cumulativeProportion > dryMass) {
+			double excess = cumulativeProportion - dryMass;
 			cumulativeProportion = cumulativeProportion - excess;
 			proportion = proportion - excess;
 		}
 
 		// Food amount eaten over this period of time.
 //		double foodAmount = foodConsumptionRate * mealProportion;
-		double hungerRelieved = 1000 * proportion / foodConsumptionRate;
+		double hungerRelieved = 1000 * proportion / dryMass;
 				
 		// Note: once a person has eaten a bit of food,
 		// the hunger index should be reset to HUNGER_CEILING
@@ -469,7 +469,7 @@ public class EatMeal extends Task implements Serializable {
 		condition.setStress(newStress);
 
 		// Add caloric energy from meal.
-		double caloricEnergyFoodAmount = proportion * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
+		double caloricEnergyFoodAmount = proportion / dryMass * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
 		condition.addEnergy(caloricEnergyFoodAmount);
 
 	}
@@ -530,7 +530,7 @@ public class EatMeal extends Task implements Serializable {
 				condition.setHunger(currentHunger);
 
 				// Add caloric energy from the prserved food.
-				double caloricEnergyFoodAmount = proportion * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
+				double caloricEnergyFoodAmount = proportion / foodConsumptionRate * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
 				condition.addEnergy(caloricEnergyFoodAmount);
 
 			} else {
@@ -634,7 +634,7 @@ public class EatMeal extends Task implements Serializable {
 		}
 		
 		// dessert amount eaten over this period of time.
-		double hungerRelieved = 1000 * proportion / foodConsumptionRate;
+		double hungerRelieved = 1000 * proportion / dryMass;
 		
 		// Reduce person's stress over time from eating a prepared.
 		// This is in addition to normal stress reduction from eating task.
@@ -671,7 +671,7 @@ public class EatMeal extends Task implements Serializable {
 				condition.setHunger(currentHunger);
 				
 				// Add caloric energy from dessert.
-				double caloricEnergy = proportion * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
+				double caloricEnergy = proportion / dryMass * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
 				condition.addEnergy(caloricEnergy);
 				
 			} else {
@@ -899,7 +899,7 @@ public class EatMeal extends Task implements Serializable {
 			}
 			
 			// dessert amount eaten over this period of time.
-			double hungerRelieved = 1000 * proportion / foodConsumptionRate;
+			double hungerRelieved = 1000 * proportion / dessertConsumptionRate;
 			
 			Unit containerUnit = person.getTopContainerUnit();
 			
@@ -928,7 +928,7 @@ public class EatMeal extends Task implements Serializable {
 					condition.setHunger(currentHunger);
 					
 					// Add caloric energy from dessert.
-					double caloricEnergy = proportion * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
+					double caloricEnergy = proportion / dessertConsumptionRate * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
 					condition.addEnergy(caloricEnergy);
 				} else {
 					// Not enough dessert resource available to eat.

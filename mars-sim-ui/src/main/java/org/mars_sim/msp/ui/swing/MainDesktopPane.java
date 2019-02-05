@@ -537,9 +537,9 @@ public class MainDesktopPane extends JDesktopPane
 			if (window.isClosed()) {
 				if (!window.wasOpened()) {
 					UIConfig config = UIConfig.INSTANCE;
-					if (config.useUIDefault()) {
-						window.setLocation(getCenterLocation(window));
-					} else {
+//					if (config.useUIDefault()) {
+//						window.setLocation(getCenterLocation(window));
+//					} else {
 						if (config.isInternalWindowConfigured(toolName)) {
 							window.setLocation(config.getInternalWindowLocation(toolName));
 							if (window.isResizable()) {
@@ -552,7 +552,7 @@ public class MainDesktopPane extends JDesktopPane
 							else
 								window.setLocation(getRandomLocation(window));
 						}
-					}
+//					}
 					window.setWasOpened(true);
 				}
 
@@ -1048,8 +1048,8 @@ public class MainDesktopPane extends JDesktopPane
 
 		// Populate windows in grid=like starting position
 		// int w = desktop_size.width - f_size.width;
-		int rX = 5;
-		int rY = 10;
+		int rX = 0;
+		int rY = 0;
 		return new Point(rX, rY);
 	}
 

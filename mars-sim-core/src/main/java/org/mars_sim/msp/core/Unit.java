@@ -766,6 +766,8 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		earthClock = e;
 		unitManager = u;
 		missionManager = mm;
+		
+		// TODO: need to fire unit update upon loading
 	}
 	
 	/**
