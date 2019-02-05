@@ -305,7 +305,7 @@
 		</repair-parts-list>
 	</malfunction>
 
-	<!-- Problems with the rover's generator. -->
+	<!-- Problems with the generator. -->
 	<malfunction name="Generator Problems">
 		<severity value="50" />
 		<probability value="2.0" />
@@ -327,8 +327,8 @@
 		</repair-parts-list>
 	</malfunction>
 
-	<!-- Battery failure. -->
-	<malfunction name="Rover Battery Failure">
+	<!-- Rover Power failure. -->
+	<malfunction name="Rover Power Failure">
 		<severity value="40" />
 		<probability value="2.0" />
 		<repair-time value="50.0" />
@@ -347,14 +347,14 @@
 		</repair-parts-list>
 	</malfunction>
 
-	<!-- Rover Battery failure. -->
-	<malfunction name="Rover Battery Failure">
+	<!-- Power failure. -->
+	<malfunction name="Power Failure">
 		<severity value="40" />
 		<probability value="3.0" />
 		<repair-time value="50.0" />
 		<system-list>
-			<system name="vehicle" />
 			<system name="power storage" />
+			<system name="power generation" />
 		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="3.0" />
@@ -369,7 +369,7 @@
 	</malfunction>
 	
 		<!-- Battery failure. -->
-	<malfunction name="EVA Battery Failure">
+	<malfunction name="EVA Power Failure">
 		<severity value="40" />
 		<probability value="3.0" />
 		<repair-time value="50.0" />

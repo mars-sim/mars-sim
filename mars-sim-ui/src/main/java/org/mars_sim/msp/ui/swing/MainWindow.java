@@ -85,6 +85,7 @@ public class MainWindow extends JComponent {
 	private static Thread saveSimThread;
 
 	private Timer delayTimer;
+	private Timer delayTimer1;
 	private Timer autosaveTimer;
 	private static javax.swing.Timer earthTimer = null;
 	private static int AUTOSAVE_EVERY_X_MINUTE = 15;
@@ -152,6 +153,8 @@ public class MainWindow extends JComponent {
 		startAutosaveTimer();
 		// Open all initial windows.
 		desktop.openInitialWindows();
+		// Set up timers for caching the settlemnet windows
+		setupSettlementWindowTimer();
 	}
 	
 	public static void createSettlementWindows() {
@@ -274,15 +277,41 @@ public class MainWindow extends JComponent {
 	}
 
 	/**
-	 * Set up timers
+	 * Set up the timer for status bar
 	 */
 	public void setupDelayTimer() {
 		if (earthTimer == null) {
 			delayTimer = new Timer();
-			delayTimer.schedule(new DelayTimer(), 2000);
+			delayTimer.schedule(new DelayTimer(), 300);
 		}
 	}
 
+	/**
+	 * Defines the delay timer class
+	 */
+	class DelayTimer extends TimerTask {
+		public void run() {
+			startEarthTimer();
+		}
+	}
+	
+	/**
+	 * Set up the timer for caching settlement windows
+	 */
+	public void setupSettlementWindowTimer() {
+		delayTimer1 = new Timer();
+		delayTimer1.schedule(new DelayTimer2(), 2000);
+	}
+	
+	/**
+	 * Defines the delay timer class
+	 */
+	class DelayTimer2 extends TimerTask {
+		public void run() {
+			createSettlementWindows();
+		}
+	}
+	
 	public JPanel getBottomPane() {
 		return bottomPane;
 	}
@@ -344,16 +373,6 @@ public class MainWindow extends JComponent {
 		});
 
 		earthTimer.start();
-	}
-
-	/**
-	 * Defines the delay timer class
-	 */
-	class DelayTimer extends TimerTask {
-		public void run() {
-			createSettlementWindows();
-			startEarthTimer();
-		}
 	}
 
 	/**

@@ -839,8 +839,10 @@ public class MissionManager implements Serializable {
 						weight = 2D;
 					else if (role == RoleType.MISSION_SPECIALIST)
 						weight = 1.5;
-					
-					mp.setPercentComplete(percent + weight * PERCENT_PER_SCORE);
+					double totalPercent = percent + weight * PERCENT_PER_SCORE;
+					if (totalPercent > 100)
+						totalPercent = 100;
+					mp.setPercentComplete(totalPercent);
 					double score = mp.getScore();
 					mp.setScore(score + weight * newScore);
 					logger.info(mp.getMission().getStartingMember() + "'s " + mp.getMission().getDescription() 
