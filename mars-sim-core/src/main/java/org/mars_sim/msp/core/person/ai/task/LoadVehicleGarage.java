@@ -405,19 +405,22 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			sInv.retrieveUnit(vehicle);
 		}
 
-		// Load resources
-		try {
-			amountLoading = loadResources(amountLoading);
-		} catch (Exception e) {
-			// logger.severe(e.getMessage());
-			LogConsolidated.log(Level.WARNING, 0, sourceName + "::loadingPhase", "Error in loadResources()" + e.getMessage());
-		}
-
 		// Load equipment
 		if (amountLoading > 0D) {
 			amountLoading = loadEquipment(amountLoading);
 		}
 		
+		// Load resources
+		try {
+			if (amountLoading > 0D) {
+				amountLoading = loadResources(amountLoading);
+			}
+		} catch (Exception e) {
+			// logger.severe(e.getMessage());
+			LogConsolidated.log(Level.WARNING, 0, sourceName + "::loadingPhase", "Error in loadResources()" + e.getMessage());
+		}
+
+
 		// Put rover back into settlement.
 		if (roverInSettlement) {
 			sInv.storeUnit(vehicle);

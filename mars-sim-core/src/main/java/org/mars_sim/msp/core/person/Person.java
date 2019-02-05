@@ -111,6 +111,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private boolean isBuried;
 	/** True if person is declared dead. */
 	private boolean declaredDead;
+	
 	/** The age of a person */
 	private int age;
 	/** The cache for sol. */
@@ -124,6 +125,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The cache for msol1 */
 	private double msolCache = -1D;
 	// private int[] emotional_states;
+	
+	/** The eating speed of the person [kg/millisol]. */
+	private double eatingSpeed = Math.max(.05, .07 + .07/5D * RandomUtil.getGaussianDouble());
 	/** The height of the person (in cm). */
 	private double height;
 	/** The height of the person (in kg). */
@@ -1853,6 +1857,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 		
 		return sum/cumulativeWeight; 
+	}
+	
+	public double getEatingSpeed() {
+		return eatingSpeed;
 	}
 	
 	/**

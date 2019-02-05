@@ -153,6 +153,8 @@ public class MainWindow extends JComponent {
 		startAutosaveTimer();
 		// Open all initial windows.
 		desktop.openInitialWindows();
+		// Cache each settlement unit window
+		desktop.cacheSettlementUnitWindow();
 	}
 
 	/**

@@ -89,6 +89,8 @@ public class EatMeal extends Task implements Serializable {
 	private static double dessertConsumptionRate;
 
 	// Data members
+	/** how much eaten [in kg]. */ 
+	private double cumulativeProportion = 0;
 	private double totalMealEatingTime = 0D;
 	private double mealEatingDuration = 0D;
 	private double totalDessertEatingTime = 0D;
@@ -118,7 +120,9 @@ public class EatMeal extends Task implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public EatMeal(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, true, 20D + RandomUtil.getRandomDouble(10D));
+		super(NAME, person, false, false, STRESS_MODIFIER, true, 20D 
+				+ RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(5D));
+		// 20 milisols ~ 30 mins
 
 		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
@@ -429,8 +433,17 @@ public class EatMeal extends Task implements Serializable {
 	private void eatCookedMeal(double eatingTime) {
 
 		// Proportion of meal being eaten over this time period.
-		double mealProportion = eatingTime / mealEatingDuration;
+//		double mealProportion = eatingTime / mealEatingDuration;
+		double proportion = person.getEatingSpeed() * eatingTime;
+		cumulativeProportion += proportion;
 
+		if (cumulativeProportion > cookedMeal.getDryMass())
+			proportion = cumulativeProportion - cookedMeal.getDryMass();
+		
+		// Food amount eaten over this period of time.
+//		double foodAmount = foodConsumptionRate * mealProportion;
+		double hungerRelieved = 1000 * proportion / foodConsumptionRate;
+				
 		// Note: once a person has eaten a bit of food,
 		// the hunger index should be reset to HUNGER_CEILING
 		if (currentHunger > HUNGER_CEILING)
@@ -439,7 +452,7 @@ public class EatMeal extends Task implements Serializable {
 		currentHunger = condition.getHunger();
 		// Reduce person's hunger by proportion of meal eaten.
 		// Entire meal will reduce person's hunger to 0.
-		currentHunger -= (startingHunger * mealProportion);
+		currentHunger -= (startingHunger * hungerRelieved);
 		if (currentHunger < 0D) {
 			currentHunger = 0D;
 		}
@@ -453,7 +466,7 @@ public class EatMeal extends Task implements Serializable {
 		condition.setStress(newStress);
 
 		// Add caloric energy from meal.
-		double caloricEnergyFoodAmount = cookedMeal.getDryMass() * mealProportion;
+		double caloricEnergyFoodAmount = proportion * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
 		condition.addEnergy(caloricEnergyFoodAmount);
 
 	}
@@ -470,10 +483,16 @@ public class EatMeal extends Task implements Serializable {
 		// double totalFoodAmount = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
 
 		// Proportion of meal being eaten over this time period.
-		double mealProportion = eatingTime / mealEatingDuration;
+//		double mealProportion = eatingTime / mealEatingDuration;
+		double proportion = person.getEatingSpeed() * eatingTime;
+		cumulativeProportion += proportion;
 
+		if (cumulativeProportion > foodConsumptionRate)
+			proportion = cumulativeProportion - foodConsumptionRate;
+		
 		// Food amount eaten over this period of time.
-		double foodAmount = foodConsumptionRate * mealProportion;
+//		double foodAmount = foodConsumptionRate * mealProportion;
+		double hungerRelieved = 1000 * proportion / foodConsumptionRate;
 		
 		Unit container = person.getContainerUnit();
 		if (person.isInside()) {//!(container instanceof MarsSurface)) {
@@ -481,13 +500,13 @@ public class EatMeal extends Task implements Serializable {
 
 			// Take preserved food from inventory if it is available.
 			boolean haveFood = false;
-			if (foodAmount > MIN)
-				haveFood = Storage.retrieveAnResource(foodAmount, ResourceUtil.foodID, inv, true);
+			if (proportion > MIN)
+				haveFood = Storage.retrieveAnResource(proportion, ResourceUtil.foodID, inv, true);
 			
 			if (haveFood) {
-				LogConsolidated.log(Level.FINE, 1000, sourceName,
+				LogConsolidated.log(Level.INFO, 1000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person 
-						+ " just ate " + foodAmount + " kg of preserved food.");
+						+ " just ate " + proportion + " kg of preserved food.");
 				// Consume preserved food.
 				// Note: once a person has eaten a bit of food,
 				// the hunger index should be reset to HUNGER_CEILING
@@ -497,15 +516,16 @@ public class EatMeal extends Task implements Serializable {
 				currentHunger = condition.getHunger();
 				// Note : Reduce person's hunger by proportion of meal eaten.
 				// Entire meal will reduce person's hunger to 0.
-				currentHunger -= (startingHunger * mealProportion);
+				currentHunger -= (startingHunger * hungerRelieved);
 				if (currentHunger < 0D) {
 					currentHunger = 0D;
 				}
 
 				condition.setHunger(currentHunger);
 
-				// Add caloric energy from meal.
-				condition.addEnergy(foodAmount);
+				// Add caloric energy from the prserved food.
+				double caloricEnergyFoodAmount = proportion * PhysicalCondition.FOOD_COMPOSITION_ENERGY_RATIO;
+				condition.addEnergy(caloricEnergyFoodAmount);
 
 			} else {
 				// Not enough food available to eat.
@@ -604,29 +624,47 @@ public class EatMeal extends Task implements Serializable {
 		double mealStressModifier = DESSERT_STRESS_MODIFIER * (nameOfDessert.getQuality() + 1D);
 		double newStress = condition.getStress() - (mealStressModifier * eatingTime);
 		condition.setStress(newStress);
-
-		double dryMass = nameOfDessert.getDryMass();
-		// Consume water
-		consumeDessertWater(dryMass);
-
-		// Note: once a person has eaten a bit of food,
-		// the hunger index should be reset to HUNGER_CEILING
-		if (currentHunger > HUNGER_CEILING)
-			currentHunger = HUNGER_CEILING;
-		condition.setHunger(currentHunger);
-		currentHunger = condition.getHunger();
-		// Reduce person's hunger by proportion of meal eaten.
-		// Entire meal will reduce person's hunger to 0.
-		currentHunger -= (startingHunger * dessertProportion);
-		if (currentHunger < 0D) {
-			currentHunger = 0D;
-		}
-
-		condition.setHunger(currentHunger);
 		
-		// Add caloric energy from dessert.
-		double caloricEnergyFoodAmount = dryMass * dessertProportion;
-		condition.addEnergy(caloricEnergyFoodAmount);
+		// Dessert amount eaten over this period of time.
+		double dessertAmount = dessertConsumptionRate * dessertProportion;
+		Unit containerUnit = person.getTopContainerUnit();
+		
+		if (containerUnit != null) {
+			Inventory inv = containerUnit.getInventory();
+			
+			// Take dessert resource from inventory if it is available.
+			boolean hasDessert = false;
+			if (dessertAmount > MIN) {
+				hasDessert = Storage.retrieveAnResource(dessertAmount, unpreparedDessertAR, inv, true);
+			}
+			if (hasDessert) {
+				// Obtain the dry mass of the dessert
+				double dryMass = nameOfDessert.getDryMass();
+				// Consume water
+				consumeDessertWater(dryMass);
+				// Consume unpreserved dessert.
+				if (currentHunger > HUNGER_CEILING)
+					currentHunger = HUNGER_CEILING;		
+				condition.setHunger(currentHunger);
+				currentHunger = condition.getHunger();
+				// Note : Reduce person's hunger by proportion of dessert eaten.
+				// Entire dessert will reduce person's hunger to 0.
+				currentHunger -= (startingHunger * dessertProportion);
+				if (currentHunger < 0D) {
+					currentHunger = 0D;
+				}
+				condition.setHunger(currentHunger);
+				
+				// Add caloric energy from dessert.
+				double caloricEnergyFoodAmount = dryMass * dessertProportion;
+				condition.addEnergy(caloricEnergyFoodAmount);
+				
+			} else {
+				// Not enough dessert resource available to eat.
+//				result = false;
+			}
+
+		}
 
 	}
 
@@ -838,26 +876,39 @@ public class EatMeal extends Task implements Serializable {
 			// Dessert amount eaten over this period of time.
 			double dessertAmount = dessertConsumptionRate * dessertProportion;
 			Unit containerUnit = person.getTopContainerUnit();
+			
 			if (containerUnit != null) {
 				Inventory inv = containerUnit.getInventory();
+				
 				// Take dessert resource from inventory if it is available.
 				boolean hasDessert = false;
 				if (dessertAmount > MIN) {
 					hasDessert = Storage.retrieveAnResource(dessertAmount, unpreparedDessertAR, inv, true);
 				}
 				if (hasDessert) {
+					// Obtain the dry mass of the dessert
+					double dryMass = PreparingDessert.getDryMass(PreparingDessert.convertAR2String(unpreparedDessertAR));
+					// Consume water inside the dessert
+					consumeDessertWater(dryMass);
 					// Consume unpreserved dessert.
-
+					if (currentHunger > HUNGER_CEILING)
+						currentHunger = HUNGER_CEILING;		
+					condition.setHunger(currentHunger);
+					currentHunger = condition.getHunger();
+					// Note : Reduce person's hunger by proportion of dessert eaten.
+					// Entire dessert will reduce person's hunger to 0.
+					currentHunger -= (startingHunger * dessertProportion);
+					if (currentHunger < 0D) {
+						currentHunger = 0D;
+					}
+					condition.setHunger(currentHunger);
+					
 					// Add caloric energy from dessert.
 					condition.addEnergy(dessertAmount);
 				} else {
 					// Not enough dessert resource available to eat.
 					result = false;
 				}
-
-				double dryMass = PreparingDessert.getDryMass(PreparingDessert.convertAR2String(unpreparedDessertAR));
-				// Consume water inside the dessert
-				consumeDessertWater(dryMass);
 
 			}
 			// else {

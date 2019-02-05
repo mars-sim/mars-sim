@@ -167,6 +167,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		TableStyle.setTableStyle(resourcesTable);
 		TableStyle.setTableStyle(equipmentTable);
         equipmentTable.repaint();
+        resourcesTable.repaint();
     }
 
     /**
@@ -279,7 +280,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 //            }
 //            fireTableRowsInserted(rowCount, rowCount);
 //        }      
-        
+//        
         public void update() {
         	try {
         		List<Resource> newResourceKeys = new ArrayList<Resource>();
@@ -306,7 +307,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
                 Collections.sort(newResourceKeys);
 
                 counts++;
-        		if (counts % 10 == 10 && !resources.equals(newResources)) {
+        		if (counts % 10 == 10 || !resources.equals(newResources)) {
             		if (getRowCount() == newResources.size()) {
             			resources = newResources;
             			capacity = newCapacity;

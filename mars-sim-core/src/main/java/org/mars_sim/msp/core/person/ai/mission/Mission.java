@@ -100,7 +100,7 @@ public abstract class Mission implements Serializable {
 	/**
 	 * The marginal factor for the amount of food to be brought during a mission.
 	 */
-	public final static double FOOD_MARGIN = 3.0;
+	public final static double FOOD_MARGIN = 8.0;
 	/**
 	 * The marginal factor for the amount of dessert to be brought during a mission.
 	 */

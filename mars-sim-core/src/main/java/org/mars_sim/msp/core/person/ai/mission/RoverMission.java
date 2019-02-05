@@ -725,17 +725,17 @@ public abstract class RoverMission extends VehicleMission {
 		int crewNum = getPeopleNumber();
 
 		// Determine life support supplies needed for trip.
-		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;// * Mission.OXYGEN_MARGIN;
+		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum * Mission.OXYGEN_MARGIN;
 		if (useBuffer)
 			oxygenAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		result.put(oxygenID, oxygenAmount);
 
-		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;// * Mission.WATER_MARGIN;
+		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum * Mission.WATER_MARGIN;
 		if (useBuffer)
 			waterAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		result.put(waterID, waterAmount);
 
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;// * Mission.FOOD_MARGIN; 
+		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum * Mission.FOOD_MARGIN; 
 		if (useBuffer)
 			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		result.put(foodID, foodAmount);
