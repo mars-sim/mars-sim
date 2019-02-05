@@ -39,7 +39,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
@@ -79,9 +78,9 @@ public class MainWindow extends JComponent {
 
 //	private TransportWizard transportWizard;
 //	private ConstructionWizard constructionWizard;
-	private BuildingManager mgr; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
+//	private BuildingManager mgr; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
 
-	private static Thread newSimThread;
+//	private static Thread newSimThread;
 	private static Thread loadSimThread;
 	private static Thread saveSimThread;
 
@@ -296,8 +295,8 @@ public class MainWindow extends JComponent {
 			@Override
 			public void run() {
 				autosaveTimer.cancel();
-				saveSimulation(true, true);
-				startAutosaveTimer();
+//				saveSimulation(true, true);
+//				startAutosaveTimer();
 			}
 		};
 		autosaveTimer = new Timer();
@@ -388,13 +387,11 @@ public class MainWindow extends JComponent {
 	 * Load a previously saved simulation.
 	 */
 	public static void loadSimulation(boolean autosave) {
-		final boolean ans = autosave;
-
 		if ((loadSimThread == null) || !loadSimThread.isAlive()) {
 			loadSimThread = new Thread(Msg.getString("MainWindow.thread.loadSim")) { //$NON-NLS-1$
 				@Override
 				public void run() {
-					loadSimulationProcess(ans);
+					loadSimulationProcess(autosave);
 				}
 			};
 			loadSimThread.start();
@@ -482,24 +479,23 @@ public class MainWindow extends JComponent {
 		}
 	}
 
-	/**
-	 * Create a new simulation.
-	 */
-	public void newSimulation() {
-		if ((newSimThread == null) || !newSimThread.isAlive()) {
-			newSimThread = new Thread(Msg.getString("MainWindow.thread.newSim")) { //$NON-NLS-1$
-				@Override
-				public void run() {
-					newSimulationProcess();
-					// Simulation.instance().runStartTask(false);
-				}
-			};
-			newSimThread.start();
-		} else {
-			newSimThread.interrupt();
-		}
-
-	}
+//	/**
+//	 * Create a new simulation.
+//	 */
+//	public void newSimulation() {
+//		if ((newSimThread == null) || !newSimThread.isAlive()) {
+//			newSimThread = new Thread(Msg.getString("MainWindow.thread.newSim")) { //$NON-NLS-1$
+//				@Override
+//				public void run() {
+//					newSimulationProcess();
+//					// Simulation.instance().runStartTask(false);
+//				}
+//			};
+//			newSimThread.start();
+//		} else {
+//			newSimThread.interrupt();
+//		}
+//	}
 
 	/**
 	 * Performs the process of creating a new simulation.
@@ -578,6 +574,7 @@ public class MainWindow extends JComponent {
 	 *            Should the user be allowed to override location?
 	 */
 	public void saveSimulation(boolean loadingDefault, final boolean isAutosave) {
+		
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
 				@Override
@@ -594,7 +591,7 @@ public class MainWindow extends JComponent {
 	/**
 	 * Performs the process of saving a simulation.
 	 */
-	private void saveSimulationProcess(boolean loadingDefault, boolean isAutosave) {
+	private void saveSimulationProcess(boolean loadingDefault, boolean isAutosave) {	
 		File fileLocn = null;
 
 		if (!loadingDefault) {
@@ -620,6 +617,9 @@ public class MainWindow extends JComponent {
 				masterClock.setSaveSim(Simulation.SAVE_AS, fileLocn);
 		}
 
+		// Save the current main window ui config
+//		UIConfig.INSTANCE.saveFile(this);
+		
 		while (masterClock.isSavingSimulation()) {
 			try {
 				Thread.sleep(100L);
@@ -627,6 +627,7 @@ public class MainWindow extends JComponent {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.sleepInterrupt"), e); //$NON-NLS-1$
 			}
 		}
+		
 		desktop.disposeAnnouncementWindow();
 	}
 
@@ -675,16 +676,16 @@ public class MainWindow extends JComponent {
 
 		// Save the simulation.
 //		Simulation sim = Simulation.instance();
-		try {
-			masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
-			e.printStackTrace(System.err);
-		}
+//		try {
+//			masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
+//		} catch (Exception e) {
+//			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
+//			e.printStackTrace(System.err);
+//		}
 
 		masterClock.exitProgram();
-
-		earthTimer = null;
+		
+		destroy();
 	}
 
 	/**
@@ -814,8 +815,8 @@ public class MainWindow extends JComponent {
 		desktop.destroy();
 		desktop = null;
 		mainWindowMenu = null;
-		mgr = null;
-		newSimThread = null;
+//		mgr = null;
+//		newSimThread = null;
 		loadSimThread = null;
 		saveSimThread = null;
 		delayTimer = null;

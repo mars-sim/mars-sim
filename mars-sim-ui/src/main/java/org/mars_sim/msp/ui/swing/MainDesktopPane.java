@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -166,11 +167,11 @@ public class MainDesktopPane extends JDesktopPane
 		if (!soundPlayer.isSoundDisabled())
 			soundPlayer.playRandomMusicTrack();
 		// Prepare unit windows.
-		unitWindows = new ArrayList<UnitWindow>();
+		unitWindows = new CopyOnWriteArrayList<UnitWindow>();
 		// Add clock listener
 		sim.getMasterClock().addClockListener(this);
 		// Prepare tool windows.
-		toolWindows = new ArrayList<ToolWindow>();
+		toolWindows = new CopyOnWriteArrayList<ToolWindow>();
 		// Instantiate BrowserJFX
 //		browserJFX = new BrowserJFX(this);
 		// Create update thread.
