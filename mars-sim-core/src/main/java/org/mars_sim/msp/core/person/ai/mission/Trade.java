@@ -66,7 +66,7 @@ public class Trade extends RoverMission implements Serializable {
 	final public static MissionPhase TRADE_EMBARKING = new MissionPhase(Msg.getString("Mission.phase.tradeEmbarking")); //$NON-NLS-1$
 
 	// Static members
-	public static final double MAX_STARTING_PROBABILITY = 10D;
+	public static final double MAX_STARTING_PROBABILITY = 100D;
 
 	// Static cache for holding trade profit info.
 	public static final Map<Settlement, TradeProfitInfo> TRADE_PROFIT_CACHE = new HashMap<Settlement, TradeProfitInfo>();

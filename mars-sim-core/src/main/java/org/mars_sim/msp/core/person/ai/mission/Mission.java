@@ -78,7 +78,8 @@ public abstract class Mission implements Serializable {
 	public static final String NO_MEMBERS_ON_MISSION = "No members available for mission.";
 	public static final String MISSION_NOT_APPROVED = "Mission not approved.";
 	public static final String TARGET_VEHICLE_NOT_FOUND = "Target vehicle not found.";
-	
+	public static final String LUV_NOT_AVAILABLE = "Light utility vehicle not available.";
+	public static final String LUV_ATTACHMENT_PARTS_NOT_LOADABLE = "Light utility vehicle and/or its attachment parts could not be loaded.";
 
 	public static final String MISSION = " mission";
 	public static final String[] EXPRESSIONS = new String[] {

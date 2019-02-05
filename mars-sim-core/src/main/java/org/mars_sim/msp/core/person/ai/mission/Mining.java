@@ -145,7 +145,7 @@ public class Mining extends RoverMission {
 				// Reserve light utility vehicle.
 				luv = reserveLightUtilityVehicle();
 				if (luv == null)
-					endMission("Light utility vehicle not available.");
+					endMission(LUV_NOT_AVAILABLE);
 			}
 		}
 
@@ -383,8 +383,8 @@ public class Mining extends RoverMission {
 				settlementInv.retrieveItemResources(ItemResourceUtil.backhoeID, 1);
 				luvInv.storeItemResources(ItemResourceUtil.backhoeID, 1);
 			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Error loading light utility vehicle and attachment parts.");
-				endMission("Light utility vehicle and attachment parts could not be loaded.");
+				logger.log(Level.SEVERE, "Light Utility Vehicle and/or its attachment parts could not be loaded.");
+				endMission(LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
 			}
 		}
 	}
@@ -1015,12 +1015,11 @@ public class Mining extends RoverMission {
 		result.put(waterID, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-//		if (result.containsKey(foodID)) {
+		if (result.containsKey(foodID)) {
 			foodAmount += (Double) result.get(foodID);
-//		}
+		}
 		result.put(foodID, foodAmount);
-		System.out.println("Mining - food : " + foodAmount);
-		
+
 		// Add Soymilk AmountResource dessert1 =
 //		ResourceUtil.findAmountResource("Soymilk"); 
 //		double dessert1Amount = PhysicalCondition.getFoodConsumptionRate() / 6D timeSols * crewNum; 

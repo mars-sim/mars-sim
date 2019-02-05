@@ -62,8 +62,8 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 			int numThisMission = missionManager.numParticularMissions(NAME, settlement);
 	
-    		// Check for # of embarking missions.
-    		if (Math.max(1, settlement.getNumCitizens()) / 8.0 < numEmbarked + numThisMission) {
+	   		// Check for # of embarking missions.
+    		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
     			return 0;
     		}	
     		

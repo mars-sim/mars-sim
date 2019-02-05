@@ -652,7 +652,7 @@ public class EatMeal extends Task implements Serializable {
 			// Take dessert resource from inventory if it is available.
 			boolean hasDessert = false;
 			if (proportion > MIN) {
-				hasDessert = Storage.retrieveAnResource(proportion, unpreparedDessertAR, inv, true);
+				hasDessert = Storage.retrieveAnResource(proportion, nameOfDessert.getName(), inv, true);
 			}
 			if (hasDessert) {
 				// Consume water

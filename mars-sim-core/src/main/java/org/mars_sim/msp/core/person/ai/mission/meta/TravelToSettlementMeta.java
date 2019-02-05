@@ -133,9 +133,9 @@ public class TravelToSettlementMeta implements MetaMission {
 		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(NAME, settlement);
 
    		// Check for # of embarking missions.
-		if (Math.max(1, settlement.getNumCitizens()) / 8.0 < numEmbarked + numThisMission) {
+		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
 			return 0;
-		}		
+		}			
 		
 		else if (numThisMission > 1)
 			return 0;	
