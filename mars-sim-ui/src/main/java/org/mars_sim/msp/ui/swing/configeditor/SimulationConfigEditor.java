@@ -254,6 +254,8 @@ public class SimulationConfigEditor {
 					closeWindow();
 					// Create main window
 					new MainWindow(true);
+					// Create the settlement unit windows ahead of time
+//					MainWindow.createSettlementWindows();
 //					logger.config("Done SimulationConfigEditor()");
 				}
 			}

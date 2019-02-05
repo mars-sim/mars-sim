@@ -309,14 +309,12 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
                 counts++;
         		if (counts % 10 == 10 || !resources.equals(newResources)) {
             		if (getRowCount() == newResources.size()) {
+                   		counts = 0;
             			resources = newResources;
             			capacity = newCapacity;
             			keys = newResourceKeys;
-            			if (counts % 10 == 10) {
-                   			counts = 0;
-            				fireTableDataChanged();
+            			fireTableDataChanged();
 //                			((AbstractTableModel)this).fireTableCellUpdated(counts, counts);
-            			}
             		}
             		else {
                			counts = 0;

@@ -85,7 +85,7 @@ public class MainWindow extends JComponent {
 	private static Thread loadSimThread;
 	private static Thread saveSimThread;
 
-	private Timer delayLaunchTimer;
+	private Timer delayTimer;
 	private Timer autosaveTimer;
 	private static javax.swing.Timer earthTimer = null;
 	private static int AUTOSAVE_EVERY_X_MINUTE = 15;
@@ -148,11 +148,14 @@ public class MainWindow extends JComponent {
 		// Initialize UI elements for the frame
 		init();
 		// Set up timers for use on the status bar
-		setupTimers();
+		setupDelayTimer();
 		// Add autosave timer
 		startAutosaveTimer();
 		// Open all initial windows.
 		desktop.openInitialWindows();
+	}
+	
+	public static void createSettlementWindows() {
 		// Cache each settlement unit window
 		desktop.cacheSettlementUnitWindow();
 	}
@@ -274,14 +277,10 @@ public class MainWindow extends JComponent {
 	/**
 	 * Set up timers
 	 */
-	public void setupTimers() {
-		// Use delayLaunchTimer to launch earthTime
+	public void setupDelayTimer() {
 		if (earthTimer == null) {
-			delayLaunchTimer = new Timer();
-			int millisec = 500;
-			// Note: this delayLaunchTimer is non-repeating
-			// thus period is N/A
-			delayLaunchTimer.schedule(new StatusTimer(), millisec);
+			delayTimer = new Timer();
+			delayTimer.schedule(new DelayTimer(), 2000);
 		}
 	}
 
@@ -349,10 +348,11 @@ public class MainWindow extends JComponent {
 	}
 
 	/**
-	 * Defines the StatusBar class for running earth timer
+	 * Defines the delay timer class
 	 */
-	class StatusTimer extends TimerTask { // (final String t) {
+	class DelayTimer extends TimerTask {
 		public void run() {
+			createSettlementWindows();
 			startEarthTimer();
 		}
 	}
@@ -818,7 +818,7 @@ public class MainWindow extends JComponent {
 		newSimThread = null;
 		loadSimThread = null;
 		saveSimThread = null;
-		delayLaunchTimer = null;
+		delayTimer = null;
 		autosaveTimer = null;
 		earthTimer = null;
 		statusBar = null;

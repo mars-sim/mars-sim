@@ -257,7 +257,7 @@ public class MarsProject {
 //			logger.config("useGUI is " + useGUI);
 			if (useGUI) {
 				// Create main window
-				new MainWindow(true);
+				new MainWindow(false);
 			} 
 			
 			else {
@@ -316,7 +316,8 @@ public class MarsProject {
 //			logger.config("useGUI is " + useGUI);
 			if (useGUI) {
 				// Create main window
-				new MainWindow(true);
+				new MainWindow(false);
+
 			} 
 			
 			else {

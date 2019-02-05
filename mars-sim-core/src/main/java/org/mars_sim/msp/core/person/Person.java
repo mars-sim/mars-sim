@@ -127,7 +127,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	// private int[] emotional_states;
 	
 	/** The eating speed of the person [kg/millisol]. */
-	private double eatingSpeed = Math.max(.05, .07 + .07/5D * RandomUtil.getGaussianDouble());
+	private double eatingSpeed = Math.max(.075, .1 + .1/5D * RandomUtil.getGaussianDouble());
 	/** The height of the person (in cm). */
 	private double height;
 	/** The height of the person (in kg). */
