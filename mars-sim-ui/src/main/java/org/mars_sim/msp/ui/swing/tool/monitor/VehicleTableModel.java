@@ -221,12 +221,20 @@ extends UnitTableModel {
 
 				case WATER : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.WATER)));
-					result = resourceMap.get(waterID);
+					double value = resourceMap.get(waterID);
+					if (value == 0)
+						result = "--";
+					else
+						result = value;
 				} break;
 
 				case FOOD : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.FOOD)));
-					result= resourceMap.get(foodID);
+					double value = resourceMap.get(foodID);
+					if (value == 0)
+						result = "--";
+					else
+						result = value;
 				} break;
 
 				case DESSERT : {
@@ -246,23 +254,38 @@ extends UnitTableModel {
 		    	        	}
 		    			}
 		    		}
-				    result = Double.valueOf(sum);
-
+		    		double value = Double.valueOf(sum);
+					if (value == 0)
+						result = "--";
+					else
+						result = value;
 				} break;
 
 				case OXYGEN : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.OXYGEN)));
-					result = resourceMap.get(oxygenID);
+					double value = resourceMap.get(oxygenID);
+					if (value == 0)
+						result = "--";
+					else
+						result = value;
 				} break;
 
 				case METHANE : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("methane")));
-					result = resourceMap.get(methaneID);
+					double value = resourceMap.get(methaneID);
+					if (value == 0)
+						result = "--";
+					else
+						result = value;
 				} break;
 
 				case ROCK_SAMPLES : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("rock samples")));
-					result = resourceMap.get(rockSamplesID);
+					double value = resourceMap.get(rockSamplesID);
+					if (value == 0)
+						result = "--";
+					else
+						result = value;
 				} break;
 
 				case SPEED : {

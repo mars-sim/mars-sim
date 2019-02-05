@@ -407,7 +407,8 @@ public class OGGSoundClip {
 		}
 
 		playerThread = null;
-		outputLine.drain();
+		if (outputLine != null) 
+			outputLine.drain();
 	}
 
 	/**

@@ -19,6 +19,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +33,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.plaf.basic.BasicToolBarUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars_sim.msp.core.Msg;
@@ -110,6 +110,8 @@ public class MainWindow extends JComponent {
 
 	// private boolean cleanUI;
 	private boolean useDefault;
+	
+	private boolean keepSleeping;
 
 	private String statusText;
 	
@@ -150,7 +152,7 @@ public class MainWindow extends JComponent {
 		// Set up timers for use on the status bar
 		setupDelayTimer();
 		// Add autosave timer
-		startAutosaveTimer();
+//		startAutosaveTimer();
 		// Open all initial windows.
 		desktop.openInitialWindows();
 		// Set up timers for caching the settlemnet windows
@@ -317,26 +319,26 @@ public class MainWindow extends JComponent {
 		return bottomPane;
 	}
 
-	/**
-	 * Start the auto save timer
-	 */
-	public void startAutosaveTimer() {
-		TimerTask timerTask = new TimerTask() {
-			@Override
-			public void run() {
-				autosaveTimer.cancel();
-//				saveSimulation(true, true);
-//				startAutosaveTimer();
-			}
-		};
-		autosaveTimer = new Timer();
-		autosaveTimer.schedule(timerTask, 1000 * 60 * AUTOSAVE_EVERY_X_MINUTE);
-	}
+//	/**
+//	 * Start the auto save timer
+//	 */
+//	public void startAutosaveTimer() {
+//		TimerTask timerTask = new TimerTask() {
+//			@Override
+//			public void run() {
+//				autosaveTimer.cancel();
+////				saveSimulation(true, true);
+////				startAutosaveTimer();
+//			}
+//		};
+//		autosaveTimer = new Timer();
+//		autosaveTimer.schedule(timerTask, 1000 * 60 * AUTOSAVE_EVERY_X_MINUTE);
+//	}
 
 	/**
 	 * Start the earth timer
 	 */
-	public static void startEarthTimer() {
+	public void startEarthTimer() {
 
 		earthTimer = new javax.swing.Timer(TIME_DELAY, new ActionListener() {
 			String t = null;
@@ -370,6 +372,13 @@ public class MainWindow extends JComponent {
 				if (memUsed > memUsedCache * 1.1 || memUsed < memUsedCache * 0.9)
 					memUsedLabel.setText("Used Memory : " + memUsed + " MB");
 				memUsedCache = memUsed;
+				
+//				// Check on whether autosave is due
+//				if (masterClock.getAutosave()) {
+//					// Trigger an autosave instance
+//					saveSimulation(true, true);
+//					masterClock.setAutosave(false);
+//				}
 			}
 		});
 
@@ -603,8 +612,11 @@ public class MainWindow extends JComponent {
 				}
 			};
 			saveSimThread.start();
-		} else {
+		} 
+		
+		else {
 			saveSimThread.interrupt();
+			keepSleeping = false;
 		}
 	}
 
@@ -612,45 +624,163 @@ public class MainWindow extends JComponent {
 	 * Performs the process of saving a simulation.
 	 */
 	private void saveSimulationProcess(boolean loadingDefault, boolean isAutosave) {	
-		File fileLocn = null;
-
-		if (!loadingDefault) {
-			JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
-			chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
-			if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-				fileLocn = chooser.getSelectedFile();
-			} else {
-				return;
-			}
+		if (masterClock.isPaused()) {
+			logger.config("Cannot save when the simulation is on pause.");
 		}
-
-		if (isAutosave) {
-			desktop.disposeAnnouncementWindow();
-			desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.autosavingSim") + "  "); //$NON-NLS-1$
-			masterClock.setSaveSim(Simulation.AUTOSAVE, null);
-		} else {
-			desktop.disposeAnnouncementWindow();
-			desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.savingSim") + "  "); //$NON-NLS-1$
-			if (fileLocn == null)
-				masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
-			else
-				masterClock.setSaveSim(Simulation.SAVE_AS, fileLocn);
-		}
-
-		// Save the current main window ui config
-//		UIConfig.INSTANCE.saveFile(this);
-		
-		while (masterClock.isSavingSimulation()) {
+		else {
 			try {
-				Thread.sleep(100L);
-			} catch (InterruptedException e) {
-				logger.log(Level.WARNING, Msg.getString("MainWindow.log.sleepInterrupt"), e); //$NON-NLS-1$
-			}
-		}
+				File fileLocn = null;
 		
-		desktop.disposeAnnouncementWindow();
+				if (!loadingDefault) {
+					JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
+					chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
+					if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+						fileLocn = chooser.getSelectedFile();
+					} else {
+						return;
+					}
+				}
+		
+				if (isAutosave) {
+					desktop.disposeAnnouncementWindow();
+					desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.autosavingSim") + "  "); //$NON-NLS-1$
+					masterClock.setSaveSim(Simulation.AUTOSAVE, null);
+				} else {
+					desktop.disposeAnnouncementWindow();
+					desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.savingSim") + "  "); //$NON-NLS-1$
+					if (fileLocn == null)
+						masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
+					else
+						masterClock.setSaveSim(Simulation.SAVE_AS, fileLocn);
+				}
+	
+				// Save the current main window ui config
+	//			UIConfig.INSTANCE.saveFile(this);
+		
+				while (keepSleeping && masterClock.isSavingSimulation())
+					TimeUnit.MILLISECONDS.sleep(100L);
+	
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, Msg.getString("MainWindow.log.sleepInterrupt") + e); //$NON-NLS-1$
+				e.printStackTrace(System.err);
+			}
+			
+			desktop.disposeAnnouncementWindow();
+		}
 	}
 
+//	/**
+//	 * Save the current simulation. This displays a FileChooser to select the
+//	 * location to save the simulation if the default is not to be used.
+//	 * 
+//	 * @param type
+//	 */
+//	public void saveSimulation(int type) {
+//		if (!masterClock.isPaused()) {
+//			// hideWaitStage(PAUSED);
+//			if (type == Simulation.SAVE_DEFAULT || type == Simulation.SAVE_AS) {
+//				desktop.disposeAnnouncementWindow();
+//				desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.savingSim") + "  "); //$NON-NLS-1$
+//			}
+//			
+//			else {
+//				desktop.disposeAnnouncementWindow();
+//				desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.autosavingSim") + "  "); //$NON-NLS-1$
+//				masterClock.setSaveSim(Simulation.AUTOSAVE, null);
+//			}
+//
+//			saveExecutor.execute(new Task<Void>() {
+//				@Override
+//				protected Void call() throws Exception {
+//					saveSimulationProcess(type);
+//					while (masterClock.isSavingSimulation())
+//						TimeUnit.MILLISECONDS.sleep(200L);
+//					return null;
+//				}
+//
+//				@Override
+//				protected void succeeded() {
+//					super.succeeded();
+//					desktop.disposeAnnouncementWindow();
+//				}
+//			});
+//
+//		}
+//		// endPause(previous);
+//	}
+//
+//
+//	/**
+//	 * Performs the process of saving a simulation.
+//	 */
+//	private void saveSimulationProcess(int type) {
+//		// logger.config("MainScene's saveSimulationProcess() is on " +
+//		// Thread.currentThread().getName() + " Thread");
+//		fileLocn = null;
+//		dir = null;
+//		title = null;
+//
+//		hideWaitStage(PAUSED);
+//
+//		if (type == Simulation.AUTOSAVE) {
+//			dir = Simulation.AUTOSAVE_DIR;
+//			masterClock.setSaveSim(Simulation.AUTOSAVE, null);
+//
+//		} else if (type == Simulation.SAVE_DEFAULT) {
+//			dir = Simulation.DEFAULT_DIR;
+//			masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
+//
+//		} else if (type == Simulation.SAVE_AS) {
+//
+//			Platform.runLater(() -> {
+//				FileChooser chooser = new FileChooser();
+//				dir = Simulation.DEFAULT_DIR;
+//				File userDirectory = new File(dir);
+//				title = Msg.getString("MainScene.dialogSaveSim");
+//				chooser.setTitle(title); // $NON-NLS-1$
+//				chooser.setInitialDirectory(userDirectory);
+//				// Set extension filter
+//				FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter("Simulation files (*.sim)",
+//						"*.sim");
+//				FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("all files (*.*)", "*.*");
+//				chooser.getExtensionFilters().addAll(simFilter, allFilter);
+//				File selectedFile = chooser.showSaveDialog(stage);
+//				if (selectedFile != null)
+//					fileLocn = selectedFile;
+//				else {
+//					hideWaitStage(PAUSED);
+//					return;
+//				}
+//
+//				showWaitStage(SAVING);
+//
+//				saveExecutor.execute(new Task<Void>() {
+//					@Override
+//					protected Void call() throws Exception {
+//						try {
+//							masterClock.setSaveSim(Simulation.SAVE_AS, fileLocn);
+//
+//							while (masterClock.isSavingSimulation())
+//								TimeUnit.MILLISECONDS.sleep(200L);
+//
+//						} catch (Exception e) {
+//							logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
+//							e.printStackTrace(System.err);
+//						}
+//
+//						return null;
+//					}
+//
+//					@Override
+//					protected void succeeded() {
+//						super.succeeded();
+//						hideWaitStage(SAVING);
+//					}
+//				});
+//			});
+//		}
+//	}
+	
 	/**
 	 * Pauses the simulation and opens an announcement window.
 	 */

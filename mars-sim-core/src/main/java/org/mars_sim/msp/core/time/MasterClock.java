@@ -441,6 +441,7 @@ public class MasterClock implements Serializable {
 	 * @param file save to file or null if default file.
 	 */
 	public void setSaveSim(int type, File file) {
+		logger.config("setSaveSim(" + type + ", " + file + ")");
 		saveType = type;
 		this.file = file;
 	}
@@ -864,6 +865,7 @@ public class MasterClock implements Serializable {
 	 */
 	private boolean checkSave() {
 		if (saveType != 0) {
+			logger.config("checkSave() : saveType is " + saveType); 
 			try {
 				sim.saveSimulation(saveType, file);
 			} catch (IOException e) {

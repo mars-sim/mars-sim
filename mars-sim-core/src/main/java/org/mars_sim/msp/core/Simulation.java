@@ -1032,6 +1032,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param file the file to be saved to.
 	 */
 	public synchronized void saveSimulation(int type, File file) throws IOException {
+		logger.config("saveSimulation(" + type + ", " + file + ")");
 		Simulation sim = instance();
 		sim.halt();
 
