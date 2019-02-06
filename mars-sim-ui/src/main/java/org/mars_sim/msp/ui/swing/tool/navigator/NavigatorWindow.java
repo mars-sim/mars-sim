@@ -27,6 +27,7 @@ import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
@@ -174,7 +175,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 //			setBorder(null);
 
 			// Prepare content pane
-			WebPanel wholePane = new WebPanel();
+			JPanel wholePane = new JPanel();
 			// mainPane.setLayout(new BorderLayout());
 			wholePane.setLayout(new BoxLayout(wholePane, BoxLayout.Y_AXIS));
 			// mainPane.setBorder(new MarsPanelBorder());

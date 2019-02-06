@@ -23,7 +23,9 @@ import java.util.logging.Logger;
 public class ExitMenu implements BiConsumer<TextIO, RunnerData> {
 	
 	private static Logger logger = Logger.getLogger(ExitMenu.class.getName());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
     public static void main(String[] args) {
         TextIO textIO = TextIoFactory.getTextIO();
         new ExitMenu().accept(textIO, null);
