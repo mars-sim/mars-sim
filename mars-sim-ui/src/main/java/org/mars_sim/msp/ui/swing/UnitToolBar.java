@@ -63,7 +63,7 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		super();
 
 		setOpaque(false);
-		setBackground(almond);
+		setBackground(cafeNoir);
 
 		// Initialize data members
 		unitButtons = new ArrayList<UnitButton>();
@@ -173,7 +173,7 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 	    Graphics2D g2 = (Graphics2D)g.create();
 
 	    // Apply vertical gradient
-	    g2.setPaint(new GradientPaint(0, 0, almond, 0, getHeight(), cafeNoir));
+	    g2.setPaint(new GradientPaint(0, 0, almond, 0, getHeight(), antiqueBronze));
 	    g2.fillRect(0, 0, getWidth(), getHeight());
 
 	    // Dipose of copy

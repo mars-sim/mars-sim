@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -52,6 +53,8 @@ import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.UIManagers;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
+import com.nilo.plaf.nimrod.NimRODLookAndFeel;
+import com.nilo.plaf.nimrod.NimRODTheme;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
@@ -69,9 +72,16 @@ public class MainWindow extends JComponent {
 	private static final String ICON_IMAGE = "/images/LanderHab.png";
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 	private static final String SOL = " Sol ";
+	private static final String themeSkin = "nimrod";
 	
 //	private static int AUTOSAVE_EVERY_X_MINUTE = 15;
 	private static final int TIME_DELAY = 960;
+	
+	public enum ThemeType {
+		System, Nimbus, Nimrod, Weblaf
+	}
+
+	public ThemeType defaultThemeType = ThemeType.Weblaf;
 
 	private static JFrame frame;
 	
@@ -149,10 +159,7 @@ public class MainWindow extends JComponent {
 //		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
 		// Set up the look and feel library to be used
-		if (OS.contains("linux"))
-			setLookAndFeel(false, false);
-		else
-			setLookAndFeel(false, true);
+		initializeTheme();
 		
 		// Set up MainDesktopPane
 		desktop = new MainDesktopPane(this);
@@ -306,6 +313,7 @@ public class MainWindow extends JComponent {
 		frame.setVisible(true);
 
 	}
+
 
 	/**
 	 * Set up the timer for status bar
@@ -927,62 +935,76 @@ public class MainWindow extends JComponent {
 		sim.getSimExecutor().shutdown();//.shutdownNow();
 	}
 	
+	/*
+	 * Sets the theme skin after calling stage.show() at the start of the sim
+	 */
+	public void initializeTheme() {
+		if (OS.contains("linux"))
+			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, ThemeType.Nimbus));
+		else
+			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, null));
+		
+	}
+	
 	/**
 	 * Sets the look and feel of the UI
 	 * 
-	 * @param nativeLookAndFeel
-	 *            true if native look and feel should be used.
+	 * @param choice
 	 */
-	public void setLookAndFeel(boolean nativeLookAndFeel, boolean nimRODLookAndFeel) {
+	public void setLookAndFeel(ThemeType choice0, ThemeType choice1) {
 		boolean changed = false;
-   
-		// use the weblaf skin
-		WebLookAndFeel.install();
-		UIManagers.initialize();
-		
-//		 final XStream xs = XmlUtils.getXStream();
-//		 XStream.setupDefaultSecurity(xs);
-//		 xs.allowTypesByWildcard(new String[] { "com.alee.**" });
-    
-//		 XStream xstream = new XStream(new StaxDriver()) {
-//		      @Override
-//		      protected void setupConverters() {
-//		      }
-//		    };
-//		    xstream.registerConverter(new ReflectionConverter(xstream.getMapper(), xstream.getReflectionProvider()), XStream.PRIORITY_VERY_LOW);
-//		    xstream.registerConverter(new IntConverter(), XStream.PRIORITY_NORMAL);
-//		    xstream.registerConverter(new StringConverter(), XStream.PRIORITY_NORMAL);
-//		    xstream.registerConverter(new CollectionConverter(xstream.getMapper()), XStream.PRIORITY_NORMAL);
-		    
-		String currentTheme = UIManager.getLookAndFeel().getClass().getName();
+		if (choice0 == ThemeType.Weblaf) {
+			try {
+				// use the weblaf skin
+//				WebLookAndFeel.setForceSingleEventsThread ( true );
+				WebLookAndFeel.install();
+				UIManagers.initialize();
+				changed = true;
 
-		if (nativeLookAndFeel) {
+			} catch (Exception e) {
+				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
+			}
+		}
+
+		if (choice1 == ThemeType.System) {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				changed = true;
-				lookAndFeelTheme = "system";
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
-		} else if (nimRODLookAndFeel) {
+		}
+
+		else if (choice1 == ThemeType.Nimrod) {
 			try {
-//				UIManager.setLookAndFeel(new NimRODLookAndFeel());
-//				changed = true;
-//				lookAndFeelTheme = "nimrod";
+				NimRODTheme nt = new NimRODTheme(
+						getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
+				NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
+				// working if switching to a brand new .theme file
+				NimRODLookAndFeel nf = new NimRODLookAndFeel();
+				nf.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme
+										// // file
+				UIManager.setLookAndFeel(nf);
+				changed = true; //
+
 			} catch (Exception e) {
-				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
+				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$ } }
 			}
-		} else {
+		}
+
+		else if (choice1 == ThemeType.Nimbus) {
 			try {
-				// Set Nimbus look & feel if found in JVM.
 				boolean foundNimbus = false;
 				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-					if (info.getName().equals("Nimbus")) { //$NON-NLS-1$
+					if (info.getName().equals("Nimbus")) {
+						// Set Nimbus look & feel if found in JVM.
+
+						// see https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/color.html
 						UIManager.setLookAndFeel(info.getClassName());
 						foundNimbus = true;
-						lookAndFeelTheme = "nimbus";
+						// themeSkin = "nimbus";
 						changed = true;
-						break;
+						// break;
 					}
 				}
 
@@ -990,7 +1012,7 @@ public class MainWindow extends JComponent {
 				if (!foundNimbus) {
 					logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
 					UIManager.setLookAndFeel(new MetalLookAndFeel());
-					lookAndFeelTheme = "metal";
+
 					changed = true;
 				}
 			} catch (Exception e) {
@@ -999,16 +1021,101 @@ public class MainWindow extends JComponent {
 		}
 
 		if (changed) {
-
 			frame.validate();
 			frame.repaint();
-
+			
 			if (desktop != null) {
 				desktop.updateToolWindowLF();
-				desktop.updateAnnouncementWindowLF();
+				desktop.updateUnitWindowLF();
+				// SwingUtilities.updateComponentTreeUI(desktop);
+				// desktop.updateAnnouncementWindowLF();
+				// desktop.updateTransportWizardLF();
 			}
 		}
 	}
+	
+//	/**
+//	 * Sets the look and feel of the UI
+//	 * 
+//	 * @param nativeLookAndFeel
+//	 *            true if native look and feel should be used.
+//	 */
+//	public void setLookAndFeel(boolean nativeLookAndFeel, boolean nimRODLookAndFeel) {
+//		boolean changed = false;
+//   
+//		// use the weblaf skin
+//		WebLookAndFeel.install();
+//		UIManagers.initialize();
+//		
+////		 final XStream xs = XmlUtils.getXStream();
+////		 XStream.setupDefaultSecurity(xs);
+////		 xs.allowTypesByWildcard(new String[] { "com.alee.**" });
+//    
+////		 XStream xstream = new XStream(new StaxDriver()) {
+////		      @Override
+////		      protected void setupConverters() {
+////		      }
+////		    };
+////		    xstream.registerConverter(new ReflectionConverter(xstream.getMapper(), xstream.getReflectionProvider()), XStream.PRIORITY_VERY_LOW);
+////		    xstream.registerConverter(new IntConverter(), XStream.PRIORITY_NORMAL);
+////		    xstream.registerConverter(new StringConverter(), XStream.PRIORITY_NORMAL);
+////		    xstream.registerConverter(new CollectionConverter(xstream.getMapper()), XStream.PRIORITY_NORMAL);
+//		    
+////		String currentTheme = UIManager.getLookAndFeel().getClass().getName();
+//
+//		if (nativeLookAndFeel) {
+//			try {
+//				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//				changed = true;
+//				lookAndFeelTheme = "system";
+//			} catch (Exception e) {
+//				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
+//			}
+//		} else if (nimRODLookAndFeel) {
+//			try {
+//				UIManager.setLookAndFeel(new NimRODLookAndFeel());
+//				changed = true;
+//				lookAndFeelTheme = "nimrod";
+//			} catch (Exception e) {
+//				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
+//			}
+//		} else {
+//			try {
+//				// Set Nimbus look & feel if found in JVM.
+//				boolean foundNimbus = false;
+//				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+//					if (info.getName().equals("Nimbus")) { //$NON-NLS-1$
+//						UIManager.setLookAndFeel(info.getClassName());
+//						foundNimbus = true;
+//						lookAndFeelTheme = "nimbus";
+//						changed = true;
+//						break;
+//					}
+//				}
+//
+//				// Metal Look & Feel fallback if Nimbus not present.
+//				if (!foundNimbus) {
+//					logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
+//					UIManager.setLookAndFeel(new MetalLookAndFeel());
+//					lookAndFeelTheme = "metal";
+//					changed = true;
+//				}
+//			} catch (Exception e) {
+//				logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
+//			}
+//		}
+//
+//		if (changed) {
+//
+//			frame.validate();
+//			frame.repaint();
+//
+//			if (desktop != null) {
+//				desktop.updateToolWindowLF();
+//				desktop.updateAnnouncementWindowLF();
+//			}
+//		}
+//	}
 
 	/**
 	 * Sets the icon image for the main window.

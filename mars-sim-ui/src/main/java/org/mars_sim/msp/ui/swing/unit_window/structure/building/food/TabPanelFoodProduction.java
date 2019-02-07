@@ -34,7 +34,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -46,8 +45,8 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -141,7 +140,7 @@ public class TabPanelFoodProduction extends TabPanel {
 		Collections.sort(buildingComboBoxCache);
 		buildingComboBox = new JComboBoxMW<Building>(buildingComboBoxCache);
 		// AddePromptComboBoxRenderer() & setSelectedIndex(-1)
-		buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
+		buildingComboBox.setRenderer(new PromptComboBoxRenderer("(1). Select a Building"));
 		buildingComboBox.setSelectedIndex(-1);
 		buildingComboBox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectBuilding")); //$NON-NLS-1$
 		buildingComboBox.addItemListener(new ItemListener() {
